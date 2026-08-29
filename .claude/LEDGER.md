@@ -40,9 +40,10 @@ The **consolidation** track is summarised in the next block and is CLOSED bar on
 The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section at the bottom.
 
 ⭐ **If you are the client-controls track:** read
-`.claude/prompts/2026-08-29-recovery-residuals-and-the-root-filter-nogo.md` — it carries EVERY
-remaining task on this track. Every predecessor was executed and DELETED; a reference to
-`check-a-backlog-and-the-settled-designs` or its four forerunners is stale.
+`.claude/prompts/2026-08-30-hover-fixes-reseed-and-deploy.md` — EVERY remaining task.
+Earlier prompt names are stale. ⛔ **That work is BLOCKED, not unstarted** — code is committed
+and pushed; it needs a CLEAN TREE (deploy + reseed are unsafe while other tracks have files in
+flight). **First action is `git status`, not an edit.**
 
 ⛔ **Before building ANY script or hand-doing investigative work, grep the two GENERATED
 catalogues in `.claude/dev-setup.md`.** 524 scripts across FIVE directories, and this repo's
@@ -299,23 +300,22 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 `.is-layout-constrained > :where(:not(.alignfull))`. Ours therefore cannot express
 "full-bleed child of a constrained parent". Read it there before reopening it.
 
-## ▶ CLIENT-CONTROLS TRACK — 2026-08-27 (nine commits, deployed + live-verified)
+## ▶ CLIENT-CONTROLS TRACK — 2026-08-29: four commits, pushed, NONE DEPLOYED
 
-⭐ **NEXT: `.claude/prompts/2026-08-29-recovery-residuals-and-the-root-filter-nogo.md`** — it
-carries every open task. Its predecessor was executed and DELETED 2026-08-27.
+⭐ **NEXT: the prompt named at the top of this file.**
 
-⛔ Detail is single-sourced to **D855-D862**. Do not restate mechanisms here.
+**2026-08-29 — `18eee2666` · `89c4d33fd` · `6c74fb4c7` · `c9b4f9b06`, pushed.** Two
+client-visible hover bugs (one root cause); Ken Burns animated nothing on the `<img>` fast
+path; a fractional grayscale silently rendered 100%. New guard, 9/9. Converter 727/0.
 
-### ✅ SHIPPED — all pushed, canary deployed, gates green
-Hero video/SVG media obey their controls · block bindings reach core's picker (19 fields) ·
-CHECK A 238 → 206 (32 artefacts exempted) · C14 order convention in Spec 35 + inspector-scan
-rule 35 · C16 spacing presets (opt-in, `sgs/container` pilot) · C19 media size & crop panel
-(`sgs/media` pilot) · two NULL `css_element` rows fixed · five client spacing ladders renamed.
+⛔ **NOTHING DEPLOYED OR LIVE-VERIFIED; 3 visual-diff debts UNPAID** (in `manual-skips.log`).
+Tree problem, not code: ~27 files of other tracks' work in flight, so deploy refused and
+`--dry-run` showed a reseed would write **5 attrs that were not mine**. The guard is
+deliberately NOT wired — it reads FAIL until that reseed.
 
-**Live-verified in the editor, not asserted:** C16 shows `XXS (0.25rem)`…`XXXL (8rem)` +
-Custom/none; C19's grey-out chain disables Height in auto/ratio and Fill style in auto, each
-with a plain-English reason. Frontend byte-identical before/after with a positive control
-(`media_sizing` ×8 in the DEPLOYED render.php) — so "unchanged" is not a failed deploy.
+### ✅ SHIPPED 2026-08-27 — deployed, live-verified, gates green
+Hero video/SVG media · bindings → core's picker · CHECK A 238→206 · C14 order · C16 presets ·
+C19 size & crop · 2 NULL `css_element` rows · 5 ladders renamed. **Detail: D855-D862.**
 
 ### ✅ BOTH ROLLOUTS LANDED (other sessions) — do NOT rebuild
 C16 COMPLETE: all 48 `ResponsiveBoxControl` mounts pass `presets` (`18806e6b0`), with detector
