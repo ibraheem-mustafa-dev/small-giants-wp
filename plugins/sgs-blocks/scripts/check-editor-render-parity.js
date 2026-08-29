@@ -446,6 +446,33 @@ const BABEL_PARSE_OPTS = {
 //     states applies before/after scroll; no resting appearance of its own.
 //   · ariaLabel — screen-reader-only accessible name, correctly invisible to
 //     sighted users.
+//
+// EXTENDED 2026-08-30 (+15 names, 31 findings) — the CLIENT-SET HOVER-STATE
+// class, decided by Bean as a class rather than the single row that surfaced
+// it. The mechanism, which is the whole justification and is narrower than
+// "hover is invisible":
+//
+//   A block's `:hover` rules in its own `style.css` DO reach the editor canvas
+//   — the canvas loads that stylesheet, so a STATIC hover rule previews there
+//   and is NOT exempt. What cannot reach the canvas is a PER-INSTANCE,
+//   CLIENT-SET hover VALUE: those are emitted by `render.php` into a scoped
+//   `.{uid}` <style> at render time, and the canvas never executes render.php.
+//   The canvas's only per-instance channel is an inline style object, and an
+//   inline style cannot express `:hover` at all. So there is no mechanism by
+//   which these 15 could be previewed — they are unpreviewable, not unpreviewed.
+//
+// ⚠ Scope note for whoever extends this next: that reasoning licenses exactly
+// the client-set hover VALUES below. It does NOT license "anything with Hover
+// in the name" — which is why these are 15 exact names and not a /Hover$/ test,
+// and why the hover OVER-MATCH control in runSelfTest() asserts that an
+// unlisted `…Hover` name is still flagged.
+//
+// Surfaced when commit 18eee2666 added `quoteColourHover`, taking CHECK A to
+// 208 against a ceiling of 207 and reding the build for every session. Fixing
+// that one row alone would have encoded "hover is invisible" for one attribute
+// and "hover is previewable" for two others on the SAME block (sgs/testimonial)
+// — an inconsistency that later reads as deliberate. Measured, not inferred:
+// `--json` reported 208 net-new before, 177 after.
 const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'bgSvgAnimation',
 	'bgSvgAnimationSpeed',
@@ -458,6 +485,22 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'rowShrinkHideTarget',
 	'headerTransparentDirection',
 	'ariaLabel',
+	// Client-set hover VALUES (2026-08-30) — see the mechanism note above.
+	'backgroundColourHover',
+	'backgroundColourHoverGradient',
+	'borderColourHover',
+	'borderColourHoverGradient',
+	'gridItemBackgroundHover',
+	'gridItemBackgroundHoverGradient',
+	'gridItemBorderGradientHover',
+	'gridItemTextColourHover',
+	'gridItemTextColourHoverGradient',
+	'groupBorderColourGradientHover',
+	'quoteColourHover',
+	'resultHoverBackgroundColour',
+	'shadowHoverColour',
+	'textColourHover',
+	'textDecorationHover',
 ] );
 
 // WP-native block-supports attribute names, consumed automatically by
@@ -3296,6 +3339,92 @@ function runSelfTest() {
 		failuresA
 	);
 
+	// HOVER-CLASS OVER-MATCH control (2026-08-30) — the 15 client-set hover
+	// names added that day are the single largest block of exemptions in the
+	// Set, and every one of them ends in a Hover-ish token. That makes a future
+	// "just make it a /Hover/ test" refactor the obvious wrong turn, and it
+	// would silently exempt real previewable properties. `panelHoverLayout` is
+	// deliberately shaped to be caught by any such pattern while NOT being a
+	// client-set colour/shadow value — a layout property the canvas genuinely
+	// should show. If this assertion ever fails, the exact-name discipline has
+	// been replaced by a pattern and the exemption is over-matching.
+	const hoverOvermatchDir = writeBlock( 'check-a-hover-overmatch', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-hover-overmatch',
+			attributes: { panelHoverLayout: { type: 'string' } },
+		} ),
+		'edit.js': [
+			"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+			"import { PanelBody, SelectControl } from '@wordpress/components';",
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { panelHoverLayout } = attributes;',
+			'\treturn (',
+			'\t\t<div { ...useBlockProps() }>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<SelectControl value={ panelHoverLayout } onChange={ ( v ) => setAttributes( { panelHoverLayout: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<div className="preview">Hello</div>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const hoverOvermatchMeta = readDeclaredAttrs( hoverOvermatchDir );
+	const hoverOvermatchFindings = checkEditorCanvasDesync(
+		hoverOvermatchMeta.name,
+		hoverOvermatchDir,
+		hoverOvermatchMeta.attrs
+	);
+	assertTrue(
+		hoverOvermatchFindings.some( ( f ) => f.attr === 'panelHoverLayout' ),
+		'hover over-match fixture: panelHoverLayout contains "Hover" but is NOT one of the 15 ' +
+			'client-set hover VALUES in EDITOR_INVISIBLE_BY_DESIGN, so it must still be flagged ' +
+			'(proves the 2026-08-30 hover exemption stayed an exact-name set and did not become a pattern)',
+		failuresA
+	);
+
+	// HOVER-CLASS positive control (2026-08-30) — the mirror of the above:
+	// proves the 15 names actually suppress. `quoteColourHover` is the exact
+	// attribute whose appearance in 18eee2666 reded the build, so this is the
+	// regression test for the incident that prompted the exemption.
+	const hoverExemptDir = writeBlock( 'check-a-hover-exempt', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-hover-exempt',
+			attributes: { quoteColourHover: { type: 'string' } },
+		} ),
+		'edit.js': [
+			"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+			"import { PanelBody, SelectControl } from '@wordpress/components';",
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { quoteColourHover } = attributes;',
+			'\treturn (',
+			'\t\t<div { ...useBlockProps() }>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<SelectControl value={ quoteColourHover } onChange={ ( v ) => setAttributes( { quoteColourHover: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<div className="preview">Hello</div>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const hoverExemptMeta = readDeclaredAttrs( hoverExemptDir );
+	const hoverExemptFindings = checkEditorCanvasDesync(
+		hoverExemptMeta.name,
+		hoverExemptDir,
+		hoverExemptMeta.attrs
+	);
+	assertTrue(
+		! hoverExemptFindings.some( ( f ) => f.attr === 'quoteColourHover' ),
+		'hover exemption fixture: quoteColourHover is one of the 15 client-set hover VALUES and must ' +
+			'NOT be flagged (regression test for commit 18eee2666, which reded the build at 208/207), but was',
+		failuresA
+	);
+
 	if ( failuresA.length ) {
 		pass = false;
 		log( 'CHECK A — FAIL' );
@@ -3961,7 +4090,30 @@ function main() {
 	// underlying defect -- the rename makes a debt class visible, it does not
 	// create it. Same class as the other 15 blocks already carrying this
 	// hover-gradient-masked-border-ring desync (not canvas-previewable).
-	const CHECK_A_OPEN_BACKLOG = 207;
+	// 207 -> 177 (2026-08-30, Bean): the CLIENT-SET HOVER-STATE class was added
+	// to EDITOR_INVISIBLE_BY_DESIGN (15 exact names, 31 findings) with the
+	// mechanism recorded on that Set's declaration -- these values are emitted
+	// as scoped CSS by render.php, which the editor canvas never executes, and
+	// an inline style object cannot express `:hover` at all, so there is no
+	// channel by which they could be previewed.
+	//
+	// This is a LOWERING, which is what the rule above asks for after any drop
+	// ("Re-measure and LOWER it after every drop -- including drops you did not
+	// make yourself"). It is NOT the sanctioned raise: no ceiling was raised to
+	// absorb debt. Triggered by commit 18eee2666 adding `quoteColourHover`,
+	// which took the count to 208 and reded the build for every co-active
+	// session; the owning session could not be identified from git (shared
+	// identity), so the class was settled rather than the one row -- fixing only
+	// that row would have encoded "hover is invisible" for one attribute and
+	// "hover is previewable" for two others on the same block.
+	//
+	// Measured, not inferred: `--json` reported netNew 208 before the exemption
+	// and 177 immediately after, with 0 hover-named findings remaining. Both
+	// directions are pinned in runSelfTest() by a positive control
+	// (`quoteColourHover` must be suppressed) and an over-match control
+	// (`panelHoverLayout` must still be flagged); each was verified to FAIL when
+	// deliberately broken, so neither is vacuous.
+	const CHECK_A_OPEN_BACKLOG = 177;
 	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
 
 	if ( isJson ) {
