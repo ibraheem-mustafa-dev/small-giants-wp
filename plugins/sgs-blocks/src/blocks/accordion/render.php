@@ -132,19 +132,39 @@ if ( 'none' !== $border_style ) {
 		$responsive_css .= $root_sel . '{' . implode( ';', $border_box_decls ) . ';}';
 	}
 
-	// Flat colour + gradient ring via the shared helper. It resolves palette
-	// token slugs internally (D881 defect 3 — a slug fed in raw painted
-	// nothing, because an unresolved slug is invalid CSS the browser drops
-	// while the masked ring sets border-color:transparent).
-	$responsive_css .= sgs_border_states_css(
-		$root_sel,
-		$attributes,
-		array(
-			'base'     => 'borderColour',
-			'gradient' => 'borderColourGradient',
-			'width'    => '' !== $border_width_top ? $border_width_top : '1px',
-		)
-	);
+	// Colour. A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses
+	// the masked ::before ring.
+	//
+	// ⚠ Deliberately NOT `sgs_border_states_css()`, even though sgs/product-card
+	// (this block's model for the width/style legs) calls it. That helper always
+	// routes through `sgs_border_gradient_css()`, which sets
+	// `border-color:transparent` and paints the colour on a ::before ring — so a
+	// client's flat border colour is unreadable as `border-color` on the element.
+	// Measured live 2026-08-30 with `scripts/qa/check-border-roundtrip.js`
+	// against a palette token: sgs/product-card and sgs/container (the helper's
+	// only two callers) BOTH report
+	// `positive border-color = rgba(0, 0, 0, 0)`, while the blocks that emit
+	// `border-color` directly pass. Direct emission is both the majority pattern
+	// (quote/heading/button) and the cheaper one — no pseudo-element,
+	// no position:relative, no background-clip, and `border-color` stays
+	// readable by anything that inspects it.
+	//
+	// `sgs_colour_value()` resolves a palette SLUG to its custom property; a raw
+	// colour passes through. Skipping that resolution is D881 defect 3 — a bare
+	// slug is invalid CSS the browser silently drops.
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+
+	if ( '' !== $border_colour_gradient ) {
+		$responsive_css .= sgs_border_gradient_css(
+			$root_sel,
+			$border_colour_gradient,
+			null,
+			'' !== $border_width_top ? $border_width_top : '1px'
+		);
+	} elseif ( '' !== $border_colour ) {
+		$responsive_css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
 }
 
 // Typography (fontSize + lineHeight only, per block.json supports) — applies
