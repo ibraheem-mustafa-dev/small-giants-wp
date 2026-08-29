@@ -93,12 +93,53 @@ _CARD_GRID_RULES = {
 
 
 def test_card_grid_hover_grayscale_lifts_as_boolean():
+    """RENAMED IN INTENT 2026-08-29 (Bean-ruled). This used to assert that a draft's
+    ROOT `:hover{filter:grayscale(1)}` lifted to `grayscaleHover:true`. That lift was a
+    MIS-ROUTE, and asserting it made this test guard a defect:
+
+      draft  `.sgs-card-grid:hover{filter:grayscale(1)}`  = colour at rest, GREY on hover
+      attr   `grayscaleHover:true` renders (style.css:274,280)
+             `.sgs-has-grayscale .__image        {filter:grayscale(100%)}`  GREY at rest
+             `.sgs-has-grayscale .__item:hover .__image {filter:grayscale(0%)}`  COLOUR on hover
+
+    Five divergences, not one: wrong element (`__image`, not the root), INVERTED state
+    direction, wrong trigger (`__item:hover`, not the root), wrong amount (always 100%,
+    any 0-1 lost), and no reduced-motion arm. The old assertion passed because
+    `grayscaleHover` had no derived-layer entry at all, so a fallback swallowed the
+    declaration; once card-grid declared `states.hover.attrMap {"css:filter":
+    "grayscaleHover"}` on its `image` element -- which is TRUE -- the root lookup
+    correctly stopped matching and the fallback stopped firing.
+
+    THE DECIDING FACT is the control, not the CSS: the only grayscale control in the
+    plugin (`extensions/hover-effects.js:382`) is labelled "Grayscale to colour" and its
+    own help text reads "Desaturates images at rest; restores colour on hover." One
+    direction. Nothing in the framework offers the draft's direction, so there is no
+    honest destination for this declaration to land in. A draft asking for the inverse
+    effect must NOT be silently written into an attribute that produces the opposite.
+
+    So this now asserts the ABSENCE of the mis-route. It is a regression guard: if
+    `grayscaleHover` ever reappears here, a fallback has started swallowing root-scoped
+    filter declarations again.
+
+    NOT YET ASSERTED, deliberately: that the dropped declaration is REPORTED. It is not --
+    `resolve_state_property` returns None (fall-through, never a GAP), which is a live
+    Rule 4 gap of its own. Tighten this to a gap assertion when that lands; do not weaken
+    it back to the old expectation."""
     node = BeautifulSoup(_CARD_GRID_HTML, "html.parser").find("section")
     rec = recognise(node)
     assert rec.slug == "sgs/card-grid"
     _cleanup_gap_rows(rec.slug)
     markup = build_block_markup(rec, node, css_rules=_CARD_GRID_RULES)
-    assert '"grayscaleHover":true' in markup, markup
+    assert '"grayscaleHover"' not in markup, (
+        "A root-scoped filter was written into grayscaleHover, which renders the INVERSE "
+        "effect on a child element. Mis-route regression: " + markup
+    )
+    # Positive control — the fixture's non-filter declaration still transfers, so a
+    # passing test above cannot be an artefact of nothing being lifted at all.
+    assert '"padding"' in markup, (
+        "Nothing lifted from this fixture at all, so the grayscale assertion is vacuous: "
+        + markup
+    )
 
 
 # ---------------------------------------------------------------------------
