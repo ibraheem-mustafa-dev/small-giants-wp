@@ -239,6 +239,52 @@
 	}
 }
 
+/* Ken-burns on the <img> LCP fast path — WITHOUT THIS, KEN BURNS IS DEAD IN THE
+   COMMONEST CASE. The rule above animates `background-size`/`background-position`
+   on the container, which only moves when the background is painted as a CSS
+   `background-image`. It often is not: SGS_Container_Wrapper renders the
+   background as a real <img class="sgs-container__image-bg"> whenever
+   `$has_bg_image && ! $has_bg_video && $sgs_bg_img_is_simple`
+   (class-sgs-container-wrapper.php ~L1129, the Phase 2 LCP fast path), while the
+   `sgs-container--ken-burns` class is added on `$has_bg_image && ! $has_bg_video`
+   alone (~L1607) with NO check on `$sgs_bg_img_is_simple`. The two conditions are
+   independent, so a plain background image with no responsive tiers — the simplest
+   and most common setup a client will pick — gets the class, has no
+   background-image to resize, and animates nothing at all. Silently: every
+   computed style still resolves, so a style-based check cannot see it.
+
+   Fixing it here rather than by suppressing the <img> path keeps the LCP benefit,
+   and is strictly better motion: `transform` is GPU-composited, whereas animating
+   `background-size` forces a full repaint every frame.
+
+   The <img> is `position:absolute; inset:0; width/height:100%; object-fit:cover`
+   (see .sgs-container__image-bg above), so it already fills the container and a
+   scale-up has room to grow into without letterboxing; `--has-bg-image` sets
+   `overflow:hidden`, which clips the overflow. Nothing else animates this element:
+   image parallax uses `background-attachment:fixed` and extensions/parallax.js
+   contains no `transform` at all, so there is no transform to collide with. */
+.sgs-container--ken-burns > .sgs-container__image-bg {
+	animation: sgs-container-ken-burns-img var(--sgs-ken-burns-duration, 20s) ease-in-out infinite alternate;
+	transform-origin: center center;
+	will-change: transform;
+}
+
+/* Mirrors the background-image keyframes' feel: the same 110% -> 120% zoom, with
+   the drift expressed as a translate rather than a background-position shift.
+   Both are composited, so the pair animates as one property. */
+@keyframes sgs-container-ken-burns-img {
+	from { transform: scale(1.1) translate(0, 0); }
+	to   { transform: scale(1.2) translate(-2%, 2%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-container--ken-burns > .sgs-container__image-bg {
+		animation: none;
+		transform: none;
+		will-change: auto;
+	}
+}
+
 /* ===== SVG background layer (merged from sgs/svg-background 2026-05-28 D93) ===== */
 
 .sgs-container--has-bg-svg {
