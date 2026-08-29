@@ -103,12 +103,16 @@
  *      the finding even though the attribute itself is unused (false
  *      negative — this check never causes a false POSITIVE from this gap).
  *   2. Attribute renaming in destructuring (`const { foo: renamed } =
- *      attributes`) is read by its KEY name (`foo`), matching this project's
- *      "attribute name is the schema key" convention — a renamed LOCAL
- *      variable referenced in JSX under the renamed name is not currently
- *      matched back to the key. Not observed live in this codebase as of
- *      2026-08-13 (no renamed attribute-destructure found in the survey run
- *      below); documented in case it appears later.
+ *      attributes`) is read by its KEY name (`foo`) for `declaredAttrs`/
+ *      `written` membership, matching this project's "attribute name is the
+ *      schema key" convention. FIXED 2026-08-30 (D-pending) — a renamed LOCAL
+ *      variable referenced outside InspectorControls IS now matched back to
+ *      the key via `collectDestructuredAliases()`, after `sgs/pricing-table`
+ *      `pricingTableStyle: style` proved the gap live: `style` is genuinely
+ *      read at `edit.js:160` inside the wrapper className, but the finding
+ *      loop only ever checked `usedOutsideControls.has('pricingTableStyle')`,
+ *      which is never true for a renamed binding — a false positive, not a
+ *      real editor-canvas desync.
  *   3. JSX assigned to an intermediate variable before being returned
  *      (`const preview = <div>...</div>; return preview;`) IS still caught —
  *      the JSXElement/JSXFragment scan is file-wide, not anchored to a
@@ -2234,6 +2238,77 @@ function collectDestructuredFromAttributes( ast ) {
 }
 
 /**
+ * Collect renamed destructuring bindings for attributes pulled FROM
+ * `attributes` (`const { foo: renamed } = attributes`), in either of the two
+ * shapes `collectDestructuredFromAttributes()` recognises. Only renamed
+ * cases are recorded — `{ foo }` (key === value) is not an alias.
+ *
+ * Built 2026-08-30 after `sgs/pricing-table` proved the blind spot documented
+ * in this file's own header (CHECK A BLIND SPOTS, item 2) is real: `const {
+ * pricingTableStyle: style } = attributes` is genuinely read back via `style`
+ * outside any control, but `usedOutsideControls` only ever contains the LOCAL
+ * name (`style`), never the schema key (`pricingTableStyle`) — so the Check A
+ * finding loop, which tests `usedOutsideControls.has( attr )` against the
+ * schema key, reported a false positive. This map lets that loop also try
+ * the alias.
+ *
+ * @param {Object} ast Parsed edit.js AST.
+ * @return {Map<string,string>} attribute name (schema key) -> local alias name.
+ */
+function collectDestructuredAliases( ast ) {
+	const aliases = new Map();
+	const record = ( keyNode, valueNode ) => {
+		if (
+			valueNode &&
+			valueNode.type === 'Identifier' &&
+			valueNode.name !== keyNode.name
+		) {
+			aliases.set( keyNode.name, valueNode.name );
+		}
+	};
+	traverse( ast, {
+		// const { a: renamedA } = attributes;  /  const { a: renamedA } = props.attributes;
+		VariableDeclarator( nodePath ) {
+			const node = nodePath.node;
+			if ( node.id.type !== 'ObjectPattern' ) {
+				return;
+			}
+			const init = node.init;
+			const isAttributesInit =
+				( init && init.type === 'Identifier' && init.name === 'attributes' ) ||
+				( init && init.type === 'MemberExpression' && init.property && init.property.name === 'attributes' );
+			if ( ! isAttributesInit ) {
+				return;
+			}
+			for ( const prop of node.id.properties ) {
+				if ( prop.type === 'ObjectProperty' && prop.key && prop.key.type === 'Identifier' ) {
+					record( prop.key, prop.value );
+				}
+			}
+		},
+		// function Edit( { attributes: { a: renamedA }, setAttributes } ) { ... }
+		ObjectPattern( nodePath ) {
+			for ( const prop of nodePath.node.properties ) {
+				if (
+					prop.type === 'ObjectProperty' &&
+					prop.key &&
+					prop.key.name === 'attributes' &&
+					prop.value &&
+					prop.value.type === 'ObjectPattern'
+				) {
+					for ( const inner of prop.value.properties ) {
+						if ( inner.type === 'ObjectProperty' && inner.key && inner.key.type === 'Identifier' ) {
+							record( inner.key, inner.value );
+						}
+					}
+				}
+			}
+		},
+	} );
+	return aliases;
+}
+
+/**
  * Collect every attribute name WRITTEN via setAttributes({...}) or the
  * house-style update('attr', val) setter. Same shapes as check-dead-
  * controls.js's collectControlledAttrs (textual, not AST — proven against
@@ -2561,6 +2636,7 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 	}
 
 	const destructured = collectDestructuredFromAttributes( ast );
+	const destructuredAliases = collectDestructuredAliases( ast );
 	const written = collectSetAttributesWrites( src );
 	const excludedRanges = collectExcludedRanges( ast );
 	const usedOutsideControls = collectUsedIdentifiersOutsideExcluded( ast, excludedRanges );
@@ -2629,6 +2705,10 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 		}
 		if ( usedOutsideControls.has( attr ) ) {
 			continue;
+		}
+		const alias = destructuredAliases.get( attr );
+		if ( alias && usedOutsideControls.has( alias ) ) {
+			continue; // renamed destructuring binding read back under its LOCAL name, not the schema key
 		}
 		if ( phpSrc && attributeIsNonPaintSinkOnly( phpSrc, phpMask, phpCommentMask, attr, attrVarMap, derivedVarMap ) ) {
 			continue; // SIGNAL 1 — every render.php consumption site is a non-paint sink
@@ -3422,6 +3502,90 @@ function runSelfTest() {
 		! hoverExemptFindings.some( ( f ) => f.attr === 'quoteColourHover' ),
 		'hover exemption fixture: quoteColourHover is one of the 15 client-set hover VALUES and must ' +
 			'NOT be flagged (regression test for commit 18eee2666, which reded the build at 208/207), but was',
+		failuresA
+	);
+
+	// RENAMED-DESTRUCTURE negative control (2026-08-30) — regression test for
+	// `sgs/pricing-table`'s `pricingTableStyle: style` false positive (this
+	// file's own header, CHECK A BLIND SPOTS item 2, flagged this shape as
+	// unconfirmed on 2026-08-13; it has now been found live). The renamed
+	// LOCAL binding (`style`) is genuinely read outside InspectorControls, so
+	// this must NOT be flagged despite `usedOutsideControls` never containing
+	// the schema key (`pricingTableStyle`) itself.
+	const aliasNegDir = writeBlock( 'check-a-alias-negative', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-alias-negative',
+			attributes: { pricingTableStyle: { type: 'string' } },
+		} ),
+		'edit.js': [
+			"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+			"import { PanelBody, SelectControl } from '@wordpress/components';",
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { pricingTableStyle: style } = attributes;',
+			"\tconst className = `sgs-fixture--${ style }`;",
+			'\tconst blockProps = useBlockProps( { className } );',
+			'\treturn (',
+			'\t\t<div { ...blockProps }>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<SelectControl value={ style } onChange={ ( v ) => setAttributes( { pricingTableStyle: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\tHello',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const aliasNegMeta = readDeclaredAttrs( aliasNegDir );
+	const aliasNegFindings = checkEditorCanvasDesync( aliasNegMeta.name, aliasNegDir, aliasNegMeta.attrs );
+	assertTrue(
+		! aliasNegFindings.some( ( f ) => f.attr === 'pricingTableStyle' ),
+		'renamed-destructure fixture: pricingTableStyle (destructured as `style`) is read back via its ' +
+			'renamed local binding in the className, so it should NOT be flagged, but was (regression for ' +
+			'the sgs/pricing-table 178/177 false positive)',
+		failuresA
+	);
+
+	// RENAMED-DESTRUCTURE OVER-MATCH control (2026-08-30) — proves the alias
+	// fix only exempts an attribute that is ACTUALLY read via its renamed
+	// local name somewhere outside InspectorControls; a renamed binding that
+	// is never referenced anywhere else must still be flagged, same as the
+	// un-renamed positive control above.
+	const aliasOvermatchDir = writeBlock( 'check-a-alias-overmatch', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-alias-overmatch',
+			attributes: { pricingTableStyle: { type: 'string' } },
+		} ),
+		'edit.js': [
+			"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+			"import { PanelBody, SelectControl } from '@wordpress/components';",
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { pricingTableStyle: style } = attributes;',
+			'\treturn (',
+			'\t\t<div { ...useBlockProps() }>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<SelectControl value={ style } onChange={ ( v ) => setAttributes( { pricingTableStyle: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<div className="preview">Hello</div>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const aliasOvermatchMeta = readDeclaredAttrs( aliasOvermatchDir );
+	const aliasOvermatchFindings = checkEditorCanvasDesync(
+		aliasOvermatchMeta.name,
+		aliasOvermatchDir,
+		aliasOvermatchMeta.attrs
+	);
+	assertTrue(
+		aliasOvermatchFindings.some( ( f ) => f.attr === 'pricingTableStyle' ),
+		'renamed-destructure over-match fixture: pricingTableStyle (destructured as `style`) is never ' +
+			'read anywhere outside InspectorControls, so it should still be flagged (proves the alias fix ' +
+			"doesn't over-exempt), but it was suppressed",
 		failuresA
 	);
 
