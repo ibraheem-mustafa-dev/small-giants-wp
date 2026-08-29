@@ -41,9 +41,8 @@ The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section
 
 ⭐ **If you are the client-controls track:** read
 `.claude/prompts/2026-08-30-hover-fixes-reseed-and-deploy.md` — EVERY remaining task.
-Earlier prompt names are stale. ⛔ **That work is BLOCKED, not unstarted** — code is committed
-and pushed; it needs a CLEAN TREE (deploy + reseed are unsafe while other tracks have files in
-flight). **First action is `git status`, not an edit.**
+Earlier prompt names are stale. ⛔ **Tasks A+B are DONE** (reseed + guard wired, both
+verified). What remains is **Task C only: DEPLOY, hand hover-check, 3 visual-diff reports.**
 
 ⛔ **Before building ANY script or hand-doing investigative work, grep the two GENERATED
 catalogues in `.claude/dev-setup.md`.** 524 scripts across FIVE directories, and this repo's
@@ -304,14 +303,16 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 
 ⭐ **NEXT: the prompt named at the top of this file.**
 
-**2026-08-29 — `18eee2666` · `89c4d33fd` · `6c74fb4c7` · `c9b4f9b06`, pushed.** Two
-client-visible hover bugs (one root cause); Ken Burns animated nothing on the `<img>` fast
-path; a fractional grayscale silently rendered 100%. New guard, 9/9. Converter 727/0.
+**2026-08-29 — `18eee2666` `89c4d33fd` `6c74fb4c7` `c9b4f9b06`.** Two client-visible hover
+bugs (one root cause); Ken Burns animated nothing on the `<img>` fast path; a fractional
+grayscale silently rendered 100%. New guard, 9/9. Converter 727/0.
 
-⛔ **NOTHING DEPLOYED OR LIVE-VERIFIED; 3 visual-diff debts UNPAID** (in `manual-skips.log`).
-Tree problem, not code: ~27 files of other tracks' work in flight, so deploy refused and
-`--dry-run` showed a reseed would write **5 attrs that were not mine**. The guard is
-deliberately NOT wired — it reads FAIL until that reseed.
+**Reseed + guard wiring DONE same day** (`c45b4f5dc`, `c50066bff`): 4 DB fixes live,
+guard = gate 78 (fast, 70/70), F6 0 NEW.
+
+⛔ **NOT DEPLOYED OR LIVE-VERIFIED; 3 visual-diff debts UNPAID** (`manual-skips.log`).
+DB correct, canary not. Deploy + a HAND hover-check is the front —
+`computed-parity.js` is hover-blind (0 hits), so it greens either way.
 
 ### ✅ SHIPPED 2026-08-27 — deployed, live-verified, gates green
 Hero video/SVG media · bindings → core's picker · CHECK A 238→206 · C14 order · C16 presets ·

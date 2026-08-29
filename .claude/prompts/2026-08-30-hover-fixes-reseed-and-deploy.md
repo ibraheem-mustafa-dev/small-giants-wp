@@ -28,7 +28,43 @@ and `.sgs-icon-list__item` is static variant CSS with no attribute behind it.
 
 ---
 
-## THE BLOCKER, and why it is not a code problem
+## ✅ TASKS A + B ARE DONE (2026-08-29, later the same day) — do NOT redo them
+
+The tree cleared, so the reseed ran. **`c45b4f5dc`** (reseed + the team-member
+override) and **`c50066bff`** (the guard wired). Verified by query, not asserted:
+
+| Attribute | Before | After |
+|---|---|---|
+| `quoteColourHover` | element NULL, state NULL | `quote-text` / `hover` |
+| `numberBackgroundHover` | element NULL, state NULL | `number` / `hover` |
+| `photoTablet` / `photoMobile` | `max-width` + tier | NULL / NULL / NULL |
+
+`check-hover-state-classification.py --check` **PASSES** (was 2 findings) and is
+now gate 78, fast tier — confirmed via `gate:list` / `gate:wired` / `run-gates.py
+--only`, never by grepping `package.json` (that is a documented false positive).
+Fast tier 70/70. F6 is 0 NEW.
+
+⚠ **One trap worth carrying:** the override needed `css_layer: null` as well as
+`css_property`/`css_tier`. F6 compares the PAIR `(css_property, css_layer)`, and
+the derived layer sets `css_layer = 'OUTER'`, so clearing the property alone left
+it mismatched and F6 still reported 2 NEW. If you clear a `css_property` in an
+override in future, clear its layer too.
+
+**The 5 `new_attrs` in the dry-run were never contamination** — they were
+`sgs/accordion`'s Shape-B border attrs, already committed and pushed in
+`542e256aa`. The DB catching up with committed work is what a reseed is for. The
+other 17 block.json-vs-DB differences are `_comment_*` pseudo-attributes the
+seeder correctly skips.
+
+**`block_changes` / `pipeline_corrections` showing as GONE in seed history is
+expected** — commit `426d10ce2` retired them and removed them from `schema.sql`.
+Schema-drift reports CLEAN. Do not go looking for a broken writer.
+
+---
+
+## ⭐ WHAT IS ACTUALLY LEFT: Task C only. And this was the blocker's shape
+
+## THE ORIGINAL BLOCKER, and why it is not a code problem
 
 At the time of writing the worktree carried **~27 modified files from other
 tracks** (accordion Shape-B, star-rating, tabs, timeline, button, card-grid, block
@@ -50,7 +86,7 @@ something else — none of this is safe on a dirty tree.**
 
 ---
 
-## Task A — the reseed, and the one change that is waiting on it
+## ✅ Task A — DONE (`c45b4f5dc`). Kept below for its root-cause record only.
 
 `sgs/team-member.photoTablet` / `photoMobile` are classified `css_property =
 'max-width'`. They are object-typed **media** attributes rendered as
@@ -88,17 +124,13 @@ than classifier-fixed because that is a shared-analyser change with real blast
 radius for a 2-row defect. The root cause is recorded in the override's `_why` so
 that decision can be made deliberately rather than rediscovered.
 
-## Task B — wire the guard (needs Task A's reseed first)
+## ✅ Task B — DONE (`c50066bff`), gate 78, fast tier. Kept for the predicate's rationale.
 
-`plugins/sgs-blocks/scripts/check-hover-state-classification.py` is committed but
-**deliberately not in `gates.json`**. It reports FAIL until the reseed propagates
-the two new `states.hover.attrMap` declarations, and wiring a red gate would break
-four other tracks' builds.
-
-After the reseed: run `--check`. It must return **0**. Then add it to
-`scripts/gates.json` (fast tier) with a `check:` alias in `package.json`, and
-confirm with `npm run gate:list` — grepping `package.json` proves only that the
-alias exists, not that the gate runs.
+`plugins/sgs-blocks/scripts/check-hover-state-classification.py` is now gate **78**,
+fast tier, `budget_ms` 150 (measured across three runs, not guessed). Confirmed via
+`npm run gate:list`, `npm run gate:wired`, `run-gates.py --only …` and a full fast
+tier at 70/70 — never by grepping `package.json`, which proves only that the alias
+exists, not that the gate runs.
 
 Its predicate is `*Hover` + real `css_property` + `css_state IS NULL` + **a
 resting twin exists**. That fourth conjunct is load-bearing: without it the
