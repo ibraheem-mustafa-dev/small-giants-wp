@@ -150,7 +150,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 					},
 				] }
 			/>
-			<InspectorControls>
+			<InspectorControls group="settings">
 				{ /* WS-4: mirrored sgs/container wrapper controls (content kind). */ }
 				<ContainerWrapperControls
 					attributes={ attributes }
