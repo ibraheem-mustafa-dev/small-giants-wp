@@ -620,28 +620,54 @@
  * Typed-card hover/focus affordance (Task 5d, 2026-08-27 — Bean-approved
  * reversal of the "typed cards stay unstyled" scope guardrail below).
  *
- * A resting transparent border is reserved up front so the coloured border
- * on hover/focus costs no layout shift (no reflow, no inset-shadow fallback
- * needed here — the border-colour swap alone is enough).
+ * A resting transparent RING is reserved up front so the coloured ring on
+ * hover/focus costs no layout shift.
+ *
+ * ⚠ FIX (2026-08-29, border-roundtrip G5 defect): this affordance used to be
+ * a real `border` shorthand on `.product-card`. That collided with the SAME
+ * longhand properties (`border-top-width/style/color`) that the operator's
+ * borderWidth/borderStyle/borderColour attributes paint (render.php's scoped
+ * `.sgs-pc-N.wp-block-sgs-product-card` rule, emitted only when
+ * borderStyle !== 'none'). When an operator explicitly set borderStyle to
+ * "none", render.php emits NOTHING for that instance (correct per G5 — "a
+ * style must only be emitted alongside a real width, and borderStyle:none
+ * must emit nothing at all"), which let THIS rule's `border: 2px solid
+ * transparent` become the winning declaration at equal specificity — a
+ * "none" card still painted a visible border. Root cause proven live
+ * 2026-08-29: `.product-card:not(.product-card--live)` and the operator's
+ * scoped rule are both (0,2,0); with no operator rule to beat it, this one
+ * painted. Moved the affordance onto `box-shadow` (a property the operator's
+ * border attrs never touch) so the two features can never collide again,
+ * regardless of which one is emitted or in what order.
  *
  * Colour resolves through the same theme-token chain as core-blocks.css:147 —
  * --sgs-hover-primary (core-blocks-critical.css:484, a colour-mix() darken of
  * --wp--preset--color--primary) with a plain-token fallback for older
  * browsers. Never a client hex — works identically for any theme palette.
  *
+ * ⚠ `box-shadow` was tried first and REJECTED before shipping: `.product-card`
+ * (line ~57, specificity 0,1,0) already owns `box-shadow` for the card's
+ * resting drop-shadow. This rule's higher specificity (0,2,0) would silently
+ * REPLACE that drop-shadow instead of adding a ring (box-shadow does not
+ * layer across two separate declarations — only the winning one applies).
+ * `outline` is a genuinely separate paint layer: no interaction with `border`
+ * (the operator's attrs) or `box-shadow` (the resting drop-shadow), so
+ * neither collides.
+ *
  * Scoped to :not(.product-card--live) so a Bound/live card (which already
  * has its own lift+shadow affordance above) doesn't get a second, competing
  * hover treatment.
  */
 .product-card:not( .product-card--live ) {
-	border: 2px solid transparent;
-	transition: border-color 0.2s ease;
+	outline: 2px solid transparent;
+	outline-offset: -2px;
+	transition: outline-color 0.2s ease;
 }
 
 .product-card:not( .product-card--live ):hover,
 .product-card:not( .product-card--live ):focus-within,
 .product-card:not( .product-card--live ):focus-visible {
-	border-color: var( --sgs-hover-primary, var( --wp--preset--color--primary, #1f7a7a ) );
+	outline-color: var( --sgs-hover-primary, var( --wp--preset--color--primary, #1f7a7a ) );
 }
 
 /* Reduced motion — respect user preference */
