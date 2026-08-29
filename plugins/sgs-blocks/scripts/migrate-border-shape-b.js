@@ -21,13 +21,48 @@
  * Copying product-card's colour leg would have cloned that defect 37 times.
  *
  * WHAT SHAPE B IS (all three must land together, or the block is left broken):
- *   1. block.json  — supports.__experimentalBorder trimmed to
- *                    { radius, __experimentalSkipSerialization }; four private
- *                    attrs added; the elements attrMap repointed off `native:`.
- *   2. render.php  — the dead native border reads removed; a G5-gated private
- *                    emission added (style only alongside a real width).
- *   3. edit.js     — SgsBorderControl imported + mounted, plus a canvas preview
- *                    (without it the four new attrs are net-new CHECK A findings).
+ *   1. block.json  — supports.__experimentalBorder REMOVED ENTIRELY (not
+ *                    trimmed); seven private attrs added (borderWidth/Style/
+ *                    Colour/ColourGradient + borderRadius/Tablet/Mobile); the
+ *                    elements attrMap repointed off `native:` on all four legs.
+ *   2. render.php  — the dead native border reads removed (width/style/colour
+ *                    AND radius); a G5-gated private emission added (style
+ *                    only alongside a real width) plus radius painted via
+ *                    wp_style_engine_get_styles() at base + both tiers.
+ *   3. edit.js     — SgsBorderControl imported + mounted with the radius pair
+ *                    wired (onRadiusChange), plus a canvas preview (without it
+ *                    the seven new attrs are net-new CHECK A findings).
+ *
+ * ⚠ RADIUS TARGET-SHAPE CORRECTION (2026-08-30, Bean): radius was originally
+ * left permanently native ({ radius: true, __experimentalSkipSerialization:
+ * true }) -- that was WRONG. Bean's actual standard is to take a native
+ * control's exact UI, wrap it, and make it a shared helper used across the
+ * library; that wrapper (`ResponsiveBorderRadiusControl`) already exists and
+ * is already the second control of `SgsBorderControl`'s pair (rendered only
+ * when the caller wires `onRadiusChange`). So the end state has NO
+ * __experimentalBorder support at all -- radius is block-private too, same as
+ * the other three legs. 12+ blocks (sgs/button, sgs/media, sgs/timeline,
+ * sgs/before-after, ...) already declare `borderRadiusTablet`/
+ * `borderRadiusMobile` as private corner objects predating this codemod --
+ * `reconcileRadiusAttrs()` ADOPTS those rather than colliding on them (checked
+ * against the full corner-key SHAPE, not just `type === 'object'` -- a looser
+ * check would adopt an object-typed attr that isn't actually a corner family),
+ * and only refuses when an existing attr means something different (sgs/mega-
+ * panel's `borderRadius` is a scalar CSS-length string; sgs/label's is
+ * `['string','number']`).
+ *
+ * ⚠ KNOWN GAP, NOT FIXED HERE: the theme-authored-border pattern-rewrite
+ * subsystem below (`splitAuthoredBorder` / `planPatternBorderMigration` /
+ * `rewritePatternAttrJson`) still treats radius as "keep, not at risk" --
+ * `SHAPE_B_LEGS` is unchanged (`['width','style','color']`). That was correct
+ * while radius stayed native; now that this codemod also strips the native
+ * radius READ, an authored theme/site radius on a migrated block would go
+ * unread. Verified EMPIRICALLY (2026-08-30) that this affects ZERO of the
+ * current 32 READY blocks -- no theme/site pattern authors a radius value
+ * alongside an at-risk width/colour/style on any NATIVE_FULL block today.
+ * Left as an open follow-up rather than expanding this pass into the pattern-
+ * rewrite engine's per-side/per-corner value shapes, which is a materially
+ * different (and already heavily self-tested) problem.
  *
  * Because a partial application leaves a block WORSE than untouched (attributes
  * declared, native supports stripped, nothing emitting), --fix is ATOMIC PER
@@ -94,6 +129,24 @@ const PRIVATE_ATTRS = {
 			'CSS gradient string painting the border with a masked ring instead of a flat colour ' +
 			'(D636 border-gradient rollout). Non-empty wins over borderColour.',
 	},
+};
+
+// ─── Radius is now part of Shape B too (target-shape correction, 2026-08-30). ──
+// Radius was originally left native ({ radius: true, __experimentalSkipSerialization:
+// true }) on the theory that it is a permanent WP-native leftover. Bean's actual
+// standard: take the native control's exact UI, wrap it (ResponsiveBorderRadiusControl
+// already exists for this, exported from components/ResponsiveBoxControl.js), and make
+// it a shared helper used across the library -- so the end state has NO
+// __experimentalBorder support at all. These are corner OBJECTS
+// ({ topLeft, topRight, bottomLeft, bottomRight }), matching the shape
+// `wp_style_engine_get_styles( array( 'border' => array( 'radius' => $obj ) ) )`
+// expects -- verified against the ALREADY-SHIPPED sgs/media + sgs/before-after
+// borderRadiusTablet/borderRadiusMobile private attrs, which use this exact shape.
+const RADIUS_CORNERS = [ 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ];
+const RADIUS_ATTRS = {
+	borderRadius: { type: 'object', default: {} },
+	borderRadiusTablet: { type: 'object', default: {} },
+	borderRadiusMobile: { type: 'object', default: {} },
 };
 
 // ─── Small IO helpers. Line endings are preserved deliberately: reading with a
@@ -636,48 +689,6 @@ function planPatternRewrites( slug, hits ) {
 	return { ok: true, files, notes };
 }
 
-/**
- * `skipSerialization: true` means WP does NOT paint the border -- the block must
- * emit it itself. A block that never reads `$attributes['style']['border']` has
- * a border control that does nothing at all.
- *
- * Reported as an ADVISORY, never a refusal: these are the HIGHEST-value
- * migration targets, because migrating them is what makes the control work.
- * Two sub-states, deliberately distinguished rather than lumped -- measured
- * 2026-08-30, and getting this wrong would misdescribe four blocks:
- *   · 'inert'      -- no border painted by any route (notice-banner, buybox)
- *   · 'own-design' -- the block paints its OWN border via a helper or literal,
- *                     but ignores the client's native value (info-box, testimonial)
- */
-function nativeBorderLiveness( bj, php ) {
-	const b = ( bj.supports || {} ).__experimentalBorder || {};
-	if ( b.__experimentalSkipSerialization !== true ) return 'wp-serialised';
-	// A DIRECT read is the obvious shape. An INDIRECT one is just as live: the
-	// block copies $attributes['style'] into a local and indexes ['border'] off
-	// that. Measured on sgs/info-box (render.php:143-144), which was mislabelled
-	// `dead-own-design` for exactly this reason — it assigns
-	// `$style_group = $attributes['style']`, then
-	// `$style_border_args = $style_group['border']`, and feeds it to
-	// wp_style_engine_get_styles() scoped to $root_sel (render.php:255-272). Its
-	// native border is fully honoured; only the literal chain was missing.
-	const directRead = /\$attributes\['style'\]\['border'\]/.test( php );
-	let indirectRead = false;
-	const aliasRe = /\$(\w+)\s*=\s*[^;]*\$attributes\[\s*'style'\s*\]/g;
-	let am;
-	while ( ( am = aliasRe.exec( php ) ) !== null ) {
-		// The alias must actually be indexed with ['border'] — merely copying
-		// $attributes['style'] proves nothing about the BORDER.
-		if ( new RegExp( '\\$' + am[ 1 ] + "\\[\\s*'border'\\s*\\]" ).test( php ) ) {
-			indirectRead = true;
-			break;
-		}
-	}
-	const readsNative = directRead || indirectRead || /'border'\s*=>/.test( php );
-	if ( readsNative ) return 'live';
-	const paintsOwn =
-		/border-(width|style|color)\s*:/.test( php ) || /sgs_border_\w+\(/.test( php );
-	return paintsOwn ? 'dead-own-design' : 'dead-inert';
-}
 
 /**
  * Locate the two anchors the render.php transform needs:
@@ -965,10 +976,73 @@ function danglingUnguardedVars( before, after ) {
 
 function alreadyShapeB( bj ) {
 	const a = bj.attributes || {};
-	const b = ( bj.supports || {} ).__experimentalBorder || {};
-	const hasPrivate = a.borderWidth && a.borderStyle && a.borderColour;
-	const trimmed = b.width === undefined && b.color === undefined && b.style === undefined;
-	return Boolean( hasPrivate && trimmed );
+	const b = ( bj.supports || {} ).__experimentalBorder;
+	const hasPrivate = Boolean( a.borderWidth && a.borderStyle && a.borderColour && a.borderRadius );
+	// Target shape has NO __experimentalBorder support left at all (radius is
+	// no longer native either) -- so "done" now means the support key is gone,
+	// not merely trimmed to { radius, skipSerialization }.
+	return hasPrivate && b === undefined;
+}
+
+/**
+ * Reconcile pre-existing radius attrs rather than blanket-refusing on
+ * collision. 12+ blocks (sgs/button, sgs/icon-list, sgs/media, sgs/timeline,
+ * sgs/counter, sgs/before-after, sgs/table-of-contents, sgs/countdown-timer,
+ * sgs/brand-strip, sgs/whatsapp-cta, sgs/option-picker...) already declare
+ * `borderRadiusTablet`/`borderRadiusMobile` as private corner-object attrs
+ * predating this codemod (some, like sgs/media + sgs/before-after, are
+ * themselves NATIVE_FULL blocks with a still-native base radius). Refusing on
+ * their mere presence would REFUSE the blocks furthest along, for no reason --
+ * their shape already matches what this codemod would write.
+ *
+ * Tightened to compare the full CORNER-KEY shape, not just `type === 'object'`
+ * (an earlier draft used the looser check; no current attr fails the
+ * stricter one, which is exactly when to tighten it, per D881-style
+ * discipline -- proven-safe now costs nothing later). An object-typed attr
+ * whose declared default carries keys OTHER than the four corners (or none of
+ * them) is not this family and must still refuse.
+ *
+ * Refuses when an existing attr means something different: sgs/mega-panel's
+ * `borderRadius` is a scalar CSS-length STRING; sgs/label's is
+ * `[ 'string', 'number' ]`. Neither is the family this codemod writes, and
+ * silently redeclaring over them would break whatever already reads them.
+ *
+ * @param {Object} existing bj.attributes of the block under classification.
+ * @return {{adopt: string[], add: string[]}|{conflict: string}}
+ */
+function reconcileRadiusAttrs( existing ) {
+	const adopt = [];
+	const add = [];
+	for ( const name of Object.keys( RADIUS_ATTRS ) ) {
+		const current = existing[ name ];
+		if ( current === undefined ) {
+			add.push( name );
+			continue;
+		}
+		if ( current.type !== 'object' ) {
+			return {
+				conflict: `${ name }: declares type=${ JSON.stringify( current.type ) }, expected 'object' ` +
+					'(corner values { topLeft, topRight, bottomLeft, bottomRight }) -- this attr means ' +
+					'something different here; rename it first or add a per-block reconciliation',
+			};
+		}
+		// SHAPE, not just type. A default whose keys are not a subset of the four
+		// corners is an object-typed attr that isn't actually this family (e.g.
+		// `{ default: { x: 1, y: 2 } }`). An EMPTY default (`{}`, the universal
+		// shape every current declaration uses) always passes -- it carries no
+		// keys to contradict the family.
+		const defaultKeys = Object.keys( current.default || {} );
+		const shapeOk = defaultKeys.every( ( k ) => RADIUS_CORNERS.includes( k ) );
+		if ( ! shapeOk ) {
+			return {
+				conflict: `${ name }: object-typed but its default keys (${ defaultKeys.join( ', ' ) }) ` +
+					`are not a subset of the corner family (${ RADIUS_CORNERS.join( ', ' ) }) -- this attr ` +
+					'means something different here',
+			};
+		}
+		adopt.push( name );
+	}
+	return { adopt, add };
 }
 
 // ─── Classification ─────────────────────────────────────────────────────────
@@ -995,7 +1069,6 @@ function classify( slug ) {
 	if ( ! fs.existsSync( editPath ) ) return { slug, status: 'REFUSE', reason: 'no-edit-js' };
 
 	const php = readFile( phpPath );
-	const liveness = nativeBorderLiveness( bj, php );
 
 	const shadow = reservedStyleAttr( bj );
 	if ( shadow && shadow.costly ) {
@@ -1007,15 +1080,20 @@ function classify( slug ) {
 				`declares a \`style\` attribute (type=${ shadow.type }, default=` +
 				`${ JSON.stringify( shadow.default ) }) which shadows WP's reserved style object; ` +
 				'rename it first (see sgs/accordion -> accordionStyle) or the migration inherits a dead native radius',
-			liveness,
 		};
 	}
 
-	// Authored native border in pattern/template markup. A radius-only value is
-	// NOT a hazard (radius stays native) and never reaches here. Everything that
-	// does reach here is migrated ALONGSIDE the block, in the same atomic write:
+	// Authored native border in pattern/template markup. Everything that
+	// reaches here is migrated ALONGSIDE the block, in the same atomic write:
 	// writing the private attrs into markup BEFORE block.json declares them
 	// would have WordPress silently discard every one of them (D338).
+	//
+	// ⚠ KNOWN GAP (documented in the file header): radius is now ALSO part of
+	// Shape B, but `splitAuthoredBorder`'s SHAPE_B_LEGS is unchanged -- an
+	// authored radius still reports as "keep", not "at risk". Verified
+	// empirically that this affects zero of the current 32 READY blocks.
+	// Extending the pattern-rewrite planner to radius's different (per-corner,
+	// not per-side) value shape is out of scope for this pass.
 	const themeHits = themeAuthoredBorder( slug );
 	let patternPlan = null;
 	if ( themeHits.length ) {
@@ -1026,7 +1104,6 @@ function classify( slug ) {
 				status: 'REFUSE',
 				reason: 'theme-authored-border',
 				detail: patternPlan.reason,
-				liveness,
 			};
 		}
 	}
@@ -1051,7 +1128,19 @@ function classify( slug ) {
 			status: 'REFUSE',
 			reason: 'attr-name-collision',
 			detail: 'block already declares an INCOMPATIBLE ' + unreconciled.join( ' | ' ),
-			liveness,
+		};
+	}
+
+	// Radius collision gate -- ADOPT a compatible pre-existing corner-object
+	// declaration (12+ blocks already have one), REFUSE on an incompatible
+	// shape (sgs/mega-panel's scalar string, sgs/label's ['string','number']).
+	const radiusPlan = reconcileRadiusAttrs( existing );
+	if ( radiusPlan.conflict ) {
+		return {
+			slug,
+			status: 'REFUSE',
+			reason: 'radius-attr-collision',
+			detail: radiusPlan.conflict,
 		};
 	}
 
@@ -1066,7 +1155,6 @@ function classify( slug ) {
 				( anchors.cssCandidates.length
 					? ` (css candidates: ${ anchors.cssCandidates.join( ', ' ) })`
 					: '' ),
-			liveness,
 		};
 	}
 
@@ -1082,31 +1170,43 @@ function classify( slug ) {
 			detail:
 				`found sink $${ anchors.cssVar } (${ anchors.cssKind }) but no top-level READ of it ` +
 				'to insert before; every read is indented (inside a conditional, loop or closure)',
-			liveness,
 		};
 	}
 
 	return {
 		slug,
 		status: READY,
-		liveness,
 		anchors,
+		adopt,
+		radiusPlan,
 		patternFiles: patternPlan ? patternPlan.files : null,
 		patternNotes: patternPlan ? patternPlan.notes : [],
-	};	return { slug, status: READY, liveness, anchors, adopt, patternFiles: patternPlan ? patternPlan.files : null, patternNotes: patternPlan ? patternPlan.notes : [] };
+	};
 }
 
 // ─── Transforms ─────────────────────────────────────────────────────────────
 
-function transformBlockJson( text, adopt ) {
+/**
+ * @param {string} text        Raw block.json source.
+ * @param {string[]} [adopt]   Names from PRIVATE_ATTRS to leave verbatim (a
+ *                             proven-compatible pre-existing declaration).
+ * @param {Object} [radiusPlan] `reconcileRadiusAttrs()` result -- which radius
+ *                              attrs to ADD vs ADOPT (leave an existing
+ *                              compatible declaration untouched). Defaults to
+ *                              "add all three" for callers (e.g. the
+ *                              self-test) that don't pass one.
+ */
+function transformBlockJson( text, adopt, radiusPlan ) {
 	const adopted = new Set( adopt || [] );
+	const rplan = radiusPlan || { adopt: [], add: Object.keys( RADIUS_ATTRS ) };
 	const bj = JSON.parse( text );
 	const eol = detectEol( text );
 
-	const border = ( bj.supports || {} ).__experimentalBorder || {};
-	const trimmed = { radius: true, __experimentalSkipSerialization: true };
-	if ( border.radius === undefined ) delete trimmed.radius;
-	bj.supports.__experimentalBorder = { radius: true, __experimentalSkipSerialization: true };
+	// Target shape has NO __experimentalBorder support left at all -- radius is
+	// no longer native either (Bean's standard: wrap the native control the
+	// same way width/style/colour already were, don't leave one leg
+	// permanently native). Removing the key outright, not trimming it.
+	delete bj.supports.__experimentalBorder;
 
 	bj.attributes = bj.attributes || {};
 	for ( const [ name, def ] of Object.entries( PRIVATE_ATTRS ) ) {
@@ -1117,11 +1217,18 @@ function transformBlockJson( text, adopt ) {
 		if ( adopted.has( name ) ) continue;
 		bj.attributes[ name ] = JSON.parse( JSON.stringify( def ) );
 	}
+	// Radius attrs: only ADD the ones that don't already exist. An adopted attr
+	// (already declared, compatible corner-object shape) is left exactly as-is
+	// -- it may carry a description or default this codemod doesn't know about.
+	for ( const name of rplan.add ) {
+		bj.attributes[ name ] = JSON.parse( JSON.stringify( RADIUS_ATTRS[ name ] ) );
+	}
 
-	// attrMap: repoint the three legs off `native:` and add the gradient key.
-	// This is the R-31-1 declarative source that seeds the DB and is gated by
-	// check-element-manifest-conformance.js -- leaving it on `native:` would
-	// make the DB describe a support the block no longer has.
+	// attrMap: repoint the FOUR legs (width/style/colour/radius) off `native:`
+	// and add the gradient key. This is the R-31-1 declarative source that
+	// seeds the DB and is gated by check-element-manifest-conformance.js --
+	// leaving any leg on `native:` would make the DB describe a support the
+	// block no longer has.
 	const els = ( ( bj.supports || {} ).sgs || {} ).elements || {};
 	for ( const el of Object.values( els ) ) {
 		if ( ! el || ! el.attrMap ) continue;
@@ -1137,6 +1244,9 @@ function transformBlockJson( text, adopt ) {
 			if ( m[ 'css:border-color-gradient' ] === undefined ) {
 				m[ 'css:border-color-gradient' ] = 'borderColourGradient';
 			}
+		}
+		if ( m[ 'css:border-radius' ] === 'native:__experimentalBorder.radius' ) {
+			m[ 'css:border-radius' ] = 'borderRadius';
 		}
 	}
 
@@ -1199,17 +1309,58 @@ if ( 'none' !== $border_style ) {
 		${ append( `$${ rootVar } . '{border-color:' . sgs_colour_value( $border_colour ) . ';}'` ) }
 	}
 }
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (\`.=\` for a string accumulator, \`[] =\` for an array one). ──
+$border_radius_obj = is_array( $attributes['borderRadius'] ?? null ) ? $attributes['borderRadius'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $${ rootVar } )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		${ append( `$border_radius_out['css']` ) }
+	}
+}
+$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $${ rootVar } )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		${ append( `'@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}'` ) }
+	}
+}
+$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $${ rootVar } )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		${ append( `'@media(max-width:767px){' . $border_radius_mob_out['css'] . '}'` ) }
+	}
+}
 `;
 }
 
 /**
  * Remove the native border arg construction. Matched narrowly: only the
  * assignments that read `$attributes['style']['border'][...]` for width/style/
- * colour. The RADIUS read is deliberately preserved -- radius stays native.
+ * colour/radius. Radius is INCLUDED now (2026-08-30 target-shape correction)
+ * -- it no longer stays native, so its native read is dead code same as the
+ * other three legs once the private `borderRadius` attr takes over.
  */
 function stripNativeBorderReads( php ) {
-	// Pass 1 — remove the statements that read the native non-radius legs, and
-	// RECORD every local variable whose assignment went with them.
+	// Pass 1 — remove the statements that read the native legs (width/style/
+	// colour/radius -- all four now), and RECORD every local variable whose
+	// assignment went with them.
 	const lines = php.split( /\r?\n/ );
 	const out = [];
 	const orphaned = new Set();
@@ -1227,10 +1378,12 @@ function stripNativeBorderReads( php ) {
 		// lines later. Resolve every match back to its owner: a match inside a
 		// comment owns nothing.
 		const isComment = /^\s*(\/\/|\*|\/\*)/.test( line );
-		const touchesNonRadiusBorder =
-			/\$attributes\['style'\]\['border'\]\['(color|style|width)'\]/.test( line ) ||
+		// Radius is INCLUDED now (2026-08-30) -- it no longer stays native, so its
+		// native read is dead code same as the other three legs.
+		const touchesBorder =
+			/\$attributes\['style'\]\['border'\]\['(color|style|width|radius)'\]/.test( line ) ||
 			/sgs_native_border_style_width_args\s*\(/.test( line );
-		if ( ! dropping && ! isComment && touchesNonRadiusBorder ) {
+		if ( ! dropping && ! isComment && touchesBorder ) {
 			dropping = true;
 			depth = 0;
 		}
@@ -1491,6 +1644,15 @@ function transformEditJs( src ) {
 \t\t\t\t\t\tcolourGradientValue={ attributes.borderColourGradient }
 \t\t\t\t\t\tonColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 \t\t\t\t\t\tcolourLinked={ true }
+\t\t\t\t\t\tradiusValues={ {
+\t\t\t\t\t\t\tbase: attributes.borderRadius ?? {},
+\t\t\t\t\t\t\ttablet: attributes.borderRadiusTablet ?? {},
+\t\t\t\t\t\t\tmobile: attributes.borderRadiusMobile ?? {},
+\t\t\t\t\t\t} }
+\t\t\t\t\t\tonRadiusChange={ ( tier, next ) => {
+\t\t\t\t\t\t\tconst radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
+\t\t\t\t\t\t\tsetAttributes( { [ radiusKey ]: next } );
+\t\t\t\t\t\t} }
 \t\t\t\t\t/>
 \t\t\t\t</PanelBody>
 `;
@@ -2034,23 +2196,6 @@ function survey( asJson ) {
 	console.log( `  DONE    ${ by( DONE ).length }` );
 	console.log( `  REFUSE  ${ by( 'REFUSE' ).length }\n` );
 
-	const dead = rows.filter( ( r ) => /^dead-/.test( r.liveness || '' ) );
-	if ( dead.length ) {
-		console.log(
-			`  ⚠ ${ dead.length } block(s) have a NATIVE BORDER THAT ALREADY DOES NOTHING\n` +
-				'    (skipSerialization means WP does not paint it, and the block never reads it).\n' +
-				'    These are the highest-value targets: migrating them is what makes the control work.'
-		);
-		for ( const r of dead ) {
-			const kind =
-				r.liveness === 'dead-inert'
-					? 'no border painted at all'
-					: 'paints its OWN border, ignores the client value';
-			console.log( `      · sgs/${ r.slug } — ${ kind }` );
-		}
-		console.log( '' );
-	}
-
 	for ( const r of by( READY ) ) {
 		console.log( `  READY   sgs/${ r.slug }` );
 		if ( r.patternFiles && r.patternFiles.size ) {
@@ -2087,7 +2232,7 @@ function fix( apply, only ) {
 		const phpPath = path.join( dir, 'render.php' );
 		const editPath = path.join( dir, 'edit.js' );
 
-		const newBj = transformBlockJson( readFile( bjPath ), r.adopt );
+		const newBj = transformBlockJson( readFile( bjPath ), r.adopt, r.radiusPlan );
 		const newPhp = transformRenderPhp(
 			readFile( phpPath ),
 			r.anchors.rootVar,
@@ -2166,8 +2311,16 @@ function check() {
 		}
 		const a = bj.attributes || {};
 		const b = ( bj.supports || {} ).__experimentalBorder || {};
-		const hasPrivate = Boolean( a.borderWidth || a.borderStyle || a.borderColour );
-		const nativeLegs = [ b.width, b.color, b.style ].filter( ( v ) => v !== undefined ).length;
+		// Radius is now PART of the family Bean is asking us to make uniform
+		// (2026-08-30 target-shape correction) -- a block with private width/
+		// style/colour but STILL-NATIVE radius is exactly the non-uniformity
+		// this check exists to surface. Kept as a REAL finding, not scoped away
+		// (Bean-directed): 11 already-migrated blocks (accordion, button,
+		// container, heading, icon-list, option-picker, process-steps,
+		// product-card, quote, text, timeline) currently fail this for exactly
+		// that reason and need their own follow-up radius migration.
+		const hasPrivate = Boolean( a.borderWidth || a.borderStyle || a.borderColour || a.borderRadius );
+		const nativeLegs = [ b.width, b.color, b.style, b.radius ].filter( ( v ) => v !== undefined ).length;
 
 		if ( hasPrivate && nativeLegs > 0 ) {
 			problems.push(
@@ -2178,7 +2331,7 @@ function check() {
 		const phpPath = path.join( BLOCKS_DIR, slug, 'render.php' );
 		if ( hasPrivate && fs.existsSync( phpPath ) ) {
 			const php = readFile( phpPath );
-			if ( ! /\$attributes\['border(Width|Style|Colour)'\]/.test( php ) ) {
+			if ( ! /\$attributes\['border(Width|Style|Colour|Radius)'\]/.test( php ) ) {
 				problems.push(
 					`sgs/${ slug }: declares private border attrs but render.php never reads them — ` +
 						'the control writes an attribute nothing paints (half-migrated)'
@@ -2238,13 +2391,13 @@ function runSelfTest() {
 		null,
 		'\t'
 	);
-	const outBj = JSON.parse( transformBlockJson( srcBj ) );
-	const b = outBj.supports.__experimentalBorder;
-	ok( b.width === undefined && b.color === undefined && b.style === undefined,
-		'block.json: native width/color/style sub-flags must be removed' );
-	ok( b.radius === true && b.__experimentalSkipSerialization === true,
-		'block.json: radius + skipSerialization must be PRESERVED (radius stays native)' );
+	const outBj = JSON.parse( transformBlockJson( srcBj, [], { adopt: [], add: Object.keys( RADIUS_ATTRS ) } ) );
+	ok( outBj.supports.__experimentalBorder === undefined,
+		'block.json: __experimentalBorder support must be REMOVED ENTIRELY (radius is no longer native either)' );
 	for ( const n of Object.keys( PRIVATE_ATTRS ) ) {
+		ok( outBj.attributes[ n ] !== undefined, `block.json: ${ n } attribute must be added` );
+	}
+	for ( const n of Object.keys( RADIUS_ATTRS ) ) {
 		ok( outBj.attributes[ n ] !== undefined, `block.json: ${ n } attribute must be added` );
 	}
 	ok( outBj.attributes.borderStyle.enum.length === 9,
@@ -2259,10 +2412,55 @@ function runSelfTest() {
 	ok( m[ 'css:border-color' ] === 'borderColour', 'attrMap: colour leg must repoint off native:' );
 	ok( m[ 'css:border-color-gradient' ] === 'borderColourGradient',
 		'attrMap: gradient key must be ADDED' );
-	// NEGATIVE CONTROL — radius must NOT be repointed. Radius stays native, and
-	// repointing it would make the DB describe an attribute that does not exist.
-	ok( m[ 'css:border-radius' ] === 'native:__experimentalBorder.radius',
-		'attrMap NEGATIVE CONTROL: radius must STAY native: (it is not part of Shape B)' );
+	ok( m[ 'css:border-radius' ] === 'borderRadius',
+		'attrMap: radius leg must NOW ALSO repoint off native: (target-shape correction — radius is no ' +
+			'longer permanently native)' );
+
+	// 1b. reconcileRadiusAttrs — adopt-if-compatible, refuse-if-different, on
+	// the full CORNER-KEY shape (not just type === 'object').
+	// Positive: pre-existing borderRadiusTablet/Mobile (the sgs/media,
+	// sgs/before-after shape) must be ADOPTED, not re-added or refused.
+	const preExisting = {
+		borderRadiusTablet: { type: 'object', default: {} },
+		borderRadiusMobile: { type: 'object', default: {} },
+	};
+	const plan1 = reconcileRadiusAttrs( preExisting );
+	ok( ! plan1.conflict, 'reconcile: compatible pre-existing corner-object radius attrs must not conflict' );
+	ok( plan1.adopt.includes( 'borderRadiusTablet' ) && plan1.adopt.includes( 'borderRadiusMobile' ),
+		'reconcile: pre-existing corner-object borderRadiusTablet/Mobile must be ADOPTED' );
+	ok( plan1.add.includes( 'borderRadius' ) && ! plan1.add.includes( 'borderRadiusTablet' ),
+		'reconcile: only the MISSING radius attr (base) is queued to ADD, not the adopted ones' );
+	// Applying that plan through transformBlockJson must NOT re-declare the
+	// adopted attrs' definitions (idempotent — no clobbering an existing
+	// description/default this codemod doesn't know about).
+	const bjWithExistingRadius = JSON.parse( JSON.stringify( JSON.parse( srcBj ) ) );
+	bjWithExistingRadius.attributes.borderRadiusTablet =
+		{ type: 'object', default: {}, description: 'pre-existing, do not touch' };
+	const outBj2 = JSON.parse(
+		transformBlockJson( JSON.stringify( bjWithExistingRadius ), [], plan1 ) );
+	ok( outBj2.attributes.borderRadiusTablet.description === 'pre-existing, do not touch',
+		'reconcile NEGATIVE CONTROL: an ADOPTED radius attr must survive the transform UNCHANGED, ' +
+			'not be overwritten' );
+	// NEGATIVE CONTROL (a) — incompatible TYPE. sgs/mega-panel's scalar string.
+	const plan2 = reconcileRadiusAttrs( { borderRadius: { type: 'string', default: '20px' } } );
+	ok( plan2.conflict && /borderRadius/.test( plan2.conflict ),
+		'reconcile NEGATIVE CONTROL: an incompatible scalar borderRadius (sgs/mega-panel shape) must ' +
+			'REFUSE, not silently overwrite' );
+	// NEGATIVE CONTROL (b) — incompatible TYPE, array-form. sgs/label's shape.
+	const plan3 = reconcileRadiusAttrs( { borderRadiusMobile: { type: [ 'string', 'number' ] } } );
+	ok( Boolean( plan3.conflict ),
+		'reconcile NEGATIVE CONTROL: an incompatible array-typed radius attr (sgs/label shape) must REFUSE' );
+	// NEGATIVE CONTROL (c) — the TIGHTENED check: object-typed but NOT the corner
+	// family (proves the check compares SHAPE, not just `type === 'object'`).
+	const plan4 = reconcileRadiusAttrs( { borderRadius: { type: 'object', default: { x: 1, y: 2 } } } );
+	ok( plan4.conflict && /corner family/.test( plan4.conflict ),
+		'reconcile NEGATIVE CONTROL: an object-typed attr whose default is NOT the corner-key shape ' +
+			'must still REFUSE — proves the check is stricter than `type === \'object\'` alone' );
+	// ...and prove that tightened check is not vacuous: a REAL corner subset passes.
+	const plan5 = reconcileRadiusAttrs( { borderRadius: { type: 'object', default: { topLeft: '4px' } } } );
+	ok( ! plan5.conflict,
+		'reconcile NEGATIVE CONTROL is not vacuous: a partial-but-real corner-key default (topLeft only) ' +
+			'must still be ADOPTED' );
 
 	// 2. render.php emission must carry the two rules the live probe checks.
 	const em = renderPhpEmission( 'root_sel', 'my_css' );
@@ -2286,8 +2484,30 @@ function runSelfTest() {
 		'emission NEGATIVE CONTROL is not vacuous: real code survives comment-stripping' );
 	ok( /if \( \$has_border_width \)/.test( em ),
 		'emission must G5-gate: border-style only alongside a real width' );
+	// Radius emission — base + both tiers, same wp_style_engine_get_styles()
+	// route already proven live by sgs/media + sgs/before-after's tiers, and
+	// respecting the string vs array SINK (not appended raw — only ['css']).
+	ok( /\$attributes\['borderRadius'\]/.test( em ),
+		'emission must read the private borderRadius (base) attr' );
+	ok( /\$attributes\['borderRadiusTablet'\]/.test( em ) && /\$attributes\['borderRadiusMobile'\]/.test( em ),
+		'emission must read both private radius tier attrs' );
+	ok( /wp_style_engine_get_styles\(/.test( em ),
+		'emission must route radius through wp_style_engine_get_styles() (the proven live mechanism)' );
+	ok( /@media\(max-width:1023px\)/.test( em ) && /@media\(max-width:767px\)/.test( em ),
+		'emission must gate radius tiers at the project standard 1023/767 breakpoints' );
+	ok( /\$my_css \.= \$border_radius_out\['css'\]/.test( em ),
+		'emission: a STRING sink must append the style-engine result with `.=`, not push it raw' );
+	const emArrRadius = renderPhpEmission( 'root_sel', 'scoped_css', SINK_ARRAY );
+	ok( /\$scoped_css\[\] = \$border_radius_out\['css'\]/.test( emArrRadius ),
+		'emission: an ARRAY sink must push the radius style-engine result with `[] =`, not `.=` ' +
+			'(the coordinator-flagged hazard — `.=` on an array sink is a PHP fatal)' );
+	ok( ! /\$scoped_css \.= \$border_radius_out/.test( emArrRadius ),
+		'emission NEGATIVE CONTROL: an array-sink radius emission must NOT also carry the `.=` form' );
 
-	// 3. stripNativeBorderReads must remove the dead legs and KEEP radius.
+	// 3. stripNativeBorderReads must remove ALL FOUR legs, including radius now
+	// (2026-08-30 correction — radius is no longer preserved as native), while
+	// still respecting Pass 2 (orphan-consumer removal) and the comment-skip
+	// guard already proven in section 11 below.
 	const php = [
 		"$border_args = array();",
 		"if ( isset( $attributes['style']['border']['color'] ) ) {",
@@ -2296,13 +2516,19 @@ function runSelfTest() {
 		"if ( isset( $attributes['style']['border']['radius'] ) ) {",
 		"\t$border_args['radius'] = $attributes['style']['border']['radius'];",
 		'}',
+		"if ( isset( $attributes['style']['spacing']['padding'] ) ) {",
+		"\t$x = 1;",
+		'}',
 	].join( '\n' );
 	const strippedOut = stripNativeBorderReads( php );
 	ok( ! /\['border'\]\['color'\]/.test( strippedOut.text ),
 		'strip: the native COLOUR read must be removed' );
-	// NEGATIVE CONTROL — over-strip guard.
-	ok( /\['border'\]\['radius'\]/.test( strippedOut.text ),
-		'strip NEGATIVE CONTROL: the native RADIUS read must SURVIVE (radius stays native)' );
+	ok( ! /\['border'\]\['radius'\]/.test( strippedOut.text ),
+		'strip: the native RADIUS read must NOW ALSO be removed (radius is no longer native)' );
+	// NEGATIVE CONTROL — over-strip guard: an unrelated (non-border) style read
+	// must SURVIVE, proving the stripper is scoped to border sub-keys only.
+	ok( /\['spacing'\]\['padding'\]/.test( strippedOut.text ),
+		'strip NEGATIVE CONTROL: a non-border style read (spacing) must SURVIVE' );
 
 	// 4. Anchor detection must reject an HTML accumulator.
 	const htmlOnly = "$root_sel = '.x'; $logos_html .= '<div>' . $x . '</div>';";
@@ -2324,30 +2550,31 @@ function runSelfTest() {
 	ok( reservedStyleAttr( { attributes: { style: { type: 'string' } }, supports: {} } ).costly === false,
 		'shadow detector NEGATIVE CONTROL: a `style` attr with no style supports must be non-costly' );
 
-	// 6. Liveness classifier must separate the two dead sub-states.
-	const skipBj = { supports: { __experimentalBorder: { __experimentalSkipSerialization: true } } };
-	ok( nativeBorderLiveness( skipBj, "$attributes['style']['border']" ) === 'live',
-		'liveness: a block that READS the native border is live' );
-	ok( nativeBorderLiveness( skipBj, 'echo "hi";' ) === 'dead-inert',
-		'liveness: no read and no paint is dead-inert' );
-	ok( nativeBorderLiveness( skipBj, 'border-width: 2px;' ) === 'dead-own-design',
-		'liveness: paints its own border but ignores the client value is dead-own-design' );
-	// An INDIRECT native read is still live (the sgs/info-box shape).
-	const indirectPhp =
-		"$style_group = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();\n" +
-		"$style_border_args = $style_group['border'];\nborder-width: 2px;";
-	ok( nativeBorderLiveness( skipBj, indirectPhp ) === 'live',
-		'liveness: an ALIASED native read ($x = $attributes[style]; $x[border]) is live, not dead ' +
-			'(sgs/info-box render.php:143-144 was mislabelled dead-own-design)' );
-	// NEGATIVE CONTROL — the alias heuristic must not over-match. Copying
-	// $attributes['style'] WITHOUT ever indexing ['border'] proves nothing about
-	// the border, and must still classify as dead.
-	const aliasNoBorder =
-		"$style_group = $attributes['style'];\n$style_typography = $style_group['typography'];\n" +
-		'border-width: 2px;';
-	ok( nativeBorderLiveness( skipBj, aliasNoBorder ) === 'dead-own-design',
-		'liveness NEGATIVE CONTROL: an alias of $attributes[style] that never indexes [border] ' +
-			'must NOT be promoted to live' );
+	// 6. transformEditJs must mount the radius pair (onRadiusChange), not just
+	// the width/style/colour trio -- an unmigrated radius leg is a net-new
+	// CHECK A finding (attribute declared, no control exposed).
+	const radiusEditSrc = [
+		"import { ResponsiveBoxControl } from '../../components';",
+		'function Edit( { attributes, setAttributes } ) {',
+		'\treturn (',
+		'\t\t<InspectorControls>',
+		'\t\t</InspectorControls>',
+		'\t);',
+		'}',
+	].join( '\n' );
+	const outEdit = transformEditJs( radiusEditSrc );
+	ok( outEdit !== null, 'edit.js: transform must succeed against a plain InspectorControls block' );
+	ok( /SgsBorderControl/.test( outEdit ), 'edit.js: SgsBorderControl must be imported + mounted' );
+	ok( /onRadiusChange=/.test( outEdit ) && /radiusValues=/.test( outEdit ),
+		'edit.js: the radius pair (radiusValues/onRadiusChange) must be wired, not just width/style/colour' );
+	ok( /attributes\.borderRadius \?\? \{\}/.test( outEdit ),
+		'edit.js: radiusValues.base must read the private borderRadius attr' );
+	ok( /borderRadiusTablet/.test( outEdit ) && /borderRadiusMobile/.test( outEdit ),
+		'edit.js: onRadiusChange must resolve both tablet and mobile attr keys' );
+	// NEGATIVE CONTROL — already-mounted guard must still fire (unchanged
+	// behaviour): re-running against SgsBorderControl-bearing source refuses.
+	ok( transformEditJs( outEdit ) === null,
+		'edit.js NEGATIVE CONTROL: an already-mounted block must be refused (returns null), not double-mounted' );
 
 	// 7. Collision reconciliation — the attr-name-collision category.
 	// Fixture models sgs/hero: an existing borderColourGradient with the SAME
@@ -2976,8 +3203,11 @@ function runSelfTest() {
 	// NEGATIVE CONTROLS — the sweep must not become a general-purpose deleter.
 	ok( /\$keep_me = 1;/.test( orphanOut.text ),
 		'strip NEGATIVE CONTROL: a variable that was NOT orphaned must survive' );
-	ok( /\$attributes\['style'\]\['border'\]\['radius'\]/.test( orphanOut.text ),
-		'strip NEGATIVE CONTROL: the native RADIUS read must still survive the second pass' );
+	// Radius is REMOVED now too (2026-08-30 correction) -- this fixture's own
+	// `$attributes['style']['border']['radius']` read is itself a native-border
+	// touch and Pass 1 removes that single guarded line, same as any other leg.
+	ok( ! /\$attributes\['style'\]\['border'\]\['radius'\]/.test( orphanOut.text ),
+		'strip: the native RADIUS read inside an unrelated isset()-guarded block must ALSO be removed now' );
 	ok( /\$pt_border_args = array\(\);/.test( orphanOut.text ),
 		'strip NEGATIVE CONTROL: the accumulator the removed code fed must survive' );
 	// NEGATIVE CONTROL — nothing to strip means nothing is touched.
@@ -3038,7 +3268,7 @@ module.exports = {
 	stripNativeBorderReads,
 	renderPhpEmission,
 	reservedStyleAttr,
-	nativeBorderLiveness,
+	reconcileRadiusAttrs,
 	splitAuthoredBorder,
 	patternColourToAttr,
 	planPatternBorderMigration,

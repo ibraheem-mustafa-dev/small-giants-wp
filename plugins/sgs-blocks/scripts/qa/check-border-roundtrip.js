@@ -43,6 +43,22 @@ const ON_STYLE = 'solid';
 const OFF_STYLE = 'none';
 const REQUIRED_ATTRS = [ 'borderWidth', 'borderStyle', 'borderColour' ];
 
+// ⛔ SCOPING GATE (proven cause, 2026-08-29). `sgs/container` is the framework's
+// generic wrapper — the page HEADER (framework-header-default pattern's
+// `.sgs-header-icons` container) AND page.html's OWN template wrap of <main>/
+// post-content are BOTH built from `sgs/container`. A bare
+// `document.querySelectorAll('.wp-block-sgs-container')` on the probe page
+// picks up THOSE frame instances as "outermost" — never the probe's own
+// authored positive/negative pair, which are demoted to non-outermost because
+// they render as DESCENDANTS of page.html's own wrapping container. Recorded
+// 3x already: STOP-CATALOGUE.md ~L2352/L2505, mistakes.md ~L253 — "scope every
+// live-DOM query to .entry-content or the block's own uid class, never a bare
+// block-type class." Here: wrap the probe's own markup in a `core/group` with
+// a unique anchor id and scope every query to `#ROOT_ID .cls` so a page-frame
+// element of the SAME block type, sitting OUTSIDE that wrapper, can never be
+// selected as one of the two instances.
+const ROOT_ID = 'sgs-border-roundtrip-probe-root';
+
 /* -------------------------------------------------------------------------
  * Pure, offline-testable core. Everything below the self-test is network.
  * ---------------------------------------------------------------------- */
@@ -239,6 +255,28 @@ function buildBlockMarkup( slug, cls ) {
 	const { positive, negative } = buildAttrPair( cls );
 	const inner = usesInnerBlocks( slug );
 	return buildInstanceMarkup( slug, positive, inner ) + '\n' + buildInstanceMarkup( slug, negative, inner );
+}
+
+/**
+ * Wrap every probed block's markup in a `core/group` carrying a unique anchor
+ * id. This is the scoping fix: `page.html` wraps its OWN post-content render
+ * in an `sgs/container`, and the header pattern renders another
+ * `sgs/container` (`.sgs-header-icons`) as a page-frame sibling — both are the
+ * SAME block type as anything under test. Without a wrapper the measurement
+ * query has no way to tell "the probe's own instance" from "a page-frame
+ * instance of the same block". The wrapper gives every query a floor: nothing
+ * outside `#ROOT_ID` can ever be selected, however many other instances of
+ * the block type the page frame happens to contain.
+ *
+ * @param {string} content Joined markup for every probed block.
+ * @return {string} `content` wrapped in an anchored `core/group`.
+ */
+function wrapInProbeRoot( content ) {
+	return (
+		`<!-- wp:group {"anchor":"${ ROOT_ID }"} -->\n` +
+		`<div class="wp-block-group" id="${ ROOT_ID }">\n${ content }\n</div>\n` +
+		'<!-- /wp:group -->'
+	);
 }
 
 /**
@@ -490,6 +528,108 @@ function selfTest() {
 		b.blocks.length === 1 && b.blocks[ 0 ] === 'sgs/quote' && b.check === false
 	);
 
+	// 13. The probe root wrapper carries the exact ROOT_ID and encloses the
+	//     content — this is the ONLY thing that lets the live DOM query tell
+	//     "the probe's own instance" from "a page-frame instance of the same
+	//     block type" (proven cause: page.html wraps <main>/post-content in
+	//     its OWN sgs/container, and framework-header-default.php renders a
+	//     second sgs/container as `.sgs-header-icons` — both survive a bare
+	//     class query as false "outermost" matches).
+	const wrapped = wrapInProbeRoot( '<!-- wp:sgs/probe {} /-->' );
+	assert(
+		'wrapInProbeRoot emits an anchored group carrying ROOT_ID and containing the content',
+		wrapped.includes( `id="${ ROOT_ID }"` ) &&
+			wrapped.indexOf( `id="${ ROOT_ID }"` ) < wrapped.indexOf( '<!-- wp:sgs/probe' ) &&
+			wrapped.trim().endsWith( '<!-- /wp:group -->' ),
+		wrapped
+	);
+
+	// 14. SCOPING RULE — simulate the exact algorithm measureInstances() runs
+	//     in-browser (query scoped to `#rootId .cls`, then filter to
+	//     outermost-within-that-scope) against a small fake DOM tree that
+	//     reproduces the real page shape: a page-frame `.wp-block-sgs-container`
+	//     SIBLING of the probe root (the header's `.sgs-header-icons`), plus
+	//     the probe's own positive/negative pair nested INSIDE the root.
+	//     A root-scoped query must return exactly the probe's two instances,
+	//     never the frame sibling.
+	const pickOutermostWithinRoot = ( nodes, rootId, cls ) => {
+		const byId = {};
+		nodes.forEach( ( n ) => {
+			byId[ n.id ] = n;
+		} );
+		const ancestorsUpToRoot = ( n ) => {
+			// Mirrors the live DOM walk: stop AT rootEl, never climb past it.
+			const out = [];
+			let cur = n.parentId ? byId[ n.parentId ] : null;
+			while ( cur && cur.id !== rootId ) {
+				out.push( cur );
+				cur = cur.parentId ? byId[ cur.parentId ] : null;
+			}
+			return out;
+		};
+		const withinRoot = ( n ) => {
+			let cur = n;
+			while ( cur ) {
+				if ( cur.id === rootId ) {
+					return true;
+				}
+				cur = cur.parentId ? byId[ cur.parentId ] : null;
+			}
+			return false;
+		};
+		const matches = nodes.filter( ( n ) => n.classes.includes( cls ) && withinRoot( n ) );
+		return matches.filter( ( n ) => ! ancestorsUpToRoot( n ).some( ( a ) => a.classes.includes( cls ) ) );
+	};
+
+	const fakePage = [
+		{ id: 'header-icons', classes: [ 'wp-block-sgs-container', 'sgs-header-icons' ], parentId: null },
+		{ id: 'page-main-wrap', classes: [ 'wp-block-sgs-container' ], parentId: null },
+		{ id: ROOT_ID, classes: [ 'wp-block-group' ], parentId: 'page-main-wrap' },
+		{ id: 'probe-positive', classes: [ 'wp-block-sgs-container' ], parentId: ROOT_ID },
+		{ id: 'probe-negative', classes: [ 'wp-block-sgs-container' ], parentId: ROOT_ID },
+	];
+
+	const scopedPicks = pickOutermostWithinRoot( fakePage, ROOT_ID, 'wp-block-sgs-container' );
+	assert(
+		'root-scoped selection returns exactly the probe\'s own positive+negative, never the page-frame siblings',
+		scopedPicks.length === 2 &&
+			scopedPicks.every( ( n ) => n.id === 'probe-positive' || n.id === 'probe-negative' ),
+		JSON.stringify( scopedPicks.map( ( n ) => n.id ) )
+	);
+
+	// Negative control: proves the assertion above is not vacuous by showing
+	// the SAME algorithm, with root-scoping disabled (unbounded, matching the
+	// pre-fix code), reproduces the real defect — it picks the two page-frame
+	// containers instead, which is exactly what made positive/control read
+	// byte-identical in the original bug report.
+	const unscopedPicks = pickOutermostWithinRoot( fakePage, 'ROOT-DOES-NOT-EXIST-DISABLES-SCOPING', 'wp-block-sgs-container' );
+	assert(
+		'negative control: WITHOUT root-scoping the same algorithm wrongly picks the page-frame containers, reproducing the original defect',
+		unscopedPicks.length === 0,
+		'root-scoping to a nonexistent id must exclude everything — proves withinRoot() is load-bearing, not a no-op'
+	);
+	const noScopeAtAll = fakePage.filter( ( n ) => n.classes.includes( 'wp-block-sgs-container' ) );
+	const outerOfAll = noScopeAtAll.filter( ( n ) => {
+		const byId = {};
+		fakePage.forEach( ( x ) => {
+			byId[ x.id ] = x;
+		} );
+		let cur = n.parentId ? byId[ n.parentId ] : null;
+		while ( cur ) {
+			if ( cur.classes.includes( 'wp-block-sgs-container' ) ) {
+				return false;
+			}
+			cur = cur.parentId ? byId[ cur.parentId ] : null;
+		}
+		return true;
+	} );
+	assert(
+		'negative control: the ORIGINAL unscoped bare-class query picks the two page-frame containers, not the probe pair — this is the proven defect',
+		outerOfAll.length === 2 &&
+			outerOfAll.every( ( n ) => n.id === 'header-icons' || n.id === 'page-main-wrap' ),
+		JSON.stringify( outerOfAll.map( ( n ) => n.id ) )
+	);
+
 	let passed = 0;
 	for ( const c of checks ) {
 		process.stdout.write(
@@ -607,36 +747,68 @@ async function resolveSlug( page, slug ) {
 }
 
 /**
- * Measure the two outermost instances of one block, in document order.
+ * Measure the two outermost instances of one block, in document order —
+ * SCOPED to the probe's own `#rootId` wrapper.
  *
- * Nested matches are filtered out: several SGS blocks render a same-class
- * element inside themselves, and a raw querySelectorAll would hand back the
- * inner one as "instance 2" — comparing a block against its own child.
+ * Two distinct kinds of false match are guarded against:
+ * (1) Nested matches from the block's OWN markup — several SGS blocks render
+ *     a same-class element inside themselves, and a raw querySelectorAll
+ *     would hand back the inner one as "instance 2" — comparing a block
+ *     against its own child. Guarded by the existing "outermost" filter.
+ * (2) Page-FRAME matches of the same block type living OUTSIDE the probe's
+ *     content — e.g. `sgs/container` also builds the header's icon row
+ *     (`framework-header-default.php`) and page.html's own wrap of
+ *     `<main>`/post-content. Without root-scoping, THOSE elements pass the
+ *     "outermost" filter (they have no `sgs/container` ancestor either) and
+ *     get measured instead of the probe's real positive/negative pair, which
+ *     render as descendants of page.html's own container and therefore fail
+ *     the naive "outermost" test. Guarded by scoping the initial query to
+ *     `#rootId .cls` — the id boundary is the ONLY thing that lets the probe
+ *     tell "mine" from "the page frame's".
  *
  * @param {Object} page      Playwright page.
  * @param {string} className Wrapper class, e.g. "wp-block-sgs-button".
+ * @param {string} rootId    The probe's own wrapper anchor id (ROOT_ID).
  * @return {Promise<Object>} { found, positive, negative }
  */
-async function measureInstances( page, className ) {
-	return page.evaluate( ( cls ) => {
-		const all = Array.from( document.querySelectorAll( '.' + cls ) );
-		const outer = all.filter(
-			( el ) => ! ( el.parentElement && el.parentElement.closest( '.' + cls ) )
-		);
-		const read = ( el ) => {
-			if ( ! el ) {
-				return null;
-			}
-			const cs = getComputedStyle( el );
-			return {
-				width: cs.borderTopWidth,
-				style: cs.borderTopStyle,
-				color: cs.borderTopColor,
-				tag: el.tagName.toLowerCase(),
+async function measureInstances( page, className, rootId ) {
+	return page.evaluate(
+		( { cls, root } ) => {
+			const rootEl = document.getElementById( root );
+			const all = rootEl ? Array.from( rootEl.querySelectorAll( '.' + cls ) ) : [];
+			// The ancestor walk MUST stop at rootEl. `page.html` wraps the probe's
+			// own content in ITS OWN sgs/container, so an unbounded closest()
+			// would climb straight past rootEl into that outer wrapper, find a
+			// same-class ancestor there, and wrongly demote the probe's own
+			// instances to "not outermost" — the exact defect this scoping fix
+			// exists to close. Bounding at rootEl means only ancestry INSIDE the
+			// probe's own content counts.
+			const outer = all.filter( ( el ) => {
+				let cur = el.parentElement;
+				while ( cur && cur !== rootEl ) {
+					if ( cur.classList.contains( cls ) ) {
+						return false;
+					}
+					cur = cur.parentElement;
+				}
+				return true;
+			} );
+			const read = ( el ) => {
+				if ( ! el ) {
+					return null;
+				}
+				const cs = getComputedStyle( el );
+				return {
+					width: cs.borderTopWidth,
+					style: cs.borderTopStyle,
+					color: cs.borderTopColor,
+					tag: el.tagName.toLowerCase(),
+				};
 			};
-		};
-		return { found: outer.length, positive: read( outer[ 0 ] ), negative: read( outer[ 1 ] ) };
-	}, className );
+			return { found: outer.length, positive: read( outer[ 0 ] ), negative: read( outer[ 1 ] ) };
+		},
+		{ cls: className, root: rootId }
+	);
 }
 
 const results = [];
@@ -743,7 +915,7 @@ async function main() {
 		return;
 	}
 
-	const content = probeable.map( ( p ) => buildBlockMarkup( p.slug, p ) ).join( '\n' );
+	const content = wrapInProbeRoot( probeable.map( ( p ) => buildBlockMarkup( p.slug, p ) ).join( '\n' ) );
 
 	let browser = null;
 	let pageId = null;
@@ -770,7 +942,7 @@ async function main() {
 		for ( const p of probeable ) {
 			const className = `wp-block-${ p.slug.replace( '/', '-' ) }`;
 			try {
-				const m = await measureInstances( page, className );
+				const m = await measureInstances( page, className, ROOT_ID );
 				if ( m.found < 2 ) {
 					record(
 						p.slug,
@@ -817,5 +989,6 @@ module.exports = {
 	buildInstanceMarkup,
 	buildAttrPair,
 	buildBlockMarkup,
+	wrapInProbeRoot,
 	judgeBlock,
 };
