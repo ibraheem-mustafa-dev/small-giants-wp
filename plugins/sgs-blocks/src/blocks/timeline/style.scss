@@ -1139,45 +1139,57 @@
 //
 // The entry gains a second row. The node and the content must be given an
 // explicit row span or they auto-place into row 2 and the layout collapses.
-.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--align-alternating {
-	.sgs-timeline__entry--has-media {
-		grid-template-rows: auto auto;
+//
+// ⛔ SCOPED TO DESKTOP ON PURPOSE (min-width: 768px). Below 768px the vertical
+// alternating grid is collapsed to a single column by the mobile rule at
+// :1054-1090, which re-places `.sgs-timeline__date` at `grid-area: 2 / 2`. This
+// block's odd/even children carried no media query at all and out-ranked that
+// collapse on specificity alone (one extra class, (0,6,0) vs (0,5,0)), so the
+// date kept `grid-area: 1 / 1` at 375px and the content column was squeezed to
+// ~76px. Placement here now yields to the collapse below 768px; the dedicated
+// mobile re-placement for has-media entries lives in the
+// `@media (max-width: 767px)` block further down (:1433).
+@media (min-width: 768px) {
+	.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--align-alternating {
+		.sgs-timeline__entry--has-media {
+			grid-template-rows: auto auto;
 
-		.sgs-timeline__node {
-			grid-row: 1 / span 2;
+			.sgs-timeline__node {
+				grid-row: 1 / span 2;
+			}
+
+			.sgs-timeline__content {
+				grid-row: 1 / span 2;
+			}
 		}
 
-		.sgs-timeline__content {
-			grid-row: 1 / span 2;
-		}
-	}
+		// ODD — date + media on the LEFT, content on the right.
+		.sgs-timeline__entry--has-media:nth-child(odd) {
+			.sgs-timeline__date {
+				grid-column: 1;
+				grid-row: 1;
+			}
 
-	// ODD — date + media on the LEFT, content on the right.
-	.sgs-timeline__entry--has-media:nth-child(odd) {
-		.sgs-timeline__date {
-			grid-column: 1;
-			grid-row: 1;
-		}
-
-		.sgs-timeline__media-slot {
-			grid-column: 1;
-			grid-row: 2;
-			justify-self: end;
-		}
-	}
-
-	// EVEN — mirrored. The media follows the DATE, not the content, because the
-	// brief is "media opposite the content, on the date's side".
-	.sgs-timeline__entry--has-media:nth-child(even) {
-		.sgs-timeline__date {
-			grid-column: 3;
-			grid-row: 1;
+			.sgs-timeline__media-slot {
+				grid-column: 1;
+				grid-row: 2;
+				justify-self: end;
+			}
 		}
 
-		.sgs-timeline__media-slot {
-			grid-column: 3;
-			grid-row: 2;
-			justify-self: start;
+		// EVEN — mirrored. The media follows the DATE, not the content, because
+		// the brief is "media opposite the content, on the date's side".
+		.sgs-timeline__entry--has-media:nth-child(even) {
+			.sgs-timeline__date {
+				grid-column: 3;
+				grid-row: 1;
+			}
+
+			.sgs-timeline__media-slot {
+				grid-column: 3;
+				grid-row: 2;
+				justify-self: start;
+			}
 		}
 	}
 }
