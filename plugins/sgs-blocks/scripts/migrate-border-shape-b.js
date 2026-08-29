@@ -34,6 +34,16 @@
  * BLOCK: a block is either fully transformed or refused untouched. There is no
  * partial write.
  *
+ * COLLISION RECONCILIATION (2026-08-29). A block already declaring one of the
+ * four names is not automatically a conflict. sgs/hero and sgs/info-box both
+ * declare `borderColourGradient` meaning EXACTLY what Shape B means by it, and
+ * both were being refused for it. Such an attribute is now ADOPTED — kept
+ * verbatim, not re-added — and its superseded standalone emission is excised so
+ * exactly one painter survives. Reconciliation requires all three of: string/''
+ * shape, a wrapper-element `css:border-color-gradient` binding, and a
+ * sgs_border_gradient_css() call on the same root selector. Anything else still
+ * REFUSES. See reconcileCollision().
+ *
  * Usage:
  *   node migrate-border-shape-b.js --survey [--json]
  *   node migrate-border-shape-b.js --fix [--apply] [--only <slug,slug>]
@@ -640,8 +650,27 @@ function planPatternRewrites( slug, hits ) {
 function nativeBorderLiveness( bj, php ) {
 	const b = ( bj.supports || {} ).__experimentalBorder || {};
 	if ( b.__experimentalSkipSerialization !== true ) return 'wp-serialised';
-	const readsNative =
-		/\$attributes\['style'\]\['border'\]/.test( php ) || /'border'\s*=>/.test( php );
+	// A DIRECT read is the obvious shape. An INDIRECT one is just as live: the
+	// block copies $attributes['style'] into a local and indexes ['border'] off
+	// that. Measured on sgs/info-box (render.php:143-144), which was mislabelled
+	// `dead-own-design` for exactly this reason — it assigns
+	// `$style_group = $attributes['style']`, then
+	// `$style_border_args = $style_group['border']`, and feeds it to
+	// wp_style_engine_get_styles() scoped to $root_sel (render.php:255-272). Its
+	// native border is fully honoured; only the literal chain was missing.
+	const directRead = /\$attributes\['style'\]\['border'\]/.test( php );
+	let indirectRead = false;
+	const aliasRe = /\$(\w+)\s*=\s*[^;]*\$attributes\[\s*'style'\s*\]/g;
+	let am;
+	while ( ( am = aliasRe.exec( php ) ) !== null ) {
+		// The alias must actually be indexed with ['border'] — merely copying
+		// $attributes['style'] proves nothing about the BORDER.
+		if ( new RegExp( '\\$' + am[ 1 ] + "\\[\\s*'border'\\s*\\]" ).test( php ) ) {
+			indirectRead = true;
+			break;
+		}
+	}
+	const readsNative = directRead || indirectRead || /'border'\s*=>/.test( php );
 	if ( readsNative ) return 'live';
 	const paintsOwn =
 		/border-(width|style|color)\s*:/.test( php ) || /sgs_border_\w+\(/.test( php );
@@ -671,6 +700,7 @@ function nativeBorderLiveness( bj, php ) {
  * fatal ("Unsupported operand types"), and pushing to a string sink would
  * silently produce `$css[0]`.
  */
+const NL = String.fromCharCode( 10 );
 const SINK_STRING = 'string';
 const SINK_ARRAY = 'array';
 
@@ -743,6 +773,194 @@ function findAnchors( php ) {
 	return { rootVar, cssVar, cssKind, cssCandidates: [ ...candidates.keys() ] };
 }
 
+// ─── Collision reconciliation ───────────────────────────────────────────────
+//
+// A name collision is NOT automatically a conflict. Measured 2026-08-29 on the
+// two blocks this codemod refused for `attr-name-collision` (sgs/hero,
+// sgs/info-box): BOTH already declare `borderColourGradient`, and in both cases
+// it means EXACTLY what Shape B means by it — the RESTING root border gradient,
+// string, default '', non-empty wins over the flat colour, bound to the wrapper
+// element's `css:border-color-gradient` and painted with sgs_border_gradient_css()
+// on the same root selector.
+//   · hero/block.json:447-451  + hero/render.php:189, 906-917   (D701)
+//   · info-box/block.json:203-207 + info-box/render.php:86, 414-417 (D636)
+//
+// Blindly overwriting would clobber a richer declaration; blindly refusing
+// declines a migration that is already three-quarters done. The correct move is
+// ADOPT: keep the existing declaration, do not re-add it, and remove the
+// superseded standalone gradient emission so exactly ONE painter survives.
+// Leaving both would double-paint the ring and, worse, be unfalsifiable — you
+// could not tell which emission produced a live result.
+//
+// Reconciliation is deliberately narrow. Only `borderColourGradient` has a rule,
+// because it is the only one of the four with a proven oracle. The other three
+// names (borderWidth / borderStyle / borderColour) have no compatibility rule
+// and therefore still REFUSE on collision — an unknown same-named attribute is
+// exactly the case the refusal exists for.
+const RECONCILABLE = {
+	borderColourGradient: {
+		cssKey: 'css:border-color-gradient',
+		painter: 'sgs_border_gradient_css',
+	},
+};
+
+/**
+ * Is an EXISTING attribute of a colliding name the same thing Shape B means?
+ *
+ * Three independent tests, all required. Any one alone over-matches:
+ *   (a) SHAPE    — string, default '' (a differently-typed attr is a different thing)
+ *   (b) SEMANTIC — the wrapper element's attrMap binds `css:border-color-gradient`
+ *                  to THIS name. This is what separates "root border gradient"
+ *                  from a same-named attribute belonging to a sub-part; without
+ *                  it, sgs/hero's own `splitMediaBorderColourGradient` shape
+ *                  would look identical.
+ *   (c) PAINTER  — render.php assigns a local from it and paints it with
+ *                  sgs_border_gradient_css() scoped to the SAME root selector
+ *                  the migration will use. A declared-but-unpainted attr is not
+ *                  evidence of the same semantic.
+ */
+function reconcileCollision( bj, php, rootVar, name ) {
+	const rule = RECONCILABLE[ name ];
+	if ( ! rule ) return { ok: false, why: `no reconciliation rule for \`${ name }\`` };
+
+	const attr = ( bj.attributes || {} )[ name ];
+	if ( ! attr || attr.type !== 'string' || ( attr.default !== '' && attr.default !== undefined ) ) {
+		return {
+			ok: false,
+			why:
+				`existing \`${ name }\` has an incompatible SHAPE ` +
+				`(type=${ attr && attr.type }, default=${ JSON.stringify( attr && attr.default ) }); ` +
+				"Shape B's is { type: 'string', default: '' }",
+		};
+	}
+
+	const els = ( ( bj.supports || {} ).sgs || {} ).elements || {};
+	const boundOnWrapper = Object.values( els ).some(
+		( el ) => el && el.isWrapper && el.attrMap && el.attrMap[ rule.cssKey ] === name
+	);
+	if ( ! boundOnWrapper ) {
+		return {
+			ok: false,
+			why:
+				`existing \`${ name }\` is not bound to \`${ rule.cssKey }\` on the WRAPPER element — ` +
+				'it names some other part, so the collision is real',
+		};
+	}
+
+	const painter = findGradientPainter( php, name, rootVar );
+	if ( ! painter ) {
+		return {
+			ok: false,
+			why:
+				`existing \`${ name }\` has no ${ rule.painter }() emission scoped to $${ rootVar } ` +
+				'in render.php — cannot prove it means the resting ROOT border gradient',
+		};
+	}
+
+	return { ok: true, name, painter };
+}
+
+/**
+ * Locate the superseded standalone gradient emission for an adopted attribute:
+ * the local assigned from `$attributes['<name>']`, and the `if ( '' !== $local )`
+ * block that paints the ring. Returns char spans, or null if either is absent or
+ * does not match the resting-root shape.
+ */
+function findGradientPainter( php, name, rootVar ) {
+	const assignRe = new RegExp(
+		"^[^\\S\\r\\n]*\\$(\\w+)\\s*=[^;]*\\$attributes\\[\\s*'" + name + "'[^;]*;",
+		'm'
+	);
+	const am = php.match( assignRe );
+	if ( ! am ) return null;
+	const localVar = am[ 1 ];
+
+	const ifRe = new RegExp( "^[^\\S\\r\\n]*if \\(\\s*'' !== \\$" + localVar + "\\s*\\)\\s*\\{", 'm' );
+	const im = php.match( ifRe );
+	if ( ! im ) return null;
+
+	// Brace-balance from the opening `{` of that if.
+	let depth = 0;
+	let end = -1;
+	for ( let i = im.index + im[ 0 ].length - 1; i < php.length; i++ ) {
+		if ( php[ i ] === '{' ) depth++;
+		else if ( php[ i ] === '}' ) {
+			depth--;
+			if ( depth === 0 ) {
+				end = i + 1;
+				break;
+			}
+		}
+	}
+	if ( end === -1 ) return null;
+
+	const body = php.slice( im.index, end );
+	if ( ! body.includes( 'sgs_border_gradient_css' ) ) return null;
+	// Must paint the RESTING root, not the hover ring (which stays untouched:
+	// borderColourHoverGradient is a different attribute the migration does not own).
+	if ( /:hover/.test( body ) ) return null;
+	if ( rootVar && ! new RegExp( '\\$' + rootVar + '\\b' ).test( body ) ) return null;
+
+	return {
+		localVar,
+		assignStart: am.index,
+		assignEnd: am.index + am[ 0 ].length,
+		ifStart: im.index,
+		ifEnd: end,
+	};
+}
+
+/** Excise a char span plus the contiguous `//` comment lines directly above it. */
+function cutSpanWithLeadingComments( text, start, end ) {
+	const lines = text.split( /\r?\n/ );
+	const eol = detectEol( text ) === '\r\n' ? '\r\n' : '\n';
+	const lineOf = ( off ) => text.slice( 0, off ).split( /\r?\n/ ).length - 1;
+	let a = lineOf( start );
+	const b = lineOf( end - 1 );
+	while ( a > 0 && /^\s*\/\//.test( lines[ a - 1 ] ) ) a--;
+	lines.splice( a, b - a + 1 );
+	return lines.join( eol );
+}
+
+/**
+ * Dangling-reference guard: after the transform, is any variable whose ONLY
+ * assignment was removed still read in a way that would FAULT?
+ *
+ * ⚠ This must NOT over-match. Every one of the 13 already-READY blocks loses
+ * `$sgs_border_style_width`, and every surviving reference to it sits inside an
+ * `isset()`-guarded block — PHP 8 evaluates isset() on an undefined variable as
+ * false with no warning, so the branch is simply never taken. That is benign
+ * dead code, not a defect, and refusing on it would regress 13 working blocks.
+ * An UNGUARDED read (`'' !== $x`) is the real defect: PHP 8 warns and the
+ * comparison against null succeeds, feeding null downstream. Measured on
+ * sgs/hero's `$native_border_width_val`.
+ */
+function danglingUnguardedVars( before, after ) {
+	const assigned = ( t ) => {
+		const s = new Set();
+		const re = /\$(\w+)\s*(?:\[[^\]]*\]\s*)?=[^=]/g;
+		let m;
+		while ( ( m = re.exec( t ) ) !== null ) s.add( m[ 1 ] );
+		return s;
+	};
+	const beforeAssigned = assigned( before );
+	const afterAssigned = assigned( after );
+	const bad = [];
+	for ( const v of beforeAssigned ) {
+		if ( afterAssigned.has( v ) ) continue;
+		const firstUse = after.search( new RegExp( '\\$' + v + '\\b' ) );
+		if ( firstUse === -1 ) continue; // removed cleanly
+		const lineStart = after.lastIndexOf( '\n', firstUse ) + 1;
+		const lineEnd = after.indexOf( '\n', firstUse );
+		const line = after.slice( lineStart, lineEnd === -1 ? undefined : lineEnd );
+		// Guarded if the FIRST surviving read opens an isset()/empty() test — that
+		// is the guard wrapping the whole dead block.
+		if ( new RegExp( '(isset|empty)\\s*\\(\\s*\\$' + v + '\\b' ).test( line ) ) continue;
+		bad.push( v );
+	}
+	return bad;
+}
+
 function alreadyShapeB( bj ) {
 	const a = bj.attributes || {};
 	const b = ( bj.supports || {} ).__experimentalBorder || {};
@@ -811,19 +1029,30 @@ function classify( slug ) {
 		}
 	}
 
+	const anchors = findAnchors( php );
+
+	// Collision gate. A colliding name is reconciled (ADOPTED) only when it is
+	// provably the same semantic; otherwise it still refuses. Checked before the
+	// anchor gate so a genuine collision keeps reporting as a collision.
 	const existing = bj.attributes || {};
 	const collides = Object.keys( PRIVATE_ATTRS ).filter( ( k ) => existing[ k ] !== undefined );
-	if ( collides.length ) {
+	const adopt = [];
+	const unreconciled = [];
+	for ( const k of collides ) {
+		const r = reconcileCollision( bj, php, anchors.rootVar, k );
+		if ( r.ok ) adopt.push( k );
+		else unreconciled.push( `${ k }: ${ r.why }` );
+	}
+	if ( unreconciled.length ) {
 		return {
 			slug,
 			status: 'REFUSE',
 			reason: 'attr-name-collision',
-			detail: 'block already declares: ' + collides.join( ', ' ),
+			detail: 'block already declares an INCOMPATIBLE ' + unreconciled.join( ' | ' ),
 			liveness,
 		};
 	}
 
-	const anchors = findAnchors( php );
 	if ( ! anchors.rootVar || ! anchors.cssVar ) {
 		return {
 			slug,
@@ -862,12 +1091,13 @@ function classify( slug ) {
 		anchors,
 		patternFiles: patternPlan ? patternPlan.files : null,
 		patternNotes: patternPlan ? patternPlan.notes : [],
-	};
+	};	return { slug, status: READY, liveness, anchors, adopt, patternFiles: patternPlan ? patternPlan.files : null, patternNotes: patternPlan ? patternPlan.notes : [] };
 }
 
 // ─── Transforms ─────────────────────────────────────────────────────────────
 
-function transformBlockJson( text ) {
+function transformBlockJson( text, adopt ) {
+	const adopted = new Set( adopt || [] );
 	const bj = JSON.parse( text );
 	const eol = detectEol( text );
 
@@ -878,6 +1108,11 @@ function transformBlockJson( text ) {
 
 	bj.attributes = bj.attributes || {};
 	for ( const [ name, def ] of Object.entries( PRIVATE_ATTRS ) ) {
+		// An ADOPTED attribute is left exactly as the block declares it. It is
+		// already the right shape (reconcileCollision proved that) and its own
+		// description carries the block's D-number provenance, which the generic
+		// PRIVATE_ATTRS text would destroy.
+		if ( adopted.has( name ) ) continue;
 		bj.attributes[ name ] = JSON.parse( JSON.stringify( def ) );
 	}
 
@@ -977,10 +1212,20 @@ function stripNativeBorderReads( php ) {
 	let depth = 0;
 	let dropping = false;
 	for ( const line of lines ) {
+		// A COMMENT that merely NAMES the native border path is prose, not a read.
+		// Measured on sgs/hero: its D701 comment block spells out
+		// `$attributes['style']['border']['color']` to explain what the gradient
+		// overrides. Without this guard the stripper fired on that comment and,
+		// because no comment line ends in `;`, kept dropping until it reached the
+		// NEXT statement — silently deleting the real, live
+		// `$border_colour_gradient = sgs_css_gradient_value( ... )` assignment four
+		// lines later. Resolve every match back to its owner: a match inside a
+		// comment owns nothing.
+		const isComment = /^\s*(\/\/|\*|\/\*)/.test( line );
 		const touchesNonRadiusBorder =
 			/\$attributes\['style'\]\['border'\]\['(color|style|width)'\]/.test( line ) ||
 			/sgs_native_border_style_width_args\s*\(/.test( line );
-		if ( ! dropping && touchesNonRadiusBorder ) {
+		if ( ! dropping && ! isComment && touchesNonRadiusBorder ) {
 			dropping = true;
 			depth = 0;
 		}
@@ -994,21 +1239,6 @@ function stripNativeBorderReads( php ) {
 		out.push( line );
 	}
 	return { text: out.join( detectEol( php ) === '\r\n' ? '\r\n' : '\n' ), removed };
-}
-
-/**
- * Is the byte at `idx` in HTML mode (i.e. outside `<?php ... ?>`)?
- *
- * Load-bearing for the array idiom: these blocks close PHP before their
- * `<?php if ( $scoped_css ) : ?><style>` tail, so the insertion point sits in
- * HTML mode. Emitting bare PHP there would print the migration source as
- * visible text on the page -- a defect that still parses under `php -l`.
- */
-function inHtmlMode( text, idx ) {
-	const pre = text.slice( 0, idx );
-	const open = Math.max( pre.lastIndexOf( '<?php' ), pre.lastIndexOf( '<?=' ) );
-	const close = pre.lastIndexOf( '?>' );
-	return close > open;
 }
 
 /**
@@ -1048,18 +1278,66 @@ function findInsertionIndex( text, name ) {
 	return -1;
 }
 
-function transformRenderPhp( php, rootVar, cssVar, cssKind = SINK_STRING ) {
-	const stripped = stripNativeBorderReads( php );
+/**
+ * Is the byte at `idx` in HTML mode (i.e. outside `<?php ... ?>`)?
+ *
+ * Load-bearing for the array idiom: these blocks close PHP before their
+ * `<?php if ( $scoped_css ) : ?><style>` tail, so the insertion point sits in
+ * HTML mode. Emitting bare PHP there would print the migration source as
+ * visible text on the page -- a defect that still parses under `php -l`.
+ */
+function inHtmlMode( text, idx ) {
+	const pre = text.slice( 0, idx );
+	const open = Math.max( pre.lastIndexOf( '<?php' ), pre.lastIndexOf( '<?=' ) );
+	const close = pre.lastIndexOf( '?>' );
+	return close > open;
+}
+
+function transformRenderPhp( php, rootVar, cssVar, cssKind = SINK_STRING, adopt = [] ) {
+	const original = php;
+	let work = php;
+
+	// 1. ADOPTION. Excise the superseded standalone painter for every adopted
+	// attribute BEFORE stripping, so its native-border read goes out with the
+	// block rather than being half-eaten. Two painters for one property is
+	// unfalsifiable -- you cannot tell which one is working.
+	for ( const name of adopt || [] ) {
+		const pnt = findGradientPainter( work, name, rootVar );
+		if ( ! pnt ) return null; // proven present at classify time; absence now = refuse
+		// Cut the if-block FIRST: it sits after the assignment, so removing it
+		// leaves the earlier assignStart/assignEnd offsets valid. Re-deriving those
+		// offsets with a fresh regex instead is what broke this on merge.
+		work = cutSpanWithLeadingComments( work, pnt.ifStart, pnt.ifEnd );
+		if ( findGradientPainter( work, name, rootVar ) ) return null;
+		work = cutSpanWithLeadingComments( work, pnt.assignStart, pnt.assignEnd );
+	}
+
+	const stripped = stripNativeBorderReads( work );
 	const emission = renderPhpEmission( rootVar, cssVar, cssKind );
-	// Insert on the line the accumulator is first READ (see findInsertionIndex),
-	// so the new rules are part of the same scoped <style> AND are appended
-	// before any guard that tests whether the accumulator is non-empty.
+
+	// 2. INSERTION POINT. The line the accumulator is first READ at top level --
+	// NOT before its print. Nine blocks guard the print with
+	// `if ( $responsive_css ) {`, so inserting before the print put the border
+	// append INSIDE the truthiness test: a block whose only styling was a border
+	// emitted nothing, while parsing and deploying cleanly.
 	const lineStart = findInsertionIndex( stripped.text, cssVar );
 	if ( lineStart === -1 ) return null;
+
+	// 3. HTML-MODE WRAP. Array-sink tails close PHP before their markup; bare PHP
+	// inserted there prints the migration's own source onto the page as text --
+	// and still passes `php -l`.
 	const chunk = inHtmlMode( stripped.text, lineStart )
-		? '<?php' + emission + '?>\n'
-		: emission + '\n';
-	return stripped.text.slice( 0, lineStart ) + chunk + stripped.text.slice( lineStart );
+		? '<?php' + emission + '?>' + NL
+		: emission + NL;
+
+	const out = stripped.text.slice( 0, lineStart ) + chunk + stripped.text.slice( lineStart );
+
+	// 4. DANGLING-VAR REFUSAL. Never ship a file that reads a variable nothing
+	// assigns: an undefined variable is a RUNTIME notice, so `php -l` calls such
+	// a file clean.
+	if ( danglingUnguardedVars( original, out ).length ) return null;
+
+	return out;
 }
 
 function transformEditJs( src ) {
@@ -1166,12 +1444,13 @@ function fix( apply, only ) {
 		const phpPath = path.join( dir, 'render.php' );
 		const editPath = path.join( dir, 'edit.js' );
 
-		const newBj = transformBlockJson( readFile( bjPath ) );
+		const newBj = transformBlockJson( readFile( bjPath ), r.adopt );
 		const newPhp = transformRenderPhp(
 			readFile( phpPath ),
 			r.anchors.rootVar,
 			r.anchors.cssVar,
-			r.anchors.cssKind
+			r.anchors.cssKind,
+			r.adopt
 		);
 		const newEdit = transformEditJs( readFile( editPath ) );
 
@@ -1410,6 +1689,209 @@ function runSelfTest() {
 		'liveness: no read and no paint is dead-inert' );
 	ok( nativeBorderLiveness( skipBj, 'border-width: 2px;' ) === 'dead-own-design',
 		'liveness: paints its own border but ignores the client value is dead-own-design' );
+	// An INDIRECT native read is still live (the sgs/info-box shape).
+	const indirectPhp =
+		"$style_group = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();\n" +
+		"$style_border_args = $style_group['border'];\nborder-width: 2px;";
+	ok( nativeBorderLiveness( skipBj, indirectPhp ) === 'live',
+		'liveness: an ALIASED native read ($x = $attributes[style]; $x[border]) is live, not dead ' +
+			'(sgs/info-box render.php:143-144 was mislabelled dead-own-design)' );
+	// NEGATIVE CONTROL — the alias heuristic must not over-match. Copying
+	// $attributes['style'] WITHOUT ever indexing ['border'] proves nothing about
+	// the border, and must still classify as dead.
+	const aliasNoBorder =
+		"$style_group = $attributes['style'];\n$style_typography = $style_group['typography'];\n" +
+		'border-width: 2px;';
+	ok( nativeBorderLiveness( skipBj, aliasNoBorder ) === 'dead-own-design',
+		'liveness NEGATIVE CONTROL: an alias of $attributes[style] that never indexes [border] ' +
+			'must NOT be promoted to live' );
+
+	// 7. Collision reconciliation — the attr-name-collision category.
+	// Fixture models sgs/hero: an existing borderColourGradient with the SAME
+	// semantic (wrapper-bound, painted on the root selector).
+	const compatBj = {
+		attributes: {
+			borderColourGradient: { type: 'string', default: '', description: 'D701 resting ring.' },
+		},
+		supports: {
+			sgs: {
+				elements: {
+					wrapper: {
+						isWrapper: true,
+						attrMap: { 'css:border-color-gradient': 'borderColourGradient' },
+					},
+				},
+			},
+		},
+	};
+	const compatPhp = [
+		"$root_sel = '.x';",
+		"// D701 — resting border gradient.",
+		"$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );",
+		"// paints the ring",
+		"if ( '' !== $border_colour_gradient ) {",
+		"\t$native_border_width_val = isset( $attributes['style']['border']['width'] ) ? $attributes['style']['border']['width'] : '';",
+		"\t$responsive_css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '1px' );",
+		'}',
+		"$responsive_css .= $root_sel . '{color:red;}';",
+		'echo $responsive_css;',
+	].join( '\n' );
+
+	const rec = reconcileCollision( compatBj, compatPhp, 'root_sel', 'borderColourGradient' );
+	ok( rec.ok === true, 'reconcile: a same-semantic borderColourGradient must be ADOPTED, not refused' );
+	ok( rec.painter && rec.painter.localVar === 'border_colour_gradient',
+		'reconcile: the painter local must be identified (fixture declares $border_colour_gradient)' );
+
+	// NEGATIVE CONTROL (a) — WRONG SHAPE. Same name, object-typed: must REFUSE.
+	const wrongShape = JSON.parse( JSON.stringify( compatBj ) );
+	wrongShape.attributes.borderColourGradient = { type: 'object', default: {} };
+	const recShape = reconcileCollision( wrongShape, compatPhp, 'root_sel', 'borderColourGradient' );
+	ok( recShape.ok === false && /SHAPE/.test( recShape.why ),
+		'reconcile NEGATIVE CONTROL (a): an object-typed same-named attr must STILL be refused' );
+
+	// NEGATIVE CONTROL (b) — WRONG SEMANTIC. Right shape, but bound to a NON-wrapper
+	// sub-part (the sgs/hero splitMediaBorderColourGradient hazard): must REFUSE.
+	const wrongSemantic = JSON.parse( JSON.stringify( compatBj ) );
+	wrongSemantic.supports.sgs.elements = {
+		'split-image': {
+			isWrapper: false,
+			attrMap: { 'css:border-color-gradient': 'borderColourGradient' },
+		},
+	};
+	const recSem = reconcileCollision( wrongSemantic, compatPhp, 'root_sel', 'borderColourGradient' );
+	ok( recSem.ok === false && /WRAPPER/.test( recSem.why ),
+		'reconcile NEGATIVE CONTROL (b): a same-shaped attr bound to a NON-wrapper element ' +
+			'names another part and must STILL be refused' );
+
+	// NEGATIVE CONTROL (c) — NO PAINTER. Declared but never emitted: must REFUSE.
+	const recNoPaint = reconcileCollision(
+		compatBj,
+		"$root_sel = '.x'; $responsive_css .= $root_sel . '{color:red;}'; echo $responsive_css;",
+		'root_sel',
+		'borderColourGradient'
+	);
+	ok( recNoPaint.ok === false && /no sgs_border_gradient_css/.test( recNoPaint.why ),
+		'reconcile NEGATIVE CONTROL (c): a declared-but-unpainted attr must STILL be refused' );
+
+	// NEGATIVE CONTROL (d) — an unreconcilable NAME. Only borderColourGradient has
+	// a rule; the other three legs must never be silently adopted.
+	for ( const n of [ 'borderWidth', 'borderStyle', 'borderColour' ] ) {
+		const r = reconcileCollision( compatBj, compatPhp, 'root_sel', n );
+		ok( r.ok === false && /no reconciliation rule/.test( r.why ),
+			`reconcile NEGATIVE CONTROL (d): \`${ n }\` has no rule and must STILL be refused` );
+	}
+
+	// NEGATIVE CONTROL (e) — the HOVER ring must not be mistaken for the resting one.
+	const hoverPhp = [
+		"$root_sel = '.x';",
+		"$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );",
+		"if ( '' !== $border_colour_gradient ) {",
+		"\t$responsive_css .= sgs_border_gradient_css( \"{$root_sel}:hover\", $border_colour_gradient, null, '1px' );",
+		'}',
+	].join( '\n' );
+	ok( findGradientPainter( hoverPhp, 'borderColourGradient', 'root_sel' ) === null,
+		'findGradientPainter NEGATIVE CONTROL (e): a :hover-scoped ring is NOT the resting painter' );
+
+	// 8. transformBlockJson must ADOPT rather than overwrite.
+	const adoptSrcBj = JSON.stringify( {
+		name: 'sgs/fixture',
+		supports: {
+			__experimentalBorder: { radius: true, width: true, color: true, style: true },
+			sgs: { elements: { wrapper: { isWrapper: true, attrMap: {
+				'css:border-color': 'native:__experimentalBorder.color',
+				'css:border-color-gradient': 'borderColourGradient',
+			} } } },
+		},
+		attributes: {
+			borderColourGradient: { type: 'string', default: '', description: 'KEEP ME (D701).' },
+		},
+	}, null, '\t' );
+	const adoptOutRaw = transformBlockJson( adoptSrcBj, [ 'borderColourGradient' ] );
+	const adoptOut = JSON.parse( adoptOutRaw );
+	ok( adoptOut.attributes.borderColourGradient.description === 'KEEP ME (D701).',
+		'adopt: an adopted attribute must keep its ORIGINAL declaration verbatim, not be overwritten ' +
+			'with the generic PRIVATE_ATTRS text' );
+	ok( ( adoptOutRaw.match( /"borderColourGradient"\s*:/g ) || [] ).length === 1,
+		'adopt: borderColourGradient must appear EXACTLY ONCE — no duplicate key' );
+	for ( const n of [ 'borderWidth', 'borderStyle', 'borderColour' ] ) {
+		ok( adoptOut.attributes[ n ] !== undefined,
+			`adopt: the missing leg ${ n } must still be ADDED alongside the adopted attr` );
+	}
+	// NEGATIVE CONTROL — with NO adopt list the attribute IS overwritten. This
+	// proves the adopt branch is load-bearing rather than vacuously always-on.
+	const noAdoptOut = JSON.parse( transformBlockJson( adoptSrcBj, [] ) );
+	ok( noAdoptOut.attributes.borderColourGradient.description !== 'KEEP ME (D701).',
+		'adopt NEGATIVE CONTROL: without an adopt list the attr IS replaced — the branch is real' );
+
+	// 9. transformRenderPhp must excise the superseded emission (exactly ONE painter).
+	const adoptedPhp = transformRenderPhp( compatPhp, 'root_sel', 'responsive_css', SINK_STRING,
+		[ 'borderColourGradient' ] );
+	ok( adoptedPhp !== null, 'adopt: the render.php transform must succeed for an adopted attr' );
+	const painterCalls = ( adoptedPhp.replace( /^\s*\/\/.*$/gm, '' )
+		.match( /sgs_border_gradient_css\s*\(/g ) || [] ).length;
+	ok( painterCalls === 1,
+		`adopt: exactly ONE resting-gradient painter must survive (found ${ painterCalls }) — ` +
+			'two would double-paint the ring and be unfalsifiable' );
+	ok( ! /\$native_border_width_val/.test( adoptedPhp ),
+		'adopt: the superseded block\'s local ($native_border_width_val) must go WITH it, ' +
+			'not be left dangling' );
+	ok( ! /D701 — resting border gradient/.test( adoptedPhp ),
+		'adopt: the superseded emission\'s leading comment must be removed with it — ' +
+			'an orphan comment describes behaviour that no longer exists' );
+	ok( /\$attributes\['borderColourGradient'\]/.test( adoptedPhp ),
+		'adopt: the adopted attribute must STILL be read — by the new unified emission' );
+
+	// 10. Dangling-variable guard.
+	ok( danglingUnguardedVars( "$a = 1;\n'' !== $a;", "'' !== $a;" ).includes( 'a' ),
+		'dangling guard: an UNGUARDED read of a variable whose assignment was removed must be caught' );
+	// NEGATIVE CONTROL — the isset()-guarded shape is benign dead code and must NOT
+	// be flagged. All 13 pre-existing READY blocks lose $sgs_border_style_width this
+	// way; flagging it would regress every one of them.
+	ok(
+		danglingUnguardedVars(
+			"$sgs_border_style_width = f();\nif ( isset( $sgs_border_style_width['width'] ) ) {\n\t$b['width'] = $sgs_border_style_width['width'];\n}",
+			"if ( isset( $sgs_border_style_width['width'] ) ) {\n\t$b['width'] = $sgs_border_style_width['width'];\n}"
+		).length === 0,
+		'dangling guard NEGATIVE CONTROL: an isset()-guarded survivor is benign dead code and ' +
+			'must NOT be flagged (else all 13 already-READY blocks regress)' );
+
+	// 10b. The guard must be WIRED INTO transformRenderPhp, not merely unit-tested.
+	// Found by mutation: deleting `if ( dangling.length ) return null;` left the
+	// whole self-test green, because assertion 10 only exercised the helper.
+	const danglerPhp = [
+		"$root_sel = '.x';",
+		"$w = $attributes['style']['border']['width'];",
+		"$responsive_css .= ( '' !== $w ) ? 'a' : 'b';",
+		'echo $responsive_css;',
+	].join( '\n' );
+	ok( transformRenderPhp( danglerPhp, 'root_sel', 'responsive_css', SINK_STRING, [] ) === null,
+		'dangling guard WIRING: transformRenderPhp must REFUSE when stripping leaves an ' +
+			'unguarded read ($w) — the guard has to be reachable, not just unit-tested' );
+	// NEGATIVE CONTROL — the identical shape with the read GUARDED must succeed,
+	// proving the wiring does not simply refuse everything.
+	const safePhp = [
+		"$root_sel = '.x';",
+		"$w = $attributes['style']['border']['width'];",
+		"if ( isset( $w ) ) { $responsive_css .= 'a'; }",
+		'echo $responsive_css;',
+	].join( '\n' );
+	ok( transformRenderPhp( safePhp, 'root_sel', 'responsive_css', SINK_STRING, [] ) !== null,
+		'dangling guard WIRING NEGATIVE CONTROL: an isset()-guarded survivor must still ' +
+			'transform successfully (the guard is not a blanket refusal)' );
+
+	// 11. The stripper must not fire on a COMMENT naming the native border path.
+	const commentTrap = [
+		"// wins over the native $attributes['style']['border']['color'] further down",
+		"$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );",
+	].join( '\n' );
+	const trapOut = stripNativeBorderReads( commentTrap );
+	ok( /\$border_colour_gradient = sgs_css_gradient_value/.test( trapOut.text ),
+		'strip NEGATIVE CONTROL: a COMMENT naming the native border path must NOT start a drop — ' +
+			'it ate sgs/hero\'s live D701 assignment four lines later' );
+	// ...and prove the comment guard has not disabled the stripper entirely.
+	ok( stripNativeBorderReads(
+		"$border_args['color'] = $attributes['style']['border']['color'];" ).removed === 1,
+		'strip: a REAL native colour read is still removed (the comment guard is not a blanket off-switch)' );
 
 	// 7. ARRAY-PUSH SINK — the idiom 11 of the 18 ambiguous-anchor refusals use.
 	// Fixture mirrors the real sgs/testimonial shape: an array sink initialised
@@ -1679,4 +2161,8 @@ module.exports = {
 	themeAuthoredBorder,
 	planPatternRewrites,
 	jsonValueEnd,
+	reconcileCollision,
+	findGradientPainter,
+	cutSpanWithLeadingComments,
+	danglingUnguardedVars,
 };
