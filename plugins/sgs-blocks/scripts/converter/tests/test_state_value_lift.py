@@ -32,6 +32,7 @@ from bs4 import BeautifulSoup  # noqa: E402
 from converter.db import db_lookup  # noqa: E402
 from converter.recognition import recognise  # noqa: E402
 from converter.services.extraction import build_block_markup  # noqa: E402
+from converter.models import GAP, GapOrigin, Write  # noqa: E402
 from converter.services.state_value_lift import (  # noqa: E402
     parse_filter_grayscale,
     parse_transform_scale,
@@ -334,3 +335,119 @@ def test_module_is_inert_for_properties_it_does_not_own(monkeypatch):
     # never a GAP. This is the assertion that fails if the gates are reordered.
     assert resolve_state_property(_D("background-color", "Other:600", False), _Ctx()) is None
     assert resolve_state_property(_D("box-shadow", "Other:600", False), _Ctx()) is None
+
+
+# ---------------------------------------------------------------------------
+# 5. A FRACTIONAL amount on a BOOLEAN destination gaps instead of writing.
+#
+# The live Rule 4 silent drop this closes: `_coerce_for_attr_type` returns
+# `parsed > 0` for a boolean attr, so `filter: grayscale(0.4)` became `True`
+# and RENDERED AS 100%. It was emitted as a Write, so no gap row was produced —
+# the draft's 40% silently became 100% and the gap ledger stayed clean while the
+# clone was wrong.
+#
+# sgs/info-box is the right target: its `grayscaleHover` is boolean AND
+# root-scoped (css_element IS NULL), so the direct-state lookup reaches it.
+# card-grid's routes to its `image` element, which is why test 2 above asserts
+# the ABSENCE of a root-scoped lift there.
+# ---------------------------------------------------------------------------
+
+_INFO_BOX_HTML = (
+    '<div class="sgs-info-box">'
+    '<h3 class="sgs-info-box__title">Title</h3>'
+    '<p class="sgs-info-box__text">Body copy.</p>'
+    "</div>"
+)
+
+
+def _info_box_markup(filter_value: str) -> str:
+    node = BeautifulSoup(_INFO_BOX_HTML, "html.parser").find("div")
+    rec = recognise(node)
+    assert rec.slug == "sgs/info-box", rec.slug
+    _cleanup_gap_rows(rec.slug)
+    return build_block_markup(
+        rec,
+        node,
+        css_rules={
+            ".sgs-info-box": {"padding": "24px"},
+            ".sgs-info-box:hover": {"filter": filter_value},
+        },
+    )
+
+
+def test_exact_grayscale_still_lifts_as_boolean():
+    """POSITIVE CONTROL. grayscale(1) is exactly representable in a boolean and
+    MUST still write. Without this, the fractional assertion below could pass
+    simply because the whole lift path had stopped working."""
+    markup = _info_box_markup("grayscale(1)")
+    assert '"grayscaleHover":true' in markup, markup
+
+
+def test_fractional_grayscale_gaps_rather_than_rendering_as_100_percent():
+    """A boolean can only say on or off. 0.4 is neither, so it must be REPORTED,
+    not silently promoted to 100% (Spec 31: an un-representable value emits an
+    honest NO_DESTINATION gap, never a silent drop)."""
+    markup = _info_box_markup("grayscale(0.4)")
+
+    assert '"grayscaleHover"' not in markup, (
+        "A fractional grayscale was written into a boolean attr. It renders as "
+        "100%, silently changing the draft's 40%. Expected an honest gap.\n" + markup
+    )
+
+    # POSITIVE CONTROL on the same fixture: the sibling padding must still have
+    # transferred. Without this the assertion above would also pass if nothing
+    # lifted from this fixture at all.
+    assert '"padding"' in markup, (
+        "Nothing lifted from this fixture, so the grayscale assertion is vacuous:\n"
+        + markup
+    )
+
+def test_fractional_grayscale_returns_a_tracked_gap_not_a_silent_fallthrough():
+    """The drop must be TRACKED, which is the whole point of the change.
+
+    Asserted at the resolver, not against attribute_gap_candidates: gap_writer's
+    own docstring states it builds the GAP and that "persistence to the
+    attribute_gap_candidates DB table is a step-3 concern (the slice's ledger IS
+    the record)". Querying that table here would assert a mechanism this layer
+    does not own — it returned an empty set on the first run of this test even
+    though the resolver was behaving correctly.
+
+    Returning None instead of a GAP would be the silent drop: None means "not
+    mine, fall through", and the ordinary chain would carry it to a
+    ResidualBand/sgsCustomCss passthrough with nothing recording the loss.
+    """
+
+    class _D:
+        property = "filter"
+        tier = "Base"
+        state = "hover"
+        is_device_tier = True
+
+        def __init__(self, value):
+            self.value = value
+
+    class _Ctx:
+        block_slug = "sgs/info-box"
+        container_kind = "content"  # sgs/info-box is a content-KIND composite.
+
+        def __init__(self):
+            # validate() does a real attr-existence lookup, so this needs the
+            # real DB rather than a stub — the point is to prove the resolver
+            # behaves against the live schema, not against a mock of it.
+            self.conn = sqlite3.connect(db_lookup.SGS_DB)
+
+    exact = resolve_state_property(_D("grayscale(1)"), _Ctx())
+    assert isinstance(exact, Write), (
+        f"POSITIVE CONTROL FAILED: an exactly-representable value must still "
+        f"write, got {exact!r}"
+    )
+    assert exact.value is True, exact
+
+    fractional = resolve_state_property(_D("grayscale(0.4)"), _Ctx())
+    assert isinstance(fractional, GAP), (
+        f"A fractional value on a boolean attr must be a TRACKED gap, not "
+        f"{'a silent fall-through (None)' if fractional is None else 'a write'}: "
+        f"{fractional!r}"
+    )
+    assert fractional.origin is GapOrigin.NO_DESTINATION, fractional
+    assert "0.4" in fractional.detail, fractional.detail
