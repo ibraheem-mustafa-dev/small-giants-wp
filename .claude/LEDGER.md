@@ -177,34 +177,38 @@ reduced-motion closed (D863). ⛔ Editing template part 2671 does NOTHING — `p
 `wp:pattern` ref, so `patterns/framework-header-default.php` renders.
 ⛔ **Parked:** `P-PARTICLE-TRAIL-VARIATIONS` (post-launch, Bean's timing).
 
-### ▶ C. TIMELINE CONNECTOR (FR-38-35) — Stage A SHIPPED + LIVE 2026-08-29. D879.
+### ▶ C. TIMELINE (FR-38-35) — Stage A + Stage B SHIPPED + LIVE 2026-08-29. D879.
 
-Scroll-driven connector for MIC's journey page. **Live, canary 3072.** Commits `72825d07c` →
-`0a5b4dd2f`. One `@property` number `--sgs-timeline-fill-progress` (0→1) drives a CSS-mask fill +
-trail glow + head dot + per-milestone spark bursts, via two drivers: native
-`@supports (animation-timeline: view())` and a vanilla rAF path in `view.js`.
+Connector, milestone media, A/B row bands, connector-triggered reveal. **Live.** Stage A
+`72825d07c`→`0a5b4dd2f` (canary 3072); Stage B `1014fc9d8`→`18396d152` (canary **3079**). DB
+seeded `bd61e13a6`, `UNCLASSIFIED: 0`. Evidence:
+`reports/visual-diff/timeline-2026-08-29.md`.
 
-⛔ **Spec 38 named the WRONG BROWSER in two places; corrected.** Safari has had `animation-timeline`
-since **26.0 (Sept 2025)**; **Firefox has it in NO stable build** (lands 157). **The JS driver is the
-PRIMARY path for Firefox, not a fallback.**
+⛔ **Spec 38 named the WRONG BROWSER twice; corrected.** Safari has `animation-timeline` since
+**26.0**; **Firefox has it in NO stable build** (lands 157). **The JS driver is Firefox's PRIMARY
+path, not a fallback.**
 
 ⛔ **The SVG-path route is DEAD for a straight connector — 3 defects, one cause** (a unit `viewBox`
-stretched non-uniformly): dashes resolve in SCREEN space so `pathLength="1"` is defeated; the stroke
+stretched non-uniformly): dashes resolve in SCREEN space, defeating `pathLength="1"`; the stroke
 doubles; the SVG sizes 2px × 2px. **Spec 31 QC correction C9's no-JS escape hatch is CLOSED** —
-Stage B's curves need a JS `ResizeObserver` for path `d`. Budget for it. Detail: D879.
+branching curves need a JS `ResizeObserver` for path `d`. Budget it. Detail: D879.
 
-⚠ **FIVE instrument failures, one shape** — STOP-CATALOGUE `STOP-INSTRUMENT-SHAPE`. Each gave
-confident, self-consistent numbers describing something untrue; each was caught by a screenshot or
-by Bean, never by a gate.
+⛔ **TWO MEASUREMENT TRAPS COST A WHOLE SESSION. Both are in CC memory — read them before
+measuring.** (1) Lenis animates every scroll, so a read after a fixed delay measures the WRONG
+position; wait until `scrollY` stops moving. (2) A scroll-driven custom property reads back as a
+STAIRCASE; compute progress from GEOMETRY instead. Both produced confident, self-consistent,
+false numbers.
 
-### ▶ NEXT for the timeline connector
+⚠ **Every real defect here was caught by a screenshot or by Bean, never by a gate** —
+STOP-CATALOGUE `STOP-INSTRUMENT-SHAPE`.
 
-⭐ **`.claude/prompts/2026-08-30-timeline-connector-stage-b.md` carries every remaining task** —
-milestone media (Bean-specified, not started), branching connectors + per-branch sparks (deferred
-by agreement, needs the SVG route), spark density sign-off (R-31-13), and one PRE-EXISTING bug that
-is NOT this track's: the milestone **node dots are invisible** (`render.php` emits the scoped colour
-with no fallback against a token this theme lacks, and that rule outranks the base rule that does
-carry one). Read it in full; it is the single source for this track's open work.
+### ▶ NEXT for the timeline
+
+⭐ **`.claude/prompts/2026-08-30-timeline-stage-c-and-open-decisions.md` carries every remaining
+task.** Its predecessor shipped in full and was deleted. Four decisions for Bean (`centre` now
+duplicates `left`; the align-left rail with no media; spark density; whether the viewport reveal
+gets the no-JS protection), then two builds: **375px is the one unmeasured breakpoint**, and
+branching connectors are a DESIGN GATE ONLY.
 
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4). Detail: D731/D732/D733,
 Spec 32 §6.1(a1)/(a2), Spec 35 Part K. shop-archive: Phase 3 ownership moved 2026-08-27 to
