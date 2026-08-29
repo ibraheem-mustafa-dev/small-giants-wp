@@ -295,3 +295,35 @@ Task 3: complete (blink.html + README.md + gates.json/package.json wiring by the
   ⭐ The implementer REFUSED a fix the controller asked for (a mojibake in the JSON), checked
   at byte level, found correct UTF-8, and cited prove-the-cause-before-fix. It was right —
   the artefact was a cp1252 console rendering UTF-8, not a defect in the file.
+
+---
+
+# SDD progress — sgs/form-field-tiles wp-block identity class fix, 2026-08-30
+Base commit: 0ee282b0f (main)
+Task 1: complete (commits 81036c832 fix + ca1f14789 gate allowlist, review round 1 found
+  2 Important doc defects, fixed in 76d4ba365, controller-verified directly — READY TO CLOSE).
+  Root cause: field_open() (shared helper, ~10 form-field block types) never called
+  get_block_wrapper_attributes(), so WP's identity class landed on form-field-tiles's INNER
+  tile-grid div (via SGS_Container_Wrapper::render(), which does call it) instead of the outer
+  div carrying the uid + border-scoped CSS. Fix shape (a) from the brief: made field_open()
+  itself call get_block_wrapper_attributes(), the universal fix, after confirming via all 12
+  sibling block.json files that none declares a WP styling support without
+  __experimentalSkipSerialization (so nothing else gets an unwanted inline style= as a side
+  effect). Live probe FAIL -> PASS after deploy; 73/73 gates green throughout; 3 sibling
+  field-block types spot-checked live with real DOM/computed-style evidence, not asserted.
+  Review round 1 (opus, cross-model from sonnet implementer, independently re-verified rather
+  than just diff-reading — re-proved the ratchet bypass itself, grepped every field_open()
+  caller for re-entrancy risk, read the probe's own outermost-element scoping logic to rule out
+  inner/outer double-class confusion): spec compliance PASS, code quality Changes Required —
+  2 Important (a stale docblock still describing the old broken behaviour; a new comment +
+  commit message asserting form-field-file now gets a live data-wp-interactive attribute, which
+  the implementer's own measurement had actually found ABSENT) + 3 Minor (customClassName now
+  also lands on both outer+inner divs on tiles specifically, harmless; double-esc_attr(), inert;
+  one "zero hits" grep claim scoped too narrowly, a QA script does select the outer div now,
+  arguably a fix not a regression). Fix pass (76d4ba365) corrected both Important findings,
+  added the optional Spec-32 footgun warning the reviewer flagged as I3; controller read the
+  diff directly and confirmed both corrections are accurate and match the reviewer's own
+  re-measurement — no new false claims introduced. Minors not fixed (correctly triaged as
+  non-blocking, next-touch items).
+TASK 1 COMPLETE. Base 0ee282b0f -> 76d4ba365. Single-task run — task review served as the
+  final review; no separate whole-branch review needed.
