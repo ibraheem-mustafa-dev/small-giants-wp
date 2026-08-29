@@ -246,6 +246,43 @@ function sgs_border_states_css( string $selector, array $attributes, array $map 
 		return '';
 	}
 
+	// ── FLAT COLOUR vs GRADIENT ────────────────────────────────────────────
+	// A gradient CANNOT be a `border-color` value in CSS, so painting one needs
+	// the masked ::before ring below — which necessarily sets
+	// `border-color:transparent` on the element itself. That is correct FOR A
+	// GRADIENT.
+	//
+	// It is wrong for a FLAT colour, and until 2026-08-30 this helper ran the
+	// ring unconditionally. The result: a client's flat border colour was never
+	// readable as `border-color`, and the transparent border it left behind was
+	// the only thing painted. Measured live on the canary with
+	// scripts/qa/check-border-roundtrip.js against a palette token — BOTH callers
+	// (sgs/container, sgs/product-card) reported
+	// `positive border-color = rgba(0, 0, 0, 0)`, while every block that emits
+	// `border-color` directly passed. The homepage's restored 1px container
+	// border painted its width and style and nothing else.
+	//
+	// So: ring ONLY when a gradient is actually set. A flat colour emits
+	// `border-color` directly, which is also cheaper — no pseudo-element, no
+	// position:relative, no background-clip — and leaves `border-color`
+	// readable by anything that inspects it.
+	$has_gradient = ( '' !== $read( $map['gradient'] ?? null ) )
+		|| ( '' !== $read( $map['hover_gradient'] ?? null ) );
+
+	if ( ! $has_gradient ) {
+		$css = '';
+		if ( '' !== $normal_paint ) {
+			$css .= $selector . '{border-color:' . $normal_paint . ';}';
+		}
+		if ( '' !== $hover_paint && $hover_paint !== $normal_paint ) {
+			// :focus-within paired with :hover so keyboard users reach the same
+			// state as mouse users — the same reasoning sgs_border_gradient_css()
+			// applies.
+			$css .= $selector . ':hover,' . $selector . ':focus-within{border-color:' . $hover_paint . ';}';
+		}
+		return $css;
+	}
+
 	return sgs_border_gradient_css(
 		$selector,
 		$normal_paint,
