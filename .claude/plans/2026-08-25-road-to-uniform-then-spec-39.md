@@ -273,7 +273,14 @@ codemods — a reformat is recoverable, but reviewing it is not free.
 **Step 5 — WRITE SPEC 39, then do the converter rework.**
 Check first whether its scope is already settled across D276 / D552 / D554 and the archived
 converter-completion plan — if so this is transcription plus a design gate, not open design.
-Closing it un-quarantines 37 conformance goldens.
+⛔ **UNVERIFIED — do not repeat it (2026-08-29).** This line used to read "Closing it
+un-quarantines 37 conformance goldens." That figure could not be reproduced: **0** xfails
+anywhere in the plugin reference Spec 39 (17 exist in total, so the grep does find them).
+Its neighbouring Spec 39 claims were found false the same day — Spec 39 does NOT pace this
+work. **D552 is the ordering rule: the block standard LEADS, the pipeline is reworked
+AFTERWARDS.** Become uniform first, then build Spec 39 on that foundation. See
+`plans/spec-39-seed-requirements.md`, which records the rule and exists to stop it being
+re-inverted.
 
 ## Guardrails carried forward
 

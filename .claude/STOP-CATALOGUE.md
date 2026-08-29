@@ -69,6 +69,33 @@ points here. Neither ever silently drops a STOP.
   recovery on a signal that DIFFERS between present and absent (symbol count, row values), and
   always pair a negative control with a positive one that must pass.
 
+- **STOP-A-STATUS-LINE-OUTRANKS-THE-DOC-WRITTEN-TO-PREVENT-IT** — NEW 2026-08-29 (D885). Bean
+  caught this. `plans/spec-39-seed-requirements.md` records D552's ordering rule (**the block
+  standard LEADS, the cloning pipeline is reworked AFTERWARDS**; converter cost is scheduled work,
+  never a precondition) and adds that it is written "so a future session cannot re-invert it and
+  block a standard change on converter cost." **The LEDGER carried the inverted version anyway —
+  "Spec 39 PACES everything" — and the LEDGER is what gets read at session start.** I inherited it,
+  repeated it in a handoff and twice to Bean, and only checked when he pushed back. The supporting
+  evidence was also false and took one grep to disprove: **0** xfails in the plugin reference Spec
+  39 (17 exist, so the grep finds them), and the cited gate lives in `orchestrator/`, i.e. the
+  pipeline, exactly where the rule puts it. **Before repeating any "X blocks Y" / "X paces Y" claim
+  from a status doc, open the doc that DECIDED the ordering. If the claim cites a count or a gate,
+  grep it with a positive control first.** When correcting one, point the status doc AT the
+  deciding doc instead of restating its conclusion — a restatement can be re-flipped by the next
+  compression; a pointer cannot. Sibling of STOP-MEASUREMENT-VS-EYE for prose.
+
+- **STOP-A-RESTING-READING-TAKEN-UNDER-AN-ACCIDENTAL-HOVER** — NEW 2026-08-29 (D885). Verifying the
+  process-steps hover fix, the FIRST reading of the number badge returned the HOVER colour at rest.
+  That is indistinguishable from a real defect ("the resting rule is broken / it is red all the
+  time") and I was one step from reporting it as one. The cause was mundane: the pointer happened
+  to sit over the element when the page loaded. Parking it at (5,5) gave the correct resting value.
+  **When measuring a state-dependent style, park the pointer explicitly AND assert the state in the
+  SAME evaluation** (`el.matches(':hover')` alongside the `getComputedStyle` read) — otherwise a
+  hover reading can be silently mislabelled as a resting one, in either direction. ⚠ Related: the
+  operator confirming "I saw the hover colour" does NOT settle it either — that observation is
+  equally consistent with "it works" and "it is that colour permanently". Only the paired
+  resting/hover measurement separates them.
+
 - **STOP-A-TWO-BYPASS-LAYERS-NOT-ONE** — NEW 2026-08-28. This repo has TWO independent commit-gate
   layers that look identical in their printed output (same F5/F6/cheat-gate report format) but have
   DIFFERENT bypass mechanisms: the session-scoped Claude Code PreToolUse hook (`f5-commit-gate.py`,

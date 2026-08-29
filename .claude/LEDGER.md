@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-08-28
+last_updated: 2026-08-29
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -40,9 +40,9 @@ The **consolidation** track is summarised in the next block and is CLOSED bar on
 The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section at the bottom.
 
 ⭐ **If you are the client-controls track:** read
-`.claude/prompts/2026-08-30-hover-fixes-reseed-and-deploy.md` — EVERY remaining task.
-Earlier prompt names are stale. ✅ **Tasks A+B+C are ALL DONE** — reseed, guard wired, deployed
-(by a parallel session), live hover-verified, and all 3 visual-diff debts PAID.
+`.claude/prompts/2026-08-30-client-controls-uniformity.md` — EVERY remaining task.
+Earlier prompt names are stale. ✅ **The hover work is CLOSED** (D885) — fixed, reseeded, guard
+wired, deployed, live-verified, all 3 debts PAID. Live front = UNIFORMITY.
 
 ⛔ **Before building ANY script or hand-doing investigative work, grep the two GENERATED
 catalogues in `.claude/dev-setup.md`.** 524 scripts across FIVE directories, and this repo's
@@ -308,7 +308,7 @@ bugs (one root cause); Ken Burns animated nothing on the `<img>` fast path; a fr
 grayscale silently rendered 100%. New guard, 9/9. Converter 727/0.
 
 **Reseed + guard wiring DONE same day** (`c45b4f5dc`, `c50066bff`): 4 DB fixes live,
-guard = gate 78 (fast, 70/70), F6 0 NEW.
+guard = gate 80 (fast, 70/70), F6 0 NEW.
 
 ⛔ **NOT DEPLOYED OR LIVE-VERIFIED; 3 visual-diff debts UNPAID** (`manual-skips.log`).
 DB correct, canary not. Deploy + a HAND hover-check is the front —

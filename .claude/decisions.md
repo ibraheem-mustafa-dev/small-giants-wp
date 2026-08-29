@@ -1,3 +1,68 @@
+## D885 [ROUTINE] — two client-set hover colours painted the block root; one root cause, one guard
+
+**2026-08-29.** Client-controls track. Commits `18eee2666` (fixes + guard) · `c45b4f5dc` (reseed +
+team-member override) · `c50066bff` (guard wired) · reports `eab359e90` / `96970454e`.
+
+**THE ROOT CAUSE WAS ONE THING, NOT TWO BUGS.** `sgs/testimonial.quoteColourHover` and
+`sgs/process-steps.numberBackgroundHover` both carried `css_element = NULL` and `css_state = NULL`
+while their RESTING siblings were correctly classified (`quoteColour` → `quote-text`,
+`numberBackground` → `number`). With no declared element, render fell back to painting at the
+block root. Both now emit ancestor-hover rules against the correct element, triggered by the
+card/step (Bean's call — preserves the trigger a client already sees, corrects only the target).
+
+⭐ **The testimonial defect was INERT, not mis-targeted.** The quote carries its own explicit
+`color` whenever `quoteColour` is set, and an explicit declaration beats an inherited value
+regardless of specificity (`post-grid/render.php:551-563` documents the same constraint). So a
+colour set on the card root could never reach the quote. It was ALSO gated behind
+`if ( $hover_decls )`. ⚠ The prompt claimed process-steps was gated the same way — it was not.
+
+**GUARD — `check-hover-state-classification.py`, gate 80 (fast).** Predicate: `*Hover` + real
+`css_property` + `css_state IS NULL` + **a resting twin exists**. ⭐ The fourth conjunct is
+load-bearing: without it the predicate returns FOUR rows, and the two extras
+(`gallery.overlayColourHover`, `business-info.linkHoverBackgroundImage`) are hover-ONLY attrs whose
+block.json `_note`s record that declaring them under `states.hover` was TRIED AND REJECTED —
+FR-35-5 STATE_WITHOUT_BASE fires for any hover with no resting counterpart, against a down-only
+baseline. "Has a resting twin" is the honest split between *should have been declared* and *cannot
+be*. 9/9 self-test, fixture-injected, including the exemption's own negative control.
+
+**TEAM-MEMBER `photoTablet`/`photoMobile` — classifier mis-derivation, root cause proven.** The
+derived layer read the media query inside `<source media="(max-width:1023px)">`
+(`render.php:261,264`) as a CSS declaration. The tiers prove it: `photoTablet` took tier `tablet`
+from 1023px, `photoMobile` took `mobile` from 767px — exactly this project's device breakpoints.
+Cleared via override. ⚠ **`css_layer` must be cleared alongside `css_property`** — F6 compares the
+PAIR and the derived layer sets `OUTER`, so the first pass still reported 2 NEW.
+
+**CONVERTER — a fractional value on a boolean attr now GAPS instead of writing.**
+`_coerce_for_attr_type` returned `parsed > 0`, so `grayscale(0.4)` became `true` and rendered as
+100%, emitted as a `Write` with no gap row: a silent Rule 4 violation. Negative control run — with
+the branch disabled the resolver returns `Write(attr='grayscaleHover', value=True)` for 0.4, i.e.
+the bug printed verbatim. Suite 727/0 (was 724).
+
+**KEN BURNS was dead on the commonest setup.** The `<img>` LCP fast path fires on
+`$has_bg_image && !$has_bg_video && $sgs_bg_img_is_simple`; the `--ken-burns` class is added on the
+first two conditions ALONE. The animation moves `background-size` on the container, which has no
+`background-image` when the `<img>` path renders. Live-proven on Bean's `/test-kenburns/`:
+`containerBgImage=none` beside a RUNNING `containerAnim`. Fixed by animating the `<img>` with
+`transform` (keeps LCP; compositor-friendly). Purely additive — a new rule on a selector whose
+animation was already dead.
+
+⛔ **SPEC 39 DOES NOT PACE THIS TRACK, AND WAS NEVER THIS TRACK'S TO BUILD** (Bean, correcting a
+claim the LEDGER carried and I repeated). D552: **the block standard LEADS, the pipeline is
+reworked AFTERWARDS**; converter cost is scheduled work, never a precondition. Uniformity first,
+then Spec 39 on that foundation. The supporting evidence was also false: **0** xfails in the plugin
+name Spec 39 (17 exist, so the grep works), and `check_flat_tier_regression.py` is in
+`orchestrator/`. `plans/spec-39-seed-requirements.md` states the rule AND says it is recorded "so a
+future session cannot re-invert it" — it was re-inverted in the LEDGER anyway, which is the copy
+that propagated. Both docs now point AT the seed doc rather than restating it.
+
+⚠ **SECURITY, handed to the motion track, NOT fixed here.** `timeline/edit.js` renders
+`entry.svg` via `dangerouslySetInnerHTML` with no sanitiser. Its own comment says the frontend
+`wp_kses` is "the path that matters" — that is the gap: a Contributor can paste
+`<svg><script>` into the plain `TextareaControl` and an Editor/Admin opening the post executes it
+in the wp-admin origin. The control's help text ("Scripts and event handlers are stripped when it
+renders") is true on the frontend and FALSE in the editor. Not fixed because all five timeline
+files were dirty with that track's in-flight work.
+
 ## D884 [INCIDENT] — FR-38-35 completed on a CSS mask, not an SVG path; five instruments passed while the feature was visibly broken
 
 **2026-08-29.** Follow-on to D879. Stage A is deployed and live on canary 3072; commits `72825d07c`
