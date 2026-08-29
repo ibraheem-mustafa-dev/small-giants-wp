@@ -29,13 +29,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"containerKind": "section",
 			"enabledExtensions": [
@@ -52,6 +45,10 @@
 				],
 				"contentBandPadding": [
 					"contentBandPadding"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
 				]
 			},
 			"elements": {
@@ -59,18 +56,22 @@
 					"label": "Wrapper",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "backgroundColour",
 						"css:padding": "padding",
 						"css:margin": "margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
-						"css:min-height": "minHeight"
+						"css:min-height": "minHeight",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "Composite-mirror rule (project CLAUDE.md D152): this block MUST mirror sgs/container's wrapper capabilities (padding, max-width, contentWidth, gap, background) rather than diverging — it is a section-KIND composite so it KEEPS SGS_Container_Wrapper rather than going block-private (D294). Background migrated off native color.background onto the flat `backgroundColour` attr (D635-pattern). `supports.color.text` was turned OFF WITHOUT a replacement flat attr — every allowed child (core/image, sgs/media, sgs/icon, sgs/decorative-image) is decorative/non-textual and sgs/icon always sets its own explicit `iconColour`, so inherited `color` never painted anything visible here; adding a `textColour` attr would be a control with no visible effect."
 				},
@@ -78,7 +79,10 @@
 					"label": "Content band (throw arena)",
 					"layer": "CONTENT",
 					"order": 2,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"prefix": "contentBand",
 					"attrMap": {
 						"css:width": "contentWidth"
@@ -122,20 +126,49 @@
 		},
 		"minHeight": {
 			"type": "object",
-			"default": {"desktop": "480px", "mobile": "320px"}
+			"default": {
+				"desktop": "480px",
+				"mobile": "320px"
+			}
 		},
 		"contentWidth": {
 			"type": "object",
-			"default": {"desktop": "full"}
+			"default": {
+				"desktop": "full"
+			}
 		},
-		"contentBandPadding": { "type": "object", "default": { "desktop": {} } },
-		"paddingTablet": { "type": "object", "default": {} },
-		"paddingMobile": { "type": "object", "default": {} },
-		"marginTablet": { "type": "object", "default": {} },
-		"marginMobile": { "type": "object", "default": {} },
-		"shadow": { "type": "string" },
-		"shadowColour": { "type": "string" },
-		"shadowColourHover": { "type": "string", "default": "" },
+		"contentBandPadding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"shadow": {
+			"type": "string"
+		},
+		"shadowColour": {
+			"type": "string"
+		},
+		"shadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"backgroundAttachment": {
 			"type": "string",
 			"default": "scroll",
@@ -311,6 +344,46 @@
 				"figure"
 			],
 			"default": "section"
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"render": "file:./render.php",

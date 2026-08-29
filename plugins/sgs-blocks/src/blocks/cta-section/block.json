@@ -46,6 +46,10 @@
 				],
 				"gridItemBorderRadius": [
 					"gridItemBorderRadius"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
 				]
 			},
 			"elements": {
@@ -63,17 +67,18 @@
 						"css:background-color": "backgroundColour",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
 						"css:box-shadow": "shadow",
 						"anim:parallax": "bgParallax",
 						"anim:duration": "bgAnimationDuration",
 						"css:color": "textColour",
-						"css:color-gradient": "textColourGradient"
+						"css:color-gradient": "textColourGradient",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "block.json's own Selectors API deliberately splits colour: color.background/color.text are scoped to the wrapper root (.wp-block-sgs-cta-section) so buttons/body/ribbon inherit text colour by cascade, while typography (fontSize/lineHeight/etc) is re-selectored to .sgs-cta-section__headline — see the 'headline' element below for that half of the split.",
 					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; no `prefix` declared, per ROLLOUT REQUIREMENT 1). bgKenBurns is a separate preset toggle with no animation-cluster member and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — no sgsAnimation*/staggerDelay/scroll-trigger attrs on this block.",
@@ -232,13 +237,6 @@
 		"spacing": {
 			"margin": true,
 			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
 			"__experimentalSkipSerialization": true
 		}
 	},
@@ -761,6 +759,46 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient for the hover root text colour. Non-empty wins over textColourHover."
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"editorScript": "file:./index.js",

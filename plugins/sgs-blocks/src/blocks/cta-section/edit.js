@@ -14,7 +14,10 @@ import {
 } from '@wordpress/components';
 import MediaPicker from '../../components/MediaPicker';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
-import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox } from '../../components';
+import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox,
+	SgsBorderControl,
+	resolveColourToken,
+} from '../../components';
 // No-inline migration (2026-07-09): cta-section no longer uses the default
 // <ContainerWrapperControls> aggregator wholesale — its ResponsiveSpacingPanel /
 // ContentBandPanel sub-panels still write to LEGACY FLAT attrs
@@ -232,6 +235,30 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					<Button variant="secondary" onClick={ addStat }>
 						{ __( 'Add stat', 'sgs-blocks' ) }
 					</Button>
+				</PanelBody>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						radiusValues={ {
+							base: attributes.borderRadius ?? {},
+							tablet: attributes.borderRadiusTablet ?? {},
+							mobile: attributes.borderRadiusMobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
+							setAttributes( { [ radiusKey ]: next } );
+						} }
+					/>
 				</PanelBody>
 			</InspectorControls>
 

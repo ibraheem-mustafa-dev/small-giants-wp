@@ -28,13 +28,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"containerKind": "section",
 			"enabledExtensions": [
@@ -45,7 +38,9 @@
 				"fx"
 			],
 			"boxFamilies": {
-				"contentBandPadding": [ "contentBandPadding" ],
+				"contentBandPadding": [
+					"contentBandPadding"
+				],
 				"padding": [
 					"paddingTablet",
 					"paddingMobile"
@@ -53,6 +48,10 @@
 				"margin": [
 					"marginTablet",
 					"marginMobile"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
 				]
 			},
 			"colourExemptions": {
@@ -79,10 +78,10 @@
 						"css:background-color-gradient": "backgroundColourGradient",
 						"css:padding": "padding",
 						"css:margin": "margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
 						"css:box-shadow": "shadow",
@@ -91,7 +90,8 @@
 						"css:background-repeat": "backgroundRepeat",
 						"css:background-size": "backgroundSize",
 						"anim:parallax": "bgParallax",
-						"anim:duration": "bgAnimationDuration"
+						"anim:duration": "bgAnimationDuration",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"states": {
 						"scrolled": {
@@ -161,7 +161,9 @@
 		},
 		"contentWidth": {
 			"type": "object",
-			"default": {"desktop": "full"}
+			"default": {
+				"desktop": "full"
+			}
 		},
 		"paddingTablet": {
 			"type": "object",
@@ -350,7 +352,9 @@
 		},
 		"contentBandPadding": {
 			"type": "object",
-			"default": { "desktop": {} }
+			"default": {
+				"desktop": {}
+			}
 		},
 		"minHeight": {
 			"type": "object",
@@ -388,6 +392,46 @@
 		},
 		"shadow": {
 			"type": "string"
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"render": "file:./render.php",

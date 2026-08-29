@@ -21,7 +21,7 @@
 <!-- wp:sgs/responsive-logo {"width":220,"linkToHome":true} /-->
 <!-- /wp:sgs/site-header-row -->
 
-<!-- wp:sgs/site-header-row {"rowSlot":"bottom","justifyContent":"center","padding":{"desktop":{"top":"var(--wp--preset--spacing--20)","bottom":"var(--wp--preset--spacing--20)"}},"style":{"border":{"top":{"color":"var:preset|color|surface-alt","width":"1px"}}}} -->
+<!-- wp:sgs/site-header-row {"borderWidth":{"top":"1px"},"borderStyle":"solid","borderColour":"surface-alt","rowSlot":"bottom","justifyContent":"center","padding":{"desktop":{"top":"var(--wp--preset--spacing--20)","bottom":"var(--wp--preset--spacing--20)"}}} -->
 <!-- wp:sgs/nav-menu {"ref":0,"itemColour":"text","gap":"32px"} /-->
 <!-- /wp:sgs/site-header-row -->
 

@@ -31,7 +31,10 @@ import {
 	PanelBody,
 	SelectControl,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, fillRow } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, fillRow,
+	SgsBorderControl,
+	resolveColourToken,
+} from '../../components';
 import { colourVar } from '../../utils';
 
 const HEADING_LEVEL_OPTIONS = [
@@ -277,6 +280,30 @@ export default function Edit( { attributes, setAttributes } ) {
 						units={ LENGTH_UNITS }
 						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 						help={ __( 'Exact CSS length, e.g. 1200px. Leave blank for no cap.', 'sgs-blocks' ) }
+					/>
+				</PanelBody>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						radiusValues={ {
+							base: attributes.borderRadius ?? {},
+							tablet: attributes.borderRadiusTablet ?? {},
+							mobile: attributes.borderRadiusMobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
+							setAttributes( { [ radiusKey ]: next } );
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>

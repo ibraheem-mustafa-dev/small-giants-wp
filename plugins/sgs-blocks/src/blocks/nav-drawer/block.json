@@ -22,25 +22,76 @@
 			"containerKind": "content",
 			"containerMirror": false,
 			"boxFamilies": {
-				"drawerPadding": [ "drawerPadding" ]
+				"drawerPadding": [
+					"drawerPadding"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
+				]
 			},
-			"hideExtensions": [ "clickEffects", "parallax" ],
+			"hideExtensions": [
+				"clickEffects",
+				"parallax"
+			],
 			"variantAttr": "variantPreset",
 			"variants": {
-				"floating-capped-card": [ "variantPreset", "anchor", "panelSize", "surfaceOpacity", "surfaceBlur", "closeStyle", "drawerAlign", "drawerBg" ],
-				"anchored-card-stack": [ "variantPreset", "anchor", "panelSize", "closeStyle", "drawerAlign" ],
-				"editorial-ghost-list": [ "variantPreset", "surfaceOpacity", "closeStyle", "drawerAlign" ],
-				"centred-statement": [ "variantPreset", "drawerBg", "drawerAlign", "closeStyle" ],
-				"solid-brand-light": [ "variantPreset", "drawerBg", "drawerAlign", "closeStyle" ],
-				"two-column-editorial": [ "variantPreset", "drawerBg", "closeStyle" ],
-				"split-zone-serif": [ "variantPreset", "drawerBg", "drawerAlign", "closeStyle" ]
+				"floating-capped-card": [
+					"variantPreset",
+					"anchor",
+					"panelSize",
+					"surfaceOpacity",
+					"surfaceBlur",
+					"closeStyle",
+					"drawerAlign",
+					"drawerBg"
+				],
+				"anchored-card-stack": [
+					"variantPreset",
+					"anchor",
+					"panelSize",
+					"closeStyle",
+					"drawerAlign"
+				],
+				"editorial-ghost-list": [
+					"variantPreset",
+					"surfaceOpacity",
+					"closeStyle",
+					"drawerAlign"
+				],
+				"centred-statement": [
+					"variantPreset",
+					"drawerBg",
+					"drawerAlign",
+					"closeStyle"
+				],
+				"solid-brand-light": [
+					"variantPreset",
+					"drawerBg",
+					"drawerAlign",
+					"closeStyle"
+				],
+				"two-column-editorial": [
+					"variantPreset",
+					"drawerBg",
+					"closeStyle"
+				],
+				"split-zone-serif": [
+					"variantPreset",
+					"drawerBg",
+					"drawerAlign",
+					"closeStyle"
+				]
 			},
 			"elements": {
 				"dialog": {
 					"label": "Drawer container",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"prefix": "",
 					"attrMap": {
@@ -53,7 +104,9 @@
 					"label": "Drawer content",
 					"layer": "GRID",
 					"order": 2,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
 						"css:color-gradient": "drawerTextColourGradient",
 						"css:color": "drawerTextColour",
@@ -66,7 +119,9 @@
 				"close": {
 					"label": "Close button",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "toggleClose",
 					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). toggleCloseColour resolves css:color via the default {prefix}{suffix} convention (toggleClose + Colour). The button's :hover opacity fade and its :focus-visible outline have NO per-block attribute behind them — an uncontrollable-styling finding, not a manifest gap (no state is declared for this element for that reason). The outline is NOT hardcoded, though: since D467 it resolves var(--sgs-focus-color, currentColor), so it follows the site-wide focus token. Line numbers deliberately omitted — the earlier ones had drifted."
 				},
@@ -85,14 +140,7 @@
 		"align": false,
 		"anchor": false,
 		"html": false,
-		"reusable": false,
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		}
+		"reusable": false
 	},
 	"selectors": {
 		"root": ".wp-block-sgs-nav-drawer",
@@ -125,12 +173,19 @@
 		"closeStyle": {
 			"type": "string",
 			"default": "separate-x",
-			"enum": [ "separate-x", "text-swap", "burger-morph" ]
+			"enum": [
+				"separate-x",
+				"text-swap",
+				"burger-morph"
+			]
 		},
 		"animateFrom": {
 			"type": "string",
 			"default": "auto",
-			"enum": [ "auto", "fade" ]
+			"enum": [
+				"auto",
+				"fade"
+			]
 		},
 		"drawerBg": {
 			"type": "string",
@@ -151,7 +206,11 @@
 		"backgroundSize": {
 			"type": "string",
 			"default": "cover",
-			"enum": [ "cover", "contain", "auto" ]
+			"enum": [
+				"cover",
+				"contain",
+				"auto"
+			]
 		},
 		"backgroundPosition": {
 			"type": "string",
@@ -160,12 +219,20 @@
 		"backgroundRepeat": {
 			"type": "string",
 			"default": "no-repeat",
-			"enum": [ "no-repeat", "repeat", "repeat-x", "repeat-y" ]
+			"enum": [
+				"no-repeat",
+				"repeat",
+				"repeat-x",
+				"repeat-y"
+			]
 		},
 		"backgroundAttachment": {
 			"type": "string",
 			"default": "scroll",
-			"enum": [ "scroll", "fixed" ]
+			"enum": [
+				"scroll",
+				"fixed"
+			]
 		},
 		"drawerTextColour": {
 			"type": "string",
@@ -186,11 +253,17 @@
 		"drawerAlign": {
 			"type": "string",
 			"default": "left",
-			"enum": [ "left", "center", "right" ]
+			"enum": [
+				"left",
+				"center",
+				"right"
+			]
 		},
 		"drawerGap": {
 			"type": "object",
-			"default": { "desktop": "20px" }
+			"default": {
+				"desktop": "20px"
+			}
 		},
 		"drawerPadding": {
 			"type": "object",
@@ -199,16 +272,68 @@
 		"submenuModel": {
 			"type": "string",
 			"default": "accordion",
-			"enum": [ "accordion", "drill-down" ]
+			"enum": [
+				"accordion",
+				"drill-down"
+			]
 		},
 		"variantPreset": {
 			"type": "string",
 			"default": "",
-			"enum": [ "", "floating-capped-card", "anchored-card-stack", "editorial-ghost-list", "centred-statement", "solid-brand-light", "two-column-editorial", "split-zone-serif" ]
+			"enum": [
+				"",
+				"floating-capped-card",
+				"anchored-card-stack",
+				"editorial-ghost-list",
+				"centred-statement",
+				"solid-brand-light",
+				"two-column-editorial",
+				"split-zone-serif"
+			]
 		},
 		"sgsCustomCss": {
 			"type": "string",
 			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"render": "file:./render.php",

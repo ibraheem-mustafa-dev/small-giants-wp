@@ -181,12 +181,6 @@ $hover_text_colour_gradient         = $attributes['textColourHoverGradient'] ?? 
 $hover_border_colour                = $attributes['borderColourHover'] ?? '';
 // D636 border-colour gradient — sibling attribute, wins over $hover_border_colour when set.
 $hover_border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
-// D701 — RESTING border-colour gradient. Sibling to the WP-native
-// __experimentalBorder.color (read from $attributes['style']['border']['color']
-// further down, at the "WP-native color/border/typography supports" block) —
-// wins over that native flat colour when set, the same relationship
-// borderColourHoverGradient already has with borderColourHover above.
-$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
 
@@ -817,36 +811,10 @@ if ( $bg_ken_burns ) {
 $hero_style_engine_args = array();
 
 $border_args = array();
-if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-	$border_args['color'] = (string) $attributes['style']['border']['color'];
-}
 // G5 (Bean, 2026-08-26): 'style set, no width' means no border by
 // default — never fall through to the browser's initial medium (~3px)
 // border-width. Gated together via the shared helper (helpers-box.php)
 // so this rule is applied identically everywhere, not per block.
-$sgs_border_style_width = sgs_native_border_style_width_args( $attributes['style']['border']['style'] ?? null, $attributes['style']['border']['width'] ?? null );
-if ( isset( $sgs_border_style_width['width'] ) ) {
-	$border_args['width'] = $sgs_border_style_width['width'];
-}
-if ( isset( $sgs_border_style_width['style'] ) ) {
-	$border_args['style'] = $sgs_border_style_width['style'];
-}
-if ( isset( $attributes['style']['border']['radius'] ) ) {
-	$radius_raw = $attributes['style']['border']['radius'];
-	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-		$border_args['radius'] = sgs_css_length_value( $radius_raw );
-	} elseif ( is_array( $radius_raw ) ) {
-		$radius_clean = array();
-		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			if ( ! empty( $radius_raw[ $corner ] ) ) {
-				$radius_clean[ $corner ] = sgs_css_length_value( $radius_raw[ $corner ] );
-			}
-		}
-		if ( ! empty( $radius_clean ) ) {
-			$border_args['radius'] = $radius_clean;
-		}
-	}
-}
 if ( ! empty( $border_args ) ) {
 	$hero_style_engine_args['border'] = $border_args;
 }
@@ -895,25 +863,6 @@ if ( isset( $attributes['textAlign'] ) && in_array( $attributes['textAlign'], ar
 	$responsive_css .= $root_sel . ' .sgs-hero__headline{text-align:' . $attributes['textAlign'] . '}';
 }
 
-// --- Resting border gradient (D701) — masked ::before ring, mirrors the
-// existing hover-only mechanism above (line ~382). sgs_border_gradient_css()
-// emits `border-color:transparent` on $root_sel in THIS SAME scoped <style>,
-// appended AFTER the native border-colour rule just emitted above (identical
-// selector, same specificity) — cascade order alone makes the gradient win,
-// no !important needed. Only the resting solid COLOUR is overridden; native
-// border-width/style (read into $border_args above) stay in effect — the
-// mask ring paints its own ring using $width below, independent of them. ---
-if ( '' !== $border_colour_gradient ) {
-	$native_border_width_val = isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width']
-		? sgs_css_length_value( $attributes['style']['border']['width'] )
-		: '';
-	$responsive_css         .= sgs_border_gradient_css(
-		$root_sel,
-		$border_colour_gradient,
-		null,
-		'' !== $native_border_width_val ? $native_border_width_val : '1px'
-	);
-}
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color class onto the wrapper — re-add it manually (mirrors sgs/quote)
@@ -1053,6 +1002,86 @@ if ( $has_standard_bg_image ) {
 // Build overlay. NO-INLINE: this block emits zero inline style property
 // declarations. Contract + mechanism: Spec 32. Enforced by
 // scripts/audit-inline-styling.js --check. background-color/opacity move to
+
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$responsive_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$responsive_css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$responsive_css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$border_radius_obj = is_array( $attributes['borderRadius'] ?? null ) ? $attributes['borderRadius'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$responsive_css .= $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$responsive_css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$responsive_css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
+}
+
 // the scoped <style> ($responsive_css, appended below) — the element carries
 // only its class. Hero renders its own overlay instead of the shared
 // wrapper's (per the C3 double-emit guard above).

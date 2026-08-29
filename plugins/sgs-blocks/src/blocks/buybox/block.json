@@ -27,13 +27,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"spacing": {
 			"margin": true,
 			"padding": false,
@@ -44,6 +37,10 @@
 				"margin": [
 					"marginTablet",
 					"marginMobile"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
 				]
 			},
 			"elements": {
@@ -190,6 +187,46 @@
 		"textColourHoverGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"editorScript": "file:./index.js",

@@ -6,7 +6,13 @@
 	"title": "Before / After",
 	"category": "sgs-interactive",
 	"description": "Two-media comparison slider with a draggable divider. Each side (before/after) independently chooses image / video / SVG via `beforeMediaType`/`afterMediaType` — mirroring sgs/media's mediaType fork applied per comparison slot. Works with zero JavaScript for the image/SVG case — both slots are always present in the markup and a CSS-only clip-path renders the configured default position; JS progressively enhances the divider into a live drag (native range input for keyboard + touch, GSAP Draggable for free-drag directly on the media) and, when either slot is video, drives synchronised play/pause + drift-corrected currentTime across both `<video>` elements. Video slots support WP-library uploads and direct MP4/WebM URLs ONLY — YouTube/Vimeo embeds are deliberately unsupported here because a cross-origin iframe cannot be kept in sync without loading each platform's external player SDK (Spec 38 three-tier motion doctrine: no CDN-loaded third-party script). `orientation` (horizontal/vertical) crossed with `reverseDirection` gives all four reveal directions — after-on-left (default), after-on-right, after-on-top, after-on-bottom — with the label order and clip-path both keyed off the same two attributes so a label never sits over the wrong media. Content-KIND, block-private (no SGS_Container_Wrapper) — box + width only, matches the sgs/quote / sgs/button pattern (D294).",
-	"keywords": [ "before after", "comparison", "slider", "image compare", "reveal" ],
+	"keywords": [
+		"before after",
+		"comparison",
+		"slider",
+		"image compare",
+		"reveal"
+	],
 	"textdomain": "sgs-blocks",
 	"icon": "columns",
 	"supports": {
@@ -17,41 +23,57 @@
 				"draggable": true
 			},
 			"boxFamilies": {
-				"borderRadius": [ "borderRadiusTablet", "borderRadiusMobile" ]
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
+				]
 			},
 			"elements": {
 				"frame": {
 					"label": "Frame",
 					"order": 1,
-					"clusters": [ "fill", "border", "layout" ],
+					"clusters": [
+						"fill",
+						"border",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:style.color.background",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:box-shadow": "boxShadow",
 						"css:max-width": "maxWidth",
-						"css:height": "height"
+						"css:height": "height",
+						"css:border-color-gradient": "borderColourGradient"
 					}
 				},
 				"label": {
 					"label": "Labels",
 					"order": 2,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"prefix": "label",
 					"_note": "'fill' cluster added 2026-08-15 so labelBackgroundColour (previously an unclaimed style-defect orphan) resolves via the default convention: label + BackgroundColour. labelColour already resolved fine under 'text' (css:color, suffix Colour)."
 				},
 				"divider": {
 					"label": "Divider",
 					"order": 3,
-					"clusters": [ "fill" ]
+					"clusters": [
+						"fill"
+					]
 				},
 				"divider-line": {
 					"label": "Divider line",
 					"order": 4,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"attrMap": {
 						"css:background-color": "dividerColour",
 						"css:width": "dividerWidth"
@@ -61,7 +83,9 @@
 				"handle": {
 					"label": "Handle",
 					"order": 5,
-					"clusters": [ "fill" ],
+					"clusters": [
+						"fill"
+					],
 					"prefix": "",
 					"attrMap": {
 						"css:background-color": "handleColour"
@@ -78,114 +102,332 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"html": false,
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"style": true,
-			"color": true,
-			"__experimentalSkipSerialization": true
-		}
+		"html": false
 	},
 	"attributes": {
 		"_comment_ssr_nullable": "Every numeric attribute below whose default is null is declared as [ <numeric>, \"string\" ] — the house convention (sgs/heading, sgs/text). REASON: this block previews through <ServerSideRender>, which serialises an unset attribute as an EMPTY STRING into the block-renderer REST query. A schema of plain \"integer\"/\"number\" rejects \"\", the REST call returns HTTP 400, and the editor shows 'Preview failed to load' for every instance — while the frontend renders perfectly, so no frontend check can catch it. Found live 2026-07-31 by the Wave C editor probe (D388). render.php already coerces with (int) / a null check, so accepting \"\" changes no rendered output.",
 		"beforeMediaType": {
 			"type": "string",
 			"default": "image",
-			"enum": [ "image", "video", "svg" ],
+			"enum": [
+				"image",
+				"video",
+				"svg"
+			],
 			"_comment": "Mirrors sgs/media's mediaType fork (Spec 38 Step 6), applied per comparison slot rather than block-wide — the before side and after side may each be a different media type (e.g. an SVG diagram compared against a photo)."
 		},
 		"afterMediaType": {
 			"type": "string",
 			"default": "image",
-			"enum": [ "image", "video", "svg" ]
+			"enum": [
+				"image",
+				"video",
+				"svg"
+			]
 		},
-		"beforeImageId": { "type": [ "integer", "string" ], "default": null },
-		"beforeImageUrl": { "type": "string", "default": "", "role": "content" },
-		"beforeImageAlt": { "type": "string", "default": "", "role": "content" },
-		"afterImageId": { "type": [ "integer", "string" ], "default": null },
-		"afterImageUrl": { "type": "string", "default": "", "role": "content" },
-		"afterImageAlt": { "type": "string", "default": "", "role": "content" },
+		"beforeImageId": {
+			"type": [
+				"integer",
+				"string"
+			],
+			"default": null
+		},
+		"beforeImageUrl": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"beforeImageAlt": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"afterImageId": {
+			"type": [
+				"integer",
+				"string"
+			],
+			"default": null
+		},
+		"afterImageUrl": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"afterImageAlt": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
 		"_comment_artDirection": "Art-direction tiers (2026-08-07) — the IMAGE pair, completing the half this block was missing: its VIDEO playback tiers landed at d8cdcf8b. Same {base}/{base}Tablet/{base}Mobile shape and ID-wins-URL-falls-back pairing as sgs/media and sgs/hero. Alt text is deliberately NOT tiered — a different crop of the same subject describes the same thing, and a per-device alt would be a second place for the description to drift out of sync. Tier siblings render inside their own comparison slot so the divider still clips them.",
-		"beforeImageIdTablet": { "type": [ "integer", "string" ], "default": null },
-		"beforeImageUrlTablet": { "type": "string", "default": "", "role": "content" },
-		"beforeImageIdMobile": { "type": [ "integer", "string" ], "default": null },
-		"beforeImageUrlMobile": { "type": "string", "default": "", "role": "content" },
-		"afterImageIdTablet": { "type": [ "integer", "string" ], "default": null },
-		"afterImageUrlTablet": { "type": "string", "default": "", "role": "content" },
-		"afterImageIdMobile": { "type": [ "integer", "string" ], "default": null },
-		"afterImageUrlMobile": { "type": "string", "default": "", "role": "content" },
-		"beforeVideoId": { "type": [ "integer", "string" ], "default": null },
-		"beforeVideoUrl": { "type": "string", "default": "", "role": "content" },
-		"beforeVideoAlt": { "type": "string", "default": "", "role": "content" },
-		"afterVideoId": { "type": [ "integer", "string" ], "default": null },
-		"afterVideoUrl": { "type": "string", "default": "", "role": "content" },
-		"afterVideoAlt": { "type": "string", "default": "", "role": "content" },
-		"beforeSvgContent": { "type": "string", "default": "", "role": "content" },
-		"afterSvgContent": { "type": "string", "default": "", "role": "content" },
+		"beforeImageIdTablet": {
+			"type": [
+				"integer",
+				"string"
+			],
+			"default": null
+		},
+		"beforeImageUrlTablet": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"beforeImageIdMobile": {
+			"type": [
+				"integer",
+				"string"
+			],
+			"default": null
+		},
+		"beforeImageUrlMobile": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"afterImageIdTablet": {
+			"type": [
+				"integer",
+				"string"
+			],
+			"default": null
+		},
+		"afterImageUrlTablet": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"afterImageIdMobile": {
+			"type": [
+				"integer",
+				"string"
+			],
+			"default": null
+		},
+		"afterImageUrlMobile": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"beforeVideoId": {
+			"type": [
+				"integer",
+				"string"
+			],
+			"default": null
+		},
+		"beforeVideoUrl": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"beforeVideoAlt": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"afterVideoId": {
+			"type": [
+				"integer",
+				"string"
+			],
+			"default": null
+		},
+		"afterVideoUrl": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"afterVideoAlt": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"beforeSvgContent": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"afterSvgContent": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
 		"videoAutoplay": {
 			"type": "boolean",
 			"default": false,
 			"_comment": "Gated behind prefers-reduced-motion at render time in view.js — reduced motion always starts both videos paused regardless of this attribute; the shared play/pause toggle remains available either way (explicit user action, never suppressed)."
 		},
 		"videoAutoplayTablet": {
-			"type": [ "boolean", "null" ],
+			"type": [
+				"boolean",
+				"null"
+			],
 			"default": null,
 			"_comment": "Per-device playback tier (D-pending). null = inherit the tier above (Tablet inherits Desktop, Mobile inherits Tablet) — same convention as sgs/media's videoAutoplayTablet/Mobile and every other *Tablet/*Mobile attr in this framework. Still gated behind prefers-reduced-motion at whichever tier is effective."
 		},
 		"videoAutoplayMobile": {
-			"type": [ "boolean", "null" ],
+			"type": [
+				"boolean",
+				"null"
+			],
 			"default": null
 		},
-		"showLabels": { "type": "boolean", "default": true },
-		"beforeLabel": { "type": "string", "default": "Before", "role": "content" },
-		"afterLabel": { "type": "string", "default": "After", "role": "content" },
-		"labelColour": { "type": "string", "default": "" },
-		"labelBackgroundColour": { "type": "string", "default": "" },
+		"showLabels": {
+			"type": "boolean",
+			"default": true
+		},
+		"beforeLabel": {
+			"type": "string",
+			"default": "Before",
+			"role": "content"
+		},
+		"afterLabel": {
+			"type": "string",
+			"default": "After",
+			"role": "content"
+		},
+		"labelColour": {
+			"type": "string",
+			"default": ""
+		},
+		"labelBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
 		"labelFontSize": {
 			"type": "object",
 			"default": {}
 		},
-		"labelFontSizeUnit": { "type": "string", "default": "px" },
-		"labelFontWeight": { "type": "string", "default": "" },
-		"labelFontStyle": { "type": "string", "default": "" },
-		"labelLineHeight": { "type": [ "number", "string" ], "default": null },
-		"labelLineHeightUnit": { "type": "string", "default": "" },
+		"labelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"labelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"labelFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"labelLineHeight": {
+			"type": [
+				"number",
+				"string"
+			],
+			"default": null
+		},
+		"labelLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
 		"orientation": {
 			"type": "string",
 			"default": "horizontal",
-			"enum": [ "horizontal", "vertical" ]
+			"enum": [
+				"horizontal",
+				"vertical"
+			]
 		},
 		"reverseDirection": {
 			"type": "boolean",
 			"default": false,
 			"_comment": "Crossed with orientation to give all 4 reveal directions. false (default, UNCHANGED — Bean-locked): horizontal reveals after on the LEFT, vertical reveals after on the TOP. true: horizontal reveals after on the RIGHT (the more common slider convention), vertical reveals after on the BOTTOM. style.css keys both the clip-path AND the label order off this same attribute so a direction change can never reintroduce the 2026-07-31 label-vs-image mismatch (labels + clip must always move together)."
 		},
-		"startPosition": { "type": "number", "default": 50 },
+		"startPosition": {
+			"type": "number",
+			"default": 50
+		},
 		"fxDraggable": {
 			"type": "boolean",
 			"default": true,
 			"_comment": "Spec 38 FR-38-13 roster opt-in. When true, GSAP Draggable enhances the divider so the visitor can drag anywhere on the image, on top of the always-present native range input (keyboard + native touch drag + no-JS-safe). When false, only the native range input drives the divider — still fully operable, just without the free-drag-on-image layer."
 		},
-		"dividerColour": { "type": "string", "default": "" },
-		"dividerWidth": { "type": "number", "default": 3 },
-		"handleColour": { "type": "string", "default": "" },
-		"handleIconColour": { "type": "string", "default": "" },
+		"dividerColour": {
+			"type": "string",
+			"default": ""
+		},
+		"dividerWidth": {
+			"type": "number",
+			"default": 3
+		},
+		"handleColour": {
+			"type": "string",
+			"default": ""
+		},
+		"handleIconColour": {
+			"type": "string",
+			"default": ""
+		},
 		"height": {
 			"type": "object",
-			"default": {"desktop": 400}
+			"default": {
+				"desktop": 400
+			}
 		},
-		"heightUnit": { "type": "string", "default": "px" },
+		"heightUnit": {
+			"type": "string",
+			"default": "px"
+		},
 		"maxWidth": {
 			"type": "object",
 			"default": {}
 		},
-		"maxWidthUnit": { "type": "string", "default": "px" },
-		"boxShadow": { "type": "string", "default": "" },
-		"boxShadowColour": { "type": "string" },
-		"boxShadowColourHover": { "type": "string", "default": "" },
-		"borderRadiusTablet": { "type": "object", "default": {} },
-		"borderRadiusMobile": { "type": "object", "default": {} }
+		"maxWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"boxShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"boxShadowColour": {
+			"type": "string"
+		},
+		"boxShadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

@@ -45,13 +45,6 @@
 		"shadow": {
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"imageControls": true,
 			"imageControlsExplicit": true,
@@ -75,17 +68,18 @@
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"anim:preset": "sgsAnimation",
 						"anim:duration": "sgsAnimationDuration",
 						"anim:easing": "sgsAnimationEasing",
 						"anim:stagger": "staggerDelay",
 						"css:background-color-gradient": "backgroundColourGradient",
 						"css:color": "textColour",
-						"css:color-gradient": "textColourGradient"
+						"css:color-gradient": "textColourGradient",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) + staggerDelay resolve via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). anim:parallax/anim:trigger are honest gaps — no bgParallax/scroll-trigger attrs on this block.",
 					"states": {
@@ -189,7 +183,9 @@
 				"summary": {
 					"label": "Summary phrase",
 					"order": 10,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "summary",
 					"attrMap": {
 						"css:color": "summaryColour",
@@ -232,6 +228,10 @@
 				"margin": [
 					"marginTablet",
 					"marginMobile"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
 				]
 			}
 		}
@@ -533,6 +533,46 @@
 		"quoteColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"render": "file:./render.php",

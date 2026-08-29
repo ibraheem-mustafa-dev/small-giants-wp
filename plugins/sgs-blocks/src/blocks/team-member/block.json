@@ -35,13 +35,6 @@
 			"padding": true,
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"imageControls": true,
 			"imageControlsExplicit": true,
@@ -53,7 +46,12 @@
 				"blockLink",
 				"hover"
 			],
-			"hoverDefaults": { "scalePreset": "1.02", "shadow": "raised", "imageZoom": true, "focusRing": true },
+			"hoverDefaults": {
+				"scalePreset": "1.02",
+				"shadow": "raised",
+				"imageZoom": true,
+				"focusRing": true
+			},
 			"elements": {
 				"card": {
 					"label": "Card",
@@ -69,10 +67,10 @@
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:background-color": "backgroundColour",
 						"css:color": "textColour",
 						"css:font-size": "native:typography.fontSize",
@@ -82,7 +80,8 @@
 						"css:box-shadow": "cardShadow",
 						"css:box-shadow-color": "cardShadowColour",
 						"css:background-color-gradient": "backgroundColourGradient",
-						"css:color-gradient": "textColourGradient"
+						"css:color-gradient": "textColourGradient",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"states": {
 						"hover": {
@@ -152,6 +151,10 @@
 				"margin": [
 					"marginTablet",
 					"marginMobile"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
 				]
 			}
 		}
@@ -330,6 +333,46 @@
 			"default": {}
 		},
 		"marginMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
 			"type": "object",
 			"default": {}
 		}

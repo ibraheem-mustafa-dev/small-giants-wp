@@ -79,11 +79,6 @@ $sgs_icon_position = isset( $attributes['iconPosition'] ) ? $attributes['iconPos
 $sgs_hover_border  = isset( $attributes['borderColourHover'] ) ? $attributes['borderColourHover'] : '';
 // D636 border-colour gradient — sibling attribute, wins over $sgs_hover_border when set.
 $sgs_hover_border_gradient = sgs_css_gradient_value( isset( $attributes['borderColourHoverGradient'] ) ? $attributes['borderColourHoverGradient'] : '' );
-// RESTING border-colour gradient — sibling to the native __experimentalBorder.color
-// flat colour (style.border.color, read into $style_border_args below). Wins over
-// the native flat colour when set — same "gradient sibling wins over flat" contract
-// as the hover pair above and as sgs/quote's borderColour/borderColourGradient pair.
-$sgs_border_gradient     = sgs_css_gradient_value( isset( $attributes['borderColourGradient'] ) ? $attributes['borderColourGradient'] : '' );
 $sgs_hover_scale         = isset( $attributes['scaleHover'] ) ? $attributes['scaleHover'] : '';
 $sgs_hover_shadow        = isset( $attributes['shadowHover'] ) ? $attributes['shadowHover'] : '';
 $sgs_hover_shadow_colour = isset( $attributes['shadowHoverColour'] ) ? $attributes['shadowHoverColour'] : '';
@@ -411,10 +406,6 @@ if ( '' !== $sgs_info_link_hover_resolved && $sgs_info_link_hover_resolved !== $
 $sgs_border_width_native = isset( $style_border_args['width'] ) && is_string( $style_border_args['width'] )
 	? sgs_css_length_value( $style_border_args['width'] )
 	: '';
-if ( '' !== $sgs_border_gradient ) {
-	$sgs_border_gradient_width = '' !== $sgs_border_width_native ? $sgs_border_width_native : '1px';
-	$scoped_css[]              = sgs_border_gradient_css( $root_sel, $sgs_border_gradient, null, $sgs_border_gradient_width );
-}
 
 // --- Width (kept-scalar, base only) ---
 if ( $sgs_content_width ) {
@@ -496,6 +487,86 @@ $sgs_wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is WP core InnerBlocks output.
 $sgs_card_html = '';
+
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$scoped_css[] = $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$scoped_css[] = sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$scoped_css[] = $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$border_radius_obj = is_array( $attributes['borderRadius'] ?? null ) ? $attributes['borderRadius'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$scoped_css[] = $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$scoped_css[] = '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$scoped_css[] = '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
+}
+
 if ( $scoped_css ) {
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D — matches SGS_Container_Wrapper

@@ -1647,9 +1647,51 @@ function transformEditJs( src ) {
 		( n ) => ! new RegExp( `\\b${ n }\\b` ).test( names )
 	);
 	if ( wanted.length ) {
+		// Strip trailing whitespace AND an optional trailing comma before
+		// appending our own -- a multi-line import whose last specifier
+		// already ends in a comma (e.g. `LinkPopoverField,\n} from ...`)
+		// otherwise gets a DOUBLED comma, a JS syntax error `php -l` cannot
+		// see (caught live, 9 of 32 blocks, 2026-08-30).
 		const injected =
-			names.replace( /\s*$/, '' ) + ',\n' + wanted.map( ( n ) => `\t${ n },` ).join( '\n' ) + '\n';
+			names.replace( /,?\s*$/, '' ) + ',\n' + wanted.map( ( n ) => `\t${ n },` ).join( '\n' ) + '\n';
 		out = out.replace( importRe, `import {${ injected }} from '../../components';` );
+	}
+
+	// 1b. PanelBody import. The panel injected below (step 2) assumes
+	// PanelBody is already bound in this file's scope -- true for every
+	// block that already renders a PanelBody elsewhere, false for a block
+	// with no prior PanelBody usage at all (accordion-item, the only
+	// observed case, 2026-08-30: two ReferenceErrors at runtime, caught by
+	// check-undefined-refs, not by php -l or this tool's own self-test).
+	// Checked BEFORE the panel text below is spliced in -- that text itself
+	// contains the literal "PanelBody" and would make this check vacuously
+	// true if run after.
+	if ( ! /\bPanelBody\b/.test( out ) ) {
+		const wpComponentsRe = /import\s*\{([^}]*)\}\s*from\s*(['"])@wordpress\/components\2\s*;/;
+		const wc = out.match( wpComponentsRe );
+		if ( wc ) {
+			const wcNames = wc[ 1 ].replace( /,?\s*$/, '' );
+			out = out.replace(
+				wpComponentsRe,
+				`import {${ wcNames },\n\tPanelBody,\n} from '@wordpress/components';`
+			);
+		} else {
+			// No @wordpress/components import anywhere in this file -- insert a
+			// standalone one immediately after the (possibly just-rewritten,
+			// now MULTI-LINE) '../../components' import above -- never by
+			// counting physical lines from the top of the file. Step 1 can
+			// turn a single-line import into three lines; "line 1" then lands
+			// INSIDE that statement instead of after it, corrupting the file
+			// (caught by re-running --self-test after this very fix, not
+			// assumed correct on the first attempt).
+			const anchorRe = /import\s*\{[^}]*\}\s*from\s*(['"])\.\.\/\.\.\/components\1\s*;/;
+			const anchor = out.match( anchorRe );
+			const insertAt = anchor ? anchor.index + anchor[ 0 ].length : out.indexOf( '\n' ) + 1;
+			out =
+				out.slice( 0, insertAt ) +
+				`\nimport { PanelBody } from '@wordpress/components';` +
+				out.slice( insertAt );
+		}
 	}
 
 	// 2. mount — appended as the LAST child of the first <InspectorControls>.
@@ -3278,6 +3320,59 @@ function runSelfTest() {
 		'edit.js import NEGATIVE CONTROL: when the name is ABSENT it must still be added exactly once' );
 	ok( /^\t\t\t<\/InspectorControls>/m.test( editImp ),
 		'edit.js mount: the closing </InspectorControls> keeps its own indentation' );
+
+	// 12a. edit.js IMPORT INJECTION must not double a comma the file already
+	// has. Regression fixture for the live defect found 2026-08-30 across 9 of
+	// 32 migrated blocks: a multi-line '../../components' import whose LAST
+	// specifier already ends in its own trailing comma (e.g. brand-strip's
+	// real shape) got a SECOND comma appended, a JS SyntaxError `php -l`
+	// cannot see.
+	const editImpTrailingComma = transformEditJs(
+		"import { __ } from '@wordpress/i18n';\n" +
+			'import {\n\tSgsColourPanel,\n\tLinkPopoverField,\n} from \'../../components\';\n' +
+			'export default function Edit() {\n\treturn <><InspectorControls>\n\t\t\t</InspectorControls></>;\n}\n'
+	);
+	ok( ! /,,/.test( editImpTrailingComma ),
+		'edit.js import: a pre-existing trailing comma on the last specifier must not be DOUBLED — ' +
+			'the exact live defect (brand-strip, counter, hero, notice-banner, physics-canvas, ' +
+			'site-footer-row, site-header-row, table-of-contents, testimonial; 2026-08-30)' );
+	// NEGATIVE CONTROL — the fixture genuinely has a trailing comma to double,
+	// proving the assertion above is not vacuous.
+	ok( /LinkPopoverField,\s*$/m.test(
+		"import {\n\tSgsColourPanel,\n\tLinkPopoverField,\n} from '../../components';"
+	),
+		'edit.js import NEGATIVE CONTROL is not vacuous: the fixture\'s last specifier really does end in a comma' );
+
+	// 12b2. PanelBody import must be ADDED when genuinely absent, and must
+	// never corrupt the (possibly just-rewritten, now multi-line)
+	// '../../components' import it sits next to. Regression fixture for the
+	// live defect found 2026-08-30 on accordion-item: the only migrated block
+	// with zero prior PanelBody usage, which threw two ReferenceErrors at
+	// runtime that neither php -l nor this tool's own pre-fix self-test caught.
+	const editImpNoPanelBody = transformEditJs(
+		"import { __ } from '@wordpress/i18n';\n" +
+			"import { SgsColourPanel } from '../../components';\n" +
+			'export default function Edit() {\n\treturn <><InspectorControls>\n\t\t\t</InspectorControls></>;\n}\n'
+	);
+	ok( /import \{ PanelBody \} from '@wordpress\/components';/.test( editImpNoPanelBody ),
+		'edit.js import: PanelBody is added as a standalone import when the file has ' +
+			'no @wordpress/components import and no prior PanelBody usage at all' );
+	ok( /\} from '\.\.\/\.\.\/components';\nimport \{ PanelBody \}/.test( editImpNoPanelBody ),
+		"edit.js import: the PanelBody import must land immediately AFTER the full " +
+			"(possibly multi-line) '../../components' import statement, never spliced " +
+			'inside it by counting physical lines from the top of the file' );
+	// NEGATIVE CONTROL — a block that already has PanelBody must NOT get a
+	// second import of it.
+	const editImpHasPanelBody = transformEditJs(
+		"import { __ } from '@wordpress/i18n';\n" +
+			"import { PanelBody } from '@wordpress/components';\n" +
+			"import { SgsColourPanel } from '../../components';\n" +
+			'export default function Edit() {\n\treturn <><InspectorControls>\n' +
+			'\t\t\t<PanelBody title="Existing"></PanelBody>\n\t\t\t</InspectorControls></>;\n}\n'
+	);
+	ok( ( editImpHasPanelBody.match( /@wordpress\/components/g ) || [] ).length === 1,
+		'edit.js import NEGATIVE CONTROL: a block that already imports PanelBody must not get ' +
+			'a second @wordpress/components import' );
 
 	// 12. ORPHANED-VARIABLE SWEEP. Removing an assignment must remove its readers.
 	const orphanSrc = [

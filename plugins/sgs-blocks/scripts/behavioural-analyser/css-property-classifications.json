@@ -32,6 +32,23 @@
     },
     {
       "slug": "sgs/before-after",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
       "attr": "boxShadow",
       "fields": {
         "css_property": "box-shadow",
@@ -136,6 +153,23 @@
       "fields": {
         "css_property": "clip-path,left,top",
         "css_element": "divider"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "strip-spacing"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "strip-spacing"
       }
     },
     {
@@ -615,6 +649,20 @@
       }
     },
     {
+      "slug": "sgs/buybox",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style"
+      }
+    },
+    {
       "slug": "sgs/card-grid",
       "attr": "aspectRatio",
       "fields": {
@@ -912,6 +960,23 @@
     },
     {
       "slug": "sgs/countdown-timer",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
       "attr": "labelColour",
       "fields": {
         "css_property": "color",
@@ -924,6 +989,23 @@
       "fields": {
         "css_property": "color",
         "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1002,6 +1084,16 @@
     },
     {
       "slug": "sgs/cta-section",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
       "attr": "borderColourHover",
       "fields": {
         "css_property": "border-color",
@@ -1009,6 +1101,15 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1077,6 +1178,25 @@
       }
     },
     {
+      "slug": "sgs/feature-grid",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/feature-grid",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/filter-search",
       "attr": "focusRingColour",
       "fields": {
@@ -1098,6 +1218,25 @@
       "fields": {
         "css_property": "color",
         "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1169,6 +1308,25 @@
     },
     {
       "slug": "sgs/gallery",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
       "attr": "captionBgColour",
       "fields": {
         "css_property": "background-color",
@@ -1233,6 +1391,25 @@
       "attr": "staggerDelay",
       "fields": {
         "css_property": "anim:stagger",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -1403,6 +1580,16 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "borderColourHover",
       "fields": {
         "css_property": "border-color",
@@ -1410,6 +1597,15 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1934,12 +2130,29 @@
     },
     {
       "slug": "sgs/info-box",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
       "attr": "borderColourHover",
       "fields": {
         "css_property": "border-color",
         "role": "color",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2382,6 +2595,24 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "drawerAlign",
       "fields": {
         "css_property": "align-items",
@@ -2724,6 +2955,25 @@
     },
     {
       "slug": "sgs/notice-banner",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
@@ -2887,6 +3137,25 @@
       }
     },
     {
+      "slug": "sgs/physics-canvas",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/post-grid",
       "attr": "backgroundColourHover",
       "fields": {
@@ -2896,10 +3165,29 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "borderColourHover",
       "fields": {
         "css_property": "border-color",
         "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -3447,6 +3735,23 @@
       }
     },
     {
+      "slug": "sgs/product-faq",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/product-search",
       "attr": "focusRingColour",
       "fields": {
@@ -3687,6 +3992,44 @@
       }
     },
     {
+      "slug": "sgs/site-footer",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/site-header",
       "attr": "backgroundColourScrolledGradient",
       "fields": {
@@ -3698,6 +4041,25 @@
     },
     {
       "slug": "sgs/site-header",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
       "attr": "textColourScrolled",
       "fields": {
         "css_property": "color",
@@ -3705,6 +4067,25 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "scrolled"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -3785,6 +4166,23 @@
     },
     {
       "slug": "sgs/table-of-contents",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
       "attr": "linkColour",
       "fields": {
         "css_property": "color",
@@ -3799,6 +4197,25 @@
         "css_property": "color",
         "role": "color",
         "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -3880,6 +4297,23 @@
     },
     {
       "slug": "sgs/team-member",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
       "attr": "cardShadow",
       "fields": {
         "css_property": "box-shadow",
@@ -3949,12 +4383,29 @@
     },
     {
       "slug": "sgs/testimonial",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
       "attr": "borderColourHover",
       "fields": {
         "css_property": "border-color",
         "role": "color",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
       }
     },
     {
@@ -4052,6 +4503,16 @@
     },
     {
       "slug": "sgs/testimonial-slider",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
       "attr": "borderColourHover",
       "fields": {
         "css_property": "border-color",
@@ -4059,6 +4520,15 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -4425,6 +4895,25 @@
     },
     {
       "slug": "sgs/trustpilot-reviews",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
       "attr": "columns",
       "fields": {
         "css_property": "flex,grid-template-columns",
@@ -4647,6 +5136,47 @@
     },
     {
       "slug": "sgs/accordion-item",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion-item",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion-item",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion-item",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion-item",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion-item",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
@@ -4670,6 +5200,30 @@
         "css_property": "background-color",
         "role": "color",
         "css_element": "spectrum"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
       }
     },
     {
@@ -4710,6 +5264,30 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "strip-spacing"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "strip-spacing"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "strip-spacing"
       }
     },
     {
@@ -5470,10 +6048,58 @@
     },
     {
       "slug": "sgs/countdown-timer",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
       "attr": "numberColourGradient",
       "fields": {
         "css_property": "background-image",
         "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
       }
     },
     {
@@ -5526,6 +6152,33 @@
       "attr": "bgParallax",
       "fields": {
         "css_property": "anim:parallax",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -5835,6 +6488,33 @@
     },
     {
       "slug": "sgs/feature-grid",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/feature-grid",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/feature-grid",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/feature-grid",
       "attr": "flexDirection",
       "fields": {
         "css_property": "flex-direction",
@@ -5940,6 +6620,33 @@
         "css_property": "align-items",
         "css_layer": "GRID",
         "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -6056,6 +6763,52 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -6180,6 +6933,52 @@
     },
     {
       "slug": "sgs/form-step",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-step",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-step",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-step",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-step",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-step",
       "attr": "contentWidth",
       "fields": {
         "css_property": "width",
@@ -6220,6 +7019,33 @@
       "attr": "alignItems",
       "fields": {
         "css_property": "align-items",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -6366,6 +7192,33 @@
         "css_property": "align-items",
         "css_layer": "GRID",
         "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -6665,6 +7518,24 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "contentWidth",
       "fields": {
         "css_property": "width",
@@ -6946,6 +7817,22 @@
         "css_property": "border-color-gradient",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
       }
     },
     {
@@ -7275,6 +8162,33 @@
     },
     {
       "slug": "sgs/notice-banner",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
       "attr": "iconColourGradient",
       "fields": {
         "css_property": "stroke",
@@ -7393,6 +8307,33 @@
     },
     {
       "slug": "sgs/physics-canvas",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
       "attr": "contentWidth",
       "fields": {
         "css_property": "width",
@@ -7451,6 +8392,33 @@
       "fields": {
         "css_property": "aspect-ratio",
         "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -8030,6 +8998,30 @@
     },
     {
       "slug": "sgs/product-faq",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
@@ -8052,6 +9044,47 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq-item",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq-item",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq-item",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq-item",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq-item",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
         "css_element": "wrapper"
       }
     },
@@ -8287,6 +9320,33 @@
     },
     {
       "slug": "sgs/site-footer",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
@@ -8420,6 +9480,33 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -8628,6 +9715,33 @@
     },
     {
       "slug": "sgs/site-header",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
       "attr": "contentWidth",
       "fields": {
         "css_property": "width",
@@ -8714,6 +9828,33 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -8899,6 +10040,47 @@
     },
     {
       "slug": "sgs/tab",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tab",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tab",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tab",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tab",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tab",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
@@ -8912,6 +10094,30 @@
       "fields": {
         "css_property": "color",
         "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
         "css_element": "wrapper"
       }
     },
@@ -8931,6 +10137,33 @@
         "css_property": "align-items",
         "css_layer": "GRID",
         "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -9095,6 +10328,30 @@
     },
     {
       "slug": "sgs/team-member",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
       "attr": "grayscaleHover",
       "fields": {
         "css_property": "filter",
@@ -9205,6 +10462,30 @@
         "css_property": "background-color-gradient",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
       }
     },
     {
@@ -9367,6 +10648,33 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -9904,6 +11212,33 @@
     },
     {
       "slug": "sgs/trustpilot-reviews",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
       "attr": "flexDirection",
       "fields": {
         "css_property": "flex-direction",
@@ -10049,6 +11384,60 @@
       }
     },
     {
+      "slug": "sgs/accordion-item",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion-item",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_element": "strip-spacing"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_element": "strip-spacing"
+      }
+    },
+    {
       "slug": "sgs/button",
       "attr": "borderRadiusMobile",
       "fields": {
@@ -10127,6 +11516,182 @@
       }
     },
     {
+      "slug": "sgs/countdown-timer",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/feature-grid",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/feature-grid",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-step",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-step",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/heading",
       "attr": "borderRadiusMobile",
       "fields": {
@@ -10145,6 +11710,26 @@
       }
     },
     {
+      "slug": "sgs/hero",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/icon-list",
       "attr": "borderRadiusMobile",
       "fields": {
@@ -10155,6 +11740,24 @@
     },
     {
       "slug": "sgs/icon-list",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
       "attr": "borderRadiusTablet",
       "fields": {
         "css_property": "border-radius",
@@ -10203,6 +11806,26 @@
       }
     },
     {
+      "slug": "sgs/notice-banner",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/option-picker",
       "attr": "borderRadiusMobile",
       "fields": {
@@ -10217,6 +11840,26 @@
       "fields": {
         "css_property": "border-radius",
         "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
         "css_element": "wrapper"
       }
     },
@@ -10255,6 +11898,26 @@
       "attr": "paddingTablet",
       "fields": {
         "css_property": "padding",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
         "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"
@@ -10317,6 +11980,42 @@
       }
     },
     {
+      "slug": "sgs/product-faq",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq-item",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq-item",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/quote",
       "attr": "borderRadiusMobile",
       "fields": {
@@ -10336,6 +12035,26 @@
     },
     {
       "slug": "sgs/site-footer",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
       "attr": "marginMobile",
       "fields": {
         "css_property": "margin",
@@ -10375,6 +12094,46 @@
       }
     },
     {
+      "slug": "sgs/site-footer-row",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/site-header",
       "attr": "marginMobile",
       "fields": {
@@ -10409,6 +12168,138 @@
       "attr": "paddingTablet",
       "fields": {
         "css_property": "padding",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tab",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tab",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
         "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"
@@ -10485,6 +12376,26 @@
       "attr": "paddingTablet",
       "fields": {
         "css_property": "padding",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
         "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"

@@ -41,17 +41,12 @@
 			"padding": true,
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"iconPicker": true,
 			"is_section_root": true,
-			"enabledExtensions": [ "blockLink" ],
+			"enabledExtensions": [
+				"blockLink"
+			],
 			"boxFamilies": {
 				"padding": [
 					"paddingTablet",
@@ -60,6 +55,10 @@
 				"margin": [
 					"marginTablet",
 					"marginMobile"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
 				]
 			},
 			"elements": {
@@ -67,7 +66,11 @@
 					"label": "Banner",
 					"layer": "CONTENT",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "textColour",
@@ -78,13 +81,14 @@
 						"css:text-align": "native:typography.textAlign",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
 						"css:background-color-gradient": "backgroundColourGradient",
-						"css:color-gradient": "textColourGradient"
+						"css:color-gradient": "textColourGradient",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "NO-WRAPPER, content-KIND (D294, render.php:9-21) — dropped SGS_Container_Wrapper, block-private; every declaration scoped to the block's own `.{uid}` style (render.php:200-278). Layer CONTENT names the structural role (this block has no GRID layer).",
 					"states": {
@@ -101,7 +105,10 @@
 				"icon": {
 					"label": "Icon",
 					"order": 2,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"prefix": "icon",
 					"attrMap": {
 						"css:stroke": "iconColourGradient"
@@ -227,6 +234,46 @@
 			"default": {}
 		},
 		"marginMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
 			"type": "object",
 			"default": {}
 		}

@@ -38,13 +38,6 @@
 			"padding": true,
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"interactivity": true,
 		"sgs": {
 			"containerKind": "layout",
@@ -56,6 +49,10 @@
 				"margin": [
 					"marginTablet",
 					"marginMobile"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
 				]
 			},
 			"elements": {
@@ -76,12 +73,13 @@
 						"css:line-height": "native:typography.lineHeight",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
-						"css:width": "contentWidth"
+						"css:width": "contentWidth",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "WS-4 composite-mirror — outer wrapper emitted by SGS_Container_Wrapper('layout', render.php:366-382), inheriting sgs/container's full LAYOUT-scope capabilities. color/typography/border are block-private, scoped via render.php:131-198 (mirrors sgs/container's render.php pattern)."
 				},
@@ -219,7 +217,12 @@
 		},
 		"layout": {
 			"type": "string",
-			"enum": ["", "flex", "stack", "grid"],
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
 			"default": "stack",
 			"description": "Composite-mirror review (P2-2, container's layout-default fix): sgs/form routes through SGS_Container_Wrapper::render() the same way sgs/container does, so an untouched form would otherwise inherit container's new 'flex'/row default and lay its fields out side-by-side. Form fields are unambiguously vertical, so this block declares its own explicit 'stack' default rather than sharing the primitive's."
 		},
@@ -326,6 +329,46 @@
 				"space-between",
 				"space-around"
 			]
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"providesContext": {

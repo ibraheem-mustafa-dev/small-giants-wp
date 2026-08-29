@@ -9,7 +9,10 @@ import {
 	Button,
 } from '@wordpress/components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { IconPicker, IconPreview, SgsColourPanel, fillRow } from '../../components';
+import { IconPicker, IconPreview, SgsColourPanel, fillRow,
+	SgsBorderControl,
+	resolveColourToken,
+} from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveResponsiveTier } from '../../utils';
 
@@ -304,6 +307,30 @@ export default function Edit( { attributes, setAttributes } ) {
 					<Button isPrimary onClick={ addTile }>
 						{ __( 'Add Tile', 'sgs-blocks' ) }
 					</Button>
+				</PanelBody>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						radiusValues={ {
+							base: attributes.borderRadius ?? {},
+							tablet: attributes.borderRadiusTablet ?? {},
+							mobile: attributes.borderRadiusMobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
+							setAttributes( { [ radiusKey ]: next } );
+						} }
+					/>
 				</PanelBody>
 			</InspectorControls>
 

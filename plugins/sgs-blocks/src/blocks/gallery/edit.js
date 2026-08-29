@@ -28,7 +28,10 @@ import {
 } from '../container/components/ContainerWrapperControls';
 // Spec 37 FR-37-16 object model (Spec 35 Phase 1.4, 2026-08-10). Replaces
 // WidthPanel + ResponsiveSpacingPanel here — see the mount below for why.
-import { ResponsiveBoxControls, MEDIA_SIZING_RATIO_OPTIONS } from '../../components';
+import { ResponsiveBoxControls, MEDIA_SIZING_RATIO_OPTIONS,
+	SgsBorderControl,
+	resolveColourToken,
+} from '../../components';
 import {
 	PanelBody,
 	SelectControl,
@@ -720,6 +723,30 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</PanelBody>
 				) }
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						radiusValues={ {
+							base: attributes.borderRadius ?? {},
+							tablet: attributes.borderRadiusTablet ?? {},
+							mobile: attributes.borderRadiusMobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
+							setAttributes( { [ radiusKey ]: next } );
+						} }
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			{ /* ============================================================

@@ -39,13 +39,6 @@
 			"padding": true,
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"containerKind": "content",
 			"boxFamilies": {
@@ -56,13 +49,21 @@
 				"margin": [
 					"marginTablet",
 					"marginMobile"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
 				]
 			},
 			"elements": {
 				"box": {
 					"label": "FAQ section",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "textColour",
@@ -71,11 +72,12 @@
 						"css:line-height": "native:typography.lineHeight",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
-						"css:max-width": "maxWidth"
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:max-width": "maxWidth",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "Content-KIND composite (supports.sgs.containerKind='content', D294 box+width only) — every style control here is a WordPress-native wrapper support (typography/color/spacing/border) plus maxWidth; no per-element (heading/icon) typography attrs exist on this block, so heading/icon text styling is an honest gap inherited from the wrapper, not independently controlled."
 				}
@@ -146,6 +148,46 @@
 			"default": {}
 		},
 		"marginMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
 			"type": "object",
 			"default": {}
 		}

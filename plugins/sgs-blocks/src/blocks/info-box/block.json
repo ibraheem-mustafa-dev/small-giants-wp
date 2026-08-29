@@ -45,13 +45,6 @@
 		"shadow": {
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"containerKind": "content",
 			"presetSelectors": [
@@ -62,7 +55,12 @@
 				"blockLink",
 				"hover"
 			],
-			"hoverDefaults": { "scalePreset": "1.02", "shadow": "raised", "imageZoom": true, "focusRing": true },
+			"hoverDefaults": {
+				"scalePreset": "1.02",
+				"shadow": "raised",
+				"imageZoom": true,
+				"focusRing": true
+			},
 			"boxFamilies": {
 				"padding": [
 					"paddingTablet",
@@ -71,6 +69,10 @@
 				"margin": [
 					"marginTablet",
 					"marginMobile"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
 				]
 			},
 			"elements": {
@@ -91,10 +93,10 @@
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:box-shadow": "native:shadow",
 						"css:border-color-gradient": "borderColourGradient",
 						"anim:preset": "sgsAnimation",
@@ -322,6 +324,41 @@
 				"right"
 			],
 			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"editorScript": "file:./index.js",

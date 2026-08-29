@@ -20,7 +20,7 @@
 <!-- wp:sgs/business-info {"displayType":"socials","iconColour":"surface"} /-->
 <!-- /wp:sgs/site-header-row -->
 
-<!-- wp:sgs/site-header-row {"rowSlot":"middle","justifyContent":"space-between","padding":{"desktop":{"top":"var(--wp--preset--spacing--30)","bottom":"var(--wp--preset--spacing--30)"}},"style":{"border":{"bottom":{"color":"var:preset|color|surface-alt","width":"1px"}}}} -->
+<!-- wp:sgs/site-header-row {"borderWidth":{"bottom":"1px"},"borderStyle":"solid","borderColour":"surface-alt","rowSlot":"middle","justifyContent":"space-between","padding":{"desktop":{"top":"var(--wp--preset--spacing--30)","bottom":"var(--wp--preset--spacing--30)"}}} -->
 <!-- wp:sgs/responsive-logo {"width":300,"linkToHome":true} /-->
 <!-- wp:sgs/nav-menu {"ref":0,"itemColour":"text","gap":"28px"} /-->
 <!-- /wp:sgs/site-header-row -->

@@ -42,13 +42,6 @@
 			"padding": true,
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"collection": true,
 			"elements": {
@@ -69,10 +62,10 @@
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
 						"css:grid-template-rows": "gridTemplateRows",
@@ -84,7 +77,8 @@
 						"css:flex-wrap": "flexWrap",
 						"anim:preset": "sgsAnimation",
 						"anim:duration": "sgsAnimationDuration",
-						"anim:easing": "sgsAnimationEasing"
+						"anim:easing": "sgsAnimationEasing",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "No `display`/`align-items`/`order`/`overflow` attribute exists on this block — honest GAPs.",
 					"_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) resolves via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). This block has NO staggerDelay attribute, so anim:stagger is an honest gap; anim:parallax/anim:trigger are also honest gaps (no bgParallax/scroll-trigger attrs)."
@@ -203,7 +197,13 @@
 				],
 				"_comment_providesNatively": "Spec 38 FR-38-13 / §7. This block owns drag-to-scroll through its OWN inspector toggle, which targets the DESCENDANT element that actually scrolls. The generic 'Scroll & effects' picker stamps data-sgs-fx onto the block ROOT, which is not the scroller here — so offering `draggable` there too would give the client TWO controls for ONE capability, and the picker's one would silently do nothing. Declaring it here removes the dud picker entry via generate-fx-qualifying-blocks.py without removing the capability, exactly as sgs/responsive-logo does for `draw`. Ruled 2026-07-31 after the roster derivation surfaced it on five blocks at once (gallery had it latently already). NOTE sgs/timeline deliberately does NOT carry this: its scroller IS the block root, so the picker lands correctly there."
 			},
-			"colourExemptions": {}
+			"colourExemptions": {},
+			"boxFamilies": {
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
+				]
+			}
 		}
 	},
 	"selectors": {
@@ -521,6 +521,46 @@
 				"space-between",
 				"space-around"
 			]
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"editorScript": "file:./index.js",

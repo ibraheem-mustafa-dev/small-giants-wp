@@ -30,13 +30,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"filter": {
 			"duotone": true
 		},
@@ -70,10 +63,10 @@
 						"css:padding": "padding",
 						"css:margin": "margin",
 						"css:max-width": "maxWidth",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
 						"css:grid-template-rows": "gridTemplateRows",
@@ -87,7 +80,8 @@
 						"anim:preset": "sgsAnimation",
 						"anim:duration": "sgsAnimationDuration",
 						"anim:easing": "sgsAnimationEasing",
-						"anim:stagger": "staggerDelay"
+						"anim:stagger": "staggerDelay",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "No `display`/`order`/`overflow` attribute exists on this block — honest GAPs.",
 					"_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) + per-image staggerDelay resolve via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). anim:parallax/anim:trigger are honest gaps — no bgParallax/scroll-trigger attributes on this block."
@@ -136,6 +130,12 @@
 					"prefix": "",
 					"_note": "The wrapper around the rendered <img> inside each grid item (.sgs-gallery__img-wrap, render.php ~line 467/508) - carries the hover-reveal overlay. overlayColourHover is HOVER-ONLY (no resting overlayColour attribute exists on this block) so it is deliberately left unclustered rather than declared via states.hover, which would manufacture a new state-without-base finding against the D542-gated baseline (currently exactly 1, sgs/post-grid). prefix:\"\" opts this element out of orphan-candidate scanning so the attribute is reported honestly as a gap, not force-claimed. Found live 2026-08-15: DB tagged 1 attr css_element='img-wrap', undeclared until now."
 				}
+			},
+			"boxFamilies": {
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
+				]
 			}
 		}
 	},
@@ -164,11 +164,17 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 3,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"gap": {
 			"type": "object",
-			"default": {"desktop": "16px"},
+			"default": {
+				"desktop": "16px"
+			},
 			"_comment": "Was the bare number \"16\". MEASURED before and after: this default renders 16px either way, so the change is behaviour-preserving — it only makes the value explicit. (An earlier draft of this comment claimed the default had been silently dead because spacing slug 16 does not exist in theme.json. That was WRONG: gallery's own render.php already appended `px` to a bare number before handing it on, so \"16\" always meant 16px here. The live capture showed 16px on both builds and corrected the claim.) Notably this block had already implemented the bare-number-means-px convention locally, which is now the framework-wide rule. Bean-ruled 2026-08-10."
 		},
 		"aspectRatio": {
@@ -326,6 +332,46 @@
 		"loopCarousel": {
 			"type": "boolean",
 			"default": false
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"editorScript": "file:./index.js",

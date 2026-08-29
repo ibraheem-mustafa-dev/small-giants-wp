@@ -121,35 +121,12 @@ $label_colour    = $attributes['labelColour'] ?? '';
 $label_bg_colour = $attributes['labelBackgroundColour'] ?? '';
 
 // Base border-radius — WP-native style.border.radius (skip-serialised).
-$base_border_radius = null;
-if ( isset( $attributes['style']['border']['radius'] ) ) {
-	$radius_raw = $attributes['style']['border']['radius'];
-	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-		$base_border_radius = $radius_raw;
-	} elseif ( is_array( $radius_raw ) ) {
-		$radius_clean   = array();
-		$has_any_corner = false;
-		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
-			if ( '' !== $radius_clean[ $corner ] ) {
-				$has_any_corner = true;
-			}
-		}
-		if ( $has_any_corner ) {
-			$base_border_radius = $radius_clean;
-		}
-	}
-}
 
 // WP `color`/border supports (skip-serialised → NOT auto-inlined).
 $style_color_bg = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
 $preset_bg_slug = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
-$border_width_raw      = $attributes['style']['border']['width'] ?? '';
-$border_style_raw      = $attributes['style']['border']['style'] ?? 'none';
-$border_colour         = $attributes['style']['border']['color'] ?? '';
 $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
-$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
 
 // ---------------------------------------------------------------------------
 // 4. Resolve scope. Uid is a CLASS (anchor stays a free `id`).
@@ -174,15 +151,6 @@ if ( $style_color_bg ) {
 // G5 (Bean, 2026-08-26): 'style set, no width' means no border by
 // default — never fall through to the browser's initial medium (~3px)
 // border-width.
-if ( 'none' !== $border_style && $border_width_raw ) {
-	if ( $border_width_raw ) {
-		$wrapper_decls[] = 'border-width:' . sgs_css_length_value( $border_width_raw );
-	}
-	$wrapper_decls[] = 'border-style:' . $border_style;
-	if ( $border_colour ) {
-		$wrapper_decls[] = 'border-color:' . sgs_colour_value( $border_colour );
-	}
-}
 if ( $box_shadow ) {
 	$wrapper_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
 }
@@ -209,9 +177,6 @@ if ( $wrapper_decls ) {
 // Base border-radius + WP colour support — via the stable core style engine.
 
 $base_style_engine_args = array();
-if ( null !== $base_border_radius ) {
-	$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
-}
 if ( ! empty( $base_style_engine_args ) ) {
 	$base_scoped_styles = wp_style_engine_get_styles( $base_style_engine_args, array( 'selector' => $root_sel ) );
 	if ( ! empty( $base_scoped_styles['css'] ) ) {
@@ -487,6 +452,86 @@ if ( $fx_draggable && ! is_admin() ) {
 
 $range_id = $uid . '-range';
 
+?>
+<?php
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$scoped_css[] = $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$scoped_css[] = sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$scoped_css[] = $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$border_radius_obj = is_array( $attributes['borderRadius'] ?? null ) ? $attributes['borderRadius'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$scoped_css[] = $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$scoped_css[] = '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$scoped_css[] = '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
+}
 ?>
 <?php if ( $scoped_css ) : ?>
 <style>
