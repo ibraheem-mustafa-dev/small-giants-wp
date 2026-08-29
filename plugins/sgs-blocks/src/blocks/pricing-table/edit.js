@@ -15,7 +15,9 @@ import {
 	CheckboxControl,
 } from '@wordpress/components';
 import { Icon, plus, close } from '@wordpress/icons';
-import { DesignTokenPicker, IconPicker, LinkPopoverField, SgsColourPanel, resolveColourToken } from '../../components';
+import { DesignTokenPicker, IconPicker, LinkPopoverField, SgsColourPanel, resolveColourToken,
+	SgsBorderControl,
+} from '../../components';
 import { colourVar, resolveResponsiveTier, resolveTextColourPreviewStyle } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
@@ -116,7 +118,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		billingToggleMonthlyLabel,
 		billingToggleYearlyLabel,
 		plans: plansRaw,
-		style,
+		pricingTableStyle: style,
 		headingLevel,
 		titleColour,
 		priceColour,
@@ -375,7 +377,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ style }
 						options={ STYLE_OPTIONS }
 						onChange={ ( val ) =>
-							setAttributes( { style: val } )
+							setAttributes( { pricingTableStyle: val } )
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
@@ -460,6 +462,30 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+				</PanelBody>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						radiusValues={ {
+							base: attributes.borderRadius ?? {},
+							tablet: attributes.borderRadiusTablet ?? {},
+							mobile: attributes.borderRadiusMobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
+							setAttributes( { [ radiusKey ]: next } );
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>
