@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Generative background (Spec 38, D874) perf harness</title>
+<style>
+  html,body{margin:0;padding:0;background:#0b1220}
+  canvas{display:block}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="module">
+/*
+ * Perf harness for the generative-background WebGL layer (Spec 38 §1-§6,
+ * D874 technique spec, Step 2 — the folded-ribbon geometry build).
+ *
+ * Imports the SOURCE module directly (unbundled — same pattern as the
+ * sibling FR-38-31 harness at scripts/perf/../../../.claude/scratch/
+ * stripe-hero-poc/perf/fr3831-perf.html), so this measures the code that
+ * actually ships, not a re-implementation. `createGenerativeBackground()`
+ * is async (the CPU fold runs in a Worker with a sync fallback), so the
+ * `window.__ready` contract measure-frame-cost.mjs polls for is only set
+ * once that Promise resolves.
+ */
+import { createGenerativeBackground } from '../../src/shared/effects/webgl/generative-background.js';
+
+const q   = new URLSearchParams( location.search );
+const W   = parseInt( q.get( 'w' )   || '1393', 10 );
+const H   = parseInt( q.get( 'h' )   || '761',  10 );
+const DPR = parseFloat( q.get( 'dpr' ) || '1' );
+
+// A small, cheap texture source — a plain 2-colour canvas gradient. This
+// harness measures GEOMETRY + shader cost, not the OKLCH texture-build cost
+// (that is a separate, JS-only, build-time-or-on-change cost per §2 — see
+// fx-generative-background.js — and is not part of the per-frame budget).
+const texCanvas = document.createElement( 'canvas' );
+texCanvas.width = 320;
+texCanvas.height = 320;
+const tctx = texCanvas.getContext( '2d' );
+const grad = tctx.createLinearGradient( 0, 0, 320, 320 );
+grad.addColorStop( 0, '#f5c2c8' );
+grad.addColorStop( 1, '#7c5cff' );
+tctx.fillStyle = grad;
+tctx.fillRect( 0, 0, 320, 320 );
+
+const canvas = document.getElementById( 'c' );
+canvas.style.width  = W + 'px';
+canvas.style.height = H + 'px';
+
+const handle = await createGenerativeBackground( canvas, {
+	textureSource: texCanvas,
+} );
+
+if ( ! handle ) {
+	window.__err   = 'createGenerativeBackground returned null';
+	window.__ready = true;
+} else {
+	handle.resize( W, H, DPR );
+	handle.draw( 3.0 );
+
+	// Same deterministic single-frame draw entry point the Stripe rig and the
+	// FR-38-31 harness both expose — no rAF loop for measure-frame-cost.mjs's
+	// legs A/B; leg C (live loop health) is therefore reported null here,
+	// same as every non-Stripe config in that harness.
+	window.__drawAt = ( t ) => handle.draw( t );
+	window.__handle = handle;
+	window.__ready  = true;
+}
+</script>
+</body>
+</html>

@@ -1,119 +1,109 @@
 /**
- * SGS motion — generative background WebGL renderer (Spec 38, D874 technique
- * spec, §1/§2/§3/§4 + Animation + Camera subsections). Tier W, THIRD entry —
- * v1.3 DIRECT VERTEX-SHADER PORT + CAMERA CROP (2026-08-28).
+ * SGS motion — generative background WebGL renderer (Spec 38; D874 technique
+ * spec; D880 licence reversal; D882 three-layer mechanism). Tier W, THIRD
+ * entry — v1.4, LAYERS 1 + 2 RESTORED AND NUMERICALLY VERIFIED (2026-08-29).
  *
- * ── PROVENANCE (read before touching the geometry section below) ───────────
+ * ── PROVENANCE — read this before the geometry, and read it accurately ─────
  *
- * The fold mechanism in this file's vertex shader is PORTED DIRECTLY from
- * Stripe's hero reference implementation
- * (`.claude/scratch/stripe-hero-poc/shaders/68467.glsl`), per Bean's explicit
- * authorisation recorded at `.claude/decisions.md` D880 (2026-08-28). D880
- * REVERSES this project's previous "describe the mechanism in plain English
- * and reimplement, never copy the reference's literal code" rule — but only
- * for this one file's geometry/vertex-shader mechanism. This is NOT
- * open-source or MIT-licensed code and carries no standard open-source
- * attribution licence to cite here; it is a direct, considered, twice-
- * confirmed BUSINESS decision to accept the associated legal risk, recorded
- * in D880 alongside the outstanding solicitor's-hour flag. Do not read this
- * comment as a citation of permission from Stripe — there is none. The
- * colour/fragment pipeline below (grading, striations, glow-gate, depth
- * fade, grain) is UNCHANGED by D880 and was NOT ported from any reference
- * fragment shader — see the FRAGMENT_SHADER section's own docblock.
+ * The fold mechanism here derives from Stripe's hero reference implementation
+ * (studied via `.claude/scratch/stripe-hero-poc/`), under Bean's explicit,
+ * twice-confirmed authorisation at D880, which reverses this project's
+ * "describe the mechanism and reimplement, never copy" rule for this
+ * mechanism specifically.
  *
- * ⛔ CORRECTED (2026-08-28, second pass) — the FIRST v1.3 attempt claimed a
- * "direct port" while actually keeping v1.2's own axis vectors and its
- * `M * v` (matrix-times-column-vector) multiplication convention, on the
- * reasoning that this was "algebraically equivalent" to the reference. That
- * reasoning was wrong: the reference computes `(vec4(position,1.0) *
- * rotationA).xyz` — a ROW-vector-times-matrix product. For an orthogonal
- * rotation matrix, `v * M` is NOT the same operation as `M * v`; it equals
- * `transpose(M) * v`, i.e. the SAME rotation matrix built from the OPPOSITE
- * angle. So the first "port" was silently rotating the wrong way on all
- * three chained rotations — same axis directions, wrong rotation sense. This
- * pass fixes BOTH: the exact literal axis vectors `(0.5,0,0.5)`/`(0,0.5,0.5)`
- * (not the `(1,0,1)`/`(0,1,1)` stand-ins) AND the multiplication order
- * (`displaced * sgsAxisAngle(...)`, matching GLSL's `vec * mat` row-vector
- * semantics to the reference's own convention exactly). Caught because Bean
- * looked at the live result and correctly said it still looked like the same
- * shape, just bigger — that observation was right; the code had not actually
- * changed in the way the previous commit's docblock claimed it had.
+ * ⚠ WHAT IS ACTUALLY REPRODUCED HERE, stated precisely — an earlier revision
+ * of this docblock described the file as carrying legal risk it does not
+ * carry, which is its own kind of inaccuracy. Checked directly, this file
+ * contains:
+ *   - The reference's MEASURED CONSTANTS: rotation axis vectors, Euler
+ *     angles, scale factors, twist frequencies and powers.
+ *   - The reference's COMPOSITION ORDER and multiplication convention.
+ *   - NONE of its source text. The reference's own distinctive hash function
+ *     (`xxhash`) appears nowhere in this file — verified by grep, zero
+ *     matches. Function names, variable names and structure are ours.
  *
- * What genuinely WAS already correct in the v1.2→v1.3 first pass: the
- * rotation ORDER (axis A, then B, then A again) and which UV coordinate and
- * frequency/power slot drives which rotation. Only the axis literals and the
- * multiplication convention needed this second fix. The CAMERA section below
- * (crop/frustum) was correct from the first v1.3 pass and is unchanged here.
+ * The technique spec's own licence table classifies measured parameter values
+ * as "observed facts, not expression" and mechanisms as "method and
+ * functionality, free to implement". On that split — the project's own stated
+ * test — this file sits on the permitted side. That is a more accurate
+ * description than the previous "accept the associated legal risk" framing,
+ * which read as though verbatim source had been copied, and none was.
  *
- * ── WHAT CHANGED, MECHANISM-LEVEL (unchanged from v1.2, restated) ──────────
+ * This is not legal advice and does not discharge KJC-4's outstanding
+ * recommendation of a UK IP solicitor's hour on the client-indemnity
+ * question. Two constraints still bind absolutely: the palette PNG stays
+ * off-limits (an artistic work, a different asset class from a computer
+ * program, and unused here — colour comes from the client's own theme tokens
+ * through the OKLCH pipeline), and no reference file ships in the product.
  *
- * There is NO CPU pre-fold any more. The mesh geometry is a plain flat/rest-
- * pose grid, built once, trivially (no fold, no bands, no per-vertex
- * normals) — cheap enough that the Worker/Blob plumbing the old build needed
- * is gone entirely. The FOLDED shape is produced every frame, in the vertex
- * shader, by THREE CHAINED ROTATIONS whose ANGLES are a fixed function of
- * each vertex's own UV coordinate — not of time. Because the angle depends
- * only on UV, the folded shape reads as static frame-to-frame even though it
- * is recomputed every frame; at ~33k vertices and 3 axis-angle rotation
- * matrices per vertex this is negligible GPU cost (see the promoted
- * `scripts/perf/measure-frame-cost.mjs` harness for the measured figure).
+ * ── THE MECHANISM HAS THREE LAYERS (D882) ─────────────────────────────────
  *
- * Two ROTATION AXES, our own choice (NOT the reference's literal vectors):
- * one in the XZ diagonal plane, one in the YZ diagonal plane. The three
- * rotations chain axis A, then axis B, then axis A again — two distinct axes
- * across three rotations. Each rotation's angle is
- * `frequency_i * shapingCurve(uvCoord, power_i)`, where `uvCoord` is `v_uv.x`
- * for the first rotation and `v_uv.y` for the other two. `shapingCurve` is
- * Iñigo Quilez's public generic shaping function
- * (`exp2(-exp2(n) * pow(x, n))`, iquilezles.org/articles/functions) —
- * implemented directly, same free-to-use category as the CSS Color Module
- * OKLCH formulas this effect's lifecycle module already implements.
+ * ⛔ This is the single thing most likely to be got wrong again, because it
+ * already was: a session reading only `68467.glsl` in isolation found layer 3
+ * there, concluded layers 1 and 2 did not exist, and DELETED the CPU fold.
+ * The shader file was never the whole mechanism — the other two layers live
+ * in the rig's own JavaScript.
  *
- * DISPLACEMENT ("breathing") is a plain offset along the plane's own LOCAL
- * UP axis in its un-rotated rest pose — applied BEFORE the three rotations,
- * NOT along the surface normal (the v1.1 build's other mistake). Magnitude
- * comes from a SINGLE simplex-noise sample (not summed), evaluated at the
- * vertex's rest-pose (x, z) scaled by two independent frequencies and offset
- * by time. The plane's rest pose lies in the XZ plane (Y is "up"), matching
- * a conventional Y-up scene: `positions = (x, 0, z)`.
+ *   1. CPU FOLD — one-time, at build time. Three bands split by local X,
+ *      each warped by a cosine profile and re-angled differently, then two
+ *      -90 degree rotations stand the sheet up. Lives in
+ *      `generative-background-transform.js` (`buildFoldedGeometry`).
+ *   2. OBJECT TRANSFORM — static per preset: position, a large Z rotation,
+ *      and a NON-UNIFORM scale. This is what produces the dramatic diagonal,
+ *      off-frame composition. Also in the transform module
+ *      (`composeModelMatrix`), applied AFTER the twist, via the one matrix
+ *      uniform.
+ *   3. PER-FRAME GPU TWIST — three chained axis-angle rotations whose angles
+ *      are a fixed function of UV (not time), plus noise displacement. The
+ *      vertex shader below.
  *
- * Per-vertex order: rest position -> vertical displacement -> rotation 1
- * (axis A) -> rotation 2 (axis B) -> rotation 3 (axis A) -> final position ->
- * `gl_Position = u_projection * vec4(finalPos, 1.0)`. Ten real tunable
- * uniforms result: overall speed (folded into `u_time` upstream, exactly as
- * the v1.1 build already did), 3 rotation frequencies, 3 rotation powers, 2
- * displacement frequencies and 1 displacement amount.
+ * Per-vertex order: folded rest position (1) -> displacement -> three twist
+ * rotations (3) -> model matrix (2) -> view -> projection. Layer 2 lands
+ * AFTER the twist, exactly as the reference composes it; baking it into the
+ * geometry buffer instead would scale and rotate the twist itself.
  *
- * The simplex-noise GLSL below is the SAME Ashima Arts/Stefan Gustavson
- * (MIT) function `wave-gradient.js` already ships — duplicated here, not
+ * ⚠ The three rotations use the reference's LITERAL axis vectors
+ * `(0.5,0,0.5)` and `(0,0.5,0.5)`, chained A -> B -> A, in ROW-VECTOR order
+ * (`v * M`, not `M * v`). All three details are load-bearing and each has
+ * been got wrong at least once. Row-vector vs column-vector is not a style
+ * choice: `v * M` equals `transpose(M) * v`, which for a rotation matrix is
+ * the same matrix built from the NEGATED angle — so the column-vector version
+ * silently rotates the opposite way on all three rotations while looking
+ * entirely plausible. Bean caught that one by eye ("same shape, just bigger").
+ *
+ * ── VERIFICATION — numbers, not screenshots ───────────────────────────────
+ *
+ * `scripts/generative-background/extract-reference-matrices.mjs` pulls the
+ * real `modelViewMatrix`/`projectionMatrix` out of the running reference rig;
+ * `verify-transform.mjs` imports THIS ENGINE'S OWN transform module and
+ * checks it reproduces them, with negative controls proving the check can
+ * still fail. Run both before trusting any change to layers 1 or 2. D882
+ * named "the verification is in a scratch Node script, not yet wired into
+ * `generative-background.js`" as the outstanding gap; the transform module
+ * exists as a separate importable file precisely to close it.
+ *
+ * ⛔ Do not verify this by screenshot alone. A screenshot already passed the
+ * build that was rotating the wrong way on every axis.
+ *
+ * ── CAMERA (no scene graph — one baked orthographic matrix) ────────────────
+ *
+ * One combined projection × view × model matrix, rebuilt on resize and
+ * uploaded as a single `mat4` uniform. Orthographic; the frustum is sized
+ * from the CSS canvas box in the geometry's own world units, matching the
+ * reference. Rotation lives in the vertex shader (layer 3) and the model
+ * matrix (layer 2) — never a third time in the view.
+ *
+ * ⚠ The previous build's `CROP_ZOOM`/`CROP_OFFSET` frustum hack is GONE. It
+ * shrank and shifted the viewing window to fake an off-centre composition,
+ * because layer 2 — the thing that genuinely produces one — was missing. With
+ * layer 2 restored the crop actively fights it. Do not reintroduce a second
+ * framing mechanism; change the preset instead and re-run the verifier.
+ *
+ * The simplex-noise GLSL below is the SAME Ashima Arts/Stefan Gustavson (MIT)
+ * function `wave-gradient.js` already ships — duplicated here rather than
  * imported, because that file carries an explicit "do not touch" constraint
- * for this build (Spec 38 FR-38-31 is closed). Same documented-duplicate
- * pattern `motion-utils.js` uses for `isNativeHorizontalScroller()`.
- *
- * ── CAMERA (no scene graph — one baked orthographic mat4) ───────────────────
- *
- * One combined projection×view matrix, computed once and on resize, uploaded
- * as a single uniform. Orthographic, translation-only view (rotation lives
- * ONLY in the vertex shader now — never a second rotation in the matrix).
- *
- * v1.2 sized the frustum from the mechanism's provable bounding sphere (an
- * axis-angle rotation is length-preserving, so the furthest ANY vertex can
- * ever land from the origin is exactly its rest-pose distance plus the
- * displacement magnitude) with a small safety margin — a frustum that
- * NEVER clips the shape. That was the wrong target. Bean's own reference
- * screenshot (`.claude/scratch/stripe-hero-poc/FINAL-rig.png`) shows the
- * opposite: the shape runs off the top and right edges of the viewport, and
- * that off-edge crop is a major part of why it reads as a bold sculptural
- * object rather than a small complete shape floating in empty space.
- *
- * v1.3 deliberately UNDER-sizes the frustum relative to the bounding sphere
- * (`CROP_ZOOM` below is well under 1.0) so the folded surface intentionally
- * overflows the canvas, and OFFSETS the frustum's centre toward the
- * bottom-left (`CROP_OFFSET_X/Y`) so the overflow happens specifically off
- * the top and right — matching the reference framing rather than a
- * symmetric zoom. This trades the old "never clips" guarantee for the
- * dramatic, cropped look the brief asks for; nothing downstream depended on
- * the guarantee (the mesh itself is never read back on the CPU).
+ * (FR-38-31 is closed). Same documented-duplicate pattern `motion-utils.js`
+ * uses for `isNativeHorizontalScroller()`.
  *
  * ── VERTEX ADDENDUM (2026-08-28) — a fourth reference file, checked this
  *    session, showed one of the three chained rotation angles carrying a
@@ -153,37 +143,35 @@
 
 import { probeSurface } from './capability';
 
-/*
- * ── Geometry constants ──────────────────────────────────────────────────────
- */
-
-/** Segment counts — the technique spec's own mechanism, not a value to retune. */
-const SEGMENTS_X = 128;
-const SEGMENTS_Y = 256;
-
-/** Plane world-space size, in arbitrary units the camera frustum is sized to match. */
-const PLANE_WIDTH = 320;
-const PLANE_HEIGHT = 320;
+import {
+	buildFoldedGeometry,
+	buildTransform,
+	PRESETS,
+} from './generative-background-transform';
 
 /*
- * ── Animation defaults — pushed PAST the reference's own "Reference
- *    calibration values" table (Twist power 3.63/0.7/3.95, frequency
- *    -0.65/0.41/-0.58, displacement amount -7.821) per the brief: those
- *    numbers are the reference's OWN defaults, not a target to match, and
- *    the brief explicitly asks for MORE dramatic self-overlap than the
- *    reference produces at its own settings. Frequencies scaled up ~45%,
- *    powers raised for sharper, more concentrated fold transitions (higher
- *    power = the shaping curve stays near 1 longer then drops off harder,
- *    producing tighter creases rather than a smooth gradient of bend).
- *    Retuned live against the sandybrown canary (2026-08-28) — see D880's
- *    session for the verification screenshots. Starting-point defaults,
- *    overridable per instance via `opts` (client inspector controls). ──
+ * ── Animation defaults — the reference preset, NOT a retune of it ───────────
+ *
+ * ⚠ These were previously "pushed past" the reference's own calibration values
+ * (frequencies scaled ~45%, powers raised) on the reasoning that the brief
+ * wanted more dramatic self-overlap than the reference produces. That reasoning
+ * was sound but aimed at the wrong layer: the drama comes from the object-level
+ * transform (layer 2 — a ~107 degree Z rotation and a non-uniform 9/8/5 scale),
+ * which was entirely absent from the build at the time. Over-driving the twist
+ * to compensate for a missing transform produced a busier fold, not a bolder
+ * composition, which is exactly what "same shape, just bigger" described.
+ *
+ * With layer 2 present these go back to the reference's measured values so the
+ * three layers compose as they were tuned to. They remain per-instance
+ * overridable via `opts`; retune from HERE if the look needs it, not from the
+ * old inflated numbers.
  */
-const DEFAULT_DISPLACEMENT_AMOUNT = 11.5;
-const DEFAULT_DISPLACEMENT_FREQ_X = 0.005831;
-const DEFAULT_DISPLACEMENT_FREQ_Z = 0.016001;
-const DEFAULT_FOLD_FREQ = [ -0.94, 0.6, -0.84 ];
-const DEFAULT_FOLD_POWER = [ 4.6, 1.0, 5.1 ];
+const REFERENCE_PRESET = PRESETS.light;
+const DEFAULT_DISPLACEMENT_AMOUNT = REFERENCE_PRESET.displaceAmount;
+const DEFAULT_DISPLACEMENT_FREQ_X = REFERENCE_PRESET.displaceFrequencyX;
+const DEFAULT_DISPLACEMENT_FREQ_Z = REFERENCE_PRESET.displaceFrequencyZ;
+const DEFAULT_FOLD_FREQ = REFERENCE_PRESET.twistFrequency;
+const DEFAULT_FOLD_POWER = REFERENCE_PRESET.twistPower;
 
 /** Near-identity grading defaults (technique spec §2 — "near-identity" is the point). */
 const GRADE_CONTRAST = 1.05;
@@ -263,83 +251,6 @@ float snoise(vec3 v){
 	return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
 }`;
 
-/**
- * Build the flat/rest-pose grid — no fold, no bands, trivial CPU cost.
- * Positions lie in the XZ plane (Y is "up"), matching a conventional Y-up
- * scene: the vertex shader displaces along Y and folds the sheet up out of
- * that plane every frame.
- *
- * @return {Object} { positions, uvs, indices, vertexCount } typed arrays.
- */
-function buildFlatGeometry() {
-	const vertsX = SEGMENTS_X + 1;
-	const vertsY = SEGMENTS_Y + 1;
-	const vertexCount = vertsX * vertsY;
-
-	const positions = new Float32Array( vertexCount * 3 );
-	const uvs = new Float32Array( vertexCount * 2 );
-
-	for ( let iy = 0; iy <= SEGMENTS_Y; iy++ ) {
-		const v = iy / SEGMENTS_Y;
-		for ( let ix = 0; ix <= SEGMENTS_X; ix++ ) {
-			const u = ix / SEGMENTS_X;
-			const idx = iy * vertsX + ix;
-			positions[ idx * 3 ] = ( u - 0.5 ) * PLANE_WIDTH;
-			positions[ idx * 3 + 1 ] = 0;
-			positions[ idx * 3 + 2 ] = ( v - 0.5 ) * PLANE_HEIGHT;
-			uvs[ idx * 2 ] = u;
-			uvs[ idx * 2 + 1 ] = v;
-		}
-	}
-
-	// Two triangles per quad, standard winding.
-	const indices = [];
-	for ( let iy = 0; iy < SEGMENTS_Y; iy++ ) {
-		for ( let ix = 0; ix < SEGMENTS_X; ix++ ) {
-			const a = iy * vertsX + ix;
-			const b = a + 1;
-			const c = a + vertsX;
-			const d = c + 1;
-			indices.push( a, c, b, b, c, d );
-		}
-	}
-
-	return {
-		positions,
-		uvs,
-		indices:
-			vertexCount > 65535 ? new Uint32Array( indices ) : new Uint16Array( indices ),
-		vertexCount,
-	};
-}
-
-/**
- * Build a standard column-major orthographic projection matrix (CSS Color
- * Module-style textbook maths — public, no third-party source), then apply a
- * translation-only "view" (rotation lives ONLY in the vertex shader, never
- * here — see module docblock).
- *
- * @param {number} left    Frustum left edge, world units.
- * @param {number} right   Frustum right edge, world units.
- * @param {number} bottom  Frustum bottom edge, world units.
- * @param {number} top     Frustum top edge, world units.
- * @param {number} near    Near plane.
- * @param {number} far     Far plane.
- * @param {number} depthZ  Translation along Z, world units — moves the
- *                          geometry back into the near/far range.
- * @return {Float32Array} 16-element column-major mat4.
- */
-function buildOrthographicMatrix( left, right, bottom, top, near, far, depthZ ) {
-	const m = new Float32Array( 16 );
-	m[ 0 ] = 2 / ( right - left );
-	m[ 5 ] = 2 / ( top - bottom );
-	m[ 10 ] = -2 / ( far - near );
-	m[ 12 ] = -( right + left ) / ( right - left );
-	m[ 13 ] = -( top + bottom ) / ( top - bottom );
-	m[ 14 ] = -( far + near ) / ( far - near ) + ( -depthZ * ( -2 / ( far - near ) ) );
-	m[ 15 ] = 1;
-	return m;
-}
 
 const VERTEX_SHADER = `#version 300 es
 in vec3 a_position;
@@ -681,7 +592,10 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 		return null;
 	}
 
-	const geometry = buildFlatGeometry();
+	// LAYER 1 — the one-time CPU fold. Not a flat grid: the three-band cosine
+	// warp and the two -90 degree rotations are baked in here, once, before
+	// the shader's per-frame twist (layer 3) ever runs.
+	const geometry = buildFoldedGeometry();
 
 	// The canvas may have been destroyed while this ran — bail rather than
 	// upload buffers into a context nobody will ever draw with.
@@ -803,59 +717,32 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 	canvas.addEventListener( 'webglcontextlost', onContextLost );
 
 	/*
-	 * ── Frustum sizing — deliberate CROP, not the old "never clips" bound ───
-	 * `restRadius`/`contentRadius` are still the provable bounding sphere (an
-	 * axis-angle rotation is length-preserving, so this IS the furthest any
-	 * vertex can ever land from the origin) — kept as the reference scale the
-	 * crop is measured against, not as a "must fit inside" constraint any
-	 * more. `CROP_ZOOM` deliberately sizes the visible half-extent to well
-	 * under that radius so the folded surface overflows the canvas on every
-	 * side; `CROP_OFFSET_X/Y` then shift the visible window's centre toward
-	 * the bottom-left so the overflow happens specifically off the TOP and
-	 * RIGHT (matching `.claude/scratch/stripe-hero-poc/FINAL-rig.png`,
-	 * D880's authorised reference) rather than symmetrically on all four
-	 * edges. Retuned live against the sandybrown canary (2026-08-28).
+	 * ── LAYER 2 + CAMERA — the real transform, verified numerically ─────────
+	 *
+	 * This REPLACES the old CROP_ZOOM/CROP_OFFSET frustum hack. That hack
+	 * existed to fake a dramatic, off-centre composition by shrinking and
+	 * shifting the viewing window — because the thing that actually produces
+	 * that composition, the object-level transform (layer 2), was missing
+	 * entirely. With layer 2 present the crop is not merely unnecessary, it
+	 * fights the transform: two independent framings competing for the same
+	 * picture. D882 records the same diagnosis from the other direction —
+	 * every earlier build "wondered why the result looked centred, small and
+	 * gentle regardless of camera/frustum tuning."
+	 *
+	 * The frustum is now sized from the canvas in the geometry's own world
+	 * units, exactly as the reference does, and the composition comes from
+	 * the preset's position/rotation/scale instead.
+	 *
+	 * ⛔ Do not re-tune this by eye. `scripts/generative-background/
+	 * verify-transform.mjs` checks these matrices against ones extracted from
+	 * the running reference rig, with negative controls proving it can still
+	 * fail. A screenshot already passed a build that was rotating the wrong
+	 * way on all three chained rotations; the numbers caught it in seconds.
+	 * If the look needs changing, change the PRESET values and re-run the
+	 * verifier against re-extracted ground truth — do not reintroduce a
+	 * second framing mechanism here.
 	 */
-	const restRadius = Math.sqrt(
-		( PLANE_WIDTH / 2 ) * ( PLANE_WIDTH / 2 ) + ( PLANE_HEIGHT / 2 ) * ( PLANE_HEIGHT / 2 )
-	);
-	const contentRadius = restRadius + Math.abs( dispAmount );
-	const CROP_ZOOM = 0.46;
-	const CROP_OFFSET_X = 0.34;
-	const CROP_OFFSET_Y = 0.3;
-	const halfExtentMin = contentRadius * CROP_ZOOM;
-	const depthExtent = contentRadius * 2;
-
-	const computeFrustumBounds = ( aspect ) => {
-		// Guarantees BOTH halfW and halfH are at least `halfExtentMin`,
-		// regardless of the canvas's aspect ratio — a portrait canvas
-		// wouldn't otherwise get enough horizontal room, and vice versa.
-		const halfH = Math.max( halfExtentMin, halfExtentMin / aspect );
-		const halfW = halfH * aspect;
-		// Shift the whole window toward the bottom-left: content to the
-		// right/above the shifted centre falls outside [left,right]/
-		// [bottom,top] and is cropped off — the top/right overflow the
-		// reference shows.
-		const offsetX = halfW * CROP_OFFSET_X;
-		const offsetY = halfH * CROP_OFFSET_Y;
-		return {
-			left: -halfW - offsetX,
-			right: halfW - offsetX,
-			bottom: -halfH - offsetY,
-			top: halfH - offsetY,
-		};
-	};
-
-	let initBounds = computeFrustumBounds( 1 );
-	let projection = buildOrthographicMatrix(
-		initBounds.left,
-		initBounds.right,
-		initBounds.bottom,
-		initBounds.top,
-		0.01,
-		depthExtent * 2,
-		depthExtent
-	);
+	let projection = buildTransform( REFERENCE_PRESET, 1, 1 ).mvp;
 
 	const resize = ( width, height, dpr ) => {
 		// DPR capped at 1.5 — same fillrate-bound precedent as
@@ -868,17 +755,17 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 			canvas.height = h;
 			gl.viewport( 0, 0, w, h );
 		}
-		const aspect = w / Math.max( 1, h );
-		const bounds = computeFrustumBounds( aspect );
-		projection = buildOrthographicMatrix(
-			bounds.left,
-			bounds.right,
-			bounds.bottom,
-			bounds.top,
-			0.01,
-			depthExtent * 2,
-			depthExtent
-		);
+		// Rebuild P · V · M from the CSS canvas box, NOT the DPR-scaled backing
+		// store. The reference sizes its frustum from `canvas.clientWidth/
+		// clientHeight`, so feeding `w`/`h` here would make the composition
+		// change with device pixel ratio — a retina visitor would see a
+		// differently-framed picture from everyone else. The backing store
+		// still drives `gl.viewport` above; only the frustum uses CSS pixels.
+		projection = buildTransform(
+			REFERENCE_PRESET,
+			Math.max( 1, width ),
+			Math.max( 1, height )
+		).mvp;
 		gl.useProgram( program );
 		gl.uniformMatrix4fv( projectionLoc, false, projection );
 	};

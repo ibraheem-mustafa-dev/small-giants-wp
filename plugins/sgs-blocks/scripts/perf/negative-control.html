@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Perf negative control</title>
+<style>
+  html,body{margin:0;padding:0;background:#fff}
+  canvas{display:block}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="module">
+/*
+ * NEGATIVE CONTROL for perf/measure-frame-cost.mjs.
+ *
+ * Same canvas size, same WebGL2 context, same draw-and-finish harness -- but the "effect" is a
+ * single glClear with no geometry, no shader work and no second pass. Its cost is therefore
+ * the floor: context overhead plus gl.finish() plus the measurement loop itself.
+ *
+ * If this returns a number close to the real effects', the harness is measuring its own
+ * overhead rather than the effects, and NO leg in the run is trustworthy. That is the whole
+ * point of running it -- a harness that reports plausible numbers for everything is the
+ * failure mode being guarded against.
+ */
+const q   = new URLSearchParams( location.search );
+const W   = parseInt( q.get( 'w' )   || '1393', 10 );
+const H   = parseInt( q.get( 'h' )   || '761',  10 );
+const DPR = parseFloat( q.get( 'dpr' ) || '1' );
+
+const canvas = document.getElementById( 'c' );
+canvas.style.width  = W + 'px';
+canvas.style.height = H + 'px';
+canvas.width  = Math.round( W * DPR );
+canvas.height = Math.round( H * DPR );
+
+const gl = canvas.getContext( 'webgl2', { antialias: false, alpha: true } );
+
+if ( ! gl ) {
+	window.__err   = 'no webgl2 context';
+	window.__ready = true;
+} else {
+	gl.viewport( 0, 0, canvas.width, canvas.height );
+
+	window.__drawAt = ( t ) => {
+		// Vary the clear colour with t so the driver cannot elide repeated identical clears.
+		gl.clearColor( ( t % 1 ), 0.5, 0.5, 1.0 );
+		gl.clear( gl.COLOR_BUFFER_BIT );
+	};
+	window.__drawAt( 0 );
+	window.__ready = true;
+}
+</script>
+</body>
+</html>
