@@ -40,9 +40,19 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
-			"enabledExtensions": [ "hover" ],
-			"hoverDefaults": { "scalePreset": "1.02", "shadow": "raised", "imageZoom": false, "focusRing": true },
-			"hoverExcludeControls": [ "imageZoom", "grayscale" ],
+			"enabledExtensions": [
+				"hover"
+			],
+			"hoverDefaults": {
+				"scalePreset": "1.02",
+				"shadow": "raised",
+				"imageZoom": false,
+				"focusRing": true
+			},
+			"hoverExcludeControls": [
+				"imageZoom",
+				"grayscale"
+			],
 			"collection": true,
 			"iconPicker": true,
 			"imageControls": false,
@@ -52,7 +62,11 @@
 					"label": "Wrapper",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "native:color.text",
@@ -61,11 +75,12 @@
 						"css:line-height": "native:typography.lineHeight",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
 						"css:border-radius": "native:__experimentalBorder.radius",
-						"css:max-width": "maxWidth"
+						"css:max-width": "maxWidth",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "Mirrors sgs/container's wrapper/grid split. Only fontSize+lineHeight are declared under `typography` (no letterSpacing/textTransform/fontWeight/fontStyle/textAlign/fontFamily) — the remaining text members are honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element."
 				},
@@ -73,7 +88,9 @@
 					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 2,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
@@ -91,7 +108,9 @@
 				"title": {
 					"label": "Plan name",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"attrMap": {
 						"css:color": "titleColour",
 						"tag": "headingLevel"
@@ -101,7 +120,10 @@
 				"price": {
 					"label": "Price",
 					"order": 4,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"attrMap": {
 						"css:color": "priceColour",
 						"css:background-image": "priceColourGradient"
@@ -111,7 +133,9 @@
 				"feature": {
 					"label": "Feature list item",
 					"order": 5,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"attrMap": {
 						"css:color": "featureColour"
 					},
@@ -120,7 +144,10 @@
 				"cta": {
 					"label": "CTA button",
 					"order": 6,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"attrMap": {
 						"css:color": "ctaColour",
 						"css:background-color": "ctaBackground"
@@ -131,7 +158,10 @@
 					"label": "Popular badge",
 					"order": 7,
 					"prefix": "popularBadge",
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"attrMap": {
 						"css:color": "popularBadgeColour",
 						"css:background-color": "popularBadgeBackground"
@@ -153,7 +183,9 @@
 				"behaviour": {
 					"label": "Toggle + animation behaviour",
 					"order": 10,
-					"clusters": [ "animation" ],
+					"clusters": [
+						"animation"
+					],
 					"attrMap": {
 						"anim:preset": "sgsAnimation",
 						"anim:duration": "sgsAnimationDuration",
@@ -165,9 +197,6 @@
 		},
 		"__experimentalBorder": {
 			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
 			"__experimentalSkipSerialization": true
 		}
 	},
@@ -178,7 +207,11 @@
 	"attributes": {
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 3,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"billingToggle": {
 			"type": "string",
@@ -387,13 +420,20 @@
 				}
 			}
 		},
-		"style": {
+		"pricingTableStyle": {
 			"type": "string",
 			"default": "card"
 		},
 		"headingLevel": {
 			"type": "string",
-			"enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
+			"enum": [
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"p"
+			],
 			"default": "h3"
 		},
 		"titleColour": {
@@ -456,7 +496,12 @@
 		},
 		"layout": {
 			"type": "string",
-			"enum": ["", "flex", "stack", "grid"],
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
 			"default": ""
 		},
 		"alignItems": {
@@ -530,6 +575,34 @@
 				"space-between",
 				"space-around"
 			]
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "none"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
 		}
 	},
 	"editorScript": "file:./index.js",
@@ -540,7 +613,7 @@
 	"example": {
 		"attributes": {
 			"columns": 3,
-			"style": "card",
+			"pricingTableStyle": "card",
 			"billingToggle": true
 		}
 	}

@@ -42,7 +42,7 @@ $sgs_pt_css_slug = static function ( $value ) {
 $columns_obj  = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
 $columns      = absint( $columns_obj['desktop'] ?? 3 );
 $plans        = (array) ( $attributes['plans'] ?? array() );
-$style        = sanitize_key( $attributes['style'] ?? 'card' );
+$style        = sanitize_key( $attributes['pricingTableStyle'] ?? 'card' );
 // Plan-name heading level — an out-of-enum stored value is otherwise
 // silently coerced to the block.json default (blockjson-enum-coerces-
 // invalid-to-default), so it is validated here too (mirrors sgs/icon-list).
@@ -407,20 +407,10 @@ if ( ! empty( $pt_color_args ) ) {
 }
 
 $pt_border_args = array();
-if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-	$pt_border_args['color'] = (string) $attributes['style']['border']['color'];
-}
 // G5 (Bean, 2026-08-26): 'style set, no width' means no border by
 // default — never fall through to the browser's initial medium (~3px)
 // border-width. Gated together via the shared helper (helpers-box.php)
 // so this rule is applied identically everywhere, not per block.
-$pt_border_style_width = sgs_native_border_style_width_args( $attributes['style']['border']['style'] ?? null, $attributes['style']['border']['width'] ?? null );
-if ( isset( $pt_border_style_width['width'] ) ) {
-	$pt_border_args['width'] = $pt_border_style_width['width'];
-}
-if ( isset( $pt_border_style_width['style'] ) ) {
-	$pt_border_args['style'] = $pt_border_style_width['style'];
-}
 if ( isset( $attributes['style']['border']['radius'] ) ) {
 	$pt_radius_raw = $attributes['style']['border']['radius'];
 	if ( is_string( $pt_radius_raw ) && '' !== $pt_radius_raw ) {
@@ -550,6 +540,48 @@ $inner_html = $toggle_html . '<div class="sgs-pricing-table__grid">' . $plans_ht
 // value reaching $responsive_css is pre-sanitised ($sgs_pt_css_slug /
 // $sgs_pt_css_length / wp_style_engine_get_styles), so no un-sanitised value
 // survives to here.
+
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$responsive_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$responsive_css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$responsive_css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+}
+
 if ( $responsive_css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below; $responsive_css built from pre-sanitised values only.
 	printf( '<style id="%s">%s</style>', esc_attr( $uid ), wp_strip_all_tags( $responsive_css ) );
