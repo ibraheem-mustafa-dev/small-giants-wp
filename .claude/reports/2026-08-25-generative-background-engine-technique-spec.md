@@ -2,7 +2,7 @@
 doc_type: report
 project: small-giants-wp
 spec_ref: 38
-status: GO — the build spec for the GENERATIVE BACKGROUND ENGINE, ready for Phase 3 (build), not a tuning guide for FR-38-31. History: D794 (2026-08-26) NO-GO on completeness. A 2026-08-28 six-seat /adversarial-council pass on the first completed revision returned NO-GO (avg grade C): a geometrically-wrong OKLab colour fix, a double-rotation bug and unreconciled scale in the Camera section, an unbuildable Animation section, inverted Configurability-axes table columns, a wrong-court legal citation, and other must-fix items — all fixed. A 3-seat targeted re-check found one further defect (Configurability-axes table's v1/v1.1 tagging contradicted itself) — fixed. A final round-3 spec-lawyer sweep returned GO (grade A-), with legal and render-math re-checks also at A-. Four cosmetic should-fix items from round 3 applied. Do not build Phase 3 from any version of this document predating this status line.
+status: GO for §1-§6, but PARTLY SUPERSEDED as of 2026-08-29 — READ D886, D887 and D888 BEFORE BUILDING FROM THIS FILE. The Animation subsection describes only ONE of the mechanism's three real layers (D882). Two claims made while executing this spec were withdrawn: an 89.3% silhouette IoU (unreproducible) and "a systematic colour cast" (over-read statistic). The engine is now BUILT and LIVE; the open work is a measured ~10.6% fidelity gap whose cause is unproven. GO — the build spec for the GENERATIVE BACKGROUND ENGINE, ready for Phase 3 (build), not a tuning guide for FR-38-31. History: D794 (2026-08-26) NO-GO on completeness. A 2026-08-28 six-seat /adversarial-council pass on the first completed revision returned NO-GO (avg grade C): a geometrically-wrong OKLab colour fix, a double-rotation bug and unreconciled scale in the Camera section, an unbuildable Animation section, inverted Configurability-axes table columns, a wrong-court legal citation, and other must-fix items — all fixed. A 3-seat targeted re-check found one further defect (Configurability-axes table's v1/v1.1 tagging contradicted itself) — fixed. A final round-3 spec-lawyer sweep returned GO (grade A-), with legal and render-math re-checks also at A-. Four cosmetic should-fix items from round 3 applied. Do not build Phase 3 from any version of this document predating this status line.
 last_updated: 2026-08-28
 ---
 
@@ -440,7 +440,17 @@ that:
    through a horizontal band and progressively blurred above and below it.
 3. Mixes blurred and sharp by that mask, then applies the grain from §4.
 
-⛔ **THIS IS THE EXPENSIVE ONE:**
+⛔ **THIS IS THE EXPENSIVE ONE — but read the ratio and the absolute together:**
+
+⚠ **Corrected 2026-08-29 (Bean).** "70% of total frame cost" is a RATIO, not a burden. The
+absolute total is **0.373 ms — about 2.2% of a 60 fps frame**, and the reference ships it. Seventy
+per cent of something small is still small. Two corrections in the other direction, so this is not
+re-litigated from the wrong premise: building it raw does NOT make it materially cheaper (the cost
+is GPU fillrate — six texture samples per pixel — not three.js overhead, which is CPU/JS); and the
+genuine blocker is ARCHITECTURAL, not performance — the Tier W interface is single-pass by
+construction, so a post-pass needs framebuffers and reopens D479 decision 2. **That design gate is
+Bean's to open and remains open.**
+
 
 | Measured (RTX 2060, 1.06 MP) | GPU ms/frame |
 |---|---|

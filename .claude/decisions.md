@@ -1,3 +1,102 @@
+## D888 [INCIDENT] — the fidelity comparator's own precondition passed while comparing two moments 25,000x apart
+
+**2026-08-29.** Commits `efb695202` (comparator) - `388141071` (phase fix). Built via
+`/subagent-driven-development`: implementer + reviewer per task, three tasks, plus a final
+whole-branch review.
+
+**THE BUG THE FINAL REVIEW CAUGHT, which three per-task rounds and a six-seat council all missed.**
+The reference scales time INSIDE its shader (`shaders/56878.glsl:226,234` use `u_time * u_speed`
+with `speed: 4e-5`); ours consumes `u_time` raw. Driving both with the same raw value put the
+reference at phase 8e-5 and ours at 2.0 - 25,000x apart, far beyond simplex noise's ~1-unit
+decorrelation length.
+
+⛔ **The precondition written to prevent exactly this PASSED on every run.** It asserted
+`ours.utime === rig.utime`, and both were literally `2`. Raw equality and effective equality are
+different claims, and the raw one is easier to write, so it is the one that got written. An
+assertion that passes while meaning nothing is worse than none: it raises confidence in the
+numbers it fails to protect. Rung 0c inherited the fault - it "proved" `?t=` was live by showing
+the reference moved across what was really 0.00028 of phase, and its threshold was then fitted to
+that observed smallness rather than predicted. Lesson: assert at the point of USE, not entry.
+Per-task review cannot catch this; each side is internally consistent.
+
+**AFTER THE FIX, THE GAP HOLDS.** 0c's discrimination went 0.055% -> 2.19% (40x), proving the
+conversion right. Rung 1 at effective phases 0.70/1.10/1.90: **5.29% / 4.71% / 5.63% crop-wide,
+10.71% / 9.90% / 10.64% over the painted region** - 2 of 3 over the 5% ceiling, essentially
+unchanged from the invalid run. Exit 1. Over the painted region the divergence is double the
+headline, because 52% of the crop is background clipped at G>=253.
+
+⛔ **A CAUSAL CLAIM WAS ASSERTED AND IS WITHDRAWN.** `efb695202` said the comparator "found a
+systematic colour cast", over-reading `bias_over_abs ~0.90`. That statistic measures
+DIRECTIONALITY, not spatial uniformity - a localised one-signed GEOMETRIC divergence produces a
+high ratio too. Three figures in the same file contradict a tone cause: painted coverage differs 8
+points (0.332 vs 0.412, and a tone shift cannot change coverage); distinct hue count differs 2.7x
+(155 vs 420); the error is bimodal (~50% within 4/255, ~43% beyond 32/255) where a gamma difference
+is smooth throughout. **Shape divergence is now the leading UNTESTED hypothesis.** "Not noise" is
+exculpatory for noise only.
+
+**Deferred, named not buried:** a shared `harness-lib.mjs` (four Chromium harnesses have already
+drifted - one roots where the palette 403s), and driving the replica through the production option
+path rather than the module's `DEFAULT_*` constants. The latter is a live alternative explanation
+for part of the gap.
+
+## D887 [INCIDENT] — /adversarial-council returned NO-GO on a measurement-harness design; the replacement is a quarter the size
+
+**2026-08-29.** Six seats, blind and parallel. Grades: metrologist D+, cynic D+, spec-lawyer C-,
+IP seat C, ship-PM C+, code-grounded fact-check B.
+
+**The convergent finding: over-built and under-specified at once.** It planned to construct
+machinery that already substantially existed (`generative-background-perf.html` already exposed
+`__ready`, `__drawAt`, `textureSource` and defaulted to 1393x761) while leaving undefined the three
+numbers that would make any of it mean something.
+
+⭐ **The single most valuable output was a live rendering bug nobody was looking for:** our engine
+created its context with `depth: false` and never enabled `DEPTH_TEST`, while the reference uses
+`depthWrite/depthTest` with `DoubleSide`. The fold passes back over itself by design, so with no
+depth buffer the visible surface at an overlap was decided by TRIANGLE DRAW ORDER - producing the
+stair-step artefact along the internal boundary. Fixed at `ba01581df`, verified live.
+
+**Other findings acted on:** rung 0 as designed could only ever return zero (a stubbed comparator
+passes it) - three seats independently demanded a positive control with a KNOWN NON-ZERO answer;
+`compare.py`'s `DEFAULT_CROP` is documented in its own source as "the softer crop on edges", and
+edges were the known defect class; `compare.py` never exits non-zero, so a driver shelling out to
+it cannot fail; the rig sets `__ready = true` on four paths where it drew nothing and removed its
+canvas. The palette-PNG "no new copy is created" argument was a rationalisation - every harness
+render is itself a new fixed reproduction.
+
+Superseded design: `.claude/plans/2026-08-29-poc-replica-fidelity-harness-design.md` (kept for the
+reasoning). Replacement: `.claude/plans/2026-08-29-fidelity-comparator-build-plan.md`.
+
+## D886 [ROUTINE] — generative-background layers 1+2 restored and numerically verified; a missing depth buffer explained the artefact
+
+**2026-08-29.** Commits `b4ce49771` (layers 1+2) - `ba01581df` (depth). Closes D882's task.
+
+Layer 1 (CPU fold) and layer 2 (static object transform) now live in
+`webgl/generative-background-transform.js` - a pure-maths module with no DOM or WebGL dependency,
+so `scripts/generative-background/verify-transform.mjs` imports THE SHIPPING MODULE rather than a
+replica. D882 named "the verification is in a scratch Node script, not yet wired into
+`generative-background.js`" as the outstanding gap; that is closed.
+
+Verified on the RTX 2060 reference rig: **2 ground-truth matrix comparisons against the running rig
+plus 5 supporting checks** (an earlier claim of "7/7 checks against the rig" overstated this -
+three are self-consistency checks and two compare a function against itself); negative controls for
+reversed Euler order and uniform scale fail by 11.0 and 3.58 against a ~5e-3 budget; frame cost
+0.240ms against a 0.300ms ceiling.
+
+⛔ **Removed the `CROP_ZOOM`/`CROP_OFFSET` frustum hack.** It faked an off-centre composition by
+shrinking and shifting the viewing window, because layer 2 - the thing that genuinely produces one
+- was missing. With layer 2 present the two framings fight. Twist and displacement defaults return
+to the reference preset; they had been inflated to compensate for the absent transform.
+
+⛔ **A silhouette IoU of 89.3% was quoted and is WITHDRAWN** - no committed script computed it, no
+inputs were committed, and its capture path injected `background:#fff !important`. It is exactly
+the unreproducible headline `compare.py`'s docblock was written to abolish.
+
+The module docblock's licence claim was also corrected twice: first it overstated the risk, then it
+overstated the defence ("contains none of its source text" is falsified by a nine-line diff of the
+axis-angle helper). The true and stronger statement is that both files copied the same PUBLIC
+sources - the standard axis-angle rotation matrix, and Ini~go Quilez's `expStep`, which the
+reference file itself attributes to him.
+
 ## D885 [ROUTINE] — two client-set hover colours painted the block root; one root cause, one guard
 
 **2026-08-29.** Client-controls track. Commits `18eee2666` (fixes + guard) · `c45b4f5dc` (reseed +

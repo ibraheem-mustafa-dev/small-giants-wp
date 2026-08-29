@@ -5,7 +5,7 @@ phase_name: Council-approved fidelity comparator (replaces the NO-GO harness des
 project: small-giants-wp
 created: 2026-08-29
 spec_ref: 38
-status: READY TO EXECUTE
+status: EXECUTED 2026-08-29 (D888). All 3 tasks shipped + a final whole-branch review. The instrument works; the gap it measures is REAL and OPEN (2 of 3 sampled phases over ceiling). Two follow-ups deferred and named: production option path, shared harness-lib.mjs.
 ---
 
 # Fidelity comparator — build plan

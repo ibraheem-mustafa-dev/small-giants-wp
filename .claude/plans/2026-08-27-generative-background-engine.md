@@ -156,10 +156,35 @@ Only after Phase 1. Absorb D794's must-fix register into
 **Gate:** the completed spec goes through `/adversarial-council` again. D794 said NO-GO on the thin
 version; the rewrite must earn a GO before any build.
 
-## Phase 3 — Build
+## Phase 3 — Build: ENGINE SHIPPED 2026-08-29. Fidelity gap OPEN.
 
-Deliberately not planned in detail: its content depends entirely on Phases 1–2, and planning it now
-would be inventing requirements — the exact failure this whole track exists to end.
+**Read D886, D887 and D888 before touching this track.** They supersede the technique spec's
+Animation section and record two claims that were asserted and withdrawn.
+
+**Shipped and live on the canary.** All three layers of the fold mechanism: the CPU fold and the
+static object transform now live in `webgl/generative-background-transform.js`, verified against
+matrices extracted from the running reference rig; layer 3 was already correct. A missing depth
+buffer — `depth: false`, `DEPTH_TEST` never enabled — was the stair-step artefact: the fold passes
+back over itself by design, so with no depth buffer draw order decided which surface was visible.
+Frame cost 0.240ms against a 0.300ms ceiling.
+
+**A reproducible fidelity instrument now exists**, built after `/adversarial-council` returned
+NO-GO on a larger harness design (D887). `npm run fidelity:compare` re-derives every figure;
+`fidelity-baseline.json` and `reference-matrices.json` are tracked and survive the rig's deletion.
+
+**The measured gap is REAL and remains open.** At effective phases 0.70/1.10/1.90 the divergence
+from the reference is 5.29% / 4.71% / 5.63% crop-wide, and 10.71% / 9.90% / 10.64% over the
+painted region — 2 of 3 over the 5% ceiling. It did not collapse when a 25,000x phase-mismatch bug
+was corrected, so it is not an artefact of the measurement.
+
+⛔ **The cause is NOT established, and one guess has already been withdrawn.** Painted coverage
+differs by 8 points and distinct hue count by 2.7x — a tone shift cannot change coverage, so shape
+divergence is the leading UNTESTED hypothesis. Two named alternatives must be eliminated first:
+the comparator currently measures the module's `DEFAULT_*` constants rather than the block's
+shipped attributes, and four Chromium harnesses have drifted apart.
+
+**Still outstanding: Bean's NAMED visual sign-off against the "B-movie 3D VFX" risk.** No number
+closes that — it is his eye, and the acceptance criteria say so.
 
 ---
 

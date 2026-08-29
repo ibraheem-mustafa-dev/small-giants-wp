@@ -113,60 +113,46 @@ neither. **Curated defaults sit in `:where()` at ZERO specificity** so the look 
 switch-on and the client's pick always wins (a render-layer `(0,1,0)` rule would LOSE to the
 `(0,2,0)` variant selectors). Aurora's violet is curated per style, never added to the palette.
 
-### ▶ B. GENERATIVE BACKGROUND ENGINE (Phase 2 CLOSED D874; Phase 3 IN PROGRESS — D882)
+### ▶ B. GENERATIVE BACKGROUND ENGINE (Phase 3 — engine BUILT + LIVE; fidelity gap OPEN)
 
-⭐ **Plan: `.claude/plans/2026-08-27-generative-background-engine.md`.** Technique spec IS a build
-spec; read **D882 before touching `generative-background.js` again** — it supersedes the technique
-spec's Animation section (which describes only ONE of the mechanism's three real layers).
-✅ Phase 1 + licence SETTLED by Bean (D874). ✅ Phase 2 CLOSED (D874, spec GO after 3 council rounds).
+⭐ **Plan: `.claude/plans/2026-08-27-generative-background-engine.md`. Read D886, D887, D888
+before touching this track — they supersede the technique spec's Animation section and record
+two withdrawn claims.**
 
-⛔ **D880: Bean explicitly authorised porting Stripe's reference VERTEX SHADER SOURCE directly**
-(reversing "describe and reimplement, never copy" for that one file only). Palette PNG stays
-off-limits regardless (different asset class). Three.js can never ship regardless (page-weight
-budget, not a legal question).
+**Shipped and live on the canary:** all three layers of the fold. Layer 1 (CPU fold) + layer 2
+(object transform) live in `webgl/generative-background-transform.js`, verified against matrices
+extracted from the running rig; layer 3 was already correct. A missing depth buffer (`depth:
+false`, no `DEPTH_TEST`) was the stair-step artefact — the fold overlaps itself, so draw order
+decided the visible surface. Fixed `ba01581df`, live-verified. Frame cost 0.240ms / 0.300ms.
 
-⛔ **D882 — THE MECHANISM HAS THREE LAYERS, and only layer 3 is built:**
-1. **CPU fold** (3 bands by local X, cosine warp, translate+two -90° rotations) — currently
-   ABSENT from production code (an earlier session deleted it, wrongly concluding it didn't exist).
-2. **Static object-level transform** (position/rotation/scale, e.g. a ~107° Z rotation +
-   non-uniform scale in the reference) — currently ABSENT; this is what actually produces the
-   dramatic diagonal composition, and no build before this session ever attempted it.
-3. **Per-frame GPU twist** (three chained UV-driven rotations + noise displacement) — ALREADY
-   CORRECTLY BUILT this session (commits `e08140869`/`05eaf14b3`) after finding and fixing a real
-   maths bug: the reference multiplies `position * rotationMatrix` (row-vector), every earlier
-   build used `rotationMatrix * position` (column-vector) — NOT the same operation for a rotation
-   matrix, it silently rotated the opposite way on all three chained rotations.
+**The measured gap, and it is REAL** (`fidelity-baseline.json`, tracked): at effective phases
+0.70/1.10/1.90 the divergence from the reference is **5.29% / 4.71% / 5.63% crop-wide, 10.71% /
+9.90% / 10.64% over the painted region** — 2 of 3 over the 5% ceiling. It did not collapse when a
+25,000x phase-mismatch bug was fixed, so it is not a measurement artefact.
 
-⭐ **Verification method proven this session, use it for layers 1+2 too:** the reference rig
-(`.claude/scratch/stripe-hero-poc/index.html`) exposes `window.__matrices()` — extract the REAL
-`modelViewMatrix`/`projectionMatrix` three.js computes, then check a from-scratch WebGL2
-reimplementation reproduces those exact numbers (a Node script with no three.js dependency is
-enough — matched to `9e-13` once the Euler composition order was fixed to `Rx·Ry·Rz`, three.js's
-default `'XYZ'`). This is far more reliable than eyeballing screenshots.
+⛔ **TWO CLAIMS WERE ASSERTED THIS SESSION AND ARE WITHDRAWN — do not resurrect either.**
+An 89.3% silhouette IoU (no script, no committed inputs, a `background:#fff` hack in its capture
+path), and "a systematic colour cast" (over-read `bias_over_abs`, which measures directionality
+not spatial uniformity). **Painted coverage differs 8 points and hue count 2.7x — a tone shift
+cannot change coverage. Shape divergence is the leading UNTESTED hypothesis.** See D888.
 
-⛔ **Two real process failures this session, guard against repeats:**
-- **Committed-but-never-deployed fixes, twice.** Deploys build from `git worktree add --detach
-  origin/main` — a real fix sitting only in the working tree silently never ships, and
-  `payload-verify` doesn't catch it (checks `block.json` only, not CSS/JS content). One incident
-  shipped a live runaway-layout bug (a canvas losing `position:absolute`) before being caught.
-  **After any dispatched build reports "done", verify with `git log`/`git diff` yourself — a
-  claimed commit hash is not evidence until checked.**
-- **A "direct port" that wasn't.** A commit's own docblock claimed fidelity while its diff shows
-  the old axis vectors and old multiplication convention kept. Bean caught it by eye ("same shape,
-  just bigger") — that observation was correct. When a port claims fidelity, diff the actual
-  maths against the source, don't trust the commit message.
+⛔ **D880: Bean authorised porting the reference's VERTEX SHADER mechanism** (that file only).
+Palette PNG stays off-limits as a shipped asset — it is a measurement fixture, read in place from
+`.claude/scratch/`, never in `plugins/`. Three.js can never ship (page weight, not law).
 
-⭐ **Gate E stays held** — don't delete `.claude/scratch/stripe-hero-poc/`.
+⭐ **Gate E stays held** — `.claude/scratch/stripe-hero-poc/` is in ZERO git files (`git ls-files`
+returns 0). A `git clean -xdf` destroys every reference number permanently. The tracked
+`fidelity-baseline.json` + `reference-matrices.json` are what survive it.
 
-### ▶ NEXT — Phase 3 of B: port layers 1+2 into production, verify numerically, get Bean's sign-off
+### ▶ NEXT — investigate the ~10.6% painted-region gap against the SHAPE hypothesis
 
-**Full task detail, file paths, and commit list: D882 — read it in full before starting, it is the
-single most important entry in this file for this track.** One-line summary: rebuild the CPU fold
-+ object-level transform in `plugins/sgs-blocks/src/shared/effects/webgl/generative-background.js`
-(layer 3 already correct, do not re-touch without new evidence), verify the combined transform
-numerically against rig-extracted matrices (method proven, not yet re-run against production code),
-then re-verify colour/striations/depth-fade and get Bean's NAMED visual sign-off against the
-"B-movie 3D VFX" risk before calling this done — do not self-declare success from a screenshot.
+Prompt: `.claude/prompts/2026-08-30-generative-background-fidelity-gap.md`. Two named follow-ups
+first (both live alternative explanations): drive the replica through the PRODUCTION option path
+(it currently measures the module's `DEFAULT_*` constants, not the block's shipped attributes),
+and a shared `harness-lib.mjs` — four Chromium harnesses have already drifted, one roots where the
+palette 403s. `npm run fidelity:compare` reproduces every figure; `check:transform-parity` is
+wired and survives the rig's deletion.
+
 
 ### ▶ PARTICLE + GATES SUB-TRACK — CLOSED 2026-08-27/28. Detail = D839-D842, D846, D853, D863-D870.
 
