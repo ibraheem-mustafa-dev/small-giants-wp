@@ -25,27 +25,46 @@ The Shape-B border migration is **built, applied to all 44 blocks, and committed
 
 Two gates are red. Clear them, deploy once, then probe.
 
+⚠ A THIRD gate (`check-render-undefined-vars`, 33 findings) was red during the handoff and is now
+fixed and committed (`9a69d60b5`). Its cause is worth knowing: the migration's emission sat ABOVE
+`$responsive_css = '';` on `sgs/cta-section`, so every border rule it wrote was WIPED before
+output — a green build with no border, invisible to `php -l`. Re-run the build to confirm 2, not 3.
+
 ---
 
 ## TASK 1 — `check-editor-render-parity`: 178 against a ceiling of 177
 
-Exactly two findings sit on newly-migrated blocks: `sgs/hero` and `sgs/info-box`, both
-`borderColourGradient`, both from the codemod's `adopt` path.
+**`borderColourGradient` has findings on 12 blocks**, not two: `button`, `container`, `heading`,
+`hero`, `icon-list`, `info-box`, `mega-panel`, `option-picker`, `process-steps`, `quote`, `text`,
+`timeline`. Re-measure with:
 
-The cause is structural, not per-block: `transformEditJs` mounts `SgsBorderControl` but writes
-**no editor-canvas preview**. Accordion has one only because I hand-wrote it
-(`src/blocks/accordion/edit.js`, the `previewStyle` block that resolves palette slugs through
-`resolveColourToken`). Every other migrated block therefore declares border attributes the canvas
-never shows.
+```bash
+node scripts/check-editor-render-parity.js --json | \
+  python3 -c "import json,sys; d=json.load(sys.stdin)['editorCanvasDesync']['netNew']; \
+  print(sorted({f['block'] for f in d if f.get('attr')=='borderColourGradient'}))"
+```
 
-**Fix the codemod, not the two blocks.** Teach `transformEditJs` to emit the preview, then re-run
-`--fix` across the migrated set. That should push the count well *below* 177, at which point
-**lower the ceiling to the measured figure** — the constant's own rule is "re-measure and LOWER
-after every drop, never raise".
+⚠ **An earlier draft of this prompt said "exactly two — hero and info-box", and a QC subagent
+then said hero has zero. Both were wrong.** The measured answer is 12 blocks, hero among them
+with one finding. Trust the command above, not either claim.
 
-⛔ Do not raise the ceiling. ⛔ Do not exempt `borderColourGradient` — a gradient border is
-genuinely previewable (accordion approximates it with `border-image`), so exempting it would
-encode a falsehood.
+**14 blocks already implement a canvas `previewStyle`** — accordion is not unique, so "the
+codemod never emits a preview" is also false as a blanket statement. Establish which of the 12
+lack one before deciding the fix shape:
+
+```bash
+grep -L previewStyle src/blocks/{button,container,heading,hero,icon-list,info-box,mega-panel,option-picker,process-steps,quote,text,timeline}/edit.js
+```
+
+If most already have a preview that simply omits the gradient leg, the fix is to extend those
+previews — not to re-run the codemod across the migrated set. Accordion's preview approximates a
+gradient border with `border-image` (`src/blocks/accordion/edit.js`); reuse that.
+
+Once the count drops, **lower the ceiling to the measured figure** — the constant's own rule is
+"re-measure and LOWER after every drop, never raise".
+
+⛔ Do not raise the ceiling. ⛔ Do not exempt `borderColourGradient` — a gradient border IS
+previewable, so exempting it would encode a falsehood.
 
 ---
 
@@ -167,8 +186,14 @@ Blocks with at-risk content: `info-box` 345, `testimonial` 174, `site-footer-row
    figure that a direct re-measurement changed.
 10. Give each parallel agent a **uniquely-named scratch directory**. Two collided in the shared
     scratchpad and one deleted the other's generated files mid-run.
-11. **A gate going red because the work succeeded is a broken gate.** `FIXABLE_FLOOR = 6` and a
+11. **Commit the paths you CHANGED, not everything `git status` returns.** Building a pathspec
+    from `git status -- src/blocks/` swept the timeline track's `view.js` into a border commit
+    (`9a69d60b5`; recorded in `b5e30f6e2`). Nothing was lost, but the attribution is wrong.
+12. **Commit a fix the moment it verifies.** Four render fixes were made, measured green, and then
+    reverted on the shared tree before being committed — the loss was only caught by the handoff's
+    QC gate. Verify-then-commit, not verify-then-move-on.
+13. **A gate going red because the work succeeded is a broken gate.** `FIXABLE_FLOOR = 6` and a
     fixture asserting `container` was un-migrated both failed *because* their migrations landed.
-12. **`php -l` cannot see the defects that matter here.** An emission placed above its
+14. **`php -l` cannot see the defects that matter here.** An emission placed above its
     accumulator's `= ''` initialiser silently wipes every rule it writes; an emission in HTML mode
     prints PHP source onto the page as text. Both parse cleanly.
