@@ -20,6 +20,21 @@ defined( 'ABSPATH' ) || exit;
  * Hidden-by-default fields also receive the sgs-form-field--hidden CSS class so
  * they are invisible before JavaScript initialises.
  *
+ * Calls get_block_wrapper_attributes() so this div — the TRUE outer element of
+ * every field-block type — carries the block's WP identity class
+ * (wp-block-sgs-form-field-*). Before this (2026-08-30, form-field-tiles
+ * border-roundtrip fix), no form-field-* block's outer wrapper ever called
+ * get_block_wrapper_attributes() anywhere, so the identity class either never
+ * rendered at all, or (form-field-tiles only) landed on an INNER div instead —
+ * a different DOM node from the one carrying the block's own scoped/private
+ * CSS. Every sibling field.json here declares anchor:false and no other
+ * supports classes/styles beyond the identity class itself (verified against
+ * each block.json before this change), so the only observable effect is that
+ * identity class appearing on this div. form-field-file additionally declares
+ * "interactivity": true, which means this call now also emits a
+ * data-wp-interactive attribute here for the first time — see the task 1
+ * report for the live spot-check of that block.
+ *
  * @param array  $attributes Block attributes.
  * @param string $type       Field type (text, email, textarea, select, etc.).
  * @param string $extra_class Additional CSS class (optional).
@@ -58,9 +73,15 @@ function field_open( array $attributes, string $type, string $extra_class = '' )
 		);
 	}
 
+	$wrapper_attributes = get_block_wrapper_attributes(
+		array(
+			'class' => implode( ' ', $classes ),
+		)
+	);
+
 	return sprintf(
-		'<div class="%s"%s>',
-		implode( ' ', $classes ),
+		'<div %s%s>',
+		$wrapper_attributes,
 		$data_attrs
 	);
 }
