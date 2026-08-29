@@ -154,9 +154,12 @@ if ( ! empty( $sgs_form_style_group['border'] ) && is_array( $sgs_form_style_gro
 	}
 }
 
+// Hoisted out of the conditional: the Shape-B border emission scopes to
+// $sgs_form_sel, which was only assigned when NATIVE style-engine input existed.
+$sgs_form_uid = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sgs_form_sel = '.' . $sgs_form_uid . '.sgs-form';
+
 if ( ! empty( $sgs_form_style_engine_input ) ) {
-	$sgs_form_uid = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-	$sgs_form_sel = '.' . $sgs_form_uid . '.sgs-form';
 
 	$sgs_form_engine_styles = wp_style_engine_get_styles(
 		$sgs_form_style_engine_input,
@@ -178,8 +181,10 @@ if ( isset( $sgs_form_style_group['typography']['lineHeight'] ) && '' !== $sgs_f
 	$sgs_form_typography_args['lineHeight'] = (string) $sgs_form_style_group['typography']['lineHeight'];
 }
 if ( ! empty( $sgs_form_typography_args ) ) {
-	if ( empty( $sgs_form_uid ) ) {
-		$sgs_form_uid                = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		// The uid is hoisted above; this now registers the CLASS exactly once. It
+		// used to key on empty($sgs_form_uid), which the hoist made permanently
+		// false -- so the class stopped being added and .{uid}.sgs-form matched nothing.
 		$sgs_form_supports_classes[] = $sgs_form_uid;
 	}
 	$sgs_form_typography_scoped = wp_style_engine_get_styles(
@@ -207,8 +212,10 @@ if ( '' !== $sgs_form_preset_bg ) {
 // color/border/typography supports above (generated eagerly here when none
 // of those already needed one) so everything lands in ONE scoped <style>.
 if ( $submit_colour || $submit_background ) {
-	if ( empty( $sgs_form_uid ) ) {
-		$sgs_form_uid                = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		// The uid is hoisted above; this now registers the CLASS exactly once. It
+		// used to key on empty($sgs_form_uid), which the hoist made permanently
+		// false -- so the class stopped being added and .{uid}.sgs-form matched nothing.
 		$sgs_form_supports_classes[] = $sgs_form_uid;
 	}
 	$sgs_form_submit_decls = array();
@@ -227,8 +234,10 @@ if ( $submit_colour || $submit_background ) {
 // (minted eagerly here when none of those already needed one) so everything
 // lands in ONE scoped <style>.
 if ( $progress_colour ) {
-	if ( empty( $sgs_form_uid ) ) {
-		$sgs_form_uid                = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		// The uid is hoisted above; this now registers the CLASS exactly once. It
+		// used to key on empty($sgs_form_uid), which the hoist made permanently
+		// false -- so the class stopped being added and .{uid}.sgs-form matched nothing.
 		$sgs_form_supports_classes[] = $sgs_form_uid;
 	}
 	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__progress{--sgs-progress-colour:' . sgs_colour_value( $progress_colour ) . ';}';

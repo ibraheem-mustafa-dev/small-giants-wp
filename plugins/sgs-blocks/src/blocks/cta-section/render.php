@@ -120,6 +120,10 @@ $wrapper_styles = array_merge( $wrapper_styles, sgs_transition_vars( $attributes
 
 // Hover colour shifts — resolved into complete CSS declaration strings and
 
+// Initialised HERE: the original init sat BELOW the border emission and wiped
+// every rule it wrote -- a silent discard php -l cannot see.
+$responsive_css = '';
+
 // ── Block-private border: width / style / colour (Shape B). ──
 // Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
 // Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
@@ -226,7 +230,7 @@ if ( $hover_border_colour ) {
 // ── Responsive CSS builder ──────────────────────────────────────────────────
 // No-inline contract (§A): background-image/size/position (a real property
 // declaration trio) is deferred to the scoped .uid rule below.
-$responsive_css = '';
+// (init hoisted above the border emission)
 
 if ( $has_image_bg ) {
 	// Image backgrounds keep using a CSS background-image so the existing
@@ -323,14 +327,8 @@ if ( ! empty( $color_args ) ) {
 	$cta_style_engine_args['color'] = $color_args;
 }
 
-$border_args = array();
-// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
-// default — never fall through to the browser's initial medium (~3px)
-// border-width. Gated together via the shared helper (helpers-box.php)
-// so this rule is applied identically everywhere, not per block.
-if ( ! empty( $border_args ) ) {
-	$cta_style_engine_args['border'] = $border_args;
-}
+// (native border_args removed by the Shape-B migration -- width/style/colour
+//  are block-private attrs now, emitted below)
 
 if ( ! empty( $cta_style_engine_args ) ) {
 	$cta_scoped_styles = wp_style_engine_get_styles(

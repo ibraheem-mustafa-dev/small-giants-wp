@@ -185,12 +185,8 @@ if ( ! empty( $base_spacing ) ) {
 	$base_style_engine_args['spacing'] = $base_spacing;
 }
 
-$border_args = array();
-// G5 (Bean, 2026-08-26): 'style set, no width' means no border by default —
-// never fall through to the browser's initial medium (~3px) border-width.
-if ( ! empty( $border_args ) ) {
-	$base_style_engine_args['border'] = $border_args;
-}
+// (native border_args removed by the Shape-B migration -- width/style/colour
+//  are block-private attrs now, emitted below)
 
 $color_args = array();
 if ( '' !== $style_color_text ) {

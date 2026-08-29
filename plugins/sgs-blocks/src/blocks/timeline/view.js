@@ -34,6 +34,89 @@ import {
 		'(prefers-reduced-motion: reduce)'
 	).matches;
 
+	// ── Shared sparkler coordinator ───────────────────────────────────────
+	//
+	// ONE frame loop for the whole page, and at most ONE burning timeline.
+	//
+	// ⛔ Why a coordinator rather than a gate on each instance: the per-instance
+	// version lit every timeline whose block was on screen, so a page with
+	// several of them ran several sparklers at once (measured live: 2 of 8) and
+	// N idle rAF loops besides. A sparkler is a focal point — two compete, and
+	// the reader cannot tell which line is "the" one. Election is per frame, so
+	// the active timeline changes as the reader scrolls, with no handover code.
+	const sparklers = new Set();
+	let coordinatorFrame = 0;
+	let lastEmit = 0;
+
+	// One spark per interval, and a hard ceiling on live sparks. The ceiling is
+	// the backstop that stops a slow machine — where a spark's animationend
+	// arrives later than the next emission — from accumulating nodes for ever.
+	const EMIT_EVERY_MS = 45;
+	const MAX_LIVE_SPARKS = 26;
+
+	function coordinatorTick( ts ) {
+		coordinatorFrame = window.requestAnimationFrame( coordinatorTick );
+		if ( ts - lastEmit < EMIT_EVERY_MS ) {
+			return;
+		}
+
+		// Elect the single active timeline: its head must be on screen, and of
+		// those it is the one nearest the viewport centre — i.e. the one the
+		// reader is actually looking at.
+		let best = null;
+		let bestDistance = Infinity;
+		sparklers.forEach( ( s ) => {
+			if ( ! s.isOnScreen() || ! s.allowed() ) {
+				return;
+			}
+			const distance = s.headDistanceFromCentre();
+			if ( null === distance || distance >= bestDistance ) {
+				return;
+			}
+			best = s;
+			bestDistance = distance;
+		} );
+		if ( ! best ) {
+			return;
+		}
+
+		lastEmit = ts;
+		if (
+			best.progressEl.querySelectorAll( '.sgs-timeline__spark' ).length >=
+			MAX_LIVE_SPARKS
+		) {
+			return;
+		}
+		best.emit();
+	}
+
+	/**
+	 * Add one timeline to the sparkler election, starting the shared loop on
+	 * the first registration.
+	 *
+	 * @param {Object} sparkler The instance descriptor.
+	 */
+	function registerSparkler( sparkler ) {
+		sparklers.add( sparkler );
+		if ( ! coordinatorFrame ) {
+			coordinatorFrame = window.requestAnimationFrame( coordinatorTick );
+		}
+	}
+
+	/**
+	 * Remove one timeline, stopping the shared loop once none remain — the loop
+	 * must not outlive the last instance, or a bfcache restore leaves two.
+	 *
+	 * @param {Object} sparkler The instance descriptor.
+	 */
+	function unregisterSparkler( sparkler ) {
+		sparklers.delete( sparkler );
+		if ( ! sparklers.size && coordinatorFrame ) {
+			window.cancelAnimationFrame( coordinatorFrame );
+			coordinatorFrame = 0;
+		}
+	}
+
 	/**
 	 * Fill progress (0..1) for one timeline, computed from GEOMETRY.
 	 *
@@ -352,10 +435,20 @@ import {
 		 * @param {HTMLElement} progressEl The .sgs-timeline__progress element.
 		 * @param {number}      frac       Head position, 0-1.
 		 */
-		function emitHeadSpark( progressEl, frac ) {
+		function emitHeadSpark( progressEl ) {
 			const spark = document.createElement( 'span' );
 			spark.className = 'sgs-timeline__spark';
-			const along = `${ frac * 100 }%`;
+			// ⛔ POSITIONED BY THE SAME CSS EXPRESSION AS THE HEAD, never by a JS
+			// number. The head is `::after` on this element at
+			// `calc(var(--sgs-timeline-fill-progress) * 100%)`; handing the spark
+			// a JS-computed percentage instead put the two in DIFFERENT places,
+			// because the geometry maths and the animated property do not agree.
+			// Measured live: the CSS said the head sat at fraction 0.931
+			// (viewport y=644) while the sparks landed at y≈340 — 304px adrift,
+			// and the owner spotted it immediately. The property inherits, so
+			// letting CSS resolve the same calc makes them coincide BY
+			// CONSTRUCTION, on either driver, whatever the animation-range.
+			const along = 'calc(var(--sgs-timeline-fill-progress) * 100%)';
 			if ( horizontal ) {
 				spark.style.left = along;
 				spark.style.top = '50%';
@@ -455,46 +548,62 @@ import {
 
 		// ── The sparkler ──────────────────────────────────────────────────
 		//
-		// A real sparkler burns continuously, so this is a self-driving rAF
-		// loop rather than something hung off the scroll event: the tip keeps
-		// throwing sparks whether or not the reader is moving. Three gates keep
-		// that honest rather than wasteful — it does no work when the block is
-		// off screen, when the burn has not started or has finished, or under
-		// reduced motion.
+		// A real sparkler burns continuously, so emission is driven by a frame
+		// loop rather than by the scroll event — the tip keeps throwing sparks
+		// whether or not the reader is moving.
+		//
+		// ⛔ ONLY ONE TIMELINE ON A PAGE MAY BURN AT A TIME, and that is why this
+		// instance only REGISTERS here instead of running its own loop. Each
+		// instance used to drive its own rAF with an `onScreen` gate, so a page
+		// with several timelines lit several sparklers at once — measured live:
+		// 2 of 8 emitting simultaneously, which the owner reported. A sparkler is
+		// a focal point; two of them compete, and N idle loops burn frames for
+		// nothing. The shared coordinator below elects a single ACTIVE instance
+		// each frame and emits for that one only.
 		const progressEl = root.querySelector( '.sgs-timeline__progress' );
-		let sparklerFrame = 0;
-		let lastEmit = 0;
 		let onScreen = false;
 
-		// One spark per interval, and a hard ceiling on live sparks. The
-		// ceiling is the backstop that stops a slow machine — where each
-		// spark's animationend arrives later than the next emission — from
-		// accumulating nodes without limit.
-		const EMIT_EVERY_MS = 45;
-		const MAX_LIVE_SPARKS = 26;
-
-		function sparklerLoop( ts ) {
-			sparklerFrame = window.requestAnimationFrame( sparklerLoop );
-			if ( ! onScreen || ! sparksAllowed() ) {
-				return;
-			}
-			const frac = readProgress();
-			// Strictly between: an unstarted line has no lit tip, and a finished
-			// one has burnt out. Both should be silent.
-			if ( ! Number.isFinite( frac ) || frac <= 0 || frac >= 1 ) {
-				return;
-			}
-			if ( ts - lastEmit < EMIT_EVERY_MS ) {
-				return;
-			}
-			lastEmit = ts;
-			if (
-				progressEl.querySelectorAll( '.sgs-timeline__spark' ).length >=
-				MAX_LIVE_SPARKS
-			) {
-				return;
-			}
-			emitHeadSpark( progressEl, frac );
+		const sparkler = {
+			progressEl,
+			horizontal,
+			allowed: sparksAllowed,
+			isOnScreen: () => onScreen,
+			emit: () => emitHeadSpark( progressEl ),
+			/**
+			 * Where the HEAD is painted, in viewport coordinates.
+			 *
+			 * Read from the CSS property rather than from geometry, because the
+			 * head itself is placed from that property — so this is the head's
+			 * real position, not a parallel estimate of it. Its staircase
+			 * quantisation is harmless for choosing WHICH timeline is active.
+			 *
+			 * @return {number|null} Distance past the viewport edge, or null when
+			 *                       the burn has not started or has finished.
+			 */
+			headDistanceFromCentre() {
+				const frac = parseFloat(
+					getComputedStyle( root )
+						.getPropertyValue( '--sgs-timeline-fill-progress' )
+						.trim()
+				);
+				// Strictly between: an unstarted line has no lit tip and a finished
+				// one has burnt out. Both are silent.
+				if ( ! Number.isFinite( frac ) || frac <= 0 || frac >= 1 ) {
+					return null;
+				}
+				const box = progressEl.getBoundingClientRect();
+				const headY = horizontal
+					? box.top + box.height / 2
+					: box.top + frac * box.height;
+				// The head must be ON SCREEN to be worth lighting.
+				if ( headY < 0 || headY > window.innerHeight ) {
+					return null;
+				}
+				return Math.abs( headY - window.innerHeight / 2 );
+			},
+		};
+		if ( progressEl ) {
+			registerSparkler( sparkler );
 		}
 
 		const visibility = new window.IntersectionObserver(
@@ -505,7 +614,6 @@ import {
 		);
 		if ( progressEl ) {
 			visibility.observe( root );
-			sparklerFrame = window.requestAnimationFrame( sparklerLoop );
 		}
 
 		const throttledTick = rafThrottle( tick );
@@ -538,14 +646,9 @@ import {
 			window.removeEventListener( 'resize', remeasure );
 			throttledTick.cancel();
 			remeasure.cancel();
-			// The sparkler drives its own frame loop, so it does NOT stop when
-			// the scroll listeners come off — it has to be cancelled by hand or
-			// it keeps burning after teardown (and a bfcache restore would then
-			// leave two loops running).
-			if ( sparklerFrame ) {
-				window.cancelAnimationFrame( sparklerFrame );
-				sparklerFrame = 0;
-			}
+			// Leave the shared coordinator, or it keeps emitting into a torn-down
+			// instance and a bfcache restore registers a second copy.
+			unregisterSparkler( sparkler );
 			visibility.disconnect();
 			root.querySelectorAll( '.sgs-timeline__spark' ).forEach( ( el ) =>
 				el.remove()

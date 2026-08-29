@@ -113,3 +113,32 @@ parameters:
 			identifier: function.notFound
 			count: 2
 			path: src/blocks/product-card/render.php
+
+		# Shape-B border migration (2026-08-30): guards left dead because the
+		# migration removed their only populator. These say "always exists" --
+		# the OPPOSITE of the undefined-variable defect this gate catches. Not
+		# deleted: each guard's BODY assigns variables used further down.
+
+		-
+			message: '#^Variable \$base_style_engine_args in empty\(\) always exists and is always falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/blocks/before-after/render.php
+
+		-
+			message: '#^Variable \$hero_style_engine_args in empty\(\) always exists and is always falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/blocks/hero/render.php
+
+		-
+			message: '#^Variable \$border_args in empty\(\) always exists and is always falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/blocks/nav-drawer/render.php
+
+		-
+			message: '#^Variable \$sf_style_engine_args in empty\(\) always exists and is always falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/blocks/site-footer/render.php

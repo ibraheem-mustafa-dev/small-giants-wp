@@ -406,14 +406,8 @@ if ( ! empty( $pt_color_args ) ) {
 	$pt_style_engine_args['color'] = $pt_color_args;
 }
 
-$pt_border_args = array();
-// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
-// default — never fall through to the browser's initial medium (~3px)
-// border-width. Gated together via the shared helper (helpers-box.php)
-// so this rule is applied identically everywhere, not per block.
-if ( ! empty( $pt_border_args ) ) {
-	$pt_style_engine_args['border'] = $pt_border_args;
-}
+// (native border_args removed by the Shape-B migration -- width/style/colour
+//  are block-private attrs now, emitted below)
 
 if ( ! empty( $pt_style_engine_args ) ) {
 	$pt_scoped_styles = wp_style_engine_get_styles(
