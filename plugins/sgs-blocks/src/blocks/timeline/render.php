@@ -64,6 +64,46 @@ $fill_colour      = $attributes['connectorFillColour'] ?? 'accent';
 $reveal_on_scroll = isset( $attributes['revealOnScroll'] ) ? (bool) $attributes['revealOnScroll'] : true;
 $reveal_stagger   = isset( $attributes['revealStagger'] ) ? absint( $attributes['revealStagger'] ) : 100;
 
+// Reveal trigger. `connector` reveals each entry as the progress fill reaches ITS
+// dot rather than when the entry enters the viewport, so the journey assembles
+// itself in step with the line. Sanitised to the declared enum: an out-of-enum
+// stored value is otherwise silently coerced to the default anyway, but stating
+// it here keeps the class name it emits safe.
+$reveal_trigger = $attributes['revealTrigger'] ?? 'viewport';
+$reveal_trigger = in_array( $reveal_trigger, array( 'viewport', 'connector' ), true )
+	? $reveal_trigger
+	: 'viewport';
+// A connector-triggered reveal is meaningless without the fill that drives it —
+// fall back rather than leave every entry hidden forever with nothing to reveal
+// them. This is the degrade-to-MORE-content direction, deliberately.
+if ( 'connector' === $reveal_trigger && ! $progress_fill ) {
+	$reveal_trigger = 'viewport';
+}
+
+// Milestone media placement (block-wide, not per entry — one decision for the
+// client, and a timeline with mixed placements reads as untidy).
+$media_placement = $attributes['milestoneMediaPlacement'] ?? 'under-date';
+$media_placement = in_array( $media_placement, array( 'under-date', 'date-over-media' ), true )
+	? $media_placement
+	: 'under-date';
+$media_width = sgs_css_length_value( $attributes['milestoneMediaWidth'] ?? '180px' );
+
+// Decorative milestone media. WordPress already stores the real alt text on the
+// ATTACHMENT, which is where it belongs and which this block reads — so this is
+// not a second alt field, it is the operator saying "ignore that, this picture
+// carries no information". It then renders with an empty alt AND aria-hidden, so
+// a screen reader skips it entirely instead of announcing a filename.
+//
+// Block-level rather than per entry, for the same reason placement is: a client
+// uses milestone pictures either as content or as decoration, consistently down
+// one timeline, and three toggles per milestone is not a client-facing control.
+$media_decorative = ! empty( $attributes['milestoneMediaDecorative'] );
+
+// Alternating A/B row bands.
+$row_stripes   = ! empty( $attributes['rowStripes'] );
+$stripe_a      = $attributes['rowStripeColourA'] ?? '';
+$stripe_b      = $attributes['rowStripeColourB'] ?? 'surface-alt';
+
 // Sanitise orientation + alignment to avoid arbitrary CSS class injection.
 $orientation     = in_array( $orientation, array( 'vertical', 'horizontal' ), true ) ? $orientation : 'vertical';
 $alignment       = in_array( $alignment, array( 'left', 'centre', 'alternating' ), true ) ? $alignment : 'alternating';
@@ -332,6 +372,18 @@ if ( $progress_fill ) {
 	$wrapper_classes[] = 'sgs-timeline--connector-progress';
 }
 
+// Milestone-media placement + A/B row bands. Both are keyed on a wrapper class
+// so that a timeline using neither is byte-identical to before: every new rule
+// in style.scss sits behind one of these classes or behind
+// `.sgs-timeline__entry--has-media`.
+$wrapper_classes[] = 'sgs-timeline--media-' . ( 'date-over-media' === $media_placement ? 'overlay' : 'under' );
+if ( $row_stripes ) {
+	$wrapper_classes[] = 'sgs-timeline--row-stripes';
+}
+if ( 'connector' === $reveal_trigger ) {
+	$wrapper_classes[] = 'sgs-timeline--reveal-connector';
+}
+
 if ( '' !== $preset_text_slug ) {
 	$wrapper_classes[] = 'has-text-color';
 	$wrapper_classes[] = 'has-' . $preset_text_slug . '-color';
@@ -355,6 +407,16 @@ if ( $progress_fill && $fill_colour ) {
 if ( $reveal_stagger > 0 ) {
 	$wrapper_style_parts[] = '--sgs-reveal-stagger:' . $reveal_stagger . 'ms';
 }
+if ( '' !== $media_width ) {
+	$wrapper_style_parts[] = '--sgs-timeline-media-width:' . $media_width;
+}
+if ( $row_stripes ) {
+	// An EMPTY stripe A is the useful default: the odd rows keep whatever the
+	// page/section background already is, and only the even rows are banded. A
+	// literal colour on both would fight a sectioned page for no gain.
+	$wrapper_style_parts[] = '--sgs-timeline-stripe-a:' . ( $stripe_a ? sgs_colour_value( $stripe_a ) : 'transparent' );
+	$wrapper_style_parts[] = '--sgs-timeline-stripe-b:' . ( $stripe_b ? sgs_colour_value( $stripe_b ) : 'transparent' );
+}
 // NO-INLINE (Spec 32 FR-32-4 as amended 2026-07-18 / D345): these are
 // custom-property VALUES, and an inline `style="--sgs-…"` is FORBIDDEN on the
 // frontend just as much as an inline property declaration — FR-32-1's done-when
@@ -371,8 +433,25 @@ $wrapper_args = array(
 
 // Pass scroll-reveal config to view.js via data attributes.
 if ( $reveal_on_scroll ) {
-	$wrapper_args['data-reveal-on-scroll'] = 'true';
-	$wrapper_args['data-reveal-stagger']   = (string) $reveal_stagger;
+	$wrapper_args['data-reveal-stagger'] = (string) $reveal_stagger;
+	$wrapper_args['data-reveal-trigger'] = $reveal_trigger;
+
+	// ⛔ THE TWO TRIGGERS MUST NOT BOTH EMIT `data-reveal-on-scroll`, and this is
+	// the whole reason the attribute is conditional. style.scss:392 hides an
+	// unrevealed entry on the ATTRIBUTE alone, with no `.is-js` guard — so if a
+	// connector-reveal timeline also carried it, that rule would hide every entry
+	// with JS disabled and nothing would ever unhide them. Measured live on the
+	// canary: the `.is-js` gate on the connector rule was completely defeated by
+	// this older selector, and all four entries stayed at opacity 0.
+	//
+	// The viewport path keeps the attribute and therefore keeps its existing
+	// behaviour exactly (including its own no-JS weakness, which is pre-existing
+	// and raised separately rather than changed here — re-keying a shipped reveal
+	// to `.is-js` trades a hidden-forever bug for a flash-then-hide one, and that
+	// is a decision, not a tidy-up).
+	if ( 'connector' !== $reveal_trigger ) {
+		$wrapper_args['data-reveal-on-scroll'] = 'true';
+	}
 }
 
 $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
@@ -417,13 +496,111 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 		}
 		$entry_class_attr = implode( ' ', $entry_classes );
 
-		$image_url = ( $image_id > 0 ) ? wp_get_attachment_image_url( $image_id, 'medium' ) : '';
 		$image_alt = ( $image_id > 0 ) ? (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true ) : '';
+
+		// ── Milestone media ────────────────────────────────────────────────
+		//
+		// `entries` is declared `"type": "array"` with NO `items` schema, so new
+		// per-entry keys round-trip freely and need no migration: an entry
+		// authored before this feature has `image` set and `mediaType` absent,
+		// resolves to 'image', and renders exactly as it did.
+		//
+		// ONE tier, not three. sgs/hero declares 32 attributes for split media
+		// because it art-directs PER DEVICE; replicating that per milestone would
+		// give a client three pickers times N milestones, which is unusable. A
+		// single 'desktop' tier still buys the whole image/video/SVG switch and
+		// the SVG allowlist, and emits no toggle CSS.
+		$entry_media_type = isset( $entry['mediaType'] ) ? (string) $entry['mediaType'] : 'image';
+		$entry_media_type = in_array( $entry_media_type, array( 'image', 'video', 'svg' ), true )
+			? $entry_media_type
+			: 'image';
+		$entry_video = isset( $entry['video'] ) && is_array( $entry['video'] ) ? $entry['video'] : array();
+		$entry_svg   = isset( $entry['svg'] ) ? (string) $entry['svg'] : '';
+
+		$entry_media_spec = array();
+		if ( 'svg' === $entry_media_type && '' !== trim( $entry_svg ) ) {
+			$entry_media_spec = array(
+				'type' => 'svg',
+				'svg'  => $entry_svg,
+			);
+		} elseif ( 'video' === $entry_media_type && ! empty( $entry_video['url'] ) ) {
+			$entry_media_spec = array(
+				'type'  => 'video',
+				'media' => array(
+					'id'  => isset( $entry_video['id'] ) ? absint( $entry_video['id'] ) : 0,
+					'url' => (string) $entry_video['url'],
+				),
+			);
+		} elseif ( 'image' === $entry_media_type && $image_id > 0 ) {
+			// Resolve dimensions server-side from the attachment ID so the image
+			// reserves its space and does not shift the layout as it loads. Same
+			// backfill sgs/hero does; the ID is stored rather than a URL so it
+			// survives a media re-upload.
+			$src               = wp_get_attachment_image_src( $image_id, 'large' );
+			$entry_media_spec  = array(
+				'type'  => 'image',
+				'media' => array(
+					'id'     => $image_id,
+					'url'    => is_array( $src ) ? (string) $src[0] : (string) wp_get_attachment_image_url( $image_id, 'large' ),
+					'width'  => is_array( $src ) ? absint( $src[1] ) : 0,
+					'height' => is_array( $src ) ? absint( $src[2] ) : 0,
+				),
+			);
+		}
+
+		$entry_media_html = '';
+		if ( $entry_media_spec ) {
+			$entry_media_result = sgs_tier_media_render(
+				array( 'desktop' => $entry_media_spec ),
+				'sgs-timeline__media',
+				$uid,
+				$media_decorative ? '' : $image_alt,
+				array(),
+				// N milestones down a page, not one hero above the fold.
+				array(
+					'img_loading'       => 'lazy',
+					'img_fetchpriority' => 'auto',
+					'video_autoplay'    => false,
+				)
+			);
+			$entry_media_html = $entry_media_result['html'];
+			// The helper's CSS must reach $scoped_css BEFORE it is printed above
+			// the <ol>. A single-tier call returns '' here, but appending
+			// unconditionally keeps the caller contract honest if a tier is ever
+			// added — sgs/image-sequence shipped broken by appending it after the
+			// <style> had already been emitted.
+			if ( '' !== $entry_media_result['css'] ) {
+				$scoped_css[] = $entry_media_result['css'];
+			}
+		}
+		if ( '' !== $entry_media_html ) {
+			$entry_classes[]  = 'sgs-timeline__entry--has-media';
+			$entry_class_attr = implode( ' ', $entry_classes );
+		}
 		?>
 		<li class="<?php echo esc_attr( $entry_class_attr ); ?>">
 			<time class="sgs-timeline__date"<?php echo $datetime_attr ? ' datetime="' . esc_attr( $datetime_attr ) . '"' : ''; ?>>
 				<?php echo esc_html( $date_raw ); ?>
 			</time>
+			<?php
+			// ⛔ A SIBLING of <time>, never a wrapper around it. Every alternation
+			// rule targets `.sgs-timeline__date` directly to swap its grid-column
+			// (style.scss :488-526); nesting the date inside a media div would
+			// break all of them, and would also cost the <time> element its own
+			// dateColour attrMap routing. For the overlay placement the two are
+			// grid-STACKED into the same cell instead, which keeps the element
+			// tree flat and every existing rule intact.
+			//
+			// The helper's markup is already escaped: images via
+			// sgs_responsive_image(), SVG through wp_kses( …, sgs_allowed_svg_tags() ).
+			if ( '' !== $entry_media_html ) :
+				?>
+				<div class="sgs-timeline__media-slot"<?php echo $media_decorative ? ' aria-hidden="true"' : ''; ?>>
+					<?php echo $entry_media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				</div>
+				<?php
+			endif;
+			?>
 			<div class="sgs-timeline__node" aria-hidden="true">
 				<?php if ( $icon ) : ?>
 					<span class="sgs-timeline__node-icon" data-icon="<?php echo esc_attr( $icon ); ?>" aria-hidden="true"></span>
@@ -434,9 +611,14 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 				<?php if ( $description ) : ?>
 					<div class="sgs-timeline__description"><?php echo wp_kses_post( $description ); ?></div>
 				<?php endif; ?>
-				<?php if ( $image_url ) : ?>
-					<img class="sgs-timeline__image" src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>" loading="lazy" />
-				<?php endif; ?>
+				<?php
+				// The per-entry image used to render HERE, inside the content
+				// column, which put every picture on the same side as the text. It
+				// now renders in `.sgs-timeline__media-slot` above — opposite the
+				// content, on the date's side. Same `image` attribute, same stored
+				// data; only the position and the surrounding markup changed, so
+				// no migration and no deprecation (D270).
+				?>
 			</div>
 		</li>
 	<?php endforeach; ?>

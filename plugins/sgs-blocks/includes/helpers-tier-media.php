@@ -156,9 +156,33 @@ if ( ! function_exists( 'sgs_tier_media_render' ) ) {
 	 *                           of the same subject describes the same thing.
 	 * @param array  $extra      Optional per-type extra classes, e.g.
 	 *                           array( 'image' => 'sgs-hero__split-image' ).
+	 * @param array  $options    Optional per-caller overrides. ADDITIVE — every
+	 *                           key defaults to the behaviour this helper had
+	 *                           before the parameter existed, so `sgs/hero`'s
+	 *                           output is byte-identical without passing it.
+	 *                           img_loading       'eager' -> 'lazy'
+	 *                           img_fetchpriority 'high'  -> 'auto'|'low'
+	 *                           video_autoplay    true    -> false (renders
+	 *                           `controls` instead, so the media stays operable).
+	 *
+	 *                           ⛔ WHY OVERRIDABLE AT ALL. The defaults are right
+	 *                           for the ONE caller this was written for: a single
+	 *                           hero above the fold, fetched eagerly at high
+	 *                           priority, autoplaying if it is video. They are
+	 *                           wrong for a caller rendering N of these DOWN a
+	 *                           page — `sgs/timeline` puts one per milestone, and
+	 *                           eight eager high-priority images (or eight
+	 *                           autoplaying looped videos) is a real regression
+	 *                           against the green-CWV budget. The timeline's own
+	 *                           pre-existing `<img>` used loading="lazy", so
+	 *                           adopting this helper WITHOUT the override would
+	 *                           have made that block slower, not faster.
 	 * @return array{html:string,css:string} Markup and the tier-toggle CSS.
 	 */
-	function sgs_tier_media_render( array $tiers, string $base_class, string $uid, string $alt = '', array $extra = array() ): array {
+	function sgs_tier_media_render( array $tiers, string $base_class, string $uid, string $alt = '', array $extra = array(), array $options = array() ): array {
+		$img_loading       = isset( $options['img_loading'] ) ? (string) $options['img_loading'] : 'eager';
+		$img_fetchpriority = isset( $options['img_fetchpriority'] ) ? (string) $options['img_fetchpriority'] : 'high';
+		$video_autoplay    = array_key_exists( 'video_autoplay', $options ) ? (bool) $options['video_autoplay'] : true;
 		$html = '';
 		$css  = '';
 
@@ -210,8 +234,9 @@ if ( ! function_exists( 'sgs_tier_media_render' ) ) {
 				// with preload="none", does not fetch — which is what keeps sibling
 				// markup honest against D5's three-videos-all-fetching objection.
 				$html .= sprintf(
-					'<video class="%s" autoplay loop muted playsinline preload="%s"><source src="%s" type="video/mp4"></video>',
+					'<video class="%s"%s loop muted playsinline preload="%s"><source src="%s" type="video/mp4"></video>',
 					esc_attr( $class_attr ),
+					$video_autoplay ? ' autoplay' : ' controls',
 					'desktop' === $tier ? 'metadata' : 'none',
 					esc_url( (string) ( $media['url'] ?? '' ) )
 				);
@@ -219,9 +244,9 @@ if ( ! function_exists( 'sgs_tier_media_render' ) ) {
 				$media = is_array( $spec['media'] ?? null ) ? $spec['media'] : array();
 				$attrs = array(
 					'class'         => $class_attr,
-					'loading'       => 'eager',
+					'loading'       => $img_loading,
 					'decoding'      => 'async',
-					'fetchpriority' => 'high',
+					'fetchpriority' => $img_fetchpriority,
 				);
 				if ( ! empty( $media['width'] ) ) {
 					$attrs['width'] = absint( $media['width'] );

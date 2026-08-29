@@ -989,3 +989,354 @@
 		}
 	}
 }
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MILESTONE MEDIA, A/B ROW BANDS, CONNECTOR-TRIGGERED REVEAL
+//
+// ⭐ THE SAFETY PROPERTY FOR THIS WHOLE SECTION: every rule below is keyed on
+// `--has-media`, `--row-stripes` or `--reveal-connector`. A timeline using none
+// of them must render byte-identically to before, and that is an acceptance
+// criterion, not an aspiration — the entry grid is shared with the connector,
+// the fill mask and the spark positions, so an unconditional change here moves
+// the milestone dots and silently breaks FR-38-35.
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── The media element itself ──────────────────────────────────────────────────
+//
+// `sgs_tier_media_render()` emits `.sgs-timeline__media` plus a type modifier
+// (`--image` / `--video` / `--svg`). Size and radius target the TYPE-AGNOSTIC
+// base so a video or an SVG milestone is sized identically to an image — scoping
+// them to the `--image` class is the exact bug sgs/hero shipped and had to fix.
+.sgs-timeline__media-slot {
+	display: block;
+	width: 100%;
+	max-width: var(--sgs-timeline-media-width, 180px);
+	min-width: 0;
+}
+
+.sgs-timeline__media {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+}
+
+// object-fit only means anything on a replaced element, so it is scoped to the
+// two types that HAVE intrinsic dimensions. An inline SVG is not replaced.
+.sgs-timeline__media--image,
+.sgs-timeline__media--video {
+	object-fit: cover;
+}
+
+.sgs-timeline__media--svg svg {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+// ── Placement 1 of 2: media UNDER the date ────────────────────────────────────
+//
+// The entry gains a second row. The node and the content must be given an
+// explicit row span or they auto-place into row 2 and the layout collapses.
+.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--align-alternating {
+	.sgs-timeline__entry--has-media {
+		grid-template-rows: auto auto;
+
+		.sgs-timeline__node {
+			grid-row: 1 / span 2;
+		}
+
+		.sgs-timeline__content {
+			grid-row: 1 / span 2;
+		}
+	}
+
+	// ODD — date + media on the LEFT, content on the right.
+	.sgs-timeline__entry--has-media:nth-child(odd) {
+		.sgs-timeline__date {
+			grid-column: 1;
+			grid-row: 1;
+		}
+
+		.sgs-timeline__media-slot {
+			grid-column: 1;
+			grid-row: 2;
+			justify-self: end;
+		}
+	}
+
+	// EVEN — mirrored. The media follows the DATE, not the content, because the
+	// brief is "media opposite the content, on the date's side".
+	.sgs-timeline__entry--has-media:nth-child(even) {
+		.sgs-timeline__date {
+			grid-column: 3;
+			grid-row: 1;
+		}
+
+		.sgs-timeline__media-slot {
+			grid-column: 3;
+			grid-row: 2;
+			justify-self: start;
+		}
+	}
+}
+
+// align-left: column 1 is `auto` and sized to the date text, so media dropped
+// into it would be squeezed to the width of "2019". Widen column 1 to the media
+// width — and ONLY when the timeline actually has media, so a plain align-left
+// timeline keeps its tight date column.
+.sgs-timeline--vertical.sgs-timeline--align-left:has(.sgs-timeline__entry--has-media) {
+	.sgs-timeline__entry {
+		grid-template-columns: minmax(0, var(--sgs-timeline-media-width, 180px)) auto 1fr;
+	}
+}
+
+.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--align-left {
+	.sgs-timeline__entry--has-media {
+		grid-template-rows: auto auto;
+
+		.sgs-timeline__date {
+			grid-column: 1;
+			grid-row: 1;
+		}
+
+		.sgs-timeline__media-slot {
+			grid-column: 1;
+			grid-row: 2;
+		}
+
+		.sgs-timeline__node {
+			grid-row: 1 / span 2;
+		}
+
+		.sgs-timeline__content {
+			grid-row: 1 / span 2;
+		}
+	}
+}
+
+// align-centre has no "opposite side" — it is a single column with the node
+// beside it. The media therefore sits BETWEEN the date and the content rather
+// than opposite anything, and the node spans all three rows.
+.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--align-centre {
+	.sgs-timeline__entry--has-media {
+		grid-template-rows: auto auto auto;
+
+		.sgs-timeline__node {
+			grid-row: 1 / span 3;
+		}
+
+		.sgs-timeline__date {
+			grid-row: 1;
+			grid-column: 2;
+		}
+
+		.sgs-timeline__media-slot {
+			grid-row: 2;
+			grid-column: 2;
+		}
+
+		.sgs-timeline__content {
+			grid-row: 3;
+			grid-column: 2;
+		}
+	}
+}
+
+// ── Placement 2 of 2: the date sits ON the media ──────────────────────────────
+//
+// Grid-STACKED into one cell rather than nested, so `<time>` keeps its own
+// element, its datetime attribute and every alternation rule that targets it.
+// This placement is self-contained, which is why it survives the mobile collapse
+// below unchanged while "under" has to be re-placed.
+.sgs-timeline--media-overlay {
+	.sgs-timeline__entry--has-media {
+		// ONE row: the date and the media share a single grid cell rather than
+		// stacking. Nothing else needs a row span because there is no second row.
+		.sgs-timeline__date,
+		.sgs-timeline__media-slot {
+			grid-row: 1;
+		}
+
+		// ⛔ The date must match the media's BOX, not just its cell. The cell is a
+		// full `1fr` column (~689px at desktop) while the media is 180px pinned to
+		// the connector side, so a plain `place-self: center` centres the date in
+		// the COLUMN and it lands well clear of the picture — measured exactly that
+		// on the canary: date at x=317, media at x=509, no overlap at all. Giving
+		// the date the same width and the same justification puts the two boxes on
+		// top of each other, and `text-align: center` then centres the text within
+		// that shared box.
+		.sgs-timeline__date {
+			z-index: 2;
+			align-self: center;
+			width: var(--sgs-timeline-media-width, 180px);
+			max-width: 100%;
+			text-align: center;
+			// The date now sits over an arbitrary photograph, so it cannot rely on
+			// the page ground for contrast. A scrim keyed to the client's own surface
+			// token travels with the brand; a hardcoded #fff would fail on a light
+			// image and is banned by the brand-accent-is-a-ground rule.
+			padding: 0.35em 0.5em;
+			border-radius: var(--wp--custom--border-radius--small, 4px);
+			background-color: var(--wp--preset--color--surface, #fff);
+			box-shadow: 0 1px 6px rgb(0 0 0 / 18%);
+		}
+	}
+}
+
+// Both boxes take the SAME column and the SAME justification, which is what
+// makes them coincide. Stated per side because the alternating layout puts the
+// date-and-media pair on the left for odd entries and the right for even ones.
+.sgs-timeline--media-overlay.sgs-timeline--align-alternating {
+	.sgs-timeline__entry--has-media:nth-child(odd) {
+		.sgs-timeline__media-slot,
+		.sgs-timeline__date {
+			grid-column: 1;
+			justify-self: end;
+		}
+
+		// ⛔ Restated per side ON PURPOSE. The base alternation rules set
+		// `text-align: right` on an odd date and `left` on an even one at (0,4,0);
+		// the generic overlay rule's `center` is only (0,3,0) and LOSES, which put
+		// the year hard against one end of its own scrim band. Measured on the
+		// canary: 2019/2023 right-aligned, 2021/2025 left-aligned, in a band the
+		// full width of the picture.
+		.sgs-timeline__date {
+			text-align: center;
+		}
+	}
+
+	.sgs-timeline__entry--has-media:nth-child(even) {
+		.sgs-timeline__media-slot,
+		.sgs-timeline__date {
+			grid-column: 3;
+			justify-self: start;
+		}
+
+		.sgs-timeline__date {
+			text-align: center;
+		}
+	}
+}
+
+// align-left and align-centre put the pair in their own single column.
+.sgs-timeline--media-overlay.sgs-timeline--align-left,
+.sgs-timeline--media-overlay.sgs-timeline--align-centre {
+	.sgs-timeline__entry--has-media {
+		.sgs-timeline__media-slot,
+		.sgs-timeline__date {
+			justify-self: start;
+		}
+	}
+}
+
+// ── Alternating A/B row bands ─────────────────────────────────────────────────
+//
+// The band paints on the ENTRY, which is the full width of the block, so the
+// stripe reads as a row across the page rather than a card behind the text.
+// `transparent` is a real, useful value for stripe A: banding only the even rows
+// lets a sectioned page show through on the odd ones.
+//
+// ⛔ `:nth-child` here counts ALL <ol> children, and the progress <li> is one of
+// them — it is emitted LAST precisely so it never shifts the entries' parity.
+// Scoping to `.sgs-timeline__entry` keeps that true even if another child is
+// ever added.
+.sgs-timeline--row-stripes {
+	.sgs-timeline__entry:nth-child(odd) {
+		background-color: var(--sgs-timeline-stripe-a, transparent);
+	}
+
+	.sgs-timeline__entry:nth-child(even) {
+		background-color: var(--sgs-timeline-stripe-b, transparent);
+	}
+
+	// Bands butt against each other, so the entries need their own breathing
+	// room — without this the text sits hard on the colour change.
+	.sgs-timeline__entry {
+		padding-block: var(--wp--preset--spacing--20, 1rem);
+	}
+}
+
+// ── Connector-triggered reveal ────────────────────────────────────────────────
+//
+// ⛔ THE ACCESSIBILITY FLOOR COMES FIRST, and it is why the hidden state is
+// declared under `.is-js` rather than plainly. Hiding content until a scroll
+// position is reached is `degrade-to-more-content-never-less` pointed the wrong
+// way: with no JS, or if the observer ever fails to run, an entry hidden by a
+// plain CSS rule is unreachable FOREVER and the page silently loses its content.
+// So the default state is VISIBLE, and only a running view.js opts an entry into
+// being hidden. A broken script degrades to "everything shown", never to a blank
+// timeline.
+.sgs-timeline--reveal-connector.is-js {
+	.sgs-timeline__entry:not(.is-revealed) {
+		opacity: 0;
+		// Rises INTO place as its dot lights up, rather than sliding sideways —
+		// a sideways slide fights the alternating layout, where the two sides
+		// would have to travel in opposite directions.
+		transform: translateY(14px);
+	}
+
+	.sgs-timeline__entry {
+		transition:
+			opacity 420ms ease-out,
+			transform 420ms ease-out;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	// Show the end state, skip the animation — the same convention the fill
+	// itself follows. An entry must never be left hidden here.
+	.sgs-timeline--reveal-connector.is-js .sgs-timeline__entry:not(.is-revealed) {
+		opacity: 1;
+		transform: none;
+	}
+
+	.sgs-timeline--reveal-connector.is-js .sgs-timeline__entry {
+		transition: none;
+	}
+}
+
+// ── Mobile: the two-sided grid does not exist below 768px ─────────────────────
+//
+// The base rules at :913-941 give odd and even entries IDENTICAL placement and
+// drop the date BELOW the content, so "the same side as the date" has no meaning
+// here. The media therefore takes its own row at the bottom of the stack and
+// spans the full content column.
+//
+// The OVERLAY placement is deliberately NOT re-placed: the date sits on its own
+// media, which is self-contained and reads correctly at any width.
+@media (max-width: 767px) {
+	.sgs-timeline--media-under.sgs-timeline--vertical .sgs-timeline__entry--has-media {
+		grid-template-rows: auto auto auto;
+
+		.sgs-timeline__node {
+			grid-row: 1 / span 3;
+		}
+
+		.sgs-timeline__media-slot {
+			grid-column: 2;
+			grid-row: 3;
+			justify-self: start;
+			max-width: 100%;
+		}
+	}
+
+	.sgs-timeline--media-overlay.sgs-timeline--vertical .sgs-timeline__entry--has-media {
+		grid-template-rows: auto auto;
+
+		.sgs-timeline__node {
+			grid-row: 1 / span 2;
+		}
+
+		.sgs-timeline__media-slot {
+			grid-column: 2;
+			grid-row: 2;
+		}
+
+		.sgs-timeline__date {
+			grid-column: 2;
+			grid-row: 2;
+		}
+	}
+}

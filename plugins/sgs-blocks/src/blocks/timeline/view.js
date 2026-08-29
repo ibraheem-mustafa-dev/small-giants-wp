@@ -41,6 +41,16 @@ import {
 	 */
 	function initTimeline( root ) {
 		const revealOnScroll = root.dataset.revealOnScroll === 'true';
+		const revealByConnector = 'connector' === root.dataset.revealTrigger;
+
+		// The connector path is reached WITHOUT `data-reveal-on-scroll` (see
+		// render.php), so it is handled before the gate below rather than after.
+		// `is-js` is what licenses the hidden state; the milestone observer does
+		// the revealing.
+		if ( revealByConnector ) {
+			root.classList.add( 'is-js' );
+			return;
+		}
 
 		if ( ! revealOnScroll ) {
 			// revealOnScroll=false: render.php bakes in is-revealed already.
@@ -54,6 +64,17 @@ import {
 		if ( ! entries.length ) {
 			return;
 		}
+
+		// The viewport path keeps its ATTRIBUTE-keyed hidden state (style.scss:392)
+		// and therefore its pre-existing behaviour, unchanged. `is-js` is added
+		// anyway so the two paths carry the same marker.
+		//
+		// ⚠ PRE-EXISTING, RAISED NOT FIXED: because that rule keys on the
+		// attribute rather than on `is-js`, a viewport-reveal timeline hides its
+		// entries with JS disabled and nothing unhides them. Re-keying it would
+		// trade a hidden-forever bug for a flash-then-hide one, which is a
+		// decision for the owner rather than a tidy-up to slip into this change.
+		root.classList.add( 'is-js' );
 
 		// Reduced motion: reveal everything immediately, no stagger.
 		if ( prefersReducedMotion ) {
@@ -218,6 +239,15 @@ import {
 		// milestones. Re-read per tick rather than cached, because the OS
 		// setting can change while the page is open.
 		const sparksAllowed = () => ! isReducedMotionNow();
+
+		// Whether this timeline hands its entry reveal to the fill rather than to
+		// the viewport. Read once: it is a server-rendered attribute and cannot
+		// change for the life of the page.
+		// Keyed on the TRIGGER alone. It used to also require
+		// `data-reveal-on-scroll`, which a connector timeline deliberately does
+		// not carry any more — that conjunction would have switched the whole
+		// feature off silently.
+		const revealOnReached = 'connector' === root.dataset.revealTrigger;
 		const horizontal = root.classList.contains( 'sgs-timeline--horizontal' );
 
 		/**
@@ -349,7 +379,23 @@ import {
 		 */
 		function applyReached( now ) {
 			nodes.forEach( ( node ) => {
-				node.el.classList.toggle( 'is-reached', node.frac <= now );
+				const reached = node.frac <= now;
+				node.el.classList.toggle( 'is-reached', reached );
+				// Connector-triggered reveal: the entry appears as its own dot
+				// lights up, so the journey assembles in step with the line.
+				//
+				// ⛔ One-way ON, deliberately — unlike `is-reached`, which is
+				// recomputed both ways. Un-revealing on the way back up would
+				// make content the reader has already seen VANISH as they scroll
+				// up to re-read it, which is the same content-loss failure the
+				// `is-js` gate exists to prevent, just triggered by scrolling
+				// rather than by a broken script.
+				if ( revealOnReached && reached ) {
+					const entry = node.el.closest( '.sgs-timeline__entry' );
+					if ( entry ) {
+						entry.classList.add( 'is-revealed' );
+					}
+				}
 			} );
 		}
 
@@ -533,8 +579,12 @@ import {
 	 * Boot on DOMContentLoaded.
 	 */
 	function boot() {
+		// BOTH reveal triggers, and the second selector is load-bearing: a
+		// connector-reveal timeline deliberately does NOT carry
+		// `data-reveal-on-scroll` (render.php explains why), so selecting on that
+		// attribute alone would silently skip it and `is-js` would never be added.
 		const timelines = document.querySelectorAll(
-			'.sgs-timeline[data-reveal-on-scroll]'
+			'.sgs-timeline[data-reveal-on-scroll], .sgs-timeline[data-reveal-trigger="connector"]'
 		);
 		timelines.forEach( initTimeline );
 

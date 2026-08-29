@@ -10,6 +10,7 @@ import {
 	PanelBody,
 	SelectControl,
 	TextControl,
+	TextareaControl,
 	Button,
 	ToggleControl,
 	RangeControl,
@@ -39,6 +40,91 @@ const HEADING_LEVEL_OPTIONS = [
 const ORIENTATION_OPTIONS = [
 	{ label: __( 'Vertical', 'sgs-blocks' ), value: 'vertical' },
 	{ label: __( 'Horizontal', 'sgs-blocks' ), value: 'horizontal' },
+];
+
+/**
+ * Does this entry carry renderable media? Mirrors render.php's own test so the
+ * canvas and the page agree on which entries get the media grid rows.
+ *
+ * @param {Object} entry One item from the `entries` array.
+ * @return {boolean} True when a source exists for the selected type.
+ */
+function entryHasMedia( entry ) {
+	const type = entry.mediaType || 'image';
+	if ( 'svg' === type ) {
+		return !! ( entry.svg && entry.svg.trim() );
+	}
+	if ( 'video' === type ) {
+		return !! entry.video?.url;
+	}
+	return !! entry.image;
+}
+
+/**
+ * Canvas preview for an image or video milestone.
+ *
+ * ⛔ Reads `entry.imageUrl`, a companion to the stored attachment `image` ID —
+ * the SAME id+url pair `sgs/media` and `sgs/responsive-logo` use, where the ID
+ * is authoritative and the URL exists so the EDITOR can paint without a REST
+ * round-trip. render.php ignores the URL entirely and resolves from the ID, so a
+ * re-uploaded attachment still renders correctly on the page.
+ *
+ * ⚠ The reason this is safe here and was a data-loss bug on sgs/responsive-logo
+ * (D496): that block read an UNDECLARED `_desktopLogoUrl`, which WP silently
+ * discarded on save, so every preview went `undefined` on reload. `entries` is a
+ * bare array with no `items` schema, so nothing strips a companion key from it.
+ *
+ * @param {Object} props       Component props.
+ * @param {Object} props.entry The entry to preview.
+ * @return {JSX.Element|null} The preview element.
+ */
+function MediaPreview( { entry } ) {
+	const type = entry.mediaType || 'image';
+	if ( 'video' === type ) {
+		return (
+			<video
+				className="sgs-timeline__media sgs-timeline__media--video"
+				src={ entry.video?.url }
+				muted
+				playsInline
+			/>
+		);
+	}
+	if ( ! entry.imageUrl ) {
+		// The ID is stored but no companion URL is — an entry authored before
+		// this feature existed. Say so rather than rendering a broken image.
+		return (
+			<span className="sgs-timeline__media sgs-timeline__media--placeholder">
+				{ __( 'Image set — re-select it to preview here', 'sgs-blocks' ) }
+			</span>
+		);
+	}
+	return (
+		<img
+			className="sgs-timeline__media sgs-timeline__media--image"
+			src={ entry.imageUrl }
+			alt=""
+		/>
+	);
+}
+
+const MEDIA_TYPE_OPTIONS = [
+	{ label: __( 'Image', 'sgs-blocks' ), value: 'image' },
+	{ label: __( 'Video', 'sgs-blocks' ), value: 'video' },
+	{ label: __( 'SVG / Animation', 'sgs-blocks' ), value: 'svg' },
+];
+
+const MEDIA_PLACEMENT_OPTIONS = [
+	{ label: __( 'Under the date', 'sgs-blocks' ), value: 'under-date' },
+	{ label: __( 'Date over the media', 'sgs-blocks' ), value: 'date-over-media' },
+];
+
+const REVEAL_TRIGGER_OPTIONS = [
+	{ label: __( 'When it scrolls into view', 'sgs-blocks' ), value: 'viewport' },
+	{
+		label: __( 'When the connector reaches it', 'sgs-blocks' ),
+		value: 'connector',
+	},
 ];
 
 const ALIGNMENT_OPTIONS = [
@@ -196,34 +282,111 @@ function EntryEditor( { entry, index, onChange, onRemove } ) {
 				onChange={ ( { name } ) => update( 'icon', name ) }
 				sources={ [ 'lucide' ] }
 			/>
-			<MediaUploadCheck>
-				<MediaUpload
-					onSelect={ ( media ) => update( 'image', media.id ) }
-					allowedTypes={ [ 'image' ] }
-					value={ entry.image || 0 }
-					render={ ( { open } ) => (
+			{ /* ── Milestone media ──────────────────────────────────────────
+			     Type picker follows sgs/hero's SelectControl shape rather than
+			     sgs/media's ButtonGroup, so the two blocks that switch media
+			     type read the same way. Hero labels the third option "SVG"
+			     while sgs/media and sgs/info-box label it "SVG / Animation" —
+			     the fuller label is used here because it tells a non-technical
+			     client what the option is FOR. */ }
+			<SelectControl
+				label={ __( 'Media type', 'sgs-blocks' ) }
+				value={ entry.mediaType || 'image' }
+				options={ MEDIA_TYPE_OPTIONS }
+				onChange={ ( value ) => update( 'mediaType', value ) }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			/>
+			{ 'image' === ( entry.mediaType || 'image' ) && (
+				<>
+					<MediaUploadCheck>
+						<MediaUpload
+							onSelect={ ( media ) =>
+								// Both keys in ONE change: `update` replaces a
+								// single key, so two calls would make the second
+								// overwrite the first's entry object.
+								onChange( {
+									...entry,
+									image: media.id,
+									imageUrl: media.url,
+								} )
+							}
+							allowedTypes={ [ 'image' ] }
+							value={ entry.image || 0 }
+							render={ ( { open } ) => (
+								<Button
+									variant="secondary"
+									onClick={ open }
+									style={ { marginTop: '8px', marginBottom: '8px' } }
+								>
+									{ entry.image
+										? __( 'Change image', 'sgs-blocks' )
+										: __( 'Add image (optional)', 'sgs-blocks' ) }
+								</Button>
+							) }
+						/>
+					</MediaUploadCheck>
+					{ entry.image > 0 && (
 						<Button
-							variant="secondary"
-							onClick={ open }
-							style={ { marginTop: '8px', marginBottom: '8px' } }
+							variant="tertiary"
+							isDestructive
+							onClick={ () =>
+								onChange( { ...entry, image: 0, imageUrl: '' } )
+							}
+							size="small"
+							style={ { display: 'block', marginBottom: '8px' } }
 						>
-							{ entry.image
-								? __( 'Change image', 'sgs-blocks' )
-								: __( 'Add image (optional)', 'sgs-blocks' ) }
+							{ __( 'Remove image', 'sgs-blocks' ) }
 						</Button>
 					) }
+				</>
+			) }
+			{ 'video' === entry.mediaType && (
+				<>
+					<MediaUploadCheck>
+						<MediaUpload
+							onSelect={ ( media ) =>
+								update( 'video', { id: media.id, url: media.url } )
+							}
+							allowedTypes={ [ 'video' ] }
+							value={ entry.video?.id || 0 }
+							render={ ( { open } ) => (
+								<Button
+									variant="secondary"
+									onClick={ open }
+									style={ { marginTop: '8px', marginBottom: '8px' } }
+								>
+									{ entry.video?.url
+										? __( 'Change video', 'sgs-blocks' )
+										: __( 'Select video', 'sgs-blocks' ) }
+								</Button>
+							) }
+						/>
+					</MediaUploadCheck>
+					{ entry.video?.url && (
+						<Button
+							variant="tertiary"
+							isDestructive
+							onClick={ () => update( 'video', {} ) }
+							size="small"
+							style={ { display: 'block', marginBottom: '8px' } }
+						>
+							{ __( 'Remove video', 'sgs-blocks' ) }
+						</Button>
+					) }
+				</>
+			) }
+			{ 'svg' === entry.mediaType && (
+				<TextareaControl
+					label={ __( 'SVG code', 'sgs-blocks' ) }
+					help={ __(
+						'Paste the SVG markup. Scripts and event handlers are stripped when it renders.',
+						'sgs-blocks'
+					) }
+					value={ entry.svg || '' }
+					onChange={ ( value ) => update( 'svg', value ) }
+					__nextHasNoMarginBottom
 				/>
-			</MediaUploadCheck>
-			{ entry.image > 0 && (
-				<Button
-					variant="tertiary"
-					isDestructive
-					onClick={ () => update( 'image', 0 ) }
-					size="small"
-					style={ { display: 'block', marginBottom: '8px' } }
-				>
-					{ __( 'Remove image', 'sgs-blocks' ) }
-				</Button>
 			) }
 			<Button
 				variant="secondary"
@@ -253,7 +416,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		connectorFillColour,
 		dateColour,
 		revealOnScroll,
+		revealTrigger,
 		revealStagger,
+		milestoneMediaPlacement,
+		milestoneMediaWidth,
+		milestoneMediaDecorative,
+		rowStripes,
+		rowStripeColourA,
+		rowStripeColourB,
 		paddingTablet,
 		paddingMobile,
 		marginTablet,
@@ -273,6 +443,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		orientation === 'vertical' ? `sgs-timeline--align-${ alignment }` : '',
 		`sgs-timeline--connector-${ connectorStyle }`,
 		connectorProgressFill ? 'sgs-timeline--connector-progress' : '',
+		`sgs-timeline--media-${
+			'date-over-media' === milestoneMediaPlacement ? 'overlay' : 'under'
+		}`,
+		rowStripes ? 'sgs-timeline--row-stripes' : '',
+		// ⛔ `--reveal-connector` is mirrored but `is-js` is NOT. The hidden
+		// state is gated on both, so omitting `is-js` here keeps every entry
+		// VISIBLE on the canvas — an editor that hides milestones until a
+		// scroll position is reached is unusable for the person authoring them.
+		connectorProgressFill && 'connector' === revealTrigger
+			? 'sgs-timeline--reveal-connector'
+			: '',
 	].filter( Boolean ).join( ' ' );
 
 	// Contract §A: the pre-existing --sgs-connector-colour / --sgs-date-colour
@@ -285,6 +466,21 @@ export default function Edit( { attributes, setAttributes } ) {
 		style: {
 			'--sgs-connector-colour': connectorColour
 				? `var(--wp--preset--color--${ connectorColour })`
+				: undefined,
+			'--sgs-timeline-media-width': milestoneMediaWidth || undefined,
+			// Mirrors render.php: an EMPTY stripe A resolves to `transparent`,
+			// so odd rows keep the page/section background and only even rows
+			// band. Emitted only when the feature is on, so a timeline without
+			// stripes carries no stray custom properties on the canvas either.
+			'--sgs-timeline-stripe-a': rowStripes
+				? ( rowStripeColourA
+						? `var(--wp--preset--color--${ rowStripeColourA })`
+						: 'transparent' )
+				: undefined,
+			'--sgs-timeline-stripe-b': rowStripes
+				? ( rowStripeColourB
+						? `var(--wp--preset--color--${ rowStripeColourB })`
+						: 'transparent' )
 				: undefined,
 			'--sgs-date-colour': dateColour
 				? `var(--wp--preset--color--${ dateColour })`
@@ -320,6 +516,14 @@ export default function Edit( { attributes, setAttributes } ) {
 					description: '',
 					icon: '',
 					image: 0,
+					// `entries` is a bare `"type": "array"` with no `items`
+					// schema, so these round-trip without a block.json change.
+					// Seeded explicitly anyway: an entry whose mediaType is
+					// absent falls back to 'image', but a seeded default is what
+					// the next reader sees when they open the stored content.
+					mediaType: 'image',
+					video: {},
+					svg: '',
 				},
 			],
 		} );
@@ -364,6 +568,50 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
+					/* Row bands — CONDITIONALLY SPREAD, not passed with a `hidden`
+					   flag. SgsColourPanel has no `hidden` row prop (checked:
+					   it forwards key/label/states/gradient/border only), so a
+					   flag would have been silently ignored and both rows would
+					   have shown for a feature that is switched off. Filtering
+					   the array is the mechanism the component actually has.
+
+					   `linked: true` is load-bearing on every row: without it a
+					   picked colour is stored as a baked hex rather than the
+					   palette token slug, and freezes against a future re-skin
+					   (D881, where both a hand migration and a codemod dropped
+					   it and 14 green assertions missed it). */
+					...( rowStripes
+						? [
+								{
+									key: 'rowStripeA',
+									label: __( 'Row colour A (odd rows)', 'sgs-blocks' ),
+									states: [
+										{
+											key: 'normal',
+											label: __( 'Normal', 'sgs-blocks' ),
+											value: rowStripeColourA,
+											onChange: ( val ) =>
+												setAttributes( { rowStripeColourA: val ?? '' } ),
+											linked: true,
+										},
+									],
+								},
+								{
+									key: 'rowStripeB',
+									label: __( 'Row colour B (even rows)', 'sgs-blocks' ),
+									states: [
+										{
+											key: 'normal',
+											label: __( 'Normal', 'sgs-blocks' ),
+											value: rowStripeColourB,
+											onChange: ( val ) =>
+												setAttributes( { rowStripeColourB: val ?? '' } ),
+											linked: true,
+										},
+									],
+								},
+						  ]
+						: [] ),
 					{
 						key: 'connector',
 						label: __( 'Connector colour', 'sgs-blocks' ),
@@ -458,6 +706,59 @@ export default function Edit( { attributes, setAttributes } ) {
 							__next40pxDefaultSize
 						/>
 					) }
+					{ /* Placement is ONE decision for the whole timeline, not one
+					     per milestone: a client should not have to make the same
+					     choice N times, and mixed placements down one timeline
+					     read as untidy. */ }
+					<SelectControl
+						label={ __( 'Milestone media placement', 'sgs-blocks' ) }
+						value={ milestoneMediaPlacement }
+						options={ MEDIA_PLACEMENT_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { milestoneMediaPlacement: val } )
+						}
+						help={ __(
+							'Where a milestone’s picture sits. It always goes on the same side as the date, opposite the text.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<TextControl
+						label={ __( 'Milestone media width', 'sgs-blocks' ) }
+						value={ milestoneMediaWidth }
+						onChange={ ( val ) =>
+							setAttributes( { milestoneMediaWidth: val } )
+						}
+						help={ __(
+							'Any CSS width, e.g. 180px or 14rem. On phones the media goes full width regardless.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<ToggleControl
+						label={ __( 'Milestone media is decorative', 'sgs-blocks' ) }
+						checked={ milestoneMediaDecorative }
+						onChange={ ( val ) =>
+							setAttributes( { milestoneMediaDecorative: val } )
+						}
+						help={ __(
+							'Turn on when the pictures are decoration rather than information — screen readers will skip them instead of reading the image description.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={ __( 'Alternating row colours', 'sgs-blocks' ) }
+						checked={ rowStripes }
+						onChange={ ( val ) => setAttributes( { rowStripes: val } ) }
+						help={ __(
+							'Bands each milestone row in one of two colours, so the rows read as distinct blocks.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 
 				{/* ── Connector ── */}
@@ -575,6 +876,29 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 					/>
 					{ revealOnScroll && (
+						<SelectControl
+							label={ __( 'Reveal each milestone', 'sgs-blocks' ) }
+							value={ revealTrigger }
+							options={ REVEAL_TRIGGER_OPTIONS }
+							onChange={ ( val ) =>
+								setAttributes( { revealTrigger: val } )
+							}
+							help={
+								connectorProgressFill
+									? __(
+											'“When the connector reaches it” makes each milestone appear as the filling line arrives at its dot.',
+											'sgs-blocks'
+									  )
+									: __(
+											'“When the connector reaches it” needs the progress fill switched on in the Connector panel — without it, this falls back to scrolling into view.',
+											'sgs-blocks'
+									  )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+					{ revealOnScroll && 'connector' !== revealTrigger && (
 						<RangeControl
 							label={ __( 'Stagger delay (ms)', 'sgs-blocks' ) }
 							value={ revealStagger }
@@ -596,10 +920,52 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ /* ── Editor preview ── */ }
 			<ol { ...blockProps }>
 				{ entries.map( ( entry, index ) => (
-					<li key={ index } className="sgs-timeline__entry is-revealed">
+					<li
+						key={ index }
+						className={ [
+							'sgs-timeline__entry',
+							'is-revealed',
+							entryHasMedia( entry ) ? 'sgs-timeline__entry--has-media' : '',
+						]
+							.filter( Boolean )
+							.join( ' ' ) }
+					>
 						<time className="sgs-timeline__date">
 							{ entry.date || __( 'Date', 'sgs-blocks' ) }
 						</time>
+						{ /* The canvas has NEVER rendered milestone media — not
+						     even the image, which has been a stored attribute all
+						     along. A client could pick a picture and see nothing
+						     until they previewed the page. Rendered here so the
+						     editor matches the page, which is the whole point of
+						     the block editor for a non-technical client. */ }
+						{ entryHasMedia( entry ) && (
+							<div
+								className="sgs-timeline__media-slot"
+								/* Mirrors render.php: a decorative milestone
+								   picture is hidden from assistive tech rather
+								   than announced. Reflected on the canvas too so
+								   the editor is not quietly different from the
+								   page — an inspector control the preview
+								   ignores is exactly the desync CHECK A exists
+								   to catch, and it caught this one. */
+								aria-hidden={ milestoneMediaDecorative || undefined }
+							>
+								{ 'svg' === entry.mediaType ? (
+									<div
+										className="sgs-timeline__media sgs-timeline__media--svg"
+										/* Editor-only preview of operator-pasted
+										   markup. The FRONTEND path is the one that
+										   matters for safety and it runs the same
+										   wp_kses() allowlist as every other SGS
+										   SVG surface (helpers-tier-media.php). */
+										dangerouslySetInnerHTML={ { __html: entry.svg } }
+									/>
+								) : (
+									<MediaPreview entry={ entry } />
+								) }
+							</div>
+						) }
 						<div className="sgs-timeline__node" aria-hidden="true" />
 						<div className="sgs-timeline__content">
 							<RichText.Content

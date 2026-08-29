@@ -202,9 +202,39 @@
 			"type": "boolean",
 			"default": true
 		},
+		"revealTrigger": {
+			"type": "string",
+			"default": "viewport",
+			"enum": [ "viewport", "connector" ]
+		},
 		"revealStagger": {
 			"type": "number",
 			"default": 100
+		},
+		"milestoneMediaPlacement": {
+			"type": "string",
+			"default": "under-date",
+			"enum": [ "under-date", "date-over-media" ]
+		},
+		"milestoneMediaWidth": {
+			"type": "string",
+			"default": "180px"
+		},
+		"milestoneMediaDecorative": {
+			"type": "boolean",
+			"default": false
+		},
+		"rowStripes": {
+			"type": "boolean",
+			"default": false
+		},
+		"rowStripeColourA": {
+			"type": "string",
+			"default": ""
+		},
+		"rowStripeColourB": {
+			"type": "string",
+			"default": "surface-alt"
 		},
 		"paddingTablet": {
 			"type": "object",
