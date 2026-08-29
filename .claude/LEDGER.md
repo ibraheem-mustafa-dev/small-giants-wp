@@ -71,11 +71,17 @@ only; other tracks landed work in between on the same shared `main`).
 Reports: `reports/visual-diff/shape-b-batch-2026-08-30.md` (canonical) + `-full-sweep.md`
 (other 14 blocks).
 
-**Named so nobody re-derives as new:** 10 blocks return probe NOT RUN, unmeasured not failing —
-`before-after`, `buybox`, `option-picker`, `product-faq-item`, `quote`, `site-footer-row`,
-`site-header-row`, `table-of-contents`, `tabs`, `testimonial` — most need a nested-in-parent
-fixture. `nav-drawer`'s variant-discriminator finding needs its own `detect_variant` converter
-session — not a border-track item.
+**The 10 NOT RUN blocks are CLOSED (2026-08-29, commit `3069869f5`).** Every one turned out to be
+a gap in the PROBE's own fixture-generation, not a parent-nesting requirement — most (quote,
+product-faq-item, site-footer-row, site-header-row) failed on one shared bug (the probe's
+`sgs/text` filler child used the wrong attribute name); the rest needed richer per-block fixtures
+(image attrs, an `optionItems` array, a real `sgs/tab` child, a real heading on the page, and for
+`buybox` a live WooCommerce product bound via `woocommerce/product-collection`'s hand-picked mode
+— NOT `core/query`+`include`, which this plugin's own CLAUDE.md documents as unreliable). Live
+re-run: 9 PASS, 1 real FAIL. `sgs/table-of-contents`'s negative control still paints a border — a
+genuine bug in that block (already flagged elsewhere as broken), not a probe gap; still open.
+`nav-drawer`'s variant-discriminator finding needs its own `detect_variant` converter session —
+not a border-track item, unchanged.
 
 **Bean's corrections:** radius is not native (shared-helper wrap, not `__experimentalBorder`);
 `borderStyle` default `solid`, `none` stays in enum. Per-device border WIDTH CANCELLED.
