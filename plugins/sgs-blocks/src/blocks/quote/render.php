@@ -334,7 +334,14 @@ if ( ! $inherit_style ) {
 		if ( $border_colour ) {
 			$wrapper_decls[] = 'border-color:' . sgs_colour_value( $border_colour );
 		}
-	}
+} else {
+	// G5 corollary: "none" must be an explicit override too, not a
+	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
+	// class default) would otherwise keep painting even though the
+	// operator picked "no border". Cause-agnostic: harmless when no
+	// such default exists, a real fix when one does.
+	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+}
 	if ( $box_shadow ) {
 		$wrapper_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
 	}

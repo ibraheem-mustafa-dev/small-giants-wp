@@ -254,6 +254,13 @@ if ( 'none' !== $border_style ) {
 		// hover-only pattern.
 		$scoped_css[] = sgs_border_gradient_css( "{$root_sel}:hover", $hover_border_gradient, null, $border_gradient_width );
 	}
+} else {
+	// G5 corollary: "none" must be an explicit override too, not a
+	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
+	// class default) would otherwise keep painting even though the
+	// operator picked "no border". Cause-agnostic: harmless when no
+	// such default exists, a real fix when one does.
+	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
 }
 
 // Hover colour declarations — emitted as a scoped .uid{…}:hover rule via the

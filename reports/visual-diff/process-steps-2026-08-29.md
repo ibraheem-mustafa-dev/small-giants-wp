@@ -3,13 +3,17 @@
 verdict: PASS
 intent_capture_passed: true
 live_verified: true
-source_sha: 18eee2666
+source_sha: 41d51bc9cb7ee261
 block: process-steps
 url: https://sandybrown-nightingale-600381.hostingersite.com/?p=3076
 method: live computed-style measurement (getComputedStyle) on the deployed canary, with the
         mouse driven to real coordinates via CDP so `:hover` genuinely matches
 
 Pays the MANUAL SKIP logged at `2026-08-29 10:42:16` in `manual-skips.log`.
+
+⚠ `source_sha` updated below to cover a SECOND, unrelated change staged the same day (the
+border-none fix) — see the new section at the bottom. Everything above this line is the
+original hover-badge report, unedited; nothing in it was re-measured or re-verified today.
 
 ## What changed
 
@@ -66,3 +70,22 @@ hypothesis, not a finding — pair it with a positive control from the same file
 
 ⚠ SGS block CSS is lifted into `uploads/sgs-css/`; page-HTML greps prove nothing. The figures
 above are `getComputedStyle` on the painted node.
+
+## Second change, same day — border-none override (unrelated to the hover fix above)
+
+Part of a 36-block universal fix (see `check-border-roundtrip.js` fixture work, same session):
+when an operator picks `borderStyle: "none"`, `render.php` now emits an explicit
+`{border-style:none;border-width:0;}` override at the block's own scoped selector, instead of
+emitting nothing for that state. A new `else` branch onto the existing
+`if ( 'none' !== $border_style )` guard — no existing branch's logic touched, including the hover
+fix documented above.
+
+**Assertion:** `sgs/process-steps` has no hardcoded CSS border declaration on the same selector
+its border control targets (confirmed by reading `style.css` and `render.php` before writing the
+codemod). Adding an explicit "no border" override changes nothing observable for this block.
+
+**Live result:** `check-border-roundtrip.js --blocks sgs/process-steps` — PASS. The
+`borderStyle:"none"` instance painted `0px none` (unchanged), the `borderStyle:"solid"` instance
+painted the expected 4px border.
+
+**Risk:** none — no colliding default exists on this block, confirmed by inspection.

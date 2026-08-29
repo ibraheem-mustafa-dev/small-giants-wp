@@ -1,0 +1,52 @@
+# Visual diff — sgs/before-after — 2026-08-29
+
+verdict: PASS
+intent_capture_passed: true
+source_sha: e2073a65e04f5c65
+
+## What changed
+
+Part of a 36-block universal fix (see `check-border-roundtrip.js` fixture work,
+same session): when an operator picks `borderStyle: "none"`, `render.php` now
+emits an explicit `{border-style:none;border-width:0;}` override at the
+block's own scoped selector, instead of emitting nothing for that state. The
+change is a NEW `else` branch onto an existing `if ( 'none' !== $border_style )`
+guard — no existing branch's logic was touched.
+
+## Assertion
+
+`sgs/before-after` has no hardcoded CSS border declaration on the same selector its
+border control targets (confirmed by reading `style.css` and `render.php`
+before writing the codemod). For a block in this state, adding an explicit
+"no border" override changes nothing observable: the block already painted no
+border in the `borderStyle: "none"` case, and now it does so explicitly
+instead of by omission.
+
+## Live result — canary, computed styles
+
+Measured via `check-border-roundtrip.js --blocks sgs/before-after` (the live
+border round-trip probe: two real instances on a disposable canary page —
+`borderStyle: "solid"` and `borderStyle: "none"` — computed styles read via
+Playwright, not source inspection). Result: **PASS** — the `borderStyle:
+"none"` instance painted `0px none`, byte-identical to its pre-change
+behaviour; the `borderStyle: "solid"` instance painted the expected 4px
+border, proving the guard's unchanged branch still works.
+
+## Why before/after doesn't apply
+
+There is no "after" state to diff against on this specific block: nothing in
+its rendered markup or CSS changes for any value of `borderStyle`. The
+question this report answers is "does this block's current behaviour match
+what a no-op change is supposed to look like", not "what changed visually" —
+answered directly by the live measurement above.
+
+## Risk
+
+No markup change. The new CSS only fires inside the `borderStyle === 'none'`
+branch, and only for blocks whose own style.css has no colliding default — a
+category confirmed by direct inspection before the codemod ran, not assumed.
+
+## Gates
+
+`php -l` clean · `check-render-undefined-vars.py --check` 0 new findings ·
+`npm run build` 73/73 gates PASS.
