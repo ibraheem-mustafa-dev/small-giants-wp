@@ -227,33 +227,89 @@ function nativeBorderLiveness( bj, php ) {
  * $data_attrs), and appending CSS to those would corrupt markup. It is only
  * accepted when the same variable is appended a value that is demonstrably CSS
  * (contains a `{`...`}` rule or a style-engine result).
+ *
+ * TWO SINK IDIOMS, both recognised (widened 2026-08-29 after measuring the 18
+ * ambiguous-anchor refusals): the string append `$x .= '...'` AND the array push
+ * `$scoped_css[] = '...'`, which 11 of the 18 use and which the `.=`-only scan
+ * could not see at all. The array idiom carries the SAME markup-corruption
+ * hazard, and worse: array pushes are how these very files build their HTML
+ * ($meta_parts[], $attr_parts[], $classes[], $wrapper_vars[]). So the identical
+ * CSS-ish proof is applied to the pushed value, and the `_css$` name is still
+ * the disambiguator. `kind` is returned because the two idioms need DIFFERENT
+ * emitted statements -- appending a string to an array sink with `.=` would
+ * fatal ("Unsupported operand types"), and pushing to a string sink would
+ * silently produce `$css[0]`.
  */
-function findAnchors( php ) {
-	const rootMatch = php.match( /\$(\w*root_sel\w*)\s*=/ );
-	const rootVar = rootMatch ? rootMatch[ 1 ] : null;
+const SINK_STRING = 'string';
+const SINK_ARRAY = 'array';
 
-	const candidates = new Map();
-	const re = /\$(\w+)\s*\.=\s*([^;]{0,200});/g;
+/**
+ * The root selector variable.
+ *
+ * Preferred name is `*root_sel*` (the house convention). The fallback exists
+ * because 5 of the 18 refusals name it per-block instead ($sgs_form_sel,
+ * $sgs_ps_sel, $sgs_fs_sel, $sgs_ft_sel) -- but a bare `_sel$` scan is UNSAFE:
+ * the same files also declare DESCENDANT selectors ($sgs_tm_link_sel =
+ * $root_sel . ' a'), and scoping the border to one of those would paint the
+ * border on a child element. The fallback therefore requires the RHS to be a
+ * ROOT-selector literal -- `'.' . $uid . '.<class>'`, no descendant space -- and
+ * requires it to be UNIQUE in the file.
+ */
+const ROOT_SEL_LITERAL = /^\s*'\.'\s*\.\s*\$\w+\s*\.\s*'\.[\w-]+'\s*$/;
+
+function findRootVar( php ) {
+	const preferred = php.match( /\$(\w*root_sel\w*)\s*=/ );
+	if ( preferred ) return preferred[ 1 ];
+
+	const found = new Set();
+	const re = /\$(\w+_sel)\s*=\s*([^;]{0,160});/g;
 	let m;
 	while ( ( m = re.exec( php ) ) !== null ) {
-		const name = m[ 1 ];
-		const rhs = m[ 2 ];
+		if ( ROOT_SEL_LITERAL.test( m[ 2 ] ) ) found.add( m[ 1 ] );
+	}
+	return found.size === 1 ? [ ...found ][ 0 ] : null;
+}
+
+function findAnchors( php ) {
+	const rootVar = findRootVar( php );
+
+	// name -> { kind, count }. A name appearing under BOTH idioms is a
+	// contradiction (it cannot be a string and an array) and is dropped.
+	const candidates = new Map();
+	const note = ( name, rhs, kind ) => {
 		const cssish =
 			/\{[^}]*\}/.test( rhs ) ||
 			/\['css'\]/.test( rhs ) ||
 			/_css\b/.test( name ) ||
 			/sgs_\w*_css\(/.test( rhs );
-		if ( ! cssish ) continue;
-		candidates.set( name, ( candidates.get( name ) || 0 ) + 1 );
+		if ( ! cssish ) return;
+		const prev = candidates.get( name );
+		if ( prev && prev.kind !== kind ) {
+			prev.conflicted = true;
+			return;
+		}
+		candidates.set( name, { kind, count: ( prev ? prev.count : 0 ) + 1 } );
+	};
+
+	let m;
+	const strRe = /\$(\w+)\s*\.=\s*([^;]{0,200});/g;
+	while ( ( m = strRe.exec( php ) ) !== null ) note( m[ 1 ], m[ 2 ], SINK_STRING );
+	const arrRe = /\$(\w+)\s*\[\s*\]\s*=\s*([^;]{0,200});/g;
+	while ( ( m = arrRe.exec( php ) ) !== null ) note( m[ 1 ], m[ 2 ], SINK_ARRAY );
+
+	for ( const [ name, info ] of [ ...candidates ] ) {
+		if ( info.conflicted ) candidates.delete( name );
 	}
-	// Prefer a *_css name; otherwise the most-appended CSS-ish variable.
+
+	// Prefer a *_css name; otherwise the sole CSS-ish variable.
 	let cssVar = null;
 	const named = [ ...candidates.keys() ].filter( ( n ) => /_css$/.test( n ) );
 	if ( named.length === 1 ) cssVar = named[ 0 ];
 	else if ( named.length > 1 ) cssVar = null; // ambiguous on purpose
 	else if ( candidates.size === 1 ) cssVar = [ ...candidates.keys() ][ 0 ];
 
-	return { rootVar, cssVar, cssCandidates: [ ...candidates.keys() ] };
+	const cssKind = cssVar ? candidates.get( cssVar ).kind : null;
+	return { rootVar, cssVar, cssKind, cssCandidates: [ ...candidates.keys() ] };
 }
 
 function alreadyShapeB( bj ) {
@@ -335,9 +391,26 @@ function classify( slug ) {
 			reason: 'ambiguous-anchor',
 			detail:
 				`rootVar=${ anchors.rootVar || 'NOT FOUND' } cssVar=${ anchors.cssVar || 'NOT FOUND' }` +
+				( anchors.cssKind ? ` (${ anchors.cssKind } sink)` : '' ) +
 				( anchors.cssCandidates.length
 					? ` (css candidates: ${ anchors.cssCandidates.join( ', ' ) })`
 					: '' ),
+			liveness,
+		};
+	}
+
+	// A block is only READY if the emission has a proven-safe insertion point.
+	// Without this check the anchor widening reported READY for three blocks
+	// whose transform then returned null -- --fix would have refused them at
+	// write time, but the SURVEY would have been lying about the migratable set.
+	if ( findInsertionIndex( stripNativeBorderReads( php ).text, anchors.cssVar ) === -1 ) {
+		return {
+			slug,
+			status: 'REFUSE',
+			reason: 'no-insertion-point',
+			detail:
+				`found sink $${ anchors.cssVar } (${ anchors.cssKind }) but no top-level READ of it ` +
+				'to insert before; every read is indented (inside a conditional, loop or closure)',
 			liveness,
 		};
 	}
@@ -388,7 +461,19 @@ function transformBlockJson( text ) {
 	return out + eol;
 }
 
-function renderPhpEmission( rootVar, cssVar ) {
+/**
+ * The append statement for whichever sink idiom this block uses. `.=` on an
+ * array sink is a PHP fatal, and `[] =` on a string sink silently writes an
+ * offset, so this is not cosmetic.
+ */
+function sinkAppend( cssVar, kind, expr ) {
+	return kind === SINK_ARRAY
+		? `$${ cssVar }[] = ${ expr };`
+		: `$${ cssVar } .= ${ expr };`;
+}
+
+function renderPhpEmission( rootVar, cssVar, kind = SINK_STRING ) {
+	const append = ( expr ) => sinkAppend( cssVar, kind, expr );
 	return `
 // ── Block-private border: width / style / colour (Shape B). ──
 // Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
@@ -412,7 +497,7 @@ if ( 'none' !== $border_style ) {
 		$bwr = '' !== $border_width_right ? $border_width_right : '0';
 		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
 		$bwl = '' !== $border_width_left ? $border_width_left : '0';
-		$${ cssVar } .= $${ rootVar } . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+		${ append( `$${ rootVar } . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}'` ) }
 	}
 
 	// A FLAT colour emits \`border-color\` DIRECTLY; only a GRADIENT uses the
@@ -423,11 +508,11 @@ if ( 'none' !== $border_style ) {
 	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
 	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 	if ( '' !== $border_colour_gradient ) {
-		$${ cssVar } .= sgs_border_gradient_css( $${ rootVar }, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+		${ append( `sgs_border_gradient_css( $${ rootVar }, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' )` ) }
 	} elseif ( '' !== $border_colour ) {
 		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
 		// the browser drops (D881 defect 3).
-		$${ cssVar } .= $${ rootVar } . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+		${ append( `$${ rootVar } . '{border-color:' . sgs_colour_value( $border_colour ) . ';}'` ) }
 	}
 }
 `;
@@ -464,19 +549,70 @@ function stripNativeBorderReads( php ) {
 	return { text: out.join( detectEol( php ) === '\r\n' ? '\r\n' : '\n' ), removed };
 }
 
-function transformRenderPhp( php, rootVar, cssVar ) {
+/**
+ * Is the byte at `idx` in HTML mode (i.e. outside `<?php ... ?>`)?
+ *
+ * Load-bearing for the array idiom: these blocks close PHP before their
+ * `<?php if ( $scoped_css ) : ?><style>` tail, so the insertion point sits in
+ * HTML mode. Emitting bare PHP there would print the migration source as
+ * visible text on the page -- a defect that still parses under `php -l`.
+ */
+function inHtmlMode( text, idx ) {
+	const pre = text.slice( 0, idx );
+	const open = Math.max( pre.lastIndexOf( '<?php' ), pre.lastIndexOf( '<?=' ) );
+	const close = pre.lastIndexOf( '?>' );
+	return close > open;
+}
+
+/**
+ * Where the emission goes: the line of the sink's FIRST READ.
+ *
+ * NOT the line of the print. Measured 2026-08-29 across the READY set: 9 of the
+ * 13 blocks that were ALREADY ready guard their print with `if ( $responsive_css )`
+ * / `if ( '' !== $sgs_form_supports_css )` on the line above. Inserting at the
+ * print therefore put the border append INSIDE that truthiness test, so a block
+ * whose ONLY styling was a border would emit nothing at all -- output that
+ * parses, deploys and silently does nothing. Reading-not-printing also removes
+ * the old `printf|echo|return|sprintf` list, which could not see the three
+ * blocks that consume their sink by CONCATENATION into an output variable
+ * (`$out = '<style>' . $css . '</style>' . $out`).
+ *
+ * A read is any `$var` that is not a push (`$var[] =`), an append (`$var .=`)
+ * or an assignment (`$var =`).
+ *
+ * The line must also start at COLUMN 0. House style leaves top-level statements
+ * unindented, so this is what keeps the emission out of a conditional, loop or
+ * closure body -- where it would run zero times, or once per iteration. A block
+ * with no column-0 read has no proven-safe insertion point and is REFUSED
+ * rather than guessed at.
+ */
+function findInsertionIndex( text, name ) {
+	const re = new RegExp( `\\$${ name }\\b`, 'g' );
+	let m;
+	while ( ( m = re.exec( text ) ) !== null ) {
+		const after = text.slice( m.index + name.length + 1, m.index + name.length + 32 );
+		if ( /^\s*\[\s*\]\s*=[^=]/.test( after ) ) continue; // array push
+		if ( /^\s*\.=/.test( after ) ) continue; // string append
+		if ( /^\s*=[^=]/.test( after ) ) continue; // assignment / initialisation
+		const lineStart = text.lastIndexOf( '\n', m.index ) + 1;
+		if ( /^[ \t]/.test( text.slice( lineStart, lineStart + 1 ) ) ) continue; // nested
+		return lineStart;
+	}
+	return -1;
+}
+
+function transformRenderPhp( php, rootVar, cssVar, cssKind = SINK_STRING ) {
 	const stripped = stripNativeBorderReads( php );
-	const emission = renderPhpEmission( rootVar, cssVar );
-	// Insert immediately before the accumulator is first CONSUMED (printed or
-	// passed on), so the new rules are part of the same scoped <style>.
-	const consumeRe = new RegExp( `(printf|echo|return|sprintf)[^;]*\\$${ cssVar }\\b` );
-	const idx = stripped.text.search( consumeRe );
-	if ( idx === -1 ) return null;
-	// Back up to the start of that line.
-	const lineStart = stripped.text.lastIndexOf( '\n', idx ) + 1;
-	return (
-		stripped.text.slice( 0, lineStart ) + emission + '\n' + stripped.text.slice( lineStart )
-	);
+	const emission = renderPhpEmission( rootVar, cssVar, cssKind );
+	// Insert on the line the accumulator is first READ (see findInsertionIndex),
+	// so the new rules are part of the same scoped <style> AND are appended
+	// before any guard that tests whether the accumulator is non-empty.
+	const lineStart = findInsertionIndex( stripped.text, cssVar );
+	if ( lineStart === -1 ) return null;
+	const chunk = inHtmlMode( stripped.text, lineStart )
+		? '<?php' + emission + '?>\n'
+		: emission + '\n';
+	return stripped.text.slice( 0, lineStart ) + chunk + stripped.text.slice( lineStart );
 }
 
 function transformEditJs( src ) {
@@ -575,7 +711,12 @@ function fix( apply, only ) {
 		const editPath = path.join( dir, 'edit.js' );
 
 		const newBj = transformBlockJson( readFile( bjPath ) );
-		const newPhp = transformRenderPhp( readFile( phpPath ), r.anchors.rootVar, r.anchors.cssVar );
+		const newPhp = transformRenderPhp(
+			readFile( phpPath ),
+			r.anchors.rootVar,
+			r.anchors.cssVar,
+			r.anchors.cssKind
+		);
 		const newEdit = transformEditJs( readFile( editPath ) );
 
 		// ATOMIC: all three or none. A partial write leaves the block with
@@ -664,7 +805,13 @@ function check() {
 // ─── Self-test ──────────────────────────────────────────────────────────────
 function runSelfTest() {
 	const failures = [];
+	// Counted, not hardcoded: the old closing line asserted "27 assertions" as a
+	// literal and stayed at 27 while assertions were added.
+	let asserted = 0;
+	let negatives = 0;
 	const ok = ( cond, msg ) => {
+		asserted++;
+		if ( /NEGATIVE CONTROL/.test( msg ) ) negatives++;
 		if ( ! cond ) failures.push( msg );
 	};
 
@@ -793,12 +940,113 @@ function runSelfTest() {
 	ok( nativeBorderLiveness( skipBj, 'border-width: 2px;' ) === 'dead-own-design',
 		'liveness: paints its own border but ignores the client value is dead-own-design' );
 
+	// 7. ARRAY-PUSH SINK — the idiom 11 of the 18 ambiguous-anchor refusals use.
+	// Fixture mirrors the real sgs/testimonial shape: an array sink initialised
+	// with array(), pushed a CSS rule, guarded, then imploded into a <style>.
+	const arrPhp = [
+		"$root_sel = '.' . $uid . '.wp-block-sgs-testimonial';",
+		'$scoped_css = array();',
+		"$scoped_css[] = $root_sel . '{color:red;}';",
+		"$meta_parts[] = '<span class=\"x\">' . $label . '</span>';",
+		'?>',
+		'<?php if ( $scoped_css ) : ?>',
+		'<style><?php echo wp_strip_all_tags( implode( \'\', $scoped_css ) ); ?></style>',
+		'<?php endif; ?>',
+	].join( '\n' );
+	const arrA = findAnchors( arrPhp );
+	ok( arrA.cssVar === 'scoped_css', 'anchors: an array-push CSS sink must be detected' );
+	ok( arrA.cssKind === SINK_ARRAY, 'anchors: an array-push sink must be reported as kind=array' );
+	ok( arrA.rootVar === 'root_sel', 'anchors: root_sel must still win when present' );
+	// NEGATIVE CONTROL — the array-idiom twin of the $logos_html control above.
+	// These very files build their MARKUP by array push ($meta_parts[],
+	// $attr_parts[], $classes[]); pushing CSS into one would corrupt the output.
+	ok( ! arrA.cssCandidates.includes( 'meta_parts' ),
+		'anchors NEGATIVE CONTROL: an HTML array accumulator ($meta_parts[]) must NOT be a CSS-sink candidate' );
+	// NEGATIVE CONTROL — a name used under BOTH idioms cannot be both a string
+	// and an array; guessing would emit either a fatal or a silent $x[0] write.
+	const conflicted = findAnchors(
+		"$root_sel = '.x'; $mix_css .= '{a:b;}'; $mix_css[] = '{c:d;}';"
+	);
+	ok( conflicted.cssVar === null,
+		'anchors NEGATIVE CONTROL: a name appended BOTH ways is contradictory and must be refused' );
+
+	// 8. The emission must match the sink's type.
+	const emArr = renderPhpEmission( 'root_sel', 'scoped_css', SINK_ARRAY );
+	ok( /\$scoped_css\[\] = /.test( emArr ),
+		'emission: an array sink must be written with `[] =`' );
+	ok( ! /\$scoped_css \.=/.test( emArr ),
+		'emission NEGATIVE CONTROL: an array sink must NOT use `.=` (PHP fatal, Unsupported operand types)' );
+	ok( /\$my_css \.=/.test( renderPhpEmission( 'root_sel', 'my_css', SINK_STRING ) ),
+		'emission: a string sink must still be written with `.=`' );
+
+	// 9. ROOT-SELECTOR FALLBACK — 5 of the 18 name it per-block, not root_sel.
+	const fbPhp = "$sgs_form_sel = '.' . $sgs_form_uid . '.sgs-form';\n$sgs_form_supports_css .= $sgs_form_sel . '{a:b;}';";
+	ok( findAnchors( fbPhp ).rootVar === 'sgs_form_sel',
+		'anchors: a per-block `*_sel` assigned a ROOT-selector literal must be accepted' );
+	// NEGATIVE CONTROL — a DESCENDANT selector must never be taken as the root.
+	// sgs/testimonial declares $sgs_tm_link_sel = $root_sel . ' a'; scoping the
+	// border there would paint it on a child element instead of the block.
+	const descPhp = "$sgs_tm_link_sel = $root_sel . ' a';\n$x_css .= $sgs_tm_link_sel . '{a:b;}';";
+	ok( findAnchors( descPhp ).rootVar === null,
+		'anchors NEGATIVE CONTROL: a descendant selector ($x_sel = $root_sel . \' a\') must NOT be taken as the root' );
+	// NEGATIVE CONTROL — two competing root literals is ambiguous, not a coin toss.
+	const twoPhp = "$a_sel = '.' . $uid . '.one';\n$b_sel = '.' . $uid . '.two';\n$x_css .= $a_sel . '{a:b;}';";
+	ok( findAnchors( twoPhp ).rootVar === null,
+		'anchors NEGATIVE CONTROL: two root-selector literals must be refused, not guessed between' );
+
+	// 10. INSERTION POINT — before the guard, not before the print.
+	const guarded = [
+		"$responsive_css = '';",
+		"$responsive_css .= '.x{a:b;}';",
+		'if ( $responsive_css ) {',
+		"\tprintf( '<style>%s</style>', $responsive_css );",
+		'}',
+	].join( '\n' );
+	const gOut = transformRenderPhp( guarded, 'root_sel', 'responsive_css', SINK_STRING );
+	ok( gOut !== null, 'insertion: a guarded string sink must still be transformable' );
+	ok( gOut.indexOf( 'Shape B' ) < gOut.indexOf( 'if ( $responsive_css ) {' ),
+		'insertion: the emission must land BEFORE `if ( $responsive_css )` — inside it, a ' +
+			'border-only block would emit nothing at all (measured on 9 blocks, 2026-08-29)' );
+	// NEGATIVE CONTROL — the assertion above cannot pass vacuously on a missing
+	// marker: indexOf returns -1 for absent text, which is "before" everything.
+	ok( gOut.indexOf( 'Shape B' ) !== -1 && gOut.indexOf( 'if ( $responsive_css ) {' ) !== -1,
+		'insertion NEGATIVE CONTROL: both index probes must actually be found (guards -1 < n)' );
+	// NEGATIVE CONTROL — no top-level read means no proven-safe point. Here the
+	// only read is INDENTED (inside a foreach), where the emission would run
+	// once per iteration or not at all. Refuse rather than guess.
+	const nestedOnly = [
+		"$only_css = '';",
+		'foreach ( $items as $i ) {',
+		"\techo $only_css;",
+		'}',
+	].join( '\n' );
+	ok( findInsertionIndex( nestedOnly, 'only_css' ) === -1,
+		'insertion NEGATIVE CONTROL: an indented-only read is NOT a safe insertion point' );
+
+	// 11. PHP-MODE WRAPPING — an array-sink tail sits in HTML mode.
+	const arrOut = transformRenderPhp( arrPhp, 'root_sel', 'scoped_css', SINK_ARRAY );
+	ok( arrOut !== null, 'insertion: the array fixture must be transformable' );
+	ok( /<\?php\n\/\/ ── Block-private border/.test( arrOut ),
+		'insertion: an emission landing in HTML mode must be wrapped in <?php ... ?> — ' +
+			'bare PHP there prints the migration source as visible page text (and still parses)' );
+	ok( arrOut.indexOf( 'Shape B' ) < arrOut.indexOf( '<?php if ( $scoped_css ) : ?>' ),
+		'insertion: the array emission must precede the `if ( $scoped_css )` guard' );
+	// NEGATIVE CONTROL — a PHP-mode insertion must NOT gain a stray <?php, which
+	// would be a parse error the moment it reopened an already-open tag.
+	ok( ! /<\?php\n\/\/ ── Block-private border/.test( gOut ),
+		'insertion NEGATIVE CONTROL: a PHP-mode insertion must NOT be wrapped in <?php' );
+	ok( inHtmlMode( '<?php $a = 1; ?>\nplain', 20 ) === true &&
+			inHtmlMode( '<?php $a = 1;\n$b = 2;', 15 ) === false,
+		'inHtmlMode must distinguish HTML mode from PHP mode' );
+
 	if ( failures.length ) {
 		console.log( `SELF-TEST FAILED (${ failures.length }):` );
 		for ( const f of failures ) console.log( '  ! ' + f );
 		return 1;
 	}
-	console.log( 'SELF-TEST OK — 27 assertions passed (7 of them negative controls).' );
+	console.log(
+		`SELF-TEST OK — ${ asserted } assertions passed (${ negatives } of them negative controls).`
+	);
 	return 0;
 }
 
@@ -831,6 +1079,10 @@ module.exports = {
 	transformRenderPhp,
 	transformEditJs,
 	findAnchors,
+	findInsertionIndex,
+	inHtmlMode,
+	SINK_STRING,
+	SINK_ARRAY,
 	classify,
 	stripNativeBorderReads,
 	renderPhpEmission,
