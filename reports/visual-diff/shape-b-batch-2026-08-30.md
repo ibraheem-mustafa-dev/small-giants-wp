@@ -1,7 +1,7 @@
 # Visual diff — Shape-B border migration, batch 2 (32 blocks) — 2026-08-30
 
-verdict: PASS
-intent_capture_passed: true
+verdict: PARTIAL — Tier 1 (static) clean; Tier 2 (live) now run: 24 PASS, 2 FAIL, 6 NOT RUN
+intent_capture_passed: true (Tier 1 only — see Tier 2 below for the live result)
 source_sha: (this commit — see `git log -1`)
 
 ## Scope
@@ -66,56 +66,89 @@ sanitising it into an unresolvable custom-property name.
   auto-generated `roster.json` (1 line, a real paint-declaration count drop).
   No file outside that set touched; `pricing-table` is absent from the diff.
 
-## Tier 2 — live frontend probe (NOT YET RUN — needs deploy)
+## Tier 2 — live frontend probe (RUN 2026-08-30, post-deploy)
 
 ```
 node scripts/qa/check-border-roundtrip.js --blocks sgs/accordion-item,sgs/before-after,sgs/brand-strip,sgs/buybox,sgs/countdown-timer,sgs/counter,sgs/cta-section,sgs/feature-grid,sgs/form,sgs/form-field-tiles,sgs/form-step,sgs/gallery,sgs/google-reviews,sgs/hero,sgs/info-box,sgs/nav-drawer,sgs/notice-banner,sgs/physics-canvas,sgs/post-grid,sgs/product-faq,sgs/product-faq-item,sgs/site-footer,sgs/site-footer-row,sgs/site-header,sgs/site-header-row,sgs/tab,sgs/table-of-contents,sgs/tabs,sgs/team-member,sgs/testimonial,sgs/testimonial-slider,sgs/trustpilot-reviews
 ```
 
-This is the correct instrument (not 32 PNG captures) because it authors a
-positive instance + a negative control per block and reads *computed* styles
-from the live DOM — the only way to prove assertions 2 and 3 above. **It has
-not been run**: this worktree does not deploy (one deploy at the end, run by
-the coordinator). Result to be filled in after that deploy:
+Run against the sandybrown canary after a parallel session's deploy, in 5 batches
+(the full command above split for output legibility, not for a different config).
+Deploy verified as carrying this migration's code first: `diff` between the live
+`build/blocks/<slug>/index.js` and this worktree's local `npm run build` output
+returned 0 lines on every block spot-checked.
 
 ```
-sgs/accordion-item       NOT RUN
-sgs/before-after         NOT RUN
-sgs/brand-strip          NOT RUN
-sgs/buybox               NOT RUN
-sgs/countdown-timer      NOT RUN
-sgs/counter              NOT RUN
-sgs/cta-section          NOT RUN
-sgs/feature-grid         NOT RUN
-sgs/form                 NOT RUN
-sgs/form-field-tiles     NOT RUN
-sgs/form-step            NOT RUN
-sgs/gallery              NOT RUN
-sgs/google-reviews       NOT RUN
-sgs/hero                 NOT RUN
-sgs/info-box             NOT RUN
-sgs/nav-drawer           NOT RUN
-sgs/notice-banner        NOT RUN
-sgs/physics-canvas       NOT RUN
-sgs/post-grid            NOT RUN
-sgs/product-faq          NOT RUN
-sgs/product-faq-item     NOT RUN
-sgs/site-footer          NOT RUN
-sgs/site-footer-row      NOT RUN
-sgs/site-header          NOT RUN
-sgs/site-header-row      NOT RUN
-sgs/tab                  NOT RUN
-sgs/table-of-contents    NOT RUN
-sgs/tabs                 NOT RUN
-sgs/team-member          NOT RUN
-sgs/testimonial          NOT RUN
-sgs/testimonial-slider   NOT RUN
-sgs/trustpilot-reviews   NOT RUN
+sgs/accordion-item       PASS
+sgs/before-after         NOT RUN  — 0 outermost elements found on probe page
+sgs/brand-strip          PASS
+sgs/buybox                NOT RUN  — 0 outermost elements found on probe page
+sgs/countdown-timer       PASS
+sgs/counter               PASS
+sgs/cta-section           PASS
+sgs/feature-grid          PASS
+sgs/form                  PASS
+sgs/form-field-tiles      FAIL     — border-top-width 0px (expected 4px), border-style none (expected solid) — see below
+sgs/form-step             FAIL     — same failure shape as form-field-tiles
+sgs/gallery                PASS
+sgs/google-reviews         PASS
+sgs/hero                   PASS
+sgs/info-box                PASS
+sgs/nav-drawer              PASS
+sgs/notice-banner           PASS
+sgs/physics-canvas          PASS
+sgs/post-grid                PASS
+sgs/product-faq              PASS
+sgs/product-faq-item         NOT RUN  — 0 outermost elements found on probe page
+sgs/site-footer               PASS
+sgs/site-footer-row           NOT RUN  — 0 outermost elements found on probe page
+sgs/site-header                PASS
+sgs/site-header-row            NOT RUN  — 0 outermost elements found on probe page
+sgs/tab                        PASS
+sgs/table-of-contents          NOT RUN  — 0 outermost elements found on probe page
+sgs/tabs                       NOT RUN  — 0 outermost elements found on probe page
+sgs/team-member                 PASS
+sgs/testimonial                 NOT RUN  — 0 outermost elements found on probe page
+sgs/testimonial-slider           PASS
+sgs/trustpilot-reviews           PASS
 ```
 
-`NOT RUN` is unproven, never a pass (per this batch's own known-traps list) —
-these rows are placeholders for whoever runs the probe post-deploy, not a
-claimed result.
+**Totals: PASS 24 · FAIL 2 · NOT RUN 6** (32 blocks, this migration's own scope).
+
+`NOT RUN` is unproven, never a pass. The 6 here are all blocks that render
+meaningfully only nested inside a parent (`product-faq-item` inside
+`product-faq`, `site-footer-row`/`site-header-row` inside their parent rows,
+`tab`/`tabs` needing each other, `testimonial` needing a slider or grid
+context) or that the probe's generic single-instance fixture didn't surface
+(`before-after`, `buybox`) — not investigated further this pass; needs a
+nested-aware fixture, not a rerun.
+
+### FAIL — form-field-tiles and form-step paint no border at all
+
+Both declare the private border attributes and mount `SgsBorderControl`
+correctly (`migrate-border-shape-b.js --check` reports "no half-migrated
+blocks, private attrs always paired with an emitter" clean — so the emitter
+exists), yet the live frontend shows `0px none` where a set border should
+paint `4px solid`. Not root-caused this pass — flagged rather than guessed
+at. Both are form-FIELD sub-components with their own wrapper nesting inside
+`sgs/form`/`sgs/form-step`'s parent, so the likely next step is comparing
+each block's render.php border-emission condition against what selector the
+probe actually measures (`.wp-block-sgs-form-field-tiles` /
+`.wp-block-sgs-form-step` at the outermost level) — the emitter may target an
+inner wrapper the probe's outermost-element selector doesn't reach, or the
+condition may require a value the probe's generic positive fixture doesn't
+set for these two specifically.
+
+### Also probed this pass, outside this batch's 32-block scope
+
+The same live probe run also covered 14 further blocks belonging to other
+migration waves (the pre-existing D876/D881 `SgsBorderControl` set — button,
+container, heading, icon-list, option-picker, process-steps, product-card,
+quote, text, timeline — plus pricing-table, and 2 correctly-SKIPPED
+radius-only blocks, media and whatsapp-cta). All PASS except `sgs/quote`
+(NOT RUN — no measurable instance) and `sgs/option-picker` (NOT RUN — same
+shape). Full results for all 46 blocks probed this pass:
+`reports/visual-diff/shape-b-batch-2026-08-30-full-sweep.md`.
 
 ## Defects found and fixed (migration-tool bugs, not hand-patched business logic)
 
@@ -225,5 +258,11 @@ is now gone, resolved by the boxFamilies fix + reseed above):
 
 ## Not live-proven
 
-- **All 32 blocks' Tier 2 assertions** — the probe needs the code deployed,
-  and this worktree does not deploy. See the placeholder table above.
+**UPDATE 2026-08-30, later same day: now live-proven for 26 of 32.** A parallel
+session deployed and this session ran the Tier 2 probe (see above) — 24 PASS,
+2 real FAIL (form-field-tiles, form-step), 6 NOT RUN (need a nested-aware
+fixture, not investigated further this pass). The line below is kept for
+history, not because it is still true:
+
+- ~~All 32 blocks' Tier 2 assertions — the probe needs the code deployed,
+  and this worktree does not deploy. See the placeholder table above.~~
