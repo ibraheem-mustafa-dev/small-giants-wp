@@ -172,7 +172,7 @@ function classifyBlock( slug, blockJson ) {
 
 	// Give the block something to paint around where it takes plain text.
 	let contentAttr = null;
-	for ( const cand of [ 'content', 'text', 'label', 'heading' ] ) {
+	for ( const cand of [ 'content', 'text', 'label', 'heading', 'quote' ] ) {
 		if ( attrs[ cand ] && attrs[ cand ].type === 'string' ) {
 			contentAttr = cand;
 			break;
@@ -219,10 +219,113 @@ function buildInstanceMarkup( slug, attrs, innerBlock ) {
 	}
 	return (
 		`<!-- wp:${ slug } ${ json } -->\n` +
-		'<!-- wp:sgs/text {"content":"border probe"} /-->\n' +
+		'<!-- wp:sgs/text {"text":"border probe"} /-->\n' +
 		`<!-- /wp:${ slug } -->`
 	);
 }
+
+/**
+ * Per-block fixture overrides for blocks whose real content shape the generic
+ * mechanism (borderWidth/borderStyle/borderColour + one optional string
+ * content attribute) cannot express. Keyed by slug. Absent = generic path.
+ *
+ *   extraAttrs   Extra attributes merged into BOTH the positive and negative
+ *                payload (the border attrs still win for borderStyle).
+ *   buildMarkup  Full override of buildBlockMarkup() for this block, when the
+ *                required structure (a specific child block, a loop wrapper)
+ *                cannot be expressed as extra attributes alone.
+ *   pageExtra    Markup appended to the probe page OUTSIDE the root wrapper —
+ *                for content the block reads from the wider page/post rather
+ *                than from its own attributes (e.g. table-of-contents scans
+ *                the whole stored post for real headings).
+ */
+const FIXTURE_PRODUCT_ID = 540; // Live "Mama's Test Box — 48 SKU fixture" variable product on the sandybrown canary.
+
+const FIXTURES = {
+	'sgs/before-after': {
+		extraAttrs: {
+			beforeImageUrl: 'https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/06/cookies-stacked-5.jpg',
+			beforeImageAlt: 'border probe before',
+			afterImageUrl: 'https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/06/cookies-stacked-5.jpg',
+			afterImageAlt: 'border probe after',
+		},
+	},
+	'sgs/option-picker': {
+		extraAttrs: {
+			optionItems: [
+				{ key: 'a', label: 'Option A' },
+				{ key: 'b', label: 'Option B' },
+			],
+		},
+	},
+	'sgs/tabs': {
+		buildMarkup: ( slug, cls ) => {
+			const { positive, negative } = buildAttrPair( cls );
+			const tabChild = [
+				'<!-- wp:sgs/tab {"label":"Tab One"} -->',
+				'<!-- wp:sgs/text {"text":"border probe"} /-->',
+				'<!-- /wp:sgs/tab -->',
+			].join( '\n' );
+			const one = ( attrs ) =>
+				[ `<!-- wp:${ slug } ${ JSON.stringify( attrs ) } -->`, tabChild, `<!-- /wp:${ slug } -->` ].join(
+					'\n'
+				);
+			return one( positive ) + '\n' + one( negative );
+		},
+	},
+	'sgs/table-of-contents': {
+		pageExtra:
+			'<!-- wp:heading {"level":2} --><h2 class="wp-block-heading">Probe Heading</h2><!-- /wp:heading -->',
+	},
+	'sgs/buybox': {
+		// Buybox reads its product ONLY from block.context.postId — a bare
+		// wrapper block supplies no such context. A core/query + include
+		// loop is NOT used here: this exact combination is documented in
+		// plugins/sgs-blocks/CLAUDE.md as silently dropping the ID filter and
+		// resolving to the newest product instead. woocommerce/product-
+		// collection's hand-picked collection type is the block's own
+		// mechanism for pinning to specific product IDs and is what Woo core
+		// itself emits when an operator picks "Hand-picked Products" in the
+		// editor — both probe instances are nested inside the SAME single
+		// iteration so the loop only needs perPage:1.
+		buildMarkup: ( slug, cls ) => {
+			const { positive, negative } = buildAttrPair( cls );
+			const query = {
+				queryId: 0,
+				query: {
+					perPage: 1,
+					pages: 0,
+					offset: 0,
+					postType: 'product',
+					order: 'asc',
+					orderBy: 'title',
+					search: '',
+					exclude: [],
+					inherit: false,
+					taxQuery: {},
+					isProductCollectionBlock: true,
+					woocommerceOnSale: false,
+					woocommerceStockStatus: [ 'instock', 'outofstock', 'onbackorder' ],
+					woocommerceAttributes: [],
+					woocommerceHandPickedProducts: [ String( FIXTURE_PRODUCT_ID ) ],
+					featured: false,
+					timeFrame: null,
+					priceRange: null,
+				},
+				collection: 'woocommerce/product-collection/hand-picked',
+				displayLayout: { type: 'flex', columns: 1, shrinkColumns: true },
+			};
+			return [
+				`<!-- wp:woocommerce/product-collection ${ JSON.stringify( query ) } -->`,
+				'<!-- wp:woocommerce/product-template -->',
+				`<!-- wp:${ slug } ${ JSON.stringify( positive ) } /-->`,
+				`<!-- wp:${ slug } ${ JSON.stringify( negative ) } /-->`,
+				'<!-- /wp:woocommerce/product-template -->',
+				'<!-- /wp:woocommerce/product-collection -->',
+			].join( '\n' );
+		},
+	},
+};
 
 /**
  * Attribute payloads for one block's positive instance and negative control.
@@ -232,7 +335,9 @@ function buildInstanceMarkup( slug, attrs, innerBlock ) {
  */
 function buildAttrPair( cls ) {
 	const width = { top: PROBE_WIDTH, right: PROBE_WIDTH, bottom: PROBE_WIDTH, left: PROBE_WIDTH };
-	const base = { borderWidth: width, borderColour: SLUG };
+	const fixture = FIXTURES[ cls.slug ];
+	const extra = fixture && fixture.extraAttrs ? fixture.extraAttrs : {};
+	const base = Object.assign( {}, extra, { borderWidth: width, borderColour: SLUG } );
 	const positive = Object.assign( {}, base, { borderStyle: cls.onStyle } );
 	const negative = Object.assign( {}, base, { borderStyle: cls.offStyle } );
 	if ( cls.contentAttr ) {
@@ -252,6 +357,10 @@ function buildAttrPair( cls ) {
  * @return {string} Markup for both instances.
  */
 function buildBlockMarkup( slug, cls ) {
+	const fixture = FIXTURES[ slug ];
+	if ( fixture && fixture.buildMarkup ) {
+		return fixture.buildMarkup( slug, cls );
+	}
 	const { positive, negative } = buildAttrPair( cls );
 	const inner = usesInnerBlocks( slug );
 	return buildInstanceMarkup( slug, positive, inner ) + '\n' + buildInstanceMarkup( slug, negative, inner );
@@ -915,7 +1024,16 @@ async function main() {
 		return;
 	}
 
-	const content = wrapInProbeRoot( probeable.map( ( p ) => buildBlockMarkup( p.slug, p ) ).join( '\n' ) );
+	// pageExtra markup (e.g. table-of-contents' real heading) lives OUTSIDE the
+	// root wrapper deliberately — some blocks read from the whole stored post,
+	// not just their own DOM subtree, so scoping it inside #ROOT_ID would be
+	// no safer and would only add noise to the root-scoped element queries.
+	const pageExtras = probeable
+		.map( ( p ) => FIXTURES[ p.slug ] && FIXTURES[ p.slug ].pageExtra )
+		.filter( Boolean );
+	const content =
+		wrapInProbeRoot( probeable.map( ( p ) => buildBlockMarkup( p.slug, p ) ).join( '\n' ) ) +
+		( pageExtras.length ? '\n' + pageExtras.join( '\n' ) : '' );
 
 	let browser = null;
 	let pageId = null;
