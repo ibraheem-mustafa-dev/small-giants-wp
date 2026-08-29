@@ -389,7 +389,13 @@
 
 // Default hidden state (overridden immediately for reduced motion).
 // Only applies when the timeline has data-reveal-on-scroll set.
-.sgs-timeline[data-reveal-on-scroll] .sgs-timeline__entry:not(.is-revealed) {
+//
+// ⛔ GATED ON `.is-js` FOR THE SAME REASON AS THE CONNECTOR REVEAL (:1354) — with
+// no JS, an entry hidden by a plain attribute-keyed rule is unreachable FOREVER.
+// The attribute is authored into the markup, so it matches whether or not view.js
+// ever runs; `.is-js` is added BY view.js, so it cannot. Default state is VISIBLE
+// and only a running script opts an entry into being hidden.
+.sgs-timeline[data-reveal-on-scroll].is-js .sgs-timeline__entry:not(.is-revealed) {
 	opacity: 0;
 	transform: translateY(20px);
 }
@@ -403,7 +409,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.sgs-timeline[data-reveal-on-scroll] .sgs-timeline__entry:not(.is-revealed) {
+	// Carries `.is-js` to stay specificity-MATCHED with the hidden state above
+	// (both (0,5,0)). Without it this rule would sit at (0,4,0), lose the cascade,
+	// and leave reduced-motion users looking at permanently hidden entries — a
+	// losing rule is indistinguishable from an absent one.
+	.sgs-timeline[data-reveal-on-scroll].is-js .sgs-timeline__entry:not(.is-revealed) {
 		opacity: 1;
 		transform: none;
 	}
@@ -1027,9 +1037,30 @@
 	}
 
 	// Vertical alternating collapses to left-aligned on mobile.
+	//
+	// ⛔ THE RAIL HAS TWO HALVES AND BOTH MUST MOVE. The static line is this
+	// element's `::before`; the animated fill is a SEPARATE element
+	// (`.sgs-timeline__progress`). Until 2026-08-29 this block moved only the
+	// `::before`, so the fill kept the base vertical rule (`left:50%`) and the two
+	// halves of one rail sat 171px apart at 375px — measured live: line at x=16,
+	// fill at x=179, dots at x=8. A second literal is how they drift (the same
+	// note guards the horizontal rule at :159), so the offset is declared ONCE
+	// here and both halves read it.
+	//
+	// The value is HALF the node, not a whole node: column 1 is `auto`, sized to
+	// the 16px node, so the dots' centre is at 8px. `align-left` already derives
+	// it this way (:595). The old `var(--sgs-node-size)` put the line on the
+	// node's right EDGE, 8px off the dots it is meant to thread.
 	.sgs-timeline--vertical.sgs-timeline--align-alternating {
+		--sgs-timeline-rail-offset: calc(var(--sgs-node-size) / 2);
+
 		&::before {
-			left: var(--sgs-node-size);
+			left: var(--sgs-timeline-rail-offset);
+			transform: none;
+		}
+
+		.sgs-timeline__progress {
+			left: var(--sgs-timeline-rail-offset);
 			transform: none;
 		}
 
