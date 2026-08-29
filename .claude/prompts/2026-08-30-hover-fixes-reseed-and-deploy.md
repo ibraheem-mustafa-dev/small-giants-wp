@@ -1,8 +1,12 @@
-# Next session — finish the hover work: reseed, deploy, live-verify
+# Client-controls track — hover work CLOSED; what remains is listed at the bottom
 
-**Written 2026-08-29.** Client-controls track. Invoke `/autopilot` first.
-Everything here is BLOCKED WORK, not new work — the code is written, committed and
-pushed. What is missing is a clean tree.
+**Written 2026-08-29, updated the same day.** Invoke `/autopilot` first.
+
+⛔ **Tasks A, B and C are ALL DONE** — reseed, guard wired, deployed, live-verified,
+and all three visual-diff debts paid. They are kept below for their root-cause
+records, which were expensive to establish. **The only live work is
+"Still open, untouched, carried forward" near the end** — read that first, and
+⛔ read the Spec 39 entry there before repeating anything about its status.
 
 ---
 
@@ -62,9 +66,31 @@ Schema-drift reports CLEAN. Do not go looking for a broken writer.
 
 ---
 
-## ⭐ WHAT IS ACTUALLY LEFT: Task C only. And this was the blocker's shape
+## ✅ TASK C IS ALSO DONE — deployed, live-verified, all three debts paid
 
-## THE ORIGINAL BLOCKER, and why it is not a code problem
+A parallel session deployed and its payload carried this work (verified on the server, with a
+positive control per file). Live measurements, mouse driven to real coordinates so `:hover`
+genuinely matches:
+
+| Block | Element | Resting -> Hover | Block root |
+|---|---|---|---|
+| testimonial | `.sgs-testimonial__quote` colour | `rgb(26,26,26)` -> `rgb(200,30,30)` | UNCHANGED |
+| process-steps | `.sgs-process-steps__number` bg | `rgb(26,26,26)` -> `rgb(200,30,30)` | UNCHANGED |
+
+Ken Burns on Bean's `/test-kenburns/` page captured the bug and the fix in one reading:
+`imgFastPath=YES`, `containerBgImage=none` (nothing for the old rule to animate),
+`containerAnim=sgs-container-ken-burns` running on nothing, `imgAnim=sgs-container-ken-burns-img`
+on the element that paints. Motion proven by transform matrix at t=0 vs t=+17.1s, and the
+screenshot pair visibly differs.
+
+Reports: `reports/visual-diff/{testimonial,process-steps,container}-2026-08-29.md`.
+⚠ One residual gap, stated honestly in the container report: reduced-motion is verified as
+RULE-PRESENCE in the live CSSOM, not as emulated-media behaviour — no `prefers-reduced-motion`
+emulation was available. Close that if you have media emulation.
+
+---
+
+## The blocker's shape — kept because it recurs, not because it is live
 
 At the time of writing the worktree carried **~27 modified files from other
 tracks** (accordion Shape-B, star-rating, tabs, timeline, button, card-grid, block
@@ -80,9 +106,8 @@ That blocks two things, both correctly:
   MEASURED, not assumed: `--stage 1 --dry-run` reported `new_attrs: 5` across 83
   blocks, and **none of the five were mine**.
 
-⭐ **First action next session: `git status`. If the tree is clean, everything
-below is unblocked and is maybe 30 minutes of work. If it is not, stop and do
-something else — none of this is safe on a dirty tree.**
+⭐ **The lesson, not the status: on this shared tree, `git status` before any
+deploy or reseed. Neither is safe while another track has files in flight.**
 
 ---
 
@@ -141,7 +166,7 @@ undeclared — FR-35-5 STATE_WITHOUT_BASE fires for any hover with no resting
 counterpart, and that baseline only ratchets down. `--self-test` is 9/9 and
 includes the exemption's own negative control.
 
-## Task C — deploy, then pay three visual-diff debts
+## ✅ Task C — DONE. Kept below for the assertions each report had to carry.
 
 Deploy via `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown`.
 ⚠ The motion track had uncommitted `fx` sources; a deploy may still need
@@ -187,11 +212,32 @@ of specificity, so a colour set on the card root could never reach it. If you se
   Needs its own design gate with Bean; nobody has priced the false-positive cost,
   and a gate that fires on every multi-file commit gets bypassed reflexively.
   Whoever fixes it: add a fixture from `1612c7b1e` to `--self-test`.
-- **Spec 39 STILL does not exist** and paces the migration — 37 conformance
-  goldens sit `xfail(strict=True)` naming it, and finishing more of the tier
-  migration INCREASES the blocked surface until it ships. Check first whether its
-  scope is already settled across D276/D552/D554; it may be transcription plus a
-  design gate rather than open design.
+- ⛔ **Spec 39 — READ THIS BEFORE REPEATING THE OLD LINE. It does NOT pace the
+  migration, and it is NOT this track's to build** (Bean, 2026-08-29). The line
+  that stood here said the opposite and was wrong twice over:
+
+  **Wrong on ordering.** D552 is the governing rule — **the block standard LEADS,
+  the cloning pipeline is reworked AFTERWARDS** to the universalised norm. The
+  converter's inability to emit the new shape is *scheduled work, never a
+  precondition*. The order is: **become uniform first, then build Spec 39 with
+  that uniformity as the foundation.** Gating uniformity on Spec 39 inverts it.
+
+  **Wrong on evidence.** "37 conformance goldens sit `xfail(strict=True)` naming
+  it" does not survive checking: **0** xfails anywhere in the plugin reference
+  Spec 39 (17 exist in total, so the grep does find them). And
+  `check_flat_tier_regression.py` lives in `orchestrator/` — the cloning pipeline,
+  not the block standard, exactly where D552 puts it.
+
+  **This track's actual job** is CAPTURING prioritised points for whoever writes
+  Spec 39 — not writing it. The inputs are already collected in
+  `.claude/plans/spec-39-seed-requirements.md` (status: "SEED — do NOT treat as a
+  spec") and `.claude/plans/spec-35-capability-routing-doctrine.md`.
+
+  ⚠ The seed doc states the ordering rule and adds that it is "recorded here so a
+  future session cannot re-invert it and block a standard change on converter
+  cost." It was re-inverted anyway, in the LEDGER and in this prompt, and I
+  repeated it from there without checking. **Read the seed doc before writing
+  anything about Spec 39's status.**
 - **CHECK A backlog 207** is a raise against a down-only rule — a debt, not a new
   floor. Re-measure and lower once the hover-gradient-masked-border-ring desync
   class is fixed.

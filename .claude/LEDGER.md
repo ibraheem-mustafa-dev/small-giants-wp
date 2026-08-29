@@ -41,8 +41,8 @@ The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section
 
 ⭐ **If you are the client-controls track:** read
 `.claude/prompts/2026-08-30-hover-fixes-reseed-and-deploy.md` — EVERY remaining task.
-Earlier prompt names are stale. ⛔ **Tasks A+B are DONE** (reseed + guard wired, both
-verified). What remains is **Task C only: DEPLOY, hand hover-check, 3 visual-diff reports.**
+Earlier prompt names are stale. ✅ **Tasks A+B+C are ALL DONE** — reseed, guard wired, deployed
+(by a parallel session), live hover-verified, and all 3 visual-diff debts PAID.
 
 ⛔ **Before building ANY script or hand-doing investigative work, grep the two GENERATED
 catalogues in `.claude/dev-setup.md`.** 524 scripts across FIVE directories, and this repo's
@@ -345,14 +345,16 @@ members. Separately the deploy went **114MB → 29MB** (dev tooling + dev-only v
 carved out, each with evidence). Ceiling 150 → 45MB.
 
 ### ⚠ STANDING BACKLOG — carried, do not compress away
-Spec 39 still does not exist and PACES everything: 37 conformance goldens sit `xfail(strict=True)`
-naming it, and finishing more of the tier migration INCREASES the blocked surface until it ships.
-Full open list + the 37-family scope + the `check-box-flat` exit-code caveat live in Task 6 of the
-prompt and in `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`. ⛔ This block was dropped
-in the 2026-08-27 LEDGER rewrite and restored after QC caught it — a D101 subtraction. Move it to
-`parking.md` with Bean's say-so if it must shrink; do not delete it. Note: Task 6's own "Step 0 —
-fix the instruments first" is CLOSED — `807ef4611` (D777) added `_base_attr_spec()` to
-`migrate-tier-object.py`, fixing the `<prop>Desktop`-base blind spot; Steps 2-5 remain open.
+⛔ **Spec 39 does NOT pace this, and is NOT this track's to build** (Bean 2026-08-29, correcting
+the line that stood here). D552: **standard LEADS, pipeline follows.** UNIFORMITY FIRST, then
+Spec 39 is built ON it; this track only CAPTURES points
+(`plans/spec-39-seed-requirements.md` exists to stop this exact inversion — which happened
+anyway). ⚠ The old claim's evidence was FALSE: **0** xfails name Spec 39 (17 exist, so the grep
+works). Open list: `plans/2026-08-25-road-to-uniform-then-spec-39.md`. ⛔ Dropped in the
+2026-08-27 rewrite and restored after QC caught it — a D101 subtraction. Move to `parking.md`
+with Bean's say-so if it must shrink; never delete. "Step 0 — fix the instruments" is CLOSED
+(`807ef4611`, D777: `_base_attr_spec()` fixed the `<prop>Desktop`-base blind spot in
+`migrate-tier-object.py`); Steps 2-5 remain open.
 
 ### ⚠ Carried
 Hero still owes a visual-diff report (bypassed when a deploy was impossible) · `sgs/media`'s
