@@ -309,6 +309,27 @@ if ( '' !== $quote_colour_effective ) {
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $quote_colour_sel, $quote_colour_effective );
 }
 
+// Hover quote colour — an ANCESTOR-hover rule (hovering the CARD recolours the
+// quote), hand-built for the same reason sgs/post-grid documents at
+// render.php:551: sgs_emit_state_colour_css() appends `:hover` directly onto the
+// selector it is given, so it can only ever express "this element's own hover".
+//
+// It must target the quote itself, not the card. The quote carries its own
+// explicit `color` above whenever quoteColour is set, and an explicit
+// declaration on an element always beats an inherited value regardless of
+// specificity — so a `color` set on the card root never reaches it. Emitted
+// independently of the root $hover_decls bucket: this attribute is sufficient
+// on its own and must not depend on an unrelated hover attr being set too.
+//
+// `:focus-within` (not `:focus-visible`) is the correct twin for this shape —
+// the element that takes focus is a descendant of the card, not the card.
+$quote_colour_hover = (string) ( $attributes['quoteColourHover'] ?? '' );
+if ( '' !== $quote_colour_hover ) {
+	$scoped_css[] = $root_sel . ':hover .sgs-testimonial__quote,'
+		. $root_sel . ':focus-within .sgs-testimonial__quote'
+		. '{color:' . sgs_colour_value( $quote_colour_hover ) . ';}';
+}
+
 // Reviewer name — colour stays on the shared per-element rule builder;
 // font-size (new, Spec 35 tier-object shape) + font-weight (pre-existing,
 // unchanged attribute/default/control) now route through the shared
@@ -518,9 +539,9 @@ if ( $wrapper_vars ) {
 if ( $hover_decls ) {
 	// Via the ONE shared hover-colour helper, which also emits the
 	// `:focus-visible` twin a keyboard user needs.
-	if ( '' !== ( $attributes['quoteColourHover'] ?? '' ) ) {
-		$hover_decls[] = 'color:' . sgs_colour_value( $attributes['quoteColourHover'] );
-	}
+	// NOTE: `quoteColourHover` is deliberately NOT in this bucket — it paints a
+	// DESCENDANT (the quote), not the card root, so it is emitted as an
+	// ancestor-hover rule beside its resting sibling instead. See there.
 	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, array(), $hover_decls );
 }
 

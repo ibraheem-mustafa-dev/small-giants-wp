@@ -136,6 +136,13 @@
 						"css:background-color": "numberBackground",
 						"css:background-image": "numberBackgroundGradient"
 					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "numberBackgroundHover"
+							}
+						}
+					},
 					"_note": "numberStyle (circle/square/none variant) is a structural/variant selector, not a style-cluster member — not mapped. Both colour members resolve via default convention (`number`+`Colour`/`Background`)."
 				},
 				"description": {

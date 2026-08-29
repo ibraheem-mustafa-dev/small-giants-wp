@@ -266,9 +266,9 @@ if ( $hover_text_colour ) {
 if ( $hover_border_colour ) {
 	$hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
 }
-if ( '' !== ( $attributes['numberBackgroundHover'] ?? '' ) ) {
-	$hover_decls[] = 'background-color:' . sgs_colour_value( $attributes['numberBackgroundHover'] );
-}
+// NOTE: `numberBackgroundHover` is deliberately NOT in this bucket — it paints
+// the number BADGE, a descendant, not the block root. It is emitted as an
+// ancestor-hover rule beside its resting sibling `numberBackground` below.
 if ( $hover_decls ) {
 	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, array(), $hover_decls );
 }
@@ -362,6 +362,25 @@ if ( $number_background ) {
 }
 if ( $num_decls ) {
 	$scoped_css[] = "{$num_scope}{" . implode( ';', $num_decls ) . ';}';
+}
+
+// Hover badge background — an ANCESTOR-hover rule: hovering the STEP repaints
+// the number badge. Hand-built because sgs_emit_state_colour_css() appends
+// `:hover` directly onto the selector it is given, so it can only express "this
+// element's own hover" (sgs/post-grid documents the same constraint at
+// render.php:551).
+//
+// The trigger is `.sgs-process-steps__step`, matching the hover trigger this
+// block's own style.css already uses for its lift/scale/glow effects
+// (style.css:169) — so the badge colour changes in step with the effect the
+// operator has already chosen, not on a second, different target.
+$number_background_hover = (string) ( $attributes['numberBackgroundHover'] ?? '' );
+if ( '' !== $number_background_hover ) {
+	$step_sel     = $root_sel . ' .sgs-process-steps__step';
+	$num_el       = ' .sgs-process-steps__number';
+	$scoped_css[] = $step_sel . ':hover' . $num_el . ','
+		. $step_sel . ':focus-within' . $num_el
+		. '{background-color:' . sgs_colour_value( $number_background_hover ) . ';}';
 }
 
 if ( $title_colour ) {

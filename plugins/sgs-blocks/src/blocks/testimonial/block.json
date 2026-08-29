@@ -113,6 +113,13 @@
 						"css:margin-bottom": "quoteMarginBottom",
 						"css:background-image": "quoteColourGradient"
 					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "quoteColourHover"
+							}
+						}
+					},
 					"_note": "quoteMarginBottom (render.php:153,241, `'margin-bottom' => $quote_margin_bot`) resolves via the new css:margin-bottom layout member (Spec 35 vocabulary fix). quoteColourGradient (D636 Task 1b) is the text-colour gradient sibling to quoteColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member."
 				},
 				"reviewer-name": {
