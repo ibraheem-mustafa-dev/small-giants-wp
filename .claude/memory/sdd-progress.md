@@ -259,3 +259,21 @@ All three merged via isolated worktrees from origin/main (never the shared main 
 tree — hit a genuine "could not write index" race the one time a merge was attempted
 directly on shared main). Full converter suite green throughout (705-712 passed depending
 on task, 0 regressions at any point).
+
+---
+
+## Run: fidelity-comparator (2026-08-29)
+
+Plan: `.claude/plans/2026-08-29-fidelity-comparator-build-plan.md`
+Base: 0ea1143ad (main). Working directly in the shared main tree, scoped strictly to
+`plugins/sgs-blocks/scripts/generative-background/` — a directory no other session touches.
+package.json / gates.json are shared and are handled by the controller, not delegated.
+
+Task 1: complete (poc-replica.html + flip-probe.mjs). Implementer sonnet, reviewer opus,
+  2 review rounds. Round 1: SPEC ❌, 2 Critical — the page hung forever under the committed
+  server root (palette path escaped it, 403 → unset __ready AND unset __err), and the flipY
+  evidence was unsound. Round 2: SPEC ✅ — the flipY answer INVERTED (false → true) once a
+  mechanical FBO/readPixels probe replaced the hue-comparison; independently corroborated by
+  a separate Python/PIL decode giving the identical 29.73 mismatch figure. 4 Important closed
+  in a third pass (residual ?t= hang, missing probe separation gate, missing provenance,
+  preserveDrawingBuffer capture trap).
