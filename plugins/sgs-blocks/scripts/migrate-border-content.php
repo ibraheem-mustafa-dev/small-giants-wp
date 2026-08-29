@@ -132,30 +132,14 @@ function sgs_border_content_map( array $border ): array {
 	if ( $styles ) {
 		$attrs['borderStyle'] = $styles[0];
 	} elseif ( $widths ) {
-		// A width with no style paints NOTHING — CSS defaults border-style to
-		// `none`, and neither sgs/container nor sgs/product-card sets a base
-		// border-style in its style.css (checked, 2026-08-30). So these values
-		// never painted, even BEFORE the migration stripped the native supports.
-		//
-		// That makes writing `solid` a VISIBLE ADDITION, not a repair, so it is
-		// NOT the default. Carrying the value across losslessly is a no-op for
-		// the client; inventing a style they never had is a design change and
-		// belongs to a person. Pass the `infer-solid` token to opt in.
-		// Bean, 2026-08-30: "It's not a design change if something that should be
-		// visible is now fixed and becomes visible." A width and a colour were
-		// authored deliberately; the only reason nothing painted is a missing
-		// third property. Restoring the intent IS the fix, so this is the DEFAULT.
-		// `no-infer` opts out for a case where the absence is genuinely intended.
-		if ( defined( 'SGS_BORDER_NO_INFER' ) && SGS_BORDER_NO_INFER ) {
-			return array(
-				'attrs'  => array(),
-				'note'   => null,
-				'refuse' => 'no border-style stored and `no-infer` was passed — held for review',
-			);
-		}
-		$attrs['borderStyle'] = 'solid';
-		$note                 = 'INFERRED "solid": a width + colour were stored with no style, so ' .
-			'nothing painted. This border now renders as authored.';
+		// No style stored — deliberately write NOTHING. Since 2026-08-30 the
+		// blocks' own `borderStyle` default is 'solid' (Bean: "none isn't a
+		// style; that is set by putting thickness at 0"), so omitting the key
+		// lets the block default paint the authored width and colour. That is
+		// strictly better than writing 'solid' into every post: less stored
+		// data, and the value follows the block if the default ever changes.
+		$note = 'no border-style stored — omitted, so the block default (solid) paints the ' .
+			'authored width/colour. Previously this combination painted nothing.';
 	}
 
 	return array( 'attrs' => $attrs, 'note' => $note, 'refuse' => null );
@@ -275,9 +259,12 @@ function sgs_border_content_self_test(): int {
 	// NEGATIVE CONTROL — by default a width with NO stored style must REFUSE,
 	// not silently invent one. Inventing `solid` makes a border appear that has
 	// never painted; that is a design change, not a migration.
-	$ok( 'solid' === $side_nostyle['attrs']['borderStyle'], 'a width with no stored style must infer solid by default so the authored border paints' );
-	$ok( null !== $side_nostyle['note'], 'the inference must be REPORTED on every run, never silent' );
-	$ok( null === $side_nostyle['refuse'], 'inferring must not also refuse' );
+	// NEGATIVE CONTROL — no style stored must write NO borderStyle key at all, so
+	// the block's own 'solid' default paints it. Writing one would duplicate the
+	// default into every post and pin it if the default ever changes.
+	$ok( ! isset( $side_nostyle['attrs']['borderStyle'] ), 'NEGATIVE CONTROL: no stored style must write NO borderStyle key — the block default paints it' );
+	$ok( isset( $side_nostyle['attrs']['borderWidth'] ), 'the width must still migrate even with no style stored' );
+	$ok( null !== $side_nostyle['note'], 'the omission must be REPORTED on every run, never silent' );
 
 	// NEGATIVE CONTROL — differing per-side colours must REFUSE, never flatten.
 	$multi = sgs_border_content_map(

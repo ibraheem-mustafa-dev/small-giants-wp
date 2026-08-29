@@ -120,7 +120,15 @@ const BORDER_STYLE_ENUM = [
 
 const PRIVATE_ATTRS = {
 	borderWidth: { type: 'object', default: {} },
-	borderStyle: { type: 'string', enum: BORDER_STYLE_ENUM, default: 'none' },
+	// DEFAULT 'solid', not 'none' (Bean, 2026-08-30): "none isn't a style, and
+	// that is usually set through putting thickness at 0 — there's no point in
+	// having an invisible border." Defaulting to 'none' created a whole defect
+	// class: a width and a colour that paint nothing. Absence of a border is now
+	// expressed by absence of WIDTH, which the G5 rule already enforces.
+	// 'none' STAYS in the enum — WP coerces an out-of-enum value to the default,
+	// so removing it would silently rewrite every stored "none" to "solid" and
+	// switch borders on across live content.
+	borderStyle: { type: 'string', enum: BORDER_STYLE_ENUM, default: 'solid' },
 	borderColour: { type: 'string', default: '' },
 	borderColourGradient: {
 		type: 'string',
@@ -2442,8 +2450,15 @@ function runSelfTest() {
 	}
 	ok( outBj.attributes.borderStyle.enum.length === 9,
 		'block.json: borderStyle must carry the 9-value enum' );
-	ok( outBj.attributes.borderStyle.default === 'none',
-		'block.json: borderStyle must default to none' );
+	ok( outBj.attributes.borderStyle.default === 'solid',
+		'block.json: borderStyle must default to SOLID — "none" is not a style, and a border is ' +
+			'turned off by zero WIDTH. Defaulting to none produced widths+colours that painted nothing.' );
+	// NEGATIVE CONTROL — 'none' must REMAIN selectable in the enum. Removing it
+	// would make WP coerce every stored "none" to the new default and switch
+	// borders on across live content.
+	ok( outBj.attributes.borderStyle.enum.includes( 'none' ),
+		'block.json NEGATIVE CONTROL: "none" must stay in the enum even though it is no longer the ' +
+			'default — WP coerces an out-of-enum stored value to the default' );
 	ok( outBj.attributes.title !== undefined,
 		'block.json: pre-existing attributes must survive the transform' );
 	const m = outBj.supports.sgs.elements.wrapper.attrMap;
