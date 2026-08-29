@@ -3,6 +3,25 @@
   "generated_by": "behavioural-analyser/extract-signatures.py::extract_css_property_and_layer",
   "entries": [
     {
+      "slug": "sgs/accordion",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/audio",
       "attr": "accentColour",
       "fields": {
@@ -3076,7 +3095,10 @@
       "slug": "sgs/process-steps",
       "attr": "numberBackgroundHover",
       "fields": {
-        "css_property": "background-color"
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "number",
+        "css_state": "hover"
       }
     },
     {
@@ -3953,7 +3975,10 @@
       "slug": "sgs/testimonial",
       "attr": "quoteColourHover",
       "fields": {
-        "css_property": "color"
+        "css_property": "color",
+        "role": "color",
+        "css_element": "quote-text",
+        "css_state": "hover"
       }
     },
     {
@@ -4446,6 +4471,24 @@
         "css_property": "align-items",
         "css_layer": "GRID",
         "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {

@@ -2616,6 +2616,26 @@
       }
     },
     {
+      "slug": "sgs/team-member",
+      "attr": "photoTablet",
+      "fields": {
+        "css_property": null,
+        "css_tier": null,
+        "css_layer": null
+      },
+      "_why": "MIS-DERIVED css_property cleared 2026-08-29. photoTablet is an OBJECT-typed media attribute (a WP media object: url/id/alt), not a CSS length — its own base sibling `photo` correctly carries css_property=NULL, so the row was self-inconsistent. ROOT CAUSE, proven not guessed: the derived layer (behavioural-analyser/css-property-classifications.json) claims css_property='max-width' + css_tier='tablet' because render.php:264 emits `sprintf('<source media=\"(max-width:1023px)\" srcset=\"%s\"', ...)` — the classifier read the media-query CONDITION inside an HTML <source> element's `media` ATTRIBUTE as if it were a CSS property emission. The breakpoints prove the mechanism beyond doubt: photoTablet took tier `tablet` from `max-width:1023px` and photoMobile took tier `mobile` from `max-width:767px` (render.php:261), which are exactly this project's tablet/mobile device-tier breakpoints. The tiers are rendered as <picture><source media> alternates (render.php:255-266), i.e. an art-direction source swap; nothing here emits a max-width DECLARATION, and style.css contains no max-width rule for the photo at all. Class checked comprehensively: the fingerprint (css_property='max-width' AND css_tier IS NOT NULL) returns exactly these two rows across the whole DB, and of the three files emitting `<source media=` only this block's inline sprintf trips it (sgs/responsive-logo and includes/helpers-media.php route through the shared helper). Overridden rather than fixed at the classifier because the classifier fix — teaching the behavioural analyser that a `media` attribute is not a CSS emission — is a shared-analyser change with real blast radius for a 2-row defect; the root cause is recorded here so that fix can be made deliberately later."
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "photoMobile",
+      "fields": {
+        "css_property": null,
+        "css_tier": null,
+        "css_layer": null
+      },
+      "_why": "MIS-DERIVED css_property cleared 2026-08-29 — the mobile twin of the sgs/team-member.photoTablet entry directly above; see that entry for the full root cause. Here the derived layer claims css_property='max-width' + css_tier='mobile', read out of `<source media=\"(max-width:767px)\">` at render.php:261. NOTE for anyone carrying forward the 2026-08-29 handoff prompt: that prompt stated `photoMobile` NO LONGER EXISTS in the DB, removed by the 2026-08-28 ghost-row prune. That is FALSE — re-verified against the live DB on 2026-08-29, both rows are present and both were mis-derived identically."
+    },
+    {
       "slug": "sgs/cta-section",
       "attr": "textAlign",
       "fields": {
