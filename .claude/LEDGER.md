@@ -133,7 +133,7 @@ decided the visible surface. Fixed `ba01581df`, live-verified. Frame cost 0.240m
 ⛔ **TWO CLAIMS WERE ASSERTED THIS SESSION AND ARE WITHDRAWN — do not resurrect either.**
 An 89.3% silhouette IoU (no script, no committed inputs, a `background:#fff` hack in its capture
 path), and "a systematic colour cast" (over-read `bias_over_abs`, which measures directionality
-not spatial uniformity). **Painted coverage differs 8 points and hue count 2.7x — a tone shift
+not spatial uniformity). **Painted coverage differs 7.7 points at t=17500 and hue count 2.3x — a tone shift
 cannot change coverage. Shape divergence is the leading UNTESTED hypothesis.** See D888.
 
 ⛔ **D880: Bean authorised porting the reference's VERTEX SHADER mechanism** (that file only).

@@ -66,9 +66,9 @@ crop-wide number is diluted roughly twofold by pixels that agree because both si
 DIRECTIONALITY, not spatial uniformity — a localised, one-signed geometric divergence produces a
 high ratio too. Three figures in `fidelity-baseline.json` contradict a tone cause:
 
-- painted coverage differs by 8 points (ours 0.332, rig 0.412) — **a tone shift cannot change how
+- painted coverage differs by 7.7 points at t=17500 (ours 0.319, rig 0.396) — **a tone shift cannot change how
   much of the canvas is covered**
-- distinct hue count differs 2.7× (155 vs 420)
+- distinct hue count differs 2.3× (162 vs 371)
 - the error is bimodal: ~50% of pixels within 4/255, ~43% beyond 32/255. A gamma or transfer
   difference is smooth and everywhere-present.
 

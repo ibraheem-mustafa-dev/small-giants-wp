@@ -29,8 +29,8 @@ headline, because 52% of the crop is background clipped at G>=253.
 systematic colour cast", over-reading `bias_over_abs ~0.90`. That statistic measures
 DIRECTIONALITY, not spatial uniformity - a localised one-signed GEOMETRIC divergence produces a
 high ratio too. Three figures in the same file contradict a tone cause: painted coverage differs 8
-points (0.332 vs 0.412, and a tone shift cannot change coverage); distinct hue count differs 2.7x
-(155 vs 420); the error is bimodal (~50% within 4/255, ~43% beyond 32/255) where a gamma difference
+points (0.319 vs 0.396, and a tone shift cannot change coverage); distinct hue count differs 2.3x
+(162 vs 371); the error is bimodal (~50% within 4/255, ~43% beyond 32/255) where a gamma difference
 is smooth throughout. **Shape divergence is now the leading UNTESTED hypothesis.** "Not noise" is
 exculpatory for noise only.
 
