@@ -49,7 +49,7 @@ if ( ! function_exists( 'sgs_media_element_stored_attr' ) ) {
 	/**
 	 * Resolve the attribute name a SURFACE actually stores.
 	 *
-	 * Measured from the census: across 124 media attributes on six surfaces the
+	 * Measured from the census: across 128 media attributes on six surfaces the
 	 * convention reproduces every name except FOUR, in TWO distinct cases. Three
 	 * are `sgs/before-after`'s shared autoplay — ONE toggle governing BOTH video
 	 * slots per its sync contract, so it is block-level rather than per-slot.

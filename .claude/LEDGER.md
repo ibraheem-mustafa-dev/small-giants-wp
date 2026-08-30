@@ -10,9 +10,9 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 ## Human Summary
 
 Plain English, for Bean. The framework is a WordPress block system that clones any design draft
-into native blocks a non-technical client can then edit. Five tracks work on it in parallel,
-sharing one `main` branch — which is why almost every rule below is about not treading on
-another track's work.
+into native blocks a non-technical client can then edit. Five tracks worked on it historically,
+sharing one `main`; **only ONE is active now (Bean, 2026-08-30)** — the path-scoped commit hook
+still applies, but 'another track holds this file' is no longer a live constraint.
 
 Right now: the cloning pipeline and the motion system are both stable. The live front is
 **client controls** — making sure every setting a client can change actually does something
@@ -22,7 +22,7 @@ framework yet, so breakage there costs time, not money.
 
 ## State Snapshot
 
-- **Branch:** `main`, shared by five tracks. Commit with explicit paths, never `git add -A`.
+- **Branch:** `main`, ONE active track. Commit with explicit paths (a hook enforces it).
 - **Canary:** WP 7.1. Deploy via `build-deploy.py --target sandybrown` — the only sanctioned path.
 - **Build:** green. Deploy payload is ~29MB (was 114MB).
 - **Live fronts:** client controls (below) and motion. Cloning + consolidation are closed.
@@ -32,7 +32,7 @@ framework yet, so breakage there costs time, not money.
 
 **Invoke `/autopilot` first.**
 
-⚠ **FIVE TRACKS HAVE TOUCHED `main`. Establish which you are before reading anything else.**
+⚠ **Five tracks have touched `main` historically; ONE is active now. Sections below are per-track.**
 The shop-archive / R-3 track owns the sections immediately below. The **colour-golden /
 client-controls** track is CLOSED (D898) — its section below is a pointer only. The **motion**
 track owns `## ▶ MOTION TRACK` below.
@@ -328,7 +328,7 @@ exact results + the ordered remainder. Detail: **D904-D907**. Plan:
 `~/.claude/plans/media-element-misty-squid.md`. Do not restate history here.
 
 **SHIPPED, DEPLOYED, LIVE-VERIFIED** (12 commits, `9b67c3885`..`e912a1f96`):
-Wave 1 census (124 media attrs, 6 surfaces, **10 storage shapes**) · SVG allowlists **6 -> 1 unified** (+2 in `button/render.php`, untouched) ·
+Wave 1 census (128 media attrs, 6 surfaces, **10 storage shapes**) · SVG allowlists **6 -> 1 unified** (+2 in `button/render.php`, untouched) ·
 editor SVG sanitiser at all 6 mounts, generated from the PHP · `<track>` captions on `sgs/media` ·
 Wave 2 L1 naming pair + declarative injection both sides. **7 new gates** (5 checks, all
 negative-controlled + 2 generators). Deploy 212s, 83/83 checksums, motion QA 3/3.
@@ -348,8 +348,8 @@ implemented → **STRUCK, not built** (re-adding = a duplicate). There were SIX 
 `before-after`, **never parallel** — that is the only test the abstraction generalises) → 6 (gates as
 inspector-scan rules, all start advisory) → 7 (remaining surfaces, INSERT→VERIFY→GUT per commit).
 
-⚠ **OWED:** `button/render.php`'s TWO allowlists unmerged. `sgs-framework.db` NOT reseeded for the 4 new `videoCaptions*` attrs (cross-track, one
-shared file). The SMIL `<a><animate attributeName="href">` bypass is REASONED, NOT EXECUTED — Bean's
+⚠ **OWED:** `button/render.php`'s TWO allowlists unmerged. (DB reseeded — `--stage 1`, 4 captions
+attrs live, DB 77 = block.json 77.) The SMIL `<a><animate attributeName="href">` bypass is REASONED, NOT EXECUTED — Bean's
 call, owed a canary probe WITH a positive control proving the harness can see a real execution.
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)

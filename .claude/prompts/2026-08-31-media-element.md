@@ -14,7 +14,7 @@ too, but **four of its claims are false and are corrected below.** The plan supe
 
 | | Commit(s) |
 |---|---|
-| Wave 1 census — 124 media attrs, 6 surfaces, 3 excluded | `9b67c3885` |
+| Wave 1 census — 128 media attrs, 6 surfaces, 3 excluded | `9b67c3885` |
 | SVG allowlists **6 → 1 unified** (+2 in `button`, untouched) | `ad414bfee`, `89f1aefdf` |
 | Editor SVG sanitiser, generated from PHP, 6 mounts | `52e232692`, `51591f936` |
 | Misleading help text corrected | `c86938f2a` |
@@ -151,8 +151,10 @@ the old code or the new code, never neither. `product-card`'s content migration 
 
 ## Owed from this session — clear these when convenient, they are not blockers
 
-1. **`sgs-framework.db` is NOT reseeded** for the four new `videoCaptions*` attrs on `sgs/media`.
-   A reseed is a CROSS-TRACK action on one shared file — do not run it unilaterally mid-session.
+1. ~~`sgs-framework.db` reseed~~ — **DONE.** `sgs-update-v2.py --stage 1`: 11 new attr rows, the 4
+   `videoCaptions*` present, DB 77 = block.json 77 for `sgs/media`. Build re-run green afterwards.
+   ⚠ The earlier "cross-track, do not run unilaterally" caution was WRONG — Bean confirmed only ONE
+   track/session is active on this work, so deploys and `/sgs-update` carry no co-active risk.
 2. **The SMIL claim is REASONED, NOT EXECUTED** (Bean: ship on the reasoning, test later). Owed: a
    canary probe firing `<a><animate attributeName="href" to="javascript:…">`, **paired with a
    positive control** proving the harness can observe a real execution — otherwise "nothing fired"
@@ -203,8 +205,9 @@ the old code or the new code, never neither. `product-card`'s content migration 
 - **A grep returning 0 is a HYPOTHESIS.** Pair every zero with a positive control. This track's
   recurring failure is grepping a block's own file when a SHARED helper is the reader.
 - **Verify on the real page (R-31-11), not the emit.** Gates are build-time and prove nothing paints.
-- **`git add -A` is banned** — five tracks share `main`. Commit by exact path; re-check
-  `git branch --show-current` in the same command as the commit.
+- **`git add -A` is banned** — a PreToolUse hook rejects a commit with no pathspec, so commit by
+  exact path regardless. (The *rationale* has changed: only ONE track is active, so this is hook
+  compliance and hygiene, not protection from a co-active session.)
 - **Never `git checkout --` a file to undo an edit** — it reverts to the last commit and silently
   takes unrelated uncommitted work with it. Save bytes, patch, restore, verify md5.
 - **Deploy is `build-deploy.py --target sandybrown` only.** Never hand-roll tar/scp (D336: two client

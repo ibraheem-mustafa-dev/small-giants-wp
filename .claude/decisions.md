@@ -1,3 +1,25 @@
+## D908 [ROUTINE] — ONE active track: the shared-DB reseed deferral was wrong, and is cleared
+
+**2026-08-30.** Bean: *"There is only 1 track/session active throughout the whole time we work on
+this so no issues for deploying and /sgs-update."*
+
+D906/D907 deferred the `sgs-framework.db` reseed for `sgs/media`'s four new `videoCaptions*` attrs
+on the grounds that a shared-DB reseed is a CROSS-TRACK action (the D432 / nav-menu precedent, where
+a routine reseed populated `css_property='fx:*'` rows and broke the motion track's build). That
+precedent is real and those historical entries stand — but the premise did not hold here: no other
+track was live.
+
+**Cleared:** `sgs-update-v2.py --stage 1` — 11 new attr rows, 1 updated, 75 new block_selectors.
+`sgs/media` DB count 73 → **77**, matching block.json exactly. Build re-run green afterwards; the
+census artefact regenerated (**124 → 128** media attributes, the four captions attrs now in
+`storedAs`). All media/SVG gates and `handoff-preflight` still pass.
+
+⚠ **The LEDGER's "FIVE TRACKS HAVE TOUCHED `main`, establish which you are" header was costing real
+time** — it framed every shared file as contested. Corrected to "five historically, ONE active now".
+The path-scoped commit discipline STAYS regardless: a PreToolUse hook rejects a commit with no
+pathspec, so it is hook compliance, not co-active protection. Do not weaken the commit practice on
+the strength of this entry.
+
 ## D907 [ROUTINE] — media attrs register from `supports.sgs.mediaElements`, not the shared generator
 
 **2026-08-30.** `ea5f7ed09`. The media-element architecture said to add media attributes to
@@ -65,7 +87,8 @@ was page-wide CSS injection from a Contributor. ⚠ The SMIL mechanism is REASON
 
 ## D904 [ROUTINE] — media-element census: 10 storage shapes, and the detector bugs it caught
 
-**2026-08-30.** `9b67c3885`. `reports/migrations/media-element-census.json` — 124 media attributes,
+**2026-08-30.** `9b67c3885`. `reports/migrations/media-element-census.json` — 128 media attributes (124 at first run; the 4
+`videoCaptions*` attrs joined it after the D906 build + the Stage-1 reseed),
 6 surfaces in scope, 3 excluded with reasons. DB-first per R-31-1, but roles UNDER-COVER
 (`imageUrl` carries `image-object` while `imageId` carries none, and no tier sibling of any pair
 does), so the script pairs roles with block.json family expansion and reports `role_coverage_gap`.
