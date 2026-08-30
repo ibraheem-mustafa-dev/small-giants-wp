@@ -1,3 +1,101 @@
+## D903 [ROUTINE] — sgs/timeline scrollEffect: one surface, four options, and the wrapper that had to be removed
+
+**2026-08-30.** `9a3159b4d`. `scrollEffect` (`basic`/`scrub`/`pinned-journey`/`pinned-horizontal`)
+reuses the EXISTING `scrub`/`pin-scrub`/`horizontal-panel` modules — no new slug, so none of the
+~10 hand-maintained fx manifests change. `supports.sgs.fx.providesNatively` removes all three from
+the generic "Scroll & effects" picker: two controls both setting scroll motion is the D896 shape.
+Options are a function of `orientation`, hidden not disabled. `pinned-journey` emits NO
+`data-reveal-on-scroll`, so the `[data-reveal-on-scroll].is-js{opacity:0}` rule cannot match — the
+D896 defect is prevented by construction, with `basic` as the positive control.
+
+⛔ **THE 4a TRACK `<div>` WAS REMOVED, NOT EXTENDED.** `fx-horizontal-panel` imposes two constraints
+simultaneously: `resolveTrack()` needs the marked element to be a DIRECT child of the `data-sgs-fx`
+element, and `getTravelDistance()` measures that element's OWN children as the panels, returning 0
+below two. The wrapper satisfied the first and broke the second — one child, so the effect attached,
+pinned, and slid nothing (measured: list overflowing 2640 vs 1410, still 0px across 30 samples).
+Marking the `<ol>` satisfies both, legal only because D902 made the root a `<div>`. Post-fix: 2,266px
+of travel across 22 positions, control static. Native scrolling and the pinned effect are mutually
+exclusive and now made so, gated `min-width: 768px` — ungated, `width: max-content` clipped 86px off
+every milestone on a 375px phone.
+
+⚠ **The design doc's "no GSAP loads at 375px" is FALSE and withdrawn.** Modules ARE enqueued on
+mobile; the registry sniffs `data-sgs-fx` server-side where the viewport is unknowable. Suppression
+is BEHAVIOURAL (verified: no transforms, pin-spacers or GSAP objects), never byte-level.
+Framework-wide, not timeline-specific.
+
+## D902 [INCIDENT] — the timeline root became a `<div>`; two couplings broke, one silently
+
+**2026-08-30.** `2686575e4`. Root is now `<div class="sgs-timeline">` with the `<ol>` inside it, so a
+horizontal effect can resolve a direct child — an `<ol>` root may only contain `<li>`. Bean chose
+this over deferring the effect. Moving the `<ol>` INWARD (rather than deleting it) preserved
+one-list-N-items semantics exactly, so the accessibility cost the design feared did not occur.
+
+⛔ **A REGRESSION SEVEN STRUCTURAL ASSERTIONS PASSED.** While the root WAS the `<ol>`, the vertical
+rule's `padding`/`margin`/`list-style` killed the UA list defaults as a SIDE EFFECT. Moved inward,
+`padding-inline-start: 40px` returned: entry columns 688.5→668.5px and the node 20px off its own
+rail — the "two halves disagree" defect Addendum 6 exists to close. Nothing structural or
+accessibility-shaped could see it; it was caught ONLY by comparing against geometry baselined
+before the change. **Baseline before restructuring, not after.**
+
+⛔ **AND A SHARED COUPLING IS RARELY SINGULAR.** The mobile carousel made the ROOT the scroller and
+was re-pointed in the same commit. Horizontal orientation had the IDENTICAL coupling
+(`display:flex` on the root) and was missed because only the carousel was looked for — it stopped
+laying out entirely (four 394px entries stacked in a 1440px viewport) until found by D903's travel
+probe. The question to ask is "what ELSE makes the root a layout container?" — one grep answers it.
+
+## D901 [ROUTINE] — full-height milestones need no new DOM, and the cross-track reseed was not needed
+
+**2026-08-30.** `2b4d39278`. A timeline entry is ALREADY four flat grid children in `1fr auto 1fr` —
+media and date one side, content the other, rail between: a hero split with a rail through it. So
+`milestoneSize: full-height` is three declarations and a modifier class, not a layout rewrite.
+`milestoneMinHeight` is a `SelectControl` copying `sgs/hero`'s option list verbatim — a client
+typing `80v` gets a silently broken layout, and inventing friendlier labels would have created a
+THIRD convention against the live control-uniformity front.
+
+⛔ **A screenshot caught it broken while five assertions passed** (min-height, align-self, object-fit,
+class, custom property — all green; the date sat stranded above a floating image). Two candidate
+fixes then changed NOTHING: `align-content: stretch` had no free space to distribute (the tracks
+already summed to 720px — the "dead space" was the DATE's row), and correct `auto 1fr` CSS was
+out-ranked by a `--media-under` rule at (0,4,0). The fix repeats its own class to (0,5,0) —
+deterministic, not source-order. **Third time in this feature that a losing rule read as an absent
+one.**
+
+⭐ **The §8 cross-track `/sgs-update` reseed was NOT required.** `check-element-manifest-conformance`
+failed only because the `entry` element declared `"clusters": []`, so its attrMap entries had no
+cluster member to claim them; regenerating `attr-role-map.json` alone did NOT clear it (that map
+derives from the DB, which does not know a new attribute). Declaring `layout` took UNCLASSIFIED to 0
+with no DB write — no other track disturbed. A first draft also invented a bare `variant` attrMap
+key: 46 of the 47 non-`css:`/`native:` keys tree-wide are `anim:*`, it had zero precedent and no
+reader, and removing it changed the gate output not at all.
+
+## D900 [INCIDENT] — the marker moves to a reading line, and deleting the CSS branch alone would have killed the fill on Chrome
+
+**2026-08-30.** `24cc70a5a`. `--sgs-timeline-fill-progress` now derives from a reading line at 38% of
+the USABLE viewport (below `chromeOffsetPx()`, measured live at **144px** — not the 93px the code's
+own docblock claims). Because the head dot is already `top: calc(var(…) * 100%)` of the rail, fixing
+the mapping lands it on the reading line BY CONSTRUCTION: measured 431px at every sample across
+1,411px of scroll. **`position: sticky` was rejected** — the dot IS the fill head, so pinning it
+separately would detach it from the fill AND add a second mechanism doing the first one's job.
+
+⛔ **THE FINDING NO GATE COULD HAVE MADE.** `view.js` gated its own rAF driver on
+`CSS.supports('animation-timeline','view()')` — BROWSER CAPABILITY, not whether the stylesheet branch
+existed. Deleting the `@supports` block alone would have left Chrome and Safari with NO driver at
+all, killing the fill and the marker on most browsers while Firefox looked perfect and every gate
+passed green. Caught by a cold reviewer; both edits now ship together, verified in Chromium.
+
+⚠ **Every prior figure understated the defect** because every prior measurement used a block SHORTER
+than the viewport. On a 1618px block the marker sat at **109.8% and 116.7%** of viewport height —
+below the screen, invisible — and the fill was **84.6%** complete when the reader starts, not 73%.
+
+## D899 [ROUTINE] — chromeOffsetPx moved to the Tier V shared home
+
+**2026-08-30.** `eb3ed2a04`. The function reads the live sticky-header height and returns an explicit
+0 when nothing is pinned. It lived in `gsap/provider.js`, which imports GSAP at module scope, so any
+consumer dragged GSAP in. The timeline's marker needs the offset and must stay vanilla — a page whose
+timeline uses no scroll effect should ship zero bytes of GSAP. Moved to `motion-utils.js` (zero
+imports); `provider.js` re-exports it, so both existing callers are untouched. Import-then-export
+rather than a bare re-export, because provider calls it internally and needs a local binding.
+
 ## D898 [ROUTINE] — client-controls colour-standard residuals closed: border group-default, deploy, scatter-detector left open
 
 **2026-08-30 (late).** Three residuals from the colour-standard handoff (`4955f4af0`). Commits

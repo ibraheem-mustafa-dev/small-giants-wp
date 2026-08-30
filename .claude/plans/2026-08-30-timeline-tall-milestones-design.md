@@ -1,7 +1,10 @@
 # sgs/timeline — tall milestones, the reading-line marker, and the gated scroll-effect list
 
 **doc_type:** design
-**Status:** REVISED after council — awaiting Bean's sign-off on §7. No code written.
+**Status:** BUILT AND LIVE, 2026-08-30. All four steps shipped (`eb3ed2a04`, `24cc70a5a`,
+`2b4d39278`, `2686575e4`, `9a3159b4d`). Evidence: `reports/visual-diff/timeline-2026-08-30.md`
+Addenda 19-22. ⚠ Where this document and those addenda disagree, THE ADDENDA WIN — they record
+what was measured, this records what was planned.
 **Date:** 2026-08-30
 **Council:** three cold raters (code-path tracer, client-experience, adversarial red-team), run
 2026-08-30. Red-team returned NO-GO on the first pass. Every finding is dispositioned in §10;
@@ -37,9 +40,10 @@ Four factual errors in the signed doc, verified against the tree 2026-08-30.
    before the reader has started. Both move to a comfortable reading position.
 3. **The scroll-effect list.** Motion options, gated by the direction the client picked.
 
-⚠ **One piece of (3) is being DEFERRED on evidence — see §5.6.** "Pin and slide sideways" cannot be
-built on this block without breaking its list semantics. Bean approved four options; this design
-ships three and explains why, rather than quietly delivering less.
+⚠ **§5.6 deferred "Pin and slide sideways" — Bean OVERRULED that and chose to change the root
+element instead. It is BUILT and measured at 2,266px of travel (Addendum 22).** Moving the `<ol>`
+inside a `<div>` root, rather than deleting it, kept one-list-N-items semantics intact, so the
+accessibility cost §5.6 feared did not materialise. All four options ship.
 
 ---
 
@@ -417,7 +421,13 @@ There is no clean shape without changing the root element away from `<ol>`, whic
 block its native list semantics — a change well outside this design's scope and needing its own
 a11y sign-off.
 
-**Deferred, with the reason recorded, rather than built badly.** §7 gives Bean the options.
+**⚠ SUPERSEDED — Bean chose option (iii), change the root element, and it was built.** The analysis
+above is correct about the `<ol>` ROOT; what it missed is that moving the `<ol>` INSIDE a `<div>`
+root is a fourth shape none of the three rows considered, and it preserves list semantics exactly
+(measured: one list, N items, on every timeline). Two further findings only surfaced on build:
+the intermediate track `<div>` this design implied had to be REMOVED (`getTravelDistance()` needs
+the marked element's own children to BE the panels), and horizontal orientation had the same
+root-as-flex-container coupling as the carousel and broke until re-pointed. Addendum 22.
 
 ### 5.7 Help text
 
@@ -524,8 +534,17 @@ Per step, before its commit:
   branch is deleted. This is the §4.4 outage, and only a non-Firefox browser can catch it.
 
 **Step 4 specifically:** assert `data-sgs-fx` reaches the front end, the module loads (registry
-sniffs at `render_block` priority 99), **no GSAP loads at 375px**, and the three slugs no longer
-appear in the generic picker for `sgs/timeline`.
+sniffs at `render_block` priority 99), **no GSAP effect INITIALISES at 375px**, and the three slugs
+no longer appear in the generic picker for `sgs/timeline`.
+
+⚠ **CORRECTED 2026-08-30 after measuring — this section originally required "no GSAP loads at
+375px", which is not achievable and was not true.** The modules ARE enqueued on mobile and simply
+do nothing: the registry sniffs `data-sgs-fx` out of rendered markup server-side at `render_block`
+priority 99, where the viewport is unknowable, while `data-sgs-fx-disable-mobile` is a client-side
+gate inside `bootEffect()`. Suppression is BEHAVIOURAL, not byte-level. This is framework-wide for
+every block using that flag, not specific to the timeline — the assertion simply promised a
+stronger guarantee than the framework provides. Assert no transforms, no pin-spacers and no GSAP
+objects instead; that is what was verified.
 
 **Every commit:** a visual-diff report at repo-root `reports/visual-diff/timeline-<TODAY>.md`, one
 per touched block directory, with `source_sha` from

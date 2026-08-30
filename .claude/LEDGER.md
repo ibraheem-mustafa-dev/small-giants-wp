@@ -165,35 +165,66 @@ reduced-motion closed (D863). ⛔ Editing template part 2671 does NOTHING — `p
 `wp:pattern` ref, so `patterns/framework-header-default.php` renders.
 ⛔ **Parked:** `P-PARTICLE-TRAIL-VARIATIONS` (post-launch, Bean's timing).
 
-### ▶ C. TIMELINE (FR-38-35) — Stages A/B/C SHIPPED + LIVE. D879, D894-D897.
+### ▶ C. TIMELINE (FR-38-35) — CLOSED 2026-08-30. D879, D894-D897, D899-D903.
 
-Layered control model built and live. `f6188b027`→`10072a44b` (canary 3079 + 3072). Evidence:
-`reports/visual-diff/timeline-2026-08-30.md` + `memory/sdd-progress.md`. Shipped:
-mobile collapse fixed (content 76/164px → **328px**), `date-over-media` REMOVED on Bean's verdict,
-`mobileLayout` (stacked | scroll-snap carousel), `alignment` split into `contentLayout` +
-`datePosition`, and **`same-side`** — Bean's originally-requested option.
+All four remaining tasks SHIPPED + LIVE. `eb3ed2a04` → `9a3159b4d`. Evidence:
+`reports/visual-diff/timeline-2026-08-30.md` **Addenda 18-22**. Design (now BUILT, not proposed):
+`.claude/plans/2026-08-30-timeline-tall-milestones-design.md`.
 
-⛔ Safari has `animation-timeline` since **26.0**; **Firefox has it in NO stable build** (157), so
-the JS driver is Firefox's PRIMARY path — Spec 38 named the wrong browser twice. **The SVG-path
-route is DEAD for a straight connector**; Spec 31 C9's no-JS hatch is CLOSED. Detail: D879.
+**Shipped this session:** `chromeOffsetPx()` moved to the Tier V shared home so a vanilla consumer
+can read the sticky-header height; the progress marker re-mapped to a **reading line** and the two
+fill drivers collapsed to one; **`milestoneSize: full-height`** with hero-split media
+(+ `milestoneMinHeight`, `entryGap`); the root changed to a `<div>` with the `<ol>` inside it; and
+**`scrollEffect`** — Standard / Move with the scroll / Pin and reveal / Pin and slide sideways,
+gated on orientation, wired to the existing GSAP modules with `providesNatively` collapsing the
+generic picker into one surface.
 
-⛔ **FOUR INSTRUMENT TRAPS — in CC memory and reproduced in full in the prompt. Read before
-measuring.** Lenis-animated scroll; staircase custom-property reads; **a losing CSS rule is
-indistinguishable from an absent one** (hit twice in one session); wrong-owner match resolution.
+⛔ **FIVE defects, NONE caught by a gate.** (1) Deleting the CSS branch alone would have killed the
+fill on Chrome+Safari — `view.js` gated on BROWSER CAPABILITY, not on whether the stylesheet branch
+existed; Firefox would have looked perfect. Found by a cold reviewer. (2) A screenshot caught tall
+milestones visibly broken while five assertions passed. (3) The `<ol>` losing its UA padding reset
+put the node 20px off its own rail — found ONLY by comparing against geometry baselined before the
+change. (4) Horizontal orientation stopped laying out entirely after the root change — same
+coupling as the carousel, which WAS fixed in the same commit; missed because only the carousel was
+looked for. (5) The intermediate track `<div>` made `pinned-horizontal` attach and slide nothing.
 
-⚠ **Every real defect here was caught by a screenshot or by Bean, never by a gate.** A blank
-carousel passed 73 gates and every numeric check — a zero-opacity element measures perfectly.
-STOP-CATALOGUE STOP-INSTRUMENT-SHAPE.
+⛔ **A SPECIFICITY CONTEST LOST SILENTLY, AGAIN — third time in this feature.** Two candidate fixes
+for the tall-milestone layout both changed NOTHING: one had no free space to distribute, the other
+was correct CSS out-ranked by a `--media-under` rule at (0,4,0). Enumerating every rule matching the
+element is the only reliable move. **A losing rule is indistinguishable from an absent one.**
+
+⚠ **Corrections to earlier records, measured:** the marker sat at **109.8% and 116.7%** of viewport
+on a TALL block — below the screen, invisible — not the 87-91% logged from a short one; and the fill
+was **84.6%** complete when a reader starts, not 73%. Every prior figure came from a block SHORTER
+than the viewport, which is exactly what hid the defect. `same-side` also shipped on PREDICTIONS
+with no browser dispatched; Addendum 18 closed that debt — all six predictions held, rail/node
+exactly 712.5.
+
+⚠ **The design doc's "no GSAP loads at 375px" is FALSE and is withdrawn.** The modules ARE enqueued
+on mobile and do nothing: the registry sniffs `data-sgs-fx` server-side where the viewport is
+unknowable. Suppression is BEHAVIOURAL (no transforms, no pin-spacers, no GSAP objects — verified),
+never byte-level. Framework-wide, not timeline-specific.
+
+⛔ Safari has `animation-timeline` since **26.0**; **Firefox has it in NO stable build** (157). The
+CSS branch is now DELETED — one rAF driver runs everywhere.
+
+**Canary fixtures — `[GATE — DO NOT DELETE]`:** **3135** (tall + full-height marker probe, 1618px)
+and **3141** (scrollEffect matrix, all four values). Both are load-bearing for re-measuring; 3079
+and 3072 remain the layout probes.
 
 ### ▶ NEXT for the timeline
 
-⭐ **`.claude/prompts/2026-08-31-timeline-task4-and-tall-milestones.md` carries every remaining
-task.** Its predecessor shipped in full and was deleted. **Task 1** wires `scrollEffect` to the
-existing `fx-pin-scrub`/`fx-horizontal-panel` modules (approved, block-private via `data-sgs-fx`;
-neither GSAP preset may run ≤767px — SC 2.5.7). **Task 2** is a DESIGN GATE ONLY for Bean's
-tall-milestones direction, which also fixes the measured marker defect (it sits at **87-91%** of
-viewport height; fill hits 73% before the reader starts). Verdict: **~35-40vh**, sticky,
-`scroll()` not `view()`.
+Nothing outstanding. Three items were NAMED as out of scope rather than dropped, all in the design
+doc §3.4: `mediaParallax`/`mediaKenBurns` (deferred on the real D597 `@keyframes` collision — add
+them against a stable layout, not during one), per-image crop control under `object-fit: cover`, and
+`milestoneMediaDecorative` being block-wide rather than per-entry (negligible at thumbnail size,
+material now that images are full-height). Plus a **pre-existing 1px** node/rail offset on
+`single-column`, recorded in Addendum 21 and provably untouched by this session.
+
+⚠ **Bean has NOT yet eyeballed the reading-line position.** It is research-backed (~38% of the
+usable viewport, below the sticky header — measured live at 144px, not the 93px the code's own
+docblock claims) and verified to land at 431px within 0px at every sample, but R-31-13 says the
+number closes on his eye, not on the measurement. Probe 3135 is built for exactly that look.
 
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4). Detail: D731/D732/D733,
 Spec 32 §6.1(a1)/(a2), Spec 35 Part K. shop-archive: Phase 3 ownership moved 2026-08-27 to
