@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-08-29
+last_updated: 2026-08-30
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -296,50 +296,58 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 `.is-layout-constrained > :where(:not(.alignfull))`. Ours therefore cannot express
 "full-bleed child of a constrained parent". Read it there before reopening it.
 
-## ▶ CLIENT-CONTROLS TRACK — 2026-08-29: four commits, pushed, NONE DEPLOYED
+## ▶ CLIENT-CONTROLS TRACK — 2026-08-30, none deployed
 
 ⭐ **NEXT: the prompt named at the top of this file.**
 
-**2026-08-29 — `18eee2666` `89c4d33fd` `6c74fb4c7` `c9b4f9b06`.** Two client-visible hover
-bugs (one root cause); Ken Burns animated nothing on the `<img>` fast path; a fractional
-grayscale silently rendered 100%. New guard, 9/9. Converter 727/0.
+**Plain English:** ~30 settings on two blocks did nothing — gone. One trust-bar colour was
+settable from two places, unsynced — now one. New tool finds controls scattered across
+panels.
 
-**Reseed + guard wiring DONE same day** (`c45b4f5dc`, `c50066bff`): 4 DB fixes live,
-guard = gate 80 (fast, 70/70), F6 0 NEW.
+**Commits `b59f8cd3f`..`99d2204da`, pushed, none deployed:** grid-item controls removed
+(paint only a direct `.sgs-container` child, which neither block's cells are) + DB pruned
+(31 orphan attrs, 44 stale supports) + roster regen 83 blocks. `scattered-element-controls.js`
+built: 69/48 blocks, self-test 32/32, advisory-first (not wired into `rules.json`).
+Trust-bar's duplicate `textColour` writer collapsed to one. **All 4 deploy-blocking gates
+green** (`gate:full` 4/4 PASS) — this session closed 2 (`74a203e8d`: `08-raw-url-link`
+re-anchor, `01-tab-group` fixed in accordion-item); the other 2 (`check-render-undefined-vars`,
+`check-editor-render-parity`) turned up already closed on re-check — credit untraced, not
+this session's. ⚠ Rule 08's fix is a line-number RE-ANCHOR, the 7th on that entry — a
+stopgap; de-line-keying the baseline is the still-open real fix.
 
-⛔ **NOT DEPLOYED OR LIVE-VERIFIED; 3 visual-diff debts UNPAID** (`manual-skips.log`).
-DB correct, canary not. Deploy + a HAND hover-check is the front —
-`computed-parity.js` is hover-blind (0 hits), so it greens either way.
+**Colour standard (D890):** `SgsColourPanel` default (65/83); own panel row only where a
+paired composite exists (`SgsBorderControl` alone, today). **Two detector gaps, unfixed
+(D892):** `check-dead-controls` misses "read but feeds no matching CSS" (grid-item's escape);
+`check-duplicate-controls` misses a duplicate writer inside a config-prop object (trust-bar's
+escape).
 
-### ✅ SHIPPED 2026-08-27 — deployed, live-verified, gates green
+⛔ **NOTHING TONIGHT DEPLOYED.** Pushed only. Carries the 2026-08-29 debt below.
+
+**2026-08-29 — `18eee2666` `89c4d33fd` `6c74fb4c7` `c9b4f9b06` + reseed/guard
+(`c45b4f5dc`, `c50066bff`).** Two hover bugs (one cause); Ken Burns animated nothing on the
+`<img>` fast path; fractional grayscale rendered 100%. Guard 9/9, converter 727/0, 4 DB
+fixes live, guard = gate 80 (70/70), F6 0 NEW. ⛔ 3 visual-diff debts UNPAID
+(`manual-skips.log`) — `computed-parity.js` is hover-blind, so a HAND check is the only gate.
+
+### ✅ SHIPPED 2026-08-27, deployed+live · ✅ BOTH ROLLOUTS LANDED — do NOT rebuild
 Hero video/SVG media · bindings → core's picker · CHECK A 238→206 · C14 order · C16 presets ·
-C19 size & crop · 2 NULL `css_element` rows · 5 ladders renamed. **Detail: D855-D862.**
-
-### ✅ BOTH ROLLOUTS LANDED (other sessions) — do NOT rebuild
-C16 COMPLETE: all 48 `ResponsiveBoxControl` mounts pass `presets` (`18806e6b0`), with detector
-`inspector-scan/rules/36-box-control-presets-missing.js` + `scripts/migrate-box-control-presets.py`.
-C19 rolled out to the full `aspectRatio` surface (card-grid, gallery, image-sequence, media,
-post-grid). ⛔ **`detector-first-commit-gate.py` HAS A NAMED HOLE** (reproduced): `MIN_SHARED_LINES = 3`
-rejects a genuine 4-file repeat that shares only ONE line. A component rollout IS a one-line
-repeat, so the rule for "trivial sweeps" eats it. Evidence: prompt Task 7.
+C19 size & crop · 2 NULL `css_element` rows · 5 ladders renamed (Detail: D855-D862). C16
+COMPLETE: 48/48 `ResponsiveBoxControl` mounts pass `presets` (`18806e6b0`), detector
+`inspector-scan/rules/36-box-control-presets-missing.js`. C19 rolled out to the full
+`aspectRatio` surface. ⛔ `detector-first-commit-gate.py` HAS A NAMED HOLE:
+`MIN_SHARED_LINES = 3` rejects a genuine rollout sharing only ONE line. Prompt Task 7.
 
 ### ⚠ THE 85 NULL `css_element` TAIL — do NOT bulk-script it
-Root-caused: **three causes, not one bug** (`.claude/reports/2026-08-27-null-css-element-root-cause.md`).
-(A) `sgs_emit_state_colour_css()` — 21 files — is unregistered in the classifier's helper
-allowlist. (B) a selector held in a PHP variable and used later is untraced. (C) genuinely
-root-scoped declarations find no element and nothing turns that into a positive `wrapper`.
-~18 more are `fx:*` markers, by design.
-⛔ Only **6 of ~67** non-fx rows were individually confirmed; the rest is an unverified
-extrapolation. A WRONG element is worse than NULL — NULL reads as unknown, a wrong value reads
-as authoritative and misroutes cloned CSS silently.
+Three causes (`.claude/reports/2026-08-27-null-css-element-root-cause.md`): unregistered
+helper (A, 21 files), untraced PHP-variable selector (B), genuinely root-scoped (C). ~18
+more are `fx:*` markers, by design. ⛔ Only **6 of ~67** non-fx rows confirmed — rest
+unverified. A WRONG element is worse than NULL — wrong reads authoritative, misroutes CSS.
 
-### ⚠ DEPLOY SAFETY — two real near-misses this session
-`plugins/sgs-blocks/stackable/` (278MB of a competitor's GPL source) was one deploy away from
-landing web-accessible on the canary. Untracked files are invisible to the dirty gate and
-visible to tar, and `--exclude=…/src` is path-anchored so it never matched `stackable/src`.
-Now gitignored + excluded, with a tarball size ceiling that fails closed and names the biggest
-members. Separately the deploy went **114MB → 29MB** (dev tooling + dev-only vendor packages
-carved out, each with evidence). Ceiling 150 → 45MB.
+### ⚠ DEPLOY SAFETY — two near-misses, both fixed
+`stackable/` (278MB competitor GPL source) was one deploy from landing web-accessible —
+untracked files invisible to the dirty gate; `--exclude=…/src` missed `stackable/src`
+(path-anchored). Now gitignored + excluded, tarball ceiling fails closed. Deploy: **114MB →
+29MB**, ceiling 150 → 45MB.
 
 ### ⚠ STANDING BACKLOG — carried, do not compress away
 ⛔ **Spec 39 does NOT pace this, and is NOT this track's to build** (Bean 2026-08-29, correcting
@@ -355,8 +363,8 @@ with Bean's say-so if it must shrink; never delete. "Step 0 — fix the instrume
 
 ### ⚠ Carried
 Hero still owes a visual-diff report (bypassed when a deploy was impossible) · `sgs/media`'s
-element manifest disagrees with its classifier for the whole block (`wrapper` vs `media`),
-predates this work · C16/C19 rollouts past their pilots.
+element manifest disagrees with its classifier (`wrapper` vs `media`), predates this work ·
+C16/C19 rollouts past their pilots.
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
