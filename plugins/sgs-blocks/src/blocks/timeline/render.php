@@ -80,12 +80,7 @@ if ( 'connector' === $reveal_trigger && ! $progress_fill ) {
 	$reveal_trigger = 'viewport';
 }
 
-// Milestone media placement (block-wide, not per entry — one decision for the
-// client, and a timeline with mixed placements reads as untidy).
-$media_placement = $attributes['milestoneMediaPlacement'] ?? 'under-date';
-$media_placement = in_array( $media_placement, array( 'under-date', 'date-over-media' ), true )
-	? $media_placement
-	: 'under-date';
+// Milestone media width (block-wide, not per entry).
 $media_width = sgs_css_length_value( $attributes['milestoneMediaWidth'] ?? '180px' );
 
 // Decorative milestone media. WordPress already stores the real alt text on the
@@ -396,11 +391,11 @@ if ( $progress_fill ) {
 	$wrapper_classes[] = 'sgs-timeline--connector-progress';
 }
 
-// Milestone-media placement + A/B row bands. Both are keyed on a wrapper class
-// so that a timeline using neither is byte-identical to before: every new rule
-// in style.scss sits behind one of these classes or behind
+// Milestone media always sits under the date. A/B row bands are keyed on a
+// wrapper class so that a timeline without them is byte-identical to before:
+// every new rule in style.scss sits behind one of these classes or behind
 // `.sgs-timeline__entry--has-media`.
-$wrapper_classes[] = 'sgs-timeline--media-' . ( 'date-over-media' === $media_placement ? 'overlay' : 'under' );
+$wrapper_classes[] = 'sgs-timeline--media-under';
 if ( $row_stripes ) {
 	$wrapper_classes[] = 'sgs-timeline--row-stripes';
 }

@@ -113,11 +113,6 @@ const MEDIA_TYPE_OPTIONS = [
 	{ label: __( 'SVG / Animation', 'sgs-blocks' ), value: 'svg' },
 ];
 
-const MEDIA_PLACEMENT_OPTIONS = [
-	{ label: __( 'Under the date', 'sgs-blocks' ), value: 'under-date' },
-	{ label: __( 'Date over the media', 'sgs-blocks' ), value: 'date-over-media' },
-];
-
 const REVEAL_TRIGGER_OPTIONS = [
 	{ label: __( 'When it scrolls into view', 'sgs-blocks' ), value: 'viewport' },
 	{
@@ -423,7 +418,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		revealOnScroll,
 		revealTrigger,
 		revealStagger,
-		milestoneMediaPlacement,
 		milestoneMediaWidth,
 		milestoneMediaDecorative,
 		showDateColumn,
@@ -449,9 +443,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		orientation === 'vertical' ? `sgs-timeline--align-${ alignment }` : '',
 		`sgs-timeline--connector-${ connectorStyle }`,
 		connectorProgressFill ? 'sgs-timeline--connector-progress' : '',
-		`sgs-timeline--media-${
-			'date-over-media' === milestoneMediaPlacement ? 'overlay' : 'under'
-		}`,
+		'sgs-timeline--media-under',
 		rowStripes ? 'sgs-timeline--row-stripes' : '',
 		orientation === 'vertical' && alignment === 'left' && showDateColumn
 			? 'sgs-timeline--date-gutter'
@@ -753,24 +745,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Milestone media', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					{ /* Placement is ONE decision for the whole timeline, not one
-					     per milestone: a client should not have to make the same
-					     choice N times, and mixed placements down one timeline
-					     read as untidy. */ }
-					<SelectControl
-						label={ __( 'Milestone media placement', 'sgs-blocks' ) }
-						value={ milestoneMediaPlacement }
-						options={ MEDIA_PLACEMENT_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { milestoneMediaPlacement: val } )
-						}
-						help={ __(
-							'Where a milestone’s picture sits. It always goes on the same side as the date, opposite the text.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
 					<TextControl
 						label={ __( 'Milestone media width', 'sgs-blocks' ) }
 						value={ milestoneMediaWidth }
