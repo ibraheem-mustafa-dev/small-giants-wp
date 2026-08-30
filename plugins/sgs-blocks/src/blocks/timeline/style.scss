@@ -17,12 +17,12 @@
 
 // ── FR-38-35 — scroll-driven progress connector (Tier V) ──────────────────────
 //
-// THE CONTRACT. Two independent drivers write ONE number,
-// `--sgs-timeline-fill-progress` (0 -> 1), and this block is the only consumer.
-// Task 2 binds it to a native scroll timeline behind `@supports`; Task 3 writes
-// it from a rAF loop in view.js for browsers with no scroll-driven animation
-// (today: all of Firefox — stable 153, `animation-timeline` lands in 157).
-// Neither driver touches the rules below.
+// THE CONTRACT. ONE driver — view.js's rAF loop — writes ONE number,
+// `--sgs-timeline-fill-progress` (0 -> 1), on every browser, and this block is
+// the only consumer. There used to be a second, native `@supports
+// (animation-timeline: view())` branch here that the JS driver deferred to;
+// it is gone (Step 2), so nothing below this file animates the property —
+// it is only ever set via JS inline style.
 
 // An UNREGISTERED custom property has computed type "token stream" and CANNOT
 // be animated — CSS interpolates it as a discrete 0->1 jump in every browser,
@@ -330,60 +330,13 @@
 }
 
 
-// Driver 1 of 2 — native CSS scroll-driven animation. Scoped entirely to
-// `.sgs-timeline--connector-progress` so a timeline with the feature off is
-// untouched. Where this isn't supported (Firefox stable today), view.js's
-// rAF driver (Task 3) writes the same custom property instead — the two
-// drivers never run at once because only one browser class ever exercises
-// each `@supports` branch.
-//
-// `view()` over `scroll()`: `view()` reports THIS element's own progress
-// through the nearest scrollable ancestor's viewport (0 on entry, 1 on
-// exit), which is exactly "fill as the timeline passes through view".
-// `scroll(root block)` (the site-header shrink precedent) instead reports
-// the PAGE's total scroll progress — wrong axis here, since a timeline can
-// sit anywhere on a long page and must fill on ITS OWN transit, not the
-// whole document's.
-//
-// The animation sits on `.sgs-timeline--connector-progress` itself (the
-// block root), not the SVG path: `--sgs-timeline-fill-progress` inherits
-// (declared at the top with `inherits: true`), so animating it once at the
-// root flows down to `.sgs-timeline__progress-path`'s
-// `stroke-dashoffset` calc for free. `view()`'s subject is also the
-// animated element itself, so anchoring it to the timeline root — the thing
-// whose transit through the viewport IS the effect being represented —
-// gives the correct 0->1 mapping across the block's full height/width,
-// rather than a small SVG box whose own transit is a fraction of that.
-//
-// `animation-duration: 1ms` + `animation-fill-mode: both` is the house
-// idiom (see site-header/render.php's shrink-on-scroll rule) for a
-// scroll-driven animation whose progress comes entirely from the timeline,
-// not from wall-clock duration.
-//
-// `animation-range: entry 0% exit 100%`: fill starts the instant the block
-// begins entering the viewport and reaches full only once it has fully
-// left — the widest, most representative "passes through the viewport"
-// window view() offers, matching the reduced-motion fallback's framing of
-// the connector as "the whole journey".
-@supports (animation-timeline: view()) {
-	@keyframes sgs-timeline-fill-progress {
-		from {
-			--sgs-timeline-fill-progress: 0;
-		}
-
-		to {
-			--sgs-timeline-fill-progress: 1;
-		}
-	}
-
-	.sgs-timeline--connector-progress {
-		animation-name: sgs-timeline-fill-progress;
-		animation-duration: 1ms;
-		animation-fill-mode: both;
-		animation-timeline: view();
-		animation-range: entry 0% exit 100%;
-	}
-}
+// The rAF driver in view.js is the ONLY thing that writes
+// `--sgs-timeline-fill-progress` (Task 2, Step 2). It runs on every browser —
+// there is no native `animation-timeline: view()` branch here any more; that
+// CSS-only driver and the JS capability gate that shadowed it were both
+// removed together, because deleting one without the other left Chrome and
+// Safari with no driver at all (nothing writing the property) while Firefox
+// still looked correct.
 
 // ── Scroll-reveal state ────────────────────────────────────────────────────────
 

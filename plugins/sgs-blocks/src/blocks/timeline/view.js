@@ -12,12 +12,13 @@
  * Each observer is disconnected per-entry after it fires (one-shot).
  *
  * Also drives the connector progress-line fill (--sgs-timeline-fill-progress)
- * on browsers with no native `animation-timeline: view()` support (today:
- * every Firefox — stable is 153, and it lands in 157), so this is a PRIMARY
- * rendering path, not a fallback — see initProgressDriver() below.
+ * on every browser — see initProgressDriver() below. There is no native
+ * `animation-timeline: view()` CSS branch any more; this rAF driver is the
+ * ONLY thing that writes the property.
  */
 
 import {
+	chromeOffsetPx,
 	prefersReducedMotion as isReducedMotionNow,
 	rafThrottle,
 } from '../../shared/effects/motion-utils.js';
@@ -136,21 +137,27 @@ import {
 	 * three at once instead of one at a time, and the owner reported the effect as
 	 * simply not working.
 	 *
-	 * The geometry below is deliberately the SAME window the CSS uses
-	 * (`animation-range: entry 0% exit 100%`): 0 when the element's top edge is at
-	 * the viewport bottom, 1 when its bottom edge reaches the viewport top. So the
-	 * dots and the reveal stay in step with the painted line by construction,
-	 * on BOTH drivers, without either reading the other's output.
+	 * Progress is driven by a READING LINE, not raw viewport transit: 0 when the
+	 * line sits above the block's top edge, 1 once it has passed the block's
+	 * bottom edge. This is what puts the fill head (and, by construction, the
+	 * milestone dot painted at the same `top: calc(fill * 100%)` expression) ON
+	 * the reading line rather than 78-92% down a still-readable block — the
+	 * defect measured in `reports/visual-diff/timeline-2026-08-30.md` Addendum 18.
+	 * `chromeOffsetPx()` and `window.innerHeight` are both read live on every
+	 * call rather than cached, because the sticky header's measured height and
+	 * the viewport size can both change without a full reload.
 	 *
 	 * @param {HTMLElement} root The .sgs-timeline root.
 	 * @return {number} Progress clamped to 0..1.
 	 */
 	function computeViewProgress( root ) {
 		const rect = root.getBoundingClientRect();
-		const viewportHeight = window.innerHeight;
-		const total = rect.height + viewportHeight;
-		const scrolled = viewportHeight - rect.top;
-		const progress = total > 0 ? scrolled / total : 0;
+		const chrome = chromeOffsetPx();
+		const readingLine = chrome + 0.38 * ( window.innerHeight - chrome );
+		if ( rect.height === 0 ) {
+			return 0;
+		}
+		const progress = ( readingLine - rect.top ) / rect.height;
 		return Math.min( 1, Math.max( 0, progress ) );
 	}
 
@@ -234,34 +241,21 @@ import {
 	/**
 	 * Vanilla rAF driver for the connector progress-line.
 	 *
-	 * This is the PRIMARY path for any browser without native
-	 * `animation-timeline: view()` support (Firefox stable has none at
-	 * all as of this writing — it lands in a later release). On a browser
-	 * that DOES support the native timeline, style.scss's own CSS
-	 * animation already owns --sgs-timeline-fill-progress and outranks a
-	 * JS inline style write in the cascade, so this driver returns
-	 * immediately and never attaches a single listener.
+	 * This is now the ONLY driver, on every browser. There used to be a
+	 * second, native `animation-timeline: view()` branch in style.scss that
+	 * this driver deferred to on browsers advertising support for it — that
+	 * branch is deleted, and so is the capability check that deferred to it,
+	 * in the same change: a browser-capability test says nothing about
+	 * whether the CSS branch it used to defer to still exists, so removing
+	 * only one half would leave Chrome/Safari (capability present, CSS
+	 * branch gone) with nothing writing the property at all.
 	 *
 	 * @param {HTMLElement} root - The .sgs-timeline--connector-progress <ol>.
 	 * @return {Function|void} A cleanup function, or nothing if the driver
-	 *                         never attached (native support / reduced motion).
+	 *                         never attached (reduced motion only).
 	 */
 	function initProgressDriver( root ) {
-		// 1. Feature-detect FIRST, before attaching anything. A CSS
-		// animation outranks a JS inline style write, so on a browser with
-		// native support this driver would burn frames producing nothing
-		// visible — and this early return is what makes the negative
-		// branch testable (a test can stub CSS.supports).
-		// The feature tested here MUST be the one style.scss gates its
-		// native driver on (`view()`), not merely a related one. Testing
-		// `scroll()` instead would leave a hole on any engine that shipped
-		// one without the other: the CSS driver would not apply and this
-		// one would have already exited, so nothing would fill the line.
-		if ( window.CSS?.supports?.( 'animation-timeline', 'view()' ) ) {
-			return;
-		}
-
-		// 2. Reduced motion: use the LIVE check (re-evaluates every call),
+		// Reduced motion: use the LIVE check (re-evaluates every call),
 		// not the module-load-cached const above. The stylesheet already
 		// forces the line fully filled under prefers-reduced-motion, so
 		// doing nothing here is correct — do not write 1 ourselves.
@@ -270,16 +264,9 @@ import {
 		}
 
 		/**
-		 * Compute fill progress (0..1) from the root's position in the
-		 * viewport.
-		 *
-		 * Range chosen for a comfortable "fills while the timeline is on
-		 * screen" feel rather than an edge-to-edge scrollIntoView range:
-		 * progress reaches 0 once the root's top edge crosses the bottom
-		 * of the viewport, and reaches 1 once the root's bottom edge
-		 * crosses the top of the viewport — i.e. the fill tracks exactly
-		 * how much of the timeline has scrolled past the top of the
-		 * screen while it's in view.
+		 * Compute fill progress (0..1) from the reading line's position
+		 * relative to the root — see `computeViewProgress()` above for the
+		 * mapping and why it replaced raw viewport transit.
 		 *
 		 * @return {number} Progress clamped to 0..1.
 		 */
@@ -292,14 +279,21 @@ import {
 			);
 		}
 
-		// 3. Share the ONE page-wide rAF loop rather than running our own.
+		// Share the ONE page-wide rAF loop rather than running our own.
 		const throttledWrite = rafThrottle( writeProgress );
 
 		writeProgress();
 		window.addEventListener( 'scroll', throttledWrite, { passive: true } );
-		// 7. Recompute on resize — the element's height changes with
-		// content/breakpoint, which shifts the progress curve.
+		// Recompute on resize — both the reading line (viewport height,
+		// live header height) and the block's own height/position shift
+		// with content/breakpoint changes.
 		window.addEventListener( 'resize', throttledWrite, { passive: true } );
+
+		// bfcache: no listener needed HERE — `bootProgressDriver()` already
+		// tears this driver down and re-initialises it (calling
+		// `writeProgress()` fresh) on `pageshow` with `event.persisted`, so
+		// a second listener in this scope would be a duplicate mechanism
+		// doing the same job.
 
 		return function cleanup() {
 			window.removeEventListener( 'scroll', throttledWrite );
@@ -318,14 +312,17 @@ import {
 	 *
 	 * ⛔ This is where the first build was wrong, and the shape of the mistake
 	 * is worth keeping: the spawner lived INSIDE initProgressDriver(), which
-	 * returns early on any browser with native `animation-timeline` support.
-	 * So sparks existed ONLY on the JS path — i.e. only on Firefox — the exact
-	 * inverse of what was wanted, and invisible to everyone who looked. A
-	 * decorative layer must never live inside the fallback driver: it has to
-	 * observe the progress VALUE, whoever wrote it.
+	 * at the time returned early on any browser with native
+	 * `animation-timeline` support. So sparks existed ONLY on the JS path —
+	 * i.e. only on Firefox — the exact inverse of what was wanted, and
+	 * invisible to everyone who looked. A decorative layer must never live
+	 * inside the fallback driver: it has to observe the progress VALUE,
+	 * whoever wrote it. There is no native path any more (Step 2 removed it),
+	 * but the separation this forced stands on its own merits and stays.
 	 *
-	 * On the native path nothing tells JS the value moved, so this polls the
-	 * computed property — one read per animation frame, only while scrolling.
+	 * This observer recomputes progress from the same geometry as the driver
+	 * (`computeViewProgress()`) rather than reading the custom property back —
+	 * one recompute per animation frame, only while scrolling.
 	 *
 	 * @param {HTMLElement} root - The .sgs-timeline root.
 	 * @return {Function|undefined} cleanup, or undefined if none attached.
