@@ -1135,92 +1135,14 @@ if ( 'svg' === $media_type ) {
 	// Mirrors the identical allowlist used by SGS_Container_Wrapper for bgSvgContent.
 	// Strips: <script>, <foreignObject>, event-handler attributes (on*), external
 	// href/xlink:href. Only the shapes/structure tags below pass through.
-	$allowed_svg_tags = array(
-		'svg'      => array(
-			'xmlns'               => true,
-			'viewbox'             => true,
-			'width'               => true,
-			'height'              => true,
-			'preserveaspectratio' => true,
-			'class'               => true,
-			'id'                  => true,
-		),
-		'g'        => array(
-			'transform' => true,
-			'class'     => true,
-			'id'        => true,
-		),
-		'path'     => array(
-			'd'            => true,
-			'fill'         => true,
-			'stroke'       => true,
-			'stroke-width' => true,
-			'class'        => true,
-		),
-		'circle'   => array(
-			'cx'     => true,
-			'cy'     => true,
-			'r'      => true,
-			'fill'   => true,
-			'stroke' => true,
-			'class'  => true,
-		),
-		'rect'     => array(
-			'x'      => true,
-			'y'      => true,
-			'width'  => true,
-			'height' => true,
-			'fill'   => true,
-			'stroke' => true,
-			'class'  => true,
-		),
-		'polygon'  => array(
-			'points' => true,
-			'fill'   => true,
-			'stroke' => true,
-			'class'  => true,
-		),
-		'polyline' => array(
-			'points' => true,
-			'fill'   => true,
-			'stroke' => true,
-			'class'  => true,
-		),
-		'line'     => array(
-			'x1'     => true,
-			'y1'     => true,
-			'x2'     => true,
-			'y2'     => true,
-			'stroke' => true,
-			'class'  => true,
-		),
-		'ellipse'  => array(
-			'cx'     => true,
-			'cy'     => true,
-			'rx'     => true,
-			'ry'     => true,
-			'fill'   => true,
-			'stroke' => true,
-			'class'  => true,
-		),
-		'text'     => array(
-			'x'           => true,
-			'y'           => true,
-			'fill'        => true,
-			'font-size'   => true,
-			'font-family' => true,
-			'class'       => true,
-		),
-		'defs'     => array(),
-		'style'    => array( 'type' => true ),
-		'animate'  => array(
-			'attributename' => true,
-			'from'          => true,
-			'to'            => true,
-			'dur'           => true,
-			'repeatcount'   => true,
-		),
-	);
+	// Sanitise SVG through the SHARED wp_kses() allowlist.
+	// Was an 86-line hand-rolled copy of sgs_allowed_svg_tags(). Verified
+	// byte-equivalent as parsed data before collapsing, with a negative
+	// control proving the comparison detects a planted difference - so this
+	// is behaviour-neutral by measurement, not by assertion.
+	// One list, one place to harden. Strips <script>, <foreignObject>,
+	// event-handler attributes (on*) and external href/xlink:href.
+	$allowed_svg_tags = sgs_allowed_svg_tags();
 
 	$sanitised_svg = wp_kses( $svg_content_raw, $allowed_svg_tags );
 
