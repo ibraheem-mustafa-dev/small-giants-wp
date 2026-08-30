@@ -320,37 +320,42 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 `.is-layout-constrained > :where(:not(.alignfull))`. Ours therefore cannot express
 "full-bleed child of a constrained parent". Read it there before reopening it.
 
-## ▶ CLIENT-CONTROLS TRACK — 2026-08-30 (evening): MEDIA ELEMENT, waves 1-2 SHIPPED + LIVE
+## ▶ CLIENT-CONTROLS TRACK — 2026-08-30: MEDIA ELEMENT, waves 1-3 SHIPPED
 
-**Two prompts, run separately.** `prompts/2026-08-31-uniformity-sweep.md` (the ORIGINAL goal, still
-Phase-1-triage-only, no code). `prompts/2026-08-31-media-element.md` — REWRITTEN this session with
-exact results + the ordered remainder. Detail: **D904-D907**. Plan:
-`~/.claude/plans/media-element-misty-squid.md`. Do not restate history here.
+**Detail: D904-D909. Plan `~/.claude/plans/media-element-zippy-boole.md`. Canonical design
+`.claude/plans/2026-08-30-media-element-architecture-v2.md` — REWRITTEN in place; do not re-add
+"this was wrong" notes, they mislead a grepping agent. Do not restate history here.**
+(`prompts/2026-08-31-uniformity-sweep.md` is the separate ORIGINAL goal, still triage-only.)
 
-**SHIPPED, DEPLOYED, LIVE-VERIFIED** (12 commits, `9b67c3885`..`e912a1f96`):
-Wave 1 census (128 media attrs, 6 surfaces, **10 storage shapes**) · SVG allowlists **6 -> 1 unified** (+2 in `button/render.php`, untouched) ·
-editor SVG sanitiser at all 6 mounts, generated from the PHP · `<track>` captions on `sgs/media` ·
-Wave 2 L1 naming pair + declarative injection both sides. **7 new gates** (5 checks, all
-negative-controlled + 2 generators). Deploy 212s, 83/83 checksums, motion QA 3/3.
+**Waves 1-2 deployed + live-verified** — census, SVG allowlists 6→1 + sanitiser at 6 mounts,
+`<track>` captions, L1 pair, declarative injection. Probe **3143**;
+`reports/visual-diff/svg-sanitiser-captions-2026-08-30.md`.
 
-**Live evidence:** `reports/visual-diff/svg-sanitiser-captions-2026-08-30.md`. Probe page **3143**
-`[GATE — DO NOT DELETE]`. Front end 11/11, editor canvas 10/10 with `SGS_PWNED` undefined in BOTH
-realms, captions 6/6 with a negative control. ⭐ The positive control came free: the server keeps the
-`<script>` TEXT as inert data, the editor removes element+subtree — had the JS sanitiser been a
-no-op the two DOMs would have matched byte for byte.
+**Wave 3 built, six media gates green, NOT deployed** — atom registry (TEN atoms, data only),
+presentation census (54 pairs / 37 names + a **`gaps` matrix**), selective injection both sides
+(109 keys → 49), and the generated L4 stylesheet `assets/css/media-element.css` (from
+`assets/css/media-atoms/*.css`, enqueued in both realms).
 
-⛔ **Four architecture claims were FALSE — corrected, do not re-inherit them.** `ContainerWrapperControls` (which owns
-`KIND_PANELS`) has 23 mounts not 30, and is NOT the most-adopted (`SgsColourPanel` 65, `ResponsiveBoxControl` 51), so
-the L2 exemplar changed. The one generator was NOT gated. `prefers-reduced-motion` was already
-implemented → **STRUCK, not built** (re-adding = a duplicate). There were SIX SVG allowlists, not 2.
+⛔ **ABSENCE IS A GAP, NOT A DECISION (Bean).** Built ad hoc, never standardised — a missing name is
+an accidental gap. `gaps` is the operative output, not the inventory: **SIX real gaps** (overlay on
+4 surfaces, object-fit + focal-point on decorative-image; box-shape complete). Only a genuinely
+DIFFERENT concept is excludable — `decorative-image`'s `positionX/Y` are absolute page placement.
 
-**NEXT, in order:** Wave 3 (six atoms, fans out) → 4 (panels+dispatch) → 5 (`sgs/media` THEN
-`before-after`, **never parallel** — that is the only test the abstraction generalises) → 6 (gates as
-inspector-scan rules, all start advisory) → 7 (remaining surfaces, INSERT→VERIFY→GUT per commit).
+⛔ **A control becomes standard by BEING a shared helper.** `golden-controls.json` encodes 14 types;
+exactly ONE has a rule reading it, so a recipe there enforces nothing.
 
-⚠ **OWED:** `button/render.php`'s TWO allowlists unmerged. (DB reseeded — `--stage 1`, 4 captions
-attrs live, DB 77 = block.json 77.) The SMIL `<a><animate attributeName="href">` bypass is REASONED, NOT EXECUTED — Bean's
-call, owed a canary probe WITH a positive control proving the harness can see a real execution.
+⛔ **`object-fit`'s `custom` is a SIZING MODE, not a fit value** → belongs to `box-shape`. Hero's
+`--image, --video` scoping (SVG's `<span>` excluded deliberately) is the canonical video/SVG answer.
+
+**NEXT:** Wave 4 = ten atoms, 4 Sonnet branches, dispatched from baseline `0fdf3b654`. Then 5
+(`sgs/media` THEN `before-after`, **never parallel**) → 6 (inspector-scan rules, all advisory) → 7
+(remaining surfaces, INSERT→VERIFY→GUT per commit).
+
+⚠ **OWED:** `button/render.php`'s two SVG allowlists; the SMIL bypass is REASONED NOT EXECUTED
+(owed a canary probe with a positive control). **Nothing in Wave 3 is deployed — Wave 3 closes on
+parity + validators; Wave 5 closes on paint.** Live defect branch B is fixing:
+`media/render.php:1076-1080` builds autoplay/muted/playsinline with no guard, so no-JS visitors get
+unplayable markup.
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
