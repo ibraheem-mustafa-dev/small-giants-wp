@@ -35,17 +35,106 @@ import { __ } from '@wordpress/i18n';
  * the caller's responsibility (it is block-specific); only the state labels are owned
  * here, because they are identical on every row in the family.
  *
+ * NON-TOP-LEVEL BINDING (get/set, added 2026-08-30, owner-approved shape). Three real
+ * colour controls (`sgs/mega-panel` asideSeparator.colour, `sgs/pricing-table`
+ * plans[i].ribbonColour, `sgs/trust-bar` items[i].fillColour) cannot be named by a
+ * single top-level attribute string, so `attrs.base` alone cannot reach them. `get`/
+ * `set` replace the `attributes[base]` read and `setAttributes({[base]:…})` write with
+ * caller-supplied functions; everything else about the row is unchanged.
+ *   PRECEDENCE — attrs and get/set are mutually exclusive. Both -> throws (ambiguous
+ *   binding). Neither -> throws (existing attrs.base-required error). Only one of
+ *   get/set -> throws (a row that reads but can't write, or vice versa, round-trips
+ *   nothing and fails silently downstream — refused loudly instead).
+ *   SIBLING STATES — the get/set path renders ONLY the 'normal' state; it accepts no
+ *   hover/gradient/hoverGradient. A hover TAB with a get/set base and no matching
+ *   hover accessor would write nowhere and look fine — worse than refusing. Per-state
+ *   overrides were considered and rejected for this pass: none of the three known
+ *   adopters need a hover state on the get/set path today, and a partially-general
+ *   API (some state names wired, others not) is a worse contract than "single-state
+ *   only, extend when a real caller needs more". Extending later is additive — a
+ *   `hoverGet`/`hoverSet` pair could be added without breaking this shape.
+ *   linked — unconditional on both paths; it is a property of DesignTokenPicker, not
+ *   of how the value is read/written, so the get/set path carries it identically.
+ *
  * @param {Object}   o
  * @param {string}   o.key            Row key, stable — used by rule 31 and by
  *                                    supports.sgs.colourExemptions lookups.
  * @param {string}   o.label          Already translated by the caller.
- * @param {Object}   o.attrs          The BLOCK'S OWN attribute names:
- *                                    { base, hover?, gradient?, hoverGradient? }
- * @param {Object}   o.attributes     The block's attributes object.
- * @param {Function} o.setAttributes  The block's setAttributes.
+ * @param {Object}   [o.attrs]        The BLOCK'S OWN top-level attribute names:
+ *                                    { base, hover?, gradient?, hoverGradient? }.
+ *                                    Mutually exclusive with o.get/o.set — see below.
+ * @param {Object}   [o.attributes]   The block's attributes object. Required when
+ *                                    o.attrs is used; ignored (and not required) on
+ *                                    the o.get/o.set path.
+ * @param {Function} [o.setAttributes] The block's setAttributes. Required when
+ *                                    o.attrs is used; ignored (and not required) on
+ *                                    the o.get/o.set path.
+ * @param {Function} [o.get]          NON-TOP-LEVEL BINDING (2026-08-30). Reads the
+ *                                    resting value from wherever it actually lives —
+ *                                    an object-attribute field (`asideSeparator.colour`)
+ *                                    or a repeater item (`plans[i].ribbonColour`). Must
+ *                                    be paired with o.set; supplying only one of the
+ *                                    pair throws (see below) rather than silently
+ *                                    rendering a row that reads or writes nowhere.
+ * @param {Function} [o.set]          Companion writer for o.get. Receives the picked
+ *                                    value (or `undefined` on clear — mirror the
+ *                                    `val ?? ''` normalisation done on the attrs path)
+ *                                    and is responsible for the whole write, however
+ *                                    deep — e.g.
+ *                                    `( val ) => setAttributes( { asideSeparator: { ...asideSeparator, colour: val ?? '' } } )`.
  * @return {Object} A row descriptor: { key, label, states }.
  */
-export default function fillRow( { key, label, attrs, attributes, setAttributes } ) {
+export default function fillRow( { key, label, attrs, attributes, setAttributes, get, set } ) {
+	// PRECEDENCE RULE (2026-08-30): attrs and get/set are MUTUALLY EXCLUSIVE, checked
+	// before anything else runs. Supplying both is refused loudly — a caller who wires
+	// attrs.base AND get/set almost certainly means the get/set is the real binding and
+	// attrs.base is stale copy-paste (or vice versa); silently preferring one would let
+	// the other rot invisibly. This mirrors the existing "attrs.base is required" error
+	// style rather than inventing a new one.
+	if ( ( get || set ) && attrs ) {
+		throw new Error(
+			`fillRow( "${ key }" ): supply EITHER attrs (top-level attribute binding) OR ` +
+				'get/set (non-top-level binding) — never both. A row with two candidate ' +
+				'bindings cannot tell which one is real.'
+		);
+	}
+
+	if ( ( get && ! set ) || ( set && ! get ) ) {
+		throw new Error(
+			`fillRow( "${ key }" ): get and set must be supplied together — a row with ` +
+				'only one of the pair can read or write but not round-trip, which is the ' +
+				'exact silent-loss class this family exists to remove.'
+		);
+	}
+
+	const usingGetSet = Boolean( get && set );
+
+	if ( usingGetSet ) {
+		// NON-TOP-LEVEL BINDING PATH. There is deliberately no hover/gradient/
+		// hoverGradient parameter here — sibling states only exist via attrs (the
+		// top-level path), and attrs+get/set is refused above. A caller cannot reach
+		// a half-wired hover tab through this path; it can only ever produce the
+		// single-state row below. See the file-header note (SIBLING STATES) for why
+		// per-state overrides were not built instead.
+		const normal = {
+			key: 'normal',
+			label: __( 'Normal', 'sgs-blocks' ),
+			value: get(),
+			onChange: ( val ) => set( val ?? '' ),
+			// linked:true stores the PALETTE SLUG rather than a resolved hex, so a
+			// client's brand token survives a theme change (D717/D740). This is NOT
+			// conditional on the binding shape — it is a property of DesignTokenPicker
+			// itself, so it applies identically on the get/set path.
+			linked: true,
+		};
+
+		return {
+			key,
+			label,
+			states: [ normal ],
+		};
+	}
+
 	const { base, hover, gradient, hoverGradient } = attrs || {};
 
 	if ( ! base ) {

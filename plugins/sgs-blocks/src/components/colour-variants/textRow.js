@@ -21,16 +21,61 @@ import { __ } from '@wordpress/i18n';
  * store a gradient — a control whose value is discarded on save, which is the exact
  * silent-loss class this family exists to remove.
  *
+ * NON-TOP-LEVEL BINDING (get/set) — same contract as fillRow (see that file's header
+ * for the full rationale). Precedence: attrs and get/set are mutually exclusive (both
+ * -> throws); get without set or set without get -> throws. The get/set path renders
+ * only the 'normal' state and is never gradientCapable (gradientCapable derives from
+ * attrs.gradient/attrs.hoverGradient, which do not exist on this path) — a hover tab
+ * or a gradient toggle bound to nowhere is refused rather than silently half-wired.
+ * `linked` is unconditional on both paths.
+ *
  * @param {Object}   o
  * @param {string}   o.key            Row key, stable.
  * @param {string}   o.label          Already translated by the caller.
- * @param {Object}   o.attrs          The BLOCK'S OWN attribute names:
- *                                    { base, hover?, gradient?, hoverGradient? }
- * @param {Object}   o.attributes     The block's attributes object.
- * @param {Function} o.setAttributes  The block's setAttributes.
+ * @param {Object}   [o.attrs]        The BLOCK'S OWN top-level attribute names:
+ *                                    { base, hover?, gradient?, hoverGradient? }.
+ *                                    Mutually exclusive with o.get/o.set.
+ * @param {Object}   [o.attributes]   The block's attributes object. Required with
+ *                                    o.attrs; ignored on the o.get/o.set path.
+ * @param {Function} [o.setAttributes] The block's setAttributes. Required with
+ *                                    o.attrs; ignored on the o.get/o.set path.
+ * @param {Function} [o.get]          Non-top-level reader — see fillRow's header.
+ * @param {Function} [o.set]          Non-top-level writer — companion to o.get.
  * @return {Object} A row descriptor: { key, label, states, gradientCapable? }.
  */
-export default function textRow( { key, label, attrs, attributes, setAttributes } ) {
+export default function textRow( { key, label, attrs, attributes, setAttributes, get, set } ) {
+	if ( ( get || set ) && attrs ) {
+		throw new Error(
+			`textRow( "${ key }" ): supply EITHER attrs (top-level attribute binding) OR ` +
+				'get/set (non-top-level binding) — never both. A row with two candidate ' +
+				'bindings cannot tell which one is real.'
+		);
+	}
+
+	if ( ( get && ! set ) || ( set && ! get ) ) {
+		throw new Error(
+			`textRow( "${ key }" ): get and set must be supplied together — a row with ` +
+				'only one of the pair can read or write but not round-trip, which is the ' +
+				'exact silent-loss class this family exists to remove.'
+		);
+	}
+
+	if ( get && set ) {
+		const normalGetSet = {
+			key: 'normal',
+			label: __( 'Normal', 'sgs-blocks' ),
+			value: get(),
+			onChange: ( val ) => set( val ?? '' ),
+			linked: true,
+		};
+
+		return {
+			key,
+			label,
+			states: [ normalGetSet ],
+		};
+	}
+
 	const { base, hover, gradient, hoverGradient } = attrs || {};
 
 	if ( ! base ) {
