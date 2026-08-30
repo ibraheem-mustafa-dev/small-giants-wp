@@ -56,6 +56,13 @@ $heading_level    = in_array( $attributes['headingLevel'] ?? '', $allowed_headin
 	: 'h3';
 $orientation      = $attributes['orientation'] ?? 'vertical';
 $alignment        = $attributes['alignment'] ?? 'alternating';
+// Mobile layout — an axis of its own, independent of orientation/alignment
+// (Task 2). 'stacked' is today's collapse, unchanged. 'carousel' is a native
+// horizontal scroll-snap row, ≤767px ONLY — see style.scss's mobile-carousel
+// section, gated on both the breakpoint and this class, so a 'stacked'
+// timeline never carries a rule from it.
+$mobile_layout    = $attributes['mobileLayout'] ?? 'stacked';
+$mobile_layout    = in_array( $mobile_layout, array( 'stacked', 'carousel' ), true ) ? $mobile_layout : 'stacked';
 $connector_style  = $attributes['connectorStyle'] ?? 'line';
 $connector_colour = $attributes['connectorColour'] ?? 'border';
 $date_colour      = $attributes['dateColour'] ?? 'accent';
@@ -405,6 +412,13 @@ if ( 'connector' === $reveal_trigger ) {
 if ( $date_gutter ) {
 	$wrapper_classes[] = 'sgs-timeline--date-gutter';
 }
+// Task 2 — 'carousel' is a native scroll-snap card row at ≤767px ONLY; every
+// rule it needs in style.scss is scoped behind BOTH this class AND
+// `@media (max-width:767px)`, so it is inert above that width and a 'stacked'
+// timeline (the default) never carries a rule from it at all.
+if ( 'carousel' === $mobile_layout ) {
+	$wrapper_classes[] = 'sgs-timeline--mobile-carousel';
+}
 
 if ( '' !== $preset_text_slug ) {
 	$wrapper_classes[] = 'has-text-color';
@@ -474,6 +488,17 @@ if ( $reveal_on_scroll ) {
 	if ( 'connector' !== $reveal_trigger ) {
 		$wrapper_args['data-reveal-on-scroll'] = 'true';
 	}
+}
+
+// Task 2 — the carousel's accessible name (SC 2.1.1). The block has no
+// heading attribute of its own (entry titles are per-milestone, not a
+// block-wide label), so this is a sensible i18n'd default rather than a
+// content-derived name. Emitted as a data attribute — never baked into
+// view.js as a literal — so a translated site gets a translated name; the
+// tabindex/role themselves stay JS-only (see view.js) because they can only
+// be true while the element actually scrolls.
+if ( 'carousel' === $mobile_layout ) {
+	$wrapper_args['data-carousel-label'] = __( 'Timeline milestones', 'sgs-blocks' );
 }
 
 $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );

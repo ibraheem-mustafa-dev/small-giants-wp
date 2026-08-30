@@ -148,6 +148,12 @@
 			"type": "string",
 			"default": "alternating"
 		},
+		"mobileLayout": {
+			"type": "string",
+			"enum": [ "stacked", "carousel" ],
+			"default": "stacked",
+			"description": "How the timeline behaves at 767px and below, independently of orientation/alignment. 'stacked' is today's collapse (unchanged). 'carousel' is a native horizontal scroll-snap row, ≤767px only — inert above that width in either orientation."
+		},
 		"entries": {
 			"type": "array",
 			"default": [

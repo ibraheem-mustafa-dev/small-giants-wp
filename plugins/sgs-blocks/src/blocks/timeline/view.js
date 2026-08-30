@@ -705,6 +705,50 @@ import {
 	}
 
 	/**
+	 * Task 2 — `mobileLayout: carousel` keyboard reachability (SC 2.1.1).
+	 *
+	 * A native overflow scroller with no focusable children cannot be reached
+	 * or operated by keyboard in Chromium before 127, and in Safari at all.
+	 * `tabindex="0"` + `role="region"` + an accessible name fix that — but
+	 * those are HTML attributes and CANNOT be media-queried, so they must be
+	 * present ONLY while the element actually scrolls (≤767px), or a
+	 * screen-reader user at desktop gets a pointless verbose region that does
+	 * not scroll. Toggled on a `matchMedia` listener that also fires on
+	 * `change`, so a rotated phone or a resized window updates it — mirrors
+	 * the existing `matchMedia('(prefers-reduced-motion: reduce)')`/
+	 * `motionQuery.addEventListener('change', …)` pattern already used
+	 * elsewhere in this file and in shared/effects/smooth-scroll.js.
+	 *
+	 * @param {HTMLElement} root The `.sgs-timeline--mobile-carousel` root.
+	 */
+	function initCarouselA11y( root ) {
+		if ( typeof window.matchMedia !== 'function' ) {
+			return;
+		}
+
+		const mobileQuery = window.matchMedia( '(max-width: 767px)' );
+		// Server-rendered, i18n'd via render.php — never hardcoded here, so a
+		// translated site gets a translated name. Falls back to a sensible
+		// default only if the data attribute is somehow absent.
+		const label = root.dataset.carouselLabel || 'Timeline milestones';
+
+		function applyState() {
+			if ( mobileQuery.matches ) {
+				root.setAttribute( 'tabindex', '0' );
+				root.setAttribute( 'role', 'region' );
+				root.setAttribute( 'aria-label', label );
+			} else {
+				root.removeAttribute( 'tabindex' );
+				root.removeAttribute( 'role' );
+				root.removeAttribute( 'aria-label' );
+			}
+		}
+
+		applyState();
+		mobileQuery.addEventListener( 'change', applyState );
+	}
+
+	/**
 	 * Boot on DOMContentLoaded.
 	 */
 	function boot() {
@@ -718,6 +762,12 @@ import {
 		timelines.forEach( initTimeline );
 
 		bootProgressDriver();
+
+		// Independent of reveal config — a carousel timeline may have reveal
+		// on or off, so this is its own selector rather than reusing `timelines`.
+		document
+			.querySelectorAll( '.sgs-timeline--mobile-carousel' )
+			.forEach( initCarouselA11y );
 	}
 
 	if ( document.readyState === 'loading' ) {

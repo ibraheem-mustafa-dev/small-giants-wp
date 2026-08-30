@@ -14,6 +14,7 @@ import {
 	Button,
 	ToggleControl,
 	RangeControl,
+	RadioControl,
 } from '@wordpress/components';
 import {
 	IconPicker,
@@ -125,6 +126,14 @@ const ALIGNMENT_OPTIONS = [
 	{ label: __( 'Alternating', 'sgs-blocks' ), value: 'alternating' },
 	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
 	{ label: __( 'Centre', 'sgs-blocks' ), value: 'centre' },
+];
+
+// Mobile layout is an axis of its own (Task 2) — independent of orientation
+// and alignment, and inert above 767px in either. 'stacked' is today's
+// collapse, unchanged; 'carousel' is a native scroll-snap card row.
+const MOBILE_LAYOUT_OPTIONS = [
+	{ label: __( 'Stacked', 'sgs-blocks' ), value: 'stacked' },
+	{ label: __( 'Swipeable cards', 'sgs-blocks' ), value: 'carousel' },
 ];
 
 const CONNECTOR_OPTIONS = [
@@ -408,6 +417,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		style,
 		orientation,
 		alignment,
+		mobileLayout,
 		entries,
 		headingLevel,
 		connectorStyle,
@@ -445,6 +455,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		connectorProgressFill ? 'sgs-timeline--connector-progress' : '',
 		'sgs-timeline--media-under',
 		rowStripes ? 'sgs-timeline--row-stripes' : '',
+		'carousel' === mobileLayout ? 'sgs-timeline--mobile-carousel' : '',
 		orientation === 'vertical' && alignment === 'left' && showDateColumn
 			? 'sgs-timeline--date-gutter'
 			: '',
@@ -733,6 +744,20 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+					/>
+					{ /* Mobile layout is an axis of its own (Task 2) — it does not
+					     touch orientation/alignment above 767px in either
+					     direction, so it is shown regardless of which of those is
+					     picked. */ }
+					<RadioControl
+						label={ __( 'Mobile layout', 'sgs-blocks' ) }
+						selected={ mobileLayout || 'stacked' }
+						options={ MOBILE_LAYOUT_OPTIONS }
+						onChange={ ( val ) => setAttributes( { mobileLayout: val } ) }
+						help={ __(
+							'Stacked: today’s single-column layout. Swipeable cards: a horizontal scroll-snap row of cards, phones only (767px and below) — layout above that width is unaffected.',
+							'sgs-blocks'
+						) }
 					/>
 				</PanelBody>
 
