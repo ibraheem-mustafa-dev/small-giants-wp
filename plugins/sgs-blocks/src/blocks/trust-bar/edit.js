@@ -11,7 +11,7 @@ import {
 	Notice,
 	BoxControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl } from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl, fillRow, textRow } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview, spacingPreview } from '../../utils';
 // trust-bar does not use the default <ContainerWrapperControls> aggregator —
@@ -420,12 +420,17 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 	return (
 		<>
-			{ /* D621/D622 — shadow colour split out of the legacy shape-only
-				iconCircleShadow/badgeImageShadow attrs into SgsColourPanel rows,
-				mounted first so they render at the top of the Styles tab. Scoped
-				to shadow only — the block's other colour controls (iconColour,
-				textColour, badge background) are pre-existing scattered
-				DesignTokenPicker rows, left untouched (out of scope here). */ }
+			{ /* D621/D622 — shadow colour rows, mounted first so they render at
+				the top of the Styles tab. Every colour control on this block
+				now lives here — the icon-circle appearance colours
+				(iconCircleBackground, iconColour+gradient) and the text-only/
+				image-badge title + label colours were consolidated in from
+				scattered bespoke DesignTokenPicker mounts in the Styles tab
+				(2026-08-30, duplicate-control fix): textColour previously had
+				TWO independent writers (this panel's "Root text colour" row
+				AND a "Label colour" picker in the Appearance panel below) —
+				the duplicate picker is deleted, this panel's row is now the
+				only writer. */ }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -517,6 +522,74 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							},
 						],
 					},
+					// ── Consolidated in 2026-08-30 (duplicate-control fix) ──
+					// Was a bespoke DesignTokenPicker in Styles > Appearance
+					// (icon-circle variant). Genuine BACKGROUND paint ->
+					// fillRow (sgs_background_paint_decl() on the PHP side).
+					// No hover/gradient siblings existed on the original
+					// control, so fillRow renders a single 'normal' state —
+					// byte-identical capability, now with linked:true (the
+					// canonical helper always links; the original bespoke
+					// picker never set it, so this is a deliberate upgrade,
+					// not a regression).
+					badgeStyle === 'icon-circle' && fillRow( {
+						key: 'icon-circle-background',
+						label: __( 'Icon circle background', 'sgs-blocks' ),
+						attrs: { base: 'iconCircleBackground' },
+						attributes,
+						setAttributes,
+					} ),
+					// ── Icon colour deliberately NOT expressed through
+					// fillRow/textRow. This paints via CSS `color` (consumed
+					// as currentColor by the SVG icon's stroke), which is
+					// neither fillRow's background-paint mechanism nor
+					// textRow's plain-text mechanism — Rule 31's own
+					// documented exemption (SgsColourPanel.js history)
+					// resolves icon colour via its gradient sibling's
+					// css_property:'stroke', a third mechanism belonging to
+					// neither helper. sgs/icon-list's own "Icon colour" row
+					// (edit.js:355-368) is the established precedent for this
+					// exact case and hand-builds the row the same way — this
+					// mirrors that, not an invented shape. Moved verbatim
+					// from the deleted Appearance-panel picker; unchanged.
+					badgeStyle === 'icon-circle' && {
+						key: 'icon-colour',
+						label: __( 'Icon colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: iconColour,
+								onChange: ( val ) => setAttributes( { iconColour: val } ),
+								gradientValue: iconColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconColourGradient: val ?? '' } ),
+							},
+						],
+					},
+					// ── Consolidated in 2026-08-30 — was the "Title colour"
+					// picker in the Title panel (text-only/image-badge).
+					// Paints the RichText title's `color` -> textRow.
+					( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && textRow( {
+						key: 'title-colour',
+						label: __( 'Title colour', 'sgs-blocks' ),
+						attrs: { base: 'titleColour' },
+						attributes,
+						setAttributes,
+					} ),
+					// ── Consolidated in 2026-08-30 — was the "Label colour"
+					// picker in the Label styling panel (text-only/image-badge).
+					// Distinct attribute from textColour's "Label colour" row
+					// above (that one is icon-circle-mode only) — labelColour
+					// governs the text-only/image-badge badge label text ->
+					// textRow.
+					( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && textRow( {
+						key: 'label-colour',
+						label: __( 'Label colour', 'sgs-blocks' ),
+						attrs: { base: 'labelColour' },
+						attributes,
+						setAttributes,
+					} ),
 				] }
 			/>
 			<InspectorControls>
@@ -794,11 +867,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
 							{ __( 'Optional heading above the badge row.', 'sgs-blocks' ) }
 						</p>
-						<DesignTokenPicker
-							label={ __( 'Title colour', 'sgs-blocks' ) }
-							value={ titleColour }
-							onChange={ ( val ) => setAttributes( { titleColour: val } ) }
-						/>
+						{ /* Title colour moved to the Colour panel (2026-08-30). */ }
 						<TypographyControls
 							attributes={ attributes }
 							setAttributes={ setAttributes }
@@ -820,11 +889,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						<DesignTokenPicker
-							label={ __( 'Icon circle background', 'sgs-blocks' ) }
-							value={ iconCircleBackground }
-							onChange={ ( val ) => setAttributes( { iconCircleBackground: val } ) }
-						/>
+						{ /* Icon circle background moved to the Colour panel (2026-08-30). */ }
 						{ /* §14.3 raw-TextControl violation fixed (D561). '%' is
 						     load-bearing here — the attribute DEFAULTS to '50%' to
 						     make the circle, so a px-only units array would silently
@@ -852,26 +917,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								hoverColour: 'iconCircleShadowColourHover',
 							} }
 						/>
-						<DesignTokenPicker
-							label={ __( 'Icon colour', 'sgs-blocks' ) }
-							states={ [
-								{
-									key: 'normal',
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: iconColour,
-									onChange: ( val ) => setAttributes( { iconColour: val } ),
-									gradientValue: iconColourGradient,
-									onGradientChange: ( val ) =>
-										setAttributes( { iconColourGradient: val ?? '' } ),
-								},
-							] }
-						/>
-						<DesignTokenPicker
-							label={ __( 'Label colour', 'sgs-blocks' ) }
-							value={ textColour }
-							onChange={ ( val ) => setAttributes( { textColour: val } ) }
-							__nextHasNoMarginBottom
-						/>
+						{ /* Icon colour + Label colour (textColour) moved to the
+							Colour panel (2026-08-30) — textColour previously
+							had TWO writers (this picker + the Colour panel's
+							own "Root text colour" row); this duplicate is
+							deleted, the Colour panel row is now the only
+							writer. */ }
 					</PanelBody>
 				) }
 
@@ -928,17 +979,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					</PanelBody>
 				) }
 
-				{ /* ── text-only / image-badge label styling ─────────────────── */ }
-				{ ( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && (
-					<PanelBody title={ __( 'Label styling', 'sgs-blocks' ) } initialOpen={ false }>
-						<DesignTokenPicker
-							label={ __( 'Label colour', 'sgs-blocks' ) }
-							value={ labelColour }
-							onChange={ ( val ) => setAttributes( { labelColour: val } ) }
-							__nextHasNoMarginBottom
-						/>
-					</PanelBody>
-				) }
+				{ /* ── text-only / image-badge label styling ──────────────────
+					"Label styling" panel WITHDRAWN (2026-08-30) — its only
+					control was the Label colour picker, now moved to the
+					Colour panel. An empty PanelBody is a dead control
+					(check-empty-inspector-containers.js). */ }
 
 				{ /* ── Badges (icon-circle only) ──────────────────────────────
 				     Named for the ELEMENT it controls, not the property cluster
