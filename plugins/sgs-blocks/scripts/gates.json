@@ -740,5 +740,32 @@
     "added_commit": null,
     "budget_ms": 400,
     "order": 81
+  },
+  {
+    "id": "generate-svg-allowlist",
+    "cmd": "node scripts/generate-svg-allowlist.js",
+    "tier": "generator",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 6
+  },
+  {
+    "id": "check-svg-allowlist-parity",
+    "cmd": "node scripts/generate-svg-allowlist.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 82
+  },
+  {
+    "id": "test-sanitise-svg",
+    "cmd": "node scripts/tests/test-sanitise-svg.mjs",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 83
   }
 ]
