@@ -3,7 +3,7 @@
  *
  * WHY THIS EXISTS
  * ---------------
- * Seven editor sites mount operator-supplied SVG with `dangerouslySetInnerHTML`
+ * Six editor sites mount operator-supplied SVG with `dangerouslySetInnerHTML`
  * while the server runs `wp_kses()` with a strict allowlist. That asymmetry is a
  * privilege escalation, not a cosmetic gap: a Contributor can store markup that
  * never reaches the front end but DOES execute in an admin's browser the moment

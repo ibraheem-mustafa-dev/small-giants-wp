@@ -320,47 +320,37 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 `.is-layout-constrained > :where(:not(.alignfull))`. Ours therefore cannot express
 "full-bleed child of a constrained parent". Read it there before reopening it.
 
-## ▶ CLIENT-CONTROLS TRACK — 2026-08-30: SPLIT IN TWO, both planned, zero code shipped
+## ▶ CLIENT-CONTROLS TRACK — 2026-08-30 (evening): MEDIA ELEMENT, waves 1-2 SHIPPED + LIVE
 
-**Run separately:** `prompts/2026-08-31-uniformity-sweep.md` (the ORIGINAL goal) and
-`prompts/2026-08-31-media-element.md` (grew out of it). **Nothing committed to `src/`.**
-Output = 12 reports, 4 plans, 2 prompts. **CODE SHIPPED = none. OUTCOME = a scoped, council-reviewed plan.**
+**Two prompts, run separately.** `prompts/2026-08-31-uniformity-sweep.md` (the ORIGINAL goal, still
+Phase-1-triage-only, no code). `prompts/2026-08-31-media-element.md` — REWRITTEN this session with
+exact results + the ordered remainder. Detail: **D904-D907**. Plan:
+`~/.claude/plans/media-element-misty-squid.md`. Do not restate history here.
 
-### Uniformity sweep — Phase 1 triage COMPLETE (7 agents)
+**SHIPPED, DEPLOYED, LIVE-VERIFIED** (12 commits, `9b67c3885`..`e912a1f96`):
+Wave 1 census (124 media attrs, 6 surfaces, **10 storage shapes**) · SVG allowlists **6 -> 1 unified** (+2 in `button/render.php`, untouched) ·
+editor SVG sanitiser at all 6 mounts, generated from the PHP · `<track>` captions on `sgs/media` ·
+Wave 2 L1 naming pair + declarative injection both sides. **7 new gates** (5 checks, all
+negative-controlled + 2 generators). Deploy 212s, 83/83 checksums, motion QA 3/3.
 
-Plan: `plans/2026-08-30-uniformity-sweep-execution.md`. Evidence: `reports/2026-08-30-triage-T1..T7-*.md`.
+**Live evidence:** `reports/visual-diff/svg-sanitiser-captions-2026-08-30.md`. Probe page **3143**
+`[GATE — DO NOT DELETE]`. Front end 11/11, editor canvas 10/10 with `SGS_PWNED` undefined in BOTH
+realms, captions 6/6 with a negative control. ⭐ The positive control came free: the server keeps the
+`<script>` TEXT as inert data, the editor removes element+subtree — had the JS sanitiser been a
+no-op the two DOMs would have matched byte for byte.
 
-The inherited register was wrong on nearly every count (rule 21 = 82 not 222; rule 34 = 1 not 319;
-rule 31 = 280, ceiling 291; tier migration = 21 targets not 37). Full table in the plan.
+⛔ **Four architecture claims were FALSE — corrected, do not re-inherit them.** `ContainerWrapperControls` (which owns
+`KIND_PANELS`) has 23 mounts not 30, and is NOT the most-adopted (`SgsColourPanel` 65, `ResponsiveBoxControl` 51), so
+the L2 exemplar changed. The one generator was NOT gated. `prefers-reduced-motion` was already
+implemented → **STRUCK, not built** (re-adding = a duplicate). There were SIX SVG allowlists, not 2.
 
-**Population under-reported FOUR times, same cause** (measuring the layer in front of you and
-calling it the total): baselines 14/146/171/**511**; rules 7/**24**; scripts **809**. Every count
-is a floor. Read the GENERATED tooling catalogue in `dev-setup.md` before building anything.
+**NEXT, in order:** Wave 3 (six atoms, fans out) → 4 (panels+dispatch) → 5 (`sgs/media` THEN
+`before-after`, **never parallel** — that is the only test the abstraction generalises) → 6 (gates as
+inspector-scan rules, all start advisory) → 7 (remaining surfaces, INSERT→VERIFY→GUT per commit).
 
-**`migrate-tier-object.py` would CORRUPT art-directed media today.** Its `ASSET` kind is a SHAPE
-test, not semantic, so 15 media attrs classify FLAT and would fold into responsive objects against
-C19. Plus an unhandled `KeyError` at `:1025/1034/1036` aborts the batch. Fix both before `--fix`.
-
-**Bean's rulings:** no canary loop · rule 20 OUT · 305-entry `dead-api` allowlist PARKED (biggest
-number, serves neither goal) · ToolsPanel pilot = `team-member` · name = `{element}Decorative` ·
-C14 only if quick, **and a control owning its own colour is NOT a split**.
-
-### Media element — architecture v2, 7-seat council applied
-
-Plan: `plans/2026-08-30-media-element-architecture-v2.md`. Evidence: `reports/2026-08-30-media-M1..M5-*.md`.
-
-v1 scored C/C+/D across 7 seats. **My founding claim was false** — `sgs_tier_media_toggle_css` DOES
-have callers (via `sgs_tier_media_render`, 2 adopters); I searched only direct block calls.
-Dropped on evidence: codegen, `<picture>` (breaks the pipeline's BEM contract —
-`media/render.php:686` calls the current shape deliberate), Interactivity rewrite (already in ~13
-blocks). Four layers mirror: typography helper pair, `KIND_PANELS`, `ContainerWrapperControls`,
-`before-after` custom properties.
-
-**Wire `sgs/media` then `before-after` — NEVER in parallel.** Concurrent builds let both agents
-patch the shared layer to suit themselves, destroying the only test that it generalises.
-
-**Three compliance items ship regardless of scope:** editor SVG sanitiser (Contributor stores a
-script, admin runs it — 3 sites), `<track>` captions (zero, WCAG A), reduced-motion on ken-burns.
+⚠ **OWED:** `button/render.php`'s TWO allowlists unmerged. `sgs-framework.db` NOT reseeded for the 4 new `videoCaptions*` attrs (cross-track, one
+shared file). The SMIL `<a><animate attributeName="href">` bypass is REASONED, NOT EXECUTED — Bean's
+call, owed a canary probe WITH a positive control proving the harness can see a real execution.
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 

@@ -19,8 +19,8 @@
  * client's image vanishes with every gate green (D338 / STOP-SILENT-ATTR-DISCARD).
  * The naming convention below was DERIVED from the census
  * (reports/migrations/media-element-census.json), not invented: across 124 real
- * media attributes on six surfaces there are only THREE names the convention
- * does not reproduce, and all three are one intentional case (see STORED_AS).
+ * media attributes on six surfaces there are only FOUR names the convention
+ * does not reproduce, across TWO blocks (see STORED_AS).
  */
 
 /**
@@ -182,8 +182,8 @@ export function mediaAttrType( base, tier ) {
 /**
  * Attribute names that the convention does NOT reproduce, per surface.
  *
- * Measured, not assumed: exactly three across the whole population, and all
- * three are `sgs/before-after`'s shared autoplay - ONE toggle governing BOTH
+ * Measured, not assumed: exactly FOUR across the whole population, in TWO
+ * distinct cases. Three are `sgs/before-after`'s shared autoplay - ONE toggle governing BOTH
  * video slots per its sync contract, so it is deliberately block-level rather
  * than per-prefix. `decorMedia` is listed for `sgs/decorative-image` because it
  * is a legacy composite object with no prefix/base decomposition at all.

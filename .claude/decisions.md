@@ -1,3 +1,87 @@
+## D907 [ROUTINE] — media attrs register from `supports.sgs.mediaElements`, not the shared generator
+
+**2026-08-30.** `ea5f7ed09`. The media-element architecture said to add media attributes to
+`generate-extension-attributes.js` "rather than creating a second one". Measured: its collector is
+`/((?:sgs|fx)[A-Za-z0-9]*)\s*:\s*\{/` — only `sgs*`/`fx*` keys. Media keeps its EXISTING names
+because v1 renames nothing, so **0 of 11** representative names match. "Keep the names" and "ride
+that generator" cannot both hold; the architecture's promise rested on a false premise.
+
+Bean's ruling: a PHP filter on `register_block_type_args` reads the SAME
+`supports.sgs.mediaElements` the JS filter reads. Still one source of truth (the block's own
+block.json), no existing extension's generator touched. **A block's own declaration always wins** —
+matching `extension-attrs-rest-register.php`; every v1 surface already declares its media keys with
+real defaults, so overwriting would silently replace the client's stored defaults with ours.
+
+⭐ **The naming risk was far smaller than assumed, the SHAPE risk far larger.** Deriving bases from
+the census: `prefix + Base` reproduces every real stored name except FOUR, across two blocks: before-after's
+`videoAutoplay`/`Tablet`/`Mobile` (block-level per its sync contract) and decorative-image's
+`decorMedia` (a legacy composite with no prefix/base decomposition). But there are TEN storage
+shapes for one concept, so `sgs_media_element_value()` reads across all of them. A name-only
+`storedAs` map — what the architecture specified — could only have read one.
+
+## D906 [ROUTINE] — `<track>` captions scoped to `sgs/media` alone, measured not assumed
+
+**2026-08-30.** `3b17d96a5`. The framework emitted ZERO `<track>` (positive control: `<video>`
+returns 34 on the identical command). WCAG 1.2.2 is Level A.
+
+Scope is ONE block because every other `<video>` goes through a shared helper whose callers ALL pass
+`muted => true` (`helpers-media.php` defaults, container-wrapper, hero, before-after, cta-section).
+A permanently-silent decorative video has no audio to caption. `sgs/media` is the only surface with
+a client unmute control plus real player chrome. ⚠ `card-grid`/`gallery` LOOK unmuted if you grep
+their own render.php — the muting is in `sgs_render_media()`. Same shared-reader blind spot that
+made `bgSvg*` controls read as absent earlier the same session.
+
+Control gated on a VIDEO existing, NOT on `muted` being off: muted is per-device and switchable, so
+gating on it would mean captions cannot be added until after unmuting — hero's media-type ordering
+trap. `srclang` validated against BCP 47, falls back to `en` (an invalid srclang makes the track
+unselectable in some browsers — fails silently, looks identical to having no captions).
+
+## D905 [INCIDENT] — the editor SVG XSS, and the six allowlists nobody had counted
+
+**2026-08-30.** `ad414bfee` `89f1aefdf` `52e232692` `51591f936` `c86938f2a`. Seven — actually SIX —
+editor mounts injected operator SVG with `dangerouslySetInnerHTML` and no sanitiser while the server
+ran `wp_kses`. A Contributor could store markup that never reaches the front end but executes in an
+admin's browser. The inherited survey said "7 mounts" but only ever named six.
+
+**There were SIX server allowlists, not the two recorded.** Two byte-identical copies of
+`sgs_allowed_svg_tags()` (media/render.php, class-sgs-container-wrapper.php) — collapsed, proven
+equivalent as PARSED DATA with a negative control (a planted `onclick` flips the verdict). Two REAL
+diverging lists (13 tags vs 36) — unified. `button/render.php` carries two more, narrower still,
+left alone and recorded.
+
+⛔ **Two silent defects the diff exposed, both now fixed:** the narrow list rejected
+`linearGradient`/`radialGradient`/`stop`, so gradient SVGs rendered FLATTENED on hero, timeline,
+`sgs/media` and every container background; and rejected `<title>`/`<desc>`, stripping SVG
+accessible names against the AA baseline.
+
+⛔ **`<animate>` + `<a href>` are safe apart and unsafe TOGETHER.** `<animate>` sets an attribute at
+runtime; `wp_kses` protocol-filters only attributes it recognises as URIs, so a payload in `to`
+passes verbatim and SMIL then applies it to `href`. NEITHER historical list was vulnerable — the
+narrow one had `<animate>` but no `<a>`, the rich one the reverse. Merging naively would have
+CREATED the vector. Resolution (Bean): keep `<animate>`, strip `<a>`'s href. `<style>` excluded
+outright — inline SVG `<style>` is DOCUMENT-scoped and kses does not sanitise element text, so it
+was page-wide CSS injection from a Contributor. ⚠ The SMIL mechanism is REASONED, not executed
+(Bean: ship on the reasoning, test later).
+
+## D904 [ROUTINE] — media-element census: 10 storage shapes, and the detector bugs it caught
+
+**2026-08-30.** `9b67c3885`. `reports/migrations/media-element-census.json` — 124 media attributes,
+6 surfaces in scope, 3 excluded with reasons. DB-first per R-31-1, but roles UNDER-COVER
+(`imageUrl` carries `image-object` while `imageId` carries none, and no tier sibling of any pair
+does), so the script pairs roles with block.json family expansion and reports `role_coverage_gap`.
+
+⭐ **The finding that changes Wave 2: `storedAs` as specified maps NAMES, and the same concept has
+TEN storage shapes** — media-object, attachment-id, an `integer|string` union, url-string,
+svg-markup, and a `boolean|null` tri-state encoding inherit-from-tier-above. A helper built from a
+name map reads one of them.
+
+Four detector bugs found by fact-checking its own first output: `classify_shape` tested the raw name
+so every tier sibling of an attachment ID mis-shaped as a number; family expansion combined prefixes
+with already-prefixed bases (`splitSplitImage`), so hero's expansion was silently EMPTY and
+under-reported by half; control resolution scanned `edit.js` only, so every `bgSvg*`/`bgVideo*`
+control read as absent (they live in the shared `BackgroundPanel` — the `gridTemplateColumns`
+shape); and import-following stopped at the components barrel.
+
 ## D903 [ROUTINE] — sgs/timeline scrollEffect: one surface, four options, and the wrapper that had to be removed
 
 **2026-08-30.** `9a3159b4d`. `scrollEffect` (`basic`/`scrub`/`pinned-journey`/`pinned-horizontal`)

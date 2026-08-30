@@ -1,108 +1,217 @@
-# Media element — build the shared layer
+# Media element — Waves 3-7
 
 Invoke `/autopilot` first.
 
-**Your architecture is `.claude/plans/2026-08-30-media-element-architecture-v2.md`. Read it in full
-before anything else. It carries every ruling, every council finding and the build order. This
-prompt only starts you.**
+**Your plan is `~/.claude/plans/media-element-misty-squid.md`. Read it in full before anything
+else.** Your architecture is `.claude/plans/2026-08-30-media-element-architecture-v2.md` — read it
+too, but **four of its claims are false and are corrected below.** The plan supersedes it on those.
 
 ---
 
-## First action
+## What actually happened (2026-08-30) — 12 commits, `9b67c3885`..`e912a1f96`, all pushed
 
-`git status`. Five tracks share this checkout. Then read the architecture above, and
-`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` in full — Bean-locked, every session.
+**Waves 1 and 2 are DONE. Both security items are DONE and LIVE-VERIFIED on the canary.**
 
----
+| | Commit(s) |
+|---|---|
+| Wave 1 census — 124 media attrs, 6 surfaces, 3 excluded | `9b67c3885` |
+| SVG allowlists **6 → 1 unified** (+2 in `button`, untouched) | `ad414bfee`, `89f1aefdf` |
+| Editor SVG sanitiser, generated from PHP, 6 mounts | `52e232692`, `51591f936` |
+| Misleading help text corrected | `c86938f2a` |
+| `<track>` captions on `sgs/media` (WCAG 1.2.2 Level A) | `3b17d96a5` |
+| **Wave 2** — L1 naming pair + declarative injection, both sides | `cce7427bd`, `ea5f7ed09` |
+| Live verification record | `e912a1f96` |
 
-## Why this exists
+Deployed via `build-deploy.py --target sandybrown --blocks-only`: 212s, 83/83 block.json checksums
+matched, both cache layers purged, motion QA 3/3.
 
-Nine surfaces render media and none of them agree. They differ in control set, panel structure,
-disclosure rules, naming, enum shape, and even in whether a media type is stored at all. Bean's
-requirement:
+**Live evidence — read it before assuming anything is unverified:**
+`reports/visual-diff/svg-sanitiser-captions-2026-08-30.md`. Probe page **3143**
+`[GATE — DO NOT DELETE] SVG sanitiser + captions probe`. Front end 11/11, editor canvas 10/10
+(`window.SGS_PWNED` undefined in BOTH realms), captions 6/6 with a negative control.
 
-> *"A unified set of controls that can be used for all of my library's media elements, plug and play
-> style, not needing to be recoded into every instance — from the attributes to the control UI to
-> the canvas rendering to the live page rendering."*
-
----
-
-## What was already decided, and must not be re-opened
-
-A seven-seat adversarial council reviewed the first architecture. No seat graded it above C+. The
-rewrite absorbed every finding. **Do not re-litigate these:**
-
-- **Four layers, mirroring proven patterns.** Naming mirrors the typography helper pair. Panels
-  mirror `KIND_PANELS` (30 adopters). Dispatch mirrors `ContainerWrapperControls`. Styling mirrors
-  `before-after`'s custom-property approach.
-- **No codegen.** Attributes arrive by runtime injection through
-  `addFilter('blocks.registerBlockType')`, exactly as the `sgs*` extensions already work. The one
-  generator needed already exists and is already gated.
-- **No `<picture>` swap.** It breaks the cloning pipeline's recognition contract, which reads BEM
-  deliberately (`media/render.php:686` says so).
-- **No Interactivity API rewrite.** Orthogonal to a controls goal.
-- **Zero attribute renames in v1.** A rename is a stored-content migration, because WordPress
-  silently discards an attribute a block no longer declares. Descriptors carry each surface's
-  existing name via `storedAs`.
-- **`responsive-logo` is excluded.** It is already good and forcing it onto the shared shape would
-  be a downgrade.
+**Seven new gates — 5 CHECKS (each negative-controlled: planted a realistic drift, confirmed red,
+restored byte-identically) + 2 generators:** `check-svg-allowlist-parity`, `test-sanitise-svg` (24 assertions),
+`test-media-attr-parity`, `test-media-injection-parity`, `check-media-attributes-parity`, plus two
+generators. All in `scripts/gates.json`. The two generators run from BOTH `prebuild` and `prestart`; the five
+checks reach only `prebuild` (via `run-gates.py --tier fast`) — `prestart` does not invoke
+`run-gates.py`.
 
 ---
 
-## Build order — and the one rule that protects the design
+## ⛔ Four architecture claims that are FALSE. Do not re-inherit them.
 
-Full detail sits in §15 of the architecture. The essentials:
+1. **"`KIND_PANELS` — 30 adopters, the framework's most-adopted shared component."** The 23/30 is
+   `ContainerWrapperControls` (which OWNS `KIND_PANELS`): **23** JSX mounts, 30 by plain grep.
+   `KIND_PANELS` itself appears in ONE file. Either way it is NOT the most adopted — `SgsColourPanel` reaches **65**, `ResponsiveBoxControl` 51,
+   `SgsBorderControl` 45. **The L2 exemplar therefore changed to `SgsColourPanel`** (caller-composed
+   `rows` array, falsy entries dropped). Inherit its shape, NOT its two flaws: it hardcodes
+   `group="styles"` (the C14 tab-split across all 65 adopters) and its disclosure rule is the
+   OPPOSITE of ours (it omits; we need disable-with-`hiddenReason`). See the plan's "L2 exemplar".
+2. **"The one generator already exists and is already gated."** It exists. It is **not** gated.
+3. **"`prefers-reduced-motion` … absent in v1."** It is PRESENT and thorough (hero guarded twice,
+   container ×2, JS parallax bails on `matchMedia`). **STRUCK, not built** — re-adding produces a
+   duplicate. Recorded in the plan's "Struck criteria".
+4. **"Two server SVG allowlists."** There were **six**. Two identical copies (collapsed), two real
+   diverging ones (unified), and `button/render.php` carries **two more** — narrower still, left
+   alone deliberately, still open.
 
-**Waves 1 and 2 stay in the main thread.** The census is a synthesis; the helper contract is the
-decision every later wave inherits. `/delegate` refuses these shapes for good reason — dispatching
-them means four parallel agents building four wrong atoms.
-
-**Wave 3 fans out.** The six v1 atoms are disjoint files once the contract is fixed.
-
-⛔ **Wire `sgs/media` first, then `before-after`. Never in parallel.** The falsification test is that
-wiring the second surface must require no edit outside `src/media/controls/`. Build them
-concurrently and both agents can quietly patch the shared layer to suit themselves — leaving you two
-wired surfaces and no evidence the abstraction generalises.
-
-`before-after` is the right second surface precisely because it is hard: two independent media
-elements on one block, video sync, its own scoped-selector machinery. Hero would pass easily and
-teach nothing.
-
-**Per surface after that: insert, verify, then gut — in one commit.** Never gut first. A surface must
-always have either the old code or the new code, never neither.
+Also corrected: the mount count was **6**, not 7. The survey said seven and named six.
 
 ---
 
-## Start here
+## The two findings that shape Waves 3-7
 
-**Wave 1, in the main thread: the census.** Synthesise the five existing survey reports
-(`.claude/reports/2026-08-30-media-M1..M5-*.md`) into a build manifest — per surface: `prefix`,
-`context`, `insertion`, `mechanism`, the `storedAs` map, and escape-hatch flags. Re-measure only
-what Bean's rulings changed.
+**1. The naming risk was small; the SHAPE risk was large.** Derived from the census, `prefix + Base`
+reproduces every real stored attribute name except **four**, across two blocks: `sgs/before-after`'s
+`videoAutoplay`/`Tablet`/`Mobile` (block-level — one toggle governs both slots per its sync
+contract) and `sgs/decorative-image`'s `decorMedia` (a legacy composite with no prefix/base
+decomposition at all). So `STORED_AS` is **four** entries. But there are **ten storage shapes** for one concept, so
+`sgs_media_element_value()` reads across all of them. A name-only `storedAs` map — what the
+architecture specified — could only have read one.
 
-⛔ **Do not re-run those surveys. They are done.** Output to
-`reports/migrations/media-element-census.json`.
-
----
-
-## Three things that will bite you
-
-**Line numbers drift daily.** `timeline/edit.js`'s SVG injection site moved 994 → 987 → 1191 inside
-one session, because three tracks edited that file. Re-derive every line number at execution. The
-stable anchors are variable names.
-
-**A grep returning 0 is a hypothesis.** The previous session's founding claim — that a shared helper
-had zero callers — was false, and four council seats caught it. The search covered only direct
-block-level calls and was reported as covering all calls. Pair every zero with a positive control.
-
-**Three security items are compliance, not preference**, and ship regardless of scope: the editor
-SVG sanitiser (a Contributor can currently store a script that runs in an admin's session), `<track>`
-captions (zero in the framework; WCAG Level A), and `prefers-reduced-motion` on Ken Burns and
-parallax.
+**2. Grepping a block's own file and concluding is this track's recurring failure.** It bit twice in
+one session: `bgSvg*` controls read as absent (they live in the shared `BackgroundPanel`), and
+`card-grid`/`gallery` read as unmuted (the muting is in `sgs_render_media()`). Follow the import and
+call graph; do not widen the regex.
 
 ---
 
-## When you finish
+## Do these in order
 
-Report what was built, what the second-surface test proved, and what you could not verify.
-Then `/handoff`.
+### Task 1 — Wave 3: the six v1 atoms
+**What:** `source` · `media-type` · `object-fit` · `focal-point` · `box-shape` · `overlay`.
+**Why:** these six cover every disagreement measured across the surveyed surfaces. The other 24 are v2.
+**Time:** ~6h.
+
+**Orchestration:** delegated, **4 parallel branches**, Sonnet via `/delegate`, dispatched through
+`/dispatching-parallel-agents`. Disjoint files; the contract is already fixed by Wave 2.
+- **Brief:** each atom declares a `requires` field enforced in BOTH the control UI and the renderer
+  (`autoplay` without `muted` + `playsinline` is silently blocked on every mobile browser), and a
+  `css()` validator that rejects to default.
+- **Context they will not have:** the L1 contract is `src/components/MediaElementControls.js`
+  (`mediaAttrName`/`mediaAttrKeys`/`mediaStoredAttrName`/`mediaAttrType`) and
+  `includes/helpers-media-element.php`. Read the census at
+  `reports/migrations/media-element-census.json` for real per-surface shapes.
+- ⛔ **One scratch directory each.** Parallel dispatch into one directory clobbers. On return run
+  `git diff --stat` yourself — an agent's brief does not constrain its tool access.
+- ⛔ **No agent touches the shared layer.** If one needs to, that is a contract bug: stop, fix it in
+  the main thread, re-dispatch.
+- **/qc gate after:** yes, `/qc-inline` per atom.
+- **Acceptance:** each atom has a control, a renderer, a `requires` enforced on both sides, and a
+  validator. Not "the file exists".
+
+### Task 2 — Wave 4: panel registry + dispatch
+**What:** `MEDIA_PANELS` keyed `root`/`element`/`backdrop`; `MediaElementControls` dispatch.
+**Time:** ~3h. **Depends on:** Task 1. **Execution:** inline.
+
+Mirror **`SgsColourPanel`'s caller-composed `rows`**, not `KIND_PANELS`. Take the InspectorControls
+`group` from `insertion` — **never hardcode it**; hardcoding is what put `SgsColourPanel` in breach
+of C14 across 65 blocks. `insertion: 'root'` opens its own `<InspectorControls>`;
+`insertion: 'element'` returns bare rows for a parent panel to absorb.
+
+**Two disclosure states, deliberately:** OMIT when a control structurally cannot apply;
+**disable-with-`hiddenReason`** when it merely does not apply YET. Hero's live bug is the second case
+handled as the first — its media-type enum is gated on `splitImage?.url`, so video is unreachable
+without first uploading an unwanted image.
+
+### Task 3 — Wave 5: wire two surfaces, SERIAL
+**Time:** ~4h. **Depends on:** Task 2. **Execution:** inline, sequential.
+
+⛔ **`sgs/media` FIRST, then `before-after`. NEVER in parallel.** Built concurrently, both agents can
+quietly patch the shared layer to suit themselves and the only evidence the abstraction generalises
+is gone.
+
+**Falsification test, objective:** `git diff --stat` after wiring `before-after` must show **no file
+outside** `src/components/Media*` and `includes/helpers-media-element.php`.
+
+⚠ `before-after` is currently BEST-IN-CLASS on two axes (one parameterised picker driving both slots
+with zero drift; the narrowest per-type gating of any surface). A unification that downgrades it has
+failed. Absorb those patterns; do not flatten them.
+
+**Acceptance:** the falsification test passes AND a client can set a different mobile image in under
+30 seconds on both surfaces, live.
+
+### Task 4 — Wave 6: six gates as inspector-scan rules
+**Time:** ~4h. **Depends on:** Task 3. **Orchestration:** 4 parallel Sonnet branches.
+
+Bean's ruling: **inspector-scan rule modules, not standalone scripts** — and audit the three existing
+media-adjacent rules (`14-media-upload-check`, `18-decorative-image-aria`, `08-raw-url-link`) against
+the new contract, repurposing or replacing any that conflict.
+
+`rules.json`'s `_meta` is Bean-locked: **every new rule starts `mode: "advisory"`** with a measured
+`openBacklog`. It also carries `zeroIsAClaim` — a rule returning 0 findings must be cross-checked
+against an independently derived population.
+
+### Task 5 — Wave 7: remaining surfaces
+⛔ **Per surface, ONE commit: INSERT → VERIFY → GUT. Never gut first.** A surface always has either
+the old code or the new code, never neither. `product-card`'s content migration ships separately.
+
+---
+
+## Owed from this session — clear these when convenient, they are not blockers
+
+1. **`sgs-framework.db` is NOT reseeded** for the four new `videoCaptions*` attrs on `sgs/media`.
+   A reseed is a CROSS-TRACK action on one shared file — do not run it unilaterally mid-session.
+2. **The SMIL claim is REASONED, NOT EXECUTED** (Bean: ship on the reasoning, test later). Owed: a
+   canary probe firing `<a><animate attributeName="href" to="javascript:…">`, **paired with a
+   positive control** proving the harness can observe a real execution — otherwise "nothing fired"
+   is indistinguishable from a broken probe.
+3. **`button/render.php`'s two allowlists** remain unmerged and out of scope.
+4. `scripts/tests/test-media-render.php` is **stale** — fatals at `render.php:344` on an unstubbed
+   `wp_style_engine_get_styles()`. Pre-existing (harness last touched 2026-07-06), not a regression.
+
+---
+
+## Skills to Invoke
+
+| Skill | When |
+|---|---|
+| `/brainstorming` | any architectural or design decision |
+| `/gap-analysis` | grade outputs before delivery |
+| `/lifecycle` | before any skill/agent/pipeline change |
+| `/research` | auto-routes to the right tier |
+| `/strategic-plan` | plan implementation order before code |
+| `/dispatching-parallel-agents` | Tasks 1 and 4 (fan-out) |
+| `/delegate` | pick the model per branch — never hardcode |
+| `/qc-inline` | per-atom gate in Task 1 |
+| `/qc-council` | before any commit touching the shared media layer |
+| `/sgs-wp-engine` | SGS block/theme work |
+| `/wp-sgs-deploy` | deploy ceremony |
+
+## MCP Servers & Tools
+
+| Tool | For |
+|---|---|
+| Playwright MCP | live editor + front-end verification (R-31-11); probe page 3143 |
+| `sgs-db.py` | `block_attributes` roles/shapes — query, never guess |
+| `wp-blocks.py dump` | schema check BEFORE any "missing X" claim |
+
+## Agents to Delegate To
+
+| Agent | When |
+|---|---|
+| `wp-sgs-developer` | Tasks 1 and 4 branch work |
+| `Explore` | locating shared readers before concluding an attr is dead |
+| `design-reviewer` | Task 3 — Bean's eye is co-authoritative (R-31-13) |
+
+---
+
+## Guardrails
+
+- **Read `.claude/STOP-CATALOGUE.md`.** It is the uncapped defence record; the LEDGER points at it.
+- **A grep returning 0 is a HYPOTHESIS.** Pair every zero with a positive control. This track's
+  recurring failure is grepping a block's own file when a SHARED helper is the reader.
+- **Verify on the real page (R-31-11), not the emit.** Gates are build-time and prove nothing paints.
+- **`git add -A` is banned** — five tracks share `main`. Commit by exact path; re-check
+  `git branch --show-current` in the same command as the commit.
+- **Never `git checkout --` a file to undo an edit** — it reverts to the last commit and silently
+  takes unrelated uncommitted work with it. Save bytes, patch, restore, verify md5.
+- **Deploy is `build-deploy.py --target sandybrown` only.** Never hand-roll tar/scp (D336: two client
+  sites down ~2.5h). Do not reach for `--allow-dirty` or `--skip-verify`.
+- **The visual gate has a SCOPED bypass**, not `--no-verify`:
+  `SGS_VISUAL_GATE_SKIP=<block> SGS_VISUAL_GATE_REASON="…"`. Run the gate's own checker first
+  (`check-markup-neutral.py <block>` etc.) to learn WHY it fired.
+- **Every new gate ships a negative control.** A gate that has never been shown to go red is a
+  decoration.
+- **No block deprecations, no version bumps** — pre-production (D270/D293).
