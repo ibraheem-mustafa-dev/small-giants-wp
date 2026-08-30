@@ -574,188 +574,212 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 <?php if ( $scoped_css ) : ?>
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>
 <?php endif; ?>
-<ol <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<?php foreach ( $entries as $index => $entry ) : ?>
-		<?php
-		$entry       = is_array( $entry ) ? $entry : array();
-		$date_raw    = isset( $entry['date'] ) ? (string) $entry['date'] : '';
-		$entry_title = isset( $entry['title'] ) ? (string) $entry['title'] : '';
-		$description = isset( $entry['description'] ) ? (string) $entry['description'] : '';
-		$icon        = isset( $entry['icon'] ) ? (string) $entry['icon'] : '';
-		$image_id    = isset( $entry['image'] ) ? absint( $entry['image'] ) : 0;
+<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+	<?php
+	/*
+	 * Structural track wrapper (Step 4a). Always emitted, not conditional on
+	 * `mobile_layout`/`variant` — one shape to reason about beats two code
+	 * paths. It exists so a future GSAP horizontal-panel effect
+	 * (`fx-horizontal-panel.js`) has a plain `<div>` DIRECT CHILD of the
+	 * block root to resolve via `:scope > [data-sgs-fx-track]` — the root
+	 * itself can never be that child, because `get_block_wrapper_attributes()`
+	 * and every modifier class live on the OUTER element the wrapper
+	 * function returns. `data-sgs-fx-track` itself is NOT added here — that
+	 * is a later step's concern.
+	 *
+	 * The `<ol>` stays the direct child of THIS div, not of the block root,
+	 * for the same reason the progress connector below is an `<li>`: an
+	 * `<ol>` may only legally contain `<li>`/`<script>`/`<template>`, so
+	 * nesting one more wrapper level around it (rather than around the
+	 * root) keeps that content model intact while still giving the future
+	 * effect its own attachment point.
+	 */
+	?>
+	<div class="sgs-timeline__track">
+		<ol class="sgs-timeline__list">
+			<?php foreach ( $entries as $index => $entry ) : ?>
+				<?php
+				$entry       = is_array( $entry ) ? $entry : array();
+				$date_raw    = isset( $entry['date'] ) ? (string) $entry['date'] : '';
+				$entry_title = isset( $entry['title'] ) ? (string) $entry['title'] : '';
+				$description = isset( $entry['description'] ) ? (string) $entry['description'] : '';
+				$icon        = isset( $entry['icon'] ) ? (string) $entry['icon'] : '';
+				$image_id    = isset( $entry['image'] ) ? absint( $entry['image'] ) : 0;
 
-		// Build a safe ISO 8601 datetime attribute from the raw date string.
-		// Accept both full dates (YYYY-MM-DD) and year-only values.
-		$datetime_attr = '';
-		if ( $date_raw ) {
-			if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date_raw ) ) {
-				// Looks like YYYY-MM-DD — use as-is.
-				$datetime_attr = $date_raw;
-			} elseif ( preg_match( '/^\d{4}$/', $date_raw ) ) {
-				// Year-only format.
-				$datetime_attr = $date_raw;
-			} else {
-				// Attempt conversion via strtotime for human-readable strings.
-				$ts = strtotime( $date_raw );
-				if ( false !== $ts ) {
-					$datetime_attr = gmdate( 'Y-m-d', $ts );
+				// Build a safe ISO 8601 datetime attribute from the raw date string.
+				// Accept both full dates (YYYY-MM-DD) and year-only values.
+				$datetime_attr = '';
+				if ( $date_raw ) {
+					if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date_raw ) ) {
+						// Looks like YYYY-MM-DD — use as-is.
+						$datetime_attr = $date_raw;
+					} elseif ( preg_match( '/^\d{4}$/', $date_raw ) ) {
+						// Year-only format.
+						$datetime_attr = $date_raw;
+					} else {
+						// Attempt conversion via strtotime for human-readable strings.
+						$ts = strtotime( $date_raw );
+						if ( false !== $ts ) {
+							$datetime_attr = gmdate( 'Y-m-d', $ts );
+						}
+					}
 				}
-			}
-		}
 
-		// Pre-reveal when revealOnScroll is disabled.
-		$entry_classes = array( 'sgs-timeline__entry' );
-		if ( ! $reveal_on_scroll ) {
-			$entry_classes[] = 'is-revealed';
-		}
-		$entry_class_attr = implode( ' ', $entry_classes );
+				// Pre-reveal when revealOnScroll is disabled.
+				$entry_classes = array( 'sgs-timeline__entry' );
+				if ( ! $reveal_on_scroll ) {
+					$entry_classes[] = 'is-revealed';
+				}
+				$entry_class_attr = implode( ' ', $entry_classes );
 
-		$image_alt = ( $image_id > 0 ) ? (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true ) : '';
+				$image_alt = ( $image_id > 0 ) ? (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true ) : '';
 
-		// ── Milestone media ────────────────────────────────────────────────
-		//
-		// `entries` is declared `"type": "array"` with NO `items` schema, so new
-		// per-entry keys round-trip freely and need no migration: an entry
-		// authored before this feature has `image` set and `mediaType` absent,
-		// resolves to 'image', and renders exactly as it did.
-		//
-		// ONE tier, not three. sgs/hero declares 32 attributes for split media
-		// because it art-directs PER DEVICE; replicating that per milestone would
-		// give a client three pickers times N milestones, which is unusable. A
-		// single 'desktop' tier still buys the whole image/video/SVG switch and
-		// the SVG allowlist, and emits no toggle CSS.
-		$entry_media_type = isset( $entry['mediaType'] ) ? (string) $entry['mediaType'] : 'image';
-		$entry_media_type = in_array( $entry_media_type, array( 'image', 'video', 'svg' ), true )
-			? $entry_media_type
-			: 'image';
-		$entry_video = isset( $entry['video'] ) && is_array( $entry['video'] ) ? $entry['video'] : array();
-		$entry_svg   = isset( $entry['svg'] ) ? (string) $entry['svg'] : '';
+				// ── Milestone media ────────────────────────────────────────────────
+				//
+				// `entries` is declared `"type": "array"` with NO `items` schema, so new
+				// per-entry keys round-trip freely and need no migration: an entry
+				// authored before this feature has `image` set and `mediaType` absent,
+				// resolves to 'image', and renders exactly as it did.
+				//
+				// ONE tier, not three. sgs/hero declares 32 attributes for split media
+				// because it art-directs PER DEVICE; replicating that per milestone would
+				// give a client three pickers times N milestones, which is unusable. A
+				// single 'desktop' tier still buys the whole image/video/SVG switch and
+				// the SVG allowlist, and emits no toggle CSS.
+				$entry_media_type = isset( $entry['mediaType'] ) ? (string) $entry['mediaType'] : 'image';
+				$entry_media_type = in_array( $entry_media_type, array( 'image', 'video', 'svg' ), true )
+					? $entry_media_type
+					: 'image';
+				$entry_video = isset( $entry['video'] ) && is_array( $entry['video'] ) ? $entry['video'] : array();
+				$entry_svg   = isset( $entry['svg'] ) ? (string) $entry['svg'] : '';
 
-		$entry_media_spec = array();
-		if ( 'svg' === $entry_media_type && '' !== trim( $entry_svg ) ) {
-			$entry_media_spec = array(
-				'type' => 'svg',
-				'svg'  => $entry_svg,
-			);
-		} elseif ( 'video' === $entry_media_type && ! empty( $entry_video['url'] ) ) {
-			$entry_media_spec = array(
-				'type'  => 'video',
-				'media' => array(
-					'id'  => isset( $entry_video['id'] ) ? absint( $entry_video['id'] ) : 0,
-					'url' => (string) $entry_video['url'],
-				),
-			);
-		} elseif ( 'image' === $entry_media_type && $image_id > 0 ) {
-			// Resolve dimensions server-side from the attachment ID so the image
-			// reserves its space and does not shift the layout as it loads. Same
-			// backfill sgs/hero does; the ID is stored rather than a URL so it
-			// survives a media re-upload.
-			$src               = wp_get_attachment_image_src( $image_id, 'large' );
-			$entry_media_spec  = array(
-				'type'  => 'image',
-				'media' => array(
-					'id'     => $image_id,
-					'url'    => is_array( $src ) ? (string) $src[0] : (string) wp_get_attachment_image_url( $image_id, 'large' ),
-					'width'  => is_array( $src ) ? absint( $src[1] ) : 0,
-					'height' => is_array( $src ) ? absint( $src[2] ) : 0,
-				),
-			);
-		}
+				$entry_media_spec = array();
+				if ( 'svg' === $entry_media_type && '' !== trim( $entry_svg ) ) {
+					$entry_media_spec = array(
+						'type' => 'svg',
+						'svg'  => $entry_svg,
+					);
+				} elseif ( 'video' === $entry_media_type && ! empty( $entry_video['url'] ) ) {
+					$entry_media_spec = array(
+						'type'  => 'video',
+						'media' => array(
+							'id'  => isset( $entry_video['id'] ) ? absint( $entry_video['id'] ) : 0,
+							'url' => (string) $entry_video['url'],
+						),
+					);
+				} elseif ( 'image' === $entry_media_type && $image_id > 0 ) {
+					// Resolve dimensions server-side from the attachment ID so the image
+					// reserves its space and does not shift the layout as it loads. Same
+					// backfill sgs/hero does; the ID is stored rather than a URL so it
+					// survives a media re-upload.
+					$src               = wp_get_attachment_image_src( $image_id, 'large' );
+					$entry_media_spec  = array(
+						'type'  => 'image',
+						'media' => array(
+							'id'     => $image_id,
+							'url'    => is_array( $src ) ? (string) $src[0] : (string) wp_get_attachment_image_url( $image_id, 'large' ),
+							'width'  => is_array( $src ) ? absint( $src[1] ) : 0,
+							'height' => is_array( $src ) ? absint( $src[2] ) : 0,
+						),
+					);
+				}
 
-		$entry_media_html = '';
-		if ( $entry_media_spec ) {
-			$entry_media_result = sgs_tier_media_render(
-				array( 'desktop' => $entry_media_spec ),
-				'sgs-timeline__media',
-				$uid,
-				$media_decorative ? '' : $image_alt,
-				array(),
-				// N milestones down a page, not one hero above the fold.
-				array(
-					'img_loading'       => 'lazy',
-					'img_fetchpriority' => 'auto',
-					'video_autoplay'    => false,
-				)
-			);
-			$entry_media_html = $entry_media_result['html'];
-			// The helper's CSS must reach $scoped_css BEFORE it is printed above
-			// the <ol>. A single-tier call returns '' here, but appending
-			// unconditionally keeps the caller contract honest if a tier is ever
-			// added — sgs/image-sequence shipped broken by appending it after the
-			// <style> had already been emitted.
-			if ( '' !== $entry_media_result['css'] ) {
-				$scoped_css[] = $entry_media_result['css'];
-			}
-		}
-		if ( '' !== $entry_media_html ) {
-			$entry_classes[]  = 'sgs-timeline__entry--has-media';
-			$entry_class_attr = implode( ' ', $entry_classes );
-		}
-		?>
-		<li class="<?php echo esc_attr( $entry_class_attr ); ?>">
-			<time class="sgs-timeline__date"<?php echo $datetime_attr ? ' datetime="' . esc_attr( $datetime_attr ) . '"' : ''; ?>>
-				<?php echo esc_html( $date_raw ); ?>
-			</time>
-			<?php
-			// ⛔ A SIBLING of <time>, never a wrapper around it. Every alternation
-			// rule targets `.sgs-timeline__date` directly to swap its grid-column
-			// (style.scss :488-526); nesting the date inside a media div would
-			// break all of them, and would also cost the <time> element its own
-			// dateColour attrMap routing. For the overlay placement the two are
-			// grid-STACKED into the same cell instead, which keeps the element
-			// tree flat and every existing rule intact.
-			//
-			// The helper's markup is already escaped: images via
-			// sgs_responsive_image(), SVG through wp_kses( …, sgs_allowed_svg_tags() ).
-			if ( '' !== $entry_media_html ) :
+				$entry_media_html = '';
+				if ( $entry_media_spec ) {
+					$entry_media_result = sgs_tier_media_render(
+						array( 'desktop' => $entry_media_spec ),
+						'sgs-timeline__media',
+						$uid,
+						$media_decorative ? '' : $image_alt,
+						array(),
+						// N milestones down a page, not one hero above the fold.
+						array(
+							'img_loading'       => 'lazy',
+							'img_fetchpriority' => 'auto',
+							'video_autoplay'    => false,
+						)
+					);
+					$entry_media_html = $entry_media_result['html'];
+					// The helper's CSS must reach $scoped_css BEFORE it is printed above
+					// the <ol>. A single-tier call returns '' here, but appending
+					// unconditionally keeps the caller contract honest if a tier is ever
+					// added — sgs/image-sequence shipped broken by appending it after the
+					// <style> had already been emitted.
+					if ( '' !== $entry_media_result['css'] ) {
+						$scoped_css[] = $entry_media_result['css'];
+					}
+				}
+				if ( '' !== $entry_media_html ) {
+					$entry_classes[]  = 'sgs-timeline__entry--has-media';
+					$entry_class_attr = implode( ' ', $entry_classes );
+				}
 				?>
-				<div class="sgs-timeline__media-slot"<?php echo $media_decorative ? ' aria-hidden="true"' : ''; ?>>
-					<?php echo $entry_media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-				</div>
+				<li class="<?php echo esc_attr( $entry_class_attr ); ?>">
+					<time class="sgs-timeline__date"<?php echo $datetime_attr ? ' datetime="' . esc_attr( $datetime_attr ) . '"' : ''; ?>>
+						<?php echo esc_html( $date_raw ); ?>
+					</time>
+					<?php
+					// ⛔ A SIBLING of <time>, never a wrapper around it. Every alternation
+					// rule targets `.sgs-timeline__date` directly to swap its grid-column
+					// (style.scss :488-526); nesting the date inside a media div would
+					// break all of them, and would also cost the <time> element its own
+					// dateColour attrMap routing. For the overlay placement the two are
+					// grid-STACKED into the same cell instead, which keeps the element
+					// tree flat and every existing rule intact.
+					//
+					// The helper's markup is already escaped: images via
+					// sgs_responsive_image(), SVG through wp_kses( …, sgs_allowed_svg_tags() ).
+					if ( '' !== $entry_media_html ) :
+						?>
+						<div class="sgs-timeline__media-slot"<?php echo $media_decorative ? ' aria-hidden="true"' : ''; ?>>
+							<?php echo $entry_media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						</div>
+						<?php
+					endif;
+					?>
+					<div class="sgs-timeline__node" aria-hidden="true">
+						<?php if ( $icon ) : ?>
+							<span class="sgs-timeline__node-icon" data-icon="<?php echo esc_attr( $icon ); ?>" aria-hidden="true"></span>
+						<?php endif; ?>
+					</div>
+					<div class="sgs-timeline__content">
+						<<?php echo esc_attr( $heading_level ); ?> class="sgs-timeline__title"><?php echo esc_html( $entry_title ); ?></<?php echo esc_attr( $heading_level ); ?>>
+						<?php if ( $description ) : ?>
+							<div class="sgs-timeline__description"><?php echo wp_kses_post( $description ); ?></div>
+						<?php endif; ?>
+						<?php
+						// The per-entry image used to render HERE, inside the content
+						// column, which put every picture on the same side as the text. It
+						// now renders in `.sgs-timeline__media-slot` above — opposite the
+						// content, on the date's side. Same `image` attribute, same stored
+						// data; only the position and the surrounding markup changed, so
+						// no migration and no deprecation (D270).
+						?>
+					</div>
+				</li>
+		<?php endforeach; ?>
+			<?php if ( $progress_fill ) : ?>
 				<?php
-			endif;
-			?>
-			<div class="sgs-timeline__node" aria-hidden="true">
-				<?php if ( $icon ) : ?>
-					<span class="sgs-timeline__node-icon" data-icon="<?php echo esc_attr( $icon ); ?>" aria-hidden="true"></span>
-				<?php endif; ?>
-			</div>
-			<div class="sgs-timeline__content">
-				<<?php echo esc_attr( $heading_level ); ?> class="sgs-timeline__title"><?php echo esc_html( $entry_title ); ?></<?php echo esc_attr( $heading_level ); ?>>
-				<?php if ( $description ) : ?>
-					<div class="sgs-timeline__description"><?php echo wp_kses_post( $description ); ?></div>
-				<?php endif; ?>
-				<?php
-				// The per-entry image used to render HERE, inside the content
-				// column, which put every picture on the same side as the text. It
-				// now renders in `.sgs-timeline__media-slot` above — opposite the
-				// content, on the date's side. Same `image` attribute, same stored
-				// data; only the position and the surrounding markup changed, so
-				// no migration and no deprecation (D270).
+				/*
+				 * FR-38-35 scroll-driven progress connector. Decorative only.
+				 *
+				 * Emitted LAST and as an <li>, both deliberately:
+				 *   - <ol> may only contain <li>/<script>/<template>, so a bare <svg>
+				 *     or <div> here is invalid markup.
+				 *   - `:nth-child(odd|even)` drives the alternating layout and counts
+				 *     ALL children, so an element emitted FIRST shifts every entry's
+				 *     index by one and inverts the alternation. Last is index-neutral.
+				 *
+				 * Three layers, one number: a blurred glow and a crisp fill, both
+				 * masked to `--sgs-timeline-fill-progress`, plus a head dot at that
+				 * same position. Sparks are appended here by view.js while scrolling.
+				 */
 				?>
-			</div>
-		</li>
-	<?php endforeach; ?>
-	<?php if ( $progress_fill ) : ?>
-		<?php
-		/*
-		 * FR-38-35 scroll-driven progress connector. Decorative only.
-		 *
-		 * Emitted LAST and as an <li>, both deliberately:
-		 *   - <ol> may only contain <li>/<script>/<template>, so a bare <svg>
-		 *     or <div> here is invalid markup.
-		 *   - `:nth-child(odd|even)` drives the alternating layout and counts
-		 *     ALL children, so an element emitted FIRST shifts every entry's
-		 *     index by one and inverts the alternation. Last is index-neutral.
-		 *
-		 * Three layers, one number: a blurred glow and a crisp fill, both
-		 * masked to `--sgs-timeline-fill-progress`, plus a head dot at that
-		 * same position. Sparks are appended here by view.js while scrolling.
-		 */
-		?>
-		<li class="sgs-timeline__progress" aria-hidden="true">
-			<span class="sgs-timeline__progress-glow"></span>
-			<span class="sgs-timeline__progress-fill"></span>
-		</li>
-	<?php endif; ?>
-</ol>
+				<li class="sgs-timeline__progress" aria-hidden="true">
+					<span class="sgs-timeline__progress-glow"></span>
+					<span class="sgs-timeline__progress-fill"></span>
+				</li>
+			<?php endif; ?>
+			</ol>
+	</div>
+</div>

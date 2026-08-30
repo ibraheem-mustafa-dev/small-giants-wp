@@ -4,6 +4,26 @@
 
 // ── CSS custom property defaults ──────────────────────────────────────────────
 
+// ⛔ THE LIST RESET IS LOAD-BEARING — do not remove it as redundant boilerplate.
+//
+// Until Step 4a the block ROOT was the `<ol>`, and `.sgs-timeline--vertical`'s
+// own `padding: … 0` / `margin: 0` / `list-style: none` killed the browser's
+// default list styling as a side effect. The root is now a `<div>` and the
+// `<ol>` moved inside it, so those resets no longer land on the list and the UA
+// default `padding-inline-start: 40px` came back.
+//
+// It is not a cosmetic 40px. Measured live on the canary immediately after the
+// restructure: entry columns went 688.5px -> 668.5px and the node centre moved
+// to 732.5 while the rail stayed at 712.5 — the dot sitting 20px off its own
+// line, which is the same "two halves disagree" defect the mobile rail fix
+// (Addendum 6) existed to close. Structure and accessibility checks all passed;
+// only a geometry comparison against the pre-change baseline caught it.
+.sgs-timeline__list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
 .sgs-timeline {
 	--sgs-connector-colour: var(--wp--preset--color--border, #0d5557);
 	--sgs-timeline-fill-colour: var(--wp--preset--color--accent, #f87a1f);
@@ -1498,17 +1518,29 @@
 // criterion for zero gain.
 @media (max-width: 767px) {
 	.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel {
-		display: flex;
-		flex-direction: row;
-		align-items: stretch;
-		overflow-x: auto;
-		overflow-y: hidden;
-		scroll-snap-type: x mandatory;
-		gap: var(--wp--preset--spacing--20, 1rem);
-		padding: var(--wp--preset--spacing--30, 1.5rem) var(--wp--preset--spacing--20, 1rem);
+		// Step 4a — the root no longer IS the scroller. The markup now nests
+		// `<div class="sgs-timeline__track"><ol class="sgs-timeline__list">`
+		// inside the root (so a future GSAP horizontal-panel effect can find
+		// a plain `<div>` DIRECT CHILD of the root), so the layout/scroll
+		// properties that used to sit directly on this selector now target
+		// the `<ol>` — the element that actually scrolls. Everything else
+		// below (entries, nodes, dates, media) stays a plain descendant
+		// selector: it still matches through the extra `.sgs-timeline__track`
+		// level exactly as it did before.
+		.sgs-timeline__list {
+			display: flex;
+			flex-direction: row;
+			align-items: stretch;
+			overflow-x: auto;
+			overflow-y: hidden;
+			scroll-snap-type: x mandatory;
+			gap: var(--wp--preset--spacing--20, 1rem);
+			padding: var(--wp--preset--spacing--30, 1.5rem) var(--wp--preset--spacing--20, 1rem);
+		}
 
-		// No continuous rail — the vertical/horizontal rail machinery does not
-		// transfer to a row of independent snap-scrolled cards (R4).
+		// No continuous rail — the rail pseudo-element is drawn on the ROOT
+		// itself (`.sgs-timeline--connector-progress::before` etc.), not on
+		// the scrolling `<ol>`, so this stays targeted at the root unchanged.
 		&::before {
 			display: none;
 		}
@@ -1594,9 +1626,14 @@
 	// Gated separately (Spec: "gate scroll-behavior: smooth behind
 	// prefers-reduced-motion: no-preference"). SCSS nests this into a combined
 	// `@media (max-width: 767px) and (prefers-reduced-motion: no-preference)`.
+	// Step 4a — `scroll-behavior` only means something on the element that
+	// actually scrolls, so this moves onto `.sgs-timeline__list` with the
+	// rest of the scroll-container properties above.
 	@media (prefers-reduced-motion: no-preference) {
 		.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel {
-			scroll-behavior: smooth;
+			.sgs-timeline__list {
+				scroll-behavior: smooth;
+			}
 		}
 	}
 }

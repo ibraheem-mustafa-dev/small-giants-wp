@@ -761,10 +761,23 @@ import {
 	 *
 	 * @param {HTMLElement} root The `.sgs-timeline--mobile-carousel` root.
 	 * @return {Function|void} A cleanup function, or nothing if the driver
-	 *                         never attached (no `matchMedia` support).
+	 *                         never attached (no `matchMedia` support, or the
+	 *                         scrolling list markup is missing).
 	 */
 	function initCarouselA11y( root ) {
 		if ( typeof window.matchMedia !== 'function' ) {
+			return;
+		}
+
+		// Step 4a — the root no longer scrolls; `<ol class="sgs-timeline__list">`
+		// nested inside `<div class="sgs-timeline__track">` does. `tabindex`/
+		// `aria-label`/the scroll listener all need to live on the element that
+		// actually scrolls: `tabindex` on a non-scrolling wrapper is a focus
+		// trap that goes nowhere, and a `scroll` listener on `root` would never
+		// fire. Detection (matchMedia, the modifier class, the data attribute)
+		// stays on `root`, which still carries all of that.
+		const list = root.querySelector( '.sgs-timeline__list' );
+		if ( ! list ) {
 			return;
 		}
 
@@ -776,11 +789,11 @@ import {
 
 		function applyState() {
 			if ( mobileQuery.matches ) {
-				root.setAttribute( 'tabindex', '0' );
-				root.setAttribute( 'aria-label', label );
+				list.setAttribute( 'tabindex', '0' );
+				list.setAttribute( 'aria-label', label );
 			} else {
-				root.removeAttribute( 'tabindex' );
-				root.removeAttribute( 'aria-label' );
+				list.removeAttribute( 'tabindex' );
+				list.removeAttribute( 'aria-label' );
 			}
 		}
 
@@ -802,14 +815,14 @@ import {
 		 * own runtime guard.
 		 */
 		function applyCarouselReached() {
-			const rootRect = root.getBoundingClientRect();
+			const listRect = list.getBoundingClientRect();
 			root.querySelectorAll( '.sgs-timeline__entry' ).forEach(
 				( entry ) => {
 					const entryRect = entry.getBoundingClientRect();
 					// A small tolerance absorbs sub-pixel scroll-snap rounding —
 					// without it the LAST reached card can flicker in and out as
 					// the browser settles a fraction of a pixel short of 0.
-					const reached = entryRect.left - rootRect.left <= 2;
+					const reached = entryRect.left - listRect.left <= 2;
 					entry.classList.toggle( 'is-reached', reached );
 				}
 			);
@@ -820,11 +833,11 @@ import {
 		// Run once on init so the first card is correct before any scroll.
 		applyCarouselReached();
 
-		root.addEventListener( 'scroll', throttledReached, { passive: true } );
+		list.addEventListener( 'scroll', throttledReached, { passive: true } );
 
 		return function cleanup() {
 			mobileQuery.removeEventListener( 'change', applyState );
-			root.removeEventListener( 'scroll', throttledReached );
+			list.removeEventListener( 'scroll', throttledReached );
 			throttledReached.cancel();
 		};
 	}
