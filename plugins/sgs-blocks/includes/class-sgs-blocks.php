@@ -351,6 +351,22 @@ final class SGS_Blocks {
 		// target for `device-visibility.php`'s `wp_style_is()` check, so it
 		// must keep enqueueing exactly the hand-maintained extensions.css
 		// file it always has, not be repurposed to also carry this.
+		// The media-element layer's ONE stylesheet (Spec: architecture v2 L4).
+		// A shared layer has no block.json to hang a `style:` entry on, so it is
+		// enqueued in BOTH realms -- here for the canvas iframe, and in
+		// enqueue_frontend_assets() for the page. The canvas then resolves the
+		// device tier from the iframe width by construction, which is what the
+		// device-preview switcher wants; nothing computes a preview tier in JS.
+		$media_element_css = SGS_BLOCKS_PATH . 'assets/css/media-element.css';
+		if ( file_exists( $media_element_css ) ) {
+			wp_enqueue_style(
+				'sgs-media-element-editor',
+				SGS_BLOCKS_URL . 'assets/css/media-element.css',
+				[],
+				SGS_BLOCKS_VERSION
+			);
+		}
+
 		$colour_picker_css = SGS_BLOCKS_PATH . 'build/extensions/index.css';
 		if ( file_exists( $colour_picker_css ) ) {
 			$asset_file = SGS_BLOCKS_PATH . 'build/extensions/index.asset.php';
@@ -422,6 +438,19 @@ final class SGS_Blocks {
 			wp_enqueue_style(
 				'sgs-extensions',
 				SGS_BLOCKS_URL . 'assets/css/extensions.css',
+				[],
+				SGS_BLOCKS_VERSION
+			);
+		}
+
+		// Front-end half of the media-element layer's dual enqueue. Same file,
+		// separate handle -- the editor handle is a guard target and must not be
+		// reused, the same discipline `sgs-extensions-editor` carries above.
+		$media_element_css = SGS_BLOCKS_PATH . 'assets/css/media-element.css';
+		if ( file_exists( $media_element_css ) ) {
+			wp_enqueue_style(
+				'sgs-media-element',
+				SGS_BLOCKS_URL . 'assets/css/media-element.css',
 				[],
 				SGS_BLOCKS_VERSION
 			);

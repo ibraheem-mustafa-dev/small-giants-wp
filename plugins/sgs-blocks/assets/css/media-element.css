@@ -1,0 +1,112 @@
+/*
+ * L4 — the media-element stylesheet. THE RULES LIVE HERE; NOTHING ELSE HOLDS THEM.
+ * ==============================================================================
+ *
+ * The editor canvas and the front end each set VALUES. Neither owns a rule.
+ * That is the whole point: a rule written twice is a rule that drifts, and the
+ * canvas/front-end divergence this layer exists to remove came from exactly
+ * that (`container/edit.js` hand-builds a style object while
+ * `class-sgs-container-wrapper.php` builds the front-end CSS separately, and
+ * its own comments record the bill twice).
+ *
+ * So there are three participants and only one of them writes CSS:
+ *
+ *   this file            every rule, once
+ *   render.php (PHP)     custom-property VALUES, in a scoped <style>
+ *   edit.js (JS)         the same custom-property VALUES, for the canvas
+ *
+ * A fixture asserts the two value-setters emit byte-identical declarations for
+ * a fixed attribute set. That is the achievable claim — they cannot "run the
+ * same function", one is PHP and one is JS.
+ *
+ * ⛔ LOADED IN BOTH REALMS, deliberately. `class-sgs-blocks.php` enqueues this
+ * on `enqueue_block_assets` (the canvas iframe) and on the front end, mirroring
+ * `extensions.css`. A shared layer has no block.json to hang a `style:` entry
+ * on, so the dual enqueue is the mechanism.
+ *
+ * ⛔ THE CANVAS RESOLVES TIERS BY CONSTRUCTION. The editor canvas is an iframe
+ * whose width is the device-preview width, so these media queries resolve
+ * against the preview — which is what the device switcher WANTS. Never compute
+ * a preview tier in JS and inline the winner; that is the bug this replaces.
+ *
+ * ── BREAKPOINTS ──────────────────────────────────────────────────────────────
+ * Mobile ≤ 767, tablet ≤ 1023, desktop above. These match `SGS_Breakpoints`
+ * (`includes/class-sgs-breakpoints.php`: MOBILE_MAX 767, TABLET_MAX 1023) and
+ * `SGS_BREAKPOINTS` (`src/utils/responsive.js`).
+ *
+ * CSS cannot read a PHP constant, so these four numbers are the one place the
+ * layer restates them — and `scripts/check-media-breakpoints.js` fails the build
+ * if they ever stop matching the source. Do not hand-tune them.
+ *
+ * ⛔ Do NOT copy the pair used by the Image Controls block in `extensions.css`
+ * (`min-width:769px` / `max-width:768px`). That pair is off by one against this
+ * project's device-tier standard. It is a recorded bug, not a precedent.
+ *
+ * ── THE CASCADE ──────────────────────────────────────────────────────────────
+ * A tier inherits UPWARD when it sets nothing: mobile falls back to tablet,
+ * tablet to desktop. Expressed as nested var() fallbacks rather than as
+ * enumerated rules, because enumerating the combinations is what produced the
+ * tablet-set/mobile-empty bug that fell through to desktop instead of tablet.
+ *
+ * @package
+ */
+
+/* ── Scope ────────────────────────────────────────────────────────────────────
+ *
+ * Every rule keys on `.sgs-media-el`, applied by the renderer to the element the
+ * atoms style. It is a MARKER class, never a layout class — it carries no
+ * appearance of its own, so adding it to an element can never change how that
+ * element looks until an atom sets a value.
+ *
+ * The renderer also emits `data-sgs-media-src="<atom>@<prefix>"` on the same
+ * element, so "which descriptor produced this rule?" is answerable from the
+ * page rather than by tracing descriptor → filter → schema → renderer.
+ */
+
+.sgs-media-el {
+	/* Desktop is the base tier: it reads its own property with no fallback
+	 * chain, because there is no tier above it to inherit from. */
+	--sgs-media-tier: desktop;
+}
+
+@media (max-width: 1023px) {
+	.sgs-media-el {
+		--sgs-media-tier: tablet;
+	}
+}
+
+@media (max-width: 767px) {
+	.sgs-media-el {
+		--sgs-media-tier: mobile;
+	}
+}
+
+/* ── Atom rules ───────────────────────────────────────────────────────────────
+ *
+ * Each atom appends its own block below, in registry order, using the shape:
+ *
+ *   .sgs-media-el { <property>: var( --sgs-media-<prop>, <initial> ); }
+ *   @media (max-width: 1023px) {
+ *     .sgs-media-el {
+ *       <property>: var( --sgs-media-<prop>-tablet, var( --sgs-media-<prop>, <initial> ) );
+ *     }
+ *   }
+ *   @media (max-width: 767px) {
+ *     .sgs-media-el {
+ *       <property>: var( --sgs-media-<prop>-mobile,
+ *                    var( --sgs-media-<prop>-tablet,
+ *                     var( --sgs-media-<prop>, <initial> ) ) );
+ *     }
+ *   }
+ *
+ * ⛔ The nesting order in the mobile rule is load-bearing: mobile → tablet →
+ * desktop → initial. Reversing the middle two makes an unset mobile fall through
+ * to desktop and silently ignore a tablet value the client did set.
+ *
+ * ⛔ Only tiered properties get the two @media blocks. A property nothing varies
+ * per device gets the base rule alone — see MEDIA_TIERED_BASES.
+ *
+ * ⛔ An SVG is not a replaced element. `object-fit` and `object-position` do
+ * nothing to an inline <svg>, so the SVG path uses `preserveAspectRatio` or a
+ * sized wrapper. Never widen a fit selector to cover it.
+ */
