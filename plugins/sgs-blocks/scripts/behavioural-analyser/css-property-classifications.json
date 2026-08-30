@@ -10863,10 +10863,26 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "entryGap",
+      "fields": {
+        "css_property": "margin-bottom",
+        "css_element": "entry"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "headingLevel",
       "fields": {
         "css_property": "tag",
         "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "milestoneMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "entry"
       }
     },
     {
