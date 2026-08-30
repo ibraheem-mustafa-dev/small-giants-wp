@@ -1666,6 +1666,7 @@
     "doc": "The PRESENTATION half of the manifest — media atoms 7-10 (object-fit / focal-point / box-shape / overlay). The Wave 1 census above is SOURCE-SIDE ONLY; see this script`s docstring.",
     "generated_by": "plugins/sgs-blocks/scripts/surveys/census-media-presentation.py",
     "decision": "D909",
+    "reading_instruction": "GAP ANALYSIS, not a wiring manifest. A name missing from a surface is an accidental gap, not a deliberate exclusion. `gaps` is the operative output; `surfaces` is only what exists today.",
     "traps": [
       {
         "id": "maxwidth-two-owners",
@@ -1738,6 +1739,83 @@
         "resolution": "Recorded, not fixed -- a rename is a stored-post_content migration (D338). Atom 10 reads both."
       }
     ],
+    "gaps": {
+      "object-fit": {
+        "eligible": 6,
+        "carries_own": [
+          "container",
+          "hero",
+          "media"
+        ],
+        "carries_via_extension": [
+          "before-after",
+          "product-card"
+        ],
+        "extension_attr": "sgsObjectFit",
+        "MISSING": [
+          "decorative-image"
+        ],
+        "coverage": "5/6",
+        "not_applicable": {}
+      },
+      "focal-point": {
+        "eligible": 6,
+        "carries_own": [
+          "container",
+          "hero",
+          "media"
+        ],
+        "carries_via_extension": [
+          "before-after",
+          "product-card"
+        ],
+        "extension_attr": "sgsObjectPosition",
+        "MISSING": [
+          "decorative-image"
+        ],
+        "coverage": "5/6",
+        "not_applicable": {}
+      },
+      "box-shape": {
+        "eligible": 6,
+        "carries_own": [
+          "before-after",
+          "container",
+          "decorative-image",
+          "hero",
+          "media",
+          "product-card"
+        ],
+        "carries_via_extension": [],
+        "extension_attr": null,
+        "MISSING": [],
+        "coverage": "6/6",
+        "not_applicable": {}
+      },
+      "overlay": {
+        "eligible": 6,
+        "carries_own": [
+          "container",
+          "hero"
+        ],
+        "carries_via_extension": [],
+        "extension_attr": null,
+        "MISSING": [
+          "before-after",
+          "decorative-image",
+          "media",
+          "product-card"
+        ],
+        "coverage": "2/6",
+        "not_applicable": {}
+      }
+    },
+    "specialised": {
+      "decorative-image": {
+        "positionX": "Absolute placement of the decoration on the page — not the position of an object within its container. Never atom 8.",
+        "positionY": "Absolute placement of the decoration on the page — not the position of an object within its container. Never atom 8."
+      }
+    },
     "surfaces": {
       "sgs/media": {
         "control": "src/components/MediaSizingPanel.js (shared) + media/edit.js",

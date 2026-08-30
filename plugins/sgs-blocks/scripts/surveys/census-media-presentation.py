@@ -16,6 +16,19 @@ Media atoms 7-10 (object-fit / focal-point / box-shape / overlay) therefore had
 NO manifest. This script produces one, and merges it into the same artefact
 under a `presentation` key so there is still exactly one census file.
 
+⛔ THIS IS A GAP ANALYSIS, NOT A WIRING MANIFEST
+------------------------------------------------
+The nine media surfaces were built one at a time and never standardised against
+each other. A name MISSING from a surface is evidence of an accidental gap, not
+of a deliberate exclusion, and must never be read as one. So the inventory below
+is only half the output: `gaps` is the operative half -- per atom, which surfaces
+CAN carry it and which are missing it. The work is the gaps.
+
+An exclusion is legitimate only when the concept genuinely differs. There is
+exactly one today: sgs/decorative-image's positionX/positionY place the
+decoration absolutely on the page, which is not the position of an object inside
+its container. "This surface does not have it today" is never a reason.
+
 WHAT IS MEASURED vs WHAT IS DECLARED
 ------------------------------------
 Mechanical, read from each block.json at run time -- never cached in prose:
@@ -292,6 +305,91 @@ DISAGREEMENTS = [
 ]
 
 
+# Which surfaces CAN carry each atom, and why one cannot.
+#
+# `element` surfaces render a media element the client positions inside a box.
+# `backdrop` surfaces paint media behind content. Both can carry all four
+# presentation atoms -- the vocabulary differs (object-fit vs background-size)
+# but the CAPABILITY does not, which is exactly what the atom layer exists to
+# normalise.
+#
+# ⛔ An entry in NOT_APPLICABLE must name a CONCEPT-level reason. "It does not
+# have it today" is a gap, not an exclusion (see the docstring).
+APPLICABLE = {
+    'object-fit': list(ROSTER),
+    'focal-point': list(ROSTER),
+    'box-shape': list(ROSTER),
+    'overlay': list(ROSTER),
+}
+
+NOT_APPLICABLE = {}
+
+# Controls that stay block-specific because they are a DIFFERENT CONCEPT, not a
+# missing instance of a shared one. Recorded so a later pass does not fold them
+# into an atom.
+SPECIALISED = {
+    'decorative-image': {
+        'positionX': 'Absolute placement of the decoration on the page — not the '
+                     'position of an object within its container. Never atom 8.',
+        'positionY': 'Absolute placement of the decoration on the page — not the '
+                     'position of an object within its container. Never atom 8.',
+    },
+}
+
+
+# Atoms the universal image-controls extension already provides to any block
+# declaring `supports.sgs.imageControls`. sgsObjectFit / sgsObjectPosition are
+# real, live controls, so a surface opting in is NOT missing those atoms even
+# though its own block.json declares neither.
+#
+# ⛔ Resolving coverage to its PROVIDER, not to the block's own file, is the
+# whole point. This track's recurring failure is reading a block's own
+# block.json and concluding a control is absent when a shared mechanism supplies
+# it. A gap matrix that over-reports sends a branch to build what already exists.
+EXTENSION_PROVIDES = {
+    'object-fit': 'sgsObjectFit',
+    'focal-point': 'sgsObjectPosition',
+}
+
+
+def opts_into_image_controls(surface):
+    """True when the block declares supports.sgs.imageControls."""
+    supports = load_block_json(surface).get('supports', {})
+    return bool(supports.get('sgs', {}).get('imageControls'))
+
+
+def compute_gaps(data):
+    """Per atom: which surfaces carry it, how, and which are genuinely missing it.
+
+    A surface "carries" an atom when it declares at least one of that atom's
+    attributes OR a shared mechanism supplies it. Missing means the client has
+    no such control on that block at all -- a gap to close, not a decision.
+    """
+    gaps = {}
+    for atom, eligible in APPLICABLE.items():
+        own, via_extension, missing = [], [], []
+        for surface in eligible:
+            attrs = data[f'sgs/{surface}']['attrs']
+            if any(r['atom'] == atom for r in attrs.values()):
+                own.append(surface)
+            elif atom in EXTENSION_PROVIDES and opts_into_image_controls(surface):
+                via_extension.append(surface)
+            else:
+                missing.append(surface)
+        covered = len(own) + len(via_extension)
+        gaps[atom] = {
+            'eligible': len(eligible),
+            'carries_own': sorted(own),
+            'carries_via_extension': sorted(via_extension),
+            'extension_attr': EXTENSION_PROVIDES.get(atom),
+            'MISSING': sorted(missing),
+            'coverage': f'{covered}/{len(eligible)}',
+            'not_applicable': {k: v for k, v in NOT_APPLICABLE.items()
+                               if k.startswith(atom)},
+        }
+    return gaps
+
+
 def load_block_json(surface):
     path = os.path.join(BLOCKS_DIR, surface, 'block.json')
     with open(path, encoding='utf-8', errors='replace') as fh:
@@ -359,6 +457,26 @@ def survey():
 
     print(f'PAIRS = {pairs}   DISTINCT NAMES = {len(names)}')
     print(f'TRAPS recorded = {len(TRAPS)}   DISAGREEMENTS = {len(DISAGREEMENTS)}')
+
+    print('\n' + '=' * 62)
+    print('GAPS — the operative output. Missing means a control the client')
+    print('does NOT have on that block, and should. Not a decision to respect.')
+    print('=' * 62)
+    gaps = compute_gaps(data)
+    total_missing = 0
+    for atom in ('object-fit', 'focal-point', 'box-shape', 'overlay'):
+        g = gaps[atom]
+        total_missing += len(g['MISSING'])
+        print(f"\n{atom}  coverage {g['coverage']}")
+        print(f"   own       : {', '.join(g['carries_own']) or '(none)'}")
+        if g['carries_via_extension']:
+            print(f"   extension : {', '.join(g['carries_via_extension'])} "
+                  f"(via {g['extension_attr']})")
+        print(f"   MISSING   : {', '.join(g['MISSING']) or '(none)'}")
+    print(f'\nTOTAL atom-surface gaps to close: {total_missing}')
+    for surface, entries in SPECIALISED.items():
+        for name, why in entries.items():
+            print(f'   specialised, never folded in: sgs/{surface}.{name}')
     if missing:
         print('\n⛔ ROSTER NAMES NOT DECLARED IN block.json — the roster is stale:')
         for m in missing:
@@ -380,8 +498,14 @@ def write():
                'census above is SOURCE-SIDE ONLY; see this script`s docstring.',
         'generated_by': 'plugins/sgs-blocks/scripts/surveys/census-media-presentation.py',
         'decision': 'D909',
+        'reading_instruction':
+            'GAP ANALYSIS, not a wiring manifest. A name missing from a surface '
+            'is an accidental gap, not a deliberate exclusion. `gaps` is the '
+            'operative output; `surfaces` is only what exists today.',
         'traps': TRAPS,
         'disagreements': DISAGREEMENTS,
+        'gaps': compute_gaps(data),
+        'specialised': SPECIALISED,
         'surfaces': data,
     }
     with open(CENSUS, 'w', encoding='utf-8', newline='\n') as fh:
@@ -427,6 +551,26 @@ def self_test():
                    di.get('positionX', {}).get('type') == 'object'))
     checks.append(('trap 3: positionX excluded from focal-point',
                    'positionX' not in data['sgs/decorative-image']['attrs']))
+
+    # Gap matrix — coverage must resolve to the PROVIDER, not the block's own file.
+    g = compute_gaps(data)
+    checks.append(('gaps: before-after DOES opt into imageControls',
+                   opts_into_image_controls('before-after')))
+    checks.append(('gaps: decorative-image does NOT opt in (its gap is real)',
+                   not opts_into_image_controls('decorative-image')))
+    checks.append(('gaps: before-after credited to the EXTENSION for object-fit',
+                   'before-after' in g['object-fit']['carries_via_extension']))
+    checks.append(('gaps: before-after NOT reported missing object-fit',
+                   'before-after' not in g['object-fit']['MISSING']))
+    checks.append(('gaps: object-fit missing on decorative-image only',
+                   g['object-fit']['MISSING'] == ['decorative-image']))
+    checks.append(('gaps: box-shape is fully covered',
+                   g['box-shape']['MISSING'] == []))
+    checks.append(('gaps: overlay is the biggest gap (4 surfaces)',
+                   len(g['overlay']['MISSING']) == 4))
+    # A gap matrix reporting ZERO gaps everywhere would be vacuous.
+    total = sum(len(v['MISSING']) for v in g.values())
+    checks.append(('gaps: the matrix reports a NON-ZERO total (not vacuous)', total > 0))
 
     # NEGATIVE CONTROL — a roster naming an attribute that does not exist must
     # be detected. Without this, `missing` could be permanently empty and the
