@@ -107,6 +107,20 @@ if ( 'connector' === $reveal_trigger && ! $progress_fill ) {
 // Milestone media width (block-wide, not per entry).
 $media_width = sgs_css_length_value( $attributes['milestoneMediaWidth'] ?? '180px' );
 
+// Task 3 (2026-08-30) — milestoneSize. Sanitised against the declared enum,
+// same idiom as $content_layout above: an out-of-enum stored value is
+// otherwise silently coerced to the default anyway, but stating it here keeps
+// the class name it emits safe.
+$milestone_size = $attributes['milestoneSize'] ?? 'compact';
+$milestone_size = in_array( $milestone_size, array( 'compact', 'full-height' ), true )
+	? $milestone_size
+	: 'compact';
+
+// milestoneMinHeight / entryGap — CSS-length attrs, routed as custom-property
+// VALUES only (no property declaration), matching $media_width above.
+$milestone_min_height = sgs_css_length_value( $attributes['milestoneMinHeight'] ?? '80vh' );
+$entry_gap             = sgs_css_length_value( $attributes['entryGap'] ?? '' );
+
 // Decorative milestone media. WordPress already stores the real alt text on the
 // ATTACHMENT, which is where it belongs and which this block reads — so this is
 // not a second alt field, it is the operator saying "ignore that, this picture
@@ -457,6 +471,12 @@ if ( $date_gutter ) {
 if ( 'carousel' === $mobile_layout ) {
 	$wrapper_classes[] = 'sgs-timeline--mobile-carousel';
 }
+// Task 3 (2026-08-30) — 'full-height' milestones. Every rule this class
+// unlocks in style.scss is scoped behind `@media (min-width: 768px)` as well,
+// so phones always render the compact size regardless of this class.
+if ( 'full-height' === $milestone_size ) {
+	$wrapper_classes[] = 'sgs-timeline--milestone-full-height';
+}
 
 if ( '' !== $preset_text_slug ) {
 	$wrapper_classes[] = 'has-text-color';
@@ -483,6 +503,15 @@ if ( $reveal_stagger > 0 ) {
 }
 if ( '' !== $media_width ) {
 	$wrapper_style_parts[] = '--sgs-timeline-media-width:' . $media_width;
+}
+// Task 3 — custom-property VALUES only (Spec 32 §A), same idiom as the block
+// above. Both fall back inside style.scss's `var(…, default)` when unset, so
+// emitting them unconditionally is safe and keeps the scoped-CSS block simple.
+if ( '' !== $milestone_min_height ) {
+	$wrapper_style_parts[] = '--sgs-timeline-milestone-min-height:' . $milestone_min_height;
+}
+if ( '' !== $entry_gap ) {
+	$wrapper_style_parts[] = '--sgs-timeline-entry-gap:' . $entry_gap;
 }
 if ( $row_stripes ) {
 	// An EMPTY stripe A is the useful default: the odd rows keep whatever the

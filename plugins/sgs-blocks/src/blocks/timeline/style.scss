@@ -438,7 +438,10 @@
 	grid-template-rows: auto;
 	align-items: start;
 	gap: 0 var(--wp--preset--spacing--30, 1.5rem);
-	margin-bottom: var(--wp--preset--spacing--40, 2rem);
+	// Task 3 (2026-08-30) — entryGap. Unset falls back to today's exact
+	// hardcoded value, so an unset timeline renders byte-identical to before.
+	// NOT gated to desktop — spacing between milestones applies everywhere.
+	margin-bottom: var(--sgs-timeline-entry-gap, var(--wp--preset--spacing--40, 2rem));
 	list-style: none;
 
 	&:last-child {
@@ -1222,6 +1225,76 @@
 				justify-self: start;
 			}
 		}
+	}
+}
+
+// ── Task 3 (2026-08-30): full-height milestones ────────────────────────────
+//
+// "Make the media sit like the hero split block" needs no new DOM: an entry
+// is already four flat grid children in `1fr auto 1fr`, `align-items: start`,
+// `grid-template-rows: auto` (the rule at the top of this file) — a hero
+// split with a rail through it. This block only makes the row tall and lets
+// the media fill its column; it does not touch grid-column/grid-row
+// placement, which the media-under block above already owns.
+//
+// ⛔ WRITTEN FIRST, INSIDE `@media (min-width: 768px)` ON PURPOSE — D894 was
+// caused by exactly the opposite: a placement rule at (0,6,0) with NO media
+// query out-ranking a mobile collapse rule at (0,5,0). Every rule here is
+// scoped so it cannot reach mobile at all; phones always render compact.
+@media (min-width: 768px) {
+	.sgs-timeline--milestone-full-height .sgs-timeline__entry {
+		min-height: var(--sgs-timeline-milestone-min-height, 80vh);
+	}
+
+	// ⛔ SPECIFICITY IS THE WHOLE POINT OF THIS SELECTOR — do not simplify it.
+	//
+	// `min-height` alone grows the entry but NOT the media. An entry with media
+	// is laid out by `.sgs-timeline--media-under.sgs-timeline--vertical
+	// .sgs-timeline--content-{alternating|same-side} .sgs-timeline__entry--has-media`
+	// at (0,4,0), which pins `grid-template-rows: auto auto` — a date row and a
+	// media row, both content-sized. `align-self: stretch` on the media then
+	// stretches it to its ROW, not to the entry.
+	//
+	// Measured live, 1440x900, 80vh: entry 720px but media 544px, with the
+	// surplus 176px absorbed by the DATE's row — the date stranded at the top of
+	// a gap. Two weaker fixes were tried against the live page first and BOTH
+	// changed nothing, because a losing rule is indistinguishable from an absent
+	// one: `align-content: stretch` (no free space to distribute — the tracks
+	// already summed to 720) and this same `auto 1fr` at (0,2,0) (out-ranked).
+	// Enumerating every rule that matched the element found the real owner.
+	//
+	// The class is repeated ONCE to reach (0,5,0) — a deterministic one-class
+	// margin over that (0,4,0) rule. Matching it at (0,4,0) and relying on
+	// source order would work today and silently flip the day any rule is
+	// appended elsewhere. Repeating the class also avoids hand-listing every
+	// content-layout combination, so `same-side` is covered by construction.
+	// Same device, same reason, as the carousel block lower in this file.
+	.sgs-timeline--milestone-full-height.sgs-timeline--milestone-full-height.sgs-timeline--media-under.sgs-timeline--vertical .sgs-timeline__entry--has-media {
+		// Date row stays content-sized; the media row takes everything left, so
+		// the media fills the entry's full height minus the date.
+		grid-template-rows: auto 1fr;
+	}
+
+	.sgs-timeline--milestone-full-height .sgs-timeline__media-slot {
+		align-self: stretch;
+		// milestoneMediaWidth is ignored here — the media fills its column
+		// rather than sitting at a fixed thumbnail width (design doc §3.4).
+		max-width: none;
+
+		.sgs-timeline__media {
+			height: 100%;
+		}
+
+		.sgs-timeline__media--image,
+		.sgs-timeline__media--video {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+	}
+
+	.sgs-timeline--milestone-full-height .sgs-timeline__content {
+		align-self: center;
 	}
 }
 

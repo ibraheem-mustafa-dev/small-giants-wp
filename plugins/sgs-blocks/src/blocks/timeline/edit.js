@@ -156,6 +156,28 @@ const MOBILE_LAYOUT_OPTIONS = [
 	{ label: __( 'Swipeable cards', 'sgs-blocks' ), value: 'carousel' },
 ];
 
+// Task 3 (2026-08-30) — 'compact' is today's content-driven row height;
+// 'full-height' gives each milestone a minimum height with hero-split media.
+// Its own axis from contentLayout — see the design doc §3.2.
+const MILESTONE_SIZE_OPTIONS = [
+	{ label: __( 'Compact', 'sgs-blocks' ), value: 'compact' },
+	{ label: __( 'Full-height', 'sgs-blocks' ), value: 'full-height' },
+];
+
+// Mirrors sgs/hero's own minHeight SelectControl (hero/edit.js) — raw-value
+// labels, 'Auto' the only friendly name, per the design doc §3.3: inventing
+// friendly names here would create a third labelling convention on a project
+// whose live front is control uniformity.
+const MILESTONE_MIN_HEIGHT_OPTIONS = [
+	{ label: __( 'Auto (fit content)', 'sgs-blocks' ), value: '' },
+	{ label: '50vh', value: '50vh' },
+	{ label: '75vh', value: '75vh' },
+	{ label: '80vh', value: '80vh' },
+	{ label: '100vh', value: '100vh' },
+	{ label: '520px', value: '520px' },
+	{ label: '600px', value: '600px' },
+];
+
 const CONNECTOR_OPTIONS = [
 	{ label: __( 'Solid line', 'sgs-blocks' ), value: 'line' },
 	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
@@ -451,6 +473,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		revealStagger,
 		milestoneMediaWidth,
 		milestoneMediaDecorative,
+		milestoneSize,
+		milestoneMinHeight,
+		entryGap,
 		datePosition,
 		rowStripes,
 		rowStripeColourA,
@@ -803,15 +828,78 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /* ── Milestone media ──
+				{ /* ── Milestone size & media ──
 				     Its own panel rather than three more rows in Layout. Beyond
 				     ~6 always-visible controls a PanelBody reads as a wall
 				     (inspector-scan rule 03, Spec 35) — and grouping the media
-				     settings together is what a client would look for anyway. */ }
+				     settings together is what a client would look for anyway.
+				     Renamed from "Milestone media" (Task 3, 2026-08-30, design
+				     doc §3.6) — milestoneMinHeight + entryGap land here rather
+				     than in Layout, which would otherwise cross the ~6-row
+				     wall. */ }
 				<PanelBody
-					title={ __( 'Milestone media', 'sgs-blocks' ) }
+					title={ __( 'Milestone size & media', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
+					{ /* milestoneSize leads this panel because it gates the
+					     control below it. It is its own axis, never folded into
+					     contentLayout — height and media treatment are
+					     orthogonal to how entries line up, and folding them
+					     would rebuild the conflation the `alignment` split
+					     spent a session removing.
+
+					     It sits HERE rather than in Layout, which the design
+					     doc originally specified: measured, Layout was already
+					     at six controls, so adding a seventh tripped
+					     inspector-scan rule 03 (dense-panel-candidate) and red
+					     the build. This panel is named for this setting anyway,
+					     which is where a client would look for it. */ }
+					<SelectControl
+						label={ __( 'Milestone size', 'sgs-blocks' ) }
+						value={ milestoneSize || 'compact' }
+						options={ MILESTONE_SIZE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { milestoneSize: val } ) }
+						help={ __(
+							"On phones this always shows as the compact size — full-height only applies from tablet width up, so there's room for it. Four milestones with a real image and a paragraph look superb; eight sparse ones are a long scroll through whitespace.",
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ /* milestoneMinHeight only means anything once
+					     milestoneSize is 'full-height' — gated per the design
+					     doc §3.6/§3.3, unlike entryGap below which always
+					     applies. A SelectControl, never free text: hero's own
+					     minHeight control set this precedent, and a
+					     tech-illiterate owner typing "80v" gets a silently
+					     broken layout with no feedback. */ }
+					{ 'full-height' === milestoneSize && (
+						<SelectControl
+							label={ __( 'Milestone minimum height', 'sgs-blocks' ) }
+							value={ milestoneMinHeight || '' }
+							options={ MILESTONE_MIN_HEIGHT_OPTIONS }
+							onChange={ ( val ) =>
+								setAttributes( { milestoneMinHeight: val } )
+							}
+							help={ __(
+								'A minimum, not a fixed height — a longer milestone can still grow past it. Auto opts out entirely for a milestone with a lot of text.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+					<TextControl
+						label={ __( 'Space between milestones', 'sgs-blocks' ) }
+						value={ entryGap }
+						onChange={ ( val ) => setAttributes( { entryGap: val } ) }
+						help={ __(
+							'Any CSS length, e.g. 3rem or 48px. Leave blank to keep the current spacing.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 					<TextControl
 						label={ __( 'Milestone media width', 'sgs-blocks' ) }
 						value={ milestoneMediaWidth }
@@ -819,7 +907,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { milestoneMediaWidth: val } )
 						}
 						help={ __(
-							'Any CSS width, e.g. 180px or 14rem. On phones the media goes full width regardless.',
+							'Any CSS width, e.g. 180px or 14rem. On phones the media goes full width regardless. Ignored in full-height mode — the media fills its column instead.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom

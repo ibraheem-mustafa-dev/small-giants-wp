@@ -124,8 +124,12 @@
 				"entry": {
 					"label": "Timeline entry",
 					"order": 5,
-					"clusters": [],
-					"_note": "Per-entry fields (date/title/description/icon/image) are plain repeater content from the `entries` array — no independent per-entry style controls exist beyond the block-wide title/date/connector colours above. `supports.sgs.imageControls` was removed 2026-08-11 (Spec 35 capability-routing doctrine) — the per-entry image renders at natural/auto size with no crop box, so object-fit/position never applied; the declaration was dead weight, not a manifest element. Mirrors sgs/accordion's `item` element and sgs/quote's `quote-body`."
+					"clusters": [ "layout" ],
+					"attrMap": {
+						"css:min-height": "milestoneMinHeight",
+						"css:margin-bottom": "entryGap"
+					},
+					"_note": "Per-entry fields (date/title/description/icon/image) are plain repeater content from the `entries` array — no independent per-entry style controls exist beyond the block-wide title/date/connector colours above. `supports.sgs.imageControls` was removed 2026-08-11 (Spec 35 capability-routing doctrine) — the per-entry image renders at natural/auto size with no crop box, so object-fit/position never applied; the declaration was dead weight, not a manifest element. Mirrors sgs/accordion's `item` element and sgs/quote's `quote-body`. Task 3 (2026-08-30) maps `milestoneMinHeight`/`entryGap` here: both are genuine CSS custom-property VALUES routed via the scoped `<style>` (Spec 32), same convention as `connectorColour`/`dateColour` above. `milestoneSize` is deliberately NOT mapped — it is a layout-MODE selector, not a CSS property, and this block maps none of its siblings (`orientation`, `contentLayout`, `mobileLayout`, `connectorStyle`, `rowStripes`). A first draft invented a bare `variant` attrMap key for it; measured against the whole tree, 46 of the 47 non-`css:`/`native:` attrMap keys are `anim:*` and `variant` had zero precedent, with no reader for it in audit-element-manifest or sgs-update. Mode selectors belong in the ORPHAN:BY-DESIGN bucket the audit already uses for `iconPosition`/`tileShape`/`logoFit`/`labelCollapse`, not in attrMap. ⚠ These three are new attributes — per the 2026-08-30 design doc §8 cross-track note, they still need `/sgs-update` to reseed `block_attributes` + regenerate `attr-role-map.json`; that reseed is a separate cross-track action, deliberately NOT run as part of this commit."
 				}
 			}
 		}
@@ -224,6 +228,22 @@
 		"milestoneMediaWidth": {
 			"type": "string",
 			"default": "180px"
+		},
+		"milestoneSize": {
+			"type": "string",
+			"enum": [ "compact", "full-height" ],
+			"default": "compact",
+			"description": "Task 3 (2026-08-30). 'compact' is today's content-driven row height. 'full-height' gives each milestone a minimum height and lets its media fill the column, hero-split style — from tablet width (768px) up only; phones always render the compact size (there's no room for a full-height row on a 375px screen)."
+		},
+		"milestoneMinHeight": {
+			"type": "string",
+			"default": "80vh",
+			"description": "Only meaningful when milestoneSize is 'full-height'. A SelectControl-driven CSS length (see sgs/hero's own minHeight control) — never free text, so a non-technical client can't type an invalid value and silently break the layout."
+		},
+		"entryGap": {
+			"type": "string",
+			"default": "",
+			"description": "Space between milestones. Empty inherits today's hardcoded default (var(--wp--preset--spacing--40, 2rem)) so existing timelines render byte-identical until a client sets this explicitly."
 		},
 		"datePosition": {
 			"type": "string",
