@@ -7,6 +7,28 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-08-30 (late) — housekeeping pass: 1 entry closed on live verification, both halves resolved
+
+> **P-HERO-VISUAL-DIFF-DEBT-AND-MEDIA-MANIFEST-MISMATCH** — two small carried items from the client-controls track
+> **Status: CLOSED — verified 2026-08-30.** Both halves resolved same session. (1) Ran
+> `node scripts/qa/check-border-roundtrip.js --blocks sgs/hero` live on the canary: PASS, positive
+> instance painted `4px solid rgb(230, 138, 149)` as configured, `borderStyle:"none"` negative
+> control painted `0px none` — the probe genuinely discriminates. Report written:
+> `reports/visual-diff/hero-2026-08-30.md`, paying the two 2026-08-29 `SGS_VISUAL_GATE_SKIP`
+> debts logged against commit `9a69d60b5`. (2) Ran
+> `node scripts/check-element-manifest-conformance.js --check --block sgs/media`: **GATE PASS**.
+> The "wrapper vs media" naming is not a defect — `block.json`'s own
+> `_note_css_element_resolves_to_wrapper` field already documents it as
+> "CONFIRMED INTENTIONAL 2026-08-27" (objectFit/objectPosition/opacity/boxShadow resolve through
+> the wrapper element's native-fallback path because `isWrapper:true` routes them there by
+> design). The LEDGER's "predates this work" note was simply stale — the investigation had
+> already happened and closed it, just never got reflected in parking.md. · **Bucket:** framework
+>
+> Original body: (1) `sgs/hero` owes a real visual-diff report — two `SGS_VISUAL_GATE_SKIP`
+> entries logged 2026-08-29 were never followed by the probe run or report they promised. (2)
+> `sgs/media`'s element manifest disagrees with its own classifier (`wrapper` vs `media`) — noted,
+> not diagnosed, predates the 2026-08-30 close-out.
+
 ## 2026-08-12 — doc-audit: 1 entry superseded by a merge
 
 > **P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM** — Migrate product mockup to SGS-BEM

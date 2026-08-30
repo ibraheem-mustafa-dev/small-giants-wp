@@ -295,10 +295,13 @@ Colour-standard residuals (border group default on `sgs/multi-button`, deploy, s
 census) closed and deployed same session — full detail in `decisions.md` D898, do not restate
 here. Full prior-session narrative archived verbatim: `memory/session-2026-08-30-5.md`.
 
+**Closed same day:** hero's visual-diff debt paid (`reports/visual-diff/hero-2026-08-30.md`) and
+the `sgs/media` "wrapper vs media" note confirmed a non-issue (`check-element-manifest-conformance.js`
+GATE PASS) — both archived to `memory/parking-archive.md`, not restated here.
+
 **Still open, parked (none blocking, none this track's to finish alone):**
 `P-SCATTER-DETECTOR-FAMILY-CLASSIFICATION` · `P-DETECTOR-FIRST-COMMIT-GATE-THRESHOLD-HOLE` ·
-`P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL` ·
-`P-HERO-VISUAL-DIFF-DEBT-AND-MEDIA-MANIFEST-MISMATCH` (all in `parking.md`, bucket "framework").
+`P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL` (all in `parking.md`, bucket "framework").
 Spec 39 capture work stays paced by `plans/2026-08-25-road-to-uniform-then-spec-39.md` /
 `plans/spec-39-seed-requirements.md` — D552 still holds: standard leads, pipeline follows.
 

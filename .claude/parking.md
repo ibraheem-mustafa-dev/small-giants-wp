@@ -254,18 +254,6 @@ and the scatter-detector, unrelated to either question. Full prior context:
 
 **Trigger:** whoever picks up sticky-sidebar or band-layout work next.
 
-### P-HERO-VISUAL-DIFF-DEBT-AND-MEDIA-MANIFEST-MISMATCH — two small carried items from the client-controls track
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
-
-(1) `sgs/hero` owes a real visual-diff report — two `SGS_VISUAL_GATE_SKIP` entries logged
-2026-08-29 (`reports/visual-diff/manual-skips.log`, "border-roundtrip probe is the evidence and
-runs after the pending batch deploy") were never followed by that probe run or a report. (2)
-`sgs/media`'s element manifest disagrees with its own classifier (`wrapper` vs `media`) — noted,
-not diagnosed, predates the 2026-08-30 close-out. Neither blocks anything; both are debt.
-
-**Trigger:** next hero-touching session (pay debt 1 first, cheaply — the border-roundtrip probe
-already exists); anyone auditing element-manifest conformance (debt 2).
-
 ### P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE — draft global-styles extractor: Phase 5-6 continuation
 **Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-11
 
