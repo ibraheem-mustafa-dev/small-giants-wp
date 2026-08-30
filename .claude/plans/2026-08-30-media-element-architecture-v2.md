@@ -2,10 +2,25 @@
 doc_type: design
 title: The SGS Media Element — architecture v2 (post-council)
 date: 2026-08-30
-status: PROPOSED — every council finding onboarded; awaiting Bean's approval
+last_updated: 2026-08-30
+status: APPROVED and PARTLY BUILT — waves 1-2 shipped, deployed and live-verified; wave 3 in progress
 owner: client-controls track
 supersedes: 2026-08-30-media-element-architecture.md (v1, graded C/C+/D by a 7-seat council)
+live_plan: ~/.claude/plans/media-element-zippy-boole.md
 ---
+
+> ⚠ **READ THIS FIRST — this doc was written before anything was built, and NINE of its claims were
+> measured false during waves 1-2. Every one is corrected in place and marked
+> `⛔ CORRECTED`/`⚠ REVISED` at the point it changes the design; none was deleted, and every
+> `✅ ONBOARDED` council attribution is preserved (D101 — a defence removed silently is a defence
+> lost). Do not re-inherit an uncorrected claim from a summary of this file.**
+>
+> The nine: the generator was not gated and cannot see media keys (§0) · `KIND_PANELS` was neither
+> 30-adopter nor most-adopted (§2 L2) · the PHP helper names must carry `media_element` (§2 L1) ·
+> six atoms was the wrong cut, it is ten (§5) · `prefers-reduced-motion` was already implemented,
+> STRUCK not built (§5) · object-fit's `custom` is a sizing mode, not a fit value (§5) · six SVG
+> mounts and six allowlists, not three and two (§7) · the census is source-side only (§9) · and the
+> falsification test's path was wrong in a way that would have silently broken the parity gate (§10).
 
 # The SGS Media Element — architecture v2
 
@@ -51,13 +66,34 @@ attributes at runtime via `addFilter( 'blocks.registerBlockType', … )`
 A filter reads that and injects the full key set for each entry. **Uniformity is not sorted out
 afterwards — it is a precondition of the injection**, because the keys come from one function.
 
-⚠ **One narrow generator remains, and it already exists.** The server needs the same attributes
-registered so `ServerSideRender` validates (12 blocks use it). That is exactly what
-`generate-extension-attributes.js` does today, and it is already gated. **Media adds its attributes
-to that existing mechanism rather than creating a second one.** No new build step.
+⚠ **One narrow generator remains.** The server needs the same attributes registered so
+`ServerSideRender` validates (12 blocks use it).
 
-✅ ONBOARDED — Cynic MF-2 (do not build a second source of truth beside `check-control-helper-parity.py`),
-Ship-PM M5, Competitor (codegen is cost, not proof of need).
+⛔ **CORRECTED 2026-08-30 (Wave 2, built).** This section said `generate-extension-attributes.js`
+does that job today and *"is already gated"*, and that **"Media adds its attributes to that existing
+mechanism rather than creating a second one."* Both halves were false, and both were measured:
+
+1. **It was NOT gated.** The generator ran in write mode on every build; its `--check` mode was
+   wired into nothing, and the script's own docblock said so. Now wired into `gates.json`.
+2. **It structurally CANNOT see media keys.** `generate-extension-attributes.js:70` collects with
+   `/\b((?:sgs|fx)[A-Za-z0-9]*)\s*:\s*\{([^}]*)\}/g` — `sgs*`/`fx*` prefixes only. Measured against
+   11 representative media attribute names (`imageUrl`, `beforeImageUrl`, `splitImage`, `bgVideo`,
+   `mediaType`, `objectFit`, `videoAutoplay`, …): **0 of 11 match.** Positive control: the same
+   pattern matches `fxDisableMobile`, and the generated PHP contains no non-`sgs`/`fx` key. So the
+   regex works and simply cannot reach these names — and "zero renames in v1" means it never will.
+
+**What shipped instead (Bean's route, 2026-08-30):** a PHP filter on `register_block_type_args`
+reads the SAME `supports.sgs.mediaElements` declaration the JS injection filter reads
+(`includes/media-element-attrs-register.php`), plus one narrow generator of its own,
+`scripts/generate-media-attributes.mjs`, emitting the base→type map from
+`MediaElementControls.js`. **Still exactly one source of truth**, no rename, no existing extension's
+generator touched. It is new code rather than the existing mechanism this section promised — that
+promise rested on a false premise, so it could not have been kept.
+
+✅ ONBOARDED — Cynic MF-2 (do not build a second source of truth beside
+`check-control-helper-parity.py`), Ship-PM M5, Competitor (codegen is cost, not proof of need).
+**MF-2 still holds — no second source of truth was created; only the *mechanism* satisfying it
+changed.**
 
 ---
 
@@ -95,7 +131,7 @@ problem than v1 assumed, and it is why v2 is a three-day change rather than a th
 | Layer | Owns | Mirrors |
 |---|---|---|
 | **L1 Controls** | attribute NAMING | `sgs_typography_attr()` / `typographyAttrName()` — proven, gated |
-| **L2 Panels** | GROUPING | `KIND_PANELS` — 30 adopters, the framework's most-adopted shared component |
+| **L2 Panels** | GROUPING | `SgsColourPanel` — 65 adopters, the framework's most-adopted shared component (see the correction below) |
 | **L3 Element** | DISPATCH + RENDER | `ContainerWrapperControls` + `SGS_Container_Wrapper` |
 | **L4 Styling** | CSS | `before-after`'s custom-property pattern |
 
@@ -106,12 +142,32 @@ mediaAttrName( prefix, base )   // 'before' + 'ImageUrl' -> 'beforeImageUrl'; ''
 mediaAttrKeys( prefix )         // the canonical key set
 ```
 ```php
-sgs_media_attr( $prefix, $base )
-sgs_media_css_rule( array $attributes, $prefix, $selector )
+sgs_media_element_attr( $prefix, $base )                       // NOT sgs_media_attr — see below
+sgs_media_element_stored_attr( $block_slug, $prefix, $base )
+sgs_media_element_value( array $attributes, $name, $want )
 ```
+
+⛔ **The PHP names carry `media_element`, not `media`, and that is load-bearing.** The parity gate
+derives a slug from the JS component (`MediaElementControls` → `media_element`) and looks for a
+`sgs_*` function under `includes/` containing it. `sgs_media_attr()` — the name this section
+originally specified — would read as **ABSENT**, and Media would silently never register as the
+fourth family.
+
+⛔ **`src/components/`, not `src/media/controls/`** (Bean's decision, taken). The same gate discovers
+helper families from disk by convention: a `*AttrName`/`*AttrKeys` export in `src/components/`, plus
+the PHP twin. The originally-proposed `src/media/controls/` sits outside that scan.
 
 Identical shape to typography, which `check-control-helper-parity.py` already measures
 (*"3 name-keyed; of those 3, 3 complete"*). **Media becomes the fourth.**
+
+⭐ **Measured while building it (Wave 2): the naming risk was small; the SHAPE risk was large.**
+Across 128 real media attributes on six surfaces, `prefix + Base` reproduces every stored name except
+**FOUR**, in two intentional cases — `before-after`'s block-level shared `videoAutoplay` (+2 tiers),
+and `decorative-image`'s legacy composite `decorMedia`. So `STORED_AS` is tiny. But there are **TEN
+distinct storage shapes** for one concept, and a name-only `storedAs` map — what this section
+originally specified — could only ever have read one of them. Hence `sgs_media_element_value()`,
+which reads across all ten (`media-object`, `attachment-id`, `attachment-id-union`, `url-string`,
+`svg-markup`, `alt-string`, `tri-state-inherit`, `boolean`, `number`, `string`).
 
 ⛔ **`storedAs`: ZERO attribute renames in v1.** A rename is a stored-`post_content` migration,
 because WP discards undeclared attributes — the client's image vanishes with every gate green. Each
@@ -121,16 +177,51 @@ for the pipeline comes from the descriptor map, not from the string.
 
 ### L2 — the panel registry
 
-```js
-const MEDIA_PANELS = {
-  root:     [ SourcePanel, PresentationPanel, BehaviourPanel, MeaningPanel ],
-  element:  [ SourcePanel, PresentationPanel, BehaviourPanel, MeaningPanel ],
-  backdrop: [ SourcePanel, PresentationPanel, BehaviourPanel ],   // no caption/link, no player chrome
-};
+⛔ **CORRECTED 2026-08-30. The exemplar named here was wrong on both of its claims, measured.**
+
+`KIND_PANELS` is **not** the framework's most-adopted shared component, and it does **not** have 30
+adopters. The 30 was a plain grep for `ContainerWrapperControls` (which OWNS `KIND_PANELS`); scoped
+to JSX mounts in `edit.js` it is **23**. `KIND_PANELS` itself appears in exactly ONE file, is
+module-private, and no live mount passes `kind: 'section'` — a dead default branch. Measured
+adoption (`grep -l "<Component" src/blocks/*/edit.js`):
+
+```
+65  SgsColourPanel          <- the actual most-adopted shared component
+51  ResponsiveBoxControl
+45  SgsBorderControl
+23  ContainerWrapperControls
+18  TypographyControls
 ```
 
-One file per panel; a context is **which array you get**. Exactly `KIND_PANELS`'s shape, and exactly
-the "insert different sets" model Bean described from the colour helpers.
+⚠ `ContainerWrapperControls` also lives at `src/blocks/container/components/`, **not**
+`src/components/` — it is a container-block-private component, so `check-control-helper-parity.py`
+never sees it.
+
+**The exemplar is therefore `SgsColourPanel`, and not only on adoption.** Its shape is
+**caller-composed rows, not a hardcoded registry**: the component owns the row SHAPE and the panel
+chrome; the caller passes `rows: [{ key, label, states, gradientCapable }]`, and *falsy entries are
+dropped* so a condition inlines directly in the array literal (`shape !== 'none' && { … }`). That
+fits media better than a `kind → fixed array` map, because media's disclosure rules are per-attribute
+and per-type, not per-context — a `backdrop` surface is not "the `element` list minus two".
+
+```js
+// v2 shape — the caller composes, the layer owns the row shape and the chrome.
+MediaElementControls( { attributes, setAttributes, prefix, context, insertion, atoms } )
+//   → rows composed from `context` + the surface's declared atoms; falsy entries dropped.
+```
+
+⚠ **Inherit `SgsColourPanel`'s shape; do NOT inherit its two known flaws.**
+
+1. **It hardcodes `group="styles"`** (`SgsColourPanel.js:116`, D621) — the cause of the C14 tab-split
+   across all 65 adopters. `MediaElementControls` takes its group from `insertion`, never hardcodes.
+2. **Its disclosure rule is the opposite of ours.** Its docblock: *"an entry that doesn't apply is
+   omitted from the `rows` array by the calling block."* Media needs the reverse for gated controls —
+   render **disabled with a `hiddenReason`**, because a silently-absent control is the "where did my
+   setting go?" defect we are fixing. **Omit when it structurally cannot apply; disable-with-reason
+   when it is merely not applicable yet.** Both states, deliberately (see §6).
+
+✅ ONBOARDED — the "insert different sets" model Bean described from the colour helpers stands; it is
+now pointed at the colour helper that actually implements it.
 
 ### L3 — dispatch, and the one place we do NOT copy the wrapper
 
@@ -175,7 +266,21 @@ covered by a shared fixture test.
 one is PHP. v2 claims what is achievable and testable: **one stylesheet, one descriptor, two thin
 value-setters, and a fixture asserting both emit identical custom-property declarations for a fixed
 attribute set.**
-✅ ONBOARDED — Cynic MF-3, Ship-PM, Platform S2.
+
+⭐ **The stylesheet's home, named (2026-08-30).** `before-after` solves this per-block via its own
+`block.json` `style:` entry, which WordPress loads in both realms — but a SHARED layer has no block
+to hang that on. The framework's existing answer is **`assets/css/extensions.css`**, enqueued twice
+by design: `class-sgs-blocks.php:332-345` into the editor canvas (handle `sgs-extensions-editor`)
+and `:419-428` on the front end (handle `sgs-extensions`). Media takes the same pattern with its own
+file, **`assets/css/media-element.css`**.
+
+⛔ **Breakpoints come from `SGS_BREAKPOINTS` (JS) / `SGS_Breakpoints` (PHP), never a literal — and
+never a copy of `extensions.css`'s own pair, which is off by one.** Measured: its Image Controls
+block uses tablet `min-width:769px` / mobile `max-width:768px` against the project's 768/1024
+device-tier standard. That is a real bug in the device-tier system (not an arbitrary visual
+breakpoint), recorded separately; the media stylesheet must not inherit it.
+
+✅ ONBOARDED — Cynic MF-3, Ship-PM, Platform S2, Platform M2 (the one breakpoint source).
 
 ---
 
@@ -263,27 +368,128 @@ focal-point · padding · border+radius · opacity · shadow · alignment · max
 **Video:** autoplay · loop · muted · controls · playsinline · poster · preload · **`<track>` captions**.
 **SVG:** svg-source · animation-source · path-draw.
 
-### ⭐ v1 SHIPS v1 WITH SIX ATOMS, NOT THIRTY
+### ⭐ v1 SHIPS TEN ATOMS, NOT THIRTY — and not six either
 
-The six that cover every disagreement measured across all surveyed surfaces:
-**source · media-type · object-fit · focal-point · box-shape · overlay.** The rest are v2.
-✅ ONBOARDED — Ship-PM (the atom list was a wish-list, not a plan).
+**REVISED 2026-08-30 (Bean's ruling), from six to ten.** ✅ The Ship-PM finding that produced the
+original cut STANDS — *"the atom list was a wish-list, not a plan"* — and the list above is still a
+wish-list. What changed is the cut line, for two measured reasons.
+
+**1. The claim "the six cover every disagreement measured" was not true.** Of the 103 distinct media
+attribute names in the census, **36 fell outside all six atoms** — the whole of meaning (7 pairs),
+video behaviour (22), SVG presentation (8) and intrinsic dimensions (3). Worse, the plan's own
+headline cross-attribute rule (autoplay ⇒ muted + playsinline) governs the video behaviour family,
+which **no atom owned**.
+
+**2. Nothing is wired to a block until step 4**, and several controls are already standardised, so
+completeness costs roughly one extra hour against three named gaps we would return for.
+
+**The roster — a roster now, not a wish-list:**
+
+| # | Atom | Manifest |
+|---|---|---|
+| 1 | `source` | census (58 pairs) |
+| 2 | `media-type` | census (8) |
+| 3 | `video-behaviour` | census (22) — owns the `requires` rule |
+| 4 | `meaning` (alt / decorative) | census (7) |
+| 5 | `intrinsic` (width / height) | census (3) — no control; written from the chosen media |
+| 6 | `svg-presentation` | census (8) |
+| 7 | `object-fit` | ⚠ presentation half — see §9 |
+| 8 | `focal-point` | ⚠ presentation half |
+| 9 | `box-shape` | ⚠ presentation half |
+| 10 | `overlay` | ⚠ presentation half |
+
+The remaining ~20 concepts in the list above (caption, link, lazy-load, LCP priority, ken-burns,
+parallax, path-draw, alignment, opacity, shadow, padding, border) stay v2.
+
+⭐ **A control becomes the standard by BEING a shared helper, not by being described (Bean, 2026-08-30).**
+Every control an atom needs that does not already exist ships as ONE component in
+`src/components/media/controls/`, mountable anywhere — so divergence is impossible rather than
+merely detectable. The alternative considered and rejected was registering each control's recipe in
+`scripts/consistency/golden-controls.json`; measured, that file encodes 14 control types but exactly
+**one** (`colour`) has a rule that reads it, so a `media` or `enum` recipe would be a row nothing
+enforces. Spec 35 PART O remains the reference for what good looks like; the shared component is
+what makes it universal.
+
+✅ ONBOARDED — Ship-PM (the atom list was a wish-list, not a plan) — **finding upheld, cut line
+revised from six to ten on measured coverage.** Plus Bean's shared-helper ruling, 2026-08-30.
+
+### ⭐ object-fit across three enums — resolved inline (Bean, 2026-08-30)
+
+Three rival vocabularies exist, and this was briefly planned as a design gate. Measured, it is not:
+
+| Source | Values |
+|---|---|
+| canonical — `MediaSizingPanel`, `sgs/media`, `helpers-media-position.php`, `before-after/render.php` | `cover, contain, fill, none, scale-down` |
+| `extensions/image-controls.js` | the same 5 **plus `""` = "Inherit (no override)"** |
+| `hero/edit.js` `IMAGE_FIT_OPTIONS` | `cover, contain, fill,` **`custom`** — and hero declares NO enum, so `custom` round-trips |
+
+⛔ **`custom` is not a fit value and not a media-type adaptation — it is a SIZING MODE.** Its label is
+literally `'Custom (explicit width/height)'` (`hero/edit.js:68`), and `hero/render.php:625` gates
+object-fit **off** so `splitMediaWidth`/`splitMediaHeight` take over. It behaves identically for
+image, video and SVG. It is the same concept `sgs/media` already models properly as
+`mediaSizing: auto|height|ratio`.
+
+**Resolution: `custom` belongs to atom 9 (`box-shape`), not atom 7.** Atom 7's enum is the canonical
+five; it *reads* hero's `custom` as "sizing mode = explicit" via its `reads` field. No rename, no
+design gate.
+
+⭐ **Hero already holds the correct answer for video and SVG, and the atoms adopt it.**
+`hero/render.php:618-624` scopes the fit selector to `--image, --video` only, deliberately excluding
+the SVG tier's `<span>` wrapper, with the reason stated in the code: *"these are replaced-element
+properties and do nothing on the SVG tier's `<span>` wrapper, so emitting them there would be a lie
+about what the property actually affects."* So SVG gets a genuinely separate implementation
+(`preserveAspectRatio` or a sized wrapper), **never a third selector pretending the property
+applies.**
+
+⚠ The universal `image-controls` extension (`sgsObjectFit`/`sgsObjectPosition`, **21 blocks opted
+in**) stays as it is for the blocks outside this population. The media atoms READ both vocabularies
+and emit one; reworking the extension itself is out of scope and would be its own design gate.
 
 ### Cross-attribute constraints — a `requires` field, not just a `gate`
 
 `autoplay` without `muted` + `playsinline` is silently blocked on every mobile browser. So a
 descriptor carries `requires`, enforced in **both** the control UI and the renderer.
+
+⛔ **This is not hypothetical — there is a live defect, measured 2026-08-30.** The coupling exists in
+exactly ONE place and it is client-side only: `src/blocks/media/view.js:148-152` forces
+`video.muted = true` when autoplay is on. `src/blocks/media/render.php:1076-1080` builds the three
+flags **independently, with no guard at all**:
+
+```php
+$autoplay_attr = $video_autoplay ? ' autoplay' : '';
+$muted_attr    = $video_muted    ? ' muted'    : '';
+$inline_attr   = $video_inline   ? ' playsinline' : '';
+```
+
+So a client setting autoplay-on + muted-off gets server markup the browser refuses to play, and
+`view.js` silently repairs it on hydration — **no-JS visitors keep the broken state**. `playsinline`
+is not coupled anywhere. Every other surface hardcodes the trio together, so the rule holds there by
+construction; `sgs/media` is the only surface where a client can unmute, which is also why it is the
+only one with `<track>` captions.
+
+**Atom 3 (`video-behaviour`) owns this**, and fixing `render.php` — not merely mirroring `view.js` —
+is its acceptance criterion.
 ✅ ONBOARDED — Platform M6.
 
 ### Accessibility — three items that are compliance, not preference
 
-- **`<track>` captions.** `grep -rn "<track"` returns **zero** across the framework. WCAG 1.2.2 is
-  **Level A**, below the stated AA baseline. A non-muted video requires at least one track before
-  the gate passes.
-- **`prefers-reduced-motion`** on ken-burns and parallax — a stated non-negotiable, absent in v1.
+- **`<track>` captions.** `grep -rn "<track"` returned **zero** across the framework, confirmed with
+  a positive control (the identical command shape returns 68 matches for `<video>`, so the zero was
+  real and not a filter artefact). WCAG 1.2.2 is **Level A**, below the stated AA baseline.
+  ✅ **SHIPPED 2026-08-30** (`3b17d96a5`) on `sgs/media` — the only surface where a client can unmute,
+  hence the only one where the requirement bites. Live-verified 6/6 with a negative control.
+- **`prefers-reduced-motion`** on ken-burns and parallax — ⛔ **STRUCK, NOT BUILT.** This section
+  called it *"absent in v1"*. It is **present, and thorough**: `hero/style.css` (476, 519, 558,
+  567-577) guards split-media twice — a `no-preference` gate plus an explicit `reduce` override;
+  `container/style.css` (235, 280) guards both Ken Burns paths; `assets/js/parallax.js:28` bails on
+  `matchMedia('(prefers-reduced-motion: reduce)')` before any work. **Re-adding a guard produces a
+  duplicate, which is its own defect class.** Recorded as struck rather than deleted so a later
+  session does not "finish the job". If the media layer introduces a NEW motion atom, that atom
+  carries its own guard — this strike covers the existing two only.
 - **Decorative/alt** stays per-instance (the same logo is meaningful in a header, decorative in a
-  footer strip).
-✅ ONBOARDED — Platform M5, N8, N9.
+  footer strip). Now **atom 4 (`meaning`)** rather than an unowned principle.
+✅ ONBOARDED — Platform M5, N8, N9 (N-whichever covered reduced motion is satisfied by construction,
+not by new code).
 
 ---
 
@@ -364,10 +570,11 @@ end's behaviour is documented rather than accidental.
 
 | Item | Position |
 |---|---|
-| **Editor SVG XSS** | ⛔ v1 restated a known privilege-escalation bug without closing it. Three editor sites inject operator SVG via `dangerouslySetInnerHTML` with no sanitiser while the front end runs `wp_kses`. **v2 ports `sgs_allowed_svg_tags()` to a JS constant from ONE source and sanitises before every mount**, with a PHP/JS parity gate. The misleading help text (`timeline/edit.js:462`) is corrected in the same change. |
+| **Editor SVG XSS** | ✅ **CLOSED 2026-08-30, and the counts here were wrong.** Not "three editor sites" — **SIX** unsanitised mounts (hero, media, timeline, IconPicker ×2, IconPreview). Not two server allowlists — **SIX**: two byte-identical copies (collapsed), two genuinely diverging (unified into `sgs_allowed_svg_tags()`), plus **two more in `button/render.php`** left alone deliberately, narrower still, and still open. Shipped: allowlists 6→1 (`ad414bfee`, `89f1aefdf`), JS sanitiser generated from the PHP + all 6 mounts (`52e232692`, `51591f936`), misleading help text corrected (`c86938f2a`). Live-verified: `window.SGS_PWNED` undefined in BOTH realms. ⚠ The SMIL bypass (`<a><animate attributeName="href" to="javascript:…">`) is **reasoned, not executed** — owed a canary probe WITH a positive control proving the harness can see a real execution. |
 | **Attachment capability** | IDs come from attributes; any role that can edit a post can name any integer. Picker restricted to media the operator can manage; renderer treats an inaccessible attachment as "no media". |
 | **Cloning pipeline = untrusted input** | It ingests third-party drafts and writes straight into attributes. **Sanitise on READ, not only on save** — never assume a value came from the inspector. |
-| **CSS injection** | ⚠ **The council's finding here was WRONG and I verified it**: `media/render.php:303` already guards `objectPosition` with `preg_match('/^[a-zA-Z0-9%\s.,\-]+$/')`, which excludes `;{}`. **But the principle stands** — every atom's `css()` declares a validator, reject-to-default, because the Style Engine's vocabulary does not cover `object-fit`/`object-position`/`mix-blend-mode`, so those stay hand-composed. |
+| **CSS injection** | ⚠ **The council's finding here was WRONG and I verified it**: `media/render.php:303` already guards `objectPosition` with `preg_match('/^[a-zA-Z0-9%\s.,\-]+$/')`, which excludes `;{}`. **But the principle stands** — every atom's `css()` declares a validator, reject-to-default, because the Style Engine's vocabulary does not cover `object-fit`/`object-position`/`mix-blend-mode`, so those stay hand-composed. Each validator ships a **negative control** proving an out-of-vocabulary value is rejected rather than passed through. |
+| **Sanitise on READ** | The cloning pipeline ingests third-party drafts and writes straight into attributes, so a value must never be assumed to have come from the inspector. Validation happens on read, not only on save. |
 | **SVG upload policy** | Inline only after allowlist sanitisation; `path-draw`/`animation-source` gated on `unfiltered_html`. |
 ✅ ONBOARDED — Abuse MUST-FIX 1/3/4 (2 refuted, principle retained), Platform M7, Competitor MF5.
 
@@ -418,6 +625,19 @@ injection filter → PHP schema → renderer → stylesheet → custom property,
 1. **Census first** — one JSON artefact in `reports/migrations/` answering "how many media attrs, on
    which surfaces, which are exempt", **before any edit**. THE-MIGRATION-METHOD requires the
    detector as the first deliverable past 3 files.
+   ✅ **SHIPPED 2026-08-30** (`9b67c3885`) — `reports/migrations/media-element-census.json`:
+   128 media attributes, 6 surfaces, 3 excluded with reasons, **10 storage shapes**, `STORED_AS` of
+   four.
+   ⚠ **SCOPE CORRECTION (2026-08-30).** §17 commissioned it as *"per surface: `prefix`, `context`,
+   `insertion`, `mechanism`, `storedAs` map, and escape-hatch flags"* — i.e. the **source, type,
+   meaning and behaviour** families. It delivered exactly that. It therefore records **no
+   presentation attributes at all**: `objectFit`, `objectPosition`, `mediaSizing`, `height`,
+   `backgroundOverlayColour` and `splitMediaObjectFit` are all absent, verified individually.
+   **Atoms 7-10 have no manifest until the presentation half is persisted** — a further **34 distinct
+   names / 55 surface-attribute pairs** (hero 22 · container 14 · media 13 · before-after 5 ·
+   decorative-image 1 · product-card 0). That is a write-up of measurements already taken in the
+   2026-08-30 survey pass, not a fresh study, and it is Wave 3 Stage 2. ⛔ Do not read §5's atom list
+   as a census; the doc itself calls that list a wish-list.
 2. **No renames in v1** (§2 `storedAs`), so no content migration is required to adopt the standard.
 3. **`product-card.image`** (bare URL string, no attachment ID, no tiers) ships **separately, after
    the abstraction is proven**, and keeps the old attribute alongside the new for one deploy cycle
@@ -453,8 +673,21 @@ with timeline, so it would pass and prove nothing. `before-after` has two indepe
 video sync, and its own scoped-selector machinery — **it is the falsifying case.**
 
 **The falsification test, made objective:** wiring the second surface must require **no edit to
-`compose.js`, `MediaElementControls`, `SGS_Media_Element`, or the injection filter**. A new file
-under `src/media/controls/*` with no changes outside that directory is a PASS.
+`MediaElementControls`, `SGS_Media_Element`, or either injection filter**.
+
+⛔ **PATH CORRECTED 2026-08-30 — this is load-bearing, not cosmetic.** The test originally read *"a
+new file under `src/media/controls/*` with no changes outside that directory is a PASS."* The shared
+layer does **not** live there and must not: `check-control-helper-parity.py` discovers helper
+families from disk by convention — a `*AttrName`/`*AttrKeys` export in **`src/components/`** plus a
+PHP twin whose slug matches — and `src/media/controls/` sits outside that scan, so Media would
+silently never have registered as the fourth family (Bean's decision, taken).
+
+**The test now reads:** `git diff --stat` after wiring `before-after` shows **no file outside
+`src/components/Media*` and `includes/helpers-media-element.php`**.
+
+⚠ `before-after` is currently BEST-IN-CLASS on two axes measured by the census — one parameterised
+picker driving both slots with zero drift, and the narrowest per-type gating of any surface. **A
+unification that downgrades it has failed.** Absorb those patterns; do not flatten them.
 ✅ ONBOARDED — Ship-PM M2, Competitor SHOULD-FIX 1, Spec-Lawyer MUST-FIX 4, Cynic MISSING M-C.
 
 ### Acceptance — the gates are all static, so they cannot close this
@@ -469,16 +702,23 @@ do not close; the eye alone does not close.
 
 ## 11. Effort — smallest plausible
 
-| Step | Estimate |
-|---|---|
-| Census | 2h |
-| L1 helpers + injection filter | 4h |
-| 6 atoms + panel registry + dispatch | 6h |
-| Wire both surfaces | 4h |
-| Gates + negative controls | 6h |
-| **v1 total** | **~3 days** |
-| Remaining surfaces (codemod) | 2-3 days, separately |
-| `product-card` content migration | separate, after proof |
+**Revised 2026-08-30 against measured actuals from waves 1-2.**
+
+| Step | Estimate | Actual |
+|---|---|---|
+| Census | 2h | ✅ shipped, with the two security items and 7 new gates, in one session |
+| L1 helpers + injection filter | 4h | ✅ shipped same session (`cce7427bd`, `ea5f7ed09`) |
+| Census — presentation half | +45m | write-up of measurements already taken |
+| Architecture doc realignment | +1h | this rewrite |
+| **10** atoms + shared helpers + selective injection | 6h → **~5.5h** | 4 parallel branches; 6 of ~8 controls already exist |
+| Panel registry + dispatch | — | Wave 4 |
+| Wire both surfaces | 4h | Wave 5 |
+| Gates + negative controls | 6h | Wave 6 |
+| Remaining surfaces (codemod) | 2-3 days, separately | Wave 7 |
+| `product-card` content migration | separate, after proof | — |
+
+⚠ Waves 1-2 came in materially faster than this table's originals. Treat the remaining figures as
+upper bounds, not targets.
 
 ---
 
@@ -490,7 +730,8 @@ do not close; the eye alone does not close.
 | **Interactivity API rewrite** | Orthogonal to a controls goal; rewrites working runtimes; already in ~13 blocks so the "learning cost" risk was backwards; and `data-wp-bind--` sets attributes while video `currentTime` is a property, so sync still needs imperative code. |
 | **`<picture>` swap** | Breaks the pipeline's recognition contract (R-31-2); discards core's image pipeline; and the `display:none` download justification was overstated — a lazy hidden image generally is not fetched. |
 | **`media-markup-parity` as specified** | Needed a live canary; the repo's live-canary gate passes when unreachable. |
-| **24 of the 30 atoms** | v1 ships six; the rest follow once the mechanism is proven. |
+| **~20 of the 30 atoms** | ⚠ **REVISED 2026-08-30 — was "24 of 30", i.e. six shipped.** v1 now ships **ten** (§5): the original six missed the whole of meaning, video behaviour, SVG presentation and intrinsic dimensions — 36 of the census's 103 names — and left the headline `requires` rule with no owner. The remaining ~20 follow once the mechanism is proven. |
+| **A golden-controls recipe per media control** | Considered and rejected 2026-08-30. `golden-controls.json` encodes 14 control types but exactly ONE (`colour`) has a rule that reads it, so the row would enforce nothing. A shared component enforces by construction. One `canonical.component` pointer line is still added per helper as a hook for Wave 6's `media-no-handroll` rule — **inert until that rule exists.** |
 
 ---
 
@@ -628,17 +869,51 @@ always has either the old code or the new code, never neither, and rollback is o
 | AVIF / WebP | ✅ Partly free via `wp_get_attachment_image()`; full negotiation travels with the dropped `<picture>` decision |
 | Container queries | ✅ Additive later as a new `mechanism` value — the axis exists for this |
 | `object-view-box` | ✅ Deferred on **browser support**, to be VERIFIED at build time, never asserted |
-| Codegen | ✅ Redundant for UI and CSS; the attribute gap is closed by runtime injection, and the one generator needed already exists and is already gated |
-| Bound / dynamic media | ✅ `source: 'static' \| 'binding'` — §5b, designed now, built later |
+| Codegen | ✅ Redundant for UI and CSS; the attribute gap is closed by runtime injection. ⚠ **The rest of this row was false** — the existing generator was NOT gated and structurally cannot see media keys. See §0 for what shipped instead |
+| Bound / dynamic media | ✅ `source: 'static' \| 'binding'` — §5b, designed now, built later. Carried as a descriptor field so a bound source never becomes a per-block fork |
 
 **Nothing remains open that could block or reshape v1.**
+
+### Added 2026-08-30 — resolved during waves 1-3 planning
+
+| Item | Resolution |
+|---|---|
+| The L2 exemplar | `KIND_PANELS`'s "30 adopters, most-adopted" was false on both counts → `SgsColourPanel` (65), caller-composed rows (§2 L2) |
+| The generator's gating | Was not gated, and cannot see media keys → PHP filter on `register_block_type_args` + its own narrow generator (§0) |
+| `prefers-reduced-motion` | Already implemented and thorough → **STRUCK, not built** (§5) |
+| SVG allowlist / mount counts | "three sites, two lists" → **six mounts, six lists** (+2 in `button/render.php`, still open) (§7) |
+| Atom count | six → **ten**; 36 of 103 census names were uncovered and `requires` had no owner (§5) |
+| object-fit's three enums | Resolved inline — `custom` is a sizing mode, reassigned to `box-shape`; hero's `--image, --video` scoping is the canonical video/SVG answer (§5) |
+| How a control becomes standard | Shared helper, not a schema recipe — 1 of 14 golden-controls types is enforced (§5, §12) |
+| Census scope | Source-side only; presentation half (34 names / 55 pairs) persisted in Wave 3 Stage 2 (§9) |
+| Falsification-test path | `src/media/controls/*` → `src/components/Media*` — the parity gate only scans `src/components/` (§10) |
 
 ---
 
 ## 17. Next action
 
-**Wave 1, inline: the census.** Synthesise the five existing survey reports
-(`.claude/reports/2026-08-30-media-M1..M5-*.md`) into a build manifest — per surface: `prefix`,
-`context`, `insertion`, `mechanism`, `storedAs` map, and escape-hatch flags — re-measuring only what
-Bean's rulings changed. ⛔ Do NOT re-run the surveys; they are done. Output to
-`reports/migrations/media-element-census.json`.
+⚠ **This section previously commissioned Wave 1's census. That is DONE** (`9b67c3885`), along with
+Wave 2's L1 pair and declarative injection (`cce7427bd`, `ea5f7ed09`) and both security items — all
+deployed and live-verified on the canary. Evidence:
+`reports/visual-diff/svg-sanitiser-captions-2026-08-30.md`, probe page 3143.
+
+**Next: Wave 3 — the ten atoms.** Live plan: `~/.claude/plans/media-element-zippy-boole.md`.
+
+| Stage | Work | Safe to stop after? |
+|---|---|---|
+| 1 | This rewrite — realign the canonical doc | yes |
+| 2 | Persist the census's presentation half (34 names / 55 pairs) | yes — pure information |
+| 3 | Atom contract + shared helpers + selective injection | serial; blocks the fan-out |
+| 4 | The ten atoms — 4 parallel Sonnet branches | yes |
+| 5 | `/qc-inline` per atom, `/qc-council` before the commit | — |
+
+⛔ **Selective injection is a Wave 3 prerequisite, not a nicety.** The Wave 2 filters inject **all 34
+bases** per declared prefix. `supports.sgs.mediaElements` has **zero adopters today**, so this has
+never bitten — but declaring `sgs/product-card` (3 real media attrs) would inject ~80 attributes
+nothing reads, which is the dead-control class `check-dead-controls.js` exists to stop. The entry
+shape gains `atoms: [...]`, and the injected set becomes the union of those atoms' `bases`. This also
+finally gives `context` a reader — it is declared in the entry shape and read by neither side today.
+
+⚠ **Wave 3 cannot claim paint.** Atoms are not wired to a surface until Wave 5, so no live DOM check
+is possible and none must be asserted. Wave 3 closes on JS/PHP parity, validator negative controls
+and helper reuse; **Wave 5 closes on paint** (STOP-CONSUMED-IS-NOT-PAINTED).

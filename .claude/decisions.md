@@ -1,3 +1,62 @@
+## D909 [ROUTINE] — media atoms: six -> TEN, shared helpers over a golden recipe, object-fit inline
+
+**2026-08-30.** Three Bean rulings for Wave 3, plus the architecture-doc realignment they forced.
+Doc: `.claude/plans/2026-08-30-media-element-architecture-v2.md` (rewritten in place). Live plan:
+`~/.claude/plans/media-element-zippy-boole.md`.
+
+**1. Ten atoms, not six.** The architecture's claim that its six "cover every disagreement measured"
+was FALSE, and measurably: of the 103 distinct media attribute names in the census, **36 fell
+outside all six** - the whole of meaning (7 pairs), video behaviour (22), SVG presentation (8) and
+intrinsic dimensions (3). Worse, the plan's own headline `requires` rule (autoplay implies muted +
+playsinline) governs video behaviour, which **no atom owned**. Bean's call: nothing is wired to a
+block until Wave 5 and several controls already exist, so completeness costs ~1h against three gaps
+we would return for. Added: `video-behaviour`, `meaning`, `svg-presentation`, `intrinsic`.
+
+**2. A control becomes the standard by BEING a shared helper, not by being described.** An earlier
+draft proposed registering each control's recipe in `scripts/consistency/golden-controls.json`.
+Bean rejected it. Measured, he was right: that file encodes **14** control types but exactly **ONE**
+(`colour`, via `inspector-scan/rules/31-golden-colour-control.js`) has a rule that reads it;
+`survey-golden-conformance.js` is advisory. A `media` or `enum` recipe would be a row nothing
+enforces - the "a data-file section with zero readers is not a source of truth" failure already in
+the STOP catalogue. **A shared component enforces by construction.** One `canonical.component`
+pointer line is still added per helper as a hook for Wave 6's `media-no-handroll` rule, recorded as
+**inert until that rule exists**. Spec 35 PART O stays the UX reference.
+
+**3. object-fit resolved INLINE, not as a design gate.** Three rival enums exist. I had recorded
+hero's `custom` as "a mode flag masquerading as a CSS value" and gated on it. Measured, that reading
+was wrong in the way that mattered: `custom`'s label is `'Custom (explicit width/height)'`
+(`hero/edit.js:68`) and `hero/render.php:625` gates object-fit OFF so
+`splitMediaWidth`/`splitMediaHeight` take over - **identically for image, video and SVG**. It is a
+SIZING MODE, the same concept `sgs/media` models as `mediaSizing: auto|height|ratio`, so it belongs
+to the `box-shape` atom. Atom 7's enum is the canonical five and merely READS `custom`. No rename,
+no gate.
+
+**Bean's premise for (3) was that `custom` adapts object-fit to non-image types. That premise is
+false, but the conclusion held for a better reason:** hero ALREADY solves video/SVG correctly and
+says so in code - `render.php:618-624` scopes the fit selector to `--image, --video` only,
+deliberately excluding the SVG tier's `<span>`, because *"these are replaced-element properties and
+do nothing on the SVG tier's `<span>` wrapper, so emitting them there would be a lie about what the
+property actually affects."* That scoping is the pattern the atoms adopt; SVG gets a genuinely
+separate implementation (`preserveAspectRatio` or a sized wrapper), never a third selector.
+
+**4. The census is SOURCE-SIDE ONLY - not a defect, a scope fact worth recording.** Architecture
+Sec.17 commissioned it as *"prefix, context, insertion, mechanism, storedAs, escape-hatch flags"* and
+it delivered exactly that. It therefore records **no presentation attributes at all** (`objectFit`,
+`objectPosition`, `mediaSizing`, `height`, `backgroundOverlayColour`, `splitMediaObjectFit` all
+verified absent). Atoms 7-10 have no manifest until a further **34 names / 55 pairs** are persisted
+(hero 22, container 14, media 13, before-after 5, decorative-image 1, product-card 0) - a write-up of
+measurements already taken, Wave 3 Stage 2. Do not read Sec.5's atom list as a census; the doc calls
+that list a wish-list itself.
+
+**Nine architecture claims were corrected in place**, none deleted, every `ONBOARDED` council
+attribution preserved (D101 receipt: markers 23 -> 25, zero attributions lost, headings 19 -> 19).
+The other five: the generator was not gated and cannot see media keys; `KIND_PANELS` was neither
+30-adopter nor most-adopted (`SgsColourPanel` reaches 65); the PHP helper names must carry
+`media_element` or the parity gate reads them as ABSENT; `prefers-reduced-motion` was already
+implemented so it is **STRUCK, not built**; and the falsification test's path
+(`src/media/controls/*`) sat outside `check-control-helper-parity.py`'s scan, so Media would
+silently never have registered as the fourth family.
+
 ## D908 [ROUTINE] — ONE active track: the shared-DB reseed deferral was wrong, and is cleared
 
 **2026-08-30.** Bean: *"There is only 1 track/session active throughout the whole time we work on
