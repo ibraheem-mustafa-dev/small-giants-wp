@@ -469,11 +469,56 @@ function stripComments( src ) {
  * does NOT match inside `nameFontSizeTablet`. The corpus is the block's own
  * render/save/view source plus the shared includes corpus, comments stripped.
  */
+/**
+ * Attribute names a corpus consumes through the MEDIA-ATOM name helpers.
+ *
+ * The media layer never writes an attribute name as a literal. It composes one
+ * from a prefix and a PascalCase base:
+ *
+ *     sgs_media_element_attr( $prefix, 'VideoPlaysInline' )  -> videoPlaysInline
+ *     mediaStoredAttrName( slug, prefix, 'ImageUrl' )        -> imageUrl
+ *
+ * so a literal grep reports every one of them as unrendered. That is a real
+ * blind spot, not a real finding: `sgs/media`'s videoPlaysInline trio was
+ * flagged the moment render.php started resolving those three flags through
+ * `sgs_media_atom_video_behaviour_requires()` — the attributes went from
+ * consumed to "dead" while becoming MORE correct.
+ *
+ * This is the same shape `sgs/before-after` already documents ("tier keys are
+ * written as WHOLE literal suffixes because this checker cannot follow a key
+ * whose tail is a second variable"). Broadening the detector is the sanctioned
+ * fix; a baseline entry would hide the class as every surface adopts an atom.
+ *
+ * Unprefixed and tiered forms are both derived, because a base composes into
+ * up to three real attribute names.
+ *
+ * @param {string} corpus Render/save/view source, comments stripped.
+ * @return {Set<string>} Attribute names reachable through the helpers.
+ */
+function mediaAtomComposedNames( corpus ) {
+	const names = new Set();
+	const re =
+		/(?:sgs_media_element_attr|sgs_media_element_stored_attr|mediaAttrName|mediaStoredAttrName)\s*\([^)]*?['"]([A-Z][A-Za-z0-9]*)['"]\s*\)/g;
+	let m;
+	while ( ( m = re.exec( corpus ) ) !== null ) {
+		const base = m[ 1 ];
+		const bare = base.charAt( 0 ).toLowerCase() + base.slice( 1 );
+		names.add( bare );
+		names.add( bare + 'Tablet' );
+		names.add( bare + 'Mobile' );
+	}
+	return names;
+}
+
 function isConsumed( attr, corpus ) {
 	// Escape nothing needed — attr names are [A-Za-z0-9_$]. Word boundary on both
 	// sides; allow the JS/PHP token to be quoted, a property, or an array key.
 	const re = new RegExp( '\\b' + attr + '\\b' );
-	return re.test( corpus );
+	if ( re.test( corpus ) ) {
+		return true;
+	}
+	// Composed through a media-atom name helper — see above.
+	return mediaAtomComposedNames( corpus ).has( attr );
 }
 
 /**

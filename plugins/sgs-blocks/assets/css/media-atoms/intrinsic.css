@@ -1,0 +1,14 @@
+/*
+ * intrinsic atom — no rules.
+ *
+ * `ImageWidth`/`ImageHeight` reach the page as HTML `width`/`height`
+ * ATTRIBUTES on the rendered `<img>` (the browser reserves layout space from
+ * those before the image loads — the actual CLS-prevention mechanism), never
+ * as a CSS property. There is nothing for this atom to paint, so it
+ * contributes no rule to the shared stylesheet.
+ *
+ * This file exists so `generate-media-stylesheet.mjs`'s partial roster stays
+ * complete and self-documenting — an atom with genuinely no CSS still gets a
+ * partial explaining why, rather than a silent gap someone re-investigates
+ * later.
+ */

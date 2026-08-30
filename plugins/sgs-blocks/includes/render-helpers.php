@@ -113,3 +113,8 @@ require_once __DIR__ . '/helpers-mega-render.php';
 require_once __DIR__ . '/helpers-row-behaviour.php';
 require_once __DIR__ . '/helpers-svg-gradient.php';
 require_once __DIR__ . '/helpers-colour-variants.php';
+require_once __DIR__ . '/media/atoms/media-type.php';
+require_once __DIR__ . '/media/atoms/video-behaviour.php';
+require_once __DIR__ . '/media/atoms/source.php';
+require_once __DIR__ . '/media/atoms/intrinsic.php';
+require_once __DIR__ . '/media/atoms/meaning.php';

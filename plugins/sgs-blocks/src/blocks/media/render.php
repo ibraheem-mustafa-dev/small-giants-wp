@@ -769,12 +769,21 @@ if ( 'video' === $media_type ) {
 	// force an iframe reload on every resize, which is worse than the fixed
 	// desktop behaviour it would replace, so tiers are deliberately inert for
 	// the embed paths below and only wired for the direct-file branch).
-	$autoplay_tiers = sgs_media_resolve_tier_bool( $attributes, 'videoAutoplay' );
-	$loop_tiers     = sgs_media_resolve_tier_bool( $attributes, 'videoLoop' );
-	$muted_tiers    = sgs_media_resolve_tier_bool( $attributes, 'videoMuted' );
-	$controls_tiers = sgs_media_resolve_tier_bool( $attributes, 'videoControls' );
-	$inline_tiers   = sgs_media_resolve_tier_bool( $attributes, 'videoPlaysInline' );
-	$lazy_tiers     = sgs_media_resolve_tier_bool( $attributes, 'videoLazyLoad' );
+	// Autoplay/muted/playsinline are resolved TOGETHER, not independently —
+	// `sgs_media_atom_video_behaviour_requires()` (video-behaviour atom,
+	// includes/media/atoms/video-behaviour.php) enforces the registry's
+	// `VideoAutoplay: [ 'VideoMuted', 'VideoPlaysInline' ]` coupling at every
+	// device tier: a browser refuses to autoplay an unmuted video, and iOS
+	// needs playsinline or the video takes over the screen. Building these
+	// three flags independently (the old shape) served no-JS visitors markup
+	// the browser cannot play, silently "fixed" only client-side by view.js.
+	$video_behaviour = sgs_media_atom_video_behaviour_requires( $attributes, '' );
+	$autoplay_tiers  = $video_behaviour['autoplay'];
+	$muted_tiers     = $video_behaviour['muted'];
+	$inline_tiers    = $video_behaviour['plays_inline'];
+	$loop_tiers      = sgs_media_resolve_tier_bool( $attributes, 'videoLoop' );
+	$controls_tiers  = sgs_media_resolve_tier_bool( $attributes, 'videoControls' );
+	$lazy_tiers      = sgs_media_resolve_tier_bool( $attributes, 'videoLazyLoad' );
 
 	$video_autoplay = $autoplay_tiers['desktop'];
 	$video_loop     = $loop_tiers['desktop'];

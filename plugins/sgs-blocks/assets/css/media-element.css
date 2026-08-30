@@ -122,3 +122,369 @@
  * nothing to an inline <svg>, so the SVG path uses `preserveAspectRatio` or a
  * sized wrapper. Never widen a fit selector to cover it.
  */
+
+/* ── box-shape.css ───────────────────────────────────────────────────── */
+/*
+ * box-shape — sizing mode (auto/height/ratio), named shape, min/max/width.
+ *
+ * Custom-property names match `box-shape.js`/`box-shape.php`'s `css()`
+ * output exactly: `--sgs-media-height[-tablet|-mobile]`,
+ * `--sgs-media-aspect-ratio`, `--sgs-media-width[-tablet|-mobile]`,
+ * `--sgs-media-min-height[-tablet|-mobile]`, `--sgs-media-max-width`,
+ * `--sgs-media-max-height`, `--sgs-media-max-width-percent`,
+ * `--sgs-media-clip-path`.
+ *
+ * SHAPE IS `clip-path`, NEVER `border-radius` — that property belongs to
+ * `SgsBorderControl` (44 blocks) and native `__experimentalBorder`
+ * (`sgs/media`). A second writer for it is a bug (plugins/sgs-blocks/CLAUDE.md,
+ * "Border controls"). See `box-shape.js`'s module docblock for the full
+ * none/square/rounded/circle -> clip-path mapping.
+ *
+ * Height/Width follow the mobile -> tablet -> desktop -> initial fallback
+ * chain `_base.css` documents; min-height does the same. Aspect-ratio,
+ * max-width/max-height/max-width-percent/clip-path are single-value (no
+ * device tiers — MEDIA_TIERED_BASES does not carry them).
+ */
+
+.sgs-media-el {
+	height: var( --sgs-media-height, auto );
+	width: var( --sgs-media-width, auto );
+	aspect-ratio: var( --sgs-media-aspect-ratio, auto );
+	min-height: var( --sgs-media-min-height, 0 );
+	max-width: var( --sgs-media-max-width, none );
+	max-height: var( --sgs-media-max-height, none );
+	clip-path: var( --sgs-media-clip-path, none );
+}
+
+/* max-width-percent is a SEPARATE cap from max-width (a percentage floor
+ * distinct from an absolute length) — only applied when the atom emits it,
+ * via the same custom-property/initial-fallback contract as every other
+ * declaration here. */
+.sgs-media-el {
+	max-width: var( --sgs-media-max-width-percent, var( --sgs-media-max-width, none ) );
+}
+
+@media ( max-width: 1023px ) {
+	.sgs-media-el {
+		height: var( --sgs-media-height-tablet, var( --sgs-media-height, auto ) );
+		width: var( --sgs-media-width-tablet, var( --sgs-media-width, auto ) );
+		min-height: var( --sgs-media-min-height-tablet, var( --sgs-media-min-height, 0 ) );
+	}
+}
+
+@media ( max-width: 767px ) {
+	.sgs-media-el {
+		height: var(
+			--sgs-media-height-mobile,
+			var( --sgs-media-height-tablet, var( --sgs-media-height, auto ) )
+		);
+		width: var(
+			--sgs-media-width-mobile,
+			var( --sgs-media-width-tablet, var( --sgs-media-width, auto ) )
+		);
+		min-height: var(
+			--sgs-media-min-height-mobile,
+			var( --sgs-media-min-height-tablet, var( --sgs-media-min-height, 0 ) )
+		);
+	}
+}
+
+/* ── focal-point.css ─────────────────────────────────────────────────── */
+/* ── focal-point atom ─────────────────────────────────────────────────────
+ *
+ * Element scope: object-position, a crop focus for a replaced element
+ * (<img>/<video>) — TIERED, because art direction genuinely differs per
+ * device (`MEDIA_TIERED_BASES` carries `ObjectPosition`). Backdrop scope:
+ * background-position/-repeat/-attachment for a painted background box —
+ * NOT tiered (none of the three backdrop bases are in `MEDIA_TIERED_BASES`).
+ *
+ * The mobile rule nests mobile -> tablet -> desktop -> initial, per _base.css
+ * — reversing the middle two would let an unset mobile value fall through to
+ * desktop and silently ignore a tablet value the client did set.
+ *
+ * `initial` resets each property to its own CSS default (`50% 50%` for
+ * *-position, `repeat` for *-repeat, `scroll` for *-attachment) — identical
+ * to what paints when this rule is absent, so an unset atom never changes
+ * rendering.
+ */
+.sgs-media-el {
+	object-position: var( --sgs-media-object-position, initial );
+	background-position: var( --sgs-media-background-position, initial );
+	background-repeat: var( --sgs-media-background-repeat, initial );
+	background-attachment: var( --sgs-media-background-attachment, initial );
+}
+
+@media (max-width: 1023px) {
+	.sgs-media-el {
+		object-position: var(
+			--sgs-media-object-position-tablet,
+			var( --sgs-media-object-position, initial )
+		);
+	}
+}
+
+@media (max-width: 767px) {
+	.sgs-media-el {
+		object-position: var(
+			--sgs-media-object-position-mobile,
+			var(
+				--sgs-media-object-position-tablet,
+				var( --sgs-media-object-position, initial )
+			)
+		);
+	}
+}
+
+/* ── intrinsic.css ───────────────────────────────────────────────────── */
+/*
+ * intrinsic atom — no rules.
+ *
+ * `ImageWidth`/`ImageHeight` reach the page as HTML `width`/`height`
+ * ATTRIBUTES on the rendered `<img>` (the browser reserves layout space from
+ * those before the image loads — the actual CLS-prevention mechanism), never
+ * as a CSS property. There is nothing for this atom to paint, so it
+ * contributes no rule to the shared stylesheet.
+ *
+ * This file exists so `generate-media-stylesheet.mjs`'s partial roster stays
+ * complete and self-documenting — an atom with genuinely no CSS still gets a
+ * partial explaining why, rather than a silent gap someone re-investigates
+ * later.
+ */
+
+/* ── meaning.css ─────────────────────────────────────────────────────── */
+/*
+ * meaning atom — no rules.
+ *
+ * Alt text and the decorative flag reach the page as HTML attributes
+ * (`alt=""`, `aria-hidden="true"`, `role="presentation"`), never as CSS.
+ * There is nothing for this atom to paint, so it contributes no rule to the
+ * shared stylesheet.
+ *
+ * This file exists so `generate-media-stylesheet.mjs`'s partial roster stays
+ * complete and self-documenting — an atom with genuinely no CSS still gets a
+ * partial explaining why, rather than a silent gap someone re-investigates
+ * later.
+ */
+
+/* ── media-type.css ──────────────────────────────────────────────────── */
+/*
+ * media-type atom — no rules.
+ *
+ * `media-type` is a MARKUP discriminator: it decides which element the
+ * renderer emits (`<img>`, `<video>`, or an inline `<svg>`), never a
+ * paintable CSS property. Both value-setters
+ * (`src/components/media/atoms/media-type.js` `css()` and
+ * `includes/media/atoms/media-type.php`
+ * `sgs_media_atom_media_type_css()`) return an empty array by design — there
+ * is nothing here for `.sgs-media-el` to read via `var()`.
+ *
+ * This file exists so the generator (`scripts/generate-media-stylesheet.mjs`)
+ * has a partial to concatenate, matching every other atom's shape, and so a
+ * future reader finds an explicit "intentionally empty" note rather than a
+ * missing file.
+ */
+
+/* ── object-fit.css ──────────────────────────────────────────────────── */
+/* ── object-fit atom ──────────────────────────────────────────────────────
+ *
+ * One client-facing question ("how should this media fill its box?") backing
+ * TWO properties depending on scope:
+ *   element scope  -> object-fit        (replaced elements: <img>/<video>)
+ *   backdrop scope -> background-size   (a painted background box)
+ *
+ * Neither is tiered: `MEDIA_TIERED_BASES` (MediaElementControls.js)
+ * deliberately excludes `ObjectFit`/`Size` — a fit MODE does not differ per
+ * device the way a crop focus does, so this atom emits the base rule only.
+ *
+ * `initial` as the var() fallback resets each property to its own CSS
+ * initial value (`fill` for object-fit, `auto` for background-size) — the
+ * same value the browser paints when this rule is absent entirely, so an
+ * unset atom never changes rendering.
+ *
+ * ⛔ Not scoped to `--svg`. object-fit/background-size are meaningless on an
+ * inline <svg>'s own geometry either way (a surface adopting this atom for an
+ * SVG tier gets no visible effect, which is correct — see registry.js).
+ */
+.sgs-media-el {
+	object-fit: var( --sgs-media-object-fit, initial );
+	background-size: var( --sgs-media-background-size, initial );
+}
+
+/* ── overlay.css ─────────────────────────────────────────────────────── */
+/*
+ * overlay — colour/gradient tint painted over a media element or backdrop,
+ * with opacity and blend mode, resting and hover.
+ *
+ * A pseudo-element layer (`::after`) rather than a direct property on
+ * `.sgs-media-el` itself: a background-colour tint would sit BEHIND an
+ * `<img>`'s own painted pixels and never be visible, whereas an absolutely
+ * positioned, full-bleed `::after` paints ON TOP — the same technique
+ * `sgs_overlay_decls()`'s two existing callers (`class-sgs-container-wrapper.php`,
+ * `hero/render.php`) already rely on for their own overlay layers.
+ *
+ * Custom-property names match `overlay.js`/`overlay.php`'s `css()` output
+ * exactly: `--sgs-media-overlay-colour`, `--sgs-media-overlay-gradient`,
+ * `--sgs-media-overlay-colour-hover`, `--sgs-media-overlay-gradient-hover`,
+ * `--sgs-media-overlay-opacity`, `--sgs-media-overlay-blend`.
+ *
+ * `position: relative` on `.sgs-media-el` is the isolation `::after` needs to
+ * anchor `inset: 0` against — inert on every element that carries no overlay
+ * (no custom properties set means the pseudo-element paints fully
+ * transparent and `pointer-events: none` keeps it out of the interaction
+ * path).
+ */
+
+.sgs-media-el {
+	position: relative;
+}
+
+.sgs-media-el::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background-color: var( --sgs-media-overlay-colour, transparent );
+	background-image: var( --sgs-media-overlay-gradient, none );
+	opacity: var( --sgs-media-overlay-opacity, 1 );
+	mix-blend-mode: var( --sgs-media-overlay-blend, normal );
+	transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.sgs-media-el:hover::after,
+.sgs-media-el:focus-within::after {
+	background-color: var( --sgs-media-overlay-colour-hover, var( --sgs-media-overlay-colour, transparent ) );
+	background-image: var( --sgs-media-overlay-gradient-hover, var( --sgs-media-overlay-gradient, none ) );
+}
+
+/* ── source.css ──────────────────────────────────────────────────────── */
+/*
+ * source atom — background-image, BACKDROP scope only.
+ *
+ * Element-scope surfaces (an `<img>`/`<video>` tag) never rely on this rule —
+ * the chosen media reaches those via markup (`src`), not CSS. This rule only
+ * paints when the `.sgs-media-el` marker sits on a painted background box.
+ *
+ * Video and SVG sources are not paintable as a CSS `background-image` and are
+ * intentionally NOT emitted by `sgs_media_atom_source_css()`/`css()` — they
+ * need their own DOM (a `<video>` element or inline `<svg>`) in a backdrop
+ * context, which is outside this atom's declared scope.
+ *
+ * Tiered per `_base.css`'s documented cascade: mobile -> tablet -> desktop ->
+ * initial. `ImageUrl`/`ImageUrlTablet`/`ImageUrlMobile` are all in
+ * MEDIA_TIERED_BASES, so all three tiers are real.
+ */
+.sgs-media-el {
+	background-image: var( --sgs-media-background-image, none );
+}
+
+@media (max-width: 1023px) {
+	.sgs-media-el {
+		background-image: var(
+			--sgs-media-background-image-tablet,
+			var( --sgs-media-background-image, none )
+		);
+	}
+}
+
+@media (max-width: 767px) {
+	.sgs-media-el {
+		background-image: var(
+			--sgs-media-background-image-mobile,
+			var(
+				--sgs-media-background-image-tablet,
+				var( --sgs-media-background-image, none )
+			)
+		);
+	}
+}
+
+/* ── svg-presentation.css ────────────────────────────────────────────── */
+/*
+ * svg-presentation — position (z-index layering), animation, opacity,
+ * text-shadow and min-height for an inline SVG media element.
+ *
+ * Custom-property names match `svg-presentation.js`/`svg-presentation.php`'s
+ * `css()` output exactly: `--sgs-media-svg-zindex`,
+ * `--sgs-media-svg-animation-name`, `--sgs-media-svg-animation-duration`,
+ * `--sgs-media-svg-opacity`, `--sgs-media-svg-text-shadow`,
+ * `--sgs-media-svg-min-height`.
+ *
+ * NONE of these six bases are tiered (MEDIA_TIERED_BASES does not carry any
+ * of them) — no @media blocks needed here, unlike box-shape/focal-point.
+ *
+ * PREFERS-REDUCED-MOTION IS A NEW, DEDICATED GUARD — this selector
+ * (`.sgs-media-el`) is not covered by the existing guards in
+ * `hero/style.css`/`container/style.css`/`parallax.js`, which are scoped to
+ * THOSE blocks' own selectors. Mirrors their pattern rather than inventing a
+ * new one: the whole animation rule sits inside
+ * `@media (prefers-reduced-motion: no-preference)`, so a client with reduced
+ * motion enabled sees the SVG fully static — animation-name/-duration
+ * simply never apply.
+ */
+
+.sgs-media-el {
+	z-index: var( --sgs-media-svg-zindex, -1 );
+	opacity: var( --sgs-media-svg-opacity, 1 );
+	text-shadow: var( --sgs-media-svg-text-shadow, none );
+	min-height: var( --sgs-media-svg-min-height, 0 );
+}
+
+@media ( prefers-reduced-motion: no-preference ) {
+	.sgs-media-el {
+		animation-name: var( --sgs-media-svg-animation-name, none );
+		animation-duration: var( --sgs-media-svg-animation-duration, 0s );
+		animation-timing-function: ease-in-out;
+		animation-iteration-count: infinite;
+		animation-direction: alternate;
+	}
+
+	@keyframes sgs-media-svg-pulse {
+		from {
+			transform: scale( 1 );
+		}
+		to {
+			transform: scale( 1.05 );
+		}
+	}
+
+	@keyframes sgs-media-svg-float {
+		from {
+			transform: translateY( 0 );
+		}
+		to {
+			transform: translateY( -12px );
+		}
+	}
+
+	@keyframes sgs-media-svg-wave {
+		0% {
+			transform: rotate( -2deg );
+		}
+		50% {
+			transform: rotate( 2deg );
+		}
+		100% {
+			transform: rotate( -2deg );
+		}
+	}
+}
+
+/* ── video-behaviour.css ─────────────────────────────────────────────── */
+/*
+ * video-behaviour atom — no rules.
+ *
+ * Playback behaviour (autoplay/loop/muted/controls/plays-inline/lazy-load,
+ * captions) is HTML element state — attributes and properties on `<video>`,
+ * or query-string params baked into a YouTube/Vimeo iframe embed — never a
+ * paintable CSS property. Both value-setters
+ * (`src/components/media/atoms/video-behaviour.js` `css()` and
+ * `includes/media/atoms/video-behaviour.php`
+ * `sgs_media_atom_video_behaviour_css()`) return an empty array by design.
+ *
+ * The real work this atom does — enforcing `VideoAutoplay -> [VideoMuted,
+ * VideoPlaysInline]` so a browser can actually play what it's told to
+ * autoplay — lives in `sgs_media_atom_video_behaviour_requires()`, not here.
+ *
+ * This file exists so the generator (`scripts/generate-media-stylesheet.mjs`)
+ * has a partial to concatenate, matching every other atom's shape.
+ */

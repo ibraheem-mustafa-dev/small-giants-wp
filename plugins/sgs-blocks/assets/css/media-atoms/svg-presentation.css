@@ -1,0 +1,69 @@
+/*
+ * svg-presentation — position (z-index layering), animation, opacity,
+ * text-shadow and min-height for an inline SVG media element.
+ *
+ * Custom-property names match `svg-presentation.js`/`svg-presentation.php`'s
+ * `css()` output exactly: `--sgs-media-svg-zindex`,
+ * `--sgs-media-svg-animation-name`, `--sgs-media-svg-animation-duration`,
+ * `--sgs-media-svg-opacity`, `--sgs-media-svg-text-shadow`,
+ * `--sgs-media-svg-min-height`.
+ *
+ * NONE of these six bases are tiered (MEDIA_TIERED_BASES does not carry any
+ * of them) — no @media blocks needed here, unlike box-shape/focal-point.
+ *
+ * PREFERS-REDUCED-MOTION IS A NEW, DEDICATED GUARD — this selector
+ * (`.sgs-media-el`) is not covered by the existing guards in
+ * `hero/style.css`/`container/style.css`/`parallax.js`, which are scoped to
+ * THOSE blocks' own selectors. Mirrors their pattern rather than inventing a
+ * new one: the whole animation rule sits inside
+ * `@media (prefers-reduced-motion: no-preference)`, so a client with reduced
+ * motion enabled sees the SVG fully static — animation-name/-duration
+ * simply never apply.
+ */
+
+.sgs-media-el {
+	z-index: var( --sgs-media-svg-zindex, -1 );
+	opacity: var( --sgs-media-svg-opacity, 1 );
+	text-shadow: var( --sgs-media-svg-text-shadow, none );
+	min-height: var( --sgs-media-svg-min-height, 0 );
+}
+
+@media ( prefers-reduced-motion: no-preference ) {
+	.sgs-media-el {
+		animation-name: var( --sgs-media-svg-animation-name, none );
+		animation-duration: var( --sgs-media-svg-animation-duration, 0s );
+		animation-timing-function: ease-in-out;
+		animation-iteration-count: infinite;
+		animation-direction: alternate;
+	}
+
+	@keyframes sgs-media-svg-pulse {
+		from {
+			transform: scale( 1 );
+		}
+		to {
+			transform: scale( 1.05 );
+		}
+	}
+
+	@keyframes sgs-media-svg-float {
+		from {
+			transform: translateY( 0 );
+		}
+		to {
+			transform: translateY( -12px );
+		}
+	}
+
+	@keyframes sgs-media-svg-wave {
+		0% {
+			transform: rotate( -2deg );
+		}
+		50% {
+			transform: rotate( 2deg );
+		}
+		100% {
+			transform: rotate( -2deg );
+		}
+	}
+}

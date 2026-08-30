@@ -1,0 +1,16 @@
+/*
+ * media-type atom — no rules.
+ *
+ * `media-type` is a MARKUP discriminator: it decides which element the
+ * renderer emits (`<img>`, `<video>`, or an inline `<svg>`), never a
+ * paintable CSS property. Both value-setters
+ * (`src/components/media/atoms/media-type.js` `css()` and
+ * `includes/media/atoms/media-type.php`
+ * `sgs_media_atom_media_type_css()`) return an empty array by design — there
+ * is nothing here for `.sgs-media-el` to read via `var()`.
+ *
+ * This file exists so the generator (`scripts/generate-media-stylesheet.mjs`)
+ * has a partial to concatenate, matching every other atom's shape, and so a
+ * future reader finds an explicit "intentionally empty" note rather than a
+ * missing file.
+ */

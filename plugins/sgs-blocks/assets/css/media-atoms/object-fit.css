@@ -1,0 +1,24 @@
+/* ── object-fit atom ──────────────────────────────────────────────────────
+ *
+ * One client-facing question ("how should this media fill its box?") backing
+ * TWO properties depending on scope:
+ *   element scope  -> object-fit        (replaced elements: <img>/<video>)
+ *   backdrop scope -> background-size   (a painted background box)
+ *
+ * Neither is tiered: `MEDIA_TIERED_BASES` (MediaElementControls.js)
+ * deliberately excludes `ObjectFit`/`Size` — a fit MODE does not differ per
+ * device the way a crop focus does, so this atom emits the base rule only.
+ *
+ * `initial` as the var() fallback resets each property to its own CSS
+ * initial value (`fill` for object-fit, `auto` for background-size) — the
+ * same value the browser paints when this rule is absent entirely, so an
+ * unset atom never changes rendering.
+ *
+ * ⛔ Not scoped to `--svg`. object-fit/background-size are meaningless on an
+ * inline <svg>'s own geometry either way (a surface adopting this atom for an
+ * SVG tier gets no visible effect, which is correct — see registry.js).
+ */
+.sgs-media-el {
+	object-fit: var( --sgs-media-object-fit, initial );
+	background-size: var( --sgs-media-background-size, initial );
+}

@@ -78,8 +78,24 @@ function code( text ) {
 		.replace( /`(?:[^`\\]|\\.)*`/g, '``' );
 }
 
+/**
+ * Strip COMMENTS only, keeping string literals intact.
+ *
+ * `code()` above also blanks strings, which is right when asking whether an
+ * identifier is USED but wrong when reading a string's VALUE. The disclosure
+ * check needs the value, and running it against the fully-stripped source made
+ * both its controls pass for the same wrong reason - the negative control
+ * caught it, which is the entire argument for having one.
+ */
+function withoutComments( text ) {
+	return text
+		.replace( /\/\*[\s\S]*?\*\//g, ' ' )
+		.replace( /^\s*\/\/.*$/gm, ' ' );
+}
+
 function problemsFor( name, raw ) {
 	const src = code( raw );
+	const withStrings = withoutComments( raw );
 	const out = [];
 
 	// 1. No UNRESOLVABLE import. Which packages those are is DERIVED from
@@ -118,6 +134,32 @@ function problemsFor( name, raw ) {
 				name.replace( /\.js$/, '.control.js' )
 		);
 	}
+
+	// 4. Disclosure states come from a CLOSED vocabulary.
+	//
+	//    Four branches produced FIVE words for three states: 'visible' beside
+	//    'shown', and 'hidden' beside both 'disabled' and 'omitted'. Two names
+	//    for one concept is the exact divergence this whole layer exists to
+	//    remove, reintroduced inside it - and the parity gate could never catch
+	//    it, because it only compares css().
+	//
+	//    'hidden' is worse than a synonym. The contract deliberately separates
+	//    OMITTED (structurally cannot apply - the control genuinely does not
+	//    exist here) from DISABLED (does not apply YET, and carries a reason).
+	//    A third word that could mean either is the ambiguity hiddenReason was
+	//    designed to prevent: a silently absent control is the 'where did my
+	//    setting go?' support call.
+	const STATES = [ 'shown', 'disabled', 'omitted' ];
+	[ ...withStrings.matchAll( /state:\s*'([a-z]+)'/g ) ].forEach( ( m ) => {
+		if ( ! STATES.includes( m[ 1 ] ) ) {
+			out.push(
+				`disclosure state '${ m[ 1 ] }' is not in the contract vocabulary ` +
+					`(${ STATES.join( ' | ' ) }). Use 'omitted' when the control ` +
+					`structurally cannot apply, 'disabled' with a hiddenReason when it ` +
+					`does not apply yet.`
+			);
+		}
+	} );
 
 	// 4. It must still export the pure trio, or it is not an atom.
 	[ 'css', 'validate', 'disclosure' ].forEach( ( fn ) => {
@@ -228,6 +270,24 @@ function selfTest() {
 	ck(
 		'a violation named in a COMMENT is ignored',
 		problemsFor( 'x.js', commented ).length === 0
+	);
+
+	// NEGATIVE CONTROL: an off-vocabulary disclosure state is rejected.
+	// NEGATIVE CONTROL: an off-vocabulary disclosure state is rejected.
+	const badState =
+		pure + "export function d() { return { state: 'visible' }; }\n";
+	ck(
+		'NEGATIVE CONTROL: an off-vocabulary disclosure state is REJECTED',
+		problemsFor( 'x.js', badState ).some( ( p ) => p.includes( "'visible'" ) )
+	);
+	// POSITIVE CONTROL: each contract state is accepted.
+	const goodStates =
+		pure +
+		"export function d() { return [ { state: 'shown' }, " +
+		"{ state: 'disabled' }, { state: 'omitted' } ]; }\n";
+	ck(
+		'POSITIVE CONTROL: shown / disabled / omitted are all accepted',
+		problemsFor( 'x.js', goodStates ).length === 0
 	);
 
 	// A generic-looking `<` that is not JSX must not trip it.

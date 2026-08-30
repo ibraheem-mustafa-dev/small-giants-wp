@@ -40,7 +40,7 @@ const P = PLUGIN.split( BS ).join( '/' );
  * it to make a run go green - a lowered ratchet is how a deleted implementation
  * passes as progress.
  */
-const IMPLEMENTED_ATOMS = 0;
+const IMPLEMENTED_ATOMS = 10;
 
 const { MEDIA_ATOMS, MEDIA_ATOM_IDS } = await import(
 	'file:///' + P + '/src/components/media/atoms/registry.js'
@@ -64,29 +64,82 @@ const jsModule = ( id ) =>
 const phpModule = ( id ) =>
 	path.join( PLUGIN, 'includes', 'media', 'atoms', `${ id }.php` );
 
-/** The attribute set every atom is measured against. */
+/**
+ * The attribute set every atom is measured against.
+ *
+ * IT MUST EXERCISE EVERY ATOM. An earlier fixture carried only presentation
+ * keys, so source / meaning / media-type / video-behaviour / intrinsic all
+ * reported 'identical declarations (0)' - a green tick for comparing two empty
+ * arrays. Branch A flagged it rather than banking the pass. Parity between
+ * nothing and nothing is not parity.
+ *
+ * Values are deliberately NON-DEFAULT wherever a default exists, so an emitter
+ * that silently returns early still shows up as a zero.
+ */
 const FIXTURE = {
 	prefix: '',
 	blockSlug: 'sgs/parity-probe',
 	attributes: {
+		// source - a paintable backdrop image, plus tiers.
+		imageId: 41,
+		imageUrl: 'https://example.test/hero.jpg',
+		imageUrlTablet: 'https://example.test/hero-tablet.jpg',
+		imageUrlMobile: 'https://example.test/hero-mobile.jpg',
+		svgContent: '<svg viewBox="0 0 10 10"></svg>',
+		// media-type
+		mediaType: 'image',
+		// meaning
+		imageAlt: 'A parity probe',
+		imageIsDecorative: false,
+		// intrinsic
+		imageWidth: 1600,
+		imageHeight: 900,
+		// video-behaviour
+		videoAutoplay: true,
+		videoMuted: false,
+		videoPlaysInline: false,
+		videoLoop: true,
+		// svg-presentation
+		svgOpacity: 0.4,
+		svgMinHeight: '220px',
+		svgPosition: 'center',
+		// object-fit / focal-point
 		objectFit: 'contain',
 		objectPosition: '30% 70%',
 		objectPositionMobile: '50% 20%',
+		size: 'cover',
+		position: 'center top',
+		// box-shape
 		mediaSizing: 'ratio',
 		aspectRatio: '16 / 9',
 		shape: 'circle',
 		height: { desktop: 320, tablet: 240 },
 		heightUnit: 'px',
 		minHeight: { desktop: '40vh' },
+		// overlay
 		overlayColour: 'primary',
-		overlayGradient: '',
 		overlayOpacity: 40,
 		overlayBlendMode: 'multiply',
-		size: 'cover',
-		position: 'center top',
 	},
 };
 
+/**
+ * Atoms whose whole job produces CSS, so a ZERO from them is a defect.
+ *
+ * The others legitimately emit nothing and say so in their own docblocks:
+ * `meaning` and `intrinsic` reach the page as HTML attributes, `media-type` is
+ * a markup discriminator, and `video-behaviour` is element state. Asserting
+ * '>0' across the board would be wrong; asserting it nowhere makes every tick
+ * vacuous.
+ */
+const EMITS_CSS = [
+	'source',
+	'svg-presentation',
+	'object-fit',
+	'focal-point',
+	'box-shape',
+	'overlay',
+];
 /** Run one atom's PHP emitter through the CLI and return its declarations. */
 function phpDeclarations( id ) {
 	const fn = `sgs_media_atom_${ id.replace( /-/g, '_' ) }_css`;
@@ -106,6 +159,7 @@ function phpDeclarations( id ) {
 process.stdout.write( 'media atom value-setter parity\n\n' );
 
 let implemented = 0;
+let totalDecls = 0;
 const pending = [];
 
 for ( const id of MEDIA_ATOM_IDS ) {
@@ -146,14 +200,30 @@ for ( const id of MEDIA_ATOM_IDS ) {
 		`JS-only: [${ onlyJs.join( ', ' ) }]  PHP-only: [${ onlyPhp.join( ', ' ) }]`
 	);
 
+	// An atom whose job IS css must emit some against this fixture. Otherwise
+	// 'identical declarations (0)' is a green tick for comparing two empty
+	// arrays - the vacuity branch A caught in the first pass.
+	if ( EMITS_CSS.includes( id ) ) {
+		ck(
+			`${ id }: emits a NON-ZERO declaration set`,
+			a.length > 0,
+			'0 declarations - the emitter returns early, or the fixture lacks the '
+				+ 'keys this atom reads'
+		);
+	}
+
 	// Every declaration must be a custom property. A raw property here would
 	// mean the atom is writing a RULE, which belongs in media-element.css alone.
+	totalDecls += a.length;
 	const raw = a.filter( ( d ) => ! d.trim().startsWith( '--' ) );
 	ck( `${ id }: emits only custom properties, never rules`, ! raw.length,
 		`offending: [${ raw.join( ', ' ) }]` );
 }
 
-process.stdout.write( `\nimplemented: ${ implemented }/${ MEDIA_ATOM_IDS.length }` );
+process.stdout.write(
+	`\nimplemented: ${ implemented }/${ MEDIA_ATOM_IDS.length }` +
+	`  ·  declarations compared: ${ totalDecls }`
+);
 if ( pending.length ) {
 	process.stdout.write( `  ·  pending: ${ pending.join( ', ' ) }` );
 }
