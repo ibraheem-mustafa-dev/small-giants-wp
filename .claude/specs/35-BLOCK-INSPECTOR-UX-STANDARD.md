@@ -1700,11 +1700,14 @@ Regenerate before building any gate on them.
 ### 1. COLOUR
 
 1. **Canonical** — `src/components/DesignTokenPicker.js`. No competitor exists. **Added 2026-08-19:**
-   `src/components/SgsColourPanel.js` is the grouped per-element PANEL that mounts `DesignTokenPicker`
+   `src/components/SgsColourPanel.js` is the grouped panel that mounts `DesignTokenPicker`
    rows (`rows={[{ key, label, states, gradientCapable }]}`) under D621/D622's Styles-tab placement —
-   the vehicle for the rule this whole section states, and the 60-of-83-block adoption route (D665's
-   Track A). It was never named here despite carrying the rule; named now. See
-   `plugins/sgs-blocks/scripts/consistency/golden-controls.json` for its machine-readable shape.
+   the vehicle for the rule this whole section states, and the adoption route (D665's
+   Track A). It was never named here despite carrying the rule; named now. **Adoption
+   RE-VERIFIED 2026-08-30 — the "60-of-83" figure above was stale; re-measured with
+   `grep -l "<SgsColourPanel" plugins/sgs-blocks/src/blocks/*/edit.js | wc -l` → 65 of 83.** See
+   `plugins/sgs-blocks/scripts/consistency/golden-controls.json` for its machine-readable shape, and
+   field 9e/9f below for the placement + omission rule this component enforces.
 2. **Required props** — `label`, `value`, `onChange`. `enableAlpha` and `clearable` already
  **default true** (lines 55, 57), so condition 4 was satisfied by construction, not by call sites.
    `linked` only when the value should track a theme slug (D288). ✅ **`id` defect FIXED** — corrected
@@ -1845,6 +1848,48 @@ table); detection target `role='color'` (50 blocks, 261 rows). ⚠ The "14-block
    Enforced by `inspector-scan` rule `31-golden-colour-control` (advisory; 408 findings as of 2026-08-19 — was 409 before that day's merges; re-derive with `node scripts/inspector-scan/run.js --check` rather than quoting this line across 64
    blocks at introduction, D674). Read the JSON for the exact figures; do not transcribe them here,
    they will drift the same way this field's own numbers did.
+
+9e. ⭐ **THE PANEL-SCOPE RULE — one `SgsColourPanel` per block; a row that doesn't apply is OMITTED,
+   never disabled. Recorded 2026-08-30, closing a gap: this component's own docblock has carried the
+   rule since 2026-08-19; the spec never named it.**
+
+   Every block that mounts `SgsColourPanel` mounts it **exactly once** — verified 2026-08-30 across
+   all 65 adopting blocks (`for f in $(grep -l "<SgsColourPanel" plugins/sgs-blocks/src/blocks/*/edit.js);
+   do grep -c "<SgsColourPanel" "$f"; done | sort | uniq -c` returns a single count of 1 for every
+   file, no block with 0 extra mounts and none with 2+). Field 4b's "an element-scoped colour belongs
+   in its element's TIER 1 panel" therefore does NOT mean a separate literal panel per element — it is
+   satisfied by which ROW a block declares and how that row is grouped/labelled inside the one panel
+   instance, not by multiple `SgsColourPanel` mounts. `SgsColourPanel.js`'s own 2026-08-14 correction
+   states this directly: *"every call site today mounts this component exactly once per block, so
+   that placement question belongs to each caller's `rows` array, not to this file."*
+
+   A colour row that applies only to some variants or configurations of the block (e.g. an icon
+   colour when the marker doesn't render an icon/emoji glyph; a border colour when no border style is
+   selected) is **omitted from the `rows` array**, never rendered-and-disabled and never hidden by
+   CSS. `SgsColourPanel` filters `rows.filter(Boolean)` (`SgsColourPanel.js:109`) so a falsy array
+   entry silently drops before render — this is the mechanical form of 9c's disclosure ban, extended
+   from "never behind a '+' menu" to "never present-but-inapplicable at all". Reference
+   implementation: `sgs/icon-list` (`edit.js:328`), whose own inline comment reads: *"icon colour only
+   applies when the marker renders an icon/emoji glyph; border colour only applies when a border
+   style is selected — both rows are OMITTED (not disabled) when they don't apply, per D609 9c."*
+
+9f. ⭐ **THE ELEMENT-PANEL EXCEPTION — `SgsBorderControl` is the one purpose-built case; no general
+   mechanism exists. Recorded 2026-08-30.**
+
+   9e's "one panel, all rows" holds everywhere except one control. `SgsBorderControl` (§14) pairs a
+   border colour with its non-colour siblings — width, style, radius — on shared popover lines, and
+   renders inside the consuming element's OWN panel rather than the shared `SgsColourPanel`. This
+   works because `SgsBorderControl` is a self-contained composite that renders its colour swatch
+   internally; it does not reuse `SgsColourPanel` or its `rows` shape, so it does not compete with or
+   fragment the single-panel rule above.
+
+   **Building a general element-panel colour mechanism — so a second composite besides
+   `SgsBorderControl` could pair colour with non-colour controls on shared lines — is NOT built and
+   requires a design gate before any block adopts it.** `SgsColourPanel` hardcodes its own
+   `InspectorControls group="styles"` + `PanelBody title="Colour"` (`SgsColourPanel.js:116-121`), and
+   zero blocks today render a colour control directly inside an element panel outside
+   `SgsBorderControl`. Do not build a second one ad hoc per block on the strength of `SgsBorderControl`
+   existing as precedent — get the design gate first.
 
 ### 2. LINK
 

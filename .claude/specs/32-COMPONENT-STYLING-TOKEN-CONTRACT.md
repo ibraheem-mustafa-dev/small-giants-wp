@@ -427,6 +427,60 @@ CSS **generation** is untouched — every helper (`sgs_typography_css_rule`, `sg
 ### (d) LANDED evidence (sandybrown page 8, 2026-07-12)
 `head` mode: one `<style id="sgs-blocks-collected">` in the head, 0 body tags. `file` mode: one `<link id="sgs-blocks-collected-css">` in the head (immutable-cached), 0 body tags, stable under LiteSpeed page cache (loads 4–7 consistent), correct cascade (link after block CSS). Both: hero/button/label-capsule/trial-tag computed values correct at 375/768/1440, D303 residual precedence intact, 0 console errors, editor canvas still styled.
 
+## 6.3 Grid-item defaults cascade — `--sgs-gi-*` (added 2026-08-30, closes a spec gap)
+
+**Gap this closes:** as of 2026-08-30, neither this spec nor Spec 35 mentioned grid-item defaults,
+per-cell styling, or `--sgs-gi-*` anywhere (`grep -ri "sgs-gi-\|grid-item defaults" .claude/specs/32-*.md
+.claude/specs/35-*.md` returned nothing before this edit). This section records the mechanism so a
+future session does not have to re-derive it from `container/style.css` and two withdrawal comments.
+
+**FR-32-12** — A grid CONTAINER parent may set `--sgs-gi-padding` / `--sgs-gi-bg` /
+`--sgs-gi-radius` / `--sgs-gi-border` / `--sgs-gi-shadow` / `--sgs-gi-color` as inline custom
+properties (`render.php`, editor UI: `GridItemDefaultsPanel.js`,
+`src/blocks/container/components/`). The **ONLY** CSS consumer is one rule in
+`src/blocks/container/style.css:8-15`:
+
+```css
+.sgs-container--grid > .sgs-container {
+	padding: var( --sgs-gi-padding );
+	background: var( --sgs-gi-bg );
+	border-radius: var( --sgs-gi-radius );
+	border: var( --sgs-gi-border );
+	box-shadow: var( --sgs-gi-shadow );
+	color: var( --sgs-gi-color );
+}
+```
+
+This is a **direct-child selector** (`>`) keyed on the literal class `.sgs-container`. It only paints
+a grid cell when that cell is ITSELF an element carrying `.sgs-container` — i.e. the cell is a
+container-wrapper-routed block, not any arbitrary InnerBlock. *Done when:* a block's grid-item
+defaults panel is only mounted where this selector can ever match one of its own children.
+
+**Eligibility (the qualifying test):** a block qualifies for a grid-item-defaults panel **only when
+its own grid cells render as `.sgs-container`-classed elements** — today that is `sgs/container`
+alone, nesting its own children. A block whose repeater/grid renders any other markup (a typed
+`items[]` array producing e.g. `<div class="sgs-trust-bar__badge">`, or a composite's own
+private-scoped card markup) can never satisfy the selector, however the panel is wired, because the
+selector's right-hand side never matches.
+
+⛔ **`block_composition.container_kind` (section/layout/content) is IRRELEVANT to this test — do not
+use it as a proxy.** `container_kind` classifies a block in the DRAFT-CLONING layer model (Spec 31
+§13.6: which of the 3-layer OUTER/CONTENT-WIDTH/PER-GRID-ITEM model a composite's wrapper occupies);
+it says nothing about what markup that block's OWN children render into. Conflating the two produced
+a wrong "3 of 17 blocks" eligibility finding in this session (2026-08-30) — `container_kind` was read
+as if it answered "do this block's grid cells carry `.sgs-container`", which is a DOM-shape question
+`container_kind` was never designed to answer. The only correct test is: does the child element carry
+literal class `.sgs-container`? Read the block's own `render.php`/`save.js` output, never the
+`container_kind` column, to answer it.
+
+**Evidence this session removed two dead mounts on this exact defect:** `sgs/trust-bar` and
+`sgs/cta-section` both imported `GridItemDefaultsPanel` while rendering typed-item markup that never
+carries `.sgs-container` — their panels painted ~15 client-facing controls each that changed nothing
+on the frontend. Both withdrawals are recorded inline (`trust-bar/edit.js` around the former mount
+point, `cta-section/edit.js` likewise) with a pointer back to this defect; the declared `gridItem*`
+block.json attrs were left in place (removing them is a stored-content migration, out of scope for a
+dead-UI fix) — only the panel mount was withdrawn.
+
 ## 7. Data model
 
 `settings.custom.{component}Presets` (per client snapshot):
@@ -511,6 +565,13 @@ client snapshots ARE white, which hid the bug), a card painted in `surface` is i
 also painted in `surface`. Proven live on Mama's/sandybrown (`surface:#fbf3dc`), where `sgs/testimonial`'s
 card vanished. This section is the durable fix: every slug gets one meaning, and every future block MUST
 pick its background/text fill by role, not by "whichever slug looked closest".
+
+> **Scope note (added 2026-08-30):** this section governs colour VALUES — which token a block picks
+> and why. For where a colour CONTROL renders in the inspector (one `SgsColourPanel` per block, a
+> row omitted rather than disabled when it doesn't apply, and the one purpose-built exception —
+> `SgsBorderControl`), see `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` PART O §1 fields 9e/9f. That is
+> the UX-placement contract; this section is the token-semantics contract. Keep the two separate —
+> a value question ("which slug?") is not a placement question ("which panel?").
 
 ### 12.1 The three-bucket rule for surface/text pairs
 

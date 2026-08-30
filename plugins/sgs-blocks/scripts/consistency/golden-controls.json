@@ -73,7 +73,8 @@
           "livesAs": "SgsColourPanel row",
           "paintHelper": "sgs_border_gradient_css()",
           "rowShape": "states[] + per-state gradient",
-          "requiredSiblings": "{attr}Gradient per state"
+          "requiredSiblings": "{attr}Gradient per state",
+          "helperAdoption": "The row-builder helper src/components/colour-variants/borderRow.js has ZERO adopters tree-wide as of 2026-08-30 (no `import` of it and no `borderRow(` call anywhere under src/blocks/*/edit.js — verified by grep). Do not assume it is wired into any block; a caller building a border row today constructs the row object inline instead. Fill and text siblings (fillRow.js, textRow.js) ARE adopted — this is a per-helper gap, not a family-wide one."
         },
         "overlay": {
           "livesAs": "SIBLING control (in BackgroundPanel) — NOT a SgsColourPanel row (Bean-ruled 2026-08-22: 'still a variation of the colour control which makes it a sibling control')",
@@ -93,8 +94,8 @@
           "component": "SgsColourPanel",
           "path": "src/components/SgsColourPanel.js",
           "api": "rows={[{ key, label, states, gradientCapable }]}",
-          "adoption": "60 of 83 blocks (measured 2026-08-19)",
-          "note": "The grouped panel. NOT NAMED IN PART O §1 despite being the vehicle for the rule §1 states — spec gap, recorded 2026-08-19."
+          "adoption": "65 of 83 blocks (re-measured 2026-08-30; the earlier '60 of 83' figure was stale — command: grep -l \"<SgsColourPanel\" plugins/sgs-blocks/src/blocks/*/edit.js | wc -l)",
+          "note": "The grouped panel. Named in Part O §1 field 1 (2026-08-19) and its placement/omission rule is now field 9e/9f (added 2026-08-30) — see controls.colour.placement below for the machine-readable form."
         },
         "row": {
           "component": "DesignTokenPicker",
@@ -264,6 +265,26 @@
         "rosterPath": "scripts/consistency/roster.json",
         "whyRosterNotDb": "roster.json is in-repo, DB-derived, regenerated in prebuild and staleness-gated. The canonical DB lives OUTSIDE the repo and two 0-byte decoys sit inside it — a relative resolve lands on an empty file and passes clean forever.",
         "nullSurfacesRule": "A block on disk but ABSENT from roster.json gets surfaces: null (core/roster.js:170,182), and reading .colour off it throws. An advisory rule that throws is SKIPPED, not failed (run.js:189-201) — it goes dark and green. Treat null surfaces as UNKNOWN, NOT CLEAN: emit an informational finding. Self-test cannot catch this (fixtures always get {}, never null)."
+      },
+      "placement": {
+        "_note": "Added 2026-08-30. Answers 'where does this control go?', not 'what shape is it?' (that half is controls.colour.states.shapeRule above). specRef: .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §1 fields 9e/9f.",
+        "onePanelPerBlock": {
+          "rule": "SgsColourPanel is mounted AT MOST ONCE per block. Every colour row that block declares — however many elements those rows belong to — renders inside that one panel instance.",
+          "measured2026_08_30": "Verified across all 65 adopting blocks: 0 blocks mount it 0 times having imported it, 65 mount it exactly once, 0 mount it 2+ times.",
+          "command": "for f in $(grep -l \"<SgsColourPanel\" plugins/sgs-blocks/src/blocks/*/edit.js); do grep -c \"<SgsColourPanel\" \"$f\"; done | sort | uniq -c"
+        },
+        "omissionNotDisabling": {
+          "rule": "A row that does not apply to the block's current variant/config is OMITTED from the `rows` array passed to SgsColourPanel — never rendered disabled, never CSS-hidden.",
+          "mechanism": "SgsColourPanel.js:109 — `(rows || []).filter(Boolean)`. A falsy array entry (e.g. `condition && {...}`) drops silently before render.",
+          "referenceImplementation": "sgs/icon-list, edit.js:328 — icon-colour row omitted unless the marker renders an icon/emoji glyph; border-colour row omitted unless a border style is selected. Cites D609 9c in its own inline comment.",
+          "relationToField9c": "Extends field 9c ('a colour is never an optional ToolsPanelItem, never hideable behind a +') from an APPLICABLE-colour disclosure ban to an INAPPLICABLE-colour existence ban — the row must not be in the array at all, not merely undisclosed."
+        },
+        "elementPanelException": {
+          "component": "SgsBorderControl",
+          "why": "The one purpose-built composite that renders a colour inside an ELEMENT's own panel instead of the shared SgsColourPanel — it pairs border colour with width/style/radius on shared popover lines (Spec 35 §14, D881).",
+          "howItDiffers": "SgsBorderControl owns its colour rendering internally. It does not call SgsColourPanel and does not use the rows={[...]} shape — so it neither competes with nor counts against the one-panel-per-block rule above.",
+          "generalMechanismStatus": "NOT BUILT. SgsColourPanel hardcodes its own InspectorControls group=\"styles\" + PanelBody title=\"Colour\" (SgsColourPanel.js:116-121), and zero blocks render a colour control directly inside an element panel outside SgsBorderControl. A second element-panel colour composite requires a design gate before any block adopts it — do not extend this pattern ad hoc per block."
+        }
       }
     },
     "enum": {
