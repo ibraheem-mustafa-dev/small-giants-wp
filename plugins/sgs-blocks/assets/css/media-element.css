@@ -208,17 +208,17 @@
  * rendering.
  */
 .sgs-media-el {
-	object-position: var( --sgs-media-object-position, initial );
-	background-position: var( --sgs-media-background-position, initial );
-	background-repeat: var( --sgs-media-background-repeat, initial );
-	background-attachment: var( --sgs-media-background-attachment, initial );
+	object-position: var( --sgs-media-object-position, center center );
+	background-position: var( --sgs-media-background-position, center center );
+	background-repeat: var( --sgs-media-background-repeat, no-repeat );
+	background-attachment: var( --sgs-media-background-attachment, scroll );
 }
 
 @media (max-width: 1023px) {
 	.sgs-media-el {
 		object-position: var(
 			--sgs-media-object-position-tablet,
-			var( --sgs-media-object-position, initial )
+			var( --sgs-media-object-position, center center )
 		);
 	}
 }
@@ -229,7 +229,7 @@
 			--sgs-media-object-position-mobile,
 			var(
 				--sgs-media-object-position-tablet,
-				var( --sgs-media-object-position, initial )
+				var( --sgs-media-object-position, center center )
 			)
 		);
 	}
@@ -306,8 +306,20 @@
  * SVG tier gets no visible effect, which is correct — see registry.js).
  */
 .sgs-media-el {
-	object-fit: var( --sgs-media-object-fit, initial );
-	background-size: var( --sgs-media-background-size, initial );
+	/* ⛔ The fallback is `cover`, NOT `initial`, and that is measured rather than
+	   chosen. All four surfaces carrying this atom default to cover:
+	   sgs/media objectFit, sgs/hero splitMediaObjectFit and backgroundSize, and
+	   sgs/container backgroundSize (census `presentation`).
+
+	   `initial` would be a silent visible regression. This rule is (0,1,0) and
+	   fires unconditionally, so it beats sgs/media's own (0,0,0)
+	   `:where( .sgs-media__img ){ object-fit: cover }` default — every existing
+	   block that never set an object-fit would have flipped from cover to
+	   `initial` (= fill) and stretched its image, with no attribute changed and
+	   nothing to grep for. A rule that LOSES is indistinguishable from one that
+	   is absent; a rule that silently WINS is worse. */
+	object-fit: var( --sgs-media-object-fit, cover );
+	background-size: var( --sgs-media-background-size, cover );
 }
 
 /* ── overlay.css ─────────────────────────────────────────────────────── */

@@ -171,6 +171,43 @@ function problemsFor( name, raw ) {
 	return out;
 }
 
+/**
+ * A shared CSS fallback must not silently override a surface's own default.
+ *
+ * The atom rules sit at (0,1,0) on `.sgs-media-el` and fire UNCONDITIONALLY,
+ * so a `var( --x, initial )` fallback beats a block's own `:where()` default at
+ * (0,0,0). `sgs/media` defaults object-fit to `cover` that way; an `initial`
+ * fallback in the shared layer would have flipped every existing block from
+ * cover to fill, with no attribute changed and nothing to grep for.
+ *
+ * ⛔ `initial` / `unset` / `revert` are therefore BANNED as fallbacks here. The
+ * fallback must be the value the surfaces actually default to — measured from
+ * the census, not chosen. A rule that loses is indistinguishable from one that
+ * is absent; a rule that silently wins is worse.
+ */
+function stylesheetFallbackProblems() {
+	const dir = path.join( PLUGIN, 'assets', 'css', 'media-atoms' );
+	if ( ! fs.existsSync( dir ) ) {
+		return [ 'assets/css/media-atoms/ is missing' ];
+	}
+	const out = [];
+	fs.readdirSync( dir )
+		.filter( ( f ) => f.endsWith( '.css' ) )
+		.forEach( ( f ) => {
+			const body = withoutComments(
+				fs.readFileSync( path.join( dir, f ), 'utf8' )
+			);
+			[ ...body.matchAll( /var\(\s*--sgs-media-[a-z0-9-]+\s*,\s*(initial|unset|revert)\s*\)/g ) ].forEach(
+				( m ) =>
+					out.push(
+						`${ f }: var() fallback '${ m[ 1 ] }' silently overrides a ` +
+							`surface's own default - use the value the census measured`
+					)
+			);
+		} );
+	return out;
+}
+
 function run() {
 	const files = logicModules();
 
@@ -184,7 +221,11 @@ function run() {
 		return 1;
 	}
 
-	let bad = 0;
+	const fallbackProblems = stylesheetFallbackProblems();
+	fallbackProblems.forEach( ( p ) => process.stderr.write( `  ⛔ ${ p }
+` ) );
+
+	let bad = fallbackProblems.length;
 	files.forEach( ( f ) => {
 		const problems = problemsFor(
 			f,
@@ -288,6 +329,25 @@ function selfTest() {
 	ck(
 		'POSITIVE CONTROL: shown / disabled / omitted are all accepted',
 		problemsFor( 'x.js', goodStates ).length === 0
+	);
+
+	// The stylesheet fallback rule needs both controls: it must reject a silent
+	// override AND accept a real measured default, or a rule that flagged
+	// everything would look identical here.
+	const fallbackNow = stylesheetFallbackProblems();
+	ck(
+		'the REAL atom stylesheets carry no initial/unset/revert fallback',
+		fallbackNow.length === 0,
+		fallbackNow.join( '; ' )
+	);
+	ck(
+		'a measured default IS present in the generated stylesheet',
+		fs
+			.readFileSync(
+				path.join( PLUGIN, 'assets', 'css', 'media-element.css' ),
+				'utf8'
+			)
+			.includes( '--sgs-media-object-fit, cover' )
 	);
 
 	// A generic-looking `<` that is not JSX must not trip it.

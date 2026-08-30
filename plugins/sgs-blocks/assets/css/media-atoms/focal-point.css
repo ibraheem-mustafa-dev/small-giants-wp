@@ -16,17 +16,17 @@
  * rendering.
  */
 .sgs-media-el {
-	object-position: var( --sgs-media-object-position, initial );
-	background-position: var( --sgs-media-background-position, initial );
-	background-repeat: var( --sgs-media-background-repeat, initial );
-	background-attachment: var( --sgs-media-background-attachment, initial );
+	object-position: var( --sgs-media-object-position, center center );
+	background-position: var( --sgs-media-background-position, center center );
+	background-repeat: var( --sgs-media-background-repeat, no-repeat );
+	background-attachment: var( --sgs-media-background-attachment, scroll );
 }
 
 @media (max-width: 1023px) {
 	.sgs-media-el {
 		object-position: var(
 			--sgs-media-object-position-tablet,
-			var( --sgs-media-object-position, initial )
+			var( --sgs-media-object-position, center center )
 		);
 	}
 }
@@ -37,7 +37,7 @@
 			--sgs-media-object-position-mobile,
 			var(
 				--sgs-media-object-position-tablet,
-				var( --sgs-media-object-position, initial )
+				var( --sgs-media-object-position, center center )
 			)
 		);
 	}
