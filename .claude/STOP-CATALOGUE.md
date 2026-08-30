@@ -2779,3 +2779,48 @@ Used to undo a bad edit mid-session; it reverted to the last commit and silently
 unrelated, uncommitted fix with it. The shared-tree stash ban exists for peers — this is the
 same hazard turned inward. Commit first, or copy to scratch, then revert.
 
+### E18. Earned 2026-08-30 — client-controls track: a green dead-control gate proved consumption, not paint
+
+⛔ **STOP-CONSUMED-IS-NOT-PAINTED — a control fully "consumed" by render.php can still paint
+nothing, because nothing checks that its emitted CSS matches a live selector.** `check-dead-controls`
+only proves the attribute is READ (destructured, interpolated into a CSS string, written to the
+page). It never proves the resulting declaration lands on a selector any rendered element matches.
+On cta-section and trust-bar, ~30 client-facing controls were fully wired end-to-end — read by
+render.php, emitted into a `<style>` block — and painted nothing, because the emitted selector never
+matched the markup (fixed `b59f8cd3f`). The gate was green the entire time; a client had been turning
+dead dials for an unmeasured stretch. **Rule: "consumed" and "painted" are two different claims with
+two different proofs. A dead-control gate closes the first; only a live DOM read (the emitted
+selector actually present on the rendered element, the property actually taking the control's value)
+closes the second.** Sibling of STOP-4 (written not landed) and STOP-A-CSS-RULE-THAT-CANNOT-WORK-
+STILL-LOOKS-CORRECT-IN-SOURCE, sharpened to the specific case of a selector/markup mismatch hiding
+behind a fully-wired attribute pipeline. Nobody has yet swept the other 82 blocks for the same
+shape — treat any block passing `check-dead-controls` as UNVERIFIED for paint until checked live.
+
+⛔ **STOP-DUPLICATE-CONTROL-INSIDE-A-CONFIG-OBJECT — `check-duplicate-controls` CHECK 2 only scans
+JSX control elements; a duplicate writer hiding inside a row/config object literal passed as a prop
+is invisible to it.** CHECK 2 walks the AST for JSX control elements (`<ColorPicker attribute=…/>`
+and its siblings) and compares the attributes they write. A second writer of the same attribute that
+instead lives inside a plain JS object literal — a row definition, a preset config, anything passed
+as a `rows`/`items`/`config` prop rather than rendered as its own JSX control — writes the identical
+attribute through a different code shape the AST walk never visits, so it never enters the
+comparison set at all. **Rule: a duplicate-writer gate that pattern-matches on JSX element shape is
+blind to the same write hiding in a config-object literal — grep for the attribute name as a plain
+string across the whole file (`setAttributes\(.*\b<attr>\b` or the bare key inside an object) as a
+second, shape-independent pass, not just the JSX walk.** Sibling of
+STOP-A-CONTROL-DETECTED-BY-COMPONENT-NAME-NOT-BY-WHAT-IT-DOES (memory
+`feedback_detect_a_control_by_what_it_does_not_its_component_name`) — same root cause, applied to a
+duplicate-detection gate instead of a control-classification one.
+
+**D101 carry-forward receipt for E18.** BEFORE (this file's own canonical commands, run pre-edit):
+bytes 246,728 · `**STOP-` occurrences 288 · DEFINED `STOP-*` entries (`grep -c '^- \*\*STOP-'`) 270 ·
+bullet defences (`grep -cE '^- \*\*'`) 337 · unique `STOP-*` tokens 313 · sections (`## `) 5 · ritual
+questions (§C) 15. Two STOP entries added here (STOP-CONSUMED-IS-NOT-PAINTED,
+STOP-DUPLICATE-CONTROL-INSIDE-A-CONFIG-OBJECT — both formatted `⛔ **STOP-…**` narrative style,
+matching E15-E17's own precedent, not the older `- **STOP-N**` bullet-list style), zero removed,
+zero reworded, zero ritual questions touched. AFTER, same commands post-edit: bytes **250,321**
+(+3,593) · `**STOP-` occurrences **291** (+3) · DEFINED `STOP-*` entries **270** (+0 — expected,
+narrative-style entries don't match the `^- \*\*STOP-` bullet pattern, same as every E15-E17 entry)
+· bullet defences **337** (+0 — same reason) · unique `STOP-*` tokens **317** (+4) · sections **5**
+(+0 — E18 is a `###` sub-section of E, matching the E15/E16/E17 pattern) · ritual questions **15**
+(+0, untouched). Every category >= its BEFORE figure. Nothing SUBTRACTED. PASS.
+
