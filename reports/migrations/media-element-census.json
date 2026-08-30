@@ -1661,5 +1661,602 @@
     "sgs/responsive-logo": "Bean's call. Already good - native <picture><source media>, zero JS, genuinely per-tier with inherit-up. Forcing it onto the shared shape is a DOWNGRADE, and excluding it removes a whole mechanism variant from v1.",
     "sgs/info-box": "Not a media surface. Its mediaType/image/icon are DEAD legacy attrs from before the FR-22-6 InnerBlocks migration; the real media lives in sgs/icon and sgs/media children (M5 S1).",
     "sgs/image-sequence": "Agency-only (inserter:false, needs a Python/ffmpeg CLI no client can run). Its \"media\" is a canvas frame rig with a fail-open thumbnail, not a displayed image (M5 S4)."
+  },
+  "presentation": {
+    "doc": "The PRESENTATION half of the manifest — media atoms 7-10 (object-fit / focal-point / box-shape / overlay). The Wave 1 census above is SOURCE-SIDE ONLY; see this script`s docstring.",
+    "generated_by": "plugins/sgs-blocks/scripts/surveys/census-media-presentation.py",
+    "decision": "D909",
+    "traps": [
+      {
+        "id": "maxwidth-two-owners",
+        "claim": "`maxWidth` is a media attribute",
+        "truth": "Only on sgs/media and sgs/before-after. On hero, container and product-card it is the WRAPPER max-width, paired with `contentWidth` and owned by SGS_Container_Wrapper.",
+        "how_found": "The two surfaces that own it as media have no `contentWidth` attribute at all; the three that do not, do."
+      },
+      {
+        "id": "imageheight-opposite-meanings",
+        "claim": "`imageHeight` is one concept",
+        "truth": "sgs/media declares `integer` (intrinsic, paired with imageWidth, written from the chosen media -- atom 5). sgs/product-card declares `string` (\"180px\", client-facing box-shape control). A helper keyed on the name alone breaks one of them.",
+        "how_found": "Reading the declared type per surface rather than matching the name."
+      },
+      {
+        "id": "positionxy-is-not-focal-point",
+        "claim": "decorative-image positionX/positionY are focal point",
+        "truth": "They are absolute placement of the decoration on its section. Folding them into atom 8 would move the wrong thing.",
+        "how_found": "Both are tier OBJECTS defaulting to {desktop:50} -- a percentage placement pair, not an object-position value."
+      }
+    ],
+    "disagreements": [
+      {
+        "atom": "object-fit",
+        "what": "THREE rival enums for one property",
+        "detail": {
+          "canonical-5": "cover, contain, fill, none, scale-down (MediaSizingPanel, sgs/media, helpers-media-position.php)",
+          "extension-6": "the same 5 plus \"\" = Inherit (extensions/image-controls.js)",
+          "hero-4": "cover, contain, fill, custom -- no none, no scale-down, and `custom` is a sizing mode. hero declares NO enum so it round-trips.",
+          "backdrop-3": "cover, contain, auto (backgroundSize on hero + container)"
+        },
+        "resolution": "D909 -- atom 7 is the canonical five and READS the others. `custom` is reassigned to atom 9 (box-shape)."
+      },
+      {
+        "atom": "focal-point",
+        "what": "TWO storage shapes for one value",
+        "detail": {
+          "xy-object": "sgsObjectPosition {x,y} floats 0-1 (FocalPointPicker native)",
+          "css-string": "objectPosition / splitMediaObjectPosition \"center center\""
+        },
+        "resolution": "Already bridged -- FocalPositionField takes a `format` prop (\"xy\" | \"css-string\") and src/utils/objectPosition.js converts. No new mechanism needed; coverage is the gap."
+      },
+      {
+        "atom": "box-shape",
+        "what": "Ratio format diverges, and height is modelled four ways",
+        "detail": {
+          "ratio-spaced": "\"16 / 9\" (MediaSizingPanel RATIO_OPTIONS, image-sequence)",
+          "ratio-unspaced": "\"16/10\" (card-grid, gallery, post-grid -- free text)",
+          "height-tier-object": "sgs/media, before-after `height` + heightUnit",
+          "height-flat-string": "product-card `imageHeight` = \"180px\", non-responsive"
+        },
+        "resolution": "OPEN -- atom 9 must pick one ratio format and read both."
+      },
+      {
+        "atom": "overlay",
+        "what": "THREE implementations, one bypassing the shared emitter",
+        "detail": {
+          "shared-value-emitter": "sgs_overlay_decls() (helpers-tokens.php:1003) -- 2 callers",
+          "shared-attr-wrapper": "sgs_overlay_decls_for() (helpers-colour-variants.php:316)",
+          "hero-bypass": "mediaOverlayColour / mediaOverlayGradient -- calls neither, and has no opacity, blend mode, hover or tiers"
+        },
+        "resolution": "OPEN -- routing hero`s split overlay through the shared emitter is the cheap win."
+      },
+      {
+        "atom": "overlay",
+        "what": "Inconsistent naming INSIDE one attribute family",
+        "detail": {
+          "prefixed": "backgroundOverlayColour, backgroundOverlayOpacity, backgroundOverlayBlendMode",
+          "unprefixed": "overlayGradient, overlayGradientHover"
+        },
+        "resolution": "Recorded, not fixed -- a rename is a stored-post_content migration (D338). Atom 10 reads both."
+      }
+    ],
+    "surfaces": {
+      "sgs/media": {
+        "control": "src/components/MediaSizingPanel.js (shared) + media/edit.js",
+        "renderer": "src/blocks/media/render.php:288-299",
+        "attr_count": 9,
+        "attrs": {
+          "objectFit": {
+            "atom": "object-fit",
+            "type": "string",
+            "default": "cover",
+            "tier": "desktop",
+            "scope": "element",
+            "enum": [
+              "cover",
+              "contain",
+              "fill",
+              "none",
+              "scale-down"
+            ]
+          },
+          "objectPosition": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "center center",
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "mediaSizing": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": null,
+            "tier": "desktop",
+            "scope": "element",
+            "enum": [
+              "auto",
+              "height",
+              "ratio"
+            ]
+          },
+          "height": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {},
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "heightUnit": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "px",
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "maxHeight": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {},
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "maxHeightUnit": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "px",
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "maxWidth": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {},
+            "tier": "desktop",
+            "scope": "element",
+            "note": "Bounds the media box -- sgs/media has no contentWidth."
+          },
+          "maxWidthUnit": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "px",
+            "tier": "desktop",
+            "scope": "element"
+          }
+        }
+      },
+      "sgs/before-after": {
+        "control": "universal image-controls extension (sgsObjectFit/sgsObjectPosition)",
+        "renderer": "src/blocks/before-after/render.php:262-278 (emits custom-property VALUES)",
+        "attr_count": 4,
+        "attrs": {
+          "height": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {
+              "desktop": 400
+            },
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "heightUnit": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "px",
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "maxWidth": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {},
+            "tier": "desktop",
+            "scope": "element",
+            "note": "Bounds the media box -- no contentWidth on this block."
+          },
+          "maxWidthUnit": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "px",
+            "tier": "desktop",
+            "scope": "element"
+          }
+        }
+      },
+      "sgs/hero": {
+        "control": "hero/edit.js (own rows) + FocalPositionField + BackgroundPanel (shared)",
+        "renderer": "src/blocks/hero/render.php:618-628 + :1098/:1112 (overlay)",
+        "attr_count": 26,
+        "attrs": {
+          "splitMediaObjectFit": {
+            "atom": "object-fit",
+            "type": "string",
+            "default": "cover",
+            "tier": "desktop",
+            "scope": "element",
+            "note": "Declares NO enum, and carries a 4th value \"custom\" that is a SIZING MODE (explicit width/height), not a CSS fit value -- render.php:625 gates object-fit OFF for it. Reassigned to box-shape (D909)."
+          },
+          "backgroundSize": {
+            "atom": "object-fit",
+            "type": "string",
+            "default": "cover",
+            "tier": "desktop",
+            "scope": "backdrop",
+            "enum": [
+              "cover",
+              "contain",
+              "auto"
+            ]
+          },
+          "splitMediaObjectPosition": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "center center",
+            "tier": "desktop",
+            "scope": "element",
+            "note": "The only per-tier focal point in the population. Mobile defaults to \"center 20%\", Tablet to \"\"."
+          },
+          "splitMediaObjectPositionTablet": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "",
+            "tier": "Tablet",
+            "scope": "element"
+          },
+          "splitMediaObjectPositionMobile": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "center 20%",
+            "tier": "Mobile",
+            "scope": "element"
+          },
+          "backgroundPosition": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "center center",
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundRepeat": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "no-repeat",
+            "tier": "desktop",
+            "scope": "backdrop",
+            "enum": [
+              "no-repeat",
+              "repeat",
+              "repeat-x",
+              "repeat-y"
+            ]
+          },
+          "backgroundAttachment": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "scroll",
+            "tier": "desktop",
+            "scope": "backdrop",
+            "enum": [
+              "scroll",
+              "fixed"
+            ]
+          },
+          "splitMediaHeight": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {},
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "splitMediaHeightUnit": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "px",
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "splitMediaWidth": {
+            "atom": "box-shape",
+            "type": "number",
+            "default": null,
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "splitMediaWidthTablet": {
+            "atom": "box-shape",
+            "type": "number",
+            "default": null,
+            "tier": "Tablet",
+            "scope": "element"
+          },
+          "splitMediaWidthMobile": {
+            "atom": "box-shape",
+            "type": "number",
+            "default": null,
+            "tier": "Mobile",
+            "scope": "element"
+          },
+          "splitMediaWidthUnit": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "%",
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "minHeight": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {
+              "mobile": "360px"
+            },
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "bgSvgMinHeight": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayColour": {
+            "atom": "overlay",
+            "type": "string",
+            "default": null,
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayColourHover": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayOpacity": {
+            "atom": "overlay",
+            "type": "number",
+            "default": 30,
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayOpacityTablet": {
+            "atom": "overlay",
+            "type": "number",
+            "default": null,
+            "tier": "Tablet",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayOpacityMobile": {
+            "atom": "overlay",
+            "type": "number",
+            "default": null,
+            "tier": "Mobile",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayBlendMode": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "normal",
+            "tier": "desktop",
+            "scope": "backdrop",
+            "enum": [
+              "normal",
+              "multiply",
+              "screen",
+              "overlay",
+              "darken",
+              "lighten",
+              "color-dodge",
+              "color-burn",
+              "soft-light",
+              "hard-light",
+              "difference",
+              "exclusion"
+            ]
+          },
+          "overlayGradient": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "overlayGradientHover": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "mediaOverlayColour": {
+            "atom": "overlay",
+            "type": "string",
+            "default": null,
+            "tier": "desktop",
+            "scope": "element",
+            "note": "Split-column overlay, SEPARATE from the section overlay. Bypasses sgs_overlay_decls() -- no opacity, no blend mode, no hover, no tiers."
+          },
+          "mediaOverlayGradient": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "element"
+          }
+        }
+      },
+      "sgs/container": {
+        "control": "src/blocks/container/components/BackgroundPanel.js (shared by 8 host blocks)",
+        "renderer": "includes/class-sgs-container-wrapper.php:1746 / :2269 (overlay)",
+        "attr_count": 14,
+        "attrs": {
+          "backgroundSize": {
+            "atom": "object-fit",
+            "type": "string",
+            "default": "cover",
+            "tier": "desktop",
+            "scope": "backdrop",
+            "enum": [
+              "cover",
+              "contain",
+              "auto"
+            ],
+            "note": "The backdrop equivalent of object-fit, and NOT equivalent in vocabulary: cover/contain/auto only. class-sgs-container-wrapper.php:1106-1108 records the impedance mismatch in its own comment."
+          },
+          "backgroundPosition": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "center center",
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundRepeat": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "no-repeat",
+            "tier": "desktop",
+            "scope": "backdrop",
+            "enum": [
+              "no-repeat",
+              "repeat",
+              "repeat-x",
+              "repeat-y"
+            ]
+          },
+          "backgroundAttachment": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "scroll",
+            "tier": "desktop",
+            "scope": "backdrop",
+            "enum": [
+              "scroll",
+              "fixed"
+            ]
+          },
+          "minHeight": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {},
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "bgSvgMinHeight": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayColour": {
+            "atom": "overlay",
+            "type": "string",
+            "default": null,
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayColourHover": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayOpacity": {
+            "atom": "overlay",
+            "type": "number",
+            "default": 30,
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayOpacityTablet": {
+            "atom": "overlay",
+            "type": "number",
+            "default": null,
+            "tier": "Tablet",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayOpacityMobile": {
+            "atom": "overlay",
+            "type": "number",
+            "default": null,
+            "tier": "Mobile",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayBlendMode": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "normal",
+            "tier": "desktop",
+            "scope": "backdrop",
+            "enum": [
+              "normal",
+              "multiply",
+              "screen",
+              "overlay",
+              "darken",
+              "lighten",
+              "color-dodge",
+              "color-burn",
+              "soft-light",
+              "hard-light",
+              "difference",
+              "exclusion"
+            ]
+          },
+          "overlayGradient": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "overlayGradientHover": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "backdrop"
+          }
+        }
+      },
+      "sgs/decorative-image": {
+        "control": "decorative-image/edit.js",
+        "renderer": "sgs_responsive_image() naked mode",
+        "attr_count": 2,
+        "attrs": {
+          "width": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {
+              "desktop": 200
+            },
+            "tier": "desktop",
+            "scope": "element",
+            "note": "Naked mode -- sgs_responsive_image() emits the <img> AS the block root, so there is no ancestor to descend from. positionX/positionY on this block are ABSOLUTE PLACEMENT, not focal point. Trap 3."
+          },
+          "maxWidthPercent": {
+            "atom": "box-shape",
+            "type": "number",
+            "default": 20,
+            "tier": "desktop",
+            "scope": "element"
+          }
+        }
+      },
+      "sgs/product-card": {
+        "control": "universal image-controls extension + product-card/edit.js",
+        "renderer": "src/blocks/product-card/render.php:246 via sgs_media_position_css()",
+        "attr_count": 1,
+        "attrs": {
+          "imageHeight": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "element",
+            "note": "string \"180px\", client-facing, drives --sgs-product-card-image-height. NOT the same concept as sgs/media imageHeight. Non-responsive. Trap 2."
+          }
+        }
+      }
+    }
   }
 }
