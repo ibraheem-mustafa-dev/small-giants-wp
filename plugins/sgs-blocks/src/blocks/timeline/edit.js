@@ -460,7 +460,7 @@ function EntryEditor( { entry, index, onChange, onRemove } ) {
 				<TextareaControl
 					label={ __( 'SVG code', 'sgs-blocks' ) }
 					help={ __(
-						'Paste the SVG markup. Scripts and event handlers are stripped when it renders.',
+						'Paste the SVG markup. Scripts, event handlers and unsafe elements are removed automatically, in the editor as well as on the published page.',
 						'sgs-blocks'
 					) }
 					value={ entry.svg || '' }
