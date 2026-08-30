@@ -821,5 +821,23 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 88
+  },
+  {
+    "id": "generate-media-stylesheet",
+    "cmd": "node scripts/generate-media-stylesheet.mjs",
+    "tier": "generator",
+    "added_D": 909,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 8
+  },
+  {
+    "id": "check-media-stylesheet",
+    "cmd": "node scripts/generate-media-stylesheet.mjs --check",
+    "tier": "fast",
+    "added_D": 909,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 89
   }
 ]

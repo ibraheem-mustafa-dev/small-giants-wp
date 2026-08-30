@@ -1,16 +1,4 @@
 /*
- * GENERATED FILE - DO NOT EDIT.
- *
- * Source:     assets/css/media-atoms/*.css
- * Regenerate: node scripts/generate-media-stylesheet.mjs
- * Gate:       node scripts/generate-media-stylesheet.mjs --check
- *
- * Edit the partial that owns the rule, never this file. A hand edit here is
- * silently discarded by the next build.
- */
-
-/* ── _base.css ───────────────────────────────────────────────────────── */
-/*
  * L4 — the media-element stylesheet. THE RULES LIVE HERE; NOTHING ELSE HOLDS THEM.
  * ==============================================================================
  *
