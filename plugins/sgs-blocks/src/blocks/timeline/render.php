@@ -55,7 +55,19 @@ $heading_level    = in_array( $attributes['headingLevel'] ?? '', $allowed_headin
 	? $attributes['headingLevel']
 	: 'h3';
 $orientation      = $attributes['orientation'] ?? 'vertical';
-$alignment        = $attributes['alignment'] ?? 'alternating';
+// contentLayout / datePosition replace the old alignment / showDateColumn split
+// (Task 3a). $alignment is still computed here — as a LOCAL mapping, never
+// stored — because the entry grid, rail-offset and date-gutter logic below are
+// unchanged and keyed on the old three values; only the STORED attribute and
+// the emitted CSS class name have moved. 'same-side' maps to 'alternating'
+// (Task 3b gives it its own render); 'single-column' maps to 'left' (the
+// mapping's 8px rail-offset difference against the old 'centre' is a known,
+// accepted loss — Task 3a brief, "near-identical").
+$content_layout   = $attributes['contentLayout'] ?? 'alternating';
+$content_layout   = in_array( $content_layout, array( 'alternating', 'same-side', 'single-column' ), true )
+	? $content_layout
+	: 'alternating';
+$alignment        = 'single-column' === $content_layout ? 'left' : 'alternating';
 // Mobile layout — an axis of its own, independent of orientation/alignment
 // (Task 2). 'stacked' is today's collapse, unchanged. 'carousel' is a native
 // horizontal scroll-snap row, ≤767px ONLY — see style.scss's mobile-carousel
@@ -106,14 +118,15 @@ $row_stripes   = ! empty( $attributes['rowStripes'] );
 $stripe_a      = $attributes['rowStripeColourA'] ?? '';
 $stripe_b      = $attributes['rowStripeColourB'] ?? 'surface-alt';
 
-// Sanitise orientation + alignment to avoid arbitrary CSS class injection.
+// Sanitise orientation to avoid arbitrary CSS class injection. $alignment was
+// already derived from the validated $content_layout above, so it needs no
+// separate sanitisation pass.
 $orientation     = in_array( $orientation, array( 'vertical', 'horizontal' ), true ) ? $orientation : 'vertical';
-$alignment       = in_array( $alignment, array( 'left', 'centre', 'alternating' ), true ) ? $alignment : 'alternating';
 $connector_style = in_array( $connector_style, array( 'line', 'dashed', 'dotted' ), true ) ? $connector_style : 'line';
 
 // Date gutter — the date in its OWN column, opposite the content, on every row.
 //
-// ⛔ THIS IS AN AXIS OF ITS OWN, not an alignment value, and that distinction is
+// ⛔ THIS IS AN AXIS OF ITS OWN, not a layout value, and that distinction is
 // the whole point. Researched 2026-08-29 against MUI (`TimelineOppositeContent`),
 // Ant Design (`label`), PrimeReact (`opposite`) and Vuetify (`opposite` slot):
 // 4 of 4 model "which side the content sits on" and "does the date get a gutter"
@@ -121,18 +134,28 @@ $connector_style = in_array( $connector_style, array( 'line', 'dashed', 'dotted'
 // This block used to weld the two together, which is why `left` read as
 // "alternating without the flip" instead of as a layout of its own.
 //
-// `alternating` is inherently two-sided — there is nothing to alternate without a
-// second column — so the toggle is ignored there rather than fighting it.
-// ⛔ NAMED `showDateColumn`, NOT `dateGutter`, and the name is load-bearing.
-// The manifest's `date` element declares `prefix: "date"`, so ANY attribute
-// spelled `date{Something}` is auto-resolved as a CSS property OF that element.
-// `dateGutter` therefore got scanned as if it were a style value for the date
-// text and came back ORPHAN:UNCLASSIFIED, failing check-element-manifest-
-// conformance (gated at zero, no baseline permitted). It is a boolean LAYOUT
-// switch, not a CSS value — exactly the "prefix-string accident" that file's own
-// baseline notes describe for sgs/before-after's dividerColour. Renaming is the
-// principled fix; do not rename it back.
-$date_gutter = ! empty( $attributes['showDateColumn'] ) && 'left' === $alignment;
+// `alternating`/`same-side` are inherently two-sided — there is nothing to
+// alternate without a second column — so the toggle is ignored there rather
+// than fighting it.
+// ⛔ NAMED `showDateColumn`/`datePosition`, NOT `dateGutter`, and the name is
+// load-bearing. The manifest's `date` element declares `prefix: "date"`, so
+// ANY attribute spelled `date{Something}` is auto-resolved as a CSS property
+// OF that element. `dateGutter` therefore got scanned as if it were a style
+// value for the date text and came back ORPHAN:UNCLASSIFIED, failing
+// check-element-manifest-conformance (gated at zero, no baseline permitted).
+// It is a LAYOUT switch, not a CSS value — exactly the "prefix-string
+// accident" that file's own baseline notes describe for sgs/before-after's
+// dividerColour. Renaming is the principled fix; do not rename it back.
+//
+// ⛔ Task 3a mapping — `showDateColumn` was only ever effective when
+// `alignment === 'left'` (render.php pre-Task-3a). `datePosition:own-column`
+// carries the SAME condition forward against its replacement,
+// `contentLayout === 'single-column'`, so a stored `own-column` on an
+// `alternating`/`same-side` timeline stays inert exactly as the old boolean
+// did on `alternating`/`centre` — never a blind 1:1 map (Task 3a brief).
+$date_position = $attributes['datePosition'] ?? 'inline';
+$date_position = in_array( $date_position, array( 'own-column', 'inline' ), true ) ? $date_position : 'inline';
+$date_gutter   = 'own-column' === $date_position && 'single-column' === $content_layout;
 
 
 // WP `color` support values (skip-serialised in block.json → NOT auto-inlined).
@@ -388,7 +411,12 @@ if ( $mobile_decls ) {
 $wrapper_classes   = array( 'sgs-timeline', $uid );
 $wrapper_classes[] = 'sgs-timeline--' . $orientation;
 if ( 'vertical' === $orientation ) {
-	$wrapper_classes[] = 'sgs-timeline--align-' . $alignment;
+	// Emits 'content-alternating' or 'content-single-column' — NOT the raw
+	// $content_layout value. 'same-side' folds into 'content-alternating'
+	// here (Task 3a; $alignment already carries that fold, see above) because
+	// no CSS exists yet for a distinct 'content-same-side' shape — Task 3b
+	// builds that layout and this fold point is where it plugs in.
+	$wrapper_classes[] = 'sgs-timeline--content-' . ( 'left' === $alignment ? 'single-column' : 'alternating' );
 }
 $wrapper_classes[] = 'sgs-timeline--connector-' . $connector_style;
 if ( $progress_fill ) {

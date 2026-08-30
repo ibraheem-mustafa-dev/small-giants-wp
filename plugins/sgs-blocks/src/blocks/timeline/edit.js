@@ -122,10 +122,22 @@ const REVEAL_TRIGGER_OPTIONS = [
 	},
 ];
 
-const ALIGNMENT_OPTIONS = [
-	{ label: __( 'Alternating', 'sgs-blocks' ), value: 'alternating' },
-	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-	{ label: __( 'Centre', 'sgs-blocks' ), value: 'centre' },
+// Task 3a — replaces the old ALIGNMENT_OPTIONS ('alternating' / 'left' /
+// 'centre'). 'same-side' is NEW and SELECTABLE but renders identically to
+// 'alternating' for now — Task 3b gives it its own layout, see render.php's
+// content-class fold comment. 'centre' is retired: it folded into
+// 'single-column' losing only an 8px rail-offset bug (Task 3a brief).
+const CONTENT_LAYOUT_OPTIONS = [
+	{ label: __( 'Alternating sides', 'sgs-blocks' ), value: 'alternating' },
+	{ label: __( 'Same side', 'sgs-blocks' ), value: 'same-side' },
+	{ label: __( 'Single column', 'sgs-blocks' ), value: 'single-column' },
+];
+
+// Task 3a — replaces the old boolean `showDateColumn`. Only takes effect when
+// contentLayout is 'single-column' (mirrors render.php's date_gutter guard).
+const DATE_POSITION_OPTIONS = [
+	{ label: __( 'In its own column', 'sgs-blocks' ), value: 'own-column' },
+	{ label: __( 'Next to the title', 'sgs-blocks' ), value: 'inline' },
 ];
 
 // Mobile layout is an axis of its own (Task 2) — independent of orientation
@@ -416,7 +428,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		style,
 		orientation,
-		alignment,
+		contentLayout,
 		mobileLayout,
 		entries,
 		headingLevel,
@@ -430,7 +442,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		revealStagger,
 		milestoneMediaWidth,
 		milestoneMediaDecorative,
-		showDateColumn,
+		datePosition,
 		rowStripes,
 		rowStripeColourA,
 		rowStripeColourB,
@@ -446,17 +458,20 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderStyle,
 	} = attributes;
 
-	// Build preview class list mirroring render.php.
+	// Build preview class list mirroring render.php. 'same-side' folds into
+	// 'content-alternating' — no CSS exists yet for a distinct shape (Task 3a;
+	// Task 3b gives it its own layout).
+	const contentLayoutClass = 'single-column' === contentLayout ? 'single-column' : 'alternating';
 	const previewClasses = [
 		'sgs-timeline',
 		`sgs-timeline--${ orientation }`,
-		orientation === 'vertical' ? `sgs-timeline--align-${ alignment }` : '',
+		orientation === 'vertical' ? `sgs-timeline--content-${ contentLayoutClass }` : '',
 		`sgs-timeline--connector-${ connectorStyle }`,
 		connectorProgressFill ? 'sgs-timeline--connector-progress' : '',
 		'sgs-timeline--media-under',
 		rowStripes ? 'sgs-timeline--row-stripes' : '',
 		'carousel' === mobileLayout ? 'sgs-timeline--mobile-carousel' : '',
-		orientation === 'vertical' && alignment === 'left' && showDateColumn
+		orientation === 'vertical' && contentLayout === 'single-column' && datePosition === 'own-column'
 			? 'sgs-timeline--date-gutter'
 			: '',
 		// ⛔ `--reveal-connector` is mirrored but `is-js` is NOT. The hidden
@@ -709,30 +724,32 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ orientation === 'vertical' && (
 						<SelectControl
-							label={ __( 'Alignment', 'sgs-blocks' ) }
-							value={ alignment }
-							options={ ALIGNMENT_OPTIONS }
-							onChange={ ( val ) => setAttributes( { alignment: val } ) }
+							label={ __( 'How entries line up', 'sgs-blocks' ) }
+							value={ contentLayout }
+							options={ CONTENT_LAYOUT_OPTIONS }
+							onChange={ ( val ) => setAttributes( { contentLayout: val } ) }
 							help={ __( 'Alternating flips content left/right on each entry.', 'sgs-blocks' ) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
 					) }
-					{ /* Date gutter is an AXIS OF ITS OWN, not an alignment value.
-					     MUI, Ant Design, PrimeReact and Vuetify all model it as a
-					     separate slot/prop — none forces a gutter when you pick
-					     "left". Shown only for Left, because Alternating is
-					     inherently two-sided and Centre is a single column. */ }
-					{ orientation === 'vertical' && alignment === 'left' && (
-						<ToggleControl
-							label={ __( 'Date in its own column', 'sgs-blocks' ) }
-							checked={ showDateColumn }
-							onChange={ ( val ) => setAttributes( { showDateColumn: val } ) }
+					{ /* Date position is an AXIS OF ITS OWN, not a content-layout
+					     value. MUI, Ant Design, PrimeReact and Vuetify all model it
+					     as a separate slot/prop — none forces a gutter when you pick
+					     "Single column". Shown only for Single column, because
+					     Alternating/Same side are inherently two-sided. */ }
+					{ orientation === 'vertical' && contentLayout === 'single-column' && (
+						<SelectControl
+							label={ __( 'Date position', 'sgs-blocks' ) }
+							value={ datePosition }
+							options={ DATE_POSITION_OPTIONS }
+							onChange={ ( val ) => setAttributes( { datePosition: val } ) }
 							help={ __(
-								'Off: the line sits at the far left and everything reads down one column. On: dates get their own column so they can be scanned on their own.',
+								"On phones the date always sits above the title, so there's room for it.",
 								'sgs-blocks'
 							) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 					<ToggleControl

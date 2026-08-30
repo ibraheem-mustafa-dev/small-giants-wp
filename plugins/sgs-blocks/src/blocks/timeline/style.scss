@@ -142,10 +142,10 @@
 	}
 }
 
-// Left/centre alignment move the line to the left edge, mirroring the ::before
-// variants this replaces.
-.sgs-timeline--vertical.sgs-timeline--align-left .sgs-timeline__progress,
-.sgs-timeline--vertical.sgs-timeline--align-centre .sgs-timeline__progress {
+// Single-column layout moves the line to the left edge, mirroring the ::before
+// variant this replaces. (Task 3a: the old align-centre sibling selector here
+// is deleted, not renamed — centre folded into single-column, D-Task-3a brief.)
+.sgs-timeline--vertical.sgs-timeline--content-single-column .sgs-timeline__progress {
 	left: var(--sgs-timeline-rail-offset, var(--sgs-node-size));
 	transform: none;
 }
@@ -445,15 +445,9 @@
 		background-color: var(--sgs-connector-colour);
 	}
 
-	// Left-aligned: line sits on the left edge.
-	&.sgs-timeline--align-left::before {
+	// Single column: line sits on the left edge.
+	&.sgs-timeline--content-single-column::before {
 		left: var(--sgs-timeline-rail-offset, var(--sgs-node-size));
-		transform: none;
-	}
-
-	// Centre-aligned: line sits on the left edge (entries all right-side).
-	&.sgs-timeline--align-centre::before {
-		left: var(--sgs-node-size);
 		transform: none;
 	}
 }
@@ -500,7 +494,7 @@
 }
 
 // Alternating: odd entries — date left, content right.
-.sgs-timeline--vertical.sgs-timeline--align-alternating .sgs-timeline__entry:nth-child(odd) {
+.sgs-timeline--vertical.sgs-timeline--content-alternating .sgs-timeline__entry:nth-child(odd) {
 	.sgs-timeline__date {
 		grid-column: 1;
 		text-align: right;
@@ -520,7 +514,7 @@
 }
 
 // Alternating: even entries — content left, date right.
-.sgs-timeline--vertical.sgs-timeline--align-alternating .sgs-timeline__entry:nth-child(even) {
+.sgs-timeline--vertical.sgs-timeline--content-alternating .sgs-timeline__entry:nth-child(even) {
 	.sgs-timeline__date {
 		grid-column: 3;
 		grid-row: 1;
@@ -541,7 +535,7 @@
 }
 
 // Left-aligned: date | node | content all on left side.
-// ── align-left ────────────────────────────────────────────────────────────────
+// ── content-single-column ────────────────────────────────────────────────────────────────
 //
 // TWO SHAPES, chosen by an axis of its own rather than by the alignment value.
 // Researched 2026-08-29 against MUI (`TimelineOppositeContent`), Ant Design
@@ -552,7 +546,7 @@
 // This block used to weld them together — `left` always drew a date column — so
 // a single row of `left` was the same shape as a row of `alternating`, and the
 // variant earned nothing. Measured before the split: alternating row 1 had
-// date 0->689 / content 737->1425; align-left had date 0->180 / content
+// date 0->689 / content 737->1425; content-single-column had date 0->180 / content
 // 228->1425. Same idea, different column widths.
 //
 // DEFAULT (no gutter) — the rail is hard left and EVERYTHING sits to its right,
@@ -560,7 +554,7 @@
 // timeline, it is what every variant collapses to on mobile anyway, and it keeps
 // DOM order identical to visual order on every row (WCAG 1.3.2), which the
 // side-flipping gutter is exactly the thing that tempts you to break.
-.sgs-timeline--vertical.sgs-timeline--align-left .sgs-timeline__entry {
+.sgs-timeline--vertical.sgs-timeline--content-single-column .sgs-timeline__entry {
 	grid-template-columns: auto 1fr;
 
 	.sgs-timeline__node {
@@ -591,16 +585,16 @@
 }
 
 // The rail sits on the NODE, which is now column 1.
-.sgs-timeline--vertical.sgs-timeline--align-left {
+.sgs-timeline--vertical.sgs-timeline--content-single-column {
 	--sgs-timeline-rail-offset: calc(var(--sgs-node-size) / 2);
 }
 
-// OPT-IN (`showDateColumn`) — the "opposite content" pattern: the date in its own
+// OPT-IN (`datePosition: own-column`) — the "opposite content" pattern: the date in its own
 // fixed column on every row, content in another, rail between. Named
 // `oppositeContent` by MUI and shipped as a separate variant ("Side timestamps")
 // by Preline. Use it when the dates must be scannable on their own — a
 // changelog, an audit log, a project history.
-.sgs-timeline--vertical.sgs-timeline--align-left.sgs-timeline--date-gutter {
+.sgs-timeline--vertical.sgs-timeline--content-single-column.sgs-timeline--date-gutter {
 	// Back to the node column's centre, since the date column is in front of it.
 	--sgs-timeline-rail-offset: calc(
 		var(--sgs-timeline-gutter-width, 100px) +
@@ -633,30 +627,10 @@
 	}
 }
 
-// Centre-aligned: single-column layout with centred node line.
-.sgs-timeline--vertical.sgs-timeline--align-centre .sgs-timeline__entry {
-	grid-template-columns: auto 1fr;
-	grid-template-rows: auto auto;
-
-	.sgs-timeline__date {
-		grid-column: 2;
-		grid-row: 1;
-		text-align: left;
-		padding-left: var(--wp--preset--spacing--20, 1rem);
-	}
-
-	.sgs-timeline__node {
-		grid-column: 1;
-		grid-row: 1 / 3;
-		align-self: start;
-	}
-
-	.sgs-timeline__content {
-		grid-column: 2;
-		grid-row: 2;
-		text-align: left;
-	}
-}
+// Task 3a: the old align-centre single-column entry rule (a near-duplicate of
+// content-single-column, differing only by the rail-offset bug) is DELETED here, not
+// renamed — centre folds into content-single-column, which reuses the
+// content-single-column shape below.
 
 // =============================================================================
 // HORIZONTAL orientation
@@ -1048,10 +1022,10 @@
 	// here and both halves read it.
 	//
 	// The value is HALF the node, not a whole node: column 1 is `auto`, sized to
-	// the 16px node, so the dots' centre is at 8px. `align-left` already derives
-	// it this way (:595). The old `var(--sgs-node-size)` put the line on the
+	// the 16px node, so the dots' centre is at 8px. `content-single-column` already derives
+	// it this way (:589). The old `var(--sgs-node-size)` put the line on the
 	// node's right EDGE, 8px off the dots it is meant to thread.
-	.sgs-timeline--vertical.sgs-timeline--align-alternating {
+	.sgs-timeline--vertical.sgs-timeline--content-alternating {
 		--sgs-timeline-rail-offset: calc(var(--sgs-node-size) / 2);
 
 		&::before {
@@ -1152,7 +1126,7 @@
 // mobile re-placement for has-media entries lives further down in the
 // `@media (max-width: 767px)` block.
 @media (min-width: 768px) {
-	.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--align-alternating {
+	.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--content-alternating {
 		.sgs-timeline__entry--has-media {
 			grid-template-rows: auto auto;
 
@@ -1196,11 +1170,11 @@
 	}
 }
 
-// align-left: column 1 is `auto` and sized to the date text, so media dropped
+// content-single-column: column 1 is `auto` and sized to the date text, so media dropped
 // into it would be squeezed to the width of "2019". Widen column 1 to the media
-// width — and ONLY when the timeline actually has media, so a plain align-left
+// width — and ONLY when the timeline actually has media, so a plain content-single-column
 // timeline keeps its tight date column.
-.sgs-timeline--vertical.sgs-timeline--align-left.sgs-timeline--date-gutter:has(.sgs-timeline__entry--has-media) {
+.sgs-timeline--vertical.sgs-timeline--content-single-column.sgs-timeline--date-gutter:has(.sgs-timeline__entry--has-media) {
 	// In GUTTER mode the media shares the date's column, so that column has to be
 	// wide enough for a picture rather than for the word "2019".
 	--sgs-timeline-gutter-width: var(--sgs-timeline-media-width, 180px);
@@ -1228,9 +1202,9 @@
 
 // Gutter mode only: the media joins the DATE in column 1, under it. Without the
 // gutter there is no second column to be opposite, and the media simply flows
-// down the single content column in DOM order — which the base align-left rule
+// down the single content column in DOM order — which the base content-single-column rule
 // already does, with no placement needed here.
-.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--align-left.sgs-timeline--date-gutter {
+.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--content-single-column.sgs-timeline--date-gutter {
 	.sgs-timeline__entry--has-media {
 		grid-template-rows: auto auto;
 
@@ -1254,33 +1228,9 @@
 	}
 }
 
-// align-centre has no "opposite side" — it is a single column with the node
-// beside it. The media therefore sits BETWEEN the date and the content rather
-// than opposite anything, and the node spans all three rows.
-.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--align-centre {
-	.sgs-timeline__entry--has-media {
-		grid-template-rows: auto auto auto;
-
-		.sgs-timeline__node {
-			grid-row: 1 / span 3;
-		}
-
-		.sgs-timeline__date {
-			grid-row: 1;
-			grid-column: 2;
-		}
-
-		.sgs-timeline__media-slot {
-			grid-row: 2;
-			grid-column: 2;
-		}
-
-		.sgs-timeline__content {
-			grid-row: 3;
-			grid-column: 2;
-		}
-	}
-}
+// Task 3a: the old align-centre milestone-media rule (three-row media-between-
+// date-and-content layout) is DELETED here, not renamed — centre folds into
+// content-single-column, which uses the media-under-date shape above instead.
 
 // ── Alternating A/B row bands ─────────────────────────────────────────────────
 //
@@ -1399,8 +1349,8 @@
 // deliberately — not a typo, and not (0,4,0) vs the ENTRY selector either
 // (a figure this comment used to state and got wrong). The real ceiling to
 // beat is a DESCENDANT selector, not the entry selector itself: the
-// alternating mobile collapse at :1067
-// (`.sgs-timeline--vertical.sgs-timeline--align-alternating` (2 classes)
+// alternating mobile collapse at :1041
+// (`.sgs-timeline--vertical.sgs-timeline--content-alternating` (2 classes)
 // ` .sgs-timeline__entry:nth-child(odd|even)` (2) ` .sgs-timeline__date` (1)
 // = **(0,5,0)**). A 4x-repeated carousel selector + `.sgs-timeline__date`
 // is ALSO (0,5,0) — an exact tie, resolved only by this block being

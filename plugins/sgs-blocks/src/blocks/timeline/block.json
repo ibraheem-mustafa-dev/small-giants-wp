@@ -144,9 +144,11 @@
 			"enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
 			"default": "h3"
 		},
-		"alignment": {
+		"contentLayout": {
 			"type": "string",
-			"default": "alternating"
+			"enum": [ "alternating", "same-side", "single-column" ],
+			"default": "alternating",
+			"description": "How entries line up. Replaces the old `alignment` attribute (Task 3a) — 'alternating' and 'single-column' render identically to the old 'alternating'/'left'+'centre'. 'same-side' is SELECTABLE but renders identically to 'alternating' for now — Task 3b gives it its own layout."
 		},
 		"mobileLayout": {
 			"type": "string",
@@ -217,9 +219,11 @@
 			"type": "string",
 			"default": "180px"
 		},
-		"showDateColumn": {
-			"type": "boolean",
-			"default": false
+		"datePosition": {
+			"type": "string",
+			"enum": [ "own-column", "inline" ],
+			"default": "inline",
+			"description": "Replaces the old `showDateColumn` boolean (Task 3a). 'own-column' only takes effect when contentLayout is 'single-column' — on phones the date always sits above the title, so there's room for it."
 		},
 		"milestoneMediaDecorative": {
 			"type": "boolean",
@@ -301,7 +305,7 @@
 	"example": {
 		"attributes": {
 			"orientation": "vertical",
-			"alignment": "alternating",
+			"contentLayout": "alternating",
 			"entries": [
 				{
 					"date": "2018-01-01",
