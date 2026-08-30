@@ -31,6 +31,7 @@ import IconGrid from './IconGrid';
 import IconPreview, { withInlineFillStroke } from './IconPreview';
 import { loadLucide, loadEmoji, loadWpIcons, ICON_SOURCES, DASHICONS } from './icon-data';
 import './editor.css';
+import { sanitiseSvg } from '../../utils';
 
 /**
  * Number of cells in the initial render window and each incremental load.
@@ -255,7 +256,7 @@ export default function IconPicker( {
 					<span
 						className="sgs-icon-grid__svg"
 						// eslint-disable-next-line react/no-danger
-						dangerouslySetInnerHTML={ { __html: withInlineFillStroke( map[ n ] ) } }
+						dangerouslySetInnerHTML={ { __html: sanitiseSvg( withInlineFillStroke( map[ n ] ) ) } }
 					/>
 				),
 			} ) );
@@ -282,7 +283,7 @@ export default function IconPicker( {
 						<span
 							className="sgs-icon-grid__svg"
 							// eslint-disable-next-line react/no-danger
-							dangerouslySetInnerHTML={ { __html: withInlineFillStroke( wpIcons[ s ] ) } }
+							dangerouslySetInnerHTML={ { __html: sanitiseSvg( withInlineFillStroke( wpIcons[ s ] ) ) } }
 						/>
 					),
 				} )

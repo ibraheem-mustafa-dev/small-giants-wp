@@ -29,6 +29,7 @@ import {
 } from '../../components';
 import BooleanResponsiveControl from './BooleanResponsiveControl';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { sanitiseSvg } from '../../utils';
 
 /**
  * Allowed CSS length units for the media styling controls. Mirrors the
@@ -1546,7 +1547,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<div
 					className={ svgClass }
 					aria-hidden="true"
-					dangerouslySetInnerHTML={ { __html: svgContent } }
+					dangerouslySetInnerHTML={ { __html: sanitiseSvg( svgContent ) } }
 				/>
 			</figure>
 		);

@@ -23,6 +23,7 @@ import {
 	SgsBorderControl,
 } from '../../components';
 import { colourVar } from '../../utils';
+import { sanitiseSvg } from '../../utils';
 
 // ── Select options ──────────────────────────────────────────────────────────
 
@@ -1188,7 +1189,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										   matters for safety and it runs the same
 										   wp_kses() allowlist as every other SGS
 										   SVG surface (helpers-tier-media.php). */
-										dangerouslySetInnerHTML={ { __html: entry.svg } }
+										dangerouslySetInnerHTML={ { __html: sanitiseSvg( entry.svg ) } }
 									/>
 								) : (
 									<MediaPreview entry={ entry } />

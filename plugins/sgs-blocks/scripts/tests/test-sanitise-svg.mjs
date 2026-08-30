@@ -68,12 +68,57 @@ check( 'title/desc survive (a11y)', '<svg><title>Logo</title><desc>Co</desc><pat
 check( 'animate survives', '<svg><path d="M0 0"><animate attributeName="opacity" from="0" to="1" dur="1s"/></path></svg>', ( o ) => /<animate/i.test( o ) && /attributename="opacity"/i.test( o ) );
 check( '<a> survives as a styling element', '<svg><a class="x"><path d="M0 0"/></a></svg>', ( o ) => /<a[ >]/i.test( o ) && /<path/i.test( o ) );
 
+// The sanitiser is mounted on the IconPicker/IconPreview surfaces too, which
+// render BUNDLED Lucide and WP icons rather than operator input. Those carry a
+// different (supply-chain) threat, and the real risk of sanitising them is
+// COSMETIC: strip an attribute the icon set relies on and every icon in the
+// library silently degrades. Assert the common shapes survive intact.
+process.stdout.write( '\nLIBRARY ICONS - must pass through UNDAMAGED\n' );
+
+const LUCIDE_STAR =
+	'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 9 22 9 17 14 19 21 12 17 5 21 7 14 2 9 9 9"/></svg>';
+const LUCIDE_TRUCK =
+	'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 18V6a2 2 0 0 0-2-2H4"/><circle cx="7" cy="18" r="2"/><line x1="9" y1="18" x2="15" y2="18"/></svg>';
+const WP_ICON =
+	'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2L2 22h20z"/></svg>';
+
+const tagCount = ( s ) => ( s.match( /<[a-z]+/gi ) || [] ).length;
+
+check(
+	'lucide (stroke-based) survives: polygon + points + stroke-width',
+	LUCIDE_STAR,
+	( o ) =>
+		tagCount( o ) === tagCount( LUCIDE_STAR ) &&
+		/points="12 2/.test( o ) &&
+		/stroke-width="2"/.test( o ) &&
+		/stroke-linecap="round"/.test( o )
+);
+check(
+	'lucide multi-shape survives: path + circle + line',
+	LUCIDE_TRUCK,
+	( o ) =>
+		tagCount( o ) === tagCount( LUCIDE_TRUCK ) &&
+		/<path/i.test( o ) &&
+		/<circle/i.test( o ) &&
+		/<line/i.test( o )
+);
+check(
+	'wp icon (fill-based) survives',
+	WP_ICON,
+	( o ) => tagCount( o ) === tagCount( WP_ICON ) && /fill="currentColor"/.test( o )
+);
+check(
+	'viewBox survives (dropping it collapses every icon to 0x0)',
+	LUCIDE_STAR,
+	( o ) => /viewbox="0 0 24 24"/i.test( o )
+);
+
 process.stdout.write( '\nEDGE CASES\n' );
 check( 'empty string', '', ( o ) => '' === o );
 check( 'non-string', null, ( o ) => '' === o );
 check( 'undefined', undefined, ( o ) => '' === o );
 
-const total = 20;
+const total = 24;
 process.stdout.write(
 	`\n${ failures ? 'FAIL' : 'PASS' } - ${ total - failures }/${ total } assertions\n`
 );

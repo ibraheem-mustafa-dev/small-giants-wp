@@ -8,6 +8,7 @@
 
 import { useState, useEffect } from '@wordpress/element';
 import { loadLucide, loadWpIcons } from './icon-data';
+import { sanitiseSvg } from '../../utils';
 
 /**
  * Every icon in `lucide-icons.json`/`wp-icons.json` carries its own explicit
@@ -112,7 +113,7 @@ export default function IconPreview( { source, name, size = 24 } ) {
 				style={ box }
 				aria-hidden="true"
 				// eslint-disable-next-line react/no-danger
-				dangerouslySetInnerHTML={ { __html: svg } }
+				dangerouslySetInnerHTML={ { __html: sanitiseSvg( svg ) } }
 			/>
 		);
 	}

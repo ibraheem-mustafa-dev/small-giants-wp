@@ -53,6 +53,7 @@ import {
 	ShapeDividersPanel,
 } from '../container/components/ContainerWrapperControls';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { sanitiseSvg } from '../../utils';
 
 // ── Phase 1 constant options ─────────────────────────────────────────────────
 // BORDER_STYLE_OPTIONS (the local 4-option none/solid/dashed/dotted list) was removed
@@ -1704,7 +1705,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									style={ imagePreviewStyle }
 									aria-hidden="true"
 									dangerouslySetInnerHTML={ {
-										__html: splitSvg,
+										__html: sanitiseSvg( splitSvg ),
 									} }
 								/>
 							) }
