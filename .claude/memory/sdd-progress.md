@@ -327,3 +327,163 @@ Task 1: complete (commits 81036c832 fix + ca1f14789 gate allowlist, review round
   non-blocking, next-touch items).
 TASK 1 COMPLETE. Base 0ee282b0f -> 76d4ba365. Single-task run — task review served as the
   final review; no separate whole-branch review needed.
+
+---
+
+# SDD progress — sgs/timeline layered control model, 2026-08-30
+Base commit: b59f8cd3f (main)
+Plan: .claude/plans/2026-08-30-timeline-layered-control-model-design.md (qc-council reviewed,
+  2 raters, both REQUEST REVISION, all required revisions applied before build started)
+Owner approved all four §10 recommendations: block-private fx wiring, tablet follows desktop,
+  entryGap as a single length, contentSide built as part of step 3.
+
+BASELINE measured live pre-dispatch (375px, media-bearing align-alternating):
+  date gridArea = "1 / 1"   entry gridTemplateColumns = "267.969px 76.0312px"
+  Predicted post-fix: gridArea "2 / 2", narrow first track.
+  Negative control at 1440px: gridArea must STAY "1 / 1" odd / "1 / 3" even.
+
+Task 1 (scope media placement rules to min-width 768px): implementer dispatched (sonnet,
+  overriding the router's haiku pick — R4 shared entry grid makes a wrong edit silently break
+  FR-38-35, which is design judgement not transcription).
+Task 1: implementer DONE (f6188b027, 73/73 green). CONTROLLER-MEASURED LIVE post-deploy:
+  media-under FIXED at 375px (dateArea 1/1 -> 2/2, cols 267.969/76.03 -> 16px/328px, content
+  76 -> 328px). Negative control at 1440px PASSED unchanged (odd 1/1, even 1/3, cols
+  688.5/16/688.5) and rail centre === node centre 713 on all four timelines, so R4's
+  FR-38-35 risk did not materialise.
+  ⚠ media-overlay NOT fixed (dateArea still 2/1, cols still 180px/164px, content 164px).
+Task 1 review (opus, cross-model): SPEC ❌ + Changes Required.
+  C1 the --media-overlay exclusion is FALSE. Proven from source: the overlay DESKTOP rule
+    (style.scss:1328-1333, (0,5,0), no media query) beats the overlay's OWN mobile re-placement
+    (:1473-1476, (0,4,0)) — so that mobile block is DEAD CODE for alternating timelines. The
+    implementer cited a code comment at :1443-1444 that is factually wrong about the block nine
+    lines below it, instead of computing specificity the way its brief demonstrated.
+  I2 the brief's stated gate ("exact grep commands and their output") was asserted, not shown.
+  I3 the false exclusion claim now stands in a verdict:PASS visual-diff report as project fact.
+  M4 fractional band 767.0<w<768.0 has no placement rule (cosmetic; dots proven safe there).
+  M5 vendor/ carries 30 dev packages after the implementer's composer install — CONTROLLER
+    CHECKED AND DELIBERATELY DID NOT "FIX" IT: build-deploy.py regenerates the autoloader
+    --no-dev for the tarball and restores dev-included locally in a finally block, and its
+    docstring records that a past session's hand-fix REOPENED the 500. Deploy verified clean.
+  ⭐ Reviewer verified the re-indent is byte-identical apart from the media wrapper (no dropped
+    declarations), and found an UNCLAIMED WIN: below 768px the node's mobile `grid-row:1/span 3`
+    had been losing to the unscoped desktop `span 2`, so the mobile 3-row layout was broken and
+    is now correct.
+Task 1 fix pass: dispatched (C1 + I2 + I3; M4/M5 triaged as non-blocking).
+Task 1 fix pass: COMPLETE (da618882c, 73/73 green). CONTROLLER-VERIFIED LIVE, not diff-read.
+  375px, ALL FOUR alternating timelines now identical: dateArea "2/2", cols "16px 328px",
+  content 328px, node 8 / rail 9 (1px rounding on a 2px rail). Overlay went 164px -> 328px.
+  1440px negative control UNCHANGED: odd 1/1, even 1/3, cols 688.5/16/688.5, rail===node 713.
+  The ASYMMETRIC SPLIT is proven correct: the overlay date keeps bg rgb(251,243,220),
+  radius 4px, z-index 2, box-shadow and padding at BOTH 375px and 1440px — appearance stayed
+  outside the min-width query exactly as required.
+  ⭐ OPEN DEBT CLOSED, NOT INHERITED: `width: var(--sgs-timeline-media-width, 180px)` was flagged
+  by the reviewer as probably-wrong-at-mobile and deliberately left unguessed. Measured + eyeballed
+  on a screenshot: the date pill is 180px and the media it overlays is 180px, so the pill spans
+  the image exactly — which is the whole point of media-overlay mode. CORRECT BY DESIGN, no change.
+  The original code comment ("reads correctly at any width") was right about the DATE and wrong
+  about the CONTENT column, which is what was actually broken.
+TASK 1 COMPLETE. Base b59f8cd3f -> da618882c (f6188b027 + da618882c).
+  Re-review skipped deliberately: C1 was verified by live measurement (stronger than a diff
+  re-read) and I2/I3 were documentation corrections the controller read directly.
+
+OWNER VERDICT 2026-08-30 — date-over-media REMOVED. Bean judged the overlay "awful" and asked why
+  it existed on the stacked layout at all. Facts checked before recommending: shipped 1 day earlier
+  (bc52064a8), referenced ONLY in the block's own 4 files, ZERO uses in theme/. Removal approved.
+  ⚠ This deletes the overlay CSS fixed hours earlier in da618882c. Not wasted — it proved the
+    specificity mechanism and validated the same fix for --media-under, which stays — but the
+    overlay code goes. Do NOT reinstate it from Addenda 10/11.
+  ⭐ The owner's EYE overruled the controller's "correct by design" close-out, correctly. The
+    controller had measured the date pill at 180px vs a 180px media width and closed the debt as
+    intentional. That was a MECHANISM claim; whether it looks good is R-31-13, the owner's call.
+    Lesson: a mechanism proof is not an aesthetic verdict and must not be written up as one.
+  Controller retains: the /sgs-update reseed to prune the block_attributes row (shared-DB write,
+    announced separately, never delegated) and the design-gate doc update (done).
+REMOVAL COMPLETE (6a183ce3b, 73/73 green, deployed + live-verified).
+  Live at 375px: zero media-overlay classes across all 8 timelines; the formerly-overlay one
+  (full index 5 — NOT filtered index 1; the controller's first probe grabbed the wrong element
+  and was corrected) now reads dateArea 2/2, transparent bg, no box-shadow, date/media/content
+  all 328px, DATE_OVERLAPS_MEDIA false. Screenshot opened: date sits above the image in accent,
+  no pill covering the photo. Bean's complaint resolved.
+  ⚠ A STALE IDE DIAGNOSTIC claimed render.php:398 used an undefined $media_placement. FALSE —
+    grep finds zero occurrences, check-render-undefined-vars (gate 29, fast tier) passes at
+    PHPStan level 1, php -l clean. Fact-checked before reporting; nearly filed a phantom bug.
+  ⚠ THE DEPLOY CORRECTLY ABORTED FIRST on oldshape-audit: 1 NEW HIGH, post 3079 line 12 storing
+    the now-undeclared milestoneMediaPlacement. wp-migrate-oldshape-blocks.js was the wrong tool
+    (it migrates known shape changes, correctly reported "no casualties"). Fixed by a TEXTUAL
+    strip of the exact 44-char needle `,"milestoneMediaPlacement":"date-over-media"` via REST —
+    never json.dumps, which would rewrite every other stored attr. Guards: exactly-1-occurrence
+    assert, byte-delta must equal needle length, both sides of the cut asserted byte-identical,
+    and a round-trip re-fetch proving KSES altered nothing. 7314 -> 7270. Redeploy then passed
+    the gate ON with 0 NEW HIGH (37 -> 36 findings).
+  ⚠ PowerShell env-loading of .claude/secrets/*.env mangles values (CRLF \r survives .Trim('"'))
+    and gave a false 401. Bash `set -a; . file; set +a` works. Use bash for these creds.
+DEFERRED DELIBERATELY: the /sgs-update reseed pruning the stale block_attributes row for
+  milestoneMediaPlacement. The row is stale but ALL 73 gates pass, so nothing is blocked, and a
+  shared-DB reseed has broken other tracks' builds mid-run before. Batch it with the reseed that
+  steps 3-4 need anyway for the new attributes. Do not run it standalone while tracks are active.
+Task 2: COMPLETE (f01b7446f + 3a877705a fix pass + 1a5ab3225 regression fix).
+  mobileLayout stacked|carousel. Live at 375px: carousel scrolls (1210>360), snap x mandatory,
+  entries 292px (<=320 G225 cap), tabindex=0 + aria-label, NO role (owner dropped it to keep the
+  <ol> list semantics — the controller's brief had wrongly mandated role="region").
+  is-reached now wired to scroll position: [t,f,f,f] -> [t,t,t,f] with border colour changing.
+  Stacked control byte-identical throughout; 1440px fully inert for both values.
+  ⛔ THE SESSION'S WORST BUG, and it was a CONTROLLER instruction: F7 told the fixer to early-bail
+    initSparks in carousel mode. initSparks ALSO drives the reveal, so .is-revealed was never
+    applied while .is-js stayed on the root — the hiding rule kept matching and the carousel
+    painted NOTHING but a scrollbar. Bean spotted it on the probe page. Fixed by opting entries
+    out of the reveal-hidden state inside the carousel gate at (0,6,0) vs (0,4,0).
+    ⭐ RULE: the .is-js gate protects against a BROKEN script, NOT a DELIBERATELY not-run driver.
+      Suppressing a driver obliges you to suppress the hidden state it alone could lift.
+    ⚠ Every numeric check passed on that blank carousel. A zero-opacity element measures perfectly.
+      Caught by a SCREENSHOT, twice over (mine, then Bean's).
+  ⭐ Reviewer found the 4x class repetition was an exact TIE (0,5,0) won only by source order, not
+    the claimed margin — one appended rule from silently losing. Raised to 5x with correct
+    arithmetic. It also corrected the controller: "scope into a media query instead" confers NO
+    advantage here because every competing rule is already inside max-width:767px.
+
+Task 3a: COMPLETE (f8b5f6916, + 88ec9173f shared reseed artefact). BEHAVIOUR-PRESERVING.
+  alignment -> contentLayout (alternating|same-side|single-column); showDateColumn -> datePosition.
+  centre folded into single-column; its 4 CSS blocks deleted, and its 8px rail bug (line on the
+  node's right EDGE, not through the dots) is gone as a side effect.
+  VERIFIED BY COMPILED-CSS DIFF: 161 lines, every one a class rename or a deleted align-centre
+  rule. No declaration, value, selector order or media query changed.
+  LIVE at 1440: alternating x4 all odd 1/1 + even 1/3, cols 688.5/16/688.5, rail===node 713.
+  single-column x3 all auto/2, 16px 1393px, node 8 / rail 9. date-gutter preserved (180/16/1197,
+  node 204). At 375 all collapse correctly; zero --align- classes remain.
+  ⛔ THE TRAP AVOIDED: showDateColumn was only ever effective when alignment==='left'. A 1:1
+    boolean map would have ACTIVATED a gutter that never rendered on pages nobody asked to change.
+    Mapping conditioned on the old alignment value, matching render.php's own gate.
+RESEED DONE (announced): /sgs-update Stage 1 seeded 3 new attrs, Stage 9 pruned 3 orphans at attr
+  level (alignment, showDateColumn, milestoneMediaPlacement — the deferred one cleared in the same
+  pass). attr-role-map.json regenerated and committed SEPARATELY (88ec9173f) because it is derived
+  from the WHOLE DB — 241 insertions / 34 deletions covering every track's blocks, not just mine.
+  ⚠ Before the regen, check-element-manifest-conformance failed GLOBALLY (orphan_unclassified=1),
+    blocking every track's commits over an attr they never touched. The gate's own message said it
+    was "a SNAPSHOT problem, not a data problem" and named the regenerator.
+STORED-CONTENT MIGRATION: pages 3079 (5 replacements) and 3072 (1). The oldshape gate caught 3072
+  AFTER 3079 was done — I had only migrated the page I was measuring on. Both verified by
+  re-parsing every block and asserting its attrs equal the mapping's prediction from its ORIGINAL
+  values, plus a round-trip proving KSES altered nothing.
+Task 3b: COMPLETE (10072a44b, 73/73 green — the manifest gate did NOT block this time because
+  Task 3a's reseed had already landed). same-side + contentSide (start|end) built.
+  ⭐ THE OWNER'S ORIGINALLY-REQUESTED OPTION, live-verified at 1440px by the ONE measurement that
+  actually distinguishes it — per-row grid columns:
+      alternating (blocks 0,7): date [1,3,1,3]  content [3,1,3,1]   <- FLIPS per row
+      same-side end (block 5):  date [1,1,1,1]  content [3,3,3,3]   <- never flips
+      same-side start (block 6):date [3,3,3,3]  content [1,1,1,1]   <- mirrored, never flips
+  Media follows the DATE's side in both (5: media col 1; 6: media col 3), matching alternating.
+  Both same-side: cols 688.5/16/688.5, rail centre === node centre 713 — R4 holds, dots unmoved.
+  At 375px both collapse to 16px/328px like every other vertical layout.
+  Regression set unchanged: alternating x2, single-column x3, date-gutter, carousel.
+  contentSide:end emits NO class (base rule); start emits sgs-timeline--side-start.
+  Test instances authored on probe 3079 blocks 5+6 by guarded textual insert (78-byte delta,
+  all 8 blocks re-parsed and asserted against intended attrs, round-trip verified).
+
+=== PROGRAMME STATE at end of session 2026-08-30 ===
+DONE: Task 1 (mobile collapse), date-over-media removal (owner verdict), Task 2 (mobileLayout +
+  carousel), Task 3a (attribute split + rename + migration + reseed), Task 3b (same-side).
+NOT STARTED: Task 4 — wire scrollEffect to fx-pin-scrub / fx-horizontal-panel (block-private via
+  data-sgs-fx, NOT the generic fx panel). Design is signed off in the design gate; owner approved
+  block-private wiring. Task 5 — entryGap + heading-level surfacing (Layer 4).
+OPEN, NON-BLOCKING: the fractional-width band 767.0<w<768.0 where neither breakpoint fires
+  (cosmetic, dots proven safe; fixing needs a file-wide 767->767.98 convention change).

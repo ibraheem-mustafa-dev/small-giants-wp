@@ -170,38 +170,35 @@ reduced-motion closed (D863). ⛔ Editing template part 2671 does NOTHING — `p
 `wp:pattern` ref, so `patterns/framework-header-default.php` renders.
 ⛔ **Parked:** `P-PARTICLE-TRAIL-VARIATIONS` (post-launch, Bean's timing).
 
-### ▶ C. TIMELINE (FR-38-35) — Stage A + Stage B SHIPPED + LIVE 2026-08-29. D879.
+### ▶ C. TIMELINE (FR-38-35) — Stages A/B/C SHIPPED + LIVE. D879, D894-D897.
 
-Connector, milestone media, A/B row bands, connector-triggered reveal. **Live.** Stage A
-`72825d07c`→`0a5b4dd2f` (canary 3072); Stage B `1014fc9d8`→`18396d152` (canary **3079**). DB
-seeded `bd61e13a6`, `UNCLASSIFIED: 0`. Evidence:
-`reports/visual-diff/timeline-2026-08-29.md`.
+Layered control model built and live. `f6188b027`→`10072a44b` (canary 3079 + 3072). Evidence:
+`reports/visual-diff/timeline-2026-08-30.md` + `memory/sdd-progress.md`. Shipped:
+mobile collapse fixed (content 76/164px → **328px**), `date-over-media` REMOVED on Bean's verdict,
+`mobileLayout` (stacked | scroll-snap carousel), `alignment` split into `contentLayout` +
+`datePosition`, and **`same-side`** — Bean's originally-requested option.
 
-⛔ **Spec 38 named the WRONG BROWSER twice; corrected.** Safari has `animation-timeline` since
-**26.0**; **Firefox has it in NO stable build** (lands 157). **The JS driver is Firefox's PRIMARY
-path, not a fallback.**
+⛔ Safari has `animation-timeline` since **26.0**; **Firefox has it in NO stable build** (157), so
+the JS driver is Firefox's PRIMARY path — Spec 38 named the wrong browser twice. **The SVG-path
+route is DEAD for a straight connector**; Spec 31 C9's no-JS hatch is CLOSED. Detail: D879.
 
-⛔ **The SVG-path route is DEAD for a straight connector — 3 defects, one cause** (a unit `viewBox`
-stretched non-uniformly): dashes resolve in SCREEN space, defeating `pathLength="1"`; the stroke
-doubles; the SVG sizes 2px × 2px. **Spec 31 QC correction C9's no-JS escape hatch is CLOSED** —
-branching curves need a JS `ResizeObserver` for path `d`. Budget it. Detail: D879.
+⛔ **FOUR INSTRUMENT TRAPS — in CC memory and reproduced in full in the prompt. Read before
+measuring.** Lenis-animated scroll; staircase custom-property reads; **a losing CSS rule is
+indistinguishable from an absent one** (hit twice in one session); wrong-owner match resolution.
 
-⛔ **TWO MEASUREMENT TRAPS COST A WHOLE SESSION. Both are in CC memory — read them before
-measuring.** (1) Lenis animates every scroll, so a read after a fixed delay measures the WRONG
-position; wait until `scrollY` stops moving. (2) A scroll-driven custom property reads back as a
-STAIRCASE; compute progress from GEOMETRY instead. Both produced confident, self-consistent,
-false numbers.
-
-⚠ **Every real defect here was caught by a screenshot or by Bean, never by a gate** —
-STOP-CATALOGUE `STOP-INSTRUMENT-SHAPE`.
+⚠ **Every real defect here was caught by a screenshot or by Bean, never by a gate.** A blank
+carousel passed 73 gates and every numeric check — a zero-opacity element measures perfectly.
+STOP-CATALOGUE STOP-INSTRUMENT-SHAPE.
 
 ### ▶ NEXT for the timeline
 
-⭐ **`.claude/prompts/2026-08-30-timeline-stage-c-and-open-decisions.md` carries every remaining
-task.** Its predecessor shipped in full and was deleted. Four decisions for Bean (`centre` now
-duplicates `left`; the align-left rail with no media; spark density; whether the viewport reveal
-gets the no-JS protection), then two builds: **375px is the one unmeasured breakpoint**, and
-branching connectors are a DESIGN GATE ONLY.
+⭐ **`.claude/prompts/2026-08-31-timeline-task4-and-tall-milestones.md` carries every remaining
+task.** Its predecessor shipped in full and was deleted. **Task 1** wires `scrollEffect` to the
+existing `fx-pin-scrub`/`fx-horizontal-panel` modules (approved, block-private via `data-sgs-fx`;
+neither GSAP preset may run ≤767px — SC 2.5.7). **Task 2** is a DESIGN GATE ONLY for Bean's
+tall-milestones direction, which also fixes the measured marker defect (it sits at **87-91%** of
+viewport height; fill hits 73% before the reader starts). Verdict: **~35-40vh**, sticky,
+`scroll()` not `view()`.
 
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4). Detail: D731/D732/D733,
 Spec 32 §6.1(a1)/(a2), Spec 35 Part K. shop-archive: Phase 3 ownership moved 2026-08-27 to

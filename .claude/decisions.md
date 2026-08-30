@@ -1,3 +1,88 @@
+## D897 [ROUTINE] — sgs/timeline gains `same-side`, closing the option Bean asked for at the outset
+
+**2026-08-30.** Commit `10072a44b`. `contentLayout: same-side` + `contentSide` (`start`|`end`).
+Both `alternating` and `same-side` are TWO-SIDED — rail down the middle, date one side, content
+the other; they differ only in whether that assignment flips per row. That distinction is easy to
+misread as "everything on one side", which is `single-column`, so the brief carried a row-by-row
+table rather than prose.
+
+Proven live at 1440px by the one measurement that discriminates — per-row grid columns:
+alternating date `[1,3,1,3]` / content `[3,1,3,1]`; same-side `end` date `[1,1,1,1]` /
+content `[3,3,3,3]`; `start` mirrored. Media follows the DATE's side, as in alternating. Both
+keep `688.5px 16px 688.5px` with rail centre === node centre 713, so R4's shared entry grid
+(connector + fill mask + spark positions) is undisturbed. `contentSide: end` emits no class;
+`start` emits `sgs-timeline--side-start`.
+
+## D896 [INCIDENT] — suppressing a driver left its hidden state standing; the carousel painted nothing
+
+**2026-08-30.** Commit `1a5ab3225`. A controller instruction told the fixer to early-bail
+`initSparks` in carousel mode, to avoid meaningless work measuring `display:none` nodes.
+`initSparks` ALSO drives the reveal, so `.is-revealed` was never applied — while `.is-js` stayed
+on the root, so the hiding rule kept matching and every card sat at `opacity: 0`. A carousel that
+painted nothing but a scrollbar. Bean found it on the probe page.
+
+⭐ **The rule, which generalises past this block: the `.is-js` gate protects against a BROKEN
+script, NOT a DELIBERATELY not-run driver.** A broken script never adds the class, so the hidden
+state never applies. A suppressed driver leaves the class present, the hiding rule matching, and
+nothing capable of lifting it. **Suppressing a driver obliges you to suppress the hidden state it
+was the only thing capable of lifting.** Fixed by opting entries out of the reveal-hidden state
+inside the carousel gate at (0,6,0) against the hiding rule's (0,4,0).
+
+⚠ **Every numeric check passed on that blank carousel** — snap type, scroll width, entry widths,
+`tabindex`, `aria-label`, `is-reached` toggling, border colours. A zero-opacity element measures
+perfectly. Caught by a screenshot, twice (controller then Bean).
+
+## D895 [ROUTINE] — `alignment` split into `contentLayout` + `datePosition`; `centre` retired
+
+**2026-08-30.** Commits `f8b5f6916` (+ `88ec9173f`, the shared reseed artefact). `alignment`
+conflated where content sits relative to the rail with whether the date gets its own column —
+which is why `centre` was vestigial (a near-duplicate of `left`, differing only by an 8px rail
+offset that was itself a bug: the line sat on the node's right EDGE, not through the dots) and why
+"both sides but consistent" had nowhere to live.
+
+Mapping: `alternating`→`alternating`, `left`→`single-column`, `centre`→`single-column`,
+`showDateColumn`→`datePosition`. CSS classes `--align-*`→`--content-*`; the four `align-centre`
+blocks deleted outright.
+
+⛔ **The trap avoided:** `showDateColumn` was only ever effective when `alignment === 'left'`
+(`render.php` gated it; the editor only rendered the toggle there). A 1:1 boolean map would have
+silently ACTIVATED a gutter layout that had never rendered, on pages nobody asked to change. The
+migration conditions on the old alignment value.
+
+Behaviour-preservation was verified by diffing the COMPILED stylesheet before/after: 161 lines,
+every one a class rename or a deleted `align-centre` rule; no declaration, value, selector order
+or media query changed. Stored content migrated on canary pages 3079 and 3072 — **the oldshape
+gate caught 3072 only AFTER 3079 was done**, i.e. migrating the page you happen to be measuring
+on is not migrating the site.
+
+## D894 [INCIDENT] — a losing CSS rule is indistinguishable from an absent one; diagnosed wrong twice
+
+**2026-08-30.** Commits `f6188b027`, `da618882c`. Media-bearing timelines did not collapse to a
+single column at ≤767px. The diagnosis was wrong twice before it was right, and both wrong
+versions were confidently held:
+
+1. *"No media-query rule matches the date at all."* FALSE — manufactured by a probe filtering rule
+   text on `/grid-column|grid-row/`, which does not match the **`grid-area` shorthand** the rules
+   actually use.
+2. *"The rule is absent from the deployed CSS."* FALSE — all 40 stylesheets on the page were
+   reachable, zero cross-origin skips.
+
+✅ **The real cause was a SPECIFICITY LOSS.** The mobile collapse at (0,5,0) inside
+`max-width: 767px` lost to `--media-under`'s placement rule at (0,6,0) carrying NO media query —
+more specific AND later in source. So the collapse worked for media-free timelines and silently
+lost for every timeline with media. Fixed by scoping the media placement blocks to
+`min-width: 768px`. Content went 76px (under) and 164px (overlay) → **328px** at 375px, desktop
+unchanged, rail still on the dots.
+
+⚠ The first fix scoped only `--media-under`, excluding `--media-overlay` on the justification that
+it "reads correctly at any width" — quoting a code comment that was factually wrong about the
+block nine lines beneath it. Review proved the overlay's OWN mobile rule was dead code, losing
+(0,4,0) to the same unscoped (0,5,0) desktop rule. Two mechanisms, one symptom.
+
+⭐ This is the project's own `a-losing-css-rule-looks-identical-to-an-absent-one` rule, hit twice
+in one session by the agent citing it. Never conclude "absent" from a probe that filters rule
+text — enumerate what matches the element and compare specificity.
+
 ## D893 [ROUTINE] — scattered-element-controls.js built: 69 findings across 48 blocks, self-test 32/32
 
 **2026-08-30.** Commits `91574fc05`, `5ee7a1d95`. New detector,
