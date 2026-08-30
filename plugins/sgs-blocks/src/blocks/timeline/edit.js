@@ -123,14 +123,22 @@ const REVEAL_TRIGGER_OPTIONS = [
 ];
 
 // Task 3a — replaces the old ALIGNMENT_OPTIONS ('alternating' / 'left' /
-// 'centre'). 'same-side' is NEW and SELECTABLE but renders identically to
-// 'alternating' for now — Task 3b gives it its own layout, see render.php's
-// content-class fold comment. 'centre' is retired: it folded into
-// 'single-column' losing only an 8px rail-offset bug (Task 3a brief).
+// 'centre'). 'centre' is retired: it folded into 'single-column' losing only
+// an 8px rail-offset bug (Task 3a brief). 'same-side' (Task 3b) is two-sided
+// like 'alternating' but does not flip per row — see CONTENT_SIDE_OPTIONS
+// below for which side it uses.
 const CONTENT_LAYOUT_OPTIONS = [
 	{ label: __( 'Alternating sides', 'sgs-blocks' ), value: 'alternating' },
 	{ label: __( 'Same side', 'sgs-blocks' ), value: 'same-side' },
 	{ label: __( 'Single column', 'sgs-blocks' ), value: 'single-column' },
+];
+
+// Task 3b — only meaningful (and only shown) when contentLayout is
+// 'same-side'. Client-facing strings name the CONTENT's side directly, per
+// the brief, rather than the more abstract 'start'/'end' the value stores.
+const CONTENT_SIDE_OPTIONS = [
+	{ label: __( 'Content on the right', 'sgs-blocks' ), value: 'end' },
+	{ label: __( 'Content on the left', 'sgs-blocks' ), value: 'start' },
 ];
 
 // Task 3a — replaces the old boolean `showDateColumn`. Only takes effect when
@@ -429,6 +437,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		style,
 		orientation,
 		contentLayout,
+		contentSide,
 		mobileLayout,
 		entries,
 		headingLevel,
@@ -458,14 +467,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderStyle,
 	} = attributes;
 
-	// Build preview class list mirroring render.php. 'same-side' folds into
-	// 'content-alternating' — no CSS exists yet for a distinct shape (Task 3a;
-	// Task 3b gives it its own layout).
-	const contentLayoutClass = 'single-column' === contentLayout ? 'single-column' : 'alternating';
+	// Build preview class list mirroring render.php. The class name IS the
+	// contentLayout value (Task 3b — 'same-side' has its own CSS shape and no
+	// longer folds into 'content-alternating').
 	const previewClasses = [
 		'sgs-timeline',
 		`sgs-timeline--${ orientation }`,
-		orientation === 'vertical' ? `sgs-timeline--content-${ contentLayoutClass }` : '',
+		orientation === 'vertical' ? `sgs-timeline--content-${ contentLayout }` : '',
+		orientation === 'vertical' && contentLayout === 'same-side' && contentSide === 'start'
+			? 'sgs-timeline--side-start'
+			: '',
 		`sgs-timeline--connector-${ connectorStyle }`,
 		connectorProgressFill ? 'sgs-timeline--connector-progress' : '',
 		'sgs-timeline--media-under',
@@ -729,6 +740,20 @@ export default function Edit( { attributes, setAttributes } ) {
 							options={ CONTENT_LAYOUT_OPTIONS }
 							onChange={ ( val ) => setAttributes( { contentLayout: val } ) }
 							help={ __( 'Alternating flips content left/right on each entry.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+					{ /* Which side of the line — meaningless outside 'same-side'
+					     (alternating flips by definition; single-column is
+					     one-sided), so it is hidden rather than disabled for the
+					     other two layouts, per the brief. */ }
+					{ orientation === 'vertical' && contentLayout === 'same-side' && (
+						<SelectControl
+							label={ __( 'Which side of the line', 'sgs-blocks' ) }
+							value={ contentSide }
+							options={ CONTENT_SIDE_OPTIONS }
+							onChange={ ( val ) => setAttributes( { contentSide: val } ) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>

@@ -56,18 +56,23 @@ $heading_level    = in_array( $attributes['headingLevel'] ?? '', $allowed_headin
 	: 'h3';
 $orientation      = $attributes['orientation'] ?? 'vertical';
 // contentLayout / datePosition replace the old alignment / showDateColumn split
-// (Task 3a). $alignment is still computed here — as a LOCAL mapping, never
-// stored — because the entry grid, rail-offset and date-gutter logic below are
-// unchanged and keyed on the old three values; only the STORED attribute and
-// the emitted CSS class name have moved. 'same-side' maps to 'alternating'
-// (Task 3b gives it its own render); 'single-column' maps to 'left' (the
-// mapping's 8px rail-offset difference against the old 'centre' is a known,
-// accepted loss — Task 3a brief, "near-identical").
+// (Task 3a). 'same-side' (Task 3b) is a distinct two-sided layout — every row
+// uses the SAME date/content assignment instead of flipping per row, unlike
+// 'alternating'. 'single-column' keeps the old 'left' shape (the mapping's 8px
+// rail-offset difference against the old 'centre' is a known, accepted loss —
+// Task 3a brief, "near-identical").
 $content_layout   = $attributes['contentLayout'] ?? 'alternating';
 $content_layout   = in_array( $content_layout, array( 'alternating', 'same-side', 'single-column' ), true )
 	? $content_layout
 	: 'alternating';
-$alignment        = 'single-column' === $content_layout ? 'left' : 'alternating';
+// contentSide — Task 3b. Meaningless outside 'same-side' (alternating flips by
+// definition; single-column is one-sided), so it is read here but only turned
+// into a class when contentLayout is 'same-side'. 'end' (content right, date
+// left) is the default AND the layout's base rule in style.scss — it mirrors
+// 'alternating's odd-row placement, so it needs no modifier class of its own;
+// only 'start' (the mirrored, even-row placement) gets one.
+$content_side = $attributes['contentSide'] ?? 'end';
+$content_side = in_array( $content_side, array( 'start', 'end' ), true ) ? $content_side : 'end';
 // Mobile layout — an axis of its own, independent of orientation/alignment
 // (Task 2). 'stacked' is today's collapse, unchanged. 'carousel' is a native
 // horizontal scroll-snap row, ≤767px ONLY — see style.scss's mobile-carousel
@@ -118,9 +123,9 @@ $row_stripes   = ! empty( $attributes['rowStripes'] );
 $stripe_a      = $attributes['rowStripeColourA'] ?? '';
 $stripe_b      = $attributes['rowStripeColourB'] ?? 'surface-alt';
 
-// Sanitise orientation to avoid arbitrary CSS class injection. $alignment was
-// already derived from the validated $content_layout above, so it needs no
-// separate sanitisation pass.
+// Sanitise orientation to avoid arbitrary CSS class injection. $content_layout
+// and $content_side were already validated above, so they need no separate
+// sanitisation pass here.
 $orientation     = in_array( $orientation, array( 'vertical', 'horizontal' ), true ) ? $orientation : 'vertical';
 $connector_style = in_array( $connector_style, array( 'line', 'dashed', 'dotted' ), true ) ? $connector_style : 'line';
 
@@ -411,12 +416,17 @@ if ( $mobile_decls ) {
 $wrapper_classes   = array( 'sgs-timeline', $uid );
 $wrapper_classes[] = 'sgs-timeline--' . $orientation;
 if ( 'vertical' === $orientation ) {
-	// Emits 'content-alternating' or 'content-single-column' — NOT the raw
-	// $content_layout value. 'same-side' folds into 'content-alternating'
-	// here (Task 3a; $alignment already carries that fold, see above) because
-	// no CSS exists yet for a distinct 'content-same-side' shape — Task 3b
-	// builds that layout and this fold point is where it plugs in.
-	$wrapper_classes[] = 'sgs-timeline--content-' . ( 'left' === $alignment ? 'single-column' : 'alternating' );
+	// Emits 'content-alternating', 'content-same-side' or 'content-single-column'
+	// straight from the validated $content_layout — the class name IS the
+	// attribute value. 'same-side' (Task 3b) has its own CSS shape; it no
+	// longer folds into 'content-alternating'.
+	$wrapper_classes[] = 'sgs-timeline--content-' . $content_layout;
+	// contentSide only means anything on the two-sided-but-not-flipping
+	// layout. 'end' (content right, date left) is the base same-side rule in
+	// style.scss and needs no class; only 'start' gets one.
+	if ( 'same-side' === $content_layout && 'start' === $content_side ) {
+		$wrapper_classes[] = 'sgs-timeline--side-start';
+	}
 }
 $wrapper_classes[] = 'sgs-timeline--connector-' . $connector_style;
 if ( $progress_fill ) {

@@ -534,6 +534,64 @@
 	}
 }
 
+// ── Same-side (Task 3b) ─────────────────────────────────────────────────────
+//
+// Two-sided, like alternating, but every row uses the SAME date/content
+// assignment instead of flipping per row (the owner's original ask). The two
+// row shapes below are NOT a new grid — they are alternating's own odd-row
+// and even-row blocks above, applied to EVERY entry instead of every-other
+// one. Both rules restate grid-column/row + text-align + BOTH paddings (not
+// just the one each side needs) because, unlike alternating, both rules can
+// legally apply to the same entry at once (base + `--side-start` modifier) —
+// an omitted padding would leak the other rule's value instead of resetting.
+//
+// contentSide: end (default) — mirrors alternating's ODD-row placement: date
+// left, content right. No modifier class needed; this is the base rule.
+.sgs-timeline--vertical.sgs-timeline--content-same-side .sgs-timeline__entry {
+	.sgs-timeline__date {
+		grid-column: 1;
+		grid-row: 1;
+		text-align: right;
+		padding-right: var(--wp--preset--spacing--20, 1rem);
+		padding-left: 0;
+	}
+
+	.sgs-timeline__node {
+		grid-column: 2;
+		grid-row: 1;
+	}
+
+	.sgs-timeline__content {
+		grid-column: 3;
+		grid-row: 1;
+		text-align: left;
+	}
+}
+
+// contentSide: start — mirrors alternating's EVEN-row placement: content
+// left, date right. One extra class (0,4,0) out-ranks the base rule (0,3,0)
+// above on the same properties, so no `!important` is needed.
+.sgs-timeline--vertical.sgs-timeline--content-same-side.sgs-timeline--side-start .sgs-timeline__entry {
+	.sgs-timeline__date {
+		grid-column: 3;
+		grid-row: 1;
+		text-align: left;
+		padding-left: var(--wp--preset--spacing--20, 1rem);
+		padding-right: 0;
+	}
+
+	.sgs-timeline__node {
+		grid-column: 2;
+		grid-row: 1;
+	}
+
+	.sgs-timeline__content {
+		grid-column: 1;
+		grid-row: 1;
+		text-align: right;
+	}
+}
+
 // Left-aligned: date | node | content all on left side.
 // ── content-single-column ────────────────────────────────────────────────────────────────
 //
@@ -1010,7 +1068,11 @@
 		padding: 0;
 	}
 
-	// Vertical alternating collapses to left-aligned on mobile.
+	// Vertical alternating/same-side both collapse to the same left-aligned
+	// mobile shape. Reused rather than duplicated (Task 3b brief) — below
+	// 768px there is no second column left to be "the same side" of, so
+	// same-side's contentSide axis is inert here exactly like alternating's
+	// odd/even flip is.
 	//
 	// ⛔ THE RAIL HAS TWO HALVES AND BOTH MUST MOVE. The static line is this
 	// element's `::before`; the animated fill is a SEPARATE element
@@ -1025,7 +1087,8 @@
 	// the 16px node, so the dots' centre is at 8px. `content-single-column` already derives
 	// it this way (:589). The old `var(--sgs-node-size)` put the line on the
 	// node's right EDGE, 8px off the dots it is meant to thread.
-	.sgs-timeline--vertical.sgs-timeline--content-alternating {
+	.sgs-timeline--vertical.sgs-timeline--content-alternating,
+	.sgs-timeline--vertical.sgs-timeline--content-same-side {
 		--sgs-timeline-rail-offset: calc(var(--sgs-node-size) / 2);
 
 		&::before {
@@ -1126,7 +1189,8 @@
 // mobile re-placement for has-media entries lives further down in the
 // `@media (max-width: 767px)` block.
 @media (min-width: 768px) {
-	.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--content-alternating {
+	.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--content-alternating,
+	.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--content-same-side {
 		.sgs-timeline__entry--has-media {
 			grid-template-rows: auto auto;
 
@@ -1138,7 +1202,9 @@
 				grid-row: 1 / span 2;
 			}
 		}
+	}
 
+	.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--content-alternating {
 		// ODD — date + media on the LEFT, content on the right.
 		.sgs-timeline__entry--has-media:nth-child(odd) {
 			.sgs-timeline__date {
@@ -1156,6 +1222,42 @@
 		// EVEN — mirrored. The media follows the DATE, not the content, because
 		// the brief is "media opposite the content, on the date's side".
 		.sgs-timeline__entry--has-media:nth-child(even) {
+			.sgs-timeline__date {
+				grid-column: 3;
+				grid-row: 1;
+			}
+
+			.sgs-timeline__media-slot {
+				grid-column: 3;
+				grid-row: 2;
+				justify-self: start;
+			}
+		}
+	}
+
+	// Same-side — every entry uses ONE of the two placements above instead of
+	// alternating between them, same reuse rule as the base entry grid.
+	.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--content-same-side {
+		// contentSide: end (default) — mirrors the ODD placement. No modifier
+		// class needed, matching the base same-side rule.
+		.sgs-timeline__entry--has-media {
+			.sgs-timeline__date {
+				grid-column: 1;
+				grid-row: 1;
+			}
+
+			.sgs-timeline__media-slot {
+				grid-column: 1;
+				grid-row: 2;
+				justify-self: end;
+			}
+		}
+	}
+
+	// contentSide: start — mirrors the EVEN placement. Extra class out-ranks
+	// the block above on the same properties (0,5,0) vs (0,4,0).
+	.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--content-same-side.sgs-timeline--side-start {
+		.sgs-timeline__entry--has-media {
 			.sgs-timeline__date {
 				grid-column: 3;
 				grid-row: 1;
