@@ -99,6 +99,57 @@ constant). Only OWN *panel*-count (not row-count, not the EXTENSION split) has b
 match live measurement. Do not quote ANY of its totals — panel-count included, once beyond a single
 verified block — as "what the client sees" without a fresh live check.
 
+### Grid-item defaults — scope correction (`b59f8cd3f`, 2026-08-30)
+
+`gridItem*` attrs (padding/gap/border/shadow/colour defaults for a grid's children) are
+consumed by exactly **ONE** CSS rule: `.sgs-container--grid > .sgs-container` in
+`src/blocks/container/style.css`. That selector paints ONLY a **direct child that itself
+carries `.sgs-container`** — so a block qualifies for `gridItem*` attrs only when its own
+grid cells are themselves container-wrapper-routed blocks. **`sgs/container` is the only
+qualifying block today.** `sgs/cta-section` and `sgs/trust-bar` had declared 15 `gridItem*`
+attrs each and rendered `GridItemDefaultsPanel` (~30 client-facing controls total) while
+painting nothing — `cta-section` wraps children in `.sgs-cta-section__content`,
+`trust-bar` renders `.sgs-trust-bar__badge` divs, neither matches the selector. Removed in
+`b59f8cd3f`.
+
+⛔ **`block_composition.container_kind` (section/layout/content) is IRRELEVANT to this
+qualification.** It describes the draft-layer model (Spec 31 §13.6), not what CSS a
+block's own children actually match. Do not reason from `container_kind` when deciding
+whether a block should carry `gridItem*` attrs — check the selector.
+
+### Detector blind spots — both real, both shipped a defect before being found
+
+- **`check-dead-controls.js` asks "is this attribute read by the render surface?"** It
+  cannot see "the attribute IS read and emits CSS custom properties that no selector ever
+  matches" — that distinction is invisible to a render-corpus scan. This is exactly how the
+  ~30 dead `gridItem*` controls above shipped and stayed green through every existing gate.
+- **`check-duplicate-controls.js` CHECK 2 scans literal JSX control elements** in a block's
+  own `edit.js`. It cannot see a duplicate writer living inside a **row OBJECT LITERAL**
+  passed as a config prop — e.g. a `SgsColourPanel` `rows` array entry that writes the same
+  attribute another literal JSX control also writes. This is how `sgs/trust-bar`'s duplicate
+  `textColour` writer survived undetected.
+
+Neither gap is fixed yet — read them as known scope limits, not solved problems, before
+trusting either gate's "0 findings" on a new colour/grid-item-shaped change.
+
+### `scripts/scattered-element-controls.js` — finds one element's controls split across panels
+
+Finds elements whose controls (writing that element's own attrs) span **multiple** inspector
+panels instead of one. `--survey [--block sgs/x] [--json]` runs the full census;
+`--self-test` runs its own positive/negative-control fixtures. **Deliberately NOT wired into
+any gate** (`scripts/gates.json` / `scripts/inspector-scan/rules.json` — verified, no
+reference in either) — it is advisory only, run it by hand.
+
+Two rulings, both load-bearing for reading its output:
+- **RULING 1 — non-paintable exclusion.** An attribute whose DB `css_property` is not a
+  paintable CSS property (the sole example today: `'tag'`, an HTML-tag-name attr like
+  `headingLevel`) is excluded from grouping entirely — it can never be "scattered" because it
+  has no paint surface to split across panels.
+- **RULING 2 — family-aware severity.** A split across DIFFERENT property families (e.g. a
+  layout attr in one panel, a typography attr in another) is `info` (by-design — those are
+  legitimately different panels). A split WITHIN one property family (e.g. two border-family
+  attrs for the same element in two different panels) is a real finding (`warn`/`high`).
+
 ### Live motion QA — `scripts/motion-qa/` + `npm run qa:motion` (D730)
 
 ```bash
@@ -621,7 +672,7 @@ Every block MUST provide per-element customisation matching Kadence/Spectra dept
 > ⚑ **CORRECTED 2026-08-10 (Spec 35 Phase 1.2).** This line used to read *"`<ResponsiveControl>` **device-icon switcher** wrapping a `<UnitControl>`"*. `ResponsiveControl` **no longer renders any switcher** — its own docblock now says so. The device tier is chosen ONCE, in the global toggle docked at the bottom of the inspector (`src/blocks/extensions/responsive-device-toggle.js`), which is a text-labelled `ToggleGroupControl`, not device icons. `ResponsiveControl` still wraps the control and still passes the tier to its child, so the rest of this rule is unchanged — but anyone building from the old wording would expect per-control device icons that no longer exist. ⛔ Do NOT add a per-control switcher: `inspector-scan` rule 25 flags it. **line-height = `<UnitControl>` (number + unit; empty string unit = unitless, matching the PHP helper's `''` → unitless semantic)**. Attr shape per element: `{prefix}FontSize` (number) + `{prefix}FontSizeUnit`/`Tablet`/`Mobile` + `{prefix}FontWeight`/`FontStyle` + `{prefix}LineHeight`/`Unit`; the helper emits a per-instance uid-scoped `<style>` (base + tablet + mobile) and honours a legacy STRING fontSize verbatim for back-compat. Do NOT hand-roll a TextControl/SelectControl font-size or emit `--x-font-size` CSS vars per block — that path produced the inconsistent stacked-RangeControl + unit-dropdown controls this rule exists to kill. Blocks already on it: text/heading/button/label/quote (canonical) + counter/whatsapp-cta/mobile-nav/option-picker/trust-bar/product-card (migrated 2026-06-11). Adopt it for every new typography control + keep all blocks aligned.
 
 1. Native WordPress `supports` for wrapper-level controls (colour, typography, spacing, border)
-2. Custom attributes + controls for each inner text element (colour via `DesignTokenPicker`; font size/weight/style/line-height via the shared `TypographyControls` component — see box above)
+2. Custom attributes + controls for each inner text element (colour via `SgsColourPanel` — see "Colour controls" below; font size/weight/style/line-height via the shared `TypographyControls` component — see box above)
 3. Custom attributes + controls for interactive elements like CTAs (text colour, background colour)
 4. Do NOT use `:not([style*="…"])` fallback guards. Under Spec 32 no block emits an inline `style` property declaration, so the guard always matches and the fallback becomes unconditional — it blocks contextual inheritance and can out-rank the operator's own scoped rule. Instead: let the value inherit (no rule), or emit the fallback inside `:where()` so any `.{uid}` scoped rule wins.
 5. Use Block Selectors API in `block.json` to target native typography to primary text element
@@ -672,6 +723,38 @@ border path handing a raw slug to CSS has this defect; a raw hex hides it.
 styles, fail-closed (a missing browser exits non-zero, never green). ⚠ It measures
 the OUTERMOST `.wp-block-sgs-<name>`, so it cannot target `sgs/container` on a
 page with a header, and NOT RUN is not a pass.
+
+### Colour controls — `SgsColourPanel` is the standard (D609/D618/D622)
+
+**65 of 83 blocks mount `<SgsColourPanel`** (verify: `grep -l "<SgsColourPanel" src/blocks/*/edit.js | wc -l`)
+— **never cache this count, re-run the grep.** It is ONE SGS-owned `PanelBody` titled
+"Colour" (`src/components/SgsColourPanel.js`), rendered in the `styles` InspectorControls
+group, that takes a `rows` array and renders one `DesignTokenPicker`
+(or `GradientCapableColourControl` for a `gradientCapable: true` row) per entry. Do NOT
+hand-roll a bespoke colour `PanelBody` — mount this component instead.
+
+- **A row that doesn't apply is OMITTED, not disabled (D609 field 9c).** `SgsColourPanel`
+  runs `rows.filter(Boolean)` and returns `null` outright if every row is falsy — no empty
+  panel, no greyed-out control. The caller inlines the condition directly in the array
+  literal (`showIconColourRow && { key: "icon", … }`). Reference implementation:
+  `src/blocks/icon-list/edit.js` — read the comment above its `rows={[…]}` block, it cites
+  D609 9c by name.
+- **Row helpers `fillRow`/`textRow`/`borderRow`** (`src/components/colour-variants/`) return
+  row DESCRIPTOR objects, not JSX — they build the `{ key, label, states, … }` shape
+  `SgsColourPanel` expects from an attrs+attributes+setAttributes triple. ⚠ **`borderRow` has
+  ZERO adopters tree-wide** (`grep -rl "borderRow" src/ --include=*.js` returns only its own
+  definition file and the `src/components/index.js` barrel export) — do not treat it as a
+  proven pattern; verify before adopting.
+- **Colour lives inside an ELEMENT's own panel only where a purpose-built paired composite
+  exists** (colour + a non-colour control sharing one row — e.g. border colour sitting next
+  to border style/width in `SgsBorderControl`). There is NO general mechanism for mounting a
+  colour row inside an element's own panel, and none should be built without a design gate —
+  `SgsColourPanel` hardcodes its own `InspectorControls`/`PanelBody`, and zero blocks render
+  a colour control directly inside another panel today.
+- **Residual gap — 6 blocks still mount raw `<DesignTokenPicker>`** instead of routing through
+  `SgsColourPanel`: `hero`, `info-box`, `mega-panel`, `multi-button`, `pricing-table`,
+  `trust-bar` (verify: `grep -l "<DesignTokenPicker" src/blocks/*/edit.js`). `sgs/product-card`
+  is the fully-standardised reference (1 `SgsColourPanel` mount, 0 raw pickers).
 
 ### Hover Controls Spec (Phase 2)
 

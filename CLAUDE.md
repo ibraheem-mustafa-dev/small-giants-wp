@@ -245,7 +245,9 @@ Every uimax row describing a design artefact MUST carry equivalent-name mappings
 Four WordPress-native channels: (1) visual styling defaults → Site Editor Styles panel (`wp_global_styles` over `theme.json`); (2) structural starting state → block patterns at `theme/sgs-theme/patterns/*.php` (one PHP file per pattern — verified 2026-07-15; the old `plugins/sgs-blocks/includes/block-patterns.php` path in this doc was stale and that file does not exist); (3) per-operator session memory → `useLastUsedAttributes` sessionStorage hook; (4) per-instance customisation → block inspector. NO `withSaveAsDefault` HOC, NO `<BlockDefaultsPanel>`, NO `wp_options`-backed defaults store.
 
 ### Block customisation standard (MANDATORY)
-Every block: (1) native `supports` for wrapper-level controls; (2) custom attrs + controls for each inner text element; (3) custom attrs + controls for CTAs; (4) CSS fallback colours use `:not([style*="color"])` so custom values win; (5) Block Selectors API in `block.json` targets native typography to primary text element.
+Every block: (1) native `supports` for wrapper-level controls; (2) custom attrs + controls for each inner text element — colour via `SgsColourPanel`, the standard control (`plugins/sgs-blocks/CLAUDE.md` "Colour controls"); (3) custom attrs + controls for CTAs; (4) Block Selectors API in `block.json` targets native typography to primary text element. Full detail: `plugins/sgs-blocks/CLAUDE.md` "Block Customisation Standard".
+
+⚠ **Corrected 2026-08-30 — the old item 4 here ("CSS fallback colours use `:not([style*="color"])` so custom values win") directly contradicted Spec 32 two sections below on this same page: no SGS block emits an inline `style` property declaration, so that guard always matches and the fallback becomes unconditional, blocking contextual inheritance. Removed. See `plugins/sgs-blocks/CLAUDE.md` item 4 for the corrected guidance (let the value inherit, or scope the fallback inside `:where()`).**
 
 ### Block styling contract — no inline styling (Spec 32)
 **No SGS block may render an inline `style="…"` property declaration.** Native WP supports stay
