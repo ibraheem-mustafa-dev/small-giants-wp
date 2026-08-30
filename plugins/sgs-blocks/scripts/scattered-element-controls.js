@@ -63,13 +63,62 @@ const DB_PATH = path.resolve(
 // DB read (read-only, one shot for the whole run)
 // ---------------------------------------------------------------------------
 
+// RULING 1 (2026-08-30) — non-paintable-attribute exclusion.
+//
+// DB enumeration behind this predicate (run against sgs-framework.db, read-only):
+//   SELECT DISTINCT role, css_property FROM block_attributes WHERE css_property='tag';
+//   -> ('tag-identity','tag') x1, ('enum-mode','tag') x7   [8 rows total]
+//   SELECT * FROM block_attributes WHERE role='tag-identity';
+//   -> 5 rows: sgs/heading.level, sgs/media.mediaType, sgs/product-card.headingLevel,
+//      sgs/product-faq.headingLevel, sgs/icon-list.headingLevel — only product-card's
+//      headingLevel carries a non-NULL css_element ('title'); the other 4 already have
+//      css_element=NULL and were already excluded by the existing null-skip path.
+//   The other 7 css_property='tag' rows (card-grid/form-review/pricing-table/
+//   process-steps/team-member/timeline/trustpilot-reviews, all role='enum-mode') are
+//   EXACTLY the bogus-finding elements the owner named (card-grid[title],
+//   pricing-table[title], process-steps[title], team-member[name]) plus 3 more of the
+//   same shape that never surfaced as findings only because those elements had no OTHER
+//   scattered attribute at the time.
+//   role='tag-identity' ALONE is insufficient — it would miss the 7 'enum-mode' rows,
+//   which are the majority of the real bug. css_property='tag' is the exact, sole,
+//   DB-enumerated signal: `SELECT DISTINCT css_property FROM block_attributes WHERE
+//   role='enum-mode'` returns only (NULL) and ('tag') — no other enum-mode css_property
+//   value exists that would need the same treatment.
+//
+// This is a structural exclusion, not a styling-control judgement call: `tag` names an
+// HTML TAG (h2 vs h3 vs h4, a semantic/SEO choice), never a CSS property. It cannot be
+// "co-located" with a colour control in any panel because it isn't part of the visual
+// styling surface of the element at all.
+const NON_PAINTABLE_CSS_PROPERTIES = new Set( [ 'tag' ] );
+
+// RULING 2 (2026-08-30) — cross-property-family down-rank to "info".
+//
+// Property-family source: block_attributes.css_property, using the two families the
+// owner NAMED explicitly (border / motion-transform), not plugins/sgs-blocks/scripts/
+// consistency/cluster-member-sets.json's 6-cluster vocabulary (text/fill/layout/
+// position/motion/animation) — that file's clusters do NOT separate "border" from
+// other box-layout properties (border-width/style/colour/radius/box-shadow/outline-*
+// are ALL one member of its single "layout" cluster, alongside plain `width`/
+// `margin-top`/`margin-bottom`/`outline-width`/`box-shadow-color`), so a cluster-set
+// difference cannot distinguish the "must still flag" cases from the "by design" cases:
+// verified against every case in the ruling — form[focus-ring]'s formFocusRingColour is
+// DB-typed css_property='border-color' (same "layout" cluster as its sibling
+// formFocusRingWidth/Opacity/Offset), so a pure cluster-diff would have DOWN-RANKED it,
+// which the ruling explicitly forbids. The two families below are read directly off
+// block_attributes.css_property (DB-enumerated: `SELECT DISTINCT css_property FROM
+// block_attributes` — the full "border-*" family is exactly {border-color,
+// border-color-gradient, border-radius, border-style, border-width}; `transform` is a
+// single distinct value, matching the ruling's own wording "scaleHover IS a transform").
+const BORDER_FAMILY_RE = /^border-/;
+const MOTION_TRANSFORM_FAMILY = new Set( [ 'transform' ] );
+
 function loadCssElementMap() {
 	const pyScript = `
 import sqlite3, json, sys
 db = ${ JSON.stringify( DB_PATH ) }
 con = sqlite3.connect(f'file:{db}?mode=ro', uri=True)
 cur = con.cursor()
-cur.execute("SELECT block_slug, attr_name, css_element FROM block_attributes")
+cur.execute("SELECT block_slug, attr_name, css_element, css_property FROM block_attributes")
 rows = cur.fetchall()
 json.dump(rows, sys.stdout)
 `;
@@ -89,10 +138,10 @@ json.dump(rows, sys.stdout)
 	} catch ( e ) {
 		return { ok: false, reason: `unparseable DB dump: ${ e.message }`, map: new Map(), nullCount: 0, totalRows: 0 };
 	}
-	const map = new Map(); // "slug|attr" -> css_element (string) | null
+	const map = new Map(); // "slug|attr" -> { cssElement: string|null, cssProperty: string|null }
 	let nullCount = 0;
-	for ( const [ slug, attr, cssElement ] of rows ) {
-		map.set( `${ slug }|${ attr }`, cssElement );
+	for ( const [ slug, attr, cssElement, cssProperty ] of rows ) {
+		map.set( `${ slug }|${ attr }`, { cssElement, cssProperty } );
 		if ( cssElement === null ) nullCount++;
 	}
 	return { ok: true, reason: null, map, nullCount, totalRows: rows.length };
@@ -507,12 +556,55 @@ function collapsePrefixPanels( bMap ) {
 	return collapsed;
 }
 
+// RULING 2 helpers — classify one PANEL's attrs (via their DB css_property) as
+// homogeneously belonging to a single recognised cross-cutting family (border /
+// motion-transform), or not. A panel that mixes a recognised-family attr with
+// anything else does NOT count — only a panel that is PURELY one family is treated
+// as "the architecture's own dedicated panel for that family" (SgsBorderControl's
+// Border panel; a Hover panel containing only scaleHover).
+function classifyPanelFamily( bucketEntry, cssPropByAttr ) {
+	const attrs = Array.from( bucketEntry.attrs );
+	if ( ! attrs.length ) return null;
+	let allBorder = true;
+	let allMotion = true;
+	for ( const attr of attrs ) {
+		const cssProperty = cssPropByAttr.get( attr );
+		if ( ! cssProperty || ! BORDER_FAMILY_RE.test( cssProperty ) ) allBorder = false;
+		if ( ! cssProperty || ! MOTION_TRANSFORM_FAMILY.has( cssProperty ) ) allMotion = false;
+	}
+	if ( allBorder ) return 'border';
+	if ( allMotion ) return 'motion-transform';
+	return null;
+}
+
+function isColourBucket( bucketEntry ) {
+	return bucketKey( bucketEntry.bucket ) === 'Colour';
+}
+
+// A finding downranks to "info" ONLY when: (a) exactly one bucket is the Colour
+// panel, (b) every OTHER bucket is homogeneously a recognised family (border or
+// motion-transform) per classifyPanelFamily(), and (c) there is at least one such
+// other bucket. A 3rd bucket that is neither Colour nor a recognised family (e.g.
+// a bespoke "Settings > Width" maxWidth control) means the split is NOT purely
+// "colour + architecture's own family panel" — real scatter remains, so severity
+// is computed as before (unaffected by this ruling).
+function isDesignedColourVsFamilySplit( buckets, cssPropByAttr ) {
+	const colourBuckets = buckets.filter( isColourBucket );
+	if ( colourBuckets.length !== 1 ) return false;
+	const otherBuckets = buckets.filter( ( b ) => ! isColourBucket( b ) );
+	if ( ! otherBuckets.length ) return false;
+	return otherBuckets.every( ( b ) => classifyPanelFamily( b, cssPropByAttr ) !== null );
+}
+
 function computeScatter( writes, dbLookup, blockSlug ) {
 	// element -> Map(bucketKey -> {bucket, attrs:Set})
 	const byElement = new Map();
+	// element -> Map(attr -> css_property), for RULING 2 family classification
+	const cssPropByElement = new Map();
 	let mappedCount = 0;
 	let nullElementCount = 0;
 	let notInDbCount = 0;
+	let nonPaintableSkipped = 0; // RULING 1
 
 	for ( const w of writes ) {
 		for ( const attr of w.attrs ) {
@@ -521,14 +613,24 @@ function computeScatter( writes, dbLookup, blockSlug ) {
 				notInDbCount++;
 				continue;
 			}
-			const el = dbLookup.get( dbKey );
+			const { cssElement: el, cssProperty } = dbLookup.get( dbKey );
 			if ( el === null ) {
 				nullElementCount++;
 				continue;
 			}
+			// RULING 1 — a css_property of 'tag' names an HTML TAG, not a paintable
+			// CSS property (e.g. sgs/product-card::headingLevel: role='tag-identity',
+			// css_property='tag', css_element='title'). It is excluded from scatter
+			// grouping entirely — never treated as a styling control of its element.
+			if ( cssProperty !== null && NON_PAINTABLE_CSS_PROPERTIES.has( cssProperty ) ) {
+				nonPaintableSkipped++;
+				continue;
+			}
 			mappedCount++;
 			if ( ! byElement.has( el ) ) byElement.set( el, new Map() );
+			if ( ! cssPropByElement.has( el ) ) cssPropByElement.set( el, new Map() );
 			const bMap = byElement.get( el );
+			cssPropByElement.get( el ).set( attr, cssProperty );
 			const bk = bucketKey( w.bucket );
 			if ( ! bMap.has( bk ) ) bMap.set( bk, { bucket: w.bucket, attrs: new Set() } );
 			bMap.get( bk ).attrs.add( attr );
@@ -540,16 +642,26 @@ function computeScatter( writes, dbLookup, blockSlug ) {
 		const bMap = collapsePrefixPanels( rawBMap ); // FIX 2
 		if ( bMap.size <= 1 ) continue;
 		const buckets = Array.from( bMap.values() );
-		const severityHigh = buckets.length >= 3 || buckets.some( ( b ) => /container|entire block/i.test( bucketKey( b.bucket ) ) );
+		const cssPropByAttr = cssPropByElement.get( el ) || new Map();
+		let severity;
+		if ( isDesignedColourVsFamilySplit( buckets, cssPropByAttr ) ) {
+			// RULING 2 — Colour panel + the architecture's own dedicated family
+			// panel(s) (Border / motion-transform-only Hover). By design, not scatter.
+			severity = 'info';
+		} else {
+			const severityHigh = buckets.length >= 3 || buckets.some( ( b ) => /container|entire block/i.test( bucketKey( b.bucket ) ) );
+			severity = severityHigh ? 'high' : 'warn';
+		}
 		scattered.push( {
 			element: el,
-			severity: severityHigh ? 'high' : 'warn',
+			severity,
 			panels: buckets.map( ( b ) => ( { bucket: b.bucket, attrs: Array.from( b.attrs ) } ) ),
 		} );
 	}
-	scattered.sort( ( a, b ) => ( a.severity === b.severity ? 0 : a.severity === 'high' ? -1 : 1 ) );
+	const severityRank = { high: 0, warn: 1, info: 2 };
+	scattered.sort( ( a, b ) => severityRank[ a.severity ] - severityRank[ b.severity ] );
 
-	return { scattered, mappedCount, nullElementCount, notInDbCount };
+	return { scattered, mappedCount, nullElementCount, notInDbCount, nonPaintableSkipped };
 }
 
 // ---------------------------------------------------------------------------
@@ -572,6 +684,7 @@ function surveyBlock( slug, tail, cache, dbMap, knownSharedComponents, component
 		mappedCount: scatterResult.mappedCount,
 		nullElementCount: scatterResult.nullElementCount,
 		notInDbCount: scatterResult.notInDbCount,
+		nonPaintableSkipped: scatterResult.nonPaintableSkipped,
 		unresolvedCount: extracted.unresolved.length,
 		unresolved: extracted.unresolved,
 		opaqueComponents: extracted.opaqueComponents,
@@ -602,6 +715,10 @@ function runSurvey( { onlyBlock, json } ) {
 
 	const blocksWithScatter = results.filter( ( r ) => r.scattered && r.scattered.length );
 	const totalScatterFindings = blocksWithScatter.reduce( ( n, r ) => n + r.scattered.length, 0 );
+	const severityCounts = { high: 0, warn: 0, info: 0 };
+	for ( const r of blocksWithScatter ) {
+		for ( const s of r.scattered ) severityCounts[ s.severity ]++;
+	}
 
 	if ( json ) {
 		console.log(
@@ -612,13 +729,14 @@ function runSurvey( { onlyBlock, json } ) {
 					blocksScanned: results.length,
 					blocksWithScatter: blocksWithScatter.length,
 					totalScatterFindings,
+					severityCounts,
 					results,
 				},
 				null,
 				2
 			)
 		);
-		return { results, blocksWithScatter, totalScatterFindings };
+		return { results, blocksWithScatter, totalScatterFindings, severityCounts };
 	}
 
 	console.log( `[scattered-element-controls] --survey` );
@@ -648,11 +766,13 @@ function runSurvey( { onlyBlock, json } ) {
 	}
 
 	console.log( `SUMMARY: ${ blocksWithScatter.length } / ${ results.length } blocks have ≥1 scattered element; ${ totalScatterFindings } scattered-element findings total.` );
+	console.log( `  Severity split — HIGH: ${ severityCounts.high }  WARN: ${ severityCounts.warn }  INFO (by-design, RULING 2): ${ severityCounts.info }` );
 	const nullSkipped = results.reduce( ( n, r ) => n + ( r.nullElementCount || 0 ), 0 );
 	const notInDb = results.reduce( ( n, r ) => n + ( r.notInDbCount || 0 ), 0 );
-	console.log( `(${ nullSkipped } control-attribute writes skipped for NULL css_element; ${ notInDb } writes resolved to a name not present in block_attributes at all — both excluded from grouping, never guessed at.)` );
+	const nonPaintable = results.reduce( ( n, r ) => n + ( r.nonPaintableSkipped || 0 ), 0 );
+	console.log( `(${ nullSkipped } control-attribute writes skipped for NULL css_element; ${ notInDb } writes resolved to a name not present in block_attributes at all; ${ nonPaintable } writes skipped for a non-paintable css_property [RULING 1, e.g. 'tag'] — all three excluded from grouping, never guessed at.)` );
 
-	return { results, blocksWithScatter, totalScatterFindings };
+	return { results, blocksWithScatter, totalScatterFindings, severityCounts };
 }
 
 // ---------------------------------------------------------------------------
@@ -748,6 +868,15 @@ export default function Edit( { attributes, setAttributes } ) {
 }
 `;
 
+// Self-test dbMap entries now carry { cssElement, cssProperty } (computeScatter's real
+// DB-map shape, since RULING 1/2 need css_property alongside css_element). This helper
+// keeps every fixture below terse: mk('split-media') === no css_property (unaffected by
+// either ruling); mk('title', 'tag') / mk('wrapper', 'border-width') opt a fixture attr
+// into a ruling's predicate.
+function mk( cssElement, cssProperty = null ) {
+	return { cssElement, cssProperty };
+}
+
 function parseFixtureSource( src ) {
 	const babelParser = require( '@babel/parser' );
 	return babelParser.parse( src, {
@@ -769,11 +898,11 @@ function selfTest() {
 		const ast = parseFixtureSource( HERO_SHAPED_FIXTURE );
 		const extracted = extractFromAst( ast, { knownSharedComponents } );
 		const dbMap = new Map( [
-			[ 'sgs/hero-fixture|mediaAnimationDuration', 'split-media' ],
-			[ 'sgs/hero-fixture|splitContentOrder', 'split-media' ],
-			[ 'sgs/hero-fixture|splitMediaWidth', 'split-media' ],
-			[ 'sgs/hero-fixture|splitMediaWidthTablet', 'split-media' ],
-			[ 'sgs/hero-fixture|splitMediaWidthMobile', 'split-media' ],
+			[ 'sgs/hero-fixture|mediaAnimationDuration', mk( 'split-media' ) ],
+			[ 'sgs/hero-fixture|splitContentOrder', mk( 'split-media' ) ],
+			[ 'sgs/hero-fixture|splitMediaWidth', mk( 'split-media' ) ],
+			[ 'sgs/hero-fixture|splitMediaWidthTablet', mk( 'split-media' ) ],
+			[ 'sgs/hero-fixture|splitMediaWidthMobile', mk( 'split-media' ) ],
 		] );
 		const result = computeScatter( extracted.writes, dbMap, 'sgs/hero-fixture' );
 		const splitMedia = result.scattered.find( ( s ) => s.element === 'split-media' );
@@ -791,9 +920,9 @@ function selfTest() {
 		const ast = parseFixtureSource( COHESIVE_FIXTURE );
 		const extracted = extractFromAst( ast, { knownSharedComponents } );
 		const dbMap = new Map( [
-			[ 'sgs/cohesive-fixture|phoneNumber', 'root' ],
-			[ 'sgs/cohesive-fixture|message', 'root' ],
-			[ 'sgs/cohesive-fixture|buttonLabel', 'root' ],
+			[ 'sgs/cohesive-fixture|phoneNumber', mk( 'root' ) ],
+			[ 'sgs/cohesive-fixture|message', mk( 'root' ) ],
+			[ 'sgs/cohesive-fixture|buttonLabel', mk( 'root' ) ],
 		] );
 		const result = computeScatter( extracted.writes, dbMap, 'sgs/cohesive-fixture' );
 		assert( result.scattered.length === 0, `NEGATIVE CONTROL: cohesive fixture produces 0 scattered findings (got ${ result.scattered.length })` );
@@ -804,9 +933,9 @@ function selfTest() {
 		const ast = parseFixtureSource( COHESIVE_FIXTURE );
 		const extracted = extractFromAst( ast, { knownSharedComponents } );
 		const dbMap = new Map( [
-			[ 'sgs/null-fixture|phoneNumber', null ],
-			[ 'sgs/null-fixture|message', null ],
-			[ 'sgs/null-fixture|buttonLabel', null ],
+			[ 'sgs/null-fixture|phoneNumber', mk( null ) ],
+			[ 'sgs/null-fixture|message', mk( null ) ],
+			[ 'sgs/null-fixture|buttonLabel', mk( null ) ],
 		] );
 		const result = computeScatter( extracted.writes, dbMap, 'sgs/null-fixture' );
 		assert( result.scattered.length === 0, 'NULL css_element: 0 scattered findings when every attr maps to NULL (never guessed)' );
@@ -866,9 +995,9 @@ function selfTest() {
 			{ bucket: [ 'Styles', 'Colour' ], attrs: [ 'colour' ] },
 		];
 		const dbMap = new Map( [
-			[ 'sgs/fix2-fixture|fontStyle', 'heading' ],
-			[ 'sgs/fix2-fixture|fontWeight', 'heading' ],
-			[ 'sgs/fix2-fixture|colour', 'heading' ],
+			[ 'sgs/fix2-fixture|fontStyle', mk( 'heading' ) ],
+			[ 'sgs/fix2-fixture|fontWeight', mk( 'heading' ) ],
+			[ 'sgs/fix2-fixture|colour', mk( 'heading' ) ],
 		] );
 		const result = computeScatter( writes, dbMap, 'sgs/fix2-fixture' );
 		const heading = result.scattered.find( ( s ) => s.element === 'heading' );
@@ -892,8 +1021,8 @@ function selfTest() {
 			{ bucket: [ 'Styles', 'Shadow' ], attrs: [ 'shadowColour' ] },
 		];
 		const dbMap = new Map( [
-			[ 'sgs/fix2-neg|borderColour', 'card' ],
-			[ 'sgs/fix2-neg|shadowColour', 'card' ],
+			[ 'sgs/fix2-neg|borderColour', mk( 'card', 'border-color' ) ],
+			[ 'sgs/fix2-neg|shadowColour', mk( 'card', 'box-shadow-color' ) ],
 		] );
 		const result = computeScatter( writes, dbMap, 'sgs/fix2-neg' );
 		const card = result.scattered.find( ( s ) => s.element === 'card' );
@@ -913,8 +1042,8 @@ function selfTest() {
 			{ bucket: [ 'Styles', 'Bar' ], attrs: [ 'gap' ] },
 		];
 		const dbMap = new Map( [
-			[ 'sgs/fix2-empty-guard|featuredItemIds', 'bar' ],
-			[ 'sgs/fix2-empty-guard|gap', 'bar' ],
+			[ 'sgs/fix2-empty-guard|featuredItemIds', mk( 'bar' ) ],
+			[ 'sgs/fix2-empty-guard|gap', mk( 'bar' ) ],
 		] );
 		const result = computeScatter( writes, dbMap, 'sgs/fix2-empty-guard' );
 		const bar = result.scattered.find( ( s ) => s.element === 'bar' );
@@ -938,6 +1067,140 @@ function selfTest() {
 
 		const onChangeWrite = extracted.writes.find( ( w ) => w.attrs.includes( 'boxShadowSize' ) );
 		assert( onChangeWrite, 'FIX3 NEGATIVE CONTROL: a genuine onChange={...} write in the same file (boxShadowSize) still counts' );
+	}
+
+	// --- RULING 1 (2026-08-30) POSITIVE CONTROL: a css_property='tag' attribute
+	// (e.g. product-card::headingLevel) alongside a colour attr on the SAME element
+	// must be EXCLUDED from grouping — the element must NOT be flagged as scattered
+	// when the "tag" attr is the only other write. This is the exact bogus-finding
+	// shape (card-grid[title] / pricing-table[title] / process-steps[title] /
+	// team-member[name]) the ruling exists to remove. ---
+	{
+		const writes = [
+			{ bucket: [ 'Colour' ], attrs: [ 'titleColour' ] },
+			{ bucket: [ 'Settings', 'Card Settings' ], attrs: [ 'headingLevel' ] },
+		];
+		const dbMap = new Map( [
+			[ 'sgs/ruling1-fixture|titleColour', mk( 'title', 'color' ) ],
+			[ 'sgs/ruling1-fixture|headingLevel', mk( 'title', 'tag' ) ],
+		] );
+		const result = computeScatter( writes, dbMap, 'sgs/ruling1-fixture' );
+		assert(
+			result.scattered.length === 0,
+			`RULING1 POSITIVE CONTROL: a css_property='tag' attr (headingLevel) is excluded, so title is NOT flagged as scattered (got ${ result.scattered.length } findings)`
+		);
+		assert( result.nonPaintableSkipped === 1, `RULING1 POSITIVE CONTROL: 1 write correctly counted as non-paintable-skipped (got ${ result.nonPaintableSkipped })` );
+	}
+
+	// --- RULING 1 NEGATIVE CONTROL (required by the brief): a GENUINE paintable
+	// attribute on the same element must STILL be grouped and still flag, even
+	// alongside an excluded 'tag' attr — the exclusion must not swallow real scatter. ---
+	{
+		const writes = [
+			{ bucket: [ 'Colour' ], attrs: [ 'titleColour' ] },
+			{ bucket: [ 'Settings', 'Card Settings' ], attrs: [ 'headingLevel' ] },
+			{ bucket: [ 'Settings', 'Border' ], attrs: [ 'borderWidth' ] },
+		];
+		const dbMap = new Map( [
+			[ 'sgs/ruling1-neg|titleColour', mk( 'title', 'color' ) ],
+			[ 'sgs/ruling1-neg|headingLevel', mk( 'title', 'tag' ) ],
+			[ 'sgs/ruling1-neg|borderWidth', mk( 'title', 'border-width' ) ],
+		] );
+		const result = computeScatter( writes, dbMap, 'sgs/ruling1-neg' );
+		const title = result.scattered.find( ( s ) => s.element === 'title' );
+		assert( title, 'RULING1 NEGATIVE CONTROL: a genuine paintable attr (borderWidth) alongside an excluded "tag" attr still flags "title" as scattered' );
+		assert(
+			title && title.panels.length === 2,
+			`RULING1 NEGATIVE CONTROL: exactly the 2 real panels (Colour + Border) survive, the excluded tag write contributes no 3rd panel (got ${ title ? title.panels.length : 0 })`
+		);
+		assert(
+			title && ! title.panels.some( ( p ) => p.attrs.includes( 'headingLevel' ) ),
+			'RULING1 NEGATIVE CONTROL: headingLevel never appears inside any surviving panel\'s attrs'
+		);
+	}
+
+	// --- RULING 2 (2026-08-30) POSITIVE CONTROL A: Colour + a Border panel whose
+	// attrs are ALL border-family (accordion-item[wrapper] shape) downranks to "info". ---
+	{
+		const writes = [
+			{ bucket: [ 'Colour' ], attrs: [ 'textColour' ] },
+			{ bucket: [ 'Settings', 'Border' ], attrs: [ 'borderWidth', 'borderStyle', 'borderColour', 'borderRadius' ] },
+		];
+		const dbMap = new Map( [
+			[ 'sgs/ruling2a-fixture|textColour', mk( 'wrapper', 'color' ) ],
+			[ 'sgs/ruling2a-fixture|borderWidth', mk( 'wrapper', 'border-width' ) ],
+			[ 'sgs/ruling2a-fixture|borderStyle', mk( 'wrapper', 'border-style' ) ],
+			[ 'sgs/ruling2a-fixture|borderColour', mk( 'wrapper', 'border-color' ) ],
+			[ 'sgs/ruling2a-fixture|borderRadius', mk( 'wrapper', 'border-radius' ) ],
+		] );
+		const result = computeScatter( writes, dbMap, 'sgs/ruling2a-fixture' );
+		const wrapper = result.scattered.find( ( s ) => s.element === 'wrapper' );
+		assert( wrapper, 'RULING2A POSITIVE CONTROL: Colour+Border split still recorded as a finding (down-ranked, not deleted)' );
+		assert( wrapper && wrapper.severity === 'info', `RULING2A POSITIVE CONTROL: Colour + all-border-family panel down-ranks to "info" (got ${ wrapper ? wrapper.severity : 'none' })` );
+	}
+
+	// --- RULING 2 POSITIVE CONTROL D: Colour + a Hover panel containing ONLY a
+	// transform attr (icon[wrapper]/post-grid[card] shape) downranks to "info". ---
+	{
+		const writes = [
+			{ bucket: [ 'Colour' ], attrs: [ 'iconColour' ] },
+			{ bucket: [ 'Settings', 'Hover effects' ], attrs: [ 'scaleHover' ] },
+		];
+		const dbMap = new Map( [
+			[ 'sgs/ruling2d-fixture|iconColour', mk( 'wrapper', 'color' ) ],
+			[ 'sgs/ruling2d-fixture|scaleHover', mk( 'wrapper', 'transform' ) ],
+		] );
+		const result = computeScatter( writes, dbMap, 'sgs/ruling2d-fixture' );
+		const wrapper = result.scattered.find( ( s ) => s.element === 'wrapper' );
+		assert( wrapper && wrapper.severity === 'info', `RULING2D POSITIVE CONTROL: Colour + transform-only Hover panel down-ranks to "info" (got ${ wrapper ? wrapper.severity : 'none' })` );
+	}
+
+	// --- RULING 2 NEGATIVE CONTROL (required — the "must still flag" group):
+	// Colour + a panel whose attrs are NEITHER all-border NOR all-transform (the
+	// sgs/form[focus-ring] shape: border-color colour paired with outline-width /
+	// box-shadow-color / outline-offset in "Focus State") must STAY warn/high. ---
+	{
+		const writes = [
+			{ bucket: [ 'Colour' ], attrs: [ 'formFocusRingColour' ] },
+			{ bucket: [ 'Settings', 'Focus State' ], attrs: [ 'formFocusRingWidth', 'formFocusRingOpacity', 'formFocusRingOffset' ] },
+		];
+		const dbMap = new Map( [
+			[ 'sgs/ruling2neg-fixture|formFocusRingColour', mk( 'focus-ring', 'border-color' ) ],
+			[ 'sgs/ruling2neg-fixture|formFocusRingWidth', mk( 'focus-ring', 'outline-width' ) ],
+			[ 'sgs/ruling2neg-fixture|formFocusRingOpacity', mk( 'focus-ring', 'box-shadow-color' ) ],
+			[ 'sgs/ruling2neg-fixture|formFocusRingOffset', mk( 'focus-ring', 'outline-offset' ) ],
+		] );
+		const result = computeScatter( writes, dbMap, 'sgs/ruling2neg-fixture' );
+		const focusRing = result.scattered.find( ( s ) => s.element === 'focus-ring' );
+		assert(
+			focusRing && focusRing.severity === 'warn',
+			`RULING2 NEGATIVE CONTROL: formFocusRingColour is css_property='border-color' (not a homogeneous border-family PANEL — the sibling panel mixes outline-width/box-shadow-color/outline-offset), so this stays "warn", never down-ranked (got ${ focusRing ? focusRing.severity : 'none' })`
+		);
+	}
+
+	// --- RULING 2 REGRESSION CONTROL: a 3rd bucket that is neither Colour nor a
+	// recognised family (e.g. a bespoke "Width" panel, the team-member[wrapper]
+	// shape) means the split is NOT purely "colour + architecture's own panel" —
+	// severity computes as before (unaffected by this ruling), never silently
+	// downranked just because ONE of the panels happens to be all-border. ---
+	{
+		const writes = [
+			{ bucket: [ 'Colour' ], attrs: [ 'cardShadowColour' ] },
+			{ bucket: [ 'Settings', 'Width' ], attrs: [ 'maxWidth' ] },
+			{ bucket: [ 'Settings', 'Border' ], attrs: [ 'borderWidth', 'borderColour' ] },
+		];
+		const dbMap = new Map( [
+			[ 'sgs/ruling2reg-fixture|cardShadowColour', mk( 'wrapper', 'box-shadow-color' ) ],
+			[ 'sgs/ruling2reg-fixture|maxWidth', mk( 'wrapper', 'max-width' ) ],
+			[ 'sgs/ruling2reg-fixture|borderWidth', mk( 'wrapper', 'border-width' ) ],
+			[ 'sgs/ruling2reg-fixture|borderColour', mk( 'wrapper', 'border-color' ) ],
+		] );
+		const result = computeScatter( writes, dbMap, 'sgs/ruling2reg-fixture' );
+		const wrapper = result.scattered.find( ( s ) => s.element === 'wrapper' );
+		assert(
+			wrapper && wrapper.severity === 'high',
+			`RULING2 REGRESSION CONTROL: Colour + Width + Border (3 panels, Width is neither Colour nor a recognised family) stays "high" as before, NOT down-ranked (got ${ wrapper ? wrapper.severity : 'none' })`
+		);
 	}
 
 	const failed = assertions.filter( ( a ) => ! a.pass );
