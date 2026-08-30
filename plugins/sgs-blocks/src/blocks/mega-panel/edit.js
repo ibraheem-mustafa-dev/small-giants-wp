@@ -51,6 +51,7 @@ import {
 	ResponsiveBoxControl,
 	SgsColourPanel,
 	SgsLengthControl,
+	fillRow,
 } from '../../components';
 import { colourVar } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
@@ -609,16 +610,18 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ToggleGroupControl>
 					{ 'line' === sepStyle && (
 						<>
-							<DesignTokenPicker
-								label={ __( 'Divider colour', 'sgs-blocks' ) }
-								value={ asideSeparator?.colour }
-								onChange={ ( value ) =>
+							<SgsColourPanel
+								rows={ [
+									fillRow( {
+										key: 'aside-separator-colour',
+										label: __( 'Divider colour', 'sgs-blocks' ),
+										get: () => asideSeparator?.colour,
+										set: ( value ) =>
 									setAttributes( {
 										asideSeparator: { ...asideSeparator, colour: value || '' },
-									} )
-								}
-								linked
-								clearable
+									} ),
+									} ),
+								] }
 							/>
 							<SgsLengthControl
 								label={ __( 'Divider width', 'sgs-blocks' ) }

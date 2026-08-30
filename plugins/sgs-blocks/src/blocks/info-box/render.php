@@ -137,6 +137,16 @@ $margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attribu
 
 $style_group           = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();
 $style_border_args     = ! empty( $style_group['border'] ) && is_array( $style_group['border'] ) ? $style_group['border'] : array();
+// COLOUR key stripped (2026-08-30 owner decision): this block declares no
+// __experimentalBorder/border support, so style.border.color was never a real
+// editor control — the deleted bespoke picker's comment claiming it mirrored
+// WP's native Border panel was false (no such panel exists on this block).
+// borderColour (Shape B, §8-9 below) is the sole canonical owner of the
+// block-private border colour. Live-verified 2026-08-30: 0 of 418 stored
+// info-box instances carry style.border.color, so nothing is stranded.
+// RADIUS (and any other key) is left untouched — 388 stored instances rely on
+// style.border.radius reaching wp_style_engine_get_styles() below.
+unset( $style_border_args['color'] );
 $style_typography_args = ! empty( $style_group['typography'] ) && is_array( $style_group['typography'] ) ? $style_group['typography'] : array();
 $style_shadow          = isset( $style_group['shadow'] ) ? (string) $style_group['shadow'] : '';
 

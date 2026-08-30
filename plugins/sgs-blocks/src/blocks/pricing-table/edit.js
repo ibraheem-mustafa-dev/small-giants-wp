@@ -17,6 +17,7 @@ import {
 import { Icon, plus, close } from '@wordpress/icons';
 import { DesignTokenPicker, IconPicker, LinkPopoverField, SgsColourPanel, resolveColourToken,
 	SgsBorderControl,
+	fillRow,
 } from '../../components';
 import { colourVar, resolveResponsiveTier, resolveTextColourPreviewStyle } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
@@ -681,12 +682,16 @@ export default function Edit( { attributes, setAttributes } ) {
 										__next40pxDefaultSize
 									/>
 									{ plan.ribbonText && (
-										<DesignTokenPicker
-											label={ __( 'Ribbon colour', 'sgs-blocks' ) }
-											value={ plan.ribbonColour || 'accent' }
-											onChange={ ( val ) =>
-												updatePlan( planIndex, 'ribbonColour', val )
-											}
+										<SgsColourPanel
+											rows={ [
+												fillRow( {
+													key: 'plan-ribbon-colour',
+													label: __( 'Ribbon colour', 'sgs-blocks' ),
+													get: () => plan.ribbonColour || 'accent',
+													set: ( val ) =>
+												updatePlan( planIndex, 'ribbonColour', val ),
+												} ),
+											] }
 										/>
 									) }
 								</div>

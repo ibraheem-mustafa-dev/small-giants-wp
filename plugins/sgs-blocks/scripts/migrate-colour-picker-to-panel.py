@@ -721,6 +721,108 @@ def apply_fixes_to_file(path, migratable_mounts, write):
     return text != original, diff, None
 
 
+# ── MIGRATABLE-FILL/-TEXT get/set apply mechanic (Task 3, 2026-08-30) ──────────────────────
+# For a mount whose value lives at `base.prop` -- an object-attribute field
+# (mega-panel's `asideSeparator.colour`) or a repeater-item field (pricing-table's
+# `plan.ribbonColour`) -- reclassified MIGRATABLE-FILL/-TEXT with `binding_kind == 'getset'`
+# by resolve_nonattr_colour_mechanism() above. attrs.base cannot name either shape, so
+# fillRow/textRow's get/set override (fillRow.js, 2026-08-30) is used instead: `get` reads
+# the ORIGINAL value expression, `set` reuses the ORIGINAL onChange handler VERBATIM.
+#
+# IN-PLACE, deliberately never lifted into the file's other top-level `<SgsColourPanel
+# rows={[...]}>` (the attrs.base mechanism's target). Two independent reasons, both real:
+#   1. Scope -- pricing-table's get/set close over `plan`/`planIndex`, loop-locals from
+#      the `plans.map(...)` callback. Lifting the row into the top-level array (defined
+#      OUTSIDE that callback) would be a ReferenceError at runtime -- those names don't
+#      exist there. mega-panel's `asideSeparator` IS a top-level attribute and COULD be
+#      lifted, but doing so would move a "Divider colour" control out of its own Divider
+#      panel into the unrelated top-level Colour panel -- a UX relocation this task never
+#      asked for. IN-PLACE is the one mechanism that is correct for both without a
+#      per-block special case.
+#   2. Task 3's own instruction for pricing-table -- "USE that [updatePlan] callback; do
+#      not hand-roll a second array-rebuild path" -- is satisfied for free: `set_expr` is
+#      reused byte-for-byte, and it already calls `updatePlan(...)`.
+#
+# The raw `<DesignTokenPicker>` mount is replaced, at its own JSX position, with a
+# minimal `<SgsColourPanel rows={[ fillRow/textRow({...}) ]} />` -- one row, one panel,
+# same slot in the tree, so no other sibling control shifts panel or position.
+
+def build_row_call_getset(helper, mount, item_indent):
+    """Builds a fillRow/textRow call using get/set (2026-08-30 binding). `mount.get_expr`
+    was a bare value expression (e.g. `asideSeparator?.colour`, `plan.ribbonColour ||
+    'accent'`) -- wrapped in a `() => ...` arrow, since fillRow's `get` prop is a function.
+    `mount.set_expr` was ALREADY a full arrow function (the original onChange handler, e.g.
+    `( value ) => setAttributes( { asideSeparator: { ...asideSeparator, colour: value || '' } } )`
+    or `( val ) => updatePlan( planIndex, 'ribbonColour', val )`) -- reused verbatim, no
+    re-wrapping, so the exact original write path (including any existing repeater
+    callback) survives unchanged."""
+    key = slugify_key(re.sub(r'[.\[\]]+', '-', mount.attr_name).strip('-'))
+    field_indent = item_indent + '\t'
+    label = mount.label or mount.attr_name
+    return (
+        f"{item_indent}{helper}( {{\n"
+        f"{field_indent}key: '{key}',\n"
+        f"{field_indent}label: __( '{label}', 'sgs-blocks' ),\n"
+        f"{field_indent}get: () => {mount.get_expr},\n"
+        f"{field_indent}set: {mount.set_expr},\n"
+        f"{item_indent}" + "} ),\n"
+    )
+
+
+def apply_getset_fixes_to_file(path, getset_mounts, write):
+    """getset_mounts: Mount objects for ONE file, all MIGRATABLE-FILL/-TEXT with
+    binding_kind == 'getset'. IN-PLACE only -- see the module comment above for why.
+    Returns (changed, diff_lines, refusal)."""
+    original = path.read_text(encoding='utf-8', newline='')
+    if not getset_mounts:
+        return False, [], None
+    text = original
+
+    ordered = sorted(getset_mounts, key=lambda m: m.start, reverse=True)
+    helpers_needed = set()
+    for mount in ordered:
+        seg_start = strip_preceding_comment(text, mount.start)
+        line_start = text.rfind('\n', 0, seg_start) + 1
+        seg_end = mount.end
+        if text[seg_end:seg_end + 1] == '\n':
+            seg_end += 1
+        indent = re.match(r'[ \t]*', text[line_start:]).group(0)
+        helper = 'fillRow' if mount.category == 'MIGRATABLE-FILL' else 'textRow'
+        helpers_needed.add(helper)
+        row_indent = indent + '\t\t'
+        new_block = (
+            f"{indent}<SgsColourPanel\n"
+            f"{indent}\trows={{ [\n"
+            f"{build_row_call_getset(helper, mount, row_indent)}"
+            f"{indent}\t] }}\n"
+            f"{indent}/>\n"
+        )
+        text = text[:line_start] + new_block + text[seg_end:]
+
+    for helper in sorted(helpers_needed | {'SgsColourPanel'}):
+        text, ok = ensure_helper_imported(text, helper)
+        if not ok:
+            return False, [], f"couldn't locate the '../../components' import block to add {helper}"
+
+    if not write and text == original:
+        return False, [], None
+
+    diff = list(
+        difflib.unified_diff(
+            original.splitlines(keepends=True),
+            text.splitlines(keepends=True),
+            fromfile=str(path),
+            tofile=str(path) + ' (fixed)',
+            lineterm='\n',
+        )
+    )
+    if write and text != original:
+        tmp = path.with_suffix(path.suffix + '.tmp')
+        tmp.write_text(text, encoding='utf-8', newline='')
+        os.replace(tmp, path)
+    return text != original, diff, None
+
+
 # ── MIGRATABLE-BORDER-NATIVE-PURGE apply mechanic (Task 2a) ────────────────────────────────
 # DELETES the bespoke WP-native-shaped `attributes.style.border.color` + `borderColourGradient`
 # DesignTokenPicker mount -- its gradient half always duplicates the block's own root
@@ -1209,17 +1311,35 @@ def cmd_fix(apply_):
             if not apply_:
                 sys.stdout.write(''.join(diff))
 
-    # 4) Everything else -- structural refusals, get/set-reclassified FILL/TEXT mounts
-    #    with no apply mechanism yet (Task 2 scope was the two border mechanics only),
-    #    and any MIGRATABLE-BORDER mount that got BLOCKED above (already reported).
+    # 4) MIGRATABLE-FILL/-TEXT, get/set binding (Task 3, 2026-08-30) -- mega-panel
+    #    asideSeparator.colour, pricing-table plan.ribbonColour today. IN-PLACE mount,
+    #    see apply_getset_fixes_to_file's module comment for why never lifted.
+    getset_mounts = [
+        m for m in mounts
+        if m.category in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT') and m.binding_kind == 'getset'
+    ]
+    getset_by_file = {}
+    for m in getset_mounts:
+        getset_by_file.setdefault(m.file, []).append(m)
+    getset_files = 0
+    getset_rows = 0
+    for path, ms in sorted(getset_by_file.items()):
+        changed, diff, refusal = apply_getset_fixes_to_file(path, ms, apply_)
+        if refusal:
+            print(f'  REFUSED (insert-site) {ms[0].block} -- {refusal}')
+            continue
+        handled_ids.update(id(m) for m in ms)
+        if changed:
+            getset_files += 1
+            getset_rows += len(ms)
+            if not apply_:
+                sys.stdout.write(''.join(diff))
+
+    # 5) Everything else -- structural refusals + any MIGRATABLE-BORDER mount that got
+    #    BLOCKED above (already reported).
     remaining = [m for m in mounts if id(m) not in handled_ids and not any(m is rm for rm, _ in border_refusals)]
     for m in remaining:
-        if m.category in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT') and m.binding_kind == 'getset':
-            verb = 'NOT-YET-APPLIED'
-        elif m.category.startswith('MIGRATABLE-'):
-            verb = 'NOT-YET-APPLIED'
-        else:
-            verb = 'REFUSED'
+        verb = 'NOT-YET-APPLIED' if m.category.startswith('MIGRATABLE-') else 'REFUSED'
         print(f'  {verb} {m.category} {m.block}:{m.line} -- {m.detail}')
 
     total_refusals = len(remaining) + len(border_refusals)
@@ -1227,6 +1347,7 @@ def cmd_fix(apply_):
         f"\n{'APPLIED' if apply_ else 'DRY RUN'} -- colour rows: {changed_files} file(s)/{total_rows} row(s); "
         f"native-purge deletions: {purged_files} file(s)/{purged_mounts_n} mount(s); "
         f"new border mounts: {new_mount_files} file(s)/{new_mount_n} mount(s); "
+        f"get/set rows: {getset_files} file(s)/{getset_rows} row(s); "
         f"{total_refusals} refusal(s)/not-yet-applied"
     )
     if not apply_:
@@ -1243,7 +1364,7 @@ def cmd_check():
     # resolution path in scope -- that mount is reported by --fix as BLOCKED instead).
     outstanding = [
         m for m in mounts
-        if (m.category in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT') and m.binding_kind == 'attrs')
+        if (m.category in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT') and m.binding_kind in ('attrs', 'getset'))
         or m.category == 'MIGRATABLE-BORDER-NATIVE-PURGE'
         or (m.category == 'MIGRATABLE-BORDER' and plan_new_border_mount(m.block, m.attr_name)[0] is not None)
     ]
@@ -1471,34 +1592,40 @@ def self_test():
                 'CONFIRMED' in (fill_colour_mounts[0].detail or '') and 'fill:' in (fill_colour_mounts[0].detail or ''),
             )
 
-        # 2c. POSITIVE (2026-08-30 reclassification): mega-panel's asideSeparator.colour --
-        #     an object-attribute field the get/set path CAN reach, CONFIRMED via render.php
-        #     to paint a border-left divider colour (not text) -> MIGRATABLE-FILL, getset-bound.
-        real_mega_panel_mounts = scan_mounts_in_file(
-            'sgs/mega-panel', BLOCKS_DIR / 'mega-panel' / 'edit.js'
-        )
+        # 2c. POST-APPLY (2026-08-30 Task 3): mega-panel's asideSeparator.colour was a
+        #     get/set-reclassified mount (an object-attribute field the get/set path CAN
+        #     reach, CONFIRMED via render.php to paint a border-left divider colour, not
+        #     text -> MIGRATABLE-FILL) and has NOW been migrated in-place by
+        #     apply_getset_fixes_to_file(). The raw <DesignTokenPicker> is gone from the
+        #     live file; what remains is proof the migration actually landed: get/set
+        #     row calling the ORIGINAL asideSeparator/setAttributes expressions verbatim,
+        #     inside a real <SgsColourPanel> mount.
+        mega_panel_src = (BLOCKS_DIR / 'mega-panel' / 'edit.js').read_text(encoding='utf-8')
+        real_mega_panel_mounts = scan_mounts_in_file('sgs/mega-panel', BLOCKS_DIR / 'mega-panel' / 'edit.js', text=mega_panel_src)
         aside_mounts = [m for m in real_mega_panel_mounts if m.attr_name == 'asideSeparator.colour']
-        check('real mega-panel: asideSeparator.colour mount found in the live file', len(aside_mounts) == 1)
-        if aside_mounts:
-            check('real mega-panel: reclassified MIGRATABLE-FILL', aside_mounts[0].category == 'MIGRATABLE-FILL')
-            check('real mega-panel: binding_kind is getset (not attrs.base)', aside_mounts[0].binding_kind == 'getset')
-            check(
-                'real mega-panel: get/set expressions captured from the original value/onChange',
-                aside_mounts[0].get_expr and aside_mounts[0].set_expr
-                and 'asideSeparator' in aside_mounts[0].get_expr and 'setAttributes' in aside_mounts[0].set_expr,
-            )
-
-        # 2d. POSITIVE (2026-08-30 reclassification): pricing-table's plan.ribbonColour --
-        #     a repeater-item field, CONFIRMED via render.php to feed a CSS custom property
-        #     consumed by `background-color` -> MIGRATABLE-FILL, getset-bound.
-        real_pricing_table_mounts = scan_mounts_in_file(
-            'sgs/pricing-table', BLOCKS_DIR / 'pricing-table' / 'edit.js'
+        check('real mega-panel: raw asideSeparator.colour mount is GONE (post-apply)', len(aside_mounts) == 0)
+        check(
+            'real mega-panel: get/set row landed in the live file (asideSeparator get + setAttributes set, inside SgsColourPanel)',
+            "get: () => asideSeparator?.colour" in mega_panel_src
+            and '<SgsColourPanel' in mega_panel_src
+            and mega_panel_src.count('<SgsColourPanel') >= 2,  # the pre-existing top-level panel + this new in-place one
         )
+
+        # 2d. POST-APPLY (2026-08-30 Task 3): pricing-table's plan.ribbonColour was a
+        #     get/set-reclassified mount (a repeater-item field, CONFIRMED via render.php
+        #     to feed a CSS custom property consumed by `background-color` -> MIGRATABLE-FILL)
+        #     and has NOW been migrated in-place, reusing the existing updatePlan(...)
+        #     callback verbatim as the writer (Task 3's own instruction -- never a second
+        #     array-rebuild path).
+        pricing_table_src = (BLOCKS_DIR / 'pricing-table' / 'edit.js').read_text(encoding='utf-8')
+        real_pricing_table_mounts = scan_mounts_in_file('sgs/pricing-table', BLOCKS_DIR / 'pricing-table' / 'edit.js', text=pricing_table_src)
         ribbon_mounts = [m for m in real_pricing_table_mounts if m.attr_name == 'plan.ribbonColour']
-        check('real pricing-table: plan.ribbonColour mount found in the live file', len(ribbon_mounts) == 1)
-        if ribbon_mounts:
-            check('real pricing-table: reclassified MIGRATABLE-FILL', ribbon_mounts[0].category == 'MIGRATABLE-FILL')
-            check('real pricing-table: binding_kind is getset', ribbon_mounts[0].binding_kind == 'getset')
+        check('real pricing-table: raw plan.ribbonColour mount is GONE (post-apply)', len(ribbon_mounts) == 0)
+        check(
+            'real pricing-table: get/set row landed in the live file, writer calls updatePlan (not a hand-rolled rebuild)',
+            "get: () => plan.ribbonColour" in pricing_table_src
+            and "updatePlan( planIndex, 'ribbonColour', val )" in pricing_table_src,
+        )
 
         # 3. POSITIVE (2026-08-30 owner overrule): border colour, plain block attribute --
         #    classified MIGRATABLE-BORDER, targeting SgsBorderControl. borderRow() STILL
@@ -1574,27 +1701,24 @@ def self_test():
         outstanding7b = [m for m in mounts7b if m.category in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT')]
         check('--check returns to PASS after the same fixture is fixed', len(outstanding7b) == 0)
 
-        # 8. Live full-tree survey sanity -- POST-APPLY state (2026-08-30 Task 2: --fix
-        #    --apply has run for real on hero/info-box/multi-button). Of the original 9
-        #    known mounts: multi-button's 2 attrs.base-bound FILL/TEXT are now migrated into
-        #    SgsColourPanel rows (0 remain raw); hero's + info-box's 2
-        #    MIGRATABLE-BORDER-NATIVE-PURGE mounts are deleted (0 remain raw); hero's
-        #    splitMediaBorderColour MIGRATABLE-BORDER mount is consolidated into a new
-        #    SgsBorderControl (0 remain raw). What's LEFT raw, deliberately: mega-panel's +
-        #    pricing-table's 2 getset-bound MIGRATABLE-FILL mounts (reclassified but no apply
-        #    mechanism built this pass -- Task 2 scope was the two border mechanics only);
-        #    multi-button's childBtnBorderColour MIGRATABLE-BORDER mount (BLOCKED -- no
-        #    childBtnBorderWidth/childBtnBorderStyle in block.json, out of file-scope to add);
-        #    and trust-bar's item.fillColour (REFUSED-SVG-FILL-MECHANISM, the trap that must
-        #    never reclassify). If the live tree's shapes ever drift, this is the assertion
-        #    that catches it rather than a silently-stale self-test. (If this test is ever
-        #    run against a PRE-apply tree, e.g. cherry-picking just the codemod script change,
-        #    these counts will legitimately differ -- that is not this test's job to detect.)
+        # 8. Live full-tree survey sanity -- POST-APPLY state (2026-08-30 Task 3: the
+        #    get/set apply mechanic has now ALSO run for real on mega-panel + pricing-table,
+        #    on top of Task 2's hero/info-box/multi-button attrs-bound + purge + new-mount
+        #    passes). multi-button's childBtnBorderColour is no longer a raw picker at all
+        #    -- it was hand-mounted onto a NEW SgsBorderControl (childBtnBorderWidth/
+        #    childBtnBorderStyle added to block.json, same session, different file scope
+        #    than this script) -- so census() finds no DesignTokenPicker there any more.
+        #    What's LEFT raw, deliberately: only trust-bar's item.fillColour
+        #    (REFUSED-SVG-FILL-MECHANISM, the trap that must never reclassify). If the live
+        #    tree's shapes ever drift, this is the assertion that catches it rather than a
+        #    silently-stale self-test. (If this test is ever run against a PRE-apply tree,
+        #    e.g. cherry-picking just the codemod script change, these counts will
+        #    legitimately differ -- that is not this test's job to detect.)
         live_mounts = census()
         named_blocks = {'sgs/hero', 'sgs/info-box', 'sgs/mega-panel', 'sgs/multi-button',
                          'sgs/pricing-table', 'sgs/trust-bar'}
         live_named = [m for m in live_mounts if m.block in named_blocks]
-        check('live tree (post-apply): exactly 4 raw mounts remain across the 6 named blocks', len(live_named) == 4)
+        check('live tree (post-apply): exactly 1 raw mount remains across the 6 named blocks', len(live_named) == 1)
         live_fill_text_attrs = [
             m for m in live_named
             if m.category in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT') and m.binding_kind == 'attrs'
@@ -1614,26 +1738,20 @@ def self_test():
         ]
         check('live tree (post-apply): 0 attrs.base-bound MIGRATABLE-FILL/-TEXT remain raw (multi-button applied)', len(live_fill_text_attrs) == 0)
         check(
-            'live tree (post-apply): exactly 2 getset-bound MIGRATABLE-FILL mounts remain raw '
-            '(mega-panel asideSeparator.colour + pricing-table plan.ribbonColour -- no apply mechanism built this pass)',
-            len(live_fill_text_getset) == 2,
+            'live tree (post-apply): 0 getset-bound MIGRATABLE-FILL/-TEXT mounts remain raw '
+            '(Task 3: mega-panel asideSeparator.colour + pricing-table plan.ribbonColour both applied in-place)',
+            len(live_fill_text_getset) == 0,
         )
         check(
             'live tree (post-apply): 0 MIGRATABLE-BORDER-NATIVE-PURGE mounts remain raw (hero + info-box purged)',
             len(live_border_purge) == 0,
         )
         check(
-            'live tree (post-apply): exactly 1 MIGRATABLE-BORDER mount remains raw '
-            '(multi-button childBtnBorderColour -- BLOCKED, no width/style attrs; hero splitMedia applied)',
-            len(live_border_new_mount) == 1,
+            'live tree (post-apply): 0 MIGRATABLE-BORDER mounts remain raw '
+            '(hero splitMedia applied by the codemod; multi-button childBtnBorderColour hand-mounted '
+            'onto a new SgsBorderControl once childBtnBorderWidth/Style existed -- different file scope, same session)',
+            len(live_border_new_mount) == 0,
         )
-        if live_border_new_mount:
-            check(
-                'live tree (post-apply): the remaining MIGRATABLE-BORDER mount is multi-button, '
-                'and genuinely has no plan (confirms it is blocked, not silently skipped)',
-                live_border_new_mount[0].block == 'sgs/multi-button'
-                and plan_new_border_mount(live_border_new_mount[0].block, live_border_new_mount[0].attr_name)[0] is None,
-            )
         check(
             'live tree (post-apply): exactly 1 genuinely-still-refused mount (trust-bar item.fillColour, the '
             'SVG-fill-mechanism trap) -- proves the reclassification did NOT over-broaden into it '
@@ -1729,17 +1847,20 @@ def self_test():
             check('plan (hero splitMedia): gradient attr resolved', plan10['gradient_attr'] == 'splitMediaBorderColourGradient')
             check('plan (hero splitMedia): radius attr + both tiers resolved', plan10['radius_attr'] == 'splitMediaBorderRadius' and plan10['radius_tablet_attr'] and plan10['radius_mobile_attr'])
 
-        # 10b. BLOCKED case (mirrors multi-button's real gap): no {prefix}BorderWidth/
-        #      BorderStyle declared -- must refuse, never fabricate a control bound to an
-        #      undeclared attribute (D338 -- WP silently drops it; a control that looks
-        #      right and writes nowhere is the exact defect class this family exists to
-        #      remove).
+        # 10b. FORMERLY BLOCKED, NOW RESOLVES (2026-08-30, item 2 of this same session's
+        #      3-item pass): multi-button's real gap -- no {prefix}BorderWidth/BorderStyle
+        #      declared -- is CLOSED. block.json now declares childBtnBorderWidth (object)
+        #      + childBtnBorderStyle (string), added by hand in edit.js/block.json (a
+        #      different file scope than this script -- render.php wiring is a separate,
+        #      still-open follow-up, see check-dead-controls.js). plan_new_border_mount()
+        #      only reads block.json, so it now resolves exactly like hero's 10a case.
         plan10b, refusal10b = plan_new_border_mount('sgs/multi-button', 'childBtnBorderColour')
-        check('plan (multi-button childBtn): refused, no plan fabricated', plan10b is None)
-        check(
-            'plan (multi-button childBtn): refusal names the missing width/style attrs, not a guess',
-            refusal10b and 'childBtnBorderWidth' in refusal10b and 'childBtnBorderStyle' in refusal10b,
-        )
+        check('plan (multi-button childBtn): now resolves (childBtnBorderWidth/Style added)', plan10b is not None and refusal10b is None)
+        if plan10b:
+            check(
+                'plan (multi-button childBtn): width/style attrs resolved',
+                plan10b['width_attr'] == 'childBtnBorderWidth' and plan10b['style_attr'] == 'childBtnBorderStyle',
+            )
 
         # 10c. End-to-end apply on a SYNTHETIC fixture reproducing hero's pre-migration
         #      splitMedia shape (bespoke SelectControl/ResponsiveBoxControl/
