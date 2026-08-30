@@ -294,6 +294,16 @@
 			"type": "string",
 			"default": ""
 		},
+		"childBtnBorderWidth": {
+			"type": "object",
+			"default": {},
+			"_comment": "2026-08-30 owner decision -- added alongside childBtnBorderStyle so SgsBorderControl can mount for this group-default row (D338: mounting the composite with a missing sibling attr crashes/discards edits). Box-object shape MATCHES every other SgsBorderControl widthValues attr (e.g. sgs/button's own borderWidth) so the shared control needs no special-casing. Reduced to a single CSS-length shorthand string via sgs_box_object_shorthand() at render time and consumed by a :where(.sgs-multi-button) .sgs-button rule in button/style.css -- zero-specificity ancestor scoping, so it never outranks a preset and never matches a standalone button (see that file's comment for why the base .sgs-button rule itself could not be reused, unlike radius/font-weight)."
+		},
+		"childBtnBorderStyle": {
+			"type": "string",
+			"default": "",
+			"_comment": "2026-08-30 owner decision. Default '' (not 'solid', unlike a per-instance borderStyle attr) matches this block's own childBtn* GROUP-DEFAULT convention: empty means no override, so an unconfigured multi-button changes nothing."
+		},
 		"childBtnBorderRadius": {
 			"type": "string",
 			"default": ""

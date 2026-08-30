@@ -75,6 +75,26 @@
 }
 
 /*
+ * Child-button border-width/style GROUP DEFAULT (sgs/multi-button, 2026-08-30
+ * owner decision) — deliberately NOT on the `.sgs-button` base rule above.
+ * `:where(.sgs-multi-button)` costs zero specificity, so this whole rule
+ * matches at (0,1,0), identical to `.sgs-button` and to every preset below —
+ * it can NEVER outrank `.sgs-button--primary/--secondary/--outline` (which
+ * come after it here and win any tie), and for a button that isn't inside a
+ * multi-button wrapper this selector never matches at all, so it is a
+ * provable no-op there. This is why border-width/style could not simply
+ * reuse the base rule's var()-fallback pattern like radius/font-weight do —
+ * unlike those, a PRESET here sets the literal property directly rather than
+ * a --sgs-btn-* custom property, so a same-or-higher-specificity consumer
+ * would win over the preset instead of losing to it (see the 2026-08-27 fix
+ * above for why that repainted a border on preset-less buttons once already).
+ */
+:where(.sgs-multi-button) .sgs-button {
+	border-width: var(--sgs-mb-btn-border-width-default);
+	border-style: var(--sgs-mb-btn-border-style-default);
+}
+
+/*
  * Keyboard focus ring (D467 family). `sgs/button` had NO outline declaration at
  * all, and the WP rule that would have supplied one —
  * `:root :where(.wp-element-button:focus, .wp-block-button__link:focus)` — cannot

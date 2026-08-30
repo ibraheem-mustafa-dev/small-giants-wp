@@ -256,6 +256,18 @@ if ( isset( $attributes['childBtnTextColour'] ) && '' !== $attributes['childBtnT
 if ( isset( $attributes['childBtnBorderColour'] ) && '' !== $attributes['childBtnBorderColour'] ) {
 	$mb_child_defaults[] = '--sgs-mb-btn-border-default:' . sgs_colour_value( (string) $attributes['childBtnBorderColour'] );
 }
+// 2026-08-30 owner decision (Residual 1, scoped-to-multi-button option). Consumed
+// by a `:where(.sgs-multi-button) .sgs-button` rule in button/style.css -- zero
+// specificity ancestor, so it never outranks a preset's own border and never
+// matches a standalone button (see that rule's comment for the full reasoning).
+$mb_child_border_width           = is_array( $attributes['childBtnBorderWidth'] ?? null ) ? $attributes['childBtnBorderWidth'] : array();
+$mb_child_border_width_shorthand = sgs_box_object_shorthand( $mb_child_border_width );
+if ( null !== $mb_child_border_width_shorthand ) {
+	$mb_child_defaults[] = '--sgs-mb-btn-border-width-default:' . $mb_child_border_width_shorthand;
+}
+if ( isset( $attributes['childBtnBorderStyle'] ) && '' !== $attributes['childBtnBorderStyle'] ) {
+	$mb_child_defaults[] = '--sgs-mb-btn-border-style-default:' . sgs_css_keyword_sanitise( (string) $attributes['childBtnBorderStyle'] );
+}
 if ( isset( $attributes['childBtnBorderRadius'] ) && '' !== $attributes['childBtnBorderRadius'] ) {
 	$mb_child_defaults[] = '--sgs-mb-btn-radius-default:' . $mb_css_length( $attributes['childBtnBorderRadius'] );
 }

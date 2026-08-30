@@ -15,9 +15,9 @@ import {
 	SgsColourPanel,
 	fillRow,
 	ResponsiveBoxControl,
-	DesignTokenPicker,
 	SGS_FONT_WEIGHT_OPTIONS,
 	textRow,
+	SgsBorderControl,
 } from '../../components';
 import { backgroundPreview, spacingPreview } from '../../utils';
 import {
@@ -98,6 +98,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		childBtnBackground,
 		childBtnTextColour,
 		childBtnBorderColour,
+		childBtnBorderWidth,
+		childBtnBorderStyle,
 		childBtnBorderRadius,
 		childBtnFontSize,
 		childBtnFontWeight,
@@ -505,10 +507,30 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 					</p>
-					<DesignTokenPicker
-						label={ __( 'Button border colour', 'sgs-blocks' ) }
-						value={ childBtnBorderColour }
-						onChange={ ( val ) => setAttributes( { childBtnBorderColour: val ?? '' } ) }
+					{ /* 2026-08-30 owner decision: childBtnBorderWidth/childBtnBorderStyle
+					    added to block.json so this group-default row can mount the
+					    standard SgsBorderControl composite (D338 -- an undeclared
+					    sibling attr crashes onWidthChange/onStyleChange or silently
+					    discards the edit). Single-state colour form (no hover, no
+					    gradient) -- this is a GROUP DEFAULT, not a per-instance
+					    border; colourLinked stays true (D881) so a picked colour
+					    stores the palette token, not a baked hex.
+					    Width/style are consumed by a zero-specificity
+					    :where(.sgs-multi-button) .sgs-button rule in
+					    button/style.css -- it can never outrank a preset's own
+					    border and never matches a standalone sgs/button, so
+					    the 2026-08-27 preset-less-border fix stays intact. */ }
+					<SgsBorderControl
+						label={ __( 'Button border', 'sgs-blocks' ) }
+						widthValues={ childBtnBorderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { childBtnBorderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ childBtnBorderStyle }
+						onStyleChange={ ( val ) => setAttributes( { childBtnBorderStyle: val } ) }
+						colourLabel={ __( 'Button border colour', 'sgs-blocks' ) }
+						colourValue={ childBtnBorderColour }
+						onColourChange={ ( val ) => setAttributes( { childBtnBorderColour: val ?? '' } ) }
+						colourLinked={ true }
 					/>
 					<TextControl
 						label={ __( 'Button border radius', 'sgs-blocks' ) }
