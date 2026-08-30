@@ -671,17 +671,27 @@
 // =============================================================================
 
 .sgs-timeline--horizontal {
-	display: flex;
-	flex-direction: row;
-	align-items: flex-start;
-	gap: 0;
+	// ⛔ THE ROW LIVES ON `.sgs-timeline__list`, NOT HERE — do not move it back.
+	//
+	// Step 4a moved the `<ol class="sgs-timeline__list">` inside the root so a
+	// horizontal scroll effect can resolve it as a direct child. The entries are
+	// therefore GRANDCHILDREN of this element: a
+	// `display: flex` here lays out the single track div and nothing else, so
+	// every entry stacks vertically at full width.
+	//
+	// That regression shipped in the step-4a commit and was caught live —
+	// measured at 1440px: track 394px wide, list `display: block`, four 394px
+	// entries stacked, `scrollWidth === clientWidth`. The carousel had the
+	// identical coupling and was re-pointed in the same commit; this one was
+	// missed because only the carousel was looked for.
+	//
+	// What stays HERE is what belongs to the root box: `position: relative` (the
+	// ::before rail and `.sgs-timeline__progress` are positioned against it),
+	// the padding, and `--sgs-timeline-h-line-top`, which INHERITS down to both.
 	position: relative;
 	list-style: none;
 	margin: 0;
 	padding: var(--wp--preset--spacing--30, 1.5rem) 0;
-	overflow-x: auto;
-	scroll-snap-type: x mandatory;
-	-webkit-overflow-scrolling: touch;
 
 	// ⛔ THE CONNECTOR SITS ON THE NODE ROW, and the offset must be derived from
 	// the ACTUAL stacking order. The horizontal entry is a flex COLUMN ordered
@@ -709,6 +719,52 @@
 		right: 0;
 		height: var(--sgs-connector-width);
 		background-color: var(--sgs-connector-colour);
+	}
+
+	// The row itself. The entries are this element's children, so the flex
+	// context and the native horizontal scroller belong here.
+	.sgs-timeline__list {
+		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+		gap: 0;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		-webkit-overflow-scrolling: touch;
+	}
+}
+
+// ⛔ 'pinned-horizontal' AND THE NATIVE SCROLLER ARE MUTUALLY EXCLUSIVE.
+//
+// The horizontal timeline is normally its own `overflow-x: auto` scroller, which
+// is what meets SC 2.5.7 without any JS. `fx-horizontal-panel` instead PINS the
+// block and TRANSLATES the list, so the two mechanisms compete for the same
+// overflow: with the scroller left on, the list's box stays viewport-width and
+// clips its own panels, so GSAP slides a box whose content cannot follow.
+//
+// Keyed on the effect's own attribute rather than a new modifier class — the
+// attribute is already emitted and is the single source of truth for "this
+// timeline is being driven by the horizontal effect".
+//
+// `width: max-content` is what actually gives the effect something to move:
+// `getTravelDistance()` measures first-to-last panel offset, and the root's
+// `overflow: hidden` is the window the translated row slides behind.
+// ⛔ GATED TO ≥768px, and the gate is about CONTENT LOSS, not tidiness. The
+// effect never runs below 768px (fx-horizontal-panel self-gates on the same
+// query), but these two declarations are CSS and would apply anyway: measured
+// at 375px, `width: max-content` made the list 461px inside a 375px viewport
+// and the root's `overflow: hidden` clipped the excess — 86px of every
+// milestone cut off, with no scrollbar to reach it. Degrade to MORE content,
+// never less.
+@media (min-width: 768px) {
+	.sgs-timeline--horizontal[data-sgs-fx='horizontal-panel'] {
+		overflow: hidden;
+
+		.sgs-timeline__list {
+			width: max-content;
+			overflow-x: visible;
+			scroll-snap-type: none;
+		}
 	}
 }
 
@@ -962,9 +1018,14 @@
 @media (max-width: 767px) {
 	// Horizontal becomes a vertical scroll-snap list.
 	.sgs-timeline--horizontal {
-		flex-direction: column;
-		overflow-x: visible;
-		scroll-snap-type: none;
+		// These three UNDO the desktop row, which since Step 4a lives on
+		// `.sgs-timeline__list` (the entries' actual parent) rather than on this
+		// root — so the undo has to follow it there or the row never collapses.
+		.sgs-timeline__list {
+			flex-direction: column;
+			overflow-x: visible;
+			scroll-snap-type: none;
+		}
 
 		&::before {
 			top: 0;
@@ -1519,14 +1580,12 @@
 @media (max-width: 767px) {
 	.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel {
 		// Step 4a — the root no longer IS the scroller. The markup now nests
-		// `<div class="sgs-timeline__track"><ol class="sgs-timeline__list">`
-		// inside the root (so a future GSAP horizontal-panel effect can find
-		// a plain `<div>` DIRECT CHILD of the root), so the layout/scroll
-		// properties that used to sit directly on this selector now target
-		// the `<ol>` — the element that actually scrolls. Everything else
-		// below (entries, nodes, dates, media) stays a plain descendant
-		// selector: it still matches through the extra `.sgs-timeline__track`
-		// level exactly as it did before.
+		// `<ol class="sgs-timeline__list">` inside the root (so the GSAP
+		// horizontal-panel effect can resolve it as a direct child), so the
+		// layout/scroll properties that used to sit directly on this selector
+		// now target the `<ol>` — the element that actually scrolls.
+		// Everything else below (entries, nodes, dates, media) stays a plain
+		// descendant selector and matches exactly as it did before.
 		.sgs-timeline__list {
 			display: flex;
 			flex-direction: row;

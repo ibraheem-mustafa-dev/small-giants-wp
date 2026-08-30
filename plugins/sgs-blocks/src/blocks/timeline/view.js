@@ -770,7 +770,7 @@ import {
 		}
 
 		// Step 4a — the root no longer scrolls; `<ol class="sgs-timeline__list">`
-		// nested inside `<div class="sgs-timeline__track">` does. `tabindex`/
+		// nested inside the root does. `tabindex`/
 		// `aria-label`/the scroll listener all need to live on the element that
 		// actually scrolls: `tabindex` on a non-scrolling wrapper is a focus
 		// trap that goes nowhere, and a `scroll` listener on `root` would never

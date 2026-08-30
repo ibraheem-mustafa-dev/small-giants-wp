@@ -48,6 +48,9 @@
 		},
 		"sgs": {
 			"iconPicker": true,
+			"fx": {
+				"providesNatively": [ "scrub", "pin-scrub", "horizontal-panel" ]
+			},
 			"boxFamilies": {
 				"padding": [
 					"paddingTablet",
@@ -83,7 +86,7 @@
 						"css:border-style": "borderStyle",
 						"css:box-shadow": "native:shadow"
 					},
-					"_note": "Root <ol> — no `layer` declared (leaf content block, no grid/flex attrs despite align:wide/full). block.json's native `typography` support is declared here but rendered via `selectors.typography` against `.sgs-timeline__title` (render.php:258-268), NOT this root — see the `title` element below, which owns the text-cluster typography members instead. borderWidth/borderColour/borderStyle are custom scalar/object attrs (no WP-native per-side width support), verified live in render.php:143-155."
+					"_note": "Root <div> (Step 4a moved the <ol> inside it as `.sgs-timeline__list`, wrapped in `.sgs-timeline__track`, so a horizontal scroll effect can resolve a plain <div> direct child; an <ol> may only contain <li>). No `layer` declared (leaf content block, no grid/flex attrs despite align:wide/full). block.json's native `typography` support is declared here but rendered via `selectors.typography` against `.sgs-timeline__title` (render.php:258-268), NOT this root — see the `title` element below, which owns the text-cluster typography members instead. borderWidth/borderColour/borderStyle are custom scalar/object attrs (no WP-native per-side width support), verified live in render.php:143-155."
 				},
 				"title": {
 					"label": "Entry title",
@@ -129,7 +132,7 @@
 						"css:min-height": "milestoneMinHeight",
 						"css:margin-bottom": "entryGap"
 					},
-					"_note": "Per-entry fields (date/title/description/icon/image) are plain repeater content from the `entries` array — no independent per-entry style controls exist beyond the block-wide title/date/connector colours above. `supports.sgs.imageControls` was removed 2026-08-11 (Spec 35 capability-routing doctrine) — the per-entry image renders at natural/auto size with no crop box, so object-fit/position never applied; the declaration was dead weight, not a manifest element. Mirrors sgs/accordion's `item` element and sgs/quote's `quote-body`. Task 3 (2026-08-30) maps `milestoneMinHeight`/`entryGap` here: both are genuine CSS custom-property VALUES routed via the scoped `<style>` (Spec 32), same convention as `connectorColour`/`dateColour` above. `milestoneSize` is deliberately NOT mapped — it is a layout-MODE selector, not a CSS property, and this block maps none of its siblings (`orientation`, `contentLayout`, `mobileLayout`, `connectorStyle`, `rowStripes`). A first draft invented a bare `variant` attrMap key for it; measured against the whole tree, 46 of the 47 non-`css:`/`native:` attrMap keys are `anim:*` and `variant` had zero precedent, with no reader for it in audit-element-manifest or sgs-update. Mode selectors belong in the ORPHAN:BY-DESIGN bucket the audit already uses for `iconPosition`/`tileShape`/`logoFit`/`labelCollapse`, not in attrMap. ⚠ These three are new attributes — per the 2026-08-30 design doc §8 cross-track note, they still need `/sgs-update` to reseed `block_attributes` + regenerate `attr-role-map.json`; that reseed is a separate cross-track action, deliberately NOT run as part of this commit."
+					"_note": "Per-entry fields (date/title/description/icon/image) are plain repeater content from the `entries` array — no independent per-entry style controls exist beyond the block-wide title/date/connector colours above. `supports.sgs.imageControls` was removed 2026-08-11 (Spec 35 capability-routing doctrine) — the per-entry image renders at natural/auto size with no crop box, so object-fit/position never applied; the declaration was dead weight, not a manifest element. Mirrors sgs/accordion's `item` element and sgs/quote's `quote-body`. Task 3 (2026-08-30) maps `milestoneMinHeight`/`entryGap` here: both are genuine CSS custom-property VALUES routed via the scoped `<style>` (Spec 32), same convention as `connectorColour`/`dateColour` above. `milestoneSize` is deliberately NOT mapped — it is a layout-MODE selector, not a CSS property, and this block maps none of its siblings (`orientation`, `contentLayout`, `mobileLayout`, `connectorStyle`, `rowStripes`). A first draft invented a bare `variant` attrMap key for it; measured against the whole tree, 46 of the 47 non-`css:`/`native:` attrMap keys are `anim:*` and `variant` had zero precedent, with no reader for it in audit-element-manifest or sgs-update. Mode selectors belong in the ORPHAN:BY-DESIGN bucket the audit already uses for `iconPosition`/`tileShape`/`logoFit`/`labelCollapse`, not in attrMap. ⚠ The design doc §8 predicted these new attributes would need a cross-track `/sgs-update` reseed. MEASURED: they do not. `check-element-manifest-conformance` failed only because this element declared `\"clusters\": []`, so an attrMap entry on it had no cluster member to be claimed by; regenerating `attr-role-map.json` alone did NOT clear it (that map derives from the DB, which does not know a brand-new attribute). Declaring the `layout` cluster took UNCLASSIFIED to 0 with no DB write at all."
 				}
 			}
 		}
@@ -211,6 +214,12 @@
 		"dateColour": {
 			"type": "string",
 			"default": "accent"
+		},
+		"scrollEffect": {
+			"type": "string",
+			"enum": [ "basic", "scrub", "pinned-journey", "pinned-horizontal" ],
+			"default": "basic",
+			"description": "A layout-MODE selector, not a CSS property — deliberately absent from any element's attrMap (see the `entry` element note). Curated wrapper around the generic GSAP scroll-effects picker: 'basic' is today's viewport/connector reveal; 'scrub' ties milestone motion directly to scroll position; 'pinned-journey' pins the timeline and reveals milestones as the connector fills (vertical only); 'pinned-horizontal' pins and slides the track sideways (horizontal only)."
 		},
 		"revealOnScroll": {
 			"type": "boolean",

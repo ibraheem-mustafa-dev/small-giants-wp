@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
@@ -121,6 +121,34 @@ const REVEAL_TRIGGER_OPTIONS = [
 		value: 'connector',
 	},
 ];
+
+// Step 4b — curated scroll-effect picker, reusing the SAME GSAP fx slugs the
+// generic "Scroll & effects" extension would offer (scrub / pin-scrub /
+// horizontal-panel), so the timeline has ONE surface for this rather than
+// two that can fight (see generate-fx-qualifying-blocks.py, which removes
+// these three slugs from the generic picker once this block declares
+// `supports.sgs.fx.providesNatively`). Options are a function of orientation
+// — 'pinned-journey' only makes sense on the vertical connector journey,
+// 'pinned-horizontal' only makes sense when there is a horizontal track to
+// slide sideways — so the irrelevant option is hidden, never disabled.
+function getScrollEffectOptions( orientation ) {
+	const options = [
+		{ label: __( 'Standard', 'sgs-blocks' ), value: 'basic' },
+		{ label: __( 'Move with the scroll', 'sgs-blocks' ), value: 'scrub' },
+	];
+	if ( 'vertical' === orientation ) {
+		options.push( {
+			label: __( 'Pin and reveal', 'sgs-blocks' ),
+			value: 'pinned-journey',
+		} );
+	} else {
+		options.push( {
+			label: __( 'Pin and slide sideways', 'sgs-blocks' ),
+			value: 'pinned-horizontal',
+		} );
+	}
+	return options;
+}
 
 // Task 3a — replaces the old ALIGNMENT_OPTIONS ('alternating' / 'left' /
 // 'centre'). 'centre' is retired: it folded into 'single-column' losing only
@@ -468,6 +496,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		connectorProgressFill,
 		connectorFillColour,
 		dateColour,
+		scrollEffect,
 		revealOnScroll,
 		revealTrigger,
 		revealStagger,
@@ -1026,6 +1055,32 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{/* ── Animation ── */}
 				<PanelBody title={ __( 'Scroll reveal', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Scroll effect', 'sgs-blocks' ) }
+						value={ scrollEffect }
+						options={ getScrollEffectOptions( orientation ) }
+						onChange={ ( val ) => setAttributes( { scrollEffect: val } ) }
+						help={
+							sprintf(
+								/* translators: 1: extra context shown only for "Move with the scroll", 2: current mobile-layout label ("Stacked" or "Swipeable cards") */
+								__(
+									'%1$sOn phones this always shows as %2$s instead — the pinning effect needs a full screen to work. All options stay available whatever you choose for phones.',
+									'sgs-blocks'
+								),
+								'scrub' === scrollEffect
+									? __(
+											'Motion tracks your scroll position directly — scroll back up and it reverses. The standard option fades each milestone in once. ',
+											'sgs-blocks'
+									  )
+									: '',
+								'carousel' === mobileLayout
+									? __( 'Swipeable cards', 'sgs-blocks' )
+									: __( 'Stacked', 'sgs-blocks' )
+							)
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 					<ToggleControl
 						label={ __( 'Reveal on scroll', 'sgs-blocks' ) }
 						checked={ revealOnScroll }
@@ -1040,11 +1095,17 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Reveal each milestone', 'sgs-blocks' ) }
 							value={ revealTrigger }
 							options={ REVEAL_TRIGGER_OPTIONS }
+							disabled={ 'pinned-journey' === scrollEffect }
 							onChange={ ( val ) =>
 								setAttributes( { revealTrigger: val } )
 							}
 							help={
-								connectorProgressFill
+								'pinned-journey' === scrollEffect
+									? __(
+											'The “Pin and reveal” scroll effect controls the reveal itself — this setting has no effect while it is active.',
+											'sgs-blocks'
+									  )
+									: connectorProgressFill
 									? __(
 											'“When the connector reaches it” makes each milestone appear as the filling line arrives at its dot.',
 											'sgs-blocks'
@@ -1066,10 +1127,18 @@ export default function Edit( { attributes, setAttributes } ) {
 							min={ 0 }
 							max={ 500 }
 							step={ 25 }
-							help={ __(
-								'Delay between each entry animating in.',
-								'sgs-blocks'
-							) }
+							disabled={ 'pinned-journey' === scrollEffect }
+							help={
+								'pinned-journey' === scrollEffect
+									? __(
+											'The “Pin and reveal” scroll effect controls the reveal itself — this setting has no effect while it is active.',
+											'sgs-blocks'
+									  )
+									: __(
+											'Delay between each entry animating in.',
+											'sgs-blocks'
+									  )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>

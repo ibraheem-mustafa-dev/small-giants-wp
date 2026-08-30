@@ -88,6 +88,25 @@ $fill_colour      = $attributes['connectorFillColour'] ?? 'accent';
 $reveal_on_scroll = isset( $attributes['revealOnScroll'] ) ? (bool) $attributes['revealOnScroll'] : true;
 $reveal_stagger   = isset( $attributes['revealStagger'] ) ? absint( $attributes['revealStagger'] ) : 100;
 
+// Step 4b — curated scroll-effect mode. Reuses the EXISTING GSAP fx slugs
+// (`scrub` / `pin-scrub` / `horizontal-panel`) rather than registering a new
+// one — this is a single-surface picker for those same modules, not a new
+// effect. Sanitised to the declared enum, same idiom as $content_layout.
+$scroll_effect = $attributes['scrollEffect'] ?? 'basic';
+$scroll_effect = in_array( $scroll_effect, array( 'basic', 'scrub', 'pinned-journey', 'pinned-horizontal' ), true )
+	? $scroll_effect
+	: 'basic';
+// 'pinned-journey' only makes sense on the vertical connector journey;
+// 'pinned-horizontal' only makes sense when there is a horizontal track to
+// slide. Fall back to 'basic' rather than emit an fx attribute the current
+// orientation can't support — degrade to more content, not a broken pin.
+if ( 'pinned-journey' === $scroll_effect && 'vertical' !== $orientation ) {
+	$scroll_effect = 'basic';
+}
+if ( 'pinned-horizontal' === $scroll_effect && 'horizontal' !== $orientation ) {
+	$scroll_effect = 'basic';
+}
+
 // Reveal trigger. `connector` reveals each entry as the progress fill reaches ITS
 // dot rather than when the entry enters the viewport, so the journey assembles
 // itself in step with the line. Sanitised to the declared enum: an out-of-enum
@@ -534,26 +553,59 @@ $wrapper_args = array(
 	'class' => implode( ' ', $wrapper_classes ),
 );
 
+// Step 4b — curated scroll effect. `sniff_block()` regex-scans the rendered
+// markup for `data-sgs-fx` on `render_block` priority 99 and enqueues the
+// matching module, so this is the ONLY place that needs to know the slug.
+if ( 'basic' !== $scroll_effect ) {
+	$fx_slug_by_effect = array(
+		'scrub'            => 'scrub',
+		'pinned-journey'   => 'pin-scrub',
+		'pinned-horizontal' => 'horizontal-panel',
+	);
+	$wrapper_args['data-sgs-fx'] = $fx_slug_by_effect[ $scroll_effect ];
+
+	// fx-horizontal-panel.js self-gates at (min-width:768px) — nothing to add.
+	// fx-scrub.js and fx-pin-scrub.js do NOT self-gate, so 'scrub' and
+	// 'pinned-journey' need the central mobile-suppression flag honoured by
+	// isDisabledAtThisTier() in shared/effects/gsap/provider.js. SC 2.5.7
+	// exempts native `overflow` scrolling, not a rolled GSAP substitute for it.
+	if ( 'scrub' === $scroll_effect || 'pinned-journey' === $scroll_effect ) {
+		$wrapper_args['data-sgs-fx-disable-mobile'] = 'true';
+	}
+}
+
 // Pass scroll-reveal config to view.js via data attributes.
 if ( $reveal_on_scroll ) {
-	$wrapper_args['data-reveal-stagger'] = (string) $reveal_stagger;
-	$wrapper_args['data-reveal-trigger'] = $reveal_trigger;
+	// ⛔ 'pinned-journey' owns entry opacity/transform itself (GSAP drives
+	// each milestone as the progress fill reaches it), so the viewport/
+	// connector reveal must not ALSO run. Suppressing the driver alone is not
+	// enough — style.scss hides `.sgs-timeline__entry:not(.is-revealed)`
+	// under `[data-reveal-on-scroll].is-js`, and view.js adds `.is-js`
+	// regardless of which fx is active. Shipped once as a "carousel that
+	// painted nothing but a scrollbar" (D896) when a suppressed driver left
+	// `data-reveal-on-scroll` on the wrapper with nothing left to reveal the
+	// entries. Fix: don't emit the attribute at all in this mode, so the hide
+	// rule can never match — entries render visible and GSAP animates them.
+	if ( 'pinned-journey' !== $scroll_effect ) {
+		$wrapper_args['data-reveal-stagger'] = (string) $reveal_stagger;
+		$wrapper_args['data-reveal-trigger'] = $reveal_trigger;
 
-	// ⛔ THE TWO TRIGGERS MUST NOT BOTH EMIT `data-reveal-on-scroll`, and this is
-	// the whole reason the attribute is conditional. style.scss:392 hides an
-	// unrevealed entry on the ATTRIBUTE alone, with no `.is-js` guard — so if a
-	// connector-reveal timeline also carried it, that rule would hide every entry
-	// with JS disabled and nothing would ever unhide them. Measured live on the
-	// canary: the `.is-js` gate on the connector rule was completely defeated by
-	// this older selector, and all four entries stayed at opacity 0.
-	//
-	// The viewport path keeps the attribute and therefore keeps its existing
-	// behaviour exactly (including its own no-JS weakness, which is pre-existing
-	// and raised separately rather than changed here — re-keying a shipped reveal
-	// to `.is-js` trades a hidden-forever bug for a flash-then-hide one, and that
-	// is a decision, not a tidy-up).
-	if ( 'connector' !== $reveal_trigger ) {
-		$wrapper_args['data-reveal-on-scroll'] = 'true';
+		// ⛔ THE TWO TRIGGERS MUST NOT BOTH EMIT `data-reveal-on-scroll`, and this is
+		// the whole reason the attribute is conditional. style.scss:392 hides an
+		// unrevealed entry on the ATTRIBUTE alone, with no `.is-js` guard — so if a
+		// connector-reveal timeline also carried it, that rule would hide every entry
+		// with JS disabled and nothing would ever unhide them. Measured live on the
+		// canary: the `.is-js` gate on the connector rule was completely defeated by
+		// this older selector, and all four entries stayed at opacity 0.
+		//
+		// The viewport path keeps the attribute and therefore keeps its existing
+		// behaviour exactly (including its own no-JS weakness, which is pre-existing
+		// and raised separately rather than changed here — re-keying a shipped reveal
+		// to `.is-js` trades a hidden-forever bug for a flash-then-hide one, and that
+		// is a decision, not a tidy-up).
+		if ( 'connector' !== $reveal_trigger ) {
+			$wrapper_args['data-reveal-on-scroll'] = 'true';
+		}
 	}
 }
 
@@ -577,26 +629,30 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<?php
 	/*
-	 * Structural track wrapper (Step 4a). Always emitted, not conditional on
-	 * `mobile_layout`/`variant` — one shape to reason about beats two code
-	 * paths. It exists so a future GSAP horizontal-panel effect
-	 * (`fx-horizontal-panel.js`) has a plain `<div>` DIRECT CHILD of the
-	 * block root to resolve via `:scope > [data-sgs-fx-track]` — the root
-	 * itself can never be that child, because `get_block_wrapper_attributes()`
-	 * and every modifier class live on the OUTER element the wrapper
-	 * function returns. `data-sgs-fx-track` itself is NOT added here — that
-	 * is a later step's concern.
+	 * The `<ol>` is a DIRECT child of the block root, and carries the horizontal
+	 * effect's track marker itself.
 	 *
-	 * The `<ol>` stays the direct child of THIS div, not of the block root,
-	 * for the same reason the progress connector below is an `<li>`: an
-	 * `<ol>` may only legally contain `<li>`/`<script>`/`<template>`, so
-	 * nesting one more wrapper level around it (rather than around the
-	 * root) keeps that content model intact while still giving the future
-	 * effect its own attachment point.
+	 * ⛔ AN INTERMEDIATE `<div class="sgs-timeline__track">` WAS TRIED HERE AND
+	 * REMOVED — do not reintroduce it. `fx-horizontal-panel.js` imposes TWO
+	 * constraints at once, and that div satisfied only the first:
+	 *   1. `resolveTrack()` matches `:scope > [data-sgs-fx-track]`, so the marked
+	 *      element must be a DIRECT child of the element carrying `data-sgs-fx`.
+	 *   2. `getTravelDistance()` measures the marked element's own `children` as
+	 *      the panels and returns 0 — no motion, CSS fallback only — when there
+	 *      are fewer than two.
+	 * With the div in place the marked element had exactly ONE child (this
+	 * `<ol>`), so the effect attached, created its pin, and slid nothing.
+	 * Measured live at 1440px with 12 entries: the list overflowed
+	 * (scrollWidth 2640 vs clientWidth 1410) and the track still translated 0px
+	 * across 30 scroll samples.
+	 *
+	 * Marking the `<ol>` satisfies both: it is a direct child of the root, and
+	 * its children ARE the `<li>` panels. This is legal precisely because Step
+	 * 4a made the root a `<div>` — the original blocker was an `<ol>` ROOT,
+	 * which may only contain `<li>`/`<script>`/`<template>`.
 	 */
 	?>
-	<div class="sgs-timeline__track">
-		<ol class="sgs-timeline__list">
+		<ol class="sgs-timeline__list"<?php echo 'pinned-horizontal' === $scroll_effect ? ' data-sgs-fx-track' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static string literal, no user input ?>>
 			<?php foreach ( $entries as $index => $entry ) : ?>
 				<?php
 				$entry       = is_array( $entry ) ? $entry : array();
@@ -625,9 +681,12 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 					}
 				}
 
-				// Pre-reveal when revealOnScroll is disabled.
+				// Pre-reveal when revealOnScroll is disabled, and also in
+				// 'pinned-journey' mode — that fx owns entry opacity/transform
+				// itself and no data-reveal-* attribute is emitted for it (see
+				// above), so entries must start visible for GSAP to animate.
 				$entry_classes = array( 'sgs-timeline__entry' );
-				if ( ! $reveal_on_scroll ) {
+				if ( ! $reveal_on_scroll || 'pinned-journey' === $scroll_effect ) {
 					$entry_classes[] = 'is-revealed';
 				}
 				$entry_class_attr = implode( ' ', $entry_classes );
@@ -781,5 +840,4 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 				</li>
 			<?php endif; ?>
 			</ol>
-	</div>
 </div>
