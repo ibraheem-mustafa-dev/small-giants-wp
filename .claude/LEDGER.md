@@ -33,16 +33,11 @@ framework yet, so breakage there costs time, not money.
 **Invoke `/autopilot` first.**
 
 ⚠ **FIVE TRACKS HAVE TOUCHED `main`. Establish which you are before reading anything else.**
-The shop-archive / R-3 track owns the sections immediately below. The **colour-golden**
-track owns `## ▶ CLIENT-CONTROLS TRACK`. The **motion** track owns
-`## ▶ MOTION TRACK` below.
+The shop-archive / R-3 track owns the sections immediately below. The **colour-golden /
+client-controls** track is CLOSED (D898) — its section below is a pointer only. The **motion**
+track owns `## ▶ MOTION TRACK` below.
 The **consolidation** track is summarised in the next block and is CLOSED bar one phase.
 The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section at the bottom.
-
-⭐ **If you are the client-controls track:** read
-`.claude/prompts/2026-08-30-client-controls-uniformity.md` — EVERY remaining task.
-Earlier prompt names are stale. ✅ **The hover work is CLOSED** (D885) — fixed, reseeded, guard
-wired, deployed, live-verified, all 3 debts PAID. Live front = UNIFORMITY.
 
 ⛔ **Before building ANY script or hand-doing investigative work, grep the two GENERATED
 catalogues in `.claude/dev-setup.md`.** 524 scripts across FIVE directories, and this repo's
@@ -211,8 +206,9 @@ page is intentionally full-width — do not "fix" it.
 ## Task 2 — Two decisions the colour-golden track is waiting on
 
 Sticky sidebar (their evidence says the accordion already solved it — RE-MEASURE before
-building anything) and the band-replacement model, which is Task 1 by another name. See their
-section below.
+building anything) and the band-replacement model, which is Task 1 by another name. Neither
+touched by the client-controls track's 2026-08-30 close-out (D898) — parked:
+`parking.md` P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL.
 
 ## ▶ LIVE STATUS — 2026-08-23 (shop-archive track — PHASE 3 WAVE A CLOSED)
 
@@ -293,75 +289,18 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 `.is-layout-constrained > :where(:not(.alignfull))`. Ours therefore cannot express
 "full-bleed child of a constrained parent". Read it there before reopening it.
 
-## ▶ CLIENT-CONTROLS TRACK — 2026-08-30, none deployed
+## ▶ CLIENT-CONTROLS TRACK — CLOSED 2026-08-30 (late). Detail: D898.
 
-⭐ **NEXT: the prompt named at the top of this file.**
+Colour-standard residuals (border group default on `sgs/multi-button`, deploy, scatter-detector
+census) closed and deployed same session — full detail in `decisions.md` D898, do not restate
+here. Full prior-session narrative archived verbatim: `memory/session-2026-08-30-5.md`.
 
-**Plain English:** ~30 settings on two blocks did nothing — gone. One trust-bar colour was
-settable from two places, unsynced — now one. New tool finds controls scattered across
-panels.
-
-**Commits `b59f8cd3f`..`99d2204da`, pushed, none deployed:** grid-item controls removed
-(paint only a direct `.sgs-container` child, which neither block's cells are) + DB pruned
-(31 orphan attrs, 44 stale supports) + roster regen 83 blocks. `scattered-element-controls.js`
-built: 69/48 blocks, self-test 32/32, advisory-first (not wired into `rules.json`).
-Trust-bar's duplicate `textColour` writer collapsed to one. **All 4 deploy-blocking gates
-green** (`gate:full` 4/4 PASS) — this session closed 2 (`74a203e8d`: `08-raw-url-link`
-re-anchor, `01-tab-group` fixed in accordion-item); the other 2 (`check-render-undefined-vars`,
-`check-editor-render-parity`) turned up already closed on re-check — credit untraced, not
-this session's. ⚠ Rule 08's fix is a line-number RE-ANCHOR, the 7th on that entry — a
-stopgap; de-line-keying the baseline is the still-open real fix.
-
-**Colour standard (D890):** `SgsColourPanel` default (65/83); own panel row only where a
-paired composite exists (`SgsBorderControl` alone, today). **Two detector gaps, unfixed
-(D892):** `check-dead-controls` misses "read but feeds no matching CSS" (grid-item's escape);
-`check-duplicate-controls` misses a duplicate writer inside a config-prop object (trust-bar's
-escape).
-
-⛔ **NOTHING TONIGHT DEPLOYED.** Pushed only. Carries the 2026-08-29 debt below.
-
-**2026-08-29 — `18eee2666` `89c4d33fd` `6c74fb4c7` `c9b4f9b06` + reseed/guard
-(`c45b4f5dc`, `c50066bff`).** Two hover bugs (one cause); Ken Burns animated nothing on the
-`<img>` fast path; fractional grayscale rendered 100%. Guard 9/9, converter 727/0, 4 DB
-fixes live, guard = gate 80 (70/70), F6 0 NEW. ⛔ 3 visual-diff debts UNPAID
-(`manual-skips.log`) — `computed-parity.js` is hover-blind, so a HAND check is the only gate.
-
-### ✅ SHIPPED 2026-08-27, deployed+live · ✅ BOTH ROLLOUTS LANDED — do NOT rebuild
-Hero video/SVG media · bindings → core's picker · CHECK A 238→206 · C14 order · C16 presets ·
-C19 size & crop · 2 NULL `css_element` rows · 5 ladders renamed (Detail: D855-D862). C16
-COMPLETE: 48/48 `ResponsiveBoxControl` mounts pass `presets` (`18806e6b0`), detector
-`inspector-scan/rules/36-box-control-presets-missing.js`. C19 rolled out to the full
-`aspectRatio` surface. ⛔ `detector-first-commit-gate.py` HAS A NAMED HOLE:
-`MIN_SHARED_LINES = 3` rejects a genuine rollout sharing only ONE line. Prompt Task 7.
-
-### ⚠ THE 85 NULL `css_element` TAIL — do NOT bulk-script it
-Three causes (`.claude/reports/2026-08-27-null-css-element-root-cause.md`): unregistered
-helper (A, 21 files), untraced PHP-variable selector (B), genuinely root-scoped (C). ~18
-more are `fx:*` markers, by design. ⛔ Only **6 of ~67** non-fx rows confirmed — rest
-unverified. A WRONG element is worse than NULL — wrong reads authoritative, misroutes CSS.
-
-### ⚠ DEPLOY SAFETY — two near-misses, both fixed
-`stackable/` (278MB competitor GPL source) was one deploy from landing web-accessible —
-untracked files invisible to the dirty gate; `--exclude=…/src` missed `stackable/src`
-(path-anchored). Now gitignored + excluded, tarball ceiling fails closed. Deploy: **114MB →
-29MB**, ceiling 150 → 45MB.
-
-### ⚠ STANDING BACKLOG — carried, do not compress away
-⛔ **Spec 39 does NOT pace this, and is NOT this track's to build** (Bean 2026-08-29, correcting
-the line that stood here). D552: **standard LEADS, pipeline follows.** UNIFORMITY FIRST, then
-Spec 39 is built ON it; this track only CAPTURES points
-(`plans/spec-39-seed-requirements.md` exists to stop this exact inversion — which happened
-anyway). ⚠ The old claim's evidence was FALSE: **0** xfails name Spec 39 (17 exist, so the grep
-works). Open list: `plans/2026-08-25-road-to-uniform-then-spec-39.md`. ⛔ Dropped in the
-2026-08-27 rewrite and restored after QC caught it — a D101 subtraction. Move to `parking.md`
-with Bean's say-so if it must shrink; never delete. "Step 0 — fix the instruments" is CLOSED
-(`807ef4611`, D777: `_base_attr_spec()` fixed the `<prop>Desktop`-base blind spot in
-`migrate-tier-object.py`); Steps 2-5 remain open.
-
-### ⚠ Carried
-Hero still owes a visual-diff report (bypassed when a deploy was impossible) · `sgs/media`'s
-element manifest disagrees with its classifier (`wrapper` vs `media`), predates this work ·
-C16/C19 rollouts past their pilots.
+**Still open, parked (none blocking, none this track's to finish alone):**
+`P-SCATTER-DETECTOR-FAMILY-CLASSIFICATION` · `P-DETECTOR-FIRST-COMMIT-GATE-THRESHOLD-HOLE` ·
+`P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL` ·
+`P-HERO-VISUAL-DIFF-DEBT-AND-MEDIA-MANIFEST-MISMATCH` (all in `parking.md`, bucket "framework").
+Spec 39 capture work stays paced by `plans/2026-08-25-road-to-uniform-then-spec-39.md` /
+`plans/spec-39-seed-requirements.md` — D552 still holds: standard leads, pipeline follows.
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 

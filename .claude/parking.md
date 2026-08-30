@@ -240,6 +240,32 @@ and strike that residual if it matches.
 
 ## framework
 
+### P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL — two decisions the consolidation track was waiting on
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
+
+The consolidation track (Phase 4, closed) flagged two decisions as owed by the client-controls
+track: (1) whether the sticky-sidebar pattern is already solved by the accordion (their own
+evidence said so — RE-MEASURE before building anything new, don't trust the old claim); (2) the
+band-replacement model, described as "Task 1 by another name" (Task 1 = the container
+width/`contentWidth` model, D725/D726, already closed). Neither decision was touched by the
+2026-08-30 colour-standard residuals close-out (D898) — that work was border controls, deploy,
+and the scatter-detector, unrelated to either question. Full prior context:
+`memory/session-2026-08-30-5.md` (archived client-controls track section).
+
+**Trigger:** whoever picks up sticky-sidebar or band-layout work next.
+
+### P-HERO-VISUAL-DIFF-DEBT-AND-MEDIA-MANIFEST-MISMATCH — two small carried items from the client-controls track
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
+
+(1) `sgs/hero` owes a real visual-diff report — two `SGS_VISUAL_GATE_SKIP` entries logged
+2026-08-29 (`reports/visual-diff/manual-skips.log`, "border-roundtrip probe is the evidence and
+runs after the pending batch deploy") were never followed by that probe run or a report. (2)
+`sgs/media`'s element manifest disagrees with its own classifier (`wrapper` vs `media`) — noted,
+not diagnosed, predates the 2026-08-30 close-out. Neither blocks anything; both are debt.
+
+**Trigger:** next hero-touching session (pay debt 1 first, cheaply — the border-roundtrip probe
+already exists); anyone auditing element-manifest conformance (debt 2).
+
 ### P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE — draft global-styles extractor: Phase 5-6 continuation
 **Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-11
 
@@ -320,6 +346,39 @@ Two overlapping Bean-reported visual-QC defect registers against the live page-8
 **Trigger:** needs the LIVE-BROWSER-GATED treatment (a live QC session, not a static re-audit) — re-clone page 8 first, then re-triage what's actually still visible against the current engine.
 
 ## Framework: blocks, theme, specs
+
+### P-SCATTER-DETECTOR-FAMILY-CLASSIFICATION - does a spacing/sizing split count as by-design
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
+
+`scripts/scattered-element-controls.js` (advisory-only, not wired into any gate) currently
+treats a colour-vs-border split and a colour-vs-transform split as "by-design" (`info`,
+RULING 2), but a colour-vs-spacing/sizing split as a real finding (`warn`). `sgs/trust-bar`
+carries exactly this today: `icon-badge` and `badge-img` each split colour into `SgsColourPanel`
+and size/border-radius into `Styles > Appearance` — 2 of its 3 current findings. Bean needs to
+rule whether spacing/sizing joins the "by-design" family list (RULING 2's family set in the
+script) alongside border/transform. If yes, those findings drop to `info` and trust-bar goes
+clean; if no, they are real consolidation work. Separately: whether to promote this detector
+into a ratcheted advisory rule at all is its own still-open decision, gated on Bean eyeballing a
+sample first.
+
+**Trigger:** next client-controls session, or whenever Bean reviews a sample of the 69
+findings across 48 blocks.
+
+### P-DETECTOR-FIRST-COMMIT-GATE-THRESHOLD-HOLE - a component rollout sharing 0 lines is invisible
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
+
+`detector-first-commit-gate.py`'s `MIN_SHARED_LINES = 3` threshold does not catch every
+component rollout — verified against C19's real rollout commit `1612c7b1e`: gate 1 (6 files
+touched) passes, gate 2 (1 shared line vs 3 required) stops it. A rollout that shares ZERO lines
+would be equally invisible, so raising or lowering the threshold treats the symptom, not the
+cause. Not fixed because it is a shared PreToolUse hook, nobody has priced the false-positive
+cost of a stricter gate, and a gate that fires on every multi-file commit gets bypassed
+reflexively and then protects nothing. Needs a design gate from Bean, not a patch — whoever
+builds it should add a fixture from `1612c7b1e` to `--self-test` (the current self-test proves
+the gate CAN fail, not that it can see this specific case).
+
+**Trigger:** Bean design-gate session on shared-hook enforcement, or the next rollout this gate
+should have caught and didn't.
 
 ### P-PARTICLE-TRAIL-VARIATIONS - two further trail looks, post-launch
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-08-27

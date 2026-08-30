@@ -1,3 +1,42 @@
+## D898 [ROUTINE] — client-controls colour-standard residuals closed: border group-default, deploy, scatter-detector left open
+
+**2026-08-30 (late).** Three residuals from the colour-standard handoff (`4955f4af0`). Commits
+`98c30e169` (data reseed) → `51be3c847` (border feature) → `eb3ed2a04`-adjacent → `d29405b60`
+(visual-diff evidence). Deployed to sandybrown, live-verified via Chrome DevTools MCP.
+
+**Residual 1 — `sgs/multi-button` child-button border group default, SHIPPED.** Bean picked
+"scope to multi-button only" over touching the shared `.sgs-button` base rule. The FIRST
+implementation of that choice (`.sgs-multi-button .sgs-button {...}` in multi-button's own
+style.css) was a real bug, caught by specificity analysis before any live check: at (0,2,0) it
+outranks every preset selector (`.sgs-button--primary/--secondary/--outline`, (0,1,0)), so it
+would have silently stripped the border off every preset button in every existing multi-button
+the moment this shipped — reintroducing the exact regression class the 2026-08-27 fix removed,
+just relocated. Fixed by moving the consuming rule into `button/style.css` itself, scoped via
+`:where(.sgs-multi-button) .sgs-button` — `:where()` costs zero specificity, so it ties with
+presets (which are declared after it in the same file and so win the tie) and never matches a
+button outside a multi-button wrapper. Live-verified: homepage + `tc-multibutton-margin-probe`
+keep their preset borders unchanged post-deploy; a disposable probe with `inheritStyle:"custom"`
+and the group default set painted the configured 3px dashed border correctly. Visual-diff debt
+(code wasn't live pre-commit, so no after-capture was possible) logged via
+`SGS_VISUAL_GATE_SKIP` and paid same session: `reports/visual-diff/{button,multi-button}-2026-08-30.md`.
+
+**Residual 2 — deploy, SHIPPED.** `build-deploy.py --target sandybrown --blocks-only`: fast
+tier 73/73, full tier 4/4, payload-verify 83/83 block.json match, 3/3 live motion probes PASS.
+
+**Residual 3 — scatter-detector, LEFT OPEN, correctly.** Re-ran `scattered-element-controls.js`:
+still 69 findings/48 blocks, self-test 32/32, still unwired (advisory-only, by design). The one
+open call — whether a spacing/sizing split should join border/transform as "by-design" (would
+drop trust-bar's 2 WARN findings to `info`) — is Bean's classification decision, not made here.
+Parked: `parking.md` P-SCATTER-DETECTOR-FAMILY-CLASSIFICATION.
+
+**Not touched, still open (Task 3 of the same handoff):** `detector-first-commit-gate.py`'s
+`MIN_SHARED_LINES = 3` hole (a rollout sharing 0 lines is equally invisible) needs a design gate
+from Bean, not a patch. Parked: `parking.md` P-DETECTOR-FIRST-COMMIT-GATE-THRESHOLD-HOLE.
+
+**LEDGER:** the `## ▶ CLIENT-CONTROLS TRACK` section is closed and archived verbatim to
+`memory/session-2026-08-30-5.md`; LEDGER.md carries a short closed pointer only (D101 — nothing
+subtracted, only compressed, per this same rule's own carry-forward count-check).
+
 ## D897 [ROUTINE] — sgs/timeline gains `same-side`, closing the option Bean asked for at the outset
 
 **2026-08-30.** Commit `10072a44b`. `contentLayout: same-side` + `contentSide` (`start`|`end`).
