@@ -1,3 +1,76 @@
+## D910 [INCIDENT] — media atoms Wave 3+4: three instruments lied, and the gates could not see three contract defects
+
+**2026-08-30/31.** Commits `96a696130`..`27bd2eb2b`. Ten atoms built, 82/82 build gates green,
+nothing deployed. Plan: `~/.claude/plans/media-element-zippy-boole.md`. Design:
+`.claude/plans/2026-08-30-media-element-architecture-v2.md`.
+
+**Shipped.** Atom registry (ten atoms, data only) · selective injection both sides (109 keys -> 49
+for two atoms) · generated L4 stylesheet from per-atom partials · six new gates · the ten atoms,
+each a pure logic module + a JSX control module + a PHP twin + a CSS partial.
+
+### The instrument failures — all three were MINE, all three read green
+
+1. **A ratchet asserting a verification no run produced.** `IMPLEMENTED_ATOMS` was raised to 7 then
+   10 while `test-media-atom-parity.mjs` crashed on the first atom and verified NOTHING. A ratchet
+   exists to stop a deleted implementation passing as progress; this did the inverse. Two stacked
+   causes: plain Node ESM cannot parse JSX, and `@wordpress/components` is a webpack external absent
+   from `node_modules`.
+2. **A vacuous fixture.** It carried only presentation keys, so five atoms reported "identical
+   declarations (0)" — a green tick for comparing two empty arrays. Branch A flagged it rather than
+   banking the pass.
+3. **A self-test whose own controls passed for the wrong reason.** The purity gate's string-stripper
+   blanked literals, so the disclosure check could never read a value; its positive AND negative
+   control both passed. Only adding the negative control exposed it.
+
+⛔ **The fix for (1) is a CONTRACT, not a tidy-up:** `atoms/<id>.js` pure and plain-Node importable,
+`atoms/<id>.control.js` for the JSX. A value-setter that needs a UI library to compute a CSS value
+has the wrong dependencies. Enforced by `check-media-atom-purity.js`.
+
+⚠ **The branches' shared diagnosis was half wrong and I nearly inherited it.** All three said the
+`@wordpress/*` packages were absent. Measured: `i18n` and `element` ARE installed; only `components`
+and `block-editor` are not. The gate therefore DERIVES what is unresolvable from `node_modules` — a
+blanket ban would reject correct code, since `__()` in a logic module is right (`hiddenReason` is
+text a client reads) and would go stale the moment a package is installed.
+
+### Three contract defects the 82 gates could not see (found by qc-inline)
+
+1. **Separator inconsistency.** Five atoms appended their own trailing `;`, one did not. Invalid CSS
+   the moment a panel concatenates two atoms. ⛔ **The JS/PHP parity gate structurally cannot catch
+   this** — it compares an atom against its own twin, never one atom against another, and both
+   halves were consistently wrong together.
+2. **`video-behaviour.disclosure({})` threw** — no default on its destructured argument. The panel
+   dispatch calls `disclosure()` on every atom, so one throw kills the whole inspector.
+3. **`svg-presentation` emitted a z-index unconditionally**, even for an empty attribute set —
+   overriding the stylesheet's own `var( …, default )` with a default the client never saw.
+
+**Contract WIDENED, not an atom flattened.** `disclosure()` legally returns either
+`{ state, hiddenReason }` or a MAP of per-base states. `video-behaviour` owns ten toggles where
+autoplay locks two; a single state cannot express a per-toggle lock.
+
+⛔ **`state` is a closed vocabulary: `shown` | `disabled` | `omitted`.** Four branches produced FIVE
+words for three states — `visible` beside `shown`, `hidden` beside both others. `hidden` is worse
+than a synonym: OMITTED (structurally cannot apply) and DISABLED (does not apply YET, carries a
+reason) are deliberately different, and a word meaning either reintroduces the ambiguity
+`hiddenReason` exists to prevent.
+
+### A live defect fixed
+
+`media/render.php` built autoplay/muted/playsinline independently with no guard; the coupling lived
+only in `view.js`, so **no-JS visitors got markup the browser refuses to play**. Now resolved through
+the atom. Verified by the coordinator, not on the branch's word: autoplay+unmuted -> `autoplay muted
+playsinline`; autoplay-off leaves muted off (not blanket-forcing); tablet-only autoplay couples on
+tablet and leaves desktop untouched.
+
+⚠ **`check-dead-controls` flagged the videoPlaysInline trio the moment that fix landed** — they went
+from consumed to "dead" while becoming MORE correct, because the media layer composes every name
+from prefix + base and a literal grep cannot see one. Detector broadened, not baselined (project
+rule), and checked for overmatch: exactly the 9 names the atom composes, zero unrelated attrs.
+
+⛔ **NOTHING IS DEPLOYED.** Waves 3-4 close on parity, validators and purity. **Wave 5 closes on
+paint.** `reports/visual-diff/media-2026-08-30.md` records the render.php change with PHP-level
+evidence and states plainly that no browser was opened; the visual gate was passed with a SCOPED
+skip and a logged reason, never a fabricated `verdict: PASS`.
+
 ## D909 [ROUTINE] — media atoms: six -> TEN, shared helpers over a golden recipe, object-fit inline
 
 **2026-08-30.** Three Bean rulings for Wave 3, plus the architecture-doc realignment they forced.

@@ -322,40 +322,41 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 
 ## ▶ CLIENT-CONTROLS TRACK — 2026-08-30: MEDIA ELEMENT, waves 1-3 SHIPPED
 
-**Detail: D904-D909. Plan `~/.claude/plans/media-element-zippy-boole.md`. Canonical design
-`.claude/plans/2026-08-30-media-element-architecture-v2.md` — REWRITTEN in place; do not re-add
+**Detail: D904-D910. Plan `~/.claude/plans/media-element-zippy-boole.md`. Design
+`.claude/plans/2026-08-30-media-element-architecture-v2.md` — rewritten in place; do not re-add
 "this was wrong" notes, they mislead a grepping agent. Do not restate history here.**
-(`prompts/2026-08-31-uniformity-sweep.md` is the separate ORIGINAL goal, still triage-only.)
+(`prompts/2026-08-31-uniformity-sweep.md` = separate ORIGINAL goal, triage-only.)
 
-**Waves 1-2 deployed + live-verified** — census, SVG allowlists 6→1 + sanitiser at 6 mounts,
-`<track>` captions, L1 pair, declarative injection. Probe **3143**;
+**Waves 1-2 deployed + live-verified.** Probe **3143**;
 `reports/visual-diff/svg-sanitiser-captions-2026-08-30.md`.
 
-**Wave 3 built, six media gates green, NOT deployed** — atom registry (TEN atoms, data only),
-presentation census (54 pairs / 37 names + a **`gaps` matrix**), selective injection both sides
-(109 keys → 49), and the generated L4 stylesheet `assets/css/media-element.css` (from
-`assets/css/media-atoms/*.css`, enqueued in both realms).
+**Wave 3 built** — atom registry, presentation census (54 pairs / 37 names + a **`gaps` matrix**),
+selective injection both sides (109 → 49 keys), generated L4 stylesheet from per-atom partials.
 
-⛔ **ABSENCE IS A GAP, NOT A DECISION (Bean).** Built ad hoc, never standardised — a missing name is
-an accidental gap. `gaps` is the operative output, not the inventory: **SIX real gaps** (overlay on
-4 surfaces, object-fit + focal-point on decorative-image; box-shape complete). Only a genuinely
-DIFFERENT concept is excludable — `decorative-image`'s `positionX/Y` are absolute page placement.
+⛔ **ABSENCE IS A GAP, NOT A DECISION (Bean).** A missing name is an accidental gap, so `gaps` is
+the operative output, not the inventory: **SIX real gaps**. Only a genuinely DIFFERENT concept is
+excludable — `decorative-image`'s `positionX/Y` are absolute page placement.
 
 ⛔ **A control becomes standard by BEING a shared helper.** `golden-controls.json` encodes 14 types;
 exactly ONE has a rule reading it, so a recipe there enforces nothing.
+⛔ **`object-fit`'s `custom` is a SIZING MODE** → belongs to `box-shape`. Hero's `--image, --video`
+scoping (SVG's `<span>` excluded) is the canonical video/SVG answer.
 
-⛔ **`object-fit`'s `custom` is a SIZING MODE, not a fit value** → belongs to `box-shape`. Hero's
-`--image, --video` scoping (SVG's `<span>` excluded deliberately) is the canonical video/SVG answer.
+**Wave 4 SHIPPED (D910)** — ten atoms, `96a696130`..`27bd2eb2b`, 82/82 gates, NOT deployed.
+Each atom = pure logic module + JSX control module + PHP twin + CSS partial. ⛔ **The split is a CONTRACT**
+(`check-media-atom-purity.js`): `<id>.js` plain-Node importable, `<id>.control.js` holds the JSX.
+Three instruments read green while proving nothing — read D910 before trusting a ratchet here.
 
-**NEXT:** Wave 4 = ten atoms, 4 Sonnet branches, dispatched from baseline `0fdf3b654`. Then 5
-(`sgs/media` THEN `before-after`, **never parallel**) → 6 (inspector-scan rules, all advisory) → 7
-(remaining surfaces, INSERT→VERIFY→GUT per commit).
+**NEXT:** Wave 5 = wire `sgs/media` THEN `before-after`, **never parallel** (the only test the
+abstraction generalises; falsification test = `git diff --stat` showing no file outside
+`src/components/Media*` + `includes/helpers-media-element.php`). Then 6 (inspector-scan rules, all
+advisory) → 7 (remaining surfaces, INSERT→VERIFY→GUT per commit).
 
 ⚠ **OWED:** `button/render.php`'s two SVG allowlists; the SMIL bypass is REASONED NOT EXECUTED
-(owed a canary probe with a positive control). **Nothing in Wave 3 is deployed — Wave 3 closes on
-parity + validators; Wave 5 closes on paint.** Live defect branch B is fixing:
-`media/render.php:1076-1080` builds autoplay/muted/playsinline with no guard, so no-JS visitors get
-unplayable markup.
+(owed a canary probe with a positive control). ⛔ **Nothing in Waves 3-4 is deployed — they close on
+parity, validators and purity; WAVE 5 CLOSES ON PAINT.** The no-JS autoplay defect
+(`media/render.php` built autoplay/muted/playsinline with no guard) is FIXED and PHP-verified;
+`reports/visual-diff/media-2026-08-30.md` names the three cases Wave 5 must check live.
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
