@@ -39,11 +39,14 @@ track owns `## ▶ MOTION TRACK` below.
 The **consolidation** track is summarised in the next block and is CLOSED bar one phase.
 The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section at the bottom.
 
-⛔ **Before building ANY script or hand-doing investigative work, grep the two GENERATED
-catalogues in `.claude/dev-setup.md`.** 524 scripts across FIVE directories, and this repo's
-recorded failure mode is rebuilding one that already exists. Search the SUBJECT (colour,
-token, element, parity), never the verb — the same idea is spelled `census-*`, `survey-*`,
-`audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
+⭐ **Client-controls SPLIT IN TWO (2026-08-30):** `prompts/2026-08-31-uniformity-sweep.md`
+(the original goal) + `prompts/2026-08-31-media-element.md`. Earlier names are stale.
+
+⛔ **Before building ANY script, read the GENERATED tooling catalogue in `.claude/dev-setup.md`
+(§"Tooling catalogue").** **611 runnable** files in `plugins/sgs-blocks/scripts` alone (the old
+"524" here was low); rebuilding an existing tool is this repo's recorded failure mode. Search the
+SUBJECT (colour, token, element, parity), never the verb — the same idea is spelled `census-*`,
+`survey-*`, `audit-*`, `check-*`, `scan-*`, `probe-*`, `migrate-*` and `report-*`.
 
 ## ▶ BORDER / SHAPE-B TRACK — 2026-08-30 (evening): CLOSED
 
@@ -234,12 +237,9 @@ Spec 32 §6.1(a1)/(a2), Spec 35 Part K. shop-archive: Phase 3 ownership moved 20
 duplicate constrained-layout DELETED. One cap per page, ours. A block placed straight into a
 page is intentionally full-width — do not "fix" it.
 
-## Task 2 — Two decisions the colour-golden track is waiting on
-
-Sticky sidebar (their evidence says the accordion already solved it — RE-MEASURE before
-building anything) and the band-replacement model, which is Task 1 by another name. Neither
-touched by the client-controls track's 2026-08-30 close-out (D898) — parked:
-`parking.md` P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL.
+## Task 2 — sticky sidebar + band-replacement model: PARKED, not this track's.
+`parking.md` P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL. RE-MEASURE before building —
+their own evidence says the accordion already solved the sidebar.
 
 ## ▶ LIVE STATUS — 2026-08-23 (shop-archive track — PHASE 3 WAVE A CLOSED)
 
@@ -320,21 +320,47 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 `.is-layout-constrained > :where(:not(.alignfull))`. Ours therefore cannot express
 "full-bleed child of a constrained parent". Read it there before reopening it.
 
-## ▶ CLIENT-CONTROLS TRACK — CLOSED 2026-08-30 (late). Detail: D898.
+## ▶ CLIENT-CONTROLS TRACK — 2026-08-30: SPLIT IN TWO, both planned, zero code shipped
 
-Colour-standard residuals (border group default on `sgs/multi-button`, deploy, scatter-detector
-census) closed and deployed same session — full detail in `decisions.md` D898, do not restate
-here. Full prior-session narrative archived verbatim: `memory/session-2026-08-30-5.md`.
+**Run separately:** `prompts/2026-08-31-uniformity-sweep.md` (the ORIGINAL goal) and
+`prompts/2026-08-31-media-element.md` (grew out of it). **Nothing committed to `src/`.**
+Output = 12 reports, 4 plans, 2 prompts. **CODE SHIPPED = none. OUTCOME = a scoped, council-reviewed plan.**
 
-**Closed same day:** hero's visual-diff debt paid (`reports/visual-diff/hero-2026-08-30.md`) and
-the `sgs/media` "wrapper vs media" note confirmed a non-issue (`check-element-manifest-conformance.js`
-GATE PASS) — both archived to `memory/parking-archive.md`, not restated here.
+### Uniformity sweep — Phase 1 triage COMPLETE (7 agents)
 
-**Still open, parked (none blocking, none this track's to finish alone):**
-`P-SCATTER-DETECTOR-FAMILY-CLASSIFICATION` · `P-DETECTOR-FIRST-COMMIT-GATE-THRESHOLD-HOLE` ·
-`P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL` (all in `parking.md`, bucket "framework").
-Spec 39 capture work stays paced by `plans/2026-08-25-road-to-uniform-then-spec-39.md` /
-`plans/spec-39-seed-requirements.md` — D552 still holds: standard leads, pipeline follows.
+Plan: `plans/2026-08-30-uniformity-sweep-execution.md`. Evidence: `reports/2026-08-30-triage-T1..T7-*.md`.
+
+The inherited register was wrong on nearly every count (rule 21 = 82 not 222; rule 34 = 1 not 319;
+rule 31 = 280, ceiling 291; tier migration = 21 targets not 37). Full table in the plan.
+
+**Population under-reported FOUR times, same cause** (measuring the layer in front of you and
+calling it the total): baselines 14/146/171/**511**; rules 7/**24**; scripts **809**. Every count
+is a floor. Read the GENERATED tooling catalogue in `dev-setup.md` before building anything.
+
+**`migrate-tier-object.py` would CORRUPT art-directed media today.** Its `ASSET` kind is a SHAPE
+test, not semantic, so 15 media attrs classify FLAT and would fold into responsive objects against
+C19. Plus an unhandled `KeyError` at `:1025/1034/1036` aborts the batch. Fix both before `--fix`.
+
+**Bean's rulings:** no canary loop · rule 20 OUT · 305-entry `dead-api` allowlist PARKED (biggest
+number, serves neither goal) · ToolsPanel pilot = `team-member` · name = `{element}Decorative` ·
+C14 only if quick, **and a control owning its own colour is NOT a split**.
+
+### Media element — architecture v2, 7-seat council applied
+
+Plan: `plans/2026-08-30-media-element-architecture-v2.md`. Evidence: `reports/2026-08-30-media-M1..M5-*.md`.
+
+v1 scored C/C+/D across 7 seats. **My founding claim was false** — `sgs_tier_media_toggle_css` DOES
+have callers (via `sgs_tier_media_render`, 2 adopters); I searched only direct block calls.
+Dropped on evidence: codegen, `<picture>` (breaks the pipeline's BEM contract —
+`media/render.php:686` calls the current shape deliberate), Interactivity rewrite (already in ~13
+blocks). Four layers mirror: typography helper pair, `KIND_PANELS`, `ContainerWrapperControls`,
+`before-after` custom properties.
+
+**Wire `sgs/media` then `before-after` — NEVER in parallel.** Concurrent builds let both agents
+patch the shared layer to suit themselves, destroying the only test that it generalises.
+
+**Three compliance items ship regardless of scope:** editor SVG sanitiser (Contributor stores a
+script, admin runs it — 3 sites), `<track>` captions (zero, WCAG A), reduced-motion on ken-burns.
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
