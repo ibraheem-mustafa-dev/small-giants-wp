@@ -1443,6 +1443,28 @@
 			display: none;
 		}
 
+		// ⛔ THE CONNECTOR REVEAL MUST BE OPTED OUT OF, NOT JUST LEFT UNDRIVEN.
+		// `revealTrigger: connector` hides every entry at :1322 until view.js
+		// adds `.is-revealed`, and view.js deliberately does NOT run the reveal
+		// driver in carousel mode (there is no travelling vertical fill to reach
+		// each dot). Without this rule the hidden state never lifts: measured
+		// live 2026-08-30, all four cards sat at `opacity: 0` with an empty
+		// carousel painting nothing but a scrollbar.
+		//
+		// That is the precise failure the `.is-js` gate at :1316-1321 exists to
+		// prevent — "a broken script degrades to everything shown, never to a
+		// blank timeline". A DELIBERATELY not-run driver leaves `.is-js` on the
+		// root, so the hiding rule still matches and nothing un-hides it.
+		// Suppressing a driver therefore obliges you to suppress the hidden
+		// state it was the only thing capable of lifting.
+		//
+		// (0,6,0) here — five repetitions plus `.sgs-timeline__entry` — against
+		// the hiding rule's (0,4,0), so this wins on specificity, not order.
+		.sgs-timeline__entry {
+			opacity: 1;
+			transform: none;
+		}
+
 		.sgs-timeline__entry {
 			display: block;
 			// The conformance-required panel width (Sufficient Technique G225):
