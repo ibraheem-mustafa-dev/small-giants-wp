@@ -1941,7 +1941,7 @@
       "sgs/hero": {
         "control": "hero/edit.js (own rows) + FocalPositionField + BackgroundPanel (shared)",
         "renderer": "src/blocks/hero/render.php:618-628 + :1098/:1112 (overlay)",
-        "attr_count": 26,
+        "attr_count": 25,
         "attrs": {
           "splitMediaObjectFit": {
             "atom": "object-fit",
@@ -2067,13 +2067,6 @@
             "tier": "desktop",
             "scope": "element"
           },
-          "bgSvgMinHeight": {
-            "atom": "box-shape",
-            "type": "string",
-            "default": "",
-            "tier": "desktop",
-            "scope": "backdrop"
-          },
           "backgroundOverlayColour": {
             "atom": "overlay",
             "type": "string",
@@ -2164,7 +2157,7 @@
       "sgs/container": {
         "control": "src/blocks/container/components/BackgroundPanel.js (shared by 8 host blocks)",
         "renderer": "includes/class-sgs-container-wrapper.php:1746 / :2269 (overlay)",
-        "attr_count": 14,
+        "attr_count": 13,
         "attrs": {
           "backgroundSize": {
             "atom": "object-fit",
@@ -2216,13 +2209,6 @@
             "default": {},
             "tier": "desktop",
             "scope": "element"
-          },
-          "bgSvgMinHeight": {
-            "atom": "box-shape",
-            "type": "string",
-            "default": "",
-            "tier": "desktop",
-            "scope": "backdrop"
           },
           "backgroundOverlayColour": {
             "atom": "overlay",

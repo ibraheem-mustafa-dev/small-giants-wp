@@ -110,7 +110,7 @@ ROSTER = {
                         'backgroundRepeat', 'backgroundAttachment'],
         'box-shape': ['splitMediaHeight', 'splitMediaHeightUnit', 'splitMediaWidth',
                       'splitMediaWidthTablet', 'splitMediaWidthMobile',
-                      'splitMediaWidthUnit', 'minHeight', 'bgSvgMinHeight'],
+                      'splitMediaWidthUnit', 'minHeight'],
         'overlay': ['backgroundOverlayColour', 'backgroundOverlayColourHover',
                     'backgroundOverlayOpacity', 'backgroundOverlayOpacityTablet',
                     'backgroundOverlayOpacityMobile', 'backgroundOverlayBlendMode',
@@ -120,7 +120,7 @@ ROSTER = {
     'container': {
         'object-fit': ['backgroundSize'],
         'focal-point': ['backgroundPosition', 'backgroundRepeat', 'backgroundAttachment'],
-        'box-shape': ['minHeight', 'bgSvgMinHeight'],
+        'box-shape': ['minHeight'],
         'overlay': ['backgroundOverlayColour', 'backgroundOverlayColourHover',
                     'backgroundOverlayOpacity', 'backgroundOverlayOpacityTablet',
                     'backgroundOverlayOpacityMobile', 'backgroundOverlayBlendMode',
@@ -327,6 +327,14 @@ NOT_APPLICABLE = {}
 # Controls that stay block-specific because they are a DIFFERENT CONCEPT, not a
 # missing instance of a shared one. Recorded so a later pass does not fold them
 # into an atom.
+# Names deliberately NOT in this roster because the SOURCE-side census already
+# owns them. `bgSvgMinHeight` is a MEDIA_BASES.svg base, so it belongs to atom 6
+# (svg-presentation), not to box-shape -- two atoms claiming one name would make
+# selective injection ambiguous.
+OWNED_ELSEWHERE = {
+    'bgSvgMinHeight': 'atom 6 svg-presentation — already a MEDIA_BASES.svg base',
+}
+
 SPECIALISED = {
     'decorative-image': {
         'positionX': 'Absolute placement of the decoration on the page — not the '

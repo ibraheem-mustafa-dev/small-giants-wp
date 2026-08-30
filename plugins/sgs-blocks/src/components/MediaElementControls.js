@@ -98,7 +98,70 @@ export const MEDIA_BASES = {
 	],
 	// Intrinsic dimensions, written from the chosen media rather than edited.
 	intrinsic: [ 'ImageWidth', 'ImageHeight' ],
+
+	// ── PRESENTATION (atoms 7-10). Added from the census's presentation half.
+	//
+	// Two vocabularies, one concept, split by SCOPE and kept apart on purpose:
+	// `ObjectFit`/`ObjectPosition` apply to a replaced element (an <img> or
+	// <video>); `Size`/`Position`/`Repeat`/`Attachment` apply to a painted
+	// background box. They are not interchangeable, which is exactly what the
+	// atom layer normalises for the client.
+	//
+	// ⛔ Neither applies to an inline <svg>: object-fit does nothing to one, so
+	// the SVG path is a separate implementation (preserveAspectRatio or a sized
+	// wrapper), never a third selector pretending otherwise.
+	fit: [ 'ObjectFit', 'Size' ],
+	focal: [ 'ObjectPosition', 'Position', 'Repeat', 'Attachment' ],
+	shape: [
+		'MediaSizing',
+		'AspectRatio',
+		'Shape',
+		'Height',
+		'HeightUnit',
+		'MaxHeight',
+		'MaxHeightUnit',
+		'MaxWidth',
+		'MaxWidthUnit',
+		'MaxWidthPercent',
+		'MinHeight',
+		'Width',
+		'WidthUnit',
+	],
+	overlay: [
+		'OverlayColour',
+		'OverlayColourHover',
+		'OverlayGradient',
+		'OverlayGradientHover',
+		'OverlayOpacity',
+		'OverlayBlendMode',
+	],
 };
+
+/**
+ * Bases whose VALUE legitimately differs per device.
+ *
+ * Tiering is a capability, not a default. Every source and behaviour base is
+ * tiered because art direction and playback genuinely differ per device. Of the
+ * presentation bases only these four do: a crop focus, a size and an overlay
+ * strength differ on a phone; a fit mode, a blend mode and a unit do not.
+ *
+ * ⛔ Declaring a tier for a base nothing varies per device creates attributes no
+ * renderer reads - the dead-control class `check-dead-controls.js` gates. This
+ * list is the single source for BOTH injection filters; neither derives the
+ * tiered set from group membership any more.
+ */
+export const MEDIA_TIERED_BASES = [
+	...[ 'Image', 'ImageId', 'ImageUrl', 'Video', 'VideoId', 'VideoUrl', 'Svg',
+		'SvgContent', 'Thumbnail', 'ThumbnailId' ],
+	...[ 'VideoAutoplay', 'VideoLoop', 'VideoMuted', 'VideoControls',
+		'VideoPlaysInline', 'VideoLazyLoad', 'VideoCaptionsId', 'VideoCaptionsUrl',
+		'VideoCaptionsLabel', 'VideoCaptionsSrcLang' ],
+	'ObjectPosition',
+	'Height',
+	'Width',
+	'MinHeight',
+	'OverlayOpacity',
+];
 
 /** Device tiers. Never hardcode 768/1024 here - see SGS_BREAKPOINTS. */
 export const MEDIA_TIERS = [ 'Tablet', 'Mobile' ];
@@ -159,6 +222,48 @@ export const MEDIA_ATTR_TYPES = {
 	SvgOpacity: 'number',
 	ImageWidth: 'number',
 	ImageHeight: 'number',
+
+	// ── PRESENTATION.
+	//
+	// ⛔ TWO BASES CARRY A TYPE CONFLICT ACROSS SURFACES, and the type declared
+	// here is what a FRESH adoption gets - never a retrofit of an existing one.
+	// A block's own declaration always wins at injection, so the divergent
+	// surfaces keep their shape and the atom READS it (see the atom registry's
+	// `reads` field):
+	//
+	//   Height  object here. `sgs/media` and `sgs/before-after` agree; but
+	//           `sgs/product-card` declares `imageHeight` as a plain "180px"
+	//           STRING. Two concepts under one base - see the census traps.
+	//   Width   object here. `sgs/decorative-image` agrees; `sgs/hero` declares
+	//           `splitMediaWidth` as a NUMBER paired with `splitMediaWidthUnit`.
+	//
+	// Declaring a union would accept both and lose the shape validation that
+	// makes a mismatched value fail loudly instead of silently (D549).
+	ObjectFit: 'string',
+	Size: 'string',
+	ObjectPosition: 'string',
+	Position: 'string',
+	Repeat: 'string',
+	Attachment: 'string',
+	MediaSizing: 'string',
+	AspectRatio: 'string',
+	Shape: 'string',
+	Height: 'object',
+	HeightUnit: 'string',
+	MaxHeight: 'object',
+	MaxHeightUnit: 'string',
+	MaxWidth: 'object',
+	MaxWidthUnit: 'string',
+	MaxWidthPercent: 'number',
+	MinHeight: 'object',
+	Width: 'object',
+	WidthUnit: 'string',
+	OverlayColour: 'string',
+	OverlayColourHover: 'string',
+	OverlayGradient: 'string',
+	OverlayGradientHover: 'string',
+	OverlayOpacity: 'number',
+	OverlayBlendMode: 'string',
 };
 
 /**
@@ -225,11 +330,10 @@ export function mediaAttrKeys( prefix ) {
 		} );
 	} );
 
-	// Per-tier siblings for the source + behaviour families. Presentation and
-	// meaning are not tiered anywhere in the measured population, so adding
-	// tiers for them would declare attributes nothing reads - the dead-control
-	// class the framework already gates against.
-	[ ...MEDIA_BASES.source, ...MEDIA_BASES.behaviour ].forEach( ( base ) => {
+	// Per-tier siblings, driven by MEDIA_TIERED_BASES rather than by group
+	// membership - presentation is only PARTLY tiered, so a group-derived rule
+	// would either miss ObjectPosition or invent tiers for OverlayBlendMode.
+	MEDIA_TIERED_BASES.forEach( ( base ) => {
 		MEDIA_TIERS.forEach( ( tier ) => {
 			const logical =
 				base.charAt( 0 ).toLowerCase() + base.slice( 1 ) + tier;

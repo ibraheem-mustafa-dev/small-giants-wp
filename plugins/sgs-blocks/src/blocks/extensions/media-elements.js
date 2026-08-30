@@ -8,6 +8,15 @@
  *       { "prefix": "after",  "context": "element" }
  *   ] } }
  *
+ * ⛔ INJECTION IS SELECTIVE, driven by the ATOMS an entry names. Without that a
+ * single declared prefix injects all 59 bases - 109 keys once tiers are applied
+ * - and a surface with three real media attributes gains a hundred nothing
+ * reads. Omitting `atoms` means ALL of them, which is the honest default for a
+ * layer whose premise is that a missing control is a gap; a surface that
+ * genuinely needs less names what it needs:
+ *
+ *   { "prefix": "image", "context": "element", "atoms": [ "source", "box-shape" ] }
+ *
  * Uniformity is not sorted out afterwards - it is a PRECONDITION of the
  * injection, because every key comes from one function (`mediaAttrKeys`).
  *
@@ -26,11 +35,15 @@
 import { addFilter } from '@wordpress/hooks';
 
 import {
-	MEDIA_BASES,
 	MEDIA_TIERS,
+	MEDIA_TIERED_BASES,
 	mediaStoredAttrName,
 	mediaAttrType,
 } from '../../components/MediaElementControls.js';
+import {
+	basesForAtoms,
+	atomsForElement,
+} from '../../components/media/atoms/registry.js';
 
 /**
  * Read a block's declared media elements.
@@ -46,16 +59,18 @@ function declaredMediaElements( settings ) {
 /**
  * Every attribute a descriptor contributes, as name -> definition.
  *
- * Tiers are applied to the source and behaviour families only. Presentation and
- * meaning are not tiered anywhere in the measured population, and declaring
- * attributes nothing reads is the dead-control class the framework gates.
+ * Tiers come from MEDIA_TIERED_BASES, not from group membership: presentation is
+ * only PARTLY tiered, so a group-derived rule would either miss ObjectPosition
+ * or invent tiers for OverlayBlendMode. Declaring attributes nothing reads is
+ * the dead-control class the framework gates.
  *
  * @param {string} blockName Block slug, for STORED_AS resolution.
- * @param {Object} element   { prefix, context }.
+ * @param {Object} element   { prefix, context, atoms? }.
  * @return {Object} attribute name -> { type, default? }.
  */
 function attributesForElement( blockName, element ) {
 	const prefix = element?.prefix || '';
+	const bases = basesForAtoms( atomsForElement( element ) );
 	const out = {};
 
 	const add = ( base, tier ) => {
@@ -73,12 +88,12 @@ function attributesForElement( blockName, element ) {
 		out[ name ] = def;
 	};
 
-	Object.keys( MEDIA_BASES ).forEach( ( group ) =>
-		MEDIA_BASES[ group ].forEach( ( base ) => add( base, '' ) )
-	);
-	[ ...MEDIA_BASES.source, ...MEDIA_BASES.behaviour ].forEach( ( base ) =>
-		MEDIA_TIERS.forEach( ( tier ) => add( base, tier ) )
-	);
+	bases.forEach( ( base ) => add( base, '' ) );
+	bases
+		.filter( ( base ) => MEDIA_TIERED_BASES.includes( base ) )
+		.forEach( ( base ) =>
+			MEDIA_TIERS.forEach( ( tier ) => add( base, tier ) )
+		);
 
 	return out;
 }

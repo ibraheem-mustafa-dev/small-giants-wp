@@ -90,16 +90,59 @@ function sgs_register_media_element_attrs( $args, $name ) {
 		? $args['attributes']
 		: array();
 
-	$tiered = array_merge( $types['groups']['source'], $types['groups']['behaviour'] );
-	$tiers  = array( '', 'Tablet', 'Mobile' );
+	// Tiering is DATA, not derived from group membership. Presentation is only
+	// partly tiered, so a group-derived rule would either miss ObjectPosition or
+	// invent tiers for OverlayBlendMode. Both sides read this same list.
+	$tiered = isset( $types['tiered'] ) && is_array( $types['tiered'] )
+		? $types['tiered']
+		: array();
+	$atom_map = isset( $types['atoms'] ) && is_array( $types['atoms'] )
+		? $types['atoms']
+		: array();
+	$tiers = array( '', 'Tablet', 'Mobile' );
 
 	$injected = array();
 
 	foreach ( $declared as $element ) {
 		$prefix = isset( $element['prefix'] ) ? (string) $element['prefix'] : '';
 
-		foreach ( $types['groups'] as $group_bases ) {
-			foreach ( $group_bases as $base ) {
+		// SELECTIVE INJECTION. An entry names the ATOMS it wants and receives
+		// the union of their bases. Omitting `atoms` means all of them - the
+		// honest default for a layer whose premise is that a missing control is
+		// a gap, so a surface that has not thought about it gets the full set.
+		//
+		// ⛔ Without this a single prefix injects all 60 bases (109 keys with
+		// tiers). A surface with three real media attributes would gain a
+		// hundred nothing reads, which is exactly what check-dead-controls.js
+		// exists to stop.
+		$wanted = isset( $element['atoms'] ) && is_array( $element['atoms'] ) && $element['atoms']
+			? $element['atoms']
+			: array_keys( $atom_map );
+
+		$bases = array();
+		foreach ( $wanted as $atom_id ) {
+			if ( ! isset( $atom_map[ $atom_id ] ) ) {
+				// An unknown atom is an authoring error, not a reason to inject
+				// less silently. Skipping it would look identical to the block
+				// simply lacking those controls.
+				_doing_it_wrong(
+					__FUNCTION__,
+					sprintf(
+						/* translators: 1: atom id, 2: block name. */
+						esc_html__( 'Unknown media atom "%1$s" declared by %2$s.', 'sgs-blocks' ),
+						esc_html( (string) $atom_id ),
+						esc_html( (string) $name )
+					),
+					'1.0.0'
+				);
+				continue;
+			}
+			foreach ( $atom_map[ $atom_id ] as $atom_base ) {
+				$bases[ $atom_base ] = true;
+			}
+		}
+
+		foreach ( array_keys( $bases ) as $base ) {
 				foreach ( $tiers as $tier ) {
 					if ( '' !== $tier && ! in_array( $base, $tiered, true ) ) {
 						continue;
@@ -123,7 +166,6 @@ function sgs_register_media_element_attrs( $args, $name ) {
 
 					$injected[ $attr_name ] = $def;
 				}
-			}
 		}
 	}
 

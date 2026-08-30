@@ -7,8 +7,14 @@
  * Regenerate: node scripts/generate-media-attributes.mjs
  * Gate:       node scripts/generate-media-attributes.mjs --check
  *
- * The declared TYPE for every media attribute base, mirrored for the server so
- * register_block_type_args() can register the same schema the editor injects.
+ * Four maps, mirrored for the server so register_block_type_args() registers
+ * exactly the schema the editor injects:
+ *
+ *   bases   base -> declared type
+ *   groups  vocabulary group -> its bases
+ *   tiered  the bases that carry Tablet/Mobile siblings
+ *   atoms   atom id -> its bases (this is what drives SELECTIVE injection)
+ *
  * Editing this by hand makes the two sides disagree - and a type mismatch does
  * not error, it makes WordPress silently coerce the stored value back to its
  * default, deleting the client's media on load.
@@ -18,7 +24,11 @@
 
 return array(
 	'bases'  => array(
+		"AspectRatio"              => "string",
+		"Attachment"               => "string",
 		"DecorMedia"               => "object",
+		"Height"                   => "object",
+		"HeightUnit"               => "string",
 		"Image"                    => "object",
 		"ImageAlt"                 => "string",
 		"ImageHeight"              => "number",
@@ -26,7 +36,26 @@ return array(
 		"ImageIsDecorative"        => "boolean",
 		"ImageUrl"                 => "string",
 		"ImageWidth"               => "number",
+		"MaxHeight"                => "object",
+		"MaxHeightUnit"            => "string",
+		"MaxWidth"                 => "object",
+		"MaxWidthPercent"          => "number",
+		"MaxWidthUnit"             => "string",
+		"MediaSizing"              => "string",
 		"MediaType"                => "string",
+		"MinHeight"                => "object",
+		"ObjectFit"                => "string",
+		"ObjectPosition"           => "string",
+		"OverlayBlendMode"         => "string",
+		"OverlayColour"            => "string",
+		"OverlayColourHover"       => "string",
+		"OverlayGradient"          => "string",
+		"OverlayGradientHover"     => "string",
+		"OverlayOpacity"           => "number",
+		"Position"                 => "string",
+		"Repeat"                   => "string",
+		"Shape"                    => "string",
+		"Size"                     => "string",
 		"Svg"                      => "string",
 		"SvgAnimation"             => "string",
 		"SvgAnimationSpeed"        => "string",
@@ -53,6 +82,8 @@ return array(
 		"VideoPlaysInline"         => "boolean",
 		"VideoSource"              => "string",
 		"VideoUrl"                 => "string",
+		"Width"                    => "object",
+		"WidthUnit"                => "string",
 	),
 	'groups' => array(
 		"behaviour"    => array(
@@ -67,6 +98,16 @@ return array(
 			"VideoCaptionsLabel",
 			"VideoCaptionsSrcLang",
 		),
+		"fit"          => array(
+			"ObjectFit",
+			"Size",
+		),
+		"focal"        => array(
+			"ObjectPosition",
+			"Position",
+			"Repeat",
+			"Attachment",
+		),
 		"intrinsic"    => array(
 			"ImageWidth",
 			"ImageHeight",
@@ -75,6 +116,29 @@ return array(
 			"ImageAlt",
 			"VideoAlt",
 			"ImageIsDecorative",
+		),
+		"overlay"      => array(
+			"OverlayColour",
+			"OverlayColourHover",
+			"OverlayGradient",
+			"OverlayGradientHover",
+			"OverlayOpacity",
+			"OverlayBlendMode",
+		),
+		"shape"        => array(
+			"MediaSizing",
+			"AspectRatio",
+			"Shape",
+			"Height",
+			"HeightUnit",
+			"MaxHeight",
+			"MaxHeightUnit",
+			"MaxWidth",
+			"MaxWidthUnit",
+			"MaxWidthPercent",
+			"MinHeight",
+			"Width",
+			"WidthUnit",
 		),
 		"source"       => array(
 			"Image",
@@ -100,6 +164,114 @@ return array(
 			"MediaType",
 			"VideoSource",
 			"VideoMimeType",
+		),
+	),
+	'tiered' => array(
+		"Height",
+		"Image",
+		"ImageId",
+		"ImageUrl",
+		"MinHeight",
+		"ObjectPosition",
+		"OverlayOpacity",
+		"Svg",
+		"SvgContent",
+		"Thumbnail",
+		"ThumbnailId",
+		"Video",
+		"VideoAutoplay",
+		"VideoCaptionsId",
+		"VideoCaptionsLabel",
+		"VideoCaptionsSrcLang",
+		"VideoCaptionsUrl",
+		"VideoControls",
+		"VideoId",
+		"VideoLazyLoad",
+		"VideoLoop",
+		"VideoMuted",
+		"VideoPlaysInline",
+		"VideoUrl",
+		"Width",
+	),
+	'atoms'  => array(
+		"box-shape"          => array(
+			"MediaSizing",
+			"AspectRatio",
+			"Shape",
+			"Height",
+			"HeightUnit",
+			"MaxHeight",
+			"MaxHeightUnit",
+			"MaxWidth",
+			"MaxWidthUnit",
+			"MaxWidthPercent",
+			"MinHeight",
+			"Width",
+			"WidthUnit",
+		),
+		"focal-point"        => array(
+			"ObjectPosition",
+			"Position",
+			"Repeat",
+			"Attachment",
+		),
+		"intrinsic"          => array(
+			"ImageWidth",
+			"ImageHeight",
+		),
+		"meaning"            => array(
+			"ImageAlt",
+			"VideoAlt",
+			"ImageIsDecorative",
+		),
+		"media-type"         => array(
+			"MediaType",
+			"VideoSource",
+			"VideoMimeType",
+		),
+		"object-fit"         => array(
+			"ObjectFit",
+			"Size",
+		),
+		"overlay"            => array(
+			"OverlayColour",
+			"OverlayColourHover",
+			"OverlayGradient",
+			"OverlayGradientHover",
+			"OverlayOpacity",
+			"OverlayBlendMode",
+		),
+		"source"             => array(
+			"Image",
+			"ImageId",
+			"ImageUrl",
+			"Video",
+			"VideoId",
+			"VideoUrl",
+			"Svg",
+			"SvgContent",
+			"Thumbnail",
+			"ThumbnailId",
+		),
+		"svg-presentation"   => array(
+			"SvgAnimation",
+			"SvgAnimationSpeed",
+			"SvgOpacity",
+			"SvgPosition",
+			"SvgMinHeight",
+			"SvgTextShadow",
+		),
+		"video-behaviour"    => array(
+			"VideoAutoplay",
+			"VideoLoop",
+			"VideoMuted",
+			"VideoControls",
+			"VideoPlaysInline",
+			"VideoLazyLoad",
+			"VideoCaptionsId",
+			"VideoCaptionsUrl",
+			"VideoCaptionsLabel",
+			"VideoCaptionsSrcLang",
 		),
 	),
 );
