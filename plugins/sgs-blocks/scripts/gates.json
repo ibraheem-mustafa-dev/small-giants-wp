@@ -776,5 +776,32 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 84
+  },
+  {
+    "id": "generate-media-attributes",
+    "cmd": "node scripts/generate-media-attributes.mjs",
+    "tier": "generator",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 7
+  },
+  {
+    "id": "check-media-attributes-parity",
+    "cmd": "node scripts/generate-media-attributes.mjs --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 85
+  },
+  {
+    "id": "test-media-injection-parity",
+    "cmd": "node scripts/tests/test-media-injection-parity.mjs",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 86
   }
 ]

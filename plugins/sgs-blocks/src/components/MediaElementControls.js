@@ -104,6 +104,82 @@ export const MEDIA_BASES = {
 export const MEDIA_TIERS = [ 'Tablet', 'Mobile' ];
 
 /**
+ * The declared TYPE for each base, keyed by base name.
+ *
+ * ⛔ Shape is not cosmetic. WordPress coerces a value that does not match its
+ * declared type back to the attribute's default, silently - a flat string on an
+ * object-typed attr, or an out-of-enum value, simply vanishes on load with no
+ * error (STOP-D328-SHAPE-NOT-JUST-VALUE). Declaring the wrong type here would
+ * delete the client's media rather than fail loudly.
+ *
+ * `null` in a union is the INHERIT sentinel for tiered booleans: null means
+ * "use the tier above", which is why those cannot be plain booleans.
+ *
+ * This map is the single source. `scripts/generate-media-attributes.mjs` emits
+ * the PHP twin from it, so the server schema cannot drift from the client's.
+ */
+export const MEDIA_ATTR_TYPES = {
+	// Composite {id,url,alt} objects.
+	Image: 'object',
+	Video: 'object',
+	Thumbnail: 'object',
+	DecorMedia: 'object',
+	// Attachment IDs.
+	ImageId: 'integer',
+	VideoId: 'integer',
+	ThumbnailId: 'integer',
+	VideoCaptionsId: 'integer',
+	// Strings.
+	ImageUrl: 'string',
+	VideoUrl: 'string',
+	ImageAlt: 'string',
+	VideoAlt: 'string',
+	Svg: 'string',
+	SvgContent: 'string',
+	MediaType: 'string',
+	VideoSource: 'string',
+	VideoMimeType: 'string',
+	VideoCaptionsUrl: 'string',
+	VideoCaptionsLabel: 'string',
+	VideoCaptionsSrcLang: 'string',
+	SvgAnimation: 'string',
+	SvgAnimationSpeed: 'string',
+	SvgPosition: 'string',
+	SvgMinHeight: 'string',
+	// Booleans.
+	ImageIsDecorative: 'boolean',
+	SvgTextShadow: 'boolean',
+	VideoAutoplay: 'boolean',
+	VideoLoop: 'boolean',
+	VideoMuted: 'boolean',
+	VideoControls: 'boolean',
+	VideoPlaysInline: 'boolean',
+	VideoLazyLoad: 'boolean',
+	// Numbers.
+	SvgOpacity: 'number',
+	ImageWidth: 'number',
+	ImageHeight: 'number',
+};
+
+/**
+ * Resolve the declared type for a base at a given tier.
+ *
+ * A tiered BOOLEAN becomes `[ 'boolean', 'null' ]` because null is the
+ * inherit-from-the-tier-above sentinel. Every other type is unchanged by tier.
+ *
+ * @param {string} base PascalCase base.
+ * @param {string} tier '' | 'Tablet' | 'Mobile'.
+ * @return {string|string[]} The declared type.
+ */
+export function mediaAttrType( base, tier ) {
+	const type = MEDIA_ATTR_TYPES[ base ] || 'string';
+	if ( tier && 'boolean' === type ) {
+		return [ 'boolean', 'null' ];
+	}
+	return type;
+}
+
+/**
  * Attribute names that the convention does NOT reproduce, per surface.
  *
  * Measured, not assumed: exactly three across the whole population, and all

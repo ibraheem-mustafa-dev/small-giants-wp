@@ -33,6 +33,7 @@ import './parallax';
 import './image-controls';
 import './fx';
 import './responsive-visibility';
+import './media-elements';
 
 // The two colour-picker fork stylesheets that carry genuinely NEW SGS
 // classnames (not core's own `.components-*` names, which `wp-components`

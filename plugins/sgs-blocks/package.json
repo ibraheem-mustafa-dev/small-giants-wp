@@ -6,7 +6,7 @@
   "scripts": {
     "check:transform-parity": "node scripts/generative-background/verify-transform.mjs",
     "fidelity:compare": "node scripts/generative-background/fidelity-compare.mjs",
-    "prebuild": "python scripts/consistency/build-roster.py && npm run clean:build && node scripts/generate-icons.js && node scripts/generate-extension-attributes.js && node scripts/generate-svg-allowlist.js && node scripts/run-motion-fx-generators.js && python scripts/run-gates.py --tier fast",
+    "prebuild": "python scripts/consistency/build-roster.py && npm run clean:build && node scripts/generate-icons.js && node scripts/generate-extension-attributes.js && node scripts/generate-svg-allowlist.js && node scripts/generate-media-attributes.mjs && node scripts/run-motion-fx-generators.js && python scripts/run-gates.py --tier fast",
     "check:tier-db-parity": "python scripts/migrate-tier-object.py --check-db-parity",
     "check:personal-data": "python ../../scripts/lint-patterns-for-personal-data.py",
     "check:font-sources": "node ../../scripts/font-source-audit.js",
@@ -23,7 +23,7 @@
     "progress": "python scripts/programme-progress.py",
     "lint:consistency": "python scripts/consistency/run-consistency-gates.py",
     "test:unit": "wp-scripts test-unit-js",
-    "prestart": "node scripts/generate-icons.js && node scripts/generate-extension-attributes.js && node scripts/generate-svg-allowlist.js && node scripts/run-motion-fx-generators.js && node scripts/check-dead-controls.js --check && node scripts/check-hardcoded-render-defaults.js --check && python scripts/check-dead-api-calls.py --check && node scripts/check-control-ux.js --check && node scripts/check-product-search-guards.js && python scripts/db-consistency/run.py --check && python scripts/cheat-gate/run.py --check && python scripts/excluded-gate/run.py --check && python scripts/ledger/coverage_check.py --check && python scripts/check-atomic-slug-literals.py --check",
+    "prestart": "node scripts/generate-icons.js && node scripts/generate-extension-attributes.js && node scripts/generate-svg-allowlist.js && node scripts/generate-media-attributes.mjs && node scripts/run-motion-fx-generators.js && node scripts/check-dead-controls.js --check && node scripts/check-hardcoded-render-defaults.js --check && python scripts/check-dead-api-calls.py --check && node scripts/check-control-ux.js --check && node scripts/check-product-search-guards.js && python scripts/db-consistency/run.py --check && python scripts/cheat-gate/run.py --check && python scripts/excluded-gate/run.py --check && python scripts/ledger/coverage_check.py --check && python scripts/check-atomic-slug-literals.py --check",
     "check:dead-controls": "node scripts/check-dead-controls.js --check",
     "check:editor-render-parity": "node scripts/check-editor-render-parity.js --check",
     "survey:editor-render-parity": "node scripts/check-editor-render-parity.js",
