@@ -1091,9 +1091,50 @@ if ( 'video' === $media_type ) {
 		$tier_data_attrs .= sgs_media_tier_data_attrs( 'plays-inline', $inline_tiers );
 		$tier_data_attrs .= sgs_media_tier_data_attrs( 'lazy', $lazy_tiers );
 
+		/*
+		 * WCAG 1.2.2 Captions (Prerecorded) is LEVEL A — below the stated AA
+		 * baseline, and the framework emitted zero <track> elements anywhere.
+		 *
+		 * Scope is deliberately THIS BLOCK ONLY, and that is a measured call
+		 * rather than a shortcut: every other <video> in the plugin is emitted
+		 * through a shared helper whose callers all pass muted => true
+		 * (helpers-media.php's defaults, class-sgs-container-wrapper, hero,
+		 * before-after, cta-section). A permanently-silent decorative video has
+		 * no audio content to caption, so 1.2.2 is not engaged. `sgs/media` is
+		 * the ONLY surface exposing a client control to unmute (videoMuted,
+		 * default true) alongside real player chrome (videoControls, default
+		 * true), so it is the only place a visitor can hear speech.
+		 */
+		$captions_url = isset( $attributes['videoCaptionsUrl'] ) ? (string) $attributes['videoCaptionsUrl'] : '';
+		if ( '' === $captions_url && ! empty( $attributes['videoCaptionsId'] ) ) {
+			$captions_url = (string) wp_get_attachment_url( (int) $attributes['videoCaptionsId'] );
+		}
+
+		$track_html = '';
+		if ( '' !== $captions_url ) {
+			$captions_label = isset( $attributes['videoCaptionsLabel'] ) && '' !== $attributes['videoCaptionsLabel']
+				? (string) $attributes['videoCaptionsLabel']
+				: __( 'English', 'sgs-blocks' );
+			// A bare language subtag, per BCP 47. Anything else is dropped
+			// rather than emitted: an invalid srclang makes the track
+			// unselectable in some browsers, which fails silently and looks
+			// exactly like having no captions at all.
+			$captions_lang = isset( $attributes['videoCaptionsSrcLang'] ) ? (string) $attributes['videoCaptionsSrcLang'] : 'en';
+			if ( ! preg_match( '/^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$/', $captions_lang ) ) {
+				$captions_lang = 'en';
+			}
+			$track_html = sprintf(
+				'<track kind="captions" src="%s" srclang="%s" label="%s" default>',
+				esc_url( $captions_url ),
+				esc_attr( $captions_lang ),
+				esc_attr( $captions_label )
+			);
+		}
+
 		$video_html = sprintf(
 			'<video class="sgs-media__video"%s%s%s%s%s%s%s%s%s%s>' .
 			'<source src="%s" type="%s">' .
+			'%s' .
 			'</video>',
 			$autoplay_attr,
 			$loop_attr,
@@ -1106,7 +1147,8 @@ if ( 'video' === $media_type ) {
 			$sgs_video_tier_attrs( 'file', $resolved_video_url ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value inside is passed through esc_url()/esc_attr() by the closure.
 			' aria-label="' . esc_attr( '' !== $caption ? $caption : __( 'Video', 'sgs-blocks' ) ) . '"',
 			esc_url( $resolved_video_url ),
-			esc_attr( $resolved_video_mime )
+			esc_attr( $resolved_video_mime ),
+			$track_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled immediately above from esc_url()/esc_attr() only; srclang is additionally validated against a BCP 47 subtag pattern.
 		);
 	}
 }

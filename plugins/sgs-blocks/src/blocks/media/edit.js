@@ -967,6 +967,83 @@ export default function Edit( { attributes, setAttributes } ) {
 						</MediaUploadCheck>
 					) }
 
+					{ /* Captions (WCAG 1.2.2, Level A — below the stated AA
+					     baseline). Gated on a video existing, not on `muted`:
+					     muted is per-device and can be switched off later, so
+					     hiding the control while it happens to be on would mean
+					     the client cannot add captions until AFTER they unmute —
+					     exactly the ordering trap that makes hero's media-type
+					     enum unreachable. Shown whenever there is a video. */ }
+					{ ( videoUrl || attributes.videoId ) && (
+						<>
+							<MediaUploadCheck>
+								<MediaUpload
+									onSelect={ ( media ) =>
+										setAttributes( {
+											videoCaptionsId: media.id || null,
+											videoCaptionsUrl: media.url || '',
+										} )
+									}
+									allowedTypes={ [ 'text/vtt' ] }
+									value={ attributes.videoCaptionsId }
+									render={ ( { open } ) => (
+										<Button
+											variant="secondary"
+											onClick={ open }
+											__next40pxDefaultSize
+										>
+											{ attributes.videoCaptionsUrl
+												? __( 'Replace captions (.vtt)', 'sgs-blocks' )
+												: __( 'Add captions (.vtt)', 'sgs-blocks' ) }
+										</Button>
+									) }
+								/>
+							</MediaUploadCheck>
+							{ attributes.videoCaptionsUrl && (
+								<>
+									<TextControl
+										label={ __( 'Captions label', 'sgs-blocks' ) }
+										help={ __(
+											'Shown in the player’s subtitle menu, e.g. “English”.',
+											'sgs-blocks'
+										) }
+										value={ attributes.videoCaptionsLabel || '' }
+										onChange={ ( value ) =>
+											setAttributes( { videoCaptionsLabel: value } )
+										}
+										__next40pxDefaultSize
+										__nextHasNoMarginBottom
+									/>
+									<TextControl
+										label={ __( 'Captions language code', 'sgs-blocks' ) }
+										help={ __(
+											'A two- or three-letter code such as en, cy or fr.',
+											'sgs-blocks'
+										) }
+										value={ attributes.videoCaptionsSrcLang || '' }
+										onChange={ ( value ) =>
+											setAttributes( { videoCaptionsSrcLang: value } )
+										}
+										__next40pxDefaultSize
+										__nextHasNoMarginBottom
+									/>
+									<Button
+										variant="link"
+										isDestructive
+										onClick={ () =>
+											setAttributes( {
+												videoCaptionsId: null,
+												videoCaptionsUrl: '',
+											} )
+										}
+									>
+										{ __( 'Remove captions', 'sgs-blocks' ) }
+									</Button>
+								</>
+							) }
+						</>
+					) }
+
 					{ /* Video art direction (2026-08-07, Bean-decided). Unlike the
 					     image tiers, this is swapped at runtime by view.js — three
 					     videos cannot all be rendered and hidden, because each one

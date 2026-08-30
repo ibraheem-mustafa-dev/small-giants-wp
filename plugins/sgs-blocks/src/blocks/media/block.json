@@ -29,9 +29,12 @@
 				"media": {
 					"label": "Media",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
-					"_note_css_element_resolves_to_wrapper": "objectFit/objectPosition/opacity/boxShadow resolve css_element to wrapper in the DB, not media, despite this element being named media \u2014 CONFIRMED INTENTIONAL 2026-08-27. isWrapper:true routes them through check-element-manifest-conformance.js's native-fallback path (nativeSupportsPath, around line 225), which only ever resolves against the wrapper element. Do not change this to media.",
+					"_note_css_element_resolves_to_wrapper": "objectFit/objectPosition/opacity/boxShadow resolve css_element to wrapper in the DB, not media, despite this element being named media — CONFIRMED INTENTIONAL 2026-08-27. isWrapper:true routes them through check-element-manifest-conformance.js's native-fallback path (nativeSupportsPath, around line 225), which only ever resolves against the wrapper element. Do not change this to media.",
 					"attrMap": {
 						"css:opacity": "opacity",
 						"css:height": "height",
@@ -49,7 +52,9 @@
 				"caption": {
 					"label": "Caption",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "caption"
 				}
 			}
@@ -186,12 +191,18 @@
 			"default": false
 		},
 		"videoAutoplayTablet": {
-			"type": [ "boolean", "null" ],
+			"type": [
+				"boolean",
+				"null"
+			],
 			"default": null,
 			"_comment": "Per-device playback-behaviour tiers (D-pending). null = inherit the tier above (Tablet inherits Desktop, Mobile inherits Tablet) — the framework's null-means-inherit convention, same as maxWidthTablet etc. Desktop has no *Desktop sibling; the unsuffixed attr above IS the desktop value."
 		},
 		"videoAutoplayMobile": {
-			"type": [ "boolean", "null" ],
+			"type": [
+				"boolean",
+				"null"
+			],
 			"default": null
 		},
 		"videoLoop": {
@@ -199,11 +210,17 @@
 			"default": false
 		},
 		"videoLoopTablet": {
-			"type": [ "boolean", "null" ],
+			"type": [
+				"boolean",
+				"null"
+			],
 			"default": null
 		},
 		"videoLoopMobile": {
-			"type": [ "boolean", "null" ],
+			"type": [
+				"boolean",
+				"null"
+			],
 			"default": null
 		},
 		"videoMuted": {
@@ -211,11 +228,17 @@
 			"default": true
 		},
 		"videoMutedTablet": {
-			"type": [ "boolean", "null" ],
+			"type": [
+				"boolean",
+				"null"
+			],
 			"default": null
 		},
 		"videoMutedMobile": {
-			"type": [ "boolean", "null" ],
+			"type": [
+				"boolean",
+				"null"
+			],
 			"default": null
 		},
 		"videoControls": {
@@ -223,11 +246,17 @@
 			"default": true
 		},
 		"videoControlsTablet": {
-			"type": [ "boolean", "null" ],
+			"type": [
+				"boolean",
+				"null"
+			],
 			"default": null
 		},
 		"videoControlsMobile": {
-			"type": [ "boolean", "null" ],
+			"type": [
+				"boolean",
+				"null"
+			],
 			"default": null
 		},
 		"videoPlaysInline": {
@@ -235,11 +264,17 @@
 			"default": true
 		},
 		"videoPlaysInlineTablet": {
-			"type": [ "boolean", "null" ],
+			"type": [
+				"boolean",
+				"null"
+			],
 			"default": null
 		},
 		"videoPlaysInlineMobile": {
-			"type": [ "boolean", "null" ],
+			"type": [
+				"boolean",
+				"null"
+			],
 			"default": null
 		},
 		"videoLazyLoad": {
@@ -247,11 +282,17 @@
 			"default": true
 		},
 		"videoLazyLoadTablet": {
-			"type": [ "boolean", "null" ],
+			"type": [
+				"boolean",
+				"null"
+			],
 			"default": null
 		},
 		"videoLazyLoadMobile": {
-			"type": [ "boolean", "null" ],
+			"type": [
+				"boolean",
+				"null"
+			],
 			"default": null
 		},
 		"imageId": {
@@ -336,7 +377,11 @@
 		"_comment_mediaSizing": "C19 shared media-sizing panel (2026-08-27). Three-way mode picker (auto/height/ratio) that makes `height` (above) and `style.dimensions.aspectRatio` (native support) mutually exclusive instead of letting both be set at once. NO `default` key deliberately — a `\"default\": null` on a typed attribute 400s every SSR preview (memory `a-null-default-is-worse-than-no-default`); render.php + edit.js both derive an absent value the same way (ratio set -> ratio; else height set -> height; else auto), so existing/old content renders identically with no edit needed.",
 		"mediaSizing": {
 			"type": "string",
-			"enum": [ "auto", "height", "ratio" ]
+			"enum": [
+				"auto",
+				"height",
+				"ratio"
+			]
 		},
 		"borderRadiusTablet": {
 			"type": "object",
@@ -410,6 +455,21 @@
 		"linkRel": {
 			"type": "string",
 			"default": ""
+		},
+		"videoCaptionsId": {
+			"type": "integer"
+		},
+		"videoCaptionsUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"videoCaptionsLabel": {
+			"type": "string",
+			"default": "English"
+		},
+		"videoCaptionsSrcLang": {
+			"type": "string",
+			"default": "en"
 		}
 	},
 	"render": "file:./render.php",
