@@ -767,5 +767,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 83
+  },
+  {
+    "id": "test-media-attr-parity",
+    "cmd": "node scripts/tests/test-media-attr-parity.mjs",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 84
   }
 ]

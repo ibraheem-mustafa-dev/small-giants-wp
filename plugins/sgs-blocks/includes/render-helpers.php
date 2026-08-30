@@ -98,6 +98,7 @@ require_once __DIR__ . '/helpers-media-position.php';
 require_once __DIR__ . '/helpers-colour-wcag.php';
 require_once __DIR__ . '/helpers-media.php';
 require_once __DIR__ . '/helpers-tier-media.php';
+require_once __DIR__ . '/helpers-media-element.php';
 require_once __DIR__ . '/helpers-configurator-pricing.php';
 require_once __DIR__ . '/helpers-value-ladder.php';
 require_once __DIR__ . '/helpers-css-safety.php';
