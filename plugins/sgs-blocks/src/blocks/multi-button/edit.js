@@ -17,6 +17,7 @@ import {
 	ResponsiveBoxControl,
 	DesignTokenPicker,
 	SGS_FONT_WEIGHT_OPTIONS,
+	textRow,
 } from '../../components';
 import { backgroundPreview, spacingPreview } from '../../utils';
 import {
@@ -238,6 +239,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							},
 						],
 					},
+					fillRow( {
+						key: 'child-btn-background',
+						label: __( 'Button background colour', 'sgs-blocks' ),
+						attrs: { base: 'childBtnBackground' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'child-btn-text-colour',
+						label: __( 'Button text colour', 'sgs-blocks' ),
+						attrs: { base: 'childBtnTextColour' },
+						attributes,
+						setAttributes,
+					} ),
 				] }
 			/>
 			<InspectorControls>
@@ -490,16 +505,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 					</p>
-					<DesignTokenPicker
-						label={ __( 'Button background colour', 'sgs-blocks' ) }
-						value={ childBtnBackground }
-						onChange={ ( val ) => setAttributes( { childBtnBackground: val ?? '' } ) }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Button text colour', 'sgs-blocks' ) }
-						value={ childBtnTextColour }
-						onChange={ ( val ) => setAttributes( { childBtnTextColour: val ?? '' } ) }
-					/>
 					<DesignTokenPicker
 						label={ __( 'Button border colour', 'sgs-blocks' ) }
 						value={ childBtnBorderColour }

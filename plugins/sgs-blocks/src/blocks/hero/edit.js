@@ -21,7 +21,6 @@ import {
 	ResponsiveControl,
 	ResponsiveOverride,
 	ResponsiveBoxControl,
-	ResponsiveBorderRadiusControl,
 	ShadowControl,
 	shadowAttrKeys,
 	GradientOverlayControl,
@@ -56,13 +55,10 @@ import {
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // ── Phase 1 constant options ─────────────────────────────────────────────────
-
-const BORDER_STYLE_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
-	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
-	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
-];
+// BORDER_STYLE_OPTIONS (the local 4-option none/solid/dashed/dotted list) was removed
+// 2026-08-30 -- its only consumer, the bespoke splitMedia <SelectControl>, was replaced
+// by a consolidated <SgsBorderControl> mount (which owns its own style options via
+// GradientCapableColourControl's BorderStyleControl); see migrate-colour-picker-to-panel.py.
 
 const IMAGE_FIT_OPTIONS = [
 	{ label: __( 'Cover', 'sgs-blocks' ), value: 'cover' },
@@ -1420,51 +1416,28 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								</>
 							) }
 
-							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Border radius', 'sgs-blocks' ) }</p>
-							<ResponsiveBorderRadiusControl
-								label={ __( 'Image border radius', 'sgs-blocks' ) }
-								values={ {
-									base: splitMediaBorderRadius ?? {},
-									tablet: splitMediaBorderRadiusTablet ?? {},
-									mobile: splitMediaBorderRadiusMobile ?? {},
+							<SgsBorderControl
+								widthValues={ attributes.splitMediaBorderWidth ?? {} }
+								onWidthChange={ ( next ) => setAttributes( { splitMediaBorderWidth: next } ) }
+								widthPresets={ [ '10', '20', '30' ] }
+								styleValue={ attributes.splitMediaBorderStyle }
+								onStyleChange={ ( val ) => setAttributes( { splitMediaBorderStyle: val } ) }
+								colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+								colourValue={ attributes.splitMediaBorderColour }
+								onColourChange={ ( val ) => setAttributes( { splitMediaBorderColour: val ?? '' } ) }
+								colourGradientValue={ attributes.splitMediaBorderColourGradient }
+								onColourGradientChange={ ( val ) => setAttributes( { splitMediaBorderColourGradient: val ?? '' } ) }
+								colourLinked={ true }
+								radiusValues={ {
+									base: attributes.splitMediaBorderRadius ?? {},
+									tablet: attributes.splitMediaBorderRadiusTablet ?? {},
+									mobile: attributes.splitMediaBorderRadiusMobile ?? {},
 								} }
-								onChange={ ( tier, next ) => {
-									const attrMap = {
-										base: 'splitMediaBorderRadius',
-										tablet: 'splitMediaBorderRadiusTablet',
-										mobile: 'splitMediaBorderRadiusMobile',
-									};
-									setAttributes( { [ attrMap[ tier ] ]: next } );
+								onRadiusChange={ ( tier, next ) => {
+									const radiusKey = tier === 'base' ? 'splitMediaBorderRadius' : tier === 'tablet' ? 'splitMediaBorderRadiusTablet' : 'splitMediaBorderRadiusMobile';
+									setAttributes( { [ radiusKey ]: next } );
 								} }
 							/>
-
-							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Border', 'sgs-blocks' ) }</p>
-							<SelectControl label={ __( 'Border style', 'sgs-blocks' ) } value={ splitMediaBorderStyle } options={ BORDER_STYLE_OPTIONS } onChange={ ( val ) => setAttributes( { splitMediaBorderStyle: val } ) } __nextHasNoMarginBottom __next40pxDefaultSize />
-							{ splitMediaBorderStyle !== 'none' && (
-								<>
-									<ResponsiveBoxControl
-										label={ __( 'Border width', 'sgs-blocks' ) }
-										presets={ [ '10', '20', '30' ] }
-										values={ { base: splitMediaBorderWidth ?? {} } }
-										showResponsive={ false }
-										onChange={ ( tier, next ) => setAttributes( { splitMediaBorderWidth: next } ) }
-									/>
-									<DesignTokenPicker
-										label={ __( 'Border colour', 'sgs-blocks' ) }
-										states={ [
-											{
-												key: 'normal',
-												label: __( 'Normal', 'sgs-blocks' ),
-												value: splitMediaBorderColour,
-												onChange: ( val ) => setAttributes( { splitMediaBorderColour: val } ),
-												gradientValue: splitMediaBorderColourGradient,
-												onGradientChange: ( val ) =>
-													setAttributes( { splitMediaBorderColourGradient: val ?? '' } ),
-											},
-										] }
-									/>
-								</>
-							) }
 
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Inner padding (around the image element itself)', 'sgs-blocks' ) }</p>
 							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Affects the gap between the image and the wrapper border.', 'sgs-blocks' ) }</p>
@@ -1530,37 +1503,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				   since hero already has its own min-height ResponsiveControl above. */ }
 				<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) } initialOpen={ false }>
 					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
-					{ /* D701 — resting border-colour gradient, symmetric with the hover
-					   sibling attribute (borderColourHoverGradient) already declared on
-					   this block. The solid "Normal" value reads/writes the WP-native
-					   Border colour (attributes.style.border.color) — the same value WP's
-					   own native Border panel (Styles tab, __experimentalBorder support)
-					   already controls — so an operator can set either the flat colour or
-					   switch this row's toggle to Gradient; render.php makes a non-empty
-					   gradient win over the native flat colour (mirrors sgs/quote's
-					   borderColour/borderColourGradient pair and this block's own
-					   borderColourHover/borderColourHoverGradient hover pair). */ }
-					<DesignTokenPicker
-						label={ __( 'Border colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: attributes.style?.border?.color,
-								onChange: ( val ) =>
-									setAttributes( {
-										style: {
-											...attributes.style,
-											border: { ...attributes.style?.border, color: val || undefined },
-										},
-									} ),
-								linked: true,
-								gradientValue: borderColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { borderColourGradient: val ?? '' } ),
-							},
-						] }
-					/>
 
 				</PanelBody>
 

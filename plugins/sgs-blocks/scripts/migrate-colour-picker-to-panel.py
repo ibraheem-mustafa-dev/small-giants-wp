@@ -127,6 +127,7 @@ USAGE
 
 import argparse
 import difflib
+import json
 import os
 import re
 import sys
@@ -271,6 +272,12 @@ class Mount:
         self.attr_name = None
         self.detail = None
         self.shape = None  # 'states' | 'single'
+        # 'attrs' (top-level attribute, attrs.base binding) or 'getset' (object-attribute
+        # field / repeater-item field, reached via fillRow/textRow's 2026-08-30 get/set
+        # binding override). Only meaningful on MIGRATABLE-FILL/-TEXT.
+        self.binding_kind = 'attrs'
+        self.get_expr = None   # raw source text of the original `value` expression
+        self.set_expr = None   # raw source text of the original `onChange` expression
 
 
 def extract_label(tag_text):
@@ -278,8 +285,90 @@ def extract_label(tag_text):
     return m.group(2) if m else ''
 
 
-def classify_binding(value_expr, onchange_expr, label):
-    """Returns (category, attr_name_or_binding, detail)."""
+def resolve_nonattr_colour_mechanism(block, prop, label):
+    """For a colour whose value lives at `base.prop` -- an object-attribute field
+    (mega-panel's asideSeparator.colour) or a repeater-item field (pricing-table's
+    plan.ribbonColour, trust-bar's item.fillColour) -- neither attrs.base binding
+    is reachable, but the 2026-08-30 fillRow/textRow get/set override can reach
+    either shape. What was previously a blanket structural refusal
+    (REFUSED-NOT-BLOCK-ATTRIBUTE / REFUSED-REPEATER-ITEM) is reclassified here by
+    TRACING THE ACTUAL RENDER MECHANISM in the block's own render.php + style
+    sheet -- never guessed from the JS shape alone (2026-08-30 owner ruling).
+
+    Evidence-driven, universal (R-31-9): this walks render.php looking for the
+    PHP array key `['<prop>']`, then asks what CSS mechanism the resolved value
+    ultimately feeds --
+      - a CSS custom property that is consumed by an SVG `fill:` declaration
+        (in render.php's own emitted CSS or the block's style.css/scss) is a
+        THIRD colour mechanism, distinct from both fillRow (background) and
+        textRow (text/background-clip) -- refused, never migrated onto either.
+      - a custom property consumed by `background`/`background-color` (direct,
+        or via that indirection) -> MIGRATABLE-FILL.
+      - failing that, a direct declaration near the key that paints a
+        border/line colour (not a text colour) -> MIGRATABLE-FILL (fillRow is
+        the generic "solid colour, not text-clip" bucket -- see fillRow.js's
+        own docstring; a border colour that does not warrant a full
+        SgsBorderControl composite, e.g. a single decorative divider line,
+        still routes here rather than through the border family).
+      - a label saying 'text' -> MIGRATABLE-TEXT; a label saying fill/
+        background -> MIGRATABLE-FILL.
+      - nothing confirmable -> None (caller falls back to the existing
+        structural refusal, never guesses).
+
+    Returns (category, detail) or None.
+    """
+    block_dir = BLOCKS_DIR / block.split('/')[-1]
+    render_php = block_dir / 'render.php'
+    if not render_php.exists():
+        return None
+    render_src = render_php.read_text(encoding='utf-8', errors='ignore')
+    style_src = ''
+    for sf in list(block_dir.glob('style.*')):
+        style_src += sf.read_text(encoding='utf-8', errors='ignore')
+
+    key_re = re.compile(r'''\[\s*['"]''' + re.escape(prop) + r'''['"]\s*\]''')
+    key_m = key_re.search(render_src)
+    if not key_m:
+        return None  # cannot confirm the mechanism from render.php -- refuse to guess
+
+    css_var_names = set(re.findall(r'--([a-z0-9-]+)\s*:', render_src))
+    svg_fill_vars = set()
+    bg_vars = set()
+    for var in css_var_names:
+        fill_re = re.compile(r'\bfill\s*:\s*[^;]*--' + re.escape(var) + r'\b')
+        bg_re = re.compile(r'\bbackground(?:-color)?\s*:\s*[^;]*--' + re.escape(var) + r'\b')
+        if fill_re.search(render_src) or fill_re.search(style_src):
+            svg_fill_vars.add(var)
+        if bg_re.search(render_src) or bg_re.search(style_src):
+            bg_vars.add(var)
+
+    if svg_fill_vars:
+        return (
+            'REFUSED-SVG-FILL-MECHANISM',
+            'CONFIRMED via render.php + style sheet: resolves through a CSS custom '
+            f'property ({", ".join(sorted(svg_fill_vars))}) consumed by an SVG `fill:` '
+            'declaration -- a THIRD colour mechanism, neither CSS background/fill nor '
+            'text colour. Would be wrong to migrate onto fillRow even though the value '
+            'is a plain repeater-item/object-attribute field the get/set path CAN reach.',
+        )
+    if bg_vars:
+        return ('MIGRATABLE-FILL', None)
+
+    window = render_src[max(0, key_m.start() - 400): key_m.end() + 800]
+    if TEXT_WORD_RE.search(label or ''):
+        return ('MIGRATABLE-TEXT', None)
+    if (
+        re.search(r'\bborder(?:-left|-right|-top|-bottom)?\s*:', window)
+        or FILL_WORD_RE.search(label or '')
+    ):
+        return ('MIGRATABLE-FILL', None)
+    return None
+
+
+def classify_binding(value_expr, onchange_expr, label, block=None):
+    """Returns (category, attr_name_or_binding, detail). `block` (e.g. 'sgs/hero')
+    is required to resolve the object-attr/repeater-item get/set reclassification
+    below; every real scan call supplies it."""
     ve = (value_expr or '').strip()
     oe = (onchange_expr or '').strip()
 
@@ -341,6 +430,32 @@ def classify_binding(value_expr, onchange_expr, label):
     if m2:
         base, prop = m2.group(1), m2.group(2)
         binding = f'{base}.{prop}'
+
+        # 2026-08-30 reclassification pass: the get/set override on fillRow/textRow
+        # can now REACH this shape (object-attribute field or repeater-item field).
+        # Whether it SHOULD is decided by tracing the actual render mechanism, never
+        # guessed from the JS shape -- see resolve_nonattr_colour_mechanism's own
+        # docstring. A block passed in (every real scan call supplies one; only the
+        # unit-test fixtures that exercise this branch without one fall through to
+        # the pre-2026-08-30 blanket refusal below).
+        resolved = resolve_nonattr_colour_mechanism(block, prop, label) if block else None
+        if resolved:
+            cat, extra_detail = resolved
+            if cat == 'REFUSED-SVG-FILL-MECHANISM':
+                return (cat, binding, extra_detail)
+            if cat in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT'):
+                verb = 'setAttributes(...)' if 'setAttributes(' in oe else 'a repeater-item callback'
+                return (
+                    cat,
+                    binding,
+                    f'CONFIRMED via render.php{"+ style sheet" if "svg" in (extra_detail or "").lower() else ""}: '
+                    f'value lives at "{binding}" (reached via {verb}), unreachable by attrs.base, but the '
+                    '2026-08-30 fillRow/textRow get/set override binds it directly -- get: reads the '
+                    f'original value expression, set: reuses the original onChange as the writer verbatim. '
+                    'No --fix --apply support yet for this binding shape (Task 2 scope was the two border '
+                    'mechanics only); reclassified here so the census stops mislabelling it a structural refusal.',
+                )
+
         if 'setAttributes(' in oe:
             return (
                 'REFUSED-NOT-BLOCK-ATTRIBUTE',
@@ -362,26 +477,6 @@ def classify_binding(value_expr, onchange_expr, label):
         None,
         f'value expression {ve!r} does not match any known shape -- refusing rather than guessing',
     )
-
-
-def enrich_trust_bar_icon_fill(block, attr_name, detail):
-    """sgs/trust-bar's item.fillColour is additionally the icon-fill/SVG-paint mechanism --
-    confirm against render.php rather than asserting it from the JS alone, and append the
-    extra detail only when confirmed."""
-    if block != 'sgs/trust-bar' or not attr_name or 'fillColour' not in attr_name:
-        return detail
-    render_php = BLOCKS_DIR / 'trust-bar' / 'render.php'
-    if not render_php.exists():
-        return detail
-    src = render_php.read_text(encoding='utf-8', errors='ignore')
-    if "item['fillColour']" in src and 'sgs_colour_value' in src:
-        return (
-            detail
-            + ' -- CONFIRMED via render.php: resolved through sgs_colour_value() and painted '
-              'as an SVG `fill` attribute, a THIRD colour mechanism (neither CSS fill/background '
-              'nor text colour); would be wrong to migrate onto fillRow even if it were a plain attribute'
-        )
-    return detail
 
 
 def scan_mounts_in_file(block, path, text=None):
@@ -414,17 +509,23 @@ def scan_mounts_in_file(block, path, text=None):
             first = objs[0]
             value_expr = extract_obj_prop(first, 'value')
             onchange_expr = extract_obj_prop(first, 'onChange')
-            cat, attr, detail = classify_binding(value_expr, onchange_expr, mount.label)
+            cat, attr, detail = classify_binding(value_expr, onchange_expr, mount.label, block)
         else:
             mount.shape = 'single'
             value_expr = extract_brace_prop(tag_text, 'value')
             onchange_expr = extract_brace_prop(tag_text, 'onChange')
-            cat, attr, detail = classify_binding(value_expr, onchange_expr, mount.label)
+            cat, attr, detail = classify_binding(value_expr, onchange_expr, mount.label, block)
 
-        detail = enrich_trust_bar_icon_fill(block, attr, detail) if detail else detail
         mount.category = cat
         mount.attr_name = attr
         mount.detail = detail
+        # get/set binding (2026-08-30 reclassification): the object-attr/repeater-item
+        # shape can't be named by attrs.base, so record the ORIGINAL value/onChange
+        # source text -- get/set reuse it verbatim once an apply mechanic exists.
+        if cat in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT') and attr and '.' in attr:
+            mount.binding_kind = 'getset'
+            mount.get_expr = (value_expr or '').strip()
+            mount.set_expr = (onchange_expr or '').strip()
         mounts.append(mount)
     return mounts
 
@@ -620,6 +721,395 @@ def apply_fixes_to_file(path, migratable_mounts, write):
     return text != original, diff, None
 
 
+# ── MIGRATABLE-BORDER-NATIVE-PURGE apply mechanic (Task 2a) ────────────────────────────────
+# DELETES the bespoke WP-native-shaped `attributes.style.border.color` + `borderColourGradient`
+# DesignTokenPicker mount -- its gradient half always duplicates the block's own root
+# SgsBorderControl's `onColourGradientChange` write (a live duplicate writer); its solid half
+# is either dead (hero -- render.php never reads style.border) or a live secondary source
+# info-box's SgsBorderControl doesn't override when its OWN colour is unset (see the
+# stored-value note in this script's own --fix output for that block).
+
+def find_matching_close(text, open_tag_start, tag_name):
+    """From a `<TagName` open position, find (close_end, body_start, body_end) for its
+    matching `</TagName>`, counting nesting of the SAME tag name. `close_end` is the index
+    just past `</TagName>`; `body_start`/`body_end` bound the children between the open
+    tag's own `>` and the matching `</TagName`. Returns None if unmatched or if the tag is
+    self-closing (`/>`) at its own open -- callers only use this for container tags
+    (PanelBody/InspectorControls) that are never self-closing in this tree."""
+    open_re = re.compile(r'<' + tag_name + r'(?![A-Za-z])')
+    close_re = re.compile(r'</' + tag_name + r'\s*>')
+    depth = 0
+    j = open_tag_start + len('<' + tag_name)
+    n = len(text)
+    while j < n:
+        ch = text[j]
+        if ch in '{([':
+            depth += 1
+        elif ch in '})]':
+            depth -= 1
+        elif depth == 0 and text[j:j + 2] == '/>':
+            return None  # self-closing -- no body, not a container to recurse into
+        elif depth == 0 and ch == '>':
+            break
+        j += 1
+    if j >= n:
+        return None
+    body_start = j + 1
+    nest = 1
+    pos = body_start
+    while pos < n:
+        om = open_re.search(text, pos)
+        cm = close_re.search(text, pos)
+        if cm is None:
+            return None
+        if om and om.start() < cm.start():
+            nest += 1
+            pos = om.end()
+        else:
+            nest -= 1
+            pos = cm.end()
+            if nest == 0:
+                return (pos, body_start, cm.start())
+    return None
+
+
+def find_enclosing_container(text, tag_name, inner_start):
+    """The TIGHTEST `<tag_name>...</tag_name>` span containing `inner_start`, as
+    (open_start, close_end, body_start, body_end), or None."""
+    open_re = re.compile(r'<' + tag_name + r'(?![A-Za-z])')
+    best = None
+    for om in open_re.finditer(text):
+        result = find_matching_close(text, om.start(), tag_name)
+        if result is None:
+            continue
+        close_end, body_start, body_end = result
+        if body_start <= inner_start < close_end:
+            span_len = close_end - om.start()
+            if best is None or span_len < best[1] - best[0]:
+                best = (om.start(), close_end, body_start, body_end)
+    return best
+
+
+def is_effectively_empty_jsx(body_text):
+    """True if `body_text` holds nothing but whitespace and JS/JSX comments -- i.e. a
+    PanelBody would render with zero children if left in place."""
+    stripped = re.sub(r'\{\s*/\*.*?\*/\s*\}', '', body_text, flags=re.S)
+    stripped = re.sub(r'/\*.*?\*/', '', stripped, flags=re.S)
+    return stripped.strip() == ''
+
+
+def strip_preceding_comment(text, start):
+    r"""If a `{/* ... */}` JSX comment sits immediately before `start` (only whitespace
+    between them), return the index of that comment's OWN line start, so removal takes
+    the comment along with the mount rather than leaving a stale explanation behind.
+    Otherwise return `start`'s own line start.
+
+    BOUNDED BACKWARD SCAN, not a whole-prefix regex search -- an earlier version used
+    `re.search(r'\{\s*/\*.*?\*/\s*\}\s*\Z', prefix, re.S)`, which (found by inspecting a
+    real --apply'd scratch copy, not by the diff alone) matched from the FIRST `{ /*`
+    ANYWHERE in the entire file down to the true end of `prefix`, because `\Z` is only
+    satisfiable at one position and DOTALL `.` happily spans every intervening line --
+    it deleted an unrelated `<WidthPanel>` mount on hero along with the intended comment.
+    This version only ever looks at the literal tail of `prefix` outward -- it cannot
+    reach past the nearest comment boundary."""
+    line_start = text.rfind('\n', 0, start) + 1
+    prefix = text[:line_start].rstrip()
+    if not prefix.endswith('}'):
+        return line_start
+    close_brace_idx = len(prefix) - 1
+    star_close = prefix.rfind('*/', 0, close_brace_idx)
+    if star_close == -1 or prefix[star_close + 2:close_brace_idx].strip() != '':
+        return line_start
+    open_comment = prefix.rfind('/*', 0, star_close)
+    if open_comment == -1:
+        return line_start
+    open_brace = prefix.rfind('{', 0, open_comment)
+    if open_brace == -1 or prefix[open_brace + 1:open_comment].strip() != '':
+        return line_start
+    comment_line_start = text.rfind('\n', 0, open_brace) + 1
+    return comment_line_start
+
+
+def apply_border_purge_to_file(path, purge_mounts, write):
+    """purge_mounts: Mount objects for ONE file, all MIGRATABLE-BORDER-NATIVE-PURGE.
+    Returns (changed, diff_lines, notes) -- notes report whether an enclosing PanelBody
+    was also removed (only when it would otherwise render empty)."""
+    original = path.read_text(encoding='utf-8', newline='')
+    if not purge_mounts:
+        return False, [], []
+    text = original
+    notes = []
+    ordered = sorted(purge_mounts, key=lambda m: m.start, reverse=True)
+    for mount in ordered:
+        seg_start = strip_preceding_comment(text, mount.start)
+        seg_end = mount.end
+        if text[seg_end:seg_end + 1] == '\n':
+            seg_end += 1
+
+        container = find_enclosing_container(text, 'PanelBody', mount.start)
+        removed_panel = False
+        if container:
+            open_start, close_end, body_start, body_end = container
+            remaining = text[body_start:seg_start] + text[seg_end:body_end]
+            if is_effectively_empty_jsx(remaining):
+                panel_line_start = text.rfind('\n', 0, open_start) + 1
+                panel_seg_end = close_end
+                if text[panel_seg_end:panel_seg_end + 1] == '\n':
+                    panel_seg_end += 1
+                text = text[:panel_line_start] + text[panel_seg_end:]
+                removed_panel = True
+                notes.append(
+                    f'{mount.block}:{mount.line} -- removed the now-empty enclosing '
+                    '<PanelBody> too (it existed only to host this one mount)'
+                )
+        if not removed_panel:
+            text = text[:seg_start] + text[seg_end:]
+
+    if not write and text == original:
+        return False, [], notes
+
+    diff = list(
+        difflib.unified_diff(
+            original.splitlines(keepends=True),
+            text.splitlines(keepends=True),
+            fromfile=str(path),
+            tofile=str(path) + ' (fixed)',
+            lineterm='\n',
+        )
+    )
+    if write and text != original:
+        tmp = path.with_suffix(path.suffix + '.tmp')
+        tmp.write_text(text, encoding='utf-8', newline='')
+        os.replace(tmp, path)
+    return text != original, diff, notes
+
+
+# ── MIGRATABLE-BORDER apply mechanic (Task 2b): a NEW SgsBorderControl mount ────────────────
+# For a border-colour attribute with no existing SgsBorderControl governing its surface.
+# Consolidates whatever bespoke width/style/radius/colour controls already exist for that
+# surface into ONE canonical `<SgsBorderControl>` mount, mirroring the shape already proven
+# at this block's own root (or info-box's) call site. Refuses -- never fabricates a control
+# bound to an attribute block.json doesn't declare -- when the surface has no
+# `{prefix}BorderWidth` + `{prefix}BorderStyle` attrs: SgsBorderControl unconditionally
+# renders its width editor, so mounting it without a real attribute behind that editor
+# would either crash (no onWidthChange) or silently discard every edit (D338 -- WP drops
+# an attribute block.json doesn't declare), which is worse than leaving the raw picker.
+
+def block_json_attrs(block):
+    path = BLOCKS_DIR / block.split('/')[-1] / 'block.json'
+    if not path.exists():
+        return set()
+    data = json.loads(path.read_text(encoding='utf-8'))
+    return set((data.get('attributes') or {}).keys())
+
+
+def plan_new_border_mount(block, base_attr_name):
+    """base_attr_name e.g. 'splitMediaBorderColour'. Derives the surface prefix and checks
+    which sibling border attrs block.json actually declares. Returns (plan_dict, None) or
+    (None, refusal_reason)."""
+    if not base_attr_name.endswith('BorderColour'):
+        return None, f'attribute "{base_attr_name}" does not end in "BorderColour" -- cannot derive a surface prefix'
+    prefix = base_attr_name[: -len('BorderColour')]
+    attrs = block_json_attrs(block)
+    width_attr = f'{prefix}BorderWidth'
+    style_attr = f'{prefix}BorderStyle'
+    if width_attr not in attrs or style_attr not in attrs:
+        missing = [a for a in (width_attr, style_attr) if a not in attrs]
+        return None, (
+            f'block.json declares no {" or ".join(missing)} for the "{prefix}" surface -- '
+            'SgsBorderControl unconditionally renders a width editor, so mounting it without '
+            'a real width attribute behind it would crash (no onWidthChange) or silently '
+            'discard edits (D338). This is a block.json gap; out of this script\'s file scope '
+            '(edit.js only). Needs a decision -- add the attrs, or leave this mount raw -- '
+            'before a full SgsBorderControl mount can land here.'
+        )
+    radius_attr = f'{prefix}BorderRadius'
+    gradient_attr = f'{prefix}BorderColourGradient'
+    return {
+        'prefix': prefix,
+        'width_attr': width_attr,
+        'style_attr': style_attr,
+        'radius_attr': radius_attr if radius_attr in attrs else None,
+        'radius_tablet_attr': f'{prefix}BorderRadiusTablet' if f'{prefix}BorderRadiusTablet' in attrs else None,
+        'radius_mobile_attr': f'{prefix}BorderRadiusMobile' if f'{prefix}BorderRadiusMobile' in attrs else None,
+        'gradient_attr': gradient_attr if gradient_attr in attrs else None,
+    }, None
+
+
+def find_simple_tag_span(text, tag_name, attr_needle, search_from=0):
+    """Find a `<TagName ... attr_needle ... />` self-closing mount whose tag text contains
+    `attr_needle` (e.g. an attribute name it reads/writes). Returns (start, end) or None."""
+    for m in re.finditer(r'<' + tag_name + r'(?![A-Za-z])', text[search_from:]):
+        start = search_from + m.start()
+        end = find_tag_span(text, start, len('<' + tag_name))
+        if end is None:
+            continue
+        if attr_needle in text[start:end]:
+            return (start, end)
+    return None
+
+
+def build_border_control_call(mount, plan, item_indent):
+    """Builds the replacement `<SgsBorderControl ... />` JSX, keyed off `plan`'s resolved
+    attribute names. `mount` supplies the original label + colour/gradient attr names."""
+    lines = [f'{item_indent}<SgsBorderControl']
+    lines.append(f"{item_indent}\twidthValues={{ attributes.{plan['width_attr']} ?? {{}} }}")
+    lines.append(f"{item_indent}\tonWidthChange={{ ( next ) => setAttributes( {{ {plan['width_attr']}: next }} ) }}")
+    lines.append(f"{item_indent}\twidthPresets={{ [ '10', '20', '30' ] }}")
+    lines.append(f"{item_indent}\tstyleValue={{ attributes.{plan['style_attr']} }}")
+    lines.append(f"{item_indent}\tonStyleChange={{ ( val ) => setAttributes( {{ {plan['style_attr']}: val }} ) }}")
+    label = mount.label or 'Border colour'
+    lines.append(f"{item_indent}\tcolourLabel={{ __( '{label}', 'sgs-blocks' ) }}")
+    lines.append(f"{item_indent}\tcolourValue={{ attributes.{mount.attr_name} }}")
+    lines.append(f"{item_indent}\tonColourChange={{ ( val ) => setAttributes( {{ {mount.attr_name}: val ?? '' }} ) }}")
+    if plan['gradient_attr']:
+        lines.append(f"{item_indent}\tcolourGradientValue={{ attributes.{plan['gradient_attr']} }}")
+        lines.append(
+            f"{item_indent}\tonColourGradientChange={{ ( val ) => setAttributes( {{ {plan['gradient_attr']}: val ?? '' }} ) }}"
+        )
+    # colourLinked -- LOAD-BEARING (D881): without it the picker stores a baked hex instead
+    # of the palette token, freezing the colour against a re-skin. Unconditional, mirroring
+    # every existing SgsBorderControl call site.
+    lines.append(f"{item_indent}\tcolourLinked={{ true }}")
+    if plan['radius_attr']:
+        if plan['radius_tablet_attr'] and plan['radius_mobile_attr']:
+            # Exact 3-tier shape -- mirrors hero's own root SgsBorderControl radius
+            # handler verbatim (edit.js:895-899), just re-keyed to this surface's attrs.
+            radius_values = (
+                f"{{\n"
+                f"{item_indent}\t\tbase: attributes.{plan['radius_attr']} ?? {{}},\n"
+                f"{item_indent}\t\ttablet: attributes.{plan['radius_tablet_attr']} ?? {{}},\n"
+                f"{item_indent}\t\tmobile: attributes.{plan['radius_mobile_attr']} ?? {{}},\n"
+                f"{item_indent}\t}}"
+            )
+            radius_key_map = (
+                "tier === 'base' ? '%s' : tier === 'tablet' ? '%s' : '%s'"
+                % (plan['radius_attr'], plan['radius_tablet_attr'], plan['radius_mobile_attr'])
+            )
+            lines.append(f"{item_indent}\tradiusValues={{ {radius_values} }}")
+            lines.append(f"{item_indent}\tonRadiusChange={{ ( tier, next ) => {{")
+            lines.append(f"{item_indent}\t\tconst radiusKey = {radius_key_map};")
+            lines.append(f"{item_indent}\t\tsetAttributes( {{ [ radiusKey ]: next }} );")
+            lines.append(f'{item_indent}\t}} }}')
+        else:
+            lines.append(f"{item_indent}\tradiusValues={{ {{ base: attributes.{plan['radius_attr']} ?? {{}} }} }}")
+            lines.append(
+                f"{item_indent}\tonRadiusChange={{ ( _tier, next ) => setAttributes( {{ {plan['radius_attr']}: next }} ) }}"
+            )
+    lines.append(f'{item_indent}/>')
+    return '\n'.join(lines) + '\n'
+
+
+def apply_new_border_mount_to_file(path, mounts_for_file, write):
+    """mounts_for_file: MIGRATABLE-BORDER Mount objects for ONE file. For each, plans the
+    surface via plan_new_border_mount; when a plan exists, removes the raw colour picker
+    PLUS any sibling bespoke width/style/radius controls for the SAME surface (found by
+    attribute-name reference, not by block name) and replaces the FIRST removed control's
+    position with one consolidated <SgsBorderControl>. Refuses per-mount (leaves that
+    mount's file untouched) when no plan exists. Returns (changed, diff, refusals) where
+    refusals is a list of (mount, reason)."""
+    original = path.read_text(encoding='utf-8', newline='')
+    if not mounts_for_file:
+        return False, [], []
+    text = original
+    refusals = []
+    applied_any = False
+
+    for mount in mounts_for_file:
+        plan, reason = plan_new_border_mount(mount.block, mount.attr_name)
+        if plan is None:
+            refusals.append((mount, reason))
+            continue
+
+        # Re-locate the raw picker mount in the (possibly already-mutated-by-an-earlier-
+        # mount-in-this-file) text by its attribute name, rather than trusting the
+        # ORIGINAL start/end offsets (which shift once anything upstream is edited).
+        picker_span = find_simple_tag_span(text, 'DesignTokenPicker', mount.attr_name)
+        if picker_span is None:
+            refusals.append((mount, f'could not re-locate the <DesignTokenPicker> mount for {mount.attr_name} to replace'))
+            continue
+
+        spans_to_remove = [picker_span]
+        select_span = find_simple_tag_span(text, 'SelectControl', plan['style_attr'])
+        if select_span:
+            spans_to_remove.append(select_span)
+        width_span = find_simple_tag_span(text, 'ResponsiveBoxControl', plan['width_attr'])
+        if width_span:
+            spans_to_remove.append(width_span)
+        if plan['radius_attr']:
+            radius_span = find_simple_tag_span(text, 'ResponsiveBorderRadiusControl', plan['radius_attr'])
+            if radius_span:
+                spans_to_remove.append(radius_span)
+
+        # Each removed control's own preceding {/* comment */} or bare heading <p> travels
+        # with it (never leaves a stale explanation/heading for a control that's gone).
+        HEADING_P_RE = re.compile(r'<p\b[^>]*>\s*\{\s*__\(\s*[\'"][^\'"]*[\'"]')
+        full_spans = []
+        for s, e in spans_to_remove:
+            seg_start = strip_preceding_comment(text, s)
+            # Also swallow an immediately-preceding bare `<p>heading</p>` (the "Border
+            # radius" / "Border" section dividers hero uses) -- same immediate-predecessor
+            # test as strip_preceding_comment, generalised to a <p> tag instead of a comment.
+            probe_line_start = text.rfind('\n', 0, seg_start) + 1
+            prev_line_start = text.rfind('\n', 0, probe_line_start - 1) + 1 if probe_line_start > 0 else 0
+            candidate = text[prev_line_start:probe_line_start]
+            if HEADING_P_RE.search(candidate) and '</p>' in candidate:
+                seg_start = prev_line_start
+            seg_end = e
+            if text[seg_end:seg_end + 1] == '\n':
+                seg_end += 1
+            full_spans.append((seg_start, seg_end))
+
+        # Insert the new mount at the position of the FIRST (earliest) removed span.
+        insert_at = min(s for s, _ in full_spans)
+        # insert_at is already a LINE START (the earliest removed span's own line, after
+        # strip_preceding_comment/heading-swallow above) -- its indentation is the
+        # whitespace run starting AT insert_at, not before it.
+        indent = re.match(r'[ \t]*', text[insert_at:]).group(0)
+        new_mount = build_border_control_call(mount, plan, indent)
+
+        ordered = sorted(full_spans, key=lambda sp: sp[0], reverse=True)
+        for seg_start, seg_end in ordered:
+            if seg_start == insert_at:
+                text = text[:seg_start] + new_mount + text[seg_end:]
+            else:
+                text = text[:seg_start] + text[seg_end:]
+        applied_any = True
+
+    if not applied_any:
+        return False, [], refusals
+
+    # A conditional JSX fragment left with NOTHING inside once its width/colour controls
+    # are consolidated into the new SgsBorderControl mount (e.g. hero's
+    # `{ splitMediaBorderStyle !== 'none' && ( <> ... </> ) }` wrapper, once every child
+    # is gone) renders nothing but is dead JSX left behind -- strip it rather than leave
+    # a stray empty conditional. Bounded to the exact shape this removal can produce: a
+    # `{ <cond> && (\n\t*<>\n\t*</>\n\t*) }` block on its own lines.
+    text = re.sub(
+        r'[ \t]*\{[^\n{}]*&&\s*\(\s*\n\s*<>\s*\n\s*</>\s*\n\s*\)\s*\}\s*\n',
+        '',
+        text,
+    )
+
+    if not write and text == original:
+        return False, [], refusals
+
+    diff = list(
+        difflib.unified_diff(
+            original.splitlines(keepends=True),
+            text.splitlines(keepends=True),
+            fromfile=str(path),
+            tofile=str(path) + ' (fixed)',
+            lineterm='\n',
+        )
+    )
+    if write and text != original:
+        tmp = path.with_suffix(path.suffix + '.tmp')
+        tmp.write_text(text, encoding='utf-8', newline='')
+        os.replace(tmp, path)
+    return text != original, diff, refusals
+
+
 # ── Commands ─────────────────────────────────────────────────────────────────────────────
 
 def cmd_survey():
@@ -631,7 +1121,7 @@ def cmd_survey():
     order = [
         'MIGRATABLE-FILL', 'MIGRATABLE-TEXT', 'MIGRATABLE-BORDER',
         'MIGRATABLE-BORDER-NATIVE-PURGE', 'AMBIGUOUS',
-        'REFUSED-NOT-BLOCK-ATTRIBUTE', 'REFUSED-REPEATER-ITEM',
+        'REFUSED-NOT-BLOCK-ATTRIBUTE', 'REFUSED-REPEATER-ITEM', 'REFUSED-SVG-FILL-MECHANISM',
         'REFUSED-NO-COLOUR-PANEL', 'REFUSED-UNRESOLVED-BINDING',
     ]
     seen = set(order)
@@ -653,11 +1143,17 @@ def cmd_survey():
 
 def cmd_fix(apply_):
     mounts = census()
-    migratable = [m for m in mounts if m.category in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT')]
-    by_file = {}
-    for m in migratable:
-        by_file.setdefault(m.file, []).append(m)
+    handled_ids = set()
 
+    # 1) MIGRATABLE-FILL/-TEXT, attrs.base binding (unchanged mechanism -- multi-button
+    #    childBtnBackground/childBtnTextColour today).
+    migratable_attrs = [
+        m for m in mounts
+        if m.category in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT') and m.binding_kind == 'attrs'
+    ]
+    by_file = {}
+    for m in migratable_attrs:
+        by_file.setdefault(m.file, []).append(m)
     changed_files = 0
     total_rows = 0
     for path, ms in sorted(by_file.items()):
@@ -665,20 +1161,73 @@ def cmd_fix(apply_):
         if refusal:
             print(f'  REFUSED (insert-site) {ms[0].block} -- {refusal}')
             continue
+        handled_ids.update(id(m) for m in ms)
         if changed:
             changed_files += 1
             total_rows += len(ms)
             if not apply_:
                 sys.stdout.write(''.join(diff))
 
-    refused = [m for m in mounts if m.category not in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT')]
-    for m in refused:
-        verb = 'NOT-YET-APPLIED' if m.category.startswith('MIGRATABLE-') else 'REFUSED'
+    # 2) MIGRATABLE-BORDER-NATIVE-PURGE -- delete the mount (Task 2a).
+    purge_mounts = [m for m in mounts if m.category == 'MIGRATABLE-BORDER-NATIVE-PURGE']
+    purge_by_file = {}
+    for m in purge_mounts:
+        purge_by_file.setdefault(m.file, []).append(m)
+    purged_files = 0
+    purged_mounts_n = 0
+    for path, ms in sorted(purge_by_file.items()):
+        changed, diff, notes = apply_border_purge_to_file(path, ms, apply_)
+        handled_ids.update(id(m) for m in ms)
+        for note in notes:
+            print(f'  NOTE {note}')
+        if changed:
+            purged_files += 1
+            purged_mounts_n += len(ms)
+            if not apply_:
+                sys.stdout.write(''.join(diff))
+
+    # 3) MIGRATABLE-BORDER -- a NEW SgsBorderControl mount (Task 2b), per-mount refusal
+    #    when the surface has no width/style attrs to back it (e.g. multi-button
+    #    childBtnBorderColour today).
+    border_mounts = [m for m in mounts if m.category == 'MIGRATABLE-BORDER']
+    border_by_file = {}
+    for m in border_mounts:
+        border_by_file.setdefault(m.file, []).append(m)
+    new_mount_files = 0
+    new_mount_n = 0
+    border_refusals = []
+    for path, ms in sorted(border_by_file.items()):
+        changed, diff, refusals = apply_new_border_mount_to_file(path, ms, apply_)
+        applied_ms = [m for m in ms if not any(m is rm for rm, _ in refusals)]
+        handled_ids.update(id(m) for m in applied_ms)
+        for m, reason in refusals:
+            print(f'  BLOCKED {m.category} {m.block}:{m.line} attr={m.attr_name} -- {reason}')
+            border_refusals.append((m, reason))
+        if changed:
+            new_mount_files += 1
+            new_mount_n += len(applied_ms)
+            if not apply_:
+                sys.stdout.write(''.join(diff))
+
+    # 4) Everything else -- structural refusals, get/set-reclassified FILL/TEXT mounts
+    #    with no apply mechanism yet (Task 2 scope was the two border mechanics only),
+    #    and any MIGRATABLE-BORDER mount that got BLOCKED above (already reported).
+    remaining = [m for m in mounts if id(m) not in handled_ids and not any(m is rm for rm, _ in border_refusals)]
+    for m in remaining:
+        if m.category in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT') and m.binding_kind == 'getset':
+            verb = 'NOT-YET-APPLIED'
+        elif m.category.startswith('MIGRATABLE-'):
+            verb = 'NOT-YET-APPLIED'
+        else:
+            verb = 'REFUSED'
         print(f'  {verb} {m.category} {m.block}:{m.line} -- {m.detail}')
 
+    total_refusals = len(remaining) + len(border_refusals)
     print(
-        f"\n{'APPLIED' if apply_ else 'DRY RUN'} -- {changed_files} file(s), {total_rows} "
-        f"row(s) {'migrated' if apply_ else 'would be migrated'}, {len(refused)} refusal(s)"
+        f"\n{'APPLIED' if apply_ else 'DRY RUN'} -- colour rows: {changed_files} file(s)/{total_rows} row(s); "
+        f"native-purge deletions: {purged_files} file(s)/{purged_mounts_n} mount(s); "
+        f"new border mounts: {new_mount_files} file(s)/{new_mount_n} mount(s); "
+        f"{total_refusals} refusal(s)/not-yet-applied"
     )
     if not apply_:
         print('pass --apply to write')
@@ -687,13 +1236,23 @@ def cmd_fix(apply_):
 
 def cmd_check():
     mounts = census()
-    outstanding = [m for m in mounts if m.category in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT')]
+    # Gate on every category with a REAL apply mechanism today: attrs-bound FILL/TEXT,
+    # every MIGRATABLE-BORDER-NATIVE-PURGE mount (deletion always applies), and only the
+    # MIGRATABLE-BORDER mounts that actually PLAN (a surface with no width/style attrs
+    # has no fix this script can apply, so gating on it would fail the build with no
+    # resolution path in scope -- that mount is reported by --fix as BLOCKED instead).
+    outstanding = [
+        m for m in mounts
+        if (m.category in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT') and m.binding_kind == 'attrs')
+        or m.category == 'MIGRATABLE-BORDER-NATIVE-PURGE'
+        or (m.category == 'MIGRATABLE-BORDER' and plan_new_border_mount(m.block, m.attr_name)[0] is not None)
+    ]
     if outstanding:
-        print(f'FAIL -- {len(outstanding)} migratable <DesignTokenPicker> mount(s) not yet in SgsColourPanel:')
+        print(f'FAIL -- {len(outstanding)} migratable <DesignTokenPicker> mount(s) not yet fixed:')
         for m in outstanding:
             print(f'   {m.block}:{m.line} ({m.category}) attr={m.attr_name}')
         return 1
-    print('PASS -- no migratable raw <DesignTokenPicker> mounts remain outside SgsColourPanel')
+    print('PASS -- no migratable raw <DesignTokenPicker> mounts remain with an unapplied fix')
     return 0
 
 
@@ -893,7 +1452,10 @@ def self_test():
         check('negative repeater/icon-fill: file BYTE-IDENTICAL after --fix --apply (nothing to fix)', before2 == after2 and not changed2)
 
         # 2b. The SAME fixture, confirmed against the real trust-bar render.php shape --
-        #     the icon-fill enrichment must fire when the block slug + render.php shape match.
+        #     the SVG-fill-mechanism reclassification (2026-08-30) must fire when the
+        #     block slug + render.php + style.css shape match, and must STAY REFUSED
+        #     even though the get/set path CAN technically reach a repeater-item field --
+        #     this is the trap the task explicitly warns to re-verify, not assume.
         real_trust_bar_mounts = scan_mounts_in_file(
             'sgs/trust-bar', BLOCKS_DIR / 'trust-bar' / 'edit.js'
         )
@@ -901,13 +1463,42 @@ def self_test():
         check('real trust-bar: item.fillColour mount found in the live file', len(fill_colour_mounts) == 1)
         if fill_colour_mounts:
             check(
-                'real trust-bar: classified REFUSED-REPEATER-ITEM',
-                fill_colour_mounts[0].category == 'REFUSED-REPEATER-ITEM',
+                'real trust-bar: classified REFUSED-SVG-FILL-MECHANISM (stays refused, never MIGRATABLE-*)',
+                fill_colour_mounts[0].category == 'REFUSED-SVG-FILL-MECHANISM',
             )
             check(
-                'real trust-bar: detail carries the CONFIRMED icon-fill/SVG note from render.php',
-                'CONFIRMED' in (fill_colour_mounts[0].detail or ''),
+                'real trust-bar: detail carries the CONFIRMED SVG `fill:` note from render.php + style.css',
+                'CONFIRMED' in (fill_colour_mounts[0].detail or '') and 'fill:' in (fill_colour_mounts[0].detail or ''),
             )
+
+        # 2c. POSITIVE (2026-08-30 reclassification): mega-panel's asideSeparator.colour --
+        #     an object-attribute field the get/set path CAN reach, CONFIRMED via render.php
+        #     to paint a border-left divider colour (not text) -> MIGRATABLE-FILL, getset-bound.
+        real_mega_panel_mounts = scan_mounts_in_file(
+            'sgs/mega-panel', BLOCKS_DIR / 'mega-panel' / 'edit.js'
+        )
+        aside_mounts = [m for m in real_mega_panel_mounts if m.attr_name == 'asideSeparator.colour']
+        check('real mega-panel: asideSeparator.colour mount found in the live file', len(aside_mounts) == 1)
+        if aside_mounts:
+            check('real mega-panel: reclassified MIGRATABLE-FILL', aside_mounts[0].category == 'MIGRATABLE-FILL')
+            check('real mega-panel: binding_kind is getset (not attrs.base)', aside_mounts[0].binding_kind == 'getset')
+            check(
+                'real mega-panel: get/set expressions captured from the original value/onChange',
+                aside_mounts[0].get_expr and aside_mounts[0].set_expr
+                and 'asideSeparator' in aside_mounts[0].get_expr and 'setAttributes' in aside_mounts[0].set_expr,
+            )
+
+        # 2d. POSITIVE (2026-08-30 reclassification): pricing-table's plan.ribbonColour --
+        #     a repeater-item field, CONFIRMED via render.php to feed a CSS custom property
+        #     consumed by `background-color` -> MIGRATABLE-FILL, getset-bound.
+        real_pricing_table_mounts = scan_mounts_in_file(
+            'sgs/pricing-table', BLOCKS_DIR / 'pricing-table' / 'edit.js'
+        )
+        ribbon_mounts = [m for m in real_pricing_table_mounts if m.attr_name == 'plan.ribbonColour']
+        check('real pricing-table: plan.ribbonColour mount found in the live file', len(ribbon_mounts) == 1)
+        if ribbon_mounts:
+            check('real pricing-table: reclassified MIGRATABLE-FILL', ribbon_mounts[0].category == 'MIGRATABLE-FILL')
+            check('real pricing-table: binding_kind is getset', ribbon_mounts[0].binding_kind == 'getset')
 
         # 3. POSITIVE (2026-08-30 owner overrule): border colour, plain block attribute --
         #    classified MIGRATABLE-BORDER, targeting SgsBorderControl. borderRow() STILL
@@ -983,23 +1574,35 @@ def self_test():
         outstanding7b = [m for m in mounts7b if m.category in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT')]
         check('--check returns to PASS after the same fixture is fixed', len(outstanding7b) == 0)
 
-        # 8. Live full-tree survey sanity: must find exactly the 9 known mounts across the
-        #    6 named blocks, with the RECLASSIFIED split ruled 2026-08-30 (owner overrule of
-        #    the border refusal categories, Task 1b): 2 MIGRATABLE-FILL/-TEXT (multi-button,
-        #    unchanged), 2 MIGRATABLE-BORDER-NATIVE-PURGE (hero's + info-box's WP-native-
-        #    shaped style.border.color pickers), 2 MIGRATABLE-BORDER (hero's
-        #    splitMediaBorderColour + multi-button's childBtnBorderColour, each needing a NEW
-        #    SgsBorderControl mount for their own surface per the owner's ruling), and 3
-        #    genuinely-still-refused (mega-panel's object-attr, pricing-table's + trust-bar's
-        #    repeater-item mounts). This is the load-bearing regression control -- if the live
-        #    tree's shapes ever drift, this is the assertion that catches it rather than a
-        #    silently-stale self-test.
+        # 8. Live full-tree survey sanity -- POST-APPLY state (2026-08-30 Task 2: --fix
+        #    --apply has run for real on hero/info-box/multi-button). Of the original 9
+        #    known mounts: multi-button's 2 attrs.base-bound FILL/TEXT are now migrated into
+        #    SgsColourPanel rows (0 remain raw); hero's + info-box's 2
+        #    MIGRATABLE-BORDER-NATIVE-PURGE mounts are deleted (0 remain raw); hero's
+        #    splitMediaBorderColour MIGRATABLE-BORDER mount is consolidated into a new
+        #    SgsBorderControl (0 remain raw). What's LEFT raw, deliberately: mega-panel's +
+        #    pricing-table's 2 getset-bound MIGRATABLE-FILL mounts (reclassified but no apply
+        #    mechanism built this pass -- Task 2 scope was the two border mechanics only);
+        #    multi-button's childBtnBorderColour MIGRATABLE-BORDER mount (BLOCKED -- no
+        #    childBtnBorderWidth/childBtnBorderStyle in block.json, out of file-scope to add);
+        #    and trust-bar's item.fillColour (REFUSED-SVG-FILL-MECHANISM, the trap that must
+        #    never reclassify). If the live tree's shapes ever drift, this is the assertion
+        #    that catches it rather than a silently-stale self-test. (If this test is ever
+        #    run against a PRE-apply tree, e.g. cherry-picking just the codemod script change,
+        #    these counts will legitimately differ -- that is not this test's job to detect.)
         live_mounts = census()
         named_blocks = {'sgs/hero', 'sgs/info-box', 'sgs/mega-panel', 'sgs/multi-button',
                          'sgs/pricing-table', 'sgs/trust-bar'}
         live_named = [m for m in live_mounts if m.block in named_blocks]
-        check('live tree: exactly 9 raw mounts across the 6 named blocks', len(live_named) == 9)
-        live_fill_text = [m for m in live_named if m.category in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT')]
+        check('live tree (post-apply): exactly 4 raw mounts remain across the 6 named blocks', len(live_named) == 4)
+        live_fill_text_attrs = [
+            m for m in live_named
+            if m.category in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT') and m.binding_kind == 'attrs'
+        ]
+        live_fill_text_getset = [
+            m for m in live_named
+            if m.category in ('MIGRATABLE-FILL', 'MIGRATABLE-TEXT') and m.binding_kind == 'getset'
+        ]
         live_border_purge = [m for m in live_named if m.category == 'MIGRATABLE-BORDER-NATIVE-PURGE']
         live_border_new_mount = [m for m in live_named if m.category == 'MIGRATABLE-BORDER']
         live_still_refused = [
@@ -1009,27 +1612,196 @@ def self_test():
                 'MIGRATABLE-BORDER-NATIVE-PURGE', 'AMBIGUOUS',
             )
         ]
-        check('live tree: exactly 2 MIGRATABLE-FILL/-TEXT mounts (multi-button fill+text)', len(live_fill_text) == 2)
+        check('live tree (post-apply): 0 attrs.base-bound MIGRATABLE-FILL/-TEXT remain raw (multi-button applied)', len(live_fill_text_attrs) == 0)
         check(
-            'live tree: exactly 2 MIGRATABLE-BORDER-NATIVE-PURGE mounts (hero + info-box native-style border)',
-            len(live_border_purge) == 2,
+            'live tree (post-apply): exactly 2 getset-bound MIGRATABLE-FILL mounts remain raw '
+            '(mega-panel asideSeparator.colour + pricing-table plan.ribbonColour -- no apply mechanism built this pass)',
+            len(live_fill_text_getset) == 2,
         )
         check(
-            'live tree: exactly 2 MIGRATABLE-BORDER mounts, each needing a NEW SgsBorderControl mount '
-            '(hero splitMediaBorderColour + multi-button childBtnBorderColour)',
-            len(live_border_new_mount) == 2,
+            'live tree (post-apply): 0 MIGRATABLE-BORDER-NATIVE-PURGE mounts remain raw (hero + info-box purged)',
+            len(live_border_purge) == 0,
         )
         check(
-            'live tree: exactly 3 genuinely-still-refused mounts (mega-panel object-attr, '
-            'pricing-table + trust-bar repeater-items), 0 ambiguous -- proves the reclassification '
-            'did NOT over-broaden into these',
-            len(live_still_refused) == 3,
+            'live tree (post-apply): exactly 1 MIGRATABLE-BORDER mount remains raw '
+            '(multi-button childBtnBorderColour -- BLOCKED, no width/style attrs; hero splitMedia applied)',
+            len(live_border_new_mount) == 1,
+        )
+        if live_border_new_mount:
+            check(
+                'live tree (post-apply): the remaining MIGRATABLE-BORDER mount is multi-button, '
+                'and genuinely has no plan (confirms it is blocked, not silently skipped)',
+                live_border_new_mount[0].block == 'sgs/multi-button'
+                and plan_new_border_mount(live_border_new_mount[0].block, live_border_new_mount[0].attr_name)[0] is None,
+            )
+        check(
+            'live tree (post-apply): exactly 1 genuinely-still-refused mount (trust-bar item.fillColour, the '
+            'SVG-fill-mechanism trap) -- proves the reclassification did NOT over-broaden into it '
+            'despite sharing pricing-table\'s exact JS shape',
+            len(live_still_refused) == 1,
         )
         for m in live_still_refused:
             check(
                 f'live tree: {m.block}:{m.line} still classified {m.category} (never a MIGRATABLE-* category)',
-                m.category in ('REFUSED-NOT-BLOCK-ATTRIBUTE', 'REFUSED-REPEATER-ITEM'),
+                m.category == 'REFUSED-SVG-FILL-MECHANISM',
             )
+
+        # 9. MIGRATABLE-BORDER-NATIVE-PURGE apply mechanic (Task 2a) -- fixture mirrors the
+        #    REAL hero shape: a dedicated PanelBody hosting ONLY the native-style picker, so
+        #    deletion must take the whole PanelBody with it (an empty titled panel left
+        #    behind is a UI regression, not a clean fix).
+        p9 = _write_fixture(tmp, 'purge_dedicated_panel.js', '')
+        p9.write_text(
+            FIXTURE_HEADER
+            + FIXTURE_PANEL_SIMPLE
+            + "\t\t\t<PanelBody title={ __( 'Border gradient', 'sgs-blocks' ) } initialOpen={ false }>\n"
+            + "\t\t\t\t{ /* stale explanation comment */ }\n"
+            + FIXTURE_POSITIVE_NATIVE_STYLE_BORDER.replace('\t\t\t<', '\t\t\t\t<')
+            + '\t\t\t</PanelBody>\n'
+            + FIXTURE_FOOTER,
+            encoding='utf-8',
+            newline='',
+        )
+        mounts9 = scan_mounts_in_file('sgs/fixture', p9)
+        purge9 = [m for m in mounts9 if m.category == 'MIGRATABLE-BORDER-NATIVE-PURGE']
+        check('purge fixture: exactly 1 MIGRATABLE-BORDER-NATIVE-PURGE mount found', len(purge9) == 1)
+        changed9, _diff9, notes9 = apply_border_purge_to_file(p9, purge9, write=True)
+        after9 = p9.read_text(encoding='utf-8')
+        check('purge (dedicated panel): file changed', changed9)
+        check('purge (dedicated panel): raw <DesignTokenPicker> mount removed', '<DesignTokenPicker' not in after9)
+        check('purge (dedicated panel): its stale comment removed too', 'stale explanation comment' not in after9)
+        check(
+            'purge (dedicated panel): the now-empty <PanelBody title="Border gradient"> removed too',
+            'Border gradient' not in after9,
+        )
+        check('purge (dedicated panel): a NOTE was reported for the panel removal', len(notes9) == 1)
+        check('purge (dedicated panel): the OTHER PanelBody (SgsColourPanel host) survives', '<SgsColourPanel' in after9)
+
+        # 9b. Same mechanic on a SHARED panel (mirrors hero's real shape: the picker sits
+        #     alongside a genuinely unrelated control, <WidthPanel>) -- deletion must NOT
+        #     take the whole panel, must NOT touch the sibling control. This is the exact
+        #     regression this script nearly shipped: an earlier version of
+        #     strip_preceding_comment matched from the FIRST `{ /* ... */ }` comment
+        #     ANYWHERE EARLIER IN THE FILE down to the mount, deleting an unrelated
+        #     <WidthPanel> mount on a real --apply'd copy of hero/edit.js. Caught by
+        #     inspecting that copy directly, not by any assertion that existed before this
+        #     one -- this fixture is the regression control so it can never recur silently.
+        p9b = _write_fixture(tmp, 'purge_shared_panel.js', '')
+        p9b.write_text(
+            FIXTURE_HEADER
+            + FIXTURE_PANEL_SIMPLE
+            + "\t\t\t<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) } initialOpen={ false }>\n"
+            + "\t\t\t\t<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />\n"
+            + "\t\t\t\t{ /* D701 explanation comment for the border picker only */ }\n"
+            + FIXTURE_POSITIVE_NATIVE_STYLE_BORDER.replace('\t\t\t<', '\t\t\t\t<')
+            + '\t\t\t</PanelBody>\n'
+            + FIXTURE_FOOTER,
+            encoding='utf-8',
+            newline='',
+        )
+        mounts9b = scan_mounts_in_file('sgs/fixture', p9b)
+        purge9b = [m for m in mounts9b if m.category == 'MIGRATABLE-BORDER-NATIVE-PURGE']
+        changed9b, _diff9b, notes9b = apply_border_purge_to_file(p9b, purge9b, write=True)
+        after9b = p9b.read_text(encoding='utf-8')
+        check('purge (shared panel): file changed', changed9b)
+        check('purge (shared panel): raw <DesignTokenPicker> mount removed', '<DesignTokenPicker' not in after9b)
+        check(
+            'purge (shared panel): its OWN comment removed, unrelated WidthPanel survives',
+            'D701 explanation' not in after9b and '<WidthPanel' in after9b,
+        )
+        check(
+            'purge (shared panel): the enclosing <PanelBody title="Section (outer)"> survives (not empty)',
+            'Section (outer)' in after9b,
+        )
+        check('purge (shared panel): no panel-removal NOTE (panel was not empty)', len(notes9b) == 0)
+
+        # 10. MIGRATABLE-BORDER apply mechanic (Task 2b) -- a fixture with the full
+        #     width/style/radius/colour+gradient attribute family (mirrors hero's
+        #     splitMediaBorderColour) must produce one consolidated <SgsBorderControl>,
+        #     dropping colourLinked/onColourGradientChange NEVER (D881).
+        # plan_new_border_mount is exercised directly against hero's REAL block.json (a
+        # fixture attribute like 'fooBorder' has no block.json to plan against; this is
+        # what --fix --apply actually consults on the live tree).
+        plan10, refusal10 = plan_new_border_mount('sgs/hero', 'splitMediaBorderColour')
+        check('plan (hero splitMedia): plan resolves (all sibling attrs exist)', plan10 is not None and refusal10 is None)
+        if plan10:
+            check('plan (hero splitMedia): width/style attrs resolved', plan10['width_attr'] == 'splitMediaBorderWidth' and plan10['style_attr'] == 'splitMediaBorderStyle')
+            check('plan (hero splitMedia): gradient attr resolved', plan10['gradient_attr'] == 'splitMediaBorderColourGradient')
+            check('plan (hero splitMedia): radius attr + both tiers resolved', plan10['radius_attr'] == 'splitMediaBorderRadius' and plan10['radius_tablet_attr'] and plan10['radius_mobile_attr'])
+
+        # 10b. BLOCKED case (mirrors multi-button's real gap): no {prefix}BorderWidth/
+        #      BorderStyle declared -- must refuse, never fabricate a control bound to an
+        #      undeclared attribute (D338 -- WP silently drops it; a control that looks
+        #      right and writes nowhere is the exact defect class this family exists to
+        #      remove).
+        plan10b, refusal10b = plan_new_border_mount('sgs/multi-button', 'childBtnBorderColour')
+        check('plan (multi-button childBtn): refused, no plan fabricated', plan10b is None)
+        check(
+            'plan (multi-button childBtn): refusal names the missing width/style attrs, not a guess',
+            refusal10b and 'childBtnBorderWidth' in refusal10b and 'childBtnBorderStyle' in refusal10b,
+        )
+
+        # 10c. End-to-end apply on a SYNTHETIC fixture reproducing hero's pre-migration
+        #      splitMedia shape (bespoke SelectControl/ResponsiveBoxControl/
+        #      ResponsiveBorderRadiusControl/DesignTokenPicker quartet), planned against
+        #      hero's REAL block.json (so plan_new_border_mount resolves genuine attrs).
+        #      Self-contained rather than reading the live hero/edit.js file, so this test
+        #      stays valid whether or not this session has already applied the real fix to
+        #      the live tree (idempotent regression coverage, not a one-shot check). The new
+        #      SgsBorderControl mount must land, colourLinked/onColourGradientChange must
+        #      survive (D881), the superseded bespoke controls it replaces must be gone --
+        #      but WidthPanel (a genuinely unrelated control in a DIFFERENT PanelBody, never
+        #      touched by this mechanic) must survive untouched.
+        hero_scratch = Path(tmp) / 'hero_edit_scratch.js'
+        hero_scratch.write_text(
+            FIXTURE_HEADER
+            + FIXTURE_PANEL_SIMPLE
+            + "\t\t\t<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) } initialOpen={ false }>\n"
+            + "\t\t\t\t<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />\n"
+            + '\t\t\t</PanelBody>\n'
+            + "\t\t\t<p style={ { fontWeight: 600 } }>{ __( 'Border radius', 'sgs-blocks' ) }</p>\n"
+            + "\t\t\t<ResponsiveBorderRadiusControl\n"
+            + "\t\t\t\tlabel={ __( 'Image border radius', 'sgs-blocks' ) }\n"
+            + "\t\t\t\tvalues={ { base: splitMediaBorderRadius ?? {}, tablet: splitMediaBorderRadiusTablet ?? {}, mobile: splitMediaBorderRadiusMobile ?? {} } }\n"
+            + "\t\t\t\tonChange={ ( tier, next ) => setAttributes( { [ tier ]: next } ) }\n"
+            + "\t\t\t/>\n"
+            + "\t\t\t<p style={ { fontWeight: 600 } }>{ __( 'Border', 'sgs-blocks' ) }</p>\n"
+            + "\t\t\t<SelectControl label={ __( 'Border style', 'sgs-blocks' ) } value={ splitMediaBorderStyle } onChange={ ( val ) => setAttributes( { splitMediaBorderStyle: val } ) } />\n"
+            + "\t\t\t<ResponsiveBoxControl\n"
+            + "\t\t\t\tlabel={ __( 'Border width', 'sgs-blocks' ) }\n"
+            + "\t\t\t\tvalues={ { base: splitMediaBorderWidth ?? {} } }\n"
+            + "\t\t\t\tshowResponsive={ false }\n"
+            + "\t\t\t\tonChange={ ( tier, next ) => setAttributes( { splitMediaBorderWidth: next } ) }\n"
+            + "\t\t\t/>\n"
+            + "\t\t\t<DesignTokenPicker\n"
+            + "\t\t\t\tlabel={ __( 'Border colour', 'sgs-blocks' ) }\n"
+            + "\t\t\t\tstates={ [ { key: 'normal', label: __( 'Normal', 'sgs-blocks' ), value: splitMediaBorderColour, onChange: ( val ) => setAttributes( { splitMediaBorderColour: val } ), gradientValue: splitMediaBorderColourGradient, onGradientChange: ( val ) => setAttributes( { splitMediaBorderColourGradient: val ?? '' } ) } ] }\n"
+            + "\t\t\t/>\n"
+            + FIXTURE_FOOTER,
+            encoding='utf-8', newline='',
+        )
+        hero_scratch_mounts = [
+            m for m in scan_mounts_in_file('sgs/hero', hero_scratch)
+            if m.category == 'MIGRATABLE-BORDER' and m.attr_name == 'splitMediaBorderColour'
+        ]
+        check('hero scratch: splitMediaBorderColour MIGRATABLE-BORDER mount found', len(hero_scratch_mounts) == 1)
+        changed10c, _diff10c, refusals10c = apply_new_border_mount_to_file(hero_scratch, hero_scratch_mounts, write=True)
+        after10c = hero_scratch.read_text(encoding='utf-8')
+        check('hero scratch: applied with zero refusals', changed10c and not refusals10c)
+        check('hero scratch: one new <SgsBorderControl> mount for splitMediaBorderWidth landed', 'widthValues={ attributes.splitMediaBorderWidth' in after10c)
+        check('hero scratch: colourLinked={ true } present (D881)', 'colourLinked={ true }' in after10c)
+        check('hero scratch: gradient pair present', 'onColourGradientChange' in after10c and 'splitMediaBorderColourGradient' in after10c)
+        check(
+            'hero scratch: superseded bespoke controls for THIS surface are gone '
+            '(SelectControl/ResponsiveBoxControl/ResponsiveBorderRadiusControl for splitMedia)',
+            'value={ splitMediaBorderStyle }' not in after10c
+            and 'values={ { base: splitMediaBorderWidth' not in after10c
+            and "base: splitMediaBorderRadius ?? {}" not in after10c.split('SgsBorderControl')[0],
+        )
+        check(
+            'hero scratch: unrelated <WidthPanel> (a different surface, different PanelBody) untouched',
+            '<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />' in after10c,
+        )
 
     ok = not failures
     print(f'\nSELF-TEST: {total[0]} assertion(s), {len(failures)} failure(s)')
