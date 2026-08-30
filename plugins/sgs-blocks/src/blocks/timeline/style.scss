@@ -1395,23 +1395,37 @@
 // a plain top border in the connector colour — the per-card equivalent of
 // the rail this mode replaces.
 //
-// The class is repeated FOUR TIMES in the entry/media selectors below,
-// deliberately — not a typo. The toughest pre-existing mobile rule this must
-// out-rank is the alternating collapse at :1054
-// (`.sgs-timeline--vertical.sgs-timeline--align-alternating .sgs-timeline__entry:nth-child(odd|even)`,
-// specificity (0,4,0)), and carousel mode must win over EVERY
+// The class is repeated FIVE TIMES in the entry/media selectors below,
+// deliberately — not a typo, and not (0,4,0) vs the ENTRY selector either
+// (a figure this comment used to state and got wrong). The real ceiling to
+// beat is a DESCENDANT selector, not the entry selector itself: the
+// alternating mobile collapse at :1067
+// (`.sgs-timeline--vertical.sgs-timeline--align-alternating` (2 classes)
+// ` .sgs-timeline__entry:nth-child(odd|even)` (2) ` .sgs-timeline__date` (1)
+// = **(0,5,0)**). A 4x-repeated carousel selector + `.sgs-timeline__date`
+// is ALSO (0,5,0) — an exact tie, resolved only by this block being
+// physically last in the file, which a single appended rule anywhere else
+// could silently flip. Repeating the carousel class a 5th time raises the
+// descendant ceiling to (0,6,0), a real one-class margin instead of a
+// source-order accident. Carousel mode must still win over EVERY
 // orientation/alignment combination without hand-listing each one — hence
 // raising past that ceiling by construction rather than chasing every
 // existing rule's exact selector one at a time.
+//
+// Media-query scoping gives NO cascade advantage here: every competing rule
+// above is already inside `@media (max-width: 767px)`, so don't "fix" the
+// tie by adding a `:not(.sgs-timeline--mobile-carousel)` guard to those
+// rules instead — that raises every one of them by (0,1,0), can flip a tie
+// against a THIRD rule, and risks the `stacked` byte-identity acceptance
+// criterion for zero gain.
 @media (max-width: 767px) {
-	.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel {
+	.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel {
 		display: flex;
 		flex-direction: row;
 		align-items: stretch;
 		overflow-x: auto;
-		overflow-y: visible;
+		overflow-y: hidden;
 		scroll-snap-type: x mandatory;
-		-webkit-overflow-scrolling: touch;
 		gap: var(--wp--preset--spacing--20, 1rem);
 		padding: var(--wp--preset--spacing--30, 1.5rem) var(--wp--preset--spacing--20, 1rem);
 
@@ -1443,6 +1457,16 @@
 			// with — filled in the connector colour, one border per card
 			// rather than one continuous scrubbing fill.
 			border-top: 3px solid var(--sgs-connector-colour);
+
+			// F1 — the horizontal analogue of `.sgs-timeline__node.is-reached`
+			// (:802). `is-reached` used to be toggled only on `.sgs-timeline__node`,
+			// which is `display:none` in carousel mode (:1465) — dead decoration
+			// with no paint surface. view.js's `initCarouselA11y` now toggles this
+			// class on each entry as its left edge scrolls past the scroller's
+			// current position; see the scroll listener there.
+			&.is-reached {
+				border-top-color: var(--sgs-timeline-fill-colour);
+			}
 		}
 
 		// The decorative dot sat ON the rail; without a rail under it, it has
@@ -1471,7 +1495,7 @@
 	// prefers-reduced-motion: no-preference"). SCSS nests this into a combined
 	// `@media (max-width: 767px) and (prefers-reduced-motion: no-preference)`.
 	@media (prefers-reduced-motion: no-preference) {
-		.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel {
+		.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel {
 			scroll-behavior: smooth;
 		}
 	}

@@ -336,6 +336,26 @@ import {
 		if ( ! root.querySelector( '.sgs-timeline__progress' ) ) {
 			return;
 		}
+
+		// F7 — carousel mode at <=767px hides `.sgs-timeline__progress`
+		// (style.scss:1442 `display:none`) and has no rail to fill: each entry is
+		// an independent snap-scrolled card, not a single scroll-through
+		// timeline. Without this bail, `measureNodes()` below reads zero-size
+		// nodes, every `frac` computes negative, `applyReached()` reveals every
+		// entry at once, and sparks append into a `display:none` parent — no
+		// visible loss (this degrades to MORE content, never less), but it is
+		// meaningless work on every scroll event. Read once at init, same as the
+		// other server-rendered-attribute reads in this file: a carousel
+		// timeline that crosses 767px mid-session keeps whichever gate applied
+		// on load, matching `initCarouselA11y`'s own tabindex/aria-label toggle
+		// being the only thing in this file that re-evaluates on resize.
+		if (
+			root.classList.contains( 'sgs-timeline--mobile-carousel' ) &&
+			window.matchMedia &&
+			window.matchMedia( '(max-width: 767px)' ).matches
+		) {
+			return;
+		}
 		// ⛔ THE REDUCED-MOTION BAIL MOVED, and the move is the point.
 		//
 		// This observer now has TWO consumers, and only one of them is motion:
@@ -684,6 +704,19 @@ import {
 					cleanups.push( cleanup );
 				}
 			} );
+
+			// F5 — joined to the SAME teardown as the driver/sparks above rather
+			// than left to register-and-never-remove. Independent of reveal
+			// config: a carousel timeline may have reveal on or off, so this is
+			// its own selector rather than reusing `timelines`/`roots`.
+			document
+				.querySelectorAll( '.sgs-timeline--mobile-carousel' )
+				.forEach( ( root ) => {
+					const carouselCleanup = initCarouselA11y( root );
+					if ( carouselCleanup ) {
+						cleanups.push( carouselCleanup );
+					}
+				} );
 		}
 
 		function teardown() {
@@ -709,17 +742,29 @@ import {
 	 *
 	 * A native overflow scroller with no focusable children cannot be reached
 	 * or operated by keyboard in Chromium before 127, and in Safari at all.
-	 * `tabindex="0"` + `role="region"` + an accessible name fix that — but
-	 * those are HTML attributes and CANNOT be media-queried, so they must be
-	 * present ONLY while the element actually scrolls (≤767px), or a
-	 * screen-reader user at desktop gets a pointless verbose region that does
-	 * not scroll. Toggled on a `matchMedia` listener that also fires on
-	 * `change`, so a rotated phone or a resized window updates it — mirrors
-	 * the existing `matchMedia('(prefers-reduced-motion: reduce)')`/
+	 * `tabindex="0"` + an accessible name fix that — but those are HTML
+	 * attributes and CANNOT be media-queried, so they must be present ONLY
+	 * while the element actually scrolls (≤767px), or a screen-reader user at
+	 * desktop gets a pointless verbose name on an element that does not
+	 * scroll. Toggled on a `matchMedia` listener that also fires on `change`,
+	 * so a rotated phone or a resized window updates it — mirrors the
+	 * existing `matchMedia('(prefers-reduced-motion: reduce)')`/
 	 * `motionQuery.addEventListener('change', …)` pattern already used
 	 * elsewhere in this file and in shared/effects/smooth-scroll.js.
 	 *
+	 * ⛔ NO `role="region"` (F4, owner decision, overturns the original
+	 * brief). The carousel root **is** the block's `<ol>`, with `<li>`
+	 * entries as real list content. `role="region"` overrides the implicit
+	 * `list` role WordPress/the browser already assigns it — measured live:
+	 * an `<OL>` with `<LI>` children carrying `role="region"` stops
+	 * announcing "list, N items" and orphans the `<li>`s from any list
+	 * semantics. SC 2.1.1 only requires the scroller be reachable and named,
+	 * both of which `tabindex="0"` + `aria-label` already satisfy; the list
+	 * structure is real content worth more than an extra landmark.
+	 *
 	 * @param {HTMLElement} root The `.sgs-timeline--mobile-carousel` root.
+	 * @return {Function|void} A cleanup function, or nothing if the driver
+	 *                         never attached (no `matchMedia` support).
 	 */
 	function initCarouselA11y( root ) {
 		if ( typeof window.matchMedia !== 'function' ) {
@@ -735,17 +780,56 @@ import {
 		function applyState() {
 			if ( mobileQuery.matches ) {
 				root.setAttribute( 'tabindex', '0' );
-				root.setAttribute( 'role', 'region' );
 				root.setAttribute( 'aria-label', label );
 			} else {
 				root.removeAttribute( 'tabindex' );
-				root.removeAttribute( 'role' );
 				root.removeAttribute( 'aria-label' );
 			}
 		}
 
 		applyState();
 		mobileQuery.addEventListener( 'change', applyState );
+
+		/**
+		 * F1 — per-card `is-reached` indicator, the horizontal analogue of
+		 * `applyReached()` inside `initSparks()`. The rail/dot machinery has no
+		 * paint surface in carousel mode (nodes are `display:none`,
+		 * `.sgs-timeline__progress` is `display:none` — style.scss:1442/1465),
+		 * so each card's own top border stands in for it: toggled on once its
+		 * left edge has scrolled to or past the scroller's visible edge.
+		 *
+		 * Inert outside carousel mode / above 767px by construction: the class
+		 * only PAINTS anything under the `@media (max-width: 767px)` +
+		 * `.sgs-timeline--mobile-carousel` gate in style.scss, so toggling it
+		 * elsewhere is a harmless no-op rather than something that needs its
+		 * own runtime guard.
+		 */
+		function applyCarouselReached() {
+			const rootRect = root.getBoundingClientRect();
+			root.querySelectorAll( '.sgs-timeline__entry' ).forEach(
+				( entry ) => {
+					const entryRect = entry.getBoundingClientRect();
+					// A small tolerance absorbs sub-pixel scroll-snap rounding —
+					// without it the LAST reached card can flicker in and out as
+					// the browser settles a fraction of a pixel short of 0.
+					const reached = entryRect.left - rootRect.left <= 2;
+					entry.classList.toggle( 'is-reached', reached );
+				}
+			);
+		}
+
+		const throttledReached = rafThrottle( applyCarouselReached );
+
+		// Run once on init so the first card is correct before any scroll.
+		applyCarouselReached();
+
+		root.addEventListener( 'scroll', throttledReached, { passive: true } );
+
+		return function cleanup() {
+			mobileQuery.removeEventListener( 'change', applyState );
+			root.removeEventListener( 'scroll', throttledReached );
+			throttledReached.cancel();
+		};
 	}
 
 	/**
@@ -761,13 +845,12 @@ import {
 		);
 		timelines.forEach( initTimeline );
 
+		// F5 — carousel a11y init moved INSIDE bootProgressDriver()'s own
+		// init()/teardown() pair (see there), so its `change` + `scroll`
+		// listeners are torn down and re-attached together with everything
+		// else on a bfcache restore instead of being registered here and
+		// never removed.
 		bootProgressDriver();
-
-		// Independent of reveal config — a carousel timeline may have reveal
-		// on or off, so this is its own selector rather than reusing `timelines`.
-		document
-			.querySelectorAll( '.sgs-timeline--mobile-carousel' )
-			.forEach( initCarouselA11y );
 	}
 
 	if ( document.readyState === 'loading' ) {
