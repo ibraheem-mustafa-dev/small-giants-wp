@@ -204,7 +204,7 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 			foreach ( $tiers as $tier => $suffix ) {
 				$val = sgs_media_atom_box_shape_format_length( $resolved[ $tier ] ?? null, $unit, $embedded );
 				if ( '' !== $val ) {
-					$decls[] = '--sgs-media-height' . $suffix . ':' . $val . ';';
+					$decls[] = '--sgs-media-height' . $suffix . ':' . $val;
 				}
 			}
 		}
@@ -213,7 +213,7 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 			$ratio_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'AspectRatio' );
 			$ratio     = sgs_media_atom_box_shape_normalise_ratio( $attributes[ $ratio_key ] ?? null );
 			if ( '' !== $ratio ) {
-				$decls[] = '--sgs-media-aspect-ratio:' . $ratio . ';';
+				$decls[] = '--sgs-media-aspect-ratio:' . $ratio;
 			}
 		}
 
@@ -229,7 +229,7 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 		foreach ( $width_tiers as $tier => $suffix ) {
 			$val = sgs_media_atom_box_shape_format_length( $resolved_width[ $tier ] ?? null, $width_unit, false );
 			if ( '' !== $val ) {
-				$decls[] = '--sgs-media-width' . $suffix . ':' . $val . ';';
+				$decls[] = '--sgs-media-width' . $suffix . ':' . $val;
 			}
 		}
 
@@ -244,7 +244,7 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 		foreach ( $mh_tiers as $tier => $suffix ) {
 			$val = $min_height_obj[ $tier ] ?? null;
 			if ( null !== $val && '' !== $val ) {
-				$decls[] = '--sgs-media-min-height' . $suffix . ':' . $val . ';';
+				$decls[] = '--sgs-media-min-height' . $suffix . ':' . $val;
 			}
 		}
 
@@ -253,7 +253,7 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 		$max_width_raw      = $attributes[ $max_width_key ] ?? null;
 		$max_width_desktop  = is_array( $max_width_raw ) ? ( $max_width_raw['desktop'] ?? null ) : null;
 		if ( null !== $max_width_desktop && '' !== $max_width_desktop ) {
-			$decls[] = '--sgs-media-max-width:' . $max_width_desktop . ( $attributes[ $max_width_unit_key ] ?? 'px' ) . ';';
+			$decls[] = '--sgs-media-max-width:' . $max_width_desktop . ( $attributes[ $max_width_unit_key ] ?? 'px' );
 		}
 
 		$max_height_key      = sgs_media_element_stored_attr( $block_slug, $prefix, 'MaxHeight' );
@@ -261,7 +261,7 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 		$max_height_raw      = $attributes[ $max_height_key ] ?? null;
 		$max_height_desktop  = is_array( $max_height_raw ) ? ( $max_height_raw['desktop'] ?? null ) : null;
 		if ( null !== $max_height_desktop && '' !== $max_height_desktop ) {
-			$decls[] = '--sgs-media-max-height:' . $max_height_desktop . ( $attributes[ $max_height_unit_key ] ?? 'px' ) . ';';
+			$decls[] = '--sgs-media-max-height:' . $max_height_desktop . ( $attributes[ $max_height_unit_key ] ?? 'px' );
 		}
 
 		$max_width_percent_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'MaxWidthPercent' );
@@ -274,7 +274,7 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 		$shape     = sgs_media_atom_box_shape_validate_shape( $attributes[ $shape_key ] ?? null );
 		if ( 'none' !== $shape ) {
 			$clip_paths = sgs_media_atom_box_shape_clip_paths();
-			$decls[]    = '--sgs-media-clip-path:' . $clip_paths[ $shape ] . ';';
+			$decls[]    = '--sgs-media-clip-path:' . $clip_paths[ $shape ];
 		}
 
 		return $decls;

@@ -92,23 +92,23 @@ if ( ! function_exists( 'sgs_media_atom_overlay_css' ) ) {
 		}
 
 		if ( 'background-image' === $paint['property'] ) {
-			$decls[] = '--sgs-media-overlay-gradient:' . $paint['value'] . ';';
+			$decls[] = '--sgs-media-overlay-gradient:' . $paint['value'];
 		} else {
-			$decls[] = '--sgs-media-overlay-colour:' . $paint['value'] . ';';
+			$decls[] = '--sgs-media-overlay-colour:' . $paint['value'];
 		}
 
 		$hover_paint = sgs_background_paint_value( $attributes[ $keys['colourHover'] ] ?? null, $attributes[ $keys['gradientHover'] ] ?? null );
 		if ( 'background-image' === $hover_paint['property'] ) {
-			$decls[] = '--sgs-media-overlay-gradient-hover:' . $hover_paint['value'] . ';';
+			$decls[] = '--sgs-media-overlay-gradient-hover:' . $hover_paint['value'];
 		} elseif ( 'background-color' === $hover_paint['property'] ) {
-			$decls[] = '--sgs-media-overlay-colour-hover:' . $hover_paint['value'] . ';';
+			$decls[] = '--sgs-media-overlay-colour-hover:' . $hover_paint['value'];
 		}
 
 		$opacity = $attributes[ $keys['opacity'] ] ?? null;
 		if ( null !== $opacity && '' !== $opacity && is_numeric( $opacity ) ) {
 			$pct = max( 0.0, min( 100.0, (float) $opacity ) );
 			if ( 100.0 !== $pct ) {
-				$decls[] = '--sgs-media-overlay-opacity:' . rtrim( rtrim( number_format( $pct / 100, 4, '.', '' ), '0' ), '.' ) . ';';
+				$decls[] = '--sgs-media-overlay-opacity:' . rtrim( rtrim( number_format( $pct / 100, 4, '.', '' ), '0' ), '.' );
 			}
 		}
 
@@ -127,7 +127,7 @@ if ( ! function_exists( 'sgs_media_atom_overlay_css' ) ) {
 			'exclusion',
 		);
 		if ( $blend_mode && 'normal' !== $blend_mode && in_array( $blend_mode, $allowed_blend_modes, true ) ) {
-			$decls[] = '--sgs-media-overlay-blend:' . $blend_mode . ';';
+			$decls[] = '--sgs-media-overlay-blend:' . $blend_mode;
 		}
 
 		return $decls;

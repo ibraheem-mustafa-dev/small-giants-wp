@@ -252,7 +252,7 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 			const suffix = pair[ 1 ];
 			const val = formatLength( resolved[ tier ], unit, resolved.__unitEmbedded );
 			if ( val ) {
-				decls.push( `--sgs-media-height${ suffix }:${ val };` );
+				decls.push( `--sgs-media-height${ suffix }:${ val }` );
 			}
 		} );
 	}
@@ -261,7 +261,7 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 		const ratioKey = mediaStoredAttrName( blockSlug, prefix, 'AspectRatio' );
 		const ratio = normaliseRatio( attributes[ ratioKey ] );
 		if ( ratio ) {
-			decls.push( `--sgs-media-aspect-ratio:${ ratio };` );
+			decls.push( `--sgs-media-aspect-ratio:${ ratio }` );
 		}
 	}
 
@@ -274,7 +274,7 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 		const suffix = pair[ 1 ];
 		const val = formatLength( resolvedWidth[ tier ], widthUnit, false );
 		if ( val ) {
-			decls.push( `--sgs-media-width${ suffix }:${ val };` );
+			decls.push( `--sgs-media-width${ suffix }:${ val }` );
 		}
 	} );
 
@@ -286,7 +286,7 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 		const suffix = pair[ 1 ];
 		const val = minHeightObj[ tier ];
 		if ( val ) {
-			decls.push( `--sgs-media-min-height${ suffix }:${ val };` );
+			decls.push( `--sgs-media-min-height${ suffix }:${ val }` );
 		}
 	} );
 
@@ -295,7 +295,7 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	const maxWidthRaw = attributes[ maxWidthKey ];
 	const maxWidthDesktop = maxWidthRaw && 'object' === typeof maxWidthRaw ? maxWidthRaw.desktop : undefined;
 	if ( undefined !== maxWidthDesktop && null !== maxWidthDesktop && '' !== maxWidthDesktop ) {
-		decls.push( `--sgs-media-max-width:${ maxWidthDesktop }${ attributes[ maxWidthUnitKey ] || 'px' };` );
+		decls.push( `--sgs-media-max-width:${ maxWidthDesktop }${ attributes[ maxWidthUnitKey ] || 'px' }` );
 	}
 
 	const maxHeightKey = mediaStoredAttrName( blockSlug, prefix, 'MaxHeight' );
@@ -303,19 +303,19 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	const maxHeightRaw = attributes[ maxHeightKey ];
 	const maxHeightDesktop = maxHeightRaw && 'object' === typeof maxHeightRaw ? maxHeightRaw.desktop : undefined;
 	if ( undefined !== maxHeightDesktop && null !== maxHeightDesktop && '' !== maxHeightDesktop ) {
-		decls.push( `--sgs-media-max-height:${ maxHeightDesktop }${ attributes[ maxHeightUnitKey ] || 'px' };` );
+		decls.push( `--sgs-media-max-height:${ maxHeightDesktop }${ attributes[ maxHeightUnitKey ] || 'px' }` );
 	}
 
 	const maxWidthPercentKey = mediaStoredAttrName( blockSlug, prefix, 'MaxWidthPercent' );
 	const maxWidthPercent = attributes[ maxWidthPercentKey ];
 	if ( 'number' === typeof maxWidthPercent ) {
-		decls.push( `--sgs-media-max-width-percent:${ maxWidthPercent }%;` );
+		decls.push( `--sgs-media-max-width-percent:${ maxWidthPercent }%` );
 	}
 
 	const shapeKey = mediaStoredAttrName( blockSlug, prefix, 'Shape' );
 	const shape = validateShape( attributes[ shapeKey ] );
 	if ( 'none' !== shape ) {
-		decls.push( `--sgs-media-clip-path:${ CLIP_PATHS[ shape ] };` );
+		decls.push( `--sgs-media-clip-path:${ CLIP_PATHS[ shape ] }` );
 	}
 
 	return decls;

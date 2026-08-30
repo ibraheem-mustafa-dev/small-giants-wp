@@ -78,13 +78,13 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	const fitKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectFit' );
 	const fit = validate( attributes[ fitKey ], 'element' );
 	if ( fit ) {
-		decls.push( `--sgs-media-object-fit:${ fit };` );
+		decls.push( `--sgs-media-object-fit:${ fit }` );
 	}
 
 	const sizeKey = mediaStoredAttrName( blockSlug, prefix, 'Size' );
 	const size = validate( attributes[ sizeKey ], 'backdrop' );
 	if ( size ) {
-		decls.push( `--sgs-media-background-size:${ size };` );
+		decls.push( `--sgs-media-background-size:${ size }` );
 	}
 
 	return decls;

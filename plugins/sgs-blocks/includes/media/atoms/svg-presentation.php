@@ -123,8 +123,17 @@ if ( ! function_exists( 'sgs_media_atom_svg_presentation_css' ) ) {
 		$decls = array();
 		$keys  = sgs_media_atom_svg_presentation_attr_keys( $prefix, $block_slug );
 
-		$position = sgs_media_atom_svg_presentation_validate_position( $attributes[ $keys['position'] ] ?? null );
-		$decls[]  = '--sgs-media-svg-zindex:' . ( 'foreground' === $position ? 1 : -1 ) . ';';
+		// Only emit when the client actually chose a position. Emitting a z-index
+		// unconditionally means the stylesheet's own `var( …, default )` fallback
+		// can never apply, so every SVG is forced behind its content even where
+		// nothing was set - a value the client never picked overriding a default
+		// they never saw. Mirrors the JS half exactly; the parity gate holds them
+		// together.
+		$raw_position = $attributes[ $keys['position'] ] ?? null;
+		if ( $raw_position ) {
+			$position = sgs_media_atom_svg_presentation_validate_position( $raw_position );
+			$decls[]  = '--sgs-media-svg-zindex:' . ( 'foreground' === $position ? 1 : -1 );
+		}
 
 		$animation = sgs_media_atom_svg_presentation_validate_animation( $attributes[ $keys['animation'] ] ?? null );
 		if ( 'none' !== $animation ) {
@@ -133,7 +142,7 @@ if ( ! function_exists( 'sgs_media_atom_svg_presentation_css' ) ) {
 				'float' => 'sgs-media-svg-float',
 				'wave'  => 'sgs-media-svg-wave',
 			);
-			$decls[]         = '--sgs-media-svg-animation-name:' . $animation_names[ $animation ] . ';';
+			$decls[]         = '--sgs-media-svg-animation-name:' . $animation_names[ $animation ];
 
 			$speed            = sgs_media_atom_svg_presentation_validate_speed( $attributes[ $keys['speed'] ] ?? null );
 			$speed_durations  = array(
@@ -141,24 +150,24 @@ if ( ! function_exists( 'sgs_media_atom_svg_presentation_css' ) ) {
 				'medium' => '3s',
 				'fast'   => '1.5s',
 			);
-			$decls[]          = '--sgs-media-svg-animation-duration:' . $speed_durations[ $speed ] . ';';
+			$decls[]          = '--sgs-media-svg-animation-duration:' . $speed_durations[ $speed ];
 		}
 
 		$opacity = $attributes[ $keys['opacity'] ] ?? null;
 		if ( is_numeric( $opacity ) ) {
 			$pct = max( 0.0, min( 100.0, (float) $opacity ) );
 			if ( 100.0 !== $pct ) {
-				$decls[] = '--sgs-media-svg-opacity:' . round( $pct ) / 100 . ';';
+				$decls[] = '--sgs-media-svg-opacity:' . round( $pct ) / 100;
 			}
 		}
 
 		if ( ! empty( $attributes[ $keys['textShadow'] ] ) ) {
-			$decls[] = '--sgs-media-svg-text-shadow:0 1px 3px rgba(0, 0, 0, 0.6);';
+			$decls[] = '--sgs-media-svg-text-shadow:0 1px 3px rgba(0, 0, 0, 0.6)';
 		}
 
 		$min_height = $attributes[ $keys['minHeight'] ] ?? null;
 		if ( is_string( $min_height ) && '' !== trim( $min_height ) ) {
-			$decls[] = '--sgs-media-svg-min-height:' . trim( $min_height ) . ';';
+			$decls[] = '--sgs-media-svg-min-height:' . trim( $min_height );
 		}
 
 		return $decls;

@@ -41,6 +41,30 @@ import { MEDIA_BASES } from '../../MediaElementControls.js';
  * control: object-fit and background-size are the same question asked of
  * different DOM.
  *
+ * `disclosure()` has TWO legal return shapes, and the second is not a
+ * concession. An atom governing ONE control returns
+ * `{ state, hiddenReason }`. An atom governing SEVERAL controls with different
+ * rules returns a MAP of base -> that same object: `video-behaviour` owns ten
+ * toggles where autoplay locks two of them, and flattening it to a single state
+ * would lose exactly the per-toggle disclosure the lock exists to express.
+ *
+ * ⛔ `state` is a CLOSED vocabulary: `shown` | `disabled` | `omitted`. OMITTED
+ * means the control structurally cannot apply here; DISABLED means it does not
+ * apply YET and carries a hiddenReason the client can act on. A third word that
+ * could mean either reintroduces the ambiguity hiddenReason exists to prevent -
+ * four branches produced five words for these three states before the purity
+ * gate closed the vocabulary.
+ *
+ * ⛔ `css()` returns declaration STRINGS with NO trailing semicolon. The joiner
+ * adds separators. Five of the first ten atoms appended their own and one did
+ * not, which is invalid CSS the moment a panel concatenates two atoms - and the
+ * JS/PHP parity check cannot see it, because it compares an atom against its
+ * own twin, never across atoms.
+ *
+ * ⛔ `css()` emits NOTHING for an empty attribute set. A value the client never
+ * set overrides the stylesheet's own `var( …, default )` fallback with a default
+ * they never saw.
+ *
  * `reads` names existing stored attributes whose SHAPE or VOCABULARY differs
  * from this atom's canonical one. It is how "zero renames" is honoured — the
  * atom reads what the surface already stores rather than proposing a new name.

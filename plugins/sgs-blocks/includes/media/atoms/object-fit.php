@@ -78,13 +78,13 @@ if ( ! function_exists( 'sgs_media_atom_object_fit_css' ) ) {
 		$fit_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'ObjectFit' );
 		$fit     = sgs_media_atom_object_fit_validate( $attributes[ $fit_key ] ?? null, 'element' );
 		if ( '' !== $fit ) {
-			$decls[] = '--sgs-media-object-fit:' . $fit . ';';
+			$decls[] = '--sgs-media-object-fit:' . $fit;
 		}
 
 		$size_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'Size' );
 		$size     = sgs_media_atom_object_fit_validate( $attributes[ $size_key ] ?? null, 'backdrop' );
 		if ( '' !== $size ) {
-			$decls[] = '--sgs-media-background-size:' . $size . ';';
+			$decls[] = '--sgs-media-background-size:' . $size;
 		}
 
 		return $decls;

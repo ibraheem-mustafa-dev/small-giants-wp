@@ -108,7 +108,10 @@ export function validate( value, base = 'VideoAutoplay' ) {
  * @param {string} [params.prefix]   Surface prefix.
  * @return {Object<string, {state: string, hiddenReason: (string|null)}>}
  */
-export function disclosure( { attributes, prefix = '' } ) {
+// Defaulted so a caller with no attributes cannot throw. The panel dispatch
+// calls disclosure() on EVERY atom to decide what to render, so one throw here
+// takes down the whole inspector, not just this row.
+export function disclosure( { attributes = {}, prefix = '' } = {} ) {
 	const autoplayKey = mediaAttrName( prefix, 'VideoAutoplay' );
 	const autoplayOn = !! attributes[ autoplayKey ];
 

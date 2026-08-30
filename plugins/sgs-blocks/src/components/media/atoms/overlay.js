@@ -195,16 +195,16 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	}
 
 	if ( 'background-image' === paint.property ) {
-		decls.push( `--sgs-media-overlay-gradient:${ paint.value };` );
+		decls.push( `--sgs-media-overlay-gradient:${ paint.value }` );
 	} else {
-		decls.push( `--sgs-media-overlay-colour:${ paint.value };` );
+		decls.push( `--sgs-media-overlay-colour:${ paint.value }` );
 	}
 
 	const hoverPaint = resolvePaint( attributes[ keys.colourHover ], attributes[ keys.gradientHover ] );
 	if ( 'background-image' === hoverPaint.property ) {
-		decls.push( `--sgs-media-overlay-gradient-hover:${ hoverPaint.value };` );
+		decls.push( `--sgs-media-overlay-gradient-hover:${ hoverPaint.value }` );
 	} else if ( 'background-color' === hoverPaint.property ) {
-		decls.push( `--sgs-media-overlay-colour-hover:${ hoverPaint.value };` );
+		decls.push( `--sgs-media-overlay-colour-hover:${ hoverPaint.value }` );
 	}
 
 	const opacityRaw = attributes[ keys.opacity ];
@@ -214,13 +214,13 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 			// Trim trailing zeros the same way sgs_overlay_decls() does, so
 			// 0.3 stays 0.3 rather than 0.300000000000004 (JS float noise).
 			const normalised = String( Math.round( ( pct / 100 ) * 10000 ) / 10000 );
-			decls.push( `--sgs-media-overlay-opacity:${ normalised };` );
+			decls.push( `--sgs-media-overlay-opacity:${ normalised }` );
 		}
 	}
 
 	const blendMode = attributes[ keys.blendMode ];
 	if ( blendMode && 'normal' !== blendMode && BLEND_MODES.includes( blendMode ) ) {
-		decls.push( `--sgs-media-overlay-blend:${ blendMode };` );
+		decls.push( `--sgs-media-overlay-blend:${ blendMode }` );
 	}
 
 	return decls;

@@ -143,31 +143,41 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	const decls = [];
 	const keys = attrKeys( prefix, blockSlug );
 
-	const position = validatePosition( attributes[ keys.position ] );
-	decls.push( `--sgs-media-svg-zindex:${ 'foreground' === position ? 1 : -1 };` );
+	// Only emit when the client actually chose a position. Pushing a z-index
+	// unconditionally means the stylesheet's own `var( …, default )` fallback can
+	// never apply, so every SVG is forced behind its content even on a block
+	// where nothing was set - a value the client never picked, overriding a
+	// default they never saw.
+	const rawPosition = attributes[ keys.position ];
+	if ( rawPosition ) {
+		const position = validatePosition( rawPosition );
+		decls.push(
+			`--sgs-media-svg-zindex:${ 'foreground' === position ? 1 : -1 }`
+		);
+	}
 
 	const animation = validateAnimation( attributes[ keys.animation ] );
 	if ( 'none' !== animation ) {
-		decls.push( `--sgs-media-svg-animation-name:${ ANIMATION_NAMES[ animation ] };` );
+		decls.push( `--sgs-media-svg-animation-name:${ ANIMATION_NAMES[ animation ] }` );
 		const speed = validateSpeed( attributes[ keys.speed ] );
-		decls.push( `--sgs-media-svg-animation-duration:${ SPEED_DURATIONS[ speed ] };` );
+		decls.push( `--sgs-media-svg-animation-duration:${ SPEED_DURATIONS[ speed ] }` );
 	}
 
 	const opacityRaw = attributes[ keys.opacity ];
 	if ( 'number' === typeof opacityRaw && Number.isFinite( opacityRaw ) ) {
 		const pct = Math.max( 0, Math.min( 100, opacityRaw ) );
 		if ( 100 !== pct ) {
-			decls.push( `--sgs-media-svg-opacity:${ Math.round( pct ) / 100 };` );
+			decls.push( `--sgs-media-svg-opacity:${ Math.round( pct ) / 100 }` );
 		}
 	}
 
 	if ( attributes[ keys.textShadow ] ) {
-		decls.push( '--sgs-media-svg-text-shadow:0 1px 3px rgba(0, 0, 0, 0.6);' );
+		decls.push( '--sgs-media-svg-text-shadow:0 1px 3px rgba(0, 0, 0, 0.6)' );
 	}
 
 	const minHeight = attributes[ keys.minHeight ];
 	if ( 'string' === typeof minHeight && minHeight.trim() ) {
-		decls.push( `--sgs-media-svg-min-height:${ minHeight.trim() };` );
+		decls.push( `--sgs-media-svg-min-height:${ minHeight.trim() }` );
 	}
 
 	return decls;

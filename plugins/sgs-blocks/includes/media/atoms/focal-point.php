@@ -142,34 +142,34 @@ if ( ! function_exists( 'sgs_media_atom_focal_point_css' ) ) {
 		$pos_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'ObjectPosition' );
 		$pos     = sgs_media_atom_focal_point_validate( $attributes[ $pos_key ] ?? null, 'ObjectPosition' );
 		if ( '' !== $pos ) {
-			$decls[] = '--sgs-media-object-position:' . $pos . ';';
+			$decls[] = '--sgs-media-object-position:' . $pos;
 		}
 		$pos_tablet_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'ObjectPositionTablet' );
 		$pos_tablet     = sgs_media_atom_focal_point_validate( $attributes[ $pos_tablet_key ] ?? null, 'ObjectPosition' );
 		if ( '' !== $pos_tablet ) {
-			$decls[] = '--sgs-media-object-position-tablet:' . $pos_tablet . ';';
+			$decls[] = '--sgs-media-object-position-tablet:' . $pos_tablet;
 		}
 		$pos_mobile_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'ObjectPositionMobile' );
 		$pos_mobile     = sgs_media_atom_focal_point_validate( $attributes[ $pos_mobile_key ] ?? null, 'ObjectPosition' );
 		if ( '' !== $pos_mobile ) {
-			$decls[] = '--sgs-media-object-position-mobile:' . $pos_mobile . ';';
+			$decls[] = '--sgs-media-object-position-mobile:' . $pos_mobile;
 		}
 
 		// Backdrop scope. None of these three bases are in MEDIA_TIERED_BASES.
 		$bg_pos_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'Position' );
 		$bg_pos     = sgs_media_atom_focal_point_validate( $attributes[ $bg_pos_key ] ?? null, 'Position' );
 		if ( '' !== $bg_pos ) {
-			$decls[] = '--sgs-media-background-position:' . $bg_pos . ';';
+			$decls[] = '--sgs-media-background-position:' . $bg_pos;
 		}
 		$bg_repeat_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'Repeat' );
 		$bg_repeat     = sgs_media_atom_focal_point_validate( $attributes[ $bg_repeat_key ] ?? null, 'Repeat' );
 		if ( '' !== $bg_repeat ) {
-			$decls[] = '--sgs-media-background-repeat:' . $bg_repeat . ';';
+			$decls[] = '--sgs-media-background-repeat:' . $bg_repeat;
 		}
 		$bg_attachment_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'Attachment' );
 		$bg_attachment     = sgs_media_atom_focal_point_validate( $attributes[ $bg_attachment_key ] ?? null, 'Attachment' );
 		if ( '' !== $bg_attachment ) {
-			$decls[] = '--sgs-media-background-attachment:' . $bg_attachment . ';';
+			$decls[] = '--sgs-media-background-attachment:' . $bg_attachment;
 		}
 
 		return $decls;

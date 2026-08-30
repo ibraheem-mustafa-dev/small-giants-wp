@@ -171,34 +171,34 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	const posKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectPosition' );
 	const pos = validate( attributes[ posKey ], 'ObjectPosition' );
 	if ( pos ) {
-		decls.push( `--sgs-media-object-position:${ pos };` );
+		decls.push( `--sgs-media-object-position:${ pos }` );
 	}
 	const posTabletKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectPositionTablet' );
 	const posTablet = validate( attributes[ posTabletKey ], 'ObjectPosition' );
 	if ( posTablet ) {
-		decls.push( `--sgs-media-object-position-tablet:${ posTablet };` );
+		decls.push( `--sgs-media-object-position-tablet:${ posTablet }` );
 	}
 	const posMobileKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectPositionMobile' );
 	const posMobile = validate( attributes[ posMobileKey ], 'ObjectPosition' );
 	if ( posMobile ) {
-		decls.push( `--sgs-media-object-position-mobile:${ posMobile };` );
+		decls.push( `--sgs-media-object-position-mobile:${ posMobile }` );
 	}
 
 	// Backdrop scope. None of these three bases are in MEDIA_TIERED_BASES.
 	const bgPosKey = mediaStoredAttrName( blockSlug, prefix, 'Position' );
 	const bgPos = validate( attributes[ bgPosKey ], 'Position' );
 	if ( bgPos ) {
-		decls.push( `--sgs-media-background-position:${ bgPos };` );
+		decls.push( `--sgs-media-background-position:${ bgPos }` );
 	}
 	const bgRepeatKey = mediaStoredAttrName( blockSlug, prefix, 'Repeat' );
 	const bgRepeat = validate( attributes[ bgRepeatKey ], 'Repeat' );
 	if ( bgRepeat ) {
-		decls.push( `--sgs-media-background-repeat:${ bgRepeat };` );
+		decls.push( `--sgs-media-background-repeat:${ bgRepeat }` );
 	}
 	const bgAttachmentKey = mediaStoredAttrName( blockSlug, prefix, 'Attachment' );
 	const bgAttachment = validate( attributes[ bgAttachmentKey ], 'Attachment' );
 	if ( bgAttachment ) {
-		decls.push( `--sgs-media-background-attachment:${ bgAttachment };` );
+		decls.push( `--sgs-media-background-attachment:${ bgAttachment }` );
 	}
 
 	return decls;

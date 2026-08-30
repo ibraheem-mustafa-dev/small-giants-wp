@@ -212,6 +212,64 @@ for ( const id of MEDIA_ATOM_IDS ) {
 		);
 	}
 
+	// SEPARATOR CONVENTION. The atom returns declaration STRINGS; the joiner adds
+	// the separators. An atom that appends its own ';' produces `--a:1;;--b:2`
+	// once two atoms' output is concatenated - and the JS/PHP parity check above
+	// cannot see it, because it compares one atom against its own twin, never
+	// across atoms. Five of ten atoms shipped with a trailing ';' and one
+	// without; the mixture is invalid CSS the moment a panel composes them.
+	const semi = a.filter( ( d ) => d.trim().endsWith( ';' ) );
+	ck(
+		`${ id }: no declaration carries its own trailing semicolon`,
+		! semi.length,
+		`offending: [${ semi.join( ', ' ) }]`
+	);
+
+	// disclosure() must survive being called with nothing. The panel dispatch
+	// calls it on EVERY atom to decide what to render, so one throw takes down
+	// the whole inspector rather than one row.
+	let disclosureOk = true;
+	let disclosureErr = '';
+	let state = null;
+	try {
+		state = mod.disclosure( {} );
+	} catch ( e ) {
+		disclosureOk = false;
+		disclosureErr = e.message;
+	}
+	ck( `${ id }: disclosure({}) does not throw`, disclosureOk, disclosureErr );
+	// TWO legal shapes, and the second is not a concession. An atom governing
+	// ONE control returns `{ state, hiddenReason }`. An atom governing SEVERAL
+	// with different rules returns a MAP of base -> that same object -
+	// `video-behaviour` owns ten toggles where autoplay locks two of them, and
+	// flattening it to a single state would lose exactly the per-toggle
+	// disclosure the lock exists to express.
+	const STATES = [ 'shown', 'disabled', 'omitted' ];
+	const entries =
+		state && typeof state.state === 'string'
+			? [ state ]
+			: Object.values( state || {} );
+	ck(
+		`${ id }: disclosure({}) returns contract state(s)`,
+		entries.length > 0 &&
+			entries.every( ( e ) => e && STATES.includes( e.state ) ),
+		JSON.stringify( state ).slice( 0, 160 )
+	);
+
+	// An atom must emit NOTHING for an empty attribute set. Emitting a value the
+	// client never set overrides the stylesheet's own var() fallback with a
+	// default they never saw.
+	const emptyOut = mod.css( {
+		attributes: {},
+		prefix: FIXTURE.prefix,
+		blockSlug: FIXTURE.blockSlug,
+	} );
+	ck(
+		`${ id }: emits nothing for an EMPTY attribute set`,
+		Array.isArray( emptyOut ) && emptyOut.length === 0,
+		`emitted: [${ ( emptyOut || [] ).join( ', ' ) }]`
+	);
+
 	// Every declaration must be a custom property. A raw property here would
 	// mean the atom is writing a RULE, which belongs in media-element.css alone.
 	totalDecls += a.length;
