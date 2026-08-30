@@ -367,6 +367,7 @@ Covers both legacy `**D<N>` and `## D<N>` heading formats in this file. Check he
 - D613 — editor-render-parity Phase 2 CLOSED: all 70 REAL-GAP findings fixed and shipped 
 - D614 — /qc-council on the closed 70-item backlog: 1 real bug found and fixed, Signal 4 
 - D617 — D609's last open question ruled: colour-state affordance is core's overlapping s
+- D728 — Two vacuous gates closed: an undefined-variable gate for render.php, and I4/I5's
 
 
 ---
@@ -6395,4 +6396,175 @@ Every number this session's report cites is now either directly ground-truth-ver
 explicitly named as still-open (rule 31's Track A/B blindness; defect-level 409-vs-120
 matching; gradient mechanism-awareness; colour's own undeclared `cssProperties`) — none
 silently assumed solved. Full detail: `.claude/reports/2026-08-20-colour-golden-scan-set.md`.
+
+## 2026-08-29 — Sweep: uncited D-numbers in the D711-D728 span
+
+Selection rule: zero citations (exact or range) across CLAUDE.md, LEDGER, STOP-CATALOGUE, parking, goals, mistakes, specs/ + plans/ (excl. archive/), per-project/client CLAUDE.md files, and scripts/*.py. 6 entries moved verbatim. Cross-referenced-by-a-kept-entry list (informational, not excluded from sweep): D707<-['D721'], D724<-['D718'], D737<-['D718'], D739<-['D718', 'D728'], D742<-['D718']
+
+---
+
+## D711 [ROUTINE] — SGS's container cannot express a full-bleed child; core's model can (2026-08-21)
+
+Established by three independent research legs against fetched theme markup and core's own
+PHPUnit stylesheet assertions — not documentation prose.
+
+WordPress caps a constrained container's CHILDREN:
+`.is-layout-constrained > :where(:not(.alignfull)) { max-width: … }` — `.alignfull` excluded
+BY NAME, at zero specificity. Canonical themes never put `max-width` on `<main>`; TT4 ships
+`{"tagName":"main","align":"full","layout":{"type":"constrained"}}`, full-bleed AND constrained
+at once. Archive intro copy sits directly inside `<main>` with no wrapper.
+
+`sgs/container` instead injects `.sgs-container__inner` carrying `max-width` on ITSELF, so a
+child is inside a physical box with no opt-out. "Full-bleed child of a constrained parent" is
+therefore INEXPRESSIBLE in our model, which is why the shop template had to unconstrain
+`<main>` — a workaround, not the structural answer. Same work as the colour-golden track's §4b.
+
+⚠ `sgs/container` emits NO `.is-layout-constrained` class, so `useRootPaddingAwareAlignments`
+cannot apply to it for free — that option is weaker than it appears, not stronger.
+
+RULED OUT ON EVIDENCE: moving a page-header band outside `<main>` (accessibility-wrong — W3C
+excludes only REPEATED chrome; a page-specific title is page content), and the
+`calc(50% - 50vw)` full-bleed trick (horizontal-scrollbar bug, still current).
+
+Research: `~/.claude/memory/research/2026-08-21-wp-block-theme-main-width-and-full-bleed-bands.md`
+
+## D712 [INCIDENT] — D338 is only half true, and 5 of 21 renamed authorings were alive (2026-08-21)
+
+Per D704, WordPress drops undeclared attributes from the EDITOR schema but PHP does NOT drop
+them before `render.php` runs. Several blocks exploit exactly that, reading
+`$attributes['backgroundColor']` to re-add `has-*` preset classes.
+
+Consequence for this session's rename work: of 21 authorings renamed British, **16 were
+genuinely dead** (`hero`, `trust-bar` — zero such reads) but **5 were already painting**
+(`site-header-row` ×3, `brand-strip`, `testimonial-slider`). The renames still stand, because
+they move authorings onto the canonical `sgs_colour_value()` path instead of depending on
+`has-*` classes that skip-serialisation exists to remove — but they were NOT all bug fixes,
+and two commit messages claim otherwise.
+
+RULE: "the block does not declare this attribute" does NOT imply "this attribute does
+nothing". Check whether `render.php` reads it anyway.
+
+## D718 [ROUTINE] — sgs/hero's overlay converges with the shared wrapper; the shared helper now owns the POLICY, not just the paint (2026-08-21)
+
+**Colour-golden track. Bean-ruled, and he found it by asking the right question:** *"Why is the
+hero different anyway? They all be via the background panel."* One shared control in one shared
+panel was producing two different behaviours. R-31-9 / D152 already covers this — a composite
+diverging from the shared wrapper is a bug to remove, not a contract to preserve.
+
+**What was genuinely different, and why only half of it was justified.** `sgs/hero` renders ALL
+its own media layers and passes `no_overlay => true`, so the wrapper does not paint a second
+one. That part is CORRECT and stays: hero's background image is a real `<img>` carrying
+`fetchpriority="high"` (`render.php:1053`), which the browser's preload scanner finds
+immediately, whereas the wrapper emits a CSS `background-image:url(...)`
+(`class-sgs-container-wrapper.php:1009`) that is only discovered once the stylesheet parses and
+the selector matches. On a hero — almost always the LCP element — that is a real Core Web Vitals
+difference. **If anything the other section blocks should adopt hero's approach, not the
+reverse** (parked, not done here).
+
+**The two behavioural differences had no such justification, and both are now removed:**
+1. Hero painted `'text'` when the client had chosen nothing. git shows that fallback PREDATES
+   the 2026-08-11 background-panel redesign; that session only added a guard stopping it from
+   *triggering* the span. Nobody ever re-reasoned the colour. It was legacy, not a decision.
+2. Hero created the overlay from a background image ALONE, where the wrapper requires a colour.
+
+Net effect: on all eight blocks, **no colour set means no overlay**. Identical, predictable.
+
+**The root cause, and the actual fix.** D717 added `sgs_overlay_decls()` and called it "one
+shared owner". It unified the *paint* — what declarations an overlay has — but left the
+*policy* — whether an overlay exists at all, and what colour when unset — hand-written
+separately at both call sites. **That is exactly how hero's divergence survived D717
+untouched.** Bean named this directly: *"I thought this was not going to be an issue since we
+agreed on making a new shared helper."* Both sites now derive existence from the helper's own
+return value (`'' === $decls` means no layer), so the two questions are one decision in one
+place and the call sites can no longer drift apart on policy.
+
+**Lesson worth generalising:** extracting a shared helper for the VALUE while leaving the
+CONDITION duplicated does not converge two implementations — it only makes them look converged.
+The divergence lives in the branch, not the expression.
+
+**Not chosen, and why.** Bean first proposed `accent` at 30% as hero's default. Measured against
+light hero text (`surface` / `text-inverse`) at 30% over a mid-tone photo: `text` 5.37:1,
+`accent` **2.78:1**, `accent-dark` 4.29:1 — and raising accent's opacity makes it WORSE (2.78 →
+1.72 at 80%), because a light-yellow scrim moves a photo *towards* light text rather than away.
+Convergence dissolved the question rather than answering it: there is no default colour now.
+
+## D720 [ROUTINE] — four dead template-part slots deleted; a registered part with no consumer is a client-facing trap (2026-08-21)
+
+**Bean spotted the premise:** `header-minimal` has no file because the header/footer system moved
+to the `sgs_header`/`sgs_footer` CPT model (Spec 37 §74). So it was never a missing file to
+recreate — it was a stale registration to remove. He then asked the same of `footer-minimal`,
+which turned a one-line fix into a sweep.
+
+**Nine template-part slots existed; only FIVE were live** (file + registered + actually called).
+The four dead ones were dead in three different ways: `header-minimal` (registered, file already
+gone), `footer-minimal` and `sgs-pdp-gallery` (file + registered, never called), `sidebar` (file
+only, unregistered, never called).
+
+**Why this is not tidying.** A registered part WITH a file appears in the Site Editor as a real,
+editable template part. A client could open "Footer (Minimal)" or "PDP: Product Gallery", edit it,
+save, and change nothing anywhere, with no warning — against this project's standard that clients
+are tech-illiterate and use the block editor exclusively. **Deleting a part's FILE while leaving
+its registration is what creates the trap**; `0a6a0fbc` deleted four header parts and removed
+three of four registrations, and `header-minimal` was the one missed.
+
+`sidebar` was a different disposition — a COMPLETE blog sidebar nobody ever wired in, i.e.
+unfinished rather than superseded — so it was raised separately rather than swept in; Bean's call.
+The `sgs/framework-header-minimal` / `sgs/footer-minimal` PATTERNS are the live mechanism and are
+untouched. **A theory disproved before shipping:** that `sidebar.html` was non-conformant for
+using `core/archives`/`core/categories`. Neither is banned — no SGS equivalent exists and
+`check-no-core-blocks.py` passes clean. The deletion stands on "no consumer", not a rule it never
+broke. Result: 5 parts, 0 orphans.
+
+## D721 [ROUTINE] — the deploy purges BOTH cache layers, and the OPcache reset the docs promised never existed (2026-08-21)
+
+**Bean asked for the LiteSpeed purge to be wired into `build-deploy.py` so it could not be
+forgotten. Reading the script to place it turned up the bigger half: it did not reset OPcache
+either, and BOTH CLAUDE.md files said it did** (`CLAUDE.md:176` "resets OPcache via HTTP";
+`plugins/sgs-blocks/CLAUDE.md` "…`.bak` rollback rotation, OPcache reset"). The only two
+`opcache` mentions in the script were inside `ROLLBACK_HINT` — a string of MANUAL instructions
+printed on failure, never executed. A defence asserted in docs and enforced nowhere is this
+repo's recorded failure mode, and D709 (theme assets served STALE to every warm cache) landed
+the day before.
+
+**TWO CACHES, NOT ONE.** `OPcache` holds COMPILED PHP — stale means the server runs yesterday's
+`render.php`. `LiteSpeed` holds RENDERED HTML — stale means the server never runs today's PHP at
+all. Clearing one does nothing for the other.
+
+**OPcache MUST be reset over HTTP.** Each PHP SAPI keeps its own OPcache, so `wp eval` resets the
+CLI pool's copy and leaves the WEB pool — the one serving visitors — untouched, while reporting
+success. `step_purge_caches()` writes a randomly-named probe into the webroot, fetches it over
+HTTPS so the web pool compiles it, removes it, and CONFIRMS the removal rather than assuming the
+`rm` landed. Random name because it is world-reachable for ~1s and a guessable `opcache_reset()`
+endpoint is a free cache-stampede lever. Placed BEFORE `step_verify()`, which probes with a
+cache-busting query string and would otherwise return green off a stale cache.
+
+**Fails soft, loudly** — the files are live by then, so aborting would read as "nothing shipped";
+but no leg that did not run is reported as OK. Opt out via `--skip-purge`. Verified with two
+NEGATIVE controls (unreachable host, bad webroot — both fail loudly) and a positive control on
+the real target, plus a check that no probe file was left behind. Both CLAUDE.md claims corrected
+in the same commit, each carrying the note that it was false until today.
+
+## D728 — Two vacuous gates closed: an undefined-variable gate for render.php, and I4/I5's stale self-test anchors [INCIDENT]
+
+**Both items are the same defect in different clothes: a check that cannot fail, and therefore proves nothing.**
+
+**1 — Nothing in the ~55-gate prebuild chain could see an undefined variable in a `render.php`.** PHP evaluates it to `null` with an unsurfaced notice. That is how `hero/render.php`'s `$overlay_gradient` — one read, zero assignments, its whole history — silently replaced the client's configured gradient with the flat overlay colour on every render, through a fully client-reachable editor control. Evidence: `reports/visual-diff/hero-overlay-gradient-2026-08-21.md`.
+
+**Premise corrected before building: PHPStan level 0 does NOT catch this.** The owed-work prompt asserted it did ("level 0 catches undefined variables and is the industry default"). Measured instead of inherited: level 0 across all 83 blocks emits 1,294 errors and ZERO variable errors — `variable.undefined` is a **level 1** rule. A level-0 gate would have shipped completely vacuous, which is precisely the class of failure this session existed to end.
+
+**Second finding, same shape:** `phpstan.neon` already existed at level 5 and **excludes `src`** — the only directory where render templates live. It could never have seen this defect class. New separate config `phpstan-render.neon` (level 1, `src/blocks`, `includes` + bootstrap as `scanDirectories`/`scanFiles` so helpers resolve).
+
+**WP-injected variables handled narrowly, not by blanket suppression.** `$attributes`/`$content`/`$block` are 69 of 87 findings; three EXACT-message ignores pinned to `src/blocks/*/render.php`. A blanket `variable.undefined` ignore would have re-vacuumed the gate. Partial templates are deliberately NOT covered — their inherited variables go through the baseline so each stays a visible owed decision.
+
+**Baseline is 18 entries and every one was read before it was frozen** — the triage lives in the baseline's own header (2 correlated-guard false positives, 5 inherited-scope, 6 missing WooCommerce symbols, 2 missing own constant, 3 dead defensive guards). `count:` is load-bearing: a SECOND `$bwt` defect in `heading/render.php` raises the count and fails the gate.
+
+**Fails CLOSED when PHPStan is absent.** `vendor/` is gitignored, so a fresh clone or worktree has none. `check-render-undefined-vars.py` exits non-zero with the install command rather than skipping — a gate that passes where it cannot run is indistinguishable from one that cannot fail (the standing `check-no-inline.py` warn-and-pass trap).
+
+**2 — `check-fx-list-drift.py`'s I4/I5 self-test cases had gone stale on WHITESPACE.** `includes/fx-attributes.php` had its `=>` columns re-padded (`'fxMask'` 7→15 spaces, `'scrub'` 12→13), so the exact-string anchors matched nothing, nothing got broken, and "no violation" proved nothing. Classification (a) — the self-test could not construct a breaking case; the invariants themselves were sound and untouched. Fixed with `\s*`-tolerant regex anchors applied via `re.subn(count=1)` and REJECTED unless exactly one substitution lands, so a future re-alignment cannot silently re-vacuum them. I1/I2/I3/I6/I7 left on their working literal anchors.
+
+**Each gate was observed FAILING before being trusted.** Hero defect reintroduced at its real call site → caught at `render.php:1035`; I4/I5 → real violation messages. Then the inverse: fixture anchor corrupted → exit 1, not a silent pass; I4 anchor corrupted → `FAIL — unproven: I4`.
+
+⚠ **The first fx-drift negative control did not land** — the corruption assertion failed and the run passed anyway, which is the exact false-negative-control shape both items are about. Redone with an explicit "prove the corruption landed" assertion before trusting the result. **A negative control needs its own landing proof.**
+
+Wired into `prebuild` in the SAME commit that built it (the D338/D493 "built but unwired for three weeks" failure), and verified EXECUTING in the build log, not merely greppable in `package.json`.
 

@@ -1,0 +1,154 @@
+<!-- wp:sgs/hero {"sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 1280px){\u0026selector .sgs-hero__content{padding:72px 64px;}}\n/* SGS-CONVERTER-RESIDUAL:end */","variant":"split","splitImage":{"id":1440,"url":"https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/07/IMG_20260419_173547_107-25.webp","alt":""},"splitImageMobile":{"id":2148,"url":"https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/08/aesthetic-pic-2.jpeg","alt":""},"splitImageMobileObjectPosition":"47% 29%","minHeight":{"desktop":"520px"},"backgroundColour":"surface-pink","imageObjectPosition":"51% 50%","imageBorderStyle":"dotted","imageBorderWidth":{"top":"","right":"","bottom":"","left":""},"contentPadding":{"bottom":"56px","left":"48px","right":"48px","top":"56px"},"splitContentOrder":{"mobile":"content-first"},"gridTemplateColumns":{"desktop":"1fr 1fr"},"layout":"grid","align":"full","className":"sgs-hero"} -->
+<!-- wp:sgs/label {"text":"Handmade in Birmingham","textColour":"text","fontSize":{"desktop":"12px"},"letterSpacing":1.5,"letterSpacingUnit":"px","style":{"spacing":{"margin":{"bottom":"6px"}}}} /-->
+
+<!-- wp:sgs/heading {"sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 1280px){\u0026selector{font-size:58px;}}\n/* SGS-CONVERTER-RESIDUAL:end */","content":"Made for the mum\u003cbr\u003ewho needs it most","level":"h1","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":{"desktop":"52px"},"fontWeight":"700","lineHeight":1.15,"lineHeightUnit":"unitless","letterSpacing":-1,"letterSpacingUnit":"px","textColour":"text","marginMobile":{"bottom":"14px"},"textWrap":"wrap","style":{"spacing":{"margin":{"bottom":"16px"}}}} /-->
+
+<!-- wp:sgs/text {"text":"Handmade lactation cookies with proper galactagogue ingredients. No medical claims — just nourishment your body will thank you for.","textColour":"text","fontSize":{"desktop":"18px"},"lineHeight":{"desktop":"1.65"},"marginMobile":{"bottom":"24px"},"maxWidth":420,"style":{"spacing":{"margin":{"bottom":"28px"}}}} /-->
+
+<!-- wp:sgs/multi-button {"flexDirection":{"desktop":"row"},"gap":{"desktop":"12px"},"layout":"flex"} -->
+<!-- wp:sgs/button {"label":"Shop Zookies","url":"/shop/","minHeight":{"desktop":"48px"},"fontFamily":"'Inter', sans-serif","textDecoration":"none","fontSize":{"desktop":"15px"},"colourBorder":"primary","colourBorderHover":"text","borderWidth":{"bottom":"2px","left":"2px","right":"2px","top":"2px"},"style":{"border":{"radius":"10px"},"spacing":{"padding":{"bottom":"14px","left":"24px","right":"24px","top":"14px"}}}} /-->
+
+<!-- wp:sgs/button {"label":"Try 3 for £5","url":"/product/trial-pack/","inheritStyle":"secondary","minHeight":{"desktop":"48px"},"fontFamily":"'Inter', sans-serif","textDecoration":"none","fontSize":{"desktop":"15px"},"colourBorder":"primary","colourBorderHover":"text","borderWidth":{"bottom":"2px","left":"2px","right":"2px","top":"2px"},"style":{"border":{"radius":"10px"},"spacing":{"padding":{"bottom":"14px","left":"24px","right":"24px","top":"14px"}}}} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/hero -->
+
+<!-- wp:sgs/trust-bar {"sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 600px) and (max-width: 767px){\u0026selector .sgs-trust-bar__inner{grid-template-columns:repeat(4, 1fr);}}\n/* SGS-CONVERTER-RESIDUAL:end */","items":[{"icon":"home","label":"Handmade in Birmingham"},{"icon":"check","label":"Registered Food Business"},{"icon":"truck","label":"Free UK Delivery Over £35"},{"fillStyle":"filled","iconSvg":"\u003csvg fill=\u0022currentColor\u0022 stroke=\u0022none\u0022 viewbox=\u00220 0 24 24\u0022\u003e\u003cpolygon points=\u002212 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\u0022\u003e\u003c/polygon\u003e\u003c/svg\u003e","label":"Loved by Breastfeeding Mums"}],"labelFontSize":{"desktop":"14px"},"labelFontWeight":"500","backgroundColour":"surface-pink","columns":{"desktop":4},"gap":{"desktop":"16px 12px"},"gridTemplateColumns":{"desktop":"repeat(4, 1fr)"},"contentWidth":{"desktop":"1100px"},"align":"full","className":"sgs-trust-bar","style":{"spacing":{"padding":{"bottom":"22px","left":"20px","right":"20px","top":"22px"}}}} /-->
+
+<!-- wp:sgs/container {"layout":"stack","contentWidth":{"desktop":"1040px"},"backgroundColour":"surface","className":"sgs-featured-product"} -->
+<!-- wp:sgs/label {"text":"Our signature","textColour":"text","fontSize":{"desktop":"12px"},"letterSpacing":1.5,"letterSpacingUnit":"px","style":{"spacing":{"margin":{"bottom":"6px"}}}} /-->
+
+<!-- wp:sgs/heading {"content":"Zookies — Our Signature Giant Cookie","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":{"desktop":"36px"},"fontWeight":"600","lineHeight":1.2,"lineHeightUnit":"unitless","textColour":"text","textWrap":"wrap","style":{"spacing":{"margin":{"bottom":"6px"}}}} /-->
+
+<!-- wp:sgs/text {"text":"One Zookie is a proper sized treat. Every one baked to order, same week.","textColour":"text-muted","fontSize":{"desktop":"16px"},"style":{"spacing":{"margin":{"bottom":"32px"}}}} /-->
+
+<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"5fr 3fr"},"gap":{"desktop":"16px"},"flexDirection":"column"} -->
+<!-- wp:sgs/product-card {"backgroundColour":"#ffffff","cardPadding":{"bottom":"20px","left":"20px","right":"20px","top":"20px"},"ctaBorderWidth":{"bottom":"1px","left":"1px","right":"1px","top":"1px"},"ctaColourBorder":"border","ctaText":"Add to Cart \u2014 \u00a310","ctaUrl":"/product/zookies/","descColour":"text-muted","descFontSize":{"desktop":"14px"},"descLineHeight":1.55,"description":"Baked fresh every week and posted the same day. Oats, brewer's yeast, flaxseed, fenugreek \u2014 no shortcuts, no preservatives.","image":"https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/08/cookies-stacked-1.jpeg","imageAlt":"Stack of Mama's Munches Zookies lactation cookies","packSizes":[{"label":"8-pack"},{"label":"12-pack"},{"label":"20-pack"},{"label":"40-pack"}],"pickerPillBgColour":"surface","pickerPillBorderColour":"border","pickerPillSelectedBgColour":"rgba(230,138,149,0.1)","pickerPillSelectedBorderColour":"primary","pickerPillSelectedTextColour":"text","pickerPillTextColour":"text-muted","priceColour":"text","priceFontSize":{"desktop":"28px"},"priceFontWeight":"700","priceLarge":"\u00a310.00","priceNote":"8-pack \u00b7 Free delivery over \u00a335","priceNoteColour":"text-muted","priceNoteFontSize":{"desktop":"13px"},"productName":"Mama's Munches Zookies","style":{"border":{"radius":"16px"}},"titleColour":"text","titleFontSize":{"desktop":"20px"},"titleFontWeight":"500","titleLineHeight":1.2,"variantStyle":"featured"} /-->
+
+<!-- wp:sgs/product-card {"cardPadding":{"bottom":"20px","left":"20px","right":"20px","top":"20px"},"ctaBorderStyle":"dashed","ctaBorderWidth":{"bottom":"2px","left":"2px","right":"2px","top":"2px"},"ctaColourBorder":"accent","ctaStyle":"secondary","ctaText":"Try 3 for \u00a35","ctaUrl":"/product/trial-pack/","descColour":"text-muted","descFontSize":{"desktop":"14px"},"descLineHeight":1.55,"description":"Not sure yet? Try 3 Classic Zookies and see what all the mums are talking about. Postage included.","image":"https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/08/cookies-on-bun-case-1.jpeg","imageAlt":"Mama's Munches cookies in a bakery display","priceColour":"text","priceFontSize":{"desktop":"28px"},"priceFontWeight":"700","priceLarge":"\u00a35.00","priceNote":"3 Classic Zookies \u00b7 postage included","priceNoteColour":"text-muted","priceNoteFontSize":{"desktop":"13px"},"productName":"The Trial Pack","style":{"border":{"radius":"16px"}},"tagBackgroundColour":"accent","tagTextColour":"text","titleColour":"text","titleFontSize":{"desktop":"20px"},"titleFontWeight":"500","titleLineHeight":1.2,"trialTag":"New? Start here","variantStyle":"trial"} /-->
+<!-- /wp:sgs/container -->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr"},"gap":{"desktop":"60px"},"maxWidth":{"desktop":"1000px"},"alignItems":"center","backgroundColour":"surface-alt","className":"sgs-brand"} -->
+<!-- wp:sgs/container {"gap":{"desktop":"16px"},"flexDirection":"column"} -->
+<!-- wp:sgs/heading {"content":"A story that started with a friend","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":{"desktop":"36px"},"fontWeight":"600","lineHeight":1.2,"lineHeightUnit":"unitless","textColour":"text","textWrap":"wrap","style":{"spacing":{"margin":{"bottom":"20px"}}}} /-->
+
+<!-- wp:sgs/quote {"attribution":"— Zainab, Founder of Mama's Munches"} -->
+<!-- wp:sgs/text {"text":"She was struggling with breastfeeding her newborn. We started making lactation cookies together — using oats, brewer's yeast, flaxseed, fenugreek. The same ingredients that have appeared in traditional postpartum foods from Pakistan to West Africa for generations."} /-->
+
+<!-- wp:sgs/text {"text":"They helped her. I was so grateful."} /-->
+
+<!-- wp:sgs/text {"text":"Now I make them for breastfeeding mums across the UK. Not because I can promise they'll work for every mum — I can't, and I won't. But because they're real food, with real ingredients, made with real care. And many mums tell me they helped."} /-->
+<!-- /wp:sgs/quote -->
+
+<!-- wp:sgs/button {"label":"Read the full story →","url":"/about/","inheritStyle":"outline","minHeight":{"desktop":"44px"},"fontFamily":"'Inter', sans-serif","textDecoration":"none","fontSize":{"desktop":"14px"},"colourBorder":"border","colourBorderHover":"primary","borderWidth":{"bottom":"2px","left":"2px","right":"2px","top":"2px"},"style":{"border":{"radius":"10px"},"spacing":{"margin":{"top":"8px"},"padding":{"bottom":"10px","left":"18px","right":"18px","top":"10px"}}}} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/media {"imageId":1442,"imageUrl":"https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/07/Halimahs-17.jpeg","imageWidth":1920,"imageHeight":1080,"maxWidth":{"desktop":"100%"},"maxHeight":{"desktop":"440px"},"height":{"desktop":"440px"},"order":{"desktop":"0"},"style":{"border":{"radius":"16px"}}} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"layout":"stack","contentWidth":{"desktop":"960px"},"backgroundColour":"surface","className":"sgs-ingredients-section"} -->
+<!-- wp:sgs/label {"text":"What's in them?","textColour":"text","fontSize":{"desktop":"12px"},"letterSpacing":1.5,"letterSpacingUnit":"px","style":{"spacing":{"margin":{"bottom":"6px"}}}} /-->
+
+<!-- wp:sgs/heading {"sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 600px) and (max-width: 767px){\u0026selector{font-size:36px;}}\n/* SGS-CONVERTER-RESIDUAL:end */","content":"Proper ingredients, properly used","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":{"desktop":"36px"},"fontWeight":"600","lineHeight":1.2,"lineHeightUnit":"unitless","textColour":"text","textWrap":"wrap","style":{"spacing":{"margin":{"bottom":"8px"}}}} /-->
+
+<!-- wp:sgs/text {"text":"Every Zookie contains the same four galactagogues that appear in postpartum food traditions across cultures.","textColour":"text-muted","fontSize":{"desktop":"16px"},"maxWidth":540,"style":{"spacing":{"margin":{"bottom":"36px","left":"auto","right":"auto","top":"0"}}}} /-->
+
+<!-- wp:sgs/feature-grid {"sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 600px) and (max-width: 767px){\u0026selector{grid-template-columns:repeat(4, 1fr);}}\n/* SGS-CONVERTER-RESIDUAL:end */","gap":{"desktop":"14px"},"layout":"grid","gridTemplateColumns":{"desktop":"repeat(4, 1fr)"},"columns":{"desktop":4},"style":{"spacing":{"margin":{"bottom":"24px"}}}} -->
+<!-- wp:sgs/info-box {"cardStyle":"bordered","effectHover":"none","backgroundColour":"#ffffff","style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder)","radius":"12px","style":"solid","width":"1px"},"spacing":{"padding":{"bottom":"22px","left":"16px","right":"16px","top":"22px"}}}} -->
+<!-- wp:sgs/icon {"iconSource":"emoji","emojiChar":"🌾","style":{"spacing":{"margin":{"bottom":"10px"}}}} /-->
+
+<!-- wp:sgs/heading {"content":"Oats","level":"h3","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":{"desktop":"19px"},"fontWeight":"600","lineHeight":1.2,"lineHeightUnit":"unitless","textColour":"text","textWrap":"wrap","style":{"spacing":{"margin":{"bottom":"6px"}}}} /-->
+
+<!-- wp:sgs/text {"text":"Rich in iron. Used in postpartum foods across cultures for centuries.","textColour":"text-muted","fontSize":{"desktop":"13px"},"lineHeight":{"desktop":"1.55"}} /-->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/info-box {"cardStyle":"bordered","effectHover":"none","backgroundColour":"#ffffff","style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder)","radius":"12px","style":"solid","width":"1px"},"spacing":{"padding":{"bottom":"22px","left":"16px","right":"16px","top":"22px"}}}} -->
+<!-- wp:sgs/icon {"iconSource":"emoji","emojiChar":"🍺","iconAlign":"center","style":{"spacing":{"margin":{"bottom":"10px"}}}} /-->
+
+<!-- wp:sgs/heading {"content":"Brewer's Yeast","level":"h3","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":{"desktop":"19px"},"fontWeight":"600","lineHeight":1.2,"lineHeightUnit":"unitless","textColour":"text","textWrap":"wrap","style":{"spacing":{"margin":{"bottom":"6px"}}}} /-->
+
+<!-- wp:sgs/text {"text":"B-vitamins and chromium. A traditional galactagogue used worldwide.","textColour":"text-muted","fontSize":{"desktop":"13px"},"lineHeight":{"desktop":"1.55"}} /-->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/info-box {"cardStyle":"bordered","effectHover":"none","backgroundColour":"#ffffff","style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder)","radius":"12px","style":"solid","width":"1px"},"spacing":{"padding":{"bottom":"22px","left":"16px","right":"16px","top":"22px"}}}} -->
+<!-- wp:sgs/icon {"iconSource":"emoji","emojiChar":"🌿","style":{"spacing":{"margin":{"bottom":"10px"}}}} /-->
+
+<!-- wp:sgs/heading {"content":"Flaxseed","level":"h3","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":{"desktop":"19px"},"fontWeight":"600","lineHeight":1.2,"lineHeightUnit":"unitless","textColour":"text","textWrap":"wrap","style":{"spacing":{"margin":{"bottom":"6px"}}}} /-->
+
+<!-- wp:sgs/text {"text":"Omega-3 fatty acids. Good for mum and baby.","textColour":"text-muted","fontSize":{"desktop":"13px"},"lineHeight":{"desktop":"1.55"}} /-->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/info-box {"cardStyle":"bordered","effectHover":"none","backgroundColour":"#ffffff","style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder)","radius":"12px","style":"solid","width":"1px"},"spacing":{"padding":{"bottom":"22px","left":"16px","right":"16px","top":"22px"}}}} -->
+<!-- wp:sgs/icon {"iconSource":"emoji","emojiChar":"🌱","style":{"spacing":{"margin":{"bottom":"10px"}}}} /-->
+
+<!-- wp:sgs/heading {"content":"Fenugreek","level":"h3","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":{"desktop":"19px"},"fontWeight":"600","lineHeight":1.2,"lineHeightUnit":"unitless","textColour":"text","textWrap":"wrap","style":{"spacing":{"margin":{"bottom":"6px"}}}} /-->
+
+<!-- wp:sgs/text {"text":"Traditional postpartum herb. If your baby shows GI sensitivity, speak to your midwife first.","textColour":"text-muted","fontSize":{"desktop":"13px"},"lineHeight":{"desktop":"1.55"}} /-->
+<!-- /wp:sgs/info-box -->
+<!-- /wp:sgs/feature-grid -->
+
+<!-- wp:sgs/text {"text":"We make nourishing food. We don't make medical claims. If you have specific concerns about lactation, your IBCLC or midwife is the right person to speak to.","textColour":"text-muted","fontSize":{"desktop":"14px"},"lineHeight":{"desktop":"1.55"},"fontStyle":"italic","maxWidth":620,"backgroundColour":"#ffffff","borderWidth":{"bottom":"1px","left":"1px","right":"1px","top":"1px"},"borderStyle":"solid","borderColour":"border","style":{"border":{"radius":"10px"},"spacing":{"margin":{"bottom":"0","left":"auto","right":"auto","top":"0"},"padding":{"bottom":"16px","left":"20px","right":"20px","top":"16px"}}}} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"layout":"stack","contentWidth":{"desktop":"960px"},"backgroundColour":"surface-pink","className":"sgs-gift-section"} -->
+<!-- wp:sgs/label {"text":"Give the gift of nourishment","textColour":"text","fontSize":{"desktop":"12px"},"letterSpacing":1.5,"letterSpacingUnit":"px","style":{"spacing":{"margin":{"bottom":"6px"}}}} /-->
+
+<!-- wp:sgs/heading {"sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 640px) and (max-width: 767px){\u0026selector{font-size:36px;}}\n/* SGS-CONVERTER-RESIDUAL:end */","content":"A gift she'll actually use","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":{"desktop":"36px"},"fontWeight":"600","lineHeight":1.2,"lineHeightUnit":"unitless","textColour":"text","textWrap":"wrap","style":{"spacing":{"margin":{"bottom":"8px"}}}} /-->
+
+<!-- wp:sgs/text {"text":"For baby showers, new arrivals, and the mums who deserve a treat.","textColour":"text","fontSize":{"desktop":"16px"},"style":{"spacing":{"margin":{"bottom":"32px"}}}} /-->
+
+<!-- wp:sgs/container {"sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 640px) and (max-width: 767px){\u0026selector .sgs-gift-section__cards{grid-template-columns:1fr 1fr;}}\n/* SGS-CONVERTER-RESIDUAL:end */","layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr"},"gap":{"desktop":"16px"}} -->
+<!-- wp:sgs/info-box {"cardStyle":"bordered","effectHover":"none","backgroundColour":"#ffffff","style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder)","radius":"16px","style":"solid","width":"1px"},"spacing":{"padding":{"bottom":"28px","left":"24px","right":"24px","top":"28px"}}}} -->
+<!-- wp:sgs/label {"text":"Gift idea","textColour":"text","backgroundColour":"surface-pink","fontSize":{"desktop":"11px"},"fontWeight":"700","letterSpacing":0.5,"letterSpacingUnit":"px","padding":{"bottom":"4px","left":"10px","right":"10px","top":"4px"},"borderRadius":6,"style":{"spacing":{"margin":{"bottom":"12px"}}}} /-->
+
+<!-- wp:sgs/heading {"content":"New Baby Gift Box","level":"h3","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":{"desktop":"22px"},"fontWeight":"600","lineHeight":1.2,"lineHeightUnit":"unitless","textColour":"text","textWrap":"wrap","style":{"spacing":{"margin":{"bottom":"8px"}}}} /-->
+
+<!-- wp:sgs/text {"text":"The perfect gift for a new mum. A mix of Zookies and Classics in a gift box, ready to send.","textColour":"text-muted","fontSize":{"desktop":"14px"},"lineHeight":{"desktop":"1.6"},"style":{"spacing":{"margin":{"bottom":"20px"}}}} /-->
+
+<!-- wp:sgs/text {"text":"£15","textColour":"text","fontSize":{"desktop":"30px"},"fontWeight":"700","fontFamily":"\u0022Fraunces\u0022, serif","style":{"spacing":{"margin":{"bottom":"16px"}}}} /-->
+
+<!-- wp:sgs/button {"label":"Shop Gift Box","url":"/product/gift-box/","minHeight":{"desktop":"48px"},"fontFamily":"'Inter', sans-serif","textDecoration":"none","fontSize":{"desktop":"15px"},"colourBorder":"primary","colourBorderHover":"text","borderWidth":{"bottom":"2px","left":"2px","right":"2px","top":"2px"},"style":{"border":{"radius":"10px"},"spacing":{"padding":{"bottom":"14px","left":"24px","right":"24px","top":"14px"}}}} /-->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/info-box {"cardStyle":"bordered","effectHover":"none","backgroundColour":"#ffffff","style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder)","radius":"16px","style":"solid","width":"1px"},"spacing":{"padding":{"bottom":"28px","left":"24px","right":"24px","top":"28px"}}}} -->
+<!-- wp:sgs/label {"text":"Most thoughtful","textColour":"text","backgroundColour":"surface-pink","fontSize":{"desktop":"11px"},"fontWeight":"700","letterSpacing":0.5,"letterSpacingUnit":"px","padding":{"bottom":"4px","left":"10px","right":"10px","top":"4px"},"borderRadius":6,"style":{"spacing":{"margin":{"bottom":"12px"}}}} /-->
+
+<!-- wp:sgs/heading {"content":"40-Day Care Bundle","level":"h3","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":{"desktop":"22px"},"fontWeight":"600","lineHeight":1.2,"lineHeightUnit":"unitless","textColour":"text","textWrap":"wrap","style":{"spacing":{"margin":{"bottom":"8px"}}}} /-->
+
+<!-- wp:sgs/text {"text":"Six weekly deliveries for the 40-day postnatal window. One of the most thoughtful gifts you can give a new mum.","textColour":"text-muted","fontSize":{"desktop":"14px"},"lineHeight":{"desktop":"1.6"},"style":{"spacing":{"margin":{"bottom":"20px"}}}} /-->
+
+<!-- wp:sgs/text {"text":"£42","textColour":"text","fontSize":{"desktop":"30px"},"fontWeight":"700","fontFamily":"\u0022Fraunces\u0022, serif","style":{"spacing":{"margin":{"bottom":"16px"}}}} /-->
+
+<!-- wp:sgs/button {"label":"Shop Bundle","url":"/product/40-day-bundle/","minHeight":{"desktop":"48px"},"fontFamily":"'Inter', sans-serif","textDecoration":"none","fontSize":{"desktop":"15px"},"colourBorder":"primary","colourBorderHover":"text","borderWidth":{"bottom":"2px","left":"2px","right":"2px","top":"2px"},"style":{"border":{"radius":"10px"},"spacing":{"padding":{"bottom":"14px","left":"24px","right":"24px","top":"14px"}}}} /-->
+<!-- /wp:sgs/info-box -->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"gap":{"desktop":"12px"},"alignItems":"center","gridItemPadding":{"bottom":"14px","left":"18px","right":"18px","top":"14px"},"justifyContent":"space-between","backgroundColour":"#ffffff","style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dprimary)","radius":"10px","style":"solid","width":"1px"}}} -->
+<!-- wp:sgs/text {"text":"🏥 Heading to hospital? Ask us about our Send to Ward delivery.","textColour":"text","fontSize":{"desktop":"14px"},"fontWeight":"500"} /-->
+
+<!-- wp:sgs/button {"label":"Find out more →","url":"/send-to-ward/","inheritStyle":"custom","minHeight":{"desktop":"44px"},"textDecoration":"none","textDecorationHover":"underline","fontSize":{"desktop":"14px"},"style":{"spacing":{"padding":{"bottom":"6px","left":"0","right":"0","top":"6px"}}}} /-->
+<!-- /wp:sgs/container -->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"layout":"stack","contentWidth":{"desktop":"960px"},"backgroundColour":"surface-alt","className":"sgs-social-proof"} -->
+<!-- wp:sgs/heading {"sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 640px) and (max-width: 767px){\u0026selector{font-size:36px;}}\n/* SGS-CONVERTER-RESIDUAL:end */","content":"What mums are saying","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":{"desktop":"36px"},"fontWeight":"600","lineHeight":1.2,"lineHeightUnit":"unitless","textColour":"text","textAlign":"center","textWrap":"wrap","style":{"spacing":{"margin":{"bottom":"6px"}}}} /-->
+
+<!-- wp:sgs/text {"text":"Real feedback from real mums — nothing fabricated.","textColour":"text-muted","fontSize":{"desktop":"16px"},"textAlign":"center","style":{"spacing":{"margin":{"bottom":"32px"}}}} /-->
+
+<!-- wp:sgs/container {"tagName":"div","gap":{"desktop":"14px"},"alignItems":"center","gridItemPadding":{"bottom":"18px","left":"24px","right":"24px","top":"18px"},"justifyContent":"center","backgroundColour":"#ffffff","style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder)","radius":"10px","style":"solid","width":"1px"}}} -->
+<!-- wp:sgs/text {"text":"★ Trustpilot","textColour":"#00B67A","fontSize":{"desktop":"13px"},"fontWeight":"700"} /-->
+
+<!-- wp:sgs/text {"text":"★★★★★","textColour":"#00B67A","fontSize":{"desktop":"20px"}} /-->
+
+<!-- wp:sgs/text {"text":"Leave us a review — help other mums find us","textColour":"text-muted","fontSize":{"desktop":"13px"}} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/testimonial-slider {"sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 640px) and (max-width: 767px){\u0026selector{grid-template-columns:repeat(3, 1fr);}}\n/* SGS-CONVERTER-RESIDUAL:end */","columns":{"desktop":3},"gridTemplateColumns":{"desktop":"repeat(3, 1fr)"},"gap":{"desktop":"12px"}} -->
+<!-- wp:sgs/testimonial {"quote":"\u0022I was sceptical but honestly these have made such a difference. My supply picked up within a few days. And they actually taste amazing.\u0022","reviewerName":"Reham, London","quoteFontSize":"14px","quoteColour":"text-muted","quoteLineHeight":"1.65","nameColour":"text","backgroundColour":"#ffffff","style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder)","radius":"12px","style":"solid","width":"1px"},"spacing":{"padding":{"bottom":"20px","left":"20px","right":"20px","top":"20px"}}}} /-->
+
+<!-- wp:sgs/testimonial {"quote":"\u0022Bought these for my best friend who was really struggling. She was in tears when they arrived — said they were the loveliest gift. And they did help.\u0022","reviewerName":"Sarah M., Manchester","quoteFontSize":"14px","quoteColour":"text-muted","quoteLineHeight":"1.65","nameColour":"text","backgroundColour":"#ffffff","style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder)","radius":"12px","style":"solid","width":"1px"},"spacing":{"padding":{"bottom":"20px","left":"20px","right":"20px","top":"20px"}}}} /-->
+
+<!-- wp:sgs/testimonial {"quote":"\u0022Zainab is so responsive and lovely. The cookies arrived quickly and my daughter (new mum) absolutely loved them. Will order again and again.\u0022","reviewerName":"Halimah, Birmingham","quoteFontSize":"14px","quoteColour":"text-muted","quoteLineHeight":"1.65","nameColour":"text","backgroundColour":"#ffffff","style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder)","radius":"12px","style":"solid","width":"1px"},"spacing":{"padding":{"bottom":"20px","left":"20px","right":"20px","top":"20px"}}}} /-->
+<!-- /wp:sgs/testimonial-slider -->
+<!-- /wp:sgs/container -->
+

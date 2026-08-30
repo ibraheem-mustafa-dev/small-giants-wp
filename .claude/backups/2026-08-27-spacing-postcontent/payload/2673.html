@@ -1,0 +1,53 @@
+<!-- wp:sgs/site-footer {"align":"full","backgroundColour":"footer-bg","contentWidth":{"desktop":"normal"},"metadata":{"patternName":"sgs/framework-footer-default","name":"SGS Framework Footer — Default","description":"Default SGS footer — the sgs/site-footer block with a columns row (brand + links + contact) and a bottom bar. All business-data slots use the sgs/business-info block (per-type variants) reading live from Business Details. No hardcoded client data.","categories":["sgs-footers"]},"padding":{"top":"var:preset|spacing|70","right":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40"}} -->
+
+	<!-- wp:sgs/site-footer-row {"rowSlot":"columns","layout":"grid","gridTemplateColumns":{"desktop":"2fr 1fr 1fr","mobile":"1fr"},"gap":{"desktop":"48px","mobile":"32px"},"alignItems":"top"} -->
+
+		<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Brand"}} -->
+
+			<!-- wp:sgs/responsive-logo {"width":180,"linkToHome":true,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
+
+			<!-- wp:sgs/business-info {"displayType":"description","textColour":"surface","fontSize":"small","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
+
+			<!-- wp:sgs/business-info {"displayType":"socials","iconColour":"surface","style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} /-->
+
+		<!-- /wp:sgs/container -->
+
+		<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Quick Links"}} -->
+
+			<!-- wp:sgs/heading {"content":"Quick Links","level":"h2","textColour":"surface","fontSize":{"desktop":"medium"},"fontWeight":"700","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} /-->
+
+			<!-- wp:list {"style":{"spacing":{"padding":{"left":"0"}},"typography":{"lineHeight":"2.2"}},"className":"is-style-no-bullets","fontSize":"small"} -->
+			<ul class="is-style-no-bullets has-small-font-size sgs-link-list" style="padding-left:0;line-height:2.2">
+			</ul>
+			<!-- /wp:list -->
+
+		<!-- /wp:sgs/container -->
+
+		<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Contact"}} -->
+
+			<!-- wp:sgs/heading {"content":"Contact","level":"h2","textColour":"surface","fontSize":{"desktop":"medium"},"fontWeight":"700","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} /-->
+
+			<!-- wp:sgs/business-info {"displayType":"address","textColour":"surface","iconColour":"surface","fontSize":"small","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} /-->
+
+			<!-- wp:sgs/business-info {"displayType":"phone","textColour":"surface","iconColour":"surface","fontSize":"small","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|10"}}}} /-->
+
+			<!-- wp:sgs/business-info {"displayType":"email","textColour":"surface","iconColour":"surface","fontSize":"small","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
+
+			<!-- wp:sgs/heading {"content":"Opening Hours","level":"h3","textColour":"surface","fontSize":{"desktop":"medium"},"fontWeight":"700","style":{"spacing":{"margin":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|20"}}}} /-->
+
+			<!-- wp:sgs/business-info {"displayType":"hours","textColour":"surface","labelColour":"surface","fontSize":"small"} /-->
+
+		<!-- /wp:sgs/container -->
+
+	<!-- /wp:sgs/site-footer-row -->
+
+	<!-- wp:sgs/site-footer-row {"rowSlot":"bottom","layout":"flex","justifyContent":"center","gap":{"desktop":"8px"},"padding":{"desktop":{"top":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dspacing\u002d\u002d40)","bottom":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dspacing\u002d\u002d40)"}},"margin":{"desktop":{"top":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dspacing\u002d\u002d50)"}},"style":{"border":{"top":{"color":"var:preset|color|accent","width":"1px"}}}} -->
+
+		<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"accent","fontSize":"small"} /-->
+
+		<!-- wp:sgs/business-info {"displayType":"attribution","textColour":"accent","fontSize":"small"} /-->
+
+	<!-- /wp:sgs/site-footer-row -->
+
+<!-- /wp:sgs/site-footer -->
+

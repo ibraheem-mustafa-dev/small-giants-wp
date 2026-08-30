@@ -1,0 +1,10 @@
+<!-- wp:sgs/container {"tagName":"section","contentWidth":"wide"} -->
+<!-- wp:sgs/heading {"level":"h2","content":"Magnetic pull — FR-38-30"} /-->
+<!-- wp:sgs/text {"text":"Move the pointer NEAR each button, not onto it. The pull begins while the cursor is still outside."} /-->
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Default pull","url":"#","fx":"magnet"} /-->
+<!-- wp:sgs/button {"label":"Strong + wide reach","url":"#","fx":"magnet","fxMagnetStrength":48,"fxMagnetRadius":260} /-->
+<!-- wp:sgs/button {"label":"Side to side only","url":"#","fx":"magnet","fxMagnetAxis":"x","fxMagnetStrength":30} /-->
+<!-- wp:sgs/button {"label":"No magnet (control)","url":"#"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/container -->
