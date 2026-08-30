@@ -32,6 +32,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Require it HERE, not just via render-helpers.php, because a render.php may
+// require_once this file directly without ever loading render-helpers.php —
+// sgs_allowed_svg_tags() now delegates to sgs_svg_kses_allowed_tags() and would
+// fatal on an undefined function without this line.
+require_once __DIR__ . '/helpers-svg-kses.php';
+
 if ( ! function_exists( 'sgs_allowed_svg_tags' ) ) {
 	/**
 	 * The SGS inline-SVG allow-list for `wp_kses()`.
@@ -39,100 +45,38 @@ if ( ! function_exists( 'sgs_allowed_svg_tags' ) ) {
 	 * Security non-negotiable: inline SVG is never echoed raw. This is the single
 	 * definition of what an operator-supplied SVG may contain.
 	 *
-	 * NOTE: `class-sgs-container-wrapper.php` still carries a byte-identical inline
-	 * copy of this array (used for `bgSvgContent`). Folding that call site onto this
-	 * function is a one-line change, but the container wrapper is a design-gate
-	 * surface, so it is deliberately NOT done here without approval.
+	 * ⭐ UNIFIED 2026-08-30. This is now an ALIAS for
+	 * `sgs_svg_kses_allowed_tags()`. There is ONE list.
+	 *
+	 * Six SVG allowlists existed in SGS code. Two were byte-identical copies of
+	 * this one (media/render.php, class-sgs-container-wrapper.php) and were
+	 * collapsed onto it. This function and `sgs_svg_kses_allowed_tags()` were
+	 * the two REAL lists and they diverged in BOTH directions — 13 tags vs 36,
+	 * with `<style>`/`<animate>` unique to this one.
+	 *
+	 * The merge, and what it changes for this function's callers (hero,
+	 * timeline, sgs/media, every container background):
+	 *
+	 *  GAINED — 25 tags, including linearGradient/radialGradient/stop (a
+	 *    gradient-filled SVG was previously flattened SILENTLY), <title>/<desc>
+	 *    (SVG accessible names were previously stripped, against the WCAG 2.1
+	 *    AA baseline), plus filters, masks, patterns and <use>.
+	 *  KEPT — `<animate>`, carried over so animated SVG still works here.
+	 *  LOST — `<style>`, deliberately. Inline SVG `<style>` in an HTML document
+	 *    is DOCUMENT-scoped, and wp_kses does not sanitise element TEXT
+	 *    content, so arbitrary page-wide CSS survived it. A Contributor could
+	 *    restyle or overlay the page, or `@import` an external sheet from an
+	 *    admin's session. That is the same privilege-escalation family as the
+	 *    editor XSS this work exists to close, so it did not carry over.
+	 *
+	 * Kept as a named alias rather than deleted so the existing call sites keep
+	 * working; collapsing the two names is a later tidy-up, not a behaviour
+	 * change.
 	 *
 	 * @return array<string,array<string,bool>> wp_kses allow-list.
 	 */
 	function sgs_allowed_svg_tags(): array {
-		return array(
-			'svg'      => array(
-				'xmlns'               => true,
-				'viewbox'             => true,
-				'width'               => true,
-				'height'              => true,
-				'preserveaspectratio' => true,
-				'class'               => true,
-				'id'                  => true,
-			),
-			'g'        => array(
-				'transform' => true,
-				'class'     => true,
-				'id'        => true,
-			),
-			'path'     => array(
-				'd'            => true,
-				'fill'         => true,
-				'stroke'       => true,
-				'stroke-width' => true,
-				'class'        => true,
-			),
-			'circle'   => array(
-				'cx'     => true,
-				'cy'     => true,
-				'r'      => true,
-				'fill'   => true,
-				'stroke' => true,
-				'class'  => true,
-			),
-			'rect'     => array(
-				'x'      => true,
-				'y'      => true,
-				'width'  => true,
-				'height' => true,
-				'fill'   => true,
-				'stroke' => true,
-				'class'  => true,
-			),
-			'polygon'  => array(
-				'points' => true,
-				'fill'   => true,
-				'stroke' => true,
-				'class'  => true,
-			),
-			'polyline' => array(
-				'points' => true,
-				'fill'   => true,
-				'stroke' => true,
-				'class'  => true,
-			),
-			'line'     => array(
-				'x1'     => true,
-				'y1'     => true,
-				'x2'     => true,
-				'y2'     => true,
-				'stroke' => true,
-				'class'  => true,
-			),
-			'ellipse'  => array(
-				'cx'     => true,
-				'cy'     => true,
-				'rx'     => true,
-				'ry'     => true,
-				'fill'   => true,
-				'stroke' => true,
-				'class'  => true,
-			),
-			'text'     => array(
-				'x'           => true,
-				'y'           => true,
-				'fill'        => true,
-				'font-size'   => true,
-				'font-family' => true,
-				'class'       => true,
-			),
-			'defs'     => array(),
-			'style'    => array( 'type' => true ),
-			'animate'  => array(
-				'attributename' => true,
-				'from'          => true,
-				'to'            => true,
-				'dur'           => true,
-				'repeatcount'   => true,
-			),
-		);
+		return sgs_svg_kses_allowed_tags();
 	}
 }
 

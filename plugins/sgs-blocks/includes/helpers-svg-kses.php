@@ -351,13 +351,62 @@ function sgs_svg_kses_allowed_tags(): array {
 		'title'             => array( 'id' => true ),
 		'desc'              => array( 'id' => true ),
 		'metadata'          => array( 'id' => true ),
-		'a'                 => array_merge(
-			$core_attrs,
-			array(
-				'href'       => true,
-				'xlink:href' => true,
-				'target'     => true,
-			)
+
+		/*
+		 * SMIL animation. Merged in from the former narrow list
+		 * (sgs_allowed_svg_tags) so the four surfaces that had it — hero,
+		 * timeline, sgs/media and every container background — keep animated
+		 * SVG after unification.
+		 *
+		 * ⛔ Its presence is WHY <a> below carries no href. `<animate>` can set
+		 * an attribute at runtime, and wp_kses only protocol-filters attributes
+		 * it recognises as URIs (href, src, action). A payload placed in `to`
+		 * is passed through verbatim, then applied to href by SMIL — so
+		 * `<animate attributeName="href" to="javascript:…">` inside a linkable
+		 * <a> would bypass the protocol filter entirely. Neither historical
+		 * list was vulnerable: the narrow one had <animate> but no <a>, the
+		 * rich one had <a href> but no <animate>. Merging them naively would
+		 * have CREATED the vector. Keep these two facts together — removing the
+		 * href restriction below while <animate> is present reopens it.
+		 *
+		 * ⚠ REASONED, NOT YET EXECUTED (Bean's call, 2026-08-30: ship on the
+		 * reasoning, test after). Owed: a canary probe firing
+		 * `<a><animate attributeName="href" to="javascript:…"></a>`, paired
+		 * with a positive control proving the harness can observe a real
+		 * execution — otherwise "nothing fired" is indistinguishable from a
+		 * broken probe.
+		 *
+		 * RESIDUAL, recorded rather than implied: <use>, <image>, <textPath>
+		 * and the gradient elements still carry href/xlink:href, so the same
+		 * animate-the-attribute trick could point one at an external URL. That
+		 * is a resource fetch, not script execution — and browsers have
+		 * restricted external <use> references to same-origin since ~2017 — so
+		 * it is materially lower severity than the <a> case and is left in
+		 * place. Revisit if any of those gains a navigating behaviour.
+		 */
+		'animate'           => array(
+			'attributename' => true,
+			'attributeName' => true,
+			'from'          => true,
+			'to'            => true,
+			'dur'           => true,
+			'repeatcount'   => true,
+			'repeatCount'   => true,
+			'begin'         => true,
+			'fill'          => true,
+			'values'        => true,
+			'id'            => true,
+			'class'         => true,
 		),
+
+		/*
+		 * <a> is kept as a grouping/styling element but is DELIBERATELY INERT:
+		 * no href, no xlink:href, no target. See the <animate> note above for
+		 * the mechanism. This costs a linkable region inside an SVG on
+		 * before-after, responsive-logo and trust-bar; every SGS block already
+		 * exposes its own link control (SgsLinkPopover), so the capability is
+		 * reachable without granting it to pasted operator markup.
+		 */
+		'a'                 => $core_attrs,
 	);
 }
