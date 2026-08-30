@@ -23,6 +23,7 @@
  */
 
 import { gsap } from 'gsap';
+import { chromeOffsetPx } from '../motion-utils.js';
 
 /**
  * Plugins already handed to `gsap.registerPlugin()` this page-load. GSAP
@@ -118,82 +119,7 @@ export function tierG( ...plugins ) {
  *                         function, run when the context reverts.
  * @return {Function} Cleanup — reverts the context and detaches listeners.
  */
-/**
- * Height of the persistent chrome occupying the top of the viewport, in px.
- *
- * WHY PINNING EFFECTS MUST KNOW THIS
- * ScrollTrigger's `pin` holds an element wherever it sat when the trigger
- * fired. With the default `start: 'top top'` that is viewport y=0 — space the
- * sticky site header already owns. Measured on the canary: header 93px at
- * `z-index: 100`, pinned element `position: fixed` at `z-index: auto`, so the
- * header wins the paint contest and the top 93px of the pinned section is
- * invisible for the entire pin. A heading in that band is simply gone.
- *
- * ⚠ RAISING THE PINNED ELEMENT'S z-index IS THE WRONG FIX. It inverts the
- * problem: the section then covers the header, so navigation disappears for the
- * duration of the pin and any focusable header control stays in the tab order
- * while being visually obscured — a WCAG 2.4.11 focus-obscured failure. Trading
- * a hidden heading for hidden navigation is strictly worse. The defect is
- * GEOMETRY, not stacking: move the pin below the chrome and nothing competes
- * for those pixels at all.
- *
- * WHY THE CSS CUSTOM PROPERTY, RATHER THAN MEASURING HERE
- * `--sgs-header-height` is not a static guess. `src/header-behaviours/view.js`
- * measures the header with a ResizeObserver and publishes the rounded px value
- * to `:root` and `body`, so it tracks shrink-on-scroll and per-breakpoint
- * heights. (The `80px` literal in `theme/.../utilities.css` is only the pre-JS
- * fallback; verified live, the published value reads 93px and matches the
- * measured header exactly.) Critically, that module publishes an explicit `0`
- * when the header is NOT pinned — it gates on the COMPUTED position, which is
- * the only reliable signal here: a header set both sticky and transparent
- * computes `absolute` and is not pinned despite still carrying the sticky body
- * class. So conditionality comes free, and a non-sticky header self-disables
- * the offset.
- *
- * Re-measuring the header in this file would recreate the duplicate
- * `--sgs-header-height` publisher the project deliberately deleted (D330,
- * 2026-07-14) and would have to re-derive that sticky-vs-transparent rule —
- * a known trap. Consuming the published value inherits the reasoning instead.
- *
- * @return {number} Offset in px; 0 when nothing persistent occupies the top.
- */
-export function chromeOffsetPx() {
-	let offset = 0;
-
-	const published = getComputedStyle( document.documentElement )
-		.getPropertyValue( '--sgs-header-height' )
-		.trim();
-	const parsed = parseFloat( published );
-
-	if ( Number.isFinite( parsed ) ) {
-		offset = parsed;
-	} else {
-		// Fallback for a page where header-behaviours/view.js is not enqueued:
-		// measure, but gate on the same COMPUTED-position test that module uses
-		// so a non-pinned header still yields 0.
-		const header = document.querySelector( 'header' );
-		if ( header ) {
-			const position = getComputedStyle( header ).position;
-			if ( 'sticky' === position || 'fixed' === position ) {
-				offset = header.getBoundingClientRect().height;
-			}
-		}
-	}
-
-	// The admin bar is a SEPARATE term — `--sgs-header-height` deliberately
-	// excludes it (utilities.css composes them with calc() for scroll-padding).
-	// It is fixed to the very top for logged-in users only, so it is measured
-	// from the live element rather than assumed: reading the CSS var with a
-	// 32px default would wrongly add 32px for every logged-OUT visitor.
-	// Worth knowing when triaging: this term makes the defect look worse when
-	// signed in and can vanish entirely in a logged-out check.
-	const adminBar = document.getElementById( 'wpadminbar' );
-	if ( adminBar && 'fixed' === getComputedStyle( adminBar ).position ) {
-		offset += adminBar.getBoundingClientRect().height;
-	}
-
-	return offset;
-}
+export { chromeOffsetPx };
 
 /**
  * Resolve an effect's ScrollTrigger `start`, optionally clearing sticky chrome.
