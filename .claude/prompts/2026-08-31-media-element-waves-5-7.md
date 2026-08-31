@@ -46,10 +46,14 @@ problem in waves 3-4 resolved this way. The same query also found two blocks
 ⚠ **BUT THE DB IS NOT A COMPLETE CENSUS EITHER — measured 2026-08-31.** That query returns eight
 rows and **`sgs/before-after` is not among them**, yet it demonstrably emits `--sgs-object-fit`
 (`before-after/render.php:256-277`) and consumes it (`style.css:63-64,346`). Its fit arrives via
-`supports.sgs.imageControls`, not a declared attribute, so `block_attributes` cannot see it — so an
-inventory built from this table alone misses **the very surface Wave 5b falsifies against**. The
-census `gaps` matrix does catch it (`carries_via_extension`). **DB query first, census as the
-backstop; neither alone is complete.**
+`supports.sgs.imageControls`, not a declared attribute, so `block_attributes` cannot see it.
+
+This bites on ONE question only: *"which blocks already carry this capability?"* — the population
+step E19 opens with. The census `gaps` matrix catches the extension case (`carries_via_extension`),
+so for that question: **DB query first, census as the backstop; neither alone is complete.**
+
+⛔ **This has NOTHING to do with Wave 5b's falsification test**, which is a `git diff --name-only`
+over source files. The DB plays no part in it. Do not connect the two.
 
 ⛔ **NEVER reason from what the canary currently renders.** Pre-production, no client content, a
 default changing costs nothing. Whether a default is RIGHT is a separate question decided on what
@@ -107,29 +111,31 @@ taken. Architecture v2 §2 L3 + §17 carry the full evidence.
 before wiring the rest. Settling the shape on one instance is this repo's own rule and it makes a
 mistake cheap.
 
-⚠ **The cascade is mapped, but this paragraph was INCOMPLETE — corrected 2026-08-31.** `sgs/media`
-sets its object-fit default via `:where( .sgs-media__img ){ object-fit: cover }` at `(0,0,0)`
-(`style.css:45-47`). The atom rule `.sgs-media-el` is `(0,1,0)` and beats it. That much was right.
+⚠ **`sgs/media` writes object-fit in THREE places, at three specificities. Know all three before
+you touch it.**
 
-⛔ **What was missing: `render.php` ALSO emits object-fit, and it beats the atom.** `$id_sel`
-(`media/render.php:281`) is `.{scope}.sgs-media__img, …` — two classes, **(0,2,0)** — and carries
-the object-fit/object-position emission at `:294-306`, flushed at `:325`. So the old rule wins
-**precisely when the client has set a non-default value**, which is the exact case a tester sets.
+| Source | Selector | Specificity |
+|---|---|---|
+| `style.css:45-47` | `:where( .sgs-media__img )` | (0,0,0) |
+| the atom | `.sgs-media-el` | (0,1,0) |
+| `render.php:294-306`, flushed `:325` | `$id_sel` = `.{scope}.sgs-media__img, …` | **(0,2,0)** |
 
-**This makes GUT load-bearing, not tidy-up.** Delete all three in the same commit: the `object-fit`
+The atom beats the stylesheet default but **loses to `render.php`** — which fires precisely when the
+client has set a non-default value, the exact case a tester sets.
+
+**So GUT is load-bearing, not tidy-up.** Delete all three in the same commit: the `object-fit`
 branch (`:294-296`), the `object-position` branch (`:302-306`), and `style.css:45-47`.
-⚠ "It paints" does NOT prove the GUT was complete — a leftover hand-rolled rule whose value happens
-to agree with the atom looks correct and is a second writer waiting to diverge. `media-no-handroll`
-is the check that catches it, which is why it is pulled forward into Wave 5.
+⚠ "It paints" does not prove the GUT was complete. A leftover hand-rolled rule whose value agrees
+with the atom looks correct and is a second writer waiting to diverge. `media-no-handroll` catches
+it, which is why it ships in Wave 5.
 
 ### 5b — `before-after`, the falsifying case
 
 ⛔ **The shared layer must NOT change here.** That is the whole test.
 
-**Falsification test — CORRECTED 2026-08-31, the old wording was UNPASSABLE.** It required "no file
-outside `src/components/Media*` and `includes/helpers-media-element.php`", but wiring a surface must
-edit that surface's own `block.json` / `edit.js` / `render.php` / `media-render.php`. No correct
-implementation could satisfy it. The real test is *no edit to the SHARED layer*:
+**Falsification test.** Wiring the second surface must require **no edit to the shared layer**. The
+surface's own `block.json` / `edit.js` / `render.php` / `media-render.php` change by definition, so
+the test measures the shared layer alone:
 
 > **PASS** = `git diff --name-only` touches **no** path under `src/components/media/`,
 > `src/components/MediaElementControls.js`, `src/components/MediaElementPanel.js`,

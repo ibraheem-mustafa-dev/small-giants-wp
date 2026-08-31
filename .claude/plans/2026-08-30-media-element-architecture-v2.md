@@ -337,12 +337,27 @@ a VOCABULARY — object-fit's element enum is `cover contain fill none scale-dow
 is `cover contain auto`. Attachment is a different axis (which DOM node). Two orthogonal axes in one
 enum is a recorded failure mode; keep them as two fields.
 
-⚠ **Prove it before building it.** The claim "a replaced element generates no pseudo-element" is
-currently REASONED and corroborated, **not executed** — the same debt shape as the SMIL bypass this
-project already carries. Apply `.sgs-media-el::after{content:'';position:absolute;inset:0;
-background:red}` to an `<img>` AND to a wrapping `<div>`, read `getComputedStyle(el,'::after')` on
-both. The `<div>` half is the positive control and is not optional: without it, "no red on the
-`<img>`" is indistinguishable from a probe that never applied the rule.
+✅ **PROVEN IN A BROWSER, 2026-08-31.** Chromium via Playwright, `about:blank`,
+`.probe::after{content:'';position:absolute;inset:0;background-color:rgb(255,0,0)}` applied to a
+100x100 `<div>` and a 100x100 `<img>`, both painted blue underneath, both confirmed non-zero area
+(`getBoundingClientRect` 100x100 each, so the zero-area failure mode is excluded). Screenshot
+pixel-sampled with PIL:
+
+| Element | Centre pixel | Reading |
+|---|---|---|
+| `<div>` at (50,50) | `(255, 0, 0)` **red** | ::after PAINTED — **positive control passed** |
+| `<img>` at (200,50) | `(0, 0, 255)` **blue** | ::after did NOT paint |
+| page background | `(255,255,255)` | probe isolated |
+
+⛔ **THE COMPUTED-STYLE CHECK LIES HERE.** `getComputedStyle( el, '::after' )
+.backgroundColor` returned `rgb(255, 0, 0)` for **BOTH** elements — the cascade resolves regardless
+of whether a pseudo-element is generated. Anyone verifying this the obvious way concludes the
+overlay works on an `<img>`. Only the pixel sample discriminates. (One weak tell in the computed
+values: the div's `::after` resolved `width: 100px`, the img's resolved `width: auto`.)
+
+This is the same class as the three instruments in D910 and as
+STOP-A-COMPUTED-STYLE-CHECK-CANNOT-SEE-A-ZERO-AREA-ELEMENT: **the check could not reach its
+subject.** Record it as the reason overlay must attach to a box.
 
 ⚠ **Second-order: a surface may have no container at all.** `sgs/media`'s naked mode renders the
 `<img>` AS the block root (`media/render.php:1307`), so there is nowhere to put `.sgs-media-box`.
@@ -770,15 +785,9 @@ step and gates that nothing calls — strictly worse than today's two-adopter he
 with timeline, so it would pass and prove nothing. `before-after` has two independent instances,
 video sync, and its own scoped-selector machinery — **it is the falsifying case.**
 
-**The falsification test, made objective:** wiring the second surface must require **no edit to
-`MediaElementControls`, `SGS_Media_Element`, or either injection filter**.
-
-⛔ **CORRECTED 2026-08-31 — the old wording made this test UNPASSABLE.** It read: *"`git diff
---stat` after wiring `before-after` shows no file outside `src/components/Media*` and
-`includes/helpers-media-element.php`"*. Wiring a surface must edit **that surface's own files**
-(`block.json`, `edit.js`, `render.php`, `media-render.php`), so no correct implementation could
-ever satisfy it. The sentence above it — *no edit to the SHARED layer* — was always the real test.
-It is restated here as a command, with the shared layer's path list as it actually exists on disk:
+**The falsification test:** wiring the second surface must require **no edit to the shared layer**.
+The surface's own files — `block.json`, `edit.js`, `render.php`, `media-render.php` — change by
+definition, so the test measures the shared layer alone:
 
 > **PASS** = `git diff --name-only` after wiring `before-after` touches **no** path under
 > `src/components/media/`, `src/components/MediaElementControls.js`,
@@ -854,12 +863,18 @@ correction to the census's population.
 returns eight rows and **`sgs/before-after` is not among them**, yet that block demonstrably emits
 `--sgs-object-fit` (`before-after/render.php:256-277`) and consumes it (`style.css:63-64,346`). Its
 fit arrives through `supports.sgs.imageControls`, not a declared attribute, so `block_attributes`
-cannot see it. **Any inventory built from this table alone silently misses the very surface §10
-falsifies against.**
+cannot see it.
 
-The census's `gaps` matrix DOES catch it, recording `before-after` and `product-card` under
-`carries_via_extension`. **So: DB query first, census as the backstop. Neither alone is complete** —
-an extension-provided capability is invisible to one and visible to the other.
+**Scope of this limitation, stated precisely.** It bites on ONE thing: using the DB to answer
+*"which blocks already carry this capability?"* — the population question E19's method opens with.
+An extension-provided capability is invisible there, so the DB under-counts the population.
+
+⛔ **It has NO bearing on §10's falsification test.** That test is a `git diff --name-only` over
+source files — a coding-implementation question the DB plays no part in. Do not connect the two.
+
+The census's `gaps` matrix DOES catch the extension case, recording `before-after` and
+`product-card` under `carries_via_extension`. **So, for the POPULATION question only: DB query
+first, census as the backstop. Neither alone is complete.**
 
 ⛔ **Never weigh "this changes what the canary currently renders."** The framework is
 PRE-PRODUCTION; there is no content to protect and a default changing costs nothing. Whether a
@@ -1041,11 +1056,10 @@ SVG allowlist unification and editor sanitiser, `<track>` captions. Live-verifie
 | L4 stylesheet, generated from partials | `assets/css/media-atoms/*.css` → `media-element.css` |
 | The ten atoms | logic + control + PHP twin + CSS partial each |
 | Per-element scoping | `sgs_media_element_scope_class()` / `_style()` |
-| **L2/L3 panel registry + dispatch** | ⛔ **NOT BUILT — see the correction below** |
+| **L2/L3 panel registry + dispatch** | ⛔ **NOT BUILT — Wave 5a deliverable, see below** |
 
-⛔ **CORRECTION (2026-08-31, measured). The heading above says "waves 3-4"; WAVE 4 WAS NOT BUILT.**
-Wave 4 is specified in §11 and §15 as *"panel registry + dispatch"*. The atoms exist; the layer that
-composes them does not:
+⛔ **WAVE 4 IS NOT BUILT.** §11 and §15 specify it as *"panel registry + dispatch"*. The atoms
+exist; the layer that composes them does not. Measured 2026-08-31:
 
 - `src/components/MediaElementControls.js` contains **zero JSX and zero React imports**. Its only
   exports are `mediaAttrName`, `MEDIA_BASES`, `MEDIA_TIERED_BASES`, `MEDIA_TIERS`,
@@ -1056,15 +1070,15 @@ composes them does not:
 - Every atom's `.control.js` returns **bare rows** and mounts no `InspectorControls`, deferring
   assembly to a caller nobody wrote.
 
-**No gate could have caught this**, and that is the point worth carrying forward: nothing consumes
-atom `control()` output, so nothing could notice the assembler was missing. Same shape as D910's
-three instruments — *the artefact that would have failed was never able to run.*
+**No gate can catch this.** Nothing consumes atom `control()` output, so nothing notices the
+assembler is missing. Same shape as D910's three instruments: *the artefact that would have failed
+was never able to run.*
 
-⚠ **The component cannot reuse the name `MediaElementControls`** — that filename is taken by the
-naming module. It lands as `src/components/MediaElementPanel.js`, with
-`includes/class-sgs-media-element.php` as its PHP twin. **L3 is Wave 5a's first build deliverable.**
+⚠ **The component takes a new name.** `MediaElementControls` belongs to the naming module, so the
+component lands as `src/components/MediaElementPanel.js` with `includes/class-sgs-media-element.php`
+as its PHP twin. **L3 is Wave 5a's first build deliverable.**
 
-⛔ **Nothing here paints yet.** Waves 3-4 close on parity, validators and purity. **Wave 5 closes on
+⛔ **Nothing here paints yet.** Wave 3 closes on parity, validators and purity. **Wave 5 closes on
 paint** — atoms are wired to no surface until then, so no DOM check is possible and none is claimed.
 
 ### Still to do
@@ -1072,7 +1086,7 @@ paint** — atoms are wired to no surface until then, so no DOM check is possibl
 | Wave | Work |
 |---|---|
 | **5** | Wire `sgs/media`, **then** `before-after`. Serial, never parallel — see §10 |
-| 6 | The six gates as inspector-scan rule modules, all starting advisory |
+| 6 | Five gates as inspector-scan rule modules, all starting advisory (`media-no-handroll` ships in Wave 5) |
 | 7 | Remaining surfaces, INSERT → VERIFY → GUT, one commit each |
 | — | `product-card`'s content migration, separately, after the abstraction is proven |
 

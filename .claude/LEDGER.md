@@ -144,13 +144,12 @@ CLAUDE.mds. Do not restate history here.**
 deployed** — atom registry, presentation census + `gaps` matrix, selective injection both sides
 (109 → 49 keys), generated L4 stylesheet, ten atoms, **nine** media gates.
 
-⛔ **WAVE 4 WAS NEVER BUILT — corrected 2026-08-31, this line said "waves 3-4 built".** Wave 4 is
-the L2/L3 panel registry + dispatch. Measured: `grep -rn "SGS_Media_Element"` returns nothing, and
-`src/components/MediaElementControls.js` holds zero JSX (it is the L1 NAMING module). Every atom's
-`.control.js` returns bare rows and mounts no `InspectorControls`, deferring assembly to a caller
-nobody wrote. **No gate could see it** — nothing consumes atom `control()` output. It is Wave 5a's
-first build deliverable, as `MediaElementPanel.js` + `class-sgs-media-element.php` (the old name is
-taken). Evidence: architecture v2 §2 L3 + §17.
+⛔ **WAVE 4 IS NOT BUILT.** It is the L2/L3 panel registry + dispatch. Measured 2026-08-31:
+`grep -rn "SGS_Media_Element"` returns nothing, and `src/components/MediaElementControls.js` holds
+zero JSX — it is the L1 NAMING module. Every atom's `.control.js` returns bare rows and mounts no
+`InspectorControls`, deferring assembly to a caller nobody wrote. **No gate can see this**: nothing
+consumes atom `control()` output. Wave 5a builds it as `MediaElementPanel.js` +
+`class-sgs-media-element.php`. Evidence: architecture v2 §2 L3 + §17.
 
 ⛔ **Each atom is TWO modules** (`check-media-atom-purity.js`): `<id>.js` plain-Node importable,
 `<id>.control.js` holds the JSX. Three of my own instruments read green while proving nothing —
