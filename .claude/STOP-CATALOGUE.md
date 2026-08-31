@@ -2859,12 +2859,13 @@ both render fill, with both values stored correctly and the parity gate green. *
 ELEMENT (`{uid}--{prefix}`), never per block.** Gated in `test-media-atom-parity.mjs`.
 
 
-**D101 carry-forward receipt for E19.** BEFORE: bytes 250,701 · `**STOP-` occurrences
-294 · DEFINED `- **STOP-` entries 270 · bullet defences
-337 · unique `STOP-*` tokens 317 · sections 5 ·
-ritual questions 8. FOUR STOP entries added (narrative `⛔ **STOP-…**` style,
-matching E15-E18), zero removed, zero reworded, zero ritual questions touched. AFTER: bytes
-253,463 · occurrences 298 · DEFINED 270 (+0, expected —
-narrative entries do not match the `^- \*\*STOP-` bullet pattern) · bullets 337 (+0,
-same reason) · unique tokens 321 · sections 5 · ritual
-8. Every category >= BEFORE. Nothing SUBTRACTED. PASS.
+**D101 carry-forward receipt for E19.** Four STOP entries added (narrative `⛔ **STOP-…**` style,
+matching E15-E18), zero removed, zero reworded, zero ritual questions touched. Unique `STOP-*`
+tokens **317 -> 321**. Ritual questions in §C: **15 before, 15 after** — untouched.
+
+⚠ **This receipt first recorded the ritual count as 8, which was wrong.** The count came from
+`^\d+\. \*\*`, which only matches a question whose first word is bolded; §C has 15 questions and
+several are not. **Count with `awk '/^## C\./,/^## D\./' … | grep -cE '^[0-9]+\. '`** — a
+carry-forward receipt whose own figure is wrong defeats the check it exists to perform, which is the
+same class of failure as the three instruments D910 records. Caught by an independent `/qc` subagent,
+not by me.

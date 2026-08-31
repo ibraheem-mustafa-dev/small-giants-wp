@@ -146,7 +146,9 @@ Every rule ships a negative control proving it does not overmatch, and a fixture
 ⛔ **Per surface, ONE commit: INSERT → VERIFY → GUT. Never gut first.** A surface always has either
 the old code or the new code, never neither, and rollback is one revert.
 
-Order from the census `wire_order`; `hero`, `container`, `decorative-image` then `product-card`.
+Order: `hero`, `container`, `decorative-image`, then `product-card`. ⚠ The census's `wire_order`
+field is populated ONLY for the two Wave 5 surfaces (`media`=1, `before-after`=2) and is `null` for
+these four — do not read it as the ordering signal for Wave 7.
 `product-card`'s content migration ships **separately**, after the abstraction is proven — it keeps
 the old attribute alongside the new for one deploy cycle, uses WP-CLI batch under `--user=1` (KSES
 strips CSS from block attributes otherwise), and writes a `_sgs_media_legacy_backup` postmeta.
@@ -198,7 +200,8 @@ python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \
      WHERE css_property IN ('object-fit','object-position') ORDER BY block_slug"
 ```
 
-Six rows across four blocks. Open `sgs/hero`'s `render.php` around the
+Read your own output rather than trusting a count here — this repo's rule is that every number
+comes from a command you just ran. Then open `sgs/hero`'s `render.php` around the
 `$sgs_hero_split_media_fit_selector` assignment and read how a working object-fit is scoped. That is
 the shape `sgs/media` adopts in Wave 5a, and reading it first will save you the hour the last session
 spent arriving at it another way.

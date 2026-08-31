@@ -5,7 +5,8 @@ nothing deployed. Plan: `~/.claude/plans/media-element-zippy-boole.md`. Design:
 `.claude/plans/2026-08-30-media-element-architecture-v2.md`.
 
 **Shipped.** Atom registry (ten atoms, data only) · selective injection both sides (109 keys -> 49
-for two atoms) · generated L4 stylesheet from per-atom partials · six new gates · the ten atoms,
+for two atoms) · generated L4 stylesheet from per-atom partials · **five** new gates (nine media
+gates total in `gates.json`) · the ten atoms,
 each a pure logic module + a JSX control module + a PHP twin + a CSS partial.
 
 ### The instrument failures — all three were MINE, all three read green
