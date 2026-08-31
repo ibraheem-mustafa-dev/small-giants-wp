@@ -119,6 +119,12 @@ const FIXTURE = {
 		height: { desktop: 320, tablet: 240 },
 		heightUnit: 'px',
 		minHeight: { desktop: '40vh' },
+		// box-shape — the border's own paint (2026-09-02), ungated by shape.
+		borderRadius: { topLeft: 8, topRight: 8, bottomRight: 8, bottomLeft: 8 },
+		borderWidth: { top: 2, right: 2, bottom: 2, left: 2 },
+		borderStyle: 'dashed',
+		borderColour: 'primary',
+		borderColourGradient: '',
 		// overlay
 		overlayColour: 'primary',
 		overlayOpacity: 40,

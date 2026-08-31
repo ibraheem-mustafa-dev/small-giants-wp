@@ -25,7 +25,7 @@
 import { __ } from '@wordpress/i18n';
 import { RangeControl, SelectControl, TextControl, ToggleGroupControl, ToggleGroupControlOption } from '@wordpress/components';
 import { RATIO_OPTIONS } from '../../MediaSizingPanel.js';
-import { ResponsiveBorderRadiusControl } from '../../ResponsiveBoxControl.js';
+import SgsBorderControl from '../../SgsBorderControl.js';
 import SgsLengthControl from '../../SgsLengthControl.js';
 
 const MODE_OPTIONS = [
@@ -148,10 +148,23 @@ function LengthFieldRow( {
  * @param {Function} [props.onMaxHeightUnitChange]
  * @param {number}   [props.maxWidthPercentValue] Bare percentage number.
  * @param {Function} [props.onMaxWidthPercentChange]
+ * @param {Object}   [props.borderWidthValue]     `{top,right,bottom,left}` —
+ *                                          `SgsBorderControl`'s own `widthValues`
+ *                                          shape. Untiered — per-device border
+ *                                          width is cancelled, not deferred.
+ * @param {Function} [props.onBorderWidthChange]
+ * @param {string}   [props.borderStyleValue]
+ * @param {Function} [props.onBorderStyleChange]
+ * @param {string}   [props.borderColourValue]
+ * @param {Function} [props.onBorderColourChange]
+ * @param {string}   [props.borderColourGradientValue]
+ * @param {Function} [props.onBorderColourGradientChange]
  * @param {Object}   [props.borderRadiusValues]   `{base,tablet,mobile}` 4-corner
- *                                          objects — `ResponsiveBorderRadiusControl`'s
- *                                          own shape. Only rendered when
- *                                          `shape === 'rounded'`.
+ *                                          objects — `SgsBorderControl`'s own
+ *                                          `radiusValues` shape. Shown UNGATED,
+ *                                          for every `shape` value (2026-09-02) —
+ *                                          the border's own paint is independent
+ *                                          of the decorative clip.
  * @param {Function} [props.onBorderRadiusChange] `(tier, nextCorners) => void`.
  * @param {boolean}  [props.heightDisabled] Whether the sizing mode makes
  *                                          Height/Ratio rows inert.
@@ -185,6 +198,14 @@ export default function MediaBoxShapeControls( {
 	onMaxHeightUnitChange,
 	maxWidthPercentValue,
 	onMaxWidthPercentChange,
+	borderWidthValue,
+	onBorderWidthChange,
+	borderStyleValue,
+	onBorderStyleChange,
+	borderColourValue,
+	onBorderColourChange,
+	borderColourGradientValue,
+	onBorderColourGradientChange,
 	borderRadiusValues,
 	onBorderRadiusChange,
 	heightDisabled = false,
@@ -247,11 +268,27 @@ export default function MediaBoxShapeControls( {
 				__next40pxDefaultSize
 			/>
 
-			{ 'rounded' === shape && onBorderRadiusChange && (
-				<ResponsiveBorderRadiusControl
-					label={ __( 'Corner radius', 'sgs-blocks' ) }
-					values={ borderRadiusValues || {} }
-					onChange={ onBorderRadiusChange }
+			{ /* Ungated by shape (2026-09-02, Bean's ruling): the border's own
+			     paint shows the same way for every shape value — no
+			     conditional mount. SgsBorderControl fed this atom's own
+			     attribute names with zero custom logic, same as every other
+			     block that mounts it (e.g. sgs/before-after's "Border" panel). */ }
+			{ onBorderWidthChange && (
+				<SgsBorderControl
+					label={ __( 'Border', 'sgs-blocks' ) }
+					widthValues={ borderWidthValue || {} }
+					onWidthChange={ onBorderWidthChange }
+					styleValue={ borderStyleValue }
+					onStyleChange={ onBorderStyleChange }
+					colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+					colourValue={ borderColourValue }
+					onColourChange={ onBorderColourChange }
+					colourGradientValue={ borderColourGradientValue }
+					onColourGradientChange={ onBorderColourGradientChange }
+					colourLinked={ true }
+					radiusLabel={ __( 'Corner radius', 'sgs-blocks' ) }
+					radiusValues={ borderRadiusValues || {} }
+					onRadiusChange={ onBorderRadiusChange }
 				/>
 			) }
 

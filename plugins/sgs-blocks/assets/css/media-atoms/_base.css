@@ -145,3 +145,45 @@
  * nothing to an inline <svg>, so the SVG path uses `preserveAspectRatio` or a
  * sized wrapper. Never widen a fit selector to cover it.
  */
+
+/* ── Cross-atom rule: composed animation (motion + svg-presentation) ──────────
+ *
+ * `motion.css` (ken-burns/parallax) and `svg-presentation.css` (pulse/float/
+ * wave) each write only to their OWN uniquely named custom properties
+ * (`--sgs-media-motion-animation-*` / `--sgs-media-svg-animation-*` — never
+ * renamed, never merged). Neither atom declares a real `animation-*`
+ * property any more; that ownership lives here, once, because two atom
+ * partials both declaring the same real property at the same specificity
+ * (0,1,0) is unresolvable by cascade alone — whichever partial the alphabet
+ * loads last always wins outright, silently killing the other (fixed
+ * 2026-09-01, Bean's direction: svg-presentation keeps sole ownership of the
+ * SVG decorative vocabulary, motion's ken-burns/parallax must still WORK,
+ * including on an element that also has an SVG animation active).
+ *
+ * CSS's native comma-separated multi-value animation syntax runs BOTH
+ * animations simultaneously, positionally matched by list order — position 1
+ * is svg-presentation's, position 2 is motion's, in every sub-property
+ * below. An atom that hasn't set its custom properties falls back to a
+ * harmless steady-state default (`none`/`0s`), so an element carrying only
+ * one of the two atoms still animates correctly; it just runs one animation
+ * instead of two.
+ *
+ * `animation-fill-mode` has no svg-presentation custom property (that atom
+ * never declared one) — position 1 is the literal `none`, matching what
+ * svg-presentation always rendered before this change.
+ *
+ * If a THIRD atom ever needs `.sgs-media-el` animation, extend this rule
+ * with a third comma-separated position — do not give it its own bare
+ * `animation-*` declaration elsewhere.
+ */
+
+@media ( prefers-reduced-motion: no-preference ) {
+	.sgs-media-el {
+		animation-name: var( --sgs-media-svg-animation-name, none ), var( --sgs-media-motion-animation-name, none );
+		animation-duration: var( --sgs-media-svg-animation-duration, 0s ), var( --sgs-media-motion-animation-duration, 20s );
+		animation-timing-function: var( --sgs-media-svg-animation-timing-function, ease-in-out ), var( --sgs-media-motion-animation-timing-function, ease-in-out );
+		animation-iteration-count: var( --sgs-media-svg-animation-iteration-count, infinite ), var( --sgs-media-motion-animation-iteration-count, infinite );
+		animation-direction: var( --sgs-media-svg-animation-direction, alternate ), var( --sgs-media-motion-animation-direction, alternate );
+		animation-fill-mode: none, var( --sgs-media-motion-animation-fill-mode, none );
+	}
+}

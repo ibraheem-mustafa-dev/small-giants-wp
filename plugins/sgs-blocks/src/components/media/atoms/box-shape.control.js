@@ -44,6 +44,10 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 	const borderRadiusKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadius' );
 	const borderRadiusTabletKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusTablet' );
 	const borderRadiusMobileKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusMobile' );
+	const borderWidthKey = mediaStoredAttrName( blockSlug, prefix, 'BorderWidth' );
+	const borderStyleKey = mediaStoredAttrName( blockSlug, prefix, 'BorderStyle' );
+	const borderColourKey = mediaStoredAttrName( blockSlug, prefix, 'BorderColour' );
+	const borderColourGradientKey = mediaStoredAttrName( blockSlug, prefix, 'BorderColourGradient' );
 
 	const disc = disclosure( { attributes, prefix, blockSlug } );
 	const minHeightObj = attributes[ minHeightKey ] && 'object' === typeof attributes[ minHeightKey ]
@@ -88,6 +92,14 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 			onMaxHeightUnitChange={ ( v ) => setAttributes( { [ maxHeightUnitKey ]: v } ) }
 			maxWidthPercentValue={ attributes[ maxWidthPercentKey ] }
 			onMaxWidthPercentChange={ ( v ) => setAttributes( { [ maxWidthPercentKey ]: v } ) }
+			borderWidthValue={ attributes[ borderWidthKey ] ?? {} }
+			onBorderWidthChange={ ( v ) => setAttributes( { [ borderWidthKey ]: v } ) }
+			borderStyleValue={ attributes[ borderStyleKey ] }
+			onBorderStyleChange={ ( v ) => setAttributes( { [ borderStyleKey ]: v } ) }
+			borderColourValue={ attributes[ borderColourKey ] }
+			onBorderColourChange={ ( v ) => setAttributes( { [ borderColourKey ]: v ?? '' } ) }
+			borderColourGradientValue={ attributes[ borderColourGradientKey ] }
+			onBorderColourGradientChange={ ( v ) => setAttributes( { [ borderColourGradientKey ]: v ?? '' } ) }
 			borderRadiusValues={ {
 				base: attributes[ borderRadiusKey ] ?? {},
 				tablet: attributes[ borderRadiusTabletKey ] ?? {},

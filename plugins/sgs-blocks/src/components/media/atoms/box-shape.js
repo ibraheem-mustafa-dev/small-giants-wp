@@ -9,28 +9,32 @@
  * is an independent decoration layered on top of whichever box the mode
  * produces.
  *
- * BORDER-RADIUS is a SECOND, ADDITIVE writer, not the same writer as before.
+ * BORDER-RADIUS/WIDTH/STYLE/COLOUR are ADDITIVE writers targeting the MEDIA
+ * ELEMENT itself (`.sgs-media-el`), NOT the block WRAPPER's border chrome —
  * `SgsBorderControl` (44 blocks) and native `__experimentalBorder`
- * (`sgs/media`) still own the BLOCK WRAPPER's border chrome outright — a
- * second writer targeting THAT node is a bug (plugins/sgs-blocks/CLAUDE.md,
- * "Border controls"). The named-shape vocabulary was therefore originally
- * expressed ONLY through `clip-path`, a different CSS property with no
- * possible collision. A genuine editable radius was added 2026-09-01
- * (`--sgs-media-border-radius`, a NEW custom property targeting the MEDIA
- * ELEMENT itself, `.sgs-media-el` — not the wrapper) because `clip-path`
- * alone gives no way to dial a custom rounded corner. `clip-path` is
- * UNCHANGED and still governs the visual clip:
+ * (`sgs/media`) still own that outright (plugins/sgs-blocks/CLAUDE.md,
+ * "Border controls"). The named-shape vocabulary is expressed ONLY through
+ * `clip-path`, a different CSS property with no possible collision:
  *
- *   none    -> no clip;              --sgs-media-border-radius NOT emitted
- *              (the default; matches the "nothing for an empty attribute
- *              set" atom contract — the stylesheet's own fallback already
- *              resolves to 0)
- *   square  -> clip-path: inset(0);  --sgs-media-border-radius:0
- *   rounded -> clip-path: inset(0 round 12px) (still this atom's OWN fixed
- *              decorative constant, unchanged); --sgs-media-border-radius
- *              carries the client's OWN tiered `BorderRadius` corners
- *              instead (falls back to a theme token, never a bare pixel)
- *   circle  -> clip-path: circle(50%); --sgs-media-border-radius:50%
+ *   none    -> no clip
+ *   square  -> clip-path: inset(0)
+ *   rounded -> clip-path: inset(0 round 12px) (this atom's OWN fixed
+ *              decorative constant, unchanged)
+ *   circle  -> clip-path: circle(50%)
+ *
+ * `clip-path` is the CLIP. The border's own PAINT — width/style/colour/
+ * radius — is a SEPARATE, independent capability layered on top, wired
+ * 2026-09-02 by feeding `SgsBorderControl` this atom's own attribute names
+ * with ZERO custom logic (Bean's ruling: "take the original border helper
+ * and shove it into any border with 0 nuance, customising it for the layer
+ * it's being applied to"). It shows UNGATED for every `shape` value — a
+ * `none`-shape element can still carry a visible border. `BorderRadius`
+ * carries the client's own tiered corners with no shape-based fallback
+ * token any more (that bespoke shape-to-radius mapping was Bean-rejected
+ * 2026-09-02 and removed); an unset `BorderRadius` simply emits nothing,
+ * matching the atom's own "nothing for an empty attribute set" contract.
+ * `BorderWidth` is an UNTIERED 4-side box object — per-device border width
+ * is CANCELLED, not deferred (Bean, 2026-08-29).
  *
  * ⚠ COLLISION RISK, NAMED NOT SOLVED: no block adopts this atom's `BorderRadius`
  * base AND a native/`SgsBorderControl` radius on the SAME element today
@@ -78,6 +82,7 @@
  * @package SGS\Blocks
  */
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
+import { colourVar } from '../../../utils/tokens.js';
 import { MEDIA_ATOMS } from './registry.js';
 
 const ATOM_ID = 'box-shape';
@@ -89,11 +94,20 @@ const CLIP_PATHS = {
 };
 
 /**
- * Fallback border-radius when `shape:'rounded'` has no client-set
- * `BorderRadius` at all — a theme token, never a bare pixel constant, so a
- * re-skin still lands correctly.
+ * Border styles this atom accepts — the same allowlist `sgs/before-after`'s
+ * render.php enforces for its own block-private border (Shape B).
  */
-const ROUNDED_BORDER_RADIUS_FALLBACK = 'var(--wp--custom--border-radius--medium)';
+const BORDER_STYLES = [ 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' ];
+
+/**
+ * Gradient charset/breakout rules, mirrored from `overlay.js`'s
+ * `validateGradient()` (not imported — every atom mirrors its own copy
+ * rather than sharing, matching that atom's own documented reasoning) and
+ * from `sgs_css_gradient_value()` (helpers-tokens.php), which has no JS
+ * twin of its own.
+ */
+const GRADIENT_PATTERN = /^(repeating-)?(linear|radial|conic)-gradient\([A-Za-z0-9\s.,%()#/_-]+\)$/i;
+const GRADIENT_BREAKOUT = /[;{}]|url\s*\(|<|>|@|expression/i;
 
 /**
  * Normalise a ratio string in EITHER format to the canonical spaced form.
@@ -223,6 +237,72 @@ export function cornersToRadiusShorthand( corners ) {
 				: '0'
 		)
 		.join( ' ' );
+}
+
+/**
+ * Convert a 4-SIDE box object into the CSS `border-width` shorthand VALUE
+ * string ("top right bottom left") — `SgsBorderControl`'s own `widthValues`
+ * shape. An unset side defaults to `0`; an entirely-empty object returns ''
+ * so the caller can skip the declaration outright. Sibling to
+ * `cornersToRadiusShorthand()` above, same rules, different key set (this
+ * one CANNOT read a corner-keyed object and vice versa).
+ *
+ * @param {*} sides Raw `BorderWidth`-shaped value.
+ * @return {string} `"T R B L"`, or '' when nothing is set.
+ */
+export function sidesToWidthShorthand( sides ) {
+	if ( ! sides || 'object' !== typeof sides ) {
+		return '';
+	}
+	const order = [ 'top', 'right', 'bottom', 'left' ];
+	const hasAny = order.some(
+		( k ) => undefined !== sides[ k ] && null !== sides[ k ] && '' !== sides[ k ]
+	);
+	if ( ! hasAny ) {
+		return '';
+	}
+	return order
+		.map( ( k ) =>
+			undefined !== sides[ k ] && null !== sides[ k ] && '' !== sides[ k ]
+				? sides[ k ]
+				: '0'
+		)
+		.join( ' ' );
+}
+
+/** Reject an out-of-vocabulary `BorderStyle` value to ''. */
+export function validateBorderStyle( value ) {
+	return 'string' === typeof value && BORDER_STYLES.includes( value ) ? value : '';
+}
+
+/**
+ * Validate a gradient string. Mirrors `sgs_css_gradient_value()`
+ * (helpers-tokens.php) and `overlay.js`'s own `validateGradient()`.
+ *
+ * @param {*} value Raw candidate.
+ * @return {string} The gradient, or '' when invalid/empty.
+ */
+export function validateBorderGradient( value ) {
+	const v = 'string' === typeof value ? value.trim() : '';
+	if ( ! v || ! GRADIENT_PATTERN.test( v ) || GRADIENT_BREAKOUT.test( v ) ) {
+		return '';
+	}
+	return v;
+}
+
+/**
+ * Resolve a colour attribute (palette slug or raw CSS colour) to a paintable
+ * value. Mirrors `sgs_colour_value()`'s slug branch, same as `overlay.js`'s
+ * own `resolveColour()`.
+ *
+ * @param {*} value Raw candidate.
+ * @return {string} A paintable CSS colour value, or '' when empty.
+ */
+export function resolveBorderColour( value ) {
+	if ( 'string' !== typeof value || ! value.trim() ) {
+		return '';
+	}
+	return colourVar( value.trim() ) || value.trim();
 }
 
 /** Format a numeric-or-string tier value with its unit, unless already unit-embedded. */
@@ -374,37 +454,55 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 		decls.push( `--sgs-media-clip-path:${ CLIP_PATHS[ shape ] }` );
 	}
 
-	// Real editable radius, companion to the clip-path above (2026-09-01).
-	// `circle` gets a fixed 50%; `rounded` gets the client's own tiered
-	// corners (falling back to a theme token when unset); `none`/`square`
-	// get a literal 0 — always emitted, never left to the stylesheet's own
-	// fallback, since this custom property is brand new and has no existing
-	// default to accidentally win against.
-	if ( 'circle' === shape ) {
-		decls.push( '--sgs-media-border-radius:50%' );
-	} else if ( 'rounded' === shape ) {
-		const radiusKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadius' );
-		const radiusTabletKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusTablet' );
-		const radiusMobileKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusMobile' );
-		const desktopShorthand = cornersToRadiusShorthand( attributes[ radiusKey ] );
-		const tabletShorthand = cornersToRadiusShorthand( attributes[ radiusTabletKey ] );
-		const mobileShorthand = cornersToRadiusShorthand( attributes[ radiusMobileKey ] );
-		decls.push(
-			`--sgs-media-border-radius:${ desktopShorthand || ROUNDED_BORDER_RADIUS_FALLBACK }`
-		);
-		if ( tabletShorthand ) {
-			decls.push( `--sgs-media-border-radius-tablet:${ tabletShorthand }` );
+	// The border's own paint — width/style/colour/radius, ungated by `shape`
+	// (2026-09-02). Straightforward custom properties, same shape as every
+	// other decl in this atom: emitted when a real value is set, skipped
+	// entirely otherwise ("nothing for an empty attribute set").
+	const radiusKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadius' );
+	const radiusTabletKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusTablet' );
+	const radiusMobileKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusMobile' );
+	const desktopRadiusShorthand = cornersToRadiusShorthand( attributes[ radiusKey ] );
+	const tabletRadiusShorthand = cornersToRadiusShorthand( attributes[ radiusTabletKey ] );
+	const mobileRadiusShorthand = cornersToRadiusShorthand( attributes[ radiusMobileKey ] );
+	if ( desktopRadiusShorthand ) {
+		decls.push( `--sgs-media-border-radius:${ desktopRadiusShorthand }` );
+	}
+	if ( tabletRadiusShorthand ) {
+		decls.push( `--sgs-media-border-radius-tablet:${ tabletRadiusShorthand }` );
+	}
+	if ( mobileRadiusShorthand ) {
+		decls.push( `--sgs-media-border-radius-mobile:${ mobileRadiusShorthand }` );
+	}
+
+	const borderWidthKey = mediaStoredAttrName( blockSlug, prefix, 'BorderWidth' );
+	const borderWidthShorthand = sidesToWidthShorthand( attributes[ borderWidthKey ] );
+	if ( borderWidthShorthand ) {
+		decls.push( `--sgs-media-border-width:${ borderWidthShorthand }` );
+	}
+
+	const borderStyleKey = mediaStoredAttrName( blockSlug, prefix, 'BorderStyle' );
+	const borderStyle = validateBorderStyle( attributes[ borderStyleKey ] );
+	if ( borderStyle ) {
+		decls.push( `--sgs-media-border-style:${ borderStyle }` );
+	}
+
+	// Colour pair — gradient wins over flat colour, same rule as
+	// `overlay.js`'s `resolvePaint()`. A gradient rides `border-image`
+	// (`box-shape.css`'s `border-image-slice:1` companion) rather than
+	// `border-color`, since a single CSS custom property cannot carry the
+	// masked-::before-ring technique `sgs_border_gradient_css()` uses — that
+	// helper builds a full scoped CSS rule, and this atom's contract is
+	// custom-property VALUES only, never bare rules.
+	const borderColourKey = mediaStoredAttrName( blockSlug, prefix, 'BorderColour' );
+	const borderColourGradientKey = mediaStoredAttrName( blockSlug, prefix, 'BorderColourGradient' );
+	const borderGradient = validateBorderGradient( attributes[ borderColourGradientKey ] );
+	if ( borderGradient ) {
+		decls.push( `--sgs-media-border-image:${ borderGradient }` );
+	} else {
+		const borderColour = resolveBorderColour( attributes[ borderColourKey ] );
+		if ( borderColour ) {
+			decls.push( `--sgs-media-border-color:${ borderColour }` );
 		}
-		if ( mobileShorthand ) {
-			decls.push( `--sgs-media-border-radius-mobile:${ mobileShorthand }` );
-		}
-	} else if ( 'square' === shape ) {
-		// 'none' (the default) emits NOTHING here, matching clip-path's own
-		// skip and the atom contract's "nothing for an empty attribute set"
-		// rule (test-media-atom-parity.mjs) — the stylesheet's own
-		// `var( --sgs-media-border-radius, 0 )` fallback already resolves to
-		// the same `0`, so this is a no-op-free skip, not a behaviour change.
-		decls.push( '--sgs-media-border-radius:0' );
 	}
 
 	return decls;

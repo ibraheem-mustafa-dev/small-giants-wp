@@ -138,6 +138,24 @@ export const MEDIA_BASES = {
 		// box-shape.js's module docblock for the collision risk this still
 		// leaves open if a future block adopts both on one element.
 		'BorderRadius',
+		// The border's own paint (2026-09-02, Bean-directed) — `SgsBorderControl`
+		// fed this atom's OWN attribute names, exactly as `sgs/before-after`
+		// feeds it its own (`src/blocks/before-after/edit.js:739-761`, the
+		// canonical live adopter). `BorderWidth` is an UNTIERED 4-side box
+		// object ({top,right,bottom,left}) — per-device border width is
+		// CANCELLED, not deferred (Bean, 2026-08-29; see CLAUDE.md "Border
+		// controls"), so this base is deliberately absent from
+		// MEDIA_TIERED_BASES below. `BorderStyle` is a flat keyword string.
+		// `BorderColour`/`BorderColourGradient` are the flat colour pair
+		// (`colourLinked:true` — a palette slug, not a baked hex). This is a
+		// SEPARATE paint from `--sgs-media-border-radius` above; the two
+		// together are the media element's own border, distinct from the
+		// block WRAPPER's border chrome (still `SgsBorderControl`/native
+		// `__experimentalBorder` on the wrapper itself).
+		'BorderWidth',
+		'BorderStyle',
+		'BorderColour',
+		'BorderColourGradient',
 	],
 	overlay: [
 		'OverlayColour',
@@ -289,6 +307,13 @@ export const MEDIA_ATTR_TYPES = {
 	// A 4-corner box-family object ({topLeft,topRight,bottomLeft,bottomRight}),
 	// matching ResponsiveBorderRadiusControl's own per-tier shape.
 	BorderRadius: 'object',
+	// A 4-side box-family object ({top,right,bottom,left}), matching
+	// SgsBorderControl's own `widthValues` shape. Untiered — see the
+	// MEDIA_BASES.shape docblock above.
+	BorderWidth: 'object',
+	BorderStyle: 'string',
+	BorderColour: 'string',
+	BorderColourGradient: 'string',
 	OverlayColour: 'string',
 	OverlayColourHover: 'string',
 	OverlayGradient: 'string',

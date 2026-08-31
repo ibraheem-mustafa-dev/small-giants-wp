@@ -44,42 +44,27 @@
  * client with reduced motion enabled sees the media fully static —
  * `animation-name` simply never applies.
  *
- * ⛔ KNOWN CROSS-ATOM COLLISION, FLAGGED NOT SILENTLY SHIPPED. `svg-
- * presentation.css` ALSO declares a bare, unconditional `.sgs-media-el {
- * animation-name / -duration / -timing-function / -iteration-count /
- * -direction }` rule at the identical specificity (0,1,0). The generated
- * stylesheet concatenates atom partials alphabetically after `_base.css`
- * (`generate-media-stylesheet.mjs`), so `svg-presentation.css` (s) loads
- * AFTER `motion.css` (m) and wins EVERY one of those shared properties for
- * ANY element carrying `.sgs-media-el` — including a block that adopted only
- * `motion`, never `svg-presentation` — because the stylesheet is loaded
- * sitewide and matches by class alone, independent of which atoms a given
- * block's `mediaElements` entry actually lists. Concretely: as shipped,
- * `motion`'s ken-burns/parallax NEVER animates on any element, because
- * `svg-presentation`'s own rule (falling back to `none`/`0s` when its own
- * attrs are unset) always wins the cascade. Both atoms currently have `types`
- * that overlap on `svg` (`svg-presentation`: svg-only; `motion`: image/video/
- * svg), so this is not a hypothetical pairing. NEITHER atom's own JS/PHP
- * `css()` can see or fix this — it is a stylesheet-concatenation-order issue
- * between two independently-built atoms. Resolving it needs a design
- * decision (a shared multi-animation-slot convention, or `registry.js`
- * declaring the two atoms mutually exclusive) BEFORE either is wired into a
- * real block — do not silently rely on load order. Flagged in the build
- * report rather than fixed here, per this atom's brief ("no live consumer
- * yet, don't wire it up") and because `svg-presentation.css` is another
- * agent's shipped file, not this atom's to unilaterally change.
+ * ✅ CROSS-ATOM COLLISION RESOLVED (2026-09-01, Bean's direction). This atom
+ * used to declare `animation-name`/`-duration`/`-timing-function`/
+ * `-iteration-count`/`-direction`/`-fill-mode` directly on `.sgs-media-el`,
+ * and so did `svg-presentation.css` — identical specificity (0,1,0), last
+ * partial loaded (alphabetically after `_base.css`) always won, so ken-burns/
+ * parallax silently never animated on any element that could also carry an
+ * SVG animation. Bean's direction: `svg-presentation` keeps sole ownership of
+ * the pulse/float/wave SVG vocabulary; `motion`'s ken-burns/parallax needs to
+ * actually WORK, including on an element that also has an SVG animation
+ * active — a zoom/drift transform and a decorative SVG pulse are different
+ * concepts that should be able to run simultaneously, not fight over one
+ * cascade slot. The fix: BOTH atoms still write only to their OWN uniquely
+ * named custom properties (unchanged below), but the REAL `animation-*`
+ * properties are now composed ONCE, in `_base.css`, using CSS's native
+ * comma-separated multi-value animation syntax — each atom occupies its own
+ * position in the list, so both animations run at once. See `_base.css`'s
+ * "Cross-atom rule: composed animation" section for the combining rule
+ * itself.
  */
 
 @media ( prefers-reduced-motion: no-preference ) {
-	.sgs-media-el {
-		animation-name: var( --sgs-media-motion-animation-name, none );
-		animation-duration: var( --sgs-media-motion-animation-duration, 20s );
-		animation-timing-function: var( --sgs-media-motion-animation-timing-function, ease-in-out );
-		animation-iteration-count: var( --sgs-media-motion-animation-iteration-count, infinite );
-		animation-direction: var( --sgs-media-motion-animation-direction, alternate );
-		animation-fill-mode: var( --sgs-media-motion-animation-fill-mode, none );
-	}
-
 	@keyframes sgs-media-motion-ken-burns {
 		0% {
 			transform: scale( 1 ) translate( 0, 0 );

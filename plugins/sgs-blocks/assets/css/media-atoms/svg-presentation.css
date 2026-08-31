@@ -18,7 +18,25 @@
  * new one: the whole animation rule sits inside
  * `@media (prefers-reduced-motion: no-preference)`, so a client with reduced
  * motion enabled sees the SVG fully static — animation-name/-duration
- * simply never apply.
+ * simply never apply. (The real `animation-name`/`-duration` properties now
+ * live in `_base.css`'s combined rule — see the note below — which is ALSO
+ * wrapped in this same `@media` guard, so that still holds.)
+ *
+ * ✅ CROSS-ATOM COLLISION RESOLVED (2026-09-01, Bean's direction). This atom
+ * used to declare `animation-name`/`-duration`/`-timing-function`/
+ * `-iteration-count`/`-direction` directly on `.sgs-media-el`, and so did
+ * `motion.css` — identical specificity (0,1,0), whichever partial loaded
+ * last (alphabetically after `_base.css`) always won, so `motion`'s ken-
+ * burns/parallax silently never animated on any element that could also
+ * carry an SVG animation. Bean's direction: this atom KEEPS sole ownership
+ * of the pulse/float/wave SVG vocabulary — nothing about that changes —
+ * but the two atoms' animations must be able to run simultaneously rather
+ * than one silently winning. The fix: this atom still writes only to its
+ * OWN uniquely named custom properties (unchanged below), but the REAL
+ * `animation-*` properties are now composed ONCE, in `_base.css`, using
+ * CSS's native comma-separated multi-value animation syntax — each atom
+ * occupies its own position in the list. See `_base.css`'s "Cross-atom
+ * rule: composed animation" section for the combining rule itself.
  */
 
 .sgs-media-el {
@@ -29,14 +47,6 @@
 }
 
 @media ( prefers-reduced-motion: no-preference ) {
-	.sgs-media-el {
-		animation-name: var( --sgs-media-svg-animation-name, none );
-		animation-duration: var( --sgs-media-svg-animation-duration, 0s );
-		animation-timing-function: ease-in-out;
-		animation-iteration-count: infinite;
-		animation-direction: alternate;
-	}
-
 	@keyframes sgs-media-svg-pulse {
 		from {
 			transform: scale( 1 );
