@@ -1195,15 +1195,22 @@ Grounded in a control-by-control comparison of the six blocks against `Backgroun
 the design input for Wave 5a's `MediaElementPanel` / `SGS_Media_Element` build — the layer §17
 records as not yet built.
 
-### 18.1 Type selection — tabs, exclusive by construction
+### 18.1 Type selection — a real `MediaType` attribute, non-destructive switching (corrected 2026-09-02)
 
-Three existing mechanisms (sgs/media's button group, hero's dropdown, container's tabs) collapse
-to ONE: WP's native `TabPanel`, the shape container/`BackgroundPanel` already uses. **No stored
-enum attribute.** Type is read from which source attribute is populated — but unlike
-container today, switching tabs CLEARS the sibling type's source attribute(s) in the same
-`setAttributes` call, so two sources can never coexist. This closes the "video silently beats
-image, no warning" gap named in §1 without adding a control to build or maintain. It also
-resolves the button-vs-dropdown question for free — `TabPanel` renders as a button row.
+⚠ **This section originally specified WP's `TabPanel` with no stored attribute, clearing the
+sibling type's source data on switch, "so two sources can never coexist." Superseded — the
+already-built `media-type`/`source` atoms (`src/components/media/atoms/media-type.control.js`,
+`source.control.js`) use a better design, kept as final rather than rebuilt to match this section:
+a real `MediaType` attribute (button-group control, `ToggleGroupControl`, matching Bean's
+preference for buttons over a dropdown) plus NON-DESTRUCTIVE switching — the other type's stored
+media is never cleared, so a client toggling image↔video to compare never loses their upload.**
+This still closes the "video silently beats image, no warning" gap named in §1, but by a different
+mechanism than "clear the loser": because this atom stores a REAL `MediaType` attribute (unlike
+container, which infers type from which source field happens to be populated), render always
+knows unambiguously which type is active regardless of what else is stored — there is no
+"whichever source is present wins" ambiguity left to resolve by deleting data. `source.control.js`
+also auto-fills `ImageAlt`/`VideoAlt` from the picked attachment's own alt text on selection
+(§18.3), never overwriting a client's own typed wording on re-pick.
 
 ### 18.2 Panel structure — "Media" panel, "Image Styling" sub-panel
 
