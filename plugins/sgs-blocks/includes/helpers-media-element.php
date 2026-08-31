@@ -148,3 +148,95 @@ if ( ! function_exists( 'sgs_media_element_value' ) ) {
 		return $value;
 	}
 }
+
+if ( ! function_exists( 'sgs_media_element_scope_class' ) ) {
+	/**
+	 * The per-ELEMENT scope class for one media element on a block.
+	 *
+	 * ⛔ PER ELEMENT, NOT PER BLOCK, and that distinction is the whole point.
+	 *
+	 * The atoms emit VALUES with fixed custom-property names -
+	 * `--sgs-media-object-fit`, not `--sgs-media-before-object-fit` - because the
+	 * shared stylesheet is static CSS and cannot know a surface's prefix. So a
+	 * block with TWO media elements (`sgs/before-after`'s before/after slots)
+	 * would set the same property twice on one scope and the second would win:
+	 * the client sets before=contain and after=fill, and both render fill.
+	 *
+	 * Scoping per element is what makes the fixed names safe. Each element
+	 * carries its own class, its own declarations sit on that class, and the
+	 * shared rule on `.sgs-media-el` reads whichever value its own element
+	 * inherited.
+	 *
+	 * This is the same answer `sgs/hero` already reached from the other
+	 * direction - it scopes its object-fit selector to
+	 * `.{uid} .sgs-hero__split-media--image` rather than to the block root.
+	 *
+	 * @param string $uid    The block instance's uid class.
+	 * @param string $prefix Surface prefix ( '' for a single-element block ).
+	 * @return string Scope class, with no leading dot.
+	 */
+	function sgs_media_element_scope_class( $uid, $prefix ) {
+		$uid = preg_replace( '/[^a-zA-Z0-9_-]/', '', (string) $uid );
+		if ( '' === $uid ) {
+			return '';
+		}
+		if ( '' === (string) $prefix ) {
+			return $uid;
+		}
+		$safe_prefix = strtolower( preg_replace( '/[^a-zA-Z0-9]/', '', (string) $prefix ) );
+		return '' === $safe_prefix ? $uid : $uid . '--' . $safe_prefix;
+	}
+}
+
+if ( ! function_exists( 'sgs_media_element_style' ) ) {
+	/**
+	 * Every declared atom's custom-property VALUES for one media element, as one
+	 * scoped CSS rule.
+	 *
+	 * The caller passes the atoms this element has adopted; each atom's
+	 * `sgs_media_atom_<id>_css()` contributes its declarations and they are
+	 * joined onto the element's own scope class.
+	 *
+	 * ⛔ Returns CSS TEXT, never a `<style>` tag and never an inline attribute.
+	 * The caller decides where it goes, exactly as `sgs_typography_css_rule()`
+	 * does - and Spec 32 forbids an inline `style` property declaration outright.
+	 *
+	 * ⛔ An atom with no PHP twin is SKIPPED SILENTLY ON PURPOSE, because the
+	 * alternative is worse: a fatal on a page because a JS-only atom was named.
+	 * The pairing is enforced at build time instead, where it belongs -
+	 * `test-media-atom-parity.mjs` fails when an atom ships one half.
+	 *
+	 * @param array  $attributes  Block attributes, verbatim.
+	 * @param string $prefix      Surface prefix.
+	 * @param string $block_slug  e.g. 'sgs/media'.
+	 * @param string $scope_class From sgs_media_element_scope_class().
+	 * @param array  $atoms       Atom ids this element has adopted.
+	 * @return string CSS text, or '' when nothing is set.
+	 */
+	function sgs_media_element_style( array $attributes, $prefix, $block_slug, $scope_class, array $atoms ) {
+		if ( '' === (string) $scope_class || empty( $atoms ) ) {
+			return '';
+		}
+
+		$decls = array();
+		foreach ( $atoms as $atom_id ) {
+			$fn = 'sgs_media_atom_' . str_replace( '-', '_', (string) $atom_id ) . '_css';
+			if ( ! function_exists( $fn ) ) {
+				continue;
+			}
+			$emitted = $fn( $attributes, $prefix, $block_slug );
+			if ( is_array( $emitted ) && $emitted ) {
+				$decls = array_merge( $decls, $emitted );
+			}
+		}
+
+		if ( empty( $decls ) ) {
+			return '';
+		}
+
+		// Atoms return declarations WITHOUT a trailing semicolon - the joiner owns
+		// the separators. Five of the first ten atoms appended their own and one
+		// did not, which produced `--a:1;;--b:2` the moment two were concatenated.
+		return '.' . $scope_class . '{' . implode( ';', $decls ) . '}';
+	}
+}

@@ -287,6 +287,60 @@ if ( pending.length ) {
 }
 process.stdout.write( '\n' );
 
+// ── Per-ELEMENT scoping ──────────────────────────────────────────────────────
+//
+// The atoms emit fixed custom-property names (`--sgs-media-object-fit`, never
+// `--sgs-media-before-object-fit`) because the shared stylesheet is static CSS
+// and cannot know a surface's prefix. That is only safe if each media element
+// gets its OWN scope class.
+//
+// ⛔ Without it, a block with two media elements sets the same property twice on
+// one scope and the second wins: a client sets before=contain and after=fill and
+// both render fill. `sgs/before-after` is the falsifying surface precisely
+// because it has two, so this is the assertion that would have caught it.
+{
+	const php = ( body ) =>
+		execFileSync( 'php', [ '-r', body ], { encoding: 'utf8' } );
+	const boot =
+		`define("ABSPATH","${ P }/");` +
+		'function esc_attr($s){return $s;} function esc_html($s){return $s;}' +
+		'function __($s,$d=null){return $s;} function esc_html__($s,$d=null){return $s;}' +
+		'function _doing_it_wrong($f,$m,$v){}' +
+		`require "${ P }/includes/helpers-media-element.php";` +
+		`foreach(glob("${ P }/includes/media/atoms/*.php") as $f) require_once $f;`;
+
+	const attrs = JSON.stringify(
+		JSON.stringify( { beforeObjectFit: 'contain', afterObjectFit: 'fill' } )
+	);
+	const rule = ( pfx ) =>
+		php(
+			boot +
+				`$a=json_decode(${ attrs },true);` +
+				`$s=sgs_media_element_scope_class("uid-abcd1234","${ pfx }");` +
+				'echo sgs_media_element_style($a,' +
+				`"${ pfx }","sgs/before-after",$s,["object-fit"]);`
+		).trim();
+
+	const before = rule( 'before' );
+	const after = rule( 'after' );
+
+	ck( 'scope: two prefixes produce DIFFERENT scope classes', before !== after,
+		`before=[${ before }] after=[${ after }]` );
+	ck( 'scope: each element keeps its OWN value',
+		before.includes( 'contain' ) && after.includes( 'fill' ) &&
+			! before.includes( 'fill' ) && ! after.includes( 'contain' ),
+		`before=[${ before }] after=[${ after }]` );
+	// POSITIVE CONTROL — an unprefixed block still gets a bare uid scope, so the
+	// prefixing is not simply always-on.
+	const bare = php(
+		boot + 'echo sgs_media_element_scope_class("uid-abcd1234","");'
+	).trim();
+	ck( 'scope: an unprefixed element scopes to the bare uid', bare === 'uid-abcd1234', bare );
+	// Declarations must join with SINGLE semicolons.
+	ck( 'scope: joined declarations carry no doubled semicolon',
+		! before.includes( ';;' ), before );
+}
+
 // ── The vacuity guard ────────────────────────────────────────────────────────
 ck(
 	`ratchet: at least ${ IMPLEMENTED_ATOMS } atom(s) implemented`,

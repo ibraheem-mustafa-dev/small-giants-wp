@@ -2824,3 +2824,47 @@ narrative-style entries don't match the `^- \*\*STOP-` bullet pattern, same as e
 (+0 — E18 is a `###` sub-section of E, matching the E15/E16/E17 pattern) · ritual questions **15**
 (+0, untouched). Every category >= its BEFORE figure. Nothing SUBTRACTED. PASS.
 
+### E19. Earned 2026-08-31 — a control that "does not work" already works somewhere else
+
+⛔ **STOP-DIFF-AGAINST-A-SURFACE-WHERE-IT-ALREADY-WORKS-BEFORE-DESIGNING-A-FIX.** Bean-locked. When a
+control, attribute or CSS property "does not mesh", the answer is almost always already in the tree:
+query which blocks declare it (`sgs-db.py sql "SELECT block_slug, attr_name, css_property,
+css_element FROM block_attributes WHERE css_property='<prop>'"`), read the WORKING block's
+`render.php` + `style.css`, and diff. Measured across the media-atom layer 2026-08-31: every "the
+atoms don't mesh" problem resolved this way in minutes after a stretch of reasoning from first
+principles produced nothing. `sgs/hero`'s split-media object-fit already worked, and the single
+difference was PER-ELEMENT selector scoping. The same query surfaced two blocks
+(`sgs/brand-strip` `logoFit`, `sgs/trust-bar` `badgeImageObjectFit`) that a hand-written survey of
+"media blocks" had missed outright — **a hand-picked population is not a census; the DB is.**
+
+⛔ **STOP-NEVER-REASON-FROM-WHAT-THE-CANARY-CURRENTLY-RENDERS.** Bean-locked. The framework is
+PRE-PRODUCTION: there is no client content, and a default changing costs nothing. Weighing "this
+would change what the canary shows" produces the wrong fix and burns the session — it happened
+2026-08-31 and cost a stop that should not have been taken. Whether a default is RIGHT is a
+SEPARATE question, decided on what the other surfaces measure, never on preserving the current page.
+
+⛔ **STOP-A-RULE-THAT-SILENTLY-WINS-IS-WORSE-THAN-ONE-THAT-LOSES.** This file already records that a
+losing CSS rule is indistinguishable from an absent one. The inverse is more dangerous: a SHARED
+rule at higher specificity that fires unconditionally silently replaces a block's own default, and
+the old behaviour simply stops with no attribute changed and nothing to grep for. The media atom
+rules sit at `(0,1,0)` and would have overridden `sgs/media`'s `(0,0,0)` `:where()` object-fit
+default. **Rule: a shared fallback is the value the population MEASURES, never `initial` / `unset` /
+`revert`** — gated by `check-media-atom-purity.js`.
+
+⛔ **STOP-A-FIXED-CUSTOM-PROPERTY-NAME-NEEDS-A-PER-ELEMENT-SCOPE.** A shared static stylesheet cannot
+know a surface's prefix, so shared emitters use fixed custom-property names. That is only safe when
+each element carries its OWN scope class. Without it a block with two media elements sets the same
+property twice on one scope and the second wins — the client sets before=contain and after=fill and
+both render fill, with both values stored correctly and the parity gate green. **Rule: scope per
+ELEMENT (`{uid}--{prefix}`), never per block.** Gated in `test-media-atom-parity.mjs`.
+
+
+**D101 carry-forward receipt for E19.** BEFORE: bytes 250,701 · `**STOP-` occurrences
+294 · DEFINED `- **STOP-` entries 270 · bullet defences
+337 · unique `STOP-*` tokens 317 · sections 5 ·
+ritual questions 8. FOUR STOP entries added (narrative `⛔ **STOP-…**` style,
+matching E15-E18), zero removed, zero reworded, zero ritual questions touched. AFTER: bytes
+253,463 · occurrences 298 · DEFINED 270 (+0, expected —
+narrative entries do not match the `^- \*\*STOP-` bullet pattern) · bullets 337 (+0,
+same reason) · unique tokens 321 · sections 5 · ritual
+8. Every category >= BEFORE. Nothing SUBTRACTED. PASS.

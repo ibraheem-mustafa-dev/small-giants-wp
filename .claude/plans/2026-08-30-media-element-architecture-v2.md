@@ -269,6 +269,41 @@ WordPress loads in **both** the canvas and the front end.
 Duplication shrinks from "all the CSS" to "read attribute → set variable" — small enough to be
 covered by a shared fixture test.
 
+### ⛔ SCOPE PER ELEMENT, NOT PER BLOCK — the constraint that makes L4 work
+
+The atoms emit fixed custom-property names — `--sgs-media-object-fit`, never
+`--sgs-media-before-object-fit` — because the shared stylesheet is static CSS and cannot know a
+surface's prefix. **That is only safe when each media element carries its own scope class.**
+
+Without it, a block with two media elements sets the same property twice on one scope and the second
+wins: a client sets `before=contain` and `after=fill`, and both render fill. `sgs/before-after` is
+the falsifying surface precisely because it has two, so this was the defect that would have made
+Wave 5 look like an abstraction failure when it was a scoping omission.
+
+```php
+sgs_media_element_scope_class( $uid, $prefix )   // -> {uid} or {uid}--{prefix}
+sgs_media_element_style( $attributes, $prefix, $block_slug, $scope_class, $atoms )
+```
+
+⭐ **`sgs/hero` already had this answer from the other direction** — it scopes its object-fit
+selector to `.{uid} .sgs-hero__split-media--image` rather than to the block root. Reading a surface
+where the control ALREADY works, and diffing, is how this was found; see §12's method note.
+Gated by the scope assertions in `test-media-atom-parity.mjs`.
+
+### ⛔ A SHARED FALLBACK MUST BE THE MEASURED DEFAULT, NEVER `initial`
+
+The atom rules sit at `(0,1,0)` on `.sgs-media-el` and fire unconditionally, so a
+`var( --x, initial )` fallback beats a block's own `:where()` default at `(0,0,0)`. `sgs/media`
+defaults object-fit to `cover` exactly that way, and an `initial` fallback would silently replace it
+with `fill` — no attribute changed, nothing to grep for, every gate green.
+
+Fallbacks are the values the census MEASURED: `cover` for object-fit and background-size (all four
+surfaces), `center center` for the position pair, `no-repeat`, `scroll`. `initial` / `unset` /
+`revert` are banned outright by `check-media-atom-purity.js`.
+
+**A rule that LOSES is indistinguishable from one that is ABSENT. A rule that silently WINS is
+worse** — the old default simply stops applying and the change looks like it came from nowhere.
+
 ⛔ **v1 claimed the canvas and server run "literally the same function". They cannot** — one is JS,
 one is PHP. v2 claims what is achievable and testable: **one stylesheet, one descriptor, two thin
 value-setters, and a fixture asserting both emit identical custom-property declarations for a fixed
@@ -722,6 +757,27 @@ do not close; the eye alone does not close.
 
 ⚠ Waves 1-2 came in materially faster than this table's originals. Treat the remaining figures as
 upper bounds, not targets.
+
+---
+
+## 11b. Method — diff against a surface where it already works (Bean-locked 2026-08-31)
+
+⛔ **When a control "does not mesh", do not design a fix from first principles.** Ask which blocks
+already have the attribute, then read the working one and compare:
+
+```bash
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql   "SELECT block_slug, attr_name, css_property, css_element FROM block_attributes
+     WHERE css_property='object-fit'"
+```
+
+Measured: every "the atoms don't mesh" problem in Waves 3-5 resolved this way in minutes. The same
+query also surfaced `sgs/brand-strip` (`logoFit`) and `sgs/trust-bar` (`badgeImageObjectFit`) —
+two blocks a hand-written survey of "media surfaces" had missed outright, which is a standing
+correction to the census's population.
+
+⛔ **Never weigh "this changes what the canary currently renders."** The framework is
+PRE-PRODUCTION; there is no content to protect and a default changing costs nothing. Whether a
+default is RIGHT is a separate question, decided on what the other surfaces measure.
 
 ---
 

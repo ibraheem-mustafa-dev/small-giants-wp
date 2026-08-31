@@ -32,12 +32,9 @@ framework yet, so breakage there costs time, not money.
 
 **Invoke `/autopilot` first.**
 
-⚠ **Five tracks have touched `main` historically; ONE is active now. Sections below are per-track.**
-The shop-archive / R-3 track owns the sections immediately below. The **colour-golden /
-client-controls** track is CLOSED (D898) — its section below is a pointer only. The **motion**
-track owns `## ▶ MOTION TRACK` below.
+⚠ **Multiple tracks have touched `main` historically; ONE is active now. Sections below are per-track.**
+The **motion** track owns `## ▶ MOTION TRACK` below.
 The **consolidation** track is summarised in the next block and is CLOSED bar one phase.
-The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section at the bottom.
 
 ⭐ **Client-controls SPLIT IN TWO (2026-08-30):** `prompts/2026-08-31-uniformity-sweep.md`
 (the original goal) + `prompts/2026-08-31-media-element.md`. Earlier names are stale.
@@ -47,6 +44,14 @@ The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section
 "524" here was low); rebuilding an existing tool is this repo's recorded failure mode. Search the
 SUBJECT (colour, token, element, parity), never the verb — the same idea is spelled `census-*`,
 `survey-*`, `audit-*`, `check-*`, `scan-*`, `probe-*`, `migrate-*` and `report-*`.
+
+## ▶ MOTION TRACK` below.
+The **consolidation** track is summarised in the next block and is CLOSED bar one phase.
+The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section at the bottom.
+
+⭐ **Client-controls SPLIT IN TWO (2026-08-30):** `prompts/2026-08-31-uniformity-sweep.md`
+(the original goal) + `prompts/2026-08-31-media-element.md`. Earlier names are stale.
+
 
 ## ▶ BORDER / SHAPE-B TRACK — 2026-08-30 (evening): CLOSED
 
@@ -320,43 +325,39 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 `.is-layout-constrained > :where(:not(.alignfull))`. Ours therefore cannot express
 "full-bleed child of a constrained parent". Read it there before reopening it.
 
-## ▶ CLIENT-CONTROLS TRACK — 2026-08-30: MEDIA ELEMENT, waves 1-3 SHIPPED
+## ▶ CLIENT-CONTROLS TRACK — 2026-08-31: MEDIA ELEMENT, waves 1-4 SHIPPED
 
 **Detail: D904-D910. Plan `~/.claude/plans/media-element-zippy-boole.md`. Design
 `.claude/plans/2026-08-30-media-element-architecture-v2.md` — rewritten in place; do not re-add
-"this was wrong" notes, they mislead a grepping agent. Do not restate history here.**
-(`prompts/2026-08-31-uniformity-sweep.md` = separate ORIGINAL goal, triage-only.)
+"this was wrong" notes, they mislead a grepping agent. Method rules: STOP-CATALOGUE **E19** + both
+CLAUDE.mds. Do not restate history here.**
 
-**Waves 1-2 deployed + live-verified.** Probe **3143**;
-`reports/visual-diff/svg-sanitiser-captions-2026-08-30.md`.
+**Waves 1-2 deployed + live-verified** (probe **3143**). **Waves 3-4 built, 82/82 gates, NOT
+deployed** — registry, presentation census + `gaps`, selective injection (109 → 49 keys), generated
+L4 stylesheet, ten atoms, eight gates.
 
-**Wave 3 built** — atom registry, presentation census (54 pairs / 37 names + a **`gaps` matrix**),
-selective injection both sides (109 → 49 keys), generated L4 stylesheet from per-atom partials.
+⛔ **Each atom is TWO modules** (`check-media-atom-purity.js`): `<id>.js` plain-Node importable,
+`<id>.control.js` holds the JSX. Three of my own instruments read green while proving nothing —
+read D910 before trusting a ratchet or fixture here.
 
-⛔ **ABSENCE IS A GAP, NOT A DECISION (Bean).** A missing name is an accidental gap, so `gaps` is
-the operative output, not the inventory: **SIX real gaps**. Only a genuinely DIFFERENT concept is
-excludable — `decorative-image`'s `positionX/Y` are absolute page placement.
+⛔ **METHOD, Bean-locked 2026-08-31.** A control that "does not work" already works somewhere: query
+`block_attributes`, read the WORKING block, diff. **Never reason from what the canary renders** —
+pre-production, nothing to protect. Two gated rules from it: a shared fallback is the MEASURED
+default, never `initial`; scope per ELEMENT (`{uid}--{prefix}`), never per block, or a two-element
+block renders both slots with the second's value.
 
-⛔ **A control becomes standard by BEING a shared helper.** `golden-controls.json` encodes 14 types;
-exactly ONE has a rule reading it, so a recipe there enforces nothing.
-⛔ **`object-fit`'s `custom` is a SIZING MODE** → belongs to `box-shape`. Hero's `--image, --video`
-scoping (SVG's `<span>` excluded) is the canonical video/SVG answer.
+⛔ **ABSENCE IS A GAP, NOT A DECISION** — `gaps` is the operative census output (**SIX real gaps**);
+only a genuinely DIFFERENT concept is excludable. ⛔ **A control becomes standard by BEING a shared
+helper.** ⛔ **`object-fit`'s `custom` is a SIZING MODE** → `box-shape`.
 
-**Wave 4 SHIPPED (D910)** — ten atoms, `96a696130`..`27bd2eb2b`, 82/82 gates, NOT deployed.
-Each atom = pure logic module + JSX control module + PHP twin + CSS partial. ⛔ **The split is a CONTRACT**
-(`check-media-atom-purity.js`): `<id>.js` plain-Node importable, `<id>.control.js` holds the JSX.
-Three instruments read green while proving nothing — read D910 before trusting a ratchet here.
+**NEXT:** Wave 5 = wire `sgs/media` THEN `before-after`, **never parallel** (falsification test =
+`git diff --stat` shows no file outside `src/components/Media*` +
+`includes/helpers-media-element.php`). Then 6 (inspector-scan rules, advisory) → 7 (remaining
+surfaces, INSERT→VERIFY→GUT per commit).
 
-**NEXT:** Wave 5 = wire `sgs/media` THEN `before-after`, **never parallel** (the only test the
-abstraction generalises; falsification test = `git diff --stat` showing no file outside
-`src/components/Media*` + `includes/helpers-media-element.php`). Then 6 (inspector-scan rules, all
-advisory) → 7 (remaining surfaces, INSERT→VERIFY→GUT per commit).
-
-⚠ **OWED:** `button/render.php`'s two SVG allowlists; the SMIL bypass is REASONED NOT EXECUTED
-(owed a canary probe with a positive control). ⛔ **Nothing in Waves 3-4 is deployed — they close on
-parity, validators and purity; WAVE 5 CLOSES ON PAINT.** The no-JS autoplay defect
-(`media/render.php` built autoplay/muted/playsinline with no guard) is FIXED and PHP-verified;
-`reports/visual-diff/media-2026-08-30.md` names the three cases Wave 5 must check live.
+⚠ **OWED:** `button/render.php`'s two SVG allowlists; the SMIL bypass is REASONED NOT EXECUTED.
+⛔ **Nothing in Waves 3-4 is deployed — WAVE 5 CLOSES ON PAINT.** The no-JS autoplay defect is FIXED
+and PHP-verified; `reports/visual-diff/media-2026-08-30.md` names the three live cases owed.
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 

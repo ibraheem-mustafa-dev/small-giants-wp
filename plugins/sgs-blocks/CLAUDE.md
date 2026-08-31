@@ -117,6 +117,41 @@ qualification.** It describes the draft-layer model (Spec 31 §13.6), not what C
 block's own children actually match. Do not reason from `container_kind` when deciding
 whether a block should carry `gridItem*` attrs — check the selector.
 
+### A control that "doesn't work" — diff it against a block where it ALREADY works (Bean-locked 2026-08-31)
+
+⛔ **Do not design a fix from first principles.** Ask which blocks already have the attribute:
+
+```bash
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql   "SELECT block_slug, attr_name, css_property, css_element, css_tier
+     FROM block_attributes WHERE css_property='object-fit'"
+```
+
+then read the WORKING block's `render.php` + `style.css` and compare. Measured 2026-08-31 across the
+media-atom layer: every "these controls don't mesh" problem resolved this way in minutes, and the DB
+query surfaced two blocks (`sgs/brand-strip` `logoFit`, `sgs/trust-bar` `badgeImageObjectFit`) a
+hand-written survey of "media blocks" had missed outright.
+
+⛔ **Never weigh "this changes what the canary currently renders."** Pre-production, no content to
+protect. Whether a default is RIGHT is a separate question decided on merits — what do the other
+surfaces measure? — never on preserving the current page.
+
+**The two findings that came out of it, both now gated:**
+
+1. **A shared rule at (0,1,0) silently beats a block's own `:where()` default at (0,0,0).** The atom
+   stylesheet fires unconditionally, so `var( --x, initial )` overrides `sgs/media`'s own
+   `:where( .sgs-media__img ){ object-fit: cover }`. A shared fallback must be the value the surfaces
+   actually MEASURE (all four say `cover`), never `initial`/`unset`/`revert` — banned by
+   `check-media-atom-purity.js`. A rule that loses is indistinguishable from an absent one; a rule
+   that silently wins is worse.
+2. **Scope per ELEMENT, not per block.** Atoms emit fixed custom-property names
+   (`--sgs-media-object-fit`) because the shared stylesheet is static CSS and cannot know a prefix.
+   That is only safe when each media element carries its own scope class —
+   `sgs_media_element_scope_class( $uid, $prefix )` → `{uid}--{prefix}`, consumed by
+   `sgs_media_element_style()`. Without it a two-element block (`sgs/before-after`) sets the same
+   property twice on one scope and the second wins: the client sets before=contain, after=fill, and
+   both render fill. `sgs/hero` already had the right answer from the other direction — it scopes its
+   selector to `.{uid} .sgs-hero__split-media--image`. Gated in `test-media-atom-parity.mjs`.
+
 ### Detector blind spots — both real, both shipped a defect before being found
 
 - **`check-dead-controls.js` asks "is this attribute read by the render surface?"** It
