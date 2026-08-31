@@ -24,7 +24,7 @@
 			{
 				"prefix": "",
 				"context": "element",
-				"atoms": [ "object-fit" ]
+				"atoms": [ "object-fit", "focal-point" ]
 			}
 		],
 			"boxFamilies": {

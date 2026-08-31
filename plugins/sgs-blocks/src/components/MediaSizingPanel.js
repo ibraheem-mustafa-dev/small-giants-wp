@@ -133,6 +133,16 @@ const inertHelp = ( reason ) => reason;
  * @param {string}   [props.focalPoint]       Current object-position CSS string.
  * @param {Function} props.onFocalPointChange ( value: string ) => void.
  * @param {string}   [props.focalPreviewUrl]  Image URL for the focal-point picker's preview thumbnail.
+ * @param {boolean}  [props.showFocalControl] Render the Focal point row. Default
+ *                                            true, so the four mounts that own
+ *                                            their focal point here are unchanged.
+ *                                            A surface wired to the media-element
+ *                                            `focal-point` ATOM passes false: the
+ *                                            atom owns the control, and two
+ *                                            controls writing one attribute is a
+ *                                            duplicate writer. The VALUE is still
+ *                                            read either way, for the atom's
+ *                                            disclosure logic.
  * @param {string}   [props.insetValue]       OPTIONAL — omit both this and onInsetChange to omit the
  *                                            row entirely (sgs/media has no inset attribute today).
  * @param {Function} [props.onInsetChange]
@@ -150,6 +160,7 @@ export default function MediaSizingPanel( {
 	focalPoint,
 	onFocalPointChange,
 	focalPreviewUrl,
+	showFocalControl = true,
 	insetValue,
 	onInsetChange,
 } ) {
@@ -280,6 +291,7 @@ export default function MediaSizingPanel( {
 			</ToolsPanelItem>
 			) }
 
+			{ showFocalControl && (
 			<ToolsPanelItem
 				label={ __( 'Focal point', 'sgs-blocks' ) }
 				hasValue={ () => !! focalPoint && 'center center' !== focalPoint }
@@ -301,6 +313,7 @@ export default function MediaSizingPanel( {
 					/>
 				</div>
 			</ToolsPanelItem>
+			) }
 
 			{ undefined !== insetValue && onInsetChange && (
 				<ToolsPanelItem

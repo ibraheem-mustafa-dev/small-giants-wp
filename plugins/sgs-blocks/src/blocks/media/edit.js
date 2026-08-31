@@ -547,6 +547,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						 * point row is disclosed from it.
 						 */
 						showFitControl={ false }
+						/*
+						 * The `focal-point` ATOM owns Focal point on this block now, so the
+						 * panel's own row is suppressed — two controls writing one attribute
+						 * is a duplicate writer, and which one wins would depend on render
+						 * order. The VALUE is still passed in for the atom's disclosure logic.
+						 */
+						showFocalControl={ false }
 					/>
 
 					{ /*
@@ -565,7 +572,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						prefix=""
 						blockSlug="sgs/media"
 						insertion="element"
-						atoms={ [ 'object-fit' ] }
+						atoms={ [ 'object-fit', 'focal-point' ] }
 						mediaType={ mediaType }
 						scope="element"
 					/>

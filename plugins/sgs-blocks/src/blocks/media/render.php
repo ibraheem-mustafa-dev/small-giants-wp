@@ -299,12 +299,8 @@ $media_base_decls = array();
 // The default is unchanged: the atom stylesheet carries `cover` as its measured
 // fallback, replacing style.css's old `:where( .sgs-media__img )` rule.
 
-// object-position — only emit when explicitly set to a non-default value (D7).
-// Allow alphanumeric, %, spaces, commas, dashes (valid CSS).
-if ( '' !== $object_position && 'center center' !== $object_position
-	&& preg_match( '/^[a-zA-Z0-9%\s.,\-]+$/', $object_position ) ) {
-	$media_base_decls[] = 'object-position:' . esc_attr( $object_position );
-}
+// object-position is OWNED BY THE ATOM LAYER (focal-point atom) and is
+// deliberately not emitted here. Same as object-fit — the atom owns this property now.
 
 // opacity.
 if ( 1.0 !== $opacity ) {
@@ -448,7 +444,7 @@ if ( '' !== $h_mobile ) {
 // VALUES only — every rule lives in assets/css/media-element.css, loaded in
 // both the canvas and the front end, so the editor and the page cannot drift.
 // `atoms` mirrors block.json's supports.sgs.mediaElements declaration.
-$sgs_media_atoms    = array( 'object-fit' );
+$sgs_media_atoms    = array( 'object-fit', 'focal-point' );
 $sgs_media_atom_css = class_exists( 'SGS_Media_Element' )
 	? SGS_Media_Element::style( $attributes, '', 'sgs/media', $scope_class, $sgs_media_atoms )
 	: '';
