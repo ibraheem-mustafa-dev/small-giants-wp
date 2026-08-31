@@ -119,3 +119,15 @@ require_once __DIR__ . '/class-sgs-media-element.php';
 require_once __DIR__ . '/media/atoms/source.php';
 require_once __DIR__ . '/media/atoms/intrinsic.php';
 require_once __DIR__ . '/media/atoms/meaning.php';
+// ⛔ EVERY atom twin is required here, not just the ones a block happened to
+// need. `sgs_media_element_style()` dispatches by naming convention and SKIPS a
+// missing function silently by design, so an unloaded twin is not an error —
+// it is an atom that quietly emits nothing. Five of the ten were unloaded when
+// sgs/media was first wired, which is why its object-fit control stored the
+// right value and painted nothing. `check-media-atom-purity.js` now fails the
+// build if a twin exists on disk without a require here.
+require_once __DIR__ . '/media/atoms/object-fit.php';
+require_once __DIR__ . '/media/atoms/focal-point.php';
+require_once __DIR__ . '/media/atoms/box-shape.php';
+require_once __DIR__ . '/media/atoms/overlay.php';
+require_once __DIR__ . '/media/atoms/svg-presentation.php';

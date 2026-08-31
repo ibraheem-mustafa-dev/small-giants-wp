@@ -391,6 +391,56 @@ function phpBoxAtomParityProblems() {
 	return [];
 }
 
+/**
+ * Every atom PHP twin must actually be REQUIRED, not merely present on disk.
+ *
+ * `sgs_media_element_style()` dispatches by naming convention and skips a
+ * missing function silently — deliberately, so a half-built atom cannot fatal a
+ * page. The cost of that kindness is that an UNLOADED twin is indistinguishable
+ * from an atom with nothing to say: the control stores the right value, the
+ * gate is green, and the page paints the default.
+ *
+ * That shipped for real. When `sgs/media` was first wired, five of the ten
+ * twins had no require — object-fit, focal-point, box-shape, overlay and
+ * svg-presentation, i.e. every atom that emits CSS. The parity gate passed
+ * throughout, because it compares each atom against its own twin and both
+ * halves existed as FILES. Existence is not reachability.
+ *
+ * @return {string[]} Problems found.
+ */
+function atomTwinLoadProblems() {
+	const dir = path.join( PLUGIN, 'includes', 'media', 'atoms' );
+	const loader = path.join( PLUGIN, 'includes', 'render-helpers.php' );
+	if ( ! fs.existsSync( dir ) || ! fs.existsSync( loader ) ) {
+		return [];
+	}
+	const onDisk = fs
+		.readdirSync( dir )
+		.filter( ( f ) => f.endsWith( '.php' ) )
+		.map( ( f ) => f.slice( 0, -4 ) )
+		.sort();
+	if ( ! onDisk.length ) {
+		return [
+			'includes/media/atoms/ holds no PHP twins — a check with nothing to ' +
+				'verify is not a pass.',
+		];
+	}
+	const loaderSrc = fs.readFileSync( loader, 'utf8' );
+	const missing = onDisk.filter(
+		( id ) => ! loaderSrc.includes( "media/atoms/" + id + ".php" )
+	);
+	if ( missing.length ) {
+		return [
+			'atom PHP twin(s) never loaded: ' +
+				missing.join( ', ' ) +
+				'. render-helpers.php has no require for them, so ' +
+				'sgs_media_element_style() skips them silently and the control ' +
+				'paints nothing while every gate stays green.',
+		];
+	}
+	return [];
+}
+
 function run() {
 	const files = logicModules();
 
@@ -406,7 +456,8 @@ function run() {
 
 	const fallbackProblems = stylesheetFallbackProblems()
 		.concat( partialMarkerProblems() )
-		.concat( phpBoxAtomParityProblems() );
+		.concat( phpBoxAtomParityProblems() )
+		.concat( atomTwinLoadProblems() );
 	fallbackProblems.forEach( ( p ) => process.stderr.write( `  ⛔ ${ p }
 ` ) );
 
@@ -581,6 +632,10 @@ function selfTest() {
 		)
 	);
 
+	ck(
+		'every atom PHP twin is required by render-helpers.php',
+		atomTwinLoadProblems().length === 0
+	);
 	ck(
 		'the PHP $box_atoms list matches registry.js attachesTo',
 		phpBoxAtomParityProblems().length === 0
