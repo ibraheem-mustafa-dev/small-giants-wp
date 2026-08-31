@@ -1186,3 +1186,118 @@ Full detail in **D910**. Named here because a later session will meet the same s
 A check that cannot reach its own subject is indistinguishable from a check that passed. Only a
 control designed to go red separates them.
 
+---
+
+## 18. Wave 5a panel design — resolved (Bean, 2026-09-01)
+
+Grounded in a control-by-control comparison of the six blocks against `BackgroundPanel` and the
+`imageControls` extension (`.claude/reports/2026-09-01-media-control-comparison.md`). This is
+the design input for Wave 5a's `MediaElementPanel` / `SGS_Media_Element` build — the layer §17
+records as not yet built.
+
+### 18.1 Type selection — tabs, exclusive by construction
+
+Three existing mechanisms (sgs/media's button group, hero's dropdown, container's tabs) collapse
+to ONE: WP's native `TabPanel`, the shape container/`BackgroundPanel` already uses. **No stored
+enum attribute.** Type is read from which source attribute is populated — but unlike
+container today, switching tabs CLEARS the sibling type's source attribute(s) in the same
+`setAttributes` call, so two sources can never coexist. This closes the "video silently beats
+image, no warning" gap named in §1 without adding a control to build or maintain. It also
+resolves the button-vs-dropdown question for free — `TabPanel` renders as a button row.
+
+### 18.2 Panel structure — "Media" panel, "Image Styling" sub-panel
+
+```
+Media (top-level PanelBody)
+├── Type tabs (Image / Video / SVG) — upload control + type-exclusive atoms live IN the tab
+│     Image tab: source · meaning (see 18.3)
+│     Video tab: source · video-behaviour (6 toggles + captions) · meaning
+│     SVG tab:   source · svg-presentation (5 controls)
+├── Image Styling (sub-section, applies to whichever type is active, per atom's `types` list)
+│     object-fit · focal-point · box-shape (sizing mode, width, ratio) · border-radius
+│     — see 18.2a, this is where box-shape's `shape` enum and border-radius reconcile
+└── Overlay (bottom, box-scoped, applies regardless of type — see 18.5)
+```
+
+This is an upgrade over `BackgroundPanel` as it exists today, not a copy of it: container
+currently only renders `backgroundSize`/`backgroundPosition` inside the Image tab, so a video
+background gets no size/position control at all. Moving object-fit/focal-point out of the tabs
+and into "Image Styling" (gated on the atom's own `types` list, not on which tab is open) fixes
+that as a side effect — video gets object-fit/focal-point, SVG correctly does not (per §5's
+"NOT svg" note on atom 7).
+
+#### 18.2a Box-shape's `shape` enum and border-radius reconcile into one control
+
+`box-shape` already declares `shape: none|rounded|circle|square`. Separately, every block has
+its own `SgsBorderControl` for manual radius, usually in its own "Border" panel. Two mechanisms
+answering the same question. Resolution: `shape` becomes the quick preset (rounded/circle/square
+map to fixed radius values); the real, editable radius input lives once, inside Image Styling,
+serving both the preset and a manual override — no separate media "Border" panel, no two
+controls competing for one visual property.
+
+### 18.3 `meaning` — auto-fill, optional override, not a required field
+
+⛔ **Corrects a real risk raised and rejected in the same conversation, not a silent design
+call.** Bean's instinct (typing alt text twice — once on the attachment, once per block instance
+— is redundant data entry) is right for the common case, but full removal was rejected:
+`source`'s own `reads` field already documents *why* alt text is per-instance by design ("the
+same logo is meaningful in a header and decorative in a footer strip"), several sources have no
+WP attachment to inherit from at all (product-card's bare-URL `image`, direct-URL video), and WP
+core has no field for "decorative in this one use" — that's structurally a per-instance concept.
+**Resolution:** auto-fill `ImageAlt`/`VideoAlt` from the attachment's own alt on select (every
+block that has this control already does it) and render the `TextControl` as a low-emphasis
+override, not a required field — zero extra typing for the common case, the escape hatch stays
+for the case that needs it. The decorative toggle is unaffected — it has no attachment-level
+equivalent to defer to.
+
+### 18.4 New atom: `motion` (ken-burns / parallax) — supersedes §5's "stay v2" line
+
+⚠ **§5 listed ken-burns/parallax among the ~20 concepts deferred to v2. Superseded — pulled into
+v1 now (Bean, 2026-09-01): "you literally already have the perfect implementation of both right
+now... just do it."** No new design needed — harvest directly from the two working
+implementations: container's `bgParallax`/`bgKenBurns` (backdrop scope) and hero's
+`mediaParallax`/`mediaKenBurns`/`mediaAnimationDuration` (split-media, element scope), a
+mutually-exclusive pair in both. Lands as the 11th atom in `registry.js`, mounted inside "Image
+Styling" (18.2) next to sizing, since it's a presentation property of the same element. **Open,
+to verify at build time, not to guess now:** whether ken-burns is gated to `types: ['image']`
+only (a slow zoom/pan reads as static-photo-only; video already moves, SVG is unclear) — check
+hero's actual gating condition rather than assuming.
+
+### 18.5 `overlay` — bottom of panel, hover-capable, hero's bypass fixed
+
+Position: bottom of "Media", box-scoped (`attachesTo: 'box'`), applies regardless of which type
+tab is active — this is the one placement criticism of `BackgroundPanel` today (overlay
+currently renders ABOVE the media tabs there; move it below). Keep container's Normal/Hover tab
+shape (hero's split-media overlay currently has no hover state — adopt container's, not hero's).
+⛔ **Fix, not just relocate:** hero's split-media overlay hand-builds its CSS inline and bypasses
+the shared `sgs_overlay_decls()` emitter — no opacity, no blend mode, no hover as a result. Route
+it through the shared emitter like container does, as part of this work, not a follow-up.
+
+### 18.6 `imageControls` extension — MediaElementPanel supersedes it for the six blocks
+
+⚠ **§5 said explicitly "reworking the extension itself is out of scope and would be its own
+design gate." Superseded (Bean, 2026-09-01):** "we'll be replacing everything the image controls
+extension did in its controls now anyway since this is the new universal extension/helper." For
+`before-after` and `product-card` — the two of the six blocks currently on the extension —
+`MediaElementPanel` replaces it outright rather than reading its vocabulary alongside the atoms'
+own (§5's "atoms READ both vocabularies and emit one" plan for object-fit is now moot for these
+two specifically, since there's only one panel left to read from). **Scope stays the six blocks.**
+The other ~19 blocks currently on the extension are NOT touched by this work — a wider
+extension-retirement is a separately-scoped, separately-gated migration, not silently folded in
+here.
+
+### 18.7 Known bugs closed as a side effect of this shape, not by separate patches
+
+- **Hero's split-media type toggle is gated on `splitImage?.url` existing** — invisible until an
+  image is uploaded, even when the client wants to start with a video. Tabs (18.1) don't need a
+  populated slot to render, so this goes away by construction, not a patch to hero's current gate.
+- **Before-after's tiers gap** (image slot gets art-direction tiers, video/SVG slots don't) —
+  once the tiered upload control is a property of the shared type-tab (18.1/18.2) rather than
+  something before-after hand-built per type, this stops being a per-block gap.
+
+### 18.8 Confirmed unaffected by 18.1–18.7
+
+Object-fit, focal-point, box-shape, overlay and svg-presentation stay independent, individually
+selectable atoms exactly as §5/`registry.js` define them — 18.2 changes where their controls sit
+in the panel, not what they are or how a block opts in/out via its `atoms: [...]` list.
+
