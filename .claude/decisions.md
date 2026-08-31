@@ -1,3 +1,69 @@
+## D911 [INCIDENT] — media atoms: object-fit paints; a background is not a media element
+
+**2026-08-31.** Commits `800d84b7e`..`3035846e9`. Wave 5a partially shipped, and the
+session's second half went wrong in a way worth recording.
+
+**SHIPPED + LIVE-VERIFIED.** `object-fit` travels the whole chain on canary page 3145 —
+control → attribute → PHP atom → custom property → one shared stylesheet rule → painted
+computed style. Three inputs produced three DIFFERENT painted values (cover / contain /
+scale-down), all on non-zero-area boxes. `focal-point` wired identically (`651aa7155`).
+L3 (`MediaElementPanel.js` + `class-sgs-media-element.php`) was built — Wave 4 had specified
+it and never written it, and no gate could notice because nothing consumed atom output.
+
+### Two bugs that passed every gate
+
+1. **Four of ten atom CONTROLS were dead on arrival.** They compared against `'visible'`, a
+   word no `disclosure()` ever returns (the vocabulary is `shown|disabled|omitted`, D910).
+   Three rendered permanently greyed; `focal-point` never rendered its row at all. The purity
+   gate already defined the vocabulary and shipped a fixture for `'visible'` — and excluded
+   `.control.js` from its scan. It checked what a logic module PRODUCES, never what a control
+   module COMPARES AGAINST.
+2. **Five of ten atom PHP twins were never `require`d** — object-fit, focal-point, box-shape,
+   overlay, svg-presentation, i.e. every atom that emits CSS. `sgs_media_element_style()`
+   skips a missing function silently by design, so an unloaded twin is indistinguishable from
+   an atom with nothing to say. Found ONLY by deploying and reading the live page; 82 build
+   and 4 deploy gates were green throughout. **Existence is not reachability** — the parity
+   gate compares each atom to its own twin and both halves existed as FILES.
+
+⛔ The new vocabulary check was **itself inert** when written: a `` escape had been mangled
+into a literal backspace (0x08), so it matched nothing and read green against four real
+defects. The first negative control missed it too — comparing md5 before and after is equally
+consistent with "changed then restored" and "never changed". Only asserting the break had
+LANDED, then watching the gate go red, exposed it. Both directions are now permanent tests.
+
+### The scope correction (Bean, and it invalidates the session's second half)
+
+⛔ **A BACKGROUND IS NOT A MEDIA ELEMENT.** A block with a background image/video/SVG/overlay
+gets it from the shared `BackgroundPanel` — a container concern, already standardised. NINE
+blocks mount that panel; counting them put `site-header` and `site-footer` into a
+media-element migration they have nothing to do with. I had derived a population of 20.
+
+**The scope is SIX:** media, before-after, hero, container, decorative-image, product-card.
+`container` is in scope for the opposite reason to the rest — it OWNS the background
+mechanism the other eight inherit, which is why the atoms carry a `backdrop` scope.
+`trust-bar` and `brand-strip` do have real nested media (badge images, logos) but are LIMITED
+follow-on work: a badge is a small fixed-purpose image and does not want the full control set.
+
+**Sequenced follow-on, recorded while the reasoning is fresh:** once the media-element
+controls exist, upgrade `BackgroundPanel` per media type — decide which of them belong on
+ROOT background media at all versus a foreground element, then align enums and the
+responsive-override / art-direction help text where the picking control differs. Order:
+`container` fixes the shared wrapper → `hero` follows → remaining hosts.
+
+### What went wrong, plainly
+
+After the scope correction I kept trying to synthesise a "best of breed" control per atom
+myself, and widened the population rather than narrowing it. Bean stopped it. The replacement
+is a comparison TABLE — every control in all ten atoms against its equivalent in each of the
+six blocks, quoted at file:line — which Bean reviews and chooses from manually. Only then is
+it checked which choices already exist as a shared helper in that exact form. Prompt:
+`.claude/prompts/2026-09-01-media-control-comparison.md`.
+
+⚠ Also corrected: "agency-only rig" was invented shorthand of mine for the census's actual
+reason for excluding `image-sequence` — `inserter: false` so no client can add it, setup needs
+a Python/ffmpeg CLI, and its media is a scroll-scrubbed canvas frame sequence rather than a
+displayed image.
+
 ## D910 [INCIDENT] — media atoms Wave 3+4: three instruments lied, and the gates could not see three contract defects
 
 **2026-08-30/31.** Commits `96a696130`..`27bd2eb2b`. Ten atoms built, 82/82 build gates green,

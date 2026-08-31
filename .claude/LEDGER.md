@@ -133,50 +133,48 @@ One item survives it, PARKED and owned by nobody: the **sticky sidebar + band-re
 (`parking.md` P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL). RE-MEASURE before building — its own
 evidence says the accordion already solved the sidebar.
 
-## ▶ CLIENT-CONTROLS TRACK — 2026-08-31: MEDIA ELEMENT, waves 1-4 SHIPPED
+## ▶ CLIENT-CONTROLS TRACK — 2026-08-31: media atoms, object-fit LIVE; scope corrected
 
-**Detail: D904-D910. Plan `~/.claude/plans/media-element-zippy-boole.md`. Design
-`.claude/plans/2026-08-30-media-element-architecture-v2.md` — rewritten in place; do not re-add
-"this was wrong" notes, they mislead a grepping agent. Method rules: STOP-CATALOGUE **E19** + both
-CLAUDE.mds. Do not restate history here.**
+**Detail: D904-D910. Design `.claude/plans/2026-08-30-media-element-architecture-v2.md`.
+Method rules: STOP-CATALOGUE **E19** + both CLAUDE.mds. Do not restate history here.**
 
-**Waves 1-2 deployed + live-verified** (probe **3143**). **Wave 3 built, 82/82 gates, NOT
-deployed** — atom registry, presentation census + `gaps` matrix, selective injection both sides
-(109 → 49 keys), generated L4 stylesheet, ten atoms, **nine** media gates.
+**SHIPPED + LIVE-VERIFIED.** `object-fit` travels the whole chain on canary page **3145**:
+control -> attribute -> PHP atom -> custom property -> one shared stylesheet rule -> painted
+computed style. Three inputs, three DIFFERENT painted values (cover / contain / scale-down),
+all non-zero area. Evidence: `reports/visual-diff/media-2026-08-31.md`. `focal-point` wired
+the same way (`651aa7155`), not yet live-read.
 
-⛔ **WAVE 4 IS NOT BUILT.** It is the L2/L3 panel registry + dispatch. Measured 2026-08-31:
-`grep -rn "SGS_Media_Element"` returns nothing, and `src/components/MediaElementControls.js` holds
-zero JSX — it is the L1 NAMING module. Every atom's `.control.js` returns bare rows and mounts no
-`InspectorControls`, deferring assembly to a caller nobody wrote. **No gate can see this**: nothing
-consumes atom `control()` output. Wave 5a builds it as `MediaElementPanel.js` +
-`class-sgs-media-element.php`. Evidence: architecture v2 §2 L3 + §17.
+⛔ **TWO BUGS THAT EVERY GATE PASSED, both now gated with red-proven negative controls.**
+(1) Four of ten atom CONTROLS compared against `'visible'`, a word no `disclosure()` returns —
+three rendered permanently greyed, `focal-point` never rendered its row at all. The purity
+gate knew the vocabulary and excluded `.control.js` from its scan.
+(2) FIVE of ten atom PHP twins were never `require`d — every atom that emits CSS. Found only
+by deploying and reading the live page; 82 build + 4 deploy gates were green. The parity gate
+compares each atom to its own twin and both halves existed AS FILES. **Existence is not
+reachability.**
 
-⛔ **Each atom is TWO modules** (`check-media-atom-purity.js`): `<id>.js` plain-Node importable,
-`<id>.control.js` holds the JSX. Three of my own instruments read green while proving nothing —
-read D910 before trusting a ratchet or fixture here.
+⛔ **SCOPE, Bean-corrected 2026-08-31. SIX blocks:** media, before-after, hero, container,
+decorative-image, product-card. **A BACKGROUND IS NOT A MEDIA ELEMENT** — a block with a
+background gets it from the shared `BackgroundPanel` (nine blocks mount it); `site-header`
+and `site-footer` have nothing to do with this work. `container` is in scope because it OWNS
+that mechanism. `trust-bar` + `brand-strip` have real nested media but are LIMITED follow-on.
+**AFTER the six:** upgrade `BackgroundPanel` per media type — which controls belong on ROOT
+background media vs a foreground element, aligning enums + art-direction help text. Order:
+container fixes the shared wrapper -> hero -> remaining hosts.
 
-⛔ **METHOD, Bean-locked 2026-08-31.** A control that "does not work" already works somewhere: query
-`block_attributes`, read the WORKING block, diff. **Never reason from what the canary renders** —
-pre-production, nothing to protect. Two gated rules from it: a shared fallback is the MEASURED
-default, never `initial`; scope per ELEMENT (`{uid}--{prefix}`), never per block, or a two-element
-block renders both slots with the second's value.
+⛔ **The session then went wrong and produced little.** I tried to synthesise "best of breed"
+myself and widened the population to 20 blocks including header/footer. Both wrong. The
+approach is replaced by the next session's task below.
 
-⛔ **ABSENCE IS A GAP, NOT A DECISION.** `gaps` is the operative census output, not the inventory:
-**SIX real gaps**. Only a genuinely DIFFERENT concept is excludable (`decorative-image`'s
-`positionX/Y` = absolute page placement).
-⛔ **A control becomes standard by BEING a shared helper** — `golden-controls.json` encodes 14 types,
-exactly ONE has a rule reading it.
-⛔ **`object-fit`'s `custom` is a SIZING MODE** → belongs to `box-shape`.
+**NEXT — `.claude/prompts/2026-09-01-media-control-comparison.md`. Read it first.**
+Produce ONE artefact: for every control in all ten atoms, the equivalent control/attribute in
+each of the six blocks, quoted at `file:line`. **Do not choose, do not build.** Bean picks per
+control manually; only then check which picks already exist as a shared helper in that exact
+form, and which need rebuilding or building fresh.
 
-**NEXT — the prompt is `prompts/2026-08-31-media-element-waves-5-7.md`; read it first.**
-Wave 5 = wire `sgs/media` THEN `before-after`, **never parallel** (falsification test =
-`git diff --stat` shows no file outside `src/components/Media*` +
-`includes/helpers-media-element.php`). Then 6 (inspector-scan rules, advisory) → 7 (remaining
-surfaces, INSERT→VERIFY→GUT per commit).
-
-⚠ **OWED:** `button/render.php`'s two SVG allowlists; the SMIL bypass is REASONED NOT EXECUTED.
-⛔ **Nothing in Waves 3-4 is deployed — WAVE 5 CLOSES ON PAINT.** The no-JS autoplay defect is FIXED
-and PHP-verified; `reports/visual-diff/media-2026-08-30.md` names the three live cases owed.
+⚠ **OWED:** `button/render.php`'s two SVG allowlists; the SMIL bypass is REASONED NOT
+EXECUTED; the three no-JS autoplay cases in `reports/visual-diff/media-2026-08-30.md`; video
+and SVG never captured live. `sgs/info-box` dead media attrs being deleted (agent in flight).
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 

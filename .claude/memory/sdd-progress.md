@@ -487,3 +487,37 @@ NOT STARTED: Task 4 — wire scrollEffect to fx-pin-scrub / fx-horizontal-panel 
   block-private wiring. Task 5 — entryGap + heading-level surfacing (Layer 4).
 OPEN, NON-BLOCKING: the fractional-width band 767.0<w<768.0 where neither breakpoint fires
   (cosmetic, dots proven safe; fixing needs a file-wide 767->767.98 convention change).
+
+---
+
+# SDD progress — media atoms wired into sgs/media, 2026-08-31
+
+Base commit: fddf6fdf6 (main)
+Goal: wire the remaining 9 atoms into sgs/media. object-fit already wired + live-proven (fddf6fdf6).
+
+Bean's two rulings for this run:
+  - The 3 atoms whose CONTROLS cannot write per-device values (video-behaviour, source,
+    box-shape) get their controls EXTENDED to support tiers first, then wire. The CSS half
+    already emits tier variables; only the control half was missing. Not a per-block
+    workaround - every future surface, incl. before-after in 5b, inherits it.
+  - One atom per task, single deploy + live paint read at the END.
+
+Order (safest first, establishing the suppression pattern on the cheapest case):
+  1 focal-point   2 meaning   3 intrinsic   4 svg-presentation   5 media-type
+  6 box-shape(+upgrade)   7 video-behaviour(+upgrade)   8 source(+upgrade)   9 overlay
+
+Task 1: complete (focal-point wired, commit 651aa7155, coordinator-verified)
+
+⛔ RUN RE-SCOPED BY BEAN mid-run, 2026-08-31. Two additional requirements:
+  1. Every atom's control must be the MOST ADVANCED version found anywhere in the
+     library, not a fresh simplification. I had been comparing each atom against ONE
+     surface. Measured: fill-style has 8 implementations, focal-point 4, plus a backdrop
+     vocabulary on 4 more blocks never examined. Wiring queue HALTED; library-wide
+     census per atom concept dispatched (4 read-only agents).
+  2. Each UNIQUE control ships as its own helper file in src/components/media/controls/
+     (architecture v2 §5 - a shared component enforces by construction).
+  3. /qc-council validates the census's fix-shapes BEFORE implementation.
+  Session finishes when all fixes are done.
+
+  object-fit + focal-point are WIRED but their controls are NOT yet best-of-breed -
+  both revisited against the census.
