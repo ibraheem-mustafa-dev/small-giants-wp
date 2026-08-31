@@ -203,35 +203,98 @@ def controls_for(block_dir, attr):
     return sorted(found)
 
 
-def derive_media_blocks(bases, blocks):
-    """Blocks qualifying on a DISCRIMINATING atom, by the STRONG test only.
+BACKDROP_PREFIXES = ("bg", "background")
 
-    ⛔ The loose suffix test cannot be used here. Applied to qualification it
-    returns 44 blocks including accordion, button, heading and label, because
-    `Size`/`Image`/`Position` are substrings of ordinary attribute names. A
-    block qualifies on the same evidence the report itself calls strong:
+# Bases that belong to an atom's BACKDROP vocabulary. `Size` is
+# background-size; Position/Repeat/Attachment are the background-* family. They
+# describe a painted box, never a nested element, so they must not qualify a
+# block as a media surface - `sgs/nav-drawer` qualified on `panelSize` until
+# this list existed. They are still REPORTED once a block qualifies otherwise.
+BACKDROP_BASES = ("Size", "Position", "Repeat", "Attachment")
 
-      EXACT      the attribute IS the base, lower-cased (`objectFit`, `bgVideo`
-                 does not qualify here but `video` would) - no prefix guessing
-      SUFFIX+DB  a suffixed match whose block the DB independently places on
-                 that concept's css_property
 
-    Measured: 20 blocks, against the census file's 6.
+def is_backdrop_attr(attr):
+    """Is this attribute a painted BACKGROUND rather than a nested element?
+
+    ⛔ THIS IS THE DISTINCTION THAT DEFINES THE POPULATION, and getting it wrong
+    inflates the set by a factor of two. A block with a background image, video,
+    SVG or overlay is NOT a media surface: it gets all of that from the shared
+    `BackgroundPanel` and the container wrapper, which is a genuine shared
+    container concern and is already standardised. NINE blocks mount that panel
+    - container, cta-section, hero, multi-button, nav-drawer, physics-canvas,
+    site-footer, site-header, trust-bar - and counting them as media surfaces
+    put site-header and site-footer in a media-element migration they have
+    nothing to do with.
+
+    The media-ELEMENT work is about a block with a NESTED element that IS media:
+    an <img>, <video> or inline <svg> rendered as content.
     """
-    qualifying = set()
+    a = attr.lower()
+    # CONTAINS, not starts-with. `linkHoverBackgroundImage` and
+    # `accentBackgroundImage` are backgrounds that do not begin with the word,
+    # and a prefix test let both qualify their blocks as media surfaces.
+    return (a.startswith(BACKDROP_PREFIXES) or a.startswith("overlay")
+            or "background" in a)
+
+
+def derive_media_blocks(bases, blocks):
+    """Blocks with a NESTED media element, plus the one that owns the backdrop.
+
+    Qualifies on the STRONG test (exact base match, or a suffix match the DB
+    independently places on the concept) AND on the attribute being a nested
+    element rather than a background.
+
+    `sgs/container` is admitted deliberately: it OWNS the background mechanism
+    the other eight inherit, and the atoms carry a `backdrop` scope for exactly
+    that. A host that merely mounts its panel does not qualify.
+
+    Measured: 8 blocks. The census file names 6; the two it misses are
+    `sgs/trust-bar` (badge images) and `sgs/brand-strip` (logos) - precisely the
+    pair architecture v2 section 11b already recorded as a standing correction
+    to the census's population.
+    """
+    qualifying = {"sgs/container"}
     for atom, base_list in bases.items():
         if atom in GENERIC_ATOMS:
             continue
-        prop_blocks = {r["block_slug"] for r in db_rows(CONCEPT_PROPS.get(atom, []))}
+        prop_rows = db_rows(CONCEPT_PROPS.get(atom, []))
+        prop_blocks = {r["block_slug"] for r in prop_rows}
+        # PROPERTY side can name an attribute the NAME side cannot see at all -
+        # brand-strip's `logoFit` carries css_property object-fit but ends in
+        # neither base, so only this branch finds it.
+        #
+        # ⛔ ONLY the REPLACED-ELEMENT properties may qualify a block here.
+        # object-fit and object-position are meaningless on anything that is not
+        # an <img> or <video>, so their presence IS evidence of a nested media
+        # element. The other concept properties are not: `overlay` lists opacity
+        # and background-color, which qualified 40 blocks - every block with an
+        # opacity attribute - until the negative control caught it.
+        for r in prop_rows:
+            if r["css_property"] not in ("object-fit", "object-position"):
+                continue
+            if not is_backdrop_attr(r["attr_name"] or ""):
+                qualifying.add(r["block_slug"])
         for base in base_list:
             lower = base[0].lower() + base[1:]
+            if base in BACKDROP_BASES:
+                continue
             for slug, info in blocks.items():
                 for attr in info["attrs"]:
-                    if attr == lower:
+                    if is_backdrop_attr(attr):
+                        continue
+                    if attr == lower or (attr.endswith(base) and slug in prop_blocks):
                         qualifying.add(slug)
-                    elif attr.endswith(base) and slug in prop_blocks:
-                        qualifying.add(slug)
-    return qualifying
+    # The census records WHY three media-ish blocks are out of scope, each with
+    # a reason: responsive-logo is already better than the shared shape,
+    # info-box's media attrs are dead legacy from the FR-22-6 migration, and
+    # image-sequence is an agency-only frame rig. Honour that rather than
+    # re-litigating it here - and read it from the file so it follows the
+    # decision instead of drifting from it.
+    try:
+        excluded = set((json.loads(read(CENSUS)).get("excluded") or {}).keys())
+    except (IOError, OSError, ValueError):
+        excluded = set()
+    return (qualifying - excluded) & set(blocks)
 
 
 def survey(only_atom=None, scoped=True, census_scope=False):
@@ -352,9 +415,22 @@ def self_test():
     # SCOPED (the default, and what this plan actually acts on).
     scoped = survey()
     scope = set(scoped["meta"]["scoped_to"])
-    if len(scope) < 15:
-        fails.append("derived media-block scope collapsed to %d - the strong "
-                     "test is probably not running" % len(scope))
+    if not 6 <= len(scope) <= 12:
+        fails.append("derived media-block scope is %d - expected ~8. Too high "
+                     "means BackgroundPanel hosts are being counted as media "
+                     "surfaces; too low means the derivation has a hole."
+                     % len(scope))
+    # The two the census misses, both carrying a real nested <img>. Named
+    # because architecture v2 s11b records them as a standing correction.
+    for want in ("sgs/trust-bar", "sgs/brand-strip"):
+        if want not in scope:
+            fails.append("POSITIVE CONTROL FAILED: %s has a nested media "
+                         "element and must qualify" % want)
+    # A BackgroundPanel host with NO nested media must NOT qualify.
+    for never in ("sgs/site-header", "sgs/site-footer", "sgs/nav-drawer"):
+        if never in scope:
+            fails.append("NEGATIVE CONTROL FAILED: %s qualified, but its media "
+                         "is the shared background, not a nested element" % never)
     # The census file's six must be a SUBSET of what we derive. If one of them
     # is missing, the derivation has a hole; if the derived set is merely
     # larger, that is the recorded finding, not a bug.

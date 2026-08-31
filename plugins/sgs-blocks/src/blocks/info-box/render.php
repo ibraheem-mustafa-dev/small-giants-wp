@@ -32,10 +32,12 @@
  * single-value families (contract §C), base only — matches the pre-existing
  * contract (no tablet/mobile tiers were ever declared for this block).
  *
- * Scalar CONTENT attributes (heading, subtitle, description, icon, mediaType,
- * image, boxMedia, mediaEmoji) are no longer read here. They are retained in
- * block.json as historical schema only (no deprecated.js exists, D271).
- * R-31-14: NO legacy fallback hack.
+ * Scalar CONTENT attributes heading/subtitle/description are no longer read
+ * here (rendered by InnerBlocks children). The legacy media attrs mediaType/
+ * image/icon/boxMedia/mediaEmoji predate the FR-22-6 InnerBlocks migration —
+ * real media now lives in sgs/icon and sgs/media children — and were REMOVED
+ * from block.json (no deprecated.js exists, D271; boxMedia/mediaEmoji were
+ * already gone). R-31-14: NO legacy fallback hack.
  *
  * Scalar STYLING/LAYOUT attributes consumed here (wrapper-level only):
  *   cardStyle, effectHover, iconPosition, backgroundColour, backgroundColourGradient,
