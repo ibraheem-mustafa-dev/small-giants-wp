@@ -369,12 +369,18 @@ function sgs_svg_kses_allowed_tags(): array {
 		 * have CREATED the vector. Keep these two facts together — removing the
 		 * href restriction below while <animate> is present reopens it.
 		 *
-		 * ⚠ REASONED, NOT YET EXECUTED (Bean's call, 2026-08-30: ship on the
-		 * reasoning, test after). Owed: a canary probe firing
-		 * `<a><animate attributeName="href" to="javascript:…"></a>`, paired
-		 * with a positive control proving the harness can observe a real
-		 * execution — otherwise "nothing fired" is indistinguishable from a
-		 * broken probe.
+		 * ✅ EXECUTED, 2026-09-01 (was "reasoned, not yet executed" — Bean's
+		 * 2026-08-30 call to ship on the reasoning and test after).
+		 * scripts/probes/probe-smil-bypass.mjs fired
+		 * `<a><animate attributeName="href" to="javascript:…"></a>` through
+		 * this exact function (via sgs/media's svgContent), with a positive
+		 * control run FIRST — a raw, unsanitised javascript: href, clicked
+		 * client-side with no WordPress involved — proving the harness can
+		 * observe real execution, so a "blocked" verdict here cannot be a
+		 * blind probe. Result: the sanitised <a> never gains a live href
+		 * (SMIL cannot write one onto an attribute the element was never
+		 * given), and clicking it does not run the payload. Bypass BLOCKED,
+		 * control FIRED. Full run: reports/visual-diff/smil-bypass-2026-09-01.md.
 		 *
 		 * RESIDUAL, recorded rather than implied: <use>, <image>, <textPath>
 		 * and the gradient elements still carry href/xlink:href, so the same
