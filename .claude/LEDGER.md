@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-08-31
+last_updated: 2026-09-01
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -172,12 +172,20 @@ each of the six blocks, quoted at `file:line`. **Do not choose, do not build.** 
 control manually; only then check which picks already exist as a shared helper in that exact
 form, and which need rebuilding or building fresh.
 
-⚠ **OWED — all four now have a prompt: `.claude/prompts/2026-09-01-media-owed-debts.md`.**
-`button/render.php`'s SVG allowlist (narrower than the shared `sgs_allowed_svg_tags()`, and
-the "two allowlists" figure is unverified — there are 7 `wp_kses` calls); the SMIL bypass
-REASONED NOT EXECUTED (needs a positive control proving the harness can see a real
-execution); the three no-JS autoplay cases in `reports/visual-diff/media-2026-08-30.md`;
-video + SVG never captured live. They share one theme: each is a claim never executed.
+✅ **All four owed debts CLOSED, 2026-09-01 (prompt deleted, session done).** Each closed on a
+command whose output is quoted, not reasoning alone: (1) `button/render.php`'s SVG allowlist
+diffed element-by-element against the shared `sgs_allowed_svg_tags()` — only 4 real `wp_kses`
+calls exist in that file (the "7" figure was wrong), narrowing is deliberate (static Lucide
+icons need none of the shared helper's gradient/filter/mask/`<use>`/`<animate>`/`<a>` tags), now
+documented in code (`464eca073`). (2) SMIL bypass EXECUTED — a positive control proved the
+harness can observe real `javascript:` execution, then the real payload through the live
+sanitiser: bypass BLOCKED, control FIRED (`1a1f291dd`,
+`reports/visual-diff/smil-bypass-2026-09-01.md`). (3) The three no-JS autoplay cases measured
+live with `javaScriptEnabled:false` at desktop+tablet, all 4 assertions held (`8460e38c3`,
+updates `media-2026-08-30.md`). (4) Video/SVG object-fit measured live on extended page 3145 —
+video resolves `cover`, SVG carries no atom marker and resolves CSS-initial `fill` (`aefd93d49`,
+updates `media-2026-08-31.md`). Full detail in `.claude/plans/2026-08-30-media-element-architecture-v2.md`
+§7 Security.
 
 ✅ `sgs/info-box`'s three dead media attrs are DELETED (`dccbc3af5`), proven dead three ways.
 ✅ Both atom-layer bugs are FIXED AND GATED — four controls comparing against a

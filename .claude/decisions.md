@@ -1,3 +1,33 @@
+## D912 [ROUTINE] — four owed media-track debts closed: each was a claim never executed
+
+**2026-09-01.** Commits `464eca073`, `1a1f291dd`, `8460e38c3`, `aefd93d49`. Independent of
+D910/D911's atom-layer work; touched button and the object-fit/autoplay/SVG-sanitiser surfaces
+only. Prompt (`.claude/prompts/2026-09-01-media-owed-debts.md`) deleted on completion.
+
+1. **`sgs/button`'s SVG allowlist**, diffed element-by-element against the shared
+   `sgs_allowed_svg_tags()` (`helpers-svg-kses.php`). The "7 `wp_kses` calls" figure cited
+   since D905 was wrong — 4 real calls exist, 2 are SVG allowlists. Narrowing confirmed
+   deliberate (static Lucide icons need none of the shared helper's gradient/filter/mask/
+   `<use>`/`<animate>`/`<a>` tags); documented in code at both declarations. No functional
+   change.
+2. **SMIL `href` bypass — EXECUTED, no longer reasoned-only** (D905 shipped the mitigation,
+   left it untested). Built a two-step probe: a positive control (raw unsanitised
+   `javascript:` href, clicked, proves the harness observes real execution) run FIRST and
+   gating the result, then the exact payload through the live sanitiser on a new canary page
+   (3148). **Bypass BLOCKED, control FIRED** — the sanitised `<a>` never gains a live `href`
+   for SMIL to rewrite. `reports/visual-diff/smil-bypass-2026-09-01.md`.
+3. **No-JS autoplay/muted coupling** (D909 fixed at the PHP level, owed a browser check with
+   JS genuinely disabled — a JS-enabled check would pass regardless, since `view.js` repairs
+   broken markup on hydration). Measured live with `javaScriptEnabled:false` at desktop and
+   tablet on a new fixture page (3147): all 4 assertions held, including the negative control.
+4. **Video/SVG object-fit** (2026-08-31 report proved it on three images only, reasoned but
+   never measured on `<video>`/SVG). Extended page 3145 with a real canary video and a
+   trivial SVG: video resolves computed `object-fit: cover` (was browser-default `fill`), SVG
+   carries no `sgs-media-el` marker and resolves the CSS-initial `fill`. 5/5 assertions held.
+
+Each closes on a quoted command's output, not reasoning — the shared theme the prompt named.
+`.claude/plans/2026-08-30-media-element-architecture-v2.md` §7 Security updated to match.
+
 ## D911 [INCIDENT] — media atoms: object-fit paints; a background is not a media element
 
 **2026-08-31.** Commits `800d84b7e`..`3035846e9`. Wave 5a partially shipped, and the

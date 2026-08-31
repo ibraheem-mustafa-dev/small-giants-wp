@@ -635,6 +635,13 @@ only one with `<track>` captions.
 **Atom 3 (`video-behaviour`) owns this**, and fixing `render.php` — not merely mirroring `view.js` —
 is its acceptance criterion.
 ✅ ONBOARDED — Platform M6.
+✅ **CLOSED, live-verified 2026-09-01.** PHP-level fix shipped and verified (D909,
+`reports/visual-diff/media-2026-08-30.md`); the no-JS browser check that report explicitly owed
+(the case above, its negative control, at desktop AND tablet) ran with Playwright's
+`javaScriptEnabled: false` — genuinely disabled, since `view.js`'s hydration repair would mask a
+broken server fix if JS ran. All 4 assertions held; both viewport widths render identical
+correctly-coupled desktop-tier markup, confirming render.php's own comment that tier overrides
+are JS-time only. No longer an open defect.
 
 ### Accessibility — three items that are compliance, not preference
 
@@ -733,7 +740,7 @@ end's behaviour is documented rather than accidental.
 
 | Item | Position |
 |---|---|
-| **Editor SVG XSS** | ✅ **CLOSED 2026-08-30.** The population was **six** unsanitised editor mounts (hero, media, timeline, IconPicker ×2, IconPreview) and **six** server allowlists — two byte-identical copies, two genuinely diverging, plus two in `button/render.php`. Shipped: allowlists unified 6→1 into `sgs_allowed_svg_tags()` (`ad414bfee`, `89f1aefdf`), the JS sanitiser generated from that PHP and applied at all six mounts (`52e232692`, `51591f936`), misleading help text corrected (`c86938f2a`). Live-verified: `window.SGS_PWNED` undefined in both realms. **Still open:** `button/render.php`'s two allowlists are narrower again and were left alone; and the SMIL bypass (`<a><animate attributeName="href" to="javascript:…">`) is reasoned, not executed — owed a canary probe WITH a positive control proving the harness can see a real execution. |
+| **Editor SVG XSS** | ✅ **CLOSED 2026-08-30, fully verified 2026-09-01.** The population was **six** unsanitised editor mounts (hero, media, timeline, IconPicker ×2, IconPreview) and **six** server allowlists — two byte-identical copies, two genuinely diverging, plus two in `button/render.php`. Shipped: allowlists unified 6→1 into `sgs_allowed_svg_tags()` (`ad414bfee`, `89f1aefdf`), the JS sanitiser generated from that PHP and applied at all six mounts (`52e232692`, `51591f936`), misleading help text corrected (`c86938f2a`). Live-verified: `window.SGS_PWNED` undefined in both realms. **`button/render.php`'s two local allowlists (2026-09-01):** diffed element-by-element against the shared helper (not "two allowlists" vs a vague count — there are 4 real `wp_kses()` calls in that file, not the previously-cited 7; two are the SVG allowlists). Confirmed deliberate: icon SVGs are static Lucide glyphs needing none of the shared helper's gradients/filters/masks/`<use>`/`<animate>`/`<a>` tags. Left narrow, now documented in code at both declarations (`464eca073`). **SMIL bypass (2026-09-01): EXECUTED, no longer reasoned-only.** `<a><animate attributeName="href" to="javascript:…">` fired against the real sanitiser on a canary page, gated by a positive control (a raw unsanitised `javascript:` href, clicked, proves the harness can observe real execution) that ran first and passed. Result: bypass BLOCKED, control FIRED — the sanitised `<a>` never gains a live `href` for SMIL to rewrite. `1a1f291dd`, `reports/visual-diff/smil-bypass-2026-09-01.md`. |
 | **Attachment capability** | IDs come from attributes; any role that can edit a post can name any integer. Picker restricted to media the operator can manage; renderer treats an inaccessible attachment as "no media". |
 | **Cloning pipeline = untrusted input** | It ingests third-party drafts and writes straight into attributes. **Sanitise on READ, not only on save** — never assume a value came from the inspector. |
 | **CSS injection** | Every atom's `css()` declares a validator with **reject-to-default**, because the Style Engine's vocabulary does not cover `object-fit`/`object-position`/`mix-blend-mode` and those stay hand-composed. Each validator ships a **negative control** proving an out-of-vocabulary value is rejected rather than passed through. ⚠ `media/render.php:303` already guards `objectPosition` with `preg_match('/^[a-zA-Z0-9%\s.,\-]+$/')`, which excludes `;{}` — the existing guard is sound; the rule generalises it. |
