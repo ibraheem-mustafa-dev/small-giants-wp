@@ -51,24 +51,39 @@ CENSUS = os.path.join(PLUGIN, "..", "..", "reports", "migrations",
 
 
 def in_scope_surfaces():
-    """The surfaces THIS PLAN covers, read from the census, never typed here.
+    """Blocks that carry a real media atom. DERIVED, never a typed list.
 
-    Scope matters more than reach. Run unscoped, the name side sweeps in every
-    block with a width or an opacity control: `box-shape` alone reported 273
-    instances across 60 blocks, most of which carry no media at all. That is a
-    population, but not THIS plan's population, and synthesising a media control
-    from a block with no media is noise dressed as rigour.
+    ⛔ The census file hardcodes six surfaces, and that list is INCOMPLETE.
+    Measured 2026-08-31: TWENTY blocks carry at least one non-generic media
+    atom. `sgs/trust-bar` carries five - as many as `sgs/hero` - and is absent
+    from the census entirely, as are `site-header` and `site-footer` with four
+    each. The architecture already recorded the direction at v2 section 11b:
+    brand-strip and trust-bar were "missed outright... a standing correction to
+    the census's population". This function follows that correction through.
 
-    The census also records WHY three media-ish blocks are out of scope -
-    responsive-logo (already better than the shared shape), info-box (dead
-    legacy attrs) and image-sequence (agency-only rig). Reading the file rather
-    than restating the list keeps this honest when that decision changes.
+    GENERIC ATOMS ARE EXCLUDED FROM THE TEST, not from the report. `box-shape`
+    and `intrinsic` own bases named Height, Width, MaxWidth and ImageHeight,
+    which every block with a width control matches. Judged on those, 61 blocks
+    look like media surfaces, including every form field. A block qualifies on
+    a DISCRIMINATING atom - one whose bases only appear on real media - and
+    then its box-shape instances are reported too.
+
+    `--census-scope` restores the census file's six, for comparing against it.
     """
+    return None  # sentinel: computed in survey(), which has the scan available
+
+
+GENERIC_ATOMS = ("box-shape", "intrinsic")
+
+
+def census_file_surfaces():
+    """The six the census file names. Kept for comparison, not as the default."""
     try:
         data = json.loads(read(CENSUS))
     except (IOError, OSError, ValueError):
         return set()
     return set((data.get("surfaces") or {}).keys())
+
 
 # Concept -> CSS properties that express it, for the PROPERTY-side derivation.
 # Held here rather than in the JS so this runs with no build step; the atom ids
@@ -88,6 +103,7 @@ CONCEPT_PROPS = {
     "media-type": [],
     "video-behaviour": [],
 }
+
 
 PRIMITIVES = [
     "ToggleControl", "CheckboxControl", "SelectControl", "TextControl",
@@ -187,10 +203,46 @@ def controls_for(block_dir, attr):
     return sorted(found)
 
 
-def survey(only_atom=None, scoped=True):
+def derive_media_blocks(bases, blocks):
+    """Blocks qualifying on a DISCRIMINATING atom, by the STRONG test only.
+
+    ⛔ The loose suffix test cannot be used here. Applied to qualification it
+    returns 44 blocks including accordion, button, heading and label, because
+    `Size`/`Image`/`Position` are substrings of ordinary attribute names. A
+    block qualifies on the same evidence the report itself calls strong:
+
+      EXACT      the attribute IS the base, lower-cased (`objectFit`, `bgVideo`
+                 does not qualify here but `video` would) - no prefix guessing
+      SUFFIX+DB  a suffixed match whose block the DB independently places on
+                 that concept's css_property
+
+    Measured: 20 blocks, against the census file's 6.
+    """
+    qualifying = set()
+    for atom, base_list in bases.items():
+        if atom in GENERIC_ATOMS:
+            continue
+        prop_blocks = {r["block_slug"] for r in db_rows(CONCEPT_PROPS.get(atom, []))}
+        for base in base_list:
+            lower = base[0].lower() + base[1:]
+            for slug, info in blocks.items():
+                for attr in info["attrs"]:
+                    if attr == lower:
+                        qualifying.add(slug)
+                    elif attr.endswith(base) and slug in prop_blocks:
+                        qualifying.add(slug)
+    return qualifying
+
+
+def survey(only_atom=None, scoped=True, census_scope=False):
     bases = atom_bases()
     blocks = block_attributes()
-    scope = in_scope_surfaces() if scoped else set()
+    if census_scope:
+        scope = census_file_surfaces()
+    elif scoped:
+        scope = derive_media_blocks(bases, blocks)
+    else:
+        scope = set()
     if scope:
         blocks = {k: v for k, v in blocks.items() if k in scope}
     report = {"meta": {"blocks_scanned": len(blocks),
@@ -300,9 +352,16 @@ def self_test():
     # SCOPED (the default, and what this plan actually acts on).
     scoped = survey()
     scope = set(scoped["meta"]["scoped_to"])
-    if len(scope) != 6:
-        fails.append("expected 6 in-scope surfaces from the census, got %d"
-                     % len(scope))
+    if len(scope) < 15:
+        fails.append("derived media-block scope collapsed to %d - the strong "
+                     "test is probably not running" % len(scope))
+    # The census file's six must be a SUBSET of what we derive. If one of them
+    # is missing, the derivation has a hole; if the derived set is merely
+    # larger, that is the recorded finding, not a bug.
+    missing = census_file_surfaces() - scope
+    if missing:
+        fails.append("census surfaces absent from the derived scope: %s"
+                     % sorted(missing))
     everywhere = {h["block"] for a in scoped["atoms"].values()
                   for v in a["bases"].values() for h in v}
     stray = everywhere - scope
@@ -349,12 +408,14 @@ def main():
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--atom")
     ap.add_argument("--all", action="store_true",
-                    help="ignore the plan scope and scan all blocks")
+                    help="scan every block, generic atoms included")
+    ap.add_argument("--census-scope", action="store_true", dest="censusscope",
+                    help="use the census file's six surfaces, for comparison")
     ap.add_argument("--self-test", action="store_true", dest="selftest")
     args = ap.parse_args()
     if args.selftest:
         return self_test()
-    rep = survey(args.atom, scoped=not args.all)
+    rep = survey(args.atom, scoped=not args.all, census_scope=args.censusscope)
     print(json.dumps(rep, indent=1) if args.json else render(rep))
     return 0
 
