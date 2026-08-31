@@ -344,6 +344,53 @@ function partialMarkerProblems() {
 	return out;
 }
 
+/**
+ * The PHP dispatch class holds its OWN list of which atoms key on the box
+ * marker. Two copies of one fact drift; this is the gate that stops them.
+ *
+ * Named rather than derived because PHP cannot import an ES module, and the
+ * alternative — generating the PHP from registry.js — would add a build step
+ * for a two-entry list. A gate is cheaper than a generator here, but only if it
+ * exists: `STORED_AS` is duplicated the same way and has no gate, which is
+ * recorded as debt rather than repeated.
+ *
+ * @return {string[]} Problems found.
+ */
+function phpBoxAtomParityProblems() {
+	const file = path.join( PLUGIN, 'includes', 'class-sgs-media-element.php' );
+	if ( ! fs.existsSync( file ) ) {
+		return [];
+	}
+	const attach = atomAttachments();
+	const fromRegistry = Object.keys( attach )
+		.filter( ( id ) => 'box' === attach[ id ] )
+		.sort();
+
+	const raw = fs.readFileSync( file, 'utf8' );
+	const m = raw.match( /\$box_atoms\s*=\s*array\(([^)]*)\)/ );
+	if ( ! m ) {
+		return [
+			'class-sgs-media-element.php declares no $box_atoms array — the PHP ' +
+				'half cannot know which atoms need the box marker.',
+		];
+	}
+	const fromPhp = [ ...m[ 1 ].matchAll( /'([a-z-]+)'/g ) ]
+		.map( ( x ) => x[ 1 ] )
+		.sort();
+
+	if ( fromRegistry.join( ',' ) !== fromPhp.join( ',' ) ) {
+		return [
+			'box-atom drift: registry.js attachesTo says [' +
+				fromRegistry.join( ', ' ) +
+				'] but class-sgs-media-element.php $box_atoms says [' +
+				fromPhp.join( ', ' ) +
+				']. The renderer would omit or add a marker the stylesheet ' +
+				'disagrees with, and nothing would paint.',
+		];
+	}
+	return [];
+}
+
 function run() {
 	const files = logicModules();
 
@@ -357,9 +404,9 @@ function run() {
 		return 1;
 	}
 
-	const fallbackProblems = stylesheetFallbackProblems().concat(
-		partialMarkerProblems()
-	);
+	const fallbackProblems = stylesheetFallbackProblems()
+		.concat( partialMarkerProblems() )
+		.concat( phpBoxAtomParityProblems() );
 	fallbackProblems.forEach( ( p ) => process.stderr.write( `  ⛔ ${ p }
 ` ) );
 
@@ -532,6 +579,11 @@ function selfTest() {
 					fs.readFileSync( path.join( ATOM_DIR, f ), 'utf8' )
 				).length === 0
 		)
+	);
+
+	ck(
+		'the PHP $box_atoms list matches registry.js attachesTo',
+		phpBoxAtomParityProblems().length === 0
 	);
 
 	// Guards the two-marker DOM contract. This single assertion covers BOTH
