@@ -765,6 +765,14 @@ if ( $icon ) {
 		}
 
 		// wp_kses with SVG allowance for the icon.
+		// Deliberately narrower than the shared sgs_svg_kses_allowed_tags()
+		// (includes/helpers-svg-kses.php): icons here are static Lucide glyphs
+		// (path/circle/rect/line/polyline/polygon/ellipse/g/title), never gradient-
+		// filled, filtered, masked, referenced (<use>/<symbol>), or animated. This
+		// list excludes the shared helper's defs/use/symbol/text/tspan/textpath/
+		// image/clippath/mask/marker/pattern/*gradient/stop/filter + filter-primitive
+		// tags/desc/metadata/animate/a. If a future icon set needs any of those,
+		// diff against sgs_svg_kses_allowed_tags() again rather than widening ad hoc.
 		$allowed_svg = array(
 			'svg'      => array(
 				'class'           => true,
@@ -975,6 +983,9 @@ if ( $scoped_css_parts ) {
 }
 
 // Allowed tags for icon SVG + label output.
+// The SVG portion below is a second, independent local allowlist — same deliberate
+// narrowing rationale as $allowed_svg above (static Lucide icons only), not a
+// duplicate to be merged away. Keep both in sync if the icon set's needs change.
 $allowed_inner = array_merge(
 	wp_kses_allowed_html( 'post' ),
 	array(
