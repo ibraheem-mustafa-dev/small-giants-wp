@@ -26,6 +26,36 @@ cloning pipeline; this is the client-controls track. Reading it will cost you an
 
 ---
 
+## ⛔ SCOPE — SIX blocks, and nothing else
+
+`sgs/media` · `sgs/before-after` · `sgs/hero` · `sgs/container` · `sgs/decorative-image` ·
+`sgs/product-card`.
+
+**A BACKGROUND IS NOT A MEDIA ELEMENT.** A block with a background image/video/SVG/overlay
+gets it from the shared `BackgroundPanel` — a container concern, already standardised. Nine
+blocks mount that panel (container, cta-section, hero, multi-button, nav-drawer,
+physics-canvas, site-footer, site-header, trust-bar); none joins on that basis.
+`site-header` and `site-footer` have nothing to do with this work. The media-element work is
+a block with a NESTED element that IS media.
+
+`sgs/container` is in scope because it OWNS that background mechanism (hence the atoms'
+`backdrop` scope), and fixing the shared wrapper here is what later lets `hero`'s
+`BackgroundPanel` be updated, then every other host.
+
+Excluded with reasons: `responsive-logo` (already better than the shared shape),
+`info-box` (dead legacy attrs, real media is in child blocks — attrs being deleted),
+`image-sequence` (`inserter: false`, needs a Python/ffmpeg CLI, its media is a canvas frame
+sequence not a displayed image).
+
+⚠ `sgs/trust-bar` and `sgs/brand-strip` DO have real nested media (badge images, logos) and
+are follow-on work — **limited**. A badge and a logo are small fixed-purpose images; judge
+each control on whether it is genuinely useful there rather than offering the full set.
+
+⭐ AFTER the six: upgrade the shared `BackgroundPanel` to match, per media type, taking
+account of what is relevant to ROOT background media versus a foreground element, and
+aligning enums + the responsive-override/art-direction help text where the picking control
+differs.
+
 ## The method, and it is not optional
 
 ⛔ **When a control "does not work", find a block where it ALREADY works and diff.** Bean-locked

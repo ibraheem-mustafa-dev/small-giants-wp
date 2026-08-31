@@ -99,6 +99,65 @@ would touch a generator every `sgs*` extension depends on. Do not propose it aga
    a control on one block finds the same control, doing the same thing, on every other block that
    can use it — and finds it in the same place.
 
+### ⛔ SCOPE — SIX blocks, and what they are in scope FOR
+
+**The six.** `sgs/media` · `sgs/before-after` · `sgs/hero` · `sgs/container` ·
+`sgs/decorative-image` · `sgs/product-card`.
+
+**A BACKGROUND IS NOT A MEDIA ELEMENT.** This is the line that defines the set, and
+getting it wrong doubles it. A block with a background image, video, SVG or overlay gets
+all of that from the shared `BackgroundPanel` and the container wrapper — a genuine shared
+container concern, already standardised. **Nine blocks mount that panel** (container,
+cta-section, hero, multi-button, nav-drawer, physics-canvas, site-footer, site-header,
+trust-bar) and none of them joins this work on that basis. `site-header` and `site-footer`
+have nothing to do with a media-element migration.
+
+The media-ELEMENT work is a block with a **nested element that IS media** — an `<img>`,
+`<video>` or inline `<svg>` rendered as content.
+
+`sgs/container` is in scope for the opposite reason: it **owns** the background mechanism
+the other eight inherit, which is why the atoms carry a `backdrop` scope. Fixing the shared
+wrapper here is what later lets `hero`'s `BackgroundPanel` be updated, and then every other
+panel host.
+
+**Excluded, each with a reason recorded in the census:**
+
+| Block | Why |
+|---|---|
+| `sgs/responsive-logo` | already better than the shared shape — native `<picture><source media>`, zero JS, genuinely per-tier with inherit-up |
+| `sgs/info-box` | not a media surface: `mediaType`/`image`/`icon` are DEAD legacy attrs from before its FR-22-6 InnerBlocks migration; the real media is in `sgs/icon` and `sgs/media` CHILDREN. **The dead attrs are being deleted.** |
+| `sgs/image-sequence` | `inserter: false`, so no client can add it, and setup needs a Python/ffmpeg CLI. Its "media" is a scroll-scrubbed canvas frame sequence with a fail-open thumbnail, not a displayed image |
+
+### ⚠ `sgs/trust-bar` and `sgs/brand-strip` — real, but LIMITED
+
+Both DO have a nested media element separate from their background: `trust-bar` renders
+`<img class="sgs-trust-bar__badge-img">` driven by `badgeImageObjectFit`/`badgeImageSize`,
+and `brand-strip` renders a `logos` repeater driven by `logoFit`. Architecture §11b already
+recorded both as a standing correction to the census's population.
+
+⛔ **They are not general media surfaces and must not be treated as one.** A badge and a
+logo are small, fixed-purpose images. Decide per control whether it is genuinely USEFUL in
+that context before offering it — a per-device art-directed video poster on a trust badge
+is not standardisation, it is clutter. Take the context into account and do not overdo it.
+
+### ⭐ AFTER this work: upgrade the shared BackgroundPanel to match
+
+Not part of the six, and deliberately sequenced after — but it is where the value compounds,
+and it is why `sgs/container` is in scope now.
+
+Once the media-element controls exist, go through `BackgroundPanel` for **each of the three
+media types** and decide:
+
+1. **Which of our new controls belong on a background at all**, given the background sits on
+   the ROOT rather than on a foreground element. Some are irrelevant there; some are only
+   meaningful there. That judgement is the work — not a copy-paste of the element set.
+2. **Where the picking control differs, bring the panel up to ours** — the same enums, and
+   the same help text for the responsive override / art-direction behaviour, so an operator
+   meets one vocabulary rather than two.
+
+Order: fix the shared wrapper via `sgs/container` → `hero`'s `BackgroundPanel` follows →
+then every other panel host.
+
 ### ⛔ Absence is a GAP, not a decision
 
 The nine media surfaces were built one at a time, ad hoc, and were never standardised against each
