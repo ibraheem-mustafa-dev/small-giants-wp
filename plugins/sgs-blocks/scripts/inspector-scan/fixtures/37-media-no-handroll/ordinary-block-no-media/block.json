@@ -1,0 +1,10 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/ordinary-block-no-media",
+	"title": "Fixture: negative control — no media-family attributes, no media CSS properties anywhere, must stay silent",
+	"category": "sgs",
+	"attributes": {
+		"heading": { "type": "string", "default": "" },
+		"showBorder": { "type": "boolean", "default": false }
+	}
+}

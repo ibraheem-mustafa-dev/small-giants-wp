@@ -1,0 +1,5 @@
+.sgs-ordinary-block-no-media {
+	display: flex;
+	border: 1px solid var( --wp--preset--color--primary );
+	gap: 16px;
+}

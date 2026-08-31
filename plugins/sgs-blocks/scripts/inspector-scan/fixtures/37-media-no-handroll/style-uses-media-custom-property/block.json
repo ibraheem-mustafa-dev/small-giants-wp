@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/style-uses-media-custom-property",
+	"title": "Fixture: style.css reads the atom-driven var(--sgs-media-object-fit) custom property, no mediaElements declared, no attr declared — must stay silent",
+	"category": "sgs",
+	"attributes": {}
+}

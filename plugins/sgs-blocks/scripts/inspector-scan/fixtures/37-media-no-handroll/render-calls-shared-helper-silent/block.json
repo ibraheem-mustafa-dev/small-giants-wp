@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/render-calls-shared-helper-silent",
+	"title": "Fixture: render.php calls sgs_media_element_style(), no mediaElements attr declared — condition 2 must go silent per-file",
+	"category": "sgs",
+	"attributes": {}
+}
