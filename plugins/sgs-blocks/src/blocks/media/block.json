@@ -19,6 +19,14 @@
 	"supports": {
 		"sgs": {
 			"scalarStylingLift": true,
+		"_comment_mediaElements": "Wave 5a. Declares this block's ONE media element to the shared atom layer. `atoms` is deliberately narrow: naming an atom injects its attributes on both sides, so an atom listed here without a renderer wired in the same commit becomes a dead control. Widen it as each atom is wired, never ahead of one.",
+		"mediaElements": [
+			{
+				"prefix": "",
+				"context": "element",
+				"atoms": [ "object-fit" ]
+			}
+		],
 			"boxFamilies": {
 				"borderRadius": [
 					"borderRadiusTablet",

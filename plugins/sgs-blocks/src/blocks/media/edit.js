@@ -26,6 +26,7 @@ import {
 	ShadowControl,
 	SgsLengthControl,
 	MediaSizingPanel,
+	MediaElementPanel,
 } from '../../components';
 import BooleanResponsiveControl from './BooleanResponsiveControl';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -538,6 +539,35 @@ export default function Edit( { attributes, setAttributes } ) {
 						focalPoint={ attributes.objectPosition || 'center center' }
 						onFocalPointChange={ ( value ) => setAttributes( { objectPosition: value } ) }
 						focalPreviewUrl={ isImage ? imageUrl : '' }
+						/*
+						 * The `object-fit` ATOM owns Fill style on this block now, so the
+						 * panel's own row is suppressed — two controls writing one
+						 * attribute is a duplicate writer, and which one wins would depend
+						 * on render order. The VALUE is still passed in, because the focal
+						 * point row is disclosed from it.
+						 */
+						showFitControl={ false }
+					/>
+
+					{ /*
+					  * The media-element atom layer (Wave 5a). Bare rows, absorbed into
+					  * this element's own panel rather than opening a top-level one —
+					  * per C14 an element's controls belong with that element.
+					  *
+					  * `atoms` mirrors block.json's `supports.sgs.mediaElements`
+					  * declaration exactly. Widening one without the other injects
+					  * attributes no control writes, or renders controls for attributes
+					  * that were never injected.
+					  */ }
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+						blockSlug="sgs/media"
+						insertion="element"
+						atoms={ [ 'object-fit' ] }
+						mediaType={ mediaType }
+						scope="element"
 					/>
 
 					<ToolsPanelItem

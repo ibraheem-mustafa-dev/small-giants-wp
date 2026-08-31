@@ -208,15 +208,41 @@ def shadow_rule_conformance() -> dict:
     return result
 
 
+def helpers_by_slug() -> dict:
+    """Every `*AttrName`/`*AttrKeys` export in `src/components/`, keyed by SLUG.
+
+    R1 originally looked for the pair in the MOUNTED component's own file, which
+    assumes one file owns both the naming and the UI. A layer that deliberately
+    SPLITS those does not fit: the media element keeps naming in
+    `MediaElementControls.js` (L1, zero JSX) and dispatch in
+    `MediaElementPanel.js` (L3). Both derive the slug `media_element`, the PHP
+    twin `sgs_media_element_attr` matches it, and the family is complete — but
+    the panel's own file exports no helper, so the old lookup reported a missing
+    half that was never missing.
+
+    Keying by slug fixes that WITHOUT weakening the rule: the pair must still
+    exist, still be name-keyed, and still have its PHP twin. Only the assumption
+    that it lives in one particular file is dropped.
+    """
+    found: dict = {}
+    for path in component_files():
+        hits = NAME_HELPER_RE.findall(path.read_text(encoding="utf-8", errors="replace"))
+        if hits:
+            found.setdefault(camel_to_slug(path.stem), []).extend(hits)
+    return found
+
+
 def survey() -> dict:
     php_fns = load_php_functions()
     mounts = mounts_by_component()
+    slug_helpers = helpers_by_slug()
 
     rows = []
     for path in component_files():
         comp = path.stem
         text = path.read_text(encoding="utf-8", errors="replace")
-        helpers = NAME_HELPER_RE.findall(text)
+        # Own file first; then a sibling sharing this slug (see helpers_by_slug).
+        helpers = NAME_HELPER_RE.findall(text) or slug_helpers.get(camel_to_slug(comp), [])
         code = strip_comments(text)
         attr_aware = bool(ATTR_AWARE_RE.search(code))
         name_keyed = attr_aware and bool(NAME_KEY_RE.search(code))

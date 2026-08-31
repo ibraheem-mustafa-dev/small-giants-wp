@@ -119,6 +119,16 @@ const inertHelp = ( reason ) => reason;
  * @param {string}   [props.ratioValue]       Current ratio string (spaced format, see RATIO_OPTIONS).
  * @param {Function} props.onRatioChange      ( value: string ) => void.
  * @param {string}   props.objectFit          Current object-fit value.
+ * @param {boolean}  [props.showFitControl]   Render the Fill style row. Default
+ *                                            true, so the four mounts that own
+ *                                            their fit here are unchanged. A
+ *                                            surface wired to the media-element
+ *                                            `object-fit` ATOM passes false: the
+ *                                            atom owns the control, and two
+ *                                            controls writing one attribute is a
+ *                                            duplicate writer. The VALUE is still
+ *                                            read either way, because the focal
+ *                                            point row is disclosed from it.
  * @param {Function} props.onObjectFitChange  ( value: string ) => void.
  * @param {string}   [props.focalPoint]       Current object-position CSS string.
  * @param {Function} props.onFocalPointChange ( value: string ) => void.
@@ -135,6 +145,7 @@ export default function MediaSizingPanel( {
 	ratioValue,
 	onRatioChange,
 	objectFit,
+	showFitControl = true,
 	onObjectFitChange,
 	focalPoint,
 	onFocalPointChange,
@@ -245,6 +256,7 @@ export default function MediaSizingPanel( {
 				</div>
 			</ToolsPanelItem>
 
+			{ showFitControl && (
 			<ToolsPanelItem
 				label={ __( 'Fill style', 'sgs-blocks' ) }
 				hasValue={ () => ( objectFit || 'cover' ) !== 'cover' }
@@ -266,6 +278,7 @@ export default function MediaSizingPanel( {
 					/>
 				</div>
 			</ToolsPanelItem>
+			) }
 
 			<ToolsPanelItem
 				label={ __( 'Focal point', 'sgs-blocks' ) }

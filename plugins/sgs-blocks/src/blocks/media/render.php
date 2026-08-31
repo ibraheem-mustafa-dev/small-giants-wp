@@ -291,12 +291,13 @@ $id_wrap = '.' . $scope_esc;
 // ---------------------------------------------------------------------------
 $media_base_decls = array();
 
-// object-fit — only emit when explicitly set to a NON-default value (D7). The
-// default `cover` is provided as an OVERRIDABLE :where() fallback in
-// style.css, so an unset value can be overridden rather than forced.
-if ( 'cover' !== $object_fit ) {
-	$media_base_decls[] = 'object-fit:' . esc_attr( $object_fit );
-}
+// object-fit is OWNED BY THE ATOM LAYER (Wave 5a) and is deliberately not
+// emitted here. This rule sat on $id_sel at (0,2,0) and therefore BEAT the
+// shared `.sgs-media-el` rule at (0,1,0) — but only once a client had set a
+// non-default value, which is exactly the case anyone testing the new control
+// would try. Leaving it would have made the atom look broken.
+// The default is unchanged: the atom stylesheet carries `cover` as its measured
+// fallback, replacing style.css's old `:where( .sgs-media__img )` rule.
 
 // object-position — only emit when explicitly set to a non-default value (D7).
 // Allow alphanumeric, %, spaces, commas, dashes (valid CSS).
@@ -443,7 +444,16 @@ if ( '' !== $h_mobile ) {
 	$mobile_rules[] = 'height:' . $h_mobile;
 }
 
-$responsive_css  = $media_base_css . $border_base_css . $aspect_ratio_css . $wrap_base_css;
+// The media-element ATOM layer (Wave 5a). It contributes custom-property
+// VALUES only — every rule lives in assets/css/media-element.css, loaded in
+// both the canvas and the front end, so the editor and the page cannot drift.
+// `atoms` mirrors block.json's supports.sgs.mediaElements declaration.
+$sgs_media_atoms    = array( 'object-fit' );
+$sgs_media_atom_css = class_exists( 'SGS_Media_Element' )
+	? SGS_Media_Element::style( $attributes, '', 'sgs/media', $scope_class, $sgs_media_atoms )
+	: '';
+
+$responsive_css  = $media_base_css . $border_base_css . $aspect_ratio_css . $wrap_base_css . $sgs_media_atom_css;
 
 /**
  * Art-direction tier visibility CSS — ONE implementation for every media family
@@ -709,14 +719,20 @@ if ( 'image' === $media_type ) {
 		$tier_imgs[ strtolower( $sgs_tier ) ] = $tier_url;
 	}
 
-	$base_class = 'sgs-media__img';
+	// `sgs-media-el` is the shared atom layer's marker for the REPLACED element.
+	// It carries no appearance of its own — it is what the one shared stylesheet
+	// keys on, and it does nothing until an atom sets a custom property.
+	// ⛔ Never on the SVG wrapper: object-fit and object-position are
+	// replaced-element properties and do nothing on a <div>, so putting the
+	// marker there would claim a capability that cannot work.
+	$base_class = 'sgs-media__img sgs-media-el';
 	if ( ! empty( $tier_imgs ) ) {
 		$base_class .= ' sgs-media__img--desktop';
 	}
 
 	foreach ( $tier_imgs as $tier_key => $tier_url ) {
 		$image_html .= sprintf(
-			'<img src="%s" alt="%s"%s class="sgs-media__img sgs-media__img--%s" loading="lazy" decoding="async" />',
+			'<img src="%s" alt="%s"%s class="sgs-media__img sgs-media-el sgs-media__img--%s" loading="lazy" decoding="async" />',
 			esc_url( $tier_url ),
 			esc_attr( $image_alt ),
 			$img_aria_hidden,
@@ -1141,7 +1157,7 @@ if ( 'video' === $media_type ) {
 		}
 
 		$video_html = sprintf(
-			'<video class="sgs-media__video"%s%s%s%s%s%s%s%s%s%s>' .
+			'<video class="sgs-media__video sgs-media-el"%s%s%s%s%s%s%s%s%s%s>' .
 			'<source src="%s" type="%s">' .
 			'%s' .
 			'</video>',
@@ -1314,7 +1330,11 @@ if ( $naked_mode && '' !== $image_html ) {
 	// apply to this naked <img> exactly as they do to the <figure> in figure-mode.
 	preg_match( '/class="([^"]*)"/', $wrapper_attributes, $cm );
 	preg_match( '/id="([^"]*)"/', $wrapper_attributes, $im );
-	$merged_classes = trim( ( $cm[1] ?? '' ) . ' sgs-media__img' );
+	// The marker rides along here too: in naked mode this <img> IS the block
+	// root, so it carries the scope class (already in $cm[1]) and the atom
+	// marker on the same node. That is the shape sgs_media_element_scope_class()
+	// was written for.
+	$merged_classes = trim( ( $cm[1] ?? '' ) . ' sgs-media__img sgs-media-el' );
 	$id_attr        = ! empty( $im[1] ) ? ' id="' . esc_attr( $im[1] ) . '"' : '';
 
 	$image_id_attr     = isset( $attributes['imageId'] ) ? absint( $attributes['imageId'] ) : null;
