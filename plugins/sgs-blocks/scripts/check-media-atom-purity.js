@@ -55,6 +55,65 @@ function logicModules() {
 		.sort();
 }
 
+/** Files in the atom directory that are CONTROL modules (the JSX half). */
+function controlModules() {
+	if ( ! fs.existsSync( ATOM_DIR ) ) {
+		return [];
+	}
+	return fs
+		.readdirSync( ATOM_DIR )
+		.filter( ( f ) => f.endsWith( '.control.js' ) )
+		.sort();
+}
+
+/**
+ * The CONSUMER half of the closed disclosure vocabulary.
+ *
+ * `problemsFor()` checks the words a logic module PRODUCES. This checks the
+ * words a control module COMPARES AGAINST — and that gap shipped a real defect:
+ * five control modules tested `'visible' !== disc.state` while every
+ * `disclosure()` returns `shown | disabled | omitted`. The comparison was
+ * therefore always true, so four controls rendered permanently greyed out and
+ * `focal-point` never rendered its row at all. Every gate stayed green, because
+ * this file deliberately excluded `.control.js` from its scan.
+ *
+ * ⛔ Matches `.state` ONLY. `box-shape` legitimately carries `heightState` and
+ * `ratioState` on a SEPARATE two-value `visible | hidden` vocabulary for its
+ * mutually-exclusive sizing fields; `\.state` cannot match `.heightState`,
+ * so that atom is untouched by construction rather than by an exception list.
+ *
+ * @param {string} name Module filename, for the message.
+ * @param {string} raw  Module source.
+ * @return {string[]} Problems found.
+ */
+function controlStateProblems( name, raw ) {
+	const STATES = [ 'shown', 'disabled', 'omitted' ];
+	const out = [];
+	const seen = new Set();
+
+	const flag = ( word ) => {
+		if ( STATES.includes( word ) || seen.has( word ) ) {
+			return;
+		}
+		seen.add( word );
+		out.push(
+			`compares against '${ word }', which no disclosure() ever returns. ` +
+				`The vocabulary is ${ STATES.join( ' | ' ) }. A comparison against a ` +
+				'word outside it is always-true or always-false, so the control ' +
+				'silently renders disabled, or never renders at all.'
+		);
+	};
+
+	[ ...raw.matchAll( /'([a-z-]+)'\s*(?:===|!==)\s*[\w$.]*\.state/g ) ].forEach(
+		( m ) => flag( m[ 1 ] )
+	);
+	[ ...raw.matchAll( /[\w$.]*\.state\s*(?:===|!==)\s*'([a-z-]+)'/g ) ].forEach(
+		( m ) => flag( m[ 1 ] )
+	);
+
+	return out;
+}
+
 /**
  * Is a package actually present in node_modules?
  *
@@ -226,6 +285,28 @@ function run() {
 ` ) );
 
 	let bad = fallbackProblems.length;
+
+	// The CONSUMER half of the vocabulary — see controlStateProblems().
+	const controls = controlModules();
+	if ( ! controls.length ) {
+		process.stderr.write(
+			'[media-atom-purity] REFUSING to pass: no .control.js modules found. ' +
+				'A gate with nothing to check is not a pass.\n'
+		);
+		return 1;
+	}
+	controls.forEach( ( f ) => {
+		const problems = controlStateProblems(
+			f,
+			fs.readFileSync( path.join( ATOM_DIR, f ), 'utf8' )
+		);
+		if ( problems.length ) {
+			bad++;
+			process.stderr.write( `  ⛔ ${ f }\n` );
+			problems.forEach( ( p ) => process.stderr.write( `       ${ p }\n` ) );
+		}
+	} );
+
 	files.forEach( ( f ) => {
 		const problems = problemsFor(
 			f,
@@ -314,7 +395,6 @@ function selfTest() {
 	);
 
 	// NEGATIVE CONTROL: an off-vocabulary disclosure state is rejected.
-	// NEGATIVE CONTROL: an off-vocabulary disclosure state is rejected.
 	const badState =
 		pure + "export function d() { return { state: 'visible' }; }\n";
 	ck(
@@ -329,6 +409,50 @@ function selfTest() {
 	ck(
 		'POSITIVE CONTROL: shown / disabled / omitted are all accepted',
 		problemsFor( 'x.js', goodStates ).length === 0
+	);
+
+	// ---- the CONSUMER half of the vocabulary -------------------------------
+	//
+	// These exist because the check they guard was INERT when first written: a
+	// word-boundary escape had been mangled into a control character, so the
+	// pattern matched nothing and the gate stayed green against four real
+	// defects. Only a negative control that went red exposed it. A check with
+	// no failing control is indistinguishable from a check that cannot run.
+	const badConsumer =
+		"paintDisabled={ 'visible' !== disc.state }\n";
+	ck(
+		'NEGATIVE CONTROL: a control module comparing against a non-vocabulary word is REJECTED',
+		controlStateProblems( 'x.control.js', badConsumer ).some( ( p ) =>
+			p.includes( "'visible'" )
+		)
+	);
+	const goodConsumer =
+		"disabled={ 'disabled' === disc.state }\n" +
+		"if ( 'omitted' !== disc.state ) { render(); }\n";
+	ck(
+		'POSITIVE CONTROL: a control module comparing against the real vocabulary passes',
+		controlStateProblems( 'x.control.js', goodConsumer ).length === 0
+	);
+	// box-shape carries heightState/ratioState on a SEPARATE visible|hidden
+	// vocabulary. `.state` cannot match `.heightState`, so it is excluded by
+	// construction rather than by an exception list — assert that stays true.
+	const boxShapeShape =
+		"heightDisabled={ 'visible' !== disc.heightState }\n" +
+		"ratioDisabled={ 'visible' !== disc.ratioState }\n";
+	ck(
+		'the box-shape visible|hidden field vocabulary is NOT flagged',
+		controlStateProblems( 'box-shape.control.js', boxShapeShape ).length === 0
+	);
+	// The real tree must be clean, or the gate is asserting against nothing.
+	ck(
+		'every REAL control module uses the contract vocabulary',
+		controlModules().every(
+			( f ) =>
+				controlStateProblems(
+					f,
+					fs.readFileSync( path.join( ATOM_DIR, f ), 'utf8' )
+				).length === 0
+		)
 	);
 
 	// The stylesheet fallback rule needs both controls: it must reject a silent

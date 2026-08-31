@@ -42,7 +42,7 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 			onTextShadowChange={ ( v ) => setAttributes( { [ keys.textShadow ]: !! v } ) }
 			minHeight={ attributes[ keys.minHeight ] }
 			onMinHeightChange={ ( v ) => setAttributes( { [ keys.minHeight ]: v ?? '' } ) }
-			speedDisabled={ 'visible' !== disc.state }
+			speedDisabled={ 'disabled' === disc.state }
 			speedHiddenReason={ disc.hiddenReason || '' }
 		/>
 	);

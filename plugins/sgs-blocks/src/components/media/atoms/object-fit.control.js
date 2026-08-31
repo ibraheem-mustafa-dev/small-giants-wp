@@ -42,6 +42,13 @@ export function control( {
 	const rows = [];
 	const disc = disclosure();
 
+	// `state` is the closed vocabulary shown | disabled | omitted (registry.js).
+	// OMITTED means the control structurally cannot apply here, so no row at all.
+	if ( 'omitted' === disc.state ) {
+		return rows;
+	}
+	const isDisabled = 'disabled' === disc.state;
+
 	if ( 'element' === scope || 'both' === scope ) {
 		const key = mediaStoredAttrName( blockSlug, prefix, 'ObjectFit' );
 		rows.push(
@@ -51,7 +58,7 @@ export function control( {
 				value={ attributes[ key ] }
 				vocabulary={ MEDIA_ATOMS[ ATOM_ID ].vocabulary.element }
 				prefix={ prefix }
-				disabled={ 'visible' !== disc.state }
+				disabled={ isDisabled }
 				hiddenReason={ disc.hiddenReason }
 				onChange={ ( next ) =>
 					setAttributes( { [ key ]: validate( next, 'element' ) } )
@@ -69,7 +76,7 @@ export function control( {
 				value={ attributes[ key ] }
 				vocabulary={ MEDIA_ATOMS[ ATOM_ID ].vocabulary.backdrop }
 				prefix={ prefix }
-				disabled={ 'visible' !== disc.state }
+				disabled={ isDisabled }
 				hiddenReason={ disc.hiddenReason }
 				onChange={ ( next ) =>
 					setAttributes( { [ key ]: validate( next, 'backdrop' ) } )

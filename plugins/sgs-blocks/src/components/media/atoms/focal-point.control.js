@@ -52,13 +52,17 @@ export function control( {
 	if ( 'element' === scope || 'both' === scope ) {
 		const disc = disclosure( { attributes, prefix, blockSlug, scope: 'element' } );
 		const key = mediaStoredAttrName( blockSlug, prefix, 'ObjectPosition' );
-		if ( 'visible' === disc.state ) {
+		// OMITTED drops the row; DISABLED renders it greyed with the reason, so a
+		// client can see the control exists and learn what unlocks it.
+		if ( 'omitted' !== disc.state ) {
 			rows.push(
 				<FocalPositionField
 					key={ key }
 					label={ __( 'Focal point', 'sgs-blocks' ) }
 					url={ previewUrl }
 					format={ format }
+					disabled={ 'disabled' === disc.state }
+					help={ disc.hiddenReason || undefined }
 					value={ attributes[ key ] }
 					onChange={ ( next ) =>
 						setAttributes( {

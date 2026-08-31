@@ -49,11 +49,15 @@ export default function FocalPositionField( {
 	value,
 	onChange,
 	format = 'xy',
+	disabled = false,
 } ) {
 	const isCssString = 'css-string' === format;
 	const focalValue = isCssString ? objectPositionToFocalPoint( value ) : ( value || {} );
 
-	return (
+	// `FocalPointPicker` (core) takes no `disabled`, so the DISABLED disclosure
+	// state is expressed with a native <fieldset disabled>, which blocks input on
+	// every descendant. Default false, so the three existing mounts are unchanged.
+	const picker = (
 		<FocalPointPicker
 			label={ label }
 			help={ help }
@@ -64,5 +68,15 @@ export default function FocalPositionField( {
 			}
 			__nextHasNoMarginBottom
 		/>
+	);
+
+	if ( ! disabled ) {
+		return picker;
+	}
+
+	return (
+		<fieldset disabled className="sgs-focal-position-field--disabled">
+			{ picker }
+		</fieldset>
 	);
 }

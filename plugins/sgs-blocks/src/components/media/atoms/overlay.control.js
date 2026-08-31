@@ -40,7 +40,7 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 			} }
 			opacityKey={ keys.opacity }
 			blendModeKey={ keys.blendMode }
-			paintDisabled={ 'visible' !== disc.state }
+			paintDisabled={ 'disabled' === disc.state }
 			disabledReason={ disc.hiddenReason || '' }
 		/>
 	);
