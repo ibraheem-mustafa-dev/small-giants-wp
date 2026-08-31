@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-08-30
+last_updated: 2026-08-31
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -127,10 +127,11 @@ them against a stable layout, not during one), per-image crop control under `obj
 material now that images are full-height). Plus a **pre-existing 1px** node/rail offset on
 `single-column`, recorded in Addendum 21 and provably untouched by this session.
 
-## Task 1 — sticky sidebar + band-replacement model: PARKED, not this track's.
+## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22. Detail: D725/D726, D731-D733.
 
-`parking.md` P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL. RE-MEASURE before building —
-their own evidence says the accordion already solved the sidebar.
+One item survives it, PARKED and owned by nobody: the **sticky sidebar + band-replacement model**
+(`parking.md` P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL). RE-MEASURE before building — its own
+evidence says the accordion already solved the sidebar.
 
 ## ▶ CLIENT-CONTROLS TRACK — 2026-08-31: MEDIA ELEMENT, waves 1-4 SHIPPED
 
