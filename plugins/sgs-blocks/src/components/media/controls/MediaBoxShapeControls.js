@@ -1,7 +1,7 @@
 /**
  * MediaBoxShapeControls — shared bare-row control set for the `box-shape`
- * atom (sizing mode / ratio / named shape / height / min-height / width /
- * max-width / max-height / max-width-percent).
+ * atom (sizing mode / ratio / named shape / border radius / height /
+ * min-height / width / max-width / max-height / max-width-percent).
  *
  * Reuses `MediaSizingPanel`'s `RATIO_OPTIONS` verbatim rather than retyping
  * the six-value spaced ratio list — that list is already the framework's one
@@ -12,11 +12,21 @@
  * atom's own `control()`) decides which panel these rows land in, matching
  * every other media-atom control (`ObjectFitField`, `FocalPositionField`).
  *
+ * ── Length fields are ONE LINE (2026-09-01) ─────────────────────────────
+ * Height/Width/MaxWidth/MaxHeight are stored as a tier object of plain
+ * NUMBERS paired with a SEPARATE flat unit attribute (box-shape.js's own
+ * documented storage shape) — NOT `SgsLengthControl`'s single combined CSS
+ * length STRING contract. `combineLength()`/`splitLength()` below bridge the
+ * two on display/write, so every field still renders as one integrated
+ * number+unit input instead of a `TextControl` beside a `SelectControl`.
+ *
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { SelectControl, TextControl, ToggleGroupControl, ToggleGroupControlOption } from '@wordpress/components';
+import { RangeControl, SelectControl, TextControl, ToggleGroupControl, ToggleGroupControlOption } from '@wordpress/components';
 import { RATIO_OPTIONS } from '../../MediaSizingPanel.js';
+import { ResponsiveBorderRadiusControl } from '../../ResponsiveBoxControl.js';
+import SgsLengthControl from '../../SgsLengthControl.js';
 
 const MODE_OPTIONS = [
 	{ label: __( 'Auto', 'sgs-blocks' ), value: 'auto' },
@@ -40,10 +50,47 @@ const LENGTH_UNITS = [
 ];
 
 /**
- * One tier-value + unit row (used for Height — the numeric-plus-separate-
- * unit shape, matching `sgs/media`'s stored shape exactly).
+ * Combine a tier NUMBER + a shared UNIT string into the one CSS-length string
+ * `SgsLengthControl` displays (e.g. 20 + 'px' -> "20px").
+ *
+ * @param {number|string|undefined} value Tier value.
+ * @param {string}                  unit  Shared unit attribute value.
+ * @return {string} Combined length, or '' when unset.
  */
-function TierLengthRow( {
+function combineLength( value, unit ) {
+	if ( undefined === value || null === value || '' === value ) {
+		return '';
+	}
+	return `${ value }${ unit || 'px' }`;
+}
+
+/**
+ * Split a CSS-length string back into a `{ value, unit }` pair for the tier
+ * attribute + shared unit attribute. An empty/unparseable input clears the
+ * tier value and leaves the unit untouched (the caller only writes the unit
+ * attribute when a new one is actually present).
+ *
+ * @param {string} raw Combined length string from `SgsLengthControl`.
+ * @return {{value: (number|undefined), unit: (string|undefined)}}
+ */
+function splitLength( raw ) {
+	if ( ! raw ) {
+		return { value: undefined, unit: undefined };
+	}
+	const m = String( raw ).trim().match( /^(-?\d*\.?\d+)([a-z%]*)$/i );
+	if ( ! m ) {
+		return { value: undefined, unit: undefined };
+	}
+	return {
+		value: '' === m[ 1 ] ? undefined : Number( m[ 1 ] ),
+		unit: m[ 2 ] || undefined,
+	};
+}
+
+/**
+ * One integrated number+unit row for a box-shape length field.
+ */
+function LengthFieldRow( {
 	label,
 	value,
 	unit,
@@ -53,27 +100,20 @@ function TierLengthRow( {
 	hiddenReason,
 } ) {
 	return (
-		<div className="sgs-media-box-shape__row" aria-disabled={ disabled }>
-			<TextControl
-				label={ label }
-				type="number"
-				value={ value ?? '' }
-				disabled={ disabled }
-				help={ disabled ? hiddenReason : undefined }
-				onChange={ ( v ) => onChangeValue( '' === v ? undefined : Number( v ) ) }
-				__nextHasNoMarginBottom
-				__next40pxDefaultSize
-			/>
-			<SelectControl
-				label={ __( 'Unit', 'sgs-blocks' ) }
-				value={ unit || 'px' }
-				disabled={ disabled }
-				options={ LENGTH_UNITS }
-				onChange={ onChangeUnit }
-				__nextHasNoMarginBottom
-				__next40pxDefaultSize
-			/>
-		</div>
+		<SgsLengthControl
+			label={ label }
+			help={ disabled ? hiddenReason : undefined }
+			value={ combineLength( value, unit ) }
+			units={ LENGTH_UNITS }
+			disabled={ disabled }
+			onChange={ ( raw ) => {
+				const next = splitLength( raw );
+				onChangeValue( next.value );
+				if ( next.unit && next.unit !== unit ) {
+					onChangeUnit( next.unit );
+				}
+			} }
+		/>
 	);
 }
 
@@ -93,6 +133,26 @@ function TierLengthRow( {
  * @param {string}   props.minHeightValue   Desktop-tier CSS length string
  *                                          (unit-embedded, e.g. "40vh").
  * @param {Function} props.onMinHeightChange
+ * @param {Object}   [props.widthValue]     `{desktop,tablet,mobile}` numbers.
+ * @param {Function} [props.onWidthChange]
+ * @param {string}   [props.widthUnit]
+ * @param {Function} [props.onWidthUnitChange]
+ * @param {Object}   [props.maxWidthValue]  `{desktop}` — not tiered (box-shape's
+ *                                          `css()` only ever reads `.desktop`).
+ * @param {Function} [props.onMaxWidthChange]
+ * @param {string}   [props.maxWidthUnit]
+ * @param {Function} [props.onMaxWidthUnitChange]
+ * @param {Object}   [props.maxHeightValue] `{desktop}` — not tiered, same as MaxWidth.
+ * @param {Function} [props.onMaxHeightChange]
+ * @param {string}   [props.maxHeightUnit]
+ * @param {Function} [props.onMaxHeightUnitChange]
+ * @param {number}   [props.maxWidthPercentValue] Bare percentage number.
+ * @param {Function} [props.onMaxWidthPercentChange]
+ * @param {Object}   [props.borderRadiusValues]   `{base,tablet,mobile}` 4-corner
+ *                                          objects — `ResponsiveBorderRadiusControl`'s
+ *                                          own shape. Only rendered when
+ *                                          `shape === 'rounded'`.
+ * @param {Function} [props.onBorderRadiusChange] `(tier, nextCorners) => void`.
  * @param {boolean}  [props.heightDisabled] Whether the sizing mode makes
  *                                          Height/Ratio rows inert.
  * @param {string}   [props.heightHiddenReason]
@@ -111,6 +171,22 @@ export default function MediaBoxShapeControls( {
 	onHeightUnitChange,
 	minHeightValue,
 	onMinHeightChange,
+	widthValue,
+	onWidthChange,
+	widthUnit,
+	onWidthUnitChange,
+	maxWidthValue,
+	onMaxWidthChange,
+	maxWidthUnit,
+	onMaxWidthUnitChange,
+	maxHeightValue,
+	onMaxHeightChange,
+	maxHeightUnit,
+	onMaxHeightUnitChange,
+	maxWidthPercentValue,
+	onMaxWidthPercentChange,
+	borderRadiusValues,
+	onBorderRadiusChange,
 	heightDisabled = false,
 	ratioDisabled = false,
 	heightHiddenReason = '',
@@ -118,6 +194,9 @@ export default function MediaBoxShapeControls( {
 } ) {
 	const resolvedSizing = sizing || 'auto';
 	const heightObj = heightValue && 'object' === typeof heightValue ? heightValue : {};
+	const widthObj = widthValue && 'object' === typeof widthValue ? widthValue : {};
+	const maxWidthObj = maxWidthValue && 'object' === typeof maxWidthValue ? maxWidthValue : {};
+	const maxHeightObj = maxHeightValue && 'object' === typeof maxHeightValue ? maxHeightValue : {};
 
 	return (
 		<>
@@ -135,7 +214,7 @@ export default function MediaBoxShapeControls( {
 				) ) }
 			</ToggleGroupControl>
 
-			<TierLengthRow
+			<LengthFieldRow
 				label={ __( 'Height', 'sgs-blocks' ) }
 				value={ heightObj.desktop }
 				unit={ heightUnit }
@@ -167,6 +246,57 @@ export default function MediaBoxShapeControls( {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
+
+			{ 'rounded' === shape && onBorderRadiusChange && (
+				<ResponsiveBorderRadiusControl
+					label={ __( 'Corner radius', 'sgs-blocks' ) }
+					values={ borderRadiusValues || {} }
+					onChange={ onBorderRadiusChange }
+				/>
+			) }
+
+			{ onWidthChange && (
+				<LengthFieldRow
+					label={ __( 'Width', 'sgs-blocks' ) }
+					value={ widthObj.desktop }
+					unit={ widthUnit }
+					onChangeValue={ ( v ) => onWidthChange( { ...widthObj, desktop: v } ) }
+					onChangeUnit={ onWidthUnitChange }
+				/>
+			) }
+
+			{ onMaxWidthChange && (
+				<LengthFieldRow
+					label={ __( 'Max width', 'sgs-blocks' ) }
+					value={ maxWidthObj.desktop }
+					unit={ maxWidthUnit }
+					onChangeValue={ ( v ) => onMaxWidthChange( { ...maxWidthObj, desktop: v } ) }
+					onChangeUnit={ onMaxWidthUnitChange }
+				/>
+			) }
+
+			{ onMaxHeightChange && (
+				<LengthFieldRow
+					label={ __( 'Max height', 'sgs-blocks' ) }
+					value={ maxHeightObj.desktop }
+					unit={ maxHeightUnit }
+					onChangeValue={ ( v ) => onMaxHeightChange( { ...maxHeightObj, desktop: v } ) }
+					onChangeUnit={ onMaxHeightUnitChange }
+				/>
+			) }
+
+			{ onMaxWidthPercentChange && (
+				<RangeControl
+					label={ __( 'Max width (% of parent)', 'sgs-blocks' ) }
+					value={ maxWidthPercentValue }
+					onChange={ onMaxWidthPercentChange }
+					min={ 0 }
+					max={ 100 }
+					step={ 1 }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) }
 
 			<TextControl
 				label={ __( 'Minimum height (any unit, e.g. 40vh)', 'sgs-blocks' ) }

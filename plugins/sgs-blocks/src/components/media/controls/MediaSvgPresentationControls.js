@@ -6,18 +6,31 @@
  * Mirrors the vocabulary `sgs/container`'s `BackgroundPanel` SVG tab already
  * uses for `bgSvg*` (background/foreground position, none/pulse/float/wave
  * animation, slow/medium/fast speed, 0-100 opacity, text-shadow toggle,
- * free-form min-height) — same client-facing questions, re-expressed as
- * atom bases (`SvgPosition`/`SvgAnimation`/`SvgAnimationSpeed`/`SvgOpacity`/
- * `SvgTextShadow`/`SvgMinHeight`) so any NEW block adopting the
- * `svg-presentation` atom gets the identical capability container already
- * proved out, without duplicating its markup.
+ * unit-aware min-height via `SgsLengthControl`) — same client-facing
+ * questions, re-expressed as atom bases (`SvgPosition`/`SvgAnimation`/
+ * `SvgAnimationSpeed`/`SvgOpacity`/`SvgTextShadow`/`SvgMinHeight`) so any NEW
+ * block adopting the `svg-presentation` atom gets the identical capability
+ * container already proved out, without duplicating its markup.
  *
  * Bare rows only — mounts no `InspectorControls`/`PanelBody`.
  *
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { RangeControl, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
+import { RangeControl, SelectControl, ToggleControl } from '@wordpress/components';
+import SgsLengthControl from '../../SgsLengthControl.js';
+
+// Mirrors `sgs/container`'s `BackgroundPanel` `LENGTH_UNITS`
+// (`src/blocks/container/components/_shared.js`) — kept as a local copy rather
+// than a cross-directory import, per that file's own docblock ("if something
+// is used once [outside its own panel family], it belongs with its consumer").
+const MIN_HEIGHT_UNITS = [
+	{ value: 'px', label: 'px' },
+	{ value: 'rem', label: 'rem' },
+	{ value: 'em', label: 'em' },
+	{ value: '%', label: '%' },
+	{ value: 'vw', label: 'vw' },
+];
 
 const POSITION_OPTIONS = [
 	{ label: __( 'Background (behind content)', 'sgs-blocks' ), value: 'background' },
@@ -117,13 +130,16 @@ export default function MediaSvgPresentationControls( {
 				onChange={ onTextShadowChange }
 				__nextHasNoMarginBottom
 			/>
-			<TextControl
+			<SgsLengthControl
+				presets={ false }
 				label={ __( 'Minimum height', 'sgs-blocks' ) }
-				help={ __( 'e.g. 400px or 50vh. Leave blank for no minimum.', 'sgs-blocks' ) }
 				value={ minHeight || '' }
+				units={ MIN_HEIGHT_UNITS }
 				onChange={ onMinHeightChange }
-				__nextHasNoMarginBottom
-				__next40pxDefaultSize
+				help={ __(
+					'Minimum height applied to the SVG layer, e.g. 400px or 50vh. Leave blank for no minimum.',
+					'sgs-blocks'
+				) }
 			/>
 		</>
 	);

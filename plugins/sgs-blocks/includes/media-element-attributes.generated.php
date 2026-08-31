@@ -24,8 +24,10 @@
 
 return array(
 	'bases'  => array(
+		"AnimationDuration"        => "number",
 		"AspectRatio"              => "string",
 		"Attachment"               => "string",
+		"BorderRadius"             => "object",
 		"DecorMedia"               => "object",
 		"Height"                   => "object",
 		"HeightUnit"               => "string",
@@ -36,6 +38,7 @@ return array(
 		"ImageIsDecorative"        => "boolean",
 		"ImageUrl"                 => "string",
 		"ImageWidth"               => "number",
+		"KenBurns"                 => "boolean",
 		"MaxHeight"                => "object",
 		"MaxHeightUnit"            => "string",
 		"MaxWidth"                 => "object",
@@ -52,6 +55,7 @@ return array(
 		"OverlayGradient"          => "string",
 		"OverlayGradientHover"     => "string",
 		"OverlayOpacity"           => "number",
+		"Parallax"                 => "boolean",
 		"Position"                 => "string",
 		"Repeat"                   => "string",
 		"Shape"                    => "string",
@@ -117,6 +121,11 @@ return array(
 			"VideoAlt",
 			"ImageIsDecorative",
 		),
+		"motion"       => array(
+			"KenBurns",
+			"Parallax",
+			"AnimationDuration",
+		),
 		"overlay"      => array(
 			"OverlayColour",
 			"OverlayColourHover",
@@ -139,6 +148,7 @@ return array(
 			"MinHeight",
 			"Width",
 			"WidthUnit",
+			"BorderRadius",
 		),
 		"source"       => array(
 			"Image",
@@ -167,11 +177,13 @@ return array(
 		),
 	),
 	'tiered' => array(
+		"BorderRadius",
 		"Height",
 		"Image",
 		"ImageId",
 		"ImageUrl",
 		"MinHeight",
+		"ObjectFit",
 		"ObjectPosition",
 		"OverlayOpacity",
 		"Svg",
@@ -208,6 +220,7 @@ return array(
 			"MinHeight",
 			"Width",
 			"WidthUnit",
+			"BorderRadius",
 		),
 		"focal-point"        => array(
 			"ObjectPosition",
@@ -228,6 +241,11 @@ return array(
 			"MediaType",
 			"VideoSource",
 			"VideoMimeType",
+		),
+		"motion"             => array(
+			"KenBurns",
+			"Parallax",
+			"AnimationDuration",
 		),
 		"object-fit"         => array(
 			"ObjectFit",

@@ -5,13 +5,16 @@
  *
  * Sizing MODE (auto / height / ratio, mutually exclusive per registry.js
  * `requires`) plus an independent named SHAPE (none / rounded / circle /
- * square) expressed through `clip-path` — NEVER `border-radius`, which
- * `SgsBorderControl` (44 blocks) and native `__experimentalBorder`
- * (`sgs/media`) own outright. See the JS twin's docblock for the full
- * reasoning, the `custom` handoff from the `object-fit` atom, the ratio
- * format bridge, and the three `reads` traps (product-card `imageHeight`
- * flat string, hero `splitMediaWidth` number, decorative-image
- * `maxWidthPercent`).
+ * square) expressed through `clip-path` — the block WRAPPER's `border-radius`
+ * still belongs to `SgsBorderControl` (44 blocks) / native
+ * `__experimentalBorder` (`sgs/media`) outright. Since 2026-09-01 this atom
+ * ALSO writes a genuine editable radius via a SEPARATE custom property
+ * (`--sgs-media-border-radius`) targeting the MEDIA ELEMENT itself, not the
+ * wrapper. See the JS twin's docblock for the full reasoning, the collision
+ * risk this leaves open for a future block, the `custom` handoff from the
+ * `object-fit` atom, the ratio format bridge, and the three `reads` traps
+ * (product-card `imageHeight` flat string, hero `splitMediaWidth` number,
+ * decorative-image `maxWidthPercent`).
  *
  * `sgs_media_atom_box_shape_css()` must emit BYTE-IDENTICAL declarations to
  * the JS twin's `css()` for the same attribute set — enforced by
@@ -123,6 +126,41 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_resolve_tier_object' ) ) {
 			return $out;
 		}
 		return array();
+	}
+}
+
+if ( ! function_exists( 'sgs_media_atom_box_shape_corners_to_radius_shorthand' ) ) {
+	/**
+	 * Convert a 4-corner box object into the CSS `border-radius` shorthand
+	 * VALUE string, in the shorthand's own order (top-left, top-right,
+	 * bottom-right, bottom-left) — corners are read by NAME, never assumed to
+	 * already be in shorthand order. An unset corner defaults to '0' so the
+	 * shorthand is always well-formed; an entirely-empty object returns ''
+	 * so the caller can fall back to the shared preset.
+	 *
+	 * @param mixed $corners Raw `BorderRadius`-shaped value.
+	 * @return string "TL TR BR BL", or '' when nothing is set.
+	 */
+	function sgs_media_atom_box_shape_corners_to_radius_shorthand( $corners ) {
+		if ( ! is_array( $corners ) ) {
+			return '';
+		}
+		$order   = array( 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' );
+		$has_any = false;
+		foreach ( $order as $k ) {
+			if ( isset( $corners[ $k ] ) && '' !== $corners[ $k ] ) {
+				$has_any = true;
+				break;
+			}
+		}
+		if ( ! $has_any ) {
+			return '';
+		}
+		$parts = array();
+		foreach ( $order as $k ) {
+			$parts[] = ( isset( $corners[ $k ] ) && '' !== $corners[ $k ] ) ? $corners[ $k ] : '0';
+		}
+		return implode( ' ', $parts );
 	}
 }
 
@@ -275,6 +313,38 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 		if ( 'none' !== $shape ) {
 			$clip_paths = sgs_media_atom_box_shape_clip_paths();
 			$decls[]    = '--sgs-media-clip-path:' . $clip_paths[ $shape ];
+		}
+
+		// Real editable radius, companion to the clip-path above (2026-09-01).
+		// Mirrors the JS twin's css() exactly -- circle:50%, rounded: the
+		// client's own tiered corners (falls back to a theme token), none/
+		// square:0. Always emitted, never left to the stylesheet's own
+		// fallback -- this custom property is brand new and has no existing
+		// default to accidentally win against.
+		if ( 'circle' === $shape ) {
+			$decls[] = '--sgs-media-border-radius:50%';
+		} elseif ( 'rounded' === $shape ) {
+			$radius_key        = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderRadius' );
+			$radius_tablet_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderRadiusTablet' );
+			$radius_mobile_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderRadiusMobile' );
+			$desktop_shorthand = sgs_media_atom_box_shape_corners_to_radius_shorthand( $attributes[ $radius_key ] ?? null );
+			$tablet_shorthand  = sgs_media_atom_box_shape_corners_to_radius_shorthand( $attributes[ $radius_tablet_key ] ?? null );
+			$mobile_shorthand  = sgs_media_atom_box_shape_corners_to_radius_shorthand( $attributes[ $radius_mobile_key ] ?? null );
+			$decls[]           = '--sgs-media-border-radius:' . ( '' !== $desktop_shorthand ? $desktop_shorthand : 'var(--wp--custom--border-radius--medium)' );
+			if ( '' !== $tablet_shorthand ) {
+				$decls[] = '--sgs-media-border-radius-tablet:' . $tablet_shorthand;
+			}
+			if ( '' !== $mobile_shorthand ) {
+				$decls[] = '--sgs-media-border-radius-mobile:' . $mobile_shorthand;
+			}
+		} elseif ( 'square' === $shape ) {
+			// 'none' (the default) emits NOTHING here, matching clip-path's
+			// own skip and the atom contract's "nothing for an empty
+			// attribute set" rule -- the stylesheet's own
+			// var(--sgs-media-border-radius,0) fallback already resolves to
+			// the same 0, so this is a no-op-free skip, not a behaviour
+			// change.
+			$decls[] = '--sgs-media-border-radius:0';
 		}
 
 		return $decls;

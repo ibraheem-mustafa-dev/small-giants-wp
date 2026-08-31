@@ -40,7 +40,7 @@ const P = PLUGIN.split( BS ).join( '/' );
  * it to make a run go green - a lowered ratchet is how a deleted implementation
  * passes as progress.
  */
-const IMPLEMENTED_ATOMS = 10;
+const IMPLEMENTED_ATOMS = 11;
 
 const { MEDIA_ATOMS, MEDIA_ATOM_IDS } = await import(
 	'file:///' + P + '/src/components/media/atoms/registry.js'
@@ -103,9 +103,12 @@ const FIXTURE = {
 		svgOpacity: 0.4,
 		svgMinHeight: '220px',
 		svgPosition: 'center',
-		// object-fit / focal-point
+		// object-fit / focal-point (both element-scope tiered, 2026-09-01)
 		objectFit: 'contain',
+		objectFitTablet: 'fill',
+		objectFitMobile: 'scale-down',
 		objectPosition: '30% 70%',
+		objectPositionTablet: '40% 60%',
 		objectPositionMobile: '50% 20%',
 		size: 'cover',
 		position: 'center top',
@@ -357,7 +360,7 @@ if ( implemented > IMPLEMENTED_ATOMS ) {
 }
 // The registry itself must stay whole, or "0 implemented" could just mean the
 // registry failed to load and every atom looked absent.
-ck( 'registry loaded and still declares ten atoms', MEDIA_ATOM_IDS.length === 10,
+ck( 'registry loaded and still declares eleven atoms', MEDIA_ATOM_IDS.length === 11,
 	`got ${ MEDIA_ATOM_IDS.length }` );
 ck( 'every atom id resolves to a registry entry',
 	MEDIA_ATOM_IDS.every( ( id ) => !! MEDIA_ATOMS[ id ] ) );

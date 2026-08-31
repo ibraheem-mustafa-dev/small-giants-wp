@@ -126,6 +126,18 @@ export const MEDIA_BASES = {
 		'MinHeight',
 		'Width',
 		'WidthUnit',
+		// A genuine editable radius for `Shape:'rounded'`, distinct from the
+		// clip-path vocabulary (2026-09-01). NEW attribute — no existing block
+		// declares it, so nothing breaks. Tiered (see MEDIA_TIERED_BASES below):
+		// a 4-corner box-family object per device, matching
+		// `ResponsiveBorderRadiusControl`'s own shape. This is intentionally a
+		// SEPARATE custom property from `SgsBorderControl`/native
+		// `__experimentalBorder`'s `border-radius` — it governs the MEDIA
+		// ELEMENT's own shape (`.sgs-media-el`), not the block wrapper's border
+		// chrome, so the two never target the same node today. See
+		// box-shape.js's module docblock for the collision risk this still
+		// leaves open if a future block adopts both on one element.
+		'BorderRadius',
 	],
 	overlay: [
 		'OverlayColour',
@@ -134,6 +146,20 @@ export const MEDIA_BASES = {
 		'OverlayGradientHover',
 		'OverlayOpacity',
 		'OverlayBlendMode',
+	],
+	// Motion (atom 11, added 2026-09-01, Bean-directed). Harvested from two
+	// working implementations rather than designed fresh — sgs/hero's
+	// mediaParallax/mediaKenBurns/mediaAnimationDuration (split-media, element
+	// scope) and sgs/container's bgParallax/bgKenBurns/bgAnimationDuration
+	// (backdrop scope). Mutually exclusive pair (KenBurns/Parallax), enforced
+	// in the control's own onChange exactly as hero already does — the
+	// registry's `requires` field expresses "X requires Y", not "X excludes
+	// Y", so exclusivity is a control-layer rule, not a registry one. Not
+	// tiered: neither reference implementation has Tablet/Mobile variants.
+	motion: [
+		'KenBurns',
+		'Parallax',
+		'AnimationDuration',
 	],
 };
 
@@ -156,11 +182,13 @@ export const MEDIA_TIERED_BASES = [
 	...[ 'VideoAutoplay', 'VideoLoop', 'VideoMuted', 'VideoControls',
 		'VideoPlaysInline', 'VideoLazyLoad', 'VideoCaptionsId', 'VideoCaptionsUrl',
 		'VideoCaptionsLabel', 'VideoCaptionsSrcLang' ],
+	'ObjectFit',
 	'ObjectPosition',
 	'Height',
 	'Width',
 	'MinHeight',
 	'OverlayOpacity',
+	'BorderRadius',
 ];
 
 /** Device tiers. Never hardcode 768/1024 here - see SGS_BREAKPOINTS. */
@@ -258,12 +286,19 @@ export const MEDIA_ATTR_TYPES = {
 	MinHeight: 'object',
 	Width: 'object',
 	WidthUnit: 'string',
+	// A 4-corner box-family object ({topLeft,topRight,bottomLeft,bottomRight}),
+	// matching ResponsiveBorderRadiusControl's own per-tier shape.
+	BorderRadius: 'object',
 	OverlayColour: 'string',
 	OverlayColourHover: 'string',
 	OverlayGradient: 'string',
 	OverlayGradientHover: 'string',
 	OverlayOpacity: 'number',
 	OverlayBlendMode: 'string',
+	// Motion (atom 11).
+	KenBurns: 'boolean',
+	Parallax: 'boolean',
+	AnimationDuration: 'number',
 };
 
 /**

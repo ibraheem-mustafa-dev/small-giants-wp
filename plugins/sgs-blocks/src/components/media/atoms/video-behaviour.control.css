@@ -1,0 +1,47 @@
+/**
+ * Editor-only spacing between the stacked bare-row controls this atom's
+ * `control()` renders (six `ToggleControl` playback toggles + the captions
+ * workflow). Every toggle sets `__nextHasNoMarginBottom: true` and nothing
+ * else in this Fragment supplies a gap, so the six rows pack flush against
+ * each other — the switch of one toggle sits directly against the label of
+ * the next, which is the "no padding between the label and the toggle
+ * under it" defect Bean reported (2026-09-01).
+ *
+ * This is the SAME defect class `SgsBooleanField.css` already fixed and
+ * proved live (2026-08-19): flipping `__nextHasNoMarginBottom` back to
+ * `false` does NOT reliably restore `ToggleControl`'s default bottom
+ * margin in this installed WP version (confirmed there via React fiber
+ * inspection — the prop was correctly `false`, computed margin-bottom was
+ * still 0px). An own, explicit, directly-verifiable CSS margin is the
+ * fix that actually works, so this file repeats that pattern rather than
+ * touching any `__nextHasNoMarginBottom` value.
+ *
+ * ⛔ NOT placed under `assets/css/media-atoms/` — that directory is the
+ * paintable-CSS-property pipeline for the rendered `<video>`/`<img>`
+ * element on the FRONTEND + editor CANVAS (`.sgs-media-el`/`.sgs-media-box`,
+ * concatenated by `scripts/generate-media-stylesheet.mjs` into ONE
+ * frontend-enqueued stylesheet). This atom's `css()` deliberately returns
+ * nothing — playback behaviour is HTML element state, never a paintable CSS
+ * property (see `video-behaviour.js`'s own docblock). The control markup
+ * this file styles lives in the Inspector sidebar, outside the canvas
+ * iframe and outside every selector that stylesheet can reach, so adding
+ * an Inspector-spacing rule there would ship dead bytes to every page's
+ * frontend and never match anything. This file is imported directly by
+ * `video-behaviour.control.js` instead — the same co-located,
+ * webpack-bundled pattern `SgsBooleanField.js` already uses for
+ * `SgsBooleanField.css`.
+ *
+ * Scoped to `.sgs-media-behaviour-controls` so it can never affect any
+ * other stacked-toggle group in the editor.
+ *
+ * Every DIRECT CHILD of this wrapper — each of the six toggles, plus
+ * whichever mix of `Button`/`TextControl` the captions workflow renders —
+ * is one bare row, so `:not(:first-child)` covers every adjacent pair
+ * without enumerating each control-type combination by name (which would
+ * silently miss a new pairing, e.g. a captions `Button` following a
+ * `TextControl`, the moment the captions state changes).
+ */
+
+.sgs-media-behaviour-controls > :not( :first-child ) {
+	margin-top: 16px;
+}

@@ -14,7 +14,7 @@ import { __ } from '@wordpress/i18n';
 
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import MediaBoxShapeControls from '../controls/MediaBoxShapeControls.js';
-import { disclosure, normaliseRatio, resolveHeight, validateShape } from './box-shape.js';
+import { disclosure, normaliseRatio, resolveHeight, resolveWidth, validateShape } from './box-shape.js';
 
 /**
  * Bare inspector rows for this atom. Mounts no `InspectorControls`/
@@ -34,11 +34,30 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 	const heightKey = mediaStoredAttrName( blockSlug, prefix, 'Height' );
 	const heightUnitKey = mediaStoredAttrName( blockSlug, prefix, 'HeightUnit' );
 	const minHeightKey = mediaStoredAttrName( blockSlug, prefix, 'MinHeight' );
+	const widthKey = mediaStoredAttrName( blockSlug, prefix, 'Width' );
+	const widthUnitKey = mediaStoredAttrName( blockSlug, prefix, 'WidthUnit' );
+	const maxWidthKey = mediaStoredAttrName( blockSlug, prefix, 'MaxWidth' );
+	const maxWidthUnitKey = mediaStoredAttrName( blockSlug, prefix, 'MaxWidthUnit' );
+	const maxHeightKey = mediaStoredAttrName( blockSlug, prefix, 'MaxHeight' );
+	const maxHeightUnitKey = mediaStoredAttrName( blockSlug, prefix, 'MaxHeightUnit' );
+	const maxWidthPercentKey = mediaStoredAttrName( blockSlug, prefix, 'MaxWidthPercent' );
+	const borderRadiusKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadius' );
+	const borderRadiusTabletKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusTablet' );
+	const borderRadiusMobileKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusMobile' );
 
 	const disc = disclosure( { attributes, prefix, blockSlug } );
 	const minHeightObj = attributes[ minHeightKey ] && 'object' === typeof attributes[ minHeightKey ]
 		? attributes[ minHeightKey ]
 		: {};
+	const maxWidthObj = attributes[ maxWidthKey ] && 'object' === typeof attributes[ maxWidthKey ]
+		? attributes[ maxWidthKey ]
+		: {};
+	const maxHeightObj = attributes[ maxHeightKey ] && 'object' === typeof attributes[ maxHeightKey ]
+		? attributes[ maxHeightKey ]
+		: {};
+	const shape = validateShape( attributes[ shapeKey ] );
+
+	const BORDER_RADIUS_TIER_KEYS = { base: borderRadiusKey, tablet: borderRadiusTabletKey, mobile: borderRadiusMobileKey };
 
 	return (
 		<MediaBoxShapeControls
@@ -47,7 +66,7 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 			onSizingChange={ ( v ) => setAttributes( { [ sizingKey ]: v } ) }
 			ratio={ attributes[ ratioKey ] }
 			onRatioChange={ ( v ) => setAttributes( { [ ratioKey ]: normaliseRatio( v ) || v } ) }
-			shape={ attributes[ shapeKey ] }
+			shape={ shape }
 			onShapeChange={ ( v ) => setAttributes( { [ shapeKey ]: validateShape( v ) } ) }
 			heightValue={ resolveHeight( attributes[ heightKey ] ) }
 			onHeightChange={ ( v ) => setAttributes( { [ heightKey ]: v } ) }
@@ -55,6 +74,28 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 			onHeightUnitChange={ ( v ) => setAttributes( { [ heightUnitKey ]: v } ) }
 			minHeightValue={ minHeightObj.desktop }
 			onMinHeightChange={ ( v ) => setAttributes( { [ minHeightKey ]: { ...minHeightObj, desktop: v } } ) }
+			widthValue={ resolveWidth( attributes[ widthKey ] ) }
+			onWidthChange={ ( v ) => setAttributes( { [ widthKey ]: v } ) }
+			widthUnit={ attributes[ widthUnitKey ] }
+			onWidthUnitChange={ ( v ) => setAttributes( { [ widthUnitKey ]: v } ) }
+			maxWidthValue={ maxWidthObj }
+			onMaxWidthChange={ ( v ) => setAttributes( { [ maxWidthKey ]: v } ) }
+			maxWidthUnit={ attributes[ maxWidthUnitKey ] }
+			onMaxWidthUnitChange={ ( v ) => setAttributes( { [ maxWidthUnitKey ]: v } ) }
+			maxHeightValue={ maxHeightObj }
+			onMaxHeightChange={ ( v ) => setAttributes( { [ maxHeightKey ]: v } ) }
+			maxHeightUnit={ attributes[ maxHeightUnitKey ] }
+			onMaxHeightUnitChange={ ( v ) => setAttributes( { [ maxHeightUnitKey ]: v } ) }
+			maxWidthPercentValue={ attributes[ maxWidthPercentKey ] }
+			onMaxWidthPercentChange={ ( v ) => setAttributes( { [ maxWidthPercentKey ]: v } ) }
+			borderRadiusValues={ {
+				base: attributes[ borderRadiusKey ] ?? {},
+				tablet: attributes[ borderRadiusTabletKey ] ?? {},
+				mobile: attributes[ borderRadiusMobileKey ] ?? {},
+			} }
+			onBorderRadiusChange={ ( tier, next ) =>
+				setAttributes( { [ BORDER_RADIUS_TIER_KEYS[ tier ] ]: next } )
+			}
 			heightDisabled={ 'visible' !== disc.heightState }
 			ratioDisabled={ 'visible' !== disc.ratioState }
 			heightHiddenReason={

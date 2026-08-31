@@ -44,6 +44,21 @@
  * installed in `node_modules`). The JSX control lives in
  * `svg-presentation.control.js` and imports from here.
  *
+ * ⚠ NO CONTENT GATE YET — sanity-checked 2026-09-01 against the client's
+ * report that container's own SVG tab controls sometimes fail to render even
+ * though they look correctly gated on `bgSvgContent` truthy. This atom's
+ * `attrKeys()`/`control()` deliberately carry NO `SvgContent` base at all
+ * (see the bases list above) — position/animation/speed/opacity/text-shadow/
+ * min-height only, so `control()` renders unconditionally today. That is
+ * correct while there is no mount point (Wave 5a panel-assembly layer isn't
+ * built), but it means the eventual mount MUST gate this control on whatever
+ * attribute actually holds the SVG content for that block — and that gate is
+ * exactly the kind of condition that can silently evaluate false forever
+ * (wrong attr name, wrong truthiness check, wrong prefix/blockSlug threaded
+ * through). When Wave 5a wires this atom's mount point, verify the content
+ * gate live (render with content set AND unset) rather than trusting that it
+ * "looks correctly gated" the way container's did.
+ *
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';

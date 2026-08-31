@@ -9,19 +9,35 @@
  * is an independent decoration layered on top of whichever box the mode
  * produces.
  *
- * BORDER-RADIUS IS NOT THIS ATOM'S. `SgsBorderControl` (44 blocks) and native
- * `__experimentalBorder` (`sgs/media`) own that property outright — a second
- * writer is a bug (plugins/sgs-blocks/CLAUDE.md, "Border controls"). The
- * named-shape vocabulary is therefore expressed through `clip-path`, a
- * DIFFERENT CSS property with no possible collision:
+ * BORDER-RADIUS is a SECOND, ADDITIVE writer, not the same writer as before.
+ * `SgsBorderControl` (44 blocks) and native `__experimentalBorder`
+ * (`sgs/media`) still own the BLOCK WRAPPER's border chrome outright — a
+ * second writer targeting THAT node is a bug (plugins/sgs-blocks/CLAUDE.md,
+ * "Border controls"). The named-shape vocabulary was therefore originally
+ * expressed ONLY through `clip-path`, a different CSS property with no
+ * possible collision. A genuine editable radius was added 2026-09-01
+ * (`--sgs-media-border-radius`, a NEW custom property targeting the MEDIA
+ * ELEMENT itself, `.sgs-media-el` — not the wrapper) because `clip-path`
+ * alone gives no way to dial a custom rounded corner. `clip-path` is
+ * UNCHANGED and still governs the visual clip:
  *
- *   none    -> no clip
- *   square  -> clip-path: inset(0)            (explicit rectangle)
- *   rounded -> clip-path: inset(0 round 12px) (a fixed decorative radius —
- *              this atom's OWN constant, not a theme override: it does not
- *              touch `border-radius` and so cannot flatten anything
- *              `SgsBorderControl` or theme.json already governs)
- *   circle  -> clip-path: circle(50%)
+ *   none    -> no clip;              --sgs-media-border-radius NOT emitted
+ *              (the default; matches the "nothing for an empty attribute
+ *              set" atom contract — the stylesheet's own fallback already
+ *              resolves to 0)
+ *   square  -> clip-path: inset(0);  --sgs-media-border-radius:0
+ *   rounded -> clip-path: inset(0 round 12px) (still this atom's OWN fixed
+ *              decorative constant, unchanged); --sgs-media-border-radius
+ *              carries the client's OWN tiered `BorderRadius` corners
+ *              instead (falls back to a theme token, never a bare pixel)
+ *   circle  -> clip-path: circle(50%); --sgs-media-border-radius:50%
+ *
+ * ⚠ COLLISION RISK, NAMED NOT SOLVED: no block adopts this atom's `BorderRadius`
+ * base AND a native/`SgsBorderControl` radius on the SAME element today
+ * (`sgs/media` only declares `atoms:['object-fit','focal-point']` — verified
+ * live in its block.json), so nothing collides yet. A future block that adopts
+ * both on one node would have two radius writers on that node and needs a
+ * design call before it ships, not an assumption either one wins.
  *
  * `custom` ARRIVES HERE FROM THE `object-fit` ATOM. `sgs/hero`'s
  * `splitMediaObjectFit` carries a 4th value, `custom`, that is not a CSS fit
@@ -71,6 +87,13 @@ const CLIP_PATHS = {
 	rounded: 'inset(0 round 12px)',
 	circle: 'circle(50%)',
 };
+
+/**
+ * Fallback border-radius when `shape:'rounded'` has no client-set
+ * `BorderRadius` at all — a theme token, never a bare pixel constant, so a
+ * re-skin still lands correctly.
+ */
+const ROUNDED_BORDER_RADIUS_FALLBACK = 'var(--wp--custom--border-radius--medium)';
 
 /**
  * Normalise a ratio string in EITHER format to the canonical spaced form.
@@ -167,6 +190,39 @@ export function resolveWidth( raw ) {
 		return out;
 	}
 	return {};
+}
+
+/**
+ * Convert a 4-corner box object into the CSS `border-radius` shorthand VALUE
+ * string, in the shorthand's own order (top-left, top-right, bottom-right,
+ * bottom-left) — note this differs from `ResponsiveBorderRadiusControl`'s
+ * declared key ORDER (topLeft, topRight, bottomLeft, bottomRight), so corners
+ * are read by NAME, never assumed to already be in shorthand order. An unset
+ * corner defaults to `0` so the shorthand is always well-formed; an
+ * ENTIRELY-empty object returns '' so the caller can fall back to the shared
+ * preset instead of emitting a no-op `0 0 0 0`.
+ *
+ * @param {*} corners Raw `BorderRadius`-shaped value.
+ * @return {string} `"TL TR BR BL"`, or '' when nothing is set.
+ */
+export function cornersToRadiusShorthand( corners ) {
+	if ( ! corners || 'object' !== typeof corners ) {
+		return '';
+	}
+	const order = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
+	const hasAny = order.some(
+		( k ) => undefined !== corners[ k ] && null !== corners[ k ] && '' !== corners[ k ]
+	);
+	if ( ! hasAny ) {
+		return '';
+	}
+	return order
+		.map( ( k ) =>
+			undefined !== corners[ k ] && null !== corners[ k ] && '' !== corners[ k ]
+				? corners[ k ]
+				: '0'
+		)
+		.join( ' ' );
 }
 
 /** Format a numeric-or-string tier value with its unit, unless already unit-embedded. */
@@ -316,6 +372,39 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	const shape = validateShape( attributes[ shapeKey ] );
 	if ( 'none' !== shape ) {
 		decls.push( `--sgs-media-clip-path:${ CLIP_PATHS[ shape ] }` );
+	}
+
+	// Real editable radius, companion to the clip-path above (2026-09-01).
+	// `circle` gets a fixed 50%; `rounded` gets the client's own tiered
+	// corners (falling back to a theme token when unset); `none`/`square`
+	// get a literal 0 — always emitted, never left to the stylesheet's own
+	// fallback, since this custom property is brand new and has no existing
+	// default to accidentally win against.
+	if ( 'circle' === shape ) {
+		decls.push( '--sgs-media-border-radius:50%' );
+	} else if ( 'rounded' === shape ) {
+		const radiusKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadius' );
+		const radiusTabletKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusTablet' );
+		const radiusMobileKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusMobile' );
+		const desktopShorthand = cornersToRadiusShorthand( attributes[ radiusKey ] );
+		const tabletShorthand = cornersToRadiusShorthand( attributes[ radiusTabletKey ] );
+		const mobileShorthand = cornersToRadiusShorthand( attributes[ radiusMobileKey ] );
+		decls.push(
+			`--sgs-media-border-radius:${ desktopShorthand || ROUNDED_BORDER_RADIUS_FALLBACK }`
+		);
+		if ( tabletShorthand ) {
+			decls.push( `--sgs-media-border-radius-tablet:${ tabletShorthand }` );
+		}
+		if ( mobileShorthand ) {
+			decls.push( `--sgs-media-border-radius-mobile:${ mobileShorthand }` );
+		}
+	} else if ( 'square' === shape ) {
+		// 'none' (the default) emits NOTHING here, matching clip-path's own
+		// skip and the atom contract's "nothing for an empty attribute set"
+		// rule (test-media-atom-parity.mjs) — the stylesheet's own
+		// `var( --sgs-media-border-radius, 0 )` fallback already resolves to
+		// the same `0`, so this is a no-op-free skip, not a behaviour change.
+		decls.push( '--sgs-media-border-radius:0' );
 	}
 
 	return decls;

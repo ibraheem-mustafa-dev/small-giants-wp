@@ -15,14 +15,21 @@
  * render-time coercion (`sgs_media_atom_video_behaviour_requires()`) stay
  * expressions of the SAME rule.
  *
+ * Imports its own `video-behaviour.control.css` for spacing between the six
+ * stacked toggles + the captions workflow — see that file's docblock for why
+ * it is NOT under `assets/css/media-atoms/` (that pipeline is the
+ * paintable-CSS-property stylesheet for the rendered element, and this is
+ * Inspector-sidebar chrome outside every selector it can reach).
+ *
  * @package SGS\Blocks
  */
-import { createElement, Fragment } from '@wordpress/element';
+import { createElement } from '@wordpress/element';
 import { ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import VideoCaptionsFields from '../controls/VideoCaptionsFields.js';
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { validate, disclosure } from './video-behaviour.js';
+import './video-behaviour.control.css';
 
 /**
  * Bare control rows. Never its own `<InspectorControls>`.
@@ -45,8 +52,8 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug } )
 	const lazyKey = key( 'VideoLazyLoad' );
 
 	return createElement(
-		Fragment,
-		{},
+		'div',
+		{ className: 'sgs-media-behaviour-controls' },
 		createElement( ToggleControl, {
 			key: 'autoplay',
 			label: __( 'Autoplay', 'sgs-blocks' ),

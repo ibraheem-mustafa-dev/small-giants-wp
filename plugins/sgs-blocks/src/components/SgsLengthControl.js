@@ -57,6 +57,16 @@ const CUSTOM_VALUE = '__custom__';
  * @param {Object}   [props.style]        Passthrough inline style (e.g. spacing
  *                                        adjustments a caller applies around the
  *                                        control).
+ * @param {boolean}  [props.disabled]     Passthrough to the underlying
+ *                                        UnitControl (both branches — the
+ *                                        preset SelectControl and its nested
+ *                                        Custom-value UnitControl). Added
+ *                                        2026-09-01 for a caller whose field
+ *                                        is inert under a disclosure rule
+ *                                        (e.g. box-shape's Height row, hidden
+ *                                        when the sizing mode is not
+ *                                        'height') — a genuinely missing
+ *                                        capability, not a passthrough spread.
  *
  * Added 2026-08-27 (Branch 2, Gate B adoption) — three concurrent adoption
  * passes independently found the same gap: this component had no rest-prop
@@ -79,6 +89,7 @@ export default function SgsLengthControl( {
 	placeholder,
 	hideLabelFromVision,
 	style,
+	disabled,
 } ) {
 	// useSettings() may hand back an origin-keyed OBJECT rather than an array
 	// (measured on the canary 2026-08-19 for typography.fontFamilies/fontSizes).
@@ -100,6 +111,7 @@ export default function SgsLengthControl( {
 				value={ value ?? '' }
 				onChange={ ( raw ) => onChange( raw ?? '' ) }
 				units={ units }
+				disabled={ disabled }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
@@ -124,6 +136,7 @@ export default function SgsLengthControl( {
 				style={ style }
 				value={ selectValue }
 				options={ options }
+				disabled={ disabled }
 				onChange={ ( next ) => {
 					if ( next === CUSTOM_VALUE ) {
 						onChange( isPresetValue ? '' : value );
@@ -141,6 +154,7 @@ export default function SgsLengthControl( {
 					value={ isPresetValue ? '' : value ?? '' }
 					onChange={ ( raw ) => onChange( raw ?? '' ) }
 					units={ units }
+					disabled={ disabled }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>

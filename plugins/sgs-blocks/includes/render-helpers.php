@@ -131,3 +131,4 @@ require_once __DIR__ . '/media/atoms/focal-point.php';
 require_once __DIR__ . '/media/atoms/box-shape.php';
 require_once __DIR__ . '/media/atoms/overlay.php';
 require_once __DIR__ . '/media/atoms/svg-presentation.php';
+require_once __DIR__ . '/media/atoms/motion.php';
