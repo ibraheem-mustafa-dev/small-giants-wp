@@ -53,7 +53,7 @@ export function control( { attributes, setAttributes, prefix, blockSlug } ) {
 							'sgs-blocks'
 					  )
 					: __(
-							'Describe the media for screen readers and search engines.',
+							'Pre-filled from the picked image\'s own description — only change it if this instance means something different (the same photo can be informative in one place and purely decorative in another).',
 							'sgs-blocks'
 					  )
 			}

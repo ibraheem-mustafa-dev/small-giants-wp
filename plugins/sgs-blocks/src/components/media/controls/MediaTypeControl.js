@@ -14,6 +14,11 @@
  * `control()` composes this alongside its sibling rows; the calling block
  * owns the panel it lives in.
  *
+ * A `ToggleGroupControl` button-group (2026-09-01, Bean's direction), NOT a
+ * dropdown — matching `box-shape`'s own "pick one of a few options" control
+ * (`MediaBoxShapeControls.js`'s `MODE_OPTIONS`/`ToggleGroupControl` block).
+ * Four options (Inherit + Image/Video/SVG) fit the segmented control fine.
+ *
  * ⛔ WRITTEN WITH `createElement()`, NOT JSX. This module is imported by
  * `scripts/tests/test-media-atom-parity.mjs` directly under plain Node (no
  * webpack/babel transform), and JSX syntax fails Node's parser at import
@@ -23,7 +28,7 @@
  * @package SGS\Blocks
  */
 import { createElement } from '@wordpress/element';
-import { SelectControl } from '@wordpress/components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 /** The three real media types. Canonical order matches the registry. */
@@ -63,14 +68,29 @@ export default function MediaTypeControl( {
 		: MEDIA_TYPE_OPTIONS;
 	const resolved = value || ( allowInherit ? '' : 'image' );
 
-	return createElement( SelectControl, {
-		label: label || __( 'Media type', 'sgs-blocks' ),
-		help: hiddenReason || undefined,
-		value: resolved,
-		options,
-		disabled,
-		onChange,
-		__next40pxDefaultSize: true,
-		__nextHasNoMarginBottom: true,
-	} );
+	return createElement(
+		ToggleGroupControl,
+		{
+			label: label || __( 'Media type', 'sgs-blocks' ),
+			help: disabled ? hiddenReason || undefined : undefined,
+			value: resolved,
+			onChange,
+			isBlock: true,
+			__nextHasNoMarginBottom: true,
+			__next40pxDefaultSize: true,
+		},
+		...options.map( ( opt ) =>
+			createElement( ToggleGroupControlOption, {
+				key: opt.value,
+				value: opt.value,
+				label: opt.label,
+				// `ToggleGroupControl` itself has no `disabled` prop in the
+				// stable Gutenberg API (WordPress/gutenberg#57862, still open) —
+				// disabling it there is a silent no-op. Per-option `disabled`
+				// IS supported (WordPress/gutenberg#63450) and is what actually
+				// blocks selection, so it's applied here instead.
+				disabled,
+			} )
+		)
+	);
 }

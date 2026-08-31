@@ -73,10 +73,28 @@ function pairPickerRow( { rowKey, label, attrs, setAttributes, name, idBase, url
 							if ( ! media || allowedType !== media.type ) {
 								return;
 							}
-							setAttributes( {
+							const next = {
 								[ idKey ]: media.id || 0,
 								[ urlKey ]: media.url,
-							} );
+							};
+							// Auto-fill alt from the picked attachment's own alt text
+							// (media-element-architecture-v2 §18.3) — the `meaning` atom's
+							// TextControl stays a low-emphasis override, never a required
+							// field. Only when the attachment actually has alt text, and
+							// only when the CURRENT alt is empty, so a client's own typed
+							// wording is never silently overwritten by re-picking a
+							// different file. Poster-image row is excluded (idBase check)
+							// — a poster is a fallback frame, not screen-reader-facing.
+							if ( media.alt && 'ThumbnailId' !== idBase ) {
+								const altKey =
+									'video' === allowedType
+										? name( 'VideoAlt' + suffix )
+										: name( 'ImageAlt' + suffix );
+								if ( ! attrs[ altKey ] ) {
+									next[ altKey ] = media.alt;
+								}
+							}
+							setAttributes( next );
 						} }
 						onRemove={ () =>
 							setAttributes( { [ idKey ]: 0, [ urlKey ]: '' } )
