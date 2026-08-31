@@ -2,17 +2,18 @@
 doc_type: design
 title: The SGS Media Element — architecture v2 (post-council)
 date: 2026-08-30
-last_updated: 2026-08-30
-status: APPROVED and PARTLY BUILT — waves 1-2 shipped, deployed and live-verified; wave 3 in progress
+last_updated: 2026-08-31
+status: APPROVED and PARTLY BUILT — waves 1-2 deployed + live-verified; waves 3-4 built and gated, NOT deployed; wave 5 next
 owner: client-controls track
 supersedes: 2026-08-30-media-element-architecture.md (v1, graded C/C+/D by a 7-seat council)
 live_plan: ~/.claude/plans/media-element-zippy-boole.md
+next_session_prompt: .claude/prompts/2026-08-31-media-element-waves-5-7.md
 ---
 
-> **Status.** Waves 1-2 are built, deployed and live-verified on the canary: the census, the L1
-> naming pair, declarative attribute injection on both sides, the SVG allowlist unification and
-> editor sanitiser, and `<track>` captions on `sgs/media`. Wave 3 (the ten atoms) is in progress.
-> Live plan: `~/.claude/plans/media-element-zippy-boole.md`. Live status: `.claude/LEDGER.md`.
+> **Status.** Waves 1-2 deployed and live-verified. Waves 3-4 built and gated but **NOT deployed** —
+> the atom layer paints nothing until a surface is wired in Wave 5. Full status in §17.
+> **Next session: `.claude/prompts/2026-08-31-media-element-waves-5-7.md`.**
+> Live status: `.claude/LEDGER.md`. Decisions: D909, D910.
 
 # The SGS Media Element — architecture v2
 
@@ -935,29 +936,66 @@ always has either the old code or the new code, never neither, and rollback is o
 
 ---
 
-## 17. Next action
+## 17. Where this stands, and what is next
 
-**Waves 1 and 2 are done** — the census (`9b67c3885`), the L1 pair and declarative injection
-(`cce7427bd`, `ea5f7ed09`), and both security items. All deployed and live-verified on the canary.
-Evidence: `reports/visual-diff/svg-sanitiser-captions-2026-08-30.md`, probe page 3143.
+### Built and deployed (waves 1-2)
 
-**Next: Wave 3 — the ten atoms.** Live plan: `~/.claude/plans/media-element-zippy-boole.md`.
+Census (`9b67c3885`), the L1 naming pair and declarative injection (`cce7427bd`, `ea5f7ed09`), the
+SVG allowlist unification and editor sanitiser, `<track>` captions. Live-verified on the canary —
+`reports/visual-diff/svg-sanitiser-captions-2026-08-30.md`, probe page **3143**.
 
-| Stage | Work | Safe to stop after? |
-|---|---|---|
-| 1 | This rewrite — realign the canonical doc | yes |
-| 2 | ✅ Persist the census's presentation half (**38 names / 56 pairs**) | done — pure information |
-| 3 | Atom contract + shared helpers + selective injection | serial; blocks the fan-out |
-| 4 | The ten atoms — 4 parallel Sonnet branches | yes |
-| 5 | `/qc-inline` per atom, `/qc-council` before the commit | — |
+### Built, gated, NOT deployed (waves 3-4)
 
-⛔ **Selective injection is a Wave 3 prerequisite, not a nicety.** The Wave 2 filters inject **all 34
-bases** per declared prefix. `supports.sgs.mediaElements` has **zero adopters today**, so this has
-never bitten — but declaring `sgs/product-card` (3 real media attrs) would inject ~80 attributes
-nothing reads, which is the dead-control class `check-dead-controls.js` exists to stop. The entry
-shape gains `atoms: [...]`, and the injected set becomes the union of those atoms' `bases`. This also
-finally gives `context` a reader — it is declared in the entry shape and read by neither side today.
+`96a696130`..`9859be65c`. 82/82 build gates, eight media gates.
 
-⚠ **Wave 3 cannot claim paint.** Atoms are not wired to a surface until Wave 5, so no live DOM check
-is possible and none must be asserted. Wave 3 closes on JS/PHP parity, validator negative controls
-and helper reuse; **Wave 5 closes on paint** (STOP-CONSUMED-IS-NOT-PAINTED).
+| Piece | State |
+|---|---|
+| Atom registry — ten atoms, data only | `src/components/media/atoms/registry.js` |
+| Presentation census + `gaps` matrix | `reports/migrations/media-element-census.json` |
+| Selective injection, both sides | 109 keys → 49 for two atoms |
+| L4 stylesheet, generated from partials | `assets/css/media-atoms/*.css` → `media-element.css` |
+| The ten atoms | logic + control + PHP twin + CSS partial each |
+| Per-element scoping | `sgs_media_element_scope_class()` / `_style()` |
+
+⛔ **Nothing here paints yet.** Waves 3-4 close on parity, validators and purity. **Wave 5 closes on
+paint** — atoms are wired to no surface until then, so no DOM check is possible and none is claimed.
+
+### Still to do
+
+| Wave | Work |
+|---|---|
+| **5** | Wire `sgs/media`, **then** `before-after`. Serial, never parallel — see §10 |
+| 6 | The six gates as inspector-scan rule modules, all starting advisory |
+| 7 | Remaining surfaces, INSERT → VERIFY → GUT, one commit each |
+| — | `product-card`'s content migration, separately, after the abstraction is proven |
+
+**Live prompt for the remainder:** `.claude/prompts/2026-08-31-media-element-waves-5-7.md`.
+
+### What changed in the plan while building it
+
+Recorded so a reader does not mistake the current shape for the original one.
+
+| Changed | From → to |
+|---|---|
+| Atom count | six → **ten** (§5) — the original six left 36 of 103 census names uncovered and the `requires` rule unowned |
+| How a control becomes standard | a `golden-controls.json` recipe → **being a shared helper** (§5); that file encodes 14 types and exactly one has a rule reading it |
+| Atom module shape | one module → **two** (`<id>.js` pure, `<id>.control.js` JSX), because the parity gate cannot import JSX or a webpack external |
+| Injection | total → **selective**, driven by the atoms an entry names |
+| Census scope | source-side only → plus a **presentation half** and a `gaps` matrix (§9) |
+| `object-fit`'s `custom` | treated as a fit value → **a sizing mode**, reassigned to `box-shape` (§5) |
+| Scoping | implicit → **per ELEMENT**, `{uid}--{prefix}` (§2 L4) |
+| `prefers-reduced-motion` | "absent in v1" → already implemented; **do not rebuild** (§5) |
+| Falsification-test path | `src/media/controls/*` → `src/components/Media*` (§10) |
+
+### The three instruments that read green while proving nothing
+
+Full detail in **D910**. Named here because a later session will meet the same shapes:
+
+1. A **ratchet** asserting ten atoms had verified parity while the gate could not execute at all.
+2. A **fixture** carrying only presentation keys, so five atoms "passed" by comparing two empty arrays.
+3. A **self-test** whose positive and negative control both passed, because its string-stripper meant
+   neither could read a value.
+
+A check that cannot reach its own subject is indistinguishable from a check that passed. Only a
+control designed to go red separates them.
+
