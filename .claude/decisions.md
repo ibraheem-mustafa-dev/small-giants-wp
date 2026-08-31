@@ -1,3 +1,66 @@
+## D913 [ROUTINE] — media atoms finished (11/11), panel design settled (§18), Wave 5-7 prompt rewritten
+
+**2026-09-01/02.** Commits `7e6e54c3b`..`350c6bab3`. Follows D911/D912; this session moved from
+"compare six blocks' controls" to "decide the target shape for each atom and finish building it."
+
+**The comparison table** (`.claude/reports/2026-09-01-media-control-comparison.md`) went through
+two drafts — the first (819 lines, prose) was rejected as overwhelming; rewritten as scannable
+tables (187 lines) with the `imageControls` extension added as its own row wherever it applies
+(object-fit/focal-point/box-shape only).
+
+**Design decisions, recorded in `.claude/plans/2026-08-30-media-element-architecture-v2.md` §18:**
+media-type uses a real `MediaType` attribute + `ToggleGroupControl` buttons with NON-DESTRUCTIVE
+switching (§18.1 — corrects the section's own original "TabPanel, clear siblings on switch" text,
+superseded because the already-built atom's non-destructive design avoids data loss and still
+kills container's "video silently wins" bug, since a real attribute removes the presence-inference
+ambiguity entirely); a "Media" panel with type tabs, an "Image Styling" sub-panel (object-fit,
+focal-point, box-shape, the new `motion` atom), overlay at the bottom (§18.2); alt text auto-fills
+from the picked attachment, TextControl reads as an optional override, never required (§18.3); a
+NEW 11th atom, `motion` (ken-burns/parallax), harvested from `sgs/hero` and `sgs/container`'s
+existing implementations rather than designed fresh, confirmed image/video/SVG-agnostic by reading
+hero's own gating logic (§18.4); overlay repositioned to the panel's bottom, hover-capable, hero's
+overlay bypass of the shared CSS emitter flagged for a fix (§18.5); the `imageControls` extension
+is superseded by `MediaElementPanel` for the six in-scope blocks specifically, not framework-wide
+(§18.6).
+
+**Built, by parallel subagents, each independently gated (`check-media-atom-purity.js`,
+`test-media-atom-parity.mjs`, `check-dead-controls.js`, all green throughout):** object-fit and
+focal-point are now fully tiered (JS `css()`, PHP twin, CSS `@media` chain, control UI) —
+reversing a DIFFERENT prior documented decision (`object-fit.css`'s own comment said "deliberately
+not tiered"), disclosed before building rather than silently overridden; box-shape rebuilt on the
+standard `SgsBorderControl` (zero bespoke logic, matching every other block's Border panel) after
+an interim radius-only mechanism was rejected as over-engineered; the `motion` atom built fresh,
+and found + fixed a real cross-atom bug where it and `svg-presentation` both wrote the same
+physical `animation-name`/etc. properties unconditionally — fixed via one shared multi-value
+composing rule in `_base.css` (CSS's native comma-separated animation syntax) so both effects can
+run at once; `media-type`/`source`/`meaning` finished (button-group primitive, alt auto-fill on
+pick, non-destructive type switch).
+
+**QC (`/qc-inline`, then `/qc` on the doc updates) found three real defects, all fixed same
+session:** `ToggleGroupControl` has no group-level `disabled` prop in the stable Gutenberg API
+(`WordPress/gutenberg#57862`, still open) — moved to per-`ToggleGroupControlOption` instead
+(`#63450`). The rewritten Wave 5-7 prompt had dropped `reports/visual-diff/media-2026-08-30.md`,
+which would have sent the next session to re-verify a live check (D909's autoplay/muted/playsinline
+negative control) already closed 2026-09-01 — restored with corrected framing.
+
+⛔ **The most significant finding: the rewritten Wave 5-7 prompt and this handoff's own first
+LEDGER draft both claimed `MediaElementPanel.js`/`class-sgs-media-element.php` "does not exist" —
+false, and a real risk to have shipped.** Both files were built and committed at `0f246b34a`
+(2026-08-31, predating this session's own work; already correctly recorded in D911). The claim
+traced to every atom `.control.js` file's own docblock ("deferring assembly to a caller nobody
+wrote yet"), written before the panel existed and never updated once it was — carried forward
+across this session without a single direct file check. `sgs/media` is in fact PARTIALLY wired
+already: `object-fit`/`focal-point` only, absorbed into the block's existing panel, INSERT-then-GUT
+already done for both (`640ad1282`, `651aa7155`). Caught by the independent handoff QC subagent
+(Gate QC), not by any check run during the atom-building work itself — a doc's own claim was never
+proof, and this session repeated the exact trap its own memory already names
+(`a-docs-own-not-started-claim-is-not-proof-nothing-happened`). Corrected in the prompt, this
+LEDGER entry, and the plan doc.
+
+**Housekeeping:** `.claude/prompts/2026-09-01-media-control-comparison.md` (this session's own
+starting prompt) deleted on completion, superseded by
+`.claude/prompts/2026-08-31-media-element-waves-5-7.md`, fully rewritten for current state.
+
 ## D912 [ROUTINE] — four owed media-track debts closed: each was a claim never executed
 
 **2026-09-01.** Commits `464eca073`, `1a1f291dd`, `8460e38c3`, `aefd93d49`. Independent of

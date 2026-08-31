@@ -2,9 +2,26 @@
 
 **Invoke `/autopilot` before anything else.**
 
-All eleven atoms are built and gated. The panel that assembles them into something a block can
-mount does not exist yet. Your job: build that panel, wire it into two real blocks, prove it
-paints on a live page, then roll it out to the rest.
+All eleven atoms are built and gated. The panel that assembles them
+(`src/components/MediaElementPanel.js` + `includes/class-sgs-media-element.php`) already exists —
+**do not rebuild it.** `sgs/media` is PARTIALLY wired to it already: `object-fit` and
+`focal-point` only, absorbed as bare rows into the block's existing panel (not yet reorganised
+into §18's "Media panel + type tabs + Image Styling sub-panel + overlay" layout). Every other
+atom on `sgs/media`, and every other block, is untouched. Your job: finish wiring `sgs/media` (the
+other nine atoms, reorganised to §18's layout), then `before-after`, prove it paints on a live
+page, then roll out to the rest.
+
+⛔ **A previous version of this prompt claimed the panel "does not exist" and told you to build
+it from scratch. That was wrong — verified false by an independent QC pass, 2026-09-01, after
+tracing the claim to a stale docblock in the atom `.control.js` files (written before the panel
+existed, never updated once it did) that got carried forward without a direct file check. Confirm
+the real state yourself before trusting ANY status claim in this prompt, including this one:**
+
+```bash
+ls plugins/sgs-blocks/src/components/MediaElementPanel.js plugins/sgs-blocks/includes/class-sgs-media-element.php
+grep -n "MediaElementPanel" plugins/sgs-blocks/src/blocks/media/edit.js
+git log --oneline -- plugins/sgs-blocks/src/components/MediaElementPanel.js
+```
 
 ---
 
@@ -31,6 +48,10 @@ cloning pipeline; this is the client-controls track. Reading it costs an hour an
 
 ## What changed since this prompt was first written
 
+- **The panel-assembly layer (`MediaElementPanel.js`) already exists, and `sgs/media` already has
+  two atoms wired.** A draft of this prompt claimed otherwise and would have sent you to rebuild
+  something that shipped before this session even started — caught by an independent QC pass.
+  See "5a" below for the confirmed current state and the verification commands to re-check it.
 - Atom count is **eleven**, not ten — `motion` (ken-burns/parallax) was added, harvested from
   `sgs/hero`'s split-media and `sgs/container`'s background implementations. It applies to image,
   video, and SVG alike; nothing in hero's own code restricts it to images. It shares no CSS
@@ -122,61 +143,64 @@ shared-layer commit.
 can quietly bend the shared layer to suit themselves, and the only evidence the abstraction
 generalises is gone. Run this inline, serially, yourself.
 
-### 5a — build the panel, then wire `sgs/media`
+### 5a — finish wiring `sgs/media` (the panel already exists)
 
 The shared layer may change here. That's expected — this is the surface it was shaped around.
 
-⛔ **Precondition: the panel-assembly layer does not exist and must be built first.**
-`grep -rn "SGS_Media_Element"` returns nothing. `src/components/MediaElementControls.js` holds
-zero JSX — it's the naming module, not the assembler. Every atom's `control()` returns bare rows
-and mounts no `InspectorControls`, deferring assembly to a caller nobody wrote yet. Build it as
-`src/components/MediaElementPanel.js` + `includes/class-sgs-media-element.php`.
+**Confirmed state, 2026-09-01 (verify it yourself before trusting it further):** the panel
+(`src/components/MediaElementPanel.js` + `includes/class-sgs-media-element.php`) was built and
+committed at `0f246b34a`. `sgs/media/block.json` already declares
+`supports.sgs.mediaElements: [{ prefix: "", context: "element", atoms: ["object-fit",
+"focal-point"] }]`; `edit.js` already mounts `<MediaElementPanel … insertion="element" atoms={[
+'object-fit', 'focal-point' ]} … />` (absorbed into the block's existing panel area, next to
+`MediaSizingPanel` with its `showFitControl`/`showFocalControl` suppressed); `render.php` already
+gutted the old three-place hand-rolled object-fit code (`style.css:40`'s comment confirms: "the
+rule now lives once, in the atom layer"). **object-fit and focal-point are DONE for `sgs/media`.**
 
-**Build it to §18's layout, not a shape you invent:** a "Media" panel; type tabs (Image/Video/SVG,
-each holding its own upload control plus type-exclusive atoms — `video-behaviour` in the Video
-tab, `svg-presentation` in the SVG tab); an "Image Styling" sub-panel below the tabs holding
-`object-fit`/`focal-point`/`box-shape`/`motion`, applying to whichever type is active per that
-atom's own `types` list; `overlay` at the bottom, box-scoped, applying regardless of type.
+**What's left:** the other nine atoms (`source`, `media-type`, `meaning`, `video-behaviour`,
+`svg-presentation`, `box-shape`, `overlay`, `motion`; `intrinsic` needs no control) are not wired
+into `sgs/media` at all, and the current mounting is a bare-rows absorption into the pre-existing
+panel — not yet reorganised to §18's actual layout (a "Media" panel; type tabs, each holding its
+own upload control plus type-exclusive atoms — `video-behaviour` in the Video tab,
+`svg-presentation` in the SVG tab; an "Image Styling" sub-panel below the tabs holding
+`object-fit`/`focal-point`/`box-shape`/`motion`; `overlay` at the bottom). Widening
+`supports.sgs.mediaElements`'s `atoms` array and `edit.js`'s `atoms={[…]}` together is enough to
+add a new atom's rows — **name only atoms you wire a renderer for in the same commit**, or the
+injected attributes become dead controls and `check-dead-controls.js` will say so. Reorganising
+the MOUNT (tabs, the Image Styling grouping, `insertion="root"` opening its own "Media" panel
+instead of absorbing into `MediaSizingPanel`) is separate, larger surgery — decide whether to
+widen atom-by-atom first and reorganise once, or reorganise the mount early and widen into the
+new shape; both are legitimate, but state which you're doing and why.
 
-0. **Build the panel.** It takes its `InspectorControls` group from `insertion`, never hardcoding
-   `group="styles"` — a defect that hit 65 blocks the same way. It must handle `disclosure()`'s
-   two legal return shapes: `{state, hiddenReason}`, or a MAP of base → that (`video-behaviour`
-   needs the map; one uncaught throw kills the whole inspector).
-1. Declare `supports.sgs.mediaElements` in `block.json` — `[ { "prefix": "", "context": "element",
-   "atoms": [ … ] } ]`. **Name only atoms you wire a renderer for in the same commit**, or the
-   injected attributes become dead controls and `check-dead-controls.js` will say so.
-2. Mount `MediaElementPanel` in `edit.js`.
-3. In `render.php`, build the element's scope class with `sgs_media_element_scope_class( $uid, '' )`
-   and emit `sgs_media_element_style( … )` into the block's existing scoped `<style>`.
-4. Two markers, not one. `.sgs-media-el` goes on the replaced element (`<img>`/`<video>`) for
-   object-fit, focal-point, and box-shape. `.sgs-media-box` goes on its container for overlay and
-   source. Neither goes on the SVG node for replaced-element properties —
-   `hero/render.php:620-623` states why: those properties do nothing on the SVG tier's `<span>`
-   wrapper, so emitting them there would be a lie about what the property affects. `overlay.css`
-   paints via `::after`, which a replaced element never generates — prove that in a browser with
-   a `<div>` positive control before building. `sgs/media`'s naked mode has no container
-   (`render.php:1307`) — add "no overlay set" to that gate.
-5. **Verify, then gut.** Delete the old attribute handling only once the new path renders.
+Two markers exist for a reason, already correctly used by the object-fit/focal-point wiring:
+`.sgs-media-el` goes on the replaced element (`<img>`/`<video>`) for object-fit, focal-point, and
+box-shape; `.sgs-media-box` goes on its container for overlay and source. Neither goes on the SVG
+node for replaced-element properties — `hero/render.php:620-623` states why: those properties do
+nothing on the SVG tier's `<span>` wrapper, so emitting them there would be a lie about what the
+property affects. `overlay.css` paints via `::after`, which a replaced element never generates —
+prove that in a browser with a `<div>` positive control before wiring it. `sgs/media`'s naked mode
+has no container (`render.php:1307`) — add "no overlay set" to that gate when you wire overlay.
 
-⚠ **Start with one atom end to end** — `object-fit` is smallest and its cascade is already
-understood — before wiring the rest. Settling the shape on one instance first is this repo's own
-rule, and it makes a mistake cheap.
+**Verify, then gut, per atom — the discipline already proven on object-fit.** Delete a block's old
+hand-rolled attribute handling for an atom only once that atom's new path genuinely renders.
 
-⚠ **`sgs/media` writes object-fit in three places, at three specificities.** Know all three
-before touching it:
+⚠ **The old three-place object-fit specificity trap is CLOSED, not still pending** — kept here so
+you understand the shape of the gut discipline for the NEXT atom you wire, not because you need to
+redo it. Before the gut, `sgs/media` wrote object-fit in three places at three specificities:
 
-| Source | Selector | Specificity |
+| Source (pre-gut) | Selector | Specificity |
 |---|---|---|
-| `style.css:45-47` | `:where( .sgs-media__img )` | (0,0,0) |
+| `style.css` (old) | `:where( .sgs-media__img )` | (0,0,0) |
 | the atom | `.sgs-media-el` | (0,1,0) |
-| `render.php:294-306`, flushed `:325` | `$id_sel` = `.{scope}.sgs-media__img, …` | **(0,2,0)** |
+| `render.php` (old) | `$id_sel` = `.{scope}.sgs-media__img, …` | **(0,2,0)** |
 
-The atom beats the stylesheet default but **loses to `render.php`** — which fires exactly when
-the client has set a non-default value, the case a tester actually hits. So the gut step is
-load-bearing, not tidy-up: delete all three in the same commit — the `object-fit` branch
-(`:294-296`), the `object-position` branch (`:302-306`), and `style.css:45-47`. "It paints" does
-not prove the gut was complete; a leftover hand-rolled rule whose value happens to agree with the
-atom looks correct today and is a second writer waiting to diverge tomorrow.
+The atom beat the stylesheet default but **lost to `render.php`** — which fired exactly when the
+client had set a non-default value, the case a tester actually hits. That's why "it paints" never
+proved the gut was complete on its own: a leftover hand-rolled rule whose value happened to agree
+with the atom would have looked correct while being a second writer waiting to diverge. All three
+were deleted in the same commit as the wiring (`640ad1282`) — confirmed above by `style.css:40`'s
+own comment. Apply the same "all writers gone in one commit" discipline to each atom you wire
+next.
 
 ### 5b — `before-after`, the falsifying case
 
@@ -313,16 +337,12 @@ container.
 
 ## First action (under 5 minutes)
 
-Read `.claude/plans/2026-08-30-media-element-architecture-v2.md` §18 in full — it's the exact
-panel shape you're about to build, and starting without it means guessing at a structure that's
-already decided. Then run:
-
-```bash
-python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \
-  "SELECT block_slug, attr_name, css_property, css_element FROM block_attributes
-     WHERE css_property IN ('object-fit','object-position') ORDER BY block_slug"
-```
-
-Read your own output rather than trusting a count here. Then open `sgs/hero`'s `render.php`
-around the `$sgs_hero_split_media_fit_selector` assignment and read how a working object-fit is
-scoped — that's the shape `sgs/media` adopts in Wave 5a.
+Run the three verification commands under "What changed" above — confirm the panel exists and
+`sgs/media` already has `object-fit`/`focal-point` wired before you plan anything, since this
+prompt has already been wrong about that once. Then read
+`.claude/plans/2026-08-30-media-element-architecture-v2.md` §18 in full — it's the exact panel
+shape the remaining nine atoms need to land in, and starting without it means guessing at a
+structure that's already decided. Then open `plugins/sgs-blocks/src/blocks/media/edit.js` around
+line 569 (`<MediaElementPanel … atoms={['object-fit','focal-point']} … />`) and read how the
+already-wired atoms are mounted — that's the shape to extend, or to knowingly replace when you
+reorganise the mount to match §18.

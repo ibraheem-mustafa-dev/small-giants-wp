@@ -254,6 +254,19 @@ and the scatter-detector, unrelated to either question. Full prior context:
 
 **Trigger:** whoever picks up sticky-sidebar or band-layout work next.
 
+### P-BOX-SHAPE-WIDTH-GATING — Width/MaxWidth/MaxHeight/MaxWidthPercent have no disclosure rule
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-02
+
+`box-shape` atom's `requires` field gates `Height`/`AspectRatio` on `MediaSizing`, but the newly
+wired `Width`/`MaxWidth`/`MaxHeight`/`MaxWidthPercent` bases have no gating rule at all — they
+always render regardless of sizing mode. Not a bug (nothing currently reads a "should be hidden"
+signal for them), but worth a decision once a real block adopts this atom and an operator can
+judge whether e.g. `MaxWidth` genuinely makes sense alongside `MediaSizing:ratio`. Flagged by the
+implementing agent rather than guessed at. `box-shape.control.js` / `MediaBoxShapeControls.js`.
+
+**Trigger:** whoever wires `box-shape` into a real block (Wave 5-7) and can judge the combination
+against a live control.
+
 ### P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE — draft global-styles extractor: Phase 5-6 continuation
 **Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-11
 

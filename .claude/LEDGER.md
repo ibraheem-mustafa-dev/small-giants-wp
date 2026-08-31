@@ -133,64 +133,73 @@ One item survives it, PARKED and owned by nobody: the **sticky sidebar + band-re
 (`parking.md` P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL). RE-MEASURE before building — its own
 evidence says the accordion already solved the sidebar.
 
-## ▶ CLIENT-CONTROLS TRACK — 2026-08-31: media atoms, object-fit LIVE; scope corrected
+## ▶ CLIENT-CONTROLS TRACK — 2026-09-01/02: all 11 atoms finished, panel design settled (§18)
 
-**Detail: D904-D910. Design `.claude/plans/2026-08-30-media-element-architecture-v2.md`.
-Method rules: STOP-CATALOGUE **E19** + both CLAUDE.mds. Do not restate history here.**
+**Detail: D904-D913. Design `.claude/plans/2026-08-30-media-element-architecture-v2.md` §18
+carries the panel design; §17 carries build status. Method rules: STOP-CATALOGUE **E19** + both
+CLAUDE.mds. Do not restate history here.**
 
-**SHIPPED + LIVE-VERIFIED.** `object-fit` travels the whole chain on canary page **3145**:
-control -> attribute -> PHP atom -> custom property -> one shared stylesheet rule -> painted
-computed style. Three inputs, three DIFFERENT painted values (cover / contain / scale-down),
-all non-zero area. Evidence: `reports/visual-diff/media-2026-08-31.md`. `focal-point` wired
-the same way (`651aa7155`), not yet live-read.
+✅ **Comparison table + design decisions CLOSED.** `.claude/reports/2026-09-01-media-control-comparison.md`
+compared all six in-scope blocks control-by-control (rewritten once, from 819-line prose to
+187-line tables, after Bean flagged the first draft as overwhelming). Bean picked a target shape
+per control, recorded in plan §18: media-type = real `MediaType` attribute + button-group +
+NON-DESTRUCTIVE switching (§18.1, corrects that section's own original tabs-and-clear-siblings
+text); "Media" panel with type tabs + an "Image Styling" sub-panel + overlay at the bottom
+(§18.2); alt text auto-fills from the attachment, optional override not required (§18.3); a NEW
+11th atom, `motion` (ken-burns/parallax), harvested from hero/container rather than designed
+fresh (§18.4); overlay moved to the panel's bottom, hero's CSS-emitter bypass flagged (§18.5);
+the `imageControls` extension is superseded by the panel for the six in-scope blocks only, not
+framework-wide (§18.6).
 
-⛔ **TWO BUGS THAT EVERY GATE PASSED, both now gated with red-proven negative controls.**
-(1) Four of ten atom CONTROLS compared against `'visible'`, a word no `disclosure()` returns —
-three rendered permanently greyed, `focal-point` never rendered its row at all. The purity
-gate knew the vocabulary and excluded `.control.js` from its scan.
-(2) FIVE of ten atom PHP twins were never `require`d — every atom that emits CSS. Found only
-by deploying and reading the live page; 82 build + 4 deploy gates were green. The parity gate
-compares each atom to its own twin and both halves existed AS FILES. **Existence is not
-reachability.**
+✅ **All eleven atoms are built and independently gated** (`check-media-atom-purity.js`,
+`test-media-atom-parity.mjs`, `check-dead-controls.js` — green throughout, verified together
+after every parallel round). object-fit and focal-point are now fully tiered end to end (JS
+`css()`, PHP twin, CSS `@media` chain, control UI) — a DIFFERENT prior documented decision
+(`object-fit.css` said "deliberately not tiered") was reversed on Bean's explicit direction,
+disclosed before building. box-shape rebuilt on the standard `SgsBorderControl` — an interim
+radius-only mechanism was rejected as over-engineered ("shove it in with 0 nuance, like the
+colour pickers"). `motion` built fresh; found and fixed a real cross-atom bug where it and
+`svg-presentation` both wrote the same physical `animation-name` properties unconditionally —
+fixed via one shared multi-value composing rule in `_base.css`, so both effects run at once
+instead of one silently killing the other. media-type/source/meaning finished (button-group,
+alt auto-fill on pick, non-destructive type switch).
 
-⛔ **SCOPE, Bean-corrected 2026-08-31. SIX blocks:** media, before-after, hero, container,
+⛔ **Three real bugs found by QC, all fixed same session.** (1) `ToggleGroupControl` has no
+group-level `disabled` prop in the stable Gutenberg API (`WordPress/gutenberg#57862`, still open)
+— it was a silent no-op; fixed by moving `disabled` onto each `ToggleGroupControlOption`
+(`#63450`). Captured: `mistakes.md` `wp-component-prop-name-is-not-proof-of-behaviour`. (2) The
+rewritten Wave 5-7 prompt had dropped `reports/visual-diff/media-2026-08-30.md`, which would have
+sent the next session to re-verify a live check already closed 2026-09-01 (D909's
+autoplay/muted/playsinline negative control, 4/4 assertions, desktop+tablet, JS disabled) —
+restored with corrected framing. (3) **Most significant:** the rewritten prompt AND this LEDGER
+entry's own first draft both claimed `MediaElementPanel.js`/`class-sgs-media-element.php` "does
+not exist" — FALSE. Both were built and committed at `0f246b34a`, predating this session, already
+correctly recorded in D911. Every atom `.control.js` file's own docblock said "deferring assembly
+to a caller nobody wrote yet" — written before the panel existed, never updated once it did, and
+carried forward uncritically. Caught by the independent handoff QC subagent, not during the atom
+work itself. Full detail: D913.
+
+**NEXT — `.claude/prompts/2026-08-31-media-element-waves-5-7.md`. Read it first — it now states
+the CONFIRMED wiring state and gives the verification commands to re-check it, since it has
+already been wrong once.** `MediaElementPanel.js` exists and works; `sgs/media` already has
+`object-fit`/`focal-point` wired (INSERT-then-GUT done for both). Wave 5a's remaining work: wire
+the other nine atoms into `sgs/media` and reorganise the mount to match §18's layout (currently
+the two wired atoms are absorbed as bare rows into the pre-existing panel, not yet a dedicated
+"Media" panel with tabs). Wave 5b: `before-after` — confirmed untouched, zero blocks besides
+`sgs/media` reference `MediaElementPanel` at all — and the shared layer must NOT change while
+wiring it (the falsification test). Waves 6-7 follow once 5 closes on a live paint, not on gates.
+
+⛔ **SCOPE unchanged from 2026-08-31 — SIX blocks:** media, before-after, hero, container,
 decorative-image, product-card. **A BACKGROUND IS NOT A MEDIA ELEMENT** — a block with a
-background gets it from the shared `BackgroundPanel` (nine blocks mount it); `site-header`
-and `site-footer` have nothing to do with this work. `container` is in scope because it OWNS
-that mechanism. `trust-bar` + `brand-strip` have real nested media but are LIMITED follow-on.
-**AFTER the six:** upgrade `BackgroundPanel` per media type — which controls belong on ROOT
-background media vs a foreground element, aligning enums + art-direction help text. Order:
-container fixes the shared wrapper -> hero -> remaining hosts.
+background gets it from the shared `BackgroundPanel` (nine blocks mount it); `site-header` and
+`site-footer` have nothing to do with this work. `container` is in scope because it OWNS that
+mechanism. `trust-bar` + `brand-strip` have real nested media but are LIMITED follow-on.
+**AFTER the six:** upgrade `BackgroundPanel` per media type. Order: container fixes the shared
+wrapper -> hero -> remaining hosts.
 
-⛔ **The session then went wrong and produced little.** I tried to synthesise "best of breed"
-myself and widened the population to 20 blocks including header/footer. Both wrong. The
-approach is replaced by the next session's task below.
-
-**NEXT — `.claude/prompts/2026-09-01-media-control-comparison.md`. Read it first.**
-Produce ONE artefact: for every control in all ten atoms, the equivalent control/attribute in
-each of the six blocks, quoted at `file:line`. **Do not choose, do not build.** Bean picks per
-control manually; only then check which picks already exist as a shared helper in that exact
-form, and which need rebuilding or building fresh.
-
-✅ **All four owed debts CLOSED, 2026-09-01 (prompt deleted, session done).** Each closed on a
-command whose output is quoted, not reasoning alone: (1) `button/render.php`'s SVG allowlist
-diffed element-by-element against the shared `sgs_allowed_svg_tags()` — only 4 real `wp_kses`
-calls exist in that file (the "7" figure was wrong), narrowing is deliberate (static Lucide
-icons need none of the shared helper's gradient/filter/mask/`<use>`/`<animate>`/`<a>` tags), now
-documented in code (`464eca073`). (2) SMIL bypass EXECUTED — a positive control proved the
-harness can observe real `javascript:` execution, then the real payload through the live
-sanitiser: bypass BLOCKED, control FIRED (`1a1f291dd`,
-`reports/visual-diff/smil-bypass-2026-09-01.md`). (3) The three no-JS autoplay cases measured
-live with `javaScriptEnabled:false` at desktop+tablet, all 4 assertions held (`8460e38c3`,
-updates `media-2026-08-30.md`). (4) Video/SVG object-fit measured live on extended page 3145 —
-video resolves `cover`, SVG carries no atom marker and resolves CSS-initial `fill` (`aefd93d49`,
-updates `media-2026-08-31.md`). Full detail in `.claude/plans/2026-08-30-media-element-architecture-v2.md`
-§7 Security.
-
-✅ `sgs/info-box`'s three dead media attrs are DELETED (`dccbc3af5`), proven dead three ways.
-✅ Both atom-layer bugs are FIXED AND GATED — four controls comparing against a
-non-vocabulary word (`61432d337`) and five PHP twins never `require`d (`eea5fb990`).
-`check-media-atom-purity.js --self-test` covers both with negative controls, 20/20.
+✅ All four owed debts from the prior session CLOSED 2026-09-01 (D912) — SVG allowlist, SMIL
+bypass, no-JS autoplay, video/SVG object-fit, all measured live not reasoned. `sgs/info-box`'s
+three dead media attrs deleted. Full detail: D912.
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 

@@ -1,9 +1,14 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-08-27 (clone-track handoff — 2 entries added: wp-cli KSES stripping CSS from block attrs, and a deploy reporting ABORTED after its payload landed. 2 oldest (2026-07-30) archived to stay level. 35 active against the ~30 target.)
+**Last updated:** 2026-09-01 (media-atom handoff — 1 entry added: ToggleGroupControl has no group-level `disabled` prop. 2 oldest (2026-07-30) archived to stay level. 34 active against the ~30 target.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-01] `ToggleGroupControl`'s `disabled` prop is a documented no-op at the group level
+- **Pattern key:** `wp-component-prop-name-is-not-proof-of-behaviour`
+- **Evidence:** `MediaTypeControl.js` passed `disabled`/`hiddenReason` straight to `ToggleGroupControl` (matching every other disableable control's shape in this codebase). `/qc-inline` checked the claim against the real Gutenberg API rather than trusting the prop name: `ToggleGroupControl` has no group-level `disabled` prop in the stable API (`WordPress/gutenberg#57862`, still open, "Add disabled state for entire component"). The prop was silently ignored — the control stayed fully clickable while `disabled: true`. Per-`ToggleGroupControlOption` `disabled` IS real (`#63450`) and was the fix.
+- **Rule:** A prop that compiles and matches the pattern used elsewhere in the codebase is not evidence it does anything — verify a WordPress component's actual prop contract (official docs, or the installed package's own type/source) before relying on it, especially for a prop whose absence fails silently rather than throwing.
+
 ### [2026-08-27] `wp post update` with no `--user` silently strips CSS out of block attributes
 - **Pattern key:** `wp-cli-post-update-without-user-strips-css-via-kses`
 - **Rule:** wp-cli runs with NO user unless told otherwise, so WordPress applies KSES to
@@ -264,16 +269,6 @@
 - **Pattern key:** `a-metric-that-gets-cheaper-when-you-hide-things`
 - **Feedback file:** [feedback_a_metric_that_gets_cheaper_when_you_hide_things.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_metric_that_gets_cheaper_when_you_hide_things.md)
 - **Rule:** a library-wide inspector census (median 12 / max 49 / total 1121) was rejected as a baseline (D543): it scored any composite as ONE row, could not see native `supports` panels (64 of 83 blocks) or `extensions/`, and summed mutually-exclusive branches — error with TWO signs. The live editor then proved it MIS-RANKED (D544): the block scoring 8 shows a client ~50 controls. Ask "what is the cheapest way to make this number fall, and does that help the user?" and validate ORDERING, not just magnitude. Its `--self-test` certified the worst defect as the expected answer, so it could never have caught this.
-
-### [2026-07-30] Three admin absence-checks ran logged-out and returned a clean-looking zero
-- **Pattern key:** `a-zero-from-an-unauthenticated-fetch-proves-nothing`
-- **Evidence (D422):** Verifying wp-admin ships no frontend bytes, the credential env failed to source (password contains shell metacharacters). The requests were redirected to the login page and reported "0 references" — a PASS for a test that never ran. Caught only because the result looked too clean; re-run with a real auth cookie plus a control asserting the page was an admin page.
-- **Rule:** Every absence-check carries a positive control proving the fetched thing is what you think it is. A zero is evidence only once you have proved you were looking in the right place.
-
-### [2026-07-30] A library option that does not exist was passed for a session, reading as an enforced safety guarantee
-- **Pattern key:** `an-option-name-that-does-not-exist-is-discarded-in-silence`
-- **Evidence (D422):** The smoother passed `smoothTouch: false` to keep phone scrolling native. That option does not exist in Lenis 1.3.25 (zero occurrences in `lenis.mjs` AND `lenis.d.ts`); unknown keys are destructured past with no warning. The guarantee was delivered entirely by the vendor default and would have flipped if upstream changed it. Real name `syncTouch`. Found by the pre-commit qc-council.
-- **Rule:** Verify every option key against the INSTALLED version's types/source — not memory, not another major version's docs — and pass values you depend on EXPLICITLY rather than relying on a default that happens to agree.
 
 ### [2026-08-04] A gate measured against the wrong document and reported 666 fictional selectors
 - **Pattern key:** `a-gate-can-measure-the-wrong-document-entirely`
