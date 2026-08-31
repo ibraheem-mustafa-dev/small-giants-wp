@@ -51,32 +51,67 @@
  * @package
  */
 
-/* ── Scope ────────────────────────────────────────────────────────────────────
+/* ── Scope: TWO markers, and which one an atom uses is declared ───────────────
  *
- * Every rule keys on `.sgs-media-el`, applied by the renderer to the element the
- * atoms style. It is a MARKER class, never a layout class — it carries no
- * appearance of its own, so adding it to an element can never change how that
- * element looks until an atom sets a value.
+ * Both are MARKER classes, never layout classes — neither carries appearance of
+ * its own, so adding one can never change how an element looks until an atom
+ * sets a value.
+ *
+ *   .sgs-media-el   the REPLACED element itself — the <img> or <video>.
+ *   .sgs-media-box  the container around it.
+ *
+ * ⛔ ONE MARKER IS NOT ENOUGH, and the reason is a browser rule rather than a
+ * preference. `overlay` paints through `::after`, and a replaced element
+ * GENERATES NO PSEUDO-ELEMENT. Measured 2026-08-31 in Chromium: the identical
+ * ::after rule on a 100x100 <div> painted red, on a 100x100 <img> painted
+ * nothing. `source` has the same shape — an <img> takes its picture from its
+ * `src`, never from `background-image`.
+ *
+ * ⚠ getComputedStyle( img, '::after' ) reports the rule as fully applied. It
+ * resolves the cascade whether or not a pseudo-element exists, so it returns
+ * the same red for both. Verify this with a pixel sample, never a computed
+ * style — a computed-style check here reports a control that works.
+ *
+ * The mirror-image constraint runs the other way: `object-fit` and
+ * `object-position` are replaced-element properties and do nothing on a
+ * container, so they must never key on `.sgs-media-box`.
+ *
+ * Each atom DECLARES which marker it needs via `attachesTo: 'element' | 'box'`
+ * in registry.js, and `check-media-atom-purity.js` fails the build if a
+ * partial keys on the other one.
+ *
+ * ⛔ `attachesTo` is a SEPARATE axis from `scope`. `scope`
+ * (element | backdrop | both) selects an atom's VOCABULARY — object-fit's
+ * element enum is cover/contain/fill/none/scale-down, its backdrop enum is
+ * cover/contain/auto. `attachesTo` selects a DOM NODE. Collapsing two
+ * orthogonal axes into one enum is how a control ends up on the wrong element.
+ *
+ * Custom properties INHERIT, which is what lets one scoped rule feed both
+ * markers: the renderer sets `--sgs-media-*` on the scope class, and whichever
+ * marker sits at or below it reads them.
  *
  * The renderer also emits `data-sgs-media-src="<atom>@<prefix>"` on the same
  * element, so "which descriptor produced this rule?" is answerable from the
  * page rather than by tracing descriptor → filter → schema → renderer.
  */
 
-.sgs-media-el {
+.sgs-media-el,
+.sgs-media-box {
 	/* Desktop is the base tier: it reads its own property with no fallback
 	 * chain, because there is no tier above it to inherit from. */
 	--sgs-media-tier: desktop;
 }
 
 @media (max-width: 1023px) {
-	.sgs-media-el {
+	.sgs-media-el,
+	.sgs-media-box {
 		--sgs-media-tier: tablet;
 	}
 }
 
 @media (max-width: 767px) {
-	.sgs-media-el {
+	.sgs-media-el,
+	.sgs-media-box {
 		--sgs-media-tier: mobile;
 	}
 }

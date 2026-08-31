@@ -75,6 +75,7 @@ export const MEDIA_ATOMS = {
 		bases: MEDIA_BASES.source,
 		types: [ 'image', 'video', 'svg' ],
 		scope: 'both',
+		attachesTo: 'box',
 		requires: {},
 		reads: {
 			// Five storage shapes for one concept, all measured by the census.
@@ -97,6 +98,7 @@ export const MEDIA_ATOMS = {
 		bases: MEDIA_BASES.type,
 		types: [ 'image', 'video', 'svg' ],
 		scope: 'both',
+		attachesTo: 'element',
 		requires: {},
 		reads: {
 			// The tier enum carries a 4th member, '', as an inherit sentinel.
@@ -119,6 +121,7 @@ export const MEDIA_ATOMS = {
 		bases: MEDIA_BASES.behaviour,
 		types: [ 'video' ],
 		scope: 'element',
+		attachesTo: 'element',
 		// ⛔ Enforced on BOTH sides, not just the client. A browser refuses to
 		// autoplay an unmuted video, and `playsinline` is required on iOS or the
 		// video takes over the screen. Today the coupling exists only in
@@ -142,6 +145,7 @@ export const MEDIA_ATOMS = {
 		bases: MEDIA_BASES.meaning,
 		types: [ 'image', 'video', 'svg' ],
 		scope: 'both',
+		attachesTo: 'element',
 		// Alt text is meaningless once the client marks the media decorative,
 		// and leaving both live produces an alt string no screen reader reads.
 		requires: {
@@ -155,6 +159,7 @@ export const MEDIA_ATOMS = {
 		bases: MEDIA_BASES.intrinsic,
 		types: [ 'image' ],
 		scope: 'element',
+		attachesTo: 'element',
 		requires: {},
 		// ⛔ NO CONTROL. These are written from the chosen media so the renderer
 		// can emit width/height and avoid layout shift. A client never edits
@@ -168,6 +173,7 @@ export const MEDIA_ATOMS = {
 		bases: MEDIA_BASES.svg,
 		types: [ 'svg' ],
 		scope: 'both',
+		attachesTo: 'element',
 		requires: {},
 		reads: {},
 	},
@@ -181,6 +187,7 @@ export const MEDIA_ATOMS = {
 		// this right — render.php scopes its fit selector to `--image, --video`
 		// and excludes the SVG tier's <span> deliberately. Adopt that scoping.
 		scope: 'both',
+		attachesTo: 'element',
 		requires: {},
 		reads: {
 			// `custom` is a SIZING MODE, not a CSS fit value: render.php gates
@@ -205,6 +212,7 @@ export const MEDIA_ATOMS = {
 		bases: MEDIA_BASES.focal,
 		types: [ 'image', 'video' ],
 		scope: 'both',
+		attachesTo: 'element',
 		// A focal point only means anything when the media is being cropped.
 		requires: {
 			ObjectPosition: [ 'ObjectFit:cover|contain|none|scale-down' ],
@@ -224,6 +232,7 @@ export const MEDIA_ATOMS = {
 		bases: MEDIA_BASES.shape,
 		types: [ 'image', 'video', 'svg' ],
 		scope: 'both',
+		attachesTo: 'element',
 		// The three sizing modes are mutually exclusive — this is what
 		// `MediaSizing` exists to express, and why a fixed height and an aspect
 		// ratio can never both be live.
@@ -259,6 +268,7 @@ export const MEDIA_ATOMS = {
 		bases: MEDIA_BASES.overlay,
 		types: [ 'image', 'video', 'svg' ],
 		scope: 'both',
+		attachesTo: 'box',
 		// An opacity or blend mode with nothing to tint is a dead control.
 		requires: {
 			OverlayOpacity: [ 'OverlayColour|OverlayGradient' ],

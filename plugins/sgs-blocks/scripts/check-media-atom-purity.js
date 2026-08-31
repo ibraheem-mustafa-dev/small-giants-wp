@@ -267,6 +267,83 @@ function stylesheetFallbackProblems() {
 	return out;
 }
 
+/**
+ * Every atom's declared `attachesTo`, parsed out of registry.js.
+ *
+ * Read textually rather than imported: this gate is plain CommonJS and
+ * registry.js is an ES module that imports from MediaElementControls.js. The
+ * field is pure data, so a text read cannot disagree with the value at runtime.
+ *
+ * @return {Object} atom id -> 'element' | 'box'.
+ */
+function atomAttachments() {
+	const file = path.join( ATOM_DIR, 'registry.js' );
+	if ( ! fs.existsSync( file ) ) {
+		return {};
+	}
+	const raw = fs.readFileSync( file, 'utf8' );
+	const out = {};
+	let current = null;
+	raw.split( String.fromCharCode( 10 ) ).forEach( ( line ) => {
+		const id = line.match( /^\t\tid: '([a-z-]+)',/ );
+		if ( id ) {
+			current = id[ 1 ];
+			return;
+		}
+		const at = line.match( /^\t\tattachesTo: '([a-z]+)',/ );
+		if ( at && current ) {
+			out[ current ] = at[ 1 ];
+		}
+	} );
+	return out;
+}
+
+/**
+ * A partial must key on the marker its atom DECLARES, and only that one.
+ *
+ * The two markers exist because `overlay` paints via `::after` and a replaced
+ * element generates no pseudo-element, while `object-fit` is a replaced-element
+ * property that does nothing on a container. Both failures are silent: the rule
+ * is present, the cascade resolves, and nothing paints. Only this gate and a
+ * pixel sample can tell.
+ *
+ * @return {string[]} Problems found.
+ */
+function partialMarkerProblems() {
+	const EL = '.sgs-media-el';
+	const BOX = '.sgs-media-box';
+	const dir = path.join( PLUGIN, 'assets', 'css', 'media-atoms' );
+	const attach = atomAttachments();
+	const out = [];
+
+	if ( ! Object.keys( attach ).length ) {
+		out.push(
+			'registry.js declares no attachesTo values — every atom must name ' +
+				"'element' or 'box', or this check silently verifies nothing."
+		);
+		return out;
+	}
+
+	Object.keys( attach ).forEach( ( id ) => {
+		const file = path.join( dir, id + '.css' );
+		if ( ! fs.existsSync( file ) ) {
+			return;
+		}
+		const body = fs.readFileSync( file, 'utf8' );
+		const wanted = 'box' === attach[ id ] ? BOX : EL;
+		const forbidden = 'box' === attach[ id ] ? EL : BOX;
+		if ( body.includes( forbidden ) ) {
+			out.push(
+				id + '.css keys on ' + forbidden + " but the atom declares attachesTo: '" +
+					attach[ id ] + "', so it must key on " + wanted + '. A rule on the ' +
+					'wrong node resolves fine and paints nothing.'
+			);
+		}
+	} );
+
+	return out;
+}
+
 function run() {
 	const files = logicModules();
 
@@ -280,7 +357,9 @@ function run() {
 		return 1;
 	}
 
-	const fallbackProblems = stylesheetFallbackProblems();
+	const fallbackProblems = stylesheetFallbackProblems().concat(
+		partialMarkerProblems()
+	);
 	fallbackProblems.forEach( ( p ) => process.stderr.write( `  ⛔ ${ p }
 ` ) );
 
@@ -453,6 +532,15 @@ function selfTest() {
 					fs.readFileSync( path.join( ATOM_DIR, f ), 'utf8' )
 				).length === 0
 		)
+	);
+
+	// Guards the two-marker DOM contract. This single assertion covers BOTH
+	// failure modes: a partial keying on the wrong marker, and the parse itself
+	// silently returning nothing (an empty attachesTo map is reported as a
+	// problem rather than as a clean pass, so an inert check cannot read green).
+	ck(
+		'every atom CSS partial keys on the marker its attachesTo declares',
+		partialMarkerProblems().length === 0
 	);
 
 	// The stylesheet fallback rule needs both controls: it must reject a silent

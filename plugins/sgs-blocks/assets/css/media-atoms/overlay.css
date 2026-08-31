@@ -3,7 +3,7 @@
  * with opacity and blend mode, resting and hover.
  *
  * A pseudo-element layer (`::after`) rather than a direct property on
- * `.sgs-media-el` itself: a background-colour tint would sit BEHIND an
+ * `.sgs-media-box` itself: a background-colour tint would sit BEHIND an
  * `<img>`'s own painted pixels and never be visible, whereas an absolutely
  * positioned, full-bleed `::after` paints ON TOP — the same technique
  * `sgs_overlay_decls()`'s two existing callers (`class-sgs-container-wrapper.php`,
@@ -14,18 +14,18 @@
  * `--sgs-media-overlay-colour-hover`, `--sgs-media-overlay-gradient-hover`,
  * `--sgs-media-overlay-opacity`, `--sgs-media-overlay-blend`.
  *
- * `position: relative` on `.sgs-media-el` is the isolation `::after` needs to
+ * `position: relative` on `.sgs-media-box` is the isolation `::after` needs to
  * anchor `inset: 0` against — inert on every element that carries no overlay
  * (no custom properties set means the pseudo-element paints fully
  * transparent and `pointer-events: none` keeps it out of the interaction
  * path).
  */
 
-.sgs-media-el {
+.sgs-media-box {
 	position: relative;
 }
 
-.sgs-media-el::after {
+.sgs-media-box::after {
 	content: '';
 	position: absolute;
 	inset: 0;
@@ -37,8 +37,8 @@
 	transition: background-color 0.3s ease, opacity 0.3s ease;
 }
 
-.sgs-media-el:hover::after,
-.sgs-media-el:focus-within::after {
+.sgs-media-box:hover::after,
+.sgs-media-box:focus-within::after {
 	background-color: var( --sgs-media-overlay-colour-hover, var( --sgs-media-overlay-colour, transparent ) );
 	background-image: var( --sgs-media-overlay-gradient-hover, var( --sgs-media-overlay-gradient, none ) );
 }
