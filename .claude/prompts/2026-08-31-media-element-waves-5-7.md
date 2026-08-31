@@ -43,6 +43,14 @@ problem in waves 3-4 resolved this way. The same query also found two blocks
 (`sgs/brand-strip` `logoFit`, `sgs/trust-bar` `badgeImageObjectFit`) that a hand-written survey of
 "media blocks" had missed — **a hand-picked population is not a census; the DB is.**
 
+⚠ **BUT THE DB IS NOT A COMPLETE CENSUS EITHER — measured 2026-08-31.** That query returns eight
+rows and **`sgs/before-after` is not among them**, yet it demonstrably emits `--sgs-object-fit`
+(`before-after/render.php:256-277`) and consumes it (`style.css:63-64,346`). Its fit arrives via
+`supports.sgs.imageControls`, not a declared attribute, so `block_attributes` cannot see it — so an
+inventory built from this table alone misses **the very surface Wave 5b falsifies against**. The
+census `gaps` matrix does catch it (`carries_via_extension`). **DB query first, census as the
+backstop; neither alone is complete.**
+
 ⛔ **NEVER reason from what the canary currently renders.** Pre-production, no client content, a
 default changing costs nothing. Whether a default is RIGHT is a separate question decided on what
 the other surfaces measure. Weighing this cost the previous session a stop it should not have taken.
@@ -64,32 +72,75 @@ is gone. Run this inline, serially, yourself.
 
 The shared layer may change here. That is expected: this is the surface it was shaped around.
 
+⛔ **PRECONDITION, measured 2026-08-31 — the L3 layer does NOT exist and must be built first.**
+Wave 4 was specified as "panel registry + dispatch" and was never written:
+`grep -rn "SGS_Media_Element"` returns nothing, and `src/components/MediaElementControls.js` holds
+zero JSX (it is the L1 naming module). Every atom's `.control.js` returns bare rows and mounts no
+`InspectorControls`, deferring assembly to a caller nobody wrote. **Build it as
+`src/components/MediaElementPanel.js` + `includes/class-sgs-media-element.php`** — the old name is
+taken. Architecture v2 §2 L3 + §17 carry the full evidence.
+
+0. **Build L3** — the panel/dispatch layer above. It takes its InspectorControls group from
+   `insertion`, never hardcoding `group="styles"` (`SgsColourPanel.js:116` is the C14 defect across
+   65 blocks), and it must handle `disclosure()`'s TWO legal return shapes — `{state, hiddenReason}`
+   or a MAP of base → that — because `video-behaviour` needs the map and one throw kills the whole
+   inspector (D910).
 1. Declare `supports.sgs.mediaElements` in `block.json` — `[ { "prefix": "", "context": "element",
    "atoms": [ … ] } ]`. **Name only atoms you wire a renderer for in the same commit**, or the
    injected attributes become dead controls and `check-dead-controls.js` will say so.
-2. Mount the atoms' `control()` rows in `edit.js`.
+2. Mount `MediaElementPanel` in `edit.js` (it composes the atoms' `control()` rows).
 3. In `render.php`, build the element's scope class with `sgs_media_element_scope_class( $uid, '' )`
-   and emit `sgs_media_element_style( … )` into the block's existing scoped `<style>`.
-4. Ensure the media element carries `.sgs-media-el` — the shared stylesheet keys on it.
+   and emit `sgs_media_element_style( … )` into the block's existing scoped `<style>`
+   (`$responsive_css`, seeded `media/render.php:446`, echoed `:1377-1389`).
+4. Ensure the media element carries the right marker — **and there are TWO, not one.**
+   `.sgs-media-el` goes on the REPLACED element (`<img>`/`<video>`) for object-fit / focal-point /
+   box-shape; `.sgs-media-box` goes on its CONTAINER for overlay / source. ⛔ **Neither goes on the
+   SVG node** for the replaced-element properties — `hero/render.php:620-623` states the reason:
+   *"these are replaced-element properties and do nothing on the SVG tier's `<span>` wrapper, so
+   emitting them there would be a lie about what the property actually affects."*
+   ⚠ `overlay.css` paints via `::after`, which **a replaced element never generates** — that is why
+   the second marker exists. Prove it in a browser (with a `<div>` positive control) before building.
+   ⚠ `sgs/media`'s naked mode has NO container (`render.php:1307`): add "no overlay set" to that gate.
 5. **VERIFY, then GUT.** Delete the old attribute handling only once the new path renders.
 
 ⚠ **Start with ONE atom end-to-end** (`object-fit` is smallest and its cascade is already understood)
 before wiring the rest. Settling the shape on one instance is this repo's own rule and it makes a
 mistake cheap.
 
-⚠ **The cascade is already mapped, do not re-derive it.** `sgs/media` sets its object-fit default via
-`:where( .sgs-media__img ){ object-fit: cover }` at `(0,0,0)`. The atom rule is `.sgs-media-el` at
-`(0,1,0)` and therefore wins. That is fine — the atom's fallback is now the measured `cover` — but
-the old `:where()` rule is what you delete in the GUT step.
+⚠ **The cascade is mapped, but this paragraph was INCOMPLETE — corrected 2026-08-31.** `sgs/media`
+sets its object-fit default via `:where( .sgs-media__img ){ object-fit: cover }` at `(0,0,0)`
+(`style.css:45-47`). The atom rule `.sgs-media-el` is `(0,1,0)` and beats it. That much was right.
+
+⛔ **What was missing: `render.php` ALSO emits object-fit, and it beats the atom.** `$id_sel`
+(`media/render.php:281`) is `.{scope}.sgs-media__img, …` — two classes, **(0,2,0)** — and carries
+the object-fit/object-position emission at `:294-306`, flushed at `:325`. So the old rule wins
+**precisely when the client has set a non-default value**, which is the exact case a tester sets.
+
+**This makes GUT load-bearing, not tidy-up.** Delete all three in the same commit: the `object-fit`
+branch (`:294-296`), the `object-position` branch (`:302-306`), and `style.css:45-47`.
+⚠ "It paints" does NOT prove the GUT was complete — a leftover hand-rolled rule whose value happens
+to agree with the atom looks correct and is a second writer waiting to diverge. `media-no-handroll`
+is the check that catches it, which is why it is pulled forward into Wave 5.
 
 ### 5b — `before-after`, the falsifying case
 
 ⛔ **The shared layer must NOT change here.** That is the whole test.
 
-**Falsification test, objective:** `git diff --stat` after wiring `before-after` shows **no file
-outside `src/components/Media*` and `includes/helpers-media-element.php`**. A new file plus no
-changes elsewhere is a PASS. If you need to edit the shared layer, say so plainly and record what
-was missing — a failed falsification test is a real result, not a setback to hide.
+**Falsification test — CORRECTED 2026-08-31, the old wording was UNPASSABLE.** It required "no file
+outside `src/components/Media*` and `includes/helpers-media-element.php`", but wiring a surface must
+edit that surface's own `block.json` / `edit.js` / `render.php` / `media-render.php`. No correct
+implementation could satisfy it. The real test is *no edit to the SHARED layer*:
+
+> **PASS** = `git diff --name-only` touches **no** path under `src/components/media/`,
+> `src/components/MediaElementControls.js`, `src/components/MediaElementPanel.js`,
+> `includes/helpers-media-element.php`, `includes/class-sgs-media-element.php`,
+> `includes/media/atoms/`, `assets/css/media-atoms/`,
+> `src/blocks/extensions/media-elements.js`, or `includes/media-element-attrs-register.php`.
+>
+> The five files under `src/blocks/before-after/` are **expected** to change.
+
+If you need to edit the shared layer, say so plainly and record what was missing — a failed
+falsification test is a real result, not a setback to hide.
 
 ⚠ `before-after` has TWO media elements, which is why it is the test. Per-element scoping
 (`{uid}--before` / `{uid}--after`) already exists and is gated; if both slots render the same value,
@@ -118,9 +169,20 @@ Waves 3-4 closed on parity and validators. This one does not.
 
 ---
 
-## Wave 6 — the six gates as inspector-scan rules
+## Wave 6 — the remaining FIVE gates as inspector-scan rules
 
-`media-no-handroll` · `media-attr-parity` · `media-css-parity` · `media-control-coverage` ·
+⛔ **`media-no-handroll` ships in WAVE 5, not here** — it is the only check that proves the GUT
+was COMPLETE, and "it paints" cannot do that job. See Wave 5's close.
+
+⭐ **Every rule here inherits Wave 5's silence criterion (Bean, 2026-08-31): a surface that has
+adopted L3 and its atoms must return ZERO findings.** Consequences: `openBacklog` counts only
+UNMIGRATED surfaces and falls to zero as a by-product of Wave 7; a finding on a MIGRATED surface is
+a **defect, never a backlog entry**; and the unmigrated surfaces are each rule's **free positive
+control** — write the rules while that control still exists, because a rule authored after every
+surface has migrated has nothing left to prove it can fire. This is how `zeroIsAClaim` is satisfied
+without hand-building a fixture.
+
+`media-attr-parity` · `media-css-parity` · `media-control-coverage` ·
 `media-svg-sanitised` · `media-disclosure-coverage`.
 
 Bean's ruling: **rule modules under `scripts/inspector-scan/rules/`, not standalone scripts.** Read
