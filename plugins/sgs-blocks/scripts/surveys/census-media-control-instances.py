@@ -46,6 +46,29 @@ BLOCKS = os.path.join(PLUGIN, "src", "blocks")
 ATOMS = os.path.join(PLUGIN, "src", "components", "media", "atoms")
 MEC = os.path.join(PLUGIN, "src", "components", "MediaElementControls.js")
 DB = os.path.expanduser("~/.claude/skills/sgs-wp-engine/sgs-framework.db")
+CENSUS = os.path.join(PLUGIN, "..", "..", "reports", "migrations",
+                      "media-element-census.json")
+
+
+def in_scope_surfaces():
+    """The surfaces THIS PLAN covers, read from the census, never typed here.
+
+    Scope matters more than reach. Run unscoped, the name side sweeps in every
+    block with a width or an opacity control: `box-shape` alone reported 273
+    instances across 60 blocks, most of which carry no media at all. That is a
+    population, but not THIS plan's population, and synthesising a media control
+    from a block with no media is noise dressed as rigour.
+
+    The census also records WHY three media-ish blocks are out of scope -
+    responsive-logo (already better than the shared shape), info-box (dead
+    legacy attrs) and image-sequence (agency-only rig). Reading the file rather
+    than restating the list keeps this honest when that decision changes.
+    """
+    try:
+        data = json.loads(read(CENSUS))
+    except (IOError, OSError, ValueError):
+        return set()
+    return set((data.get("surfaces") or {}).keys())
 
 # Concept -> CSS properties that express it, for the PROPERTY-side derivation.
 # Held here rather than in the JS so this runs with no build step; the atom ids
@@ -164,11 +187,15 @@ def controls_for(block_dir, attr):
     return sorted(found)
 
 
-def survey(only_atom=None):
+def survey(only_atom=None, scoped=True):
     bases = atom_bases()
     blocks = block_attributes()
+    scope = in_scope_surfaces() if scoped else set()
+    if scope:
+        blocks = {k: v for k, v in blocks.items() if k in scope}
     report = {"meta": {"blocks_scanned": len(blocks),
-                       "db_present": os.path.exists(DB)}, "atoms": {}}
+                       "db_present": os.path.exists(DB),
+                       "scoped_to": sorted(scope) if scope else "ALL BLOCKS"}, "atoms": {}}
 
     for atom, base_list in bases.items():
         if only_atom and atom != only_atom:
@@ -179,6 +206,8 @@ def survey(only_atom=None):
 
         # PROPERTY-side first, so the name side can use it to disambiguate.
         rows_early = db_rows(CONCEPT_PROPS.get(atom, []))
+        if scope:
+            rows_early = [r for r in rows_early if r["block_slug"] in scope]
         prop_blocks_early = {r["block_slug"] for r in rows_early}
 
         for base in base_list:
@@ -228,9 +257,12 @@ def survey(only_atom=None):
 
 
 def render(report):
+    scope = report["meta"]["scoped_to"]
     out = ["MEDIA CONTROL-INSTANCE CENSUS",
            "  blocks scanned: %d   DB present: %s"
-           % (report["meta"]["blocks_scanned"], report["meta"]["db_present"]), ""]
+           % (report["meta"]["blocks_scanned"], report["meta"]["db_present"]),
+           "  scope: %s" % (", ".join(scope) if isinstance(scope, list) else scope),
+           ""]
     for atom, e in report["atoms"].items():
         total = sum(len(v) for v in e["bases"].values())
         blocks = sorted({h["block"] for v in e["bases"].values() for h in v})
@@ -265,28 +297,49 @@ def self_test():
     if len(block_attributes()) < 50:
         fails.append("fewer than 50 blocks scanned - the block scan is broken")
 
-    rep = survey()
-    of = rep["atoms"].get("object-fit", {})
-    hit_blocks = {h["block"] for v in of.get("bases", {}).values() for h in v}
+    # SCOPED (the default, and what this plan actually acts on).
+    scoped = survey()
+    scope = set(scoped["meta"]["scoped_to"])
+    if len(scope) != 6:
+        fails.append("expected 6 in-scope surfaces from the census, got %d"
+                     % len(scope))
+    everywhere = {h["block"] for a in scoped["atoms"].values()
+                  for v in a["bases"].values() for h in v}
+    stray = everywhere - scope
+    if stray:
+        fails.append("SCOPE LEAK: %s reported while out of scope" % sorted(stray))
+    of_scoped = {h["block"] for v in
+                 scoped["atoms"].get("object-fit", {}).get("bases", {}).values()
+                 for h in v}
+    # POSITIVE CONTROL, scoped: the two surfaces known to carry object-fit.
+    for want in ("sgs/media", "sgs/hero"):
+        if want not in of_scoped:
+            fails.append("POSITIVE CONTROL FAILED (scoped): %s missing from "
+                         "object-fit" % want)
 
-    # POSITIVE CONTROL: the two blocks a hand-written survey missed must appear.
+    # UNSCOPED, kept because it encodes a real lesson: a hand-written survey of
+    # "the media blocks" missed brand-strip and trust-bar outright. --all must
+    # still find them, or the widening has quietly stopped working.
+    wide = survey(scoped=False)
+    of_wide = {h["block"] for v in
+               wide["atoms"].get("object-fit", {}).get("bases", {}).values()
+               for h in v}
     for want in ("sgs/brand-strip", "sgs/trust-bar"):
-        if want not in hit_blocks:
-            fails.append("POSITIVE CONTROL FAILED: %s missing from object-fit" % want)
-
-    # NEGATIVE CONTROL: a block with no media must not be swept in.
-    if "sgs/collapsible-text" in hit_blocks:
+        if want not in of_wide:
+            fails.append("POSITIVE CONTROL FAILED (--all): %s missing from "
+                         "object-fit" % want)
+    # NEGATIVE CONTROL: even unscoped, a block with no media must not be swept in.
+    if "sgs/collapsible-text" in of_wide:
         fails.append("NEGATIVE CONTROL FAILED: overmatched sgs/collapsible-text")
-
-    # The two derivations must differ SOMEWHERE, or one of them is not running
-    # and the census is silently single-sourced.
-    if not any(rep["atoms"][a]["property_only"] for a in rep["atoms"]):
+    # The two derivations must differ SOMEWHERE, or one is not running and the
+    # census is single-sourced while looking fine.
+    if not any(wide["atoms"][a]["property_only"] for a in wide["atoms"]):
         fails.append("no property-only block anywhere - the DB side is probably "
                      "not running, so this census is single-sourced")
 
     for f in fails:
         print("  FAIL " + f)
-    print("%s - 6 check(s), incl. positive + negative controls"
+    print("%s - 9 checks: scope-leak, scoped + unscoped positive controls, negative control, single-source guard"
           % ("PASS" if not fails else "FAIL"))
     return 1 if fails else 0
 
@@ -295,11 +348,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--atom")
+    ap.add_argument("--all", action="store_true",
+                    help="ignore the plan scope and scan all blocks")
     ap.add_argument("--self-test", action="store_true", dest="selftest")
     args = ap.parse_args()
     if args.selftest:
         return self_test()
-    rep = survey(args.atom)
+    rep = survey(args.atom, scoped=not args.all)
     print(json.dumps(rep, indent=1) if args.json else render(rep))
     return 0
 
