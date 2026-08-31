@@ -172,9 +172,17 @@ each of the six blocks, quoted at `file:line`. **Do not choose, do not build.** 
 control manually; only then check which picks already exist as a shared helper in that exact
 form, and which need rebuilding or building fresh.
 
-⚠ **OWED:** `button/render.php`'s two SVG allowlists; the SMIL bypass is REASONED NOT
-EXECUTED; the three no-JS autoplay cases in `reports/visual-diff/media-2026-08-30.md`; video
-and SVG never captured live. `sgs/info-box` dead media attrs being deleted (agent in flight).
+⚠ **OWED — all four now have a prompt: `.claude/prompts/2026-09-01-media-owed-debts.md`.**
+`button/render.php`'s SVG allowlist (narrower than the shared `sgs_allowed_svg_tags()`, and
+the "two allowlists" figure is unverified — there are 7 `wp_kses` calls); the SMIL bypass
+REASONED NOT EXECUTED (needs a positive control proving the harness can see a real
+execution); the three no-JS autoplay cases in `reports/visual-diff/media-2026-08-30.md`;
+video + SVG never captured live. They share one theme: each is a claim never executed.
+
+✅ `sgs/info-box`'s three dead media attrs are DELETED (`dccbc3af5`), proven dead three ways.
+✅ Both atom-layer bugs are FIXED AND GATED — four controls comparing against a
+non-vocabulary word (`61432d337`) and five PHP twins never `require`d (`eea5fb990`).
+`check-media-atom-purity.js --self-test` covers both with negative controls, 20/20.
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
