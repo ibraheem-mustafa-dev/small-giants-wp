@@ -1,0 +1,6 @@
+/*
+ * link — no CSS. The link is an anchor wrapper, never a stylesheet value
+ * (this atom's own `css()`/`sgs_media_atom_link_css()` both always return an
+ * empty array). This partial exists purely so
+ * `generate-media-stylesheet.mjs`'s per-atom ownership convention holds.
+ */

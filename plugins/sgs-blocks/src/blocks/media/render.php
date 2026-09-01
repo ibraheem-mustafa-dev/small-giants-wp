@@ -53,11 +53,10 @@ $object_fit_raw      = $attributes['objectFit'] ?? 'cover';
 $object_fit          = in_array( $object_fit_raw, $allowed_object_fits, true ) ? $object_fit_raw : 'cover';
 $object_position     = isset( $attributes['objectPosition'] ) ? (string) $attributes['objectPosition'] : 'center center';
 
-$box_shadow        = isset( $attributes['boxShadow'] ) ? (string) $attributes['boxShadow'] : '';
-$box_shadow_colour = isset( $attributes['boxShadowColour'] ) ? (string) $attributes['boxShadowColour'] : '';
-$box_shadow_colour_hover = isset( $attributes['boxShadowColourHover'] ) ? (string) $attributes['boxShadowColourHover'] : '';
-$opacity           = isset( $attributes['opacity'] ) ? floatval( $attributes['opacity'] ) : 1.0;
-$opacity    = max( 0.0, min( 1.0, $opacity ) );
+// opacity / box-shadow are now owned entirely by the `opacity`/`shadow`
+// atoms (Wave 5c, 2026-09-01) — their own custom-property CSS (emitted below
+// via $sgs_media_atom_css) replaces the hand-rolled $opacity/$box_shadow*
+// reads and the base+hover box-shadow rules this file used to build here.
 
 $allowed_alignments = array( 'left', 'center', 'right' );
 $alignment_raw      = $attributes['alignment'] ?? 'left';
@@ -249,33 +248,15 @@ $media_base_decls = array();
 // object-position is OWNED BY THE ATOM LAYER (focal-point atom) and is
 // deliberately not emitted here. Same as object-fit — the atom owns this property now.
 
-// opacity.
-if ( 1.0 !== $opacity ) {
-	$media_base_decls[] = 'opacity:' . esc_attr( $opacity );
-}
-
-// box-shadow — SHAPE-only string (D621/D622 colour-architecture redesign);
-// colour lives in the sibling boxShadowColour attr and is composed back in
-// at render time via sgs_shadow_value_composed().
-if ( '' !== $box_shadow ) {
-	$shadow_css = sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
-	if ( '' !== $shadow_css ) {
-		$media_base_decls[] = 'box-shadow:' . $shadow_css;
-	}
-}
+// opacity and box-shadow (base + hover) are OWNED BY THE ATOM LAYER
+// (`opacity`/`shadow` atoms, Wave 5c 2026-09-01) and are deliberately not
+// emitted here — their own custom-property CSS is emitted below via
+// $sgs_media_atom_css, applied to the shared `.sgs-media-el` marker rather
+// than this file's own $id_sel.
 
 $media_base_css = '';
 if ( $media_base_decls ) {
 	$media_base_css = $id_sel . '{' . implode( ';', $media_base_decls ) . '}';
-}
-
-// HOVER-state shadow colour (Rule 31, 2026-08-22) — reuses the resting SHAPE
-// with the hover colour composed in.
-if ( '' !== $box_shadow && '' !== $box_shadow_colour_hover ) {
-	$box_shadow_hover_css = sgs_shadow_value_composed( $box_shadow, $box_shadow_colour_hover );
-	if ( '' !== $box_shadow_hover_css ) {
-		$media_base_css .= $id_sel . ':hover,' . $id_sel . ':focus-within{box-shadow:' . $box_shadow_hover_css . '}';
-	}
 }
 
 // Border (width/style/colour/radius) and aspect-ratio are now emitted
@@ -318,10 +299,13 @@ if ( $wrap_base_decls ) {
 // VALUES only — every rule lives in assets/css/media-element.css, loaded in
 // both the canvas and the front end, so the editor and the page cannot drift.
 // `atoms` lists only the CSS-EMITTING atoms declared in block.json's
-// supports.sgs.mediaElements — media-type/source/meaning/video-behaviour
-// contribute no CSS (control-only atoms), so they are correctly absent here
-// even though they are declared there for attribute injection.
-$sgs_media_atoms    = array( 'object-fit', 'focal-point', 'svg-presentation', 'motion', 'box-shape', 'overlay' );
+// supports.sgs.mediaElements — media-type/source/meaning/video-behaviour/
+// caption/link contribute no CSS (control-only atoms), so they are
+// correctly absent here even though they are declared there for attribute
+// injection. `opacity`/`shadow`/`media-padding` (Wave 5c, 2026-09-01) join
+// the CSS-emitting set, replacing this file's old hand-rolled opacity/
+// box-shadow declarations.
+$sgs_media_atoms    = array( 'object-fit', 'focal-point', 'svg-presentation', 'motion', 'box-shape', 'overlay', 'opacity', 'shadow', 'media-padding' );
 $sgs_media_atom_css = class_exists( 'SGS_Media_Element' )
 	? SGS_Media_Element::style( $attributes, '', 'sgs/media', $scope_class, $sgs_media_atoms )
 	: '';

@@ -11,13 +11,10 @@ import {
 	Button,
 	TextControl,
 	SelectControl,
-	RangeControl,
 	Notice,
 } from '@wordpress/components';
 import {
-	LinkPopoverField,
 	SgsColourPanel,
-	ShadowControl,
 	MediaPanelLayout,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -185,20 +182,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ ( isImage || isVideo ) && (
 				<ToolsPanel
 					label={ __( 'Media Styling', 'sgs-blocks' ) }
-					resetAll={ () => {
-						// Sizing/shape/border (mediaSizing/height/maxWidth/
-						// maxHeight/aspectRatio/borderRadius*/borderWidth/
-						// borderStyle/borderColour*) are now the `box-shape`
-						// atom's own reset, mounted via MediaPanelLayout's
-						// "Box & Border" panel — this reset only covers the
-						// rows still owned by THIS ToolsPanel.
-						setAttributes( {
-							alignment: 'left',
-							opacity: 1,
-							boxShadow: '',
-							boxShadowColour: '',
-						} );
-					} }
+					resetAll={ () => setAttributes( { alignment: 'left' } ) }
 				>
 					{ /*
 					  * Sizing (mediaSizing/height/width/maxWidth/maxHeight/
@@ -244,113 +228,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
-
-					<ToolsPanelItem
-						label={ __( 'Opacity', 'sgs-blocks' ) }
-						hasValue={ () => 1 !== ( attributes.opacity ?? 1 ) }
-						onDeselect={ () => setAttributes( { opacity: 1 } ) }
-					>
-						<RangeControl
-							label={ __( 'Opacity', 'sgs-blocks' ) }
-							value={ attributes.opacity ?? 1 }
-							min={ 0 }
-							max={ 1 }
-							step={ 0.05 }
-							onChange={ ( value ) =>
-								setAttributes( { opacity: value ?? 1 } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-
-					<ToolsPanelItem
-						label={ __( 'Box shadow', 'sgs-blocks' ) }
-						hasValue={ () => !! attributes.boxShadow }
-						onDeselect={ () =>
-							setAttributes( { boxShadow: '', boxShadowColour: '' } )
-						}
-					>
-						<ShadowControl
-							label={ __( 'Box shadow', 'sgs-blocks' ) }
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							attrNames={ {
-								base: 'boxShadow',
-								colour: 'boxShadowColour',
-								hoverColour: 'boxShadowColourHover',
-							} }
-						/>
-					</ToolsPanelItem>
 				</ToolsPanel>
 			) }
 
-			{ /* Caption & link — caption applies to image + video; link is image-only. */ }
-			{ ( isImage || isVideo ) && (
-				<PanelBody
-					title={ __( 'Caption & Link', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<TextControl
-						label={ __( 'Caption', 'sgs-blocks' ) }
-						value={ attributes.caption || '' }
-						onChange={ ( value ) =>
-							setAttributes( { caption: value } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Caption tag', 'sgs-blocks' ) }
-						value={ attributes.captionTag || 'figcaption' }
-						options={ [
-							{
-								label: __(
-									'Figure caption (figcaption)',
-									'sgs-blocks'
-								),
-								value: 'figcaption',
-							},
-							{ label: __( 'Div', 'sgs-blocks' ), value: 'div' },
-						] }
-						onChange={ ( value ) =>
-							setAttributes( { captionTag: value } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ isImage && (
-						/* Spec 35 §2 LINK standard (promoted from `sgs/button`'s
-						   Bean-approved popover 2026-08-13) — replaces the old
-						   `SgsLinkControl` inline mount. `linkOpensNewTab` is a
-						   plain boolean (not a `linkTarget` enum), so it's mapped
-						   to/from the shared component's `linkTarget` field here
-						   at the edge, matching `targetMode="boolean"`. */
-						<LinkPopoverField
-							label={ __( 'Link', 'sgs-blocks' ) }
-							help={ __(
-								'Search your site or paste a URL to wrap the image in a link. Leave empty for no link.',
-								'sgs-blocks'
-							) }
-							value={ {
-								url: attributes.linkUrl || '',
-								linkTarget: attributes.linkOpensNewTab ? '_blank' : '_self',
-								rel: attributes.linkRel || '',
-							} }
-							targetMode="boolean"
-							onChange={ ( next ) => {
-								const patch = {};
-								if ( undefined !== next.url ) patch.linkUrl = next.url;
-								if ( undefined !== next.linkTarget ) {
-									patch.linkOpensNewTab = '_blank' === next.linkTarget;
-								}
-								if ( undefined !== next.rel ) patch.linkRel = next.rel;
-								setAttributes( patch );
-							} }
-						/>
-					) }
-				</PanelBody>
-			) }
+			{ /* Caption & link are now owned entirely by the `caption`/`link`
+			     atoms, mounted via MediaPanelLayout's own "Caption & Link"
+			     PanelBody (mounted above) — this old hand-rolled panel is
+			     fully superseded (Wave 5c, 2026-09-01). */ }
 
 			{ /* SVG content + animation/speed/position/opacity/text-shadow/
 			     min-height are now owned by the `source` and

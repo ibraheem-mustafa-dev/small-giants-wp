@@ -187,3 +187,31 @@
 		animation-fill-mode: none, var( --sgs-media-motion-animation-fill-mode, none );
 	}
 }
+
+/* ── Cross-atom rule: composed opacity (`opacity` + `svg-presentation`) ───────
+ *
+ * Found live 2026-09-01, the `opacity` atom's first real deploy: both
+ * `opacity.css` (`--sgs-media-opacity`) and `svg-presentation.css`
+ * (`--sgs-media-svg-opacity`) declared a bare `opacity:` property on
+ * `.sgs-media-el` — identical specificity (0,1,0), so whichever partial the
+ * alphabet loads last (`svg-presentation` sorts after `opacity`) always won
+ * outright, silently discarding the general opacity control's value on
+ * every element: an authored `--sgs-media-opacity:0.5` computed as `1`.
+ * Same collision class as the animation rule above, on a different
+ * property.
+ *
+ * Fix: composed here, once, by MULTIPLYING both custom properties (each
+ * defaulting to 1 when its owning atom hasn't set one) rather than
+ * comma-listing — opacity is not a multi-value CSS property the way
+ * `animation-name` is, but it IS naturally multiplicative: two 0.5-opacity
+ * layers stacked visually combine to 0.25, which is the physically correct
+ * result, not an arbitrary tie-break. An element carrying only one of the
+ * two atoms is unaffected, since the absent one's factor is 1.
+ *
+ * If a THIRD atom ever needs `.sgs-media-el` opacity, extend this
+ * `calc()` with a third multiplied factor — do not give it its own bare
+ * `opacity:` declaration elsewhere.
+ */
+.sgs-media-el {
+	opacity: calc( var( --sgs-media-opacity, 1 ) * var( --sgs-media-svg-opacity, 1 ) );
+}

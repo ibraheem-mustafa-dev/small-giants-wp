@@ -37,11 +37,19 @@
  * CSS's native comma-separated multi-value animation syntax — each atom
  * occupies its own position in the list. See `_base.css`'s "Cross-atom
  * rule: composed animation" section for the combining rule itself.
+ *
+ * ⛔ NO BARE `opacity:` DECLARATION HERE EITHER (2026-09-01, same session).
+ * The `opacity` atom (`opacity.css`) ALSO declares `opacity` on this exact
+ * selector via its own `--sgs-media-opacity` custom property — the identical
+ * collision class the animation fix above already documents, just on a
+ * different property. This atom still writes only to its own uniquely
+ * named `--sgs-media-svg-opacity`; the REAL `opacity` property is composed
+ * ONCE in `_base.css` by multiplying both atoms' values. See `_base.css`'s
+ * "Cross-atom rule: composed opacity" section.
  */
 
 .sgs-media-el {
 	z-index: var( --sgs-media-svg-zindex, -1 );
-	opacity: var( --sgs-media-svg-opacity, 1 );
 	text-shadow: var( --sgs-media-svg-text-shadow, none );
 	min-height: var( --sgs-media-svg-min-height, 0 );
 }

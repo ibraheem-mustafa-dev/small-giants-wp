@@ -24,7 +24,7 @@
 			{
 				"prefix": "",
 				"context": "element",
-				"atoms": [ "media-type", "source", "meaning", "svg-presentation", "object-fit", "focal-point", "motion", "box-shape", "video-behaviour", "overlay" ]
+				"atoms": [ "media-type", "source", "meaning", "svg-presentation", "object-fit", "focal-point", "motion", "box-shape", "video-behaviour", "overlay", "opacity", "shadow", "media-padding", "caption", "link" ]
 			}
 		],
 			"boxFamilies": {

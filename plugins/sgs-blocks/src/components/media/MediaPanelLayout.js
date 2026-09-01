@@ -77,8 +77,11 @@ export default function MediaPanelLayout( {
 				/>
 			</PanelBody>
 
+			{ /* Wave 5c (2026-09-01): padding/opacity/shadow join box-shape here —
+			     all four are box-presentation controls for the same element,
+			     so they share one panel rather than each opening its own. */ }
 			<PanelBody title={ __( 'Box & Border', 'sgs-blocks' ) } initialOpen={ false }>
-				<MediaElementPanel { ...commonProps } atoms={ [ 'box-shape' ] } />
+				<MediaElementPanel { ...commonProps } atoms={ [ 'box-shape', 'media-padding', 'opacity', 'shadow' ] } />
 			</PanelBody>
 
 			{ /* video-behaviour's `types:['video']` gate returns no rows for
@@ -94,6 +97,15 @@ export default function MediaPanelLayout( {
 
 			<PanelBody title={ __( 'Overlay', 'sgs-blocks' ) } initialOpen={ false }>
 				<MediaElementPanel { ...commonProps } atoms={ [ 'overlay' ] } />
+			</PanelBody>
+
+			{ /* Wave 5c: caption is image/video; link is image-only — each
+			     atom's own `types` gate already returns no rows outside its
+			     media type, so this section is safe to mount unconditionally
+			     (unlike Playback above, which would open onto blank space for
+			     every non-video type and is gated in JSX instead). */ }
+			<PanelBody title={ __( 'Caption & Link', 'sgs-blocks' ) } initialOpen={ false }>
+				<MediaElementPanel { ...commonProps } atoms={ [ 'caption', 'link' ] } />
 			</PanelBody>
 		</>
 	);

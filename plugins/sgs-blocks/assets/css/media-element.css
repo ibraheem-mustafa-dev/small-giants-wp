@@ -200,6 +200,34 @@
 	}
 }
 
+/* ── Cross-atom rule: composed opacity (`opacity` + `svg-presentation`) ───────
+ *
+ * Found live 2026-09-01, the `opacity` atom's first real deploy: both
+ * `opacity.css` (`--sgs-media-opacity`) and `svg-presentation.css`
+ * (`--sgs-media-svg-opacity`) declared a bare `opacity:` property on
+ * `.sgs-media-el` — identical specificity (0,1,0), so whichever partial the
+ * alphabet loads last (`svg-presentation` sorts after `opacity`) always won
+ * outright, silently discarding the general opacity control's value on
+ * every element: an authored `--sgs-media-opacity:0.5` computed as `1`.
+ * Same collision class as the animation rule above, on a different
+ * property.
+ *
+ * Fix: composed here, once, by MULTIPLYING both custom properties (each
+ * defaulting to 1 when its owning atom hasn't set one) rather than
+ * comma-listing — opacity is not a multi-value CSS property the way
+ * `animation-name` is, but it IS naturally multiplicative: two 0.5-opacity
+ * layers stacked visually combine to 0.25, which is the physically correct
+ * result, not an arbitrary tie-break. An element carrying only one of the
+ * two atoms is unaffected, since the absent one's factor is 1.
+ *
+ * If a THIRD atom ever needs `.sgs-media-el` opacity, extend this
+ * `calc()` with a third multiplied factor — do not give it its own bare
+ * `opacity:` declaration elsewhere.
+ */
+.sgs-media-el {
+	opacity: calc( var( --sgs-media-opacity, 1 ) * var( --sgs-media-svg-opacity, 1 ) );
+}
+
 /* ── box-shape.css ───────────────────────────────────────────────────── */
 /*
  * box-shape — sizing mode (auto/height/ratio), named shape, min/max/width,
@@ -294,6 +322,16 @@
 	}
 }
 
+/* ── caption.css ─────────────────────────────────────────────────────── */
+/*
+ * caption — no CSS. Caption text/tag are HTML content and structure, never
+ * stylesheet values (this atom's own `css()`/`sgs_media_atom_caption_css()`
+ * both always return an empty array). This partial exists purely so
+ * `generate-media-stylesheet.mjs`'s per-atom ownership convention holds —
+ * every atom owns a partial, even an empty one — and so a future reader
+ * finds this atom's file here rather than concluding it was skipped.
+ */
+
 /* ── focal-point.css ─────────────────────────────────────────────────── */
 /* ── focal-point atom ─────────────────────────────────────────────────────
  *
@@ -356,6 +394,14 @@
  * later.
  */
 
+/* ── link.css ────────────────────────────────────────────────────────── */
+/*
+ * link — no CSS. The link is an anchor wrapper, never a stylesheet value
+ * (this atom's own `css()`/`sgs_media_atom_link_css()` both always return an
+ * empty array). This partial exists purely so
+ * `generate-media-stylesheet.mjs`'s per-atom ownership convention holds.
+ */
+
 /* ── meaning.css ─────────────────────────────────────────────────────── */
 /*
  * meaning atom — no rules.
@@ -370,6 +416,35 @@
  * partial explaining why, rather than a silent gap someone re-investigates
  * later.
  */
+
+/* ── media-padding.css ───────────────────────────────────────────────── */
+/*
+ * media-padding — the media element's own inner spacing, tiered.
+ *
+ * Custom-property names match `media-padding.js`/`media-padding.php`'s
+ * `css()` output exactly: `--sgs-media-padding[-tablet|-mobile]`. Follows
+ * the mobile -> tablet -> desktop -> initial fallback chain `_base.css`
+ * documents, same as every other tiered atom.
+ */
+
+.sgs-media-el {
+	padding: var( --sgs-media-padding, 0 );
+}
+
+@media ( max-width: 1023px ) {
+	.sgs-media-el {
+		padding: var( --sgs-media-padding-tablet, var( --sgs-media-padding, 0 ) );
+	}
+}
+
+@media ( max-width: 767px ) {
+	.sgs-media-el {
+		padding: var(
+			--sgs-media-padding-mobile,
+			var( --sgs-media-padding-tablet, var( --sgs-media-padding, 0 ) )
+		);
+	}
+}
 
 /* ── media-type.css ──────────────────────────────────────────────────── */
 /*
@@ -565,6 +640,33 @@
 	}
 }
 
+/* ── opacity.css ─────────────────────────────────────────────────────── */
+/*
+ * opacity — the media element's own transparency.
+ *
+ * Custom-property name matches `opacity.js`/`opacity.php`'s `css()` output
+ * exactly: `--sgs-media-opacity`. Not tiered — MEDIA_TIERED_BASES does not
+ * carry `Opacity`, matching the atom's own pre-existing single-value shape
+ * (the hand-rolled control it replaces had no Tablet/Mobile siblings either).
+ *
+ * ⛔ NO BARE `opacity:` DECLARATION HERE. `svg-presentation.css` also
+ * declares `opacity` on this SAME selector (`--sgs-media-svg-opacity`), and
+ * two atom partials both declaring the same real property at the same
+ * specificity (0,1,0) is unresolvable by cascade alone — whichever partial
+ * the alphabet loads last always wins outright, silently discarding this
+ * atom's value on any non-svg element (measured live 2026-09-01: an
+ * authored `--sgs-media-opacity:0.5` computed as `1` because
+ * `svg-presentation.css` loads after this file and unconditionally wins).
+ * Same collision class `_base.css`'s "Cross-atom rule: composed animation"
+ * section already documents and fixes for motion/svg-presentation. Fixed
+ * the same way: this atom still writes only to its OWN uniquely named
+ * custom property (unchanged above), but the REAL `opacity` property is
+ * composed ONCE, in `_base.css`, by multiplying both atoms' custom
+ * properties (opacity is naturally multiplicative — two 0.5 layers combine
+ * to 0.25, which is the physically correct visual result). See `_base.css`'s
+ * "Cross-atom rule: composed opacity" section for the combining rule itself.
+ */
+
 /* ── overlay.css ─────────────────────────────────────────────────────── */
 /*
  * overlay — colour/gradient tint painted over a media element or backdrop,
@@ -609,6 +711,28 @@
 .sgs-media-box:focus-within::after {
 	background-color: var( --sgs-media-overlay-colour-hover, var( --sgs-media-overlay-colour, transparent ) );
 	background-image: var( --sgs-media-overlay-gradient-hover, var( --sgs-media-overlay-gradient, none ) );
+}
+
+/* ── shadow.css ──────────────────────────────────────────────────────── */
+/*
+ * shadow — the media element's own box shadow, resting and hover.
+ *
+ * Custom-property names match `shadow.js`/`shadow.php`'s `css()` output
+ * exactly: `--sgs-media-box-shadow`, `--sgs-media-box-shadow-hover`.
+ * `:focus-within` rides alongside `:hover` because the media element itself
+ * has no meaningful focus state, but a caption/link wrapper around it does —
+ * matching the old hand-rolled `$id_sel:hover,$id_sel:focus-within` rule
+ * this atom replaces.
+ */
+
+.sgs-media-el {
+	box-shadow: var( --sgs-media-box-shadow, none );
+	transition: box-shadow 0.3s ease;
+}
+
+.sgs-media-el:hover,
+.sgs-media-el:focus-within {
+	box-shadow: var( --sgs-media-box-shadow-hover, var( --sgs-media-box-shadow, none ) );
 }
 
 /* ── source.css ──────────────────────────────────────────────────────── */
@@ -693,11 +817,19 @@
  * CSS's native comma-separated multi-value animation syntax — each atom
  * occupies its own position in the list. See `_base.css`'s "Cross-atom
  * rule: composed animation" section for the combining rule itself.
+ *
+ * ⛔ NO BARE `opacity:` DECLARATION HERE EITHER (2026-09-01, same session).
+ * The `opacity` atom (`opacity.css`) ALSO declares `opacity` on this exact
+ * selector via its own `--sgs-media-opacity` custom property — the identical
+ * collision class the animation fix above already documents, just on a
+ * different property. This atom still writes only to its own uniquely
+ * named `--sgs-media-svg-opacity`; the REAL `opacity` property is composed
+ * ONCE in `_base.css` by multiplying both atoms' values. See `_base.css`'s
+ * "Cross-atom rule: composed opacity" section.
  */
 
 .sgs-media-el {
 	z-index: var( --sgs-media-svg-zindex, -1 );
-	opacity: var( --sgs-media-svg-opacity, 1 );
 	text-shadow: var( --sgs-media-svg-text-shadow, none );
 	min-height: var( --sgs-media-svg-min-height, 0 );
 }
