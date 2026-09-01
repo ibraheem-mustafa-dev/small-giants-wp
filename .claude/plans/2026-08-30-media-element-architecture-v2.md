@@ -2,20 +2,22 @@
 doc_type: design
 title: The SGS Media Element — architecture v2 (post-council)
 date: 2026-08-30
-last_updated: 2026-08-31
-status: APPROVED and PARTLY BUILT — waves 1-2 deployed + live-verified; wave 3 (ten atoms) built and gated, NOT deployed; WAVE 4 (L3 panel registry + dispatch) NOT BUILT — moved into wave 5a; wave 5 next
+last_updated: 2026-09-01
+status: APPROVED and MOSTLY BUILT — waves 1-5 deployed, live-verified and MERGED TO MAIN (PR #36, `13286fc69`); sgs/media fully converted to the atom system (16 atoms, not 10); before-after wired for object-fit/focal-point + its own independence bug fixed; wave 6 (gate rules) and wave 7 (remaining 4 surfaces) not started
 owner: client-controls track
 supersedes: 2026-08-30-media-element-architecture.md (v1, graded C/C+/D by a 7-seat council)
 live_plan: ~/.claude/plans/media-element-zippy-boole.md
-next_session_prompt: .claude/prompts/2026-08-31-media-element-waves-5-7.md
+next_session_prompt: .claude/prompts/2026-09-01-media-element-waves-6-7.md
 ---
 
-> **Status.** Waves 1-2 deployed and live-verified. Wave 3 (the ten atoms) built and gated but
-> **NOT deployed** — the atom layer paints nothing until a surface is wired in Wave 5.
-> ⛔ **Wave 4 — the L2/L3 panel registry and dispatch layer — was NEVER BUILT** (measured
-> 2026-08-31; `SGS_Media_Element` does not exist and `MediaElementControls.js` is a naming module
-> with zero JSX). It is Wave 5a's first build deliverable. Full status + evidence in §17.
-> **Next session: `.claude/prompts/2026-08-31-media-element-waves-5-7.md`.**
+> **Status.** Waves 1-5 deployed, live-verified, and merged to `main`. `sgs/media` is now the
+> fully-realised reference block: every one of its media controls — 16 atoms in total, not the
+> 10/11 named earlier in this doc — comes from the shared, portable atom system, with the old
+> block-private code deleted. `before-after`'s object-fit/focal-point are wired and independently
+> scoped per photo (its own pre-existing shared-value bug is fixed). The falsification test in §10
+> passed cleanly. Full build-out, the bugs found and fixed (including two genuine regressions an
+> independent code review caught before merge), and exact atom-by-atom status: §17.
+> **Next session: `.claude/prompts/2026-09-01-media-element-waves-6-7.md`.**
 > Live status: `.claude/LEDGER.md`. Decisions: D909, D910.
 
 # The SGS Media Element — architecture v2
@@ -538,10 +540,18 @@ focal-point · padding · border+radius · opacity · shadow · alignment · max
 **Video:** autoplay · loop · muted · controls · playsinline · poster · preload · **`<track>` captions**.
 **SVG:** svg-source · animation-source · path-draw.
 
-### ⭐ v1 SHIPS TEN ATOMS, NOT THIRTY — and not six either
+### ⭐ SHIPPED: SIXTEEN ATOMS, NOT THIRTY, NOT TEN EITHER (updated 2026-09-01)
 
-The list above is a wish-list. **This is the roster.** Ten atoms cover every media attribute on the
-six in-scope surfaces; the ~20 remaining concepts follow once the mechanism is proven.
+⚠ **This section originally shipped ten atoms and named the other ~20 concepts below as deferred
+to v2. Six of those "v2" concepts have since shipped: `motion` (§18.4, ken-burns/parallax) landed
+in Wave 5a; `opacity`, `shadow`, `media-padding`, `caption` and `link` landed in Wave 5c after Bean
+challenged why `sgs/media`'s panel still had hand-rolled code for them once the atom system
+existed — see §17's Wave 5 record. The roster below is what actually exists in `registry.js`
+today, not the original ten-atom plan.**
+
+The list further below is what's still genuinely left for later (lazy-load, LCP priority,
+path-draw, alignment, max-width, border as a concept separate from `box-shape`'s own border). Read
+this section as "what shipped", not "what was planned".
 
 Ten rather than a smaller cut for two reasons. Meaning, video behaviour, SVG presentation and
 intrinsic dimensions account for **36 of the census's 103 names**, and the cross-attribute rule
@@ -560,11 +570,21 @@ rule without an owner. Nothing is wired to a block until step 4, so completeness
 | 6 | `svg-presentation` | census (8) |
 | 7 | `object-fit` | ⚠ presentation half — see §9 |
 | 8 | `focal-point` | ⚠ presentation half |
-| 9 | `box-shape` | ⚠ presentation half |
+| 9 | `box-shape` | ⚠ presentation half — also absorbed border (width/style/colour/gradient, tiered radius) via the standard `SgsBorderControl`, and `aspect-ratio`/`max-width`/`max-height` |
 | 10 | `overlay` | ⚠ presentation half |
+| 11 | `motion` (ken-burns / parallax) | added Wave 5a (§18.4) — harvested from hero + container's working implementations |
+| 12 | `opacity` | added Wave 5c (2026-09-01) |
+| 13 | `shadow` | added Wave 5c — wraps the existing shared `ShadowControl`, no new UI |
+| 14 | `media-padding` | added Wave 5c — wraps the existing shared `ResponsiveBoxControl`, no new UI |
+| 15 | `caption` | added Wave 5c |
+| 16 | `link` | added Wave 5c — wraps the existing shared `LinkPopoverField`, no new UI |
 
-The remaining ~20 concepts in the list above (caption, link, lazy-load, LCP priority, ken-burns,
-parallax, path-draw, alignment, opacity, shadow, padding, border) stay v2.
+The remaining concepts still genuinely deferred: lazy-load, LCP priority, ken-burns/parallax's
+SVG-type gating question (§18.4's open item), path-draw, and plain `alignment` as its own control.
+`alignment` was found this session to be duplicated ad hoc in a few unrelated non-media blocks
+too (`multi-button`, `feature-grid`, `separator`) — a smaller, separate framework-wide
+unification, not part of this track's scope, but worth knowing before treating its absence here
+as a gap unique to media.
 
 ⭐ **A control becomes the standard by BEING a shared helper, not by being described (Bean, 2026-08-30).**
 Every control an atom needs that does not already exist ships as ONE component in
@@ -899,11 +919,11 @@ do not close; the eye alone does not close.
 | Census — presentation half | +45m | write-up of measurements already taken |
 | Architecture doc realignment | +1h | this rewrite |
 | **10** atoms + shared helpers + selective injection | 6h → **~5.5h** | 4 parallel branches; 6 of ~8 controls already exist |
-| Panel registry + dispatch | — | ⛔ **NOT BUILT in Wave 4** — moved to Wave 5a (§17) |
-| Wire both surfaces | 4h | Wave 5 |
-| Gates + negative controls | 6h | Wave 6 |
-| Remaining surfaces (codemod) | 2-3 days, separately | Wave 7 |
-| `product-card` content migration | separate, after proof | — |
+| Panel registry + dispatch | — | ✅ built in Wave 5a as `MediaElementPanel.js` + `MediaPanelLayout.js` |
+| Wire both surfaces + close the atom roster to 16 + fix 2 real regressions + 1 security gap found by review | 4h | ✅ shipped, merged (`13286fc69`) |
+| Gates + negative controls | 6h | Wave 6, not started |
+| Remaining surfaces (codemod) | 2-3 days, separately | Wave 7, not started |
+| `product-card` content migration | separate, after proof | not started — the proof now exists |
 
 ⚠ Waves 1-2 came in materially faster than this table's originals. Treat the remaining figures as
 upper bounds, not targets.
@@ -1147,16 +1167,57 @@ as its PHP twin. **L3 is Wave 5a's first build deliverable.**
 ⛔ **Nothing here paints yet.** Wave 3 closes on parity, validators and purity. **Wave 5 closes on
 paint** — atoms are wired to no surface until then, so no DOM check is possible and none is claimed.
 
+### Wave 5 — DONE, merged to main (2026-09-01)
+
+**`sgs/media` first, `before-after` second, exactly as §10/§15 specified — the falsification test
+passed.** `git diff --name-only` while wiring `before-after`'s object-fit/focal-point touched only
+the 5 files under `src/blocks/before-after/`, zero shared-layer paths. The shared layer genuinely
+did not need to change for the second surface.
+
+**What shipped, beyond the original Wave 5 scope:**
+
+- `sgs/media` is now driven entirely by the atom system — all 16 atoms (§5), not the original 10.
+  §18's panel design (type tabs, "Image Styling" sub-panel, bottom-mounted overlay) was built as
+  `src/components/media/MediaPanelLayout.js`, the first concrete `MediaElementPanel` layout
+  component (Wave 7's remaining surfaces can reuse it or build their own from the same pattern).
+- `before-after` had a real, pre-existing bug surfaced during this work: its before/after photos
+  shared ONE `sgsObjectFit`/`sgsObjectPosition` pair, so they could never be cropped
+  independently — exactly the scoping defect §2 L4's "scope per element, not per block" section
+  warned this exact block would hit. Fixed as its own step, with a read-time fallback so any
+  pre-existing `post_content` with the old shared value still renders correctly on both slots.
+- The box-wrapper decision (`SGS_Media_Element::requires_box()`) originally decided whether a
+  block needed its media wrapped in a `<figure>` by checking whether an atom was merely
+  *declared* — not whether it actually produced anything to paint. Fixed to be value-aware: a
+  plain image with no overlay set now correctly renders as a bare `<img>` again.
+- The editor canvas never reflected atom changes live (the canvas element never carried the
+  marker class the shared stylesheet keys on) — fixed with a new reusable JS module
+  (`src/components/media/canvasStyle.js`) mirroring the PHP render logic, so Wave 7 surfaces
+  inherit working live preview by construction rather than re-discovering this gap per block.
+- **An independent code review (8-angle pass) caught two genuine regressions before merge, plus a
+  security gap, plus six smaller correctness issues — all fixed and re-verified live before
+  merging:** external video (YouTube/Vimeo/direct URL) had become unreachable in the editor (the
+  new picker only offered the WP media library); before-after's legacy crop attributes were
+  silently dropped with no migration path; border-radius/width values weren't routed through this
+  project's own established CSS-injection sanitiser; plus a caption that kept painting on the
+  frontend after switching media type to SVG, a validation bypass on the padding control, a
+  tablet/mobile autoplay lock that LOOKED locked but didn't actually block the click (the same
+  `ToggleGroupControl` `disabled`-prop trap this project already has one memory entry for — now
+  two), an opacity JS/PHP parity gap, a shared method's signature widened with no safety net for
+  old-style callers, and a hand-edited generated file (turned out already correct, verified
+  against a real regeneration).
+- **Merged:** PR #36, squash-merged to `main` as `13286fc69`, 2026-09-01.
+
 ### Still to do
 
 | Wave | Work |
 |---|---|
-| **5** | Wire `sgs/media`, **then** `before-after`. Serial, never parallel — see §10 |
-| 6 | Five gates as inspector-scan rule modules, all starting advisory (`media-no-handroll` ships in Wave 5) |
-| 7 | Remaining surfaces, INSERT → VERIFY → GUT, one commit each |
-| — | `product-card`'s content migration, separately, after the abstraction is proven |
+| 6 | Five gates as inspector-scan rule modules, all starting advisory (`media-no-handroll`'s own gate already shipped in Wave 5's build) |
+| 7 | Remaining four surfaces (`hero`, `container`'s `BackgroundPanel`, `decorative-image`, `product-card`), INSERT → VERIFY → GUT, one commit each |
+| — | `product-card`'s content migration, separately, after the abstraction is proven — it now is |
+| — | The editor-canvas live-preview fix currently covers `sgs/media` only; confirm/extend to each Wave 7 surface as it's wired |
+| — | Not required, but flagged: `alignment` as a shared control (see §5's atom-roster note) — a smaller, separate framework-wide unification |
 
-**Live prompt for the remainder:** `.claude/prompts/2026-08-31-media-element-waves-5-7.md`.
+**Live prompt for the remainder:** `.claude/prompts/2026-09-01-media-element-waves-6-7.md`.
 
 ### What changed in the plan while building it
 
@@ -1307,4 +1368,3 @@ here.
 Object-fit, focal-point, box-shape, overlay and svg-presentation stay independent, individually
 selectable atoms exactly as §5/`registry.js` define them — 18.2 changes where their controls sit
 in the panel, not what they are or how a block opts in/out via its `atoms: [...]` list.
-
