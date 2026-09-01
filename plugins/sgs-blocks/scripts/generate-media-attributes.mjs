@@ -155,7 +155,12 @@ function selfTest() {
 	ck( 'MEDIA_BASES has source + behaviour', !! MEDIA_BASES.source && !! MEDIA_BASES.behaviour );
 	ck( 'MEDIA_BASES has the presentation groups', !! MEDIA_BASES.fit && !! MEDIA_BASES.overlay );
 	ck( 'MEDIA_TIERED_BASES is populated', MEDIA_TIERED_BASES.length > 10 );
-	ck( 'MEDIA_ATOMS has ten atoms', Object.keys( MEDIA_ATOMS ).length === 10 );
+	// Exact-count assertions go stale every time a wave adds an atom (10 -> 16
+	// across Waves 5a-5c alone) with no behavioural signal that anything is
+	// actually wrong - a self-test failure that fires on every legitimate
+	// addition trains people to ignore it. Threshold like the other
+	// cardinality checks in this file instead.
+	ck( 'MEDIA_ATOMS is populated', Object.keys( MEDIA_ATOMS ).length > 10 );
 
 	// Every base must belong to exactly ONE atom. Two atoms claiming a base
 	// would make selective injection ambiguous; zero would make the base

@@ -414,9 +414,16 @@ if ( $caption_decls ) {
 
 // ---------------------------------------------------------------------------
 // 9. Build caption element (no inline style attr — see step 8 above).
+// The `caption` atom is registered for image/video only (`registry.js`
+// `caption.types`) — svg is deliberately excluded there, and the editor
+// hides the Caption control once mediaType is svg. Media-type switching is
+// non-destructive (the stored value is preserved, not cleared), so gate the
+// FRONTEND render on the current media type too: stop painting a stale
+// caption under an svg without deleting the attribute the operator may
+// switch back to.
 // ---------------------------------------------------------------------------
 $caption_html = '';
-if ( '' !== $caption ) {
+if ( '' !== $caption && in_array( $media_type, array( 'image', 'video' ), true ) ) {
 	$caption_tag_escaped = tag_escape( $caption_tag );
 	$caption_html        = sprintf(
 		'<%1$s class="sgs-media__caption">%2$s</%1$s>',
