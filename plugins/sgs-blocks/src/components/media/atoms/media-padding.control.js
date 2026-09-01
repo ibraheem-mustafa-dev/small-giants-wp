@@ -12,7 +12,7 @@
 import { __ } from '@wordpress/i18n';
 
 import ResponsiveBoxControl from '../../ResponsiveBoxControl.js';
-import { attrKeys } from './media-padding.js';
+import { attrKeys, validate } from './media-padding.js';
 
 /**
  * Bare inspector row for this atom. Mounts no `InspectorControls`/`PanelBody`.
@@ -37,7 +37,7 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 				tablet: attributes[ keys.tablet ] ?? {},
 				mobile: attributes[ keys.mobile ] ?? {},
 			} }
-			onChange={ ( tier, next ) => setAttributes( { [ TIER_KEYS[ tier ] ]: next } ) }
+			onChange={ ( tier, next ) => setAttributes( { [ TIER_KEYS[ tier ] ]: validate( next ) } ) }
 		/>
 	);
 }

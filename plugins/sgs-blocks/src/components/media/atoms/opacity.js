@@ -65,6 +65,15 @@ export function validate( value ) {
  * fallback, so a client who never touched the control gets no declaration at
  * all, matching every other atom's convention.
  *
+ * The gate accepts a numeric STRING as well as a `number` — matching the PHP
+ * twin's `is_numeric()` (the atom-family convention: `box-shape.php`/
+ * `motion.php`/`overlay.php`/`svg-presentation.php` all gate on `is_numeric()`
+ * too). A numeric string is a genuine value on the REST/import path (a stored
+ * attribute round-tripped through JSON as `"0.5"` rather than `0.5`), and
+ * rejecting it here while PHP accepts it was a JS/PHP parity gap — the same
+ * stored value rendered a declaration on the frontend but not in the editor
+ * canvas.
+ *
  * @param {Object} props
  * @param {Object} props.attributes
  * @param {string} [props.prefix]
@@ -75,7 +84,10 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	const decls = [];
 	const keys = attrKeys( prefix, blockSlug );
 	const raw = attributes[ keys.opacity ];
-	if ( 'number' === typeof raw && Number.isFinite( raw ) ) {
+	const isNumeric =
+		( 'number' === typeof raw && Number.isFinite( raw ) ) ||
+		( 'string' === typeof raw && '' !== raw.trim() && Number.isFinite( Number( raw ) ) );
+	if ( isNumeric ) {
 		const clamped = validate( raw );
 		if ( 1 !== clamped ) {
 			decls.push( `--sgs-media-opacity:${ clamped }` );
