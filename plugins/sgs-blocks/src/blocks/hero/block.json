@@ -292,19 +292,11 @@
 			}
 		}
 	},
+	"_selectorsNote": "S1 fix (2026-09-02, uniformity sweep, inspector-scan rule 33): selectors.typography retargeted from '.sgs-hero__headline' to the block root ('.wp-block-sgs-hero', matching cta-section/info-box/notice-banner). '.sgs-hero__headline' is set ONLY as an InnerBlocks TEMPLATE child's className in edit.js, never emitted by hero's own rendered markup — the old selector generated a scoped rule at CSS specificity (0,2,0) that could never beat the child block's own inline typography at (1,0,0,0), so hero's 7 declared native typography controls were silent no-ops (Spec 35 F.1).",
 	"selectors": {
 		"root": ".wp-block-sgs-hero",
 		"border": ".wp-block-sgs-hero",
-		"typography": {
-			"root": ".sgs-hero__headline",
-			"fontSize": ".sgs-hero__headline",
-			"fontFamily": ".sgs-hero__headline",
-			"fontWeight": ".sgs-hero__headline",
-			"lineHeight": ".sgs-hero__headline",
-			"letterSpacing": ".sgs-hero__headline",
-			"textTransform": ".sgs-hero__headline",
-			"textDecoration": ".sgs-hero__headline"
-		}
+		"typography": ".wp-block-sgs-hero"
 	},
 	"attributes": {
 		"variant": {

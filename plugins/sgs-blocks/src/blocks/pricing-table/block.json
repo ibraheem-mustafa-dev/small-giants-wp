@@ -202,9 +202,10 @@
 			}
 		}
 	},
+	"_selectorsNote": "S1 fix (2026-09-02, uniformity sweep, inspector-scan rule 33): selectors.typography retargeted from '.sgs-pricing-table__title' (never emitted by any rendered markup) to '.sgs-pricing-table__name' (render.php:364, the block's real per-plan title element).",
 	"selectors": {
 		"root": ".wp-block-sgs-pricing-table",
-		"typography": ".sgs-pricing-table__title"
+		"typography": ".sgs-pricing-table__name"
 	},
 	"attributes": {
 		"columns": {

@@ -3,6 +3,7 @@ import {
 	useBlockProps,
 	RichText,
 	InspectorControls,
+	InspectorAdvancedControls,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -519,16 +520,23 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /* ── Advanced panel ── */ }
-				<PanelBody title={ __( 'Advanced', 'sgs-blocks' ) } initialOpen={ false }>
-					<ToggleControl
-						label={ __( 'Inherit style from parent', 'sgs-blocks' ) }
-						help={ __( 'When enabled, all block-level typography styles are suppressed and the element inherits from its parent container.', 'sgs-blocks' ) }
-						checked={ !! inheritStyle }
-						onChange={ ( val ) => setAttributes( { inheritStyle: val } ) }
-					/>
-				</PanelBody>
 			</InspectorControls>
+
+			{ /* S1 fix (2026-09-02, uniformity sweep, inspector-scan rule 35): moved
+			   out of a block-private "Advanced" PanelBody in the default Settings
+			   group into the real InspectorAdvancedControls slot — "Advanced" is
+			   pinned structurally last on every block via the shared
+			   src/blocks/extensions/custom-css.js mechanism, and a block-private
+			   panel with the same title silently broke that guarantee for this one
+			   block while reading, by title alone, as if it kept it. */ }
+			<InspectorAdvancedControls>
+				<ToggleControl
+					label={ __( 'Inherit style from parent', 'sgs-blocks' ) }
+					help={ __( 'When enabled, all block-level typography styles are suppressed and the element inherits from its parent container.', 'sgs-blocks' ) }
+					checked={ !! inheritStyle }
+					onChange={ ( val ) => setAttributes( { inheritStyle: val } ) }
+				/>
+			</InspectorAdvancedControls>
 
 			{ /* ── Canvas ── the RichText h-tag/<p> IS the block root (§B3, no
 			   wrapper div): useBlockProps spreads straight onto it. ── */ }

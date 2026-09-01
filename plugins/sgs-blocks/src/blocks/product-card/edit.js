@@ -1947,6 +1947,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							{ __( 'Reset colours to preset', 'sgs-blocks' ) }
 						</Button>
 						<ToolsPanel
+							className="sgs-nested-tools-panel"
 							label={ __( 'CTA Button Style', 'sgs-blocks' ) }
 							resetAll={ () =>
 								setAttributes( {
@@ -2167,6 +2168,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							) }
 						</p>
 						<ToolsPanel
+							className="sgs-nested-tools-panel"
 							label={ __( 'Picker style', 'sgs-blocks' ) }
 							resetAll={ () =>
 								setAttributes( {

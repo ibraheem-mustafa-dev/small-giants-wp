@@ -412,6 +412,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 					</p>
 					<ToolsPanel
+						className="sgs-nested-tools-panel"
 						label={ __( 'Responsive frame sources', 'sgs-blocks' ) }
 						resetAll={ () =>
 							setAttributes( {

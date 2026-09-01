@@ -622,6 +622,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 											<RangeControl
 												label={ __( 'Icon size (px)', 'sgs-blocks' ) }
+												hideLabelFromVision
 												value={ ownValue || ( inherited ? effectiveValue : 16 ) || 16 }
 												onChange={ ( val ) => setOwnValue( val ) }
 												min={ 8 }
@@ -771,6 +772,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									<SgsLengthControl
 										presets={ false }
 										label={ __( 'Line height', 'sgs-blocks' ) }
+										hideLabelFromVision
 										value={ composeUnit( ownValue, lineHeightUnit ) }
 										units={ LINE_HEIGHT_UNITS }
 										onChange={ ( raw ) => {
@@ -810,6 +812,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ ( { ownValue, setOwnValue } ) => (
 								<RangeControl
 									label={ __( 'Letter spacing (px)', 'sgs-blocks' ) }
+									hideLabelFromVision
 									value={ ownValue || 0 }
 									onChange={ ( val ) => setOwnValue( val ) }
 									min={ -5 }

@@ -131,9 +131,10 @@
 	"providesContext": {
 		"sgs/testimonialVariant": "cardStyle"
 	},
+	"_selectorsNote": "S1 fix (2026-09-02, uniformity sweep, inspector-scan rule 33): selectors.typography retargeted from '.sgs-testimonial-slider__quote' to the block root ('.wp-block-sgs-testimonial-slider'). No element in this block's own rendered markup ever carried the quote class — the quote text belongs to a child sgs/testimonial InnerBlocks (render.php:179-183 already documents this and works around it with a manual PHP-side root-scoped rule).",
 	"selectors": {
 		"root": ".wp-block-sgs-testimonial-slider",
-		"typography": ".sgs-testimonial-slider__quote"
+		"typography": ".wp-block-sgs-testimonial-slider"
 	},
 	"attributes": {
 		"alignItems": {

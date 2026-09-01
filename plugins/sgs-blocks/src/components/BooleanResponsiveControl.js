@@ -96,6 +96,7 @@ export default function BooleanResponsiveControl( {
 						<ToggleControl
 							__nextHasNoMarginBottom
 							label={ label }
+							hideLabelFromVision
 							help={ help }
 							checked={ base }
 							disabled={ disabled }
