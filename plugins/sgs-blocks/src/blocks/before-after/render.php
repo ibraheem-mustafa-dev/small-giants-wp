@@ -63,8 +63,23 @@ $has_video_slot = 'video' === $before_media['media_type'] || 'video' === $after_
 // as data-* on the root and are resolved + applied by view.js
 // (bootVideoSyncLayer), reusing the same fallback-upward shape as sgs/media's
 // tiered playback attrs (null = inherit the tier above).
+//
+// An empty string is treated identically to null (inherit) — NOT a stored
+// shape, only a REST-transport artefact. block.json's type union carries
+// 'string' alongside 'boolean'/'null' solely because
+// @wordpress/server-side-render's GET transport serialises an unset (null)
+// attribute to '' in the REST query string (addQueryArgs cannot represent a
+// real null), and the editor's own live preview would otherwise 400 on
+// every load. Real post_content always stores a genuine JSON null for an
+// unset tier, never ''.
 $video_autoplay_tablet_raw = $attributes['videoAutoplayTablet'] ?? null;
 $video_autoplay_mobile_raw = $attributes['videoAutoplayMobile'] ?? null;
+if ( '' === $video_autoplay_tablet_raw ) {
+	$video_autoplay_tablet_raw = null;
+}
+if ( '' === $video_autoplay_mobile_raw ) {
+	$video_autoplay_mobile_raw = null;
+}
 
 $video_autoplay = ! empty( $attributes['videoAutoplay'] );
 
