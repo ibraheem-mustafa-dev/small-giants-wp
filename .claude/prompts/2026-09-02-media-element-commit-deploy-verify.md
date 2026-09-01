@@ -29,25 +29,12 @@ Skip the cloning-pipeline spec (Spec 31) unless you land on the `db_lookup.py`/`
 `emit_as` change specifically (D915 names the exact files) — it governs a different track and will
 mislead you elsewhere in this session.
 
-## Task 1 — Commit and push
-
-`git status` first — confirm the working tree still matches what D915/§17 describe (roughly 30-something
-tracked files modified, several new files under `plugins/sgs-blocks/scripts/inspector-scan/rules/` +
-`fixtures/`, three new `src/components/media/*PanelLayout.js` files, `migrate-product-card-image-id.py`).
-Commit by explicit path (never `git add -A` — this project's hook enforces it). One commit is fine
-given the whole body of work was already reviewed and integrated together; split it only if you find a
-reason to.
-
-⚠ Two untracked/modified files are NOT part of this work and should NOT be swept into the commit —
-check `git status` for anything under `.claude/backups/` or unrelated to the media-atom track before
-committing, and leave it alone if so.
-
-## Task 2 — Deploy to sandybrown
+## Task 1 — Deploy to sandybrown
 
 `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` — the only sanctioned path,
 never a hand-rolled tar/scp. Confirm the deploy's own fail-closed verify step passes before moving on.
 
-## Task 3 — Live-verify every migrated surface in the real editor + published page
+## Task 2 — Live-verify every migrated surface in the real editor + published page
 
 For each of the four Wave 7 surfaces, open the real block editor on sandybrown and confirm:
 
@@ -69,7 +56,7 @@ For each of the four Wave 7 surfaces, open the real block editor on sandybrown a
   across all the image roles named in D915 (typed built-in, bound read-only, bound configurator,
   thumbnail strip). Confirm `imageHeight`'s legacy plain-string shape still round-trips.
 
-## Task 4 — Run product-card's migration survey against real content
+## Task 3 — Run product-card's migration survey against real content
 
 `python plugins/sgs-blocks/scripts/migrate-product-card-image-id.py --survey` against real sandybrown
 `sgs/product-card` content (prepare the dump per the script's own docstring — `wp post list` +
@@ -80,8 +67,7 @@ but the discipline still applies the moment one exists.
 ## Three items deliberately deferred — re-open only if live-verification below finds a real problem
 
 These aren't blocking Waves 6-7's own definition of done; they're specific, named risks that only a
-live check can settle. Do not treat any of them as "still to build" unless the check below finds a
-real issue.
+live check can settle. Do not treat any of them as "still to build" unless the check below finds a real issue. Bean has stated that all 3 are acceptable unless they cause problems in functionality.
 
 1. **`hero`'s ken-burns/parallax CSS stays hero-private, not atom-driven.** The editor control is
    real and atom-owned; the CSS-emission path was deliberately left as hero's own code because its
