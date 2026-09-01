@@ -121,15 +121,34 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_to_length_value' ) ) {
 	 * shorthand value is invalid CSS, and the browser silently falls back to
 	 * `border-width: medium` (~3px) / `border-radius: 0`).
 	 *
+	 * A non-numeric string is routed through the shared hardened validator
+	 * `sgs_css_length_value()` (helpers-css-safety.php, loaded transitively
+	 * via helpers-tokens.php's own require) rather than passed straight
+	 * through unsanitised — this atom's editor control (`SgsBorderControl`)
+	 * only ever stores a plain number, but a hand-authored theme pattern or a
+	 * stored value from an older shape could carry an arbitrary string, and
+	 * that string reaches this function's return value directly as a CSS
+	 * custom-property VALUE with no further escaping downstream.
+	 *
+	 * ⛔ NEGATIVE NUMBERS: a negative `border-width`/`border-radius` corner is
+	 * invalid CSS and, once joined into the 4-value shorthand, invalidates
+	 * the WHOLE declaration — the exact same failure class the unsuffixed-
+	 * value fix above closes, triggered by a different malformed input.
+	 * Clamped to `'0px'` here rather than passed through.
+	 *
 	 * @param mixed $value Raw corner/side value.
-	 * @return string `px`-suffixed length, or the value unchanged if already
-	 *                a non-numeric string.
+	 * @return string A safe `px`-suffixed or sanitised length, or `'0'` when
+	 *                the input cannot be trusted.
 	 */
 	function sgs_media_atom_box_shape_to_length_value( $value ) {
 		if ( is_numeric( $value ) ) {
-			return $value . 'px';
+			return ( (float) $value < 0 ) ? '0px' : $value . 'px';
 		}
-		return $value;
+		if ( is_string( $value ) ) {
+			$sanitised = sgs_css_length_value( $value );
+			return '' !== $sanitised ? $sanitised : '0';
+		}
+		return '0';
 	}
 }
 
