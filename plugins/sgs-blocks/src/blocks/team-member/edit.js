@@ -44,6 +44,7 @@ import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverFiel
 	resolveColourToken,
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { colourVar, resolveShadowPreviewComposed, resolveTextColourPreviewStyle } from '../../utils';
 
 const CARD_STYLES = [
@@ -420,83 +421,152 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Card Settings', 'sgs-blocks' ) }>
-					<SelectControl
+				{ /* S7 pilot (2026-09-02, uniformity sweep): converted from a plain
+				   PanelBody to a ToolsPanel — the four SelectControls are core
+				   block config and stay always-visible (isShownByDefault); the
+				   hover-overlay toggle and the two shadow controls are genuinely
+				   optional style embellishments and are hideable/resettable per
+				   WP's native ToolsPanel pattern (same shape as brand-strip's
+				   Tile panel). One pilot block before scripting the other 14 —
+				   Bean reviews this one first. */ }
+				<ToolsPanel
+					label={ __( 'Card Settings', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							headingLevel: 'h3',
+							displayMode: 'full',
+							cardStyle: 'elevated',
+							photoShape: 'circle',
+							overlayHover: false,
+							cardShadow: '',
+							cardShadowColour: null,
+							shadowHover: '',
+							shadowHoverColour: null,
+						} )
+					}
+				>
+					<ToolsPanelItem
 						label={ __( 'Heading level', 'sgs-blocks' ) }
-						value={ headingLevel || 'h3' }
-						options={ HEADING_LEVEL_OPTIONS }
-						onChange={ ( val ) => setAttributes( { headingLevel: val } ) }
-						help={ __(
-							'Pick the level that fits your page outline — usually H3 under a page-level H2.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Display mode', 'sgs-blocks' ) }
-						help={ __(
-							'Compact shows photo, name and role only — ideal for dense team grids.',
-							'sgs-blocks'
-						) }
-						value={ displayMode }
-						options={ DISPLAY_MODES }
-						onChange={ ( val ) => setAttributes( { displayMode: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Card style', 'sgs-blocks' ) }
-						value={ cardStyle }
-						options={ CARD_STYLES }
-						onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Photo shape', 'sgs-blocks' ) }
-						value={ photoShape }
-						options={ PHOTO_SHAPES }
-						onChange={ ( val ) => setAttributes( { photoShape: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ ! isCompact && (
-						<ToggleControl
-							label={ __( 'Hover overlay (bio)', 'sgs-blocks' ) }
-							help={ __( 'Reveals the bio as a slide-up overlay on the photo when hovered or focused. On touch devices, tap the photo to toggle.', 'sgs-blocks' ) }
-							checked={ overlayHover }
-							onChange={ ( val ) => setAttributes( { overlayHover: val } ) }
+						hasValue={ () => ( headingLevel || 'h3' ) !== 'h3' }
+						onDeselect={ () => setAttributes( { headingLevel: 'h3' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Heading level', 'sgs-blocks' ) }
+							value={ headingLevel || 'h3' }
+							options={ HEADING_LEVEL_OPTIONS }
+							onChange={ ( val ) => setAttributes( { headingLevel: val } ) }
+							help={ __(
+								'Pick the level that fits your page outline — usually H3 under a page-level H2.',
+								'sgs-blocks'
+							) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Display mode', 'sgs-blocks' ) }
+						hasValue={ () => displayMode !== 'full' }
+						onDeselect={ () => setAttributes( { displayMode: 'full' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Display mode', 'sgs-blocks' ) }
+							help={ __(
+								'Compact shows photo, name and role only — ideal for dense team grids.',
+								'sgs-blocks'
+							) }
+							value={ displayMode }
+							options={ DISPLAY_MODES }
+							onChange={ ( val ) => setAttributes( { displayMode: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Card style', 'sgs-blocks' ) }
+						hasValue={ () => cardStyle !== 'elevated' }
+						onDeselect={ () => setAttributes( { cardStyle: 'elevated' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Card style', 'sgs-blocks' ) }
+							value={ cardStyle }
+							options={ CARD_STYLES }
+							onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Photo shape', 'sgs-blocks' ) }
+						hasValue={ () => photoShape !== 'circle' }
+						onDeselect={ () => setAttributes( { photoShape: 'circle' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Photo shape', 'sgs-blocks' ) }
+							value={ photoShape }
+							options={ PHOTO_SHAPES }
+							onChange={ ( val ) => setAttributes( { photoShape: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					{ ! isCompact && (
+						<ToolsPanelItem
+							label={ __( 'Hover overlay (bio)', 'sgs-blocks' ) }
+							hasValue={ () => overlayHover !== false }
+							onDeselect={ () => setAttributes( { overlayHover: false } ) }
+						>
+							<ToggleControl
+								label={ __( 'Hover overlay (bio)', 'sgs-blocks' ) }
+								help={ __( 'Reveals the bio as a slide-up overlay on the photo when hovered or focused. On touch devices, tap the photo to toggle.', 'sgs-blocks' ) }
+								checked={ overlayHover }
+								onChange={ ( val ) => setAttributes( { overlayHover: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
 					) }
 					{ /* FR-35-5 Task 4c (2026-07-21) — resting-state shadow, pairs with
 					   the existing hover-only shadowHover. Empty = inherit the theme
 					   token exactly as before (Bean's Option A, same shape as
 					   card-grid's cardShadow). */ }
-					<ShadowControl
+					<ToolsPanelItem
 						label={ __( 'Shadow', 'sgs-blocks' ) }
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						attrNames={ {
-							base: 'cardShadow',
-							colour: 'cardShadowColour',
-						} }
-					/>
+						hasValue={ () => !! cardShadow || !! cardShadowColour }
+						onDeselect={ () => setAttributes( { cardShadow: '', cardShadowColour: null } ) }
+					>
+						<ShadowControl
+							label={ __( 'Shadow', 'sgs-blocks' ) }
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ {
+								base: 'cardShadow',
+								colour: 'cardShadowColour',
+							} }
+						/>
+					</ToolsPanelItem>
 					{ /* shadowHover — declared + read by render.php but restricted to a
 					   fixed subtle/raised/floating/glow preset ALLOWLIST with no editor
 					   control at all (same bug class as card-grid's pre-fix shadowHover).
 					   Fixed straight onto the target shape (D621/D622). */ }
-					<ShadowControl
+					<ToolsPanelItem
 						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						attrNames={ {
-							base: 'shadowHover',
-							colour: 'shadowHoverColour',
-						} }
-					/>
-				</PanelBody>
+						hasValue={ () => !! shadowHover || !! shadowHoverColour }
+						onDeselect={ () => setAttributes( { shadowHover: '', shadowHoverColour: null } ) }
+					>
+						<ShadowControl
+							label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ {
+								base: 'shadowHover',
+								colour: 'shadowHoverColour',
+							} }
+						/>
+					</ToolsPanelItem>
+				</ToolsPanel>
 
 				{ /* Responsive photo family. Uses the SHARED <ResponsiveControl>
 				   rather than one loose picker per tier: the prebuild oldshape
