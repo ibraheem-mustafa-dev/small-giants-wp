@@ -50,8 +50,8 @@
     {
       "file": "setting-types.json",
       "key": "css:background-image",
-      "count": 2,
-      "reason": "Two Phase-1 type rows predate the background-overlay ruling. Never rewritten upstream."
+      "count": 1,
+      "reason": "Phase-1 type row predates the background-overlay ruling. Never rewritten upstream. LOWERED 2 -> 1 (2026-09-02, uniformity sweep): one of the two original rows is gone from setting-types.json upstream — the gate itself reported this as an obsolete baseline line (drift fixed upstream, not a regression), so the count is lowered per its own fix instruction rather than re-added."
     },
     {
       "file": "setting-types.json",
