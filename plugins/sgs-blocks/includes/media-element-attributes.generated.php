@@ -32,6 +32,11 @@ return array(
 		"BorderRadius"             => "object",
 		"BorderStyle"              => "string",
 		"BorderWidth"              => "object",
+		"BoxShadow"                => "string",
+		"BoxShadowColour"          => "string",
+		"BoxShadowColourHover"     => "string",
+		"Caption"                  => "string",
+		"CaptionTag"               => "string",
 		"DecorMedia"               => "object",
 		"Height"                   => "object",
 		"HeightUnit"               => "string",
@@ -43,6 +48,9 @@ return array(
 		"ImageUrl"                 => "string",
 		"ImageWidth"               => "number",
 		"KenBurns"                 => "boolean",
+		"LinkOpensNewTab"          => "boolean",
+		"LinkRel"                  => "string",
+		"LinkUrl"                  => "string",
 		"MaxHeight"                => "object",
 		"MaxHeightUnit"            => "string",
 		"MaxWidth"                 => "object",
@@ -53,12 +61,14 @@ return array(
 		"MinHeight"                => "object",
 		"ObjectFit"                => "string",
 		"ObjectPosition"           => "string",
+		"Opacity"                  => "number",
 		"OverlayBlendMode"         => "string",
 		"OverlayColour"            => "string",
 		"OverlayColourHover"       => "string",
 		"OverlayGradient"          => "string",
 		"OverlayGradientHover"     => "string",
 		"OverlayOpacity"           => "number",
+		"Padding"                  => "object",
 		"Parallax"                 => "boolean",
 		"Position"                 => "string",
 		"Repeat"                   => "string",
@@ -106,6 +116,10 @@ return array(
 			"VideoCaptionsLabel",
 			"VideoCaptionsSrcLang",
 		),
+		"caption"      => array(
+			"Caption",
+			"CaptionTag",
+		),
 		"fit"          => array(
 			"ObjectFit",
 			"Size",
@@ -120,6 +134,11 @@ return array(
 			"ImageWidth",
 			"ImageHeight",
 		),
+		"link"         => array(
+			"LinkUrl",
+			"LinkOpensNewTab",
+			"LinkRel",
+		),
 		"meaning"      => array(
 			"ImageAlt",
 			"VideoAlt",
@@ -130,6 +149,9 @@ return array(
 			"Parallax",
 			"AnimationDuration",
 		),
+		"opacity"      => array(
+			"Opacity",
+		),
 		"overlay"      => array(
 			"OverlayColour",
 			"OverlayColourHover",
@@ -137,6 +159,14 @@ return array(
 			"OverlayGradientHover",
 			"OverlayOpacity",
 			"OverlayBlendMode",
+		),
+		"padding"      => array(
+			"Padding",
+		),
+		"shadow"       => array(
+			"BoxShadow",
+			"BoxShadowColour",
+			"BoxShadowColourHover",
 		),
 		"shape"        => array(
 			"MediaSizing",
@@ -194,6 +224,7 @@ return array(
 		"ObjectFit",
 		"ObjectPosition",
 		"OverlayOpacity",
+		"Padding",
 		"Svg",
 		"SvgContent",
 		"Thumbnail",
@@ -234,6 +265,10 @@ return array(
 			"BorderColour",
 			"BorderColourGradient",
 		),
+		"caption"            => array(
+			"Caption",
+			"CaptionTag",
+		),
 		"focal-point"        => array(
 			"ObjectPosition",
 			"Position",
@@ -244,10 +279,18 @@ return array(
 			"ImageWidth",
 			"ImageHeight",
 		),
+		"link"               => array(
+			"LinkUrl",
+			"LinkOpensNewTab",
+			"LinkRel",
+		),
 		"meaning"            => array(
 			"ImageAlt",
 			"VideoAlt",
 			"ImageIsDecorative",
+		),
+		"media-padding"      => array(
+			"Padding",
 		),
 		"media-type"         => array(
 			"MediaType",
@@ -263,6 +306,9 @@ return array(
 			"ObjectFit",
 			"Size",
 		),
+		"opacity"            => array(
+			"Opacity",
+		),
 		"overlay"            => array(
 			"OverlayColour",
 			"OverlayColourHover",
@@ -270,6 +316,11 @@ return array(
 			"OverlayGradientHover",
 			"OverlayOpacity",
 			"OverlayBlendMode",
+		),
+		"shadow"             => array(
+			"BoxShadow",
+			"BoxShadowColour",
+			"BoxShadowColourHover",
 		),
 		"source"             => array(
 			"Image",

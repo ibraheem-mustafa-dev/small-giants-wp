@@ -328,13 +328,26 @@ if ( ! function_exists( 'sgs_before_after_resolve_media' ) ) {
 	 *
 	 * @param array  $attributes Block attributes.
 	 * @param string $modifier   'before' | 'after'.
+	 * @param string $uid        Block instance uid (Wave 5b — scopes the
+	 *                           media-atom layer's object-fit/focal-point
+	 *                           custom properties independently per slot).
 	 * @return array{ html: string, has_content: bool, media_type: string }
 	 */
-	function sgs_before_after_resolve_media( array $attributes, string $modifier ): array {
+	function sgs_before_after_resolve_media( array $attributes, string $modifier, string $uid = '' ): array {
 		$prefix     = 'before' === $modifier ? 'before' : 'after';
 		$type_raw   = $attributes[ $prefix . 'MediaType' ] ?? 'image';
 		$media_type = in_array( $type_raw, array( 'image', 'video', 'svg' ), true ) ? $type_raw : 'image';
 		$classes    = 'wp-block-sgs-before-after__img wp-block-sgs-before-after__img--' . $modifier;
+
+		// object-fit/focal-point atoms are image+video scope only (registry.js
+		// `types`) — svg's inline geometry doesn't take object-fit, so the
+		// marker is added only for the two types that can use it.
+		if ( '' !== $uid && 'svg' !== $media_type && function_exists( 'sgs_media_element_scope_class' ) ) {
+			$sgs_bap_scope = sgs_media_element_scope_class( $uid, $prefix );
+			if ( '' !== $sgs_bap_scope ) {
+				$classes .= ' sgs-media-el ' . $sgs_bap_scope;
+			}
+		}
 
 		$result = match ( $media_type ) {
 			'video' => sgs_before_after_resolve_video( $attributes, $modifier, $classes ),

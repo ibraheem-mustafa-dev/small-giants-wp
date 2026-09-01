@@ -113,6 +113,45 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_validate_border_style' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_atom_box_shape_to_length_value' ) ) {
+	/**
+	 * Append `px` to a bare number, matching `sgs_css_length_value()`'s own
+	 * bare-number convention (mirrors the JS twin's `toLengthValue()` — see
+	 * that function's docblock for the live defect this closes: an unsuffixed
+	 * shorthand value is invalid CSS, and the browser silently falls back to
+	 * `border-width: medium` (~3px) / `border-radius: 0`).
+	 *
+	 * A non-numeric string is routed through the shared hardened validator
+	 * `sgs_css_length_value()` (helpers-css-safety.php, loaded transitively
+	 * via helpers-tokens.php's own require) rather than passed straight
+	 * through unsanitised — this atom's editor control (`SgsBorderControl`)
+	 * only ever stores a plain number, but a hand-authored theme pattern or a
+	 * stored value from an older shape could carry an arbitrary string, and
+	 * that string reaches this function's return value directly as a CSS
+	 * custom-property VALUE with no further escaping downstream.
+	 *
+	 * ⛔ NEGATIVE NUMBERS: a negative `border-width`/`border-radius` corner is
+	 * invalid CSS and, once joined into the 4-value shorthand, invalidates
+	 * the WHOLE declaration — the exact same failure class the unsuffixed-
+	 * value fix above closes, triggered by a different malformed input.
+	 * Clamped to `'0px'` here rather than passed through.
+	 *
+	 * @param mixed $value Raw corner/side value.
+	 * @return string A safe `px`-suffixed or sanitised length, or `'0'` when
+	 *                the input cannot be trusted.
+	 */
+	function sgs_media_atom_box_shape_to_length_value( $value ) {
+		if ( is_numeric( $value ) ) {
+			return ( (float) $value < 0 ) ? '0px' : $value . 'px';
+		}
+		if ( is_string( $value ) ) {
+			$sanitised = sgs_css_length_value( $value );
+			return '' !== $sanitised ? $sanitised : '0';
+		}
+		return '0';
+	}
+}
+
 if ( ! function_exists( 'sgs_media_atom_box_shape_sides_to_width_shorthand' ) ) {
 	/**
 	 * Build a 4-SIDE CSS `border-width` shorthand ("top right bottom left")
@@ -141,7 +180,7 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_sides_to_width_shorthand' ) ) 
 		}
 		$parts = array();
 		foreach ( $order as $k ) {
-			$parts[] = ( isset( $sides[ $k ] ) && '' !== $sides[ $k ] ) ? $sides[ $k ] : '0';
+			$parts[] = ( isset( $sides[ $k ] ) && '' !== $sides[ $k ] ) ? sgs_media_atom_box_shape_to_length_value( $sides[ $k ] ) : '0';
 		}
 		return implode( ' ', $parts );
 	}
@@ -208,7 +247,7 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_corners_to_radius_shorthand' )
 		}
 		$parts = array();
 		foreach ( $order as $k ) {
-			$parts[] = ( isset( $corners[ $k ] ) && '' !== $corners[ $k ] ) ? $corners[ $k ] : '0';
+			$parts[] = ( isset( $corners[ $k ] ) && '' !== $corners[ $k ] ) ? sgs_media_atom_box_shape_to_length_value( $corners[ $k ] ) : '0';
 		}
 		return implode( ' ', $parts );
 	}

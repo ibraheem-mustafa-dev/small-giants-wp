@@ -3,15 +3,13 @@
  * Inherit/On/Off switch on Tablet/Mobile, driven by the shared device-tab
  * switcher (`ResponsiveControl`).
  *
- * Block-local copy (D-pending, video playback-behaviour tiers task): the
- * cloning/tier work for this session was scoped to exactly two block
- * directories (`sgs/media` and `sgs/before-after`) on a shared worktree with
- * other sessions active, so this small control is duplicated in each block's
- * own directory (identical sibling at `src/blocks/media/BooleanResponsiveControl.js`)
- * rather than added to the shared `src/components/` barrel — avoids touching
- * a file other concurrent sessions may also be editing. If a THIRD block
- * needs this pattern, promote the (then-duplicated-3x) component to
- * `src/components/` in its own follow-up change.
+ * Promoted to the shared `src/components/` barrel (2026-09-01) once a THIRD
+ * consumer (`sgs/media`'s `video-behaviour` atom) needed it — the two
+ * block-local copies this replaces (`src/blocks/before-after/
+ * BooleanResponsiveControl.js`, `src/blocks/media/BooleanResponsiveControl.js`)
+ * were byte-identical, and their own docblocks named this exact promotion
+ * as the next step once a third need arrived. `sgs/before-after` and the
+ * media block's own remaining direct import both now point here.
  *
  * Built for the FLAT base + `{base}Tablet` + `{base}Mobile` attribute
  * convention (the framework standard — the unsuffixed base IS the desktop
@@ -22,6 +20,12 @@
  * tier above" (Tablet inherits Desktop; Mobile inherits the resolved Tablet
  * value), matching the framework's null-means-inherit convention already
  * used for `maxWidthTablet` etc. Desktop is always a concrete boolean.
+ *
+ * `disabled` (added 2026-09-01 for the `video-behaviour` atom's Autoplay ->
+ * Muted/PlaysInline lock, registry.js `requires`) disables the control at
+ * EVERY tier when true, rather than only the desktop toggle — a client
+ * changing device tabs must not find the "locked" control suddenly editable
+ * on Tablet/Mobile while its desktop sibling is disabled.
  *
  * Usage:
  *   <BooleanResponsiveControl
@@ -43,16 +47,16 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
-import { ResponsiveControl } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import ResponsiveControl from './ResponsiveControl';
+import { ToggleGroupControl, ToggleGroupControlOption } from './primitives';
 
 /**
  * Resolve the EFFECTIVE boolean for a tier, falling back upward through
  * null/undefined overrides (tablet -> desktop; mobile -> resolved tablet).
  *
  * @param {boolean}                     base   Desktop value.
- * @param {boolean|null}                tablet Tablet override (null/undefined = inherit).
- * @param {boolean|null}                mobile Mobile override (null/undefined = inherit).
+ * @param {boolean|null|undefined}      tablet Tablet override (null/undefined = inherit).
+ * @param {boolean|null|undefined}      mobile Mobile override (null/undefined = inherit).
  * @param {'desktop'|'tablet'|'mobile'} tier   Tier to resolve.
  * @return {boolean} Effective value at that tier.
  */
@@ -78,6 +82,7 @@ export default function BooleanResponsiveControl( {
 	attrMobile,
 	attributes,
 	setAttributes,
+	disabled = false,
 } ) {
 	const base = !! attributes[ attrBase ];
 	const tablet = attributes[ attrTablet ] ?? null;
@@ -93,6 +98,7 @@ export default function BooleanResponsiveControl( {
 							label={ label }
 							help={ help }
 							checked={ base }
+							disabled={ disabled }
 							onChange={ ( value ) =>
 								setAttributes( { [ attrBase ]: value } )
 							}
@@ -127,14 +133,29 @@ export default function BooleanResponsiveControl( {
 							label={ label }
 							hideLabelFromVision
 							value={ ownState }
-							onChange={ ( next ) =>
+							onChange={ ( next ) => {
+								// `ToggleGroupControl` itself has no `disabled`
+								// prop in the stable Gutenberg API
+								// (WordPress/gutenberg#57862, still open) —
+								// disabling it there is a silent no-op, so the
+								// group-level `isDisabled` this used to carry
+								// never actually blocked a click. Per-option
+								// `disabled` below IS supported
+								// (WordPress/gutenberg#63450) and does the real
+								// DOM-level blocking; this `onChange` guard is
+								// the second line of defence so the stored
+								// value genuinely cannot change while locked
+								// even if the DOM-level block has a gap.
+								if ( disabled ) {
+									return;
+								}
 								setAttributes( {
 									[ attrKey ]:
 										'inherit' === next
 											? null
 											: 'on' === next,
-								} )
-							}
+								} );
+							} }
 							__next40pxDefaultSize
 						>
 							<ToggleGroupControlOption
@@ -147,14 +168,17 @@ export default function BooleanResponsiveControl( {
 										? __( 'On', 'sgs-blocks' )
 										: __( 'Off', 'sgs-blocks' )
 								) }
+								disabled={ disabled }
 							/>
 							<ToggleGroupControlOption
 								value="on"
 								label={ __( 'On', 'sgs-blocks' ) }
+								disabled={ disabled }
 							/>
 							<ToggleGroupControlOption
 								value="off"
 								label={ __( 'Off', 'sgs-blocks' ) }
+								disabled={ disabled }
 							/>
 						</ToggleGroupControl>
 						{ help && (

@@ -51,6 +51,12 @@ import { control as objectFitControl } from './media/atoms/object-fit.control.js
 import { control as focalPointControl } from './media/atoms/focal-point.control.js';
 import { control as boxShapeControl } from './media/atoms/box-shape.control.js';
 import { control as overlayControl } from './media/atoms/overlay.control.js';
+import { control as motionControl } from './media/atoms/motion.control.js';
+import { control as opacityControl } from './media/atoms/opacity.control.js';
+import { control as shadowControl } from './media/atoms/shadow.control.js';
+import { control as mediaPaddingControl } from './media/atoms/media-padding.control.js';
+import { control as captionControl } from './media/atoms/caption.control.js';
+import { control as linkControl } from './media/atoms/link.control.js';
 
 /**
  * Atom id -> its control function.
@@ -71,6 +77,12 @@ const ATOM_CONTROLS = {
 	'focal-point': focalPointControl,
 	'box-shape': boxShapeControl,
 	overlay: overlayControl,
+	motion: motionControl,
+	opacity: opacityControl,
+	shadow: shadowControl,
+	'media-padding': mediaPaddingControl,
+	caption: captionControl,
+	link: linkControl,
 };
 
 /**

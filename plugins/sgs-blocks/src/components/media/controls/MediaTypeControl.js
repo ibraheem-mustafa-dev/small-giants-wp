@@ -28,8 +28,8 @@
  * @package SGS\Blocks
  */
 import { createElement } from '@wordpress/element';
-import { ToggleGroupControl, ToggleGroupControlOption } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../primitives';
 
 /** The three real media types. Canonical order matches the registry. */
 export const MEDIA_TYPE_OPTIONS = [

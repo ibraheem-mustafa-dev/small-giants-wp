@@ -1,4 +1,5 @@
 export { default as ResponsiveControl } from './ResponsiveControl';
+export { default as BooleanResponsiveControl } from './BooleanResponsiveControl';
 export { default as ResponsiveOverride } from './ResponsiveOverride';
 export { default as ResponsiveTriStateControl } from './ResponsiveTriStateControl';
 export {
@@ -18,7 +19,13 @@ export { default as fillRow } from './colour-variants/fillRow';
 export { default as textRow } from './colour-variants/textRow';
 export { default as borderRow } from './colour-variants/borderRow';
 export { default as MediaElementPanel } from './MediaElementPanel';
+export { default as MediaPanelLayout } from './media/MediaPanelLayout';
 export { default as MediaGalleryPicker } from './MediaGalleryPicker';
+export {
+	elementScopeClass as mediaElementScopeClass,
+	elementCustomProperties as mediaElementCustomProperties,
+	requiresBox as mediaElementRequiresBox,
+} from './media/canvasStyle';
 // `parseLinearGradient` / `buildGradientCss` were deleted by 837f7c97 (D636 storage
 // collapse) but stayed listed here, so the barrel advertised two bindings that resolve
 // to `undefined` at runtime — a webpack WARNING, not an error, which is why a green

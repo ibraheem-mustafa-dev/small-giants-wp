@@ -1,0 +1,20 @@
+/*
+ * shadow — the media element's own box shadow, resting and hover.
+ *
+ * Custom-property names match `shadow.js`/`shadow.php`'s `css()` output
+ * exactly: `--sgs-media-box-shadow`, `--sgs-media-box-shadow-hover`.
+ * `:focus-within` rides alongside `:hover` because the media element itself
+ * has no meaningful focus state, but a caption/link wrapper around it does —
+ * matching the old hand-rolled `$id_sel:hover,$id_sel:focus-within` rule
+ * this atom replaces.
+ */
+
+.sgs-media-el {
+	box-shadow: var( --sgs-media-box-shadow, none );
+	transition: box-shadow 0.3s ease;
+}
+
+.sgs-media-el:hover,
+.sgs-media-el:focus-within {
+	box-shadow: var( --sgs-media-box-shadow-hover, var( --sgs-media-box-shadow, none ) );
+}

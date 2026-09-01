@@ -5,7 +5,7 @@
 	"version": "1.7.0",
 	"title": "SGS Media",
 	"category": "sgs-content",
-	"description": "Content media block — image or video. Use mediaType to choose image (with imageUrl) or video (with videoUrl for external embeds or videoId for WP-library uploads). Media styling (object-fit, max-width/height + tiers, border-radius, alignment, etc.) is driven entirely by this block's own NATIVE attributes and its Media Styling panel — this block deliberately OPTS OUT of the shared universal image-controls extension (no supports.sgs.imageControls) so there is ONE source of truth the cloning converter writes and the editor edits. supports.filter.duotone (T3.5, D402 ADOPT) is a separate native WP support — WP core renders it as a generated class + <style> tag (not an inline style= attribute), so it needs no render.php involvement and satisfies the no-inline contract as-is. supports.dimensions.aspectRatio (Spec 35 wave-B, D402 ADOPT) replaces the old hand-rolled `aspectRatio` scalar attr + TextControl — UNLIKE duotone, WP core's aspect-ratio support (`wp_render_dimensions_support()` in wp-includes/block-supports/dimensions.php) is a bespoke render_block filter that unconditionally writes an inline `style=\"aspect-ratio:…\"` on the block's ROOT wrapper tag and does NOT consult block.json `selectors` at all — so it both violates the no-inline contract AND targets the wrong element (the <figure> wrapper, not the <img>/<video>). `__experimentalSkipSerialization` on `supports.dimensions` makes WP emit nothing automatically (the render_block filter returns early); render.php then reads `style.dimensions.aspectRatio` itself and emits the CSS via `wp_style_engine_get_styles()` scoped to `.sgs-media__img, .sgs-media__video` — same pattern as the native border group above. The `selectors.dimensions.aspectRatio` entry below is declared for consistency/future-proofing but is currently INERT for this feature (core's aspect-ratio filter never reads it).",
+	"description": "Content media block — image or video. Use mediaType to choose image (with imageUrl) or video (with videoUrl for external embeds or videoId for WP-library uploads). Media sizing/shape/border (aspect ratio, height/width, max-width/height, named shape, border width/style/colour/radius) and overlay/video-behaviour are driven by the shared media-atom layer (box-shape/overlay/video-behaviour, Wave 5b 2026-09-01) — supports.filter.duotone (T3.5, D402 ADOPT) is a separate native WP support, rendered as a generated class + <style> tag, needing no render.php involvement.",
 	"keywords": [
 		"image",
 		"video",
@@ -19,12 +19,12 @@
 	"supports": {
 		"sgs": {
 			"scalarStylingLift": true,
-		"_comment_mediaElements": "Wave 5a. Declares this block's ONE media element to the shared atom layer. `atoms` is deliberately narrow: naming an atom injects its attributes on both sides, so an atom listed here without a renderer wired in the same commit becomes a dead control. Widen it as each atom is wired, never ahead of one.",
+		"_comment_mediaElements": "Wave 5b (2026-09-01). box-shape/video-behaviour/overlay are now wired, closing the Wave 5a gap list. `box-shape` REPLACES this block's old native `__experimentalBorder` (width/style/colour/radius) AND the old native `supports.dimensions.aspectRatio` — the atom's own borderRadius/borderRadiusTablet/borderRadiusMobile/borderWidth/borderStyle/borderColour/borderColourGradient/aspectRatio/height/width/maxWidth/maxHeight attrs are the sole mechanism now. `video-behaviour` renders its 6 boolean bases through the shared tiered BooleanResponsiveControl (promoted to src/components/), matching this block's existing Tablet/Mobile playback tiers. `overlay` paints via `.sgs-media-box::after`; render.php adds the `sgs-media-box` marker class to the figure wrapper whenever a box atom is declared and gates naked-mode off in that case, per `SGS_Media_Element::requires_box()`.",
 		"mediaElements": [
 			{
 				"prefix": "",
 				"context": "element",
-				"atoms": [ "object-fit", "focal-point" ]
+				"atoms": [ "media-type", "source", "meaning", "svg-presentation", "object-fit", "focal-point", "motion", "box-shape", "video-behaviour", "overlay", "opacity", "shadow", "media-padding", "caption", "link" ]
 			}
 		],
 			"boxFamilies": {
@@ -48,10 +48,10 @@
 						"css:height": "height",
 						"css:max-width": "maxWidth",
 						"css:max-height": "maxHeight",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:box-shadow": "boxShadow",
 						"css:object-fit": "objectFit",
 						"css:object-position": "objectPosition"
@@ -73,25 +73,11 @@
 		"html": false,
 		"filter": {
 			"duotone": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"style": true,
-			"color": true,
-			"__experimentalSkipSerialization": true
-		},
-		"dimensions": {
-			"aspectRatio": true,
-			"__experimentalSkipSerialization": true
 		}
 	},
 	"selectors": {
 		"filter": {
 			"duotone": ".sgs-media__img, .sgs-media__video"
-		},
-		"dimensions": {
-			"aspectRatio": ".sgs-media__img, .sgs-media__video"
 		}
 	},
 	"attributes": {
@@ -391,6 +377,16 @@
 				"ratio"
 			]
 		},
+		"aspectRatio": {
+			"type": "string",
+			"default": "",
+			"_comment": "box-shape atom's own flat AspectRatio base (Wave 5b) — replaces the retired native style.dimensions.aspectRatio. Spaced canonical form e.g. '16 / 9'."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {},
+			"_comment": "box-shape atom's own desktop-tier corner-keyed radius ({topLeft,topRight,bottomLeft,bottomRight}) — replaces the retired native style.border.radius. borderRadiusTablet/Mobile below are the existing tier siblings, unchanged."
+		},
 		"borderRadiusTablet": {
 			"type": "object",
 			"default": {}
@@ -398,6 +394,47 @@
 		"borderRadiusMobile": {
 			"type": "object",
 			"default": {}
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {},
+			"_comment": "box-shape atom's own 4-side box ({top,right,bottom,left}) — replaces the retired native __experimentalBorder width. Untiered — per-device border width is cancelled (CLAUDE.md 'Border controls')."
+		},
+		"borderStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayColour": {
+			"type": "string",
+			"default": "",
+			"_comment": "overlay atom's own attrs (Wave 5b) — paints via `.sgs-media-box::after`."
+		},
+		"overlayColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientHover": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayOpacity": {
+			"type": "number"
+		},
+		"overlayBlendMode": {
+			"type": "string",
+			"default": "normal"
 		},
 		"boxShadow": {
 			"type": "string",

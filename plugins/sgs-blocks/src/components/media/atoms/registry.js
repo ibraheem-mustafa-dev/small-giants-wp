@@ -306,6 +306,75 @@ export const MEDIA_ATOMS = {
 		requires: {},
 		reads: {},
 	},
+
+	// Atoms 12-16 — Wave 5c (2026-09-01, Bean-directed). The five atoms the
+	// original design doc's Layer 1 list named but never built:
+	// media-padding/opacity/shadow/caption/link. Harvested from `sgs/media`'s
+	// own hand-rolled controls, not designed fresh — see each atom's own
+	// module docblock for its exact prior location.
+	opacity: {
+		id: 'opacity',
+		bases: MEDIA_BASES.opacity,
+		types: [ 'image', 'video', 'svg' ],
+		scope: 'both',
+		attachesTo: 'element',
+		requires: {},
+		reads: {},
+	},
+
+	shadow: {
+		id: 'shadow',
+		bases: MEDIA_BASES.shadow,
+		types: [ 'image', 'video', 'svg' ],
+		scope: 'both',
+		attachesTo: 'element',
+		// The hover colour is meaningless without a shape already set.
+		requires: {
+			BoxShadowColourHover: [ 'BoxShadow' ],
+		},
+		reads: {},
+	},
+
+	// ⛔ NOT "media-border"/"media-radius" — see this atom's own module
+	// docblock. `box-shape` already owns the media element's border+radius
+	// (Wave 5a/5b); this atom is scoped to the one BOX-family property that
+	// was never covered anywhere: padding. Brand new capability, not a
+	// retrofit — `sgs/media` never declared a padding attribute before this.
+	'media-padding': {
+		id: 'media-padding',
+		bases: MEDIA_BASES.padding,
+		types: [ 'image', 'video', 'svg' ],
+		scope: 'both',
+		attachesTo: 'element',
+		requires: {},
+		reads: {},
+	},
+
+	// NON-PAINT — see this atom's own module docblock. `caption`/`captionTag`
+	// are the SAME names the census's `sgs/media` reads already, so this is a
+	// zero-rename control promotion, not a new storage shape.
+	caption: {
+		id: 'caption',
+		bases: MEDIA_BASES.caption,
+		types: [ 'image', 'video' ],
+		scope: 'both',
+		attachesTo: 'element',
+		requires: {},
+		reads: {},
+	},
+
+	// NON-PAINT, IMAGE-ONLY — mirrors the hand-rolled `{ isImage && … }` gate
+	// this atom replaces. `linkUrl`/`linkOpensNewTab`/`linkRel` are the SAME
+	// names the census's `sgs/media` reads already.
+	link: {
+		id: 'link',
+		bases: MEDIA_BASES.link,
+		types: [ 'image' ],
+		scope: 'both',
+		attachesTo: 'element',
+		requires: {},
+		reads: {},
+	},
 };
 
 /** Atom ids, in panel order. */

@@ -27,6 +27,19 @@
  * caption, link or tiers — in that shape there is no container, so a box atom
  * has nowhere to attach.
  *
+ * ⛔ `requires_box()` is VALUE-aware, not declaration-aware. A box atom
+ * appearing in a block's declared atom list does not by itself mean it needs
+ * a wrapper — `overlay` produces no box-scope CSS until an operator sets a
+ * colour/gradient, and `source` only ever produces box-scope CSS when its
+ * output is consumed as a CSS `background-image` (container/hero-style
+ * surfaces), never for a block like `sgs/media` that paints real `<img>`/
+ * `<video>` markup. Forcing a wrapper on DECLARATION ALONE gives every such
+ * block a permanently-unnecessary `<figure>` the moment it declares an atom
+ * it happens not to be using for that purpose. `requires_box()` therefore
+ * computes each declared box atom's real CSS output for the CURRENT
+ * attribute values (the same `sgs_media_atom_<id>_css()` functions
+ * `sgs_media_element_style()` already calls) and answers based on OUTPUT.
+ *
  * @package SGS\Blocks
  */
 
@@ -71,13 +84,69 @@ if ( ! class_exists( 'SGS_Media_Element' ) ) {
 		}
 
 		/**
-		 * Does this set of atoms need a container to attach to?
+		 * Does this element's CURRENT attribute values need a container to
+		 * attach to?
 		 *
-		 * @param array $atoms Declared atom ids.
-		 * @return bool True when at least one atom keys on the box marker.
+		 * Value-aware, not declaration-aware: a box atom appearing in $atoms
+		 * only counts when it actually produces a non-empty CSS declaration
+		 * for these specific attribute values — computed by calling that
+		 * atom's `sgs_media_atom_<id>_css()` PHP twin, the same function
+		 * `sgs_media_element_style()` already calls to build the element's
+		 * scoped `<style>` rule. An atom that is declared but emits nothing
+		 * for this instance (`overlay` with no colour/gradient set, or
+		 * `source` on a block that never paints it as a background) must not
+		 * force a wrapper nothing will use.
+		 *
+		 * ⚠⚠⚠ SIGNATURE CHANGED (Wave 5, 2026-09-01) — DO NOT COPY AN OLD CALL
+		 * SITE FROM MEMORY OR AN OUTDATED EXAMPLE. This method used to take a
+		 * single argument, `requires_box( array $atoms )` (declaration-aware:
+		 * true whenever a box atom was in the block's declared list, regardless
+		 * of the current attribute values). It now takes FOUR arguments and is
+		 * VALUE-aware instead — see the class docblock above. A caller still
+		 * using the old 1-argument shape does NOT get a PHP fatal
+		 * (`ArgumentCountError`) that would take down the whole page: the three
+		 * new parameters default to `null`, and that exact shape is detected
+		 * and handled safely below (a loud `trigger_error()` + a conservative
+		 * `false`/no-box return, never a crash and never a silent wrong
+		 * wrapper). But the RIGHT fix, if you land here from a fatal or a
+		 * warning, is to update the call site to the new 4-argument shape —
+		 * this compatibility path is a safety net, not a supported API.
+		 *
+		 * @param array       $attributes Block attributes.
+		 * @param string|null $prefix     Surface prefix ('' when unprefixed).
+		 * @param string|null $block_slug Block slug, for stored-name resolution.
+		 * @param array|null  $atoms      Declared atom ids.
+		 * @return bool True when at least one box atom emits real CSS for these values.
 		 */
-		public static function requires_box( array $atoms ) {
-			return (bool) array_intersect( $atoms, self::$box_atoms );
+		public static function requires_box( array $attributes, $prefix = null, $block_slug = null, $atoms = null ) {
+			if ( null === $prefix && null === $block_slug && null === $atoms ) {
+				// Old 1-argument call shape: `requires_box( $atoms )`, i.e. what
+				// landed in $attributes here was actually the atom-id list, not
+				// a block's $attributes array. We cannot recover the real
+				// $attributes/$prefix/$block_slug from this call, so we can't
+				// safely reproduce EITHER the old declaration-aware answer or
+				// the new value-aware one. Fail safe (no wrapper requested)
+				// rather than fatal or guess.
+				trigger_error( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error -- deliberate loud, non-fatal signal; see docblock above.
+					'SGS_Media_Element::requires_box() was called with the OLD 1-argument shape. ' .
+					'The signature changed to requires_box( $attributes, $prefix, $block_slug, $atoms ) ' .
+					'in Wave 5 (2026-09-01) and is now value-aware, not declaration-aware. Update the call site.',
+					E_USER_WARNING
+				);
+				return false;
+			}
+			$atoms = $atoms ?? array();
+			foreach ( array_intersect( $atoms, self::$box_atoms ) as $atom_id ) {
+				$fn = 'sgs_media_atom_' . str_replace( '-', '_', (string) $atom_id ) . '_css';
+				if ( ! function_exists( $fn ) ) {
+					continue;
+				}
+				$emitted = $fn( $attributes, $prefix, $block_slug );
+				if ( is_array( $emitted ) && $emitted ) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		/**
@@ -95,18 +164,40 @@ if ( ! class_exists( 'SGS_Media_Element' ) ) {
 		}
 
 		/**
-		 * Classes for the container, when the declared atoms need one.
+		 * Classes for the container, when the CURRENT attribute values need one.
 		 *
-		 * Returns an EMPTY array when no atom keys on the box, so a renderer
-		 * never adds a marker nothing reads. An unused marker is harmless but
-		 * misleading — it suggests a capability the element does not have.
+		 * Returns an EMPTY array when no atom's actual output keys on the box
+		 * for these values, so a renderer never adds a marker nothing paints.
+		 * An unused marker is harmless but misleading — it suggests a
+		 * capability the element does not have.
 		 *
-		 * @param string $scope_class The per-element scope class.
-		 * @param array  $atoms       Declared atom ids.
+		 * ⚠⚠⚠ SIGNATURE CHANGED (Wave 5, 2026-09-01) — same landmine as
+		 * `requires_box()` above, and the same defence: the three new
+		 * arguments default to `null`, an old 2-argument call
+		 * (`box_classes( $scope_class, $atoms )`) is detected rather than left
+		 * to fatal, and the safe fallback is "no box classes" (never a
+		 * silently-wrong wrapper). Update the call site to the new 5-argument
+		 * shape rather than relying on this compatibility path.
+		 *
+		 * @param string      $scope_class The per-element scope class.
+		 * @param array       $attributes  Block attributes.
+		 * @param string|null $prefix      Surface prefix ('' when unprefixed).
+		 * @param string|null $block_slug  Block slug, for stored-name resolution.
+		 * @param array|null  $atoms       Declared atom ids.
 		 * @return string[] Class names, possibly empty.
 		 */
-		public static function box_classes( $scope_class, array $atoms ) {
-			if ( ! self::requires_box( $atoms ) ) {
+		public static function box_classes( $scope_class, array $attributes, $prefix = null, $block_slug = null, $atoms = null ) {
+			if ( null === $prefix && null === $block_slug && null === $atoms ) {
+				trigger_error( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error -- deliberate loud, non-fatal signal; see docblock above.
+					'SGS_Media_Element::box_classes() was called with the OLD 2-argument shape. ' .
+					'The signature changed to box_classes( $scope_class, $attributes, $prefix, $block_slug, $atoms ) ' .
+					'in Wave 5 (2026-09-01) and is now value-aware, not declaration-aware. Update the call site.',
+					E_USER_WARNING
+				);
+				return array();
+			}
+			$atoms = $atoms ?? array();
+			if ( ! self::requires_box( $attributes, $prefix, $block_slug, $atoms ) ) {
 				return array();
 			}
 			$classes = array( self::CLASS_BOX );

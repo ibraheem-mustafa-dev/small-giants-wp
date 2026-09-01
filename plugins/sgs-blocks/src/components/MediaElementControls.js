@@ -179,6 +179,21 @@ export const MEDIA_BASES = {
 		'Parallax',
 		'AnimationDuration',
 	],
+
+	// ── Wave 5c atoms (12-16, added 2026-09-01) ─────────────────────────────
+	//
+	// Harvested from `sgs/media`'s own hand-rolled controls — every base name
+	// below is EXACTLY the attribute name that block already stores (zero
+	// renames, D338). `padding` is the one genuinely new attribute; the other
+	// four already existed as unprefixed, unpromoted block-private attrs.
+	opacity: [ 'Opacity' ],
+	shadow: [ 'BoxShadow', 'BoxShadowColour', 'BoxShadowColourHover' ],
+	// A 4-side box-family object ({top,right,bottom,left}), matching
+	// `ResponsiveBoxControl`'s own shape (padding/margin/border-width). Brand
+	// new — `sgs/media` never declared a padding attribute before this atom.
+	padding: [ 'Padding' ],
+	caption: [ 'Caption', 'CaptionTag' ],
+	link: [ 'LinkUrl', 'LinkOpensNewTab', 'LinkRel' ],
 };
 
 /**
@@ -207,6 +222,9 @@ export const MEDIA_TIERED_BASES = [
 	'MinHeight',
 	'OverlayOpacity',
 	'BorderRadius',
+	// Wave 5c: padding genuinely differs per device, same reasoning as every
+	// other box-family base above.
+	'Padding',
 ];
 
 /** Device tiers. Never hardcode 768/1024 here - see SGS_BREAKPOINTS. */
@@ -324,6 +342,19 @@ export const MEDIA_ATTR_TYPES = {
 	KenBurns: 'boolean',
 	Parallax: 'boolean',
 	AnimationDuration: 'number',
+
+	// ── Wave 5c atoms (12-16). ──────────────────────────────────────────────
+	Opacity: 'number',
+	BoxShadow: 'string',
+	BoxShadowColour: 'string',
+	BoxShadowColourHover: 'string',
+	// A 4-side box-family object, matching `BorderWidth`'s own shape above.
+	Padding: 'object',
+	Caption: 'string',
+	CaptionTag: 'string',
+	LinkUrl: 'string',
+	LinkOpensNewTab: 'boolean',
+	LinkRel: 'string',
 };
 
 /**

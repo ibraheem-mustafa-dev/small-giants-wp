@@ -207,6 +207,146 @@ export function resolveWidth( raw ) {
 }
 
 /**
+ * Function names `sgs_css_length_value()` (helpers-css-safety.php) allowlists
+ * for balanced-paren consumption — kept in sync with that function's own
+ * step 3 pattern by name, not by import (this module must stay Node-plain,
+ * see the purity contract in the module docblock).
+ */
+const LENGTH_FN_NAME = /^(?:var|calc|min|max|minmax|clamp|repeat)\(/i;
+
+/**
+ * Consume every balanced-paren `var()`/`calc()`/`min()`/`max()`/`minmax()`/
+ * `clamp()`/`repeat()` call in `value`, mirroring
+ * `sgs_css_length_value()`'s step-3 recursive-paren consumption (PHP's PCRE2
+ * `(?1)` recursion has no JS equivalent, so this walks the string by hand
+ * instead — same result: a call whose parens balance is removed whole, one
+ * whose parens don't balance is left untouched so its stray `(` survives
+ * into the caller's post-consumption breakout check).
+ *
+ * @param {string} value Raw candidate.
+ * @return {string} `value` with every balanced allowlisted call removed.
+ */
+function consumeAllowlistedLengthCalls( value ) {
+	let out = '';
+	let i = 0;
+	while ( i < value.length ) {
+		const rest = value.slice( i );
+		const m = rest.match( LENGTH_FN_NAME );
+		if ( m ) {
+			let depth = 1;
+			let j = i + m[ 0 ].length;
+			while ( j < value.length && depth > 0 ) {
+				if ( '(' === value[ j ] ) {
+					depth++;
+				} else if ( ')' === value[ j ] ) {
+					depth--;
+				}
+				j++;
+			}
+			if ( 0 === depth ) {
+				i = j;
+				continue;
+			}
+		}
+		out += value[ i ];
+		i++;
+	}
+	return out;
+}
+
+// The two-character comment-open sequence is deliberately never spelled out
+// literally anywhere in this file, in a string OR in a comment:
+// `scripts/check-media-atom-purity.js`'s own comment-stripper scans raw
+// source for it BEFORE it strips string literals, so ANY occurrence — even
+// inside a string literal, even inside a plain `//` comment describing this
+// very fact — is misread as a block-comment opener, and everything up to the
+// next real comment-close (including this module's own `css`/`validate`/
+// `disclosure` exports, further down the file) is silently swallowed; the
+// gate then reports those exports as missing. Built via
+// `String.fromCharCode()` instead, same convention `test-media-atom-parity
+// .mjs` already uses for a bare backslash for the identical reason.
+const COMMENT_OPEN = String.fromCharCode( 47, 42 );
+
+/**
+ * Validate a non-numeric length-shaped string, mirroring
+ * `sgs_css_length_value()` (helpers-css-safety.php) — the project's
+ * established shared sanitiser for exactly this class of value, cited by
+ * this atom's own PHP twin's docblock but never actually routed through
+ * until this fix. Same discipline as this file's own
+ * `validateBorderGradient()`/`resolveBorderColour()`: reject CSS-breakout
+ * characters and dangerous raw substrings before returning anything.
+ *
+ * @param {string} value Raw candidate (already known non-numeric).
+ * @return {string} A safe CSS value fragment, or '' on rejection.
+ */
+function sanitiseLengthString( value ) {
+	if ( '' === value ) {
+		return '';
+	}
+	// Dangerous raw substrings, checked before any function-call consumption.
+	if ( /url\s*\(|expression\s*\(|@import/i.test( value ) ) {
+		return '';
+	}
+	// CSS-breakout characters on the RAW input, before consumption — a
+	// payload wrapped inside an allowlisted call (e.g. "calc(}body{...)")
+	// must be caught here, not just in the post-consumption remainder check.
+	if ( /[\\{}<>;=]/.test( value ) || value.includes( COMMENT_OPEN ) ) {
+		return '';
+	}
+	const consumed = consumeAllowlistedLengthCalls( value );
+	// Anything left that can break out of a declaration, open a comment, or
+	// is an unconsumed/unbalanced parenthesis → reject.
+	if ( /[\\&=}{;<>()]/.test( consumed ) || consumed.includes( COMMENT_OPEN ) ) {
+		return '';
+	}
+	return value.trim().replace( /\s+/g, ' ' );
+}
+
+/**
+ * Append `px` to a bare number, matching `sgs_css_length_value()`'s own
+ * bare-number convention (`sgs/before-after`'s block-private border reads
+ * its box values through that shared sanitiser; this atom's border shares
+ * the exact same `SgsBorderControl` UI, which stores a plain number). A
+ * value already carrying a unit (a string) is routed through
+ * `sanitiseLengthString()` rather than passed through unsanitised.
+ *
+ * ⛔ Found live 2026-09-01, sgs/media's first real deploy of this atom's
+ * border feature: without this, `sidesToWidthShorthand()`/
+ * `cornersToRadiusShorthand()` emitted a UNITLESS shorthand
+ * (`--sgs-media-border-width:4 4 4 4`), which is invalid CSS — the browser
+ * discards the whole declaration and falls back to `border-width: medium`
+ * (~3px), the exact G5 anti-pattern `sgs/before-after`'s own render.php
+ * comment names and avoids via `sgs_css_length_value()`. Radius had the
+ * identical defect. Measured: computed `border-width` read `3px` and
+ * `border-top-left-radius` read `0px` against an authored 4px/30px value.
+ *
+ * ⛔ NEGATIVE NUMBERS: a negative `border-width`/`border-radius` corner is
+ * invalid CSS and, once joined into the 4-value shorthand, invalidates the
+ * WHOLE declaration — the exact same failure class as the unitless case
+ * above, triggered by a different malformed input. Clamped to `0px` here
+ * rather than passed through.
+ *
+ * @param {*} value Raw corner/side value (number, numeric string, or a
+ *                  length-shaped string such as a `var()`/`calc()` call).
+ * @return {string} A safe `px`-suffixed or sanitised length, or `'0'` when
+ *                  the input cannot be trusted.
+ */
+function toLengthValue( value ) {
+	if ( 'number' === typeof value ) {
+		return value < 0 ? '0px' : `${ value }px`;
+	}
+	if ( 'string' === typeof value ) {
+		const trimmed = value.trim();
+		if ( /^-?\d+(\.\d+)?$/.test( trimmed ) ) {
+			return parseFloat( trimmed ) < 0 ? '0px' : `${ trimmed }px`;
+		}
+		const sanitised = sanitiseLengthString( trimmed );
+		return sanitised || '0';
+	}
+	return '0';
+}
+
+/**
  * Convert a 4-corner box object into the CSS `border-radius` shorthand VALUE
  * string, in the shorthand's own order (top-left, top-right, bottom-right,
  * bottom-left) — note this differs from `ResponsiveBorderRadiusControl`'s
@@ -233,7 +373,7 @@ export function cornersToRadiusShorthand( corners ) {
 	return order
 		.map( ( k ) =>
 			undefined !== corners[ k ] && null !== corners[ k ] && '' !== corners[ k ]
-				? corners[ k ]
+				? toLengthValue( corners[ k ] )
 				: '0'
 		)
 		.join( ' ' );
@@ -264,7 +404,7 @@ export function sidesToWidthShorthand( sides ) {
 	return order
 		.map( ( k ) =>
 			undefined !== sides[ k ] && null !== sides[ k ] && '' !== sides[ k ]
-				? sides[ k ]
+				? toLengthValue( sides[ k ] )
 				: '0'
 		)
 		.join( ' ' );

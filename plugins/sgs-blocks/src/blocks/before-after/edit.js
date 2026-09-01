@@ -43,8 +43,9 @@ import {
 	SgsLengthControl,
 	SgsBorderControl,
 	resolveColourToken,
+	MediaElementPanel,
 } from '../../components';
-import BooleanResponsiveControl from './BooleanResponsiveControl';
+import { BooleanResponsiveControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const HEIGHT_UNITS = [
@@ -361,6 +362,41 @@ function MediaSlotPicker( { side, label, attributes, setAttributes } ) {
 }
 
 /**
+ * ServerSideRender serialises its `attributes` prop into REST query args via
+ * `@wordpress/url`'s `addQueryArgs`, which turns a JS `null` into an EMPTY
+ * STRING in the URL (there is no way to put a real `null` in a query
+ * string). The `/wp/v2/block-renderer` endpoint then validates that empty
+ * string against THIS block's own attribute schema — and for
+ * `videoAutoplayTablet`/`videoAutoplayMobile` (typed `["boolean","null"]`,
+ * default `null`, the framework's "inherit the tier above" convention) an
+ * empty string matches neither branch. The whole preview request 400s with
+ * `rest_invalid_param`, and ServerSideRender surfaces that as the canvas
+ * error notice "Preview failed to load." — confirmed live: the REST call
+ * returns `{"code":"rest_invalid_param","data":{"params":{"attributes":
+ * "[videoAutoplayTablet] is not of type boolean,null."}}}`.
+ *
+ * Fix: omit any attribute whose value is `null` before handing attributes
+ * to ServerSideRender. An omitted query param is never validated against
+ * the schema at all, and render.php already reads every attribute through
+ * an `?? null`/`?? default` fallback (see `$video_autoplay_tablet_raw`
+ * above) — so the effective value render.php sees is identical whether the
+ * key is present-as-null or simply absent. This is a transport-layer fix,
+ * not a behaviour change.
+ *
+ * @param {Object} attrs Full block attributes.
+ * @return {Object} The same attributes with any `null`-valued key removed.
+ */
+function omitNullAttributes( attrs ) {
+	const out = {};
+	for ( const key in attrs ) {
+		if ( null !== attrs[ key ] ) {
+			out[ key ] = attrs[ key ];
+		}
+	}
+	return out;
+}
+
+/**
  * Whether a comparison slot has enough configured to render — mirrors
  * media-render.php's `has_content` check per media type, so the editor
  * placeholder/preview toggle never disagrees with what render.php will
@@ -506,11 +542,37 @@ export default function Edit( { attributes, setAttributes } ) {
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>
+					{ /* Wave 5b — independently-scoped fit/focal-point per slot
+					     (the falsifying case the shared atom layer's `prefix`
+					     support exists for: two media elements on one block,
+					     each with its own object-fit/object-position rather
+					     than the old shared sgsObjectFit/sgsObjectPosition
+					     pair that set both slots identically). */ }
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="before"
+						blockSlug="sgs/before-after"
+						insertion="element"
+						atoms={ [ 'object-fit', 'focal-point' ] }
+						mediaType={ attributes.beforeMediaType || 'image' }
+						scope="element"
+					/>
 					<MediaSlotPicker
 						side="after"
 						label={ __( 'After', 'sgs-blocks' ) }
 						attributes={ attributes }
 						setAttributes={ setAttributes }
+					/>
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="after"
+						blockSlug="sgs/before-after"
+						insertion="element"
+						atoms={ [ 'object-fit', 'focal-point' ] }
+						mediaType={ attributes.afterMediaType || 'image' }
+						scope="element"
 					/>
 					{ ( 'video' === attributes.beforeMediaType ||
 						'video' === attributes.afterMediaType ) && (
@@ -820,7 +882,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						</Notice>
 						<ServerSideRender
 							block="sgs/before-after"
-							attributes={ attributes }
+							attributes={ omitNullAttributes( attributes ) }
 							LoadingResponsePlaceholder={ () => (
 								<div
 									style={ {

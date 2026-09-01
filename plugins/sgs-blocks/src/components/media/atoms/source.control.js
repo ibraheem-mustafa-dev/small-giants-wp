@@ -20,7 +20,7 @@
  *
  * @package SGS\Blocks
  */
-import { TextareaControl } from '@wordpress/components';
+import { TextareaControl, TextControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
@@ -106,6 +106,45 @@ function pairPickerRow( { rowKey, label, attrs, setAttributes, name, idBase, url
 	);
 }
 
+/**
+ * One responsive external-video-URL row (TextControl), for a surface whose
+ * `media-type` atom's `VideoSource` base is set to `'external'`. Writes the
+ * URL half only and clears the ID half, matching what a picked-media
+ * `onChange` writes for the internal-library branch — the two writers are
+ * mutually exclusive per tier, never both populated at once.
+ *
+ * Matches the pre-atom-layer `sgs/media` "Video URL" TextControl's label and
+ * help text verbatim, so adopting this atom changes nothing about the field
+ * a client already knows (`git show 0e897e004^:plugins/sgs-blocks/src/blocks/media/edit.js`).
+ * The old block's separate desktop-tier explanatory paragraph ("someone who
+ * resizes across a breakpoint mid-watch will have the player restart") is
+ * NOT reproduced here — this atom's `<ResponsiveControl>` already shows one
+ * plain URL field per tier with no desktop-only prose branch.
+ */
+function videoUrlRow( { rowKey, label, help, attrs, setAttributes, name, idBase, urlBase } ) {
+	return (
+		<ResponsiveControl key={ rowKey } label={ label }>
+			{ ( tier ) => {
+				const suffix = TIER_SUFFIX[ tier ] ?? '';
+				const idKey = name( idBase + suffix );
+				const urlKey = name( urlBase + suffix );
+				return (
+					<TextControl
+						label={ label }
+						help={ help }
+						value={ attrs[ urlKey ] || '' }
+						onChange={ ( value ) =>
+							setAttributes( { [ urlKey ]: value, [ idKey ]: 0 } )
+						}
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+					/>
+				);
+			} }
+		</ResponsiveControl>
+	);
+}
+
 /** One responsive SVG-markup row, matching `sgs/media`'s existing pattern. */
 function svgRow( { attrs, setAttributes, name } ) {
 	return (
@@ -152,17 +191,44 @@ export function control( { attributes, setAttributes, prefix, blockSlug } ) {
 	}
 
 	if ( 'video' === type ) {
+		// `VideoSource` is owned by the `media-type` atom's base set
+		// (`MEDIA_BASES.type`), not this atom's own — it is READ here only,
+		// to branch which video-source control this atom renders, exactly as
+		// `media-type.control.js` reads this same key to decide whether to
+		// show its own toggle at all. A surface that never declared the
+		// attribute (`hasOwnProperty` false) has no external/internal
+		// concept — treat it as the pre-atom-layer default of an always-on
+		// WordPress-library picker, matching what this file did before this
+		// fix (no external-URL field reachable anywhere).
+		const videoSourceKey = mediaStoredAttrName( blockSlug, prefix, 'VideoSource' );
+		const hasVideoSource = Object.prototype.hasOwnProperty.call( attrs, videoSourceKey );
+		const videoSource = hasVideoSource ? attrs[ videoSourceKey ] || 'external' : 'internal';
+
 		return [
-			pairPickerRow( {
-				rowKey: 'source-video',
-				label: __( 'Video', 'sgs-blocks' ),
-				attrs,
-				setAttributes,
-				name,
-				idBase: 'VideoId',
-				urlBase: 'VideoUrl',
-				allowedType: 'video',
-			} ),
+			'external' === videoSource
+				? videoUrlRow( {
+						rowKey: 'source-video',
+						label: __( 'Video URL', 'sgs-blocks' ),
+						help: __(
+							'YouTube, Vimeo, or direct MP4/WebM URL. Watch URLs are converted to embed URLs automatically.',
+							'sgs-blocks'
+						),
+						attrs,
+						setAttributes,
+						name,
+						idBase: 'VideoId',
+						urlBase: 'VideoUrl',
+				  } )
+				: pairPickerRow( {
+						rowKey: 'source-video',
+						label: __( 'Video', 'sgs-blocks' ),
+						attrs,
+						setAttributes,
+						name,
+						idBase: 'VideoId',
+						urlBase: 'VideoUrl',
+						allowedType: 'video',
+				  } ),
 			pairPickerRow( {
 				rowKey: 'source-thumbnail',
 				label: __( 'Poster image', 'sgs-blocks' ),
