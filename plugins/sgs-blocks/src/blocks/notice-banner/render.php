@@ -199,6 +199,9 @@ $scoped_css = array();
 // scoped declaration keyed off the SAME root uid. ---
 if ( $icon_colour ) {
 	$scoped_css[] = $root_sel . ' .sgs-notice-banner__icon{color:' . sgs_colour_value( $icon_colour ) . ';}';
+	if ( '' !== ( $attributes['iconColourHover'] ?? '' ) ) {
+		$scoped_css[] = $root_sel . " .sgs-notice-banner__icon:hover,{$root_sel} .sgs-notice-banner__icon:focus-visible{color:" . sgs_colour_value( $attributes['iconColourHover'] ) . '}';
+	}
 }
 // D636/D644 icon/SVG gradient — non-empty wins over iconColour's flat
 // currentColor paint above (helpers-svg-gradient.php). $icon_html was built

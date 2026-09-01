@@ -276,6 +276,10 @@
 		"borderRadiusMobile": {
 			"type": "object",
 			"default": {}
+		},
+		"iconColourHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

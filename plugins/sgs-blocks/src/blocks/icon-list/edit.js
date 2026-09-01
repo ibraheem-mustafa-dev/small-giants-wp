@@ -150,6 +150,7 @@ export default function Edit({ attributes, setAttributes }) {
     icon: defaultIconName,
     defaultIconSource,
     iconColour,
+    iconColourHover,
     iconColourGradient,
     iconSize,
     textColour,
@@ -364,6 +365,13 @@ export default function Edit({ attributes, setAttributes }) {
                 onGradientChange: (val) =>
                   setAttributes({ iconColourGradient: val ?? "" }),
               },
+              {
+                key: "hover",
+                label: __("Hover", "sgs-blocks"),
+                value: iconColourHover,
+                onChange: (val) => setAttributes({ iconColourHover: val ?? "" }),
+                linked: true,
+                },
             ],
           },
           textRow({

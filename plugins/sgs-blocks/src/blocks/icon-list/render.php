@@ -345,6 +345,9 @@ if ( function_exists( 'sgs_typography_css_rule' ) ) {
 // repeated <li> elements. ---
 if ( $icon_colour ) {
 	$scoped_css[] = "{$icon_sel}{color:" . sgs_colour_value( $icon_colour ) . ';}';
+	if ( '' !== ( $attributes['iconColourHover'] ?? '' ) ) {
+		$scoped_css[] = "{$icon_sel}:hover,{$icon_sel}:focus-visible{color:" . sgs_colour_value( $attributes['iconColourHover'] ) . '}';
+	}
 }
 // D636/D644 icon/SVG gradient — one rule paints every item's icon (mirrors the
 // single icon_colour rule above; a gradient def is injected once into the

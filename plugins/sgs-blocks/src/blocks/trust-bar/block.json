@@ -480,7 +480,12 @@
 		},
 		"layout": {
 			"type": "string",
-			"enum": ["", "flex", "stack", "grid"],
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
 			"default": "grid"
 		},
 		"gridTemplateColumns": {
@@ -815,6 +820,10 @@
 			"default": "section"
 		},
 		"ariaLabel": {
+			"type": "string",
+			"default": ""
+		},
+		"iconColourHover": {
 			"type": "string",
 			"default": ""
 		}

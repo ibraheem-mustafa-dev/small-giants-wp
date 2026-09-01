@@ -253,6 +253,9 @@ if ( '' !== $tb_text_colour_hover_effective ) {
 }
 
 if ( $tb_root_colour_decls || $tb_root_colour_hover_decls ) {
+if ( '' !== ( $attributes['iconColourHover'] ?? '' ) ) {
+	$tb_root_colour_hover_decls[] = 'color:' . sgs_colour_value( $attributes['iconColourHover'] );
+}
 	$tb_extra_scoped_css .= sgs_emit_state_colour_css( $root_sel, $tb_root_colour_decls, $tb_root_colour_hover_decls );
 }
 

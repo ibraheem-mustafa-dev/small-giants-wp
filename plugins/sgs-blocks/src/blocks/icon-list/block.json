@@ -63,7 +63,10 @@
 				"wrapper": {
 					"label": "List wrapper",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "backgroundColour",
@@ -90,7 +93,10 @@
 				"item-icon": {
 					"label": "Item icon",
 					"order": 2,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"prefix": "icon",
 					"attrMap": {
 						"css:stroke": "iconColourGradient"
@@ -100,14 +106,18 @@
 				"item": {
 					"label": "Item row",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "item",
 					"_note": "The per-item `<li class=\"sgs-icon-list__item\">` row (render.php:337 `$item_row_sel`, fed to `sgs_typography_css_rule( $attributes, 'item', $item_row_sel )` at render.php:348-350 — the shared TypographyControls emitter, R-22-13). Owns itemFontSize/FontSizeUnit/FontWeight/FontStyle/LineHeight/LineHeightUnit, all resolved via the default `item`+suffix convention. This is a DISTINCT DOM node from item-text's `<span class=\"sgs-icon-list__text\">` (render.php:337 `$text_sel`) — added 2026-08-15 because these six attrs were showing as orphans: item-text's attrMap explicitly redirects css:font-size/line-height to native typography (which paints the span), so the default convention never got a chance to claim the item-row's own itemFontSize/itemLineHeight family for anyone. Same split rationale as the `heading` element below (2026-07-23)."
 				},
 				"item-text": {
 					"label": "Item text",
 					"order": 4,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "",
 					"attrMap": {
 						"css:color": "textColour",
@@ -129,7 +139,9 @@
 				"heading": {
 					"label": "Heading",
 					"order": 5,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "heading",
 					"_note": "Optional list heading (render.php, `.sgs-icon-list__heading`). Custom typography resolves via prefix `heading` + the text cluster (headingFontSize/FontWeight/FontStyle/LineHeight). Declared as its OWN element (2026-07-23) so heading* typography routes to element=heading, DISTINCT from item* text — before this they both fell to NULL element and collided on font-size."
 				}
@@ -187,7 +199,12 @@
 		"defaultIconSource": {
 			"type": "string",
 			"default": "lucide",
-			"enum": [ "lucide", "wp-icon", "dashicon", "emoji" ],
+			"enum": [
+				"lucide",
+				"wp-icon",
+				"dashicon",
+				"emoji"
+			],
 			"_comment": "Declared 2026-08-06 (Spec 35 Task A2). Values are NOT invented and NOT inferred from the two local comparisons — they are the framework's icon-source vocabulary, enforced as a hard allow-list at icon/render.php:88 (`$allowed_sources = array( 'lucide', 'wp-icon', 'dashicon', 'emoji' )`) and mirrored one-for-one by the four icon-* roles on sgs/icon (iconName/wpIconName/dashiconName/emojiChar — D503). EXACT PRECEDENT: sgs/icon.iconSource already declares this identical enum, so this is copying a settled declaration rather than authoring a new one. Feeds enum_values -> TIER 3.5 role `enum-mode`, and gives the client a real select control."
 		},
 		"iconColour": {
@@ -305,7 +322,14 @@
 		},
 		"headingLevel": {
 			"type": "string",
-			"enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
+			"enum": [
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"p"
+			],
 			"default": "h3"
 		},
 		"markerType": {
@@ -315,7 +339,10 @@
 		"source": {
 			"type": "string",
 			"default": "typed",
-			"enum": [ "typed", "menu" ],
+			"enum": [
+				"typed",
+				"menu"
+			],
 			"_comment": "Declared 2026-08-06 (Spec 35 Task A2). Values are NOT invented — they are the allow-list render.php:158 already enforces: `in_array( $attributes['source'] ?? '', array( 'typed', 'menu' ), true ) ? ... : 'typed'`. Declaring it does three things at once with no new role logic: /sgs-update Stage 1 reads it into block_attributes.enum_values, TIER 3.5 then seeds role `enum-mode` from that column, and the client gets a real select control instead of a free-text box (Spec 35 Part B). WP coercing an out-of-enum stored value back to the default matches render.php's own fallback exactly, so the two layers agree rather than diverge (the D456 site-header-row.layout precedent)."
 		},
 		"menuRef": {
@@ -369,6 +396,10 @@
 			"type": "number"
 		},
 		"itemLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"iconColourHover": {
 			"type": "string",
 			"default": ""
 		}

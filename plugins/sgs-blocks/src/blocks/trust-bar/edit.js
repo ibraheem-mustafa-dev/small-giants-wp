@@ -272,6 +272,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		iconCircleSize,
 		iconCircleBackground,
 		iconColour,
+		iconColourHover,
 		iconColourGradient,
 		iconCircleBorderRadius,
 		iconCircleShadow,
@@ -565,6 +566,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { iconColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: iconColourHover,
+								onChange: ( val ) => setAttributes( { iconColourHover: val } ),
+								},
 						],
 					},
 					// ── Consolidated in 2026-08-30 — was the "Title colour"

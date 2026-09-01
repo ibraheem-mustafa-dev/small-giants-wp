@@ -144,6 +144,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		showIcon,
 		iconSource,
 		iconColour,
+		iconColourHover,
 		iconColourGradient,
 		displayMode,
 		stickyPosition,
@@ -231,6 +232,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { iconColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: iconColourHover,
+								onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 				] }
