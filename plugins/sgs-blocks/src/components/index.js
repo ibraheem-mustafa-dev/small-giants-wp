@@ -17,7 +17,6 @@ export { default as SgsColourPanel } from './SgsColourPanel';
 // Colour-variant row helpers (the five-variant family: 3 rows + 2 controls).
 export { default as fillRow } from './colour-variants/fillRow';
 export { default as textRow } from './colour-variants/textRow';
-export { default as borderRow } from './colour-variants/borderRow';
 export { default as MediaElementPanel } from './MediaElementPanel';
 export { default as MediaPanelLayout } from './media/MediaPanelLayout';
 export { default as MediaGalleryPicker } from './MediaGalleryPicker';
