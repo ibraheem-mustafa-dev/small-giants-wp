@@ -44,8 +44,13 @@ require_once __DIR__ . '/media-render.php';
 // Soft-fail: nothing to render without content on BOTH slots.
 // ---------------------------------------------------------------------------
 
-$before_media = sgs_before_after_resolve_media( $attributes, 'before' );
-$after_media  = sgs_before_after_resolve_media( $attributes, 'after' );
+// $uid is computed here (moved ahead of its original §4 location) because
+// the media-slot scope class (Wave 5b, media-atom prefix support) is applied
+// to the <img>/<video> markup INSIDE sgs_before_after_resolve_media() itself.
+$uid = 'sgs-before-after-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+
+$before_media = sgs_before_after_resolve_media( $attributes, 'before', $uid );
+$after_media  = sgs_before_after_resolve_media( $attributes, 'after', $uid );
 
 if ( ! $before_media['has_content'] || ! $after_media['has_content'] ) {
 	return;
@@ -133,7 +138,8 @@ $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', '
 // ---------------------------------------------------------------------------
 
 $anchor   = $attributes['anchor'] ?? '';
-$uid      = 'sgs-before-after-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+// $uid computed earlier, ahead of the resolve_media() calls — see the
+// comment there.
 $root_sel = '.' . $uid . '.wp-block-sgs-before-after';
 
 // ---------------------------------------------------------------------------
@@ -253,30 +259,34 @@ if ( $label_bg_colour ) {
 	$root_var_decls[] = '--sgs-before-after-label-bg-colour:' . sgs_colour_value( $label_bg_colour );
 }
 
-// --- Image controls (supports.sgs.imageControls + imageControlsExplicit) ---
-// This block is the ONE consumer where style.css genuinely reads
-// `--sgs-object-fit`/`--sgs-object-position` (`.__img` + `.__svg svg`
-// selectors, both with their own CSS fallback). Emitted explicitly here
-// with the KNOWN root selector, using the same shared maths
-// (`sgs_media_position_focal_to_css()`) and the same object-fit enum
-// whitelist as `sgs_media_position_css()`. Set as CUSTOM-PROPERTY VALUES
-// (not raw `object-fit`/`object-position` declarations) because style.css
-// already reads them via `var(--sgs-object-fit, …)`/`var(--sgs-object-position, …)`
-// with its own fallback per selector — a raw declaration here would compete
-// with, rather than feed, that existing var()-with-fallback pattern.
-$allowed_object_fits = array( 'cover', 'contain', 'fill', 'none', 'scale-down' );
-$object_fit_raw      = $attributes['sgsObjectFit'] ?? '';
-$object_fit           = in_array( $object_fit_raw, $allowed_object_fits, true ) ? $object_fit_raw : '';
-$object_position      = sgs_media_position_focal_to_css( $attributes['sgsObjectPosition'] ?? null );
-
-if ( '' !== $object_fit ) {
-	$root_var_decls[] = '--sgs-object-fit:' . $object_fit;
-}
-if ( '' !== $object_position ) {
-	$root_var_decls[] = '--sgs-object-position:' . $object_position;
-}
-
 $scoped_css[] = "{$root_sel}{" . implode( ';', $root_var_decls ) . ';}';
+
+// --- Media-element atom layer (Wave 5b) — object-fit + focal-point, ---
+// --- INDEPENDENTLY scoped per slot (before/after), replacing the old ---
+// --- shared supports.sgs.imageControls sgsObjectFit/sgsObjectPosition ---
+// --- pair that set BOTH images identically. Each slot's <img>/<video> ---
+// --- carries its own `sgs_media_element_scope_class( $uid, $prefix )` ---
+// --- class (added in media-render.php) plus the universal `.sgs-media-el` ---
+// --- marker, so the shared `assets/css/media-element.css` stylesheet ---
+// --- (already enqueued globally by the plugin) paints each slot from ---
+// --- its OWN custom-property values — no per-block CSS needed here. ---
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	foreach ( array( 'before', 'after' ) as $sgs_bap_slot ) {
+		// $uid here is the RAW block uid, not yet scope-suffixed — `style()`
+		// applies `scope_class( $uid, $prefix )` internally, matching the
+		// SAME class media-render.php puts on the slot's <img>/<video>.
+		$sgs_bap_css = SGS_Media_Element::style(
+			$attributes,
+			$sgs_bap_slot,
+			'sgs/before-after',
+			$uid,
+			array( 'object-fit', 'focal-point' )
+		);
+		if ( '' !== $sgs_bap_css ) {
+			$scoped_css[] = $sgs_bap_css;
+		}
+	}
+}
 
 // --- Label typography (font-weight/font-style — plain declarations; these
 // have no hardcoded CSS default to compete with, so they stay as direct

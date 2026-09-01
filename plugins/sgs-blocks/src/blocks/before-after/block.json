@@ -17,8 +17,11 @@
 	"icon": "columns",
 	"supports": {
 		"sgs": {
-			"imageControls": true,
-			"imageControlsExplicit": true,
+			"_comment_mediaElements": "Wave 5b. Replaces the old universal imageControls extension's single shared sgsObjectFit/sgsObjectPosition pair (which set BOTH the before and after slots identically) with two independently-scoped media elements, one per slot.",
+			"mediaElements": [
+				{ "prefix": "before", "context": "element", "atoms": [ "object-fit", "focal-point" ] },
+				{ "prefix": "after", "context": "element", "atoms": [ "object-fit", "focal-point" ] }
+			],
 			"fx": {
 				"draggable": true
 			},

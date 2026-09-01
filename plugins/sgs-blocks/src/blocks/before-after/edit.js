@@ -43,6 +43,7 @@ import {
 	SgsLengthControl,
 	SgsBorderControl,
 	resolveColourToken,
+	MediaElementPanel,
 } from '../../components';
 import BooleanResponsiveControl from './BooleanResponsiveControl';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -506,11 +507,37 @@ export default function Edit( { attributes, setAttributes } ) {
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>
+					{ /* Wave 5b — independently-scoped fit/focal-point per slot
+					     (the falsifying case the shared atom layer's `prefix`
+					     support exists for: two media elements on one block,
+					     each with its own object-fit/object-position rather
+					     than the old shared sgsObjectFit/sgsObjectPosition
+					     pair that set both slots identically). */ }
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="before"
+						blockSlug="sgs/before-after"
+						insertion="element"
+						atoms={ [ 'object-fit', 'focal-point' ] }
+						mediaType={ attributes.beforeMediaType || 'image' }
+						scope="element"
+					/>
 					<MediaSlotPicker
 						side="after"
 						label={ __( 'After', 'sgs-blocks' ) }
 						attributes={ attributes }
 						setAttributes={ setAttributes }
+					/>
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="after"
+						blockSlug="sgs/before-after"
+						insertion="element"
+						atoms={ [ 'object-fit', 'focal-point' ] }
+						mediaType={ attributes.afterMediaType || 'image' }
+						scope="element"
 					/>
 					{ ( 'video' === attributes.beforeMediaType ||
 						'video' === attributes.afterMediaType ) && (
