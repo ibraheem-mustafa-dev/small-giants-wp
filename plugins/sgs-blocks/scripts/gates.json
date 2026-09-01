@@ -848,5 +848,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 90
+  },
+  {
+    "id": "check-media-disclosure-coverage",
+    "cmd": "node scripts/check-media-disclosure-coverage.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 91
   }
 ]

@@ -1,0 +1,12 @@
+{
+	"apiVersion": 3,
+	"name": "sgs/sgs-media-silent",
+	"title": "Fixture: sgs/media SVG pattern (silent)",
+	"category": "sgs-content",
+	"attributes": {
+		"mediaType": { "type": "string", "default": "image" },
+		"svgContent": { "type": "string", "default": "" },
+		"svgContentTablet": { "type": "string", "default": "" },
+		"svgContentMobile": { "type": "string", "default": "" }
+	}
+}

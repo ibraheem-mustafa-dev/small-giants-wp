@@ -513,6 +513,37 @@ def _load_scalar_media_roles() -> list[tuple[str, str]]:
     return out
 
 
+def scalar_media_emit_as(block_slug: str, attr_name: str) -> dict[str, str] | None:
+    """Optional 4th roster-entry field (``scalar-media-roles.json``'s own
+    ``__emit_as`` docstring carries the full rationale): when a scalar-media
+    attr's STORAGE shape has moved from the composite ``{id,url,alt}`` object
+    ``run_mechanism_b``'s ``ScalarLift`` still produces to three separate
+    scalar keys (Wave 6, 2026-09-02 — sgs/hero's media-atom migration), this
+    names the three target attr names so ``assembly.py``'s ScalarLift
+    handling can expand the composite value into them instead of writing the
+    composite object to a name nothing reads any more.
+
+    @return ``{"id": ..., "url": ..., "alt": ...}`` (target attr names) or
+        ``None`` for every roster entry that has not opted in — the
+        overwhelming majority, which keep writing the composite object
+        exactly as before.
+    """
+    try:
+        raw = json.loads(_SCALAR_MEDIA_ROLES_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    for entry in raw.get("attrs", []):
+        if not (isinstance(entry, list) and len(entry) >= 4):
+            continue
+        if entry[0] != block_slug or entry[1] != attr_name:
+            continue
+        opts = entry[3]
+        emit_as = opts.get("emit_as") if isinstance(opts, dict) else None
+        if isinstance(emit_as, dict) and {"id", "url", "alt"} <= set(emit_as):
+            return {"id": emit_as["id"], "url": emit_as["url"], "alt": emit_as["alt"]}
+    return None
+
+
 def _migrate_scalar_media_roles() -> None:
     """Re-assert ``role='scalar-media'`` on the rostered attrs. Idempotent.
 

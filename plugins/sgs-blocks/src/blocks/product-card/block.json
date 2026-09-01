@@ -239,7 +239,13 @@
 		},
 		"image": {
 			"type": "string",
-			"default": ""
+			"default": "",
+			"description": "Permanent URL fallback for the card's main product image. NEVER removed, NEVER made conditional — kept forever alongside imageId so content stored before the imageId migration (2026-09-01) keeps rendering identically. When imageId resolves to a live attachment, imageId wins; image is the read-time fallback."
+		},
+		"imageId": {
+			"type": "number",
+			"default": 0,
+			"description": "Attachment post ID for the card's main product image, added 2026-09-01 alongside the pre-existing image URL string (which stays as the permanent fallback — see its own description). Forward-only: edit.js's 4 image-picker write sites store media.id here from now on; existing content authored before this attribute existed has imageId 0/unset and keeps rendering off image until backfilled by scripts/migrate-product-card-image-id.py. When set and it resolves to a live attachment (wp_get_attachment_image_src()), it wins over image at render time — unlocking real srcset/sizes. render.php falls back to the raw image URL whenever imageId is 0 or the attachment no longer exists."
 		},
 		"imageAlt": {
 			"type": "string",

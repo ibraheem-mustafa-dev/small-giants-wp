@@ -520,10 +520,38 @@ if ( 'typed' === $source_mode ) {
 
 	$sgs_card_typo_tag = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
 
+	/*
+	 * imageId resolution (2026-09-01 data-migration): imageId is a real
+	 * attachment post ID, added alongside the pre-existing `image` URL string.
+	 * `image` is the PERMANENT fallback — never removed, never made
+	 * conditional — for content authored/cloned before imageId existed, or
+	 * where the attachment has since been deleted. When imageId is set and
+	 * wp_get_attachment_image_src() proves it still resolves to a live
+	 * attachment, that URL wins (this is what unlocks real attachment
+	 * metadata for a future responsive-sizes pass); otherwise the raw `image`
+	 * string renders exactly as it did before this attribute existed. Mirrors
+	 * sgs/media's imageId-wins-else-imageUrl pattern (media/render.php
+	 * "Resolve final image URL: imageId wins; fall back to imageUrl.").
+	 * A COPY of $attributes is passed to sgs_product_card_builtin_render() so
+	 * that helper (includes/product-card-builtin-render.php) needs no change —
+	 * it already reads `image` as a plain string; this class of logic is fully
+	 * contained in render.php.
+	 */
+	$sgs_pcard_typed_image_id = isset( $attributes['imageId'] ) ? absint( $attributes['imageId'] ) : 0;
+	$sgs_pcard_typed_image    = isset( $attributes['image'] ) ? (string) $attributes['image'] : '';
+	if ( $sgs_pcard_typed_image_id ) {
+		$sgs_pcard_typed_src = wp_get_attachment_image_src( $sgs_pcard_typed_image_id, 'full' );
+		if ( $sgs_pcard_typed_src ) {
+			$sgs_pcard_typed_image = $sgs_pcard_typed_src[0];
+		}
+	}
+	$sgs_pcard_typed_attributes          = $attributes;
+	$sgs_pcard_typed_attributes['image'] = $sgs_pcard_typed_image;
+
 	// Built-in element render — the ONLY typed path (no InnerBlocks slot).
 	// Prepend the scoped typography + CTA <style>. Pass the uid so the trial tag
 	// carries it (the box rule above scopes to it).
-	$builtin_inner = $sgs_card_typo_tag . sgs_product_card_builtin_render( $attributes, $sgs_card_uid );
+	$builtin_inner = $sgs_card_typo_tag . sgs_product_card_builtin_render( $sgs_pcard_typed_attributes, $sgs_card_uid );
 
 	// BEM modifier classes on the wrapper.
 	$builtin_classes   = $classes;
@@ -650,8 +678,20 @@ $sgs_resolved_desc  = sgs_product_card_resolve_element( $attributes, 'descriptio
 
 // Image: URL + alt resolve as a pair — when the typed image wins, the typed alt
 // accompanies it (a live alt under a typed image would mis-describe).
-$sgs_img_override     = sgs_product_card_override_active( $attributes, 'image', $attributes['image'] ?? '' );
-$sgs_resolved_img     = $sgs_img_override ? (string) $attributes['image'] : (string) $data['image_url'];
+$sgs_img_override = sgs_product_card_override_active( $attributes, 'image', $attributes['image'] ?? '' );
+// imageId resolution (2026-09-01): when the typed override wins, prefer the
+// resolved attachment URL over the raw `image` string, same rule + same
+// permanent fallback as the typed-mode branch above (imageId 0/unresolved ->
+// the raw image URL renders exactly as before this attribute existed).
+$sgs_pcard_bound_typed_image = (string) ( $attributes['image'] ?? '' );
+$sgs_pcard_bound_image_id    = isset( $attributes['imageId'] ) ? absint( $attributes['imageId'] ) : 0;
+if ( $sgs_pcard_bound_image_id ) {
+	$sgs_pcard_bound_src = wp_get_attachment_image_src( $sgs_pcard_bound_image_id, 'full' );
+	if ( $sgs_pcard_bound_src ) {
+		$sgs_pcard_bound_typed_image = $sgs_pcard_bound_src[0];
+	}
+}
+$sgs_resolved_img     = $sgs_img_override ? $sgs_pcard_bound_typed_image : (string) $data['image_url'];
 $sgs_resolved_img_alt = $sgs_img_override ? (string) ( $attributes['imageAlt'] ?? '' ) : (string) $data['image_alt'];
 
 // Badge: bound branches have no live badge — live value is '' (override OFF or

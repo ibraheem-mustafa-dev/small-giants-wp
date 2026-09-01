@@ -1,3 +1,60 @@
+## D915 [INCIDENT] — Waves 6+7 built via parallel dispatch: R-31-14 vs the plan collided, the fix reached into the cloning pipeline, four real bugs caught in review before integration
+
+**2026-09-02.** Built via `/dispatching-parallel-agents` (isolated worktrees, one agent per gate/surface,
+each independently re-verified in the main tree before integration — never trusted from subagent-reported
+output alone). Working tree only — **not committed this session**; commit is the next session's first
+action. Full per-piece detail: `.claude/plans/2026-08-30-media-element-architecture-v2.md` §17 Wave 6/7
+entries; approved build plan + review notes: `.claude/plans/media-element-tingly-stallman.md`.
+
+**Wave 6 (five quality gates) shipped as planned, with two real corrections to the brief.** Gate 2
+(`media-css-parity`) needed no new file — `test-media-atom-parity.mjs` already covered it. Gate 5
+(`media-disclosure-coverage`) shipped as a standalone atom-level script (`gates.json`), not an
+inspector-scan rule — `MediaElementPanel` never calls `disclosure()` itself, so there is no per-block
+artefact for a per-block rule to inspect. Two bugs in the NEW gates themselves, both found in
+independent re-verification and fixed before shipping: rule 38's PHP shell-out hit Windows'
+command-line length limit the moment a real multi-entry adopter (`hero`) was scanned
+(`spawnSync php ENAMETOOLONG` — fixed via a temp file); rule 38 also false-positived on `sgs/media`'s
+own legacy `thumbnail` fields until taught to respect the registry's `reads` exemption map.
+
+**Wave 7 shipped all four remaining surfaces + `product-card`'s data migration, reordered
+safest-first** (`decorative-image, hero, container, product-card` — not the plan's
+`hero, container, decorative-image, product-card`), checked with Bean before `container` (shared by 8
+blocks, confirmed via `grep`, one more than the plan's estimated 7) was touched — its own explicit
+design-gate sign-off, per this project's Rule 7.
+
+⛔ **A real, Bean-adjudicated conflict, not a design nicety.** `hero`'s split-media migration needed the
+SAME read-time legacy-fallback pattern already shipped for `sgs/media`'s `thumbnail` and
+`sgs/before-after`'s `sgsObjectFit` — but `hero`'s own `render.php` already carried a 2026-08-13 comment
+recording that Bean had explicitly BANNED this exact shape on this exact block once before (R-31-14: "no
+legacy elements as fallbacks; the framework is pre-production"). Asked Bean rather than resolve it
+inline; the strict reading won. Consequence, followed through rather than left half-done: the legacy
+`splitImage`/`splitVideo`/`splitSvg` attributes became genuinely dead and were DELETED from block.json
+— except `splitImage`/`splitImageMobile`, kept declared because the CLONING PIPELINE's scalar-media role
+assignment (`scripts/data/scalar-media-roles.json`, tied to a real 2026-08-02 incident) still needs
+them. That in turn meant a FUTURE `/sgs-clone` run against a new hero draft would populate the now-dead
+composite shape and silently render nothing — asked Bean again, chose to fix properly:
+`scripts/converter/services/assembly.py`'s `ScalarLift` handling now consults a new `emit_as` field on
+the scalar-media-roles roster (`db_lookup.scalar_media_emit_as()`) and expands the composite lift into
+the atom system's own attribute triple at write time. The lift mechanism itself (`run_mechanism_b`
+branch A) is unchanged. Verified against the full 727-test converter suite, all passing.
+
+**Three more real bugs caught in review, none from the building agents' own verification:**
+`decorative-image`'s editor preview applied object-fit/focal-point to a video slot the frontend could
+never apply them to (a real editor/frontend divergence — fixed by matching the preview to the frontend's
+actual capability, not the other way round). `product-card`'s first draft declared `box-shape` in
+`mediaElements.atoms` "for the schema" with no mounted control — would have injected a dozen dead
+attributes for zero client benefit; removed. `container`'s BackgroundPanel worktree predated the `hero`
+fix above, so its own hero-specific object-position sanitiser called a closure already deleted from the
+current tree — would have fataled the first hero instance with a background video to render; caught
+before integration, repointed to the current replacement (`sgs_media_atom_focal_point_validate()`).
+
+**Final state, independently re-verified in the main tree:** full `npm run build` 83/83 gates green,
+inspector-scan clean, media atom JS/PHP parity clean across all 16 atoms, atom-purity 16/16
+import-clean, disclosure-coverage clean, cloning-pipeline `check_value_identity.py --check` clean,
+full converter suite green (727 passed). **Never deployed to the canary this session** — every
+verification was static (build/gates/tests); the real editor + published-page check (R-31-11/R-31-13)
+is unstarted and is the next session's first substantive task after the commit.
+
 ## D914 [INCIDENT] — Wave 5 shipped and merged: 16 atoms not 11, 2 real regressions + 1 security gap caught before merge, a delegation loop cost real time twice
 
 **2026-09-01.** Commits `be9fe17b1`..`3c213dd43` (branch `feat/media-panel-wave5`, PR #36, squash-merged

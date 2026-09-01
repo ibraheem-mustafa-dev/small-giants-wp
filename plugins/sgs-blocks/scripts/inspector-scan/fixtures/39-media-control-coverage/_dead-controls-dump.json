@@ -1,0 +1,20 @@
+[
+	{
+		"block": "sgs/missing-control-mustflag",
+		"attr": "opacity",
+		"renderConsumed": true,
+		"controlPresent": false,
+		"renderVia": "literal",
+		"exempt": false,
+		"exemptReason": null
+	},
+	{
+		"block": "sgs/exempt-atom-not-flagged",
+		"attr": "opacity",
+		"renderConsumed": true,
+		"controlPresent": false,
+		"renderVia": "shared-include",
+		"exempt": true,
+		"exemptReason": "system-attr"
+	}
+]

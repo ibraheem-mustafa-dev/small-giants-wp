@@ -1,0 +1,18 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/before-after",
+	"title": "Fixture: mirrors sgs/before-after's real two-prefix mediaElements shape (must stay silent)",
+	"category": "sgs",
+	"supports": {
+		"sgs": {
+			"mediaElements": [
+				{ "prefix": "before", "context": "element", "atoms": [ "object-fit", "focal-point" ] },
+				{ "prefix": "after", "context": "element", "atoms": [ "object-fit", "focal-point" ] }
+			]
+		}
+	},
+	"attributes": {
+		"beforeImageId": { "type": [ "integer", "string" ], "default": 0 },
+		"afterImageId": { "type": [ "integer", "string" ], "default": 0 }
+	}
+}

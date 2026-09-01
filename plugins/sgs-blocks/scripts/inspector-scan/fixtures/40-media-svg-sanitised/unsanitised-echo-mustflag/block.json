@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "sgs/unsanitised-echo-mustflag",
+	"title": "Fixture: unsanitised render.php SVG echo (must flag)",
+	"category": "sgs-content",
+	"attributes": {
+		"svgContent": { "type": "string", "default": "" }
+	}
+}

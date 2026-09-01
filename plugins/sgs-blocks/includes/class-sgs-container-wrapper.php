@@ -1166,6 +1166,27 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$sgs_bg_img_style_decls[] = 'object-position:' . esc_attr( $bg_position );
 			}
 
+			// object-fit/object-position for the <video> background — same
+			// $bg_size/$bg_position source as the <img> fast path immediately
+			// above and the CSS-background ::before layer below.
+			// `backgroundSize`/`backgroundPosition` are the ONE attribute pair
+			// the whole Background panel writes; the Video tab's new Size/
+			// Position controls (BackgroundPanel.js) now write into them too,
+			// via the shared object-fit/focal-point media atoms (backdrop
+			// scope) — no second attribute family. Before this, a video
+			// background had NO size/position control at all: it only ever
+			// got style.css's hardcoded `object-fit:cover` default with no
+			// object-position rule. Built here (where $bg_size/$bg_position
+			// are in scope) but EMITTED with the other scoped rules further
+			// down — $uid/$responsive_css don't exist yet at this point.
+			// No-inline contract (Spec 32): these values route to the scoped
+			// <style>, never onto the <video> tag itself.
+			$sgs_bg_video_style_decls = array();
+			if ( $has_bg_video ) {
+				$sgs_bg_video_style_decls[] = 'object-fit:' . esc_attr( $bg_size );
+				$sgs_bg_video_style_decls[] = 'object-position:' . esc_attr( $bg_position );
+			}
+
 			// Background image — section kind only, painted on the .$uid::before
 			// MEDIA LAYER rather than on .$uid itself (Phase 1, 2026-08-08).
 			//
@@ -2057,6 +2078,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// to this stylesheet's `object-fit:cover` / default centred position,
 				// discarding whatever the client actually configured.
 				|| ! empty( $sgs_bg_img_style_decls )
+				// Video background object-fit/object-position — same reasoning
+				// as the <img> LCP fast-path clause immediately above: a
+				// MINIMAL container with only a background video (nothing else
+				// that would otherwise mint a uid) must still get a uid, or the
+				// scoped rule that sets its object-fit/object-position never
+				// emits and the browser silently falls back to style.css's
+				// hardcoded `object-fit:cover` default, discarding whatever
+				// the client configured on the Video tab.
+				|| ! empty( $sgs_bg_video_style_decls )
 				|| ! empty( $shape_divider_decls )
 				// D345 Facet B: any remaining custom-property VALUES ($styles — the
 				// composite's extra_styles + ken-burns/svg/grid-item vars) also need a
@@ -2247,6 +2277,17 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// that layer's background-size/background-position).
 			if ( $sgs_bg_img_style_decls && $uid ) {
 				$responsive_css .= '.' . $uid . ' > .sgs-container__image-bg{' . implode( ';', $sgs_bg_img_style_decls ) . '}';
+			}
+
+			// <video> background object-fit/object-position scoped rule — same
+			// direct-child selector shape as the <img> fast-path rule above
+			// (the video markup sits directly inside .{uid}, see the final-
+			// assembly sprintf near the end of render()). Closes the gap
+			// where a video background had no per-instance size/position at
+			// all (style.css's `.sgs-container__video-bg{object-fit:cover}`
+			// stays as the CSS fallback default for the (rare) no-uid case).
+			if ( $sgs_bg_video_style_decls && $uid ) {
+				$responsive_css .= '.' . $uid . ' > .sgs-container__video-bg{' . implode( ';', $sgs_bg_video_style_decls ) . '}';
 			}
 
 			// Overlay paint scoped rule (Spec 32 no-inline contract) — the bg overlay

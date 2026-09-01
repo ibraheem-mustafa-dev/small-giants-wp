@@ -274,27 +274,30 @@ section.sgs-hero {
 	height: 100%;
 }
 
-/* Media overlay — a decorative layer on top of the split media (image/video/
-   SVG). It is appended AFTER the media element in the DOM (render.php), so at
-   z-index:0 it would already paint above the media's static in-flow box.
-   ⛔ It uses z-index:1, NOT the section overlay's 0, and that is load-bearing:
-   `.sgs-hero--ken-burns .sgs-hero__media` is itself raised to
-   `position:relative; z-index:1` (see the ken-burns rule at ~line 453 below),
-   so an overlay left at 0 would render BEHIND the media on every Ken Burns
-   hero. Do not "harmonise" this back to 0 to match .sgs-hero__overlay. */
-.sgs-hero__media-overlay {
-	position: absolute;
-	inset: 0;
-	z-index: 1;
-	pointer-events: none;
-}
+/* Media overlay — Wave 6 (2026-09-01). The hand-rolled `.sgs-hero__media-overlay`
+   span + its own rule (position/inset/z-index/pointer-events) were REMOVED. The
+   overlay now paints via the shared `assets/css/media-atoms/overlay.css` rule
+   (`.sgs-media-box::after`), which `.sgs-hero__media` qualifies for directly —
+   render.php adds the universal `sgs-media-box` marker class to this same
+   element. No hero-specific overlay CSS is needed: the shared rule's own
+   `position:absolute;inset:0;pointer-events:none` already does the job, and
+   `.sgs-hero__media` above already carries `position:relative` for it to
+   anchor against. */
 
 .sgs-hero__split-image {
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
 	display: block;
 }
+
+/* object-fit's own structural default used to be hardcoded here
+   (`object-fit: cover`). Wave 6 (2026-09-01): REMOVED — this element now also
+   carries the universal `sgs-media-el` marker class, and the shared
+   `assets/css/media-atoms/object-fit.css` rule already supplies the identical
+   'cover' fallback via `var(--sgs-media-object-fit, cover)`. Both rules were
+   (0,1,0) specificity, so keeping this one risked a load-order race that could
+   silently override a client's own Object fit choice — removing it makes the
+   shared atom rule the single source of truth instead of a coin-flip. */
 
 /* ── Split-image hover zoom (restored from prior session; measured off the
  * source draft) ── The split media zooms slightly on hover. The split section
@@ -364,9 +367,12 @@ section.sgs-hero {
 	height: 100%;
 }
 
-.sgs-hero__split-media--video {
-	object-fit: cover;
-}
+/* object-fit's own structural default used to be hardcoded here too
+   (`.sgs-hero__split-media--video { object-fit: cover }`, same (0,1,0)
+   race-with-the-shared-atom risk as `.sgs-hero__split-image` above). REMOVED
+   Wave 6 (2026-09-01) for the identical reason — the video tier also now
+   carries the `sgs-media-el` marker, and `object-fit.css`'s own
+   `var(--sgs-media-object-fit, cover)` fallback already supplies 'cover'. */
 
 .sgs-hero__split-media--svg svg {
 	width: 100%;

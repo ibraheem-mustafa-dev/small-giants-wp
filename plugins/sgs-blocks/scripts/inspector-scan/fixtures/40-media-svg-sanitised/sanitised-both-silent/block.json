@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "sgs/sanitised-both-silent",
+	"title": "Fixture: both JS and PHP correctly sanitised (silent)",
+	"category": "sgs-content",
+	"attributes": {
+		"svgContent": { "type": "string", "default": "" }
+	}
+}

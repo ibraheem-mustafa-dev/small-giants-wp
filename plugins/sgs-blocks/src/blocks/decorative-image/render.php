@@ -166,6 +166,31 @@ $root_decls = array(
 $scoped_css   = array();
 $scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
 
+// ---------------------------------------------------------------------------
+// Media-atom layer (Wave 6, 2026-09-02) — object-fit / focal-point (element
+// scope) / overlay (box scope). Scoped to '.' . $uid alone (this block
+// declares `mediaElements: [{ prefix: "", ... }]`, so
+// `SGS_Media_Element::scope_class()` resolves to $uid itself with no
+// suffix — the SAME class every rendered node in this file already carries
+// somewhere in its ancestor chain: the naked <img> in default mode, or the
+// wrapper span in video/treated/boxed mode). Custom properties inherit, so
+// one rule on `.{uid}` feeds both `.sgs-media-el` and `.sgs-media-box`
+// wherever those markers land.
+//
+// object-fit/focal-point never emitted anything for this block before this
+// migration (it had no such controls) — this is new capability, wired via
+// the atom layer exactly per the migration brief, not a replacement of any
+// existing hand-rolled CSS (there was none to replace).
+$sgs_di_atoms        = array( 'object-fit', 'focal-point', 'overlay' );
+$sgs_di_requires_box = class_exists( 'SGS_Media_Element' )
+	&& SGS_Media_Element::requires_box( $attributes, '', 'sgs/decorative-image', $sgs_di_atoms );
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_di_atom_css = SGS_Media_Element::style( $attributes, '', 'sgs/decorative-image', $uid, $sgs_di_atoms );
+	if ( '' !== $sgs_di_atom_css ) {
+		$scoped_css[] = $sgs_di_atom_css;
+	}
+}
+
 // wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 // CSS combinators like `>` intact (contract §D). Every value reaching
 // $scoped_css is pre-sanitised via $sgs_css_num (numeric cast) or a literal.
@@ -173,7 +198,9 @@ $style_tag_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . 
 
 // Build data attributes — passed directly through $img_attrs for proper escaping.
 $img_attrs = array(
-	'class'       => 'sgs-decorative-image ' . $uid,
+	// `sgs-media-el` is the shared atom layer's marker for the REPLACED
+	// element (object-fit/focal-point read it) — added Wave 6, 2026-09-02.
+	'class'       => 'sgs-decorative-image sgs-media-el ' . $uid,
 	'aria-hidden' => 'true',
 	'role'        => 'presentation',
 	'alt'         => '',
@@ -242,8 +269,24 @@ if ( $is_video ) {
 	// key — the wrapper carries zero inline property declarations; the
 	// positioning/transform/opacity rule lives in $style_tag_html above,
 	// scoped to $uid (contract §A).
-	$wrapper_attrs = array(
-		'class'       => 'sgs-decorative-image sgs-decorative-image--video ' . $uid,
+	//
+	// `sgs-media-box` (Wave 6, 2026-09-02) is added ONLY when the overlay
+	// atom actually emits box-scope CSS for these attribute values
+	// ($sgs_di_requires_box, value-aware) — this wrapper already carries the
+	// $uid class the atom CSS is scoped to, so no other change is needed for
+	// overlay to paint here. object-fit/focal-point are NOT wired onto the
+	// inner <video> in this branch: sgs_render_media() (includes/helpers-
+	// media.php, a shared file out of scope for this migration) has no class
+	// parameter to carry the `sgs-media-el` marker — a documented, narrow gap,
+	// not a silent drop (this block never had object-fit/focal-point controls
+	// for video before this migration either).
+	$video_wrapper_class = array( 'sgs-decorative-image', 'sgs-decorative-image--video' );
+	if ( $sgs_di_requires_box ) {
+		$video_wrapper_class[] = SGS_Media_Element::CLASS_BOX;
+	}
+	$video_wrapper_class[] = $uid;
+	$wrapper_attrs         = array(
+		'class'       => implode( ' ', $video_wrapper_class ),
 		'aria-hidden' => 'true',
 		'role'        => 'presentation',
 	);
@@ -327,6 +370,15 @@ if ( $is_video ) {
  */
 $has_treatment = 'surface-treatment' === ( $attributes['fx'] ?? '' );
 
+// A real container is needed whenever EITHER the FX surface-treatment (a
+// <canvas> host) OR the overlay atom (a ::after box paint) needs one — a
+// replaced <img> supplies neither (Wave 6, 2026-09-02: see the overlay-atom
+// note further below, and the surface-treatment note above it — both name
+// the identical constraint independently). Generalising the wrapper-takes-
+// root-role shape this file already uses for $has_treatment means overlay
+// gets it for free with no second implementation.
+$sgs_di_wants_wrapper = $has_treatment || $sgs_di_requires_box;
+
 $tier_imgs = array();
 foreach ( array( 'Tablet', 'Mobile' ) as $sgs_tier ) {
 	$tier_id  = isset( $attributes[ 'imageId' . $sgs_tier ] ) ? absint( $attributes[ 'imageId' . $sgs_tier ] ) : 0;
@@ -348,12 +400,15 @@ $base_class = $img_attrs['class'];
 // verbatim — there is still no ancestor to descend from there.
 $sgs_media_class = 'sgs-decorative-image__media';
 if ( ! empty( $tier_imgs ) ) {
-	$img_attrs['class'] = $has_treatment
-		? $sgs_media_class . ' ' . $sgs_media_class . '--desktop'
+	// `$sgs_di_wants_wrapper` (Wave 6) generalises this gate: the same
+	// wrapper-takes-root-role tier-class shape now also applies when overlay
+	// alone needs the wrapper, not only fx-surface-treatment.
+	$img_attrs['class'] = $sgs_di_wants_wrapper
+		? $sgs_media_class . ' sgs-media-el ' . $sgs_media_class . '--desktop'
 		: $base_class . ' sgs-decorative-image--desktop';
 
-	$sgs_tier_sel = static function ( $tier ) use ( $uid, $has_treatment, $sgs_media_class ) {
-		if ( $has_treatment ) {
+	$sgs_tier_sel = static function ( $tier ) use ( $uid, $sgs_di_wants_wrapper, $sgs_media_class ) {
+		if ( $sgs_di_wants_wrapper ) {
 			return '.' . $uid . ' .' . $sgs_media_class . '--' . $tier;
 		}
 		return '.' . $uid . '.sgs-decorative-image--' . $tier;
@@ -374,22 +429,42 @@ if ( ! empty( $tier_imgs ) ) {
 	$style_tag_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
 }
 
-// TREATED BRANCH — emit the wrapper the WebGL host needs. Mirrors the video
-// branch above exactly: <style> printed BEFORE the wrapper, wrapper carries no
-// 'style' key (Spec 32), data-* lifted off $img_attrs and nothing else.
-if ( $has_treatment ) {
-	// The inner media carries neither uid nor base class, so $root_sel's
-	// position:absolute never reaches it — it only needs to fill the host.
-	// `[data-sgs-fx="surface-treatment"]{position:relative}` (0,1,0) loses to
-	// $root_sel's (0,2,0) position:absolute on the wrapper, which is fine:
-	// absolute is equally a containing block, so the canvas's inset:0 still
-	// resolves against the wrapper.
-	$scoped_css[]   = '.' . $uid . '.sgs-decorative-image--treated>.' . $sgs_media_class
-		. '{display:block;width:100%;height:auto}';
+// WRAPPER BRANCH — emit the container EITHER the WebGL host ($has_treatment)
+// OR the overlay atom's ::after box paint ($sgs_di_requires_box, Wave 6,
+// 2026-09-02) needs. Mirrors the video branch above: <style> printed BEFORE
+// the wrapper, wrapper carries no 'style' key (Spec 32), data-* lifted off
+// $img_attrs and nothing else. The two triggers share one wrapper when both
+// are active — a treated block that ALSO sets an overlay colour gets both
+// classes on the same span, not two.
+if ( $sgs_di_wants_wrapper ) {
+	if ( $has_treatment ) {
+		// The inner media carries neither uid nor base class, so $root_sel's
+		// position:absolute never reaches it — it only needs to fill the host.
+		// `[data-sgs-fx="surface-treatment"]{position:relative}` (0,1,0) loses to
+		// $root_sel's (0,2,0) position:absolute on the wrapper, which is fine:
+		// absolute is equally a containing block, so the canvas's inset:0 still
+		// resolves against the wrapper.
+		$scoped_css[] = '.' . $uid . '.sgs-decorative-image--treated>.' . $sgs_media_class
+			. '{display:block;width:100%;height:auto}';
+	}
 	$style_tag_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
 
+	$sgs_di_wrapper_class = array( 'sgs-decorative-image' );
+	if ( $has_treatment ) {
+		$sgs_di_wrapper_class[] = 'sgs-decorative-image--treated';
+	}
+	if ( $sgs_di_requires_box ) {
+		// `sgs-media-box` is the shared atom layer's marker for the overlay's
+		// ::after paint (class-sgs-media-element.php::CLASS_BOX) — added
+		// ONLY when overlay actually emits box-scope CSS for these attribute
+		// values, so an instance that never sets an overlay colour/gradient
+		// renders byte-identically to before this migration.
+		$sgs_di_wrapper_class[] = SGS_Media_Element::CLASS_BOX;
+	}
+	$sgs_di_wrapper_class[] = $uid;
+
 	$wrapper_attrs = array(
-		'class'       => 'sgs-decorative-image sgs-decorative-image--treated ' . $uid,
+		'class'       => implode( ' ', $sgs_di_wrapper_class ),
 		'aria-hidden' => 'true',
 		'role'        => 'presentation',
 	);
@@ -404,11 +479,15 @@ if ( $has_treatment ) {
 		$wrapper_attr_strs[] = sprintf( '%s="%s"', esc_attr( $sgs_key ), esc_attr( $sgs_val ) );
 	}
 
-	// Plain fill-the-host media: no uid, no base class, no data-*. Without that
-	// stripping, view.js would match the inner <img> too and apply parallax
-	// twice, and $root_sel would absolutely-position it inside its own wrapper.
+	// Plain fill-the-host media: no uid, no base class, no data-* — but it
+	// KEEPS `sgs-media-el` (Wave 6) so object-fit/focal-point still reach it;
+	// the custom-property VALUES those atoms read are set on the wrapper via
+	// $sgs_di_atom_css above and inherit down through the DOM to this node.
+	// Without that stripping otherwise, view.js would match the inner <img>
+	// too and apply parallax twice, and $root_sel would absolutely-position
+	// it inside its own wrapper.
 	$media_attrs = array(
-		'class'    => empty( $tier_imgs ) ? $sgs_media_class : $img_attrs['class'],
+		'class'    => empty( $tier_imgs ) ? $sgs_media_class . ' sgs-media-el' : $img_attrs['class'],
 		'alt'      => '',
 		'loading'  => 'lazy',
 		'decoding' => 'async',
@@ -440,7 +519,7 @@ if ( $has_treatment ) {
 	);
 	foreach ( $tier_imgs as $tier_key => $tier_media ) {
 		$tier_attrs          = $media_attrs;
-		$tier_attrs['class'] = $sgs_media_class . ' ' . $sgs_media_class . '--' . $tier_key;
+		$tier_attrs['class'] = $sgs_media_class . ' sgs-media-el ' . $sgs_media_class . '--' . $tier_key;
 		$media_html         .= sgs_responsive_image(
 			$tier_media['id'],
 			$tier_media['url'],

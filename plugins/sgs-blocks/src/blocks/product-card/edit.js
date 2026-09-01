@@ -500,6 +500,10 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 									onClick={ () =>
 										setAttributes( {
 											image: img.src,
+											// img is a WooCommerce REST product image object
+											// ({id,src,name,alt}) — img.id is a real WP
+											// attachment ID, not a synthetic gallery index.
+											imageId: img.id || 0,
 											imageAlt: img.alt || '',
 										} )
 									}
@@ -539,6 +543,7 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 							onSelect={ ( media ) =>
 								setAttributes( {
 									image: media.url,
+									imageId: media.id || 0,
 									imageAlt: media.alt || '',
 								} )
 							}
@@ -2334,6 +2339,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										onSelect={ ( media ) =>
 											setAttributes( {
 												image: media.url,
+												imageId: media.id || 0,
 												imageAlt: media.alt || '',
 											} )
 										}
@@ -2365,6 +2371,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									onClick={ () =>
 										setAttributes( {
 											image: '',
+											imageId: 0,
 											imageAlt: '',
 										} )
 									}
@@ -2383,6 +2390,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onSelect={ ( media ) =>
 									setAttributes( {
 										image: media.url,
+										imageId: media.id || 0,
 										imageAlt: media.alt || '',
 									} )
 								}

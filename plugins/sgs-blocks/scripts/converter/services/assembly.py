@@ -139,7 +139,22 @@ def build_block_markup(
     _grid_prefix = db_lookup.layer_attr_prefix("GRID")  # 'gridItem' (DB layer map, not a literal)
     for r in results:
         if isinstance(r, ScalarLift):
-            if _grid_prefix and r.attr.startswith(_grid_prefix):
+            # Wave 6 (2026-09-02) — scalar-media-roles.json's optional
+            # `emit_as` field (db_lookup.scalar_media_emit_as()): a small,
+            # explicit set of attrs (sgs/hero's splitImage/splitImageMobile
+            # today) whose STORAGE shape moved from this composite
+            # {id,url,alt} object to three separate scalar attrs when the
+            # target block adopted the shared media-atom system. The LIFT
+            # itself (scalar_media_from_img(), Branch A's img-scan/modifier
+            # routing) is UNCHANGED — only the final write shape adapts, so a
+            # future clone populates attrs the migrated block's render.php
+            # actually reads instead of the now-dead composite name.
+            _emit_as = db_lookup.scalar_media_emit_as(rec.slug or "", r.attr)
+            if _emit_as and isinstance(r.value, dict):
+                attrs[_emit_as["id"]] = r.value.get("id", 0)
+                attrs[_emit_as["url"]] = r.value.get("url", "")
+                attrs[_emit_as["alt"]] = r.value.get("alt", "")
+            elif _grid_prefix and r.attr.startswith(_grid_prefix):
                 attrs.setdefault(r.attr, r.value)  # grid-item default — CSS pass wins
             else:
                 attrs[r.attr] = r.value            # content wins on collision

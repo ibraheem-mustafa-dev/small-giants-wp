@@ -6,16 +6,19 @@
   "__proven": "Sandbox experiment 2026-08-02 against a COPY of the live DB, real two-class markup, real run_universal_content_walk: BEFORE splitImage=/hero-mob.jpg + stray ChildBlock; AFTER applying these 3 rows splitImage=/hero-desk.webp, splitImageMobile=/hero-mob.jpg, no stray child.",
   "__format": "[block_slug, attr_name, note] — the role applied is always 'scalar-media'",
   "__roster_source": "D128's stated roster, re-verified against the live DB 2026-08-02: all three currently hold role='image-object' with canonical_slot='media'.",
+  "__emit_as": "Wave 6 (2026-09-02). sgs/hero's split-media adopted the shared media-atom system, which stores the picked image as THREE scalar attrs (Id/Url/Alt) rather than the one composite {id,url,alt} object run_mechanism_b's ScalarLift still emits (scalar_media_from_img() in lift_helpers.py, unchanged — the LIFT logic is correct and untouched; only the FINAL WRITE shape needed adapting). render.php stopped reading the composite `splitImage`/`splitImageMobile` attrs entirely (Bean-locked, no legacy read-time fallback — R-31-14), so a future /sgs-clone run populating the old composite shape would silently write a value nothing displays. `emit_as` names the three new keys a ScalarLift targeting this attr should expand into instead of writing the composite object — consumed by assembly.py's ScalarLift handling loop. Absent `emit_as` (every other roster entry) means unchanged behaviour: write the composite object to `attr_name` as before.",
   "attrs": [
     [
       "sgs/hero",
       "splitImage",
-      "Desktop half of the hero split art-direction pair. Branch A routes the un-suffixed image here."
+      "Desktop half of the hero split art-direction pair. Branch A routes the un-suffixed image here.",
+      { "emit_as": { "id": "splitImageId", "url": "splitImageUrl", "alt": "splitImageAlt" } }
     ],
     [
       "sgs/hero",
       "splitImageMobile",
-      "Mobile half. Branch A routes the --mobile image here by appending 'Mobile' to the base attr name."
+      "Mobile half. Branch A routes the --mobile image here by appending 'Mobile' to the base attr name.",
+      { "emit_as": { "id": "splitImageIdMobile", "url": "splitImageUrlMobile", "alt": "splitImageAltMobile" } }
     ]
   ],
   "__WHY_TESTIMONIAL_SLIDER_IS_EXCLUDED": "⛔ sgs/testimonial-slider.sideImage was briefly added to this roster on 2026-08-02 and it BROKE THE BLOCK. Measured with the seeder disabled: role='image-object' lifts sideImage correctly; role='scalar-media' lifts NOTHING. Reason: scalar-media is not a content-bearing role, so it removes the attr from the universal walk's candidate set — and the path that is supposed to take over, run_mechanism_b branch A, only fires for is_class_section_block blocks. sgs/testimonial-slider returns False, so the attr ends up with no route in either direction. D128's own note said exactly this ('testimonial-slider.sideImage NOT routed — tier=block not class-section, gate doesn't fire; DB row not updated') and deliberately left it alone; adding it here overrode a documented decision with an assumption. ⚠ PRE-CONDITION for ever adding a block to this roster: db_lookup.is_class_section_block(slug) MUST return True. scalar-media only pays off when branch A can actually fire; on any other block it strands the attr with no route at all."

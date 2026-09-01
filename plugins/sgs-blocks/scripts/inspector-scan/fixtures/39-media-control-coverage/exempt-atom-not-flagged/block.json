@@ -1,0 +1,17 @@
+{
+	"name": "sgs/exempt-atom-not-flagged",
+	"supports": {
+		"sgs": {
+			"mediaElements": [
+				{ "prefix": "", "context": "element", "atoms": [ "opacity" ] }
+			]
+		}
+	},
+	"attributes": {
+		"mediaType": {
+			"type": "string",
+			"default": "image",
+			"enum": [ "image" ]
+		}
+	}
+}

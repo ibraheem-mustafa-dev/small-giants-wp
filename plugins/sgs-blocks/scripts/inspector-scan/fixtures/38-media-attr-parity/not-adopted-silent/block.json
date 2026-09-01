@@ -1,0 +1,9 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/fixture-not-adopted",
+	"title": "Fixture: a block with no supports.sgs.mediaElements at all (must stay silent — nothing to check)",
+	"category": "sgs",
+	"attributes": {
+		"unrelatedAttr": { "type": "string", "default": "" }
+	}
+}

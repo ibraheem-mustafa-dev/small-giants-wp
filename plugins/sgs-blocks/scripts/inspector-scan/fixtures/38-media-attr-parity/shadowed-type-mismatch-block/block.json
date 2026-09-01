@@ -1,0 +1,16 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/fixture-shadow-mismatch",
+	"title": "Fixture: a hand-declared attribute collides by name with an adopted atom's injected name, wrong type, no reads exemption (must flag)",
+	"category": "sgs",
+	"supports": {
+		"sgs": {
+			"mediaElements": [
+				{ "prefix": "", "context": "element", "atoms": [ "object-fit" ] }
+			]
+		}
+	},
+	"attributes": {
+		"objectFit": { "type": "boolean", "default": false }
+	}
+}

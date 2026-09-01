@@ -90,6 +90,20 @@ export const MEDIA_ATOMS = {
 				beforeImageId: 'integer|string union',
 				afterImageId: 'integer|string union',
 			},
+			// The block's OWN block.json still declares these three as plain
+			// strings (pre-atom-migration poster-image shape), and render.php
+			// (§12a, "thumbnailId wins; fall back to thumbnail") deliberately
+			// keeps reading them as a legacy fallback for stored content that
+			// predates the ThumbnailId/Thumbnail object pair this atom now
+			// injects. Documented here (rather than migrated) because the block
+			// ALREADY declares them — the injection filter's "the block's own
+			// declaration always wins" rule means the atom-shaped Thumbnail
+			// object is never what these three names actually resolve to.
+			'sgs/media': {
+				thumbnail: 'legacy string URL, pre-atom-migration; ThumbnailId/Thumbnail wins when set',
+				thumbnailTablet: 'legacy string URL, pre-atom-migration; ThumbnailId/Thumbnail wins when set',
+				thumbnailMobile: 'legacy string URL, pre-atom-migration; ThumbnailId/Thumbnail wins when set',
+			},
 		},
 	},
 

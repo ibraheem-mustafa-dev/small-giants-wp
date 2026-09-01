@@ -3,8 +3,6 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
-	MediaUpload,
-	MediaUploadCheck,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -12,8 +10,6 @@ import {
 	RangeControl,
 	Button,
 	TextControl,
-	TextareaControl,
-	ToggleControl,
 	BoxControl,
 } from '@wordpress/components';
 import {
@@ -25,7 +21,6 @@ import {
 	shadowAttrKeys,
 	GradientOverlayControl,
 	gradientOverlayAttrKeys,
-	FocalPositionField,
 	BOX_UNITS,
 	normaliseResponsiveBox,
 	SgsColourPanel,
@@ -33,7 +28,14 @@ import {
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
-import MediaPicker from '../../components/MediaPicker';
+import {
+	HeroSplitMediaSourceSection,
+	HeroSplitMediaStylingSection,
+} from '../../components/media/HeroSplitMediaPanelLayout.js';
+import {
+	elementScopeClass,
+	elementCustomProperties,
+} from '../../components/media/canvasStyle.js';
 import {
 	resolveShadowPreview,
 	colourVar,
@@ -61,12 +63,11 @@ import { sanitiseSvg } from '../../utils';
 // by a consolidated <SgsBorderControl> mount (which owns its own style options via
 // GradientCapableColourControl's BorderStyleControl); see migrate-colour-picker-to-panel.py.
 
-const IMAGE_FIT_OPTIONS = [
-	{ label: __( 'Cover', 'sgs-blocks' ), value: 'cover' },
-	{ label: __( 'Contain', 'sgs-blocks' ), value: 'contain' },
-	{ label: __( 'Fill', 'sgs-blocks' ), value: 'fill' },
-	{ label: __( 'Custom (explicit width/height)', 'sgs-blocks' ), value: 'custom' },
-];
+// IMAGE_FIT_OPTIONS (cover/contain/fill/custom) was removed 2026-09-01 — the
+// hand-rolled "Object fit" SelectControl it fed was replaced by the shared
+// object-fit atom's own ObjectFitField (HeroSplitMediaStylingSection). The
+// 'custom' sizing-mode sentinel is no longer a SelectControl option; it is
+// now toggled via that section's dedicated "Custom sizing" ToggleControl.
 
 const UNIT_PX_PCT = [
 	{ label: 'px', value: 'px' },
@@ -188,7 +189,7 @@ const CTA_STYLE_OPTIONS = [
 	{ label: __( 'Outline', 'sgs-blocks' ), value: 'outline' },
 ];
 
-export default function Edit( { attributes, setAttributes, name } ) {
+export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	const {
 		variant,
 		// Split-media motion (2026-08-13) — mirrors the section's own
@@ -201,22 +202,25 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		backgroundImage,
 		backgroundOverlayColour,
 		overlayGradient,
-		splitImage,
-		splitImageTablet,
-		splitImageMobile,
-		// Per-device split-media TYPE (2026-08-13) — declared + render-consumed
-		// but had no editor control until now (dead controls: splitMediaType,
-		// splitVideo, splitSvg families, all 9 attrs). '' on the tablet/mobile
-		// tier means "inherit the next widest tier that has a value".
+		// splitImage/splitVideo/splitSvg (legacy shapes) and their Tablet/
+		// Mobile siblings, plus the hand-rolled "Split image" picker + media-
+		// type SelectControl that used to read them, were removed 2026-09-01
+		// (HeroSplitMediaSourceSection now owns that UI). No legacy fallback
+		// is read here — Bean-locked (2026-09-02), see the resolution
+		// comment below for the full reasoning.
+		//
+		// Wave 6 (2026-09-01) — the `source` atom's own canonical shape
+		// (prefix 'split'), written by the new picker in
+		// HeroSplitMediaSourceSection. Desktop tier only here, matching every
+		// other canvas-preview resolution in this file; render.php resolves
+		// all three tiers.
+		splitImageId,
+		splitImageUrl,
+		splitImageAlt,
+		splitVideoId,
+		splitVideoUrl,
+		splitSvgContent,
 		splitMediaType,
-		splitMediaTypeTablet,
-		splitMediaTypeMobile,
-		splitVideo,
-		splitVideoTablet,
-		splitVideoMobile,
-		splitSvg,
-		splitSvgTablet,
-		splitSvgMobile,
 		// minHeight is a TIER OBJECT {desktop,tablet,mobile} as of Spec 35 pass 3b
 		// (2026-08-11) — the minHeightTablet/minHeightMobile siblings no longer exist.
 		minHeight,
@@ -292,6 +296,24 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	} = attributes;
 
 	const isSplit = variant === 'split';
+
+	// Wave 6 — resolve the split-media SOURCE from the `source` atom's own
+	// Id/Url pair ONLY (the picker in HeroSplitMediaSourceSection writes
+	// there). No legacy `splitImage`/`splitVideo`/`splitSvg` fallback —
+	// Bean-locked (2026-09-02): R-31-14 bans exactly the
+	// `if ( empty($new) && !empty($legacy) )` shape, and this block's own
+	// render.php already carries a 2026-08-13 precedent of deleting an
+	// identically-shaped bridge for the same reason ("no legacy elements as
+	// fallbacks; the framework is pre-production"). An already-published hero
+	// instance that only has the legacy shape shows an empty split-media slot
+	// until re-uploaded through the new picker — a deliberate, accepted
+	// consequence of the strict reading, not an oversight. Desktop tier
+	// only — matches every other preview resolution in this file.
+	const resolvedSplitImage = splitImageUrl
+		? { id: splitImageId || 0, url: splitImageUrl, alt: splitImageAlt || '' }
+		: null;
+	const resolvedSplitVideo = splitVideoUrl ? { id: splitVideoId || 0, url: splitVideoUrl } : null;
+	const resolvedSplitSvg = splitSvgContent || '';
 
 	// Root background paint (backgroundColour / backgroundColourGradient).
 	// Spread FIRST so the background-image branch below still wins when a media
@@ -402,12 +424,27 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// frontend. Desktop tier only, matching every other preview builder in
 	// this file (splitMediaWidthTablet/splitMediaWidthMobile stay editor-only-inert
 	// here, same as the other *Tablet/*Mobile pairs above).
-	const imagePreviewStyle = {};
-	// object-fit — render.php:577-580 (gated OFF when splitMediaObjectFit==='custom',
-	// which switches to explicit width/height below instead).
-	if ( 'custom' !== splitMediaObjectFit ) {
-		imagePreviewStyle.objectFit = splitMediaObjectFit || 'cover';
-	}
+	const imagePreviewStyle = {
+		// Wave 6 — object-fit + focal-point (+ tablet/mobile) now come from
+		// the shared atom's own custom-property VALUES (prefix 'splitMedia'),
+		// consumed by the shared `.sgs-media-el` stylesheet via the
+		// `sgs-media-el` marker class applied below — the same mechanism
+		// `sgs/media`'s own edit.js canvas uses. This REPLACES the old direct
+		// `imagePreviewStyle.objectFit = splitMediaObjectFit || 'cover'`
+		// assignment; the atom's own CSS (`object-fit.css`) already falls
+		// back to 'cover' via `var(--sgs-media-object-fit, cover)`, so an
+		// unset value renders identically. Gated off entirely while
+		// `splitMediaObjectFit === 'custom'` — see `object-fit.js`'s own
+		// `validate()`, which rejects 'custom' to '' and therefore emits no
+		// custom property, leaving the explicit width/height below in sole
+		// control, matching render.php's gate.
+		...elementCustomProperties( {
+			attributes,
+			prefix: 'splitMedia',
+			blockSlug: 'sgs/hero',
+			atoms: [ 'object-fit', 'focal-point' ],
+		} ),
+	};
 	// width — render.php:597-599, gated behind splitMediaObjectFit==='custom'.
 	// splitMediaWidth itself has no dedicated ticket item here, but splitMediaWidthUnit
 	// is meaningless without it (same CSS declaration), so both are applied
@@ -441,20 +478,60 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// is mutually exclusive with mediaParallax, matching render.php:686's
 	// `$media_ken_burns = ! empty( $attributes['mediaKenBurns'] ) && ! $media_parallax;`
 	const mediaKenBurnsActive = !! mediaKenBurns && ! mediaParallax;
+	// Wave 6 — the overlay atom (prefix 'media', attachesTo: 'box') paints via
+	// `.sgs-media-box::after`, so `.sgs-hero__media` (the wrapper this atom's
+	// "box" IS) carries the universal `sgs-media-box` marker + this element's
+	// own scope class. This is what lets the SAME shared `overlay.css` the
+	// other adopting blocks use paint here too — no hero-specific overlay CSS.
+	const mediaBoxScopeClass = elementScopeClass( clientId, 'media' );
 	const mediaWrapperClassName = [
 		'sgs-hero__media',
+		'sgs-media-box',
+		mediaBoxScopeClass,
 		mediaKenBurnsActive ? 'sgs-hero__media--ken-burns' : null,
 	]
 		.filter( Boolean )
 		.join( ' ' );
-	const mediaWrapperStyle = {};
+	const mediaWrapperStyle = {
+		// Wave 6 — overlay colour/gradient/opacity/blend-mode + hover pair,
+		// consumed by the shared `.sgs-media-box::after` rule via the marker
+		// class above. Replaces the old hand-rolled `$media_overlay_html`
+		// span's frontend-only preview gap — the canvas previously showed NO
+		// overlay preview at all; it now matches the frontend exactly.
+		...elementCustomProperties( {
+			attributes,
+			prefix: 'media',
+			blockSlug: 'sgs/hero',
+			atoms: [ 'overlay' ],
+		} ),
+	};
 	if ( isMediaFirstDesktop ) {
 		mediaWrapperStyle.order = 1;
 	}
 	if ( mediaKenBurnsActive ) {
 		mediaWrapperStyle[ '--sgs-hero-media-ken-burns-duration' ] = `${ mediaAnimationDuration }s`;
 	}
-	const splitImageClassName = 'sgs-hero__split-image';
+	// Wave 6 — object-fit + focal-point (prefix 'splitMedia', attachesTo:
+	// 'element') target `.sgs-media-el` directly, so this element carries the
+	// universal marker + its own scope class. Motion is DELIBERATELY NOT
+	// routed through this marker — see the "judgement calls" section of this
+	// migration's task report: hero's existing ken-burns/parallax CSS
+	// (style.css, ~line 495 onward) has a subtle clipping interaction with
+	// its own hover-zoom rule (a compound-selector specificity fight) that
+	// this migration did not risk reproducing under the shared `.sgs-media-el`
+	// mechanism without a live canary to verify against. The motion atom's
+	// EDITOR CONTROL is still fully adopted (HeroSplitMediaSourceSection) and
+	// writes to the SAME mediaParallax/mediaKenBurns/mediaAnimationDuration
+	// attributes hero's own render.php already reads — only the CSS
+	// consumption mechanism stays hero-private.
+	const splitMediaScopeClass = elementScopeClass( clientId, 'splitMedia' );
+	const splitImageClassName = [
+		'sgs-hero__split-image',
+		'sgs-media-el',
+		splitMediaScopeClass,
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
 	// `has-background` suppression flag — mirrors render.php:934-938.
 	//
@@ -601,278 +678,21 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				   reachable for BOTH variants (see that panel for why). ── */}
 				{ isSplit && (
 					<PanelBody title={ __( 'Split image', 'sgs-blocks' ) } initialOpen={ false }>
-						<>
-							{ /* ⛔ The "Split media source" picker (attribute `splitMedia`) was
-							     DELETED here 2026-08-13. It was the pre-typed unified
-							     image-or-video slot, and it left the client looking at TWO media
-							     pickers for one slot — "Split media source" and "Split image" —
-							     that wrote different attributes and had to be kept in sync by
-							     hand. The typed families replace it outright: splitImage* /
-							     splitVideo* / splitSvg*, selected per tier by splitMediaType*.
-							     No deprecation and no fallback: the framework is pre-production
-							     (D270), and render.php no longer reads `splitMedia` at all, so
-							     leaving the control would have been a dead control writing an
-							     attribute nothing renders. */ }
-
-							{ /* Art direction. `splitImageMobile` was render-consumed and
-							     `splitImageTablet` was declared-but-dead, and NEITHER had an editor
-							     control — so only the cloning pipeline could set them and a client
-							     could not crop their own hero for narrow screens. One device-switched
-							     control rather than three stacked pickers: that is the SGS canonical
-							     shape, and `check-control-ux` enforces it (it flagged the stacked
-							     version as RESPONSIVE-FAMILY-WITHOUT-SWITCHER). The switcher also
-							     drives WP's native canvas preview, so the picker and the preview
-							     always agree about which tier you are editing. */ }
-							<ResponsiveControl label={ __( 'Split image', 'sgs-blocks' ) }>
-								{ ( bp ) => {
-									const key = {
-										desktop: 'splitImage',
-										tablet: 'splitImageTablet',
-										mobile: 'splitImageMobile',
-									}[ bp ];
-									const current = attributes[ key ];
-									return (
-										<MediaPicker
-											value={
-												current?.url
-													? { ...current, type: 'image' }
-													: null
-											}
-											onChange={ ( media ) =>
-												setAttributes( {
-													[ key ]:
-														media && media.url
-															? {
-																	id: media.id || 0,
-																	url: media.url,
-																	alt: media.alt || '',
-															  }
-															: undefined,
-												} )
-											}
-											onRemove={ () =>
-												setAttributes( { [ key ]: undefined } )
-											}
-											label={
-												'desktop' === bp
-													? __( 'Main image', 'sgs-blocks' )
-													: __( 'Override for this screen size', 'sgs-blocks' )
-											}
-											instructionsImage={
-												'desktop' === bp
-													? __( 'The image used unless a narrower size overrides it.', 'sgs-blocks' )
-													: __( 'Optional. Leave empty to use the main image at this size.', 'sgs-blocks' )
-											}
-										/>
-									);
-								} }
-							</ResponsiveControl>
-
-							{ /* Media TYPE per device (2026-08-13). splitMediaType/Tablet/Mobile
-							     + splitVideo/Tablet/Mobile + splitSvg/Tablet/Mobile were all
-							     declared in block.json and read in render.php, but had no editor
-							     control at all — so the split media column could only ever be an
-							     image, on every device, no matter what a client picked here.
-							     Gated on the base split media existing (rule: a per-device override
-							     for media that is not there is a dead control). Desktop defaults to
-							     'image' (the block.json default); tablet/mobile default to '' —
-							     "inherit the next widest tier that has a value", same fall-back-UP
-							     rule as every other tier family on this block. */ }
-							{ splitImage?.url && (
-								<ResponsiveControl label={ __( 'Media type', 'sgs-blocks' ) }>
-									{ ( bp ) => {
-										const typeKey = {
-											desktop: 'splitMediaType',
-											tablet: 'splitMediaTypeTablet',
-											mobile: 'splitMediaTypeMobile',
-										}[ bp ];
-										const videoKey = {
-											desktop: 'splitVideo',
-											tablet: 'splitVideoTablet',
-											mobile: 'splitVideoMobile',
-										}[ bp ];
-										const svgKey = {
-											desktop: 'splitSvg',
-											tablet: 'splitSvgTablet',
-											mobile: 'splitSvgMobile',
-										}[ bp ];
-										const currentType = attributes[ typeKey ] || '';
-										const options =
-											'desktop' === bp
-												? [
-														{ label: __( 'Image', 'sgs-blocks' ), value: 'image' },
-														{ label: __( 'Video', 'sgs-blocks' ), value: 'video' },
-														{ label: __( 'SVG', 'sgs-blocks' ), value: 'svg' },
-												  ]
-												: [
-														{ label: __( 'Inherit', 'sgs-blocks' ), value: '' },
-														{ label: __( 'Image', 'sgs-blocks' ), value: 'image' },
-														{ label: __( 'Video', 'sgs-blocks' ), value: 'video' },
-														{ label: __( 'SVG', 'sgs-blocks' ), value: 'svg' },
-												  ];
-										return (
-											<>
-												<SelectControl
-													label={
-														'desktop' === bp
-															? __( 'Media type', 'sgs-blocks' )
-															: __( 'Media type for this screen size', 'sgs-blocks' )
-													}
-													value={ currentType }
-													options={ options }
-													onChange={ ( value ) =>
-														setAttributes( { [ typeKey ]: value } )
-													}
-													__nextHasNoMarginBottom
-													__next40pxDefaultSize
-												/>
-												{ 'image' === currentType && (
-													<p style={ { margin: 0, fontStyle: 'italic' } }>
-														{ __(
-															'Set the image above in "Split image".',
-															'sgs-blocks'
-														) }
-													</p>
-												) }
-												{ 'video' === currentType && (
-													<>
-														<MediaUploadCheck>
-															<MediaUpload
-																onSelect={ ( media ) =>
-																	setAttributes( {
-																		[ videoKey ]: {
-																			id: media.id || 0,
-																			url: media.url,
-																		},
-																	} )
-																}
-																allowedTypes={ [ 'video' ] }
-																value={ attributes[ videoKey ]?.id }
-																render={ ( { open } ) => (
-																	<Button variant="secondary" onClick={ open }>
-																		{ attributes[ videoKey ]?.url
-																			? __( 'Replace video', 'sgs-blocks' )
-																			: __( 'Select video', 'sgs-blocks' ) }
-																	</Button>
-																) }
-															/>
-														</MediaUploadCheck>
-														{ attributes[ videoKey ]?.url && (
-															<Button
-																variant="link"
-																isDestructive
-																onClick={ () =>
-																	setAttributes( { [ videoKey ]: undefined } )
-																}
-																style={ { marginTop: '8px', display: 'block' } }
-															>
-																{ 'desktop' === bp
-																	? __( 'Remove video', 'sgs-blocks' )
-																	: __( 'Use the main media here', 'sgs-blocks' ) }
-															</Button>
-														) }
-													</>
-												) }
-												{ 'svg' === currentType && (
-													<>
-														<TextareaControl
-															label={ __( 'SVG code', 'sgs-blocks' ) }
-															value={ attributes[ svgKey ] || '' }
-															onChange={ ( value ) =>
-																setAttributes( { [ svgKey ]: value } )
-															}
-															help={ __(
-																'Paste your <svg>…</svg> markup here.',
-																'sgs-blocks'
-															) }
-															rows={ 6 }
-														/>
-														{ attributes[ svgKey ] && 'desktop' !== bp && (
-															<Button
-																variant="link"
-																isDestructive
-																onClick={ () =>
-																	setAttributes( { [ svgKey ]: '' } )
-																}
-																style={ { display: 'block' } }
-															>
-																{ __( 'Use the main media here', 'sgs-blocks' ) }
-															</Button>
-														) }
-													</>
-												) }
-												{ '' === currentType && 'desktop' !== bp && (
-													<p style={ { margin: 0, fontStyle: 'italic' } }>
-														{ __(
-															'Inherits the media from the next widest screen size.',
-															'sgs-blocks'
-														) }
-													</p>
-												) }
-											</>
-										);
-									} }
-								</ResponsiveControl>
-							) }
-
-							{ /* Media overlay — a SEPARATE decorative layer on TOP of the split
-							     media, distinct from the "Background" colour set via the
-							     mediaBackground* family in the "Image styling" panel below (that
-							     one paints BEHIND an object-fit:cover image and is invisible
-							     whenever media is present). Mirrors the section overlay's own
-							     GradientOverlayControl usage 1:1, scoped to mediaOverlay*. */ }
-							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Overlay', 'sgs-blocks' ) }</p>
-							<GradientOverlayControl
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-								attrNames={ gradientOverlayAttrKeys( 'mediaOverlay', { solid: 'mediaOverlayColour' } ) }
-								solidLabel={ __( 'Media overlay colour', 'sgs-blocks' ) }
-							/>
-
-							{ /* Media motion (2026-08-13) — a SEPARATE toggle pair from the
-							     section's own "Ken-burns zoom"/"Parallax scroll" controls in
-							     the "Container / Entire Block" panel below (which animate the
-							     SECTION BACKGROUND). These animate the foreground split-media
-							     column itself. Labelled "Media …" throughout so an operator
-							     with both panels open never confuses which element a toggle
-							     affects. Same mutual-exclusion pattern as the section's pair
-							     (ContainerWrapperControls.js) — turning one on clears the
-							     other. */ }
-							<hr style={ { margin: '16px 0' } } />
-							<p className="components-base-control__help">
-								{ __( 'Media Ken-burns and parallax are mutually exclusive — Ken-burns takes priority.', 'sgs-blocks' ) }
-							</p>
-							<ToggleControl
-								label={ __( 'Media Ken-burns zoom', 'sgs-blocks' ) }
-								help={ __( 'Slow zoom animation on the split media (image, video, or SVG), not the section background.', 'sgs-blocks' ) }
-								checked={ !! mediaKenBurns }
-								onChange={ ( val ) =>
-									setAttributes( { mediaKenBurns: val, mediaParallax: val ? false : mediaParallax } )
-								}
-								__nextHasNoMarginBottom
-							/>
-							<ToggleControl
-								label={ __( 'Media parallax scroll', 'sgs-blocks' ) }
-								help={ __( 'The split media drifts gently as the visitor scrolls, for a subtle sense of depth.', 'sgs-blocks' ) }
-								checked={ !! mediaParallax }
-								onChange={ ( val ) =>
-									setAttributes( { mediaParallax: val, mediaKenBurns: val ? false : mediaKenBurns } )
-								}
-								__nextHasNoMarginBottom
-							/>
-							{ mediaKenBurns && (
-								<RangeControl
-									label={ __( 'Media animation duration (seconds)', 'sgs-blocks' ) }
-									value={ mediaAnimationDuration }
-									onChange={ ( val ) => setAttributes( { mediaAnimationDuration: val } ) }
-									min={ 5 }
-									max={ 60 }
-									step={ 1 }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							) }
-						</>
+						{ /* Wave 6 (2026-09-01) — media-type + source + overlay + motion now
+						     route through the shared media-atom system (media-type/source
+						     atoms, prefix 'split'; overlay/motion atoms, prefix 'media' —
+						     see HeroSplitMediaPanelLayout.js for why three different prefixes
+						     are correct here, not an inconsistency). This REPLACES the
+						     hand-rolled "Split image" MediaPicker, the splitImage?.url-gated
+						     media-type SelectControl (closing that gating bug — the type tabs
+						     are now always reachable), the per-type video/SVG MediaUpload/
+						     TextareaControl combo, the hand-rolled GradientOverlayControl
+						     media-overlay span, and the hand-rolled Ken-burns/parallax
+						     ToggleControl pair + RangeControl. */ }
+						<HeroSplitMediaSourceSection
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+						/>
 					</PanelBody>
 				) }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
@@ -1303,61 +1123,20 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							     already the loser whenever both were set. The surviving control is the
 							     Height control below, which carries a unit picker instead of hardcoding
 							     px. Its render is now UNGATED so it keeps this control's reach. */ }
-							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Display', 'sgs-blocks' ) }</p>
-							<SelectControl label={ __( 'Object fit', 'sgs-blocks' ) } value={ splitMediaObjectFit } options={ IMAGE_FIT_OPTIONS } onChange={ ( val ) => setAttributes( { splitMediaObjectFit: val } ) } __nextHasNoMarginBottom __next40pxDefaultSize />
-							{ /* Upgraded from a free-text "center 20%" TextControl to a
-							     crosshair 2026-08-11 (Spec 35 capability-routing doctrine,
-							     Part 9) — this control was the ONLY known-good, already-
-							     responsive object-position path in the whole framework, so
-							     the tier structure (desktop/tablet/mobile, three distinct
-							     attrs) is kept exactly as-is; only the INPUT WIDGET changes.
-							     Conversion is via the shared objectPositionToFocalPoint /
-							     focalPointToObjectPosition maths (src/utils/objectPosition.js),
-							     same rounding contract as the universal imageControls
-							     extension's PHP side, so a legacy free-text value round-trips
-							     losslessly the first time the crosshair is touched. */ }
-							<ResponsiveControl label={ __( 'Object position', 'sgs-blocks' ) }>
-								{ ( breakpoint ) => {
-									const posAttrMap = {
-										desktop: 'splitMediaObjectPosition',
-										tablet: 'splitMediaObjectPositionTablet',
-										mobile: 'splitMediaObjectPositionMobile',
-									};
-									const posKey = posAttrMap[ breakpoint ];
-									const posDefault = {
-										desktop: 'center center',
-										tablet: '',
-										mobile: 'center 20%',
-									}[ breakpoint ];
-									const posHelpMap = {
-										desktop: __( 'Drag the crosshair to control which part of the image stays visible when it is cropped. Applies to tablet too unless overridden below.', 'sgs-blocks' ),
-										tablet: __( 'Leave centred to inherit the desktop position above.', 'sgs-blocks' ),
-										mobile: __( 'Only used when a separate mobile image is set above.', 'sgs-blocks' ),
-									};
-									const posValue = attributes[ posKey ];
-									// Tablet's "blank = inherit desktop" contract can't be
-									// expressed by a crosshair (it has no empty state) — an
-									// unset tablet override is shown at the desktop position
-									// so dragging it always starts from what's actually
-									// rendering, and is written explicitly the moment it's
-									// touched (same as every other breakpoint here).
-									const effectiveValue =
-										'tablet' === breakpoint && ! posValue
-											? attributes.splitMediaObjectPosition ?? posDefault
-											: posValue ?? posDefault;
-									return (
-										<FocalPositionField
-											format="css-string"
-											help={ posHelpMap[ breakpoint ] }
-											url={ splitImage?.url || '' }
-											value={ effectiveValue }
-											onChange={ ( val ) =>
-												setAttributes( { [ posKey ]: val } )
-											}
-										/>
-									);
-								} }
-							</ResponsiveControl>
+							{ /* Wave 6 (2026-09-01) — object-fit + focal-point now route
+							     through the shared media-atom system (prefix 'splitMedia',
+							     reproducing splitMediaObjectFit/splitMediaObjectPosition*
+							     exactly — see HeroSplitMediaPanelLayout.js). This REPLACES the
+							     hand-rolled "Object fit" SelectControl and the
+							     ResponsiveControl+FocalPositionField "Object position" combo.
+							     The "Custom sizing" toggle inside the new section is a
+							     hero-specific bridge into the `custom` sizing-mode sentinel
+							     (object-fit's own vocabulary never includes it) — see that
+							     component's own docblock. */ }
+							<HeroSplitMediaStylingSection
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+							/>
 							{ splitMediaObjectFit === 'custom' && (
 								<>
 									<p style={ { fontWeight: 600, margin: '12px 0 4px' } }>{ __( 'Custom dimensions', 'sgs-blocks' ) }</p>
@@ -1670,9 +1449,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				     The old `splitMedia?.type === 'video'` branch was removed with
 				     that attribute (2026-08-13). */ }
 				{ isSplit &&
-					( splitImage?.url ||
-						splitVideo?.url ||
-						splitSvg ) && (
+					( resolvedSplitImage?.url ||
+						resolvedSplitVideo?.url ||
+						resolvedSplitSvg ) && (
 						<div
 							className={ mediaWrapperClassName }
 							style={
@@ -1681,9 +1460,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									: undefined
 							}
 						>
-							{ splitMediaType === 'video' && splitVideo?.url && (
+							{ splitMediaType === 'video' && resolvedSplitVideo?.url && (
 								<video
-									src={ splitVideo.url }
+									src={ resolvedSplitVideo.url }
 									className={ splitImageClassName }
 									style={ imagePreviewStyle }
 									autoPlay
@@ -1692,7 +1471,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									playsInline
 								/>
 							) }
-							{ splitMediaType === 'svg' && splitSvg && (
+							{ splitMediaType === 'svg' && resolvedSplitSvg && (
 								/* Editor-only preview of the operator's own pasted markup,
 								   identical in mechanism and purpose to media/edit.js:1538.
 								   The SERVER is the security boundary: render.php passes every
@@ -1705,16 +1484,16 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									style={ imagePreviewStyle }
 									aria-hidden="true"
 									dangerouslySetInnerHTML={ {
-										__html: sanitiseSvg( splitSvg ),
+										__html: sanitiseSvg( resolvedSplitSvg ),
 									} }
 								/>
 							) }
 							{ splitMediaType !== 'video' &&
 								splitMediaType !== 'svg' &&
-								splitImage?.url && (
+								resolvedSplitImage?.url && (
 									<img
-										src={ splitImage.url }
-										alt={ splitImage.alt || '' }
+										src={ resolvedSplitImage.url }
+										alt={ resolvedSplitImage.alt || '' }
 										className={ splitImageClassName }
 										style={ imagePreviewStyle }
 									/>

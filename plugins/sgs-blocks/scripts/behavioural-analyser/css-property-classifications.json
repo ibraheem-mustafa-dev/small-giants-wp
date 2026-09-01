@@ -1683,25 +1683,6 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "mediaOverlayColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_layer": "GRID_AREA",
-        "css_element": "media-overlay"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "mediaOverlayGradient",
-      "fields": {
-        "css_property": "background-image",
-        "css_layer": "GRID_AREA",
-        "css_element": "media-overlay"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "mediaPadding",
       "fields": {
         "css_property": "padding",
@@ -1804,43 +1785,6 @@
         "css_property": "height",
         "css_layer": "GRID_AREA",
         "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaObjectFit",
-      "fields": {
-        "css_property": "object-fit",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaObjectPosition",
-      "fields": {
-        "css_property": "object-position",
-        "css_tier": "desktop",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaObjectPositionMobile",
-      "fields": {
-        "css_property": "object-position",
-        "css_tier": "mobile",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaObjectPositionTablet",
-      "fields": {
-        "css_property": "object-position",
-        "css_tier": "tablet"
       }
     },
     {
@@ -2256,16 +2200,6 @@
     },
     {
       "slug": "sgs/media",
-      "attr": "boxShadow",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER",
-        "css_element": "wrapper",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/media",
       "attr": "captionColour",
       "fields": {
         "css_property": "color",
@@ -2278,55 +2212,6 @@
       "fields": {
         "css_property": "font-size",
         "css_element": "caption"
-      }
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "height",
-      "fields": {
-        "css_property": "height",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "maxHeight",
-      "fields": {
-        "css_property": "max-height",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "maxWidth",
-      "fields": {
-        "css_property": "max-width",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "objectFit",
-      "fields": {
-        "css_property": "object-fit",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "objectPosition",
-      "fields": {
-        "css_property": "object-position",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "opacity",
-      "fields": {
-        "css_property": "opacity",
-        "css_element": "wrapper"
       }
     },
     {
@@ -7504,6 +7389,25 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "mediaOverlayColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "GRID_AREA",
+        "css_element": "media-overlay"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "mediaOverlayGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "GRID_AREA",
+        "css_element": "media-overlay"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "mediaParallax",
       "fields": {
         "css_property": "anim:parallax",
@@ -7527,6 +7431,24 @@
         "css_property": "box-shadow",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMediaObjectFit",
+      "fields": {
+        "css_property": "object-fit",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMediaObjectPosition",
+      "fields": {
+        "css_property": "object-position",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
       }
     },
     {
@@ -7837,6 +7759,97 @@
       "attr": "textColourGradient",
       "fields": {
         "css_property": "color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "boxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "height",
+      "fields": {
+        "css_property": "height",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "maxHeight",
+      "fields": {
+        "css_property": "max-height",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "objectFit",
+      "fields": {
+        "css_property": "object-fit",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "objectPosition",
+      "fields": {
+        "css_property": "object-position",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "opacity",
+      "fields": {
+        "css_property": "opacity",
         "css_element": "wrapper"
       }
     },
@@ -11642,6 +11655,26 @@
       }
     },
     {
+      "slug": "sgs/hero",
+      "attr": "splitMediaObjectPositionMobile",
+      "fields": {
+        "css_property": "object-position",
+        "css_tier": "mobile",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMediaObjectPositionTablet",
+      "fields": {
+        "css_property": "object-position",
+        "css_tier": "tablet",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
+      }
+    },
+    {
       "slug": "sgs/icon-list",
       "attr": "borderRadiusMobile",
       "fields": {
@@ -11670,6 +11703,24 @@
     },
     {
       "slug": "sgs/info-box",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/media",
       "attr": "borderRadiusTablet",
       "fields": {
         "css_property": "border-radius",

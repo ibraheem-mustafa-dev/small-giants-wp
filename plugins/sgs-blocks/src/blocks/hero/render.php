@@ -57,12 +57,13 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // declaration into a new CSS rule. Mirrors sgs/button's proven sanitiser.
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations (border-style / object-fit) — letters + hyphen only.
-// object-position sanitiser — allows the keyword/percentage/length grammar of
-// CSS object-position ("center 20%", "top left", "10px 50%") while stripping
-// anything that could break out of the declaration.
-$sgs_css_object_position = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9%.\-\s]/', '', (string) $value );
-};
+// object-position sanitiser — Wave 6 (2026-09-01): the hand-rolled
+// $sgs_css_object_position closure that used to live here was REMOVED. Its
+// only two callers (base+tablet object-position and the mobile-tier override)
+// were replaced by the shared `focal-point` atom's own PHP twin
+// (`sgs_media_atom_focal_point_css()`, `includes/media/atoms/focal-point.php`),
+// which sanitises with the identical charset and now owns all three tiers —
+// see the `SGS_Media_Element::style()` call further down this file.
 
 // ── Shell / layout attributes (still scalar — drive the wrapper + media column).
 // FR-22-6: scalar content attrs (label, headline, subHeadline, ctaPrimary*,
@@ -119,9 +120,48 @@ $overlay_blend_mode     = $attributes['backgroundOverlayBlendMode'] ?? '';
 // pre-production, so there is nothing to migrate). They also contradicted this
 // file's own R-31-14 contract at the top — "NO legacy scalar fallback" — and
 // R-31-14, which bans exactly the `if ( empty($new) && !empty($legacy) )` shape.
-$split_image        = $attributes['splitImage'] ?? null;
-$split_image_tablet = $attributes['splitImageTablet'] ?? null;
-$split_image_mobile = $attributes['splitImageMobile'] ?? null;
+// Wave 6 (2026-09-01) — the `source` atom (prefix 'split') writes a NEW
+// {base}Id/{base}Url pair (its own canonical shape — `source.control.js`'s
+// `pairPickerRow()` always writes this, never the legacy composite object),
+// which is NOT the shape hero's `splitImage`/`splitVideo` attributes declare
+// (a composite `{id,url,alt}` object). NO legacy fallback is read here —
+// Bean-locked (2026-09-02): R-31-14 bans exactly the
+// `if ( empty($new) && !empty($legacy) )` shape, and this very block already
+// carries a 2026-08-13 precedent of deleting an identically-shaped bridge
+// for the same reason (see the comment block above this one). An
+// already-published hero instance that only has the legacy `splitImage`/
+// `splitVideo`/`splitSvg` shape renders an EMPTY split-media slot until
+// re-uploaded through the new picker — a deliberate, accepted consequence of
+// the strict reading, not an oversight. The legacy attributes stay DECLARED
+// in block.json (never renamed — D338), simply unread and unwritten going
+// forward.
+$sgs_hero_resolve_split_image = static function ( array $attributes, string $suffix ) {
+	$url = (string) ( $attributes[ 'splitImageUrl' . $suffix ] ?? '' );
+	if ( '' === $url ) {
+		return null;
+	}
+	return array(
+		'id'  => absint( $attributes[ 'splitImageId' . $suffix ] ?? 0 ),
+		'url' => $url,
+		'alt' => (string) ( $attributes[ 'splitImageAlt' . $suffix ] ?? '' ),
+	);
+};
+$sgs_hero_resolve_split_video = static function ( array $attributes, string $suffix ) {
+	$url = (string) ( $attributes[ 'splitVideoUrl' . $suffix ] ?? '' );
+	if ( '' === $url ) {
+		return null;
+	}
+	return array(
+		'id'  => absint( $attributes[ 'splitVideoId' . $suffix ] ?? 0 ),
+		'url' => $url,
+	);
+};
+$sgs_hero_resolve_split_svg   = static function ( array $attributes, string $suffix ) {
+	return (string) ( $attributes[ 'splitSvgContent' . $suffix ] ?? '' );
+};
+$split_image                  = $sgs_hero_resolve_split_image( $attributes, '' );
+$split_image_tablet           = $sgs_hero_resolve_split_image( $attributes, 'Tablet' );
+$split_image_mobile           = $sgs_hero_resolve_split_image( $attributes, 'Mobile' );
 // Per-tier media TYPE (2026-08-13). The split media column may be an image on one
 // device and a video or inline SVG on another, so each tier carries its own type
 // alongside its own source. '' on a narrower tier = inherit the next wider tier,
@@ -129,19 +169,19 @@ $split_image_mobile = $attributes['splitImageMobile'] ?? null;
 $split_media_type        = $attributes['splitMediaType'] ?? 'image';
 $split_media_type_tablet = $attributes['splitMediaTypeTablet'] ?? '';
 $split_media_type_mobile = $attributes['splitMediaTypeMobile'] ?? '';
-$split_video             = $attributes['splitVideo'] ?? null;
-$split_video_tablet      = $attributes['splitVideoTablet'] ?? null;
-$split_video_mobile      = $attributes['splitVideoMobile'] ?? null;
-$split_svg               = (string) ( $attributes['splitSvg'] ?? '' );
-$split_svg_tablet        = (string) ( $attributes['splitSvgTablet'] ?? '' );
-$split_svg_mobile        = (string) ( $attributes['splitSvgMobile'] ?? '' );
+$split_video             = $sgs_hero_resolve_split_video( $attributes, '' );
+$split_video_tablet      = $sgs_hero_resolve_split_video( $attributes, 'Tablet' );
+$split_video_mobile      = $sgs_hero_resolve_split_video( $attributes, 'Mobile' );
+$split_svg               = $sgs_hero_resolve_split_svg( $attributes, '' );
+$split_svg_tablet        = $sgs_hero_resolve_split_svg( $attributes, 'Tablet' );
+$split_svg_mobile        = $sgs_hero_resolve_split_svg( $attributes, 'Mobile' );
 // ⛔ The `splitMedia` -> `splitVideo` alias bridge was DELETED here 2026-08-13.
 // `splitVideo*` is the only video source; a video is set through its own control.
-$split_image_mobile_object_position = $attributes['splitMediaObjectPositionMobile'] ?? 'center 20%';
-// Tablet tier of the object-position triple (Spec 35 Track 1b Phase 1.4c —
-// promoted from a mobile-only orphan). Desktop tier is $image_object_position
-// below (splitMediaObjectPosition, already wired); '' = inherit desktop.
-$image_object_position_tablet = $attributes['splitMediaObjectPositionTablet'] ?? '';
+// splitMediaObjectPosition/Tablet/Mobile (the object-position triple) are read
+// entirely by the `focal-point` atom's own PHP twin now (Wave 6, 2026-09-01) —
+// see the `SGS_Media_Element::style()` call further down this file. The three
+// local variables that used to hold them here were removed along with the
+// hand-rolled emission they fed.
 // Free-text embedded length strings (e.g. "600px") — sanitised before reaching
 // the scoped <style> rule below (was esc_attr()-only, which does not strip
 // ;{}() and so cannot prevent CSS-rule breakout).
@@ -193,8 +233,11 @@ $bg_video_mobile = $attributes['bgVideoMobile'] ?? null;
 
 
 // ── Phase 1: Image display attributes ──────────────────────────────────────
-$image_object_fit      = $attributes['splitMediaObjectFit'] ?? 'cover';
-$image_object_position = $attributes['splitMediaObjectPosition'] ?? 'center center';
+// $image_object_fit is still read directly (the 'custom' explicit-sizing
+// gate below, Width/Height family). $image_object_position was removed —
+// the `focal-point` atom's own PHP twin reads `splitMediaObjectPosition*`
+// directly now (Wave 6).
+$image_object_fit = $attributes['splitMediaObjectFit'] ?? 'cover';
 
 $image_width        = $attributes['splitMediaWidth'] ?? null;
 $image_width_tablet = $attributes['splitMediaWidthTablet'] ?? null;
@@ -616,28 +659,30 @@ if ( $is_split ) {
 		);
 	}
 
-	// ── object-fit / object-position — moved from inline style="" (contract §A).
-	// Scoped to `--image, --video` ONLY (not the shared `.sgs-hero__split-media`
-	// base): these are replaced-element properties and do nothing on the SVG
-	// tier's `<span>` wrapper, so emitting them there would be a lie about what
-	// the property actually affects.
-	$sgs_hero_split_media_fit_selector = '.' . $uid . ' .sgs-hero__split-media--image,.' . $uid . ' .sgs-hero__split-media--video';
-	if ( 'custom' !== $image_object_fit ) {
-		$allowed_fits    = array( 'fill', 'contain', 'cover', 'none' );
-		$safe_fit        = in_array( $image_object_fit, $allowed_fits, true ) ? $image_object_fit : 'cover';
-		$responsive_css .= $sgs_hero_split_media_fit_selector . '{object-fit:' . $safe_fit . '}';
-	}
-	$safe_object_position = $sgs_css_object_position( $image_object_position );
-	if ( '' !== $safe_object_position ) {
-		$responsive_css .= $sgs_hero_split_media_fit_selector . '{object-position:' . $safe_object_position . '}';
-	}
-	// Tablet tier override. Blank = inherit the desktop rule above.
-	if ( $image_object_position_tablet ) {
-		$safe_object_position_tablet = $sgs_css_object_position( $image_object_position_tablet );
-		if ( '' !== $safe_object_position_tablet ) {
-			$responsive_css .= '@media (max-width:1023px){' . $sgs_hero_split_media_fit_selector . '{object-position:' . $safe_object_position_tablet . '}}';
-		}
-	}
+	// ── object-fit / object-position — Wave 6 (2026-09-01). Now emitted by the
+	// shared `object-fit`/`focal-point` atoms (prefix 'splitMedia', which
+	// reproduces `splitMediaObjectFit`/`splitMediaObjectPosition*` EXACTLY —
+	// see block.json's `_comment_mediaElements`), via `SGS_Media_Element::style()`.
+	// REPLACES the hand-rolled `object-fit`/`object-position` CSS this block
+	// used to build directly (base + tablet tiers here; the mobile-tier
+	// override that used to live separately near the media-assembly site
+	// below is ALSO replaced — the atom's own `css()` already emits all three
+	// tiers). Targets the universal `.sgs-media-el` marker class, added to
+	// every tier element (image/video/svg) via `sgs_tier_media_render()`'s
+	// `$extra` parameter below — object-fit/object-position are no-ops on the
+	// SVG `<span>` tier regardless of whether the rule reaches it (replaced-
+	// element properties only), so a single unscoped-by-type marker is safe.
+	// The atom's own `validate()` already rejects `custom` (hero's own
+	// explicit-sizing sentinel — see `object-fit.js`'s module docblock) to ''
+	// for the fit property, so no separate `'custom' !== $image_object_fit`
+	// gate is needed here — it degrades identically to the old hand-rolled gate.
+	$responsive_css .= SGS_Media_Element::style(
+		$attributes,
+		'splitMedia',
+		'sgs/hero',
+		$uid,
+		array( 'object-fit', 'focal-point' )
+	);
 }
 
 // ── splitMediaWidth: base + tablet + mobile (custom fit only) ──────────────────
@@ -706,14 +751,14 @@ if ( $media_bg_gradient_value ) {
 // mediaOverlay — a SEPARATE overlay layered on TOP of the split media (image/
 // video/SVG), distinct from mediaBackground above (which paints BEHIND an
 // object-fit:cover image and is therefore invisible whenever media is
-// present). Mirrors the section overlay's own gradient/flat-colour build
-// (~line 969 below) 1:1, scoped to `.sgs-hero__media-overlay` instead of
-// `.sgs-hero__overlay`.
-$media_overlay_colour_raw = $attributes['mediaOverlayColour'] ?? '';
-// mediaOverlayGradient is ONE attribute holding the complete CSS gradient
-// value, validated through sgs_css_gradient_value().
-$media_overlay_gradient_value = sgs_css_gradient_value( $attributes['mediaOverlayGradient'] ?? '' );
-$media_overlay_has_colour     = '' !== $media_overlay_colour_raw || $media_overlay_gradient_value;
+// present). Wave 6 (2026-09-01): the hand-rolled colour/gradient resolution
+// that used to live here, plus the `$media_overlay_html` span it fed, are
+// GONE — `mediaOverlayColour`/`mediaOverlayGradient` (+ Hover/Opacity/
+// BlendMode siblings) are now read entirely by the shared `overlay` atom's
+// PHP twin (`sgs_media_atom_overlay_css()`), which routes through the SAME
+// `sgs_background_paint_value()` primitive `sgs_overlay_decls()` itself uses
+// — see the `SGS_Media_Element::style()` call at the media-assembly site
+// further down this file, and block.json's `_comment_mediaElements`.
 
 // Media motion — mediaParallax/mediaKenBurns/mediaAnimationDuration (2026-08-13).
 // A SEPARATE control family from the section's own bgParallax/bgKenBurns
@@ -946,6 +991,38 @@ if ( $has_attr_video ) {
 			esc_url( $desktop_src )
 		);
 	}
+
+	// object-fit/object-position for the section background video — reads the
+	// SAME backgroundSize/backgroundPosition attributes the shared
+	// BackgroundPanel's Image tab already writes (the Video tab's new Size/
+	// Position controls now write into them too, via the object-fit/
+	// focal-point media atoms at backdrop scope — no second attribute
+	// family). Mirrors SGS_Container_Wrapper::render()'s equivalent
+	// `.sgs-container__video-bg` rule for sgs/container, cta-section,
+	// multi-button, physics-canvas, site-footer, site-header, trust-bar —
+	// but hero hand-rolls its OWN video markup rather than calling the
+	// wrapper for it (see the "composite-mirror divergence" note above this
+	// block), so this reads the shared attributes directly and emits its own
+	// scoped rule using hero's own $uid/$responsive_css, exactly like the
+	// split-media object-fit/object-position rule further up in this file.
+	// No-inline contract (Spec 32): routes to the scoped <style>, never onto
+	// the <video> tag itself.
+	// ⚠ Uses `sgs_media_atom_focal_point_validate()` (includes/media/atoms/
+	// focal-point.php, globbed in by render-helpers.php — the SAME validator
+	// the split-media object-position rule above already calls), NOT the old
+	// `$sgs_css_object_position` closure — that closure was REMOVED from this
+	// file in the Wave 6 split-media migration (see the note near the top of
+	// this file); calling it here would fatal.
+	$bg_video_size          = $attributes['backgroundSize'] ?? 'cover';
+	$allowed_bg_video_sizes = array( 'cover', 'contain', 'auto' );
+	if ( ! in_array( $bg_video_size, $allowed_bg_video_sizes, true ) ) {
+		$bg_video_size = 'cover';
+	}
+	$bg_video_position = sgs_media_atom_focal_point_validate( $attributes['backgroundPosition'] ?? 'center center', 'Position' );
+	if ( '' === $bg_video_position ) {
+		$bg_video_position = 'center center';
+	}
+	$responsive_css .= '.' . $uid . ' .sgs-hero__video-bg{object-fit:' . esc_attr( $bg_video_size ) . ';object-position:' . esc_attr( $bg_video_position ) . '}';
 }
 
 // Build standard background image element.
@@ -1015,10 +1092,10 @@ if ( 'none' !== $border_style ) {
 	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
 	// through to the browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt             = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr             = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb             = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl             = '' !== $border_width_left ? $border_width_left : '0';
 		$responsive_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
 	}
 
@@ -1262,21 +1339,52 @@ if ( $is_split && ! empty( $split_tiers ) ) {
 	// `.sgs-hero__split-image`, so video/SVG tiers silently ignored every one of
 	// those controls despite the inspector offering them.
 	$sgs_hero_split_image_class = 'sgs-hero__split-image';
-	$sgs_hero_tier_result = sgs_tier_media_render(
+	// Wave 6 (2026-09-01) — every tier element (image/video/svg) now ALSO
+	// carries the universal `sgs-media-el` marker + the `object-fit`/
+	// `focal-point` atoms' scope class (prefix 'splitMedia'), so the shared
+	// `.sgs-media-el`-keyed stylesheet (`assets/css/media-atoms/object-fit.css`
+	// + `focal-point.css`) can reach these elements — the SAME mechanism
+	// `sgs/media`/`sgs/before-after` use, not a hero-private duplicate. This
+	// is what lets `SGS_Media_Element::style()` above (which computed this
+	// exact scope class) actually paint: a rule with nowhere to attach is a
+	// silent no-op, so the class MUST reach the same element the rule targets.
+	$sgs_hero_media_el_extra = 'sgs-media-el ' . SGS_Media_Element::scope_class( $uid, 'splitMedia' );
+	$sgs_hero_tier_result    = sgs_tier_media_render(
 		$split_tiers,
 		'sgs-hero__split-media',
 		$uid,
 		$sgs_hero_split_alt,
-		array( 'image' => $sgs_hero_split_image_class )
+		array(
+			'image' => $sgs_hero_split_image_class . ' ' . $sgs_hero_media_el_extra,
+			'video' => $sgs_hero_media_el_extra,
+			'svg'   => $sgs_hero_media_el_extra,
+		)
 	);
 	if ( '' !== $sgs_hero_tier_result['html'] ) {
-		$media_class = 'sgs-hero__media';
+		// Wave 6 — the `overlay` atom (prefix 'media', attachesTo: 'box') paints
+		// via `.sgs-media-box::after`, so `.sgs-hero__media` (this wrapper IS
+		// that "box") carries the universal `sgs-media-box` marker + its own
+		// scope class. REPLACES the hand-rolled `$media_overlay_html` span +
+		// its manual background-color/background-image CSS string below —
+		// that mechanism bypassed `sgs_overlay_decls()` entirely (no opacity,
+		// no blend mode, no hover state); the shared `overlay.css` rule gives
+		// all three for free, with zero hero-specific overlay CSS. The marker
+		// is added UNCONDITIONALLY (matching every other adopting block) —
+		// `overlay.css`'s own `::after` paints fully transparent when no
+		// custom property is set, so an unused marker costs nothing.
+		$media_class = 'sgs-hero__media sgs-media-box ' . SGS_Media_Element::scope_class( $uid, 'media' );
 		// Media motion classes — scoped to `.sgs-hero__media` ONLY (never the
 		// root `<section>`), and gated inside this `'' !== …['html']` branch so
 		// they can only ever land on a media column that genuinely rendered
 		// something (an operator toggling these before picking media leaves
 		// $sgs_hero_tier_result['html'] empty, so $media_html itself never
-		// prints and neither class reaches the page).
+		// prints and neither class reaches the page). Deliberately NOT routed
+		// through the shared `motion` atom's `.sgs-media-el` mechanism — see
+		// this migration's task report ("judgement calls") for why hero keeps
+		// its own ken-burns/parallax CSS (a subtle clipping interaction with
+		// the split-image hover-zoom rule that this migration did not risk
+		// reproducing without a live canary). The motion atom's EDITOR
+		// CONTROL is still fully adopted and writes to these SAME attributes.
 		if ( $media_parallax ) {
 			$media_class .= ' sgs-hero__media--parallax';
 		}
@@ -1289,39 +1397,11 @@ if ( $is_split && ! empty( $split_tiers ) ) {
 			// never collide on the same variable.
 			$responsive_css .= '.' . $uid . ' .sgs-hero__media{--sgs-hero-media-ken-burns-duration:' . $media_animation_duration . 's}';
 		}
-		// Media overlay — a decorative span layered on top of the tier media,
-		// appended AFTER it in the DOM so it paints above (mirrors the section
-		// overlay's positioning approach). Emitted only when an overlay colour
-		// or gradient has actually been set (mediaOverlay* read above) — an
-		// empty overlay element must never render.
-		$media_overlay_html = '';
-		if ( $media_overlay_has_colour ) {
-			$media_overlay_html = '<span class="sgs-hero__media-overlay" aria-hidden="true"></span>';
-			if ( $media_overlay_gradient_value ) {
-				$responsive_css .= '.' . $uid . ' .sgs-hero__media-overlay{background-image:' . $media_overlay_gradient_value . '}';
-			} else {
-				$responsive_css .= '.' . $uid . ' .sgs-hero__media-overlay{background-color:' . sgs_colour_value( $media_overlay_colour_raw ) . '}';
-			}
-		}
-		$media_html = '<div class="' . esc_attr( $media_class ) . '">' . $sgs_hero_tier_result['html'] . $media_overlay_html . '</div>';
+		$responsive_css .= SGS_Media_Element::style( $attributes, 'media', 'sgs/hero', $uid, array( 'overlay' ) );
+		$media_html      = '<div class="' . esc_attr( $media_class ) . '">' . $sgs_hero_tier_result['html'] . '</div>';
 		// ⛔ CALLER CONTRACT (helpers-tier-media.php): this MUST be appended to
 		// $responsive_css BEFORE it is printed below — it is, at line ~1166.
 		$responsive_css .= $sgs_hero_tier_result['css'];
-
-		// Mobile-tier image object-position override — only meaningful when the
-		// mobile tier actually resolved to an IMAGE (a video/SVG mobile tier has
-		// no object-position concept here).
-		if ( isset( $split_tiers['mobile'] ) && 'image' === $split_tiers['mobile']['type'] ) {
-			$safe_mobile_object_position = $sgs_css_object_position( $split_image_mobile_object_position );
-			if ( '' !== $safe_mobile_object_position ) {
-				// Converted from the compound `.split-image.split-media--mobile`
-				// selector to the type-modifier form, matching the base/tablet
-				// object-position rules above (now scoped to `--image, --video`
-				// generically) — this one stays image-only by its own `isset()`
-				// guard above, so `--image` alone is correct here.
-				$responsive_css .= '.' . $uid . ' .sgs-hero__split-media--image.sgs-hero__split-media--mobile{object-position:' . $safe_mobile_object_position . '}';
-			}
-		}
 	}
 }
 

@@ -1,0 +1,10 @@
+{
+	"apiVersion": 3,
+	"name": "sgs/no-svg-block-silent",
+	"title": "Fixture: no SVG features at all (silent)",
+	"category": "sgs-content",
+	"attributes": {
+		"heading": { "type": "string", "default": "" },
+		"backgroundColour": { "type": "string", "default": "" }
+	}
+}

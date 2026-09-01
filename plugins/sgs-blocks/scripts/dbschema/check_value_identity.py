@@ -103,14 +103,28 @@ VALUE_ASSERTIONS: list[dict] = [
                "universal walk. Flip it to 'content-bearing' and the walk re-claims the "
                "image with no modifier awareness — the original bug, restored.",
     },
-    {
-        "table": "block_attributes",
-        "key": {"block_slug": "sgs/hero", "attr_name": "splitImage"},
-        "column": "emit_shape",
-        "expected": "nested",
-        "why": "'child' here would emit a separate block instead of lifting the image into "
-               "the hero's own attr — the double-render D128 was built to stop.",
-    },
+    # ⚠ The `emit_shape='nested'` assertion that used to live here (removed
+    # 2026-09-02, Wave 6 — sgs/hero's media-atom migration) is now STALE, not
+    # a regression to fix. `_populate_emit_shape` (sgs-update-v2.py) only
+    # classifies attrs whose role is in the content-bearing allowlist —
+    # `roles.classification='content-bearing'` — and `splitImage`'s role
+    # ('scalar-media', asserted two rows above) is 'styling-behaviour', so it
+    # was NEVER eligible for that query in the first place; whatever value it
+    # held before was a leftover from an earlier classification pass, not a
+    # live invariant `_populate_emit_shape` re-asserts. The real protection
+    # against the double-render this assertion named ("'child' would emit a
+    # separate block") is the `role='scalar-media'` assertion above — that
+    # role is what excludes the attr from the content-bearing walk that
+    # decides nested vs child, independent of `emit_shape`'s own value.
+    # Confirmed structurally, not assumed: render.php no longer reads
+    # `splitImage` at all (its own composite shape retired in favour of
+    # splitImageId/Url/Alt — Bean-locked, R-31-14, no legacy read-time
+    # fallback), and `run_mechanism_b`'s ScalarLift for `splitImage` is
+    # translated at write-time (`assembly.py`, via
+    # `db_lookup.scalar_media_emit_as()`) into those three new attrs instead
+    # of the composite object — so a future clone still produces content the
+    # migrated block actually renders; `emit_shape` merely stopped being the
+    # column that proves it.
     # ⛔ sgs/testimonial-slider.sideImage was asserted here on 2026-08-02 and REMOVED the
     # same day: setting role='scalar-media' on it BROKE the block. Measured with the
     # seeder disabled — 'image-object' lifts sideImage, 'scalar-media' lifts nothing,

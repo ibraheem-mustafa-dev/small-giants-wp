@@ -12,6 +12,8 @@ import {
 import { ResponsiveControl, ResponsiveOverride } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import DecorativeImagePanelLayout from '../../components/media/DecorativeImagePanelLayout';
+import { elementCustomProperties, requiresBox } from '../../components/media/canvasStyle';
 
 const OVERFLOW_OPTIONS = [
 	{ label: __( 'Visible', 'sgs-blocks' ), value: 'visible' },
@@ -93,6 +95,46 @@ export default function Edit( { attributes, setAttributes } ) {
 	const positionYDesktop = positionY?.desktop ?? 50;
 	const rotationDesktop = rotation?.desktop ?? 0;
 	const widthDesktop = width?.desktop ?? 200;
+
+	// -------------------------------------------------------------------------
+	// Media-atom canvas mirror (Wave 6, 2026-09-02) — object-fit/focal-point/
+	// overlay. This block renders its OWN React canvas markup below (never
+	// <ServerSideRender>), so nothing paints the atoms' custom-property VALUES
+	// onto the preview node unless this file sets them itself — same gap
+	// `sgs/media/edit.js` closed for its own canvas (see that file's own
+	// comment for the confirmed-live root cause). Inline custom-property
+	// VALUES here are not a Spec 32 violation: they override a var() the
+	// shared, globally-enqueued media-element.css already declares, not a
+	// real CSS property (canvasStyle.js's own module docblock).
+	const mediaAtomIds = [ 'object-fit', 'focal-point', 'overlay' ];
+	// object-fit/focal-point are ELEMENT-scope atoms; render.php cannot wire
+	// them onto the <video> path (sgs_render_media(), a shared helper, has no
+	// class parameter to carry the sgs-media-el marker — a documented, narrow
+	// gap on the frontend). Excluding them from the editor's video preview
+	// too keeps the canvas honest with what actually ships — the alternative
+	// (crop working in the editor, not on the published page) is exactly the
+	// canvas/frontend divergence this project's editor-canvas-parity work
+	// exists to prevent. overlay (box-scope) is unaffected either way.
+	const isVideoPreview = 'video' === effectiveMedia?.type;
+	const mediaElementStyle = elementCustomProperties( {
+		attributes,
+		blockSlug: 'sgs/decorative-image',
+		atoms: isVideoPreview ? [ 'overlay' ] : mediaAtomIds,
+	} );
+	// `overlay` is a box-scope atom (paints via ::after) — a replaced <img>/
+	// <video> generates no pseudo-element to attach it to, so its custom
+	// properties are set on the PREVIEW WRAPPER (already a real <div>, unlike
+	// the frontend's naked <img> root) rather than on the media node itself.
+	const mediaBoxStyle = elementCustomProperties( {
+		attributes,
+		blockSlug: 'sgs/decorative-image',
+		atoms: mediaAtomIds.filter( ( id ) => 'overlay' === id ),
+	} );
+	const mediaWantsBox = requiresBox( {
+		attributes,
+		blockSlug: 'sgs/decorative-image',
+		atoms: mediaAtomIds,
+	} );
 
 	// Build preview styles for editor.
 	const previewStyles = {
@@ -184,6 +226,21 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<InspectorControls group="styles">
+				{ /* Wave 6 (2026-09-02) — object-fit/focal-point/overlay, the atom
+				     layer's first adoption on this block. Gated on media existing
+				     (each atom's own `types` list already excludes irrelevant rows;
+				     mounting unconditionally with no media selected would open onto
+				     blank space — the same empty-inspector-container rule
+				     MediaPanelLayout.js's own "Playback" section follows). */ }
+				{ effectiveMedia && (
+					<DecorativeImagePanelLayout
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						mediaType={ 'video' === effectiveMedia.type ? 'video' : 'image' }
+						previewUrl={ 'video' === effectiveMedia.type ? '' : effectiveMedia.url }
+					/>
+				) }
+
 				{ /* The old bare desktop-only "Position" panel (Position X / Y) was
 				     deleted here — it duplicated the tier-aware ResponsiveOverride
 				     controls in the "Responsive Overrides" panel below, which cover
@@ -530,8 +587,13 @@ export default function Edit( { attributes, setAttributes } ) {
 				) : (
 					<div className="sgs-decorative-image-editor__preview-wrapper">
 						<div
-							className="sgs-decorative-image-editor__preview-container"
-							style={ { position: 'relative', minHeight: '400px' } }
+							className={ [
+								'sgs-decorative-image-editor__preview-container',
+								mediaWantsBox ? 'sgs-media-box' : '',
+							]
+								.filter( Boolean )
+								.join( ' ' ) }
+							style={ { position: 'relative', minHeight: '400px', ...mediaBoxStyle } }
 						>
 							{ effectiveMedia.type === 'video' ? (
 								<video
@@ -540,8 +602,8 @@ export default function Edit( { attributes, setAttributes } ) {
 									muted
 									loop
 									playsInline
-									className="sgs-decorative-image-editor__preview"
-									style={ previewStyles }
+									className="sgs-decorative-image-editor__preview sgs-media-el"
+									style={ { ...previewStyles, ...mediaElementStyle } }
 								/>
 							) : (
 								<img
@@ -550,8 +612,8 @@ export default function Edit( { attributes, setAttributes } ) {
 										effectiveMedia.alt ||
 										__( 'Decorative image preview', 'sgs-blocks' )
 									}
-									className="sgs-decorative-image-editor__preview"
-									style={ previewStyles }
+									className="sgs-decorative-image-editor__preview sgs-media-el"
+									style={ { ...previewStyles, ...mediaElementStyle } }
 								/>
 							) }
 						</div>

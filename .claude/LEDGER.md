@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-09-01
+last_updated: 2026-09-02
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -24,7 +24,9 @@ framework yet, so breakage there costs time, not money.
 
 - **Branch:** `main`, ONE active track. Commit with explicit paths (a hook enforces it).
 - **Canary:** WP 7.1. Deploy via `build-deploy.py --target sandybrown` — the only sanctioned path.
-- **Build:** green. Deploy payload is ~29MB (was 114MB).
+- **Build:** green, 83/83 gates. **~40 files uncommitted at session close (2026-09-02)** — Waves
+  6-7 of client-controls, fully built and re-verified, not yet in git history. Commit is the
+  next session's first action, before any new work.
 - **Live fronts:** client controls (below) and motion. Cloning + consolidation are closed.
 - **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
 
@@ -133,45 +135,50 @@ One item survives it, PARKED and owned by nobody: the **sticky sidebar + band-re
 (`parking.md` P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL). RE-MEASURE before building — its own
 evidence says the accordion already solved the sidebar.
 
-## ▶ CLIENT-CONTROLS TRACK — 2026-09-01: Wave 5 DONE, merged to main (16 atoms, not 11)
+## ▶ CLIENT-CONTROLS TRACK — 2026-09-02: Waves 6+7 DONE, built + verified, NOT yet committed
 
-**Detail: D904-D913 + this session's PR #36. Design `.claude/plans/2026-08-30-media-element-architecture-v2.md`
-§17 carries build status, §18 the panel design. Method rules: STOP-CATALOGUE **E19** + both
-CLAUDE.mds. Do not restate history here.**
+**Detail: D904-D913, PR #36 (Wave 5), and this session's uncommitted work (Waves 6-7). Design
+`.claude/plans/2026-08-30-media-element-architecture-v2.md` §17 carries full build status +
+per-piece comparison against the plan, §18 the panel design. Approved build plan + per-piece
+review notes: `.claude/plans/media-element-tingly-stallman.md`. Method rules: STOP-CATALOGUE
+**E19** + both CLAUDE.mds. Do not restate history here.**
 
-✅ **`sgs/media` fully converted — every control now comes from the shared atom system, old
-hand-rolled code deleted.** 16 atoms total, not 11 — `opacity`/`shadow`/`media-padding`/`caption`/
-`link` shipped this session (they were always in the original design doc's atom list, just not
-yet built; wrap EXISTING shared components, zero new UI). `before-after`'s object-fit/focal-point
-are wired, independently scoped per photo, its own pre-existing shared-crop bug fixed with a
-legacy-value fallback. **Falsification test passed** — wiring it touched zero shared-layer files.
+✅ **All 16 atoms are now adopted by all six in-scope blocks.** Wave 5 (`sgs/media`,
+`sgs/before-after`) merged to `main` at `13286fc69` (PR #36). Wave 6 (five quality gates) and
+Wave 7 (`hero`, `container`'s `BackgroundPanel`, `decorative-image`, `product-card` +
+`product-card`'s data migration) are BUILT and independently re-verified in the working tree this
+session — full `npm run build` 83/83 gates green, inspector-scan clean, media atom JS/PHP parity
+clean across all 16 atoms, cloning-pipeline `check_value_identity.py` clean, all 727 converter
+tests green — but **not yet committed**. Next session's first job is the commit + a real canary
+deploy + live-editor verification (static gates were never a substitute for opening the real
+editor — R-31-11/R-31-13).
 
-⛔ **Full incident detail, D914, not restated here:** an independent 8-angle code review (before
-merge) caught 2 real regressions + 1 security gap + 6 smaller defects the building agents'
-own live-verification missed — including the SAME `ToggleGroupControl` `disabled`-prop trap in
-`mistakes.md` recurring in a second file, needing a second pass once actually click-tested. A
-`wp-sgs-developer` dispatch chain-delegated to itself twice, zero commits, before an explicit
-"do not delegate further" line fixed it — watch for this shape recurring.
+⛔ **A real cross-subsystem conflict surfaced and was resolved, not worked around.** The plan's
+read-time legacy-fallback pattern (already shipped for `sgs/media`'s `thumbnail` and
+`sgs/before-after`'s `sgsObjectFit`) collided with a rule `hero` was ALREADY hardened against
+(R-31-14, 2026-08-13: no legacy fallbacks, nothing to migrate pre-production). Bean chose the
+strict reading. That in turn broke the CLONING PIPELINE's scalar-media role assignment for a
+future hero clone (a genuinely different, active subsystem) — Bean chose to fix it properly:
+`scripts/converter/services/assembly.py` + `scripts/converter/db/db_lookup.py` now translate the
+lift's composite `{id,url,alt}` value into the atom system's own attribute triple at write time,
+verified against the full 727-test converter suite. Full account:
+`.claude/plans/2026-08-30-media-element-architecture-v2.md` §17 Wave 7, `hero` entry.
 
-**Also shipped:** a canvas-live-preview fix (`src/components/media/canvasStyle.js`) — Wave 7
-surfaces should extend it, not rediscover the gap. `MediaPanelLayout.js` is the first concrete
-§18 panel layout — reuse its shape.
+**NEXT — `.claude/prompts/2026-09-02-media-element-commit-deploy-verify.md`.** Commit + push, deploy
+to sandybrown, live-verify every migrated surface in the real editor + published page, run
+`product-card`'s migration survey against real canary content. Three items are deliberately
+DEFERRED, not forgotten — `hero`'s motion CSS-emission (stays hero-private, a live clip/
+specificity risk unverified), `container`'s Image tab (untouched by design, kept minimal on a
+shared component), `product-card`'s `box-shape` adoption (a real CSS-specificity conflict against
+this block's own hardcoded height fallback, needs a live check) — see the prompt for the exact
+re-open condition on each.
 
-✅ **Merged: PR #36, squash-merged to `main` as `13286fc69`, 2026-09-01.**
-
-**NEXT — `.claude/prompts/2026-09-01-media-element-waves-6-7.md`.** Wave 6: five gate rules
-(media-attr-parity, media-css-parity, media-control-coverage, media-svg-sanitised,
-media-disclosure-coverage), advisory-first. Wave 7: wire the remaining four surfaces (`hero`,
-`container`'s `BackgroundPanel`, `decorative-image`, `product-card`), INSERT -> VERIFY -> GUT,
-one commit each, then `product-card`'s content migration (the abstraction is now proven).
-
-⛔ **SCOPE unchanged — SIX blocks:** media (done), before-after (partly done — object-fit/
-focal-point only, its video/SVG slots still untouched), hero, container, decorative-image,
-product-card. **A BACKGROUND IS NOT A MEDIA ELEMENT** — a block with a background gets it from
-the shared `BackgroundPanel`; `site-header`/`site-footer` have nothing to do with this work.
-`container` is in scope because it OWNS that mechanism. `trust-bar` + `brand-strip` have real
-nested media but are LIMITED follow-on. **AFTER the six:** upgrade `BackgroundPanel` per media
-type. Order: container fixes the shared wrapper -> hero -> remaining hosts.
+⛔ **SCOPE now closed — all SIX blocks done:** media, before-after, hero, container,
+decorative-image, product-card. **A BACKGROUND IS NOT A MEDIA ELEMENT** — a block with a
+background gets it from the shared `BackgroundPanel`; `site-header`/`site-footer` have nothing to
+do with this work (their OWN `BackgroundPanel` mount got the video-tab fix as a side effect of
+`container` owning the shared mechanism, not because they're separately in scope). `trust-bar` +
+`brand-strip` have real nested media but remain LIMITED follow-on, not started.
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 

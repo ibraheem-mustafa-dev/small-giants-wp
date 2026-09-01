@@ -1207,19 +1207,154 @@ did not need to change for the second surface.
   against a real regeneration).
 - **Merged:** PR #36, squash-merged to `main` as `13286fc69`, 2026-09-01.
 
+### Wave 6 — DONE, verified, NOT yet committed (2026-09-02)
+
+Built via `/dispatching-parallel-agents` (3 in parallel: gates 3/4/5), each reviewed and re-verified
+independently in the main tree (not trusted from subagent-reported output) before integration. Full
+build order + review process: `.claude/plans/media-element-tingly-stallman.md`.
+
+| Gate | What shipped | vs the original brief |
+|---|---|---|
+| 1 — `media-attr-parity` | New rule `38-media-attr-parity.js`. Flags an unknown atom id in `mediaElements`, or a block's own declared attribute silently shadowing an atom-injected one at the WRONG TYPE (D328 silent-coercion class) | As planned |
+| 2 — `media-css-parity` | **No new file.** `scripts/tests/test-media-atom-parity.mjs` already covers it — confirmed by full read, its fixture already exercises non-default values for all 16 atoms | Brief asked for a new rule module; this one didn't need one |
+| 3 — `media-control-coverage` | New rule `39-media-control-coverage.js`. Both parts (declared-without-control, type-coverage-gap) initially false-positived on BOTH reference blocks — root cause: `MediaElementPanel` is a runtime dispatcher no static resolver can see through. Fixed by exempting any block that mounts `<MediaElementPanel` (with a barrel-import follower, verified against `sgs/media`'s real indirection) | As planned, but needed real investigation before the detection logic could be written at all |
+| 4 — `media-svg-sanitised` | New rule `40-media-svg-sanitised.js`. Attribute-name heuristic had to be widened mid-build — `sgs/hero`'s `splitSvg*` carries raw markup with no "Content" substring, so the naive "Svg + Content" heuristic missed it | As planned |
+| 5 — `media-disclosure-coverage` | **Standalone script** `scripts/check-media-disclosure-coverage.js` (registered in `gates.json`, not `rules.json`) — `MediaElementPanel` never calls `disclosure()` itself, so there is no per-block artefact for a per-block rule to inspect; this is atom-level, matching `check-media-atom-purity.js`'s own shape. Discovered two disclosure return shapes the brief didn't anticipate: `box-shape`'s alt `heightState`/`ratioState` fields (a `visible`/`hidden` vocabulary, not `state`/`hiddenReason`), and `video-behaviour`'s inverted `requires` shape (key = driver, values = governed bases, the reverse of every other atom) | Brief asked for a rule module; this one is structurally a different shape and was placed accordingly |
+
+Two real bugs in the NEW gates themselves, found during independent re-verification, both fixed before
+integration: rule 38's `phpResolve()` embedded its request JSON inline in a `php -r` argument, which hit
+Windows' command-line length limit the moment a real multi-entry adopter (`sgs/hero`, three
+`mediaElements` entries) was scanned — `spawnSync php ENAMETOOLONG` — fixed by routing the payload
+through a temp file. Rule 38 also false-positived on `sgs/media`'s own legacy `thumbnail` fields until
+the exemption mechanism (registry.js's `reads` map) was taught to the rule — the SAME class of
+divergence `reads` already documents for other blocks, just never yet flagged because no per-block gate
+had existed to notice it.
+
+### Wave 7 — DONE, verified, NOT yet committed (2026-09-02)
+
+All four remaining surfaces plus `product-card`'s data migration. Order actually used —
+**decorative-image → hero → container's `BackgroundPanel` → product-card (styling) → product-card
+(data)** — reordered from the brief's `hero, container, decorative-image, product-card` after checking
+with Bean: safest-first, so `container` (shared by 8 blocks, this work's highest blast radius) got the
+most rehearsal before it was touched, per this project's design-gate rule (Bean's explicit sign-off
+obtained before any `container` code was written).
+
+**decorative-image** — clean adoption of `object-fit`/`focal-point`/`overlay` (unprefixed, one media
+slot). `box-shape` deliberately NOT adopted — border-radius/sizing is a genuinely NEW capability this
+block never had, out of scope for a preserve-behaviour migration. One real bug caught in review: the
+editor canvas applied object-fit/focal-point custom properties to the video preview, but the frontend
+(`sgs_render_media()`, a shared helper with no marker-class parameter) could never apply them to
+`<video>` — an editor/frontend visual divergence, fixed by excluding those two atoms from the video
+preview's style object to match the frontend's real capability.
+
+**hero** — the largest, highest-judgement single surface. Adopted `media-type`+`source` (closing the
+`splitImage?.url`-gated type-picker bug described in §18.7, as predicted, by construction), `object-fit`
++`focal-point`, `overlay` (deleted the hand-rolled `$media_overlay_html` span entirely, routed through
+the shared atom — opacity/blend-mode/hover now exist for the first time), and `motion`'s EDITOR control
+only (the CSS-emission path stayed hero-private — a judgement call, not forced: hero's existing
+ken-burns/parallax CSS has a clip/specificity interaction with its hover-zoom rule too risky to
+reproduce without a live canary check). Needed THREE prefixes on one physical element (`split`,
+`splitMedia`, `media`) because hero's own legacy naming already used three different conventions and
+none may be renamed (D338).
+
+⛔ **A genuine, Bean-adjudicated conflict surfaced mid-build.** The original plan called for a
+read-time-only legacy fallback (new attribute wins, falls back to the old shape when unset — the exact
+pattern already shipped for `sgs/media`'s `thumbnail` and `sgs/before-after`'s `sgsObjectFit`). But
+hero's own `render.php` already carried a 2026-08-13 comment recording that Bean had explicitly BANNED
+this shape on this exact block once before (R-31-14: "no legacy elements as fallbacks; the framework is
+pre-production, so there is nothing to migrate"), after an earlier, differently-motivated attempt at the
+same pattern (a bidirectional `splitMedia` unified-slot sync bridge) was deleted for contradicting it.
+Asked Bean directly rather than resolve it inline; the strict reading won — no fallback, at all, for
+this migration either. Consequence, worked through fully rather than left half-done: the legacy
+`splitImage`/`splitVideo`/`splitSvg`(+Tablet/Mobile) attributes became genuinely dead code and were
+DELETED from block.json (not merely retired) — except `splitImage`/`splitImageMobile` specifically,
+which stayed declared (unread by the editor, but load-bearing for the CLONING PIPELINE's scalar-media
+role assignment, `scripts/data/scalar-media-roles.json`, tied to a real 2026-08-02 incident). That in
+turn meant a future `/sgs-clone` run against a new hero draft would populate the now-dead composite
+shape and silently render nothing — a real gap in a genuinely different, active subsystem. Asked Bean
+again; chosen to fix properly rather than park it: `scripts/converter/services/assembly.py`'s
+`ScalarLift` handling now consults a new, small, explicit `emit_as` field on the scalar-media-roles
+roster (`db_lookup.scalar_media_emit_as()`) and expands the composite `{id,url,alt}` lift into the
+atom system's own `splitImageId`/`Url`/`Alt`(+Mobile) triple at write time — the LIFT logic itself
+(`run_mechanism_b` branch A, `scalar_media_from_img()`) is completely unchanged, only the final write
+shape adapts. Verified against the full 727-test converter suite, unrelated pre-existing tests
+untouched, all passing.
+
+**`container`'s `BackgroundPanel`** — the highest-blast-radius piece, confirmed live via
+`grep -rl "BackgroundPanel" src/blocks/*/edit.js` at **8 real consumers** (container, cta-section,
+hero, multi-button, physics-canvas, site-footer, site-header, trust-bar — one more than the plan's
+estimated 7; `nav-drawer` correctly excluded, it only mirrors the control options in comments). Closed
+the Video-tab gap by routing `object-fit`+`focal-point` (backdrop scope) into the SAME
+`backgroundSize`/`backgroundPosition` attributes the Image tab already writes (`prefix="background"`
+derives the exact existing names with zero `reads` bridging needed — confirmed, not assumed). Diverged
+from the brief in two deliberate, evidenced ways: did NOT declare `supports.sgs.mediaElements` on any
+of the 8 blocks (would have auto-injected 6 dead `backgroundObjectFit*`/`backgroundObjectPosition*`
+attributes per block — the injection filter operates at base-granularity, not scope-granularity, with
+no way to declare "backdrop-scope bases only"); did NOT call `SGS_Media_Element::style()` server-side
+(that emitter unconditionally also computes `Repeat`/`Attachment`, which happen to alias onto
+`backgroundRepeat`/`backgroundAttachment` under this prefix — using it would have silently pulled two
+explicitly-out-of-scope bases into the emitter). Hand-extended the wrapper's existing `$bg_size`/
+`$bg_position` → CSS pattern instead, for 7 of the 8 blocks via `class-sgs-container-wrapper.php`; hero
+gets its own copy in `hero/render.php` because it hand-rolls its own `<video>` markup rather than
+delegating to the wrapper (a pre-existing composite-mirror divergence, unrelated to this work). Image
+tab's four existing controls untouched byte-for-byte — confirmed via `git diff` showing zero deletions
+across all 8 blocks, pure insertion only. One real bug caught in review before integration: the
+worktree this was built in predated the hero fix above, so its hero-specific object-position sanitiser
+called a closure (`$sgs_css_object_position`) that no longer exists in the current tree — would have
+fataled the moment a hero instance with a background video rendered. Fixed to call the current
+replacement (`sgs_media_atom_focal_point_validate()`, the same validator hero's split-media object-
+position already uses) before integrating.
+
+**`product-card`** (styling) — single unprefixed entry (`object-fit`, `focal-point`), mirroring the
+block's existing "one value applied uniformly across every image role" contract rather than introducing
+before-after's per-role-prefix independence (a scope expansion nobody asked for, flagged as a possible
+future ask). One real bug caught and removed before integration: the first draft declared `box-shape`
+in `mediaElements.atoms` "for the schema" while never mounting its control — since `imageHeight`
+already exists as the block's own attribute (existing-wins), that declaration's only real effect would
+have been injecting a dozen brand-new, uncontrolled, unconsumed attributes (`imageShape`,
+`imageBorderRadius`, `imageMaxWidth`, …) into the schema for zero client benefit — removed, matching
+`decorative-image`'s precedent for a deliberately-deferred capability.
+
+**`product-card`** (data migration) — `imageId` (real attachment ID) added alongside the pre-existing
+bare-URL `image` attribute, which stays a PERMANENT fallback, not a transition window. All 5 write
+sites in `edit.js` updated (4 pickers + the "Remove image" reset, the latter not explicitly named in
+the brief but a real correctness gap left otherwise — a cleared image with a stale `imageId` would
+resolve to the wrong attachment). Batch backfill script
+(`scripts/migrate-product-card-image-id.py`) follows this repo's `--survey`/`--fix`/`--fix --apply`/
+`--check`/`--self-test` convention, resolves via a real `wp eval-file` SSH round-trip against the
+sandybrown canary (URLs travel as JSON over stdin, never shell-interpolated), with an explicit
+UNREACHABLE status distinct from NO-MATCH so a down connection can never be read as "nothing to
+migrate." A newly-added attribute needed the framework DB's own role classifier + element-manifest
+role-map regenerated twice (`/sgs-update`, then `generate-attr-role-map.py` again — the first run's
+snapshot raced ahead of the DB write) before the build's own `check-element-manifest-conformance`
+gate went green; `imageId` now classifies `BY-DESIGN`, matching every other `*ImageId` attribute
+across the whole atom system (`sgs/media`, `sgs/before-after`, `sgs/decorative-image`, `sgs/hero` all
+carry the identical classifier fallback role, `enum-class-probe` — confirmed a systemic, pre-existing
+gap, not something this migration introduced).
+
+**Whole-body final state (independently re-verified in the main tree, not subagent-reported):** full
+`npm run build` 83/83 gates green; `inspector-scan --check` exit 0, full self-test suite green; media
+atom JS/PHP parity green across all 16 atoms; atom-purity 16/16 import-clean; disclosure-coverage
+green; cloning-pipeline `check_value_identity.py --check` clean (4/4 assertions hold); full converter
+test suite green (727 passed, 1 skipped, 11 xfailed, unrelated). **Nothing committed** — the working
+tree holds the finished, verified state.
+
 ### Still to do
 
 | Wave | Work |
 |---|---|
-| 6 | Five gates as inspector-scan rule modules, all starting advisory (`media-no-handroll`'s own gate already shipped in Wave 5's build) |
-| 7 | Remaining four surfaces (`hero`, `container`'s `BackgroundPanel`, `decorative-image`, `product-card`), INSERT → VERIFY → GUT, one commit each |
-| — | `product-card`'s content migration, separately, after the abstraction is proven — it now is |
-| — | The editor-canvas live-preview fix currently covers `sgs/media` only; confirm/extend to each Wave 7 surface as it's wired |
+| — | **Commit the working tree.** Waves 6-7 are built and verified but not yet in git history. |
+| — | The `hero` motion CSS-emission path (ken-burns/parallax) stays hero-private, not atom-driven — a deliberate deferral pending a live-canary check of a clip/specificity interaction, not forced by the design |
+| — | `container/BackgroundPanel`'s Image tab still hand-rolls its own Size/Position controls (untouched by design, to keep the diff minimal on a shared component) — a future pass could route both tabs through one shared control if the duplication becomes a maintenance cost |
+| — | `product-card`'s `box-shape` adoption (border-radius/sizing for the image) remains deferred — the `.sgs-media-el` marker class's fallback values (`height:auto`) genuinely conflict with this block's own hardcoded fallback (`height:220px`) at equal CSS specificity, unverifiable without a live canary check |
+| — | Run `scripts/migrate-product-card-image-id.py --survey` against real sandybrown content and review the no-match bucket before ever running `--fix --apply` against a client site |
 | — | Not required, but flagged: `alignment` as a shared control (see §5's atom-roster note) — a smaller, separate framework-wide unification |
 
-**Live prompt for the remainder:** `.claude/prompts/2026-09-01-media-element-waves-6-7.md`.
+**Session record:** `.claude/plans/media-element-tingly-stallman.md` (the approved plan) — build order,
+per-piece review notes, and the full verification trail for Waves 6-7 live there in more detail than
+duplicated here.
 
-### What changed in the plan while building it
+### What changed in the plan while building it (Waves 1-5)
 
 Recorded so a reader does not mistake the current shape for the original one.
 
@@ -1234,6 +1369,19 @@ Recorded so a reader does not mistake the current shape for the original one.
 | Scoping | implicit → **per ELEMENT**, `{uid}--{prefix}` (§2 L4) |
 | `prefers-reduced-motion` | "absent in v1" → already implemented; **do not rebuild** (§5) |
 | Falsification-test path | `src/media/controls/*` → `src/components/Media*` (§10) |
+
+### What changed in the plan while building Waves 6-7
+
+| Changed | From → to |
+|---|---|
+| Gate 2 (`media-css-parity`) | a new rule module → **an existing test file already covers it**; nothing built |
+| Gate 5 (`media-disclosure-coverage`) | a new `inspector-scan` rule → **a standalone atom-level script** (`gates.json`), because there is no per-block artefact for a per-block rule to inspect |
+| Wave 7 build order | `hero, container, decorative-image, product-card` → **`decorative-image, hero, container, product-card`**, safest-first, checked with Bean |
+| Legacy-fallback pattern for hero's split-media | read-time-only fallback (the `sgs/media`/`before-after` precedent) → **no fallback at all**, Bean's explicit strict-R-31-14 call, after the plan's own assumption collided with a rule this exact block was already hardened against |
+| `container`'s attribute-injection mechanism | `supports.sgs.mediaElements` declaration (as every other surface uses) → **hand-extension of the existing wrapper CSS**, because the standard injection path would have created dead attributes at this block's scope-granularity |
+| `product-card`'s adopted atom set | `object-fit`, `focal-point`, `box-shape` (per the approved plan) → **`object-fit`, `focal-point` only** — `box-shape` removed after review found it would inject a dozen dead attributes with no mounted control |
+
+---
 
 ### The three instruments that read green while proving nothing
 

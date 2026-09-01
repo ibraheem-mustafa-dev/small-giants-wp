@@ -27,6 +27,7 @@ import {
 	GradientOverlayControl,
 	SgsColourPanel,
 	SgsLengthControl,
+	MediaElementPanel,
 } from '../../../components';
 import { isExtensionEnabled } from '../../extensions/hide-extensions';
 import { LENGTH_UNITS } from './_shared';
@@ -464,6 +465,38 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 										);
 									} }
 								</ResponsiveControl>
+								) }
+
+								{ /* Size/Position — closes the gap this atom migration exists for:
+								     the Image tab has had Size/Position since the panel shipped;
+								     the Video tab had NOTHING, so a client setting a video
+								     background had no way to control how it fits/positions. Routes
+								     into the SAME backgroundSize/backgroundPosition attributes the
+								     Image tab's controls write (prefix="background" + the object-fit/
+								     focal-point atoms' own "Size"/"Position" backdrop-scope bases —
+								     mediaAttrName('background','Size') derives 'backgroundSize' exactly,
+								     zero renames, no second attribute family). Deliberately NOT
+								     replacing the Image tab's own hand-rolled Size/Position
+								     SelectControls — this is a pure ADDITION for a tab that had zero
+								     such controls, keeping the Image tab's byte-identical existing
+								     behaviour completely untouched. Repeat/Attachment stay hand-rolled
+								     Image-tab-only, unaffected — no atom owns those two bases. Gated on
+								     bgVideo existing, matching the art-direction control above. */ }
+								{ bgVideo?.url && (
+									<>
+										<p className="components-base-control__label" style={ { fontWeight: 600, marginTop: '12px', marginBottom: '4px' } }>
+											{ __( 'Video sizing', 'sgs-blocks' ) }
+										</p>
+										<MediaElementPanel
+											attributes={ attributes }
+											setAttributes={ setAttributes }
+											prefix="background"
+											blockSlug={ name }
+											insertion="element"
+											atoms={ [ 'object-fit', 'focal-point' ] }
+											scope="backdrop"
+										/>
+									</>
 								) }
 							</>
 						);
