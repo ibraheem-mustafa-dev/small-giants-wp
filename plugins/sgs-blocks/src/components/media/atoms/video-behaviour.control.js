@@ -100,8 +100,8 @@ const DEVICE_TO_KEY = {
  * file's docblock for why it is duplicated rather than imported.
  *
  * @param {boolean}                     base   Desktop value.
- * @param {boolean|null}                tablet Tablet override (null/undefined = inherit).
- * @param {boolean|null}                mobile Mobile override (null/undefined = inherit).
+ * @param {boolean|null|undefined}      tablet Tablet override (null/undefined = inherit).
+ * @param {boolean|null|undefined}      mobile Mobile override (null/undefined = inherit).
  * @param {'desktop'|'tablet'|'mobile'} tier   Tier to resolve.
  * @return {boolean} Effective value at that tier.
  */

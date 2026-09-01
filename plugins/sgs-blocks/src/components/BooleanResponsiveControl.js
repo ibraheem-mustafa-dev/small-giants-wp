@@ -55,8 +55,8 @@ import { ToggleGroupControl, ToggleGroupControlOption } from './primitives';
  * null/undefined overrides (tablet -> desktop; mobile -> resolved tablet).
  *
  * @param {boolean}                     base   Desktop value.
- * @param {boolean|null}                tablet Tablet override (null/undefined = inherit).
- * @param {boolean|null}                mobile Mobile override (null/undefined = inherit).
+ * @param {boolean|null|undefined}      tablet Tablet override (null/undefined = inherit).
+ * @param {boolean|null|undefined}      mobile Mobile override (null/undefined = inherit).
  * @param {'desktop'|'tablet'|'mobile'} tier   Tier to resolve.
  * @return {boolean} Effective value at that tier.
  */

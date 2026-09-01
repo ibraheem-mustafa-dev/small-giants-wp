@@ -65,7 +65,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// Shared.
 		mediaType,
 		// Image.
-		imageId,
 		imageUrl,
 		imageAlt,
 		imageIsDecorative,
