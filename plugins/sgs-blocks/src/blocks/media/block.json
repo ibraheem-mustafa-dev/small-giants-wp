@@ -318,10 +318,10 @@
 			"default": "",
 			"role": "content"
 		},
-		"imageIsDecorative": {
+		"imageDecorative": {
 			"type": "boolean",
 			"default": false,
-			"_comment": "Spec 35 T3.4 / Part C 'A11y/SEO as controls' + E6 — WCAG 2.1 AA 1.1.1 (Non-text Content): a purely decorative image must be hidden from assistive tech (empty alt + aria-hidden) rather than forcing the operator to leave alt blank and hope. Narrow v1 scope: sgs/media + sgs/decorative-image only."
+			"_comment": "Spec 35 T3.4 / Part C 'A11y/SEO as controls' + E6 — WCAG 2.1 AA 1.1.1 (Non-text Content): a purely decorative image must be hidden from assistive tech (empty alt + aria-hidden) rather than forcing the operator to leave alt blank and hope. Narrow v1 scope: sgs/media + sgs/decorative-image only. Renamed from imageIsDecorative to the {element}Decorative convention (2026-09-02, uniformity sweep S8, matching sgs/timeline's milestoneMediaDecorative)."
 		},
 		"imageWidth": {
 			"type": "integer"

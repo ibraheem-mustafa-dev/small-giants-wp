@@ -476,7 +476,7 @@ if ( 'image' === $media_type ) {
 	// from assistive tech via both empty alt AND aria-hidden, not alt="" alone
 	// (some AT/browser combinations still expose an empty-alt image without
 	// aria-hidden). Spec 35 T3.4.
-	$image_is_decorative = ! empty( $attributes['imageIsDecorative'] );
+	$image_is_decorative = ! empty( $attributes['imageDecorative'] );
 	if ( $image_is_decorative ) {
 		$image_alt = '';
 	}

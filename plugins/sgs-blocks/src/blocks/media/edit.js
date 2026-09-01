@@ -67,7 +67,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// Image.
 		imageUrl,
 		imageAlt,
-		imageIsDecorative,
+		imageDecorative,
 		// Video.
 		videoUrl,
 		videoSource,
@@ -428,8 +428,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{ inspectorControls }
 				<img
 					src={ imageUrl }
-					alt={ imageIsDecorative ? '' : imageAlt }
-					aria-hidden={ imageIsDecorative ? 'true' : undefined }
+					alt={ imageDecorative ? '' : imageAlt }
+					aria-hidden={ imageDecorative ? 'true' : undefined }
 					className={ mediaElementClassName }
 					style={ mediaElementStyle }
 				/>
