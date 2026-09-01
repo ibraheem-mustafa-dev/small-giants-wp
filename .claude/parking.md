@@ -348,6 +348,16 @@ Two overlapping Bean-reported visual-QC defect registers against the live page-8
 
 ## Framework: blocks, theme, specs
 
+### P-MEDIA-ALIGNMENT-SHARED-CONTROL — `alignment` duplicated ad hoc across unrelated blocks
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-01
+
+Found while auditing whether `sgs/media`'s remaining controls all came from shared/atom sources
+(D914): `alignment` is hand-rolled separately in `sgs/media`, `sgs/multi-button`,
+`sgs/feature-grid`, and `sgs/separator` — same control, four copies, never standardised. Not part
+of the media-atom system (it isn't a media-specific concern), and not in scope for the
+client-controls track. A smaller, separate unification: one shared `alignment` control,
+4 adopters to migrate.
+
 ### P-SCATTER-DETECTOR-FAMILY-CLASSIFICATION - does a spacing/sizing split count as by-design
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
 

@@ -1,3 +1,62 @@
+## D914 [INCIDENT] — Wave 5 shipped and merged: 16 atoms not 11, 2 real regressions + 1 security gap caught before merge, a delegation loop cost real time twice
+
+**2026-09-01.** Commits `be9fe17b1`..`3c213dd43` (branch `feat/media-panel-wave5`, PR #36, squash-merged
+to `main` as `13286fc69`), plus `92572ff54` (SonarCloud quality-gate fixes) and `7d146169a` (docs).
+Follows D913. `sgs/media` is now fully converted to the atom system — every control comes from a
+shared, portable module; the old block-private code is deleted.
+
+**Atom count corrected 11 -> 16.** Bean asked why the panel still had hand-rolled code for
+alignment/opacity/caption/link/shadow after the atom system existed. First answer (these are
+either generic or genuinely unique to this block) was WRONG — the ORIGINAL design doc
+(`.claude/plans/2026-08-30-unified-media-element-design.md`, Layer 1) always listed `opacity`,
+`shadow`, `caption`, `link`, `media-padding` as intended atoms; they just hadn't been built yet.
+Built as thin wrappers around EXISTING shared components (`ShadowControl`, `LinkPopoverField`,
+`ResponsiveBoxControl`) — zero new UI, only the missing naming/registry/render plumbing that
+makes them portable to other blocks.
+
+**`before-after`'s pre-existing bug, found and fixed:** its before/after photos shared ONE
+`sgsObjectFit`/`sgsObjectPosition` pair — exactly the "scope per element, not per block" defect
+§2 L4 of the architecture doc warned this block would hit. Fixed with independently-scoped
+per-slot values plus a read-time fallback to the legacy value for any already-saved content.
+**The falsification test passed** — wiring `before-after` touched zero shared-layer files.
+
+**Independent 8-angle code review (dispatched before merge, not after) caught what live
+verification missed:** external video (YouTube/Vimeo/direct URL) had become unreachable in the
+editor — the rebuilt picker only offered the WP media library, silently regressing the block's
+documented default option. `before-after`'s legacy crop attribute was being dropped with no
+migration on already-saved content. Border-radius/width values weren't routed through this
+project's own `sgs_css_length_value()` CSS-injection sanitiser despite the code's own comment
+claiming they were. Six smaller issues also found and fixed: a stale caption that kept painting
+on the frontend after a type switch to SVG (editor hid the control, so the client couldn't find
+or clear it); a control skipping its own `validate()` call unlike every sibling; a tablet/mobile
+autoplay lock that read as correct in code and STILL let a click through when actually tested in
+a browser — **the identical `ToggleGroupControl` group-level `disabled`-prop trap already
+recorded in `mistakes.md` (`wp-component-prop-name-is-not-proof-of-behaviour`), recurring in a
+second file** (`gutenberg#57862` still open upstream); an opacity JS/PHP parity gap; a shared
+method's signature widened with no safety net for an old-style caller; a generated file that
+turned out, once actually regenerated and diffed, to already be correct.
+
+**Two genuine bugs found, not just review nitpicks, surfaced by SonarCloud's post-merge quality
+gate** (a "C Reliability" fail on New Code) — both false positives on inspection, but worth the
+fifteen minutes to confirm rather than override: two "always false" comparison warnings turned
+out to be a pre-existing, correct, long-running defensive check whose JSDoc type annotation
+never listed `undefined` as possible, so Sonar's flow analysis marked the second half of the
+check unreachable. Fixed the annotation, not the logic. One genuinely dead variable
+(`imageId`, orphaned by the atom migration) removed alongside it.
+
+⛔ **A `wp-sgs-developer` dispatch chain-delegated to itself, twice, with zero commits produced
+either time.** Each hop reported "completed" after spawning another copy of the same agent
+instead of doing the file edits — caught only by checking `git log` directly rather than trusting
+the "completed" status (per `agent-completed-status-is-not-proof-background-work-finished`).
+Fixed by adding an explicit "do not dispatch this to another Agent" line to the prompt; the third
+hop then did the actual work. Watch for this shape recurring — a task framed as "large, needs
+delegation" can trigger an agent to delegate reflexively even when it has the tools to just do
+the work itself.
+
+**Result: merged to `main`, PR #36 closed.** Full atom roster, panel design, and remaining scope:
+`.claude/plans/2026-08-30-media-element-architecture-v2.md` §17. Next session:
+`.claude/prompts/2026-09-01-media-element-waves-6-7.md`.
+
 ## D913 [ROUTINE] — media atoms finished (11/11), panel design settled (§18), Wave 5-7 prompt rewritten
 
 **2026-09-01/02.** Commits `7e6e54c3b`..`350c6bab3`. Follows D911/D912; this session moved from
