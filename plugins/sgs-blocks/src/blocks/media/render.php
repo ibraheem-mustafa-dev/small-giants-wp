@@ -1147,7 +1147,13 @@ if ( 'svg' === $media_type ) {
 // container to attach the pseudo-element to (`SGS_Media_Element::
 // requires_box()`, class-sgs-media-element.php). The scope class is already
 // in $wrapper_classes above, so only the bare marker needs adding.
-$sgs_media_requires_box = class_exists( 'SGS_Media_Element' ) && SGS_Media_Element::requires_box( $sgs_media_atoms );
+//
+// VALUE-AWARE, not declaration-aware: `overlay` is declared in $sgs_media_atoms
+// for every instance of this block, but produces no box-scope CSS until an
+// operator actually sets an overlay colour/gradient — declaring it alone must
+// not force a `<figure>` wrapper nothing will use. `requires_box()` computes
+// each box atom's real CSS output for THESE attribute values before deciding.
+$sgs_media_requires_box = class_exists( 'SGS_Media_Element' ) && SGS_Media_Element::requires_box( $attributes, '', 'sgs/media', $sgs_media_atoms );
 if ( $sgs_media_requires_box ) {
 	$wrapper_classes[] = SGS_Media_Element::CLASS_BOX;
 }

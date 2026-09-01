@@ -27,6 +27,19 @@
  * caption, link or tiers — in that shape there is no container, so a box atom
  * has nowhere to attach.
  *
+ * ⛔ `requires_box()` is VALUE-aware, not declaration-aware. A box atom
+ * appearing in a block's declared atom list does not by itself mean it needs
+ * a wrapper — `overlay` produces no box-scope CSS until an operator sets a
+ * colour/gradient, and `source` only ever produces box-scope CSS when its
+ * output is consumed as a CSS `background-image` (container/hero-style
+ * surfaces), never for a block like `sgs/media` that paints real `<img>`/
+ * `<video>` markup. Forcing a wrapper on DECLARATION ALONE gives every such
+ * block a permanently-unnecessary `<figure>` the moment it declares an atom
+ * it happens not to be using for that purpose. `requires_box()` therefore
+ * computes each declared box atom's real CSS output for the CURRENT
+ * attribute values (the same `sgs_media_atom_<id>_css()` functions
+ * `sgs_media_element_style()` already calls) and answers based on OUTPUT.
+ *
  * @package SGS\Blocks
  */
 
@@ -71,13 +84,37 @@ if ( ! class_exists( 'SGS_Media_Element' ) ) {
 		}
 
 		/**
-		 * Does this set of atoms need a container to attach to?
+		 * Does this element's CURRENT attribute values need a container to
+		 * attach to?
 		 *
-		 * @param array $atoms Declared atom ids.
-		 * @return bool True when at least one atom keys on the box marker.
+		 * Value-aware, not declaration-aware: a box atom appearing in $atoms
+		 * only counts when it actually produces a non-empty CSS declaration
+		 * for these specific attribute values — computed by calling that
+		 * atom's `sgs_media_atom_<id>_css()` PHP twin, the same function
+		 * `sgs_media_element_style()` already calls to build the element's
+		 * scoped `<style>` rule. An atom that is declared but emits nothing
+		 * for this instance (`overlay` with no colour/gradient set, or
+		 * `source` on a block that never paints it as a background) must not
+		 * force a wrapper nothing will use.
+		 *
+		 * @param array  $attributes Block attributes.
+		 * @param string $prefix     Surface prefix ('' when unprefixed).
+		 * @param string $block_slug Block slug, for stored-name resolution.
+		 * @param array  $atoms      Declared atom ids.
+		 * @return bool True when at least one box atom emits real CSS for these values.
 		 */
-		public static function requires_box( array $atoms ) {
-			return (bool) array_intersect( $atoms, self::$box_atoms );
+		public static function requires_box( array $attributes, $prefix, $block_slug, array $atoms ) {
+			foreach ( array_intersect( $atoms, self::$box_atoms ) as $atom_id ) {
+				$fn = 'sgs_media_atom_' . str_replace( '-', '_', (string) $atom_id ) . '_css';
+				if ( ! function_exists( $fn ) ) {
+					continue;
+				}
+				$emitted = $fn( $attributes, $prefix, $block_slug );
+				if ( is_array( $emitted ) && $emitted ) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		/**
@@ -95,18 +132,22 @@ if ( ! class_exists( 'SGS_Media_Element' ) ) {
 		}
 
 		/**
-		 * Classes for the container, when the declared atoms need one.
+		 * Classes for the container, when the CURRENT attribute values need one.
 		 *
-		 * Returns an EMPTY array when no atom keys on the box, so a renderer
-		 * never adds a marker nothing reads. An unused marker is harmless but
-		 * misleading — it suggests a capability the element does not have.
+		 * Returns an EMPTY array when no atom's actual output keys on the box
+		 * for these values, so a renderer never adds a marker nothing paints.
+		 * An unused marker is harmless but misleading — it suggests a
+		 * capability the element does not have.
 		 *
 		 * @param string $scope_class The per-element scope class.
+		 * @param array  $attributes  Block attributes.
+		 * @param string $prefix      Surface prefix ('' when unprefixed).
+		 * @param string $block_slug  Block slug, for stored-name resolution.
 		 * @param array  $atoms       Declared atom ids.
 		 * @return string[] Class names, possibly empty.
 		 */
-		public static function box_classes( $scope_class, array $atoms ) {
-			if ( ! self::requires_box( $atoms ) ) {
+		public static function box_classes( $scope_class, array $attributes, $prefix, $block_slug, array $atoms ) {
+			if ( ! self::requires_box( $attributes, $prefix, $block_slug, $atoms ) ) {
 				return array();
 			}
 			$classes = array( self::CLASS_BOX );
