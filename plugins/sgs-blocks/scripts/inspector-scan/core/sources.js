@@ -153,6 +153,21 @@ class SourceCache {
 			// PHP/CSS string literal swallows the rest of the file. Do not treat
 			// this as a general-purpose PHP parser.
 			out = raw.replace( /\/\*[\s\S]*?\*\//g, ( m ) => ' '.repeat( m.length ) );
+			// S1 fix (2026-09-02): the block-comment strip above left `//` PHP
+			// line comments untouched, so a comment merely MENTIONING an
+			// attribute name (e.g. "// FR-22-6: scalar attrs are intentionally
+			// NOT read here") counted as a live render reference — proven false
+			// positive on 3 baselined rule-21 findings (cta-section headline/body,
+			// hero subHeadline). Only a FULL-LINE `//` comment (the first
+			// non-whitespace token on its line) is stripped — deliberately not a
+			// trailing inline `//` after real code, since that risks truncating a
+			// same-line string containing "//" (e.g. a URL). Same known-limited
+			// caveat as the block-comment strip above: this is not a PHP parser.
+			if ( path.extname( file ) === '.php' ) {
+				out = out.replace( /^([ \t]*)\/\/.*$/gm, ( m, indent ) =>
+					indent + ' '.repeat( m.length - indent.length )
+				);
+			}
 		}
 		this._stripped.set( file, out );
 		return out;
