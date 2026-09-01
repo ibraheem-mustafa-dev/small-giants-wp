@@ -205,8 +205,46 @@ def _base_attr_spec(attrs: dict, prop: str):
     return None
 
 
+def _base_attr_key(attrs: dict, prop: str):
+    """The actual JSON key holding the base declaration — `prop` or `prop + 'Desktop'`
+    (see `_base_attr_spec` above for why). Returns None if neither is declared.
+
+    S4 fix (2026-09-02, uniformity sweep): `apply_block_json` used to subscript
+    `attrs[prop]` directly, assuming the bare key always exists — it doesn't for the
+    three `<prop>Desktop`-base families (columns/textAlign/showOn), so `--fix` crashed
+    with an uncaught KeyError the moment it reached one, aborting the whole batch.
+    Callers now resolve the real key through this helper first."""
+    if isinstance(attrs.get(prop), dict):
+        return prop
+    if isinstance(attrs.get(prop + 'Desktop'), dict):
+        return prop + 'Desktop'
+    return None
+
+
+# S4 fix (2026-09-02, uniformity sweep): a SHAPE test alone (base + all responsive
+# siblings are scalars of the same type) cannot distinguish a genuine flat-scalar fold
+# candidate (columns/textAlign/backgroundOverlayOpacity/showOn) from an art-directed
+# MEDIA REFERENCE (imageId/imageUrl/videoUrl/svgContent/...), which Bean's C19 ruling
+# forbids ever folding into a per-breakpoint object — each tier's image/video/SVG is a
+# genuinely independent piece of content, not a responsive VALUE of one property.
+# Universal file-reference NAME test, not a hardcoded attr list (R-31-1): an attribute
+# whose bare name ends in one of these suffixes IS the file reference by construction —
+# a WP attachment ID, a URL, or raw embedded content. Verified against the live tree
+# (2026-09-02): matches all 17 known art-directed media attrs across
+# decorative-image/media/responsive-logo/before-after/hero, and does NOT match any of
+# columns/textAlign/backgroundOverlayOpacity/showOn/videoAutoplay/videoControls/
+# videoLazyLoad/videoLoop/videoMuted/videoPlaysInline/splitMediaObjectPosition/
+# splitMediaType/splitMediaWidth/splitImageAlt — the negative control this fix requires.
+_FILE_REFERENCE_SUFFIXES = ('Id', 'Url', 'Content')
+
+
+def _is_file_reference_attr(prop: str) -> bool:
+    return prop.endswith(_FILE_REFERENCE_SUFFIXES)
+
+
 def classify(attrs: dict, prop: str):
-    """Return (kind, sibling_names). kind in FLAT|BLENDED|OBJECT|ASSET|ABSENT.
+    """Return (kind, sibling_names). kind in
+    FLAT|BLENDED|OBJECT|ASSET|ABSENT|ART_DIRECTED_MEDIA.
 
     See `_base_attr_spec()` for why the base lookup isn't a plain `attrs.get(prop)`."""
     spec = _base_attr_spec(attrs, prop)
@@ -221,7 +259,15 @@ def classify(attrs: dict, prop: str):
         if all(attrs[s].get('type') == 'object' for s in sibs):
             return 'ASSET', sibs          # consistent per-tier object family — correct as-is
         return 'BLENDED', sibs
-    return ('FLAT', sibs) if sibs else ('ABSENT', [])
+    if not sibs:
+        return 'ABSENT', []
+    if _is_file_reference_attr(prop):
+        # C19-protected: would otherwise classify FLAT (scalar base + scalar siblings),
+        # but every MIGRATABLE filter in this script checks kind in ('FLAT', 'BLENDED')
+        # only, so this kind is excluded from every --survey/--fix/--check operation by
+        # construction — never folded, never silently dropped from the report either.
+        return 'ART_DIRECTED_MEDIA', sibs
+    return 'FLAT', sibs
 
 
 def reads_attr_directly(block_dir: Path, prop: str) -> int:
@@ -1018,6 +1064,10 @@ def apply_block_json(entry, prop: str, apply: bool):
     data = json.loads(raw)
     attrs = data['attributes']
 
+    base_key = _base_attr_key(attrs, prop)
+    if base_key is None:
+        return False, None, f'no base declaration for "{prop}" or "{prop}Desktop" — refused'
+
     sib_defaults = {}
     for t in TIERS:
         name = prop + t
@@ -1031,9 +1081,9 @@ def apply_block_json(entry, prop: str, apply: bool):
     # but it WOULD be printed as the proposed change, and a human approving a diff
     # reads the description, not the code path. So compute it honestly per kind.
     if entry['kind'] == 'BLENDED':
-        new_default = attrs[prop].get('default')
+        new_default = attrs[base_key].get('default')
     else:
-        new_default = build_object_default({'default': attrs[prop].get('default'),
+        new_default = build_object_default({'default': attrs[base_key].get('default'),
                                             'sib_defaults': sib_defaults})
 
     out = raw
@@ -1049,11 +1099,15 @@ def apply_block_json(entry, prop: str, apply: bool):
         out = new
 
     if entry['kind'] == 'FLAT':
-        # Retype the base and swap its default for the tier object.
-        pat = re.compile(r'"' + re.escape(prop) + r'":\s*\{[^{}]*\}')
+        # Retype the base and swap its default for the tier object. Search on
+        # base_key (which may be "<prop>Desktop" for the 3 Desktop-base families —
+        # see _base_attr_key) but WRITE the bare `prop` name: bare is the canonical
+        # post-migration target shape (_base_attr_spec's own docstring), so this also
+        # completes the Desktop -> bare rename as part of the fold, in one pass.
+        pat = re.compile(r'"' + re.escape(base_key) + r'":\s*\{[^{}]*\}')
         m = pat.search(out)
         if not m:
-            return False, None, f'could not locate base "{prop}" declaration'
+            return False, None, f'could not locate base "{base_key}" declaration'
         indent = '\t\t\t'
         body = f'"{prop}": {{\n{indent}"type": "object",\n{indent}"default": ' \
                + json.dumps(new_default) + f'\n\t\t}}'
@@ -1833,6 +1887,60 @@ def self_test() -> int:
         check(f'end-to-end: sgs/{_slug}.{_prop} (declared as "{_prop}Desktop" on disk) no '
               f'longer classifies ABSENT',
               classify(_attrs, _prop)[0] != 'ABSENT')
+
+    # ================================================================================
+    # classify() — the C19 art-directed-media exemption (2026-09-02, uniformity sweep).
+    # ART_DIRECTED_MEDIA must be reachable (positive), must not overmatch a real
+    # migratable property (negative control), and the negative control must not be
+    # vacuous (same fixture shape, differing only in the name it tests).
+    # ================================================================================
+    _media_attrs = {
+        'imageId': {'type': 'integer', 'default': 0},
+        'imageIdTablet': {'type': 'integer', 'default': 0},
+        'imageIdMobile': {'type': 'integer', 'default': 0},
+    }
+    _kind_media, _sibs_media = classify(_media_attrs, 'imageId')
+    check(f'positive: "imageId" (scalar base + scalar Tablet/Mobile siblings) classifies '
+          f'ART_DIRECTED_MEDIA (got {_kind_media!r}), never FLAT — C19 forbids folding a '
+          'per-device media identity into a responsive object',
+          _kind_media == 'ART_DIRECTED_MEDIA')
+    check('ART_DIRECTED_MEDIA sibling list still names the Tablet/Mobile attrs (excluded '
+          'from migration, not silently dropped from the report)',
+          set(_sibs_media) == {'imageIdTablet', 'imageIdMobile'})
+
+    _opacity_attrs = {
+        'backgroundOverlayOpacity': {'type': 'number', 'default': 1},
+        'backgroundOverlayOpacityTablet': {'type': 'number', 'default': 1},
+        'backgroundOverlayOpacityMobile': {'type': 'number', 'default': 1},
+    }
+    _kind_opacity, _ = classify(_opacity_attrs, 'backgroundOverlayOpacity')
+    check('negative control: "backgroundOverlayOpacity" (same scalar-base/scalar-sibling '
+          f'shape as imageId, but not a file-reference name) still classifies FLAT '
+          f'(got {_kind_opacity!r}) — a real migration target must not be caught by the '
+          'C19 exemption',
+          _kind_opacity == 'FLAT')
+    check('negative control is not vacuous: the SAME fixture shape classifies '
+          'ART_DIRECTED_MEDIA for "imageId" and FLAT for "backgroundOverlayOpacity" — the '
+          'suffix test is doing the discriminating, not classify() ignoring the name',
+          _kind_media == 'ART_DIRECTED_MEDIA' and _kind_opacity == 'FLAT')
+
+    # --- end-to-end: the 17 real art-directed media attrs in the live tree are excluded
+    # from the MIGRATABLE population (--all-properties reported 32 before this fix, 15
+    # after — exactly 32 - 17).
+    _real_media_cases = [
+        ('decorative-image', 'imageId'), ('decorative-image', 'imageUrl'),
+        ('media', 'videoUrl'), ('media', 'svgContent'), ('media', 'thumbnailId'),
+        ('responsive-logo', 'logoId'), ('responsive-logo', 'logoUrl'),
+        ('before-after', 'beforeImageId'), ('before-after', 'afterImageUrl'),
+        ('hero', 'splitImageId'), ('hero', 'splitSvgContent'),
+    ]
+    for _slug, _prop in _real_media_cases:
+        _bj = BLOCKS_DIR / _slug / 'block.json'
+        _data = json.loads(_bj.read_text(encoding='utf-8'))
+        _attrs = _data.get('attributes', {})
+        check(f'end-to-end: sgs/{_slug}.{_prop} classifies ART_DIRECTED_MEDIA, not FLAT '
+              '(would have been silently folded into a responsive object pre-fix)',
+              classify(_attrs, _prop)[0] == 'ART_DIRECTED_MEDIA')
 
     if failures:
         print(f'\n{len(failures)} FAILURE(S): {failures}')
