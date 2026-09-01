@@ -135,23 +135,62 @@ One item survives it, PARKED and owned by nobody: the **sticky sidebar + band-re
 (`parking.md` P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL). RE-MEASURE before building — its own
 evidence says the accordion already solved the sidebar.
 
-## ▶ CLIENT-CONTROLS TRACK — 2026-09-02: Waves 6+7 DONE, built + verified, NOT yet committed
+## ▶ CLIENT-CONTROLS TRACK — 2026-09-02: Waves 6+7 committed, deployed to sandybrown, live-verified
 
-**Detail: D904-D913, PR #36 (Wave 5), and this session's uncommitted work (Waves 6-7). Design
+**Detail: D904-D913, D915, D916 (this session's close-out), PR #36 (Wave 5). Design
 `.claude/plans/2026-08-30-media-element-architecture-v2.md` §17 carries full build status +
 per-piece comparison against the plan, §18 the panel design. Approved build plan + per-piece
 review notes: `.claude/plans/media-element-tingly-stallman.md`. Method rules: STOP-CATALOGUE
 **E19** + both CLAUDE.mds. Do not restate history here.**
 
-✅ **All 16 atoms are now adopted by all six in-scope blocks.** Wave 5 (`sgs/media`,
-`sgs/before-after`) merged to `main` at `13286fc69` (PR #36). Wave 6 (five quality gates) and
-Wave 7 (`hero`, `container`'s `BackgroundPanel`, `decorative-image`, `product-card` +
-`product-card`'s data migration) are BUILT and independently re-verified in the working tree this
-session — full `npm run build` 83/83 gates green, inspector-scan clean, media atom JS/PHP parity
-clean across all 16 atoms, cloning-pipeline `check_value_identity.py` clean, all 727 converter
-tests green — but **not yet committed**. Next session's first job is the commit + a real canary
-deploy + live-editor verification (static gates were never a substitute for opening the real
-editor — R-31-11/R-31-13).
+✅ **All 16 atoms are now adopted by all six in-scope blocks, committed, deployed, and
+live-verified.** Wave 5 (`sgs/media`, `sgs/before-after`) merged to `main` at `13286fc69` (PR
+#36). Wave 6 (five quality gates) and Wave 7 (`hero`, `container`'s `BackgroundPanel`,
+`decorative-image`, `product-card` + `product-card`'s data migration) — committed at `e6acd82d8`
+(2026-09-01), pushed. This session (2026-09-02): deployed to sandybrown (`59f86b451`, after
+baselining two real deploy-gate findings — see below) and live-verified in the real block editor
++ published pages:
+- **`decorative-image`** (probe page 2900) — object-fit/focal-point/overlay all read/write
+  correctly; disclosure logic (focal-point/overlay fields disabled until object-fit crops /
+  overlay colour is set) reacts live to a real attribute write.
+- **`hero`** (probe page 2334 "T3 hero split probe") — the two published instances holding only
+  the OLD `splitImage`/`splitSvgMobile` legacy shape confirmed rendering an EMPTY split-media slot
+  on both the published page AND the editor canvas (the accepted R-31-14 consequence, confirmed in
+  practice not just theory); media-type tabs (Image/Video/SVG, all 3 device tiers) confirmed
+  reachable with no image uploaded (closes the `splitImage?.url`-gating bug by construction);
+  overlay colour/opacity/blend-mode controls present and interactive.
+- **`container`'s `BackgroundPanel`** (page 2242 "Tier fixture — maxWidth", `cta-section` sampled
+  as representative of the 7 non-hero consumers sharing `class-sgs-container-wrapper.php`) —
+  Image tab confirmed pixel-identical: pre-existing overlay opacity (30) and colour value
+  preserved unchanged; new Video/SVG tabs present and wired.
+- **`product-card`** (page 3046, typed mode) — "Image Controls" panel (object position
+  focal-point picker + object-fit dropdown + max-width + height-unit) confirmed present and
+  functional with correct default values; legacy `imageHeight` plain-string shape confirmed
+  round-tripping (shows "220px" placeholder). Bound mode not independently re-clicked this
+  session — same shared atom mechanism as typed mode, lower marginal risk, not exhaustively
+  re-verified.
+- **Migration survey** — `migrate-product-card-image-id.py --survey` run against a full dump of
+  every sandybrown page+post (161 files via REST `context=edit`): 9 candidates, 8 matched real
+  attachments, 1 NO-MATCH (post 1601 "F3 Oracle sgs-product-card" — a converter golden-test
+  fixture with a fabricated `/products/lactation-cookies.jpg` path, never a real upload; correctly
+  left unresolved). Reviewed by hand; no `--fix --apply` run (no client sites exist yet on this
+  framework — the discipline is precautionary).
+
+⛔ **Two real deploy-gate findings surfaced and were baselined, not worked around** — both are the
+DIRECT, predicted consequence of the R-31-14 strict-no-fallback decision, not new bugs:
+`oldshape-audit` flagged post 2334's stranded `splitSvgMobile` (WP will strip it on next editor
+save — non-lossy, the atom system never read it); `audit-block-file-consistency` flagged 5
+`sgs/hero` orphan-attr findings — `splitImage`/`splitImageMobile` (deliberately kept declared for
+the cloning pipeline per D915) and `splitMediaObjectPosition`(+Tablet/Mobile) (a dynamic-key false
+positive — genuinely live via `SGS_Media_Element::style()` server-side and
+`HeroSplitMediaPanelLayout`'s `prefix="splitMedia"` control client-side, matching this project's
+existing dynamic-key baseline convention). Both baselined with full evidence in
+`oldshape-audit-baseline.json` / `block-file-consistency-baseline.json`, committed at `59f86b451`.
+A THIRD gate (deploy-ownership) also fired — the live canary carried `3c213dd4`
+(`feat/media-panel-wave5` branch tip, deployed 2026-09-01 for pre-merge live QA), not an ancestor
+of `main` because Wave 5 SQUASH-merged at `13286fc69`. Verified (not assumed) the squash-merge is
+a strict superset — `git diff 3c213dd4 HEAD -- .../BooleanResponsiveControl.js` shows only a
+docblock type-annotation difference, the real fix is present — before using `--takeover`.
 
 ⛔ **A real cross-subsystem conflict surfaced and was resolved, not worked around.** The plan's
 read-time legacy-fallback pattern (already shipped for `sgs/media`'s `thumbnail` and
@@ -164,14 +203,15 @@ lift's composite `{id,url,alt}` value into the atom system's own attribute tripl
 verified against the full 727-test converter suite. Full account:
 `.claude/plans/2026-08-30-media-element-architecture-v2.md` §17 Wave 7, `hero` entry.
 
-**NEXT — `.claude/prompts/2026-09-02-media-element-commit-deploy-verify.md`.** Commit + push, deploy
-to sandybrown, live-verify every migrated surface in the real editor + published page, run
-`product-card`'s migration survey against real canary content. Three items are deliberately
-DEFERRED, not forgotten — `hero`'s motion CSS-emission (stays hero-private, a live clip/
-specificity risk unverified), `container`'s Image tab (untouched by design, kept minimal on a
-shared component), `product-card`'s `box-shape` adoption (a real CSS-specificity conflict against
-this block's own hardcoded height fallback, needs a live check) — see the prompt for the exact
-re-open condition on each.
+**NEXT — nothing queued.** Commit, deploy, and live-verification (`.claude/prompts/2026-09-02-media-element-commit-deploy-verify.md`)
+are DONE. Three items are deliberately DEFERRED, not forgotten, and were NOT re-opened this
+session (live-verification found no real problem triggering any of them) — `hero`'s motion
+CSS-emission (stays hero-private, a live clip/specificity risk unverified), `container`'s Image
+tab (untouched by design, kept minimal on a shared component), `product-card`'s `box-shape`
+adoption (a real CSS-specificity conflict against this block's own hardcoded height fallback,
+still needs the load-order test named in the prompt — not run this session, remains open if
+anyone wants `box-shape` on this block later). Bound-mode `product-card` (buybox configurator)
+was not independently re-clicked this session — flagged above, not a blocker.
 
 ⛔ **SCOPE now closed — all SIX blocks done:** media, before-after, hero, container,
 decorative-image, product-card. **A BACKGROUND IS NOT A MEDIA ELEMENT** — a block with a

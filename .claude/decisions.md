@@ -1,3 +1,24 @@
+## D916 [ROUTINE] — Waves 6+7 deployed to sandybrown + live-verified; two deploy-gate findings baselined as predicted R-31-14 consequences
+
+**2026-09-02.** Deploy+verify session for D915's work (already committed at `e6acd82d8`, pushed).
+`build-deploy.py --target sandybrown` hit two real gates on first run, both traced to root cause
+before baselining (never worked around blind): `oldshape-audit` flagged post 2334's stranded
+`splitSvgMobile` (the exact predicted R-31-14 no-fallback consequence — non-lossy, atom system
+never reads it); `audit-block-file-consistency` flagged 5 `sgs/hero` orphan-attrs —
+`splitImage`/`splitImageMobile` (deliberately kept declared for the cloning pipeline, per D915)
+and `splitMediaObjectPosition`(+Tablet/Mobile) (a dynamic-key false positive, verified live via
+`SGS_Media_Element::style()` + `HeroSplitMediaPanelLayout`'s `prefix="splitMedia"` control — same
+class as the existing `product-card.titleFontFamily`/`hero.mediaOverlayGradient` baseline
+entries). Both baselined with full evidence, committed `59f86b451`. A third gate
+(deploy-ownership) fired on the live canary carrying `3c213dd4` (`feat/media-panel-wave5` tip,
+not an ancestor of `main` because Wave 5 squash-merged at `13286fc69`) — verified via
+`git diff 3c213dd4 HEAD` that the squash-merge is a strict superset (only a docblock diff
+remained) before using `--takeover`. Live-verified `decorative-image`/`hero`/`container`
+`BackgroundPanel`/`product-card` (typed mode) in the real editor + published pages; ran
+`migrate-product-card-image-id.py --survey` against a full 161-file dump of every sandybrown
+page+post (8 matched, 1 correctly-refused synthetic test-fixture URL). No `--fix --apply` run (no
+client sites exist yet). Full account: `.claude/LEDGER.md` CLIENT-CONTROLS TRACK.
+
 ## D915 [INCIDENT] — Waves 6+7 built via parallel dispatch: R-31-14 vs the plan collided, the fix reached into the cloning pipeline, four real bugs caught in review before integration
 
 **2026-09-02.** Built via `/dispatching-parallel-agents` (isolated worktrees, one agent per gate/surface,
