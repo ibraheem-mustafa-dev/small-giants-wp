@@ -113,6 +113,26 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_validate_border_style' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_atom_box_shape_to_length_value' ) ) {
+	/**
+	 * Append `px` to a bare number, matching `sgs_css_length_value()`'s own
+	 * bare-number convention (mirrors the JS twin's `toLengthValue()` — see
+	 * that function's docblock for the live defect this closes: an unsuffixed
+	 * shorthand value is invalid CSS, and the browser silently falls back to
+	 * `border-width: medium` (~3px) / `border-radius: 0`).
+	 *
+	 * @param mixed $value Raw corner/side value.
+	 * @return string `px`-suffixed length, or the value unchanged if already
+	 *                a non-numeric string.
+	 */
+	function sgs_media_atom_box_shape_to_length_value( $value ) {
+		if ( is_numeric( $value ) ) {
+			return $value . 'px';
+		}
+		return $value;
+	}
+}
+
 if ( ! function_exists( 'sgs_media_atom_box_shape_sides_to_width_shorthand' ) ) {
 	/**
 	 * Build a 4-SIDE CSS `border-width` shorthand ("top right bottom left")
@@ -141,7 +161,7 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_sides_to_width_shorthand' ) ) 
 		}
 		$parts = array();
 		foreach ( $order as $k ) {
-			$parts[] = ( isset( $sides[ $k ] ) && '' !== $sides[ $k ] ) ? $sides[ $k ] : '0';
+			$parts[] = ( isset( $sides[ $k ] ) && '' !== $sides[ $k ] ) ? sgs_media_atom_box_shape_to_length_value( $sides[ $k ] ) : '0';
 		}
 		return implode( ' ', $parts );
 	}
@@ -208,7 +228,7 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_corners_to_radius_shorthand' )
 		}
 		$parts = array();
 		foreach ( $order as $k ) {
-			$parts[] = ( isset( $corners[ $k ] ) && '' !== $corners[ $k ] ) ? $corners[ $k ] : '0';
+			$parts[] = ( isset( $corners[ $k ] ) && '' !== $corners[ $k ] ) ? sgs_media_atom_box_shape_to_length_value( $corners[ $k ] ) : '0';
 		}
 		return implode( ' ', $parts );
 	}

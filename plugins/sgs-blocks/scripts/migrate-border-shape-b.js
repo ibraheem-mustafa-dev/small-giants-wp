@@ -2435,7 +2435,18 @@ function check() {
 		const phpPath = path.join( BLOCKS_DIR, slug, 'render.php' );
 		if ( hasPrivate && fs.existsSync( phpPath ) ) {
 			const php = readFile( phpPath );
-			if ( ! /\$attributes\['border(Width|Style|Colour|Radius)'\]/.test( php ) ) {
+			// A block whose border rides the shared media-atom layer (the
+			// `box-shape` atom, `sgs/media` as of 2026-09-01) reads these
+			// attrs INDIRECTLY — via a computed `$attributes[ $radius_key ]`
+			// inside `sgs_media_atom_box_shape_css()`, not a literal
+			// `$attributes['borderRadius']` in the block's OWN render.php.
+			// `SGS_Media_Element::style(...)` dispatching to a `box-shape`
+			// atom is the paired emitter for that pattern, verified against
+			// `includes/media/atoms/box-shape.php` — a genuinely different,
+			// equally-real consumption path the literal regex below cannot
+			// see, not a half-migrated block.
+			const viaMediaAtom = /SGS_Media_Element::style\(/.test( php ) && /'box-shape'/.test( php );
+			if ( ! viaMediaAtom && ! /\$attributes\['border(Width|Style|Colour|Radius)'\]/.test( php ) ) {
 				problems.push(
 					`sgs/${ slug }: declares private border attrs but render.php never reads them — ` +
 						'the control writes an attribute nothing paints (half-migrated)'

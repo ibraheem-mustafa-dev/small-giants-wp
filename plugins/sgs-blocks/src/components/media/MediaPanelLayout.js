@@ -14,18 +14,18 @@
  * rather than re-implementing atom logic — kept under the 250-line JS limit
  * by design; every atom owns its own rows/CSS/disclosure.
  *
- * THREE atoms are DELIBERATELY NOT wired here (Wave 5a findings, not
- * oversights — see block.json's `_comment_mediaElements` for the full
- * reasoning): `box-shape` would create a second, conflicting `borderRadius`
- * mechanism alongside sgs/media's existing WP-native `style.border.radius`
- * for the base tier; `video-behaviour`'s toggles have no Tablet/Mobile tiers
- * while sgs/media's existing hand-rolled Playback Options panel already
- * offers per-device autoplay/loop/muted/etc; `overlay` paints via a
- * `.sgs-media-box::after` wrapper class that no render surface in this
- * plugin emits yet. Wiring any of the three in as-is would be a regression
- * or a silently-dead control, not a gap-fill — all three stay on the
- * existing behaviour (or absent) until a follow-up resolves the shape
- * mismatch.
+ * Wave 5b (2026-09-01) closes the Wave 5a gap list: `box-shape` now owns
+ * sizing/shape/border for this block outright (its own `aspectRatio`/
+ * `borderRadius`/`borderWidth`/`borderStyle`/`borderColour`/
+ * `borderColourGradient` attrs replace the retired native
+ * `__experimentalBorder` + `style.dimensions.aspectRatio` — see block.json's
+ * `_comment_mediaElements`), so the old "Media Sizing" (MediaSizingPanel) and
+ * "Border radius" rows are gone from `media/edit.js`'s own ToolsPanel.
+ * `video-behaviour` now renders its 6 boolean bases through the shared
+ * tiered `BooleanResponsiveControl`, matching (not falling short of) the old
+ * hand-rolled Playback Options panel, which is also gone from `edit.js`.
+ * `overlay` paints via `.sgs-media-box::after`; `render.php` now adds the
+ * `sgs-media-box` marker class whenever a box atom is declared.
  *
  * @package SGS\Blocks
  */
@@ -75,6 +75,25 @@ export default function MediaPanelLayout( {
 					atoms={ [ 'object-fit', 'focal-point', 'motion' ] }
 					previewUrl={ previewUrl }
 				/>
+			</PanelBody>
+
+			<PanelBody title={ __( 'Box & Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<MediaElementPanel { ...commonProps } atoms={ [ 'box-shape' ] } />
+			</PanelBody>
+
+			{ /* video-behaviour's `types:['video']` gate returns no rows for
+			     image/svg — mounting the PanelBody unconditionally would open
+			     onto blank space for those types (empty-inspector-container),
+			     so this section is gated on mediaType here rather than inside
+			     MediaElementPanel. */ }
+			{ 'video' === mediaType && (
+				<PanelBody title={ __( 'Playback', 'sgs-blocks' ) } initialOpen={ false }>
+					<MediaElementPanel { ...commonProps } atoms={ [ 'video-behaviour' ] } />
+				</PanelBody>
+			) }
+
+			<PanelBody title={ __( 'Overlay', 'sgs-blocks' ) } initialOpen={ false }>
+				<MediaElementPanel { ...commonProps } atoms={ [ 'overlay' ] } />
 			</PanelBody>
 		</>
 	);

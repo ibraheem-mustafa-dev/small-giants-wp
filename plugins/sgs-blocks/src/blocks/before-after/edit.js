@@ -45,7 +45,7 @@ import {
 	resolveColourToken,
 	MediaElementPanel,
 } from '../../components';
-import BooleanResponsiveControl from './BooleanResponsiveControl';
+import { BooleanResponsiveControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const HEIGHT_UNITS = [

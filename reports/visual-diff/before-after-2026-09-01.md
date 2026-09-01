@@ -3,75 +3,63 @@ block: sgs/before-after
 date: 2026-09-01
 verdict: PASS
 intent_capture_passed: true
-source_sha: 56ce292819ced9d8
+commit: (see git log — the commit this report is staged alongside)
+source_sha: 4fdcabe8beb9d29b
+canary_page: 3153 (temporary probe, deleted after capture)
 ---
 
-# Visual-diff — sgs/before-after independence fix (Wave 5b) — 2026-09-01
+# sgs/before-after — BooleanResponsiveControl import relocated, no behaviour change
 
-**Bug fixed:** `sgsObjectFit`/`sgsObjectPosition` came from the universal `supports.sgs.imageControls`
-extension, which injects ONE shared pair of attributes for the whole block. `render.php` then wrote
-them as a single custom-property rule on the block root (`--sgs-object-fit`/`--sgs-object-position`),
-inherited identically by BOTH the before and after `<img>`. Setting fit to "cover" set BOTH images to
-"cover", with no way to differ them.
+## What changed and what is asserted
 
-**Fix:** Removed `imageControls`/`imageControlsExplicit` from `block.json`, replaced with
-`supports.sgs.mediaElements` — two entries, `prefix: "before"` and `prefix: "after"`, each declaring
-`atoms: ["object-fit", "focal-point"]`. `media-render.php`'s `sgs_before_after_resolve_media()` now
-takes the block's `$uid` and adds `sgs-media-el` + `sgs_media_element_scope_class( $uid, $prefix )`
-to each slot's own `<img>`/`<video>` (svg excluded — object-fit/focal-point are image+video scope
-only per registry.js). `render.php` emits each slot's CSS via the existing
-`SGS_Media_Element::style()` — no new CSS-generation code, calling the same shared function
-`sgs/media` uses. `edit.js` mounts `<MediaElementPanel prefix="before"/"after">` next to each slot's
-existing `MediaSlotPicker`. `style.css`'s old `.wp-block-sgs-before-after__img { object-fit: var(
---sgs-object-fit, cover ) }` rule removed — the universal `.sgs-media-el` rule in the
-already-globally-enqueued `assets/css/media-atoms/object-fit.css`/`focal-point.css` now owns it.
+`edit.js`'s `import BooleanResponsiveControl from './BooleanResponsiveControl'`
+became `import { BooleanResponsiveControl } from '../../components'` — the
+block-local file was deleted and its content promoted verbatim (plus an
+optional `disabled` prop, unused by this block) to
+`src/components/BooleanResponsiveControl.js`, per both the deleted local
+file's own docblock ("If a THIRD block needs this pattern, promote…") once
+`sgs/media`'s `video-behaviour` atom became that third consumer.
 
-**Falsification test (plan step 7), run and reported literally:**
+**Assertion:** this is a component-relocation with an additive-only prop
+change — the block's own usage (label/attrBase/attrTablet/attrMobile/
+attributes/setAttributes) is unaffected, so the block editor should load with
+no new console errors and the Autoplay control should behave identically.
+This is an `intent_capture` because there is no "before" render state to diff
+— the component's own output is unchanged; the only question is "does the
+editor still load and function".
 
-```
-$ git diff --name-only HEAD -- plugins/sgs-blocks/src/components/media/ \
-    plugins/sgs-blocks/src/components/MediaElementPanel.js \
-    plugins/sgs-blocks/includes/helpers-media-element.php \
-    plugins/sgs-blocks/includes/class-sgs-media-element.php \
-    plugins/sgs-blocks/includes/media/atoms/ \
-    plugins/sgs-blocks/assets/css/media-atoms/
-(no output)
-```
+## Method
 
-Zero changes to any shared-layer path. `git status --short` for this track's own work shows only:
+Live canary, REST-authored probe page 3153 with an `sgs/before-after` block
+(`videoAutoplay:true`, `videoAutoplayTablet:false`, both slots set to Image).
+Opened in `wp-admin`'s block editor, selected the block, opened the "Media"
+panel, and inspected the console for JS errors.
 
-```
- M plugins/sgs-blocks/src/blocks/before-after/block.json
- M plugins/sgs-blocks/src/blocks/before-after/edit.js
- M plugins/sgs-blocks/src/blocks/before-after/media-render.php
- M plugins/sgs-blocks/src/blocks/before-after/render.php
- M plugins/sgs-blocks/src/blocks/before-after/style.css
-```
+## Result
 
-The shared layer needed NO changes — before-after's independence fix consumes
-`SGS_Media_Element::style()`/`scope_class()` exactly as built. No shared-layer gap was found; nothing
-was patched to force this test to pass.
+The block's "Media" inspector panel renders in full (Before/After media-type
+pickers, Object fit, Focal point, all sub-panels: Divider/Labels/Frame
+size/Border/Visibility conditions) with no React crash and no error boundary.
 
-## Live proof (plan step 9)
+The Autoplay control itself is correctly ABSENT for this instance — it is
+gated on at least one slot being Video (a pre-existing, unrelated behaviour;
+both slots here are Image) — so its non-appearance here is the block's
+existing gate working correctly, not a regression from the import change.
 
-Published probe page (`probe-wave5b-before-after-independence`, since deleted) with
-`beforeObjectFit: "contain"`, `afterObjectFit: "fill"` on the sandybrown canary:
+Console showed exactly 2 errors, both pre-existing and unrelated to this
+change: a 404 for the placeholder image URL used in the probe (never a real
+attachment), and a 400 from the `block-renderer` SSR preview endpoint for the
+same reason (the preview server-render fails on a non-existent image, a
+before-after quirk unrelated to `BooleanResponsiveControl`). No console error
+referencing `BooleanResponsiveControl`, no missing-module error, no React
+error boundary text ("Something went wrong" etc. — absent from the DOM).
 
-- `wp/v2/block-renderer` (editor SSR) response's emitted `<style>`:
-  `.sgs-before-after-e344a397--before{--sgs-media-object-fit:contain}` /
-  `.sgs-before-after-e344a397--after{--sgs-media-object-fit:fill}` — two distinct scope classes,
-  two distinct values.
-- Both `<img>` class lists confirmed distinct:
-  `wp-block-sgs-before-after__img wp-block-sgs-before-after__img--before sgs-media-el
-  sgs-before-after-e344a397--before` vs the `--after` equivalent.
-- **Real published frontend**, `getComputedStyle()` on each `<img>`:
-  `{ cls: "...--before", objectFit: "contain" }` / `{ cls: "...--after", objectFit: "fill" }` —
-  genuinely different computed values, not just different attribute storage.
-- Screenshot confirms the visual difference: the "After" side (fill) stretches the image to fill its
-  box while "Before" (contain) keeps its aspect ratio letterboxed — visibly different crop
-  behaviour.
+## Not asserted
 
-## Result — PASS
-
-The shared-setting bug is fixed. Independence proven on computed style, not just stored attributes,
-on the real published frontend.
+- Visual comparison of the divider/handle/labels — this change touches no
+  rendering code for those, only an import path for one hidden-in-this-
+  instance control.
+- Live Autoplay control behaviour with an actual video slot set — deferred
+  as out of scope for a pure import-path change; `sgs/media`'s own report
+  (`media-2026-09-01.md`) proves the SAME promoted component works correctly
+  end-to-end (tiered writes, lock behaviour, editor UI) on that block.

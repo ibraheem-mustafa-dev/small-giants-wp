@@ -894,6 +894,27 @@ def check_orphan_attrs(block, shared_php_corpus, shared_js_corpus, extension_att
         if word_present(attr, full_corpus):
             continue
 
+        # The shared media-atom layer (src/components/media/atoms/,
+        # includes/media/atoms/) never writes the camelCase attr name as a
+        # literal — every read is a COMPUTED key built from a PascalCase
+        # "base" string via mediaAttrName()/mediaStoredAttrName() (JS) or
+        # sgs_media_element_attr()/sgs_media_element_stored_attr() (PHP), e.g.
+        # mediaStoredAttrName( blockSlug, '', 'VideoMuted' ) -> 'videoMuted'
+        # at runtime. A block wiring an atom via block.json's
+        # `supports.sgs.mediaElements` (not a literal control in edit.js)
+        # therefore never appears as its own camelCase name anywhere in the
+        # corpus — checking the PascalCase base form this convention actually
+        # uses is what recognises it as consumed. Found live 2026-09-01: this
+        # gate flagged 13 sgs/media attrs (mediaSizing/videoMuted*/overlay*/
+        # border*) as orphaned the moment their controls moved from literal
+        # JSX in edit.js into the atom dispatch layer — verified NOT dead via
+        # the dedicated atom-parity gates (test-media-atom-parity,
+        # check-media-attributes-parity, test-media-injection-parity, all
+        # green) before concluding this was a detector gap, not a real one.
+        pascal_base = attr[:1].upper() + attr[1:]
+        if pascal_base != attr and word_present(pascal_base, full_corpus):
+            continue
+
         findings.append({
             'type': 'orphan_attr',
             'block': block.slug,

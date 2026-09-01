@@ -207,6 +207,37 @@ export function resolveWidth( raw ) {
 }
 
 /**
+ * Append `px` to a bare number, matching `sgs_css_length_value()`'s own
+ * bare-number convention (`sgs/before-after`'s block-private border reads
+ * its box values through that shared sanitiser; this atom's border shares
+ * the exact same `SgsBorderControl` UI, which stores a plain number). A
+ * value already carrying a unit (a string) passes through unchanged.
+ *
+ * ⛔ Found live 2026-09-01, sgs/media's first real deploy of this atom's
+ * border feature: without this, `sidesToWidthShorthand()`/
+ * `cornersToRadiusShorthand()` emitted a UNITLESS shorthand
+ * (`--sgs-media-border-width:4 4 4 4`), which is invalid CSS — the browser
+ * discards the whole declaration and falls back to `border-width: medium`
+ * (~3px), the exact G5 anti-pattern `sgs/before-after`'s own render.php
+ * comment names and avoids via `sgs_css_length_value()`. Radius had the
+ * identical defect. Measured: computed `border-width` read `3px` and
+ * `border-top-left-radius` read `0px` against an authored 4px/30px value.
+ *
+ * @param {*} value Raw corner/side value (number, numeric string, or '0').
+ * @return {string} `px`-suffixed length, or the value unchanged if already
+ *                  a non-numeric string.
+ */
+function toLengthValue( value ) {
+	if ( 'number' === typeof value ) {
+		return `${ value }px`;
+	}
+	if ( 'string' === typeof value && /^-?\d+(\.\d+)?$/.test( value.trim() ) ) {
+		return `${ value.trim() }px`;
+	}
+	return value;
+}
+
+/**
  * Convert a 4-corner box object into the CSS `border-radius` shorthand VALUE
  * string, in the shorthand's own order (top-left, top-right, bottom-right,
  * bottom-left) — note this differs from `ResponsiveBorderRadiusControl`'s
@@ -233,7 +264,7 @@ export function cornersToRadiusShorthand( corners ) {
 	return order
 		.map( ( k ) =>
 			undefined !== corners[ k ] && null !== corners[ k ] && '' !== corners[ k ]
-				? corners[ k ]
+				? toLengthValue( corners[ k ] )
 				: '0'
 		)
 		.join( ' ' );
@@ -264,7 +295,7 @@ export function sidesToWidthShorthand( sides ) {
 	return order
 		.map( ( k ) =>
 			undefined !== sides[ k ] && null !== sides[ k ] && '' !== sides[ k ]
-				? sides[ k ]
+				? toLengthValue( sides[ k ] )
 				: '0'
 		)
 		.join( ' ' );

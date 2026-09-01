@@ -38,73 +38,20 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // ---------------------------------------------------------------------------
 // 1. Extract shared styling attributes with safe defaults.
 // ---------------------------------------------------------------------------
-// `maxWidth`, `maxHeight` AND (as of this pass) `height` are TIER OBJECTS —
-// ONE attr each holding {desktop,tablet,mobile}. Read them through the
-// shared normaliser rather than sibling attrs: `maxWidthTablet`/`maxWidthMobile`,
-// `maxHeightTablet`/`maxHeightMobile`, and `heightTablet`/`heightMobile` no
-// longer exist as declared attrs, and a `(string)` cast on the object-typed
-// base raises PHP "Array to string conversion" on EVERY render, emitting a
-// garbage `max-width:Array` / `max-height:Array` / `height:Array`.
-$max_width_tiers  = sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null );
-$max_width        = (string) ( $max_width_tiers['desktop'] ?? '' );
-$max_width_tablet = (string) ( $max_width_tiers['tablet'] ?? '' );
-$max_width_mobile = (string) ( $max_width_tiers['mobile'] ?? '' );
-$max_width_unit   = isset( $attributes['maxWidthUnit'] ) ? (string) $attributes['maxWidthUnit'] : 'px';
-
-$max_height_tiers  = sgs_responsive_normalise_object( $attributes['maxHeight'] ?? null );
-$max_height        = (string) ( $max_height_tiers['desktop'] ?? '' );
-$max_height_tablet = (string) ( $max_height_tiers['tablet'] ?? '' );
-$max_height_mobile = (string) ( $max_height_tiers['mobile'] ?? '' );
-$max_height_unit   = isset( $attributes['maxHeightUnit'] ) ? (string) $attributes['maxHeightUnit'] : 'px';
-
-// Fixed CSS height (fill) — distinct from maxHeight (a cap) and imageHeight (the
-// intrinsic HTML attr). A draft `height:440px` on an image makes it FILL that
-// height with object-fit cropping. Same unit-embedded + tier-object format as
-// maxHeight above (Spec 35 pass, D563).
-$height_tiers  = sgs_responsive_normalise_object( $attributes['height'] ?? null );
-$height        = (string) ( $height_tiers['desktop'] ?? '' );
-$height_unit   = isset( $attributes['heightUnit'] ) ? (string) $attributes['heightUnit'] : 'px';
-$height_tablet = (string) ( $height_tiers['tablet'] ?? '' );
-$height_mobile = (string) ( $height_tiers['mobile'] ?? '' );
-
-// Native dimensions.aspectRatio (Spec 35 wave-B, D402). Read from
-// style.dimensions.aspectRatio (block.json declares __experimentalSkipSerialization
-// on supports.dimensions so WP's own wp_render_dimensions_support() emits nothing
-// automatically — see the block.json description comment for why that support
-// can't be left to core: it unconditionally inlines onto the wrapper root tag and
-// ignores `selectors`).
-$native_aspect_ratio = isset( $attributes['style']['dimensions']['aspectRatio'] ) ? (string) $attributes['style']['dimensions']['aspectRatio'] : '';
-
-// Media size & crop mode (C19, 2026-08-27). `mediaSizing` has no block.json
-// `default` (a `"default": null` on a typed attr 400s every SSR preview —
-// memory `a-null-default-is-worse-than-no-default`), so an absent value is
-// DERIVED here — ratio set -> ratio; else height set -> height; else auto —
-// the SAME derivation `media/edit.js` performs, so old/existing content
-// (nothing live uses this attribute yet) renders identically with no edit.
-// This is also the mutual-exclusivity ENFORCEMENT point: `height` and
-// `native_aspect_ratio` may both be populated on a hand-authored/legacy
-// instance, but only the resolved mode's CSS is emitted below (§5/§7) —
-// they can no longer both paint at once.
-$media_sizing = isset( $attributes['mediaSizing'] ) ? (string) $attributes['mediaSizing'] : '';
-if ( ! in_array( $media_sizing, array( 'auto', 'height', 'ratio' ), true ) ) {
-	$media_sizing = '' !== $native_aspect_ratio ? 'ratio' : ( '' !== $height ? 'height' : 'auto' );
-}
-
+// Sizing (mediaSizing/height/width/maxWidth/maxHeight/aspectRatio), Shape
+// and Border (radius/width/style/colour) are now owned entirely by the
+// `box-shape` atom (Wave 5b, 2026-09-01) — its own custom-property CSS
+// (`--sgs-media-*`, emitted below via $sgs_media_atom_css) replaces this
+// block's old hand-rolled max-width/max-height/height responsive rules, the
+// native `style.border.radius` base + `borderRadiusTablet`/`borderRadiusMobile`
+// tier emission, and the native `style.dimensions.aspectRatio` support —
+// all three would otherwise double-write the SAME CSS properties the atom
+// now emits. See block.json's `_comment_mediaElements` for the full
+// replacement rationale.
 $allowed_object_fits = array( 'cover', 'contain', 'fill', 'none', 'scale-down' );
 $object_fit_raw      = $attributes['objectFit'] ?? 'cover';
 $object_fit          = in_array( $object_fit_raw, $allowed_object_fits, true ) ? $object_fit_raw : 'cover';
 $object_position     = isset( $attributes['objectPosition'] ) ? (string) $attributes['objectPosition'] : 'center center';
-
-// Border-radius base — WP-NATIVE style.border.radius (box-object interface
-// contract: no more custom flat/per-corner attrs). Tablet/Mobile are the SGS
-// custom tier OBJECT attrs { topLeft, topRight, bottomLeft, bottomRight }.
-// The whole border group (colour/width/style/radius) is read from
-// $attributes['style']['border'] because __experimentalBorder now carries
-// __experimentalSkipSerialization (block.json) — WP still POPULATES the attr,
-// it just stops auto-inlining it onto the wrapper.
-$native_border             = ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) ? $attributes['style']['border'] : array();
-$border_radius_tablet_obj  = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-$border_radius_mobile_obj  = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
 
 $box_shadow        = isset( $attributes['boxShadow'] ) ? (string) $attributes['boxShadow'] : '';
 $box_shadow_colour = isset( $attributes['boxShadowColour'] ) ? (string) $attributes['boxShadowColour'] : '';
@@ -331,43 +278,12 @@ if ( '' !== $box_shadow && '' !== $box_shadow_colour_hover ) {
 	}
 }
 
-// Native border group (colour/width/style/radius) — base only, via the
-// stable core style-engine API (matches sgs/button + sgs/container's proven
-// pattern: WP core's own sanitisation, never hand-rolled). Applies to the
-// media element (img/video) — mirrors this block's pre-existing behaviour of
-// painting border/radius on the media element itself, not the figure.
-$border_base_css = '';
-if ( ! empty( $native_border ) ) {
-	$border_base_out = wp_style_engine_get_styles(
-		array( 'border' => $native_border ),
-		array( 'selector' => $id_sel )
-	);
-	if ( ! empty( $border_base_out['css'] ) ) {
-		$border_base_css = $border_base_out['css'];
-	}
-}
-
-// Native dimensions.aspectRatio (Spec 35 wave-B, D402 ADOPT) — same stable
-// core style-engine API as the border group above, scoped to the media
-// element rather than left to core's wp_render_dimensions_support() (which
-// would inline it onto the wrong element — the wrapper — and ignore
-// `selectors`; see block.json + render.php step-1 comments for the full
-// verdict). Digits/slash validated as belt-and-braces defence in depth
-// (wp_style_engine_get_styles() sanitises internally, but this mirrors the
-// validation discipline already used elsewhere in this file).
-$aspect_ratio_css = '';
-if ( 'ratio' === $media_sizing
-	&& '' !== $native_aspect_ratio
-	&& preg_match( '/^[\d\s\/]+$/', $native_aspect_ratio )
-) {
-	$aspect_ratio_out = wp_style_engine_get_styles(
-		array( 'dimensions' => array( 'aspectRatio' => $native_aspect_ratio ) ),
-		array( 'selector' => $id_sel )
-	);
-	if ( ! empty( $aspect_ratio_out['css'] ) ) {
-		$aspect_ratio_css = $aspect_ratio_out['css'];
-	}
-}
+// Border (width/style/colour/radius) and aspect-ratio are now emitted
+// entirely by the `box-shape` atom below (`$sgs_media_atom_css`) via
+// `--sgs-media-border-*`/`--sgs-media-aspect-ratio` custom properties
+// applied to `.sgs-media-el` — the old native `style.border.radius` +
+// `style.dimensions.aspectRatio` style-engine calls that used to live here
+// are retired (Wave 5b, 2026-09-01; see block.json's `_comment_mediaElements`).
 
 // ---------------------------------------------------------------------------
 // 6. Wrapper/scope-level base declarations (alignment margin).
@@ -389,70 +305,28 @@ if ( $wrap_base_decls ) {
 // @media(max-width:767px), tablet @media(max-width:1023px).
 // ---------------------------------------------------------------------------
 
-// max-width / max-height / height — base + tablet + mobile on the SAME
-// selector (Pattern A). Values are validated through sgs_media_css_length().
-// `height` (fixed-height fill) only emits when the resolved mode is
-// 'height' — mutual exclusivity with `aspect_ratio_css` above (C19). This is
-// belt-and-braces: the editor panel already keeps the two from being set at
-// once via the mode picker, but a hand-authored/legacy instance could carry
-// both, and the mode is the single source of truth for which one paints.
-$media_sizing_is_height = 'height' === $media_sizing;
+// max-width / max-height / height / aspect-ratio / border are now owned
+// entirely by the `box-shape` atom's own custom-property CSS
+// ($sgs_media_atom_css below) — the hand-rolled base/tablet/mobile rule
+// arrays this block used to build here are retired (Wave 5b, 2026-09-01).
+// Border-radius Tablet/Mobile tier emission (formerly via
+// wp_style_engine_get_styles() on $border_radius_tablet_obj/
+// $border_radius_mobile_obj) is retired the same way — see §7b below, now
+// gone, and block.json's `_comment_mediaElements`.
 
-$base_rules = array();
-$mw_base    = sgs_media_css_length( $max_width, $max_width_unit );
-$mh_base    = sgs_media_css_length( $max_height, $max_height_unit );
-$h_base     = $media_sizing_is_height ? sgs_media_css_length( $height, $height_unit ) : '';
-if ( '' !== $mw_base ) {
-	$base_rules[] = 'max-width:' . $mw_base;
-}
-if ( '' !== $mh_base ) {
-	$base_rules[] = 'max-height:' . $mh_base;
-}
-if ( '' !== $h_base ) {
-	$base_rules[] = 'height:' . $h_base;
-}
-
-$tablet_rules = array();
-$mw_tablet    = sgs_media_css_length( $max_width_tablet, $max_width_unit );
-$mh_tablet    = sgs_media_css_length( $max_height_tablet, $max_height_unit );
-$h_tablet     = $media_sizing_is_height ? sgs_media_css_length( $height_tablet, $height_unit ) : '';
-if ( '' !== $mw_tablet ) {
-	$tablet_rules[] = 'max-width:' . $mw_tablet;
-}
-if ( '' !== $mh_tablet ) {
-	$tablet_rules[] = 'max-height:' . $mh_tablet;
-}
-if ( '' !== $h_tablet ) {
-	$tablet_rules[] = 'height:' . $h_tablet;
-}
-
-$mobile_rules = array();
-$mw_mobile    = sgs_media_css_length( $max_width_mobile, $max_width_unit );
-$mh_mobile    = sgs_media_css_length( $max_height_mobile, $max_height_unit );
-$h_mobile     = $media_sizing_is_height ? sgs_media_css_length( $height_mobile, $height_unit ) : '';
-if ( '' !== $mw_mobile ) {
-	$mobile_rules[] = 'max-width:' . $mw_mobile;
-}
-if ( '' !== $mh_mobile ) {
-	$mobile_rules[] = 'max-height:' . $mh_mobile;
-}
-if ( '' !== $h_mobile ) {
-	$mobile_rules[] = 'height:' . $h_mobile;
-}
-
-// The media-element ATOM layer (Wave 5a). It contributes custom-property
+// The media-element ATOM layer (Wave 5b). It contributes custom-property
 // VALUES only — every rule lives in assets/css/media-element.css, loaded in
 // both the canvas and the front end, so the editor and the page cannot drift.
 // `atoms` lists only the CSS-EMITTING atoms declared in block.json's
-// supports.sgs.mediaElements — media-type/source/meaning contribute no CSS
-// (control-only atoms), so they are correctly absent here even though they
-// are declared there for attribute injection.
-$sgs_media_atoms    = array( 'object-fit', 'focal-point', 'svg-presentation', 'motion' );
+// supports.sgs.mediaElements — media-type/source/meaning/video-behaviour
+// contribute no CSS (control-only atoms), so they are correctly absent here
+// even though they are declared there for attribute injection.
+$sgs_media_atoms    = array( 'object-fit', 'focal-point', 'svg-presentation', 'motion', 'box-shape', 'overlay' );
 $sgs_media_atom_css = class_exists( 'SGS_Media_Element' )
 	? SGS_Media_Element::style( $attributes, '', 'sgs/media', $scope_class, $sgs_media_atoms )
 	: '';
 
-$responsive_css  = $media_base_css . $border_base_css . $aspect_ratio_css . $wrap_base_css . $sgs_media_atom_css;
+$responsive_css  = $media_base_css . $wrap_base_css . $sgs_media_atom_css;
 
 /**
  * Art-direction tier visibility CSS — ONE implementation for every media family
@@ -523,38 +397,10 @@ $sgs_tier_visibility_css = static function ( $modifier_base, array $tiers_presen
 	return $css;
 };
 
-if ( $base_rules ) {
-	$responsive_css .= $id_sel . '{' . implode( ';', $base_rules ) . '}';
-}
-if ( $tablet_rules ) {
-	$responsive_css .= '@media(max-width:1023px){' . $id_sel . '{' . implode( ';', $tablet_rules ) . '}}';
-}
-if ( $mobile_rules ) {
-	$responsive_css .= '@media(max-width:767px){' . $id_sel . '{' . implode( ';', $mobile_rules ) . '}}';
-}
-
-// Border-radius tiers — SGS custom tier OBJECT attrs (borderRadiusTablet /
-// borderRadiusMobile), routed through the same stable core style-engine API
-// as the base rule above (box-object interface contract §B).
-
-if ( ! empty( $border_radius_tablet_obj ) ) {
-	$radius_tab_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
-		array( 'selector' => $id_sel )
-	);
-	if ( ! empty( $radius_tab_out['css'] ) ) {
-		$responsive_css .= '@media(max-width:1023px){' . $radius_tab_out['css'] . '}';
-	}
-}
-if ( ! empty( $border_radius_mobile_obj ) ) {
-	$radius_mob_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
-		array( 'selector' => $id_sel )
-	);
-	if ( ! empty( $radius_mob_out['css'] ) ) {
-		$responsive_css .= '@media(max-width:767px){' . $radius_mob_out['css'] . '}';
-	}
-}
+// max-width/max-height/height (all tiers) and border-radius Tablet/Mobile
+// are emitted by the `box-shape` atom (`$sgs_media_atom_css` above, folded
+// into `$responsive_css` at its assembly point) — the hand-rolled rule
+// blocks that used to sit here are retired (Wave 5b, 2026-09-01).
 
 // order — base + tablet + mobile on the SAME wrapper/scope selector (Pattern A).
 if ( null !== $css_order ) {
@@ -1297,6 +1143,15 @@ if ( 'svg' === $media_type ) {
 	$wrapper_classes[] = 'sgs-media--svg';
 }
 
+// The `overlay` atom paints via `.sgs-media-box::after` — it needs a real
+// container to attach the pseudo-element to (`SGS_Media_Element::
+// requires_box()`, class-sgs-media-element.php). The scope class is already
+// in $wrapper_classes above, so only the bare marker needs adding.
+$sgs_media_requires_box = class_exists( 'SGS_Media_Element' ) && SGS_Media_Element::requires_box( $sgs_media_atoms );
+if ( $sgs_media_requires_box ) {
+	$wrapper_classes[] = SGS_Media_Element::CLASS_BOX;
+}
+
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
 		'class' => implode( ' ', $wrapper_classes ),
@@ -1319,7 +1174,13 @@ $wrapper_attributes = get_block_wrapper_attributes(
 // 32 bans. Falling back to the figure path also keeps ONE convention across sgs/hero
 // and sgs/media (sibling <img>s + BEM tier modifiers + breakpoint CSS), which is the
 // point of proving the routing on both a nested element and a standalone block.
-$naked_mode = ( 'image' === $media_type ) && ( '' === $caption ) && empty( $link_open ) && empty( $tier_imgs );
+//
+// A BOX ATOM ALSO SUPPRESSES NAKED MODE (Wave 5b, 2026-09-01) — `overlay`
+// paints via `.sgs-media-box::after`, and a replaced element (a naked <img>)
+// has nowhere for that pseudo-element to attach (`class-sgs-media-element.php`'s
+// own docblock names this exact scenario as the reason `requires_box()`
+// exists: "a renderer can ask the question BEFORE choosing its markup").
+$naked_mode = ( 'image' === $media_type ) && ( '' === $caption ) && empty( $link_open ) && empty( $tier_imgs ) && ! $sgs_media_requires_box;
 // SVG mode always uses the <figure> wrapper (needed for consistent sizing + caption support).
 
 if ( $naked_mode && '' !== $image_html ) {

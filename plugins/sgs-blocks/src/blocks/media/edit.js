@@ -15,16 +15,11 @@ import {
 	Notice,
 } from '@wordpress/components';
 import {
-	ResponsiveOverride,
-	ResponsiveBorderRadiusControl,
 	LinkPopoverField,
 	SgsColourPanel,
 	ShadowControl,
-	SgsLengthControl,
-	MediaSizingPanel,
 	MediaPanelLayout,
 } from '../../components';
-import BooleanResponsiveControl from './BooleanResponsiveControl';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { sanitiseSvg } from '../../utils';
 
@@ -34,44 +29,13 @@ import { sanitiseSvg } from '../../utils';
  * unit render.php would reject.
  */
 /**
- * The video playback booleans, each as a breakpoint map plus its desktop default.
- *
- * Shape is deliberate: `{ desktop, tablet, mobile }` is the canonical responsive
- * idiom in this codebase (see any `<ResponsiveControl>` call site), and
- * `check-control-ux.js` recognises a variant appearing as the VALUE of a
- * `tablet:`/`mobile:` key as a compliant family. Listing the tier attrs any other
- * way — e.g. spelled out one per line in a resetAll — reads to that gate as an
- * unwrapped direct control, which is exactly what it flagged.
- *
- * Single source of truth for the panel's reset, so adding a seventh boolean
- * cannot be silently forgotten by `resetAll`.
+ * Playback options (autoplay/loop/muted/controls/plays-inline/lazy-load) are
+ * now owned entirely by the `video-behaviour` atom (Wave 5b, 2026-09-01),
+ * mounted via `MediaPanelLayout`'s "Playback" section — the hand-rolled
+ * `PLAYBACK_TIERS` reset map + "Playback Options" `ToolsPanel` this file used
+ * to own here are gone; the atom's own control renders each of the same 6
+ * bases through the shared tiered `BooleanResponsiveControl`.
  */
-const PLAYBACK_TIERS = [
-	{
-		map: { desktop: 'videoAutoplay', tablet: 'videoAutoplayTablet', mobile: 'videoAutoplayMobile' },
-		desktopDefault: false,
-	},
-	{
-		map: { desktop: 'videoLoop', tablet: 'videoLoopTablet', mobile: 'videoLoopMobile' },
-		desktopDefault: false,
-	},
-	{
-		map: { desktop: 'videoMuted', tablet: 'videoMutedTablet', mobile: 'videoMutedMobile' },
-		desktopDefault: true,
-	},
-	{
-		map: { desktop: 'videoControls', tablet: 'videoControlsTablet', mobile: 'videoControlsMobile' },
-		desktopDefault: true,
-	},
-	{
-		map: { desktop: 'videoPlaysInline', tablet: 'videoPlaysInlineTablet', mobile: 'videoPlaysInlineMobile' },
-		desktopDefault: true,
-	},
-	{
-		map: { desktop: 'videoLazyLoad', tablet: 'videoLazyLoadTablet', mobile: 'videoLazyLoadMobile' },
-		desktopDefault: true,
-	},
-];
 
 /**
  * `RUnitControl` (a responsive UnitControl trio storing a unit-embedded CSS
@@ -100,9 +64,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		// Shared.
 		mediaType,
-		style,
-		borderRadiusTablet,
-		borderRadiusMobile,
 		// Image.
 		imageId,
 		imageUrl,
@@ -111,12 +72,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		// Video.
 		videoUrl,
 		videoSource,
-		videoAutoplay,
-		videoLoop,
-		videoMuted,
-		videoControls,
-		videoPlaysInline,
-		videoLazyLoad,
 		// SVG.
 		svgContent,
 		svgAnimation,
@@ -131,19 +86,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	const isImage = 'image' === mediaType || ! mediaType;
 	const isVideo = 'video' === mediaType;
 	const isSvg = 'svg' === mediaType;
-
-	// Media size & crop (C19, 2026-08-27) — `mediaSizing` has no block.json
-	// `default` (see block.json's `_comment_mediaSizing`), so an absent value
-	// is DERIVED here — ratio set -> ratio; else height set -> height; else
-	// auto — the SAME derivation `media/render.php` performs at render time,
-	// so old/existing content (none exists live for this attribute — see the
-	// dispatch return) renders identically with zero edit required.
-	const nativeAspectRatio = attributes.style?.dimensions?.aspectRatio || '';
-	const heightHasValue = !! (
-		attributes.height && Object.values( attributes.height ).some( ( v ) => v !== undefined && v !== null && v !== '' )
-	);
-	const resolvedMediaSizing =
-		attributes.mediaSizing || ( nativeAspectRatio ? 'ratio' : heightHasValue ? 'height' : 'auto' );
 
 	const onSelectImage = ( media ) => {
 		setAttributes( {
@@ -215,19 +157,17 @@ export default function Edit( { attributes, setAttributes } ) {
 			/>
 			<InspectorControls>
 			{ /* Media type switch + per-type source/meaning/svg-presentation +
-			     Image Styling (object-fit/focal-point/motion) — the Wave 5a
-			     atom layer (MediaPanelLayout.js). Replaces the old hand-rolled
-			     media-type ButtonGroup, the Image panel's Replace/Remove +
-			     art-direction + decorative/alt controls, and (further below)
-			     the SVG content/animation controls and the Video
-			     source/URL/poster workflow — all now owned by the `source`,
-			     `meaning` and `svg-presentation` atoms. `box-shape`,
-			     `video-behaviour` and `overlay` are deliberately NOT part of
-			     this layout yet (Wave 5a finding — see block.json's
-			     `_comment_mediaElements`), so this block's existing Media
-			     Styling ToolsPanel (border radius/max-width/max-height/
-			     alignment/opacity/shadow) and Playback Options ToolsPanel
-			     stay exactly as they were. */ }
+			     Image Styling (object-fit/focal-point/motion) + Box & Border
+			     (box-shape) + Playback (video-behaviour) + Overlay — the full
+			     Wave 5b atom layer (MediaPanelLayout.js). Replaces the old
+			     hand-rolled media-type ButtonGroup, the Image panel's
+			     Replace/Remove + art-direction + decorative/alt controls, the
+			     SVG content/animation controls, the Video source/URL/poster
+			     workflow, the old Media Styling ToolsPanel's sizing/border
+			     rows, and the old Playback Options ToolsPanel — all now owned
+			     by the atom layer. This block's Media Styling ToolsPanel
+			     (further below) keeps only Alignment/Opacity/Box shadow, none
+			     of which any atom owns. */ }
 			<MediaPanelLayout
 				attributes={ attributes }
 				setAttributes={ setAttributes }
@@ -246,25 +186,13 @@ export default function Edit( { attributes, setAttributes } ) {
 				<ToolsPanel
 					label={ __( 'Media Styling', 'sgs-blocks' ) }
 					resetAll={ () => {
+						// Sizing/shape/border (mediaSizing/height/maxWidth/
+						// maxHeight/aspectRatio/borderRadius*/borderWidth/
+						// borderStyle/borderColour*) are now the `box-shape`
+						// atom's own reset, mounted via MediaPanelLayout's
+						// "Box & Border" panel — this reset only covers the
+						// rows still owned by THIS ToolsPanel.
 						setAttributes( {
-							objectFit: 'cover',
-							objectPosition: 'center center',
-							mediaSizing: 'auto',
-							// maxWidth + maxHeight + height are TIER OBJECTS —
-							// reset to an empty object, NOT resetResponsiveLength()'s
-							// `null` + flat siblings. A null on an object-typed attr
-							// coerces to the declared default, and the siblings no
-							// longer exist so WP discards them silently (D338/D563).
-							maxWidth: {},
-							maxHeight: {},
-							height: {},
-							style: {
-								...style,
-								dimensions: { ...style?.dimensions, aspectRatio: undefined },
-								border: { ...style?.border, radius: {} },
-							},
-							borderRadiusTablet: {},
-							borderRadiusMobile: {},
 							alignment: 'left',
 							opacity: 1,
 							boxShadow: '',
@@ -273,184 +201,14 @@ export default function Edit( { attributes, setAttributes } ) {
 					} }
 				>
 					{ /*
-					  `maxWidth` is a TIER OBJECT (Spec 35 pass 2) — ONE attr holding
-					  {desktop,tablet,mobile}, so it uses ResponsiveOverride. `maxHeight`
-					  and `height` below are on the same shape as of this pass.
-					*/ }
-					<ToolsPanelItem
-						label={ __( 'Max width', 'sgs-blocks' ) }
-						hasValue={ () =>
-							!! (
-								attributes.maxWidth &&
-								Object.values( attributes.maxWidth ).some(
-									( v ) => v !== undefined && v !== null && v !== ''
-								)
-							)
-						}
-						onDeselect={ () => setAttributes( { maxWidth: {} } ) }
-						isShownByDefault
-					>
-						<ResponsiveOverride
-							label={ __( 'Max width', 'sgs-blocks' ) }
-							value={ attributes.maxWidth }
-							onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
-						>
-							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-								<SgsLengthControl
-									presets={ false }
-									value={ ownValue || '' }
-									placeholder={ inherited ? effectiveValue || '' : '' }
-									onChange={ ( v ) => setOwnValue( v || '' ) }
-								/>
-							) }
-						</ResponsiveOverride>
-					</ToolsPanelItem>
-
-					{ /*
-					  `maxHeight` is a TIER OBJECT (Spec 35 pass 2/3c) — ONE attr
-					  holding {desktop,tablet,mobile}, so it uses
-					  <ResponsiveOverride> rather than the flat-sibling
-					  <RUnitControl> its "Height (fill)" neighbour used to use.
-					*/ }
-					<ToolsPanelItem
-						label={ __( 'Max height', 'sgs-blocks' ) }
-						hasValue={ () =>
-							!! (
-								attributes.maxHeight &&
-								Object.values( attributes.maxHeight ).some(
-									( v ) => v !== undefined && v !== null && v !== ''
-								)
-							)
-						}
-						onDeselect={ () => setAttributes( { maxHeight: {} } ) }
-					>
-						<ResponsiveOverride
-							label={ __( 'Max height', 'sgs-blocks' ) }
-							value={ attributes.maxHeight }
-							onChange={ ( obj ) => setAttributes( { maxHeight: obj } ) }
-						>
-							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-								<SgsLengthControl
-									presets={ false }
-									value={ ownValue || '' }
-									placeholder={ inherited ? effectiveValue || '' : '' }
-									onChange={ ( v ) => setOwnValue( v || '' ) }
-								/>
-							) }
-						</ResponsiveOverride>
-					</ToolsPanelItem>
-
-					{ /*
-					  Media size & crop (C19, 2026-08-27) — the mode picker below
-					  REPLACES the old standalone "Height (fill)" + "Object fit" +
-					  "Object position" ToolsPanelItems (removed above/below this
-					  point) with the shared MediaSizingPanel: `height` (unchanged
-					  attribute shape/name — a TIER OBJECT, no rename) and the
-					  NATIVE `style.dimensions.aspectRatio` (block.json
-					  `supports.dimensions.aspectRatio`) become mutually exclusive
-					  modes of ONE `mediaSizing` picker instead of two controls
-					  that could both be set at once. `mediaSizing` derives from
-					  existing data when absent (see `resolvedMediaSizing` above) —
-					  no stored content needs migrating.
-
-					  `imageInset` is deliberately OMITTED here — sgs/media has no
-					  padding/inset attribute today (a gap, not a bug in this
-					  panel); the component supports the row only when a future
-					  adopter passes insetValue/onInsetChange.
-					*/ }
-					<MediaSizingPanel
-						mode={ resolvedMediaSizing }
-						onModeChange={ ( next ) => setAttributes( { mediaSizing: next } ) }
-						heightValue={ attributes.height }
-						onHeightChange={ ( obj ) => setAttributes( { height: obj } ) }
-						ratioValue={ nativeAspectRatio }
-						onRatioChange={ ( value ) =>
-							setAttributes( {
-								style: {
-									...style,
-									dimensions: { ...style?.dimensions, aspectRatio: value || undefined },
-								},
-							} )
-						}
-						objectFit={ attributes.objectFit || 'cover' }
-						onObjectFitChange={ ( value ) => setAttributes( { objectFit: value } ) }
-						focalPoint={ attributes.objectPosition || 'center center' }
-						onFocalPointChange={ ( value ) => setAttributes( { objectPosition: value } ) }
-						focalPreviewUrl={ isImage ? imageUrl : '' }
-						/*
-						 * The `object-fit` ATOM owns Fill style on this block now, so the
-						 * panel's own row is suppressed — two controls writing one
-						 * attribute is a duplicate writer, and which one wins would depend
-						 * on render order. The VALUE is still passed in, because the focal
-						 * point row is disclosed from it.
-						 */
-						showFitControl={ false }
-						/*
-						 * The `focal-point` ATOM owns Focal point on this block now, so the
-						 * panel's own row is suppressed — two controls writing one attribute
-						 * is a duplicate writer, and which one wins would depend on render
-						 * order. The VALUE is still passed in for the atom's disclosure logic.
-						 */
-						showFocalControl={ false }
-					/>
-
-					{ /*
-					  * object-fit/focal-point/motion now render in
-					  * MediaPanelLayout's own "Image Styling" PanelBody
-					  * (mounted above), not inside this ToolsPanel — one
-					  * writer per attribute, not two panels racing.
+					  * Sizing (mediaSizing/height/width/maxWidth/maxHeight/
+					  * aspectRatio), Shape and Border (radius/width/style/
+					  * colour) now render in MediaPanelLayout's own
+					  * "Box & Border" PanelBody (mounted above) via the
+					  * `box-shape` atom — one writer per attribute, not two
+					  * panels racing. object-fit/focal-point/motion render in
+					  * the "Image Styling" PanelBody, also mounted above.
 					  */ }
-
-					<ToolsPanelItem
-						label={ __( 'Border radius', 'sgs-blocks' ) }
-						hasValue={ () =>
-							Object.keys( style?.border?.radius ?? {} ).length >
-								0 ||
-							Object.keys( borderRadiusTablet ?? {} ).length >
-								0 ||
-							Object.keys( borderRadiusMobile ?? {} ).length > 0
-						}
-						onDeselect={ () =>
-							setAttributes( {
-								style: {
-									...style,
-									border: { ...style?.border, radius: {} },
-								},
-								borderRadiusTablet: {},
-								borderRadiusMobile: {},
-							} )
-						}
-					>
-						<ResponsiveBorderRadiusControl
-							label={ __( 'Border radius', 'sgs-blocks' ) }
-							values={ {
-								base: style?.border?.radius ?? {},
-								tablet: borderRadiusTablet ?? {},
-								mobile: borderRadiusMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								if ( 'base' === tier ) {
-									setAttributes( {
-										style: {
-											...style,
-											border: {
-												...style?.border,
-												radius: next,
-											},
-										},
-									} );
-								} else {
-									setAttributes( {
-										[ `borderRadius${
-											'tablet' === tier
-												? 'Tablet'
-												: 'Mobile'
-										}` ]: next,
-									} );
-								}
-							} }
-						/>
-					</ToolsPanelItem>
 
 					<ToolsPanelItem
 						label={ __( 'Alignment', 'sgs-blocks' ) }
@@ -701,227 +459,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					     above) — its "Poster image" row is the same
 					     ThumbnailId/Thumbnail pair, tiered the same way. */ }
 
-					{ /* Playback options — ToolsPanel (dense-panel-candidate, Spec 35
-					     wave-B T-item-2): 6 independent booleans, all with a clear
-					     block.json default. Autoplay/Muted/Show-Controls stay
-					     isShownByDefault — the background-video pattern (autoplay +
-					     muted together) and controls-visibility are the settings
-					     operators touch most; Loop/Plays-Inline/Lazy-Load are
-					     usually left at their sensible defaults. */ }
-					<ToolsPanel
-						label={ __( 'Playback Options', 'sgs-blocks' ) }
-						resetAll={ () => {
-							// Driven off PLAYBACK_TIER_MAP rather than a hand-listed
-							// wall of 18 keys, so a new playback boolean cannot be
-							// added to the panel and silently forgotten by reset.
-							// The map is also the canonical breakpoint-map idiom
-							// ({ desktop, tablet, mobile }) that check-control-ux.js
-							// recognises as a compliant responsive family — a
-							// hand-listed reset reads to that gate as 12 unwrapped
-							// direct controls, which is what it flagged before.
-							const reset = {};
-							PLAYBACK_TIERS.forEach( ( { map, desktopDefault } ) => {
-								reset[ map.desktop ] = desktopDefault;
-								reset[ map.tablet ] = null;
-								reset[ map.mobile ] = null;
-							} );
-							setAttributes( reset );
-						} }
-					>
-						{ /* Each item is a single BooleanResponsiveControl (Desktop
-						     toggle + Tablet/Mobile Inherit/On/Off) rather than 3
-						     loose ToggleControls per setting — 6 rows in the panel,
-						     not 18, per the design brief's inspector-usability
-						     requirement. "It's easy to mute something on a PC... but
-						     on mobile people often want mute by default" is exactly
-						     the per-device product decision these tiers exist for. */ }
-						<ToolsPanelItem
-							label={ __( 'Autoplay', 'sgs-blocks' ) }
-							hasValue={ () =>
-								!! videoAutoplay ||
-								null !==
-									( attributes.videoAutoplayTablet ??
-										null ) ||
-								null !==
-									( attributes.videoAutoplayMobile ?? null )
-							}
-							onDeselect={ () =>
-								setAttributes( {
-									videoAutoplay: false,
-									videoAutoplayTablet: null,
-									videoAutoplayMobile: null,
-								} )
-							}
-							isShownByDefault
-						>
-							<BooleanResponsiveControl
-								label={ __( 'Autoplay', 'sgs-blocks' ) }
-								help={ __(
-									'Autoplay requires Muted to be enabled on most browsers — turning Autoplay on for a tier automatically mutes that tier too.',
-									'sgs-blocks'
-								) }
-								attrBase="videoAutoplay"
-								attrTablet="videoAutoplayTablet"
-								attrMobile="videoAutoplayMobile"
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-							/>
-						</ToolsPanelItem>
-
-						<ToolsPanelItem
-							label={ __( 'Loop', 'sgs-blocks' ) }
-							hasValue={ () =>
-								!! videoLoop ||
-								null !==
-									( attributes.videoLoopTablet ?? null ) ||
-								null !== ( attributes.videoLoopMobile ?? null )
-							}
-							onDeselect={ () =>
-								setAttributes( {
-									videoLoop: false,
-									videoLoopTablet: null,
-									videoLoopMobile: null,
-								} )
-							}
-						>
-							<BooleanResponsiveControl
-								label={ __( 'Loop', 'sgs-blocks' ) }
-								attrBase="videoLoop"
-								attrTablet="videoLoopTablet"
-								attrMobile="videoLoopMobile"
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-							/>
-						</ToolsPanelItem>
-
-						<ToolsPanelItem
-							label={ __( 'Muted', 'sgs-blocks' ) }
-							hasValue={ () =>
-								videoMuted === false ||
-								null !==
-									( attributes.videoMutedTablet ?? null ) ||
-								null !== ( attributes.videoMutedMobile ?? null )
-							}
-							onDeselect={ () =>
-								setAttributes( {
-									videoMuted: true,
-									videoMutedTablet: null,
-									videoMutedMobile: null,
-								} )
-							}
-							isShownByDefault
-						>
-							<BooleanResponsiveControl
-								label={ __( 'Muted', 'sgs-blocks' ) }
-								help={ __(
-									'It’s easy to unmute on a PC — but on mobile, visitors often expect audio off by default, like social-media video. Set it per device here.',
-									'sgs-blocks'
-								) }
-								attrBase="videoMuted"
-								attrTablet="videoMutedTablet"
-								attrMobile="videoMutedMobile"
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-							/>
-						</ToolsPanelItem>
-
-						<ToolsPanelItem
-							label={ __( 'Show Controls', 'sgs-blocks' ) }
-							hasValue={ () =>
-								videoControls === false ||
-								null !==
-									( attributes.videoControlsTablet ??
-										null ) ||
-								null !==
-									( attributes.videoControlsMobile ?? null )
-							}
-							onDeselect={ () =>
-								setAttributes( {
-									videoControls: true,
-									videoControlsTablet: null,
-									videoControlsMobile: null,
-								} )
-							}
-							isShownByDefault
-						>
-							<BooleanResponsiveControl
-								label={ __( 'Show Controls', 'sgs-blocks' ) }
-								attrBase="videoControls"
-								attrTablet="videoControlsTablet"
-								attrMobile="videoControlsMobile"
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-							/>
-						</ToolsPanelItem>
-
-						<ToolsPanelItem
-							label={ __( 'Plays Inline (iOS)', 'sgs-blocks' ) }
-							hasValue={ () =>
-								videoPlaysInline === false ||
-								null !==
-									( attributes.videoPlaysInlineTablet ??
-										null ) ||
-								null !==
-									( attributes.videoPlaysInlineMobile ??
-										null )
-							}
-							onDeselect={ () =>
-								setAttributes( {
-									videoPlaysInline: true,
-									videoPlaysInlineTablet: null,
-									videoPlaysInlineMobile: null,
-								} )
-							}
-						>
-							<BooleanResponsiveControl
-								label={ __(
-									'Plays Inline (iOS)',
-									'sgs-blocks'
-								) }
-								help={ __(
-									'Prevents iOS from opening the video in full screen automatically.',
-									'sgs-blocks'
-								) }
-								attrBase="videoPlaysInline"
-								attrTablet="videoPlaysInlineTablet"
-								attrMobile="videoPlaysInlineMobile"
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-							/>
-						</ToolsPanelItem>
-
-						<ToolsPanelItem
-							label={ __( 'Lazy Load', 'sgs-blocks' ) }
-							hasValue={ () =>
-								videoLazyLoad === false ||
-								null !==
-									( attributes.videoLazyLoadTablet ??
-										null ) ||
-								null !==
-									( attributes.videoLazyLoadMobile ?? null )
-							}
-							onDeselect={ () =>
-								setAttributes( {
-									videoLazyLoad: true,
-									videoLazyLoadTablet: null,
-									videoLazyLoadMobile: null,
-								} )
-							}
-						>
-							<BooleanResponsiveControl
-								label={ __( 'Lazy Load', 'sgs-blocks' ) }
-								help={ __(
-									'Load video only when scrolled into view.',
-									'sgs-blocks'
-								) }
-								attrBase="videoLazyLoad"
-								attrTablet="videoLazyLoadTablet"
-								attrMobile="videoLazyLoadMobile"
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-							/>
-						</ToolsPanelItem>
-					</ToolsPanel>
+					{ /* Playback options are now owned entirely by the
+					     `video-behaviour` atom, mounted via MediaPanelLayout's
+					     "Playback" PanelBody (video-only) — each of the same
+					     6 bases (Autoplay/Loop/Muted/Show Controls/Plays
+					     Inline/Lazy Load) renders through the shared tiered
+					     `BooleanResponsiveControl`, matching this panel's old
+					     capability rather than falling short of it. */ }
 				</PanelBody>
 			) }
 			</InspectorControls>
