@@ -19,6 +19,7 @@ import { PanelBody, Notice, SelectControl, BoxControl } from '@wordpress/compone
 import {
 	WidthPanel,
 	BackgroundPanel,
+	ShapeDividersPanel,
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
 import { ResponsiveBoxControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel,
@@ -459,6 +460,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						} }
 					/>
 				</PanelBody>
+
+				<ShapeDividersPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 
 			<InspectorControls>
