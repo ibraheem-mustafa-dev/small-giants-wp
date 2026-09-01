@@ -285,13 +285,46 @@ $scoped_css[] = "{$root_sel}{" . implode( ';', $root_var_decls ) . ';}';
 // --- marker, so the shared `assets/css/media-element.css` stylesheet ---
 // --- (already enqueued globally by the plugin) paints each slot from ---
 // --- its OWN custom-property values — no per-block CSS needed here. ---
+// --- Legacy sgsObjectFit/sgsObjectPosition fallback (fix, 2026-09-01) ---
+// Wave 5b (125e79ad3) removed supports.sgs.imageControls/imageControlsExplicit
+// from block.json in favour of the per-slot mediaElements atoms above, but
+// block.json no longer declares `sgsObjectFit`/`sgsObjectPosition` anywhere.
+// WP drops an attribute a block's schema doesn't declare — but only on the
+// EDITOR/JS surface (see plugins/sgs-blocks/CLAUDE.md); this PHP render
+// still receives whatever value is sitting in the block's saved
+// post_content. Any instance saved BEFORE this migration therefore still
+// carries its old shared crop/position under the legacy keys, while the new
+// beforeObjectFit/afterObjectFit/beforeObjectPosition/afterObjectPosition
+// default empty ('inherit') — so without this fallback the page would
+// silently revert to the browser-default crop the next time it renders.
+// Read-time-only: this does NOT re-declare sgsObjectFit/sgsObjectPosition in
+// block.json (that would resurrect the exact "one shared value for two
+// independent slots" bug 125e79ad3 fixed on purpose) and only fills a slot
+// value when that slot's OWN new attribute is genuinely unset, so a page
+// already migrated to independent per-slot values is never touched.
+$sgs_bap_legacy_fit     = $attributes['sgsObjectFit'] ?? '';
+$sgs_bap_legacy_pos     = $attributes['sgsObjectPosition'] ?? null;
+$sgs_bap_has_legacy_fit = is_string( $sgs_bap_legacy_fit ) && '' !== $sgs_bap_legacy_fit;
+$sgs_bap_has_legacy_pos = is_array( $sgs_bap_legacy_pos ) && isset( $sgs_bap_legacy_pos['x'], $sgs_bap_legacy_pos['y'] );
+
 if ( class_exists( 'SGS_Media_Element' ) ) {
 	foreach ( array( 'before', 'after' ) as $sgs_bap_slot ) {
+		$sgs_bap_attrs = $attributes;
+
+		$sgs_bap_fit_key = $sgs_bap_slot . 'ObjectFit';
+		if ( $sgs_bap_has_legacy_fit && empty( $sgs_bap_attrs[ $sgs_bap_fit_key ] ) ) {
+			$sgs_bap_attrs[ $sgs_bap_fit_key ] = $sgs_bap_legacy_fit;
+		}
+		$sgs_bap_pos_key = $sgs_bap_slot . 'ObjectPosition';
+		if ( $sgs_bap_has_legacy_pos && empty( $sgs_bap_attrs[ $sgs_bap_pos_key ] ) ) {
+			$sgs_bap_attrs[ $sgs_bap_pos_key ] = $sgs_bap_legacy_pos;
+		}
+
 		// $uid here is the RAW block uid, not yet scope-suffixed — `style()`
 		// applies `scope_class( $uid, $prefix )` internally, matching the
 		// SAME class media-render.php puts on the slot's <img>/<video>.
 		$sgs_bap_css = SGS_Media_Element::style(
-			$attributes,
+			$sgs_bap_attrs,
 			$sgs_bap_slot,
 			'sgs/before-after',
 			$uid,
