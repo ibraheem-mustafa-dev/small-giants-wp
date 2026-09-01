@@ -443,8 +443,11 @@ if ( '' !== $h_mobile ) {
 // The media-element ATOM layer (Wave 5a). It contributes custom-property
 // VALUES only — every rule lives in assets/css/media-element.css, loaded in
 // both the canvas and the front end, so the editor and the page cannot drift.
-// `atoms` mirrors block.json's supports.sgs.mediaElements declaration.
-$sgs_media_atoms    = array( 'object-fit', 'focal-point' );
+// `atoms` lists only the CSS-EMITTING atoms declared in block.json's
+// supports.sgs.mediaElements — media-type/source/meaning contribute no CSS
+// (control-only atoms), so they are correctly absent here even though they
+// are declared there for attribute injection.
+$sgs_media_atoms    = array( 'object-fit', 'focal-point', 'svg-presentation', 'motion' );
 $sgs_media_atom_css = class_exists( 'SGS_Media_Element' )
 	? SGS_Media_Element::style( $attributes, '', 'sgs/media', $scope_class, $sgs_media_atoms )
 	: '';

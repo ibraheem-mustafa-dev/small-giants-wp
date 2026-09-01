@@ -23,7 +23,8 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { RangeControl, SelectControl, TextControl, ToggleGroupControl, ToggleGroupControlOption } from '@wordpress/components';
+import { RangeControl, SelectControl, TextControl } from '@wordpress/components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../primitives';
 import { RATIO_OPTIONS } from '../../MediaSizingPanel.js';
 import SgsBorderControl from '../../SgsBorderControl.js';
 import SgsLengthControl from '../../SgsLengthControl.js';

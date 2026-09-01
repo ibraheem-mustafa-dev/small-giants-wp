@@ -8,17 +8,13 @@ import {
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
-	ButtonGroup,
 	Button,
 	TextControl,
 	SelectControl,
-	TextareaControl,
-	ToggleControl,
 	RangeControl,
 	Notice,
 } from '@wordpress/components';
 import {
-	ResponsiveControl,
 	ResponsiveOverride,
 	ResponsiveBorderRadiusControl,
 	LinkPopoverField,
@@ -26,7 +22,7 @@ import {
 	ShadowControl,
 	SgsLengthControl,
 	MediaSizingPanel,
-	MediaElementPanel,
+	MediaPanelLayout,
 } from '../../components';
 import BooleanResponsiveControl from './BooleanResponsiveControl';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -115,8 +111,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		// Video.
 		videoUrl,
 		videoSource,
-		thumbnail,
-		thumbnailId,
 		videoAutoplay,
 		videoLoop,
 		videoMuted,
@@ -170,12 +164,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		} );
 	};
 
-	const onSelectPoster = ( media ) => {
-		setAttributes( {
-			thumbnailId: media.id || null,
-			thumbnail: media.url || '',
-		} );
-	};
 
 	// -------------------------------------------------------------------------
 	// Inspector controls.
@@ -226,177 +214,27 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-			{ /* Media type toggle */ }
-			<PanelBody
-				title={ __( 'Media Type', 'sgs-blocks' ) }
-				initialOpen={ true }
-			>
-				<ButtonGroup
-					aria-label={ __( 'Select media type', 'sgs-blocks' ) }
-				>
-					<Button
-						variant={ isImage ? 'primary' : 'secondary' }
-						onClick={ () =>
-							setAttributes( { mediaType: 'image' } )
-						}
-					>
-						{ __( 'Image', 'sgs-blocks' ) }
-					</Button>
-					<Button
-						variant={ isVideo ? 'primary' : 'secondary' }
-						onClick={ () =>
-							setAttributes( { mediaType: 'video' } )
-						}
-					>
-						{ __( 'Video', 'sgs-blocks' ) }
-					</Button>
-					<Button
-						variant={ isSvg ? 'primary' : 'secondary' }
-						onClick={ () => setAttributes( { mediaType: 'svg' } ) }
-					>
-						{ __( 'SVG / Animation', 'sgs-blocks' ) }
-					</Button>
-				</ButtonGroup>
-			</PanelBody>
-
-			{ /* Image controls */ }
-			{ isImage && imageUrl && (
-				<PanelBody
-					title={ __( 'Image', 'sgs-blocks' ) }
-					initialOpen={ true }
-				>
-					<MediaUploadCheck>
-						<MediaUpload
-							onSelect={ onSelectImage }
-							allowedTypes={ [ 'image' ] }
-							value={ imageId }
-							render={ ( { open } ) => (
-								<Button variant="secondary" onClick={ open }>
-									{ __( 'Replace Image', 'sgs-blocks' ) }
-								</Button>
-							) }
-						/>
-					</MediaUploadCheck>
-					<Button
-						variant="link"
-						isDestructive
-						onClick={ () =>
-							setAttributes( {
-								imageId: undefined,
-								imageUrl: '',
-								imageAlt: '',
-							} )
-						}
-						style={ { marginTop: '8px', display: 'block' } }
-					>
-						{ __( 'Remove Image', 'sgs-blocks' ) }
-					</Button>
-					{ /* Art direction (2026-08-07). Same device-switched shape as
-					     sgs/hero's split image, so a client meets ONE interaction for
-					     "a different crop on narrow screens" wherever images appear.
-					     Desktop is the image chosen above; tablet/mobile are optional
-					     overrides that fall back to it when left empty. */ }
-					<ResponsiveControl label={ __( 'Art direction (optional)', 'sgs-blocks' ) }>
-						{ ( bp ) => {
-							if ( 'desktop' === bp ) {
-								return (
-									<p style={ { margin: 0, fontStyle: 'italic' } }>
-										{ __(
-											'The image above is used on desktop. Switch to tablet or mobile to set a different crop.',
-											'sgs-blocks'
-										) }
-									</p>
-								);
-							}
-							const idKey = 'tablet' === bp ? 'imageIdTablet' : 'imageIdMobile';
-							const urlKey = 'tablet' === bp ? 'imageUrlTablet' : 'imageUrlMobile';
-							return (
-								<>
-									<MediaUploadCheck>
-										<MediaUpload
-											onSelect={ ( media ) =>
-												setAttributes( {
-													[ idKey ]: media.id || null,
-													[ urlKey ]: media.url || '',
-												} )
-											}
-											allowedTypes={ [ 'image' ] }
-											value={ attributes[ idKey ] }
-											render={ ( { open } ) => (
-												<Button variant="secondary" onClick={ open }>
-													{ attributes[ urlKey ]
-														? __( 'Replace image', 'sgs-blocks' )
-														: __( 'Set image', 'sgs-blocks' ) }
-												</Button>
-											) }
-										/>
-									</MediaUploadCheck>
-									{ attributes[ urlKey ] && (
-										<Button
-											variant="link"
-											isDestructive
-											onClick={ () =>
-												setAttributes( {
-													[ idKey ]: null,
-													[ urlKey ]: '',
-												} )
-											}
-											style={ { marginTop: '8px', display: 'block' } }
-										>
-											{ __( 'Use the main image here', 'sgs-blocks' ) }
-										</Button>
-									) }
-								</>
-							);
-						} }
-					</ResponsiveControl>
-					{ /* WCAG 2.1 AA 1.1.1 (Non-text Content): decorative toggle is the
-					     structural fix for "leave alt blank" — it makes the choice
-					     explicit and emits both alt="" AND aria-hidden="true", rather
-					     than relying on the operator remembering to leave a field
-					     empty (which screen readers can't distinguish from a missing
-					     description). Informational control, not a gate (a11y-validation-informational rule). */ }
-					<ToggleControl
-						label={ __(
-							'Decorative image (hide from screen readers)',
-							'sgs-blocks'
-						) }
-						help={ __(
-							'Turn on for purely decorative images that add no information — e.g. background flourishes. Screen readers will skip it entirely.',
-							'sgs-blocks'
-						) }
-						checked={ !! imageIsDecorative }
-						onChange={ ( value ) =>
-							setAttributes( { imageIsDecorative: value } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __(
-							'Alt text (alternative text)',
-							'sgs-blocks'
-						) }
-						help={
-							imageIsDecorative
-								? __(
-										'Disabled — this image is marked decorative and is hidden from screen readers.',
-										'sgs-blocks'
-								  )
-								: __(
-										'Describe the image for screen readers and search engines. Leave empty only if the image is purely decorative.',
-										'sgs-blocks'
-								  )
-						}
-						value={ imageIsDecorative ? '' : imageAlt || '' }
-						onChange={ ( value ) =>
-							setAttributes( { imageAlt: value } )
-						}
-						disabled={ imageIsDecorative }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
-			) }
+			{ /* Media type switch + per-type source/meaning/svg-presentation +
+			     Image Styling (object-fit/focal-point/motion) — the Wave 5a
+			     atom layer (MediaPanelLayout.js). Replaces the old hand-rolled
+			     media-type ButtonGroup, the Image panel's Replace/Remove +
+			     art-direction + decorative/alt controls, and (further below)
+			     the SVG content/animation controls and the Video
+			     source/URL/poster workflow — all now owned by the `source`,
+			     `meaning` and `svg-presentation` atoms. `box-shape`,
+			     `video-behaviour` and `overlay` are deliberately NOT part of
+			     this layout yet (Wave 5a finding — see block.json's
+			     `_comment_mediaElements`), so this block's existing Media
+			     Styling ToolsPanel (border radius/max-width/max-height/
+			     alignment/opacity/shadow) and Playback Options ToolsPanel
+			     stay exactly as they were. */ }
+			<MediaPanelLayout
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				mediaType={ mediaType || 'image' }
+				blockSlug="sgs/media"
+				previewUrl={ isImage ? imageUrl : '' }
+			/>
 
 			{ /* Media styling — writes the block's NATIVE styling attributes
 			     (single source of truth the cloning converter also writes).
@@ -557,25 +395,11 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 
 					{ /*
-					  * The media-element atom layer (Wave 5a). Bare rows, absorbed into
-					  * this element's own panel rather than opening a top-level one —
-					  * per C14 an element's controls belong with that element.
-					  *
-					  * `atoms` mirrors block.json's `supports.sgs.mediaElements`
-					  * declaration exactly. Widening one without the other injects
-					  * attributes no control writes, or renders controls for attributes
-					  * that were never injected.
+					  * object-fit/focal-point/motion now render in
+					  * MediaPanelLayout's own "Image Styling" PanelBody
+					  * (mounted above), not inside this ToolsPanel — one
+					  * writer per attribute, not two panels racing.
 					  */ }
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix=""
-						blockSlug="sgs/media"
-						insertion="element"
-						atoms={ [ 'object-fit', 'focal-point' ] }
-						mediaType={ mediaType }
-						scope="element"
-					/>
 
 					<ToolsPanelItem
 						label={ __( 'Border radius', 'sgs-blocks' ) }
@@ -770,159 +594,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			) }
 
-			{ /* SVG controls */ }
-			{ isSvg && (
-				<PanelBody
-					title={ __( 'SVG / Animation', 'sgs-blocks' ) }
-					initialOpen={ true }
-				>
-					<p className="components-base-control__help">
-						{ __(
-							'Paste SVG markup to render it as a foreground content element. Animations use pure CSS — no JavaScript required.',
-							'sgs-blocks'
-						) }
-					</p>
-					<TextareaControl
-						label={ __( 'SVG code', 'sgs-blocks' ) }
-						value={ svgContent || '' }
-						onChange={ ( value ) =>
-							setAttributes( { svgContent: value } )
-						}
-						help={ __(
-							'Paste your <svg>…</svg> markup here.',
-							'sgs-blocks'
-						) }
-						rows={ 8 }
-					/>
-					{ /* Art direction for SVG (Spec 35 Part D5). Same device-switched
-					     shape as the image tiers above and the video/thumbnail tiers
-					     below, so a client meets ONE interaction for "something different
-					     on narrow screens" wherever media appears. Gated on the base SVG
-					     existing — a per-device override for media that is not there is a
-					     dead control. Desktop is the markup pasted above; tablet/mobile
-					     are optional overrides that fall back UP when left empty. */ }
-					{ svgContent && (
-						<ResponsiveControl
-							label={ __(
-								'SVG for this screen size',
-								'sgs-blocks'
-							) }
-						>
-							{ ( bp ) => {
-								if ( 'desktop' === bp ) {
-									return (
-										<p
-											style={ {
-												margin: 0,
-												fontStyle: 'italic',
-											} }
-										>
-											{ __(
-												'The SVG above is used on desktop. Switch to tablet or mobile to set different markup.',
-												'sgs-blocks'
-											) }
-										</p>
-									);
-								}
-								const svgKey =
-									'tablet' === bp
-										? 'svgContentTablet'
-										: 'svgContentMobile';
-								return (
-									<>
-										<TextareaControl
-											label={ __(
-												'SVG code',
-												'sgs-blocks'
-											) }
-											value={ attributes[ svgKey ] || '' }
-											onChange={ ( value ) =>
-												setAttributes( {
-													[ svgKey ]: value,
-												} )
-											}
-											help={ __(
-												'Leave empty to use the SVG from the next widest screen size.',
-												'sgs-blocks'
-											) }
-											rows={ 8 }
-										/>
-										{ attributes[ svgKey ] && (
-											<Button
-												variant="link"
-												isDestructive
-												onClick={ () =>
-													setAttributes( {
-														[ svgKey ]: '',
-													} )
-												}
-												style={ { display: 'block' } }
-											>
-												{ __(
-													'Use the main SVG here',
-													'sgs-blocks'
-												) }
-											</Button>
-										) }
-									</>
-								);
-							} }
-						</ResponsiveControl>
-					) }
-					<SelectControl
-						label={ __( 'Animation', 'sgs-blocks' ) }
-						value={ svgAnimation || 'none' }
-						options={ [
-							{
-								label: __( 'None', 'sgs-blocks' ),
-								value: 'none',
-							},
-							{
-								label: __( 'Pulse', 'sgs-blocks' ),
-								value: 'pulse',
-							},
-							{
-								label: __( 'Float', 'sgs-blocks' ),
-								value: 'float',
-							},
-							{
-								label: __( 'Wave', 'sgs-blocks' ),
-								value: 'wave',
-							},
-						] }
-						onChange={ ( value ) =>
-							setAttributes( { svgAnimation: value } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ svgAnimation && 'none' !== svgAnimation && (
-						<SelectControl
-							label={ __( 'Animation speed', 'sgs-blocks' ) }
-							value={ svgAnimationSpeed || 'medium' }
-							options={ [
-								{
-									label: __( 'Slow', 'sgs-blocks' ),
-									value: 'slow',
-								},
-								{
-									label: __( 'Medium', 'sgs-blocks' ),
-									value: 'medium',
-								},
-								{
-									label: __( 'Fast', 'sgs-blocks' ),
-									value: 'fast',
-								},
-							] }
-							onChange={ ( value ) =>
-								setAttributes( { svgAnimationSpeed: value } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
-				</PanelBody>
-			) }
+			{ /* SVG content + animation/speed/position/opacity/text-shadow/
+			     min-height are now owned by the `source` and
+			     `svg-presentation` atoms in MediaPanelLayout (mounted above)
+			     — this old hand-rolled SVG panel is fully superseded. */ }
 
 			{ /* Video controls — SKIP-WITH-REASON (Spec 35 wave-B T-item-2 dense-panel
 			     audit): this outer "Video" panel is a source-picker WORKFLOW, not a
@@ -938,71 +613,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Video', 'sgs-blocks' ) }
 					initialOpen={ true }
 				>
-					<SelectControl
-						label={ __( 'Video Source', 'sgs-blocks' ) }
-						value={ videoSource || 'external' }
-						options={ [
-							{
-								label: __(
-									'External URL (YouTube, Vimeo, MP4)',
-									'sgs-blocks'
-								),
-								value: 'external',
-							},
-							{
-								label: __(
-									'WordPress Media Library',
-									'sgs-blocks'
-								),
-								value: 'internal',
-							},
-						] }
-						onChange={ ( value ) =>
-							setAttributes( { videoSource: value } )
-						}
-						__next40pxDefaultSize
-					/>
-
-					{ 'external' === ( videoSource || 'external' ) && (
-						<TextControl
-							label={ __( 'Video URL', 'sgs-blocks' ) }
-							help={ __(
-								'YouTube, Vimeo, or direct MP4/WebM URL. Watch URLs are converted to embed URLs automatically.',
-								'sgs-blocks'
-							) }
-							value={ videoUrl || '' }
-							onChange={ ( value ) =>
-								setAttributes( { videoUrl: value } )
-							}
-							__next40pxDefaultSize
-						/>
-					) }
-
-					{ 'internal' === videoSource && (
-						<MediaUploadCheck>
-							<MediaUpload
-								onSelect={ onSelectVideo }
-								allowedTypes={ [ 'video' ] }
-								value={ attributes.videoId }
-								render={ ( { open } ) => (
-									<Button
-										variant="secondary"
-										onClick={ open }
-									>
-										{ attributes.videoId
-											? __(
-													'Replace Video',
-													'sgs-blocks'
-											  )
-											: __(
-													'Select Video',
-													'sgs-blocks'
-											  ) }
-									</Button>
-								) }
-							/>
-						</MediaUploadCheck>
-					) }
+					{ /* Video source (URL/media-library toggle via the `media-type`
+					     atom's VideoSourceControl) + the video/poster pickers with
+					     their tablet/mobile art-direction are now owned by the
+					     `source` atom in MediaPanelLayout (mounted above). */ }
 
 					{ /* Captions (WCAG 1.2.2, Level A — below the stated AA
 					     baseline). Gated on a video existing, not on `muted`:
@@ -1081,273 +695,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						</>
 					) }
 
-					{ /* Video art direction (2026-08-07, Bean-decided). Unlike the
-					     image tiers, this is swapped at runtime by view.js — three
-					     videos cannot all be rendered and hidden, because each one
-					     would start downloading. Gated on a desktop video existing:
-					     an override for a video that is not there is a dead control. */ }
-					{ ( videoUrl || attributes.videoId ) && (
-						<ResponsiveControl
-							label={ __(
-								'Video for this screen size',
-								'sgs-blocks'
-							) }
-						>
-							{ ( bp ) => {
-								if ( 'desktop' === bp ) {
-									return (
-										<p
-											style={ {
-												margin: 0,
-												fontStyle: 'italic',
-											} }
-										>
-											{ __(
-												'The video above is used on desktop. Switch to tablet or mobile to use a different clip there. Note: someone who resizes across a breakpoint mid-watch will have the player restart.',
-												'sgs-blocks'
-											) }
-										</p>
-									);
-								}
-								const tier =
-									'tablet' === bp ? 'Tablet' : 'Mobile';
-								const urlKey = `videoUrl${ tier }`;
-								const idKey = `videoId${ tier }`;
-								return 'internal' === videoSource ? (
-									<MediaUploadCheck>
-										<MediaUpload
-											onSelect={ ( media ) =>
-												setAttributes( {
-													[ idKey ]: media.id || null,
-													[ urlKey ]: media.url || '',
-												} )
-											}
-											allowedTypes={ [ 'video' ] }
-											value={ attributes[ idKey ] }
-											render={ ( { open } ) => (
-												<Button
-													variant="secondary"
-													onClick={ open }
-												>
-													{ attributes[ idKey ]
-														? __(
-																'Replace video',
-																'sgs-blocks'
-														  )
-														: __(
-																'Set video',
-																'sgs-blocks'
-														  ) }
-												</Button>
-											) }
-										/>
-									</MediaUploadCheck>
-								) : (
-									<TextControl
-										label={ __(
-											'Video URL for this screen size',
-											'sgs-blocks'
-										) }
-										help={ __(
-											'Optional. Leave empty to reuse the desktop video here. YouTube, Vimeo, or a direct MP4/WebM URL.',
-											'sgs-blocks'
-										) }
-										value={ attributes[ urlKey ] || '' }
-										onChange={ ( value ) =>
-											setAttributes( {
-												[ urlKey ]: value,
-											} )
-										}
-										__next40pxDefaultSize
-									/>
-								);
-							} }
-						</ResponsiveControl>
-					) }
-
-					{ /* Thumbnail image */ }
-					<PanelBody
-						title={ __( 'Thumbnail', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						<p className="components-base-control__help">
-							{ __(
-								'Shown before the video plays. Recommended for external embeds.',
-								'sgs-blocks'
-							) }
-						</p>
-						<MediaUploadCheck>
-							<MediaUpload
-								onSelect={ onSelectPoster }
-								allowedTypes={ [ 'image' ] }
-								value={ thumbnailId }
-								render={ ( { open } ) => (
-									<>
-										{ thumbnail && (
-											<img
-												src={ thumbnail }
-												alt={ __(
-													'Video thumbnail',
-													'sgs-blocks'
-												) }
-												style={ {
-													maxWidth: '100%',
-													marginBottom: '8px',
-													display: 'block',
-												} }
-											/>
-										) }
-										<Button
-											variant="secondary"
-											onClick={ open }
-										>
-											{ thumbnail
-												? __(
-														'Replace Thumbnail',
-														'sgs-blocks'
-												  )
-												: __(
-														'Select Thumbnail',
-														'sgs-blocks'
-												  ) }
-										</Button>
-										{ thumbnail && (
-											<Button
-												variant="link"
-												isDestructive
-												onClick={ () =>
-													setAttributes( {
-														thumbnailId: undefined,
-														thumbnail: '',
-													} )
-												}
-												style={ { marginLeft: '8px' } }
-											>
-												{ __( 'Remove', 'sgs-blocks' ) }
-											</Button>
-										) }
-									</>
-								) }
-							/>
-						</MediaUploadCheck>
-						{ /* Poster art direction (2026-08-07). Independent of the
-						     video source — a tier may override only the still frame
-						     and keep the desktop clip. Gated on a desktop poster
-						     existing, so it is never a control over nothing. */ }
-						{ thumbnail && (
-							<ResponsiveControl
-								label={ __(
-									'Thumbnail for this screen size',
-									'sgs-blocks'
-								) }
-							>
-								{ ( bp ) => {
-									if ( 'desktop' === bp ) {
-										return (
-											<p
-												style={ {
-													margin: 0,
-													fontStyle: 'italic',
-												} }
-											>
-												{ __(
-													'The thumbnail above is used on desktop. Switch to tablet or mobile to set a different crop.',
-													'sgs-blocks'
-												) }
-											</p>
-										);
-									}
-									const tier =
-										'tablet' === bp ? 'Tablet' : 'Mobile';
-									const urlKey = `thumbnail${ tier }`;
-									const idKey = `thumbnailId${ tier }`;
-									return (
-										<MediaUploadCheck>
-											<MediaUpload
-												onSelect={ ( media ) =>
-													setAttributes( {
-														[ idKey ]:
-															media.id || null,
-														[ urlKey ]:
-															media.url || '',
-													} )
-												}
-												allowedTypes={ [ 'image' ] }
-												value={ attributes[ idKey ] }
-												render={ ( { open } ) => (
-													<>
-														{ attributes[
-															urlKey
-														] && (
-															<img
-																src={
-																	attributes[
-																		urlKey
-																	]
-																}
-																alt=""
-																style={ {
-																	maxWidth:
-																		'100%',
-																	marginBottom:
-																		'8px',
-																	display:
-																		'block',
-																} }
-															/>
-														) }
-														<Button
-															variant="secondary"
-															onClick={ open }
-														>
-															{ attributes[
-																urlKey
-															]
-																? __(
-																		'Replace thumbnail',
-																		'sgs-blocks'
-																  )
-																: __(
-																		'Set thumbnail',
-																		'sgs-blocks'
-																  ) }
-														</Button>
-														{ attributes[
-															urlKey
-														] && (
-															<Button
-																variant="link"
-																isDestructive
-																onClick={ () =>
-																	setAttributes(
-																		{
-																			[ idKey ]:
-																				null,
-																			[ urlKey ]:
-																				'',
-																		}
-																	)
-																}
-																style={ {
-																	marginLeft:
-																		'8px',
-																} }
-															>
-																{ __(
-																	'Use the desktop thumbnail here',
-																	'sgs-blocks'
-																) }
-															</Button>
-														) }
-													</>
-												) }
-											/>
-										</MediaUploadCheck>
-									);
-								} }
-							</ResponsiveControl>
-						) }
-					</PanelBody>
+					{ /* Video art-direction tiers + the Thumbnail/poster panel
+					     (picker + tablet/mobile art-direction) are now owned
+					     by the `source` atom in MediaPanelLayout (mounted
+					     above) — its "Poster image" row is the same
+					     ThumbnailId/Thumbnail pair, tiered the same way. */ }
 
 					{ /* Playback options — ToolsPanel (dense-panel-candidate, Spec 35
 					     wave-B T-item-2): 6 independent booleans, all with a clear
