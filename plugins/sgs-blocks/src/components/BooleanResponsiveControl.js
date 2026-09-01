@@ -133,15 +133,29 @@ export default function BooleanResponsiveControl( {
 							label={ label }
 							hideLabelFromVision
 							value={ ownState }
-							isDisabled={ disabled }
-							onChange={ ( next ) =>
+							onChange={ ( next ) => {
+								// `ToggleGroupControl` itself has no `disabled`
+								// prop in the stable Gutenberg API
+								// (WordPress/gutenberg#57862, still open) —
+								// disabling it there is a silent no-op, so the
+								// group-level `isDisabled` this used to carry
+								// never actually blocked a click. Per-option
+								// `disabled` below IS supported
+								// (WordPress/gutenberg#63450) and does the real
+								// DOM-level blocking; this `onChange` guard is
+								// the second line of defence so the stored
+								// value genuinely cannot change while locked
+								// even if the DOM-level block has a gap.
+								if ( disabled ) {
+									return;
+								}
 								setAttributes( {
 									[ attrKey ]:
 										'inherit' === next
 											? null
 											: 'on' === next,
-								} )
-							}
+								} );
+							} }
 							__next40pxDefaultSize
 						>
 							<ToggleGroupControlOption
@@ -154,14 +168,17 @@ export default function BooleanResponsiveControl( {
 										? __( 'On', 'sgs-blocks' )
 										: __( 'Off', 'sgs-blocks' )
 								) }
+								disabled={ disabled }
 							/>
 							<ToggleGroupControlOption
 								value="on"
 								label={ __( 'On', 'sgs-blocks' ) }
+								disabled={ disabled }
 							/>
 							<ToggleGroupControlOption
 								value="off"
 								label={ __( 'Off', 'sgs-blocks' ) }
+								disabled={ disabled }
 							/>
 						</ToggleGroupControl>
 						{ help && (
