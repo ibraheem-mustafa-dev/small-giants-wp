@@ -16,7 +16,10 @@ import {
 import {
 	SgsColourPanel,
 	MediaPanelLayout,
+	mediaElementScopeClass,
+	mediaElementCustomProperties,
 } from '../../components';
+import { MEDIA_ATOM_IDS } from '../../components/media/atoms/registry.js';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { sanitiseSvg } from '../../utils';
 
@@ -57,7 +60,7 @@ import { sanitiseSvg } from '../../utils';
  * @param root0.attributes
  * @param root0.setAttributes
  */
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		// Shared.
 		mediaType,
@@ -83,6 +86,41 @@ export default function Edit( { attributes, setAttributes } ) {
 	const isImage = 'image' === mediaType || ! mediaType;
 	const isVideo = 'video' === mediaType;
 	const isSvg = 'svg' === mediaType;
+
+	// -------------------------------------------------------------------------
+	// Media-atom canvas mirror (Wave 5-7 gap, closed 2026-09-01).
+	//
+	// render.php applies the `.sgs-media-el` marker + this element's own
+	// scope class + every atom's custom-property VALUES so the shared
+	// `assets/css/media-element.css` stylesheet paints object-fit/opacity/
+	// shadow/etc on the FRONTEND. Nothing on the editor side ever did the
+	// same, so the canvas <img>/<svg> never visibly reacted to those
+	// inspector controls even though the underlying attribute was written
+	// correctly — confirmed live via Playwright before this fix (`opacity`/
+	// `object-fit` computed styles stayed at their CSS defaults regardless
+	// of the panel value). `sgs/media` is unprefixed and uses every atom
+	// (MediaPanelLayout.js mounts all 16 unprefixed), so the full
+	// MEDIA_ATOM_IDS set applies here.
+	const mediaScopeClass = mediaElementScopeClass( clientId, '' );
+	const mediaElementStyle = mediaElementCustomProperties( {
+		attributes,
+		blockSlug: 'sgs/media',
+		atoms: MEDIA_ATOM_IDS,
+	} );
+	// The box marker is a no-op until the `overlay` atom has a colour/gradient
+	// set (media-element.css's own docblock: "no custom properties set means
+	// the pseudo-element paints fully transparent") — unlike render.php's
+	// naked-mode branch, the editor canvas always wraps in a <figure>, so
+	// there is no wrapper-avoidance case to gate here.
+	const mediaBoxStyle = mediaElementCustomProperties( {
+		attributes,
+		blockSlug: 'sgs/media',
+		atoms: MEDIA_ATOM_IDS.filter( ( id ) => 'overlay' === id ),
+	} );
+	const mediaElementClassName = [ 'sgs-media__img', 'sgs-media-el', mediaScopeClass ]
+		.filter( Boolean )
+		.join( ' ' );
+	const mediaBoxClassName = [ 'sgs-media-box', mediaScopeClass ].filter( Boolean ).join( ' ' );
 
 	const onSelectImage = ( media ) => {
 		setAttributes( {
@@ -383,13 +421,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		}
 
 		return (
-			<figure { ...blockProps }>
+			<figure
+				{ ...blockProps }
+				className={ [ blockProps.className, mediaBoxClassName ].filter( Boolean ).join( ' ' ) }
+				style={ { ...blockProps.style, ...mediaBoxStyle } }
+			>
 				{ inspectorControls }
 				<img
 					src={ imageUrl }
 					alt={ imageIsDecorative ? '' : imageAlt }
 					aria-hidden={ imageIsDecorative ? 'true' : undefined }
-					className="sgs-media__img"
+					className={ mediaElementClassName }
+					style={ mediaElementStyle }
 				/>
 			</figure>
 		);
@@ -435,11 +478,16 @@ export default function Edit( { attributes, setAttributes } ) {
 			.join( ' ' );
 
 		return (
-			<figure { ...blockProps }>
+			<figure
+				{ ...blockProps }
+				className={ [ blockProps.className, mediaBoxClassName ].filter( Boolean ).join( ' ' ) }
+				style={ { ...blockProps.style, ...mediaBoxStyle } }
+			>
 				{ inspectorControls }
 				{ /* eslint-disable-next-line react/no-danger */ }
 				<div
-					className={ svgClass }
+					className={ [ svgClass, 'sgs-media-el', mediaScopeClass ].filter( Boolean ).join( ' ' ) }
+					style={ mediaElementStyle }
 					aria-hidden="true"
 					dangerouslySetInnerHTML={ { __html: sanitiseSvg( svgContent ) } }
 				/>
