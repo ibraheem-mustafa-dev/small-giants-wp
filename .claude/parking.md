@@ -1,7 +1,7 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-08-22
+last_updated: 2026-09-03
 note: "OPEN deferred work ONLY. Four permitted Status values (OPEN | PARTIAL | BLOCKED | DEFERRED) and six buckets. The moment an entry is finished it moves VERBATIM to memory/parking-archive.md under a dated pass heading - enforced mechanically by .claude/hooks/handoff-preflight.py, not by prose. Normalised 2026-07-29: 296KB -> this, one layout, one Status syntax, shipped history stripped to residual scope. Pre-normalise copy: memory/archived-2026-07-28-parking-pre-normalise.md."
 ---
 
@@ -608,6 +608,21 @@ now 444 lines (not the 502 originally logged), still 48% over the 300-line cap. 
 notice/dismiss-handling logic to bring it closer.
 
 **Trigger:** Next time anything is added to this file, or Wave 3 starts.
+
+### P-SITE-FOOTER-ROW-ALIGNITEMS-DEFAULT-MISMATCH — block.json default isn't a valid control option
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-03
+
+`sgs/site-footer-row`'s `alignItems` attribute declares `"default": "top"` in block.json, but its
+own `VERTICAL_ALIGN_OPTIONS` control list only has values `start`/`center`/`end`/`stretch` — `top`
+isn't valid CSS for `align-items` and isn't one of the control's own options. Found during a
+`/qc-council` pass on unrelated work (2026-09-03), confirmed pre-existing. `alignItems` isn't read
+by literal name in this block's own render.php — it goes through the shared
+`SGS_Container_Wrapper`, same pattern as hero's grid/flex attrs — so the practical effect on an
+untouched/reset instance hasn't been measured.
+
+**Trigger:** Next time this block's Alignment & grid panel is touched. Fix: align the block.json
+default to `'start'`, or add a `top` option to `VERTICAL_ALIGN_OPTIONS` — whichever matches the
+block's actual intended default visually.
 
 ### P-SPEC37-OPEN-RESIDUALS — Spec 37 coverage-matrix residuals
 **Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-21

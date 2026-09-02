@@ -1,11 +1,15 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-09-02 (Waves 6-7 handoff — 2 new entries added: a subagent worktree fatal
-caused by a concurrently-integrated migration deleting a function the worktree still called, and a
-plan-vs-hardened-rule collision on hero's split-media legacy fallback.)
+**Last updated:** 2026-09-03 (1 new entry added — a dated report filename nearly caused a
+same-day evidence overwrite; caught before commit. 7 oldest entries pruned to archive to
+restore the ~30 cap.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
-## Active entries (target ~30, prune oldest by date when over — currently over, prune due)
+## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-03] A dated report filename is not proof the file is new — nearly overwrote a same-day, genuinely live-verified report
+- **Pattern key:** `read-before-overwrite-dated-report-files`
+- **Feedback file:** [feedback_read_before_overwrite_dated_report_files.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_read_before_overwrite_dated_report_files.md)
+- **Rule:** Writing a fresh `intent_capture_passed` report to `reports/visual-diff/hero-2026-09-02.md` via `Write`, without reading the existing file first, silently overwrote a genuinely live-verified earlier report from the SAME day's earlier D919 work (real `gate:full` + deploy + live-capture evidence against page 2742). Caught before commit only because `git diff --cached --stat` showed `M` (modified) rather than `A` (added) for a file the session believed was brand new — the mismatch between assumption and git's own record was the tell. Recovered the original via `git show HEAD:<path>` and merged both captures into one file (matching the pre-existing `info-box-2026-08-15.md` report's own established "two commits today, this report covers both" pattern), so nothing was lost — but the near-miss was real. Sibling to `a-gate-can-be-date-keyed-instead-of-change-keyed` (2026-08-06, archived) — same class of failure (a `<name>-<DATE>.md` path is keyed on the date, not on who wrote it or what it describes), this time on the WRITE side rather than the gate's READ side. On a shared, multi-track, date-keyed report path: before writing, check `git status`/`git diff --cached --stat` for that exact path — a same-day report from an EARLIER part of your own session is exactly as real as one from a different track, and needs the same merge-not-overwrite treatment.
 ### [2026-09-02] A self-declared "PROTOTYPE" script's output was published at scale while a mature, already-gated tool for the same question sat unused in the same directory
 - **Pattern key:** `check-for-mature-tool-before-trusting-prototype-script`
 - **Feedback file:** [feedback_check_for_mature_tool_before_trusting_prototype_script.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_check_for_mature_tool_before_trusting_prototype_script.md)
@@ -276,38 +280,7 @@ plan-vs-hardened-rule collision on hero's split-media legacy fallback.)
 - **Feedback file:** [feedback_queryselector_first_match_not_test_instance.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_queryselector_first_match_not_test_instance.md)
 - **Rule:** `document.querySelector('.wp-block-sgs-container')` on a live verification page matched the site header's nav container (same shared block type, renders first in document order) instead of the test content block further down the page — silently, no error. Always scope live-verification DOM queries to the content container (`.entry-content <selector>`) or the block's own unique uid class, never a bare block-type class, on any page with shared header/footer chrome.
 
-### [2026-08-09] I wrote "these gates ban the raw components" into a spec without reading either rule body — both claims were false
-- **Pattern key:** `never-assert-an-enforcement-claim-without-reading-the-gate`
-- **Feedback file:** [feedback_never_assert_an_enforcement_claim_without_reading_the_gate.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_never_assert_an_enforcement_claim_without_reading_the_gate.md)
-- **Rule:** correcting Spec 35 Part H, I asserted that rules 04/08 gate raw `ColorPalette`/`LinkControl` out of a block's `edit.js`. Reading the bodies: `04-colour-alpha.js:92` returns early when `enableAlpha` is present (so `<ColorPalette enableAlpha>` passes clean), and `08-raw-url-link.js:99-101` matches `<TextControl type="url">` only and has never heard of `LinkControl`. **Neither is gated.** It was the one sentence in the change an operator would have acted on. A gate's NAME and its checklist item are not its CONDITION — read the matcher before describing what it enforces. Fixed by building rule 24 and proving the gap by planting `<ColorPalette enableAlpha>` in a real block: rule 04 reported 0, rule 24 flagged it.
-
-### [2026-08-09] A metric can MIS-RANK, not merely undercount — and its own self-test can certify the defect
-- **Pattern key:** `a-metric-that-gets-cheaper-when-you-hide-things`
-- **Feedback file:** [feedback_a_metric_that_gets_cheaper_when_you_hide_things.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_metric_that_gets_cheaper_when_you_hide_things.md)
-- **Rule:** a library-wide inspector census (median 12 / max 49 / total 1121) was rejected as a baseline (D543): it scored any composite as ONE row, could not see native `supports` panels (64 of 83 blocks) or `extensions/`, and summed mutually-exclusive branches — error with TWO signs. The live editor then proved it MIS-RANKED (D544): the block scoring 8 shows a client ~50 controls. Ask "what is the cheapest way to make this number fall, and does that help the user?" and validate ORDERING, not just magnitude. Its `--self-test` certified the worst defect as the expected answer, so it could never have caught this.
-
-### [2026-08-04] A perfect correlation was reported as a confirmed mechanism, twice in one session
-- **Pattern key:** `a-correlation-is-not-a-mechanism`
-- **Evidence (D481/D484):** (a) 99 of 99 inline `"role":"content"` declarations sat on attributes with no `css_property` — reported to Bean as confirming his "deterministic fingerprint left for derivation" hypothesis. The correlation was real; the cause was not. It is WordPress 7.0's own content-editability marker (commit `d307c8b0`), colliding on the key name, and reading it into the SGS role column would corrupt 8 attributes. (b) Bean's occupied-slot hypothesis was reported as plausible; `canonical_slot` is a pure name→alias dictionary lookup with no notion of occupancy.
-- **Rule:** A correlation with no verified mechanism is a lead, not a finding. Say "correlates with" until the writer/consumer has been read. State the mechanism you checked and where.
-
-### [2026-08-04] Three enforcement rules each shipped blind, and only a suspicious number caught them
-- **Pattern key:** `a-rule-returning-zero-is-a-claim-requiring-evidence`
-- **Evidence (D483):** Item 1 reported 0 violations against a true population of 65 (it counted `<InspectorControls>` elements instead of panels, skipping every block that wraps all panels in one — including `hero` at 15). Item 18 reported 12 against 15. Item 20 reported 43 against 23. All three passed their own self-tests, because the fixtures never presented the dominant real-world shape.
-- **Rule:** Every new rule declares its EXPECTED population before it runs, and any result at or near zero is a claim requiring evidence, not a pass. A fixture set that omits the common case makes a blind rule look proven.
-
-### [2026-08-05] A detector worked in every direct run and was inert in the seeder that calls it
-- **Pattern key:** `a-module-can-work-run-directly-and-be-inert-when-imported`
-- **Evidence:** Detector 4 assigned 42 rows every time `fingerprint_content_roles.py` was run from its own folder, and 0 inside the real `/sgs-update`. `assign-canonical.py` loads the fingerprint via `importlib.util.spec_from_file_location`, which does NOT put the loaded module's directory on `sys.path`, so `import detector4_referenced_not_output` raised `ModuleNotFoundError`. The `except` branch printed a warning to stderr, where it was buried in a 14-stage log, and the run exited 0. Every number in the commit that introduced the detector came from the working path. Caught only because the DB read `role='technical'` at 17 against a declared expectation of 59.
-- **Rule:** When a script both runs standalone AND is imported by a pipeline, exercise the IMPORTING path before quoting any number from it. A degraded run that exits 0 is indistinguishable from a healthy one unless you check the number against a declared expectation.
-
-### [2026-08-05] A subagent verified the theme patterns and missed the stored post content
-- **Pattern key:** `verify-wider-than-the-agent-did` (existing rule, new instance)
-- **Evidence:** The `multi-button` `direction`/`wrap` rename was verified by its subagent across block files and theme patterns — it correctly found and fixed two patterns. It never checked STORED post content. The deploy's `oldshape-audit` then found 3 NEW HIGH on canary posts 1596 and 2130, where shipping the rename would have had WordPress silently DELETE those attrs on the next editor save. The rename was pulled from the deploy.
-- **Rule:** For any attribute rename or deletion, "no consumers in code" is only half the check. Stored content in the DB is the other half, and it is the half that loses client data. The gate caught it; the verification should have.
-
-### [2026-08-06] A gate passed on a concurrent track's evidence, because it keys on a DATE not a DIFF
-- **Pattern key:** `a-gate-can-be-date-keyed-instead-of-change-keyed`
-- **Evidence:** The pre-commit visual-diff gate is satisfied by `reports/visual-diff/<block>-<DATE>.md` containing `verdict: PASS` + `first_paint_capture_passed: true`. Four of my changed blocks ALREADY had same-day reports written by a parallel track documenting a completely different change (`brand-strip`'s was about a `scrollDirection` enum; mine deleted a dead transition local). The gate would have passed my commit on their evidence. I appended my evidence to those four, clearly marked, rather than overwriting.
-- **Rule:** When a gate passes, ask what it actually bound itself to. Date-keyed evidence is not change-keyed evidence, and on a shared worktree that difference is reachable in practice, not just in theory.
+*(7 entries dated 2026-08-04 through 2026-08-09 pruned to `memory/mistakes-archive.md` on
+2026-09-03 — oldest by date, moved verbatim, to make room at cap. 36 -> 30 active after the
+prune + 1 new entry.)*
 

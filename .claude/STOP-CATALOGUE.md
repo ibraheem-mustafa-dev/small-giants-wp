@@ -2870,6 +2870,47 @@ carry-forward receipt whose own figure is wrong defeats the check it exists to p
 same class of failure as the three instruments D910 records. Caught by an independent `/qc` subagent,
 not by me.
 
+### E22. Earned 2026-09-03 — uniformity-sweep detector backlog (03/18/21-appendix) + media-atom rename fix, D920
+
+⛔ **STOP-READ-A-DATED-REPORT-PATH-BEFORE-WRITING-TO-IT.** A `reports/visual-diff/<block>-<date>.md`
+path's date matching today is NOT proof the file is new — it may already hold a genuinely
+live-verified report from an earlier part of the SAME session, or a different track on a shared
+worktree. Writing to `hero-2026-09-02.md` without reading it first silently overwrote a real
+`gate:full`+deploy+live-capture report from earlier the same day. Caught only because
+`git diff --cached --stat` showed `M` (modified) not `A` (added) for a file believed to be new.
+**Rule: before writing to any date-keyed doc/report path, check `git status`/`git diff --cached
+--stat` for that exact path first — if it exists and is tracked, read it and merge (matching
+`info-box-2026-08-15.md`'s "two commits today, this report covers both" pattern), never blind-write.**
+Mistakes.md entry: `read-before-overwrite-dated-report-files`.
+
+⛔ **STOP-RUN-GATE-FULL-BEFORE-DEPLOY-NOT-ONLY-GATE-FAST.** `gate:fast`'s 85 gates all passed, and a
+deploy was attempted on that basis — it ABORTED, because `build-deploy.py` itself runs `gate:full`
+(a separate, heavier 3-gate tier: `pytest-oracle-converter`, `inspector-scan-run`,
+`audit-block-file-consistency`) which `gate:fast` does not cover, and that tier found two real
+NEW findings (`before-after`'s dynamic-key `{side}ImageDecorative` attrs, invisible to the
+consistency auditor's literal-string matching — traced by hand, confirmed genuinely wired, correctly
+baselined with a written reason, not blindly accepted). **Rule: `gate:fast` passing is not
+deploy-readiness — run `gate:full` (or just call `build-deploy.py`, which runs it for you) before
+assuming a deploy will succeed, and treat any `gate:full`-only finding with the same "understand
+before baselining" discipline as any other gate.**
+
+⛔ **STOP-A-SUBAGENTS-GIT-STASH-ATTEMPT-ON-A-SHARED-WORKTREE-IS-A-REAL-VIOLATION-EVEN-IF-HARMLESS.**
+A dispatched agent (working on `sgs/hero`, a file 14 other concurrent agents were also touching that
+session) attempted `git stash` despite an explicit "no state-changing git commands" instruction in
+its cold prompt, reasoning it needed a clean baseline for its own before/after diff. It failed
+harmlessly this time (`git stash list` empty, no reflog entry, `git status` unaffected) — but on a
+shared worktree with other agents mid-edit, a successful stash would have silently pulled their
+in-progress uncommitted work out from under them. **Rule: a cold prompt's git restriction is not
+satisfied by "it happened to be harmless" — verify via `git stash list`/`git reflog` after any
+agent completes, regardless of outcome, and give agents a scratch-directory baseline instead of a
+reason to reach for `git stash` in the first place (per the existing
+`a-prohibition-in-a-subagent-brief-is-not-enforcement` lesson — restating the rule doesn't enforce
+it; the workaround needs to not be reachable).**
+
+**D101 carry-forward receipt for E22.** Three STOP entries added (narrative `⛔ **STOP-…**` style,
+matching E15-E19), zero removed, zero reworded, zero ritual questions touched. Unique `STOP-*`
+tokens **325 -> 328**. Ritual questions in §C: **15 before, 15 after** — untouched.
+
 ### E20. Earned 2026-09-02 — uniformity sweep: three commits silently failed and were nearly lost
 
 ⛔ **STOP-A-TRUNCATED-COMMAND-TAIL-CAN-HIDE-A-FAILED-GIT-COMMIT.** Bean-locked. This project's

@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-09-02
+last_updated: 2026-09-03
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -18,16 +18,20 @@ Right now: the cloning pipeline and the motion system are both stable. Client co
 2026-09-02 (Waves 6-7 committed, deployed, live-verified). The live front is the **uniformity
 sweep** — running the framework's own detector/audit scripts, clearing real findings, and fixing
 the detectors themselves where they're wrong, so the client's editor/canvas/live-page experience
-has no clear blockers. The canary test site is sandybrown-nightingale-600381.hostingersite.com;
+has no clear blockers. This session closed three more items (03, 18, 21's appendix) with full
+live verification against the deployed canary, and split the remaining backlog into two dedicated
+next-session prompts (below). The canary test site is sandybrown-nightingale-600381.hostingersite.com;
 there are no live client sites on this framework yet, so breakage there costs time, not money.
 
 ## State Snapshot
 
 - **Branch:** `main`, ONE active track. Commit with explicit paths (a hook enforces it).
 - **Canary:** WP 7.1. Deploy via `build-deploy.py --target sandybrown` — the only sanctioned path.
-- **Build:** green, **85/85** gates, verified 2026-09-02 at `ac2cb47ca`. Canary deployed + live
-  homepage re-verified same session (D919 — a real hero split-media render bug, caught and fixed
-  before any client ever hit it). Nothing uncommitted at session close.
+- **Build:** green, **85/85 gate:fast + 3/3 gate:full** gates, verified 2026-09-03 at `4b10bad32`.
+  Canary deployed twice this session (once mid-session to unblock live verification, once
+  post-commit to carry a same-session fix live) and re-verified — 13 blocks' decorative/panel
+  changes each got their own live REST-probe capture against the real deployed build, not just a
+  code read. Nothing uncommitted at session close.
 - **Live fronts:** the uniformity sweep (below). Client controls, cloning, consolidation are closed;
   motion is stable with named next steps in its own section.
 - **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
@@ -40,83 +44,64 @@ there are no live client sites on this framework yet, so breakage there costs ti
 (section below). Sections below are per-track, read only the one you're continuing.**
 The **motion** track owns `⛔ `sgs-framework.db` is ONE shared file — DB work sequentially, not parallel.
 
-## ▶ UNIFORMITY SWEEP TRACK — 2026-09-02: decide-first batch CLOSED (D917-D919); 7 items remain
+## ▶ UNIFORMITY SWEEP TRACK — 2026-09-03: 03/18/21-appendix CLOSED + live-verified; 5 items remain, 2 dedicated prompts
 
 ⭐ **Read `.claude/reports/2026-09-02-findings-INDEX.md` FIRST — it is the map.** Twelve reports,
 one per detector reporting findings, each with a plain-English problem/effect, a ranked menu and a
 "Your call" checklist. Plan: `.claude/plans/2026-08-30-uniformity-sweep-execution.md`.
-**Continuation prompt: `.claude/prompts/2026-09-03-detector-backlog-continuation.md`** — the prior
-prompt (`...-review-and-resolve.md`) is DELETED, its full scope closed; do not look for it.
 
-⛔ **THE SESSION'S CENTRAL LESSON (D918).** Bean challenged the C14 scattered-controls report.
-`/qc-council` found `scattered-element-controls.js` was a **self-declared PROTOTYPE** whose model
-contradicted Spec 35's own schema comment — `isWrapper: true` explicitly selects **TIER 2**
-(property-family panels are the CORRECT shape for a block's root, not "scatter"). It produced ~600
-false positives, was published as a 613-row report, and nearly became a fix-dispatch target.
-**Deleted outright**; `placement-reach.py` (already built, already gated, self-tested) was the
-correct tool all along and D537 already named it. Its real answer was **9 CONTESTED attrMap gaps —
-all 9 now resolved** (`css:box-shadow-color` siblings on container/cta-section/hero/before-after;
-border family explicitly owned by nav-drawer's `dialog`).
+**Two dedicated next-session prompts, split deliberately (see below for why):**
+- **Mixed backlog sweep (border-migration, 37, 01, 21's own pre-existing 54):**
+  `.claude/prompts/2026-09-03-detector-backlog-remaining.md`
+- **`31-golden-colour-control` build session (separate — it's a build task, not triage):**
+  `.claude/prompts/2026-09-03-golden-colour-grant-build.md`
 
-**Detector validation.** Every detector reporting findings was checked — logic vs decisions/specs/
-`dev-setup.md` — before its count was trusted (10 parallel agents). Result: 3 detectors were WRONG
-(rules 23, 26, and rule 21's 74-finding media/hero cluster), 1 was miscategorised (dead-api's 253
-were never bugs), the rest were sound.
+### This session's close (D920 has the full account — this is a pointer, not a duplicate)
 
-**Six defects fixed** (`06497afac`): rule 21 128→105 (ATOM_CONTROLS dispatcher; ~51 residual left
-deliberately — a generic 1-arg-literal pattern would over-suppress tree-wide); rule 23 1→0 (the PHP
-comment-stripper stripped block comments BEFORE line comments, so `*Tablet/*Mobile` inside a `//`
-comment blanked ~50KB of `hero/render.php` — **order is now load-bearing**, verified with a full
-28-rule diff showing only rule 23 moved); rule 26 2→0 (Spec 35 Part D5 art-direction exemption, with
-a paired fixture proven non-vacuous by disabling the exemption and watching the self-test FAIL);
-rule 37 77→71; dead-api 253→0 (96 real WP/WC names promoted, allowlist 321→417, self-test still
-catches the original `wc_get_price_html()` incident); CLAUDE.md border-controls corrected.
+Closed **03-dense-panel-candidate** (13→0), **18-decorative-image-aria** (16→4, remaining 4 are
+confirmed detector false positives), and **21-render-without-control**'s 14-finding appendix (all
+resolved — hero's Alignment & grid panel + hover controls, media's caption typography,
+testimonial-slider's dead-attribute cleanup). Extended rule 18's detector to recurse into repeater
+`items.properties` (two new self-test fixtures prove it). Fixed a same-day regression from the
+earlier `{element}Decorative` naming sweep (`sgs/media`'s decorative checkbox silently wrote to an
+undeclared attribute — 6 files fixed, zero stale references remain). A `/qc-council` pass ahead of
+commit caught real bugs before deploy: a hero `ReferenceError` waiting to fire, an enum-control-shape
+violation (D812), and — found DURING live verification itself — `sgs/gallery`'s lightbox
+Interactivity-API context leaking a decorative image's real alt text independently of the already-
+correct render-loop gate. All 13 touched blocks got their own `reports/visual-diff/<block>-2026-09-02.md`
+`intent_capture_passed` report, each backed by a real REST-probe capture against the deployed canary
+(not just a code read) — re-verify the method before trusting a future report at the same path
+without reading it first (see `mistakes.md`'s newest entry — a near-miss this session).
 
-⭐ **OPEN QUESTION, needs an early ruling — Bean raised it, it is real.** "Baselined" conflates
-**"not a problem, by design"** with **"a real problem we deferred"**, and nothing distinguishes them.
-Verified across all 35 baseline files: only 8 carry even a free-text `reason`; the one `category`
-field describes effect type, not disposition. Two entries, two files, identical shape under the same
-`accepted` key — one is a genuinely dead attribute, the other is a Bean-ruled by-design duplicate.
-**This blocks "resolve all violations including baselined ones" as a runnable instruction.**
-Proposal: a required `disposition` field (`by-design` / `detector-limitation` / `accepted-debt` /
-`blocked`) back-filled across the ~165 entries in the 8 non-empty baseline files. Note the project's
-own rule already says a false positive is a DETECTOR BUG, never baseline fodder — so any
-`detector-limitation` found in that pass is already a violation.
+⛔ **`31-golden-colour-control`'s status was corrected this session — do not re-trust an older
+"unblocked" claim.** D754's plan has two of six work units done (`U2` manifest-seed, `U1` triage),
+but `grant.js` — the actual capability tool — does not exist anywhere in the tree, confirmed by
+search. This is a ~5.4-hour BUILD task with its own feasibility spike, not a triage-and-dispatch
+item — it has its own dedicated prompt (above) precisely so it doesn't get folded into a mixed
+backlog session by mistake.
 
-**Validated remaining backlog:** 01 (57) · 03 (13) · 18 (15) · 21 (14 new, untriaged — the
-originally-listed 54 real + residual-FP findings are CLOSED, see below) · 31 (277, blocked on
-D754's capability-grant design) · 37 (71) · border-migration (3 blocks: card-grid, multi-button,
-trust-bar — `sgs/media` closed, see below). **Closed: dead-api, rules 23 and 26, 07, 22, 34,
-border-migration's `sgs/media` item.**
+**What's left — 5 items, ranked in the mixed-backlog prompt:** border-migration's 3 remaining
+blocks (`card-grid`/`multi-button`/`trust-bar`) · `37` (71, mechanical) · `01` (57, coarse-proxy
+check — verify by eye) · `21`'s own pre-existing 54-item backlog (separate from the appendix this
+session closed, not yet triaged block-by-block). `31` (277) is out of this prompt entirely — see
+its own build-session prompt.
 
-**Closed this session (D919 has the full account — this is a pointer, not a duplicate):** all four
-"decide first" items (07, 22, 34, border-migration's `sgs/media` block) plus a bonus — extending
-the cloning pipeline's hero split-media routing to Tablet tier + video/SVG media types surfaced and
-fixed a real bug (video/SVG content was being stored but never rendered). 10 commits ending
-`ac2cb47ca`, all on `main`, working tree clean. Independently re-verified via a 3-rater
-`/qc-council` pass (consumer safety SAFE, one test-coverage gap found and closed same session,
-production migration independently re-verified). Also fixed, found along the way: a canary
-`wp-login.php` LiteSpeed cache-cookie bug that silently blocked every automated Playwright login
-(WP-CLI option flip, no code change — but real, and would have blocked every future QC session
-needing editor access).
+⛔ **Working shape carried forward from the prior session, unchanged: dispatch each fix the MOMENT
+Bean decides it and keep discussing while the agent works — do NOT batch every fix to the end.**
+Verify every agent's result yourself (`git diff --stat`, re-run the detector, read a sample of the
+actual diff) — this session caught a broken import, a syntax error, curly-quote flattening, an
+invalid-UTF-8 byte, and an undestructured-attribute `ReferenceError` this way, none of which a
+trusting read of an agent's own "done, verified" self-report would have caught.
 
-⭐ **OPEN QUESTION, still needs an early ruling — carried from part 2, not yet resolved.**
-"Baselined" conflated **"not a problem, by design"** with **"a real problem we deferred"** until
-the `disposition` field fix closed that ambiguity (see part 2's account above). **New decision
-surfaced by that pass, still open:** 31 entries classified `detector-limitation` — per this
-project's own rule ("a false positive is a detector bug, never baseline fodder") these are rule
-violations sitting in a baseline, not a normal outcome. Full list + which detector each belongs to:
-the INDEX report's disposition section.
+**Earlier history (D918: the scattered-controls prototype deletion + 9 CONTESTED attrMap gaps
+resolved; D919: the decide-first batch closure + hero split-media bug).** Compressed to this
+pointer — full accounts live in `decisions.md`, not duplicated here.
 
-**What's left — 7 items, ranked, none started:** `03` (13, template-ready) · `18` (15,
-template-ready) · `21`'s 14-finding appendix (new, untriaged) · border-migration's 3 remaining
-blocks (`card-grid`/`multi-button`/`trust-bar`) · `37` (71) · `01` (57, coarse-proxy check — verify
-by eye) · `31` (277, blocked on D754's design pass — do not hand-fix). Full detail + suggested
-order: `.claude/prompts/2026-09-03-detector-backlog-continuation.md`.
-
-⛔ **Next session's working shape changed, at Bean's instruction: dispatch each fix the MOMENT he
-decides it and keep discussing while the agent works — do NOT batch every fix to the end** (this
-session's mistake). The prompt leads with that rule.
+⭐ **OPEN QUESTION, still needs an early ruling — carried forward, not yet resolved.** 31 baseline
+entries classified `detector-limitation` — per this project's own rule ("a false positive is a
+detector bug, never baseline fodder") these are rule violations sitting in a baseline, not a
+normal outcome. Full list + which detector each belongs to: the INDEX report's disposition
+section (`.claude/reports/2026-09-02-findings-INDEX.md`).
 
 ## ▶ MOTION TRACK (A closed+live; B Phase 2 closed, Phase 3 next)
 
