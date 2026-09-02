@@ -299,6 +299,16 @@
 		"typography": ".wp-block-sgs-hero"
 	},
 	"attributes": {
+		"templateLock": {
+			"type": "string",
+			"enum": [
+				"",
+				"all",
+				"contentOnly",
+				"insert"
+			],
+			"default": ""
+		},
 		"variant": {
 			"type": "string",
 			"default": "standard",

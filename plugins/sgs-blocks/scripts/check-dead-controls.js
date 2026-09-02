@@ -260,13 +260,17 @@ const SYSTEM_ATTR_PREFIXES = [ 'sgs' ];
 // templates, or other editor-side behaviour) and legitimately have no render
 // consumption. Keep this list tiny and justified (Spec 22 BY-DESIGN).
 //
-// Intentionally EMPTY (2026-08-27): the only member, `templateMode`, was
-// removed outright as vestigial (six blocks declared it; the stored value
-// was always its "free" default, so it never restricted anything in
-// practice — see `.superpowers/sdd/task-3-report.md`). The mechanism stays
-// for the next genuinely editor-only attribute — do not delete this set, and
-// do not repopulate it with a stale name once an attribute is gone.
-const EDITOR_ONLY_ATTRS = new Set( [] );
+// Was intentionally EMPTY 2026-08-27 -> 2026-09-02 (the only prior member,
+// `templateMode`, was removed outright as vestigial — see
+// `.superpowers/sdd/task-3-report.md`). `templateLock` (sgs/container,
+// sgs/hero) is the next genuinely editor-only attribute: it drives
+// useInnerBlocksProps' `templateLock` option (Spec 20-pattern-template-lock's
+// repair target) and is never read in render.php — the InnerBlocks structural
+// lock is a block-editor-only behaviour, confirmed live (grep for
+// "templateLock" across both blocks' render.php: 0 matches). Keep this list
+// tiny and justified; do not repopulate it with a stale name once an
+// attribute is gone.
+const EDITOR_ONLY_ATTRS = new Set( [ 'templateLock' ] );
 
 // Extension attributes that are BY-DESIGN editor-only — never emitted as a
 // data-attribute / consumed server-side, with the design decision documented

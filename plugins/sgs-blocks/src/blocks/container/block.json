@@ -195,6 +195,16 @@
 		"root": ".wp-block-sgs-container"
 	},
 	"attributes": {
+		"templateLock": {
+			"type": "string",
+			"enum": [
+				"",
+				"all",
+				"contentOnly",
+				"insert"
+			],
+			"default": ""
+		},
 		"layout": {
 			"type": "string",
 			"enum": [

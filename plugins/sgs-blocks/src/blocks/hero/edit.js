@@ -573,7 +573,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		{ className: 'sgs-hero__content', style: contentPreviewStyle },
 		{
 			template: HERO_CONTENT_TEMPLATE,
-			templateLock: false,
+			templateLock: attributes.templateLock || false,
 		}
 	);
 

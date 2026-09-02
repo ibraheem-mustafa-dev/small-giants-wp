@@ -427,6 +427,7 @@ export default function Edit({ attributes, setAttributes, name }) {
     hasBandProps ? { className: "sgs-container__inner", style: bandStyle } : blockProps,
     {
       orientation: layout === "stack" ? "vertical" : undefined,
+      templateLock: attributes.templateLock || undefined,
     }
   );
 
