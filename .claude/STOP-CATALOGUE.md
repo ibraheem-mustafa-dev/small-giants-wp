@@ -2869,3 +2869,31 @@ several are not. **Count with `awk '/^## C\./,/^## D\./' … | grep -cE '^[0-9]+
 carry-forward receipt whose own figure is wrong defeats the check it exists to perform, which is the
 same class of failure as the three instruments D910 records. Caught by an independent `/qc` subagent,
 not by me.
+
+### E20. Earned 2026-09-02 — uniformity sweep: three commits silently failed and were nearly lost
+
+⛔ **STOP-A-TRUNCATED-COMMAND-TAIL-CAN-HIDE-A-FAILED-GIT-COMMIT.** Bean-locked. This project's
+pre-commit hook (`.githooks/sgs-gates.sh`) runs many gates after the one that can actually block the
+commit (the visual-diff gate), so its full output is long — `❌ COMMIT BLOCKED` and every reason for
+it print BEFORE a long run of unrelated baselined-and-passing gate diagnostics. Reading only the last
+few lines of that output (`tail -N`, or a result window that happened to end there) shows a
+plausible-looking wall of `[baselined]`/`Gate passed` lines and NOTHING that says the commit failed —
+because it did fail, silently, three commits in a row, in this exact session. **Rule: after any `git
+commit`, confirm success by reading the FULL output or by grepping for `\[main ` / `COMMIT BLOCKED`
+specifically — never infer success from a tail that happens to end on a passing sub-gate.** A `git
+log --oneline -1` / `git status --short` check before moving on is the cheap, reliable confirmation;
+this session only caught the loss because of a routine sanity check before writing a handoff, not
+because anything in the commit flow itself surfaced it.
+
+⛔ **STOP-A-CODEMODS-OWN-SELF-TEST-PASSING-IS-NOT-PROOF-ITS-REAL-OUTPUT-IS-CORRECT.**
+`scripts/colour-codemod/fix.js --self-test` passed 100% both before and after a real `--fix --apply`
+run that shipped a PHP parse error into two live blocks and a JS `ReferenceError` into all three it
+touched. The self-test's fixtures did not cover the exact string-concatenation shape those blocks
+used. **Rule: after any codemod's `--fix --apply`, re-run the project's own build-time gates
+(`gate:fast`, `php -l` on touched PHP) — a green self-test proves the TESTED cases are handled, not
+that today's REAL cases are among them.**
+
+**D101 carry-forward receipt for E20.** Two STOP entries added (narrative `⛔ **STOP-…**` style,
+matching E15-E19), zero removed, zero reworded, zero ritual questions touched. Unique `STOP-*`
+tokens **321 -> 323**. Ritual questions in §C: unchanged — verified via
+`awk '/^## C\./,/^## D\./' .claude/STOP-CATALOGUE.md | grep -cE '^[0-9]+\. '` before and after.

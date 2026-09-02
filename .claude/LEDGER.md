@@ -14,28 +14,60 @@ into native blocks a non-technical client can then edit. Five tracks worked on i
 sharing one `main`; **only ONE is active now (Bean, 2026-08-30)** — the path-scoped commit hook
 still applies, but 'another track holds this file' is no longer a live constraint.
 
-Right now: the cloning pipeline and the motion system are both stable. The live front is
-**client controls** — making sure every setting a client can change actually does something
-visible, in the editor as well as on the published page. The canary test site is
-sandybrown-nightingale-600381.hostingersite.com; there are no live client sites on this
-framework yet, so breakage there costs time, not money.
+Right now: the cloning pipeline and the motion system are both stable. Client controls closed out
+2026-09-02 (Waves 6-7 committed, deployed, live-verified). The live front is the **uniformity
+sweep** — running the framework's own detector/audit scripts, clearing real findings, and fixing
+the detectors themselves where they're wrong, so the client's editor/canvas/live-page experience
+has no clear blockers. The canary test site is sandybrown-nightingale-600381.hostingersite.com;
+there are no live client sites on this framework yet, so breakage there costs time, not money.
 
 ## State Snapshot
 
 - **Branch:** `main`, ONE active track. Commit with explicit paths (a hook enforces it).
 - **Canary:** WP 7.1. Deploy via `build-deploy.py --target sandybrown` — the only sanctioned path.
-- **Build:** green, 83/83 gates. **~40 files uncommitted at session close (2026-09-02)** — Waves
-  6-7 of client-controls, fully built and re-verified, not yet in git history. Commit is the
-  next session's first action, before any new work.
-- **Live fronts:** client controls (below) and motion. Cloning + consolidation are closed.
+- **Build:** green, 83/83 gates, verified 2026-09-02 after the uniformity sweep's 11 commits (all
+  pushed to origin — nothing uncommitted at session close).
+- **Live fronts:** the uniformity sweep (below). Client controls, cloning, consolidation are closed;
+  motion is stable with named next steps in its own section.
 - **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
 
 # ▶ NEXT SESSION STARTS HERE
 
 **Invoke `/autopilot` first.**
 
-⚠ **Multiple tracks have touched `main` historically; ONE is active now. Sections below are per-track.**
+⚠ **Multiple tracks have touched `main` historically; ONE is active now — the uniformity sweep
+(section below). Sections below are per-track, read only the one you're continuing.**
 The **motion** track owns `⛔ `sgs-framework.db` is ONE shared file — DB work sequentially, not parallel.
+
+## ▶ UNIFORMITY SWEEP TRACK — 2026-09-02: 9 of 10 shapes shipped, 11 commits pushed. Full account: D917.
+
+⭐ **Plan: `.claude/plans/2026-08-30-uniformity-sweep-execution.md`. Its own STATUS section at the
+top is the single source for what shipped, what's carried forward, and per-shape gotchas — do not
+duplicate that detail here.** Goal, verbatim: *"no clear blockers from this aspect to the pipeline
+or my client's experience with the editor, canvas, or the blocks doing what they should on the live
+pages."* Not a perfection exercise.
+
+**Shipped:** S10 (rule 08 line-key fix), S1 (2 of 3 items — 3rd needs an architectural call, left
+open), S6 (`borderRow` deleted), S3 (partial — `ShapeDividersPanel` mounted, `LayoutPanel` deferred
+on real schema/collision gaps), S7 (pilot only, awaiting Bean's review), S4 (both blockers fixed,
+batch migration deferred), rules 29/33/35 (11 findings), S8 (decorative naming), S5 (3 of 280
+findings — the other 277 are structurally REFUSED by the codemod itself, not a batch-run target).
+
+⛔ **Two real bugs in `scripts/colour-codemod/fix.js` caught only by re-running `gate:fast` after
+each change, not by the codemod's own self-test (100% pass both times).** A PHP string-literal
+splice bug and a missing edit.js attribute destructure. Hand-fixed, documented in `rules.json`, NOT
+fixed in `fix.js` itself — its remaining refused rows need the same re-verification on any future run.
+
+⛔ **Bean lifted the original "out of scope" ruling 2026-09-02** — rule 20 (23 findings), the
+dead-api-calls allowlist (321 entries), and C14 splits (12 unconfirmed candidates) are back in scope
+for the next session, alongside everything the sweep's own Wave A enumerated but never actioned: 82
+detector-shaped scripts with zero gate reach, `check-enum-control-shape.py` failing ungated with 6
+new violations and no repair script, two un-enumerated client-facing gaps
+(`survey-wrapper-capability.js` 76 findings, `survey-colour-coverage.py` 41 findings), 1 broken +
+6 unreferenced scripts.
+
+**NEXT:** see `.claude/prompts/` for the current dated continuation prompt (this session wrote a
+fresh one covering the full remaining scope — check the most recent date).
 
 ## ▶ MOTION TRACK (A closed+live; B Phase 2 closed, Phase 3 next)
 

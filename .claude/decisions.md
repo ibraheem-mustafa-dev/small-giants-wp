@@ -1,3 +1,69 @@
+## D917 [INCIDENT] — Uniformity sweep: 9 of 10 planned shapes shipped (11 commits), two real codemod bugs caught by re-running gate:fast (not by the codemod's own self-test), three commits silently failed to land and were nearly lost
+
+**2026-09-02.** Executed `.claude/plans/2026-08-30-uniformity-sweep-execution.md` per its own
+Bean-approved rulings. Six read-only Wave-A agents re-enumerated the detector population fresh
+(prior counts were 3-5 days stale after the media-element track's Wave 6-7 landed) before any fix
+work started, confirming the plan's own warning that every count is a floor: `inspector-scan` grew
+24→28 rules, the dead-api allowlist 250→321 entries, `setting-types.json` was stale by 680 attr
+instances (silently caught up as a byproduct of running `gate:fast`, committed separately). Per-shape
+project memory ("coding subagents cascade-fail in this environment") meant all fixes were done
+inline in the main thread rather than dispatched to Wave-B agents as the plan specified — a
+deliberate, documented deviation.
+
+**Shipped:** S10 (rule 08's line-keyed baseline moved to a block-slug exemption in the rule itself)
+· S1 (PHP `//`-comment-stripping fix, cleared 3 false positives; rule 18's landmark-`ariaLabel`
+false-clear fixed, surfacing 4 real findings the fix itself does not resolve) · S6 (`borderRow`
+deleted, 0 adopters) · S3 (site-footer `ShapeDividersPanel` mounted, 12 findings cleared;
+`LayoutPanel` investigated and explicitly NOT mounted — site-footer has no `layout` attr declared at
+all and hero already writes `gridTemplateColumns` via a bespoke control, both real collisions, not
+mechanical) · S7 (`team-member` "Card Settings" converted to `ToolsPanel`, the approved pilot, NOT
+scripted to the other 14 pending Bean's review) · S4 (both `migrate-tier-object.py` blockers fixed
+— the `<prop>Desktop`-base KeyError and the C19 art-directed-media exemption, now a universal
+file-reference name test not a hardcoded list — self-test-covered; the actual batch migration of the
+remaining 15 properties deliberately NOT run, since it only feeds the cloning pipeline not
+`gate:fast` and each property needs its own edit.js/render.php verification) · rules 29/33/35 (11
+findings, including hero's 7 native typography controls being silent no-ops for months — dead
+InnerBlocks-child selector, root-caused via `render.php`) · S8 (`sgs/media.imageIsDecorative` →
+`imageDecorative`) · S5 (colour codemod, 3 of 280 findings — `fix.js`'s own survey shows only 25 of
+178 non-conformant rows are auto-fixable at all; the rest are structurally `REFUSED`, overwhelmingly
+deferred text-gradient work the codemod itself scopes elsewhere).
+
+⛔ **Two real bugs in `scripts/colour-codemod/fix.js`, caught only because `gate:fast` was re-run
+after every change — its own `--self-test` passed 100% both before and after.** (1) The `render.php`
+patch for 2 of 3 rows spliced the new hover-conditional PHP *inside* the still-open string literal
+from the original assignment, a PHP parse error in both files (`php -l` caught it; the third row uses
+a structurally different mechanism and was fine). (2) All 3 rows got a new `iconColourHover` JSX
+reference with no matching entry added to the block's own attribute destructure — a genuine
+runtime `ReferenceError`, caught by `check-undefined-refs.js`. Both hand-fixed and documented in
+`rules.json`'s `advisoryReason`; neither fixed in `fix.js` itself — its remaining refused rows must
+not be trusted on a future run without the same re-verification.
+
+⛔ **THE REAL INCIDENT: three commits (rules 29/33/35, S8, S5) silently failed to land three times
+in a row and were nearly lost**, caught only by a routine `git log` sanity check before writing this
+entry — not by anything in the commit flow itself. Root cause: a `git commit` pre-commit hook
+(`.githooks/sgs-gates.sh`'s visual-diff gate) exits non-zero and blocks the commit whenever a touched
+block isn't provably editor-only, but its full diagnostic output is long enough that `tail -N` on the
+command result showed only the LAST few lines of gate diagnostics (baselined findings from unrelated
+gates, printed after the actual failure) — never the `❌ COMMIT BLOCKED` line itself, and never a
+`[main <hash>]` success line because there wasn't one. All three "successful" commits were actually
+silent no-ops; `git status --short` still showed every file staged. Recovered cleanly (nothing was
+lost — `git diff --cached --stat` before re-committing matched the intended change sets exactly) using
+the hook's own sanctioned `SGS_VISUAL_GATE_SKIP=<blocks> SGS_VISUAL_GATE_REASON="..."` bypass (never
+`--no-verify`, which would also skip gitleaks/cheat-gate/F5/F6). **Lesson for any future commit
+verification: read the FULL command output or grep for `\[main ` / `COMMIT BLOCKED`, never assume
+success from a truncated tail that happens to end on a passing sub-gate.**
+
+Wave A also surfaced work never actioned this session, carried forward as the next session's scope
+(Bean lifted the original "out of scope" ruling — rule 20, the dead-api allowlist, and C14 are back
+in scope): 82 detector-shaped scripts with zero gate reach (the `surveys/` census triad,
+`motion-qa`/`migrate-core-blocks` live probes, 6 commit-hook-only visual-diff helpers);
+`check-enum-control-shape.py` failing ungated with 6 new violations and no repair script;
+`survey-wrapper-capability.js`'s 76 orphaned-capability findings and `survey-colour-coverage.py`'s 41
+uncontrolled-colour findings, both real client-facing gaps never enumerated by any gate; 1 broken
+script (`motion-qa/probe-fr-38-35-timeline-progress.mjs`) and 6 unreferenced scripts from
+`audit-script-reachability.py`. Full account, per-shape evidence and the complete Wave-A tables:
+`.claude/plans/2026-08-30-uniformity-sweep-execution.md`.
+
 ## D916 [ROUTINE] — Waves 6+7 deployed to sandybrown + live-verified; two deploy-gate findings baselined as predicted R-31-14 consequences
 
 **2026-09-02.** Deploy+verify session for D915's work (already committed at `e6acd82d8`, pushed).

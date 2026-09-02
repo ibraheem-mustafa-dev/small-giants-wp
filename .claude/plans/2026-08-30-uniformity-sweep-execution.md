@@ -2,12 +2,42 @@
 doc_type: plan
 title: The uniformity sweep — execution plan (main track)
 date: 2026-08-30
-status: READY TO RUN
+status: IN PROGRESS — 9 of 10 shapes shipped 2026-09-02 (11 commits, pushed to origin); continuing next session with expanded scope
 owner: client-controls track
 note: The media-element rework is a SEPARATE track. This is the original goal.
 ---
 
 # The uniformity sweep — execution
+
+## ▶ STATUS (2026-09-02) — read this before anything below
+
+**Shipped, on `main`, pushed:** S10, S1 (2 of its 3 items — see below), S6, S3 (partial — see below),
+S7 (pilot only), S4 (blockers only — see below), rules 29/33/35, S8, S5 (3 of 280 findings). Full
+account, evidence and the two real codemod bugs caught: **D917** in `.claude/decisions.md`.
+
+**Per-shape carry-forward, so the next session doesn't re-discover what this one already found:**
+
+| Shape | What shipped | What's still open |
+|---|---|---|
+| S1 | Comment-strip fix + rule 18 fix | Rule 21's "4 artefacts" investigated, found NOT simple artefacts — both base+`*Unit` attrs genuinely uncontrolled; deciding add-control vs delete-as-dead is a real architectural call, left open |
+| S3 | `ShapeDividersPanel` on site-footer (12 findings) | `LayoutPanel` NOT mounted — site-footer has no `layout` attr declared (schema gap) and hero already writes `gridTemplateColumns` via its own control (collision). Needs a design decision, not a mechanical mount |
+| S4 | Both blockers fixed + self-tested | The actual batch migration (15 remaining properties, ~23 block-touches) never run — only feeds the cloning pipeline, not `gate:fast`; each property needs its own edit.js/render.php verification |
+| S7 | `team-member` pilot converted | **Needs Bean's review before the other 14 candidates get scripted** |
+| S5 | 3 of 280 findings closed | `fix.js`'s own survey: only 25 of 178 non-conformant rows are auto-fixable at all (14%); the other 153 are `REFUSED` with named reasons, overwhelmingly deferred text-gradient work. Two real bugs in `fix.js` hand-fixed, NOT fixed in the codemod itself (see D917) — do not trust its output blind on a future run without re-verifying `gate:fast` |
+
+**⛔ The "out of scope" ruling below (rule 20, the dead-api-calls allowlist, C14 beyond a quick
+remainder) is LIFTED as of 2026-09-02 — Bean asked for all three to be worked next session.** Read
+that section for context on WHY they were deprioritised first, not as a current constraint.
+
+**Also never actioned, carried forward from Wave A's enumeration (§"THE FULL RANGE" below, and the
+Wave A tables referenced there):** 82 detector-shaped scripts with zero gate reach; a real ungated
+failure in `check-enum-control-shape.py` (6 new violations, no repair script); two real un-enumerated
+client-facing gaps (`survey-wrapper-capability.js` 76 orphaned-capability findings,
+`survey-colour-coverage.py` 41 uncontrolled-colour findings); 1 broken script + 6 unreferenced
+scripts from `audit-script-cull-candidates.py`/`audit-script-reachability.py`; S9 (C14 splits,
+12 candidates to confirm against Bean's colour-panel exception).
+
+---
 
 ## Bean's brief, restated
 
@@ -42,6 +72,13 @@ For each shape: **does a script exist?** → run it. **No?** → fingerprint it,
 ---
 
 ## Ground truth already measured this session (do NOT re-run these surveys)
+
+⛔ **STALE as of 2026-09-02 — this table is the 2026-08-30 snapshot, kept for its reasoning, not its
+numbers.** A fresh Wave A re-enumeration the same day already found real drift on several rows below
+(28 `inspector-scan` rules not 24, 321 dead-api-calls entries not 305, 32 migratable tier properties
+not 27) — see D917 in `.claude/decisions.md` and the STATUS section at the top of this file. Re-run
+every row before trusting it for new work; this table earns its keep only as a record of what
+"measured, not assumed" looked like on the day it was written.
 
 | Source | Reading |
 |---|---|
@@ -333,13 +370,18 @@ attempt to reach 0 on every rule.
 
 ## ✅ BEAN'S RULINGS — 2026-08-30. All five settled; both waves can now run unattended.
 
+⛔ **Rulings 2 and 3 below (rule 20, the dead-api-calls allowlist) were REVERSED 2026-09-02 — Bean
+asked for both back in scope next session, alongside C14 in full.** Kept verbatim below as the
+historical reasoning for why they were deprioritised FIRST (still valid — they serve neither goal
+directly), not as a current constraint. Do not re-park them without asking again.
+
 | # | Question | Ruling |
 |---|---|---|
-| 1 | **C14 tab-splits** | **Conditional: do it if quick, otherwise not essential.** See the nuance below — it narrows the list. |
-| 2 | **Rule 20** (23 findings) | ⛔ **OUT OF SCOPE this round.** |
-| 3 | **`dead-api-calls` allowlist** (305) | ⛔ **PARKED.** The biggest number available, and it serves neither goal. |
-| 4 | **ToolsPanel pilot** | ✅ **`team-member` "Card Settings"** (`edit.js:423`). Convert ONE, Bean looks, then script the other 14. |
-| 5 | **Decorative attribute name** | ✅ **`{element}Decorative`** (no "Is") — taken as settled, consistent with the "split media" naming ruling. Not re-asked. |
+| 1 | **C14 tab-splits** | **Conditional: do it if quick, otherwise not essential** (2026-08-30). **REVERSED 2026-09-02 — full scope, no longer conditional on being quick.** See the nuance below — it still narrows the list even at full scope. |
+| 2 | **Rule 20** (23 findings) | ⛔ ~~OUT OF SCOPE this round~~ (2026-08-30). **IN SCOPE 2026-09-02.** |
+| 3 | **`dead-api-calls` allowlist** (321 as of 2026-09-02, was 305) | ⛔ ~~PARKED~~ (2026-08-30). **IN SCOPE 2026-09-02** — spot-check against real WP/WC function names before extending it (per S2's original caveat below). |
+| 4 | **ToolsPanel pilot** | ✅ **`team-member` "Card Settings"** (`edit.js:423`). Shipped 2026-09-02 — **awaiting Bean's review before scripting the other 14.** |
+| 5 | **Decorative attribute name** | ✅ **`{element}Decorative`** (no "Is") — settled, shipped 2026-09-02 (`sgs/media`; `sgs/timeline` already matched). |
 
 ### ⭐ Bean's C14 nuance — this SHRINKS the candidate list, do not skip it
 
@@ -364,13 +406,14 @@ Bean just exempted. **Re-triage against this rule BEFORE fixing anything**, then
 **Execution rule:** timebox it. If the genuine remainder is a fast mechanical move, do it in Wave B.
 If it needs design or per-block judgement, **drop it** — Bean has said it is not essential.
 
-### Net scope after the rulings
+### Net scope after the rulings (2026-08-30 original; see the STATUS section at the top for what actually shipped)
 
 **IN (goal-serving):** S10 line-key · S1 detector fixes · S4 tier migration (after its two blockers)
 · S3 panel mounts · S5 colour + ratchet · rules 29/33/35 · S6 `borderRow` · S8 decorative ·
 S7 ToolsPanel pilot only.
 
-**OUT:** rule 20 (23) · the 305-entry allowlist · C14 beyond the quick remainder.
+**OUT (2026-08-30 only — REVERSED 2026-09-02, all three now in scope):** rule 20 (23) · the
+dead-api-calls allowlist · C14 beyond the quick remainder.
 
 **Still unenumerated and therefore unscoped:** everything Wave A surfaces from the 611 runnable
 scripts. ⛔ Read the GENERATED tooling catalogue in `.claude/dev-setup.md` (§"Tooling catalogue",
