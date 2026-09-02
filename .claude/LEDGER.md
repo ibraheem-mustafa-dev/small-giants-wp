@@ -81,9 +81,25 @@ Proposal: a required `disposition` field (`by-design` / `detector-limitation` / 
 own rule already says a false positive is a DETECTOR BUG, never baseline fodder — so any
 `detector-limitation` found in that pass is already a violation.
 
-**Validated remaining backlog:** 01 (57) · 03 (13) · 07 (1) · 18 (15) · 21 (54 real) · 22 (1) ·
-31 (277, blocked on D754's capability-grant design) · 34 (7, informational only) · 37 (71) ·
-border-migration (4 blocks). **Closed: dead-api, rules 23 and 26.**
+**Validated remaining backlog:** 01 (57) · 03 (13) · 18 (15) · 21 (14 new, untriaged — the
+originally-listed 54 real + residual-FP findings are CLOSED, see below) · 31 (277, blocked on
+D754's capability-grant design) · 37 (71) · border-migration (3 blocks: card-grid, multi-button,
+trust-bar — `sgs/media` closed, see below). **Closed: dead-api, rules 23 and 26, 07, 22, 34,
+border-migration's `sgs/media` item.**
+
+## ▶ 2026-09-02 (part 3) — decide-first batch closed (D919); a real hero render bug caught before it ever shipped
+
+Closed all four "decide first" items from part 2's menu, plus a bonus: extending the cloning
+pipeline's hero split-media routing to Tablet tier + video/SVG media types surfaced and fixed a
+real bug (video/SVG content was being stored but never rendered — see D919 for the full account,
+this is a pointer not a duplicate). Five commits: `79c910d2f` (07, site-header ShadowControl),
+`dcd9940d2` (hero dead-attr deletion), `2cc9cbc56` (22 + border-migration + 34 + hero
+Tablet/video/SVG routing + splitMediaType bug fix + 2 unrelated classification gaps), `b7b420df9`
+(a second dead-attribute source, affecting `sgs/media` too), `47e5a9cbb` (6-post live migration +
+full deploy). Independently re-verified via a 3-rater `/qc-council` pass — SAFE / one test-gap
+(closed same session) / PRODUCTION-VERIFIED. Also fixed: a canary `wp-login.php` LiteSpeed
+cache-cookie bug that silently blocked every automated Playwright login (WP-CLI option flip, no
+code change). Full account: D919.
 
 ⛔ **Next session's working shape changed, at Bean's instruction: dispatch each fix the MOMENT he
 decides it and keep discussing while the agent works — do NOT batch every fix to the end** (this
@@ -210,7 +226,11 @@ baselining two real deploy-gate findings — see below) and live-verified in the
   on both the published page AND the editor canvas (the accepted R-31-14 consequence, confirmed in
   practice not just theory); media-type tabs (Image/Video/SVG, all 3 device tiers) confirmed
   reachable with no image uploaded (closes the `splitImage?.url`-gating bug by construction);
-  overlay colour/opacity/blend-mode controls present and interactive.
+  overlay colour/opacity/blend-mode controls present and interactive. ⚠ **Superseded 2026-09-02
+  (D919):** post 2334 (along with 5 other live posts, including the homepage 2742) has since been
+  migrated onto the decomposed `splitImageId`/`Url`/`Alt` shape and no longer carries the old
+  composite attrs at all — this bullet describes the PRE-migration state, kept for narrative
+  history, not the current live state.
 - **`container`'s `BackgroundPanel`** (page 2242 "Tier fixture — maxWidth", `cta-section` sampled
   as representative of the 7 non-hero consumers sharing `class-sgs-container-wrapper.php`) —
   Image tab confirmed pixel-identical: pre-existing overlay opacity (30) and colour value
@@ -233,8 +253,10 @@ DIRECT, predicted consequence of the R-31-14 strict-no-fallback decision, not ne
 `oldshape-audit` flagged post 2334's stranded `splitSvgMobile` (WP will strip it on next editor
 save — non-lossy, the atom system never read it); `audit-block-file-consistency` flagged 5
 `sgs/hero` orphan-attr findings — `splitImage`/`splitImageMobile` (deliberately kept declared for
-the cloning pipeline per D915) and `splitMediaObjectPosition`(+Tablet/Mobile) (a dynamic-key false
-positive — genuinely live via `SGS_Media_Element::style()` server-side and
+the cloning pipeline per D915 — ⚠ **superseded 2026-09-02, D919: the pipeline's routing was
+re-anchored off these two onto the real `splitMediaType` attrs, and they are now DELETED from
+block.json, not baselined-debt any more**) and `splitMediaObjectPosition`(+Tablet/Mobile) (a
+dynamic-key false positive — genuinely live via `SGS_Media_Element::style()` server-side and
 `HeroSplitMediaPanelLayout`'s `prefix="splitMedia"` control client-side, matching this project's
 existing dynamic-key baseline convention). Both baselined with full evidence in
 `oldshape-audit-baseline.json` / `block-file-consistency-baseline.json`, committed at `59f86b451`.

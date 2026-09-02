@@ -1,3 +1,58 @@
+## D919 [ROUTINE] — hero split-media cloning routing extended to Tablet+video/SVG; D915's "kept declared" composite anchor attrs superseded, deleted; a real render bug caught and fixed before it ever shipped to a client
+
+**2026-09-02.** Follow-on to D915/D916. While closing detector-findings item 34 (`sgs/hero`'s
+`splitImage`/`splitImageMobile` flagged dead-on-render), extended the cloning pipeline's
+scalar-media art-direction routing (`extraction.py` Branch A) from image-only/2-tier to all three
+device tiers (desktop/tablet/mobile) and all three media types (image/video/SVG) — the BLOCK side
+already had full Tablet + video/SVG attribute support; only the converter's routing had not caught
+up.
+
+⛔ **A real bug was caught and fixed during this work, before any client ever hit it.** The
+video/SVG lift stored media content correctly but never set the matching
+`splitMediaType`/`Tablet`/`Mobile` selector attribute. Since that attribute's schema default is
+`"image"` and `render.php`'s type resolver is strict (no image URL → nothing renders), a hero
+cloned from a draft with a video or SVG in its split slot would have silently rendered an empty
+split-media area — content stored, never painted. Fixed by re-anchoring the DB `role='scalar-media'`
+classification off D915's `splitImage`/`splitImageMobile` composite attrs (dead on render, kept
+declared only as the routing anchor) onto the real, rendered `splitMediaType`/`Tablet`/`Mobile`
+attrs, and writing the matching type value in the same lift pass that writes the content — so type
+and content can no longer drift apart. **This supersedes D915's "kept declared... because the
+CLONING PIPELINE's scalar-media role assignment... still needs them" line** — the mechanism no
+longer needs them, so `splitImage`/`splitImageMobile` are DELETED from `hero/block.json`
+(commit `dcd9940d2`). D916's `audit-block-file-consistency` baseline entry for these two attrs is
+now moot (resolved, not accepted debt) — updated in the same pass.
+
+A second, unrelated dead-attribute source was found and fixed the same day: the shared
+`sgs_register_media_element_attrs()` filter (`includes/media-element-attrs-register.php`)
+independently re-derived the same composite `Image`/`Video`/`Svg` bases from `supports.sgs.
+mediaElements`'s `"source"` atom declaration — a pre-decomposition convention — so it kept
+phantom-registering `splitImage`/`splitImageMobile` in WordPress's LIVE schema even after the
+block.json declaration was deleted. This affected `sgs/media` too, not just hero (same atom,
+silently phantom-registering the same dead bases). Fixed at the source
+(`MEDIA_BASES.source` in `MediaElementControls.js`, the single JS source of truth both the JS atom
+registry and the generated PHP mirror derive from) — commit `b7b420df9`.
+
+6 live canary posts (including the homepage, 2742) still hand-authored the old composite shape from
+before this fix; migrated onto the decomposed `splitImageId`/`Url`/`Alt` (+Tablet/Mobile) shape via
+a new DECOMPOSE mode added to the existing oldshape-mappings migration tool, then the whole session's
+work deployed and live-verified (commit `47e5a9cbb`).
+
+**Independently re-verified via a 3-rater QC council (fresh evidence, not trusting prior reports):**
+consumer safety of the anchor rename (SAFE — only sgs/hero ever used this mechanism, live DB has
+exactly one `role='scalar-media'` row matching the new anchor, every consumer function traced
+generic with zero hero-specific hardcoding); splitMediaType fix completeness (code correct by
+tracing all 9 tier×type combinations, but 2 test gaps found — tablet-svg and mobile-svg untested,
+closed same session); production migration (independently re-fetched all 6 posts from scratch,
+confirmed non-lossy, live schema clean, homepage renders with zero console errors).
+
+Also fixed the same session, surfaced during production verification: the canary's `wp-login.php`
+was being served through LiteSpeed's page cache (a real LSCache misconfiguration —
+`cache-page_login` was enabled, which must never happen for a login page), silently blocking every
+automated Playwright login. Root-caused via raw header inspection, fixed via one WP-CLI option
+flip + cache purge, proven with a real end-to-end login. Unrelated to the cloning-pipeline work but
+found in the same session and worth recording since it would have silently blocked every future
+QC session needing editor access.
+
 ## D918 [INCIDENT] — `scattered-element-controls.js` deleted: a prototype detector's flat element-grouping model produced ~600 false-positive C14 findings by ignoring THE PLACEMENT RULE's two-tier structure
 
 **2026-09-02.** Mid-uniformity-sweep, a full-population C14 report (613 attribute rows, 68
