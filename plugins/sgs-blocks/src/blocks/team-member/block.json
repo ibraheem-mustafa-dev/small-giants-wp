@@ -173,6 +173,11 @@
 		"photoMobile": {
 			"type": "object"
 		},
+		"photoDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "Marks the photo as purely decorative (empty alt + aria-hidden) — for edge cases such as a placeholder silhouette graphic. Most team photos identify the person and should keep their alt text."
+		},
 		"name": {
 			"type": "string",
 			"default": "",

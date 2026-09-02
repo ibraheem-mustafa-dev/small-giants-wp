@@ -39,6 +39,8 @@ import {
 	ToggleControl,
 	RadioControl,
 	Spinner,
+	ToolsPanel,
+	ToolsPanelItem,
 } from '@wordpress/components';
 import { useRef } from '@wordpress/element';
 import SgsColourPanel from '../../components/SgsColourPanel';
@@ -111,6 +113,7 @@ function GalleryThumbnail( {
 	onDragStart,
 	onDragOver,
 	onDrop,
+	onToggleDecorative,
 } ) {
 	return (
 		<div
@@ -137,6 +140,21 @@ function GalleryThumbnail( {
 			>
 				&times;
 			</button>
+			{ /* Item 18 (2026-09-02, decorative-image-aria) — per-item decorative
+			     toggle. This is a REPEATER (mediaItems array), so the flag lives
+			     on the item object (`decorative`), not as a top-level block
+			     attribute. When true, render.php blanks this item's alt text and
+			     adds aria-hidden="true" so the image is hidden from assistive
+			     tech (WCAG 2.1 AA 1.1.1). This block has no per-item alt-text
+			     control in the editor to disable (alt is set via the WordPress
+			     Media Library, not an inline field here). */ }
+			<ToggleControl
+				className="sgs-gallery-editor__thumb-decorative"
+				label={ __( 'Decorative — hide from screen readers', 'sgs-blocks' ) }
+				checked={ !! image.decorative }
+				onChange={ ( value ) => onToggleDecorative( index, value ) }
+				__nextHasNoMarginBottom
+			/>
 		</div>
 	);
 }
@@ -247,6 +265,21 @@ export default function Edit( { attributes, setAttributes } ) {
 	 */
 	const removeImage = ( index ) => {
 		const next = items.filter( ( _, i ) => i !== index );
+		setAttributes( { mediaItems: next } );
+	};
+
+	/**
+	 * Toggle the per-item decorative flag (item 18, decorative-image-aria).
+	 * Patches only the targeted item in the mediaItems repeater — the flag is
+	 * a per-item field, not a top-level block attribute.
+	 *
+	 * @param {number}  index      Index of the item to update.
+	 * @param {boolean} decorative New decorative value.
+	 */
+	const toggleItemDecorative = ( index, decorative ) => {
+		const next = items.map( ( item, i ) =>
+			i === index ? { ...item, decorative } : item
+		);
 		setAttributes( { mediaItems: next } );
 	};
 
@@ -434,6 +467,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									onDragStart={ handleDragStart }
 									onDragOver={ () => {} }
 									onDrop={ handleDrop }
+									onToggleDecorative={ toggleItemDecorative }
 								/>
 							) ) }
 						</div>
@@ -634,42 +668,78 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /* Panel 6: Carousel (conditional — only when layout = carousel) */ }
 				{ 'carousel' === layout && (
-					<PanelBody
-						title={ __( 'Carousel', 'sgs-blocks' ) }
-						initialOpen={ false }
+					<ToolsPanel
+						label={ __( 'Carousel', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								carouselShowArrows: true,
+								carouselShowDots: true,
+								carouselAutoplay: false,
+								carouselSpeed: 5000,
+								dragToScroll: false,
+								dragMomentum: true,
+								loopCarousel: false,
+							} )
+						}
 					>
-						<ToggleControl
+						<ToolsPanelItem
 							label={ __( 'Show arrows', 'sgs-blocks' ) }
-							checked={ carouselShowArrows }
-							onChange={ set( 'carouselShowArrows' ) }
-							__nextHasNoMarginBottom
-						/>
-						<ToggleControl
-							label={ __( 'Show dots', 'sgs-blocks' ) }
-							checked={ carouselShowDots }
-							onChange={ set( 'carouselShowDots' ) }
-							__nextHasNoMarginBottom
-						/>
-						<ToggleControl
-							label={ __( 'Autoplay', 'sgs-blocks' ) }
-							checked={ carouselAutoplay }
-							onChange={ set( 'carouselAutoplay' ) }
-							__nextHasNoMarginBottom
-						/>
-						{ carouselAutoplay && (
-							<RangeControl
-								label={ __(
-									'Autoplay speed (ms)',
-									'sgs-blocks'
-								) }
-								value={ carouselSpeed }
-								onChange={ set( 'carouselSpeed' ) }
-								min={ 1000 }
-								max={ 10000 }
-								step={ 500 }
+							hasValue={ () => carouselShowArrows !== true }
+							onDeselect={ () => setAttributes( { carouselShowArrows: true } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Show arrows', 'sgs-blocks' ) }
+								checked={ carouselShowArrows }
+								onChange={ set( 'carouselShowArrows' ) }
 								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Show dots', 'sgs-blocks' ) }
+							hasValue={ () => carouselShowDots !== true }
+							onDeselect={ () => setAttributes( { carouselShowDots: true } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Show dots', 'sgs-blocks' ) }
+								checked={ carouselShowDots }
+								onChange={ set( 'carouselShowDots' ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Autoplay', 'sgs-blocks' ) }
+							hasValue={ () => carouselAutoplay !== false }
+							onDeselect={ () => setAttributes( { carouselAutoplay: false } ) }
+						>
+							<ToggleControl
+								label={ __( 'Autoplay', 'sgs-blocks' ) }
+								checked={ carouselAutoplay }
+								onChange={ set( 'carouselAutoplay' ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						{ carouselAutoplay && (
+							<ToolsPanelItem
+								label={ __( 'Autoplay speed (ms)', 'sgs-blocks' ) }
+								hasValue={ () => carouselSpeed !== 5000 }
+								onDeselect={ () => setAttributes( { carouselSpeed: 5000 } ) }
+							>
+								<RangeControl
+									label={ __(
+										'Autoplay speed (ms)',
+										'sgs-blocks'
+									) }
+									value={ carouselSpeed }
+									onChange={ set( 'carouselSpeed' ) }
+									min={ 1000 }
+									max={ 10000 }
+									step={ 500 }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
 						) }
 						{ /*
 						 * Draggable + Inertia roster opt-in (Spec 38 FR-38-13).
@@ -678,30 +748,42 @@ export default function Edit( { attributes, setAttributes } ) {
 						 * keeps its native scroll either way, so this never
 						 * needs its own "touch" caveat in the help text.
 						 */ }
-						<ToggleControl
-							label={ __(
-								'Drag to scroll (desktop)',
-								'sgs-blocks'
-							) }
-							checked={ dragToScroll }
-							onChange={ set( 'dragToScroll' ) }
-							help={ __(
-								'Lets visitors click and drag with a mouse to scroll the carousel, on top of the usual arrows, dots, swipe and scrollbar.',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-						/>
-						{ dragToScroll && (
+						<ToolsPanelItem
+							label={ __( 'Drag to scroll (desktop)', 'sgs-blocks' ) }
+							hasValue={ () => dragToScroll !== false }
+							onDeselect={ () => setAttributes( { dragToScroll: false } ) }
+						>
 							<ToggleControl
-								label={ __( 'Momentum', 'sgs-blocks' ) }
-								checked={ dragMomentum }
-								onChange={ set( 'dragMomentum' ) }
+								label={ __(
+									'Drag to scroll (desktop)',
+									'sgs-blocks'
+								) }
+								checked={ dragToScroll }
+								onChange={ set( 'dragToScroll' ) }
 								help={ __(
-									'Carousel keeps coasting briefly after the visitor releases the drag, like a real scroll flick.',
+									'Lets visitors click and drag with a mouse to scroll the carousel, on top of the usual arrows, dots, swipe and scrollbar.',
 									'sgs-blocks'
 								) }
 								__nextHasNoMarginBottom
 							/>
+						</ToolsPanelItem>
+						{ dragToScroll && (
+							<ToolsPanelItem
+								label={ __( 'Momentum', 'sgs-blocks' ) }
+								hasValue={ () => dragMomentum !== true }
+								onDeselect={ () => setAttributes( { dragMomentum: true } ) }
+							>
+								<ToggleControl
+									label={ __( 'Momentum', 'sgs-blocks' ) }
+									checked={ dragMomentum }
+									onChange={ set( 'dragMomentum' ) }
+									help={ __(
+										'Carousel keeps coasting briefly after the visitor releases the drag, like a real scroll flick.',
+										'sgs-blocks'
+									) }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
 						) }
 						{ /*
 						 * Infinite loop (Spec 38 §11 loop FR). Deliberately its
@@ -711,17 +793,23 @@ export default function Edit( { attributes, setAttributes } ) {
 						 * (native swipe/scrollbar/keyboard still loop with
 						 * drag off). Default off, same as drag.
 						 */ }
-						<ToggleControl
+						<ToolsPanelItem
 							label={ __( 'Loop', 'sgs-blocks' ) }
-							checked={ loopCarousel }
-							onChange={ set( 'loopCarousel' ) }
-							help={ __(
-								'Scrolling or dragging past the last image continues into the first, and back again — never a dead end.',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-						/>
-					</PanelBody>
+							hasValue={ () => loopCarousel !== false }
+							onDeselect={ () => setAttributes( { loopCarousel: false } ) }
+						>
+							<ToggleControl
+								label={ __( 'Loop', 'sgs-blocks' ) }
+								checked={ loopCarousel }
+								onChange={ set( 'loopCarousel' ) }
+								help={ __(
+									'Scrolling or dragging past the last image continues into the first, and back again — never a dead end.',
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 				) }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl

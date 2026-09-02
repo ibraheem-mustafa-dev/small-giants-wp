@@ -293,6 +293,11 @@
 			"type": "boolean",
 			"default": true
 		},
+		"imageDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "Block-level (not per-post): every post's featured image in this grid is dynamically pulled from WordPress, so a per-item toggle would be meaningless as the query result changes. When true, each card's featured image renders with an empty alt attribute and aria-hidden, so screen readers skip it entirely instead of announcing the media library's per-post alt text."
+		},
 		"showTitle": {
 			"type": "boolean",
 			"default": true

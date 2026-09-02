@@ -48,6 +48,15 @@ $photo        = $attributes['photo'] ?? null;
 $photo_tablet = $attributes['photoTablet'] ?? null;
 $photo_mobile = $attributes['photoMobile'] ?? null;
 
+// Decorative photo (WCAG 2.1 AA 1.1.1) — an explicit editorial "this picture
+// carries no information", for the edge case of a placeholder/silhouette
+// graphic before a real photo is uploaded. A team photo is almost always
+// informative content (it identifies the person), so this defaults false;
+// when true it renders with an empty alt AND aria-hidden on the photo
+// wrapper, so a screen reader skips it entirely. Same shape as
+// sgs/timeline's milestoneMediaDecorative (render.php:152).
+$photo_decorative = ! empty( $attributes['photoDecorative'] );
+
 // Schema.org needs a plain image URL (desktop tier only).
 $schema_image_url = ! empty( $photo['url'] ) ? $photo['url'] : '';
 
@@ -74,7 +83,7 @@ $sgs_css_safe_value = static function ( $value ) {
 // ---------------------------------------------------------------------------
 // 3. Scalar content / layout attributes.
 // ---------------------------------------------------------------------------
-$name                = $attributes['name'] ?? '';
+$name = $attributes['name'] ?? '';
 // Name heading level — an out-of-enum stored value is otherwise silently
 // coerced to the block.json default (blockjson-enum-coerces-invalid-to-
 // default), so it is validated here too (mirrors sgs/icon-list).
@@ -82,23 +91,23 @@ $allowed_heading_levels = array( 'h2', 'h3', 'h4', 'h5', 'h6', 'p' );
 $heading_level          = in_array( $attributes['headingLevel'] ?? '', $allowed_heading_levels, true )
 	? $attributes['headingLevel']
 	: 'h3';
-$sgs_role            = $attributes['role'] ?? '';
-$bio                 = $attributes['bio'] ?? '';
-$name_colour         = $attributes['nameColour'] ?? '';
-$role_colour         = $attributes['roleColour'] ?? 'text-muted';
-$card_style          = $attributes['cardStyle'] ?? 'elevated';
-$photo_shape         = $attributes['photoShape'] ?? 'circle';
-$hover_scale         = $attributes['scaleHover'] ?? '';
-$hover_shadow        = $attributes['shadowHover'] ?? '';
-$hover_shadow_colour = $attributes['shadowHoverColour'] ?? '';
-$card_shadow         = $attributes['cardShadow'] ?? '';
-$card_shadow_colour  = $attributes['cardShadowColour'] ?? '';
-$hover_img_zoom      = (bool) ( $attributes['imageZoomHover'] ?? false );
-$hover_grayscale     = (bool) ( $attributes['grayscaleHover'] ?? false );
-$hover_overlay       = (bool) ( $attributes['overlayHover'] ?? false );
-$display_mode        = $attributes['displayMode'] ?? 'full';
-$is_compact          = 'compact' === $display_mode;
-$social_links        = is_array( $attributes['socialLinks'] ?? null ) ? $attributes['socialLinks'] : array();
+$sgs_role               = $attributes['role'] ?? '';
+$bio                    = $attributes['bio'] ?? '';
+$name_colour            = $attributes['nameColour'] ?? '';
+$role_colour            = $attributes['roleColour'] ?? 'text-muted';
+$card_style             = $attributes['cardStyle'] ?? 'elevated';
+$photo_shape            = $attributes['photoShape'] ?? 'circle';
+$hover_scale            = $attributes['scaleHover'] ?? '';
+$hover_shadow           = $attributes['shadowHover'] ?? '';
+$hover_shadow_colour    = $attributes['shadowHoverColour'] ?? '';
+$card_shadow            = $attributes['cardShadow'] ?? '';
+$card_shadow_colour     = $attributes['cardShadowColour'] ?? '';
+$hover_img_zoom         = (bool) ( $attributes['imageZoomHover'] ?? false );
+$hover_grayscale        = (bool) ( $attributes['grayscaleHover'] ?? false );
+$hover_overlay          = (bool) ( $attributes['overlayHover'] ?? false );
+$display_mode           = $attributes['displayMode'] ?? 'full';
+$is_compact             = 'compact' === $display_mode;
+$social_links           = is_array( $attributes['socialLinks'] ?? null ) ? $attributes['socialLinks'] : array();
 
 // ---------------------------------------------------------------------------
 // 4. Root-level box/visual attributes (own visual styling — scoped, not
@@ -242,7 +251,9 @@ $photo_html = '';
 $photo_img  = '';
 if ( ! empty( $photo['url'] ) ) {
 	$media_for_render = $photo;
-	if ( empty( $media_for_render['alt'] ) ) {
+	if ( $photo_decorative ) {
+		$media_for_render['alt'] = '';
+	} elseif ( empty( $media_for_render['alt'] ) ) {
 		$media_for_render['alt'] = $name;
 	}
 	$photo_base_img = sgs_render_media( $media_for_render, 'sgs/team-member' );
@@ -271,17 +282,29 @@ if ( ! empty( $photo['url'] ) ) {
 
 if ( '' !== $photo_img ) {
 	if ( $hover_overlay && ! $is_compact ) {
-		$photo_html = sprintf(
-			'<div class="sgs-team-member__photo sgs-team-member__photo--%s sgs-team-member__photo--has-overlay" tabindex="0" role="img" aria-label="%s">%s<div class="sgs-team-member__overlay" aria-hidden="true"><div class="sgs-team-member__overlay-bio">%s</div></div></div>',
-			esc_attr( $photo_shape ),
-			esc_attr( $name ),
-			$photo_img,
-			wp_kses_post( $bio )
-		);
+		if ( $photo_decorative ) {
+			// Decorative + overlay: drop role="img"/aria-label (nothing left to
+			// name) and hide the whole photo wrapper from assistive tech instead.
+			$photo_html = sprintf(
+				'<div class="sgs-team-member__photo sgs-team-member__photo--%s sgs-team-member__photo--has-overlay" aria-hidden="true">%s<div class="sgs-team-member__overlay" aria-hidden="true"><div class="sgs-team-member__overlay-bio">%s</div></div></div>',
+				esc_attr( $photo_shape ),
+				$photo_img,
+				wp_kses_post( $bio )
+			);
+		} else {
+			$photo_html = sprintf(
+				'<div class="sgs-team-member__photo sgs-team-member__photo--%s sgs-team-member__photo--has-overlay" tabindex="0" role="img" aria-label="%s">%s<div class="sgs-team-member__overlay" aria-hidden="true"><div class="sgs-team-member__overlay-bio">%s</div></div></div>',
+				esc_attr( $photo_shape ),
+				esc_attr( $name ),
+				$photo_img,
+				wp_kses_post( $bio )
+			);
+		}
 	} else {
 		$photo_html = sprintf(
-			'<div class="sgs-team-member__photo sgs-team-member__photo--%s">%s</div>',
+			'<div class="sgs-team-member__photo sgs-team-member__photo--%s"%s>%s</div>',
 			esc_attr( $photo_shape ),
+			$photo_decorative ? ' aria-hidden="true"' : '',
 			$photo_img
 		);
 	}
@@ -685,10 +708,10 @@ if ( 'none' !== $border_style ) {
 	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
 	// through to the browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt          = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr          = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb          = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl          = '' !== $border_width_left ? $border_width_left : '0';
 		$scoped_css[] = $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
 	}
 

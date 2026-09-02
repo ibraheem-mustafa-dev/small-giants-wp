@@ -19,6 +19,7 @@ import {
 	ProductHandpickPanel,
 } from './components/product-panels';
 import { ShadowControl, TypographyControls, ResponsiveBoxControl, LinkPopoverField, SgsColourPanel, SgsLengthControl, MEDIA_SIZING_RATIO_OPTIONS } from '../../components';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import MediaPicker from '../../components/MediaPicker';
 import CollectionPanel from './components/collection-panel';
 import { colourVar, spacingVar, resolveResponsiveTier } from '../../utils';
@@ -156,6 +157,16 @@ function ItemEditor( { item, index, onChange, onRemove } ) {
 					) }
 				/>
 			</div>
+			<ToggleControl
+				label={ __( 'Decorative — hide from screen readers', 'sgs-blocks' ) }
+				checked={ !! item.decorative }
+				onChange={ ( val ) => update( 'decorative', val ) }
+				help={ __(
+					'Turn on for a purely decorative card image with no informational content — screen readers will skip it entirely (WCAG 1.1.1).',
+					'sgs-blocks'
+				) }
+				__nextHasNoMarginBottom
+			/>
 			<TextControl
 				label={ __( 'Title', 'sgs-blocks' ) }
 				value={ item.title || '' }
@@ -345,6 +356,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					badge: '',
 					badgeVariant: '',
 					link: '',
+					decorative: false,
 				},
 			],
 		} );
@@ -554,95 +566,163 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				) }
 
-				{ /* ── Products panel: visible only in wc-product mode ── */ }
+				{ /* ── Products panel: visible only in wc-product mode.
+					   S7 pilot (2026-09-02, uniformity sweep): converted from a flat
+					   PanelBody to a ToolsPanel. Selection mode is core config
+					   (isShownByDefault); collection/handpick controls and filters
+					   are optional and resettable. */ }
 				{ isWcProductMode && (
-					<PanelBody
-						title={ __( 'Products', 'sgs-blocks' ) }
-						initialOpen={ true }
+					<ToolsPanel
+						label={ __( 'Products', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								productSource: 'collection',
+								productCollection: 'latest',
+								productLimit: 6,
+								productCategories: [],
+								productTags: [],
+								productInStock: true,
+								productOnSale: false,
+								productFeatured: false,
+								productShowLadder: false,
+								productEmptyMessage: '',
+							} )
+						}
 					>
-						<SelectControl
+						<ToolsPanelItem
 							label={ __( 'Selection mode', 'sgs-blocks' ) }
-							value={ productSource || 'collection' }
-							options={ [
-								{ label: __( 'Smart collection', 'sgs-blocks' ), value: 'collection' },
-								{ label: __( 'Hand-pick specific products', 'sgs-blocks' ), value: 'handpick' },
-							] }
-							onChange={ ( val ) => setAttributes( { productSource: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
+							hasValue={ () => ( productSource || 'collection' ) !== 'collection' }
+							onDeselect={ () => setAttributes( { productSource: 'collection' } ) }
+							isShownByDefault
+						>
+							<SelectControl
+								label={ __( 'Selection mode', 'sgs-blocks' ) }
+								value={ productSource || 'collection' }
+								options={ [
+									{ label: __( 'Smart collection', 'sgs-blocks' ), value: 'collection' },
+									{ label: __( 'Hand-pick specific products', 'sgs-blocks' ), value: 'handpick' },
+								] }
+								onChange={ ( val ) => setAttributes( { productSource: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
 
 						{ ( productSource || 'collection' ) === 'collection' && (
 							<>
-								<SelectControl
+								<ToolsPanelItem
 									label={ __( 'Smart collection', 'sgs-blocks' ) }
-									value={ productCollection || 'latest' }
-									options={ PRODUCT_COLLECTION_OPTIONS }
-									onChange={ ( val ) => setAttributes( { productCollection: val } ) }
-									help={ __( 'One-click preset ordering for your product grid.', 'sgs-blocks' ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-								<RangeControl
+									hasValue={ () => ( productCollection || 'latest' ) !== 'latest' }
+									onDeselect={ () => setAttributes( { productCollection: 'latest' } ) }
+									isShownByDefault
+								>
+									<SelectControl
+										label={ __( 'Smart collection', 'sgs-blocks' ) }
+										value={ productCollection || 'latest' }
+										options={ PRODUCT_COLLECTION_OPTIONS }
+										onChange={ ( val ) => setAttributes( { productCollection: val } ) }
+										help={ __( 'One-click preset ordering for your product grid.', 'sgs-blocks' ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
 									label={ __( 'Number of products', 'sgs-blocks' ) }
-									value={ productLimit || 6 }
-									onChange={ ( val ) => setAttributes( { productLimit: val } ) }
-									min={ 1 }
-									max={ 24 }
-									help={ __( 'Maximum 24 products.', 'sgs-blocks' ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-								<p style={ { margin: '12px 0 4px', fontWeight: 600, fontSize: 12 } }>
-									{ __( 'Filters', 'sgs-blocks' ) }
-								</p>
-								<ProductTaxonomyChecklist
-									taxonomy="product_cat"
+									hasValue={ () => ( productLimit || 6 ) !== 6 }
+									onDeselect={ () => setAttributes( { productLimit: 6 } ) }
+									isShownByDefault
+								>
+									<RangeControl
+										label={ __( 'Number of products', 'sgs-blocks' ) }
+										value={ productLimit || 6 }
+										onChange={ ( val ) => setAttributes( { productLimit: val } ) }
+										min={ 1 }
+										max={ 24 }
+										help={ __( 'Maximum 24 products.', 'sgs-blocks' ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
 									label={ __( 'Categories', 'sgs-blocks' ) }
-									attributeKey="productCategories"
-									selectedIds={ productCategories || [] }
-									setAttributes={ setAttributes }
-								/>
-								<ProductTaxonomyChecklist
-									taxonomy="product_tag"
+									hasValue={ () => ( productCategories || [] ).length > 0 }
+									onDeselect={ () => setAttributes( { productCategories: [] } ) }
+								>
+									<p style={ { margin: '12px 0 4px', fontWeight: 600, fontSize: 12 } }>
+										{ __( 'Filters', 'sgs-blocks' ) }
+									</p>
+									<ProductTaxonomyChecklist
+										taxonomy="product_cat"
+										label={ __( 'Categories', 'sgs-blocks' ) }
+										attributeKey="productCategories"
+										selectedIds={ productCategories || [] }
+										setAttributes={ setAttributes }
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
 									label={ __( 'Tags', 'sgs-blocks' ) }
-									attributeKey="productTags"
-									selectedIds={ productTags || [] }
-									setAttributes={ setAttributes }
-								/>
-								<SelectControl
+									hasValue={ () => ( productTags || [] ).length > 0 }
+									onDeselect={ () => setAttributes( { productTags: [] } ) }
+								>
+									<ProductTaxonomyChecklist
+										taxonomy="product_tag"
+										label={ __( 'Tags', 'sgs-blocks' ) }
+										attributeKey="productTags"
+										selectedIds={ productTags || [] }
+										setAttributes={ setAttributes }
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
 									label={ __( 'In stock only', 'sgs-blocks' ) }
-									value={ productInStock === false ? 'no' : 'yes' }
-									options={ [
-										{ label: __( 'Yes (recommended)', 'sgs-blocks' ), value: 'yes' },
-										{ label: __( 'No — include out-of-stock', 'sgs-blocks' ), value: 'no' },
-									] }
-									onChange={ ( val ) => setAttributes( { productInStock: val === 'yes' } ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-								<SelectControl
+									hasValue={ () => productInStock !== true }
+									onDeselect={ () => setAttributes( { productInStock: true } ) }
+								>
+									<SelectControl
+										label={ __( 'In stock only', 'sgs-blocks' ) }
+										value={ productInStock === false ? 'no' : 'yes' }
+										options={ [
+											{ label: __( 'Yes (recommended)', 'sgs-blocks' ), value: 'yes' },
+											{ label: __( 'No — include out-of-stock', 'sgs-blocks' ), value: 'no' },
+										] }
+										onChange={ ( val ) => setAttributes( { productInStock: val === 'yes' } ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
 									label={ __( 'On sale only', 'sgs-blocks' ) }
-									value={ productOnSale ? 'yes' : 'no' }
-									options={ [
-										{ label: __( 'No', 'sgs-blocks' ), value: 'no' },
-										{ label: __( 'Yes — sale items only', 'sgs-blocks' ), value: 'yes' },
-									] }
-									onChange={ ( val ) => setAttributes( { productOnSale: val === 'yes' } ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-								<SelectControl
+									hasValue={ () => productOnSale !== false }
+									onDeselect={ () => setAttributes( { productOnSale: false } ) }
+								>
+									<SelectControl
+										label={ __( 'On sale only', 'sgs-blocks' ) }
+										value={ productOnSale ? 'yes' : 'no' }
+										options={ [
+											{ label: __( 'No', 'sgs-blocks' ), value: 'no' },
+											{ label: __( 'Yes — sale items only', 'sgs-blocks' ), value: 'yes' },
+										] }
+										onChange={ ( val ) => setAttributes( { productOnSale: val === 'yes' } ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
 									label={ __( 'Featured only', 'sgs-blocks' ) }
-									value={ productFeatured ? 'yes' : 'no' }
-									options={ [
-										{ label: __( 'No', 'sgs-blocks' ), value: 'no' },
-										{ label: __( 'Yes — featured items only', 'sgs-blocks' ), value: 'yes' },
-									] }
-									onChange={ ( val ) => setAttributes( { productFeatured: val === 'yes' } ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
+									hasValue={ () => productFeatured !== false }
+									onDeselect={ () => setAttributes( { productFeatured: false } ) }
+								>
+									<SelectControl
+										label={ __( 'Featured only', 'sgs-blocks' ) }
+										value={ productFeatured ? 'yes' : 'no' }
+										options={ [
+											{ label: __( 'No', 'sgs-blocks' ), value: 'no' },
+											{ label: __( 'Yes — featured items only', 'sgs-blocks' ), value: 'yes' },
+										] }
+										onChange={ ( val ) => setAttributes( { productFeatured: val === 'yes' } ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
 							</>
 						) }
 
@@ -653,22 +733,34 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) }
 
-						<ToggleControl
+						<ToolsPanelItem
 							label={ __( 'Show price breakdown on cards', 'sgs-blocks' ) }
-							checked={ !! productShowLadder }
-							onChange={ ( val ) => setAttributes( { productShowLadder: val } ) }
-							help={ __( 'Off by default — grids are a browsing context; the ladder does its upsell work on the product page.', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-						/>
-						<TextControl
+							hasValue={ () => !! productShowLadder }
+							onDeselect={ () => setAttributes( { productShowLadder: false } ) }
+						>
+							<ToggleControl
+								label={ __( 'Show price breakdown on cards', 'sgs-blocks' ) }
+								checked={ !! productShowLadder }
+								onChange={ ( val ) => setAttributes( { productShowLadder: val } ) }
+								help={ __( 'Off by default — grids are a browsing context; the ladder does its upsell work on the product page.', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
 							label={ __( 'Empty state message', 'sgs-blocks' ) }
-							value={ productEmptyMessage || '' }
-							onChange={ ( val ) => setAttributes( { productEmptyMessage: val } ) }
-							help={ __( 'Shown when no products match — never a blank region (FR-24-6).', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</PanelBody>
+							hasValue={ () => productEmptyMessage !== '' }
+							onDeselect={ () => setAttributes( { productEmptyMessage: '' } ) }
+						>
+							<TextControl
+								label={ __( 'Empty state message', 'sgs-blocks' ) }
+								value={ productEmptyMessage || '' }
+								onChange={ ( val ) => setAttributes( { productEmptyMessage: val } ) }
+								help={ __( 'Shown when no products match — never a blank region (FR-24-6).', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 				) }
 
 				{ ! isQueryMode && ! isWcProductMode && ! isCptCollectionMode && (

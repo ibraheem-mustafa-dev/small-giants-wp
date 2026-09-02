@@ -209,6 +209,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		thumbnail,
 		thumbnailAlt,
+		thumbnailDecorative,
 		aspectRatio,
 		desktopFramesUrl,
 		desktopFrameCount,
@@ -277,6 +278,28 @@ export default function Edit( { attributes, setAttributes } ) {
 						allowedTypes={ [ 'image' ] }
 						label={ __( 'Select thumbnail image', 'sgs-blocks' ) }
 					/>
+					<ToggleControl
+						label={ __(
+							'Decorative — hide from screen readers',
+							'sgs-blocks'
+						) }
+						checked={ Boolean( thumbnailDecorative ) }
+						onChange={ ( value ) =>
+							setAttributes( { thumbnailDecorative: value } )
+						}
+						help={
+							thumbnailDecorative
+								? __(
+										'Screen readers will skip this thumbnail entirely — use only when it carries no information the sequence itself doesn’t already convey.',
+										'sgs-blocks'
+								  )
+								: __(
+										'Turn on when the thumbnail is decoration rather than information.',
+										'sgs-blocks'
+								  )
+						}
+						__nextHasNoMarginBottom
+					/>
 					{ /* Art direction (2026-08-07). The canvas sequence already
 					     art-directs itself per device (the three frame pipelines
 					     below); this gives the SAME per-device choice to the
@@ -330,14 +353,22 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveControl>
 					<TextControl
 						label={ __( 'Thumbnail alt text', 'sgs-blocks' ) }
-						help={ __(
-							'Describes the sequence for screen readers and no-JS visitors.',
-							'sgs-blocks'
-						) }
+						help={
+							thumbnailDecorative
+								? __(
+										'Disabled — the thumbnail is set to decorative above, so no alt text is rendered.',
+										'sgs-blocks'
+								  )
+								: __(
+										'Describes the sequence for screen readers and no-JS visitors.',
+										'sgs-blocks'
+								  )
+						}
 						value={ thumbnailAlt }
 						onChange={ ( value ) =>
 							setAttributes( { thumbnailAlt: value } )
 						}
+						disabled={ thumbnailDecorative }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

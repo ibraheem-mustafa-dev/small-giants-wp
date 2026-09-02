@@ -74,7 +74,7 @@ import { close } from '@wordpress/icons';
 import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsLengthControl,
 	SgsBorderControl,
 } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
  * Content template: menu + (optional) logo + (optional) CTA. templateLock:false.
@@ -265,11 +265,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			/>
 			{ /* ── Settings tab ─────────────────────────────────────────── */ }
 			<InspectorControls>
+				{ /* Preview drawer open — editor-only state (never serialised), stays
+				   outside ToolsPanel since it doesn't reset with the block's saved attrs. */ }
 				<PanelBody title={ __( 'Drawer', 'sgs-blocks' ) }>
-					{ /* The drawer is closed on the frontend, so the canvas shows a
-					   collapsed strip by default rather than a full-height panel over
-					   the template. This opens it for editing; it is editor-only and
-					   is never saved. */ }
 					<ToggleControl
 						label={ __( 'Preview drawer open', 'sgs-blocks' ) }
 						help={ __( 'Expands the drawer in the editor so you can edit its contents. Affects this editing session only — it is not saved and does not change the site.', 'sgs-blocks' ) }
@@ -277,130 +275,198 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ setPreviewOpen }
 						__nextHasNoMarginBottom
 					/>
+				</PanelBody>
+
+				{ /* S7 pilot (2026-09-02, uniformity sweep): converted from a plain PanelBody
+				   to a ToolsPanel — ariaLabel, drawerRef, and anchor (panel position) are
+				   core block settings and stay always-visible (isShownByDefault); panelSize,
+				   animateFrom, closeStyle, and submenuModel are genuinely optional
+				   style/behaviour embellishments and are hideable/resettable per WP's native
+				   ToolsPanel pattern. */ }
+				<ToolsPanel
+					label={ __( 'Drawer Settings', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							ariaLabel: '',
+							drawerRef: 'sgs-nav-drawer',
+							anchor: {},
+							panelSize: {},
+							animateFrom: 'auto',
+							closeStyle: 'separate-x',
+							submenuModel: 'accordion',
+						} )
+					}
+				>
 					{ /* The dialog's accessible name. A site may run MORE THAN ONE drawer
 					   (that is what Drawer ID is for), and two dialogs both announced as
 					   "Navigation menu" cannot be told apart by a screen reader. */ }
-					<TextControl
+					<ToolsPanelItem
 						label={ __( 'Accessible name', 'sgs-blocks' ) }
-						help={ __( 'How screen readers announce this drawer. Leave blank for “Navigation menu”; give each drawer its own name when a site has more than one.', 'sgs-blocks' ) }
-						value={ ariaLabel }
-						onChange={ ( value ) => setAttributes( { ariaLabel: value } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<TextControl
-						label={ __( 'Drawer ID', 'sgs-blocks' ) }
-						help={ __(
-							'The ID the burger opens (its “Drawer ref”). Leave as the default for a single drawer; give each drawer a unique ID when a site has more than one.',
-							'sgs-blocks'
-						) }
-						value={ drawerRef || '' }
-						onChange={ ( value ) => setAttributes( { drawerRef: value } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
+						hasValue={ () => !! ariaLabel }
+						onDeselect={ () => setAttributes( { ariaLabel: '' } ) }
+						isShownByDefault
+					>
+						<TextControl
+							label={ __( 'Accessible name', 'sgs-blocks' ) }
+							help={ __( 'How screen readers announce this drawer. Leave blank for “Navigation menu”; give each drawer its own name when a site has more than one.', 'sgs-blocks' ) }
+							value={ ariaLabel }
+							onChange={ ( value ) => setAttributes( { ariaLabel: value } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
 
-					<ResponsiveControl label={ __( 'Panel position', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => (
-							<ToggleGroupControl
-								hideLabelFromVision
-								label={ __( 'Panel position', 'sgs-blocks' ) }
-								help={ __(
-									'Full screen is the default everywhere. Header, corner and centred are desktop-style variants — set a different position per device, e.g. a corner panel on desktop that becomes full screen on mobile.',
-									'sgs-blocks'
-								) }
-								value={ anchor?.[ breakpoint ] || 'full-screen' }
-								onChange={ ( value ) =>
-									setAttributes( {
-										anchor: { ...anchor, [ breakpoint ]: value || 'full-screen' },
-									} )
-								}
-								isBlock
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							>
-								<ToggleGroupControlOption value="full-screen" label={ __( 'Full screen', 'sgs-blocks' ) } />
-								<ToggleGroupControlOption value="header" label={ __( 'Below header', 'sgs-blocks' ) } />
-								<ToggleGroupControlOption value="trigger" label={ __( 'Corner panel', 'sgs-blocks' ) } />
-								<ToggleGroupControlOption value="centred" label={ __( 'Centred card', 'sgs-blocks' ) } />
-							</ToggleGroupControl>
-						) }
-					</ResponsiveControl>
+					<ToolsPanelItem
+						label={ __( 'Drawer ID', 'sgs-blocks' ) }
+						hasValue={ () => ( drawerRef || 'sgs-nav-drawer' ) !== 'sgs-nav-drawer' }
+						onDeselect={ () => setAttributes( { drawerRef: 'sgs-nav-drawer' } ) }
+						isShownByDefault
+					>
+						<TextControl
+							label={ __( 'Drawer ID', 'sgs-blocks' ) }
+							help={ __(
+								'The ID the burger opens (its “Drawer ref”). Leave as the default for a single drawer; give each drawer a unique ID when a site has more than one.',
+								'sgs-blocks'
+							) }
+							value={ drawerRef || '' }
+							onChange={ ( value ) => setAttributes( { drawerRef: value } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Panel position', 'sgs-blocks' ) }
+						hasValue={ () => !! anchor && Object.keys( anchor ).length > 0 }
+						onDeselect={ () => setAttributes( { anchor: {} } ) }
+						isShownByDefault
+					>
+						<ResponsiveControl label={ __( 'Panel position', 'sgs-blocks' ) }>
+							{ ( breakpoint ) => (
+								<ToggleGroupControl
+									hideLabelFromVision
+									label={ __( 'Panel position', 'sgs-blocks' ) }
+									help={ __(
+										'Full screen is the default everywhere. Header, corner and centred are desktop-style variants — set a different position per device, e.g. a corner panel on desktop that becomes full screen on mobile.',
+										'sgs-blocks'
+									) }
+									value={ anchor?.[ breakpoint ] || 'full-screen' }
+									onChange={ ( value ) =>
+										setAttributes( {
+											anchor: { ...anchor, [ breakpoint ]: value || 'full-screen' },
+										} )
+									}
+									isBlock
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								>
+									<ToggleGroupControlOption value="full-screen" label={ __( 'Full screen', 'sgs-blocks' ) } />
+									<ToggleGroupControlOption value="header" label={ __( 'Below header', 'sgs-blocks' ) } />
+									<ToggleGroupControlOption value="trigger" label={ __( 'Corner panel', 'sgs-blocks' ) } />
+									<ToggleGroupControlOption value="centred" label={ __( 'Centred card', 'sgs-blocks' ) } />
+								</ToggleGroupControl>
+							) }
+						</ResponsiveControl>
+					</ToolsPanelItem>
 
 					{ ( anchor?.desktop === 'trigger' || anchor?.desktop === 'centred' ||
 						anchor?.tablet === 'trigger' || anchor?.tablet === 'centred' ||
 						anchor?.mobile === 'trigger' || anchor?.mobile === 'centred' ) && (
-						<ResponsiveControl label={ __( 'Panel size', 'sgs-blocks' ) }>
-							{ ( breakpoint ) => (
-								<SgsLengthControl
-									label={ __( 'Panel size', 'sgs-blocks' ) }
-									hideLabelFromVision
-									help={ __( 'Maximum width of a corner or centred panel at this device.', 'sgs-blocks' ) }
-									value={ panelSize?.[ breakpoint ] || '' }
-									onChange={ ( value ) =>
-										setAttributes( {
-											panelSize: { ...panelSize, [ breakpoint ]: value || undefined },
-										} )
-									}
-									presets={ false }
-								/>
-							) }
-						</ResponsiveControl>
+						<ToolsPanelItem
+							label={ __( 'Panel size', 'sgs-blocks' ) }
+							hasValue={ () => !! panelSize && Object.keys( panelSize ).length > 0 }
+							onDeselect={ () => setAttributes( { panelSize: {} } ) }
+						>
+							<ResponsiveControl label={ __( 'Panel size', 'sgs-blocks' ) }>
+								{ ( breakpoint ) => (
+									<SgsLengthControl
+										label={ __( 'Panel size', 'sgs-blocks' ) }
+										hideLabelFromVision
+										help={ __( 'Maximum width of a corner or centred panel at this device.', 'sgs-blocks' ) }
+										value={ panelSize?.[ breakpoint ] || '' }
+										onChange={ ( value ) =>
+											setAttributes( {
+												panelSize: { ...panelSize, [ breakpoint ]: value || undefined },
+											} )
+										}
+										presets={ false }
+									/>
+								) }
+							</ResponsiveControl>
+						</ToolsPanelItem>
 					) }
 
-					<SelectControl
+					<ToolsPanelItem
 						label={ __( 'Open animation', 'sgs-blocks' ) }
-						help={ sprintf(
-							/* translators: %s: the automatic animation for the current desktop panel position. */
-							__(
-								'Automatic matches the panel position (currently: %s). Visitors who ask their device to reduce motion never see any movement, whichever you choose.',
-								'sgs-blocks'
-							),
-							ANCHOR_ANIM_LABEL[ anchorDesktop ] || ANCHOR_ANIM_LABEL[ 'full-screen' ]
-						) }
-						value={ animateFrom }
-						options={ [
-							{ label: __( 'Automatic', 'sgs-blocks' ), value: 'auto' },
-							{ label: __( 'Fade only (no movement)', 'sgs-blocks' ), value: 'fade' },
-						] }
-						onChange={ ( value ) => setAttributes( { animateFrom: value } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
+						hasValue={ () => animateFrom !== 'auto' }
+						onDeselect={ () => setAttributes( { animateFrom: 'auto' } ) }
+					>
+						<SelectControl
+							label={ __( 'Open animation', 'sgs-blocks' ) }
+							help={ sprintf(
+								/* translators: %s: the automatic animation for the current desktop panel position. */
+								__(
+									'Automatic matches the panel position (currently: %s). Visitors who ask their device to reduce motion never see any movement, whichever you choose.',
+									'sgs-blocks'
+								),
+								ANCHOR_ANIM_LABEL[ anchorDesktop ] || ANCHOR_ANIM_LABEL[ 'full-screen' ]
+							) }
+							value={ animateFrom }
+							options={ [
+								{ label: __( 'Automatic', 'sgs-blocks' ), value: 'auto' },
+								{ label: __( 'Fade only (no movement)', 'sgs-blocks' ), value: 'fade' },
+							] }
+							onChange={ ( value ) => setAttributes( { animateFrom: value } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
 
-					<ToggleGroupControl
+					<ToolsPanelItem
 						label={ __( 'Close button style', 'sgs-blocks' ) }
-						help={ __(
-							'How the always-present close control is drawn. The close button itself can never be deleted.',
-							'sgs-blocks'
-						) }
-						value={ closeStyle }
-						onChange={ ( value ) => setAttributes( { closeStyle: value || 'separate-x' } ) }
-						isBlock
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						hasValue={ () => closeStyle !== 'separate-x' }
+						onDeselect={ () => setAttributes( { closeStyle: 'separate-x' } ) }
 					>
-						<ToggleGroupControlOption value="separate-x" label={ __( '× icon', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="text-swap" label={ __( '“Close” text', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="burger-morph" label={ __( 'Morphed icon', 'sgs-blocks' ) } />
-					</ToggleGroupControl>
+						<ToggleGroupControl
+							label={ __( 'Close button style', 'sgs-blocks' ) }
+							help={ __(
+								'How the always-present close control is drawn. The close button itself can never be deleted.',
+								'sgs-blocks'
+							) }
+							value={ closeStyle }
+							onChange={ ( value ) => setAttributes( { closeStyle: value || 'separate-x' } ) }
+							isBlock
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						>
+							<ToggleGroupControlOption value="separate-x" label={ __( '× icon', 'sgs-blocks' ) } />
+							<ToggleGroupControlOption value="text-swap" label={ __( '“Close” text', 'sgs-blocks' ) } />
+							<ToggleGroupControlOption value="burger-morph" label={ __( 'Morphed icon', 'sgs-blocks' ) } />
+						</ToggleGroupControl>
+					</ToolsPanelItem>
 
-					<ToggleGroupControl
+					<ToolsPanelItem
 						label={ __( 'Submenu behaviour', 'sgs-blocks' ) }
-						help={ __(
-							'How nested menu items expand. Accordion opens items in place; drill-down slides to a sub-panel.',
-							'sgs-blocks'
-						) }
-						value={ submenuModel }
-						onChange={ ( value ) => setAttributes( { submenuModel: value || 'accordion' } ) }
-						isBlock
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						hasValue={ () => submenuModel !== 'accordion' }
+						onDeselect={ () => setAttributes( { submenuModel: 'accordion' } ) }
 					>
-						<ToggleGroupControlOption value="accordion" label={ __( 'Accordion', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="drill-down" label={ __( 'Drill-down', 'sgs-blocks' ) } />
-					</ToggleGroupControl>
-				</PanelBody>
+						<ToggleGroupControl
+							label={ __( 'Submenu behaviour', 'sgs-blocks' ) }
+							help={ __(
+								'How nested menu items expand. Accordion opens items in place; drill-down slides to a sub-panel.',
+								'sgs-blocks'
+							) }
+							value={ submenuModel }
+							onChange={ ( value ) => setAttributes( { submenuModel: value || 'accordion' } ) }
+							isBlock
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						>
+							<ToggleGroupControlOption value="accordion" label={ __( 'Accordion', 'sgs-blocks' ) } />
+							<ToggleGroupControlOption value="drill-down" label={ __( 'Drill-down', 'sgs-blocks' ) } />
+						</ToggleGroupControl>
+					</ToolsPanelItem>
+				</ToolsPanel>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }

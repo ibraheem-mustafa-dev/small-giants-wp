@@ -14,7 +14,7 @@
  *
  * @package
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
@@ -80,6 +80,12 @@ const WIDTH_UNITS = [
  *                                   thing), and rendering the field without an
  *                                   `alt`/`onAltChange` pair would put an
  *                                   uncontrolled, untypeable input on screen.
+ * @param {boolean}  [root0.disabled] Disable the alt-text field. Passed true
+ *                                    by MediaSlotPicker when this slot is
+ *                                    marked decorative — render.php blanks the
+ *                                    alt at render time either way, so the
+ *                                    field is disabled rather than hidden to
+ *                                    show the operator why it's inert.
  */
 function ImagePickerRow( {
 	label,
@@ -89,6 +95,7 @@ function ImagePickerRow( {
 	onAltChange,
 	onClear,
 	showAlt = true,
+	disabled = false,
 } ) {
 	return (
 		<div style={ { marginBottom: '16px' } }>
@@ -128,12 +135,20 @@ function ImagePickerRow( {
 					{ showAlt && (
 						<TextControl
 							label={ __( 'Alt text', 'sgs-blocks' ) }
-							help={ __(
-								'Required — describes this image for screen-reader and no-JS visitors, who see both images without any comparison interaction.',
-								'sgs-blocks'
-							) }
+							help={
+								disabled
+									? __(
+											'Disabled — this image is marked decorative, so it renders with no alt text and is hidden from screen readers.',
+											'sgs-blocks'
+									  )
+									: __(
+											'Required — describes this image for screen-reader and no-JS visitors, who see both images without any comparison interaction.',
+											'sgs-blocks'
+									  )
+							}
 							value={ alt }
 							onChange={ onAltChange }
+							disabled={ disabled }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -172,6 +187,8 @@ function MediaSlotPicker( { side, label, attributes, setAttributes } ) {
 	const imageUrlKey = `${ side }ImageUrl`;
 	const imageAltKey = `${ side }ImageAlt`;
 	const imageIdKey = `${ side }ImageId`;
+	const imageDecorativeKey = `${ side }ImageDecorative`;
+	const isImageDecorative = !! attributes[ imageDecorativeKey ];
 
 	const videoUrlKey = `${ side }VideoUrl`;
 	const videoAltKey = `${ side }VideoAlt`;
@@ -219,6 +236,26 @@ function MediaSlotPicker( { side, label, attributes, setAttributes } ) {
 							[ imageAltKey ]: '',
 						} )
 					}
+					disabled={ isImageDecorative }
+				/>
+			) }
+
+			{ 'image' === mediaType && (
+				<ToggleControl
+					label={ sprintf(
+						/* translators: %s: slot label, e.g. "Before" or "After". */
+						__( '%s image is decorative', 'sgs-blocks' ),
+						label
+					) }
+					checked={ isImageDecorative }
+					onChange={ ( val ) =>
+						setAttributes( { [ imageDecorativeKey ]: val } )
+					}
+					help={ __(
+						'Turn on when this picture is decoration rather than information — screen readers will skip it instead of reading the image description.',
+						'sgs-blocks'
+					) }
+					__nextHasNoMarginBottom
 				/>
 			) }
 

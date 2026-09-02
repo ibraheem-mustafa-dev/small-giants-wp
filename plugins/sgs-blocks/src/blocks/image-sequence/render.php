@@ -44,10 +44,22 @@ if ( empty( $thumbnail_media['url'] ) ) {
 	return;
 }
 
-$thumbnail_url = (string) $thumbnail_media['url'];
-$thumbnail_id  = isset( $thumbnail_media['id'] ) ? absint( $thumbnail_media['id'] ) : 0;
-$thumbnail_alt = (string) ( $attributes['thumbnailAlt'] ?? '' );
-$aspect_ratio  = (string) ( $attributes['aspectRatio'] ?? '16 / 9' );
+$thumbnail_url        = (string) $thumbnail_media['url'];
+$thumbnail_id         = isset( $thumbnail_media['id'] ) ? absint( $thumbnail_media['id'] ) : 0;
+$thumbnail_alt        = (string) ( $attributes['thumbnailAlt'] ?? '' );
+$thumbnail_decorative = ! empty( $attributes['thumbnailDecorative'] );
+$aspect_ratio         = (string) ( $attributes['aspectRatio'] ?? '16 / 9' );
+
+// Decorative fallback thumbnail (WCAG 2.1 AA 1.1.1). Block-level, not
+// per-tier — the tablet/mobile thumbnails are art-directed crops of the
+// SAME photo (2026-08-07 art-direction tiers), not different pictures, so
+// one editorial choice covers all of them. Blanking the alt here (rather
+// than only adding aria-hidden) matches the sgs/timeline pattern: an empty
+// alt already tells assistive tech to skip the image; aria-hidden reinforces
+// it for browsers/ATs that still expose an empty-alt <img> to the a11y tree.
+if ( $thumbnail_decorative ) {
+	$thumbnail_alt = '';
+}
 
 // Whitelist — this reaches a scoped <style> rule, so it is validated against
 // known-good values rather than trusted as free text. This array is the
@@ -169,7 +181,7 @@ if ( ! empty( $sgs_tier_thumbs ) ) {
 	$sgs_tier_sel = static function ( $tier ) use ( $root_sel ) {
 		return $root_sel . ' .sgs-image-sequence__thumbnail--' . $tier;
 	};
-	$tier_css = '';
+	$tier_css     = '';
 	if ( isset( $sgs_tier_thumbs['mobile'] ) ) {
 		$tier_css .= '@media(max-width:767px){' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
 		$tier_css .= '@media(min-width:768px){' . $sgs_tier_sel( 'mobile' ) . '{display:none}}';
@@ -229,21 +241,30 @@ printf(
 	$style_tag // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-validated via whitelist + wp_strip_all_tags.
 );
 
+$thumb_attrs = array( 'class' => $thumb_class );
+if ( $thumbnail_decorative ) {
+	$thumb_attrs['aria-hidden'] = 'true';
+}
+
 echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes internally.
 	$thumbnail_id,
 	$thumbnail_url,
 	$thumbnail_alt,
 	'large',
-	array( 'class' => $thumb_class )
+	$thumb_attrs
 );
 
 foreach ( $sgs_tier_thumbs as $sgs_tier_key => $sgs_tier_media ) {
+	$sgs_tier_attrs = array( 'class' => 'sgs-image-sequence__thumbnail sgs-image-sequence__thumbnail--' . $sgs_tier_key );
+	if ( $thumbnail_decorative ) {
+		$sgs_tier_attrs['aria-hidden'] = 'true';
+	}
 	echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes internally.
 		$sgs_tier_media['id'],
 		$sgs_tier_media['url'],
 		$thumbnail_alt,
 		'large',
-		array( 'class' => 'sgs-image-sequence__thumbnail sgs-image-sequence__thumbnail--' . $sgs_tier_key )
+		$sgs_tier_attrs
 	);
 }
 

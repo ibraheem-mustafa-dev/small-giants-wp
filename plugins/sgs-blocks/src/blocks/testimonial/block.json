@@ -209,13 +209,16 @@
 					"sourcePlatform"
 				],
 				"avatar-spotlight": [
-					"avatarMedia"
+					"avatarMedia",
+					"avatarDecorative"
 				],
 				"corporate-logo": [
-					"orgLogo"
+					"orgLogo",
+					"orgLogoDecorative"
 				],
 				"case-study-media": [
-					"workMedia"
+					"workMedia",
+					"workMediaDecorative"
 				],
 				"minimal-quote": []
 			},
@@ -303,6 +306,21 @@
 		"workMedia": {
 			"type": "object",
 			"default": null
+		},
+		"avatarDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "Item 18 (WCAG 1.1.1) — the reviewer photo carries no information beyond decoration; hides it from assistive tech (empty alt + aria-hidden) instead of storing/announcing the media library's alt text."
+		},
+		"orgLogoDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "Item 18 (WCAG 1.1.1) — the organisation logo is purely decorative for this instance; hides it from assistive tech (empty alt + aria-hidden) instead of storing/announcing the media library's alt text."
+		},
+		"workMediaDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "Item 18 (WCAG 1.1.1) — the case-study work image/video is purely decorative for this instance; hides it from assistive tech (empty alt + aria-hidden) instead of storing/announcing the media library's alt text."
 		},
 		"showRating": {
 			"type": "boolean",

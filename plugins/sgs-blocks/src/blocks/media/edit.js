@@ -18,6 +18,7 @@ import {
 	MediaPanelLayout,
 	mediaElementScopeClass,
 	mediaElementCustomProperties,
+	TypographyControls,
 } from '../../components';
 import { MEDIA_ATOM_IDS } from '../../components/media/atoms/registry.js';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -189,6 +190,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					},
 				] }
 			/>
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Caption typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="caption"
+						showSize={ true }
+						showWeight={ false }
+						showStyle={ false }
+						showLineHeight={ false }
+						showResponsive={ false }
+					/>
+				</PanelBody>
+			</InspectorControls>
 			<InspectorControls>
 			{ /* Media type switch + per-type source/meaning/svg-presentation +
 			     Image Styling (object-fit/focal-point/motion) + Box & Border

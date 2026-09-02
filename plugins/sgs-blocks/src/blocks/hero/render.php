@@ -1274,6 +1274,18 @@ $sgs_hero_resolve_split_type = static function ( string $declared_type, $image, 
 // same thing, and a per-tier alt is a second place for it to drift).
 $sgs_hero_split_alt = (string) ( $split_image['alt'] ?? '' );
 
+// Decorative-image toggle (finding 18, 2026-09-02, WCAG 2.1 AA 1.1.1). Only the
+// split-media element — the sole real <img>/<video>/svg this block renders —
+// gets this; backgroundImage paints via CSS background-image and is never
+// exposed to assistive tech, so it carries no such toggle. When on, the alt is
+// blanked (covers the image tier) and the media wrapper is marked aria-hidden
+// (covers video/svg tiers, which have no alt attribute of their own), mirroring
+// sgs/timeline's milestoneMediaDecorative treatment.
+$split_media_decorative = ! empty( $attributes['splitMediaDecorative'] );
+if ( $split_media_decorative ) {
+	$sgs_hero_split_alt = '';
+}
+
 $split_tiers = array();
 foreach (
 	array(
@@ -1398,7 +1410,10 @@ if ( $is_split && ! empty( $split_tiers ) ) {
 			$responsive_css .= '.' . $uid . ' .sgs-hero__media{--sgs-hero-media-ken-burns-duration:' . $media_animation_duration . 's}';
 		}
 		$responsive_css .= SGS_Media_Element::style( $attributes, 'media', 'sgs/hero', $uid, array( 'overlay' ) );
-		$media_html      = '<div class="' . esc_attr( $media_class ) . '">' . $sgs_hero_tier_result['html'] . '</div>';
+		// Decorative wrapper: covers video/svg tiers, which carry no alt attribute
+		// of their own; the image tier's alt was already blanked above.
+		$media_aria_hidden = $split_media_decorative ? ' aria-hidden="true"' : '';
+		$media_html        = '<div class="' . esc_attr( $media_class ) . '"' . $media_aria_hidden . '>' . $sgs_hero_tier_result['html'] . '</div>';
 		// ⛔ CALLER CONTRACT (helpers-tier-media.php): this MUST be appended to
 		// $responsive_css BEFORE it is printed below — it is, at line ~1166.
 		$responsive_css .= $sgs_hero_tier_result['css'];

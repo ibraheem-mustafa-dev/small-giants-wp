@@ -86,7 +86,7 @@ export const MEDIA_BASES = {
 	type: [ 'MediaType', 'VideoSource', 'VideoMimeType' ],
 	// Meaning / accessibility. Per-instance by design: the same logo is
 	// meaningful in a header and decorative in a footer strip.
-	meaning: [ 'ImageAlt', 'VideoAlt', 'ImageIsDecorative' ],
+	meaning: [ 'ImageAlt', 'VideoAlt', 'ImageDecorative' ],
 	// Video playback. Currently declared only by sgs/media - the other video
 	// surfaces hardcode these server-side, which is a GAP in those surfaces
 	// rather than a naming difference.
@@ -287,7 +287,7 @@ export const MEDIA_ATTR_TYPES = {
 	SvgPosition: 'string',
 	SvgMinHeight: 'string',
 	// Booleans.
-	ImageIsDecorative: 'boolean',
+	ImageDecorative: 'boolean',
 	SvgTextShadow: 'boolean',
 	VideoAutoplay: 'boolean',
 	VideoLoop: 'boolean',

@@ -6,9 +6,9 @@
  * client reads, and `@wordpress/i18n` is genuinely installed (confirmed via
  * `node_modules`), unlike `@wordpress/components`/`@wordpress/block-editor`.
  *
- * Owns `ImageAlt`/`VideoAlt`/`ImageIsDecorative` (registry.js:
+ * Owns `ImageAlt`/`VideoAlt`/`ImageDecorative` (registry.js:
  * `meaning.bases`). `registry.js` declares one cross-base rule:
- * `requires: { ImageAlt: [ '!ImageIsDecorative' ] }` — alt text is
+ * `requires: { ImageAlt: [ '!ImageDecorative' ] }` — alt text is
  * meaningless once the client marks the media decorative, and leaving both
  * live produces an alt string no screen reader ever reads.
  *
@@ -68,7 +68,7 @@ export function resolveMediaType( attributes, prefix, blockSlug ) {
  */
 export function disclosure( { attributes, prefix } ) {
 	const attrs = attributes || {};
-	const key = mediaAttrName( prefix, 'ImageIsDecorative' );
+	const key = mediaAttrName( prefix, 'ImageDecorative' );
 	const isDecorative = !! attrs[ key ];
 
 	return isDecorative

@@ -1,0 +1,19 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/image-via-repeater-without-decorative",
+	"title": "Fixture: renders <img> per repeater item, item schema has NO decorative field — must still flag",
+	"category": "sgs",
+	"attributes": {
+		"logos": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"url": { "type": "string" },
+					"alt": { "type": "string" }
+				}
+			}
+		}
+	}
+}

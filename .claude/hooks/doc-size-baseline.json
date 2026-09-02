@@ -47,11 +47,12 @@
       "2026-08-21 (auto, decisions-sweep-auto.py Stop hook): 691,771 -> 691,771 bytes, 0 entries archived. Re-baselined automatically.",
       "2026-08-22 (auto, decisions-sweep-auto.py Stop hook): 759,923 -> 759,359 bytes, 1 entries archived. Re-baselined automatically.",
       "2026-08-28 (manual, sweep-decisions.py, handoff preflight): decisions.md 1,127,746 -> 1,087,213 bytes, 23 entries archived (40,533 bytes). The auto Stop hook had fired twice earlier the same day and found 0 sweepable both times -- not a bug, the file was mid-edit (uncommitted) at those exact moments, and the script deliberately excludes any D-number not yet committed (see the 2026-08-14 Sweep 2 note above). Once this session's own decisions.md edits landed in a clean commit, the same 23 candidates the dry-run had already found became sweepable for real.",
-      "2026-08-29 (auto, decisions-sweep-auto.py Stop hook): 1,156,116 -> 1,141,887 bytes, 6 entries archived. Re-baselined automatically."
+      "2026-08-29 (auto, decisions-sweep-auto.py Stop hook): 1,156,116 -> 1,141,887 bytes, 6 entries archived. Re-baselined automatically.",
+      "2026-09-02 (auto, decisions-sweep-auto.py Stop hook): 1,207,982 -> 1,207,982 bytes, 0 entries archived. Re-baselined automatically."
     ],
     "sweep_owed": "NONE in practice. The 262,144-byte fallback cap is not the real gate -- check_decisions_size() is growth-keyed (baseline + 65,536-byte budget) and the file passes cleanly today; the absolute cap only applies when no baseline is recorded (handoff-preflight.py:613-627). decisions.md is also not auto-loaded into any session (grep confirms no SessionStart hook or script reads its content, only its size), so its byte count costs zero context per session. Chasing the 262KB number further is not a real requirement -- see the 2026-08-14 council entry above. If growth ever does trip the gate, re-run sweep-decisions.py; that mechanism alone is safe and sufficient."
   },
   "sizes": {
-    "decisions.md": 1141887
+    "decisions.md": 1207982
   }
 }

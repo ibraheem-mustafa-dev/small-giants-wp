@@ -268,6 +268,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		roleColour,
 		cardStyle,
 		photoShape,
+		photoDecorative,
 		overlayHover,
 		cardShadow,
 		cardShadowColour,
@@ -591,6 +592,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) }
 					</ResponsiveControl>
+					<ToggleControl
+						label={ __( 'Decorative photo', 'sgs-blocks' ) }
+						help={ __( 'Only use this for a purely decorative graphic, such as a placeholder silhouette before a real photo is uploaded. Most photos identify the person and should keep their alt text.', 'sgs-blocks' ) }
+						checked={ !! photoDecorative }
+						onChange={ ( val ) => setAttributes( { photoDecorative: val } ) }
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 
 				{ /* Box-object interface contract §B/§E: padding/margin base routes

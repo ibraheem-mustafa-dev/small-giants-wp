@@ -279,6 +279,11 @@
 								"type": "string"
 							}
 						}
+					},
+					"decorative": {
+						"type": "boolean",
+						"default": false,
+						"description": "image-badge variant only. Explicit editorial choice (WCAG 2.1 AA 1.1.1) that this badge's image carries no information — render.php blanks its alt text and adds aria-hidden so assistive tech skips it entirely."
 					}
 				}
 			},

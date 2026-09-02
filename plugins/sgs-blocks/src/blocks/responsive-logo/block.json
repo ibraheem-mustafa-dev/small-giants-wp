@@ -159,6 +159,11 @@
 			"default": "",
 			"role": "content"
 		},
+		"logoDecorative": {
+			"type": "boolean",
+			"default": false,
+			"_comment": "WCAG 2.1 AA 1.1.1 explicit editorial decorative-image flag (mirrors sgs/timeline's milestoneMediaDecorative). Block-level, not per-tier: one flag covers the logo concept across logoId/logoIdTablet/logoIdMobile the same way `alt` already does. A site logo wrapped in a homepage link is almost never truly decorative — but this block sets the <a>'s aria-label independently of the <img> alt (see render.php's $link_aria_label), so the link keeps its accessible name ('Go to [Site] homepage') even when the logo image itself is marked decorative. render.php blanks alt + adds aria-hidden on the <img> when true."
+		},
 		"paddingTablet": {
 			"type": "object",
 			"default": {}

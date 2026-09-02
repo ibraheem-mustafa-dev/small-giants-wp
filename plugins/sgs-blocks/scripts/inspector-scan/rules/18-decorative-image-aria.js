@@ -84,11 +84,30 @@ module.exports = {
 		const blockJson = ctx.json( blockJsonFile );
 		if ( ! blockJson.ok ) return []; // malformed/absent block.json is a different rule's concern
 
-		const attrNames = Object.keys( blockJson.data.attributes || {} );
+		const attributes = blockJson.data.attributes || {};
+		const attrNames = Object.keys( attributes );
 		const hasDecorativeAttr = attrNames.some(
 			( a ) => a !== LANDMARK_LABEL_ATTR && DECORATIVE_ATTR_RE.test( a )
 		);
 		if ( hasDecorativeAttr ) return [];
+
+		// A repeater block (an array-typed attribute whose items are objects,
+		// e.g. `logos`/`items`/`images`) stores its image PER-ITEM, so the
+		// decorative flag legitimately lives at `items.properties.decorative`
+		// rather than as a top-level attribute — the correct shape (D918/S8's
+		// {element}Decorative convention scoped to the item, not the block),
+		// confirmed live across sgs/brand-strip, sgs/card-grid, sgs/gallery and
+		// sgs/trust-bar (2026-09-03 batch) all independently reporting this
+		// exact false-positive. Recurse one level into each array attribute's
+		// item schema before concluding no decorative mechanism exists.
+		const hasNestedDecorativeAttr = attrNames.some( ( a ) => {
+			const attr = attributes[ a ];
+			if ( ! attr || attr.type !== 'array' ) return false;
+			const itemProps = attr.items && attr.items.properties;
+			if ( ! itemProps || typeof itemProps !== 'object' ) return false;
+			return Object.keys( itemProps ).some( ( p ) => DECORATIVE_ATTR_RE.test( p ) );
+		} );
+		if ( hasNestedDecorativeAttr ) return [];
 
 		return [
 			makeFinding( {
@@ -105,7 +124,15 @@ module.exports = {
 	},
 	selfTest: {
 		fixture: 'fixtures/18-decorative-image-aria',
-		mustFlag: [ 'image-no-decorative-toggle', 'image-via-shared-component' ],
-		mustNotFlag: [ 'image-with-decorative-toggle', 'no-image-at-all' ],
+		mustFlag: [
+			'image-no-decorative-toggle',
+			'image-via-shared-component',
+			'image-via-repeater-without-decorative',
+		],
+		mustNotFlag: [
+			'image-with-decorative-toggle',
+			'no-image-at-all',
+			'image-via-repeater-with-decorative',
+		],
 	},
 };

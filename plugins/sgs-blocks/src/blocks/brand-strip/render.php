@@ -527,10 +527,16 @@ if ( ! empty( $logos ) ) {
 			continue;
 		}
 
-		$logo_name   = isset( $logo['name'] ) ? sanitize_text_field( (string) $logo['name'] ) : '';
-		$has_caption = $show_names && '' !== $logo_name;
+		$logo_name       = isset( $logo['name'] ) ? sanitize_text_field( (string) $logo['name'] ) : '';
+		$has_caption     = $show_names && '' !== $logo_name;
+		$logo_decorative = ! empty( $logo['decorative'] );
 
-		if ( $has_caption ) {
+		if ( $logo_decorative ) {
+			// Explicit editorial choice (WCAG 2.1 AA 1.1.1) — hide this logo
+			// from assistive tech entirely, regardless of caption or operator
+			// alt text.
+			$media['alt'] = '';
+		} elseif ( $has_caption ) {
 			// Caption is on-screen and carries the accessible name — the
 			// image becomes decorative so screen readers announce the name
 			// once, not twice.
@@ -543,6 +549,12 @@ if ( ! empty( $logos ) ) {
 		$logo_html = sgs_render_media( $media, 'sgs/brand-strip' );
 		if ( '' === $logo_html ) {
 			continue;
+		}
+		if ( $logo_decorative ) {
+			// Belt-and-braces alongside the empty alt above — aria-hidden
+			// stops assistive tech announcing the image at all, not just
+			// skipping its (already-empty) accessible name.
+			$logo_html = preg_replace( '/<img\b/', '<img aria-hidden="true"', $logo_html, 1 );
 		}
 
 		$name_id = $has_caption ? $uid . '-name-' . $logo_index : '';

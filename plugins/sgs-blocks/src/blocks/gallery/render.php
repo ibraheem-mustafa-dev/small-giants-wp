@@ -173,9 +173,14 @@ foreach ( $images as $img ) {
 		$full_url = esc_url( $img['url'] );
 	}
 
+	// Decorative items get an empty alt here too — otherwise the lightbox's
+	// Interactivity-API context (data-wp-bind--alt) leaks the real alt text
+	// even though the thumbnail's own alt/aria-hidden is already correct.
+	$context_img_decorative = ! empty( $img['decorative'] );
+
 	$context_images[] = [
 		'fullUrl' => $full_url,
-		'alt'     => esc_attr( wp_strip_all_tags( $img['alt'] ?? '' ) ),
+		'alt'     => $context_img_decorative ? '' : esc_attr( wp_strip_all_tags( $img['alt'] ?? '' ) ),
 		'caption' => esc_html( wp_strip_all_tags( $img['caption'] ?? '' ) ),
 		'type'    => $img_type,
 	];
@@ -360,20 +365,34 @@ ob_start();
 			<?php
 		else :
 			foreach ( $images as $index => $img ) :
-				$img_id      = absint( $img['id'] ?? 0 );
-				$img_type    = isset( $img['type'] ) ? sanitize_key( $img['type'] ) : 'image';
-				$img_alt     = esc_attr( wp_strip_all_tags( $img['alt'] ?? '' ) );
-				$img_caption = $show_captions ? esc_html( wp_strip_all_tags( $img['caption'] ?? '' ) ) : '';
+				$img_id         = absint( $img['id'] ?? 0 );
+				$img_type       = isset( $img['type'] ) ? sanitize_key( $img['type'] ) : 'image';
+				// Item 18 (2026-09-02, decorative-image-aria) — per-item field on the
+				// mediaItems repeater (Spec 00 field-level naming). When set, the image
+				// is purely decorative: alt is blanked and aria-hidden="true" is added
+				// so assistive tech skips it entirely (WCAG 2.1 AA 1.1.1), instead of a
+				// client either writing meaningless alt text or leaving it blank and
+				// hoping.
+				$img_decorative = ! empty( $img['decorative'] );
+				$img_alt        = $img_decorative ? '' : esc_attr( wp_strip_all_tags( $img['alt'] ?? '' ) );
+				$img_caption    = $show_captions ? esc_html( wp_strip_all_tags( $img['caption'] ?? '' ) ) : '';
 
 				// Build the unified media-slot shape for sgs_render_media().
 				$item_media = array(
 					'url'  => $img['url'] ?? '',
 					'type' => $img_type,
 					'id'   => $img_id,
-					'alt'  => $img['alt'] ?? '',
+					'alt'  => $img_decorative ? '' : ( $img['alt'] ?? '' ),
 					'mime' => $img['mime'] ?? '',
 				);
 				$item_html = sgs_render_media( $item_media, 'sgs/gallery' );
+				if ( $img_decorative ) {
+					// sgs_render_media() has no aria-hidden param (shared helper — out of
+					// scope to change here). Its output always opens with a literal
+					// `<img ` or `<video ` tag (helpers-media.php), so a single anchored
+					// replacement on the OPENING tag only is safe.
+					$item_html = preg_replace( '/^<(img|video)\s/', '<$1 aria-hidden="true" ', $item_html, 1 );
+				}
 
 				// Determine the aspect-ratio and stagger delay for this item. Both
 				// are CSS custom-PROPERTY VALUES (never a raw property
@@ -432,9 +451,16 @@ ob_start();
 										$img_id,
 										$image_size,
 										false,
-										array(
-											'class'   => 'sgs-gallery__img',
-											'loading' => $index < 4 ? 'eager' : 'lazy',
+										array_merge(
+											array(
+												'class'   => 'sgs-gallery__img',
+												'loading' => $index < 4 ? 'eager' : 'lazy',
+											),
+											// Item 18 (decorative-image-aria): overriding 'alt' here beats
+											// wp_get_attachment_image()'s own default (the attachment's
+											// stored _wp_attachment_image_alt meta), and 'aria-hidden'
+											// passes straight through as an extra attribute.
+											$img_decorative ? array( 'alt' => '', 'aria-hidden' => 'true' ) : array()
 										)
 									);
 								} else {
@@ -471,9 +497,14 @@ ob_start();
 									$img_id,
 									$image_size,
 									false,
-									array(
-										'class'   => 'sgs-gallery__img',
-										'loading' => $index < 4 ? 'eager' : 'lazy',
+									array_merge(
+										array(
+											'class'   => 'sgs-gallery__img',
+											'loading' => $index < 4 ? 'eager' : 'lazy',
+										),
+										// Item 18 (decorative-image-aria) — see the lightbox branch above
+										// for the rationale (same override, no-lightbox path).
+										$img_decorative ? array( 'alt' => '', 'aria-hidden' => 'true' ) : array()
 									)
 								);
 							} else {

@@ -167,6 +167,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		maxHeightUnit,
 		linkToHome,
 		alt,
+		logoDecorative,
 		style,
 		paddingTablet,
 		paddingMobile,
@@ -392,11 +393,22 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 
+					<ToggleControl
+						label={ __( 'Decorative logo (hide from screen readers)', 'sgs-blocks' ) }
+						help={ __( 'Only use this if the logo is purely decorative — if it links to your homepage, keep this off so screen reader users can still navigate home. A site logo almost always carries meaning, so this should stay off in most cases.', 'sgs-blocks' ) }
+						checked={ !! logoDecorative }
+						onChange={ ( val ) => setAttributes( { logoDecorative: val } ) }
+						__nextHasNoMarginBottom
+					/>
+
 					<TextareaControl
 						label={ __( 'Alt text', 'sgs-blocks' ) }
-						help={ __( 'Describes what the logo depicts for screen readers. Leave empty to use "[Business name] home" automatically — never just "logo".', 'sgs-blocks' ) }
+						help={ logoDecorative
+							? __( 'Disabled — the logo image is marked decorative and won’t be announced to screen readers.', 'sgs-blocks' )
+							: __( 'Describes what the logo depicts for screen readers. Leave empty to use "[Business name] home" automatically — never just "logo".', 'sgs-blocks' ) }
 						value={ alt }
 						onChange={ ( val ) => setAttributes( { alt: val } ) }
+						disabled={ !! logoDecorative }
 						rows={ 2 }
 					/>
 				</PanelBody>

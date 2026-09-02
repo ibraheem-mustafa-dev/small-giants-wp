@@ -206,20 +206,32 @@ function GenericBadgeItemEditor( { item, index, badgeStyle, onChange, onRemove }
 			</p>
 
 			{ 'image-badge' === badgeStyle && (
-				<MediaPicker
-					value={ item.media || null }
-					onChange={ ( media ) => {
-						const next = { ...item, media };
-						if ( next.image ) {
-							next.image = undefined;
-						}
-						onChange( next );
-					} }
-					onRemove={ () => onChange( { ...item, media: null, image: undefined } ) }
-					allowedTypes={ [ 'image' ] }
-					label={ __( 'Badge image', 'sgs-blocks' ) }
-					instructionsImage={ __( 'Choose a certification badge or logo image', 'sgs-blocks' ) }
-				/>
+				<>
+					<MediaPicker
+						value={ item.media || null }
+						onChange={ ( media ) => {
+							const next = { ...item, media };
+							if ( next.image ) {
+								next.image = undefined;
+							}
+							onChange( next );
+						} }
+						onRemove={ () => onChange( { ...item, media: null, image: undefined } ) }
+						allowedTypes={ [ 'image' ] }
+						label={ __( 'Badge image', 'sgs-blocks' ) }
+						instructionsImage={ __( 'Choose a certification badge or logo image', 'sgs-blocks' ) }
+					/>
+					<ToggleControl
+						label={ __( 'Decorative — hide from screen readers', 'sgs-blocks' ) }
+						help={ __(
+							'Turn on for a purely decorative badge image — screen readers will skip it entirely instead of reading its alt text.',
+							'sgs-blocks'
+						) }
+						checked={ !! item.decorative }
+						onChange={ ( val ) => update( 'decorative', val ) }
+						__nextHasNoMarginBottom
+					/>
+				</>
 			) }
 
 			<TextControl

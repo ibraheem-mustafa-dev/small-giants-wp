@@ -13,6 +13,7 @@ import {
 	RangeControl,
 	TextControl,
 } from '@wordpress/components';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	ResponsiveOverride,
 	SpacingControl,
@@ -506,149 +507,204 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 
-				<PanelBody
-					title={ __( 'Alignment & grid', 'sgs-blocks' ) }
-					initialOpen={ false }
+				<ToolsPanel
+					label={ __( 'Alignment & grid', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							alignItems: 'start',
+							flexDirection: '',
+							justifyItems: 'stretch',
+							alignContent: 'stretch',
+							gridTemplateColumns: {},
+							gridTemplateRows: {},
+							gridAutoRows: '',
+						} )
+					}
 				>
-					<SelectControl
+					<ToolsPanelItem
 						label={ __( 'Align items', 'sgs-blocks' ) }
-						value={ alignItems || 'start' }
-						options={ VERTICAL_ALIGN_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { alignItems: val } )
-						}
-						help={ __(
-							'How elements of different heights line up across the row.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ ! isGrid && (
+						hasValue={ () => ( alignItems || 'start' ) !== 'start' }
+						onDeselect={ () => setAttributes( { alignItems: 'start' } ) }
+						isShownByDefault
+					>
 						<SelectControl
-							label={ __( 'Flex direction', 'sgs-blocks' ) }
-							value={ flexDirection || '' }
-							options={ FLEX_DIRECTION_OPTIONS }
+							label={ __( 'Align items', 'sgs-blocks' ) }
+							value={ alignItems || 'start' }
+							options={ VERTICAL_ALIGN_OPTIONS }
 							onChange={ ( val ) =>
-								setAttributes( { flexDirection: val } )
+								setAttributes( { alignItems: val } )
 							}
 							help={ __(
-								'Reverses or stacks the row’s elements instead of the normal left-to-right order.',
+								'How elements of different heights line up across the row.',
 								'sgs-blocks'
 							) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
+					</ToolsPanelItem>
+					{ ! isGrid && (
+						<ToolsPanelItem
+							label={ __( 'Flex direction', 'sgs-blocks' ) }
+							hasValue={ () => flexDirection !== '' }
+							onDeselect={ () => setAttributes( { flexDirection: '' } ) }
+							isShownByDefault
+						>
+							<SelectControl
+								label={ __( 'Flex direction', 'sgs-blocks' ) }
+								value={ flexDirection || '' }
+								options={ FLEX_DIRECTION_OPTIONS }
+								onChange={ ( val ) =>
+									setAttributes( { flexDirection: val } )
+								}
+								help={ __(
+									'Reverses or stacks the row’s elements instead of the normal left-to-right order.',
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
 					) }
 					{ isGrid && (
 						<>
-							<SelectControl
+							<ToolsPanelItem
 								label={ __( 'Justify items', 'sgs-blocks' ) }
-								value={ justifyItems || 'stretch' }
-								options={ JUSTIFY_ITEMS_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes( { justifyItems: val } )
-								}
-								help={ __(
-									'How each element sits inside its own column when narrower than the column.',
-									'sgs-blocks'
-								) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<SelectControl
+								hasValue={ () => ( justifyItems || 'stretch' ) !== 'stretch' }
+								onDeselect={ () => setAttributes( { justifyItems: 'stretch' } ) }
+								isShownByDefault
+							>
+								<SelectControl
+									label={ __( 'Justify items', 'sgs-blocks' ) }
+									value={ justifyItems || 'stretch' }
+									options={ JUSTIFY_ITEMS_OPTIONS }
+									onChange={ ( val ) =>
+										setAttributes( { justifyItems: val } )
+									}
+									help={ __(
+										'How each element sits inside its own column when narrower than the column.',
+										'sgs-blocks'
+									) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
 								label={ __( 'Align content', 'sgs-blocks' ) }
-								value={ alignContent || 'stretch' }
-								options={ ALIGN_CONTENT_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes( { alignContent: val } )
-								}
-								help={ __(
-									'Spacing between grid rows when this row has more than one row of elements.',
-									'sgs-blocks'
-								) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<ResponsiveOverride
-								label={ __(
-									'Custom column template',
-									'sgs-blocks'
-								) }
-								value={ gridTemplateColumns }
-								onChange={ ( obj ) =>
-									setAttributes( {
-										gridTemplateColumns: obj,
-									} )
-								}
+								hasValue={ () => ( alignContent || 'stretch' ) !== 'stretch' }
+								onDeselect={ () => setAttributes( { alignContent: 'stretch' } ) }
 							>
-								{ ( {
-									ownValue,
-									effectiveValue,
-									inherited,
-									setOwnValue,
-								} ) => (
-									<TextControl
-										value={ ownValue }
-										onChange={ setOwnValue }
-										placeholder={
-											inherited ? effectiveValue : ''
-										}
-										help={ __(
-											"Advanced override — CSS grid-template-columns, e.g. '5fr 3fr'. Leave blank to use the Maximum columns count above.",
-											'sgs-blocks'
-										) }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
-									/>
-								) }
-							</ResponsiveOverride>
-							<ResponsiveOverride
+								<SelectControl
+									label={ __( 'Align content', 'sgs-blocks' ) }
+									value={ alignContent || 'stretch' }
+									options={ ALIGN_CONTENT_OPTIONS }
+									onChange={ ( val ) =>
+										setAttributes( { alignContent: val } )
+									}
+									help={ __(
+										'Spacing between grid rows when this row has more than one row of elements.',
+										'sgs-blocks'
+									) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Custom column template', 'sgs-blocks' ) }
+								hasValue={ () => !! gridTemplateColumns?.desktop || !! gridTemplateColumns?.tablet || !! gridTemplateColumns?.mobile }
+								onDeselect={ () => setAttributes( { gridTemplateColumns: {} } ) }
+							>
+								<ResponsiveOverride
+									label={ __(
+										'Custom column template',
+										'sgs-blocks'
+									) }
+									value={ gridTemplateColumns }
+									onChange={ ( obj ) =>
+										setAttributes( {
+											gridTemplateColumns: obj,
+										} )
+									}
+								>
+									{ ( {
+										ownValue,
+										effectiveValue,
+										inherited,
+										setOwnValue,
+									} ) => (
+										<TextControl
+											value={ ownValue }
+											onChange={ setOwnValue }
+											placeholder={
+												inherited ? effectiveValue : ''
+											}
+											help={ __(
+												"Advanced override — CSS grid-template-columns, e.g. '5fr 3fr'. Leave blank to use the Maximum columns count above.",
+												'sgs-blocks'
+											) }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+									) }
+								</ResponsiveOverride>
+							</ToolsPanelItem>
+							<ToolsPanelItem
 								label={ __( 'Row template', 'sgs-blocks' ) }
-								value={ gridTemplateRows }
-								onChange={ ( obj ) =>
-									setAttributes( {
-										gridTemplateRows: obj,
-									} )
-								}
+								hasValue={ () => !! gridTemplateRows?.desktop || !! gridTemplateRows?.tablet || !! gridTemplateRows?.mobile }
+								onDeselect={ () => setAttributes( { gridTemplateRows: {} } ) }
 							>
-								{ ( {
-									ownValue,
-									effectiveValue,
-									inherited,
-									setOwnValue,
-								} ) => (
-									<TextControl
-										value={ ownValue }
-										onChange={ setOwnValue }
-										placeholder={
-											inherited ? effectiveValue : ''
-										}
-										help={ __(
-											"CSS grid-template-rows, e.g. 'auto 1fr'. Leave blank for the browser default.",
-											'sgs-blocks'
-										) }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
-									/>
-								) }
-							</ResponsiveOverride>
-							<TextControl
+								<ResponsiveOverride
+									label={ __( 'Row template', 'sgs-blocks' ) }
+									value={ gridTemplateRows }
+									onChange={ ( obj ) =>
+										setAttributes( {
+											gridTemplateRows: obj,
+										} )
+									}
+								>
+									{ ( {
+										ownValue,
+										effectiveValue,
+										inherited,
+										setOwnValue,
+									} ) => (
+										<TextControl
+											value={ ownValue }
+											onChange={ setOwnValue }
+											placeholder={
+												inherited ? effectiveValue : ''
+											}
+											help={ __(
+												"CSS grid-template-rows, e.g. 'auto 1fr'. Leave blank for the browser default.",
+												'sgs-blocks'
+											) }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+									) }
+								</ResponsiveOverride>
+							</ToolsPanelItem>
+							<ToolsPanelItem
 								label={ __( 'Auto rows', 'sgs-blocks' ) }
-								value={ gridAutoRows || '' }
-								onChange={ ( val ) =>
-									setAttributes( { gridAutoRows: val } )
-								}
-								help={ __(
-									"Sets grid-auto-rows, e.g. '1fr' for equal-height rows or 'minmax(100px,auto)'.",
-									'sgs-blocks'
-								) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
+								hasValue={ () => gridAutoRows !== '' }
+								onDeselect={ () => setAttributes( { gridAutoRows: '' } ) }
+							>
+								<TextControl
+									label={ __( 'Auto rows', 'sgs-blocks' ) }
+									value={ gridAutoRows || '' }
+									onChange={ ( val ) =>
+										setAttributes( { gridAutoRows: val } )
+									}
+									help={ __(
+										"Sets grid-auto-rows, e.g. '1fr' for equal-height rows or 'minmax(100px,auto)'.",
+										'sgs-blocks'
+									) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
 						</>
 					) }
-				</PanelBody>
+				</ToolsPanel>
 				<ResponsiveBoxControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }

@@ -141,10 +141,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"testimonials": {
-			"type": "array",
-			"default": []
-		},
 		"autoplay": {
 			"type": "boolean",
 			"default": true

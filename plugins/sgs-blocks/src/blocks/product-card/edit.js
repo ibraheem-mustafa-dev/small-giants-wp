@@ -387,224 +387,272 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 		value ? `${ __( 'Live value:', 'sgs-blocks' ) } ${ value }` : undefined;
 
 	return (
-		<PanelBody
-			title={ __( 'Content overrides', 'sgs-blocks' ) }
-			initialOpen={ false }
-		>
-			<p style={ { marginTop: 0 } }>
+		<>
+			<p style={ { marginTop: 0, marginBottom: 16 } }>
 				{ __(
-					'Replace individual live product details with your own text. Switching an override off keeps your text for later. Price always comes from the product.',
-					'sgs-blocks'
+					"Replace individual live product details with your own text. Switching an override off keeps your text for later. Price always comes from the product.",
+					"sgs-blocks"
 				) }
 			</p>
-
-			{ /* Name */ }
-			<ToggleControl
-				label={ __( 'Override name', 'sgs-blocks' ) }
-				checked={ isOn( 'name' ) }
-				onChange={ ( on ) => toggle( 'name', on ) }
-				help={ ! isOn( 'name' ) ? liveHelp( liveName ) : undefined }
-				__nextHasNoMarginBottom
-			/>
-			{ isOn( 'name' ) && (
-				<TextControl
-					label={ __( 'Name', 'sgs-blocks' ) }
-					value={ attributes.productName || '' }
-					onChange={ ( v ) =>
-						setAttributes( { productName: v } )
-					}
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-			) }
-
-			{ /* Description */ }
-			<ToggleControl
-				label={ __( 'Override description', 'sgs-blocks' ) }
-				checked={ isOn( 'description' ) }
-				onChange={ ( on ) => toggle( 'description', on ) }
-				help={
-					! isOn( 'description' )
-						? liveHelp( liveDesc )
-						: undefined
+			<ToolsPanel
+				label={ __( "Content overrides", "sgs-blocks" ) }
+				resetAll={ () =>
+					setAttributes( {
+						overrideElements: [],
+						productName: "",
+						description: "",
+						trialTag: "",
+						featuredTag: "",
+						image: "",
+						imageId: 0,
+						imageAlt: "",
+						ctaText: "",
+						ctaUrl: "",
+					} )
 				}
-				__nextHasNoMarginBottom
-			/>
-			{ isOn( 'description' ) && (
-				<TextareaControl
-					label={ __( 'Description', 'sgs-blocks' ) }
-					value={ attributes.description || '' }
-					onChange={ ( v ) =>
-						setAttributes( { description: v } )
-					}
-					__nextHasNoMarginBottom
-				/>
-			) }
+			>
+				{ /* Name */ }
+				<ToolsPanelItem
+					label={ __( "Override name", "sgs-blocks" ) }
+					hasValue={ () => isOn( "name" ) }
+					onDeselect={ () => toggle( "name", false ) }
+					isShownByDefault
+				>
+					<ToggleControl
+						label={ __( "Override name", "sgs-blocks" ) }
+						checked={ isOn( "name" ) }
+						onChange={ ( on ) => toggle( "name", on ) }
+						help={ ! isOn( "name" ) ? liveHelp( liveName ) : undefined }
+						__nextHasNoMarginBottom
+					/>
+					{ isOn( "name" ) && (
+						<TextControl
+							label={ __( "Name", "sgs-blocks" ) }
+							value={ attributes.productName || "" }
+							onChange={ ( v ) =>
+								setAttributes( { productName: v } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+				</ToolsPanelItem>
 
-			{ /* Badge */ }
-			<ToggleControl
-				label={ __( 'Override badge', 'sgs-blocks' ) }
-				checked={ isOn( 'badge' ) }
-				onChange={ ( on ) => toggle( 'badge', on ) }
-				__nextHasNoMarginBottom
-			/>
-			{ isOn( 'badge' ) &&
-				( badgeApplies ? (
-					<TextControl
-						label={ __( 'Badge text', 'sgs-blocks' ) }
-						value={ attributes[ badgeAttr ] || '' }
-						onChange={ ( v ) =>
-							setAttributes( { [ badgeAttr ]: v } )
+				{ /* Description */ }
+				<ToolsPanelItem
+					label={ __( "Override description", "sgs-blocks" ) }
+					hasValue={ () => isOn( "description" ) }
+					onDeselect={ () => toggle( "description", false ) }
+					isShownByDefault
+				>
+					<ToggleControl
+						label={ __( "Override description", "sgs-blocks" ) }
+						checked={ isOn( "description" ) }
+						onChange={ ( on ) => toggle( "description", on ) }
+						help={
+							! isOn( "description" )
+								? liveHelp( liveDesc )
+								: undefined
 						}
 						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
-				) : (
-					<Notice status="info" isDismissible={ false }>
-						{ __(
-							'Badges show on the Trial and Featured variants. Choose one under Card.',
-							'sgs-blocks'
-						) }
-					</Notice>
-				) ) }
+					{ isOn( "description" ) && (
+						<TextareaControl
+							label={ __( "Description", "sgs-blocks" ) }
+							value={ attributes.description || "" }
+							onChange={ ( v ) =>
+								setAttributes( { description: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					) }
+				</ToolsPanelItem>
 
-			{ /* Image */ }
-			<ToggleControl
-				label={ __( 'Override image', 'sgs-blocks' ) }
-				checked={ isOn( 'image' ) }
-				onChange={ ( on ) => toggle( 'image', on ) }
-				help={ __(
-					'Sets the card’s default image. Variation photos still swap in when an option is selected.',
-					'sgs-blocks'
-				) }
-				__nextHasNoMarginBottom
-			/>
-			{ isOn( 'image' ) && (
-				<>
-					{ galleryImages.length > 0 && (
-						<div
-							style={ {
-								display: 'flex',
-								flexWrap: 'wrap',
-								gap: 8,
-								margin: '8px 0',
-							} }
-							aria-label={ __(
-								'Product gallery images',
-								'sgs-blocks'
+				{ /* Badge */ }
+				<ToolsPanelItem
+					label={ __( "Override badge", "sgs-blocks" ) }
+					hasValue={ () => isOn( "badge" ) }
+					onDeselect={ () => toggle( "badge", false ) }
+				>
+					<ToggleControl
+						label={ __( "Override badge", "sgs-blocks" ) }
+						checked={ isOn( "badge" ) }
+						onChange={ ( on ) => toggle( "badge", on ) }
+						__nextHasNoMarginBottom
+					/>
+					{ isOn( "badge" ) &&
+						( badgeApplies ? (
+							<TextControl
+								label={ __( "Badge text", "sgs-blocks" ) }
+								value={ attributes[ badgeAttr ] || "" }
+								onChange={ ( v ) =>
+									setAttributes( { [ badgeAttr ]: v } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) : (
+							<Notice status="info" isDismissible={ false }>
+								{ __(
+									"Badges show on the Trial and Featured variants. Choose one under Card.",
+									"sgs-blocks"
+								) }
+							</Notice>
+						) ) }
+				</ToolsPanelItem>
+
+				{ /* Image */ }
+				<ToolsPanelItem
+					label={ __( "Override image", "sgs-blocks" ) }
+					hasValue={ () => isOn( "image" ) }
+					onDeselect={ () => toggle( "image", false ) }
+					isShownByDefault
+				>
+					<ToggleControl
+						label={ __( "Override image", "sgs-blocks" ) }
+						checked={ isOn( "image" ) }
+						onChange={ ( on ) => toggle( "image", on ) }
+						help={ __(
+							'Sets the card’s default image. Variation photos still swap in when an option is selected.',
+							"sgs-blocks"
+						) }
+						__nextHasNoMarginBottom
+					/>
+					{ isOn( "image" ) && (
+						<>
+							{ galleryImages.length > 0 && (
+								<div
+									style={ {
+										display: "flex",
+										flexWrap: "wrap",
+										gap: 8,
+										margin: "8px 0",
+									} }
+									aria-label={ __(
+										"Product gallery images",
+										"sgs-blocks"
+									) }
+								>
+									{ galleryImages.map( ( img, i ) => (
+										<Button
+											key={ img.id || i }
+											onClick={ () =>
+												setAttributes( {
+													image: img.src,
+													// img is a WooCommerce REST product image object
+													// ({id,src,name,alt}) — img.id is a real WP
+													// attachment ID, not a synthetic gallery index.
+													imageId: img.id || 0,
+													imageAlt: img.alt || "",
+												} )
+											}
+											aria-label={ `${ __(
+												"Use gallery image",
+												"sgs-blocks"
+											) } ${ i + 1 }` }
+											style={ {
+												padding: 0,
+												width: 48,
+												height: 48,
+												minWidth: 44,
+												minHeight: 44,
+												overflow: "hidden",
+												borderRadius: 4,
+												border:
+													attributes.image === img.src
+														? "2px solid var(--wp-admin-theme-color, #007cba)"
+														: "2px solid transparent",
+											} }
+										>
+											<img
+												src={ img.src }
+												alt={ img.alt || "" }
+												style={ {
+													width: "100%",
+													height: "100%",
+													objectFit: "cover",
+												} }
+											/>
+										</Button>
+									) ) }
+								</div>
 							) }
-						>
-							{ galleryImages.map( ( img, i ) => (
-								<Button
-									key={ img.id || i }
-									onClick={ () =>
+							<MediaUploadCheck>
+								<MediaUpload
+									onSelect={ ( media ) =>
 										setAttributes( {
-											image: img.src,
-											// img is a WooCommerce REST product image object
-											// ({id,src,name,alt}) — img.id is a real WP
-											// attachment ID, not a synthetic gallery index.
-											imageId: img.id || 0,
-											imageAlt: img.alt || '',
+											image: media.url,
+											imageId: media.id || 0,
+											imageAlt: media.alt || "",
 										} )
 									}
-									aria-label={ `${ __(
-										'Use gallery image',
-										'sgs-blocks'
-									) } ${ i + 1 }` }
-									style={ {
-										padding: 0,
-										width: 48,
-										height: 48,
-										minWidth: 44,
-										minHeight: 44,
-										overflow: 'hidden',
-										borderRadius: 4,
-										border:
-											attributes.image === img.src
-												? '2px solid var(--wp-admin-theme-color, #007cba)'
-												: '2px solid transparent',
-									} }
-								>
-									<img
-										src={ img.src }
-										alt={ img.alt || '' }
-										style={ {
-											width: '100%',
-											height: '100%',
-											objectFit: 'cover',
-										} }
-									/>
-								</Button>
-							) ) }
-						</div>
-					) }
-					<MediaUploadCheck>
-						<MediaUpload
-							onSelect={ ( media ) =>
-								setAttributes( {
-									image: media.url,
-									imageId: media.id || 0,
-									imageAlt: media.alt || '',
-								} )
-							}
-							allowedTypes={ [ 'image' ] }
-							render={ ( { open } ) => (
-								<Button
-									variant="secondary"
-									onClick={ open }
-								>
-									{ __(
-										'Choose another image',
-										'sgs-blocks'
+									allowedTypes={ [ "image" ] }
+									render={ ( { open } ) => (
+										<Button
+											variant="secondary"
+											onClick={ open }
+										>
+											{ __(
+												"Choose another image",
+												"sgs-blocks"
+											) }
+										</Button>
 									) }
-								</Button>
-							) }
-						/>
-					</MediaUploadCheck>
-				</>
-			) }
-
-			{ /* CTA */ }
-			<ToggleControl
-				label={ __( 'Override button', 'sgs-blocks' ) }
-				checked={ isOn( 'cta' ) }
-				onChange={ ( on ) => toggle( 'cta', on ) }
-				__nextHasNoMarginBottom
-			/>
-			{ isOn( 'cta' ) && (
-				<>
-					<TextControl
-						label={ __( 'Button text', 'sgs-blocks' ) }
-						value={ attributes.ctaText || '' }
-						onChange={ ( v ) =>
-							setAttributes( { ctaText: v } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ ( ctaBehaviour || 'learn-more' ) ===
-					'learn-more' ? (
-						/* Spec 35 §2 LINK standard, searchOnly mode — ctaUrl
-						   is a bare string with no target/rel concept. */
-						<LinkPopoverField
-							label={ __( 'Button link', 'sgs-blocks' ) }
-							value={ attributes.ctaUrl || '' }
-							onChange={ ( url ) =>
-								setAttributes( { ctaUrl: url } )
-							}
-							searchOnly
-						/>
-					) : (
-						<Notice status="info" isDismissible={ false }>
-							{ __(
-								'Only the button text is overridable for basket buttons — the button keeps its basket action.',
-								'sgs-blocks'
-							) }
-						</Notice>
+								/>
+							</MediaUploadCheck>
+						</>
 					) }
-				</>
-			) }
-		</PanelBody>
+				</ToolsPanelItem>
+
+				{ /* CTA */ }
+				<ToolsPanelItem
+					label={ __( "Override button", "sgs-blocks" ) }
+					hasValue={ () => isOn( "cta" ) }
+					onDeselect={ () => toggle( "cta", false ) }
+					isShownByDefault
+				>
+					<ToggleControl
+						label={ __( "Override button", "sgs-blocks" ) }
+						checked={ isOn( "cta" ) }
+						onChange={ ( on ) => toggle( "cta", on ) }
+						__nextHasNoMarginBottom
+					/>
+					{ isOn( "cta" ) && (
+						<>
+							<TextControl
+								label={ __( "Button text", "sgs-blocks" ) }
+								value={ attributes.ctaText || "" }
+								onChange={ ( v ) =>
+									setAttributes( { ctaText: v } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							{ ( ctaBehaviour || "learn-more" ) ===
+							"learn-more" ? (
+								/* Spec 35 §2 LINK standard, searchOnly mode — ctaUrl
+								   is a bare string with no target/rel concept. */
+								<LinkPopoverField
+									label={ __( "Button link", "sgs-blocks" ) }
+									value={ attributes.ctaUrl || "" }
+									onChange={ ( url ) =>
+										setAttributes( { ctaUrl: url } )
+									}
+									searchOnly
+								/>
+							) : (
+								<Notice status="info" isDismissible={ false }>
+									{ __(
+										"Only the button text is overridable for basket buttons — the button keeps its basket action.",
+										"sgs-blocks"
+									) }
+								</Notice>
+							) }
+						</>
+					) }
+				</ToolsPanelItem>
+			</ToolsPanel>
+		</>
 	);
 }
 
@@ -622,6 +670,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		description,
 		image,
 		imageAlt,
+		imageDecorative,
 		packSizes,
 		priceLarge,
 		priceNote,
@@ -1331,6 +1380,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
+							{ /* Typed mode only — a bound/live product photo is genuine
+							     shopping content and must never be hidden from
+							     assistive tech; this control only exists here,
+							     inside the isBuiltIn gate. */ }
+							<ToggleControl
+								label={ __( 'Product image is decorative', 'sgs-blocks' ) }
+								checked={ !! imageDecorative }
+								onChange={ ( val ) =>
+									setAttributes( { imageDecorative: val } )
+								}
+								help={ __(
+									'Turn on when this image is a visual/promotional tile rather than a real product photo — screen readers will skip it instead of reading the alt text.',
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+							/>
 							{ isTrial && (
 								<TextControl
 									label={ __( 'Trial tag text', 'sgs-blocks' ) }
@@ -1477,7 +1542,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								'What happens when the button is clicked in the live product card.',
 								'sgs-blocks'
 							) }
-							value={ ctaBehaviour || 'learn-more' }
+							value={ ctaBehaviour || "learn-more" }
 							options={ CTA_BEHAVIOUR_OPTIONS }
 							onChange={ ( v ) =>
 								setAttributes( { ctaBehaviour: v } )

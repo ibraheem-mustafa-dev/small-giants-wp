@@ -163,7 +163,7 @@ export const MEDIA_ATOMS = {
 		// Alt text is meaningless once the client marks the media decorative,
 		// and leaving both live produces an alt string no screen reader reads.
 		requires: {
-			ImageAlt: [ '!ImageIsDecorative' ],
+			ImageAlt: [ '!ImageDecorative' ],
 		},
 		reads: {},
 	},

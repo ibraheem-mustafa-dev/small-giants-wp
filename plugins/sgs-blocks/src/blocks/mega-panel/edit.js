@@ -54,7 +54,7 @@ import {
 	fillRow,
 } from '../../components';
 import { colourVar } from '../../utils';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /** Default general-variant template: 2 mega-groups (CF-10 pin) — a starting
  *  point only; the panel is NOT locked to this shape (FIX 1). */
@@ -396,83 +396,130 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Panel', 'sgs-blocks' ) }>
+				{ /* S7 pilot (2026-09-02, uniformity sweep): converted from a plain
+				   PanelBody to a ToolsPanel — all six controls (bgBlur, maxWidth,
+				   panelPadding, groupGap, borderRadius) are optional style/layout
+				   customisations, so none are marked isShownByDefault. Same pattern
+				   as team-member's optional controls. */ }
+				<ToolsPanel
+					label={ __( 'Panel', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							bgBlur: false,
+							maxWidth: undefined,
+							panelPadding: undefined,
+							groupGap: undefined,
+							borderRadius: '',
+						} )
+					}
+				>
 					{ /* Fill */ }
-					<ToggleControl
+					<ToolsPanelItem
 						label={ __( 'Background blur', 'sgs-blocks' ) }
-						help={ __(
-							'Adds a frosted-glass blur behind a translucent panel background.',
-							'sgs-blocks'
-						) }
-						checked={ !! bgBlur }
-						onChange={ ( value ) => setAttributes( { bgBlur: value } ) }
-						__nextHasNoMarginBottom
-					/>
+						hasValue={ () => !! bgBlur }
+						onDeselect={ () => setAttributes( { bgBlur: false } ) }
+					>
+						<ToggleControl
+							label={ __( 'Background blur', 'sgs-blocks' ) }
+							help={ __(
+								'Adds a frosted-glass blur behind a translucent panel background.',
+								'sgs-blocks'
+							) }
+							checked={ !! bgBlur }
+							onChange={ ( value ) => setAttributes( { bgBlur: value } ) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
 
 					{ /* Layout */ }
-					<ResponsiveControl label={ __( 'Panel max width', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => (
-							<SgsLengthControl
-								label={ __( 'Max width', 'sgs-blocks' ) }
-								hideLabelFromVision
-								value={ maxWidth?.[ breakpoint ] || '' }
-								onChange={ ( value ) =>
-									setAttributes( {
-										maxWidth: { ...maxWidth, [ breakpoint ]: value || undefined },
-									} )
-								}
-								presets={ false }
-							/>
-						) }
-					</ResponsiveControl>
+					<ToolsPanelItem
+						label={ __( 'Panel max width', 'sgs-blocks' ) }
+						hasValue={ () => !! maxWidth && Object.values( maxWidth ).some( v => v ) }
+						onDeselect={ () => setAttributes( { maxWidth: undefined } ) }
+					>
+						<ResponsiveControl label={ __( 'Panel max width', 'sgs-blocks' ) }>
+							{ ( breakpoint ) => (
+								<SgsLengthControl
+									label={ __( 'Max width', 'sgs-blocks' ) }
+									hideLabelFromVision
+									value={ maxWidth?.[ breakpoint ] || '' }
+									onChange={ ( value ) =>
+										setAttributes( {
+											maxWidth: { ...maxWidth, [ breakpoint ]: value || undefined },
+										} )
+									}
+									presets={ false }
+								/>
+							) }
+						</ResponsiveControl>
+					</ToolsPanelItem>
 
-					<ResponsiveBoxControl
+					<ToolsPanelItem
 						label={ __( 'Panel padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: panelPadding?.desktop ?? {},
-							tablet: panelPadding?.tablet ?? {},
-							mobile: panelPadding?.mobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( {
-								panelPadding: { ...panelPadding, [ key ]: next },
-							} );
-						} }
-					/>
+						hasValue={ () => !! panelPadding && Object.values( panelPadding ).some( box => box && Object.values( box ).some( v => v ) ) }
+						onDeselect={ () => setAttributes( { panelPadding: undefined } ) }
+					>
+						<ResponsiveBoxControl
+							label={ __( 'Panel padding', 'sgs-blocks' ) }
+							presets
+							values={ {
+								base: panelPadding?.desktop ?? {},
+								tablet: panelPadding?.tablet ?? {},
+								mobile: panelPadding?.mobile ?? {},
+							} }
+							onChange={ ( tier, next ) => {
+								const key = tier === 'base' ? 'desktop' : tier;
+								setAttributes( {
+									panelPadding: { ...panelPadding, [ key ]: next },
+								} );
+							} }
+						/>
+					</ToolsPanelItem>
 
-					<ResponsiveControl label={ __( 'Group gap', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => (
-							<SgsLengthControl
-								label={ __( 'Gap', 'sgs-blocks' ) }
-								hideLabelFromVision
-								value={ groupGap?.[ breakpoint ] || '' }
-								onChange={ ( value ) =>
-									setAttributes( {
-										groupGap: { ...groupGap, [ breakpoint ]: value || undefined },
-									} )
-								}
-								presets={ false }
-							/>
-						) }
-					</ResponsiveControl>
+					<ToolsPanelItem
+						label={ __( 'Group gap', 'sgs-blocks' ) }
+						hasValue={ () => !! groupGap && Object.values( groupGap ).some( v => v ) }
+						onDeselect={ () => setAttributes( { groupGap: undefined } ) }
+					>
+						<ResponsiveControl label={ __( 'Group gap', 'sgs-blocks' ) }>
+							{ ( breakpoint ) => (
+								<SgsLengthControl
+									label={ __( 'Gap', 'sgs-blocks' ) }
+									hideLabelFromVision
+									value={ groupGap?.[ breakpoint ] || '' }
+									onChange={ ( value ) =>
+										setAttributes( {
+											groupGap: { ...groupGap, [ breakpoint ]: value || undefined },
+										} )
+									}
+									presets={ false }
+								/>
+							) }
+						</ResponsiveControl>
+					</ToolsPanelItem>
 
 					{ /* units array REQUIRED by contract §14 field 2 — added
 					     2026-08-11 (P-SPEC35-BORDER-RESIDUALS item 3). */ }
-					<SgsLengthControl
+					<ToolsPanelItem
 						label={ __( 'Border radius', 'sgs-blocks' ) }
-						value={ borderRadius || '' }
-						onChange={ ( value ) => setAttributes( { borderRadius: value || '20px' } ) }
-						units={ [
-							{ value: 'px', label: 'px', default: 20 },
-							{ value: '%', label: '%', default: 50 },
-							{ value: 'rem', label: 'rem', default: 1.25 },
-							{ value: 'em', label: 'em', default: 1.25 },
-						] }
-						presets={ false }
-					/>
-				</PanelBody>
+						hasValue={ () => !! borderRadius }
+						onDeselect={ () => setAttributes( { borderRadius: '' } ) }
+					>
+						<SgsLengthControl
+							label={ __( 'Border radius', 'sgs-blocks' ) }
+							value={ borderRadius || '' }
+							onChange={ ( value ) => setAttributes( { borderRadius: value || '20px' } ) }
+							units={ [
+								{ value: 'px', label: 'px', default: 20 },
+								{ value: '%', label: '%', default: 50 },
+								{ value: 'rem', label: 'rem', default: 1.25 },
+								{ value: 'em', label: 'em', default: 1.25 },
+							] }
+							presets={ false }
+						/>
+					</ToolsPanelItem>
+				</ToolsPanel>
+
 
 				<PanelBody title={ __( 'Style', 'sgs-blocks' ) } initialOpen={ false }>
 					<ToggleGroupControl

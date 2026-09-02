@@ -3,13 +3,13 @@
  * Atom: MEANING (PHP half) — accessibility text for the media.
  *
  * Server twin of `src/components/media/atoms/meaning.js`. `registry.js`
- * declares `requires: { ImageAlt: [ '!ImageIsDecorative' ] }` — alt text is
+ * declares `requires: { ImageAlt: [ '!ImageDecorative' ] }` — alt text is
  * meaningless once the client marks the media decorative.
  *
  * ⛔ The `_requires` signature carries no `$block_slug` (contract-fixed:
  * `array $attributes, $prefix` only), so this reads the plain
  * `sgs_media_element_attr()` name rather than the STORED_AS-aware
- * `sgs_media_element_stored_attr()` — correct here because `ImageIsDecorative`
+ * `sgs_media_element_stored_attr()` — correct here because `ImageDecorative`
  * has no STORED_AS override anywhere in the census.
  *
  * @package SGS\Blocks
@@ -32,7 +32,7 @@ if ( ! function_exists( 'sgs_media_atom_meaning_requires' ) ) {
 	 * @return array { state, hiddenReason }.
 	 */
 	function sgs_media_atom_meaning_requires( array $attributes, $prefix ) {
-		$key           = sgs_media_element_attr( $prefix, 'ImageIsDecorative' );
+		$key           = sgs_media_element_attr( $prefix, 'ImageDecorative' );
 		$is_decorative = ! empty( $attributes[ $key ] );
 
 		if ( $is_decorative ) {

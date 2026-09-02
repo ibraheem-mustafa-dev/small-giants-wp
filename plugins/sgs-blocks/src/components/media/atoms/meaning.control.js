@@ -31,7 +31,7 @@ export function control( { attributes, setAttributes, prefix, blockSlug } ) {
 	const name = ( base ) => mediaStoredAttrName( blockSlug, prefix, base );
 	const type = resolveMediaType( attrs, prefix, blockSlug );
 	const altKey = name( altBaseFor( type ) );
-	const decorativeKey = name( 'ImageIsDecorative' );
+	const decorativeKey = name( 'ImageDecorative' );
 	const isDecorative = !! attrs[ decorativeKey ];
 
 	return [

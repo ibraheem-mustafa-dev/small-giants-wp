@@ -150,7 +150,13 @@
 			"type": "array",
 			"default": [],
 			"items": {
-				"type": "object"
+				"type": "object",
+				"properties": {
+					"decorative": {
+						"type": "boolean",
+						"default": false
+					}
+				}
 			}
 		},
 		"layout": {

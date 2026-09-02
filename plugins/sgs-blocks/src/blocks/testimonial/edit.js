@@ -181,6 +181,9 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		avatarMedia,
 		orgLogo,
 		workMedia,
+		avatarDecorative,
+		orgLogoDecorative,
+		workMediaDecorative,
 		showRating,
 		ratingType,
 		ratingStars,
@@ -592,134 +595,197 @@ export default function Edit( { attributes, setAttributes, context } ) {
 				{ /* ── Rating — visibility + content (behaviour). Appearance
 				     [colour, size] moved to the Styles tab below. ── */ }
 				{ ( effectiveVariant === 'rating-led' || effectiveVariant === 'classic-card' ) && (
-					<PanelBody title={ __( 'Rating', 'sgs-blocks' ) } initialOpen={ false }>
-						<ToggleControl
+					<ToolsPanel
+						label={ __( 'Rating', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								showRating: false,
+								ratingType: 'stars',
+								ratingStars: 0,
+								ratingScale: 0,
+								ratingScaleMax: '10',
+								verified: false,
+								sourcePlatform: '',
+								reviewDate: '',
+							} )
+						}
+					>
+						<ToolsPanelItem
 							label={ __( 'Show a rating', 'sgs-blocks' ) }
-							help={ __(
-								'Ratings are optional. Leave off for testimonials with no score.',
-								'sgs-blocks'
-							) }
-							checked={ showRating }
-							onChange={ ( val ) =>
-								setAttributes( { showRating: val } )
-							}
-							__nextHasNoMarginBottom
-						/>
-						{ showRating && effectiveVariant === 'rating-led' && (
-							<SelectControl
-								label={ __( 'Rating type', 'sgs-blocks' ) }
-								value={ ratingType }
-								options={ [
-									{
-										label: __( 'Stars (out of 5)', 'sgs-blocks' ),
-										value: 'stars',
-									},
-									{
-										label: __( 'Numeric score', 'sgs-blocks' ),
-										value: 'scale',
-									},
-								] }
+							hasValue={ () => showRating !== false }
+							onDeselect={ () => setAttributes( { showRating: false } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Show a rating', 'sgs-blocks' ) }
+								help={ __(
+									'Ratings are optional. Leave off for testimonials with no score.',
+									'sgs-blocks'
+								) }
+								checked={ showRating }
 								onChange={ ( val ) =>
-									setAttributes( { ratingType: val } )
+									setAttributes( { showRating: val } )
 								}
 								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
+						</ToolsPanelItem>
+						{ showRating && effectiveVariant === 'rating-led' && (
+							<ToolsPanelItem
+								label={ __( 'Rating type', 'sgs-blocks' ) }
+								hasValue={ () => ratingType !== 'stars' }
+								onDeselect={ () => setAttributes( { ratingType: 'stars' } ) }
+							>
+								<SelectControl
+									label={ __( 'Rating type', 'sgs-blocks' ) }
+									value={ ratingType }
+									options={ [
+										{
+											label: __( 'Stars (out of 5)', 'sgs-blocks' ),
+											value: 'stars',
+										},
+										{
+											label: __( 'Numeric score', 'sgs-blocks' ),
+											value: 'scale',
+										},
+									] }
+									onChange={ ( val ) =>
+										setAttributes( { ratingType: val } )
+									}
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
 						) }
 						{ showRating &&
 							showStarsControl &&
 							( effectiveVariant === 'classic-card' ||
 								ratingType === 'stars' ) && (
-								<RangeControl
+								<ToolsPanelItem
 									label={ __( 'Stars', 'sgs-blocks' ) }
-									value={ ratingStars }
-									onChange={ ( val ) =>
-										setAttributes( { ratingStars: val } )
-									}
-									min={ 0 }
-									max={ 5 }
-									step={ 0.5 }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
+									hasValue={ () => ratingStars !== 0 }
+									onDeselect={ () => setAttributes( { ratingStars: 0 } ) }
+								>
+									<RangeControl
+										label={ __( 'Stars', 'sgs-blocks' ) }
+										value={ ratingStars }
+										onChange={ ( val ) =>
+											setAttributes( { ratingStars: val } )
+										}
+										min={ 0 }
+										max={ 5 }
+										step={ 0.5 }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
 							) }
 						{ showRating &&
 							effectiveVariant === 'rating-led' &&
 							ratingType === 'scale' && (
 								<>
-									<RangeControl
+									<ToolsPanelItem
 										label={ __( 'Score', 'sgs-blocks' ) }
-										value={ ratingScale }
-										onChange={ ( val ) =>
-											setAttributes( {
-												ratingScale: val,
-											} )
-										}
-										min={ 0 }
-										max={ 10 }
-										step={ 0.1 }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
-									/>
-									<TextControl
-										label={ __(
-											'Out of (max)',
-											'sgs-blocks'
-										) }
-										value={ ratingScaleMax }
-										onChange={ ( val ) =>
-											setAttributes( {
-												ratingScaleMax: val,
-											} )
-										}
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
-									/>
+										hasValue={ () => ratingScale !== 0 }
+										onDeselect={ () => setAttributes( { ratingScale: 0 } ) }
+									>
+										<RangeControl
+											label={ __( 'Score', 'sgs-blocks' ) }
+											value={ ratingScale }
+											onChange={ ( val ) =>
+												setAttributes( {
+													ratingScale: val,
+												} )
+											}
+											min={ 0 }
+											max={ 10 }
+											step={ 0.1 }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+									</ToolsPanelItem>
+									<ToolsPanelItem
+										label={ __( 'Out of (max)', 'sgs-blocks' ) }
+										hasValue={ () => ratingScaleMax !== '10' }
+										onDeselect={ () => setAttributes( { ratingScaleMax: '10' } ) }
+									>
+										<TextControl
+											label={ __(
+												'Out of (max)',
+												'sgs-blocks'
+											) }
+											value={ ratingScaleMax }
+											onChange={ ( val ) =>
+												setAttributes( {
+													ratingScaleMax: val,
+												} )
+											}
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+									</ToolsPanelItem>
 								</>
 							) }
 						{ showRating && effectiveVariant === 'rating-led' && (
 							<>
-								<ToggleControl
-									label={ __(
-										'Verified badge',
-										'sgs-blocks'
-									) }
-									checked={ verified }
-									onChange={ ( val ) =>
-										setAttributes( { verified: val } )
-									}
-									__nextHasNoMarginBottom
-								/>
-								<TextControl
-									label={ __(
-										'Source platform',
-										'sgs-blocks'
-									) }
-									help={ __(
-										'e.g. Trustpilot, Google',
-										'sgs-blocks'
-									) }
-									value={ sourcePlatform }
-									onChange={ ( val ) =>
-										setAttributes( {
-											sourcePlatform: val,
-										} )
-									}
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-								<TextControl
+								<ToolsPanelItem
+									label={ __( 'Verified badge', 'sgs-blocks' ) }
+									hasValue={ () => verified !== false }
+									onDeselect={ () => setAttributes( { verified: false } ) }
+								>
+									<ToggleControl
+										label={ __(
+											'Verified badge',
+											'sgs-blocks'
+										) }
+										checked={ verified }
+										onChange={ ( val ) =>
+											setAttributes( { verified: val } )
+										}
+										__nextHasNoMarginBottom
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Source platform', 'sgs-blocks' ) }
+									hasValue={ () => sourcePlatform !== '' }
+									onDeselect={ () => setAttributes( { sourcePlatform: '' } ) }
+								>
+									<TextControl
+										label={ __(
+											'Source platform',
+											'sgs-blocks'
+										) }
+										help={ __(
+											'e.g. Trustpilot, Google',
+											'sgs-blocks'
+										) }
+										value={ sourcePlatform }
+										onChange={ ( val ) =>
+											setAttributes( {
+												sourcePlatform: val,
+											} )
+										}
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
 									label={ __( 'Review date', 'sgs-blocks' ) }
-									value={ reviewDate }
-									onChange={ ( val ) =>
-										setAttributes( { reviewDate: val } )
-									}
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
+									hasValue={ () => reviewDate !== '' }
+									onDeselect={ () => setAttributes( { reviewDate: '' } ) }
+								>
+									<TextControl
+										label={ __( 'Review date', 'sgs-blocks' ) }
+										value={ reviewDate }
+										onChange={ ( val ) =>
+											setAttributes( { reviewDate: val } )
+										}
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
 							</>
 						) }
-					</PanelBody>
+					</ToolsPanel>
 				) }
 
 				{ /* ── Media (gated per variant) ── */ }
@@ -736,6 +802,30 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onChange={ ( media ) =>
 									setAttributes( { avatarMedia: media } )
 								}
+							/>
+						) }
+						{ /* Item 18 (WCAG 1.1.1) — a person's headshot is normally
+						     informative (it identifies who gave the testimonial), so
+						     this stays OFF by default; only an operator who knows this
+						     particular photo carries no information (e.g. a stock/
+						     placeholder image) should switch it on. When on, the photo
+						     renders with an empty alt + aria-hidden instead of the
+						     media library's stored alt text. */ }
+						{ showAvatar && avatarMedia?.url && (
+							<ToggleControl
+								label={ __(
+									'Author photo is decorative',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Hides this photo from screen readers. Leave off unless the photo carries no information of its own.',
+									'sgs-blocks'
+								) }
+								checked={ !! avatarDecorative }
+								onChange={ ( val ) =>
+									setAttributes( { avatarDecorative: val } )
+								}
+								__nextHasNoMarginBottom
 							/>
 						) }
 						{ /* Art direction (2026-08-07). Same device-switched shape as
@@ -795,6 +885,25 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								}
 							/>
 						) }
+						{ /* Item 18 (WCAG 1.1.1) — a logo is normally informative (it
+						     identifies which company), so OFF by default. */ }
+						{ showLogo && orgLogo?.url && (
+							<ToggleControl
+								label={ __(
+									'Organisation logo is decorative',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Hides this logo from screen readers. Leave off unless the logo carries no information of its own.',
+									'sgs-blocks'
+								) }
+								checked={ !! orgLogoDecorative }
+								onChange={ ( val ) =>
+									setAttributes( { orgLogoDecorative: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						) }
 						{ showWork && (
 							<MediaPanel
 								label={ __( 'Work image or video', 'sgs-blocks' ) }
@@ -803,6 +912,27 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onChange={ ( media ) =>
 									setAttributes( { workMedia: media } )
 								}
+							/>
+						) }
+						{ /* Item 18 (WCAG 1.1.1) — case-study media is more plausibly
+						     decorative (a background/hero shot for the story) than the
+						     avatar/logo above, but still OFF by default: the operator
+						     makes the call per instance. */ }
+						{ showWork && workMedia?.url && (
+							<ToggleControl
+								label={ __(
+									'Work media is decorative',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Hides this image or video from screen readers. Leave off unless it carries no information of its own.',
+									'sgs-blocks'
+								) }
+								checked={ !! workMediaDecorative }
+								onChange={ ( val ) =>
+									setAttributes( { workMediaDecorative: val } )
+								}
+								__nextHasNoMarginBottom
 							/>
 						) }
 					</PanelBody>

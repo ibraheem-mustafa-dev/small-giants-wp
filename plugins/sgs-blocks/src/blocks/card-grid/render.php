@@ -738,10 +738,23 @@ foreach ( $items as $index => $item ) :
 			)
 			: null;
 	}
+	// Per-card decorative toggle (item 18 of the detector-findings backlog,
+	// D918/S8 repeater-field naming — the media slot lives inside the `items`
+	// array, so the flag does too). Blanking alt AND aria-hiding the wrapper
+	// mirrors sgs/timeline's block-level `milestoneMediaDecorative` mechanism
+	// so the image (or video) is skipped entirely by assistive tech, per
+	// WCAG 2.1 AA 1.1.1. wc-product/cpt-collection modes never reach this
+	// loop with client-authored media — `$items` there is the live product
+	// query result, not this attribute, so decorative scoping is a no-op for
+	// those modes rather than needing a separate exclusion.
+	$item_decorative = ! empty( $item['decorative'] );
+	if ( $item_decorative && is_array( $item_media ) ) {
+		$item_media['alt'] = '';
+	}
 	$media_html = ! empty( $item_media ) ? sgs_render_media( $item_media, 'sgs/card-grid' ) : '';
 	?>
 	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item"<?php echo $link_attr; ?>>
-		<div class="sgs-card-grid__image-wrap">
+		<div class="sgs-card-grid__image-wrap"<?php echo $item_decorative ? ' aria-hidden="true"' : ''; ?>>
 			<?php if ( '' !== $media_html ) : ?>
 				<?php echo $media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_render_media(). ?>
 			<?php endif; ?>

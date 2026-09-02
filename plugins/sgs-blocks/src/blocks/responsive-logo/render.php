@@ -50,6 +50,7 @@ $width            = isset( $attributes['width'] ) ? absint( $attributes['width']
 $link_to_home     = isset( $attributes['linkToHome'] ) ? (bool) $attributes['linkToHome'] : true;
 $alt              = isset( $attributes['alt'] ) ? sanitize_text_field( $attributes['alt'] ) : '';
 $align            = isset( $attributes['align'] ) ? sanitize_key( $attributes['align'] ) : 'left';
+$logo_decorative  = ! empty( $attributes['logoDecorative'] );
 
 // Validate animationStyle against allowed values.
 $allowed_animation_styles = array( 'none', 'draw-on-load', 'hover-redraw', 'scroll-trigger' );
@@ -126,6 +127,15 @@ if ( '' === $alt ) {
 		get_bloginfo( 'name' )
 	);
 }
+
+// Decorative override (WCAG 2.1 AA 1.1.1, FR-detector-18) — blanks the alt and
+// hides the <img> from assistive tech. Safe on THIS block even when linked:
+// the wrapping <a>'s accessible name comes from $link_aria_label below (set
+// independently of the image), not from the <img alt>, so a linked-home logo
+// keeps its "Go to [Site] homepage" announcement either way. Never strips the
+// link itself — that stays an operator decision (linkToHome).
+$img_alt         = $logo_decorative ? '' : $alt;
+$img_aria_hidden = $logo_decorative ? ' aria-hidden="true"' : '';
 
 // The wrapping <a>'s accessible name is driven DISTINCTLY from the <img alt>
 // (FR-36-22): the image alt describes WHAT the graphic depicts, the link's
@@ -393,13 +403,14 @@ if ( $has_svg_animation && $svg_html ) {
 		'<picture class="sgs-responsive-logo__picture sgs-responsive-logo__picture--fallback">' .
 		'<source media="(max-width: 767px)" srcset="%1$s">' .
 		'<source media="(max-width: 1023px)" srcset="%2$s">' .
-		'<img class="sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager">' .
+		'<img class="sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager"%6$s>' .
 		'</picture>',
 		esc_url( $effective_mobile_url ),
 		esc_url( $effective_tablet_url ),
 		esc_url( $desktop_url ),
-		esc_attr( $alt ),
-		absint( $width )
+		esc_attr( $img_alt ),
+		absint( $width ),
+		$img_aria_hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
 	);
 } else {
 	// Standard mode: the compact/alternate logo replaces the desktop logo per
@@ -418,25 +429,27 @@ if ( $has_svg_animation && $svg_html ) {
 		printf(
 			'<picture class="sgs-responsive-logo__picture">' .
 			'<source media="(max-width: %5$dpx)" srcset="%1$s">' .
-			'<img class="sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async">' .
+			'<img class="sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async"%6$s>' .
 			'</picture>',
 			esc_url( $compact_url ),
 			esc_url( $desktop_url ),
-			esc_attr( $alt ),
+			esc_attr( $img_alt ),
 			absint( $width ),
-			absint( $custom_px )
+			absint( $custom_px ),
+			$img_aria_hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
 		);
 	} elseif ( 'tablet' === $switch_mode && $has_alt ) {
 		// The compact logo covers the whole tablet + mobile band (<=1023px viewport).
 		printf(
 			'<picture class="sgs-responsive-logo__picture">' .
 			'<source media="(max-width: 1023px)" srcset="%1$s">' .
-			'<img class="sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async">' .
+			'<img class="sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async"%5$s>' .
 			'</picture>',
 			esc_url( $compact_url ),
 			esc_url( $desktop_url ),
-			esc_attr( $alt ),
-			absint( $width )
+			esc_attr( $img_alt ),
+			absint( $width ),
+			$img_aria_hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
 		);
 	} else {
 		// mobile (default): compact at <=767px; a distinct tablet logo (if set) fills
@@ -445,13 +458,14 @@ if ( $has_svg_animation && $svg_html ) {
 			'<picture class="sgs-responsive-logo__picture">' .
 			'<source media="(max-width: 767px)" srcset="%1$s">' .
 			'<source media="(max-width: 1023px)" srcset="%2$s">' .
-			'<img class="sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager" decoding="async">' .
+			'<img class="sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager" decoding="async"%6$s>' .
 			'</picture>',
 			esc_url( $effective_mobile_url ),
 			esc_url( $effective_tablet_url ),
 			esc_url( $desktop_url ),
-			esc_attr( $alt ),
-			absint( $width )
+			esc_attr( $img_alt ),
+			absint( $width ),
+			$img_aria_hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
 		);
 	}
 }

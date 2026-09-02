@@ -33,6 +33,47 @@ require_once dirname( __FILE__, 4 ) . '/includes/class-sgs-container-wrapper.php
 // the sibling grid blocks and keeps this new line phpcs-clean.
 require_once dirname( __DIR__, 3 ) . '/includes/class-grid-pagination.php';
 
+// Decorative-image helper (item 18, WCAG 1.1.1) — rewrites the alt attribute
+// and adds aria-hidden on the ONE <img class="sgs-post-grid__img"> that
+// Post_Grid_REST::render_card() emits per card, without touching that shared
+// class (used by both this render path and the AJAX pagination REST
+// endpoint). Guarded with function_exists() per the no-top-level-function
+// -in-per-render-php gotcha — this file runs once per block instance on a
+// page, and a bare `function` declaration here would fatal on the second
+// instance.
+if ( ! function_exists( 'sgs_post_grid_make_card_image_decorative' ) ) {
+	/**
+	 * Blank the alt text and mark aria-hidden on a rendered card's featured
+	 * image, so it is skipped entirely by assistive tech.
+	 *
+	 * @param string $card_html Escaped card markup from Post_Grid_REST::render_card().
+	 * @return string Card markup with its <img class="sgs-post-grid__img"> alt emptied + aria-hidden added.
+	 */
+	function sgs_post_grid_make_card_image_decorative( string $card_html ): string {
+		if ( false === strpos( $card_html, 'sgs-post-grid__img' ) ) {
+			return $card_html;
+		}
+
+		return preg_replace_callback(
+			'/<img\b[^>]*\bclass="[^"]*\bsgs-post-grid__img\b[^"]*"[^>]*>/',
+			static function ( array $matches ): string {
+				$tag = $matches[0];
+
+				$tag = preg_match( '/\salt="[^"]*"/', $tag )
+					? preg_replace( '/\salt="[^"]*"/', ' alt=""', $tag, 1 )
+					: preg_replace( '/<img\b/', '<img alt=""', $tag, 1 );
+
+				if ( false === strpos( $tag, 'aria-hidden' ) ) {
+					$tag = preg_replace( '/<img\b/', '<img aria-hidden="true"', $tag, 1 );
+				}
+
+				return $tag;
+			},
+			$card_html
+		);
+	}
+}
+
 // CSS length/unit sanitiser — for free-text style-engine values concatenated
 // into raw CSS declarations inside this block's scoped <style> tag. Strips
 // everything except letters, digits, dot, and % so a Contributor-authored
@@ -105,6 +146,19 @@ $shadow_colour       = sanitize_text_field( $attributes['shadowColour'] ?? '' );
 $hover_shadow        = sanitize_text_field( $attributes['shadowHover'] ?? '' );
 $hover_shadow_colour = sanitize_text_field( $attributes['shadowHoverColour'] ?? '' );
 $hover_img_zoom      = (bool) ( $attributes['imageZoomHover'] ?? true );
+
+// Decorative-image toggle (item 18, WCAG 1.1.1). Block-level, not per-post —
+// the featured image is pulled per post from a dynamic WP_Query, so which
+// post occupies a card changes on every save/reorder/AJAX page; a per-item
+// toggle would have nothing stable to attach to. When true, every card's
+// featured image is hidden from assistive tech: alt is blanked and
+// aria-hidden is set on the <img> itself. This is BELT-AND-BRACES on top of
+// Post_Grid_REST::render_card()'s existing unconditional
+// `aria-hidden="true"` on the wrapping <a> (the image is already outside the
+// accessibility tree today) — the img-level treatment is what actually makes
+// the choice visible/auditable in the markup and keeps this correct if that
+// wrapper ever stops being unconditionally hidden.
+$image_decorative = (bool) ( $attributes['imageDecorative'] ?? false );
 
 // Hover colour shifts — resolved from token slug or raw CSS colour. Emitted
 // further down (once $root_sel exists) as real declarations via
@@ -348,7 +402,11 @@ if ( $query->have_posts() ) {
 	while ( $query->have_posts() ) {
 		$query->the_post();
 		$card_params['_card_index'] = $card_index;
-		echo Post_Grid_REST::render_card( get_the_ID(), $card_params ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — render_card() escapes all output internally.
+		$card_html                  = Post_Grid_REST::render_card( get_the_ID(), $card_params );
+		if ( $image_decorative ) {
+			$card_html = sgs_post_grid_make_card_image_decorative( $card_html );
+		}
+		echo $card_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — render_card() escapes all output internally; sgs_post_grid_make_card_image_decorative() only rewrites an already-escaped alt attribute to an empty string and adds a literal aria-hidden attribute.
 		$card_index++;
 	}
 	wp_reset_postdata();

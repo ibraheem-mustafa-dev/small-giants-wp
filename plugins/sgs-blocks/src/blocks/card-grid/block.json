@@ -217,6 +217,11 @@
 					},
 					"badgeVariant": {
 						"type": "string"
+					},
+					"decorative": {
+						"type": "boolean",
+						"default": false,
+						"description": "When true, this card image is purely decorative — rendered with an empty alt attribute and aria-hidden on its wrapper so screen readers skip it (WCAG 2.1 AA 1.1.1). Manual/query modes only; wc-product/cpt-collection cards pull an informative product photo the client does not author."
 					}
 				}
 			}

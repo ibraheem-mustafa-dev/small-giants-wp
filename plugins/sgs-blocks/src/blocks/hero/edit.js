@@ -11,6 +11,7 @@ import {
 	Button,
 	TextControl,
 	BoxControl,
+	ToggleControl,
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
@@ -122,6 +123,50 @@ const TABLET_ORDER_OPTIONS = [
 	{ label: __( 'Image first (left if side-by-side, top if stacked)', 'sgs-blocks' ), value: 'media-first' },
 ];
 
+// Alignment & grid panel (gap 1, 2026-09-02) — option lists match hero's own
+// block.json enums exactly (NOT copied verbatim from sgs/site-footer-row,
+// whose flexDirection enum also carries row-reverse/column-reverse — hero's
+// enum is only '' | 'row' | 'column').
+const FLEX_DIRECTION_OPTIONS = [
+	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Row', 'sgs-blocks' ), value: 'row' },
+	{ label: __( 'Column', 'sgs-blocks' ), value: 'column' },
+];
+
+const FLEX_WRAP_OPTIONS = [
+	{ label: __( 'Wrap', 'sgs-blocks' ), value: 'wrap' },
+	{ label: __( 'No wrap', 'sgs-blocks' ), value: 'nowrap' },
+];
+
+const JUSTIFY_CONTENT_OPTIONS = [
+	{ label: __( '— default —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Flex start', 'sgs-blocks' ), value: 'flex-start' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'Flex end', 'sgs-blocks' ), value: 'flex-end' },
+	{ label: __( 'Space between', 'sgs-blocks' ), value: 'space-between' },
+	{ label: __( 'Space around', 'sgs-blocks' ), value: 'space-around' },
+];
+
+// Grid-only: justify-items / align-content. block.json enums both include
+// 'stretch' as their default member — 'stretch' IS the reset value (mirrors
+// sgs/site-footer-row's identically-shaped constants).
+const JUSTIFY_ITEMS_OPTIONS = [
+	{ label: __( 'Stretch', 'sgs-blocks' ), value: 'stretch' },
+	{ label: __( 'Start', 'sgs-blocks' ), value: 'start' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'End', 'sgs-blocks' ), value: 'end' },
+];
+
+const ALIGN_CONTENT_OPTIONS = [
+	{ label: __( 'Stretch', 'sgs-blocks' ), value: 'stretch' },
+	{ label: __( 'Start', 'sgs-blocks' ), value: 'start' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'End', 'sgs-blocks' ), value: 'end' },
+	{ label: __( 'Space between', 'sgs-blocks' ), value: 'space-between' },
+	{ label: __( 'Space around', 'sgs-blocks' ), value: 'space-around' },
+	{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
+];
+
 /**
  * Responsive RangeControl helper.
  * Renders a RangeControl wrapped in ResponsiveControl, mapping
@@ -217,6 +262,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		splitImageId,
 		splitImageUrl,
 		splitImageAlt,
+		// Decorative-image toggle (finding 18, 2026-09-02) — when true, render.php
+		// blanks the alt text and sets aria-hidden on the split-media wrapper
+		// regardless of media type (image/video/svg), so a screen reader skips it.
+		splitMediaDecorative,
 		splitVideoId,
 		splitVideoUrl,
 		splitSvgContent,
@@ -227,6 +276,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		shadow,
 		// Phase 1 — image display.
 		splitMediaObjectFit,
+		splitMediaObjectPosition,
+		splitMediaObjectPositionTablet,
+		splitMediaObjectPositionMobile,
 		splitMediaWidth,
 		splitMediaWidthTablet,
 		splitMediaWidthMobile,
@@ -245,10 +297,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		splitMediaBorderColourGradient,
 		// D701 — resting (non-hover) border-colour gradient. Sibling to the
 		// WP-native __experimentalBorder.color support (attributes.style.border.color),
-		// wins over it at render time when set. No `borderColourHover`/
-		// `borderColourHoverGradient` editor control exists yet on this block (a
-		// separate, pre-existing gap — see edit.js's absence of any "Hover" panel);
-		// this row is deliberately added independent of that gap.
+		// wins over it at render time when set. `borderColourHover`/
+		// `borderColourHoverGradient` gained their own "Hover" tab in the same
+		// SgsBorderControl popover on 2026-09-02 (gap 2 fix) — see this file's
+		// destructure block below for those two attrs.
 		borderColourGradient,
 		borderColour,
 		borderWidth,
@@ -274,6 +326,8 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		// box-tier migration, 2026-08-11) — the contentPaddingTablet/Mobile sibling
 		// attrs no longer exist in this block's schema.
 		contentPadding,
+		mediaBackground,
+		mediaBackgroundGradient,
 		mediaPadding,
 		mediaPaddingTablet,
 		mediaPaddingMobile,
@@ -293,7 +347,31 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		textAlignDesktop,
 		textAlignTablet,
 		textAlignMobile,
+		// Alignment & grid (gap 1, 2026-09-02) — the shared wrapper's `inner`
+		// grid/flex layout element (class-sgs-container-wrapper.php:3057-3068)
+		// consumes all 7 of these; none had an editor control until now. `layout`
+		// is the grid-vs-flex discriminator, mirroring sgs/site-footer-row's own
+		// `isGrid = 'grid' === layout`.
+		layout,
+		alignContent,
+		justifyContent,
+		flexDirection,
+		flexWrap,
+		gridAutoRows,
+		gridTemplateRows,
+		justifyItems,
+		// Hover-state border colour + transition (gap 2, 2026-09-02) — declared
+		// and read directly by render.php (borderColourHover/
+		// borderColourHoverGradient at render.php:221-223; transitionDuration/
+		// transitionEasing consumed by sgs_transition_vars()), previously no
+		// editor control existed for any of the four.
+		borderColourHover,
+		borderColourHoverGradient,
+		transitionDuration,
+		transitionEasing,
 	} = attributes;
+
+	const isGrid = 'grid' === layout;
 
 	const isSplit = variant === 'split';
 
@@ -693,9 +771,36 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 						/>
+						{ /* Decorative-image toggle (finding 18, 2026-09-02, WCAG 2.1 AA 1.1.1).
+						     Only the split-media element gets this — it is the only real
+						     <img>/<video>/svg the block renders; backgroundImage paints via CSS
+						     background-image and is never exposed to assistive tech, so it needs
+						     no toggle. The alt-text field itself lives inside
+						     HeroSplitMediaSourceSection (HeroSplitMediaPanelLayout.js), a shared
+						     component this task does not touch — render.php is the single source
+						     of truth and blanks alt / sets aria-hidden whenever this is on,
+						     regardless of what the alt field still shows in the editor. */ }
+						<ToggleControl
+							label={ __( 'Split image is decorative', 'sgs-blocks' ) }
+							checked={ !! splitMediaDecorative }
+							onChange={ ( val ) =>
+								setAttributes( { splitMediaDecorative: val } )
+							}
+							help={ __(
+								'Turn on when this image/video is decoration rather than information — screen readers will skip it instead of reading the alt text.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+						/>
 					</PanelBody>
 				) }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					{ /* Gap 2 (2026-09-02) — colourValue/onColourChange (single-state
+					   form) replaced with colourStates (multi-state Normal/Hover
+					   form) so borderColourHover/borderColourHoverGradient (declared,
+					   read by render.php:221-223, previously no editor control) gain
+					   a "Hover" tab in the same popover — mirrors sgs/container's and
+					   sgs/quote's identically-shaped colourStates wiring. */ }
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
 						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
@@ -703,11 +808,28 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						styleValue={ attributes.borderStyle }
 						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
-						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
-						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
-						colourLinked={ true }
+						colourStates={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: borderColour,
+								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+								linked: true,
+								gradientValue: borderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { borderColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: borderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { borderColourHoverGradient: val ?? '' } ),
+							},
+						] }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},
@@ -717,6 +839,40 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
 							setAttributes( { [ radiusKey ]: next } );
 						} }
+					/>
+				</PanelBody>
+
+				{ /* ── Hover (gap 2, 2026-09-02) — transitionDuration/
+				   transitionEasing are declared and consumed by
+				   sgs_transition_vars() (render.php) but had no editor control.
+				   Mirrors sgs/quote's identically-shaped "Hover" panel controls
+				   (edit.js:849-870) — scale/shadow-on-hover controls are NOT
+				   added here, hero declares no scaleHover/boxShadowHover attrs,
+				   only the transition pair is in scope for this fix. */ }
+				<PanelBody title={ __( 'Hover', 'sgs-blocks' ) } initialOpen={ false }>
+					<RangeControl
+						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+						value={ parseInt( transitionDuration, 10 ) || 300 }
+						onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
+						min={ 0 }
+						max={ 1000 }
+						step={ 50 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<SelectControl
+						label={ __( 'Transition easing', 'sgs-blocks' ) }
+						value={ transitionEasing }
+						options={ [
+							{ label: 'ease-in-out', value: 'ease-in-out' },
+							{ label: 'ease', value: 'ease' },
+							{ label: 'ease-in', value: 'ease-in' },
+							{ label: 'ease-out', value: 'ease-out' },
+							{ label: 'linear', value: 'linear' },
+						] }
+						onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>
@@ -1094,6 +1250,209 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					) }
 				</PanelBody>
 
+				{ /* ── Alignment & grid (gap 1, 2026-09-02, appendix to the
+				   21-render-without-control detector's findings against
+				   sgs/hero). Mirrors sgs/site-footer-row's identically-titled
+				   ToolsPanel (edit.js:510-707) — same shape, hero's own
+				   7-attribute subset (no gridTemplateColumns/alignItems: the
+				   former is the UNRELATED split-media column-ratio control
+				   above, the latter is genuinely dead on this block per grep of
+				   render.php and is deliberately not given a control here).
+				   Governs the shared wrapper's `inner` GRID layer
+				   (class-sgs-container-wrapper.php:3057-3068), a separate
+				   element from the "Container / Entire Block" panel above
+				   (which governs the OUTER wrapper). */ }
+				<PanelBody title={ __( 'Alignment & grid', 'sgs-blocks' ) } initialOpen={ false }>
+					{ /* The ToolsPanel label deliberately does NOT repeat the PanelBody
+					   title above it (rule 29 / Spec 35 Part A5 — mirrors the
+					   "Container / Entire Block" panel's own comment a few hundred
+					   lines up this file). A nested ToolsPanel names the CLUSTER it
+					   resets, not its parent. */ }
+					<ToolsPanel
+						label={ __( 'Grid & flex settings', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								alignContent: 'stretch',
+								justifyContent: '',
+								flexDirection: '',
+								flexWrap: 'wrap',
+								gridAutoRows: '',
+								gridTemplateRows: {},
+								justifyItems: 'stretch',
+							} )
+						}
+					>
+						{ ! isGrid && (
+							<ToolsPanelItem
+								label={ __( 'Flex direction', 'sgs-blocks' ) }
+								hasValue={ () => flexDirection !== '' }
+								onDeselect={ () => setAttributes( { flexDirection: '' } ) }
+								isShownByDefault
+							>
+								<ToggleGroupControl
+									label={ __( 'Flex direction', 'sgs-blocks' ) }
+									value={ flexDirection || '' }
+									onChange={ ( val ) =>
+										setAttributes( { flexDirection: val } )
+									}
+									help={ __(
+										'Reverses or stacks the content and media columns instead of the normal left-to-right order.',
+										'sgs-blocks'
+									) }
+									isBlock
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								>
+									{ FLEX_DIRECTION_OPTIONS.map( ( opt ) => (
+										<ToggleGroupControlOption
+											key={ opt.value }
+											value={ opt.value }
+											label={ opt.label }
+										/>
+									) ) }
+								</ToggleGroupControl>
+							</ToolsPanelItem>
+						) }
+						{ ! isGrid && (
+							<ToolsPanelItem
+								label={ __( 'Flex wrap', 'sgs-blocks' ) }
+								hasValue={ () => ( flexWrap || 'wrap' ) !== 'wrap' }
+								onDeselect={ () => setAttributes( { flexWrap: 'wrap' } ) }
+							>
+								<SelectControl
+									label={ __( 'Flex wrap', 'sgs-blocks' ) }
+									value={ flexWrap || 'wrap' }
+									options={ FLEX_WRAP_OPTIONS }
+									onChange={ ( val ) =>
+										setAttributes( { flexWrap: val } )
+									}
+									help={ __(
+										'Whether the content and media columns are allowed to wrap onto a new line.',
+										'sgs-blocks'
+									) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
+						) }
+						{ ! isGrid && (
+							<ToolsPanelItem
+								label={ __( 'Justify content', 'sgs-blocks' ) }
+								hasValue={ () => justifyContent !== '' }
+								onDeselect={ () => setAttributes( { justifyContent: '' } ) }
+							>
+								<SelectControl
+									label={ __( 'Justify content', 'sgs-blocks' ) }
+									value={ justifyContent || '' }
+									options={ JUSTIFY_CONTENT_OPTIONS }
+									onChange={ ( val ) =>
+										setAttributes( { justifyContent: val } )
+									}
+									help={ __(
+										'How the content and media columns are spaced along the row when they do not fill it.',
+										'sgs-blocks'
+									) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
+						) }
+						{ isGrid && (
+							<>
+								<ToolsPanelItem
+									label={ __( 'Justify items', 'sgs-blocks' ) }
+									hasValue={ () => ( justifyItems || 'stretch' ) !== 'stretch' }
+									onDeselect={ () => setAttributes( { justifyItems: 'stretch' } ) }
+									isShownByDefault
+								>
+									<SelectControl
+										label={ __( 'Justify items', 'sgs-blocks' ) }
+										value={ justifyItems || 'stretch' }
+										options={ JUSTIFY_ITEMS_OPTIONS }
+										onChange={ ( val ) =>
+											setAttributes( { justifyItems: val } )
+										}
+										help={ __(
+											'How each grid item sits inside its own column when narrower than the column.',
+											'sgs-blocks'
+										) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Align content', 'sgs-blocks' ) }
+									hasValue={ () => ( alignContent || 'stretch' ) !== 'stretch' }
+									onDeselect={ () => setAttributes( { alignContent: 'stretch' } ) }
+								>
+									<SelectControl
+										label={ __( 'Align content', 'sgs-blocks' ) }
+										value={ alignContent || 'stretch' }
+										options={ ALIGN_CONTENT_OPTIONS }
+										onChange={ ( val ) =>
+											setAttributes( { alignContent: val } )
+										}
+										help={ __(
+											'Spacing between grid rows when this section has more than one row.',
+											'sgs-blocks'
+										) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Row template', 'sgs-blocks' ) }
+									hasValue={ () => !! gridTemplateRows?.desktop || !! gridTemplateRows?.tablet || !! gridTemplateRows?.mobile }
+									onDeselect={ () => setAttributes( { gridTemplateRows: {} } ) }
+								>
+									<ResponsiveOverride
+										label={ __( 'Row template', 'sgs-blocks' ) }
+										value={ gridTemplateRows }
+										onChange={ ( obj ) =>
+											setAttributes( { gridTemplateRows: obj } )
+										}
+									>
+										{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+											<TextControl
+												value={ ownValue }
+												onChange={ setOwnValue }
+												placeholder={
+													inherited ? effectiveValue : ''
+												}
+												help={ __(
+													"CSS grid-template-rows, e.g. 'auto 1fr'. Leave blank for the browser default.",
+													'sgs-blocks'
+												) }
+												__nextHasNoMarginBottom
+												__next40pxDefaultSize
+											/>
+										) }
+									</ResponsiveOverride>
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Auto rows', 'sgs-blocks' ) }
+									hasValue={ () => gridAutoRows !== '' }
+									onDeselect={ () => setAttributes( { gridAutoRows: '' } ) }
+								>
+									<TextControl
+										label={ __( 'Auto rows', 'sgs-blocks' ) }
+										value={ gridAutoRows || '' }
+										onChange={ ( val ) =>
+											setAttributes( { gridAutoRows: val } )
+										}
+										help={ __(
+											"Sets grid-auto-rows, e.g. '1fr' for equal-height rows or 'minmax(100px,auto)'.",
+											'sgs-blocks'
+										) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+							</>
+						) }
+					</ToolsPanel>
+				</PanelBody>
+
 				{/* ── 4. Split image styling (SPLIT VARIANT ONLY — appearance for the split
 				   media column; media SELECTION for this image lives in the "Split image"
 				   panel on the Settings tab).
@@ -1113,7 +1472,38 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				   already covers every variant, so it is the one that stays. This panel is
 				   now entirely split-specific, so it is gated + retitled to say so. */ }
 				{ isSplit && (
-					<PanelBody title={ __( 'Split image styling', 'sgs-blocks' ) } initialOpen={ false }>
+					<ToolsPanel
+						label={ __( 'Split image styling', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								splitMediaObjectFit: 'cover',
+								splitMediaObjectPosition: 'center center',
+								splitMediaObjectPositionTablet: '',
+								splitMediaObjectPositionMobile: 'center 20%',
+								splitMediaWidth: undefined,
+								splitMediaWidthTablet: undefined,
+								splitMediaWidthMobile: undefined,
+								splitMediaWidthUnit: '%',
+								splitMediaHeight: {},
+								splitMediaHeightUnit: 'px',
+								splitMediaBorderRadius: {},
+								splitMediaBorderRadiusTablet: {},
+								splitMediaBorderRadiusMobile: {},
+								splitMediaBorderStyle: 'none',
+								splitMediaBorderWidth: {},
+								splitMediaBorderColour: '',
+								splitMediaBorderColourGradient: '',
+								splitMediaPadding: {},
+								splitMediaPaddingTablet: {},
+								splitMediaPaddingMobile: {},
+								mediaBackground: '',
+								mediaBackgroundGradient: '',
+								mediaPadding: {},
+								mediaPaddingTablet: {},
+								mediaPaddingMobile: {},
+							} )
+						}
+					>
 						{ /* The "Split image height" control was REMOVED 2026-08-10. It wrote
 							     the splitImageHeight/…Tablet/splitImageMobileHeight trio, which set
 							     `height` on `.sgs-hero__split-image` — the SAME property on the SAME
@@ -1133,6 +1523,36 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							     hero-specific bridge into the `custom` sizing-mode sentinel
 							     (object-fit's own vocabulary never includes it) — see that
 							     component's own docblock. */ }
+						<ToolsPanelItem
+							label={ __( 'Split media styling', 'sgs-blocks' ) }
+							hasValue={ () =>
+								splitMediaObjectFit !== 'cover' ||
+								splitMediaObjectPosition !== 'center center' ||
+								splitMediaObjectPositionTablet !== '' ||
+								splitMediaObjectPositionMobile !== 'center 20%' ||
+								splitMediaWidth ||
+								splitMediaWidthTablet ||
+								splitMediaWidthMobile ||
+								splitMediaWidthUnit !== '%' ||
+								Object.keys( splitMediaHeight ?? {} ).length > 0 ||
+								splitMediaHeightUnit !== 'px'
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									splitMediaObjectFit: 'cover',
+									splitMediaObjectPosition: 'center center',
+									splitMediaObjectPositionTablet: '',
+									splitMediaObjectPositionMobile: 'center 20%',
+									splitMediaWidth: undefined,
+									splitMediaWidthTablet: undefined,
+									splitMediaWidthMobile: undefined,
+									splitMediaWidthUnit: '%',
+									splitMediaHeight: {},
+									splitMediaHeightUnit: 'px',
+								} )
+							}
+							isShownByDefault
+						>
 							<HeroSplitMediaStylingSection
 								attributes={ attributes }
 								setAttributes={ setAttributes }
@@ -1195,7 +1615,31 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									/>
 								</>
 							) }
+						</ToolsPanelItem>
 
+						<ToolsPanelItem
+							label={ __( 'Border', 'sgs-blocks' ) }
+							hasValue={ () =>
+								Object.keys( splitMediaBorderWidth ?? {} ).length > 0 ||
+								splitMediaBorderStyle !== 'none' ||
+								splitMediaBorderColour !== '' ||
+								splitMediaBorderColourGradient !== '' ||
+								Object.keys( splitMediaBorderRadius ?? {} ).length > 0 ||
+								Object.keys( splitMediaBorderRadiusTablet ?? {} ).length > 0 ||
+								Object.keys( splitMediaBorderRadiusMobile ?? {} ).length > 0
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									splitMediaBorderRadius: {},
+									splitMediaBorderRadiusTablet: {},
+									splitMediaBorderRadiusMobile: {},
+									splitMediaBorderStyle: 'none',
+									splitMediaBorderWidth: {},
+									splitMediaBorderColour: '',
+									splitMediaBorderColourGradient: '',
+								} )
+							}
+						>
 							<SgsBorderControl
 								widthValues={ attributes.splitMediaBorderWidth ?? {} }
 								onWidthChange={ ( next ) => setAttributes( { splitMediaBorderWidth: next } ) }
@@ -1218,7 +1662,23 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									setAttributes( { [ radiusKey ]: next } );
 								} }
 							/>
+						</ToolsPanelItem>
 
+						<ToolsPanelItem
+							label={ __( 'Inner padding', 'sgs-blocks' ) }
+							hasValue={ () =>
+								Object.keys( splitMediaPadding ?? {} ).length > 0 ||
+								Object.keys( splitMediaPaddingTablet ?? {} ).length > 0 ||
+								Object.keys( splitMediaPaddingMobile ?? {} ).length > 0
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									splitMediaPadding: {},
+									splitMediaPaddingTablet: {},
+									splitMediaPaddingMobile: {},
+								} )
+							}
+						>
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Inner padding (around the image element itself)', 'sgs-blocks' ) }</p>
 							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Affects the gap between the image and the wrapper border.', 'sgs-blocks' ) }</p>
 							<ResponsiveBoxControl
@@ -1238,7 +1698,18 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									setAttributes( { [ attrMap[ tier ] ]: next } );
 								} }
 							/>
+						</ToolsPanelItem>
 
+						<ToolsPanelItem
+							label={ __( 'Background', 'sgs-blocks' ) }
+							hasValue={ () => !! mediaBackground || !! mediaBackgroundGradient }
+							onDeselect={ () =>
+								setAttributes( {
+									mediaBackground: '',
+									mediaBackgroundGradient: '',
+								} )
+							}
+						>
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Background', 'sgs-blocks' ) }</p>
 							<GradientOverlayControl
 								attributes={ attributes }
@@ -1246,6 +1717,23 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								attrNames={ gradientOverlayAttrKeys( 'mediaBackground', { solid: 'mediaBackground' } ) }
 								solidLabel={ __( 'Media background colour', 'sgs-blocks' ) }
 							/>
+						</ToolsPanelItem>
+
+						<ToolsPanelItem
+							label={ __( 'Outer padding', 'sgs-blocks' ) }
+							hasValue={ () =>
+								Object.keys( mediaPadding ?? {} ).length > 0 ||
+								Object.keys( mediaPaddingTablet ?? {} ).length > 0 ||
+								Object.keys( mediaPaddingMobile ?? {} ).length > 0
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									mediaPadding: {},
+									mediaPaddingTablet: {},
+									mediaPaddingMobile: {},
+								} )
+							}
+						>
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Outer padding (around the whole media wrapper)', 'sgs-blocks' ) }</p>
 							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Affects the gap between the wrapper and the surrounding section.', 'sgs-blocks' ) }</p>
 							<ResponsiveBoxControl
@@ -1265,7 +1753,8 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									setAttributes( { [ attrMap[ tier ] ]: next } );
 								} }
 							/>
-					</PanelBody>
+						</ToolsPanelItem>
+					</ToolsPanel>
 				) }
 
 				{ /* WS-4: mirrored sgs/container wrapper controls (section KIND).

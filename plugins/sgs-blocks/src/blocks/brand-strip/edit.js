@@ -107,8 +107,20 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 				label={ __( 'Alt text', 'sgs-blocks' ) }
 				value={ logo.alt || '' }
 				onChange={ ( val ) => update( 'alt', val ) }
+				disabled={ !! logo.decorative }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
+			/>
+
+			<ToggleControl
+				label={ __( 'Decorative — hide from screen readers', 'sgs-blocks' ) }
+				help={ __(
+					'Turn on for a purely decorative logo — screen readers will skip it entirely instead of reading alt text.',
+					'sgs-blocks'
+				) }
+				checked={ !! logo.decorative }
+				onChange={ ( val ) => update( 'decorative', val ) }
+				__nextHasNoMarginBottom
 			/>
 
 			<TextControl

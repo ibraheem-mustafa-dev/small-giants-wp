@@ -435,6 +435,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"splitMediaDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "WCAG 2.1 AA 1.1.1 (finding 18, 2026-09-02). When true, the split-media element (image/video/svg — the only real <img>/<video>/svg this block renders) is hidden from assistive tech: render.php blanks its alt text and marks it aria-hidden. Does NOT apply to backgroundImage, which paints via CSS background-image and is never exposed to a screen reader."
+		},
 		"label": {
 			"type": "string",
 			"default": "",

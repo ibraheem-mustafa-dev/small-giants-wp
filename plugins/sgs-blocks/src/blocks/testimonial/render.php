@@ -81,6 +81,18 @@ $avatar_media = $attributes['avatarMedia'] ?? null;
 $org_logo     = $attributes['orgLogo'] ?? null;
 $work_media   = $attributes['workMedia'] ?? null;
 
+// ── Decorative-image toggles (item 18, WCAG 1.1.1) ──────────────────────────
+// The media library already stores the real alt text on each attachment
+// (sgs_render_media() reads it from $attrs['alt']) — so this is not a second
+// alt field, it is the operator saying "ignore that, this picture carries no
+// information for THIS instance". When on: the media is rendered with an
+// empty alt (via a cloned attrs array, never mutating the stored attachment
+// data) AND the wrapping element carries aria-hidden="true", so a screen
+// reader skips the whole node instead of announcing a filename or nothing.
+$avatar_decorative     = ! empty( $attributes['avatarDecorative'] );
+$org_logo_decorative   = ! empty( $attributes['orgLogoDecorative'] );
+$work_media_decorative = ! empty( $attributes['workMediaDecorative'] );
+
 // ── Rating fields (fully optional — gated by showRating) ────────────────────
 $show_rating = ! empty( $attributes['showRating'] );
 $rating_type = $attributes['ratingType'] ?? 'stars';
@@ -632,6 +644,12 @@ foreach ( array( 'Tablet', 'Mobile' ) as $sgs_tier ) {
 	if ( empty( $sgs_tier_media['url'] ) ) {
 		continue;
 	}
+	// Decorative applies block-wide to every avatar tier — a client uses the
+	// author photo either as content or as decoration, not differently per
+	// device width.
+	if ( $avatar_decorative ) {
+		$sgs_tier_media = array_merge( $sgs_tier_media, array( 'alt' => '' ) );
+	}
 	$sgs_tier_inner = sgs_render_media( $sgs_tier_media, 'sgs/testimonial' );
 	if ( '' === $sgs_tier_inner ) {
 		continue;
@@ -640,16 +658,18 @@ foreach ( array( 'Tablet', 'Mobile' ) as $sgs_tier ) {
 }
 
 if ( ! empty( $avatar_media['url'] ) ) {
-	$avatar_inner = sgs_render_media( $avatar_media, 'sgs/testimonial' );
+	$avatar_media_render = $avatar_decorative ? array_merge( $avatar_media, array( 'alt' => '' ) ) : $avatar_media;
+	$avatar_inner        = sgs_render_media( $avatar_media_render, 'sgs/testimonial' );
 	if ( '' !== $avatar_inner ) {
 		$avatar_base_cls = 'sgs-testimonial__avatar';
 		if ( ! empty( $avatar_tiers ) ) {
 			$avatar_base_cls .= ' sgs-testimonial__avatar--desktop';
 		}
-		$avatar_html = '<div class="' . esc_attr( $avatar_base_cls ) . '">' . $avatar_inner . '</div>';
+		$avatar_aria = $avatar_decorative ? ' aria-hidden="true"' : '';
+		$avatar_html = '<div class="' . esc_attr( $avatar_base_cls ) . '"' . $avatar_aria . '>' . $avatar_inner . '</div>';
 		foreach ( $avatar_tiers as $sgs_tier_key => $sgs_tier_inner ) {
 			$avatar_html .= '<div class="sgs-testimonial__avatar sgs-testimonial__avatar--'
-				. esc_attr( $sgs_tier_key ) . '">' . $sgs_tier_inner . '</div>';
+				. esc_attr( $sgs_tier_key ) . '"' . $avatar_aria . '>' . $sgs_tier_inner . '</div>';
 		}
 	}
 }
@@ -675,17 +695,21 @@ if ( '' !== $avatar_html && ! empty( $avatar_tiers ) ) {
 
 $logo_html = '';
 if ( ! empty( $org_logo['url'] ) ) {
-	$logo_inner = sgs_render_media( $org_logo, 'sgs/testimonial' );
+	$org_logo_render = $org_logo_decorative ? array_merge( $org_logo, array( 'alt' => '' ) ) : $org_logo;
+	$logo_inner      = sgs_render_media( $org_logo_render, 'sgs/testimonial' );
 	if ( '' !== $logo_inner ) {
-		$logo_html = '<div class="sgs-testimonial__logo">' . $logo_inner . '</div>';
+		$logo_aria = $org_logo_decorative ? ' aria-hidden="true"' : '';
+		$logo_html = '<div class="sgs-testimonial__logo"' . $logo_aria . '>' . $logo_inner . '</div>';
 	}
 }
 
 $work_html = '';
 if ( ! empty( $work_media['url'] ) ) {
-	$work_inner = sgs_render_media( $work_media, 'sgs/testimonial' );
+	$work_media_render = $work_media_decorative ? array_merge( $work_media, array( 'alt' => '' ) ) : $work_media;
+	$work_inner        = sgs_render_media( $work_media_render, 'sgs/testimonial' );
 	if ( '' !== $work_inner ) {
-		$work_html = '<figure class="sgs-testimonial__work">' . $work_inner . '</figure>';
+		$work_aria = $work_media_decorative ? ' aria-hidden="true"' : '';
+		$work_html = '<figure class="sgs-testimonial__work"' . $work_aria . '>' . $work_inner . '</figure>';
 	}
 }
 
@@ -884,10 +908,10 @@ if ( 'none' !== $border_style ) {
 	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
 	// through to the browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt          = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr          = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb          = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl          = '' !== $border_width_left ? $border_width_left : '0';
 		$scoped_css[] = $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
 	}
 

@@ -41,9 +41,9 @@ return array(
 		"Height"                   => "object",
 		"HeightUnit"               => "string",
 		"ImageAlt"                 => "string",
+		"ImageDecorative"          => "boolean",
 		"ImageHeight"              => "number",
 		"ImageId"                  => "integer",
-		"ImageIsDecorative"        => "boolean",
 		"ImageUrl"                 => "string",
 		"ImageWidth"               => "number",
 		"KenBurns"                 => "boolean",
@@ -139,7 +139,7 @@ return array(
 		"meaning"      => array(
 			"ImageAlt",
 			"VideoAlt",
-			"ImageIsDecorative",
+			"ImageDecorative",
 		),
 		"motion"       => array(
 			"KenBurns",
@@ -278,7 +278,7 @@ return array(
 		"meaning"            => array(
 			"ImageAlt",
 			"VideoAlt",
-			"ImageIsDecorative",
+			"ImageDecorative",
 		),
 		"media-padding"      => array(
 			"Padding",

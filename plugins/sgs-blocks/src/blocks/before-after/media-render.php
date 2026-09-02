@@ -69,6 +69,20 @@ if ( ! function_exists( 'sgs_before_after_resolve_image' ) ) {
 		$url    = isset( $attributes[ $prefix . 'ImageUrl' ] ) ? (string) $attributes[ $prefix . 'ImageUrl' ] : '';
 		$alt    = isset( $attributes[ $prefix . 'ImageAlt' ] ) ? (string) $attributes[ $prefix . 'ImageAlt' ] : '';
 
+		// Decorative slot (D918/S8 {element}Decorative convention). WordPress
+		// already stores the real alt text on the ATTACHMENT/attribute, which
+		// is where it belongs — this is the operator saying "ignore that, this
+		// picture carries no information". It renders with an empty alt AND
+		// aria-hidden, so a screen reader skips it entirely instead of
+		// announcing a filename. Block-level per SLOT, mirroring how
+		// milestoneMediaDecorative is per-block on sgs/timeline — a client
+		// uses a comparison slot either as content or as decoration, not one
+		// way on desktop and another on a tier.
+		$decorative = ! empty( $attributes[ $prefix . 'ImageDecorative' ] );
+		if ( $decorative ) {
+			$alt = '';
+		}
+
 		if ( '' === trim( $url ) && $id <= 0 ) {
 			return array(
 				'html'        => '',
@@ -128,19 +142,18 @@ if ( ! function_exists( 'sgs_before_after_resolve_image' ) ) {
 		 * @param string $img_cls Full class attribute for this <img>.
 		 * @return string HTML, or '' when neither source resolves.
 		 */
-		$emit_img = static function ( int $img_id, string $img_url, string $img_cls ) use ( $alt ): string {
+		$emit_img = static function ( int $img_id, string $img_url, string $img_cls ) use ( $alt, $decorative ): string {
 			if ( $img_id > 0 ) {
-				$markup = wp_get_attachment_image(
-					$img_id,
-					'full',
-					false,
-					array(
-						'class'    => $img_cls,
-						'alt'      => $alt,
-						'loading'  => 'lazy',
-						'decoding' => 'async',
-					)
+				$img_attrs = array(
+					'class'    => $img_cls,
+					'alt'      => $alt,
+					'loading'  => 'lazy',
+					'decoding' => 'async',
 				);
+				if ( $decorative ) {
+					$img_attrs['aria-hidden'] = 'true';
+				}
+				$markup = wp_get_attachment_image( $img_id, 'full', false, $img_attrs );
 				if ( '' !== $markup ) {
 					return $markup;
 				}
@@ -149,10 +162,11 @@ if ( ! function_exists( 'sgs_before_after_resolve_image' ) ) {
 				return '';
 			}
 			return sprintf(
-				'<img class="%1$s" src="%2$s" alt="%3$s" loading="lazy" decoding="async" />',
+				'<img class="%1$s" src="%2$s" alt="%3$s" loading="lazy" decoding="async"%4$s />',
 				esc_attr( $img_cls ),
 				esc_url( $img_url ),
-				esc_attr( $alt )
+				esc_attr( $alt ),
+				$decorative ? ' aria-hidden="true"' : ''
 			);
 		};
 

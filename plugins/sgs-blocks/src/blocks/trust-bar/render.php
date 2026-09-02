@@ -503,12 +503,23 @@ foreach ( $items as $tb_item_index => $item ) {
 			$media_alt = isset( $item['label'] ) ? (string) $item['label'] : '';
 		}
 
+		// Decorative badge image (WCAG 2.1 AA 1.1.1) — an explicit per-badge
+		// editorial choice that this image carries no information (e.g. a
+		// repeating brand-mark pattern where the names already appear as
+		// text elsewhere). Blank the alt AND add aria-hidden so assistive
+		// tech skips it entirely rather than announcing an empty image.
+		$item_decorative = ! empty( $item['decorative'] );
+		if ( $item_decorative ) {
+			$media_alt = '';
+		}
+
 		$badge_content = '';
 		if ( $media_url ) {
 			$badge_content .= sprintf(
-				'<img src="%s" alt="%s" class="sgs-trust-bar__badge-img" loading="lazy" />',
+				'<img src="%s" alt="%s"%s class="sgs-trust-bar__badge-img" loading="lazy" />',
 				esc_url( $media_url ),
-				esc_attr( $media_alt )
+				esc_attr( $media_alt ),
+				$item_decorative ? ' aria-hidden="true"' : ''
 			);
 		}
 		if ( $item_label ) {

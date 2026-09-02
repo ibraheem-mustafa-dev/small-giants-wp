@@ -181,6 +181,10 @@
 					"alt": {
 						"type": "string"
 					},
+					"decorative": {
+						"type": "boolean",
+						"default": false
+					},
 					"linkUrl": {
 						"type": "string"
 					},

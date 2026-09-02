@@ -17,6 +17,8 @@ import {
 	RangeControl,
 	TextControl,
 	Notice,
+	ToolsPanel,
+	ToolsPanelItem,
 } from '@wordpress/components';
 import { ResponsiveOverride, SgsColourPanel,
 	SgsBorderControl,
@@ -282,36 +284,74 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				{ variant === 'slider' && (
-					<PanelBody title={ __( 'Slider Settings', 'sgs-blocks' ) } initialOpen={ false }>
-						<ToggleControl
+					<ToolsPanel
+						label={ __( 'Slider Settings', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								autoplay: false,
+								autoplaySpeed: 5000,
+								showDots: true,
+								showArrows: true,
+								dragToScroll: false,
+								dragMomentum: true,
+								loopCarousel: false,
+							} )
+						}
+					>
+						<ToolsPanelItem
 							label={ __( 'Autoplay', 'sgs-blocks' ) }
-							checked={ autoplay }
-							onChange={ ( value ) => setAttributes( { autoplay: value } ) }
-						/>
+							hasValue={ () => autoplay !== false }
+							onDeselect={ () => setAttributes( { autoplay: false } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Autoplay', 'sgs-blocks' ) }
+								checked={ autoplay }
+								onChange={ ( value ) => setAttributes( { autoplay: value } ) }
+							/>
+						</ToolsPanelItem>
 
 						{ autoplay && (
-							<RangeControl
+							<ToolsPanelItem
 								label={ __( 'Autoplay Speed (ms)', 'sgs-blocks' ) }
-								value={ autoplaySpeed }
-								onChange={ ( value ) => setAttributes( { autoplaySpeed: value } ) }
-								min={ 2000 }
-								max={ 10000 }
-								step={ 500 }
-								__next40pxDefaultSize
-							/>
+								hasValue={ () => autoplaySpeed !== 5000 }
+								onDeselect={ () => setAttributes( { autoplaySpeed: 5000 } ) }
+							>
+								<RangeControl
+									label={ __( 'Autoplay Speed (ms)', 'sgs-blocks' ) }
+									value={ autoplaySpeed }
+									onChange={ ( value ) => setAttributes( { autoplaySpeed: value } ) }
+									min={ 2000 }
+									max={ 10000 }
+									step={ 500 }
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
 						) }
 
-						<ToggleControl
+						<ToolsPanelItem
 							label={ __( 'Show dots', 'sgs-blocks' ) }
-							checked={ showDots }
-							onChange={ ( value ) => setAttributes( { showDots: value } ) }
-						/>
+							hasValue={ () => showDots !== true }
+							onDeselect={ () => setAttributes( { showDots: true } ) }
+						>
+							<ToggleControl
+								label={ __( 'Show dots', 'sgs-blocks' ) }
+								checked={ showDots }
+								onChange={ ( value ) => setAttributes( { showDots: value } ) }
+							/>
+						</ToolsPanelItem>
 
-						<ToggleControl
+						<ToolsPanelItem
 							label={ __( 'Show arrows', 'sgs-blocks' ) }
-							checked={ showArrows }
-							onChange={ ( value ) => setAttributes( { showArrows: value } ) }
-						/>
+							hasValue={ () => showArrows !== true }
+							onDeselect={ () => setAttributes( { showArrows: true } ) }
+						>
+							<ToggleControl
+								label={ __( 'Show arrows', 'sgs-blocks' ) }
+								checked={ showArrows }
+								onChange={ ( value ) => setAttributes( { showArrows: value } ) }
+							/>
+						</ToolsPanelItem>
 
 						{ /*
 						 * Draggable + Inertia opt-in (Spec 38 FR-38-13),
@@ -320,30 +360,43 @@ export default function Edit( { attributes, setAttributes } ) {
 						 * renders — touch keeps its native scroll either way,
 						 * so no "touch" caveat belongs in the help text.
 						 */ }
-						<ToggleControl
+						<ToolsPanelItem
 							label={ __( 'Drag to scroll (desktop)', 'sgs-blocks' ) }
-							checked={ dragToScroll }
-							onChange={ ( value ) =>
-								setAttributes( { dragToScroll: value } )
-							}
-							help={ __(
-								'Lets visitors click and drag with a mouse to scroll the reviews, on top of the usual arrows, dots, swipe and scrollbar.',
-								'sgs-blocks'
-							) }
-						/>
-
-						{ dragToScroll && (
+							hasValue={ () => dragToScroll !== false }
+							onDeselect={ () => setAttributes( { dragToScroll: false } ) }
+							isShownByDefault
+						>
 							<ToggleControl
-								label={ __( 'Momentum', 'sgs-blocks' ) }
-								checked={ dragMomentum }
+								label={ __( 'Drag to scroll (desktop)', 'sgs-blocks' ) }
+								checked={ dragToScroll }
 								onChange={ ( value ) =>
-									setAttributes( { dragMomentum: value } )
+									setAttributes( { dragToScroll: value } )
 								}
 								help={ __(
-									'Slider keeps coasting briefly after the visitor releases the drag, like a real scroll flick.',
+									'Lets visitors click and drag with a mouse to scroll the reviews, on top of the usual arrows, dots, swipe and scrollbar.',
 									'sgs-blocks'
 								) }
 							/>
+						</ToolsPanelItem>
+
+						{ dragToScroll && (
+							<ToolsPanelItem
+								label={ __( 'Momentum', 'sgs-blocks' ) }
+								hasValue={ () => dragMomentum !== true }
+								onDeselect={ () => setAttributes( { dragMomentum: true } ) }
+							>
+								<ToggleControl
+									label={ __( 'Momentum', 'sgs-blocks' ) }
+									checked={ dragMomentum }
+									onChange={ ( value ) =>
+										setAttributes( { dragMomentum: value } )
+									}
+									help={ __(
+										'Slider keeps coasting briefly after the visitor releases the drag, like a real scroll flick.',
+										'sgs-blocks'
+									) }
+								/>
+							</ToolsPanelItem>
 						) }
 
 						{ /*
@@ -355,18 +408,24 @@ export default function Edit( { attributes, setAttributes } ) {
 						 * keyboard/arrows/dots still loop with drag off).
 						 * Default off, same as drag.
 						 */ }
-						<ToggleControl
+						<ToolsPanelItem
 							label={ __( 'Loop', 'sgs-blocks' ) }
-							checked={ loopCarousel }
-							onChange={ ( value ) =>
-								setAttributes( { loopCarousel: value } )
-							}
-							help={ __(
-								'Scrolling, dragging or using the arrows past the last review continues into the first, and back again — never a dead end.',
-								'sgs-blocks'
-							) }
-						/>
-					</PanelBody>
+							hasValue={ () => loopCarousel !== false }
+							onDeselect={ () => setAttributes( { loopCarousel: false } ) }
+						>
+							<ToggleControl
+								label={ __( 'Loop', 'sgs-blocks' ) }
+								checked={ loopCarousel }
+								onChange={ ( value ) =>
+									setAttributes( { loopCarousel: value } )
+								}
+								help={ __(
+									'Scrolling, dragging or using the arrows past the last review continues into the first, and back again — never a dead end.',
+									'sgs-blocks'
+								) }
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 				) }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl

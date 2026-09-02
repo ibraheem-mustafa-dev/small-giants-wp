@@ -146,6 +146,11 @@
 			"default": "",
 			"role": "content"
 		},
+		"beforeImageDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "When true, this slot's image renders with an empty alt and aria-hidden so screen readers skip it, per D918/S8 naming convention ({element}Decorative)."
+		},
 		"afterImageId": {
 			"type": [
 				"integer",
@@ -162,6 +167,11 @@
 			"type": "string",
 			"default": "",
 			"role": "content"
+		},
+		"afterImageDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "When true, this slot's image renders with an empty alt and aria-hidden so screen readers skip it, per D918/S8 naming convention ({element}Decorative)."
 		},
 		"_comment_artDirection": "Art-direction tiers (2026-08-07) — the IMAGE pair, completing the half this block was missing: its VIDEO playback tiers landed at d8cdcf8b. Same {base}/{base}Tablet/{base}Mobile shape and ID-wins-URL-falls-back pairing as sgs/media and sgs/hero. Alt text is deliberately NOT tiered — a different crop of the same subject describes the same thing, and a per-device alt would be a second place for the description to drift out of sync. Tier siblings render inside their own comparison slot so the divider still clips them.",
 		"beforeImageIdTablet": {

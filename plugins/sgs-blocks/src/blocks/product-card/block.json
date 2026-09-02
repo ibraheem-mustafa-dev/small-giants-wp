@@ -252,6 +252,11 @@
 			"default": "",
 			"role": "content"
 		},
+		"imageDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "Typed mode only. When true, the product image is purely decorative (visual/promotional tile rather than a real product photo the shopper needs) and is hidden from assistive tech — alt text is blanked and aria-hidden is set. Never applies in bound/live-product mode (sourceMode='wc-product'/'sgs-cpt'), where the photo is genuine shopping content."
+		},
 		"productName": {
 			"type": "string",
 			"default": ""
