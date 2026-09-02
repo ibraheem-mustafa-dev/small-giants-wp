@@ -50,19 +50,34 @@ export function mediaAttrName( prefix, base ) {
  * video, and so on.
  */
 export const MEDIA_BASES = {
-	// The media itself. `Image`/`Video` are OBJECT-shaped ({id,url,alt}) on
-	// hero/container; `ImageId` + `ImageUrl` are the scalar PAIR shape used by
-	// media/before-after/decorative-image. Both are real and both are kept -
-	// see the census `storage_shapes` field. A helper that assumes one shape
-	// can only read part of the population.
+	// The media itself. `ImageId`+`ImageUrl` / `VideoId`+`VideoUrl` are the
+	// scalar PAIR shape every live consumer actually stores (media,
+	// before-after, decorative-image, and — since the Wave 6 decomposition,
+	// D-pending 2026-09-02 — hero's split-media too). `SvgContent` is the
+	// inline-markup string. `Thumbnail`/`ThumbnailId` is a genuine
+	// OBJECT-shaped ({id,url,alt}) pair, still real (sgs/media's video
+	// poster, sgs/image-sequence).
+	//
+	// ⛔ `Image`/`Video`/`Svg` (the BARE, composite {id,url,alt}/string forms
+	// this comment used to also list here) were REMOVED 2026-09-02. They
+	// were a pre-decomposition convention — true when hero stored a single
+	// `splitImage` object attr — and by the time hero's decomposition
+	// shipped (dcd9940d2) no block anywhere still wrote or read them: zero
+	// `"image":`/`"video":`/`"svg":` (bare) declarations in any block.json,
+	// zero render.php/edit.js reads, zero editor control in
+	// `source.control.js` (which only ever writes the Id/Url pair or
+	// SvgContent). Keeping them in this atom meant EVERY surface adopting
+	// `atoms:['source']` had these three dead names silently
+	// re-registered server-side by `sgs_register_media_element_attrs()`
+	// even after a block's own block.json stopped declaring them — exactly
+	// how hero's already-deleted `splitImage`/`splitImageMobile` kept
+	// reappearing in the live registered schema post-deploy. See
+	// `includes/media-element-attrs-register.php`'s module docblock.
 	source: [
-		'Image',
 		'ImageId',
 		'ImageUrl',
-		'Video',
 		'VideoId',
 		'VideoUrl',
-		'Svg',
 		'SvgContent',
 		'Thumbnail',
 		'ThumbnailId',
@@ -210,7 +225,7 @@ export const MEDIA_BASES = {
  * tiered set from group membership any more.
  */
 export const MEDIA_TIERED_BASES = [
-	...[ 'Image', 'ImageId', 'ImageUrl', 'Video', 'VideoId', 'VideoUrl', 'Svg',
+	...[ 'ImageId', 'ImageUrl', 'VideoId', 'VideoUrl',
 		'SvgContent', 'Thumbnail', 'ThumbnailId' ],
 	...[ 'VideoAutoplay', 'VideoLoop', 'VideoMuted', 'VideoControls',
 		'VideoPlaysInline', 'VideoLazyLoad', 'VideoCaptionsId', 'VideoCaptionsUrl',
@@ -246,9 +261,8 @@ export const MEDIA_TIERS = [ 'Tablet', 'Mobile' ];
  * the PHP twin from it, so the server schema cannot drift from the client's.
  */
 export const MEDIA_ATTR_TYPES = {
-	// Composite {id,url,alt} objects.
-	Image: 'object',
-	Video: 'object',
+	// Composite {id,url,alt} objects. `Image`/`Video` (bare) were removed
+	// 2026-09-02 — dead pre-decomposition bases, see MEDIA_BASES.source above.
 	Thumbnail: 'object',
 	DecorMedia: 'object',
 	// Attachment IDs.
@@ -261,7 +275,6 @@ export const MEDIA_ATTR_TYPES = {
 	VideoUrl: 'string',
 	ImageAlt: 'string',
 	VideoAlt: 'string',
-	Svg: 'string',
 	SvgContent: 'string',
 	MediaType: 'string',
 	VideoSource: 'string',

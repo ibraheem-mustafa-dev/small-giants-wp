@@ -201,7 +201,7 @@ function selfTest() {
 
 	const php = render();
 	ck( 'render emits a php open tag', php.startsWith( '<?php' ) );
-	ck( 'render emits the object shapes', php.includes( '"Image"' ) && php.includes( '"object"' ) );
+	ck( 'render emits the object shapes', php.includes( '"Thumbnail"' ) && php.includes( '"object"' ) );
 	ck( 'render emits the groups', php.includes( '"behaviour"' ) );
 
 	fails.forEach( ( f ) => process.stdout.write( `  FAIL ${ f }\n` ) );
