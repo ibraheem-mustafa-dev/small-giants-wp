@@ -27,10 +27,10 @@ import {
 	WidthPanel,
 	BackgroundPanel,
 	MIN_HEIGHT_OPTIONS,
-	SHADOW_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
 import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox,
 	SgsBorderControl,
+	ShadowControl,
 	resolveColourToken,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -667,24 +667,26 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			<InspectorControls group="styles">
 				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
 
-				{ /* SHADOW — mounted 2026-08-19. The `shadow` attribute was already
-				     declared AND already honoured by SGS_Container_Wrapper, but no
-				     control had ever been mounted, so no client could reach it: a
-				     working feature that was invisible. Reuses sgs/container's own
-				     SHADOW_OPTIONS rather than a second list, so the header offers
-				     exactly the same shadow vocabulary as every other wrapper. */ }
+				{ /* SHADOW — mounted 2026-08-19, upgraded 2026-09-02 (rule
+				     07-preset-only-shadow) from a coarse sm/md/lg/glow preset
+				     SelectControl to the shared ShadowControl (X/Y/blur/spread/
+				     colour+alpha/inset) every other SGS_Container_Wrapper block
+				     mounts — matches sgs/cta-section's reference wiring. The
+				     `shadow`/`shadowColour`/`shadowColourHover` attrs are already
+				     read by class-sgs-container-wrapper.php via
+				     sgs_shadow_value_composed(), so no render.php change is
+				     needed; a bare preset slug (from an existing stored value)
+				     still resolves correctly through the same helper. */ }
 				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
+					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
-						value={ attributes.shadow || '' }
-						options={ SHADOW_OPTIONS }
-						onChange={ ( val ) => setAttributes( { shadow: val } ) }
-						help={ __(
-							'Casts a shadow beneath the header, lifting it off the page content below.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'shadow',
+							colour: 'shadowColour',
+							hoverColour: 'shadowColourHover',
+						} }
 					/>
 				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>

@@ -85,6 +85,7 @@
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
 						"css:box-shadow": "shadow",
+						"css:box-shadow-color": "shadowColour",
 						"css:background-attachment": "backgroundAttachment",
 						"css:background-position": "backgroundPosition",
 						"css:background-repeat": "backgroundRepeat",
@@ -392,6 +393,13 @@
 		},
 		"shadow": {
 			"type": "string"
+		},
+		"shadowColour": {
+			"type": "string"
+		},
+		"shadowColourHover": {
+			"type": "string",
+			"default": ""
 		},
 		"borderWidth": {
 			"type": "object",
