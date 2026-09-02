@@ -91,6 +91,76 @@ function elementName( jsxElementNode ) {
 	return jsxName( jsxElementNode.openingElement && jsxElementNode.openingElement.name );
 }
 
+/** WordPress's asset pickers. Mounting one of these is the mechanical signal
+ *  that a per-device family is a MEDIA SOURCE swap (Spec 35 Part D5) rather
+ *  than a scalar tier cascade. */
+const ASSET_PICKERS = new Set( [ 'MediaUpload', 'MediaUploadCheck' ] );
+
+function subtreeMountsAssetPicker( node ) {
+	let found = false;
+	const walk = ( n ) => {
+		if ( found || ! n || typeof n !== 'object' ) return;
+		if ( Array.isArray( n ) ) {
+			n.forEach( walk );
+			return;
+		}
+		if ( n.type === 'JSXElement' && ASSET_PICKERS.has( elementName( n ) ) ) {
+			found = true;
+			return;
+		}
+		for ( const key of Object.keys( n ) ) {
+			if ( key === 'loc' || key === 'start' || key === 'end' ) continue;
+			walk( n[ key ] );
+		}
+	};
+	walk( node );
+	return found;
+}
+
+/** True when this responsive wrapper is the Spec 35 Part D5 art-direction
+ *  shape: the wrapper itself mounts an asset picker for its override tiers,
+ *  AND a second asset picker exists elsewhere in the file (the always-visible
+ *  base/desktop picker, deliberately mounted outside the wrapper).
+ *
+ *  Both halves are required. The first alone would exempt any wrapper that
+ *  happens to contain a picker; the second alone would exempt every wrapper
+ *  in a file that mounts a picker anywhere. Together they describe only the
+ *  documented pattern.
+ *
+ *  @param {Object} wrapperPath Babel path of the responsive wrapper JSXElement.
+ *  @param {Object} fileAst     The file's full AST, for the outside-the-wrapper check.
+ */
+function isArtDirectionSwap( wrapperPath, fileAst ) {
+	if ( ! subtreeMountsAssetPicker( wrapperPath.node ) ) return false;
+
+	// Count pickers in the whole file; if the only one(s) are inside this
+	// wrapper, there is no separate base control mounted outside it.
+	let total = 0;
+	const wrapperStart = wrapperPath.node.start;
+	const wrapperEnd = wrapperPath.node.end;
+	const walk = ( n ) => {
+		if ( ! n || typeof n !== 'object' ) return;
+		if ( Array.isArray( n ) ) {
+			n.forEach( walk );
+			return;
+		}
+		if ( n.type === 'JSXElement' && ASSET_PICKERS.has( elementName( n ) ) ) {
+			const inside =
+				typeof n.start === 'number' &&
+				typeof wrapperStart === 'number' &&
+				n.start >= wrapperStart &&
+				n.end <= wrapperEnd;
+			if ( ! inside ) total++;
+		}
+		for ( const key of Object.keys( n ) ) {
+			if ( key === 'loc' || key === 'start' || key === 'end' ) continue;
+			walk( n[ key ] );
+		}
+	};
+	walk( fileAst );
+	return total > 0;
+}
+
 /** Splits `minHeightTablet` -> { base: 'minHeight', tier: 'Tablet' }. A bare
  *  name is the desktop/base tier — which is the whole point: `minHeight` +
  *  `minHeightTablet` + `minHeightMobile` is a triple even though only two
@@ -286,6 +356,11 @@ module.exports = {
 	scope: 'global',
 	needs: [ 'ast:shared-components', 'ast:extensions' ],
 
+	// See the ART-DIRECTION EXEMPTION comment at its call site in Detection 1.
+	// Kept as a named helper so the negative-control fixtures can exercise both
+	// halves of the AND independently.
+	_isArtDirectionSwap: isArtDirectionSwap,
+
 	run( ctx ) {
 		const findings = [];
 
@@ -358,6 +433,30 @@ module.exports = {
 							visitTest( cp.node.test, cp.node.consequent );
 						},
 					} );
+
+					// ART-DIRECTION EXEMPTION (2026-09-02) — Spec 35 Part D5.
+					//
+					// A per-device MEDIA SOURCE family is a deliberate RUNTIME SWAP,
+					// not a cascade: the desktop picker is mounted OUTSIDE the wrapper
+					// as the always-visible base control, and the wrapper carries only
+					// the optional tablet/mobile overrides. Its desktop branch renders
+					// help text BY DESIGN, so the "hollow tier" signature fires on a
+					// shape that is correct. Both live findings (BackgroundPanel.js
+					// :289 and :420) were this.
+					//
+					// ⛔ The exemption CANNOT key on "desktop is the only hollow tier"
+					// — that is structurally identical to the genuine-bug fixture
+					// `hollow-desktop-tier` (a scalar `maxWidth` cascade), which must
+					// keep firing. The discriminator is WHICH CONTROL the branches
+					// mount: an asset picker (MediaUpload/MediaUploadCheck) is the
+					// art-direction shape; a scalar control (UnitControl et al) is the
+					// cascade bug. Both conditions are required — the wrapper mounts a
+					// picker AND a picker also exists outside it in the same file,
+					// which is what proves the "base mounted outside" claim rather
+					// than trusting an unsubstantiated help-text branch.
+					if ( hollowTiers.size && isArtDirectionSwap( p, parsed.ast ) ) {
+						return;
+					}
 
 					for ( const tier of hollowTiers ) {
 						findings.push(
@@ -474,6 +573,16 @@ module.exports = {
 			'sibling-triple-props-setattributes',
 		],
 		mustNotFlag: [
+			// Spec 35 Part D5 art-direction swap: a per-device MEDIA SOURCE family,
+			// desktop picker deliberately mounted OUTSIDE the wrapper, so the
+			// desktop branch renders help text by design. Added 2026-09-02 to close
+			// the two live BackgroundPanel.js false positives.
+			// ⛔ PAIRED with `hollow-desktop-tier` in mustFlag above — the two are
+			// structurally near-identical and differ only in which control the
+			// branches mount (asset picker vs scalar UnitControl). Keep BOTH: if
+			// this exemption ever widens to swallow the scalar cascade bug, that
+			// fixture is what catches it.
+			'art-direction-media-swap',
 			// The canonical shape: one control inside the wrapper, computed key.
 			'canonical-responsive-control',
 			// A wrapper whose every tier returns a real control component.

@@ -136,6 +136,109 @@
 //   - `src/blocks/extensions/` has no block.json and is structurally
 //     outside the roster (`core/roster.js`), same boundary every per-block
 //     rule in this directory already accepts.
+//
+// ── CONDITION 2's MEDIA-CONTEXT GATE (added 2026-09-02, session ID
+//    f4e697c7) ───────────────────────────────────────────────────────────
+// Condition 2 originally matched a media CSS property (object-fit,
+// object-position, background-size, background-position, mix-blend-mode)
+// ANYWHERE in a file, with no check that the declaration was actually
+// styling a media element — background-size/background-position fire on
+// ANY background, media or not. Two confirmed false positives proved this:
+// `sgs/form` (`background-position: right 0.75rem center` is a
+// validation-icon offset on a text `<input>`) and `sgs/business-info`
+// (`background-size`/`background-position` drive a `background-clip:text`
+// colour-sweep hover effect on a link — the block's own documented
+// `#e7d768` "credit-sweep" constant, not a media asset).
+//
+// The fix: a matched line only counts if it is in MEDIA CONTEXT, judged by
+// `isMediaContextMatch()` below —
+//   (a) for a .css file: the line's ENCLOSING CSS RULE is located via
+//       brace-depth backward/forward scanning (`findEnclosingCssRule()` —
+//       PHP files are NOT scanned this way; a PHP file's `{`/`}` are
+//       control-flow braces, not CSS rule braces, so brace-matching them
+//       would misattribute selectors). The rule's SELECTOR text is tested
+//       against `MEDIA_CONTEXT_KEYWORDS` (media/image/img/photo/avatar/
+//       logo/thumb/video/svg/banner/poster) — the block's own media BEM
+//       element classes, a media tag selector, or an atom-ish keyword.
+//       Independently, the rule's DECLARATION BODY is tested for a REAL
+//       `background-image:url(...)` (not a `data:` URI, not a gradient) —
+//       a real uploaded asset is itself strong evidence the accompanying
+//       size/position/repeat/attachment governs that image.
+//   (b) for a .php file (selectors are built dynamically via string
+//       concatenation, so there is no static "selector" to parse): a
+//       window of source around the match (~400 chars before, ~200 after)
+//       is tested the same way — keyword OR a real background-image url().
+//
+// `data:` URIs are stripped from the selector/window text used by the
+// KEYWORD test BEFORE it runs — an inline SVG icon's own MIME string
+// ("image/svg+xml") otherwise reads as a false "svg"/"image" keyword hit.
+// The URL-is-real-asset test is deliberately NOT a strip-then-lookahead
+// regex — a first attempt was, and it broke on exactly this data URI: the
+// SVG markup inside `sgs/form`'s validation icon contains its own single
+// quotes (`stroke='%23dc2626'`), so a `data:[^'")]*` strip halted at that
+// FIRST embedded quote and left enough un-stripped residue that the
+// lookahead read as "not data:" — the false positive came straight back.
+// `backgroundImageIsRealAsset()` instead bounds the URL value by its own
+// OPENING quote via `indexOf()`, which finds the true closing quote
+// regardless of what the URI's own content contains.
+//
+// Keyword matching uses a letter-boundary `(?<![a-z])…(?![a-z])` rather
+// than `\b`, deliberately — `\b` treats `_` as a word character, so it
+// would MISS "media" inside a PHP snake_case variable like
+// `$sgs_nd_media_decls` (a real case: `sgs/nav-drawer`'s render.php names
+// its background-declaration array exactly this way). The letter-boundary
+// form matches "media" there because both neighbouring characters (`_`)
+// are non-letters.
+//
+// `findEnclosingCssRule()`'s selector-boundary scan stops at the nearest
+// `}` OR `{` before the rule's own opening brace, NOT `}` alone — a rule
+// that is the FIRST rule inside an `@media`/`@supports` block has no `}`
+// between the at-rule's own `{` and this rule's `{`, so a `}`-only scan
+// walks straight past the at-rule line and folds it into "the selector".
+// Caught live during this fix's own verification: `@media
+// (prefers-reduced-motion: reduce) { .sgs-container--ken-burns {…} }`
+// produced a false "media" keyword hit — coincidental (the CSS at-rule
+// keyword "@media"), not a real media-element signal.
+//
+// A property that is used in the file but NEVER in a media context (both
+// confirmed false positives) produces no finding at all for that property —
+// this is a stronger statement than "adopted", it means condition 2 never
+// considered the property applicable in the first place. A property used
+// in BOTH a media and a non-media context is judged only on the media-
+// context line(s) — the non-media line is simply irrelevant to this rule.
+//
+// Verified BEFORE/AFTER against the live tree (not just the fixtures), with
+// two live bugs caught and fixed mid-verification (both documented above —
+// the data-URI strip-then-lookahead break, and the `@media` boundary leak):
+// baseline 77 findings (34 direct-css-write / 43 declared-without-
+// mediaelements); after this gate, 70 findings (27 direct-css-write / 43
+// declared-without-mediaelements, unchanged). The 3 explicitly-confirmed
+// false positives (sgs/form background-position; sgs/business-info
+// background-size AND background-position) are gone, confirmed by direct
+// diff of the before/after JSON. FOUR further findings also cleared that
+// were NOT named in the brief, all judged to fit the identical pattern on
+// direct reading of the CSS (no live-DOM check was done on these four —
+// flagged as a residual verification gap in the dispatch report):
+//   - `sgs/post-grid`'s `.sgs-post-grid__card--skeleton` loading-shimmer:
+//     a `linear-gradient` background-image (no `url()`, no media keyword
+//     in its selector) animates background-size/-position for a loading
+//     placeholder — not a media element, structurally identical to
+//     `sgs/business-info`'s gradient sweep.
+//   - `sgs/container`'s Ken-Burns zoom (`.sgs-container--ken-burns` +
+//     its `@keyframes`/reduced-motion sibling rules): background-size/
+//     -position animate a `background-image` that is set INLINE by
+//     render.php (not present in this stylesheet at all), so neither a
+//     selector keyword nor a same-rule `url()` is available as static
+//     evidence here — this one is a genuine judgement call, not as
+//     clear-cut as the other three, and is called out in the dispatch
+//     report for Bean/the next session to reconsider if wanted.
+// `sgs/container`'s own `object-fit` finding (`.sgs-container__video-bg` /
+// `.sgs-container__image-bg`) is untouched by this and still fires, so the
+// block itself is not silenced. All 5 of the brief's named real findings
+// (sgs/cta-section, sgs/container, sgs/team-member, sgs/testimonial,
+// sgs/gallery) were re-verified live after the change and still fire. No
+// other rule's finding count changed (verified via full before/after
+// `--json` diff — only rule 37's own array differs).
 
 const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
@@ -182,6 +285,154 @@ function propertyAtomBackedRegex( prop ) {
 		'\\b' + prop.replace( /-/g, '\\-' ) + '\\s*:\\s*var\\(\\s*--sgs-media',
 		'i'
 	);
+}
+
+// ── Media-context gate for condition 2 (see the file header for the full
+//    rationale + the two confirmed false positives this closes). ──────────
+
+// `media`/`image`/`img`/etc. as the block's own BEM element classes, a
+// media tag selector, or an atom-ish keyword. A letter-boundary
+// `(?<![a-z])…(?![a-z])`, NOT `\b` — `\b` treats `_` as a word character
+// and would miss "media" inside a PHP snake_case name like
+// `$sgs_nd_media_decls`.
+// `ken-burns` and `parallax` added 2026-09-02 (coordinator review of this
+// rule's own flagged judgement call). Both name a BACKGROUND-IMAGE treatment
+// by definition — a Ken Burns pan-zoom and a parallax scroll only ever apply
+// to a background image — so a rule animating `background-size`/
+// `background-position` under `.sgs-container--ken-burns` IS hand-rolled
+// media-property handling and must keep firing. Without these two words the
+// keyword gate suppressed it as a false negative, because the matching
+// `background-image` is set inline by render.php and never appears in the
+// stylesheet for `backgroundImageIsRealAsset()` to find.
+const MEDIA_CONTEXT_KEYWORDS = new RegExp(
+	'(?<![a-z])(?:media|image|img|photo|avatar|logo|thumb|video|svg|banner|poster|ken-burns|parallax)(?![a-z])',
+	'i'
+);
+
+const BG_IMAGE_URL_START_REGEX = /background-image\s*:\s*url\(\s*(["']?)/i;
+
+// A background-image pointing at a REAL asset — not a decorative `data:`
+// URI icon and not a synthetic gradient — is itself strong evidence the
+// accompanying size/position/repeat/attachment governs that image.
+//
+// Deliberately NOT a strip-then-lookahead regex. A first attempt stripped
+// `data:[^'")]*` from the text and then tested a negative lookahead for
+// `data:` right after `url(` — that broke on `sgs/form`'s own validation
+// icon: the data URI is an inline SVG whose OWN markup contains single
+// quotes (`stroke='%23dc2626'`), so the strip regex halted at the FIRST
+// embedded quote, leaving enough un-stripped residue (`"'http://www.w3.org/
+// 2000/svg' …`) that the lookahead read as "not data:" and the false
+// positive came straight back. Bounding the URL value by its OWN opening
+// quote via `indexOf` (ignoring any quote type embedded inside the value)
+// finds the true end regardless of what the URI's own content contains.
+function backgroundImageIsRealAsset( body ) {
+	const m = BG_IMAGE_URL_START_REGEX.exec( body );
+	if ( ! m ) return false;
+	const valueStart = m.index + m[ 0 ].length;
+	const quote = m[ 1 ];
+	let valueEnd;
+	if ( quote ) {
+		valueEnd = body.indexOf( quote, valueStart );
+	} else {
+		valueEnd = body.indexOf( ')', valueStart );
+	}
+	const value = valueEnd === -1 ? body.slice( valueStart ) : body.slice( valueStart, valueEnd );
+	return ! /^\s*data:/i.test( value );
+}
+
+function stripDataUris( text ) {
+	// A data: URI's own MIME string ("image/svg+xml") reads as a false
+	// "svg"/"image" keyword hit if left in — used only for the SELECTOR/
+	// window keyword test (backgroundImageIsRealAsset() above bounds the
+	// URL value directly and does not depend on this).
+	return typeof text === 'string' ? text.replace( /data:[^'")]*/gi, '' ) : text;
+}
+
+// Locate the CSS rule enclosing `matchIndex` via brace-depth scanning.
+// CSS-file-only — a PHP file's `{`/`}` are control-flow braces, not CSS
+// rule braces, so brace-matching them would misattribute selectors (see
+// phpWindowAround for the PHP-file equivalent).
+function findEnclosingCssRule( text, matchIndex ) {
+	let depth = 0;
+	let i = matchIndex;
+	let openBrace = -1;
+	while ( i >= 0 ) {
+		const ch = text[ i ];
+		if ( ch === '}' ) {
+			depth++;
+		} else if ( ch === '{' ) {
+			if ( depth === 0 ) {
+				openBrace = i;
+				break;
+			}
+			depth--;
+		}
+		i--;
+	}
+	if ( openBrace === -1 ) return { selector: '', body: '' };
+
+	// Bound the selector text by the nearest `}` OR `{` before openBrace —
+	// NOT `}` alone. A rule that is the FIRST rule inside an @media/
+	// @supports block has no `}` between the at-rule's own opening `{` and
+	// this rule's `{`, so a `}`-only scan walks straight past the at-rule
+	// line and includes it in "the selector". That is how `@media
+	// (prefers-reduced-motion: reduce) { .sgs-container--ken-burns {…} }`
+	// produced a false "media" keyword hit on `.sgs-container--ken-burns`
+	// — coincidental (the CSS at-rule keyword "@media", not a media
+	// element) — caught live during this fix's own verification pass.
+	let selStart = 0;
+	for ( let k = openBrace - 1; k >= 0; k-- ) {
+		if ( text[ k ] === '}' || text[ k ] === '{' ) {
+			selStart = k + 1;
+			break;
+		}
+	}
+	const selector = text.slice( selStart, openBrace );
+
+	let bodyDepth = 0;
+	let closeBrace = text.length;
+	for ( let j = openBrace; j < text.length; j++ ) {
+		if ( text[ j ] === '{' ) {
+			bodyDepth++;
+		} else if ( text[ j ] === '}' ) {
+			bodyDepth--;
+			if ( bodyDepth === 0 ) {
+				closeBrace = j;
+				break;
+			}
+		}
+	}
+	const body = text.slice( openBrace + 1, closeBrace );
+
+	return { selector, body };
+}
+
+// PHP-file equivalent of findEnclosingCssRule — there is no static
+// "selector" to parse (render.php builds one dynamically via string
+// concatenation), so this takes a text window around the match instead.
+// A window of ~400 chars back / ~200 chars forward comfortably covers
+// every real render.php case measured live (the media signal sits on the
+// same line, or within a handful of lines, of the property write).
+function phpWindowAround( text, matchIndex ) {
+	const back = Math.max( 0, matchIndex - 400 );
+	const lineStart = text.lastIndexOf( '\n', back );
+	const start = lineStart === -1 ? back : lineStart;
+	const end = Math.min( text.length, matchIndex + 200 );
+	return text.slice( start, end );
+}
+
+// Is the property match at `matchIndexInLine` (within `line`, which begins
+// at `lineStartOffset` in `fullText`) plausibly styling a media element?
+function isMediaContextMatch( fullText, lineStartOffset, matchIndexInLine, isCss ) {
+	const absoluteIndex = lineStartOffset + matchIndexInLine;
+	if ( isCss ) {
+		const { selector, body } = findEnclosingCssRule( fullText, absoluteIndex );
+		if ( MEDIA_CONTEXT_KEYWORDS.test( stripDataUris( selector ) ) ) return true;
+		return backgroundImageIsRealAsset( body );
+	}
+	const windowText = phpWindowAround( fullText, absoluteIndex );
+	if ( MEDIA_CONTEXT_KEYWORDS.test( stripDataUris( windowText ) ) ) return true;
+	return backgroundImageIsRealAsset( windowText );
 }
 
 function hasMediaElementsSupport( blockJsonData ) {
@@ -264,15 +515,45 @@ module.exports = {
 
 			for ( const source of sources ) {
 				if ( ! source.text || source.fileAdopted ) continue;
+				const isCss = /\.css$/i.test( source.file );
+
+				// Precompute each line's starting offset once per source, so
+				// isMediaContextMatch() can locate the match's absolute position
+				// in the full text without re-scanning.
+				const lines = source.text.split( '\n' );
+				const lineOffsets = [];
+				let cursor = 0;
+				for ( const line of lines ) {
+					lineOffsets.push( cursor );
+					cursor += line.length + 1; // +1 for the '\n' split() consumed.
+				}
+
 				for ( const prop of MEDIA_CSS_PROPERTIES ) {
-					if ( ! propertyPresenceRegex( prop ).test( source.text ) ) continue;
-					// Every match of this property on an atom-backed var(--sgs-media-…)
-					// value is adopted; only flag if at least one match is NOT.
-					const allMatchesAtomBacked = source.text
-						.split( '\n' )
-						.filter( ( line ) => propertyPresenceRegex( prop ).test( line ) )
-						.every( ( line ) => propertyAtomBackedRegex( prop ).test( line ) );
-					if ( allMatchesAtomBacked ) continue;
+					const propRegex = propertyPresenceRegex( prop );
+					if ( ! propRegex.test( source.text ) ) continue; // property not used at all
+
+					// Only a line matching the property AND in plausible media
+					// context counts — this is the fix for the two confirmed false
+					// positives (see the file header): background-size/position
+					// fire on ANY background, so the property match alone is not
+					// enough evidence a media element is involved.
+					const mediaContextLines = [];
+					for ( let li = 0; li < lines.length; li++ ) {
+						const line = lines[ li ];
+						const m = propRegex.exec( line );
+						if ( ! m ) continue;
+						if ( isMediaContextMatch( source.text, lineOffsets[ li ], m.index, isCss ) ) {
+							mediaContextLines.push( line );
+						}
+					}
+					if ( mediaContextLines.length === 0 ) continue; // used, but never in media context
+
+					// Every media-context match on an atom-backed var(--sgs-media-…)
+					// value is adopted; only flag if at least one is NOT.
+					const allMediaMatchesAtomBacked = mediaContextLines.every( ( line ) =>
+						propertyAtomBackedRegex( prop ).test( line )
+					);
+					if ( allMediaMatchesAtomBacked ) continue;
 
 					findings.push(
 						makeFinding( {

@@ -314,6 +314,13 @@ const SUFFIX_SHAPES = [
 	// PHP:  sgs_typography_attr( $prefix, 'LineHeightTablet' )
 	// JS:   typographyAttrName( prefix, 'FontSizeTablet' )
 	/\(\s*[\w$.[\]]+\s*,\s*['"]([A-Z][A-Za-z0-9_]*)['"]\s*\)/g,
+	// JS:   mediaStoredAttrName( blockSlug, prefix, 'ObjectFit' ) — the same
+	// trailing-literal shape as the two-arg pattern above, one fixed arg
+	// further out. Every media atom's control() builds its attribute name
+	// this way (src/components/media/atoms/*.control.js), so without this
+	// shape every media-atom attribute false-positives as uncontrolled —
+	// this is Trap A (see the file header) recurring for a 3-arg helper.
+	/\(\s*[\w$.[\]]+\s*,\s*[\w$.[\]]+\s*,\s*['"]([A-Z][A-Za-z0-9_]*)['"]\s*\)/g,
 	// JS:   `${ base }Tablet`   /   attributes[ `${ side }MediaType` ]
 	/\$\{[^}]*\}\s*([A-Z][A-Za-z0-9_]*)/g,
 ];
@@ -424,6 +431,96 @@ function readIfExists( ctx, file ) {
 }
 
 /**
+ * The IMPORT-BOUND sibling of `localRefsIn()` above — same dispatcher-table
+ * problem, one level further out.
+ *
+ * ⛔ WHY THIS EXISTS (2026-09-02). `MediaElementPanel.js`'s `ATOM_CONTROLS`
+ * map is STRUCTURALLY IDENTICAL to `ContainerWrapperControls.js`'s
+ * `KIND_PANELS` — `const control = ATOM_CONTROLS[ id ]; … control( props )` is
+ * the same "invoked from a table, not rendered as a JSX tag" shape
+ * `localRefsIn()` was built to resolve. But `KIND_PANELS`'s VALUES are
+ * inline arrow functions rendering SAME-FILE JSX components
+ * (`<WidthPanel>`, `<BackgroundPanel>`, …), which the existing
+ * tag-matching recursion in `controlCorpus()` already follows once
+ * `localRefsIn()` surfaces `KIND_PANELS` itself as a same-file reference.
+ * `ATOM_CONTROLS`'s VALUES are IMPORTED bindings — `sourceControl`,
+ * `objectFitControl`, … — one per atom's own `*.control.js` file
+ * (`src/components/media/atoms/object-fit.control.js` etc.). An
+ * `import { control as objectFitControl } from './media/atoms/object-fit.control.js'`
+ * is invisible to `localRefsIn()`'s DECL regex (`function|const|let|class`
+ * only), so the table's values dead-ended: `MediaElementPanel.js`'s OWN text
+ * reaches the corpus fine (it is itself a JSX tag, `<MediaElementPanel`,
+ * resolved by the normal component-tag recursion), but the literal
+ * PascalCase suffixes each atom's `control()` builds via
+ * `mediaStoredAttrName( blockSlug, prefix, 'ObjectFit' )` (`'ObjectFit'`,
+ * `'Colour'`, `'Opacity'`, …) live only in the imported `.control.js`
+ * files, never in `MediaElementPanel.js` itself.
+ *
+ * MEASURED: this single shape produced 74 of rule 21's 128 findings before
+ * this fix — every sgs/media attribute (45) and every sgs/hero split-media
+ * attribute (29), the exact two blocks this rule's own header already
+ * documented as false positives pending this mechanism.
+ *
+ * Bounded the same way `localRefsIn()` is bounded, and for the same reason:
+ * only imports the SCOPED region actually references (never the whole
+ * file's import list) are followed, and only RELATIVE imports resolve (a
+ * bare `@wordpress/…` specifier has no local file to read). A dispatch
+ * table shaped differently than this — imports feeding something other than
+ * a plain identifier-keyed call — still fails toward a false positive here,
+ * never a false negative, matching this rule's own doctrine.
+ *
+ * @param {string} source File source to scan for `import { … as X } from '…'`
+ *                         statements.
+ * @param {string} scoped The isolated region (an export body, or a local
+ *                         declaration's own body via `exportBody()`) whose
+ *                         references decide which imports are followed.
+ * @param {string} dir    Absolute directory `source` lives in, so a relative
+ *                         import specifier resolves to a real file.
+ * @return {string[]} Absolute file paths of the imported modules referenced.
+ */
+function importedRefsIn( source, scoped, dir ) {
+	const IMPORT_RE = /import\s*\{([^}]*)\}\s*from\s*['"]([^'"]+)['"]/g;
+	const word = ( n ) => new RegExp( /\b/.source + n + /\b/.source );
+	const out = [];
+	let m;
+	IMPORT_RE.lastIndex = 0;
+	while ( ( m = IMPORT_RE.exec( source ) ) ) {
+		const specifiers = m[ 1 ];
+		const from = m[ 2 ];
+		// Only a RELATIVE import resolves to a real file this rule can read —
+		// a bare package specifier ('@wordpress/components') has none.
+		if ( ! from.startsWith( '.' ) ) continue;
+
+		for ( const spec of specifiers.split( ',' ) ) {
+			const trimmed = spec.trim();
+			if ( ! trimmed ) continue;
+			// `{ control as sourceControl }` -> the LOCAL binding name is what
+			// the scoped region actually references, never the exported name.
+			const asMatch = trimmed.match( /\bas\s+([A-Za-z_$][\w$]*)\s*$/ );
+			const local = asMatch ? asMatch[ 1 ] : trimmed.split( /\s+/ ).pop();
+			if ( ! local || ! word( local ).test( scoped ) ) continue;
+
+			// A BARREL import ('../../../components', no extension) resolves to a
+			// DIRECTORY, not a file — e.g. WidthPanel.js's own
+			// `import { ResponsiveControl, … } from '../../../components'`. This
+			// rule only ever wants a single leaf file's own literal attribute
+			// suffixes (the shape ATOM_CONTROLS's *.control.js values are), so a
+			// directory resolution is deliberately SKIPPED rather than expanded
+			// to its index.js — pulling in a whole barrel's text risks the exact
+			// over-match this rule's own doctrine fails away from. Fails toward a
+			// false positive (a real control missed) here, never a false
+			// negative reached by accident.
+			const resolved = path.resolve( dir, from );
+			const withExt = fs.existsSync( resolved ) && fs.statSync( resolved ).isFile()
+				? resolved
+				: resolved + '.js';
+			if ( fs.existsSync( withExt ) && fs.statSync( withExt ).isFile() ) out.push( withExt );
+		}
+	}
+	return out;
+}
+
+/**
  * Every control-component file in the tree, keyed by component name.
  *
  * MEASURED 2026-08-08: resolving shared components from `src/components/` ALONE
@@ -471,7 +568,23 @@ function allControlComponentFiles() {
 	//
 	// It also widens the corpus to src/blocks/extensions/. discover() and its
 	// exportsMap are deliberately UNTOUCHED, so rules 01 and 18 do not move.
-	COMPONENT_FILE_CACHE = resolveComponentFiles();
+	//
+	// ── src/components/media/ (2026-09-02) ──────────────────────────────────
+	// `resolveComponentFiles()`'s own `addDir()` reads ONE directory's `.js`
+	// files, non-recursively — `src/components/media/` is a SUBDIRECTORY of
+	// `src/components/`, so `MediaPanelLayout.js` / `HeroSplitMediaPanelLayout.js`
+	// / `DecorativeImagePanelLayout.js` / `ProductCardImagePanelLayout.js` were
+	// never indexed at all, for any rule. MEASURED: this is why the ATOM_CONTROLS
+	// fix (importedRefsIn(), above) alone did not move sgs/media's or sgs/hero's
+	// findings — `sgs/media`'s edit.js renders `<MediaPanelLayout`, not
+	// `<MediaElementPanel` directly, so the JSX-tag recursion dead-ended at the
+	// FIRST hop, before ATOM_CONTROLS was ever reached.
+	//
+	// Passed via `resolveComponentFiles()`'s own `extraDirs` parameter — the
+	// exact escape hatch this promotion already ships, so this is widening the
+	// CALL, not the shared function. `discover()`'s own call (used by rules 01
+	// and 18) is untouched, so their populations do not move.
+	COMPONENT_FILE_CACHE = resolveComponentFiles( [ path.join( REAL_SRC, 'components', 'media' ) ] );
 	return COMPONENT_FILE_CACHE;
 }
 
@@ -682,9 +795,47 @@ function controlCorpus( ctx, block ) {
 					// A dispatcher reaches its panels by CALLING them rather than
 					// rendering them, so the tag frontier alone dead-ends. Follow the
 					// same-file declarations this body actually names. See localRefsIn().
+					const regionsToScan = [ scoped ];
 					for ( const local of localRefsIn( body, scoped, name ) ) {
 						const localBody = exportBody( body, local );
-						if ( localBody ) next.push( localBody );
+						if ( localBody ) {
+							next.push( localBody );
+							regionsToScan.push( localBody );
+						}
+					}
+					// A SIBLING dispatcher shape: the table's values are IMPORTED
+					// bindings (MediaElementPanel.js's ATOM_CONTROLS -> each atom's
+					// own *.control.js file) rather than same-file JSX components.
+					// Scan both this export's own body AND every local body just
+					// resolved above (ATOM_CONTROLS itself is one such local ref) —
+					// see importedRefsIn().
+					for ( const region of regionsToScan ) {
+						for ( const importedFile of importedRefsIn( body, region, path.dirname( file ) ) ) {
+							const importedSrc = readIfExists( ctx, importedFile );
+							if ( ! importedSrc ) continue;
+							text += '\n' + importedSrc;
+
+							// ONE FURTHER HOP, same scoping discipline one level
+							// deeper. MEASURED: `link.control.js` and `caption.control.js`
+							// do NOT build their attribute names inline (unlike
+							// `object-fit.control.js`) — they call `attrKeys()`/
+							// equivalent imported from a SIBLING *.js LOGIC module
+							// (`link.js`), which is where the literal
+							// `mediaStoredAttrName( blockSlug, prefix, 'LinkUrl' )`
+							// calls actually live. Without this hop, linkUrl/
+							// linkOpensNewTab/linkRel/captionTag stayed false
+							// positives even after ATOM_CONTROLS resolution, because
+							// the literal suffixes are one import further out than
+							// MediaElementPanel.js's own dispatch table reaches.
+							// Scoped to the imported file's own 'control' export body
+							// — never a whole-file fallback — matching localRefsIn()'s
+							// stated discipline just above.
+							const importedScoped = exportBody( importedSrc, 'control' ) || importedSrc;
+							for ( const nestedFile of importedRefsIn( importedSrc, importedScoped, path.dirname( importedFile ) ) ) {
+								const nestedSrc = readIfExists( ctx, nestedFile );
+								if ( nestedSrc ) text += '\n' + nestedSrc;
+							}
+						}
 					}
 				}
 			}

@@ -726,16 +726,21 @@ Every block MUST provide per-element customisation matching Kadence/Spectra dept
 ⚠ **This line said "ten blocks" for weeks and drifted 4.4x — verified 2026-08-30 by grepping
 `<SgsBorderControl` across every `edit.js` rather than trusting the cached figure.** **44 blocks
 mount it** (the Shape-B border migration's full rollout — everything from the original 10 through
-`before-after`/`product-faq-item`/`form-step`/`form-field-tiles` and the rest). Two more
-(`sgs/media`, `sgs/whatsapp-cta`) are radius-private-only and correctly do NOT mount it — they
-declare no `borderWidth`/`borderStyle`/`borderColour` at all, radius rides `__experimentalBorder`
-instead. Four blocks (`card-grid`, `media`, `multi-button`, `trust-bar`) still carry an ACTIVE
-native `__experimentalBorder` support (radius+width+colour+style) — the codemod's own
-`--survey` refuses them as `ambiguous-anchor`; not yet migrated, not a regression. **Never cache
-this count again — run `grep -l '<SgsBorderControl' src/blocks/*/edit.js | wc -l` yourself.**
+`before-after`/`product-faq-item`/`form-step`/`form-field-tiles` and the rest). One more
+(`sgs/whatsapp-cta`) is radius-private-only and correctly does NOT mount it — it declares no
+`borderWidth`/`borderStyle`/`borderColour` at all, radius rides `__experimentalBorder` instead.
+Three blocks (`card-grid`, `multi-button`, `trust-bar`) still carry an ACTIVE native
+`__experimentalBorder` support (radius+width+colour+style) — the codemod's own `--survey`
+refuses them as `ambiguous-anchor`; not yet migrated, not a regression. *(Note: `sgs/media`
+migrated to full block-private border attributes at Wave 5b, 2026-09-01 — it left the native
+group, but has NOT yet swapped its control: it renders border through the shared `box-shape`
+atom in `MediaPanelLayout`'s "Box & Border" panel, so the survey correctly classifies it
+`PRIVATE_NEEDS_SWAP`.)* **Never cache this count again — run `grep -l '<SgsBorderControl' src/blocks/*/edit.js | wc -l` yourself.**
 
 Census + ratcheted gate: `scripts/survey-border-control-migration.py`
-(`PRIVATE_NEEDS_SWAP` must stay 0). Codemod for the edit.js swap:
+(`PRIVATE_NEEDS_SWAP` ceiling is **8**, currently **1** — `sgs/media`; the "must stay 0" this
+line claimed until 2026-09-02 was never the script's actual ceiling, check `CEILING` in the
+script rather than trusting a prose figure). Codemod for the edit.js swap:
 `scripts/migrate-border-control.js` (`--survey`/`--fix`/`--check`/`--self-test`). Codemod for the
 broader Shape-B storage migration (radius+width+colour off WP-native, per-block): `scripts/migrate-border-shape-b.js`.
 
