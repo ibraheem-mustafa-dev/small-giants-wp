@@ -752,6 +752,46 @@ function findRootVar( php ) {
 	return found.size === 1 ? [ ...found ][ 0 ] : null;
 }
 
+/**
+ * When more than one `*_css`-named accumulator exists, `findAnchors()` used to
+ * refuse outright rather than guess which one is the border's sink (see the
+ * comment above `findAnchors`). But the correct sink isn't actually ambiguous
+ * -- it's whichever accumulator receives the `['css']` result of the
+ * `wp_style_engine_get_styles()` call built from a `['border']`-keyed args
+ * array. Trace THAT structurally instead of guessing from the variable's
+ * name, so this generalises to any future block with the same shape rather
+ * than hardcoding a per-block preferred name.
+ *
+ * Verified against the two real refusals this exists for (2026-09-03):
+ *   · card-grid — $cg_style_engine_args['border'] = $cg_border_args; ...
+ *                 $cg_scoped_styles = wp_style_engine_get_styles( $cg_style_engine_args, ... );
+ *                 $card_grid_native_css .= $cg_scoped_styles['css'];
+ *   · trust-bar — same shape; sink is $tb_extra_scoped_css (the second `_css`
+ *                 candidate there, $typo_css, holds only typography and is
+ *                 never touched by this trace).
+ */
+function traceBorderCssSink( php ) {
+	const argsRe = /\$(\w+)\s*\[\s*'border'\s*\]\s*=/g;
+	let am;
+	while ( ( am = argsRe.exec( php ) ) !== null ) {
+		const argsVar = am[ 1 ];
+
+		const callRe = new RegExp( '\\$(\\w+)\\s*=\\s*wp_style_engine_get_styles\\(\\s*\\$' + argsVar + '\\b' );
+		const cm = php.match( callRe );
+		if ( ! cm ) continue;
+		const resultVar = cm[ 1 ];
+
+		const strSinkRe = new RegExp( '\\$(\\w+)\\s*\\.=\\s*\\$' + resultVar + "\\s*\\[\\s*'css'\\s*\\]" );
+		const sm = php.match( strSinkRe );
+		if ( sm ) return { sink: sm[ 1 ], kind: SINK_STRING };
+
+		const arrSinkRe = new RegExp( '\\$(\\w+)\\s*\\[\\s*\\]\\s*=\\s*\\$' + resultVar + "\\s*\\[\\s*'css'\\s*\\]" );
+		const am2 = php.match( arrSinkRe );
+		if ( am2 ) return { sink: am2[ 1 ], kind: SINK_ARRAY };
+	}
+	return null;
+}
+
 function findAnchors( php ) {
 	const rootVar = findRootVar( php );
 
@@ -787,8 +827,14 @@ function findAnchors( php ) {
 	let cssVar = null;
 	const named = [ ...candidates.keys() ].filter( ( n ) => /_css$/.test( n ) );
 	if ( named.length === 1 ) cssVar = named[ 0 ];
-	else if ( named.length > 1 ) cssVar = null; // ambiguous on purpose
-	else if ( candidates.size === 1 ) cssVar = [ ...candidates.keys() ][ 0 ];
+	else if ( named.length > 1 ) {
+		// More than one `*_css`-named candidate -- don't guess from the name.
+		// Trace which one structurally receives the border rule's own CSS
+		// output; only accept a traced sink that the file already proved is
+		// CSS-ish (it must already be in `candidates`), never a brand-new name.
+		const traced = traceBorderCssSink( php );
+		cssVar = traced && candidates.has( traced.sink ) ? traced.sink : null;
+	} else if ( candidates.size === 1 ) cssVar = [ ...candidates.keys() ][ 0 ];
 
 	const cssKind = cssVar ? candidates.get( cssVar ).kind : null;
 	return { rootVar, cssVar, cssKind, cssCandidates: [ ...candidates.keys() ] };
@@ -1407,8 +1453,20 @@ function stripNativeBorderReads( php ) {
 		const isComment = /^\s*(\/\/|\*|\/\*)/.test( line );
 		// Radius is INCLUDED now (2026-08-30) -- it no longer stays native, so its
 		// native read is dead code same as the other three legs.
+		//
+		// A THIRD shape, found live on sgs/multi-button (2026-09-03): the whole
+		// `$attributes['style']['border']` object read directly (not sub-keyed),
+		// then handed wholesale into a style-engine args array
+		// (`$mb_color_border['border'] = $attributes['style']['border'];`). The
+		// sub-keyed regex above never matches this -- so it survived stripping
+		// and kept running as a SECOND, competing border emitter alongside the
+		// new block-private one, silently double-painting for any stored content
+		// that still carries a native `style.border` value. `(?!\[)` excludes
+		// the sub-keyed shape (already handled above) so this is additive, not a
+		// re-match of the same line.
 		const touchesBorder =
 			/\$attributes\['style'\]\['border'\]\['(color|style|width|radius)'\]/.test( line ) ||
+			/\$attributes\['style'\]\['border'\](?!\[)/.test( line ) ||
 			/sgs_native_border_style_width_args\s*\(/.test( line );
 		if ( ! dropping && ! isComment && touchesBorder ) {
 			dropping = true;
@@ -1446,6 +1504,67 @@ function stripNativeBorderReads( php ) {
 			if ( ! dropping && re.test( line ) ) {
 				dropping = true;
 				depth = 0;
+			}
+			if ( dropping ) {
+				depth += ( line.match( /\{/g ) || [] ).length;
+				depth -= ( line.match( /\}/g ) || [] ).length;
+				removed++;
+				if ( depth <= 0 && /;\s*$|\}\s*$/.test( line.trim() ) ) dropping = false;
+				continue;
+			}
+			kept.push( line );
+		}
+		out2 = kept;
+	}
+
+	// Pass 3 — prune a now-vacuous `if ( ! empty( $X ) ) { … }` CONSUMER guard,
+	// never the accumulator's own declaration (that stays out of scope on
+	// purpose, same as Pass 1/2 above -- the self-test's own negative control
+	// asserts a `$pt_border_args = array();` initializer must SURVIVE even
+	// once nothing writes to it, precisely because this function's job is
+	// removing NATIVE READS and their direct orphaned consumers, not
+	// reasoning generally about which locals end up unused).
+	//
+	// What genuinely IS provable: once `$X = array();` never receives a
+	// single `$X['key'] = …` write anywhere else in the file, `empty( $X )`
+	// is UNCONDITIONALLY true forever -- PHP semantics, not a heuristic -- so
+	// `if ( ! empty( $X ) ) { BODY }` is dead code REGARDLESS of what BODY
+	// does. Deleting the whole guard is behaviour-preserving by construction.
+	//
+	// Runs to a FIXED POINT because the shape CASCADES, found live on
+	// trust-bar (2026-09-03): stripping `if ( ! empty( $tb_border_args ) ) {
+	// $tb_style_engine_args['border'] = $tb_border_args; }` (round 1, X =
+	// tb_border_args) leaves `$tb_style_engine_args` itself with zero
+	// remaining writes, so its OWN consumer `if ( ! empty(
+	// $tb_style_engine_args ) ) { … wp_style_engine_get_styles( …) … }`
+	// becomes vacuous too (round 2, X = tb_style_engine_args) -- a
+	// DIFFERENT body shape (a style-engine call, not a bracket assignment),
+	// which is exactly why this is brace-depth generic rather than matching
+	// one fixed 3-line template.
+	for ( let guard = true; guard; ) {
+		guard = false;
+		const initRe = /^\s*\$(\w+)\s*=\s*array\(\s*\);\s*$/;
+		const vacuous = new Set();
+		for ( const line of out2 ) {
+			const m = line.match( initRe );
+			if ( ! m ) continue;
+			const name = m[ 1 ];
+			const written = out2.some( ( l ) => l !== line && new RegExp( `\\$${ name }\\s*\\[` ).test( l ) );
+			if ( ! written ) vacuous.add( name );
+		}
+		if ( ! vacuous.size ) break;
+
+		const guardStartRe = new RegExp(
+			`^\\s*if\\s*\\(\\s*!\\s*empty\\(\\s*\\$(?:${ [ ...vacuous ].join( '|' ) })\\s*\\)\\s*\\)\\s*\\{\\s*$`
+		);
+		const kept = [];
+		depth = 0;
+		dropping = false;
+		for ( const line of out2 ) {
+			if ( ! dropping && guardStartRe.test( line ) ) {
+				dropping = true;
+				depth = 0;
+				guard = true; // something changed -- re-scan next iteration
 			}
 			if ( dropping ) {
 				depth += ( line.match( /\{/g ) || [] ).length;
@@ -1627,8 +1746,32 @@ function transformRenderPhp( php, rootVar, cssVar, cssKind = SINK_STRING, adopt 
 	return out;
 }
 
+/**
+ * Is the block's OWN root border already mounted, as opposed to some OTHER
+ * `SgsBorderControl` instance that governs a different attribute family
+ * entirely (e.g. multi-button's "Button group defaults" panel, which binds
+ * the SAME component to `childBtnBorderWidth`/`childBtnBorderStyle`/
+ * `childBtnBorderColour` -- a per-child-button default, not the block's own
+ * root border Shape B owns). A bare `/SgsBorderControl/` name-match cannot
+ * tell those apart and refused multi-button outright even though its root
+ * border was never mounted (found 2026-09-03). The disambiguator is the
+ * SAME `widthValues={ attributes.borderWidth ?? {} }` binding this
+ * function's own injected panel uses below -- if some existing instance is
+ * already bound to the ROOT `borderWidth` attribute, it really is a repeat
+ * run and refusing is correct; a differently-named sibling attribute is not
+ * a collision.
+ */
+function hasRootBorderControlMounted( src ) {
+	const re = /<SgsBorderControl\b[\s\S]*?\/>/g;
+	let m;
+	while ( ( m = re.exec( src ) ) !== null ) {
+		if ( /\bwidthValues\s*=\s*\{\s*attributes\.borderWidth\b/.test( m[ 0 ] ) ) return true;
+	}
+	return false;
+}
+
 function transformEditJs( src ) {
-	if ( /SgsBorderControl/.test( src ) ) return null; // already mounted
+	if ( hasRootBorderControlMounted( src ) ) return null; // already mounted
 
 	// 1. import
 	let out = src;

@@ -692,12 +692,31 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "borderColourHover",
       "fields": {
         "css_property": "border-color",
         "role": "color",
         "css_element": "item",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2419,6 +2438,25 @@
       "attr": "alignItems",
       "fields": {
         "css_property": "align-items",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -4678,6 +4716,25 @@
     },
     {
       "slug": "sgs/trust-bar",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
       "attr": "iconCircleBackground",
       "fields": {
         "css_property": "background-color",
@@ -5449,11 +5506,38 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "borderColourHoverGradient",
       "fields": {
         "css_property": "border-color-gradient",
         "css_element": "item",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -8013,6 +8097,33 @@
       "attr": "backgroundImage",
       "fields": {
         "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -11083,6 +11194,33 @@
     },
     {
       "slug": "sgs/trust-bar",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
       "attr": "flexDirection",
       "fields": {
         "css_property": "flex-direction",
@@ -11489,6 +11627,26 @@
       }
     },
     {
+      "slug": "sgs/card-grid",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/container",
       "attr": "borderRadiusMobile",
       "fields": {
@@ -11858,6 +12016,26 @@
     },
     {
       "slug": "sgs/multi-button",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
       "attr": "paddingMobile",
       "fields": {
         "css_property": "padding",
@@ -12429,6 +12607,26 @@
       "fields": {
         "css_property": "border-radius",
         "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
         "css_element": "wrapper"
       }
     },

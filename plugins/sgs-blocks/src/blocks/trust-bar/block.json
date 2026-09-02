@@ -60,6 +60,10 @@
 				],
 				"contentBandPadding": [
 					"contentBandPadding"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
 				]
 			},
 			"elements": {
@@ -85,10 +89,10 @@
 						"css:margin": "margin",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:box-shadow": "shadow",
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
@@ -98,7 +102,8 @@
 						"css:justify-content": "justifyContent",
 						"css:align-content": "alignContent",
 						"css:flex-direction": "flexDirection",
-						"css:flex-wrap": "flexWrap"
+						"css:flex-wrap": "flexWrap",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"states": {
 						"hover": {
@@ -202,13 +207,6 @@
 			"text": false,
 			"background": false,
 			"gradients": false,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
 			"__experimentalSkipSerialization": true
 		}
 	},
@@ -838,6 +836,46 @@
 		"iconColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"render": "file:./render.php",

@@ -47,22 +47,23 @@
 		"shadow": {
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"collection": true,
 			"scalarStylingLift": true,
 			"imageControls": true,
 			"imageControlsExplicit": true,
 			"arrayContentLift": true,
-			"presetSelectors": [ "effectHover" ],
+			"presetSelectors": [
+				"effectHover"
+			],
 			"boxFamilies": {
-				"cardBorderWidth": [ "cardBorderWidth" ]
+				"cardBorderWidth": [
+					"cardBorderWidth"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
+				]
 			},
 			"elements": {
 				"grid": {
@@ -70,17 +71,20 @@
 					"layer": "OUTER",
 					"_layer_note": "This element is BOTH the block root and the grid definition. layer_detect.py's MF-3 guard makes the root OUTER regardless of its own display:grid, so OUTER is correct here — the layout cluster carries the grid/arrangement properties, disambiguated by this element being the grid.",
 					"order": 1,
-					"clusters": [ "layout", "animation" ],
+					"clusters": [
+						"layout",
+						"animation"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:gap": "gap",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:grid-template-columns": "gridTemplateColumns",
 						"css:grid-template-rows": "gridTemplateRows",
 						"css:grid-auto-rows": "gridAutoRows",
@@ -93,7 +97,8 @@
 						"anim:preset": "sgsAnimation",
 						"anim:duration": "sgsAnimationDuration",
 						"anim:easing": "sgsAnimationEasing",
-						"anim:stagger": "staggerDelay"
+						"anim:stagger": "staggerDelay",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) + per-card staggerDelay resolve via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). anim:parallax/anim:trigger are honest gaps — this block has no bgParallax/scroll-trigger attributes."
 				},
@@ -146,7 +151,9 @@
 				"title": {
 					"label": "Card title",
 					"order": 5,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "title",
 					"attrMap": {
 						"tag": "headingLevel"
@@ -156,7 +163,9 @@
 				"subtitle": {
 					"label": "Card subtitle",
 					"order": 6,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "subtitle",
 					"_note": "Renamed from 'card-subtitle' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__subtitle` (render.php:705,716), not `.sgs-card-grid__card-subtitle`."
 				},
@@ -180,7 +189,14 @@
 		},
 		"headingLevel": {
 			"type": "string",
-			"enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
+			"enum": [
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"p"
+			],
 			"default": "h3"
 		},
 		"_comment_items_media": "Migrated 2026-05-05 â€” each item gains a unified `media` slot (image OR video). Legacy `image` retained on items for deprecation back-compat. New instances should write `media` via MediaPicker.",
@@ -228,11 +244,17 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 3,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"gap": {
 			"type": "object",
-			"default": {"desktop": "1rem"},
+			"default": {
+				"desktop": "1rem"
+			},
 			"_comment": "Was the bare number \"30\", which the old flat path read as WordPress spacing-scale SLUG 30 = 1rem (theme.json settings.spacing.spacingSizes). A bare number now means px (Bean-ruled 2026-08-10), so the value is stated explicitly to render EXACTLY as before rather than jumping to 30px."
 		},
 		"aspectRatio": {
@@ -543,7 +565,12 @@
 		},
 		"layout": {
 			"type": "string",
-			"enum": ["", "flex", "stack", "grid"],
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
 			"default": ""
 		},
 		"gridTemplateColumns": {
@@ -581,6 +608,46 @@
 		"alignItems": {
 			"type": "string",
 			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"render": "file:./render.php",

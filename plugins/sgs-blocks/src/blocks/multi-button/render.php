@@ -101,10 +101,11 @@ $align_items_tablet = esc_attr( $align_items_obj['tablet'] ?? $align_items );
 $align_items_mobile = esc_attr( $align_items_obj['mobile'] ?? 'stretch' );
 
 // Generate a unique ID so responsive CSS is scoped per block instance.
-$uid = wp_unique_id( 'sgs-mb-' );
+$uid      = wp_unique_id( 'sgs-mb-' );
+$root_sel = '.' . $uid . '.sgs-multi-button';
 
 // Build scoped responsive CSS using concatenation (WPCS: no variable interpolation in strings).
-$css  = '.' . $uid . '.sgs-multi-button{';
+$css  = $root_sel . '{';
 $css .= 'display:flex;';
 $css .= 'flex-direction:' . $direction . ';';
 $css .= 'flex-wrap:' . $wrap . ';';
@@ -116,7 +117,7 @@ $css .= '}';
 // Tablet breakpoint (768px to 1023px — device-tier standard, CLAUDE.md
 // "Responsive breakpoint discipline").
 $css .= '@media(max-width:1023px) and (min-width:768px){';
-$css .= '.' . $uid . '.sgs-multi-button{';
+$css .= $root_sel . '{';
 $css .= 'flex-direction:' . $direction_tablet . ';';
 $css .= 'flex-wrap:' . $wrap_tablet . ';';
 $css .= 'gap:' . $gap_tab_css . ';';
@@ -126,7 +127,7 @@ $css .= '}}';
 
 // Mobile breakpoint (max 767px — device-tier standard; was 768px, see above).
 $css .= '@media(max-width:767px){';
-$css .= '.' . $uid . '.sgs-multi-button{';
+$css .= $root_sel . '{';
 $css .= 'flex-direction:' . $direction_mobile . ';';
 $css .= 'flex-wrap:' . $wrap_mobile . ';';
 $css .= 'gap:' . $gap_mob_css . ';';
@@ -163,7 +164,7 @@ if ( ! empty( $mb_color_args ) ) {
 	$mb_color_border['color'] = $mb_color_args;
 }
 $mb_fill_css = sgs_fill_states_css(
-	'.' . $uid . '.sgs-multi-button',
+	$root_sel,
 	$attributes,
 	array(
 		'base'           => 'backgroundColour',
@@ -174,9 +175,6 @@ $mb_fill_css = sgs_fill_states_css(
 );
 if ( '' !== $mb_fill_css ) {
 	$css .= $mb_fill_css;
-}
-if ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) {
-	$mb_color_border['border'] = $attributes['style']['border'];
 }
 // Base padding/margin are NOT read here (2026-08-27). They were, and that was a
 // genuine DOUBLE EMISSION: this block calls SGS_Container_Wrapper::render() below
@@ -195,7 +193,7 @@ if ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['
 if ( ! empty( $mb_color_border ) ) {
 	$mb_style_engine_css = wp_style_engine_get_styles(
 		$mb_color_border,
-		array( 'selector' => '.' . $uid . '.sgs-multi-button' )
+		array( 'selector' => $root_sel )
 	);
 	if ( ! empty( $mb_style_engine_css['css'] ) ) {
 		$css .= $mb_style_engine_css['css'];
@@ -281,6 +279,86 @@ if ( isset( $attributes['childBtnFontWeight'] ) && '' !== $attributes['childBtnF
 // WS-4: the outer wrapper is now the shared sgs/container element. multi-button keeps
 // its own scoped flex CSS (#uid.sgs-multi-button) + the id via extra_attrs; the buttons
 // ($content) become the interior. The mirror adds the container width capability.
+
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$border_radius_obj = is_array( $attributes['borderRadius'] ?? null ) ? $attributes['borderRadius'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$css .= $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
+}
+
 // wp_strip_all_tags (NOT esc_html) blocks a `</style>` breakout while leaving CSS
 // combinators intact (contract §D) — every value reaching $css is either hand-built
 // from sanitised scalars above or the output of wp_style_engine_get_styles().
