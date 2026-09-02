@@ -9,7 +9,6 @@
 	},
 	"surfaces": [
 		".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md",
-		".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O",
 		"plugins/sgs-blocks/scripts/inspector-scan/rules/01-tab-group.js",
 		"plugins/sgs-blocks/scripts/placement-reach.py",
 		"plugins/sgs-blocks/src/blocks/extensions/animation.js",

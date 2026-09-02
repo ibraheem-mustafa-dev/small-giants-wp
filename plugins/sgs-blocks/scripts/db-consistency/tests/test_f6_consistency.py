@@ -349,7 +349,19 @@ class TestCheck3LiveDB:
 
     @_skip_no_db
     def test_check3_hero_split_discriminators_safe(self, live_conn):
-        """After the fix, sgs/hero 'split' discriminators are splitImage+splitImageMobile only."""
+        """After the fix, sgs/hero 'split' discriminators are image-family attrs only.
+
+        2026-09-02 (Wave 7b): the literal names changed from
+        splitImage/splitImageMobile to splitImageUrl/splitImageUrlMobile —
+        block.json's composite splitImage/splitImageMobile attrs were
+        DELETED (their only remaining reason to exist, the cloning
+        pipeline's DB anchor, moved to splitMediaType — see
+        scripts/data/scalar-media-roles.json's __RE_ANCHOR_2026_09_02 note),
+        so variant_slots' auto-derivation (which reads live block.json
+        attrs) correctly picked new discriminating slots from what block.json
+        NOW declares. This is the mechanism adapting correctly, not a design
+        break — assert on the CURRENT real attr names, not the deleted ones.
+        """
         split_slots = live_conn.execute(
             "SELECT unique_slot FROM variant_slots WHERE block_slug='sgs/hero' AND variant_value='split'"
         ).fetchall()
@@ -359,8 +371,9 @@ class TestCheck3LiveDB:
             "Run: python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 1"
         )
         # The safe discriminators should be present.
-        assert "splitImage" in slot_names or "splitImageMobile" in slot_names, (
-            "Expected splitImage or splitImageMobile as hero 'split' discriminators after fix"
+        assert "splitImageUrl" in slot_names or "splitImageUrlMobile" in slot_names, (
+            f"Expected splitImageUrl or splitImageUrlMobile as hero 'split' discriminators "
+            f"after the 2026-09-02 re-anchor; got {slot_names!r}"
         )
 
 

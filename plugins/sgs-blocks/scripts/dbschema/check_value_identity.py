@@ -59,20 +59,23 @@ LIVE_DB_DEFAULT = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-fr
 VALUE_ASSERTIONS: list[dict] = [
     {
         "table": "block_attributes",
-        "key": {"block_slug": "sgs/hero", "attr_name": "splitImage"},
+        "key": {"block_slug": "sgs/hero", "attr_name": "splitMediaType"},
         "column": "role",
         "expected": "scalar-media",
         "why": "Opens run_mechanism_b branch A, the only path that reads an image's "
-               "--mobile/--desktop modifier. Lost once already: a hero clone put the "
-               "MOBILE crop in the DESKTOP attribute. Source of truth: "
+               "--mobile/--tablet/--desktop modifier. Lost once already (against the "
+               "PRIOR anchor, splitImage): a hero clone put the MOBILE crop in the "
+               "DESKTOP attribute. Re-anchored here 2026-09-02 (Wave 7b) — splitImage/"
+               "splitImageMobile were deleted from block.json the same day, having been "
+               "dead on the render/editor side since the Wave 6 media-atom migration and "
+               "kept alive for one extra day purely as this assertion's target. "
+               "splitMediaType is genuinely read by render.php (it selects the media "
+               "family) and is the sole real (non-virtual) anchor row now — Mobile/Tablet "
+               "tiers do NOT get their own anchor row (see scalar_media_attr_for's "
+               "docstring: it never matches a 'Mobile'-suffixed row, and 'Tablet'-suffixed "
+               "real rows were deliberately never created, to avoid two rows both matching "
+               "the same canonical_slot with no tier-aware tiebreak). Source of truth: "
                "scripts/data/scalar-media-roles.json.",
-    },
-    {
-        "table": "block_attributes",
-        "key": {"block_slug": "sgs/hero", "attr_name": "splitImageMobile"},
-        "column": "role",
-        "expected": "scalar-media",
-        "why": "Destination for the --mobile image. Same incident.",
     },
     # ------------------------------------------------------------------
     # THE ART-DIRECTION DEPENDENCY CHAIN (added 2026-08-02 after the QC council

@@ -297,6 +297,42 @@ const EXTENSION_EDITOR_ONLY_ATTRS = new Set( [
 // masquerade as dead controls.
 const KEY_NOISE = new Set( [ 'id', 'url', 'alt', 'true', 'false', 'null', 'undefined' ] );
 
+// Attributes that are genuinely dead to THIS gate's render/editor scope (no
+// render.php/save.js/view.js consumer, no editor control) but are kept alive
+// deliberately for a NON-render consumer: the Python cloning pipeline. This is
+// structurally distinct from every exemption above — not a WP `supports`-
+// backed attribute (`core-supports`), not editor-only UI wiring
+// (`editor-only`), not a naming-convention/object-literal artefact
+// (`key-noise`/`system-attr`) — so it gets its own reason rather than being
+// folded into one of those.
+//
+// `sgs/hero`'s `splitImage`/`splitImageMobile` USED to be the DB-side
+// routing anchors for the scalar-media art-direction mechanism, kept alive
+// here purely so `/sgs-update` Stage 9's orphan-prune wouldn't silently
+// delete their `block_attributes` rows (`role='scalar-media'`) and lose the
+// routing entirely — the exact 2026-08-02 regression this mechanism existed
+// to prevent. 2026-09-02 (Wave 7b): the anchor was re-pointed onto
+// `splitMediaType` (genuinely read by render.php, so it needs no dead-control
+// exemption of its own) and `splitImage`/`splitImageMobile` were deleted from
+// block.json outright — nothing declares them any more, so this gate can
+// never see them, and the two-entry roster below is now empty. Source of
+// truth for the re-anchor: `plugins/sgs-blocks/scripts/data/scalar-media-
+// roles.json`'s `__RE_ANCHOR_2026_09_02` note.
+//
+// The exemption MECHANISM (Set + isCloningPipelineAnchorAttr helper) is kept
+// rather than deleted — it is a general-purpose category (a declared attr
+// that is dead to THIS gate's render/editor scope but load-bearing for the
+// Python cloning pipeline elsewhere), not hero-specific, and a future
+// virtual-only anchor could need it again. Keyed by `block::attr` (same
+// convention as inspector-scan rule 34's dumpRowKey()) so any future entry
+// can never accidentally widen to catch an unrelated block's same-named
+// attribute.
+const CLONING_PIPELINE_ANCHOR_ATTRS = new Set( [] );
+
+function isCloningPipelineAnchorAttr( blockName, attr ) {
+	return CLONING_PIPELINE_ANCHOR_ATTRS.has( blockName + '::' + attr );
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -477,10 +513,15 @@ function stripComments( src ) {
  * Attribute names a corpus consumes through the MEDIA-ATOM name helpers.
  *
  * The media layer never writes an attribute name as a literal. It composes one
- * from a prefix and a PascalCase base:
+ * from a PREFIX (the block's own call-site argument to
+ * `SGS_Media_Element::style()`/`::css()`, e.g. hero's `'splitMedia'`/`'media'`,
+ * or `''` for an unprefixed surface like `sgs/media`/`sgs/decorative-image`)
+ * and a PascalCase BASE (a literal string inside the shared atom file, e.g.
+ * `focal-point.php`'s `'ObjectPosition'`):
  *
- *     sgs_media_element_attr( $prefix, 'VideoPlaysInline' )  -> videoPlaysInline
- *     mediaStoredAttrName( slug, prefix, 'ImageUrl' )        -> imageUrl
+ *     sgs_media_element_attr( '', 'VideoPlaysInline' )         -> videoPlaysInline
+ *     sgs_media_element_attr( 'splitMedia', 'ObjectPosition' ) -> splitMediaObjectPosition
+ *     mediaStoredAttrName( slug, prefix, 'ImageUrl' )          -> {prefix}ImageUrl
  *
  * so a literal grep reports every one of them as unrendered. That is a real
  * blind spot, not a real finding: `sgs/media`'s videoPlaysInline trio was
@@ -488,28 +529,74 @@ function stripComments( src ) {
  * `sgs_media_atom_video_behaviour_requires()` — the attributes went from
  * consumed to "dead" while becoming MORE correct.
  *
+ * WIDENED 2026-09-02 (rule-34 findings review): this used to derive ONLY the
+ * unprefixed (`prefix === ''`) form — `lcfirst(base)` — because it never
+ * looked for the prefix argument at all. That is correct for `sgs/media` and
+ * `sgs/decorative-image` (both call the helper with a literal `''` prefix),
+ * but produced 5 false-positive "dead" findings on `sgs/hero`, whose call
+ * sites pass `'splitMedia'`/`'media'` — the real stored names
+ * (`splitMediaObjectPosition`, `mediaOverlayColour`, …) were never generated,
+ * so `isConsumed()` never matched them even though `SGS_Media_Element::style()`
+ * genuinely resolves them at render time (see the atom's own
+ * `sgs_media_element_stored_attr( $block_slug, $prefix, $base )` call — prefix
+ * concatenation, not string literal). Every literal prefix this BLOCK'S OWN
+ * corpus passes to `::style()`/`::css()` is found structurally (the same
+ * "resolve the call site's own literal argument" discipline
+ * `collectPrefixedHelperConsumed()` already uses for `sgs_typography_css_rule`)
+ * and combined with every base found anywhere in the corpus — `''` is always
+ * tried too, so the pre-existing unprefixed blocks keep working unchanged.
+ *
  * This is the same shape `sgs/before-after` already documents ("tier keys are
  * written as WHOLE literal suffixes because this checker cannot follow a key
- * whose tail is a second variable"). Broadening the detector is the sanctioned
- * fix; a baseline entry would hide the class as every surface adopts an atom.
+ * whose tail is a second variable") for its OWN dynamic (loop-variable) prefix
+ * — that shape is NOT resolved here (a non-literal 2nd argument can't be
+ * statically determined) and is out of scope for this widening; before-after
+ * works around it today by writing the composed literal names directly. A
+ * future block hitting the same dynamic-prefix shape needs the same treatment
+ * or a further-generalised resolver, not a baseline entry.
  *
  * Unprefixed and tiered forms are both derived, because a base composes into
- * up to three real attribute names.
+ * up to three real attribute names per prefix.
  *
- * @param {string} corpus Render/save/view source, comments stripped.
+ * @param {string} corpus Render/save/view source, comments stripped (this
+ *   block's own corpus + the shared includes corpus — prefixes are read from
+ *   whichever half of `corpus` actually calls `::style()`/`::css()`, which in
+ *   practice is always the block's own render.php; no `includes/*.php` file
+ *   calls either method, so cross-block prefix leakage cannot occur).
  * @return {Set<string>} Attribute names reachable through the helpers.
  */
 function mediaAtomComposedNames( corpus ) {
 	const names = new Set();
-	const re =
+	const baseRe =
 		/(?:sgs_media_element_attr|sgs_media_element_stored_attr|mediaAttrName|mediaStoredAttrName)\s*\([^)]*?['"]([A-Z][A-Za-z0-9]*)['"]\s*\)/g;
+	const bases = new Set();
 	let m;
-	while ( ( m = re.exec( corpus ) ) !== null ) {
-		const base = m[ 1 ];
-		const bare = base.charAt( 0 ).toLowerCase() + base.slice( 1 );
-		names.add( bare );
-		names.add( bare + 'Tablet' );
-		names.add( bare + 'Mobile' );
+	while ( ( m = baseRe.exec( corpus ) ) !== null ) {
+		bases.add( m[ 1 ] );
+	}
+	if ( bases.size === 0 ) {
+		return names;
+	}
+
+	// Literal prefixes this corpus passes as the 2nd argument to
+	// `SGS_Media_Element::style()`/`::css()`. `''` is always tried — the
+	// unprefixed shape every surface used before any block passed a real prefix.
+	const prefixRe = /SGS_Media_Element::(?:style|css)\(\s*[^,]+,\s*['"]([A-Za-z0-9]*)['"]/g;
+	const prefixes = new Set( [ '' ] );
+	while ( ( m = prefixRe.exec( corpus ) ) !== null ) {
+		prefixes.add( m[ 1 ] );
+	}
+
+	for ( const base of bases ) {
+		for ( const prefix of prefixes ) {
+			// Mirrors sgs_media_element_attr()'s own rule exactly: a non-empty
+			// prefix concatenates verbatim; an empty prefix lower-cases the base's
+			// first letter instead.
+			const composed = '' !== prefix ? prefix + base : base.charAt( 0 ).toLowerCase() + base.slice( 1 );
+			names.add( composed );
+			names.add( composed + 'Tablet' );
+			names.add( composed + 'Mobile' );
+		}
 	}
 	return names;
 }
@@ -801,6 +888,143 @@ function isDynamicPrefixConsumed( attr, corpus, suffixes ) {
 	return false;
 }
 
+// The media-ATOM resolver (2026-09-02, task-2 findings-34 fix). A THIRD
+// computed-key shape, distinct from both PREFIXED_HELPER_SUFFIXES (a fixed
+// helper name, prefix as a literal 2nd-arg string) and the dynamic-prefix
+// `$attributes[ $var . 'Suffix' ]` concatenation: `SGS_Media_Element::style(
+// $attributes, '<prefix>', '<block-slug>', $uid, array( 'atom-id', ... ) )`
+// (`includes/class-sgs-media-element.php`). Each named atom owns a fixed set
+// of PascalCase "bases" (e.g. the `focal-point` atom owns `ObjectPosition`);
+// inside the atom's own PHP twin the actual read is
+// `$attributes[ sgs_media_element_stored_attr( $block_slug, $prefix, $base ) ]`
+// — a bracket access keyed by a FUNCTION CALL, not a literal or a simple
+// concatenation, so neither existing resolver can see it. `sgs/hero`'s
+// `splitMediaObjectPosition`/`mediaOverlayColour`/`mediaOverlayGradient` are
+// exactly this shape (verified live: `hero/render.php` calls
+// `SGS_Media_Element::style( $attributes, 'splitMedia', 'sgs/hero', $uid,
+// array( 'object-fit', 'focal-point' ) )` and
+// `SGS_Media_Element::style( $attributes, 'media', 'sgs/hero', $uid,
+// array( 'overlay' ) )`).
+//
+// MEDIA_ELEMENT_ATOM_BASES is a byte-for-byte mirror of the atom -> bases map
+// `src/components/media/atoms/registry.js` builds from `MEDIA_BASES` in
+// `src/components/MediaElementControls.js` (the JS registry this whole
+// mechanism is driven by) — kept in sync the same way PREFIXED_HELPER_SUFFIXES
+// is kept in sync with each PHP helper's own doc-comment (see that dict's
+// comment above). Adding a 17th atom there means adding its `id`+`bases` here;
+// nothing else in this resolver is atom-specific. MEDIA_ELEMENT_TIERED_BASES /
+// MEDIA_ELEMENT_TIERS mirror `MEDIA_TIERED_BASES`/`MEDIA_TIERS` from the same
+// JS file — only a tiered base gets `+Tablet`/`+Mobile` siblings.
+//
+// Known limitation (documented, not silently assumed away): `sgs_media_
+// element_stored_attr()` (`includes/helpers-media-element.php`) applies a
+// STORED_AS override for exactly two blocks (`sgs/before-after`,
+// `sgs/decorative-image`) — today every override maps to the SAME name the
+// default prefix+base convention already produces (verified live,
+// 2026-09-02), so ignoring STORED_AS here changes no result. If a future
+// STORED_AS entry genuinely renames a base, this resolver will miss it until
+// updated — the same class of drift PREFIXED_HELPER_SUFFIXES already accepts
+// for its own helpers.
+const MEDIA_ELEMENT_ATOM_BASES = {
+	source: [
+		'Image', 'ImageId', 'ImageUrl', 'Video', 'VideoId', 'VideoUrl', 'Svg',
+		'SvgContent', 'Thumbnail', 'ThumbnailId',
+	],
+	'media-type': [ 'MediaType', 'VideoSource', 'VideoMimeType' ],
+	'video-behaviour': [
+		'VideoAutoplay', 'VideoLoop', 'VideoMuted', 'VideoControls',
+		'VideoPlaysInline', 'VideoLazyLoad', 'VideoCaptionsId', 'VideoCaptionsUrl',
+		'VideoCaptionsLabel', 'VideoCaptionsSrcLang',
+	],
+	meaning: [ 'ImageAlt', 'VideoAlt', 'ImageIsDecorative' ],
+	intrinsic: [ 'ImageWidth', 'ImageHeight' ],
+	'svg-presentation': [
+		'SvgAnimation', 'SvgAnimationSpeed', 'SvgOpacity', 'SvgPosition',
+		'SvgMinHeight', 'SvgTextShadow',
+	],
+	'object-fit': [ 'ObjectFit', 'Size' ],
+	'focal-point': [ 'ObjectPosition', 'Position', 'Repeat', 'Attachment' ],
+	'box-shape': [
+		'MediaSizing', 'AspectRatio', 'Shape', 'Height', 'HeightUnit', 'MaxHeight',
+		'MaxHeightUnit', 'MaxWidth', 'MaxWidthUnit', 'MaxWidthPercent', 'MinHeight',
+		'Width', 'WidthUnit', 'BorderRadius', 'BorderWidth', 'BorderStyle',
+		'BorderColour', 'BorderColourGradient',
+	],
+	overlay: [
+		'OverlayColour', 'OverlayColourHover', 'OverlayGradient',
+		'OverlayGradientHover', 'OverlayOpacity', 'OverlayBlendMode',
+	],
+	motion: [ 'KenBurns', 'Parallax', 'AnimationDuration' ],
+	opacity: [ 'Opacity' ],
+	shadow: [ 'BoxShadow', 'BoxShadowColour', 'BoxShadowColourHover' ],
+	'media-padding': [ 'Padding' ],
+	caption: [ 'Caption', 'CaptionTag' ],
+	link: [ 'LinkUrl', 'LinkOpensNewTab', 'LinkRel' ],
+};
+
+const MEDIA_ELEMENT_TIERED_BASES = new Set( [
+	'Image', 'ImageId', 'ImageUrl', 'Video', 'VideoId', 'VideoUrl', 'Svg',
+	'SvgContent', 'Thumbnail', 'ThumbnailId',
+	'VideoAutoplay', 'VideoLoop', 'VideoMuted', 'VideoControls',
+	'VideoPlaysInline', 'VideoLazyLoad', 'VideoCaptionsId', 'VideoCaptionsUrl',
+	'VideoCaptionsLabel', 'VideoCaptionsSrcLang',
+	'ObjectFit', 'ObjectPosition', 'Height', 'Width', 'MinHeight',
+	'OverlayOpacity', 'BorderRadius', 'Padding',
+] );
+
+const MEDIA_ELEMENT_TIERS = [ 'Tablet', 'Mobile' ];
+
+// `SGS_Media_Element::style( $attributes, 'prefix', 'sgs/block', $uid,
+// array( 'atom-a', 'atom-b' ) )` — prefix + block-slug + the atom-id array,
+// each a literal string/array so this can be resolved statically. A call
+// site with a computed (non-literal) prefix or block-slug is skipped, same
+// discipline as isDynamicPrefixConsumed()'s own "can't resolve, don't claim"
+// rule.
+const MEDIA_ELEMENT_STYLE_CALL_RE =
+	/SGS_Media_Element::style\(\s*\$\w+\s*,\s*['"]([A-Za-z0-9]*)['"]\s*,\s*['"][a-z0-9-]+\/[a-z0-9-]+['"]\s*,\s*\$\w+\s*,\s*array\(\s*((?:['"][a-z0-9-]+['"]\s*,?\s*)+)\)/g;
+
+const MEDIA_ELEMENT_ATOM_ID_RE = /['"]([a-z0-9-]+)['"]/g;
+
+/**
+ * Collect every attribute name consumed via an `SGS_Media_Element::style()`
+ * call site in `corpus` — the prefix+base(+tier) product of each call's
+ * literal prefix and its declared atom ids.
+ *
+ * @param {string} corpus PHP source (comments already stripped).
+ * @return {Set<string>} Attribute names consumed via a media-element atom.
+ */
+function collectMediaElementAtomConsumed( corpus ) {
+	const consumed = new Set();
+	let m;
+	MEDIA_ELEMENT_STYLE_CALL_RE.lastIndex = 0;
+	while ( ( m = MEDIA_ELEMENT_STYLE_CALL_RE.exec( corpus ) ) !== null ) {
+		const prefix = m[ 1 ];
+		const atomIdsRaw = m[ 2 ];
+		let atomMatch;
+		MEDIA_ELEMENT_ATOM_ID_RE.lastIndex = 0;
+		while ( ( atomMatch = MEDIA_ELEMENT_ATOM_ID_RE.exec( atomIdsRaw ) ) !== null ) {
+			const atomId = atomMatch[ 1 ];
+			const bases = MEDIA_ELEMENT_ATOM_BASES[ atomId ];
+			if ( ! bases ) {
+				continue; // unknown atom id — not this resolver's business to guess
+			}
+			for ( const base of bases ) {
+				const attrName = '' !== prefix ? prefix + base : base.charAt( 0 ).toLowerCase() + base.slice( 1 );
+				consumed.add( attrName );
+				if ( MEDIA_ELEMENT_TIERED_BASES.has( base ) ) {
+					for ( const tier of MEDIA_ELEMENT_TIERS ) {
+						const tieredBase = base + tier;
+						const tieredAttrName =
+							'' !== prefix ? prefix + tieredBase : tieredBase.charAt( 0 ).toLowerCase() + tieredBase.slice( 1 );
+						consumed.add( tieredAttrName );
+					}
+				}
+			}
+		}
+	}
+	return consumed;
+}
+
 // ---------------------------------------------------------------------------
 // CHECK 1 — per-block dead controls
 // ---------------------------------------------------------------------------
@@ -822,6 +1046,7 @@ function checkBlock( block, wrapperControlled, sharedCorpus, contextConsumed ) {
 	// is recognised only via the declared providesContext/usesContext channel.
 	const corpus = block.ownCorpus + '\n' + sharedCorpus;
 	const prefixedHelperConsumed = collectPrefixedHelperConsumed( corpus );
+	const mediaElementAtomConsumed = collectMediaElementAtomConsumed( corpus );
 
 	for ( const attr of controlled ) {
 		// Only attributes actually DECLARED in this block.json count; a stray
@@ -852,6 +1077,14 @@ function checkBlock( block, wrapperControlled, sharedCorpus, contextConsumed ) {
 		if ( prefixedHelperConsumed.has( attr ) ) {
 			continue;
 		}
+			// Media-element atom (SGS_Media_Element::style() dispatch -- see the
+			// resolver's own comment above CHECK 1). The literal call site names
+			// the prefix + the atom-id array; the full attr name is resolvable
+			// even though the atom's own PHP twin builds the key via a helper
+			// function call, not a literal or a simple concatenation.
+			if ( mediaElementAtomConsumed.has( attr ) ) {
+				continue;
+			}
 		// Rule (a) — responsive variant: a {base}Tablet/Mobile/Desktop attr is
 		// consumed if its base is consumed AND the BLOCK'S OWN corpus builds
 		// responsive keys dynamically / emits @media (the legitimate reason its
@@ -960,6 +1193,7 @@ function checkFullyDeadAttrs( block, wrapperControlled, sharedCorpus, contextCon
 	const controlled = collectControlledAttrs( editJs + collectReferencedComponentSources( editJs ) );
 	const corpus = block.ownCorpus + '\n' + sharedCorpus;
 	const prefixedHelperConsumed = collectPrefixedHelperConsumed( corpus );
+	const mediaElementAtomConsumed = collectMediaElementAtomConsumed( corpus );
 	const dynamicPrefixSuffixes = collectDynamicPrefixSuffixes( corpus );
 
 	for ( const attr of block.attrs ) {
@@ -968,6 +1202,9 @@ function checkFullyDeadAttrs( block, wrapperControlled, sharedCorpus, contextCon
 		}
 		if ( EDITOR_ONLY_ATTRS.has( attr ) || KEY_NOISE.has( attr ) ) {
 			continue; // by-design editor-only, or stray non-attribute key
+		}
+		if ( isCloningPipelineAnchorAttr( block.name, attr ) ) {
+			continue; // kept alive for the Python cloning pipeline — see CLONING_PIPELINE_ANCHOR_ATTRS
 		}
 
 		// Attrs with a control are CHECK 1/2's responsibility (own edit.js, or the
@@ -991,6 +1228,11 @@ function checkFullyDeadAttrs( block, wrapperControlled, sharedCorpus, contextCon
 		// media-render.php `$attributes[ $prefix . 'ImageId' ]`, where $prefix
 		// is a local variable, not a literal call-site argument).
 		if ( isDynamicPrefixConsumed( attr, corpus, dynamicPrefixSuffixes ) ) {
+			continue;
+		}
+		// Media-element atom (SGS_Media_Element::style() dispatch -- see the
+		// resolver's own comment above CHECK 1; same rule as CHECK 1).
+		if ( mediaElementAtomConsumed.has( attr ) ) {
 			continue;
 		}
 
@@ -1471,19 +1713,24 @@ function findingKey( f ) {
 //                         wrong by the definition above.
 //   'none'                none of the above resolved it.
 //
-// `exempt` / `exemptReason` surface the SAME three exemptions
+// `exempt` / `exemptReason` surface the SAME FOUR exemptions
 // checkFullyDeadAttrs() applies BEFORE resolving consumption (isSystemAttr() /
-// EDITOR_ONLY_ATTRS / KEY_NOISE — see that function's own comment), PLUS a
-// fourth, dump-only exemption this function alone applies (Important 4,
-// 2026-08-27): 'core-supports'. Without them, `renderConsumed: false`
-// conflates a genuinely dead control with a by-design editor-only attr (the
-// mechanism currently has no live example — `templateMode` was it until
-// removed as vestigial, see `.superpowers/sdd/task-3-report.md`), a
-// registered extension attr, or a WP-native
-// `supports`-backed attribute (e.g. `anchor`, `lock`) that WordPress core
-// itself renders — none of the four are a finding. `exemptReason` is one of
-// 'system-attr' / 'editor-only' / 'key-noise' / 'core-supports' / null (not
-// exempt).
+// EDITOR_ONLY_ATTRS / KEY_NOISE / CLONING_PIPELINE_ANCHOR_ATTRS — see that
+// function's own comment), PLUS a fifth, dump-only exemption this function
+// alone applies (Important 4, 2026-08-27): 'core-supports'. Without them,
+// `renderConsumed: false` conflates a genuinely dead control with a by-design
+// editor-only attr (the mechanism currently has no live example —
+// `templateMode` was it until removed as vestigial, see
+// `.superpowers/sdd/task-3-report.md`), a registered extension attr, a
+// WP-native `supports`-backed attribute (e.g. `anchor`, `lock`) that
+// WordPress core itself renders, or a cloning-pipeline routing anchor (the
+// mechanism currently has no live example either — `sgs/hero::splitImage`/
+// `splitImageMobile` were its only entries and both were DELETED from
+// block.json 2026-09-02, Wave 7b, once the DB anchor moved to
+// `splitMediaType` — see CLONING_PIPELINE_ANCHOR_ATTRS above, currently
+// empty) — none of the five are a finding.
+// `exemptReason` is one of 'system-attr' / 'editor-only' / 'key-noise' /
+// 'core-supports' / 'cloning-pipeline-anchor' / null (not exempt).
 //
 // 'core-supports' — CONSUMPTION RESOLUTION BELONGS TO THE PRODUCER (design
 // decision, Important 4). A block.json attribute IS consumed when its own
@@ -1538,6 +1785,7 @@ function dumpAttributeRows( blocks, wrapperControlled, sharedCorpus, contextCons
 		const corpus = block.ownCorpus + '\n' + sharedCorpus;
 		const prefixedHelperConsumed = collectPrefixedHelperConsumed( corpus );
 		const dynamicPrefixSuffixes = collectDynamicPrefixSuffixes( corpus );
+		const mediaElementAtomConsumed = collectMediaElementAtomConsumed( corpus );
 		const contextConsumed = contextConsumedByBlock.get( block.name ) || new Set();
 
 		for ( const attr of block.attrs ) {
@@ -1556,6 +1804,11 @@ function dumpAttributeRows( blocks, wrapperControlled, sharedCorpus, contextCons
 				exemptReason = 'key-noise';
 			} else if ( isCoreSupportsAttr( attr, block.supports ) ) {
 				exemptReason = 'core-supports';
+			} else if ( isCloningPipelineAnchorAttr( block.name, attr ) ) {
+				// Render/editor-dead by design — kept alive as a routing anchor for
+				// the Python cloning pipeline's scalar-media mechanism. Source of
+				// truth: plugins/sgs-blocks/scripts/data/scalar-media-roles.json.
+				exemptReason = 'cloning-pipeline-anchor';
 			}
 
 			let renderVia = 'none';
@@ -1565,6 +1818,8 @@ function dumpAttributeRows( blocks, wrapperControlled, sharedCorpus, contextCons
 				renderVia = 'prefixed-helper';
 			} else if ( isDynamicPrefixConsumed( attr, corpus, dynamicPrefixSuffixes ) ) {
 				renderVia = 'dynamic-prefix';
+			} else if ( mediaElementAtomConsumed.has( attr ) ) {
+				renderVia = 'media-element-atom';
 			} else if ( isConsumed( attr, block.ownCorpus ) ) {
 				renderVia = 'literal';
 			} else if ( isConsumed( attr, sharedCorpus ) ) {
@@ -2779,6 +3034,89 @@ function runDumpJsonSelfTest( log ) {
 		);
 	} else {
 		log( `FAIL — Test J (live, exempt): got ${ JSON.stringify( buttonAnchorRow ) }` );
+		pass = false;
+	}
+
+	// Live check — task-2 findings-34 fix (2026-09-02): sgs/hero declares
+	// `splitMediaObjectPosition`/`mediaOverlayColour`/`mediaOverlayGradient`
+	// with NO own edit.js control and consumes them entirely via
+	// `SGS_Media_Element::style( $attributes, 'splitMedia'|'media', 'sgs/hero',
+	// $uid, array( 'focal-point' )|array( 'overlay' ) )` — a bracket read keyed
+	// by a HELPER FUNCTION CALL (`sgs_media_element_stored_attr()`), which
+	// neither PREFIXED_HELPER_SUFFIXES nor the dynamic-prefix resolver could
+	// see (both require the key expression to be a literal or a simple `$var .
+	// 'Suffix'` concatenation). Positive control for the new
+	// collectMediaElementAtomConsumed() resolver.
+	const heroObjectPositionRow = liveRows.find(
+		( r ) => 'sgs/hero' === r.block && 'splitMediaObjectPosition' === r.attr
+	);
+	if (
+		heroObjectPositionRow &&
+		true === heroObjectPositionRow.renderConsumed &&
+		'media-element-atom' === heroObjectPositionRow.renderVia
+	) {
+		log(
+			'PASS — Test K (live): sgs/hero.splitMediaObjectPosition -> renderConsumed=true, ' +
+				'renderVia=media-element-atom (hero/render.php SGS_Media_Element::style(), focal-point atom).'
+		);
+	} else {
+		log( `FAIL — Test K (live): got ${ JSON.stringify( heroObjectPositionRow ) }` );
+		pass = false;
+	}
+	const heroOverlayColourRow = liveRows.find(
+		( r ) => 'sgs/hero' === r.block && 'mediaOverlayColour' === r.attr
+	);
+	if (
+		heroOverlayColourRow &&
+		true === heroOverlayColourRow.renderConsumed &&
+		'media-element-atom' === heroOverlayColourRow.renderVia
+	) {
+		log(
+			'PASS — Test K (live): sgs/hero.mediaOverlayColour -> renderConsumed=true, ' +
+				'renderVia=media-element-atom (hero/render.php SGS_Media_Element::style(), overlay atom).'
+		);
+	} else {
+		log( `FAIL — Test K (live): got ${ JSON.stringify( heroOverlayColourRow ) }` );
+		pass = false;
+	}
+
+	// Negative control — USED to target sgs/hero's `splitImage` (object, no
+	// suffix), a genuinely orphaned attribute left over from the 2026-09-01
+	// migration to the decomposed splitImageId/splitImageUrl/splitImageAlt
+	// fields (never a media-element-atom base, never read anywhere in
+	// render.php). Proved the resolver does not over-match: it must NOT clear
+	// a real dead attribute just because the block also uses
+	// SGS_Media_Element::style() for unrelated atoms.
+	//
+	// 2026-09-02 (Wave 7b): `splitImage`/`splitImageMobile` were DELETED from
+	// block.json outright (the DB-anchor role that was their only remaining
+	// reason to exist moved to `splitMediaType`, which render.php genuinely
+	// reads — see scripts/data/scalar-media-roles.json's
+	// `__RE_ANCHOR_2026_09_02` note). That removed this negative control's
+	// fixture: sgs/hero currently declares no unexempt orphaned attribute at
+	// all (verified via `--dump-json` the same day), so there is nothing live
+	// left to assert a FAIL against without inventing one. Rather than either
+	// silently deleting the negative control (leaving the resolver's
+	// non-over-match behaviour unproven) or hard-failing the whole self-test
+	// on an absent-by-design fixture, this WARNS and skips — honest about
+	// what it can and cannot currently prove. If a future change reintroduces
+	// a genuinely orphaned attribute on sgs/hero (or another
+	// SGS_Media_Element::style()-using block), retarget this at it.
+	const heroSplitImageRow = liveRows.find( ( r ) => 'sgs/hero' === r.block && 'splitImage' === r.attr );
+	if ( heroSplitImageRow && false === heroSplitImageRow.renderConsumed && 'none' === heroSplitImageRow.renderVia ) {
+		log(
+			'PASS — Test K (live, negative control): sgs/hero.splitImage -> renderConsumed=false, ' +
+				'renderVia=none (genuinely orphaned, not a media-element-atom base — resolver does not over-match).'
+		);
+	} else if ( undefined === heroSplitImageRow ) {
+		log(
+			'WARN — Test K (live, negative control): sgs/hero.splitImage no longer exists ' +
+				'(deleted 2026-09-02, Wave 7b) — no live orphaned-attr fixture currently ' +
+				'available on sgs/hero to prove the resolver does not over-match. Not counted ' +
+				'as a failure; retarget at a real fixture if one reappears.'
+		);
+	} else {
+		log( `FAIL — Test K (live, negative control): got ${ JSON.stringify( heroSplitImageRow ) }` );
 		pass = false;
 	}
 

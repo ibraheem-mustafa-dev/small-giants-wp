@@ -733,16 +733,22 @@ Three blocks (`card-grid`, `multi-button`, `trust-bar`) still carry an ACTIVE na
 `__experimentalBorder` support (radius+width+colour+style) — the codemod's own `--survey`
 refuses them as `ambiguous-anchor`; not yet migrated, not a regression. *(Note: `sgs/media`
 migrated to full block-private border attributes at Wave 5b, 2026-09-01 — it left the native
-group, but has NOT yet swapped its control: it renders border through the shared `box-shape`
-atom in `MediaPanelLayout`'s "Box & Border" panel, so the survey correctly classifies it
-`PRIVATE_NEEDS_SWAP`.)* **Never cache this count again — run `grep -l '<SgsBorderControl' src/blocks/*/edit.js | wc -l` yourself.**
+group, and its swap IS done, just not via a direct `edit.js` mount. Border renders through the
+shared `box-shape` atom's composition chain — `box-shape.control.js` → `MediaPanelLayout` →
+`MediaBoxShapeControls.js`, which already imports and mounts `<SgsBorderControl>` fed the atom's
+own `borderWidthValue`/`borderStyleValue`/`borderColourValue`/`borderRadiusValues` props with
+zero custom logic. `survey-border-control-migration.py` was corrected 2026-09-02 to follow that
+delegation chain [a block declaring the `box-shape` atom in `supports.sgs.mediaElements[].atoms`
+now has its border classification resolved by checking whether `MediaBoxShapeControls.js` itself
+mounts `SgsBorderControl`, rather than text-searching only the block's own `edit.js`] — `sgs/media`
+now correctly classifies `PRIVATE_DONE`.)* **Never cache this count again — run `grep -l '<SgsBorderControl' src/blocks/*/edit.js | wc -l` yourself** (note this grep alone under-counts by one: `sgs/media` mounts it only via the atom chain, not its own `edit.js`).
 
 Census + ratcheted gate: `scripts/survey-border-control-migration.py`
-(`PRIVATE_NEEDS_SWAP` ceiling is **8**, currently **1** — `sgs/media`; the "must stay 0" this
-line claimed until 2026-09-02 was never the script's actual ceiling, check `CEILING` in the
-script rather than trusting a prose figure). Codemod for the edit.js swap:
-`scripts/migrate-border-control.js` (`--survey`/`--fix`/`--check`/`--self-test`). Codemod for the
-broader Shape-B storage migration (radius+width+colour off WP-native, per-block): `scripts/migrate-border-shape-b.js`.
+(`PRIVATE_NEEDS_SWAP` ceiling is **0** as of 2026-09-02, after the `sgs/media` misclassification
+was fixed at the detector — check `CEILING` in the script rather than trusting a prose figure).
+Codemod for the edit.js swap: `scripts/migrate-border-control.js`
+(`--survey`/`--fix`/`--check`/`--self-test`). Codemod for the broader Shape-B storage migration
+(radius+width+colour off WP-native, per-block): `scripts/migrate-border-shape-b.js`.
 
 The control is a PAIR: border width (box object) + colour, with **border STYLE
 inside the colour popover** (native `BorderBoxControl` opens both from one

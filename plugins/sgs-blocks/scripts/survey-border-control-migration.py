@@ -71,8 +71,48 @@ def _find_repo_root(start):
 
 ROOT = _find_repo_root(os.path.dirname(__file__))
 BLOCKS_DIR = os.path.join(ROOT, 'plugins', 'sgs-blocks', 'src', 'blocks')
+COMPONENTS_DIR = os.path.join(ROOT, 'plugins', 'sgs-blocks', 'src', 'components')
 
 BORDER_ATTR_RE = re.compile(r'border', re.IGNORECASE)
+
+# A block need not mount <SgsBorderControl> directly in its own edit.js -- it can
+# delegate border rendering to an ATOM's own control file (box-shape.control.js ->
+# MediaPanelLayout -> MediaBoxShapeControls.js -> SgsBorderControl), three
+# composition layers deep. A literal `'SgsBorderControl' in edit_js` text search
+# can't see through that chain (confirmed live on sgs/media, 2026-09-02).
+#
+# This is a small, explicit lookup -- not a general "walk every import" resolver --
+# because there is currently exactly ONE atom that delegates border this way. Add a
+# new entry here (never a per-block special case) the day a second one appears.
+BORDER_DELEGATING_ATOMS = {
+    'box-shape': os.path.join(
+        COMPONENTS_DIR, 'media', 'controls', 'MediaBoxShapeControls.js'
+    ),
+}
+
+
+def _delegated_atom_mounts_sgs_border_control(bj):
+    """For each border-delegating atom declared on the block (in any atom-bearing
+    list nested under `supports.sgs`, e.g. block.json's `mediaElements[].atoms`),
+    check whether that atom's OWN control file mounts <SgsBorderControl>. Returns
+    True only when a delegating atom is declared AND its control file confirms
+    the mount. Ground truth: sgs/media's `supports.sgs.mediaElements[0].atoms`
+    declares "box-shape" -- confirmed 2026-09-02 by reading block.json directly."""
+    sgs_supports = ((bj or {}).get('supports') or {}).get('sgs') or {}
+    for key, value in sgs_supports.items():
+        if not isinstance(value, list):
+            continue
+        for entry in value:
+            if not isinstance(entry, dict):
+                continue
+            atoms = entry.get('atoms')
+            if not isinstance(atoms, list):
+                continue
+            for atom in atoms:
+                control_path = BORDER_DELEGATING_ATOMS.get(atom)
+                if control_path and 'SgsBorderControl' in _read(control_path):
+                    return True
+    return False
 
 # The ratcheted ceiling: current known-open population for each open category, so a
 # regression (a new NATIVE_FULL block appearing, or an existing PRIVATE block losing
@@ -84,7 +124,15 @@ CEILING = {
     # PRIVATE_DONE. Lowered because a block was genuinely migrated, which is the
     # one reason this file permits.
     'NATIVE_FULL': 37,
-    'PRIVATE_NEEDS_SWAP': 8,   # 10 already-private minus product-card + quote (DONE)
+    # 8 -> 0 on 2026-09-02: sgs/media was misclassified as PRIVATE_NEEDS_SWAP -- its
+    # border control is mounted via the box-shape atom's own composition chain
+    # (box-shape.control.js -> MediaPanelLayout -> MediaBoxShapeControls.js ->
+    # SgsBorderControl), which the classifier's flat `edit.js` text search could
+    # not see through. It already uses SgsBorderControl; fixing the detector to
+    # follow the delegation reclassifies it PRIVATE_DONE. Lowered because the
+    # population was already 0, not because a block was migrated -- see D881
+    # section "Border controls" in CLAUDE.md for the corrected classification.
+    'PRIVATE_NEEDS_SWAP': 0,
     # Measured 2026-08-28, first real run of this classifier: filter-search, label,
     # mega-aside, mega-panel, product-search, social-icons, whatsapp-cta -- each has
     # SOME border-shaped attr (usually radius-only, sometimes radius+colour with no
@@ -138,7 +186,10 @@ def classify_block(block_dir):
     has_private_style = 'borderStyle' in attrs
 
     edit_js = _read(os.path.join(block_dir, 'edit.js'))
-    uses_sgs_border_control = 'SgsBorderControl' in edit_js
+    uses_sgs_border_control = (
+        'SgsBorderControl' in edit_js
+        or _delegated_atom_mounts_sgs_border_control(bj)
+    )
 
     detail = {
         'block': slug,

@@ -129,7 +129,14 @@
 						"css:stroke": "iconColourGradient",
 						"css:box-shadow-color": "iconCircleShadowColour"
 					},
-					"_note": "iconColour (the SVG stroke/fill colour, style.css:80 `color: var(--sgs-trust-badge-icon-colour, ...)`) resolves via css:color (text cluster) — mirrors sgs/icon's own icon element + sgs/business-info's icon element, which use the same functional-icon-colour/css:color convention (Spec 35 vocabulary fix). Only applies when badgeStyle='icon-circle' (supports.sgs.variants). `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "iconColourHover"
+							}
+						}
+					},
+					"_note": "iconColour (the SVG stroke/fill colour, style.css:80 `color: var(--sgs-trust-badge-icon-colour, ...)`) resolves via css:color (text cluster) — mirrors sgs/icon's own icon element + sgs/business-info's icon element, which use the same functional-icon-colour/css:color convention (Spec 35 vocabulary fix). Only applies when badgeStyle='icon-circle' (supports.sgs.variants). `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover pairs with the resting iconColour above (2026-09-02) — render.php:255-258 emits it as a `color:` decl scoped to the block ROOT rather than a dedicated icon-badge selector, but the element it semantically belongs to (and the one its resting twin is declared on) is icon-badge, matching check-hover-state-classification.py's resting-twin discriminator."
 				},
 				"label": {
 					"label": "Badge label",

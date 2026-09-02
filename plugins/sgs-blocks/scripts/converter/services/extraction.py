@@ -184,6 +184,31 @@ def _mobile_suffixes() -> frozenset[str]:
     return frozenset(mobile)
 
 
+def _tablet_suffixes() -> frozenset[str]:
+    """Return the set of breakpoint suffix names that map to 'Tablet' tier.
+
+    Sibling of ``_mobile_suffixes()`` — added 2026-09-02 for the composite-
+    interior scalar-media Tablet-tier routing widening. Same DB-driven
+    pattern (R-31-1): collects every tier MARKER from
+    ``db_lookup.breakpoint_suffix_rules()`` that IS ``'Tablet'``. Per that
+    function's own verified shape, the only rule carrying a 'Tablet' marker
+    is ``('min-width: 768', ['Tablet', 'Desktop'])`` — so this always
+    resolves to ``frozenset({'tablet'})`` against the live DB, but is written
+    generically (no literal 'tablet' string) to match ``_mobile_suffixes()``'s
+    own discipline and stay correct if the DB rule set changes.
+    """
+    try:
+        bp_rules = db_lookup.breakpoint_suffix_rules()
+    except Exception:  # noqa: BLE001 — soft-fail; DB unavailable during tests
+        return frozenset()
+    tablet: set[str] = set()
+    for _media_condition, tier_markers in bp_rules:
+        for marker in tier_markers:
+            if marker == "Tablet":
+                tablet.add(marker.lower())
+    return frozenset(tablet)
+
+
 def _child_content_for_node(
     child_node: Any,
     child_slug: str,
@@ -539,10 +564,18 @@ def run_mechanism_b(
 
     COMPOSITE-INTERIOR branches (per direct child column):
       (A) Scalar-media column — db_lookup.scalar_media_attr_for(slug, element) non-None
-            → find <img> descendants; use BEM modifier (--mobile/--desktop) to pick
-              base_attr vs base_attr+'Mobile'; lift via scalar_media_from_img;
-              emit ScalarLift(attr=target_attr, value=lifted_img_dict).
-            → No img found → ContentGap (never a silent skip, Rule 4).
+            → find <img>/<video>/<svg> descendants; use BEM modifier
+              (--mobile/--tablet/--desktop) to pick the tier suffix; lift via
+              scalar_media_from_img/_video/svg_markup_from_node; emit
+              ScalarLift(attr=target_attr, value=lifted) where target_attr's
+              stem comes from db_lookup.scalar_media_type_stem(slug, kind) —
+              NOT from scalar_media_attr_for's return value, which (Wave 7b,
+              2026-09-02) is a presence/eligibility anchor only. A video/svg
+              lift ALSO emits a second plain ScalarLift setting that tier's
+              splitMediaType*/Tablet/Mobile explicitly (base_attr + tier
+              suffix IS that literal attr name) — otherwise WordPress's
+              schema default ('image') silently wins at render time.
+            → No img/video/svg found → ContentGap (never a silent skip, Rule 4).
       (B) Content-item block column — resolve_slug_from_bem(child_classes) non-None
             → emit ChildBlock + recurse into the child (_child_content_for_node).
       (C) slug-None content wrapper (fold case) — resolve_slug_from_bem returns None
@@ -577,10 +610,15 @@ def run_mechanism_b(
     # Build mobile-suffix set once per call (DB-driven, no hardcoded dict).
     # ------------------------------------------------------------------
     mobile_sfxs = _mobile_suffixes()
+    tablet_sfxs = _tablet_suffixes()
 
     # Import here to avoid a module-level circular import: lift_helpers is a
     # leaf module with no imports from converter.services.
-    from converter.services.lift_helpers import scalar_media_from_img
+    from converter.services.lift_helpers import (
+        scalar_media_from_img,
+        scalar_media_from_video,
+        svg_markup_from_node,
+    )
 
     results: list = []
     columns_seen = 0  # conservation counter
@@ -626,33 +664,140 @@ def run_mechanism_b(
 
             if base_attr is not None:
                 # ---- Branch A: Scalar-media column (convert.py:4218-4253) ----
-                imgs = child.find_all("img")
-                if not imgs:
-                    # No img found → ContentGap (convert.py:4224-4229 silently skips;
-                    # we emit a ContentGap per Rule 4 — no silent drops allowed here).
+                # Widened 2026-09-02 (converter-side only, no render.php/block.json
+                # change): a scalar-media column may carry an <img>, a <video>, or
+                # an inline <svg> — sgs/hero's split-media slot supports all three
+                # per device tier (splitMediaType/*Tablet/*Mobile, block.json).
+                # Each media kind writes to its OWN attr family, resolved via
+                # db_lookup.scalar_media_type_stem() — a checked-in roster-declared
+                # mapping (R-31-1: never a hardcoded/guessed string-substitution).
+                #
+                # Wave 7b re-anchor (2026-09-02): `base_attr` (from
+                # scalar_media_attr_for) is now 'splitMediaType' — a
+                # presence/eligibility ANCHOR only, no longer the image content
+                # stem by coincidence of sharing a name. It is used below for
+                # exactly two things: the truthy gate on this `if`, and as the
+                # base name for the TYPE-SELECTOR write (base_attr + tier_suffix
+                # IS 'splitMediaType'/'splitMediaTypeTablet'/'splitMediaTypeMobile'
+                # verbatim — the real block.json attr names, no expansion needed).
+                # The CONTENT stem for every media kind, image included, comes from
+                # scalar_media_type_stem() — never from `base_attr` directly.
+                #
+                # Bug fix (2026-09-02, same session that added video/SVG tiers):
+                # a video/SVG lift previously wrote its CONTENT but never its
+                # TYPE — block.json's schema default for an unset tier is
+                # 'image', so WordPress silently coerced the tier back to image
+                # at render time and the video/SVG never displayed despite being
+                # correctly stored. Video/SVG branches below now ALSO emit a
+                # second, plain string ScalarLift setting that tier's
+                # splitMediaType*/Tablet/Mobile explicitly. The image branch does
+                # NOT need this: 'image' is already the schema default, so an
+                # image tier resolves correctly with no explicit type write —
+                # deliberately left as-is, per the live investigation of this bug.
+                media_els: list[tuple[Any, str]] = (
+                    [(el, "image") for el in child.find_all("img")]
+                    + [(el, "video") for el in child.find_all("video")]
+                    + [(el, "svg") for el in child.find_all("svg")]
+                )
+                if not media_els:
+                    # No media found → ContentGap (convert.py:4224-4229 silently
+                    # skips; we emit a ContentGap per Rule 4 — no silent drops).
                     results.append(ContentGap(
                         _label(child),
-                        f"scalar-media column (attr={base_attr!r}) had no <img> descendant"
-                        " — media content not transferred",
+                        f"scalar-media column (attr={base_attr!r}) had no <img>/"
+                        "<video>/<svg> descendant — media content not transferred",
                     ))
                     continue
 
-                for img in imgs:
-                    img_classes: list[str] = img.get("class", []) or []
-                    img_modifier: str | None = None
-                    for img_cls in img_classes:
-                        img_bem = db_lookup.parse_sgs_bem(img_cls)
-                        if img_bem and img_bem.modifier:
-                            img_modifier = img_bem.modifier.lower()
+                for media_el, media_kind in media_els:
+                    media_classes: list[str] = media_el.get("class", []) or []
+                    media_modifier: str | None = None
+                    for media_cls in media_classes:
+                        media_bem = db_lookup.parse_sgs_bem(media_cls)
+                        if media_bem and media_bem.modifier:
+                            media_modifier = media_bem.modifier.lower()
                             break
 
-                    # Mobile modifier → base_attr + 'Mobile'; else → base_attr.
-                    # convert.py:4243-4244
-                    is_mobile = (img_modifier in mobile_sfxs) if img_modifier else False
-                    target_attr = f"{base_attr}Mobile" if is_mobile else base_attr
+                    # Three-way tier resolution — Mobile / Tablet / base(desktop).
+                    # convert.py:4243-4244 was Mobile-only; Tablet added 2026-09-02.
+                    # Mobile wins over Tablet on the (unreachable in practice) case
+                    # of a modifier matching both sets, matching the pre-existing
+                    # Mobile-first precedence this branch already had.
+                    is_mobile = (media_modifier in mobile_sfxs) if media_modifier else False
+                    is_tablet = (media_modifier in tablet_sfxs) if media_modifier else False
+                    tier_suffix = "Mobile" if is_mobile else ("Tablet" if is_tablet else "")
 
-                    lifted = scalar_media_from_img(img, media_map=media_map or {})
-                    results.append(ScalarLift(attr=target_attr, value=lifted))
+                    if media_kind == "image":
+                        # NOT base_attr — media_type_stems.image (Wave 7b), see
+                        # the Branch A header comment above. Left un-guarded on
+                        # None (unlike video/svg below) would be a silent
+                        # behaviour change for the ALREADY-TESTED image path if
+                        # the roster ever lost its image stem; a loud ContentGap
+                        # is the correct failure mode instead.
+                        image_stem = db_lookup.scalar_media_type_stem(rec.slug or "", "image")
+                        if image_stem is None:
+                            results.append(ContentGap(
+                                _label(media_el),
+                                f"scalar-media column (anchor={base_attr!r}) held an "
+                                "<img> but the block declares no image family "
+                                "stem — see scalar-media-roles.json media_type_stems",
+                            ))
+                            continue
+                        target_attr = f"{image_stem}{tier_suffix}"
+                        lifted = scalar_media_from_img(media_el, media_map=media_map or {})
+                        results.append(ScalarLift(attr=target_attr, value=lifted))
+                        continue
+
+                    if media_kind == "video":
+                        stem = db_lookup.scalar_media_type_stem(rec.slug or "", "video")
+                        if stem is None:
+                            results.append(ContentGap(
+                                _label(media_el),
+                                f"scalar-media column (anchor={base_attr!r}) held a "
+                                "<video> but the block declares no video family "
+                                "stem — see scalar-media-roles.json media_type_stems",
+                            ))
+                            continue
+                        target_attr = f"{stem}{tier_suffix}"
+                        lifted = scalar_media_from_video(media_el, media_map=media_map or {})
+                        results.append(ScalarLift(attr=target_attr, value=lifted))
+                        # Bug fix: write the TYPE selector alongside the content
+                        # (see the Branch A header comment) — base_attr here is
+                        # the real anchor 'splitMediaType', so base_attr+tier_suffix
+                        # is the literal block.json attr name, written directly.
+                        results.append(ScalarLift(attr=f"{base_attr}{tier_suffix}", value="video"))
+                        continue
+
+                    # media_kind == "svg" — CONTENT is written DIRECTLY as a
+                    # plain string ScalarLift, no emit_as expansion:
+                    # splitSvgContent* IS the real block.json-declared attr
+                    # name, unlike image/video which decompose into an
+                    # Id/Url(/Alt) trio. (test_svg_in_split_media_routes_to_
+                    # split_svg_content_directly asserts the value stays a raw
+                    # str, never a dict — do not change this shape.)
+                    stem = db_lookup.scalar_media_type_stem(rec.slug or "", "svg")
+                    if stem is None:
+                        results.append(ContentGap(
+                            _label(media_el),
+                            f"scalar-media column (anchor={base_attr!r}) held an "
+                            "inline <svg> but the block declares no svg family "
+                            "stem — see scalar-media-roles.json media_type_stems",
+                        ))
+                        continue
+                    markup = svg_markup_from_node(media_el)
+                    if not markup:
+                        results.append(ContentGap(
+                            _label(media_el),
+                            f"scalar-media column (anchor={base_attr!r}) held an "
+                            "inline <svg> that serialised to empty markup",
+                        ))
+                        continue
+                    target_attr = f"{stem}{tier_suffix}"
+                    results.append(ScalarLift(attr=target_attr, value=markup))
+                    # Bug fix: same TYPE-selector write as the video branch above
+                    # — a SEPARATE plain-string ScalarLift, not folded into the
+                    # content lift, so the content shape assertion above holds.
+                    results.append(ScalarLift(attr=f"{base_attr}{tier_suffix}", value="svg"))
 
             else:
                 # ---- Branch B / C: content column (convert.py:4256-4307) ----

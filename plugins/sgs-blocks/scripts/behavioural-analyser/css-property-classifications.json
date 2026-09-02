@@ -60,8 +60,9 @@
       "slug": "sgs/before-after",
       "attr": "boxShadowColour",
       "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER"
+        "css_property": "box-shadow-color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1580,6 +1581,22 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "backgroundPosition",
+      "fields": {
+        "css_property": "object-position",
+        "css_element": "video-bg"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "backgroundSize",
+      "fields": {
+        "css_property": "object-fit",
+        "css_element": "video-bg"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -2034,6 +2051,14 @@
     },
     {
       "slug": "sgs/icon-list",
+      "attr": "iconColourHover",
+      "fields": {
+        "css_property": "color",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
       "attr": "itemFontSize",
       "fields": {
         "css_property": "font-size",
@@ -2483,6 +2508,7 @@
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -2863,6 +2889,15 @@
       "fields": {
         "css_property": "color",
         "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "iconColourHover",
+      "fields": {
+        "css_property": "color",
+        "css_element": "icon",
+        "css_state": "hover"
       }
     },
     {
@@ -4686,6 +4721,16 @@
     },
     {
       "slug": "sgs/trust-bar",
+      "attr": "iconColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "icon-badge",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
       "attr": "labelColour",
       "fields": {
         "css_property": "color",
@@ -5893,6 +5938,15 @@
     },
     {
       "slug": "sgs/container",
+      "attr": "shadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
       "attr": "textColour",
       "fields": {
         "css_property": "color",
@@ -6163,6 +6217,15 @@
       "attr": "minHeight",
       "fields": {
         "css_property": "min-height",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "shadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -7435,6 +7498,15 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "shadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "splitMediaObjectFit",
       "fields": {
         "css_property": "object-fit",
@@ -7969,6 +8041,33 @@
       "fields": {
         "css_property": "color",
         "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -9699,6 +9798,15 @@
       "attr": "shadow",
       "fields": {
         "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "shadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -11763,6 +11871,26 @@
       "attr": "paddingTablet",
       "fields": {
         "css_property": "padding",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
         "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"

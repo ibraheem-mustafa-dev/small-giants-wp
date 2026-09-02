@@ -149,11 +149,15 @@ def build_block_markup(
             # routing) is UNCHANGED — only the final write shape adapts, so a
             # future clone populates attrs the migrated block's render.php
             # actually reads instead of the now-dead composite name.
+            # Widened 2026-09-02 (Tablet/video/svg tier routing): emit_as is no
+            # longer a fixed id/url/alt trio — a video lift has no 'alt', so
+            # this now expands WHATEVER keys the roster entry declares,
+            # generically, defaulting each to 0 for 'id' and '' otherwise.
             _emit_as = db_lookup.scalar_media_emit_as(rec.slug or "", r.attr)
             if _emit_as and isinstance(r.value, dict):
-                attrs[_emit_as["id"]] = r.value.get("id", 0)
-                attrs[_emit_as["url"]] = r.value.get("url", "")
-                attrs[_emit_as["alt"]] = r.value.get("alt", "")
+                for _semantic_key, _target_attr in _emit_as.items():
+                    _default = 0 if _semantic_key == "id" else ""
+                    attrs[_target_attr] = r.value.get(_semantic_key, _default)
             elif _grid_prefix and r.attr.startswith(_grid_prefix):
                 attrs.setdefault(r.attr, r.value)  # grid-item default — CSS pass wins
             else:

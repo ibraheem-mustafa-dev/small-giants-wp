@@ -501,15 +501,32 @@ _SCALAR_MEDIA_ROLE = "scalar-media"
 
 
 def _load_scalar_media_roles() -> list[tuple[str, str]]:
-    """Load the [(block_slug, attr_name)] roster. Soft-fails to ``[]``."""
+    """Load the [(block_slug, attr_name)] roster for the `block_attributes.role`
+    RE-ASSERTION path only (``_migrate_scalar_media_roles``).
+
+    Skips any entry marked ``"virtual": true`` in its 4th (options) field —
+    added 2026-09-02 for the Tablet/video/svg tier-sibling entries. Those
+    entries exist purely so ``scalar_media_emit_as``/``scalar_media_type_stem``
+    can resolve their target attr names; they name a COMPOSITE attr
+    (``splitImageTablet``, ``splitVideo``, …) that has no ``block_attributes``
+    row at all (block.json never declares a composite object for those tiers —
+    only the flat Id/Url/Alt trio, which the emit_as expansion writes to).
+    Feeding them through the role re-assertion path would print a permanent
+    false "no block_attributes row" warning on every module load. Real
+    (non-virtual) entries are unaffected — same soft-fail-to-``[]`` contract.
+    """
     try:
         raw = json.loads(_SCALAR_MEDIA_ROLES_FILE.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return []
     out: list[tuple[str, str]] = []
     for entry in raw.get("attrs", []):
-        if isinstance(entry, list) and len(entry) >= 2:
-            out.append((entry[0], entry[1]))
+        if not (isinstance(entry, list) and len(entry) >= 2):
+            continue
+        opts = entry[3] if len(entry) >= 4 else None
+        if isinstance(opts, dict) and opts.get("virtual"):
+            continue
+        out.append((entry[0], entry[1]))
     return out
 
 
@@ -517,13 +534,23 @@ def scalar_media_emit_as(block_slug: str, attr_name: str) -> dict[str, str] | No
     """Optional 4th roster-entry field (``scalar-media-roles.json``'s own
     ``__emit_as`` docstring carries the full rationale): when a scalar-media
     attr's STORAGE shape has moved from the composite ``{id,url,alt}`` object
-    ``run_mechanism_b``'s ``ScalarLift`` still produces to three separate
-    scalar keys (Wave 6, 2026-09-02 — sgs/hero's media-atom migration), this
-    names the three target attr names so ``assembly.py``'s ScalarLift
-    handling can expand the composite value into them instead of writing the
-    composite object to a name nothing reads any more.
+    ``run_mechanism_b``'s ``ScalarLift`` still produces to separate scalar
+    keys (Wave 6, 2026-09-02 — sgs/hero's media-atom migration), this names
+    the target attr names so ``assembly.py``'s ScalarLift handling can expand
+    the composite value into them instead of writing the composite object to
+    a name nothing reads any more.
 
-    @return ``{"id": ..., "url": ..., "alt": ...}`` (target attr names) or
+    Widened 2026-09-02 (Tablet/video/svg tier routing): the shape is no
+    longer fixed to the id/url/alt image trio — a video lift has no ``alt``
+    (``{"id": ..., "url": ...}``), so this now returns WHATEVER key set the
+    roster entry declares, verbatim, rather than requiring all three of
+    id/url/alt to be present. ``assembly.py``'s consumer reads the returned
+    dict generically (``r.value.get(key, ...)`` per declared key) so any
+    subset of {id, url, alt} keys is safe to add here without a second change
+    there. (An inline-SVG lift needs no expansion at all — ``splitSvgContent``
+    is written directly as a plain string ScalarLift; it never appears here.)
+
+    @return the entry's ``emit_as`` dict (target attr names) verbatim, or
         ``None`` for every roster entry that has not opted in — the
         overwhelming majority, which keep writing the composite object
         exactly as before.
@@ -539,9 +566,50 @@ def scalar_media_emit_as(block_slug: str, attr_name: str) -> dict[str, str] | No
             continue
         opts = entry[3]
         emit_as = opts.get("emit_as") if isinstance(opts, dict) else None
-        if isinstance(emit_as, dict) and {"id", "url", "alt"} <= set(emit_as):
-            return {"id": emit_as["id"], "url": emit_as["url"], "alt": emit_as["alt"]}
+        if isinstance(emit_as, dict) and emit_as:
+            return dict(emit_as)
     return None
+
+
+def scalar_media_type_stem(block_slug: str, media_kind: str) -> str | None:
+    """Return the BASE attr-name STEM for `block_slug`'s scalar-media family
+    matching `media_kind` (``'image'``, ``'video'`` or ``'svg'``).
+
+    Added 2026-09-02 for the video/SVG split-media tier widening; widened the
+    same day (Wave 7b re-anchor) to also cover ``'image'``. A scalar-media
+    column (e.g. sgs/hero's split-media slot) may hold an ``<img>``, a
+    ``<video>``, or an inline ``<svg>`` depending on the draft — each media
+    kind writes to a DIFFERENT attr family (``splitImage*`` / ``splitVideo*``
+    / ``splitSvgContent*``).
+
+    ⚠ Before the Wave 7b re-anchor, the image family's stem was NOT declared
+    here — it was read straight off ``scalar_media_attr_for``'s return value,
+    because that function's DB-resolved anchor happened to BE ``splitImage``.
+    That coincidence is exactly what the re-anchor removed: the anchor moved
+    to ``splitMediaType`` (a presence/eligibility gate only — see
+    ``scalar_media_attr_for``'s docstring), which shares no substring with
+    any of the three content families, so NONE of them can be derived from
+    it any more. All three are now declared explicitly and symmetrically in
+    the roster's ``media_type_stems`` section instead of being guessed by
+    string-substitution (R-31-1 — no invented naming convention).
+
+    @return the stem string (e.g. ``'splitVideo'``, ``'splitSvgContent'``) or
+        ``None`` when the block declares no stem for that media kind — the
+        caller must treat this as "route not built for this block/kind", a
+        loud ContentGap, never a guess.
+    """
+    try:
+        raw = json.loads(_SCALAR_MEDIA_ROLES_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    stems = raw.get("media_type_stems", {})
+    if not isinstance(stems, dict):
+        return None
+    block_stems = stems.get(block_slug)
+    if not isinstance(block_stems, dict):
+        return None
+    stem = block_stems.get(media_kind)
+    return stem if isinstance(stem, str) and stem else None
 
 
 def _migrate_scalar_media_roles() -> None:
@@ -604,6 +672,12 @@ def _migrate_scalar_media_roles() -> None:
             # seeder REFUSED to repair sgs/hero while printing a message that said
             # `is_class_section_block(sgs/hero) is False` — which was untrue. A guard that
             # fails closed AND reports a fabricated reason is worse than no guard.
+            #
+            # 2026-09-02 (Wave 7b): the roster's only real (non-virtual) row for
+            # sgs/hero is now 'splitMediaType', not 'splitImage'/'splitImageMobile' —
+            # this precondition guard is unaffected (it keys on block_slug, not the
+            # attr name), but a reader expecting 'splitImage' examples in older
+            # comments nearby should treat 'splitMediaType' as the current anchor.
             # Fixed by moving the module-load invocation to the END of this file; the
             # narrow except keeps that class of mistake loud if the order ever regresses.
             eligible = is_class_section_block(block_slug)
@@ -3399,7 +3473,9 @@ def has_scalar_media_attrs(block_slug: str) -> bool:
 
 
 def scalar_media_attr_for(block_slug: str, bem_element: str) -> str | None:
-    """Return the attr_name of the scalar-media attr on `block_slug` for `bem_element`.
+    """Return the attr_name of the scalar-media ANCHOR row on `block_slug` for
+    `bem_element` — a presence/eligibility gate, NOT necessarily the content
+    family's write-target stem.
 
     A 'scalar-media' attr is one where:
       - block_attributes.role = 'scalar-media'  (classification='styling-behaviour'
@@ -3407,12 +3483,23 @@ def scalar_media_attr_for(block_slug: str, bem_element: str) -> str | None:
       - Its canonical_slot aliases include `bem_element` (or canonical_slot itself
         equals `bem_element` after normalisation).
 
+    ⚠ Wave 7b re-anchor (2026-09-02): for sgs/hero this now returns
+    'splitMediaType', not 'splitImage'. Do NOT use the return value directly
+    as an image/video/svg content-family stem (the old assumption, which
+    happened to work only because the anchor and the image stem used to be
+    the same string by coincidence). Callers building a CONTENT write target
+    must resolve the family stem via `scalar_media_type_stem(block_slug,
+    media_kind)` instead, for every media kind including 'image' — this
+    function's only remaining job is "does a scalar-media anchor exist for
+    this BEM element at all", the truthy/None gate that decides whether
+    Branch A fires.
+
     The Mobile/Desktop distinction is the CALLER's job: this function returns the
-    **base** attr_name (e.g. 'splitImage', 'sideImage') — never the '+Mobile'
-    sibling.  The caller appends 'Mobile' when the BEM modifier is '--mobile'.
+    **base** (non-suffixed) anchor attr_name — never the '+Mobile' sibling. The
+    caller appends 'Mobile'/'Tablet' to whatever stem it actually needs to write.
 
     Returns:
-        attr_name string (e.g. 'splitImage') on a match, or None when the
+        attr_name string (e.g. 'splitMediaType') on a match, or None when the
         composite has no scalar-media attr at the given slot.
 
     Args:

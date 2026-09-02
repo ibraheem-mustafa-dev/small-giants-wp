@@ -120,7 +120,22 @@ let cachedDumpError = null;
 // `null` (not-exempt) or ignored. 'core-supports' added Task 4 (2026-08-27,
 // IMPORTANT 4): a WP-native `supports`-backed attribute (anchor/lock/align)
 // is consumed by WordPress core itself, not by this block's own render code.
-const KNOWN_EXEMPT_REASONS = new Set( [ 'system-attr', 'editor-only', 'key-noise', 'core-supports' ] );
+// 'cloning-pipeline-anchor' added 2026-09-02: render/editor-dead by design,
+// kept alive as a routing anchor for the Python cloning pipeline's
+// scalar-media mechanism. Its only entries (`sgs/hero::splitImage`/
+// `splitImageMobile`) were deleted from block.json the same day (Wave 7b)
+// once the DB anchor moved to `splitMediaType`, which IS render-consumed and
+// needs no exemption — CLONING_PIPELINE_ANCHOR_ATTRS in check-dead-
+// controls.js is currently empty, so this reason value is unused today but
+// kept in the vocabulary for a future virtual-only anchor. Source of truth:
+// plugins/sgs-blocks/scripts/data/scalar-media-roles.json.
+const KNOWN_EXEMPT_REASONS = new Set( [
+	'system-attr',
+	'editor-only',
+	'key-noise',
+	'core-supports',
+	'cloning-pipeline-anchor',
+] );
 
 /**
  * Minor 7 (2026-08-27, review findings) — a shape guard on the dump contract.
