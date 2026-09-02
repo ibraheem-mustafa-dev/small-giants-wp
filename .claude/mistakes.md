@@ -6,6 +6,10 @@ plan-vs-hardened-rule collision on hero's split-media legacy fallback.)
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over — currently over, prune due)
+### [2026-09-02] A self-declared "PROTOTYPE" script's output was published at scale while a mature, already-gated tool for the same question sat unused in the same directory
+- **Pattern key:** `check-for-mature-tool-before-trusting-prototype-script`
+- **Feedback file:** [feedback_check_for_mature_tool_before_trusting_prototype_script.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_check_for_mature_tool_before_trusting_prototype_script.md)
+
 ### [2026-09-02] A subagent's worktree fataled on integration — a shared function it called had been deleted by a concurrently-integrated migration
 - **Pattern key:** `merge-main-before-trusting-a-stale-worktrees-gate-failures` (recurrence — see the CC-memory file for the fuller mechanism)
 - **Evidence:** `container`'s `BackgroundPanel` agent worked in a worktree branched before `hero`'s Wave 7 migration was integrated (manually, not via `git merge` — so a plain `git log origin/main -1` check would not have surfaced it). Its own hero-specific fix called `$sgs_css_object_position`, a closure the hero migration had already deleted from the current tree — invisible to the agent's own build, since its worktree's copy of `hero/render.php` still had it. Would have fataled the first hero instance with a background video to render.
@@ -281,11 +285,6 @@ plan-vs-hardened-rule collision on hero's split-media legacy fallback.)
 - **Pattern key:** `a-metric-that-gets-cheaper-when-you-hide-things`
 - **Feedback file:** [feedback_a_metric_that_gets_cheaper_when_you_hide_things.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_metric_that_gets_cheaper_when_you_hide_things.md)
 - **Rule:** a library-wide inspector census (median 12 / max 49 / total 1121) was rejected as a baseline (D543): it scored any composite as ONE row, could not see native `supports` panels (64 of 83 blocks) or `extensions/`, and summed mutually-exclusive branches — error with TWO signs. The live editor then proved it MIS-RANKED (D544): the block scoring 8 shows a client ~50 controls. Ask "what is the cheapest way to make this number fall, and does that help the user?" and validate ORDERING, not just magnitude. Its `--self-test` certified the worst defect as the expected answer, so it could never have caught this.
-
-### [2026-08-04] A gate measured against the wrong document and reported 666 fictional selectors
-- **Pattern key:** `a-gate-can-measure-the-wrong-document-entirely`
-- **Evidence (D484):** Built `check-derived-selector-drift.py` comparing `block_attributes.derived_selector` against classes the BLOCK renders; it flagged 666 of 889 as naming a class that does not exist. `derived_selector` is a DRAFT-side matcher — `scalar_content.py:106-120` matches it against the draft DOM subtree, Spec 00 §3.1 calls it "a documented per-attr DB mapping", and Spec 31 §3.B calls hover selectors "synthetic placeholders that never exist in real markup". Inventing them is the design. Bean caught the premise and asked for the specs to be read before acting; the gate was deleted.
-- **Rule:** Before building a detector, state which DOCUMENT the value under test is supposed to describe, and prove it by reading the consumer. A gate pointed at the wrong document produces confident, plausible, wholly false findings — and 666 of them would have driven a large rework.
 
 ### [2026-08-04] A perfect correlation was reported as a confirmed mechanism, twice in one session
 - **Pattern key:** `a-correlation-is-not-a-mechanism`

@@ -37,8 +37,10 @@ positive, not just the ones RULING 2 already softened.
 
 **Action:** `scattered-element-controls.js` DELETED outright (not patched — a correct,
 spec-conformant, gated replacement already existed). The published report
-(`.claude/reports/2026-09-02-c14-scattered-controls-table.md`) marked WITHDRAWN in place (kept for
-git-blame). `plugins/sgs-blocks/CLAUDE.md`'s script-catalogue section rewritten to point at
+(`.claude/reports/2026-09-02-c14-scattered-controls-table.md`) was first marked WITHDRAWN in
+place, then DELETED outright at Bean's direction — its findings are recoverable via git-blame if
+ever needed, but nothing in the live tree should reference it. `plugins/sgs-blocks/CLAUDE.md`'s
+script-catalogue section rewritten to point at
 `placement-reach.py`. `parking.md`'s `P-SCATTER-DETECTOR-FAMILY-CLASSIFICATION` entry (which asked
 Bean to rule on RULING 2's family list) archived as SUPERSEDED — the question never needed
 answering, since the detector asking it was itself wrong. The 9-item CONTESTED list shared with
