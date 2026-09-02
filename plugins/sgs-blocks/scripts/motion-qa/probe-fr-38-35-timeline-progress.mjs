@@ -216,8 +216,7 @@ for ( const r of results.nativeStatic ) {
 	);
 }
 
-console.log( '
-=== GEOMETRY (svg must SPAN the block — the zero-area check) ===' );
+console.log( '\n=== GEOMETRY (svg must SPAN the block — the zero-area check) ===' );
 for ( const r of results.nativeStatic ) {
 	if ( ! r.isProgress ) continue;
 	console.log(
