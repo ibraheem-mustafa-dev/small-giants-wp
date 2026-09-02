@@ -25,8 +25,9 @@ there are no live client sites on this framework yet, so breakage there costs ti
 
 - **Branch:** `main`, ONE active track. Commit with explicit paths (a hook enforces it).
 - **Canary:** WP 7.1. Deploy via `build-deploy.py --target sandybrown` — the only sanctioned path.
-- **Build:** green, **84/84** gates (a 84th was wired this session: `check-enum-control-shape`),
-  verified 2026-09-02 at `2b55c4f29`. Nothing uncommitted at session close.
+- **Build:** green, **85/85** gates, verified 2026-09-02 at `ac2cb47ca`. Canary deployed + live
+  homepage re-verified same session (D919 — a real hero split-media render bug, caught and fixed
+  before any client ever hit it). Nothing uncommitted at session close.
 - **Live fronts:** the uniformity sweep (below). Client controls, cloning, consolidation are closed;
   motion is stable with named next steps in its own section.
 - **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
@@ -39,12 +40,13 @@ there are no live client sites on this framework yet, so breakage there costs ti
 (section below). Sections below are per-track, read only the one you're continuing.**
 The **motion** track owns `⛔ `sgs-framework.db` is ONE shared file — DB work sequentially, not parallel.
 
-## ▶ UNIFORMITY SWEEP TRACK — 2026-09-02 (part 2): every detector VALIDATED, 6 defects fixed. D917 + D918.
+## ▶ UNIFORMITY SWEEP TRACK — 2026-09-02: decide-first batch CLOSED (D917-D919); 7 items remain
 
 ⭐ **Read `.claude/reports/2026-09-02-findings-INDEX.md` FIRST — it is the map.** Twelve reports,
 one per detector reporting findings, each with a plain-English problem/effect, a ranked menu and a
 "Your call" checklist. Plan: `.claude/plans/2026-08-30-uniformity-sweep-execution.md`.
-**Continuation prompt: `.claude/prompts/2026-09-03-detector-findings-review-and-resolve.md`.**
+**Continuation prompt: `.claude/prompts/2026-09-03-detector-backlog-continuation.md`** — the prior
+prompt (`...-review-and-resolve.md`) is DELETED, its full scope closed; do not look for it.
 
 ⛔ **THE SESSION'S CENTRAL LESSON (D918).** Bean challenged the C14 scattered-controls report.
 `/qc-council` found `scattered-element-controls.js` was a **self-declared PROTOTYPE** whose model
@@ -87,19 +89,30 @@ D754's capability-grant design) · 37 (71) · border-migration (3 blocks: card-g
 trust-bar — `sgs/media` closed, see below). **Closed: dead-api, rules 23 and 26, 07, 22, 34,
 border-migration's `sgs/media` item.**
 
-## ▶ 2026-09-02 (part 3) — decide-first batch closed (D919); a real hero render bug caught before it ever shipped
+**Closed this session (D919 has the full account — this is a pointer, not a duplicate):** all four
+"decide first" items (07, 22, 34, border-migration's `sgs/media` block) plus a bonus — extending
+the cloning pipeline's hero split-media routing to Tablet tier + video/SVG media types surfaced and
+fixed a real bug (video/SVG content was being stored but never rendered). 10 commits ending
+`ac2cb47ca`, all on `main`, working tree clean. Independently re-verified via a 3-rater
+`/qc-council` pass (consumer safety SAFE, one test-coverage gap found and closed same session,
+production migration independently re-verified). Also fixed, found along the way: a canary
+`wp-login.php` LiteSpeed cache-cookie bug that silently blocked every automated Playwright login
+(WP-CLI option flip, no code change — but real, and would have blocked every future QC session
+needing editor access).
 
-Closed all four "decide first" items from part 2's menu, plus a bonus: extending the cloning
-pipeline's hero split-media routing to Tablet tier + video/SVG media types surfaced and fixed a
-real bug (video/SVG content was being stored but never rendered — see D919 for the full account,
-this is a pointer not a duplicate). Five commits: `79c910d2f` (07, site-header ShadowControl),
-`dcd9940d2` (hero dead-attr deletion), `2cc9cbc56` (22 + border-migration + 34 + hero
-Tablet/video/SVG routing + splitMediaType bug fix + 2 unrelated classification gaps), `b7b420df9`
-(a second dead-attribute source, affecting `sgs/media` too), `47e5a9cbb` (6-post live migration +
-full deploy). Independently re-verified via a 3-rater `/qc-council` pass — SAFE / one test-gap
-(closed same session) / PRODUCTION-VERIFIED. Also fixed: a canary `wp-login.php` LiteSpeed
-cache-cookie bug that silently blocked every automated Playwright login (WP-CLI option flip, no
-code change). Full account: D919.
+⭐ **OPEN QUESTION, still needs an early ruling — carried from part 2, not yet resolved.**
+"Baselined" conflated **"not a problem, by design"** with **"a real problem we deferred"** until
+the `disposition` field fix closed that ambiguity (see part 2's account above). **New decision
+surfaced by that pass, still open:** 31 entries classified `detector-limitation` — per this
+project's own rule ("a false positive is a detector bug, never baseline fodder") these are rule
+violations sitting in a baseline, not a normal outcome. Full list + which detector each belongs to:
+the INDEX report's disposition section.
+
+**What's left — 7 items, ranked, none started:** `03` (13, template-ready) · `18` (15,
+template-ready) · `21`'s 14-finding appendix (new, untriaged) · border-migration's 3 remaining
+blocks (`card-grid`/`multi-button`/`trust-bar`) · `37` (71) · `01` (57, coarse-proxy check — verify
+by eye) · `31` (277, blocked on D754's design pass — do not hand-fix). Full detail + suggested
+order: `.claude/prompts/2026-09-03-detector-backlog-continuation.md`.
 
 ⛔ **Next session's working shape changed, at Bean's instruction: dispatch each fix the MOMENT he
 decides it and keep discussing while the agent works — do NOT batch every fix to the end** (this

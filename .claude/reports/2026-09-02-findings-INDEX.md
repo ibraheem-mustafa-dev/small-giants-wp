@@ -19,14 +19,18 @@ direct.
 
 ---
 
-## Decide first — smallest effort, clearest fix
+## ✅ Closed 2026-09-02 (part 3) — the decide-first batch below
 
-| Report | Count | What it needs |
-|---|---|---|
-| [07-preset-only-shadow](2026-09-02-findings-07-preset-only-shadow.md) | 1 | Swap `site-header`'s shadow dropdown for the shared `ShadowControl` |
-| [22-placement-rule-surfaces](2026-09-02-findings-22-placement-rule-surfaces.md) | 1 | A manifest path typo — no code change |
-| [34-declared-attr-unrendered](2026-09-02-findings-34-declared-attr-unrendered.md) | 7 | **Nothing.** All 7 already explained and correctly tracked — informational only |
-| [border-control-migration](2026-09-02-findings-border-control-migration.md) | 4 blocks | 1 easy swap (`media`), 3 bigger migrations (card-grid / multi-button / trust-bar) |
+All four items in this table are now CLOSED — see `.claude/decisions.md` D919 for the full
+account, and `.claude/prompts/2026-09-03-detector-backlog-continuation.md` for what's still open.
+Kept here for the historical count/shape record, not as an active menu.
+
+| Report | Count | What it needed | Status |
+|---|---|---|---|
+| [07-preset-only-shadow](2026-09-02-findings-07-preset-only-shadow.md) | 1 | Swap `site-header`'s shadow dropdown for the shared `ShadowControl` | ✅ Done (`79c910d2f`) |
+| [22-placement-rule-surfaces](2026-09-02-findings-22-placement-rule-surfaces.md) | 1 | A manifest path typo — no code change | ✅ Done (`2cc9cbc56`) |
+| [34-declared-attr-unrendered](2026-09-02-findings-34-declared-attr-unrendered.md) | 7 | Investigated further — 5 were real resolver false positives (3 fixed), 2 are legitimate cloning-pipeline anchors (now exempted, not deleted) | ✅ Done (`2cc9cbc56` + a3065f47969ac follow-up) |
+| [border-control-migration](2026-09-02-findings-border-control-migration.md) | 4 blocks | 1 easy swap (`media`), 3 bigger migrations (card-grid / multi-button / trust-bar) | ✅ `media` done (`2cc9cbc56`, was already correctly wired via its atom composition, no swap needed) — 3 blocks remain open |
 
 ## Real backlog — needs your direction on approach
 
