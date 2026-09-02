@@ -1280,6 +1280,20 @@ atom system's own `splitImageId`/`Url`/`Alt`(+Mobile) triple at write time — t
 shape adapts. Verified against the full 727-test converter suite, unrelated pre-existing tests
 untouched, all passing.
 
+**CORRECTED (2026-09-02, D919 — Wave 7b, one day after this Wave 6 account).** The "kept declared...
+load-bearing for the CLONING PIPELINE's scalar-media role assignment" framing above is now stale as
+current state (it remains accurate as history of what Wave 6 did and why). The `emit_as` triple-write
+onto `splitImageId`/`Url`/`Alt`(+Mobile) fixed the CONTENT shape but left a real bug: the type-selector
+attribute (`splitMediaType`) was never written alongside it, so a video/SVG split-media source would
+have stored its content correctly but rendered nothing (schema default `"image"`, strict resolver, no
+image URL → empty). Caught and fixed the next day: the `scalar-media` role anchor moved off
+`splitImage`/`splitImageMobile` onto `splitMediaType` (the real, rendered type-selector), routing was
+extended from image-only/2-tier to all 3 device tiers and all 3 media types, and — the anchor no longer
+needing them — `splitImage`/`splitImageMobile` were DELETED from `hero/block.json` in the same commit
+(`dcd9940d2`). Live-reverified 2026-09-02: `SELECT block_slug, attr_name, role FROM block_attributes
+WHERE role='scalar-media'` now returns exactly one row, `('sgs/hero', 'splitMediaType', 'scalar-media')`.
+Full account: `.claude/decisions.md` D919.
+
 **`container`'s `BackgroundPanel`** — the highest-blast-radius piece, confirmed live via
 `grep -rl "BackgroundPanel" src/blocks/*/edit.js` at **8 real consumers** (container, cta-section,
 hero, multi-button, physics-canvas, site-footer, site-header, trust-bar — one more than the plan's
