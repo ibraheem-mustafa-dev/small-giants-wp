@@ -167,23 +167,31 @@ surfaces measure? — never on preserving the current page.
 Neither gap is fixed yet — read them as known scope limits, not solved problems, before
 trusting either gate's "0 findings" on a new colour/grid-item-shaped change.
 
-### `scripts/scattered-element-controls.js` — finds one element's controls split across panels
+### `scripts/scattered-element-controls.js` — DELETED 2026-09-02, do not rebuild it
 
-Finds elements whose controls (writing that element's own attrs) span **multiple** inspector
-panels instead of one. `--survey [--block sgs/x] [--json]` runs the full census;
-`--self-test` runs its own positive/negative-control fixtures. **Deliberately NOT wired into
-any gate** (`scripts/gates.json` / `scripts/inspector-scan/rules.json` — verified, no
-reference in either) — it is advisory only, run it by hand.
+⛔ **Retired via `/qc-council` (Bean-directed) after it produced ~600 false-positive findings in
+one session.** Its model was "every element (including a block's own `wrapper`) needs its
+controls in exactly ONE panel" — flat grouping purely on the DB's `css_element` column, with
+zero knowledge of `isWrapper`, `clusters`, or THE PLACEMENT RULE's two-tier structure (D537,
+Spec 35 §"THE PLACEMENT RULE"). A `wrapper` element (`isWrapper: true`) is explicitly TIER 2
+territory — its controls are SUPPOSED to split across separate property-family panels (Colour /
+Border / Padding & margin are three deliberately different panels, not scatter) — so every
+"wrapper"-element finding it produced was a false positive by design, not a bug to patch. The
+script also self-declared as a "PROTOTYPE (design + feasibility task)" in its own header and was
+never wired into any gate. **Use `scripts/placement-reach.py` instead** (below) — it already
+implements THE PLACEMENT RULE correctly, is self-tested, and its "CONTESTED" output is the
+real, spec-conformant version of what this script was trying to approximate.
 
-Two rulings, both load-bearing for reading its output:
-- **RULING 1 — non-paintable exclusion.** An attribute whose DB `css_property` is not a
-  paintable CSS property (the sole example today: `'tag'`, an HTML-tag-name attr like
-  `headingLevel`) is excluded from grouping entirely — it can never be "scattered" because it
-  has no paint surface to split across panels.
-- **RULING 2 — family-aware severity.** A split across DIFFERENT property families (e.g. a
-  layout attr in one panel, a typography attr in another) is `info` (by-design — those are
-  legitimately different panels). A split WITHIN one property family (e.g. two border-family
-  attrs for the same element in two different panels) is a real finding (`warn`/`high`).
+### `scripts/placement-reach.py` — how far THE PLACEMENT RULE actually reaches (D537)
+
+Implements THE PLACEMENT RULE (Spec 35, two-tier: TIER 1 = one panel per declared element;
+TIER 2 = property-family panel for a `wrapper` element or any control scoped to no element) against
+real `block.json` data. `python scripts/placement-reach.py [--block sgs/x] [--self-test]`. Reports
+the tier-1/tier-2 split (2,945 declared attrs: 67.6% element panel, 32.4% tier-2 as of 2026-09-02 —
+re-run rather than trusting this line) and a **CONTESTED** list: attributes claimable by 2+ elements
+per the manifest — a real manifest gap (needs an explicit `attrMap` entry), never guessed at or
+silently tie-broken. Companion prebuild gate: `check-element-manifest-conformance.js` (promoted
+WARN-ONLY → hard gate at D622).
 
 ### Live motion QA — `scripts/motion-qa/` + `npm run qa:motion` (D730)
 

@@ -358,23 +358,6 @@ of the media-atom system (it isn't a media-specific concern), and not in scope f
 client-controls track. A smaller, separate unification: one shared `alignment` control,
 4 adopters to migrate.
 
-### P-SCATTER-DETECTOR-FAMILY-CLASSIFICATION - does a spacing/sizing split count as by-design
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
-
-`scripts/scattered-element-controls.js` (advisory-only, not wired into any gate) currently
-treats a colour-vs-border split and a colour-vs-transform split as "by-design" (`info`,
-RULING 2), but a colour-vs-spacing/sizing split as a real finding (`warn`). `sgs/trust-bar`
-carries exactly this today: `icon-badge` and `badge-img` each split colour into `SgsColourPanel`
-and size/border-radius into `Styles > Appearance` — 2 of its 3 current findings. Bean needs to
-rule whether spacing/sizing joins the "by-design" family list (RULING 2's family set in the
-script) alongside border/transform. If yes, those findings drop to `info` and trust-bar goes
-clean; if no, they are real consolidation work. Separately: whether to promote this detector
-into a ratcheted advisory rule at all is its own still-open decision, gated on Bean eyeballing a
-sample first.
-
-**Trigger:** next client-controls session, or whenever Bean reviews a sample of the 69
-findings across 48 blocks.
-
 ### P-DETECTOR-FIRST-COMMIT-GATE-THRESHOLD-HOLE - a component rollout sharing 0 lines is invisible
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
 

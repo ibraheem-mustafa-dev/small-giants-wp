@@ -1,3 +1,57 @@
+## D918 [INCIDENT] — `scattered-element-controls.js` deleted: a prototype detector's flat element-grouping model produced ~600 false-positive C14 findings by ignoring THE PLACEMENT RULE's two-tier structure
+
+**2026-09-02.** Mid-uniformity-sweep, a full-population C14 report (613 attribute rows, 68
+findings, 48 blocks) was published from `scattered-element-controls.js`'s `--survey --json`
+output. Bean flagged that the script treats a block's own `wrapper` element as if it needed ONE
+consolidated panel, same as a genuine sub-element (`content`, `icon-badge`) — but the wrapper/root
+is TIER 2 territory under THE PLACEMENT RULE (D537, Spec 35), where controls are SUPPOSED to
+split across separate property-family panels. Asked to run `/qc-council` to check the detector
+against the project's own documented rules rather than its own internal logic.
+
+**Verdict, triangulated across 4 independent primary sources — no synthetic LLM debate needed,
+the evidence was already conclusive and documentary:**
+1. The script's own header self-declares `// PROTOTYPE detector (design + feasibility task,
+   2026-08-30)` and `NOT BUILT: --fix. Not asked for...` — never meant to be authoritative.
+2. Spec 35's own schema comment for `isWrapper` is unambiguous: `"isWrapper": true, // OPTIONAL —
+   ONLY the element representing the block ROOT. Gates the native-supports fallback, AND selects
+   TIER 2 of THE PLACEMENT RULE (D537 — block-root controls resolve by property-family, not to a
+   catch-all panel)."`
+3. D537 itself: "VINDICATED + NOW ENFORCED (D622)... `check-element-manifest-conformance.js`
+   promoted WARN-ONLY → prebuild gate."
+4. A better, already-built, already-gated tool exists: `scripts/placement-reach.py` +
+   `check-element-manifest-conformance.js` (confirmed live: conformance gate passes 0
+   style-defects; `placement-reach.py --self-test` passes). It correctly resolves 2,945 declared
+   attrs into element-panel (67.6%) vs tier-2 property-family (32.4%) using `isWrapper`,
+   `clusters`, and `attrMap` — and reports only **9 genuinely contested attributes across 5
+   blocks** (`nav-drawer` ×5 border-family, `before-after`/`container`/`cta-section`/`hero`
+   ×1 `shadowColour` or `boxShadowColour` each, all `[inner/wrapper]` or `[divider-line/frame]`
+   ownership ties needing an explicit `attrMap` entry) — nothing like 613 rows.
+
+Confirmed mechanically against `sgs/container` and `sgs/hero`'s own `block.json`: both declare
+`wrapper` with `"isWrapper": true`; `scattered-element-controls.js`'s `computeScatter()` groups
+purely by the DB `css_element` string with zero knowledge of `isWrapper`/`clusters`/tier at all.
+A second bug beyond wrapper: `RULING 2` only downranks the narrow Colour+Border/motion-transform
+combination to `info` — it never recognises Layout/Border/Colour as three legitimate, deliberately
+separate TIER-2 clusters, so almost every "wrapper" finding in the published report was a false
+positive, not just the ones RULING 2 already softened.
+
+**Action:** `scattered-element-controls.js` DELETED outright (not patched — a correct,
+spec-conformant, gated replacement already existed). The published report
+(`.claude/reports/2026-09-02-c14-scattered-controls-table.md`) marked WITHDRAWN in place (kept for
+git-blame). `plugins/sgs-blocks/CLAUDE.md`'s script-catalogue section rewritten to point at
+`placement-reach.py`. `parking.md`'s `P-SCATTER-DETECTOR-FAMILY-CLASSIFICATION` entry (which asked
+Bean to rule on RULING 2's family list) archived as SUPERSEDED — the question never needed
+answering, since the detector asking it was itself wrong. The 9-item CONTESTED list shared with
+Bean directly; no fix applied this session (each needs an explicit `attrMap` decision, not a
+mechanical move).
+
+**Lesson:** before trusting a script's own output at scale (613 rows, published as a decision
+table), check whether it self-declares as a prototype/feasibility task, and check whether a more
+mature tool already exists for the same question — `placement-reach.py` was sitting in the same
+`scripts/` directory the whole time, D537's own decision entry already named it as "THE placement
+mechanism", and `THE-MIGRATION-METHOD`'s own tooling-catalogue discipline exists precisely to
+catch this before rebuilding (or in this case, trusting the wrong build).
+
 ## D917 [INCIDENT] — Uniformity sweep: 9 of 10 planned shapes shipped (11 commits), two real codemod bugs caught by re-running gate:fast (not by the codemod's own self-test), three commits silently failed to land and were nearly lost
 
 **2026-09-02.** Executed `.claude/plans/2026-08-30-uniformity-sweep-execution.md` per its own

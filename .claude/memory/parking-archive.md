@@ -7,6 +7,23 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-09-02 — 1 entry SUPERSEDED: the detector itself was retired, not its rulings
+
+> **P-SCATTER-DETECTOR-FAMILY-CLASSIFICATION** — does a spacing/sizing split count as by-design
+> **Status: SUPERSEDED — 2026-09-02.** The question this entry asked (should RULING 2's
+> "by-design" family list include spacing/sizing alongside border/transform) never got ruled on,
+> because `/qc-council` (Bean-directed) found the entire detector's model was wrong, not just
+> RULING 2's family list: `scripts/scattered-element-controls.js` flagged a block's own `wrapper`
+> element (declared `isWrapper: true`) as needing ONE consolidated panel, when Spec 35's own
+> schema comment says `isWrapper: true` explicitly selects TIER 2 (property-family panels are
+> the CORRECT shape for a wrapper, not scatter) — confirmed against `decisions.md` D537 and a
+> working, spec-conformant, self-tested replacement (`scripts/placement-reach.py`) that was
+> already built and already gated (`check-element-manifest-conformance.js`). The script produced
+> ~600 false-positive findings from this conflation in one session, including the trust-bar
+> icon-badge/badge-img findings this entry names. Deleted outright rather than patched — see
+> `plugins/sgs-blocks/CLAUDE.md`'s `placement-reach.py` section for the replacement tool, and
+> its "CONTESTED" output (9 attributes, 5 blocks) for the real remaining work, if any.
+
 ## 2026-08-30 (late) — housekeeping pass: 1 entry closed on live verification, both halves resolved
 
 > **P-HERO-VISUAL-DIFF-DEBT-AND-MEDIA-MANIFEST-MISMATCH** — two small carried items from the client-controls track
