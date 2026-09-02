@@ -6,28 +6,41 @@
    "block": "sgs/responsive-logo",
    "check": "control-ux",
    "reason": "logoId/logoIdTablet/logoIdMobile were renamed 2026-08-05 from the old desktopLogoId/tabletLogoId/mobileLogoId PREFIX scheme to the framework's universal Tablet/Mobile SUFFIX convention (so the device-tier axis can see them). That rename makes this attr trio LOOK like a ResponsiveControl-shaped family to this gate's naming heuristic, but it is a genuinely different UX pattern: three DISTINCT media assets (a horizontal desktop logo, a square tablet logo, a mark/icon mobile logo — not the same value swapped per breakpoint), each needing its own always-visible MediaUpload slot with its own label/placeholder so an operator can see and manage all three at once. Wrapping them in <ResponsiveControl> (a device-icon switcher showing ONE control at a time) would hide two of the three logo slots behind tab-switching, which is worse UX for this specific case, not better. The block's own 'Logos by device' panel already documents this design ('Desktop logo is required. Tablet and mobile fall back to desktop when not set.').",
-   "violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER"
+   "violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+   "disposition": "by-design"
   },
   {
    "attr": "logoIdMobile",
    "block": "sgs/responsive-logo",
    "check": "control-ux",
    "reason": "Same acceptance as logoIdTablet above — see that entry for the full reasoning (three distinct media assets need three always-visible upload slots, not a device-switcher).",
-   "violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER"
+   "violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+   "disposition": "by-design"
   },
   {
    "attr": "logoUrlTablet",
    "block": "sgs/responsive-logo",
    "check": "control-ux",
    "reason": "Same acceptance as logoIdTablet/logoIdMobile — see those entries. logoUrl* are the URL half of the id+url pair added 2026-08-05 so this block mirrors sgs/media's image shape (imageId + imageUrl), which is what finally lets `image-alt` fire on `alt` (walk.py:295 needs an attr_type='string' companion). They inherit the same UX shape as the IDs they accompany: three DISTINCT media assets — horizontal desktop logo, square tablet, mobile mark — each needing its own always-visible MediaUpload slot, NOT one value swapped per breakpoint. The block's own edit.js states the fallback semantics that make them distinct: \"Desktop logo is required. Tablet and mobile fall back to desktop when not set.\" A <ResponsiveControl> device switcher shows ONE control at a time and would hide two of the three slots behind tabs. Verified against edit.js, not accepted on assertion.",
-   "violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER"
+   "violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+   "disposition": "by-design"
   },
   {
    "attr": "logoUrlMobile",
    "block": "sgs/responsive-logo",
    "check": "control-ux",
    "reason": "Same acceptance as logoIdTablet/logoIdMobile — see those entries. logoUrl* are the URL half of the id+url pair added 2026-08-05 so this block mirrors sgs/media's image shape (imageId + imageUrl), which is what finally lets `image-alt` fire on `alt` (walk.py:295 needs an attr_type='string' companion). They inherit the same UX shape as the IDs they accompany: three DISTINCT media assets — horizontal desktop logo, square tablet, mobile mark — each needing its own always-visible MediaUpload slot, NOT one value swapped per breakpoint. The block's own edit.js states the fallback semantics that make them distinct: \"Desktop logo is required. Tablet and mobile fall back to desktop when not set.\" A <ResponsiveControl> device switcher shows ONE control at a time and would hide two of the three slots behind tabs. Verified against edit.js, not accepted on assertion.",
-   "violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER"
+   "violation": "RESPONSIVE-FAMILY-WITHOUT-SWITCHER",
+   "disposition": "by-design"
   }
- ]
+ ],
+ "_meta": {
+  "dispositionVocabulary": [
+   "by-design",
+   "accepted-debt",
+   "detector-limitation",
+   "blocked"
+  ],
+  "dispositionVocabularyNote": "Closed vocabulary: by-design (correct, will never need fixing) / accepted-debt (real gap, consciously deferred) / detector-limitation (the checker itself is wrong — flags a rule violation per THE-MIGRATION-METHOD.md:455, not a normal outcome) / blocked (waiting on something external). See .claude/parking.md P-BASELINE-DISPOSITION-VOCABULARY / .claude/LEDGER.md."
+ }
 }

@@ -336,6 +336,73 @@ function lcFirst( s ) {
 	return s.charAt( 0 ).toLowerCase() + s.slice( 1 );
 }
 
+// ── LOCAL WRAPPER indirection (P-RULE21-ONE-ARG-LITERAL-RESIDUAL) ──────────
+// A local arrow-function wrapper forwarding its own single parameter as the
+// LAST argument of a call already matching one of SUFFIX_SHAPES' own 2-/3-arg
+// trailing-literal shapes (e.g.
+// `const key = ( base ) => mediaStoredAttrName( blockSlug, prefix, base )`,
+// `src/components/media/atoms/video-behaviour.control.js:129`) hides a real
+// derived attribute name from every shape above — the literal never sits
+// directly against the builder call. It sits one hop away, at the wrapper's
+// own call site (`key( 'VideoLoop' )`), or at the wrapper's CALLER's call
+// site one hop further still (`pairPickerRow({ ..., idBase: 'VideoId', ... })`
+// + `name( idBase + suffix )` inside it, `source.control.js:48,53-54`).
+//
+// A GENERIC "any 1-arg call with a literal" pattern was rejected for exactly
+// this residual — it also matches `__( 'text' )` and over-suppresses the
+// whole tree (the same over-suppression this rule's own header already
+// walked into once with Trap A/B). The gate here is structural, not
+// name-shaped: only a call whose CALLEE is proven, from THIS SAME corpus, to
+// be a thin pass-through wrapper around an already-recognised builder shape
+// qualifies. `__` never satisfies that — it is imported, never locally
+// defined as `const __ = ( x ) => someBuilder( ..., x )`.
+const WRAPPER_DEF_RE = /\bconst\s+(\w+)\s*=\s*\(\s*(\w+)\s*\)\s*=>\s*[\w$.[\]]+\(\s*(?:[\w$.[\]]+\s*,\s*)+\2\s*\)/g;
+
+// The framework's fixed device-tier suffix vocabulary (mirrors
+// TYPOGRAPHY_SUFFIXES above — a literal list because it is a verified,
+// project-wide contract, not a pattern to infer per corpus).
+const TIER_SUFFIXES = [ '', 'Tablet', 'Mobile' ];
+
+function localWrapperDerivedSuffixes( corpus ) {
+	const out = new Set();
+	const wrapperNames = new Set();
+
+	let m;
+	WRAPPER_DEF_RE.lastIndex = 0;
+	while ( ( m = WRAPPER_DEF_RE.exec( corpus ) ) ) wrapperNames.add( m[ 1 ] );
+
+	for ( const wrapper of wrapperNames ) {
+		// Direct literal call: key( 'VideoLoop' )
+		const literalRe = new RegExp( `\\b${ wrapper }\\(\\s*['"]([A-Z][A-Za-z0-9_]*)['"]\\s*\\)`, 'g' );
+		let lm;
+		while ( ( lm = literalRe.exec( corpus ) ) ) out.add( lm[ 1 ] );
+
+		// Literal + tier-suffix-variable concatenation: name( 'VideoAlt' + suffix )
+		const literalConcatRe = new RegExp( `\\b${ wrapper }\\(\\s*['"]([A-Z][A-Za-z0-9_]*)['"]\\s*\\+\\s*\\w+\\s*\\)`, 'g' );
+		let lcm;
+		while ( ( lcm = literalConcatRe.exec( corpus ) ) ) {
+			for ( const tier of TIER_SUFFIXES ) out.add( lcm[ 1 ] + tier );
+		}
+
+		// One-hop-further concatenation call: name( idBase + suffix ) — the
+		// base half's literal values live at ITS OWN call sites, as an
+		// object-literal property of the same name (the destructuring
+		// convention every call site here follows, e.g. `idBase: 'VideoId'`).
+		const concatRe = new RegExp( `\\b${ wrapper }\\(\\s*(\\w+)\\s*\\+\\s*(\\w+)\\s*\\)`, 'g' );
+		let cm;
+		while ( ( cm = concatRe.exec( corpus ) ) ) {
+			const baseVar = cm[ 1 ];
+			const baseRe = new RegExp( `\\b${ baseVar }\\s*:\\s*['"]([A-Z][A-Za-z0-9_]*)['"]`, 'g' );
+			let bm;
+			while ( ( bm = baseRe.exec( corpus ) ) ) {
+				for ( const tier of TIER_SUFFIXES ) out.add( bm[ 1 ] + tier );
+			}
+		}
+	}
+
+	return out;
+}
+
 /**
  * Collects every dynamically-constructed key fragment in a corpus.
  * Returns { suffixes: Set<PascalCase>, prefixes: Set<camelCase> }.
@@ -348,6 +415,7 @@ function dynamicPartsOf( corpus ) {
 		let m;
 		while ( ( m = re.exec( corpus ) ) ) suffixes.add( m[ 1 ] );
 	}
+	for ( const s of localWrapperDerivedSuffixes( corpus ) ) suffixes.add( s );
 	for ( const re of PREFIX_SHAPES ) {
 		re.lastIndex = 0;
 		let m;

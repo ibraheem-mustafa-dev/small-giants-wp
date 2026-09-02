@@ -25,8 +25,8 @@ there are no live client sites on this framework yet, so breakage there costs ti
 
 - **Branch:** `main`, ONE active track. Commit with explicit paths (a hook enforces it).
 - **Canary:** WP 7.1. Deploy via `build-deploy.py --target sandybrown` — the only sanctioned path.
-- **Build:** green, 83/83 gates, verified 2026-09-02 after the uniformity sweep's 11 commits (all
-  pushed to origin — nothing uncommitted at session close).
+- **Build:** green, **84/84** gates (a 84th was wired this session: `check-enum-control-shape`),
+  verified 2026-09-02 at `2b55c4f29`. Nothing uncommitted at session close.
 - **Live fronts:** the uniformity sweep (below). Client controls, cloning, consolidation are closed;
   motion is stable with named next steps in its own section.
 - **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
@@ -39,35 +39,55 @@ there are no live client sites on this framework yet, so breakage there costs ti
 (section below). Sections below are per-track, read only the one you're continuing.**
 The **motion** track owns `⛔ `sgs-framework.db` is ONE shared file — DB work sequentially, not parallel.
 
-## ▶ UNIFORMITY SWEEP TRACK — 2026-09-02: 9 of 10 shapes shipped, 11 commits pushed. Full account: D917.
+## ▶ UNIFORMITY SWEEP TRACK — 2026-09-02 (part 2): every detector VALIDATED, 6 defects fixed. D917 + D918.
 
-⭐ **Plan: `.claude/plans/2026-08-30-uniformity-sweep-execution.md`. Its own STATUS section at the
-top is the single source for what shipped, what's carried forward, and per-shape gotchas — do not
-duplicate that detail here.** Goal, verbatim: *"no clear blockers from this aspect to the pipeline
-or my client's experience with the editor, canvas, or the blocks doing what they should on the live
-pages."* Not a perfection exercise.
+⭐ **Read `.claude/reports/2026-09-02-findings-INDEX.md` FIRST — it is the map.** Twelve reports,
+one per detector reporting findings, each with a plain-English problem/effect, a ranked menu and a
+"Your call" checklist. Plan: `.claude/plans/2026-08-30-uniformity-sweep-execution.md`.
+**Continuation prompt: `.claude/prompts/2026-09-03-detector-findings-review-and-resolve.md`.**
 
-**Shipped:** S10 (rule 08 line-key fix), S1 (2 of 3 items — 3rd needs an architectural call, left
-open), S6 (`borderRow` deleted), S3 (partial — `ShapeDividersPanel` mounted, `LayoutPanel` deferred
-on real schema/collision gaps), S7 (pilot only, awaiting Bean's review), S4 (both blockers fixed,
-batch migration deferred), rules 29/33/35 (11 findings), S8 (decorative naming), S5 (3 of 280
-findings — the other 277 are structurally REFUSED by the codemod itself, not a batch-run target).
+⛔ **THE SESSION'S CENTRAL LESSON (D918).** Bean challenged the C14 scattered-controls report.
+`/qc-council` found `scattered-element-controls.js` was a **self-declared PROTOTYPE** whose model
+contradicted Spec 35's own schema comment — `isWrapper: true` explicitly selects **TIER 2**
+(property-family panels are the CORRECT shape for a block's root, not "scatter"). It produced ~600
+false positives, was published as a 613-row report, and nearly became a fix-dispatch target.
+**Deleted outright**; `placement-reach.py` (already built, already gated, self-tested) was the
+correct tool all along and D537 already named it. Its real answer was **9 CONTESTED attrMap gaps —
+all 9 now resolved** (`css:box-shadow-color` siblings on container/cta-section/hero/before-after;
+border family explicitly owned by nav-drawer's `dialog`).
 
-⛔ **Two real bugs in `scripts/colour-codemod/fix.js` caught only by re-running `gate:fast` after
-each change, not by the codemod's own self-test (100% pass both times).** A PHP string-literal
-splice bug and a missing edit.js attribute destructure. Hand-fixed, documented in `rules.json`, NOT
-fixed in `fix.js` itself — its remaining refused rows need the same re-verification on any future run.
+**Detector validation.** Every detector reporting findings was checked — logic vs decisions/specs/
+`dev-setup.md` — before its count was trusted (10 parallel agents). Result: 3 detectors were WRONG
+(rules 23, 26, and rule 21's 74-finding media/hero cluster), 1 was miscategorised (dead-api's 253
+were never bugs), the rest were sound.
 
-⛔ **Bean lifted the original "out of scope" ruling 2026-09-02** — rule 20 (23 findings), the
-dead-api-calls allowlist (321 entries), and C14 splits (12 unconfirmed candidates) are back in scope
-for the next session, alongside everything the sweep's own Wave A enumerated but never actioned: 82
-detector-shaped scripts with zero gate reach, `check-enum-control-shape.py` failing ungated with 6
-new violations and no repair script, two un-enumerated client-facing gaps
-(`survey-wrapper-capability.js` 76 findings, `survey-colour-coverage.py` 41 findings), 1 broken +
-6 unreferenced scripts.
+**Six defects fixed** (`06497afac`): rule 21 128→105 (ATOM_CONTROLS dispatcher; ~51 residual left
+deliberately — a generic 1-arg-literal pattern would over-suppress tree-wide); rule 23 1→0 (the PHP
+comment-stripper stripped block comments BEFORE line comments, so `*Tablet/*Mobile` inside a `//`
+comment blanked ~50KB of `hero/render.php` — **order is now load-bearing**, verified with a full
+28-rule diff showing only rule 23 moved); rule 26 2→0 (Spec 35 Part D5 art-direction exemption, with
+a paired fixture proven non-vacuous by disabling the exemption and watching the self-test FAIL);
+rule 37 77→71; dead-api 253→0 (96 real WP/WC names promoted, allowlist 321→417, self-test still
+catches the original `wc_get_price_html()` incident); CLAUDE.md border-controls corrected.
 
-**NEXT:** see `.claude/prompts/` for the current dated continuation prompt (this session wrote a
-fresh one covering the full remaining scope — check the most recent date).
+⭐ **OPEN QUESTION, needs an early ruling — Bean raised it, it is real.** "Baselined" conflates
+**"not a problem, by design"** with **"a real problem we deferred"**, and nothing distinguishes them.
+Verified across all 35 baseline files: only 8 carry even a free-text `reason`; the one `category`
+field describes effect type, not disposition. Two entries, two files, identical shape under the same
+`accepted` key — one is a genuinely dead attribute, the other is a Bean-ruled by-design duplicate.
+**This blocks "resolve all violations including baselined ones" as a runnable instruction.**
+Proposal: a required `disposition` field (`by-design` / `detector-limitation` / `accepted-debt` /
+`blocked`) back-filled across the ~165 entries in the 8 non-empty baseline files. Note the project's
+own rule already says a false positive is a DETECTOR BUG, never baseline fodder — so any
+`detector-limitation` found in that pass is already a violation.
+
+**Validated remaining backlog:** 01 (57) · 03 (13) · 07 (1) · 18 (15) · 21 (54 real) · 22 (1) ·
+31 (277, blocked on D754's capability-grant design) · 34 (7, informational only) · 37 (71) ·
+border-migration (4 blocks). **Closed: dead-api, rules 23 and 26.**
+
+⛔ **Next session's working shape changed, at Bean's instruction: dispatch each fix the MOMENT he
+decides it and keep discussing while the agent works — do NOT batch every fix to the end** (this
+session's mistake). The prompt leads with that rule.
 
 ## ▶ MOTION TRACK (A closed+live; B Phase 2 closed, Phase 3 next)
 

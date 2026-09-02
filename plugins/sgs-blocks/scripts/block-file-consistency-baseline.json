@@ -4,243 +4,292 @@
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "afterImageAlt",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "afterImageId",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "afterImageIdMobile",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "afterImageIdTablet",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "afterImageUrl",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "afterImageUrlMobile",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "afterImageUrlTablet",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "afterSvgContent",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "afterVideoAlt",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "afterVideoId",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "afterVideoUrl",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "beforeImageAlt",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "beforeImageId",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "beforeImageIdMobile",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "beforeImageIdTablet",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "beforeImageUrl",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "beforeImageUrlMobile",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "beforeImageUrlTablet",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "beforeSvgContent",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "beforeVideoAlt",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "beforeVideoId",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "beforeVideoUrl",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "maxWidthUnit",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/nav-menu",
       "attr": "_note_nav_fill",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused"
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup � fully unused",
+      "disposition": "accepted-debt"
     },
     {
       "type": "undeclared_render_ref",
       "block": "sgs/decorative-image",
       "attr": "fx",
       "file": "render.php",
-      "reason": "render.php gates the surface-treatment wrapper on 'fx', which is REGISTERED AT RUNTIME by src/blocks/extensions/fx.js for every qualifying block, not declared in any block.json. The read is LIVE, not dead: PHP does not drop undeclared attrs (only the editor/JS surface does), and the effect is verified working on canary page 2900. Declaring it was tried and reverted - no other block declares 'fx' (before-after/image-sequence declare only fx-family attrs they OWN and control in their own edit.js), so declaring made decorative-image the sole outlier and additionally tripped inspector-scan rule 21, whose SYSTEM_ATTR_RE already excludes extension-injected attrs by design but matches on the name shape ^sgs[A-Z_] and so misses the fx family. Accepted as an extension-ownership gap in this gate, not as dead code."
+      "reason": "render.php gates the surface-treatment wrapper on 'fx', which is REGISTERED AT RUNTIME by src/blocks/extensions/fx.js for every qualifying block, not declared in any block.json. The read is LIVE, not dead: PHP does not drop undeclared attrs (only the editor/JS surface does), and the effect is verified working on canary page 2900. Declaring it was tried and reverted - no other block declares 'fx' (before-after/image-sequence declare only fx-family attrs they OWN and control in their own edit.js), so declaring made decorative-image the sole outlier and additionally tripped inspector-scan rule 21, whose SYSTEM_ATTR_RE already excludes extension-injected attrs by design but matches on the name shape ^sgs[A-Z_] and so misses the fx family. Accepted as an extension-ownership gap in this gate, not as dead code.",
+      "disposition": "detector-limitation"
     },
     {
       "type": "undeclared_render_ref",
       "block": "sgs/quote",
       "attr": "backgroundColourHoverGradient",
       "file": "render.php",
-      "reason": "render.php reads 'backgroundColourHoverGradient' from attributes but block.json does not declare it � WP silently discards an undeclared attribute at parse time, so this read is dead"
+      "reason": "render.php reads 'backgroundColourHoverGradient' from attributes but block.json does not declare it � WP silently discards an undeclared attribute at parse time, so this read is dead",
+      "disposition": "accepted-debt"
     },
     {
       "type": "undeclared_control",
       "block": "sgs/quote",
       "attr": "backgroundColourHoverGradient",
-      "reason": "edit.js binds a control to 'backgroundColourHoverGradient' but block.json does not declare it � WP silently drops the value on save"
+      "reason": "edit.js binds a control to 'backgroundColourHoverGradient' but block.json does not declare it � WP silently drops the value on save",
+      "disposition": "accepted-debt"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/product-card",
       "attr": "titleFontFamily",
-      "reason": "FALSE POSITIVE — the attr is live at BOTH ends, but neither end contains its literal name. Control: product-card/edit.js mounts <TypographyControls prefix=\"title\" showFontFamily />, and TypographyControls.js:160 builds k.fontFamily = typographyAttrName(prefix, \"FontFamily\"), reading it at :536 and writing it at :538. Render: helpers-typography.php builds $k_family = sgs_typography_attr($prefix, \"FontFamily\") and emits font-family when set. This is the documented dynamic-key blind spot — the same one recorded for sgs/before-after tier keys, where the checker cannot follow a key whose tail is a second variable. It surfaced on 2026-08-26 because G4 moved font-family onto the shared helper and deleted the block-private emission that had been the only literal occurrence. VERIFY BEFORE TRUSTING THIS ROW: if TypographyControls stops mounting with showFontFamily on this block, or the helper loses its font-family branch, the attr really is dead and this entry must go."
+      "reason": "FALSE POSITIVE — the attr is live at BOTH ends, but neither end contains its literal name. Control: product-card/edit.js mounts <TypographyControls prefix=\"title\" showFontFamily />, and TypographyControls.js:160 builds k.fontFamily = typographyAttrName(prefix, \"FontFamily\"), reading it at :536 and writing it at :538. Render: helpers-typography.php builds $k_family = sgs_typography_attr($prefix, \"FontFamily\") and emits font-family when set. This is the documented dynamic-key blind spot — the same one recorded for sgs/before-after tier keys, where the checker cannot follow a key whose tail is a second variable. It surfaced on 2026-08-26 because G4 moved font-family onto the shared helper and deleted the block-private emission that had been the only literal occurrence. VERIFY BEFORE TRUSTING THIS ROW: if TypographyControls stops mounting with showFontFamily on this block, or the helper loses its font-family branch, the attr really is dead and this entry must go.",
+      "disposition": "detector-limitation"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/product-card",
       "attr": "descFontFamily",
-      "reason": "FALSE POSITIVE, verified 2026-08-27 - live at BOTH ends, but neither end contains the literal attribute name. Control: product-card/edit.js mounts <TypographyControls prefix=\"desc\" showFontFamily />, and TypographyControls.js:160 builds k.fontFamily = typographyAttrName(prefix, \"FontFamily\"). Render: render.php:187 calls sgs_typography_css_rule($attributes, 'desc', ...), and helpers-typography.php:93 builds $k_family = sgs_typography_attr($prefix, \"FontFamily\") and emits font-family when set. Same dynamic-key blind spot already recorded for product-card.titleFontFamily. Added so description/price/price-note text can carry a typeface at all - previously only the title could. VERIFY BEFORE TRUSTING THIS ROW: if TypographyControls stops mounting with showFontFamily on this prefix, or the helper loses its font-family branch, the attr really is dead and this entry must go."
+      "reason": "FALSE POSITIVE, verified 2026-08-27 - live at BOTH ends, but neither end contains the literal attribute name. Control: product-card/edit.js mounts <TypographyControls prefix=\"desc\" showFontFamily />, and TypographyControls.js:160 builds k.fontFamily = typographyAttrName(prefix, \"FontFamily\"). Render: render.php:187 calls sgs_typography_css_rule($attributes, 'desc', ...), and helpers-typography.php:93 builds $k_family = sgs_typography_attr($prefix, \"FontFamily\") and emits font-family when set. Same dynamic-key blind spot already recorded for product-card.titleFontFamily. Added so description/price/price-note text can carry a typeface at all - previously only the title could. VERIFY BEFORE TRUSTING THIS ROW: if TypographyControls stops mounting with showFontFamily on this prefix, or the helper loses its font-family branch, the attr really is dead and this entry must go.",
+      "disposition": "detector-limitation"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/product-card",
       "attr": "priceFontFamily",
-      "reason": "FALSE POSITIVE, verified 2026-08-27 - live at BOTH ends, but neither end contains the literal attribute name. Control: product-card/edit.js mounts <TypographyControls prefix=\"price\" showFontFamily />, and TypographyControls.js:160 builds k.fontFamily = typographyAttrName(prefix, \"FontFamily\"). Render: render.php:186 calls sgs_typography_css_rule($attributes, 'price', ...), and helpers-typography.php:93 builds $k_family = sgs_typography_attr($prefix, \"FontFamily\") and emits font-family when set. Same dynamic-key blind spot already recorded for product-card.titleFontFamily. Added so description/price/price-note text can carry a typeface at all - previously only the title could. VERIFY BEFORE TRUSTING THIS ROW: if TypographyControls stops mounting with showFontFamily on this prefix, or the helper loses its font-family branch, the attr really is dead and this entry must go."
+      "reason": "FALSE POSITIVE, verified 2026-08-27 - live at BOTH ends, but neither end contains the literal attribute name. Control: product-card/edit.js mounts <TypographyControls prefix=\"price\" showFontFamily />, and TypographyControls.js:160 builds k.fontFamily = typographyAttrName(prefix, \"FontFamily\"). Render: render.php:186 calls sgs_typography_css_rule($attributes, 'price', ...), and helpers-typography.php:93 builds $k_family = sgs_typography_attr($prefix, \"FontFamily\") and emits font-family when set. Same dynamic-key blind spot already recorded for product-card.titleFontFamily. Added so description/price/price-note text can carry a typeface at all - previously only the title could. VERIFY BEFORE TRUSTING THIS ROW: if TypographyControls stops mounting with showFontFamily on this prefix, or the helper loses its font-family branch, the attr really is dead and this entry must go.",
+      "disposition": "detector-limitation"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/product-card",
       "attr": "priceNoteFontFamily",
-      "reason": "FALSE POSITIVE, verified 2026-08-27 - live at BOTH ends, but neither end contains the literal attribute name. Control: product-card/edit.js mounts <TypographyControls prefix=\"priceNote\" showFontFamily />, and TypographyControls.js:160 builds k.fontFamily = typographyAttrName(prefix, \"FontFamily\"). Render: render.php:191 calls sgs_typography_css_rule($attributes, 'priceNote', ...), and helpers-typography.php:93 builds $k_family = sgs_typography_attr($prefix, \"FontFamily\") and emits font-family when set. Same dynamic-key blind spot already recorded for product-card.titleFontFamily. Added so description/price/price-note text can carry a typeface at all - previously only the title could. VERIFY BEFORE TRUSTING THIS ROW: if TypographyControls stops mounting with showFontFamily on this prefix, or the helper loses its font-family branch, the attr really is dead and this entry must go."
+      "reason": "FALSE POSITIVE, verified 2026-08-27 - live at BOTH ends, but neither end contains the literal attribute name. Control: product-card/edit.js mounts <TypographyControls prefix=\"priceNote\" showFontFamily />, and TypographyControls.js:160 builds k.fontFamily = typographyAttrName(prefix, \"FontFamily\"). Render: render.php:191 calls sgs_typography_css_rule($attributes, 'priceNote', ...), and helpers-typography.php:93 builds $k_family = sgs_typography_attr($prefix, \"FontFamily\") and emits font-family when set. Same dynamic-key blind spot already recorded for product-card.titleFontFamily. Added so description/price/price-note text can carry a typeface at all - previously only the title could. VERIFY BEFORE TRUSTING THIS ROW: if TypographyControls stops mounting with showFontFamily on this prefix, or the helper loses its font-family branch, the attr really is dead and this entry must go.",
+      "disposition": "detector-limitation"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/hero",
       "attr": "mediaBackgroundGradient",
-      "reason": "FALSE POSITIVE, verified 2026-08-27 — genuinely live at both ends, but neither end contains the literal attribute name. Render: render.php:700 reads $attributes['mediaBackgroundGradient'] and emits background-image when set (render.php:701-704). Control: hero/edit.js mounts <GradientOverlayControl attrNames={ gradientOverlayAttrKeys('mediaBackground', {...}) } />, and GradientOverlayControl.js:113-114 builds the key as base + 'Gradient' at runtime (gradientOverlayAttrName()) rather than spelling it as a literal string. Same dynamic-key blind spot already recorded for product-card.titleFontFamily above. VERIFY BEFORE TRUSTING THIS ROW: if hero/edit.js stops mounting GradientOverlayControl with base 'mediaBackground', the attr really is dead and this entry must go."
+      "reason": "FALSE POSITIVE, verified 2026-08-27 — genuinely live at both ends, but neither end contains the literal attribute name. Render: render.php:700 reads $attributes['mediaBackgroundGradient'] and emits background-image when set (render.php:701-704). Control: hero/edit.js mounts <GradientOverlayControl attrNames={ gradientOverlayAttrKeys('mediaBackground', {...}) } />, and GradientOverlayControl.js:113-114 builds the key as base + 'Gradient' at runtime (gradientOverlayAttrName()) rather than spelling it as a literal string. Same dynamic-key blind spot already recorded for product-card.titleFontFamily above. VERIFY BEFORE TRUSTING THIS ROW: if hero/edit.js stops mounting GradientOverlayControl with base 'mediaBackground', the attr really is dead and this entry must go.",
+      "disposition": "detector-limitation"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/hero",
       "attr": "mediaOverlayGradient",
-      "reason": "FALSE POSITIVE, verified 2026-08-27 — same shape as mediaBackgroundGradient above. Render: render.php:716 reads $attributes['mediaOverlayGradient'] via sgs_css_gradient_value(), feeding media_overlay_has_colour (render.php:717). Control: hero/edit.js mounts <GradientOverlayControl attrNames={ gradientOverlayAttrKeys('mediaOverlay', { solid: 'mediaOverlayColour' }) } />, key built at runtime by gradientOverlayAttrName() (GradientOverlayControl.js:113-114), never as a literal string. VERIFY BEFORE TRUSTING THIS ROW: if hero/edit.js stops mounting GradientOverlayControl with base 'mediaOverlay', the attr really is dead and this entry must go."
+      "reason": "FALSE POSITIVE, verified 2026-08-27 — same shape as mediaBackgroundGradient above. Render: render.php:716 reads $attributes['mediaOverlayGradient'] via sgs_css_gradient_value(), feeding media_overlay_has_colour (render.php:717). Control: hero/edit.js mounts <GradientOverlayControl attrNames={ gradientOverlayAttrKeys('mediaOverlay', { solid: 'mediaOverlayColour' }) } />, key built at runtime by gradientOverlayAttrName() (GradientOverlayControl.js:113-114), never as a literal string. VERIFY BEFORE TRUSTING THIS ROW: if hero/edit.js stops mounting GradientOverlayControl with base 'mediaOverlay', the attr really is dead and this entry must go.",
+      "disposition": "detector-limitation"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/hero",
       "attr": "mediaOverlayGradient",
-      "reason": "FALSE POSITIVE, not real debt (2026-08-27, D818/D821): controlled via gradientOverlayAttrKeys('mediaOverlay',...) in edit.js, a runtime-derived attrNames helper the static scanner cannot read (same class as rule-21 D810, this gate was not taught the same derivation rule). Confirmed controlled: rule 21 (inspector-scan) verifies this attr resolves correctly, holding at 82 unchanged after hero adopted the helper."
+      "reason": "FALSE POSITIVE, not real debt (2026-08-27, D818/D821): controlled via gradientOverlayAttrKeys('mediaOverlay',...) in edit.js, a runtime-derived attrNames helper the static scanner cannot read (same class as rule-21 D810, this gate was not taught the same derivation rule). Confirmed controlled: rule 21 (inspector-scan) verifies this attr resolves correctly, holding at 82 unchanged after hero adopted the helper.",
+      "disposition": "detector-limitation"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/hero",
       "attr": "mediaBackgroundGradient",
-      "reason": "FALSE POSITIVE, not real debt (2026-08-27, D818/D821): controlled via gradientOverlayAttrKeys('mediaBackground',...) in edit.js, a runtime-derived attrNames helper the static scanner cannot read (same class as rule-21 D810, this gate was not taught the same derivation rule). Confirmed controlled: rule 21 (inspector-scan) verifies this attr resolves correctly, holding at 82 unchanged after hero adopted the helper."
+      "reason": "FALSE POSITIVE, not real debt (2026-08-27, D818/D821): controlled via gradientOverlayAttrKeys('mediaBackground',...) in edit.js, a runtime-derived attrNames helper the static scanner cannot read (same class as rule-21 D810, this gate was not taught the same derivation rule). Confirmed controlled: rule 21 (inspector-scan) verifies this attr resolves correctly, holding at 82 unchanged after hero adopted the helper.",
+      "disposition": "detector-limitation"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/hero",
       "attr": "splitImage",
-      "reason": "NOT a false positive — genuinely unread by editor/render (Wave 6/7 media-atom migration, 2026-09-02, D915). block.json's own _comment_sourceAtomPair says so explicitly: this attribute is KEPT DECLARED on purpose, despite being equally dead on the render/editor side as the splitVideo*/splitSvg* siblings that WERE deleted, because scripts/dbschema/check_value_identity.py proved the literal name splitImage is load-bearing for the CLONING PIPELINE's scalar-media role assignment (scripts/data/scalar-media-roles.json, run_mechanism_b branch A) — a real named historical incident (a hero clone put the mobile crop in the desktop attribute when this role mapping was lost). Deleting the declaration would silently break a future hero clone's desktop/mobile image assignment, an out-of-scope subsystem this migration deliberately did not touch. See .claude/decisions.md D915 and .claude/plans/2026-08-30-media-element-architecture-v2.md §17 hero entry."
+      "reason": "NOT a false positive — genuinely unread by editor/render (Wave 6/7 media-atom migration, 2026-09-02, D915). block.json's own _comment_sourceAtomPair says so explicitly: this attribute is KEPT DECLARED on purpose, despite being equally dead on the render/editor side as the splitVideo*/splitSvg* siblings that WERE deleted, because scripts/dbschema/check_value_identity.py proved the literal name splitImage is load-bearing for the CLONING PIPELINE's scalar-media role assignment (scripts/data/scalar-media-roles.json, run_mechanism_b branch A) — a real named historical incident (a hero clone put the mobile crop in the desktop attribute when this role mapping was lost). Deleting the declaration would silently break a future hero clone's desktop/mobile image assignment, an out-of-scope subsystem this migration deliberately did not touch. See .claude/decisions.md D915 and .claude/plans/2026-08-30-media-element-architecture-v2.md §17 hero entry.",
+      "disposition": "by-design"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/hero",
       "attr": "splitImageMobile",
-      "reason": "NOT a false positive — genuinely unread by editor/render (Wave 6/7 media-atom migration, 2026-09-02, D915). Same cloning-pipeline load-bearing exception as splitImage above — kept declared deliberately for scripts/data/scalar-media-roles.json, not consumed by edit.js/render.php. See .claude/decisions.md D915."
+      "reason": "NOT a false positive — genuinely unread by editor/render (Wave 6/7 media-atom migration, 2026-09-02, D915). Same cloning-pipeline load-bearing exception as splitImage above — kept declared deliberately for scripts/data/scalar-media-roles.json, not consumed by edit.js/render.php. See .claude/decisions.md D915.",
+      "disposition": "by-design"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/hero",
       "attr": "splitMediaObjectPosition",
-      "reason": "FALSE POSITIVE, verified 2026-09-02 (Wave 6/7 media-atom migration, D915) — live at BOTH ends, but neither end contains the literal attribute name. Render: render.php:679 calls SGS_Media_Element::style($attributes, 'splitMedia', 'sgs/hero', $uid, ...), which is the focal-point atom's PHP twin (includes/media/atoms/focal-point.php) building the key at runtime as prefix.'ObjectPosition' — never spelled out literally in render.php (see render.php:180-184's own comment recording the removal of the old hand-rolled local variables in favour of this atom call). Control: src/components/media/HeroSplitMediaPanelLayout.js mounts a media-atom control with prefix=\"splitMedia\" atoms={['focal-point']}, which builds the same key via mediaAttrName('splitMedia', 'ObjectPosition') at runtime. Same dynamic-key blind spot already recorded for product-card.titleFontFamily and hero.mediaOverlayGradient above. VERIFY BEFORE TRUSTING THIS ROW: if HeroSplitMediaPanelLayout stops mounting the focal-point atom with prefix 'splitMedia', or render.php's SGS_Media_Element::style call for 'splitMedia' is removed, the attr really is dead and this entry must go."
+      "reason": "FALSE POSITIVE, verified 2026-09-02 (Wave 6/7 media-atom migration, D915) — live at BOTH ends, but neither end contains the literal attribute name. Render: render.php:679 calls SGS_Media_Element::style($attributes, 'splitMedia', 'sgs/hero', $uid, ...), which is the focal-point atom's PHP twin (includes/media/atoms/focal-point.php) building the key at runtime as prefix.'ObjectPosition' — never spelled out literally in render.php (see render.php:180-184's own comment recording the removal of the old hand-rolled local variables in favour of this atom call). Control: src/components/media/HeroSplitMediaPanelLayout.js mounts a media-atom control with prefix=\"splitMedia\" atoms={['focal-point']}, which builds the same key via mediaAttrName('splitMedia', 'ObjectPosition') at runtime. Same dynamic-key blind spot already recorded for product-card.titleFontFamily and hero.mediaOverlayGradient above. VERIFY BEFORE TRUSTING THIS ROW: if HeroSplitMediaPanelLayout stops mounting the focal-point atom with prefix 'splitMedia', or render.php's SGS_Media_Element::style call for 'splitMedia' is removed, the attr really is dead and this entry must go.",
+      "disposition": "detector-limitation"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/hero",
       "attr": "splitMediaObjectPositionTablet",
-      "reason": "FALSE POSITIVE, same dynamic-key blind spot as sgs/hero.splitMediaObjectPosition above — the focal-point atom's PHP twin and HeroSplitMediaPanelLayout's prefix=\"splitMedia\" control build this tier key at runtime (prefix + 'ObjectPositionTablet'), never as a literal string. Verified 2026-09-02, D915."
+      "reason": "FALSE POSITIVE, same dynamic-key blind spot as sgs/hero.splitMediaObjectPosition above — the focal-point atom's PHP twin and HeroSplitMediaPanelLayout's prefix=\"splitMedia\" control build this tier key at runtime (prefix + 'ObjectPositionTablet'), never as a literal string. Verified 2026-09-02, D915.",
+      "disposition": "detector-limitation"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/hero",
       "attr": "splitMediaObjectPositionMobile",
-      "reason": "FALSE POSITIVE, same dynamic-key blind spot as sgs/hero.splitMediaObjectPosition above — the focal-point atom's PHP twin and HeroSplitMediaPanelLayout's prefix=\"splitMedia\" control build this tier key at runtime (prefix + 'ObjectPositionMobile'), never as a literal string. Verified 2026-09-02, D915."
+      "reason": "FALSE POSITIVE, same dynamic-key blind spot as sgs/hero.splitMediaObjectPosition above — the focal-point atom's PHP twin and HeroSplitMediaPanelLayout's prefix=\"splitMedia\" control build this tier key at runtime (prefix + 'ObjectPositionMobile'), never as a literal string. Verified 2026-09-02, D915.",
+      "disposition": "detector-limitation"
     }
-  ]
+  ],
+  "_meta": {
+    "dispositionVocabulary": [
+      "by-design",
+      "accepted-debt",
+      "detector-limitation",
+      "blocked"
+    ],
+    "dispositionVocabularyNote": "Closed vocabulary: by-design (correct, will never need fixing) / accepted-debt (real gap, consciously deferred) / detector-limitation (the checker itself is wrong — flags a rule violation per THE-MIGRATION-METHOD.md:455, not a normal outcome) / blocked (waiting on something external). See .claude/parking.md P-BASELINE-DISPOSITION-VOCABULARY / .claude/LEDGER.md."
+  }
 }

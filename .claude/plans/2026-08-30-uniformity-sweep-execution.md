@@ -2,14 +2,38 @@
 doc_type: plan
 title: The uniformity sweep — execution plan (main track)
 date: 2026-08-30
-status: IN PROGRESS — 9 of 10 shapes shipped 2026-09-02 (11 commits, pushed to origin); continuing next session with expanded scope
+status: SUPERSEDED for execution 2026-09-02 (part 2) — the plan's own shapes are done or carried; the live front is now the per-detector findings reports. Kept for its reasoning and per-shape history.
 owner: client-controls track
 note: The media-element rework is a SEPARATE track. This is the original goal.
 ---
 
 # The uniformity sweep — execution
 
-## ▶ STATUS (2026-09-02) — read this before anything below
+## ▶ SUPERSEDED 2026-09-02 (part 2) — read the reports index instead
+
+**The live front moved.** A second session that day validated every detector reporting findings
+(logic vs decisions/specs/`dev-setup.md`, 10 parallel agents), fixed six defects (`06497afac`),
+deleted one detector outright, and wrote **one report per detector** with a "Your call" checklist.
+
+- **Start here:** `.claude/reports/2026-09-02-findings-INDEX.md`
+- **Continuation prompt:** `.claude/prompts/2026-09-03-detector-findings-review-and-resolve.md`
+- **Full account:** `decisions.md` **D917** (the sweep) + **D918** (the retired detector)
+
+Two items from this plan's own scope were answered rather than executed as written:
+`scattered-element-controls.js` (the C14 shape) was **deleted** — a self-declared prototype whose
+model contradicted Spec 35's `isWrapper` TIER-2 rule, producing ~600 false positives; and the
+`dead-api-calls` allowlist item turned out not to be debt at all (253 real WP/WC functions,
+promoted, 253→0). The rule-20 item shipped. Everything else is now tracked per-detector in the
+reports above, not per-shape here.
+
+⭐ **An open structural question outranks the remaining backlog:** "baselined" conflates *by design*
+with *deferred debt*, with no machine-readable distinction (verified across all 35 baseline files).
+Until that is ruled on, "resolve all violations including baselined ones" is not runnable. See the
+INDEX's final section.
+
+---
+
+## ▶ STATUS (2026-09-02, part 1) — historical, kept for per-shape detail
 
 **Shipped, on `main`, pushed:** S10, S1 (2 of its 3 items — see below), S6, S3 (partial — see below),
 S7 (pilot only), S4 (blockers only — see below), rules 29/33/35, S8, S5 (3 of 280 findings). Full

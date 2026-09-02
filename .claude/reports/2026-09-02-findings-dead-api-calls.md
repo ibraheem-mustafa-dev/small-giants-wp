@@ -26,11 +26,14 @@ One entry worth remembering: `wp_get_connector` / `wp_get_connectors` /
 Connectors API calls, `function_exists()`-guarded in `includes/class-sgs-ai-connector.php` and
 cited there with `developer.wordpress.org` links.
 
-## Open follow-up (your call, not done)
+## Follow-up — ✅ RESOLVED 2026-09-02
 
-The checker is still wired as **advisory**, not a hard gate. Now that its baseline is genuinely
-zero, it could be promoted to a blocking `prebuild` gate — which is the whole point of having it.
-That is a policy decision, deliberately left for you.
+Promoted to a hard gate the same day. `scripts/gates.json`'s `check-dead-api-calls` entry moved
+from `tier: "full"` (pre-deploy only) to `tier: "fast"` (every `prebuild`) — it was already
+hard-blocking on `npm start` via `prestart`'s direct `&&` chain, so this closes the one remaining
+gap (a plain `npm run build` with no `start`/deploy could still ship a hallucinated call). The
+script's own docstring, which had stated "NOT wired into prebuild/prestart" since the day it was
+built, was corrected to match. Verified: `npm run gate:fast` (all 85 fast-tier gates) passes clean
+with the promoted gate included; `--self-test` still 5/5.
 
-- [ ] Promote `check-dead-api-calls` to a hard gate
-- [ ] Leave it advisory
+- [x] Promote `check-dead-api-calls` to a hard gate

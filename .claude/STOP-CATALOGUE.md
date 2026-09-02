@@ -2897,3 +2897,32 @@ that today's REAL cases are among them.**
 matching E15-E19), zero removed, zero reworded, zero ritual questions touched. Unique `STOP-*`
 tokens **321 -> 323**. Ritual questions in §C: unchanged — verified via
 `awk '/^## C\./,/^## D\./' .claude/STOP-CATALOGUE.md | grep -cE '^[0-9]+\. '` before and after.
+
+### E21. Earned 2026-09-02 (part 2) — a prototype detector's 613-row report nearly became a work plan
+
+⛔ **STOP-A-SELF-DECLARED-PROTOTYPE-IS-NOT-AN-AUTHORITATIVE-SOURCE.** Bean-locked (D918).
+`scattered-element-controls.js` opened with `// PROTOTYPE detector (design + feasibility task)` and
+`NOT BUILT: --fix. Not asked for` in its own header. Its output was nonetheless published as a
+613-row, 48-block report and was one approval away from becoming a fix-dispatch target. Its model —
+"every element, including a block's own `wrapper`, needs its controls in ONE panel" — directly
+contradicted Spec 35's own schema comment, which says `isWrapper: true` **selects TIER 2**, where
+property-family panels are the CORRECT shape. ~600 of its findings were false. **Before quoting any
+script's output at scale — in a report, a decision, or a dispatch — read its own header for a
+maturity disclaimer (`prototype`, `feasibility`, `census not a gate`, `advisory only`, `NOT BUILT`),
+and grep the same directory plus `decisions.md` for a more mature tool answering the same question.**
+`placement-reach.py` was sitting in that same `scripts/` folder the whole time, self-tested and
+already gated, and D537 had already named it "THE placement mechanism". Its real answer was 9
+findings, not 613.
+
+⛔ **STOP-A-DETECTOR-THAT-NEVER-NAMES-A-RULES-DOCUMENTED-EXCEPTION-PREDATES-OR-IGNORES-IT.** The
+tell was mechanical and cheap: the rule it claimed to enforce has an explicit, named exception
+(`isWrapper`), and the detector's source never mentioned that word anywhere. **When a spec rule has
+a named exception, grep the detector for that exact name. A detector whose code cannot say the
+exception's name is not implementing the rule — it is implementing an older, simpler idea of it.**
+Its own `--self-test` passing proves internal consistency only; it can never catch conformance drift
+against an external spec, because the fixtures were written from the same wrong model as the code.
+
+**D101 carry-forward receipt for E21.** Two STOP entries added (narrative `⛔ **STOP-…**` style,
+matching E15-E20), zero removed, zero reworded, zero ritual questions touched. Unique `STOP-*`
+tokens **323 -> 325**. Ritual questions in §C: unchanged — verified via
+`awk '/^## C\./,/^## D\./' .claude/STOP-CATALOGUE.md | grep -cE '^[0-9]+\. '` before and after.

@@ -146,12 +146,12 @@
   {
     "id": "check-dead-api-calls",
     "cmd": "python scripts/check-dead-api-calls.py --check",
-    "tier": "full",
+    "tier": "fast",
     "added_D": null,
     "added_commit": "d1e36104",
     "budget_ms": 25385,
     "order": 16,
-    "tier_reason": "31.2s / 22.3% \u2014 the D641 incident gate (hallucinated PHP fn fatals in production). Pre-deploy is where it matters: nothing ships past it."
+    "tier_reason": "Promoted full\u2192fast 2026-09-02 (P-DEAD-API-PROMOTE-TO-HARD-GATE): baseline is genuinely 0 (all 96 real WP/WC names promoted to the allowlist), self-test still catches the D641 incident call, and it already runs hard-blocking on every `npm start` via prestart \u2014 gating it on every prebuild too closes the gap where a plain `npm run build` (no start, no deploy) could still ship a hallucinated call."
   },
   {
     "id": "check-control-ux",

@@ -55,7 +55,7 @@ specs and decisions before trusting its count. That pass deleted one detector ou
 | `border-control-migration` | 4 blocks | 1 easy + 3 bigger migrations |
 | `03-dense-panel-candidate` | 13 | Template exists (`team-member` pilot) |
 | `18-decorative-image-aria` | 15 | Naming settled, ready to script |
-| `21-render-without-control` | 54 | 51 further false positives excluded, documented |
+| `21-render-without-control` | 68 | Residual false positives now closed (was 54 real + 51 excluded); 14 new findings appeared since, not yet triaged |
 | `37-media-no-handroll` | 71 | Atom-migration backlog |
 | `01-tab-group` | 57 | Real, but the check is a coarse proxy |
 | `31-golden-colour-control` | 277 | Blocked on a capability-grant design pass (D754) |
@@ -66,35 +66,30 @@ ranking, do not impose it.
 
 ---
 
-## The one question that needs settling early
+## Two items that were open when this prompt was written are now closed
 
-**"Baselined" means at least two opposite things and nothing distinguishes them.** Raised by Bean
-2026-09-02, verified across all 35 baseline files. Some entries mean "not a problem, correct by
-design"; others mean "a real problem we deferred". Same JSON shape, same `accepted` key, no
-category field. Only 8 of 35 files carry even a free-text `reason`.
+Both resolved 2026-09-02, same day as writing — read this before trusting anything below that
+still cites them as open.
 
-This blocks the stated goal. "Resolve all violations including baselined ones" cannot be executed
-while the two are indistinguishable.
+1. **The `disposition` vocabulary question is DONE.** `by-design` / `accepted-debt` /
+   `detector-limitation` / `blocked` back-filled across all 360 entries (not ~165 — that figure
+   had drifted) in the 8 non-empty baseline files. "Resolve all violations including baselined
+   ones" is now a runnable filter. **New decision surfaced by the pass, still open:** 31 entries
+   classified `detector-limitation` — per the project's own rule ("a false positive is a detector
+   bug, never baseline fodder") these are rule violations sitting in a baseline, not a normal
+   outcome. Full list + which detector each belongs to: INDEX report's disposition section.
+2. **Rule 21's residual false positives are closed.** The detector now traces the local-wrapper
+   indirection (`key('VideoLoop')`, `name(idBase + suffix)`) structurally — narrow enough it can
+   never match `__('text')`, so the over-suppression risk that blocked a fix doesn't apply. 46
+   false positives eliminated (turned out to span `sgs/before-after` too, not just `sgs/media`/
+   `sgs/hero`), zero new findings introduced. **New, unrelated to this fix:** a live re-scan
+   surfaced 14 findings on `sgs/hero`/`sgs/media`/`sgs/testimonial-slider` that didn't exist when
+   the original report was written — not yet triaged, see that report's appendix.
+3. **`check-dead-api-calls` is now a hard gate**, not advisory — promoted to the `fast` tier
+   (every `prebuild`), not just `full` (pre-deploy). Verified: all 85 fast-tier gates pass.
 
-**Proposal to put to Bean:** add a required `disposition` field with a closed vocabulary —
-`by-design` / `detector-limitation` / `accepted-debt` / `blocked` — and back-fill it across the
-~165 entries in the 8 non-empty baseline files. Then the work list becomes a filter.
-
-Worth raising early, because it determines whether baselined entries enter this session's scope
-at all. Full detail in the INDEX report's final section.
-
----
-
-## Two known-unfixed items, both deliberate
-
-Neither is an oversight. Do not "fix" either without Bean ruling on it first.
-
-1. **Rule 21's 51 residual false positives** (`sgs/media`, `sgs/hero`). They come from a 1-argument
-   literal wrapper call (`key('VideoLoop')`). A generic pattern for that shape would match
-   `__('text')` and over-suppress tree-wide. Fixing it needs a narrower signal than anyone has
-   yet proposed.
-2. **`check-dead-api-calls` is still advisory, not a hard gate.** Its baseline is now genuinely
-   zero, so promoting it is possible — that is a policy call for Bean.
+Full detail on all three: the INDEX report and the `dead-api-calls`/`21-render-without-control`
+reports, all re-read and updated 2026-09-02.
 
 ---
 
