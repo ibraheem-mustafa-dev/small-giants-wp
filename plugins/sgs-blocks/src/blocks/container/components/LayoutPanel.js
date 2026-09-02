@@ -19,6 +19,7 @@ import {
 	SgsLengthControl,
 	SpacingControl,
 } from '../../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../../components/primitives';
 import { isExtensionEnabled } from '../../extensions/hide-extensions';
 
 const LAYOUT_OPTIONS = [
@@ -98,14 +99,22 @@ export function LayoutPanel( {
 	return (
 		<>
 			{ showLayout && (
-				<SelectControl
+				<ToggleGroupControl
 					label={ __( 'Layout type', 'sgs-blocks' ) }
 					value={ layout }
-					options={ LAYOUT_OPTIONS }
 					onChange={ ( val ) => setAttributes( { layout: val } ) }
+					isBlock
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
-				/>
+				>
+					{ LAYOUT_OPTIONS.map( ( opt ) => (
+						<ToggleGroupControlOption
+							key={ opt.value }
+							value={ opt.value }
+							label={ opt.label }
+						/>
+					) ) }
+				</ToggleGroupControl>
 			) }
 
 			{ /*

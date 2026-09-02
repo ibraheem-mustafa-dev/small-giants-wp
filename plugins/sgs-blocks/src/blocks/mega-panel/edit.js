@@ -547,37 +547,25 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 
-					<SelectControl
+					<ToggleGroupControl
 						label={ __( '"View all" link', 'sgs-blocks' ) }
 						help={ __(
 							'The menu item that opens this panel is a button, so its own page needs a link somewhere inside the panel. Automatic hides it when this panel already has its own button linking there.',
 							'sgs-blocks'
 						) }
 						value={ viewAllPlacement || 'auto' }
-						options={ [
-							{
-								label: __( 'Automatic', 'sgs-blocks' ),
-								value: 'auto',
-							},
-							{
-								label: __( "Don't show", 'sgs-blocks' ),
-								value: 'none',
-							},
-							{
-								label: __( 'Bottom left', 'sgs-blocks' ),
-								value: 'bottom-left',
-							},
-							{
-								label: __( 'Bottom right', 'sgs-blocks' ),
-								value: 'bottom-right',
-							},
-						] }
 						onChange={ ( value ) =>
 							setAttributes( { viewAllPlacement: value || 'auto' } )
 						}
+						isBlock
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
-					/>
+					>
+						<ToggleGroupControlOption value="auto" label={ __( 'Automatic', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="none" label={ __( "Don't show", 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="bottom-left" label={ __( 'Bottom left', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="bottom-right" label={ __( 'Bottom right', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
 				</PanelBody>
 
 				<PanelBody title={ __( 'Aside', 'sgs-blocks' ) } initialOpen={ false }>

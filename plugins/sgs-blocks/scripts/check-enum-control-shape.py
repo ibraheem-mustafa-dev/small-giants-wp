@@ -146,7 +146,69 @@ def declared_enums() -> list[dict]:
 
 
 def find_marks(src: str, attr: str) -> list[int]:
-    return [m.start() for m in re.finditer(rf"\b{re.escape(attr)}\b", src)]
+    """Positions where `attr` is genuinely REFERENCED as an attribute (a
+    variable, a destructure, `attributes.attr`, `value={ attr }`, `attr:`
+    in a setAttributes call, ...) -- never where it merely appears as a
+    quoted JSX PROP VALUE STRING, e.g. `kind="layout"` on
+    <ContainerWrapperControls kind="layout" />. That exact shape was proven
+    to false-bind sgs/card-grid's `layout` attribute to its wholly
+    unrelated "Post type" SelectControl (queryPostType) 745 chars later --
+    the only mark `\\blayout\\b` found in the file was the quoted prop
+    value, and the proximity window then latched onto the nearest
+    SelectControl of any kind. A quoted-string occurrence carries no
+    binding information; excluding it is strictly more precise, never
+    less -- it can only turn a false "violation"/"compliant" into a
+    correctly-skipped "unresolved", never the reverse.
+
+    A second, narrower exclusion: a SELF-FORWARDING prop, `attr={ attr` (a
+    block passing its own attribute straight through to a CHILD component
+    under the same name, e.g. `mediaType={ mediaType || 'image' }` handing
+    off to <MediaPanelLayout>). Proven necessary: sgs/media's real
+    `mediaType` control lives inside that child's own shared
+    MediaTypeControl.js, invisible to this file-local scan; the ONLY marks
+    `\\bmediaType\\b` found in media/edit.js were destructure/derived-const
+    lines and this exact forwarding prop, and proximity to it wrongly bound
+    the unrelated "Alignment" <SelectControl>. Excluding ONLY the `attr={
+    attr` shape (not the reverse `X={ attr }` binding into a real local
+    control, whose prop name differs from attr) keeps every genuine local
+    `value={ attr }`-style binding intact.
+
+    A THIRD exclusion: an OBJECT-LITERAL KEY (`attr: '',` -- a resetAll/
+    default-value config entry) or a boolean PRESENCE CHECK (`!! attr` /
+    `! attr`, an `isShown` test). Neither is control-binding evidence.
+    Proven necessary: sgs/quote's real `attributionFontStyle` control lives
+    inside the shared TypographyControls component (mounted with
+    `prefix="attribution" showStyle`), invisible to this file-local scan;
+    every mark in quote/edit.js was one of these two shapes, and proximity
+    wrongly bound the unrelated "HTML tag" <SelectControl>."""
+    # Exclude BOTH occurrences of a self-forwarding `attr={ attr` shape --
+    # the prop-name position and the value-reference position immediately
+    # after it (e.g. `mediaType={ mediaType || 'image' }` is two separate
+    # `\battr\b` matches, and leaving the second one as a mark reintroduces
+    # the exact false bind this exclusion exists to remove).
+    excluded_starts: set[int] = set()
+    for m in re.finditer(rf"\b{re.escape(attr)}\s*=\s*\{{\s*{re.escape(attr)}\b", src):
+        excluded_starts.add(m.start())
+        second_rel = m.group(0).rfind(attr)
+        excluded_starts.add(m.start() + second_rel)
+
+    marks = []
+    for m in re.finditer(rf"\b{re.escape(attr)}\b", src):
+        start, end = m.start(), m.end()
+        if start in excluded_starts:
+            continue
+        before = src[start - 1] if start > 0 else ""
+        after = src[end] if end < len(src) else ""
+        if before in ("'", '"') and after in ("'", '"'):
+            continue  # quoted string literal value, not a reference
+        tail = src[end:end + 3].lstrip()
+        if tail.startswith(":") and not tail.startswith("::"):
+            continue  # object-literal key (default-value / resetAll config)
+        head = src[max(0, start - 3):start]
+        if head.rstrip().endswith("!"):
+            continue  # boolean presence check (!attr / !!attr)
+        marks.append(start)
+    return marks
 
 
 def resolve_control(src: str, attr: str) -> tuple[str, int | None]:

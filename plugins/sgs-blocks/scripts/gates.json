@@ -857,5 +857,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 91
+  },
+  {
+    "id": "check-enum-control-shape",
+    "cmd": "python scripts/check-enum-control-shape.py --check",
+    "tier": "fast",
+    "added_D": "D812",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 92
   }
 ]
