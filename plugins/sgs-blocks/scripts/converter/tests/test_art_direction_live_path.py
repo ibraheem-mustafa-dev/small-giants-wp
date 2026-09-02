@@ -483,6 +483,169 @@ def test_image_lift_does_not_write_split_media_type():
 
 
 @requires_db
+def test_svg_tablet_lift_writes_content_and_matching_split_media_type():
+    """Tablet-tier sibling of test_svg_lift_also_writes_matching_split_media_type.
+
+    Closes a real test-coverage gap flagged by an independent QC-council review
+    of commit 2cc9cbc56 (2026-09-02): only the DESKTOP svg tier had a test
+    proving splitSvgContentTablet + splitMediaTypeTablet both land. The code
+    trace was judged correct by that review; this test proves it rather than
+    assuming it."""
+    markup = (
+        '<section class="sgs-hero sgs-hero--split">'
+        '  <div class="sgs-hero__split-image">'
+        '    <svg class="sgs-hero__split-image sgs-hero__split-image--tablet"'
+        '         viewBox="0 0 10 10"><circle cx="5" cy="5" r="4"/></svg>'
+        '  </div>'
+        '</section>'
+    )
+    rec = Recognition(
+        kind="named", slug="sgs/hero", container_kind="section", delegates_content=1
+    )
+    root = BeautifulSoup(markup, "html.parser").find("section")
+    results = W.run_universal_content_walk(rec, root, {}, {})
+    lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
+    assert isinstance(lifts.get("splitSvgContentTablet"), str) and lifts["splitSvgContentTablet"].startswith("<svg"), (
+        f"got {lifts}"
+    )
+    assert lifts.get("splitMediaTypeTablet") == "svg", (
+        f"the tablet svg's TYPE was not written alongside its content; got {lifts}"
+    )
+
+
+@requires_db
+def test_svg_mobile_lift_writes_content_and_matching_split_media_type():
+    """Mobile-tier sibling of test_svg_lift_also_writes_matching_split_media_type.
+
+    Same coverage gap as the tablet test above, for the Mobile tier."""
+    markup = (
+        '<section class="sgs-hero sgs-hero--split">'
+        '  <div class="sgs-hero__split-image">'
+        '    <svg class="sgs-hero__split-image sgs-hero__split-image--mobile"'
+        '         viewBox="0 0 10 10"><circle cx="5" cy="5" r="4"/></svg>'
+        '  </div>'
+        '</section>'
+    )
+    rec = Recognition(
+        kind="named", slug="sgs/hero", container_kind="section", delegates_content=1
+    )
+    root = BeautifulSoup(markup, "html.parser").find("section")
+    results = W.run_universal_content_walk(rec, root, {}, {})
+    lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
+    assert isinstance(lifts.get("splitSvgContentMobile"), str) and lifts["splitSvgContentMobile"].startswith("<svg"), (
+        f"got {lifts}"
+    )
+    assert lifts.get("splitMediaTypeMobile") == "svg", (
+        f"the mobile svg's TYPE was not written alongside its content; got {lifts}"
+    )
+
+
+@requires_db
+def test_image_lift_does_not_write_split_media_type_tablet():
+    """Negative control for the type-write fix, TABLET tier.
+
+    test_image_lift_does_not_write_split_media_type only pins the desktop
+    tier, whose schema default is 'image'. Tablet's schema default is ''
+    (empty string, the inherit/cascade branch in render.php's
+    $sgs_hero_resolve_split_type resolver) — a genuinely different default
+    value and a genuinely different resolver branch, so this is not a
+    copy-paste of the desktop test."""
+    markup = (
+        '<section class="sgs-hero sgs-hero--split">'
+        '  <div class="sgs-hero__split-image">'
+        '    <img class="sgs-hero__split-image sgs-hero__split-image--tablet"'
+        '         src="/hero-tab.jpg" alt="Tablet crop">'
+        '  </div>'
+        '</section>'
+    )
+    rec = Recognition(
+        kind="named", slug="sgs/hero", container_kind="section", delegates_content=1
+    )
+    root = BeautifulSoup(markup, "html.parser").find("section")
+    results = W.run_universal_content_walk(rec, root, {}, {})
+    lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
+    assert lifts.get("splitImageTablet", {}).get("url") == "/hero-tab.jpg", f"got {lifts}"
+    assert "splitMediaTypeTablet" not in lifts, (
+        f"image branch must not write a tablet type — the tablet resolver's own "
+        f"empty-string inherit/cascade branch already resolves it correctly; got {lifts}"
+    )
+
+
+@requires_db
+def test_image_lift_does_not_write_split_media_type_mobile():
+    """Negative control for the type-write fix, MOBILE tier — the sibling of
+    the tablet test above, same reasoning applied to Mobile's own resolver
+    branch."""
+    markup = (
+        '<section class="sgs-hero sgs-hero--split">'
+        '  <div class="sgs-hero__split-image">'
+        '    <img class="sgs-hero__split-image sgs-hero__split-image--mobile"'
+        '         src="/hero-mob.jpg" alt="Mobile crop">'
+        '  </div>'
+        '</section>'
+    )
+    rec = Recognition(
+        kind="named", slug="sgs/hero", container_kind="section", delegates_content=1
+    )
+    root = BeautifulSoup(markup, "html.parser").find("section")
+    results = W.run_universal_content_walk(rec, root, {}, {})
+    lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
+    assert lifts.get("splitImageMobile", {}).get("url") == "/hero-mob.jpg", f"got {lifts}"
+    assert "splitMediaTypeMobile" not in lifts, (
+        f"image branch must not write a mobile type — the mobile resolver's own "
+        f"empty-string inherit/cascade branch already resolves it correctly; got {lifts}"
+    )
+
+
+@requires_db
+def test_mixed_media_types_across_tiers_resolve_independently_no_cross_contamination():
+    """The mixed-type scenario the qc-council rater flagged as traced-but-
+    unverified: desktop=video, tablet=svg, mobile=image in ONE hero instance.
+    Each tier must resolve to its own content + type attrs with no bleed
+    between tiers or media families."""
+    markup = (
+        '<section class="sgs-hero sgs-hero--split">'
+        '  <div class="sgs-hero__split-image">'
+        '    <video class="sgs-hero__split-image sgs-hero__split-image--desktop"'
+        '           src="/hero-desk.mp4"></video>'
+        '    <svg class="sgs-hero__split-image sgs-hero__split-image--tablet"'
+        '         viewBox="0 0 10 10"><circle cx="5" cy="5" r="4"/></svg>'
+        '    <img class="sgs-hero__split-image sgs-hero__split-image--mobile"'
+        '         src="/hero-mob.jpg" alt="Mobile crop">'
+        '  </div>'
+        '</section>'
+    )
+    rec = Recognition(
+        kind="named", slug="sgs/hero", container_kind="section", delegates_content=1
+    )
+    root = BeautifulSoup(markup, "html.parser").find("section")
+    results = W.run_universal_content_walk(rec, root, {}, {})
+    lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
+
+    # Desktop: video content + matching type.
+    assert lifts.get("splitVideo") == {"url": "/hero-desk.mp4", "id": 0}, f"got {lifts}"
+    assert lifts.get("splitMediaType") == "video", f"got {lifts}"
+
+    # Tablet: svg content + matching type.
+    assert isinstance(lifts.get("splitSvgContentTablet"), str) and lifts["splitSvgContentTablet"].startswith("<svg"), (
+        f"got {lifts}"
+    )
+    assert lifts.get("splitMediaTypeTablet") == "svg", f"got {lifts}"
+
+    # Mobile: image content, no type write (image is the default, no explicit type needed).
+    assert lifts.get("splitImageMobile", {}).get("url") == "/hero-mob.jpg", f"got {lifts}"
+    assert "splitMediaTypeMobile" not in lifts, f"got {lifts}"
+
+    # No cross-contamination: each tier's OWN family attrs only, nothing else leaked.
+    assert "splitImage" not in lifts, f"desktop is video, not image; got {lifts}"
+    assert "splitVideoTablet" not in lifts, f"tablet is svg, not video; got {lifts}"
+    assert "splitSvgContentMobile" not in lifts, f"mobile is image, not svg; got {lifts}"
+    assert "splitVideoMobile" not in lifts, f"mobile is image, not video; got {lifts}"
+    assert "splitImageTablet" not in lifts, f"tablet is svg, not image; got {lifts}"
+    assert "splitSvgContent" not in lifts, f"desktop is video, not svg; got {lifts}"
+
+
+@requires_db
 def test_negative_control_plain_div_is_not_mistaken_for_media():
     """A scalar-media column with NO <img>/<video>/<svg> descendant must
     still emit a ContentGap, never a silent drop or a false media lift.
