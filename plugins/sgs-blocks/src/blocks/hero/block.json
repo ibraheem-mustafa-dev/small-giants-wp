@@ -124,6 +124,7 @@
 						"css:border-color": "borderColour",
 						"css:border-radius": "borderRadius",
 						"css:box-shadow": "shadow",
+						"css:box-shadow-color": "shadowColour",
 						"css:border-color-gradient": "borderColourGradient",
 						"anim:parallax": "bgParallax",
 						"anim:duration": "bgAnimationDuration"

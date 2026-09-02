@@ -96,9 +96,14 @@
 					"prefix": "",
 					"attrMap": {
 						"css:background-color": "drawerBg",
-						"css:background-image": "drawerBgGradient"
+						"css:background-image": "drawerBgGradient",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:border-radius": "borderRadius"
 					},
-					"_note": "Root `<dialog>`. Block-private (containerMirror:false, per the render.php header note — a `<dialog>` root falls outside SGS_Container_Wrapper's $allowed_tags, so this mirrors the wrapper's fill/box capability without calling it). drawerBg resolves via explicit attrMap (name doesn't carry a Colour/Background suffix); border-width/style/color/radius resolve via the skip-serialised native __experimentalBorder support (nativeSupportsPath), not a flat attr. Geometry (position/inset/width/height) is now driven by `anchor` (per-device enum) + `panelSize` (per-device length, trigger/centred only) rather than the retired `edge`/`width` scalars — see render.php's geometry_css_for closure. The WCAG-computed foreground (drawerFgHex) has no independent client-facing attribute — it is always DERIVED from drawerBg, never set directly — so css:color (text cluster) is deliberately NOT declared here."
+					"_note": "Root `<dialog>`. Block-private (containerMirror:false, per the render.php header note — a `<dialog>` root falls outside SGS_Container_Wrapper's $allowed_tags, so this mirrors the wrapper's fill/box capability without calling it). drawerBg resolves via explicit attrMap (name doesn't carry a Colour/Background suffix). Border (width/style/colour/colour-gradient/radius) is block-private via `SgsBorderControl` in its own dedicated Border panel (Shape-B migration, matching every other SgsBorderControl-adopting block) — explicitly mapped here because `body` also declares the `layout` cluster these members belong to, and the bare (no-`prefix`) suffix convention could not otherwise tell them apart; the border paints the whole drawer surface, not just `body`'s inner padding. Geometry (position/inset/width/height) is now driven by `anchor` (per-device enum) + `panelSize` (per-device length, trigger/centred only) rather than the retired `edge`/`width` scalars — see render.php's geometry_css_for closure. The WCAG-computed foreground (drawerFgHex) has no independent client-facing attribute — it is always DERIVED from drawerBg, never set directly — so css:color (text cluster) is deliberately NOT declared here."
 				},
 				"body": {
 					"label": "Drawer content",

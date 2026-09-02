@@ -48,6 +48,7 @@
 						"css:border-color": "borderColour",
 						"css:border-radius": "borderRadius",
 						"css:box-shadow": "boxShadow",
+						"css:box-shadow-color": "boxShadowColour",
 						"css:max-width": "maxWidth",
 						"css:height": "height",
 						"css:border-color-gradient": "borderColourGradient"

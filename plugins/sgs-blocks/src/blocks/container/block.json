@@ -100,6 +100,7 @@
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
 						"css:box-shadow": "shadow",
+						"css:box-shadow-color": "shadowColour",
 						"anim:parallax": "bgParallax",
 						"anim:duration": "bgAnimationDuration",
 						"css:color-gradient": "textColourGradient"
