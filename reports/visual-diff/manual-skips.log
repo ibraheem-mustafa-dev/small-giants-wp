@@ -751,3 +751,6 @@
 2026-09-02 01:38:42 | hero | MANUAL SKIP | templateLock attribute is InnerBlocks-only, consumed exclusively by the block editor structural-lock UI; render.php never reads it
 2026-09-02 01:41:13 | container | MANUAL SKIP | templateLock attribute is InnerBlocks-only, consumed exclusively by the block editor structural-lock UI; render.php never reads it
 2026-09-02 01:41:13 | hero | MANUAL SKIP | templateLock attribute is InnerBlocks-only, consumed exclusively by the block editor structural-lock UI; render.php never reads it
+2026-09-03 00:38:11 | card-grid | MANUAL SKIP | Shape-B border migration -- capture needs the code live on canary, which needs the commit first (same debt-paid pattern as accordion-2026-08-29.md); report follows post-deploy
+2026-09-03 00:38:11 | multi-button | MANUAL SKIP | Shape-B border migration -- capture needs the code live on canary, which needs the commit first (same debt-paid pattern as accordion-2026-08-29.md); report follows post-deploy
+2026-09-03 00:38:12 | trust-bar | MANUAL SKIP | Shape-B border migration -- capture needs the code live on canary, which needs the commit first (same debt-paid pattern as accordion-2026-08-29.md); report follows post-deploy

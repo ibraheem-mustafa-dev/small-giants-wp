@@ -258,6 +258,17 @@ const FIXTURES = {
 			],
 		},
 	},
+	// Manual-mode card-grid (the block.json default `source`) returns '' outright
+	// when `items` is empty (render.php: `if ( empty( $items ) ) { return ''; }`)
+	// -- a bare attribute-only instance renders NOTHING, not even the wrapper, so
+	// the generic mechanism finds 0 outermost elements. One minimal item is
+	// enough to reach the wrapper + border emission (found live 2026-09-03,
+	// Shape-B migration round-trip).
+	'sgs/card-grid': {
+		extraAttrs: {
+			items: [ { title: 'border probe' } ],
+		},
+	},
 	'sgs/tabs': {
 		buildMarkup: ( slug, cls ) => {
 			const { positive, negative } = buildAttrPair( cls );
