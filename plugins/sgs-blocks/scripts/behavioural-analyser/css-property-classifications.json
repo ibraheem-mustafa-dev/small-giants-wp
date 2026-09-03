@@ -238,14 +238,6 @@
     },
     {
       "slug": "sgs/brand-strip",
-      "attr": "logoFit",
-      "fields": {
-        "css_property": "object-fit",
-        "css_element": "logo"
-      }
-    },
-    {
-      "slug": "sgs/brand-strip",
       "attr": "logoGap",
       "fields": {
         "css_property": "gap",
@@ -961,6 +953,15 @@
       }
     },
     {
+      "slug": "sgs/collapsible-text",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "body"
+      }
+    },
+    {
       "slug": "sgs/container",
       "attr": "borderStyle",
       "fields": {
@@ -1217,6 +1218,16 @@
       }
     },
     {
+      "slug": "sgs/feature-grid",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/filter-search",
       "attr": "focusRingColour",
       "fields": {
@@ -1290,6 +1301,22 @@
       "fields": {
         "css_property": "outline-width",
         "css_element": "focus-ring"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "prevColourBackground",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "prevColourBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "button"
       }
     },
     {
@@ -1417,6 +1444,54 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "arrowColourBackground",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "arrowColourBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "arrowColourBorder",
+      "fields": {
+        "css_property": "border-color",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "arrowColourBorderHover",
+      "fields": {
+        "css_property": "border-color",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "arrowColourText",
+      "fields": {
+        "css_property": "color",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "arrowColourTextHover",
+      "fields": {
+        "css_property": "color",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -1441,6 +1516,38 @@
         "css_property": "fill",
         "css_layer": "OUTER",
         "css_element": "star"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewColourBackground",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "write-review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewColourBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "write-review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewColourText",
+      "fields": {
+        "css_property": "color",
+        "css_element": "write-review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewColourTextHover",
+      "fields": {
+        "css_property": "color",
+        "css_element": "write-review"
       }
     },
     {
@@ -2247,6 +2354,7 @@
       "attr": "captionColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "caption"
       }
     },
@@ -2389,6 +2497,38 @@
         "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/modal",
+      "attr": "closeColourBackground",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/modal",
+      "attr": "closeColourBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/modal",
+      "attr": "closeColourText",
+      "fields": {
+        "css_property": "color",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/modal",
+      "attr": "closeColourTextHover",
+      "fields": {
+        "css_property": "color",
+        "css_element": "close"
       }
     },
     {
@@ -3001,6 +3141,15 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillBgColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
         "css_element": "pill",
         "css_state": "hover"
       }
@@ -3082,6 +3231,15 @@
       "attr": "pillTextColour",
       "fields": {
         "css_property": "color",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillTextColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
         "css_element": "pill",
         "css_state": "hover"
       }
@@ -3710,6 +3868,15 @@
       }
     },
     {
+      "slug": "sgs/product-faq",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/product-search",
       "attr": "focusRingColour",
       "fields": {
@@ -3988,6 +4155,16 @@
       }
     },
     {
+      "slug": "sgs/site-footer-row",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/site-header",
       "attr": "backgroundColourScrolledGradient",
       "fields": {
@@ -4042,6 +4219,16 @@
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -4691,14 +4878,6 @@
     },
     {
       "slug": "sgs/trust-bar",
-      "attr": "badgeImageObjectFit",
-      "fields": {
-        "css_property": "object-fit",
-        "css_element": "badge-img"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
       "attr": "badgeImageShadow",
       "fields": {
         "css_property": "box-shadow",
@@ -4905,6 +5084,16 @@
       "fields": {
         "css_property": "flex,grid-template-columns",
         "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -5177,6 +5366,14 @@
       "fields": {
         "css_property": "color",
         "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion-item",
+      "attr": "textColourGradient",
+      "fields": {
+        "css_property": "background-image",
         "css_element": "wrapper"
       }
     },
@@ -5681,6 +5878,22 @@
       }
     },
     {
+      "slug": "sgs/card-grid",
+      "attr": "subtitleColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "subtitle"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "titleColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "title"
+      }
+    },
+    {
       "slug": "sgs/cart",
       "attr": "iconColourGradient",
       "fields": {
@@ -5700,10 +5913,9 @@
     },
     {
       "slug": "sgs/collapsible-text",
-      "attr": "textColour",
+      "attr": "textColourGradient",
       "fields": {
-        "css_property": "color",
-        "role": "color",
+        "css_property": "background-image",
         "css_element": "body"
       }
     },
@@ -6127,6 +6339,14 @@
     },
     {
       "slug": "sgs/counter",
+      "attr": "labelColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/counter",
       "attr": "numberColourGradient",
       "fields": {
         "css_property": "background-image",
@@ -6524,10 +6744,9 @@
     },
     {
       "slug": "sgs/feature-grid",
-      "attr": "textColour",
+      "attr": "textColourGradient",
       "fields": {
-        "css_property": "color",
-        "role": "color",
+        "css_property": "background-image",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -6837,6 +7056,15 @@
       "fields": {
         "css_property": "color",
         "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "textColourGradient",
+      "fields": {
+        "css_property": "background-image",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -6929,6 +7157,15 @@
       "fields": {
         "css_property": "color",
         "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-step",
+      "attr": "textColourGradient",
+      "fields": {
+        "css_property": "background-image",
         "css_layer": "CONTENT",
         "css_element": "wrapper"
       }
@@ -7958,6 +8195,14 @@
         "css_property": "box-shadow",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "captionColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "caption"
       }
     },
     {
@@ -9150,10 +9395,9 @@
     },
     {
       "slug": "sgs/product-faq",
-      "attr": "textColour",
+      "attr": "textColourGradient",
       "fields": {
-        "css_property": "color",
-        "role": "color",
+        "css_property": "background-image",
         "css_element": "wrapper"
       }
     },
@@ -9213,6 +9457,14 @@
       "fields": {
         "css_property": "color",
         "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq-item",
+      "attr": "textColourGradient",
+      "fields": {
+        "css_property": "background-image",
         "css_element": "wrapper"
       }
     },
@@ -9740,10 +9992,9 @@
     },
     {
       "slug": "sgs/site-footer-row",
-      "attr": "textColour",
+      "attr": "textColourGradient",
       "fields": {
-        "css_property": "color",
-        "role": "color",
+        "css_property": "background-image",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -10097,10 +10348,9 @@
     },
     {
       "slug": "sgs/site-header-row",
-      "attr": "textColour",
+      "attr": "textColourGradient",
       "fields": {
-        "css_property": "color",
-        "role": "color",
+        "css_property": "background-image",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -10226,6 +10476,23 @@
       }
     },
     {
+      "slug": "sgs/tab",
+      "attr": "textColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "activeLinkColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "link",
+        "css_state": "current"
+      }
+    },
+    {
       "slug": "sgs/table-of-contents",
       "attr": "borderColourGradient",
       "fields": {
@@ -10247,6 +10514,22 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "linkColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "titleColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "title"
       }
     },
     {
@@ -10502,6 +10785,22 @@
         "css_property": "max-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "nameColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "roleColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "role"
       }
     },
     {
@@ -11194,6 +11493,14 @@
     },
     {
       "slug": "sgs/trust-bar",
+      "attr": "badgeImageObjectFit",
+      "fields": {
+        "css_property": "object-fit",
+        "css_element": "badge-img"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
       "attr": "borderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
@@ -11526,10 +11833,9 @@
     },
     {
       "slug": "sgs/trustpilot-reviews",
-      "attr": "textColour",
+      "attr": "textColourGradient",
       "fields": {
-        "css_property": "color",
-        "role": "color",
+        "css_property": "background-image",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }

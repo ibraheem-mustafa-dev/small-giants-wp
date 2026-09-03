@@ -2454,16 +2454,32 @@ def _apply_attr_classification_overrides(
     # run — i.e. already stale, uncovered by the narrower object_tier_fossils cleanup
     # below (that cleanup requires attr_type='object'; nav-menu.gap is 'string').
     #
-    # css_property and css_state got the SAME live diagnostic and came back with ZERO
-    # stale rows today — ownership is equally clean (verified: the one migration that
-    # writes css_property directly, `migrations/2026-08-13-role-remediation-part2-
+    # css_property got the SAME live diagnostic and came back with ZERO stale rows
+    # today — ownership is clean (verified: the one migration that writes
+    # css_property directly, `migrations/2026-08-13-role-remediation-part2-
     # overrides.py`, writes BOTH the live DB AND attr-classification-overrides.json,
-    # so it stays reseed-durable), but with no PROVEN current drift to fix, they are
-    # deliberately left un-reset here (prove-the-cause-before-fix) — re-run the
-    # diagnostic after future reseeds if a stale css_property/css_state is ever
-    # reported.
+    # so it stays reseed-durable), so it is deliberately left un-reset here
+    # (prove-the-cause-before-fix) — re-run the diagnostic after future reseeds if
+    # a stale css_property is ever reported.
+    #
+    # css_state WAS included in that same "no proven drift" claim (2026-08-xx) —
+    # PROVEN FALSE 2026-09-03 (qc-council, this session): `sgs/option-picker.
+    # pillBgColour` (a resting/base attribute, no `states` entry of its own)
+    # carried a stale `css_state='hover'` that survived every reseed since before
+    # this loop existed, because this column was never in the reset list, so the
+    # per-row additive UPDATE below — which only sets the columns present in that
+    # row's own `fields` dict — silently preserved whatever value was already
+    # sitting there. The classifier itself was already correct (its own JSON
+    # output for `pillBgColour` carries no `css_state` key at all); the DB simply
+    # never caught up. Root cause traced to a plausible origin: option-picker's
+    # bespoke nested-CSS-variable-fallback pattern (`var(--sgs-op-bg-hover,
+    # var(--sgs-op-bg, ...)))`) is the exact shape the 2026-07-21 `_top_level_vars()`
+    # fix (extract-signatures.py) was built to stop mis-attributing state on —
+    # that fix corrected the classifier going forward but never touched the
+    # already-stored DB value. `css_layer`/`css_element`/`css_tier` never had this
+    # failure mode because they were ALREADY in the reset list.
     if not dry_run:
-        for _reset_col in ("css_layer", "css_element", "css_tier"):
+        for _reset_col in ("css_layer", "css_element", "css_tier", "css_state"):
             if _reset_col in existing_cols:
                 c.execute(f"UPDATE block_attributes SET {_reset_col} = NULL")
     for (slug, attr), fields in combined.items():
