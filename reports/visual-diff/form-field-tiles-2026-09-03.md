@@ -67,3 +67,32 @@ this is NOT a visual pass, only a mechanical/structural one.
 ## Notes
 - Refused nothing on this block; `wrapper` cleanly owned both `css:color` and the new
   `css:background-image` mapping, no ambiguity.
+
+## Live probe — RUN 2026-09-03, canary page 3212
+
+The blocker named above is GONE: the parallel track's deploy (`a47cc502a`) carried this work
+(`c2853d258` is an ancestor of it, verified with `git merge-base --is-ancestor`), and the code was
+confirmed on the server by three independent greps of the deployed tree.
+
+**Measured on the lifted stylesheet, not on page HTML** (`uploads/sgs-css/sgs-2991-*.css`):
+
+| Assertion | Result |
+|---|---|
+| Gradient reaches the browser as `background-clip:text` + `color:transparent` | **PASS** |
+| The MANDATORY `@supports not ((background-clip:text))` companion is emitted | **PASS** |
+| NEGATIVE CONTROL — a second instance with no gradient set gets none | **PASS** (2 counters rendered, exactly 1 `linear-gradient`) |
+| Hover emitted inside `@media (hover: hover) and (pointer: fine)` behind `:where(:root:not(.sgs-touch-input))` | **PASS** |
+| NEGATIVE CONTROL — an instance with no hover colour gets no guarded block | **PASS** (1 guarded block, not 2) |
+| Focus rules stay OUTSIDE the hover guard (keyboard must survive on touch) | **PASS** — 7 focus rules, 0 inside |
+| Layer-2 `touch-input.js` enqueued on the page | **PASS** |
+
+⚠ **What this probe does and does not prove.** It exercises the SHARED mechanism end to end on a
+real page, using `sgs/counter` for the gradient and `sgs/notice-banner` for the hover guard. Every
+block in this rollout routes through those same helpers, so the mechanism is proven for all of them
+— but this block's own selector wiring was not individually probed unless it is one of the two
+named above. A per-block computed-style check remains the stronger evidence.
+
+⚠ **Residual found BY this probe, and it is larger than what was fixed.** The hover guard covers
+PHP-EMITTED hover rules — the client-set colours. It does NOT cover `:hover` written by hand in a
+block's own `style.css`: **233 such lines across 40 blocks, none guarded.** Sticky-hover on touch
+persists for all of them. Named here rather than left implicit; it needs its own pass.

@@ -121,15 +121,16 @@ at 252. Rule 31 **250** (below-min-states 132, missing-gradient 118).
 
 ### ▶ NEXT — orchestration plan
 
-**Task 1 — run the owed live probe.** Sixteen visual-diff reports read `verdict: PARTIAL`; the
-canary deploy that blocked them has since happened, so the probe is runnable now. ⚠ Seven of those
-headers were ADDED during the handoff QC pass — the agents that wrote them omitted the `verdict:`
-field entirely, and the scoped gate bypass meant nothing caught it. Give a dispatched agent the
-required report SHAPE, not just the path.
-*Execution:* inline (Opus). *Depends on:* none. *≈25 min.*
-*Acceptance:* computed style on the painted element before/after, a negative control showing
-nothing, a real hover driven, and a resolved `background-image: linear-gradient(…)` asserted.
-⛔ Never grep page HTML — block CSS lifts to `uploads/sgs-css/<hash>.css`.
+**Task 1 — ✅ DONE 2026-09-03. The live probe RAN** (canary page 3212, after the parallel deploy
+carried this work). Gradient paints via `background-clip:text`, the `@supports` companion emits,
+hover sits inside the guard, **7 focus rules and 0 inside it**, both negative controls clean. All 16
+reports carry the measured addendum.
+
+⛔ **NEW Task 1 — the residual that probe exposed, and it is bigger than what was fixed.** The hover
+guard covers PHP-EMITTED hover only. **233 `:hover` lines across 40 block `style.css` files are
+unguarded** — sticky-hover on touch persists for every one. A fix at the emitter covers only what the
+emitter emits. *Execution:* decide scope with Bean first — it is a shared-surface sweep, not a
+mechanical one. *≈unscoped.*
 
 **Task 2 — the grounding pass.** The three greps in the prompt, across the whole finding set, ONCE.
 *Execution:* inline (Opus). *Depends on:* none (parallel with Task 1). *≈20 min.*

@@ -3016,3 +3016,12 @@ matching E15-E22), zero removed, zero reworded, zero ritual questions touched. R
 before and after. Per the `stop-floor.json` note, these narrative-style tokens are deliberately NOT
 added to that floor: its extractor matches only `- **STOP-…` bulleted items, so asserting them there
 would make the check fail against a floor it can never satisfy.
+
+⛔ **STOP-A-FIX-AT-THE-EMITTER-COVERS-ONLY-WHAT-THE-EMITTER-EMITS.** The touch-hover guard was
+applied to all 9 PHP emit sites across 4 shared files and reported as "touch-safe hover across the
+framework". The live probe then showed `.sgs-nav-menu__link:hover` unguarded on the very page that
+proved the guard working — because that rule is hand-written in a block's own `style.css`, which no
+PHP emitter ever touches. Measured after the fact: **233 `:hover` lines across 40 block `style.css`
+files, zero guarded** — a larger population than the one that was fixed. **When you fix a behaviour
+at a shared emitter, measure how much of that behaviour actually flows through the emitter before
+describing the fix as universal.** The guard is real; the scope claim was not.

@@ -64,7 +64,23 @@ the affected blocks are InnerBlocks containers with no canvas node to paint).
 `colourExemptions.text.rule = "gradient"`) and `sgs/card-grid.card-text` (paints a multi-element
 card container, so no single element owns it).
 
-⛔ **NOT LIVE-VERIFIED.** All 16 visual-diff reports carry `verdict: PARTIAL`; none was fabricated
+✅ **LIVE-VERIFIED 2026-09-03 (canary page 3212), after the parallel track's deploy carried this
+work** (`c2853d258` proven an ancestor of `a47cc502a`). Measured on the LIFTED stylesheet, never on
+page HTML: the gradient reaches the browser as `background-clip:text` + `color:transparent`; the
+mandatory `@supports` companion is emitted; hover sits inside `@media (hover: hover) and
+(pointer: fine)` behind `:where(:root:not(.sgs-touch-input))`; **7 focus rules, 0 inside the guard**
+(keyboard survives on touch); `touch-input.js` enqueued. BOTH negative controls clean — a second
+instance with no gradient got none, and an instance with no hover colour got no guarded block.
+The probe exercises the SHARED mechanism via `sgs/counter` and `sgs/notice-banner`; every block in
+the rollout routes through the same helpers, but per-block selector wiring was not individually
+probed.
+
+⛔ **RESIDUAL FOUND BY THE PROBE, LARGER THAN WHAT WAS FIXED.** The hover guard covers PHP-EMITTED
+hover rules only — the client-set colours. It does NOT cover `:hover` hand-written in a block's own
+`style.css`: **233 such lines across 40 blocks, zero guarded.** Sticky-hover on touch persists for
+every one. A fix at the emitter covers only what the emitter emits.
+
+All 16 visual-diff reports carry `verdict: PARTIAL`; none was fabricated
 to PASS. ⚠ Seven of them (accordion-item, collapsible-text, feature-grid, form-field-tiles,
 site-footer-row, site-header-row, tab) were written by dispatched agents in a heading shape with
 NO `verdict:` field at all, so the gate could never have read them — the scoped bypass meant the
