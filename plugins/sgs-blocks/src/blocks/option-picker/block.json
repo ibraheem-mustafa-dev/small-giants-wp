@@ -73,7 +73,10 @@
 					"order": 2,
 					"clusters": [ "text", "layout" ],
 					"prefix": "label",
-					"_note": "labelFontSize/labelColour/labelFontWeight/labelFontStyle/labelMarginBottom resolve via the default {prefix}{suffix} convention (labelMarginBottom -> css:margin-bottom, Spec 35 vocabulary fix; render.php:492-495 legend `margin-bottom:...`). line-height/letter-spacing/text-transform/text-decoration/text-align/font-family have no labelX equivalent — honest gaps."
+					"attrMap": {
+						"css:color-gradient": "labelColourGradient"
+					},
+					"_note": "labelFontSize/labelColour/labelFontWeight/labelFontStyle/labelMarginBottom resolve via the default {prefix}{suffix} convention (labelMarginBottom -> css:margin-bottom, Spec 35 vocabulary fix; render.php:492-495 legend `margin-bottom:...`). line-height/letter-spacing/text-transform/text-decoration/text-align/font-family have no labelX equivalent — honest gaps. labelColourGradient is the text-colour gradient sibling to labelColour (background-clip:text mechanism, same recipe as sgs/quote's attributionColour/attributionColourGradient) — needs an explicit attrMap entry since the default prefix convention only covers css:color, not the gradient sibling."
 				},
 				"pill": {
 					"label": "Option pill",
@@ -154,6 +157,11 @@
 		"labelColour": {
 			"type": "string",
 			"default": ""
+		},
+		"labelColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the label legend's text via background-clip:text (D636 text builder). Non-empty wins over labelColour."
 		},
 		"labelFontWeight": {
 			"type": "string",

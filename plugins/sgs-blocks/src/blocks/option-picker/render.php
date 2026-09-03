@@ -85,6 +85,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 $label                = $attributes['label'] ?? __( 'Choose an option', 'sgs-blocks' );
 $show_label           = $attributes['showLabel'] ?? true;
 $label_colour         = $attributes['labelColour'] ?? '';
+$label_colour_gradient = $attributes['labelColourGradient'] ?? '';
 $label_margin_bottom  = $attributes['labelMarginBottom'] ?? '';
 $option_items         = $attributes['optionItems'] ?? array();
 $default_selected     = $attributes['defaultSelected'] ?? '';
@@ -537,9 +538,20 @@ if ( '' !== $typography_css ) {
 	$scoped_css[] = $typography_css;
 }
 
+// Flat-or-gradient (D636 "text" builder) — sgs_resolve_text_colour_or_gradient()
+// picks the gradient sibling attribute when it's set and valid, otherwise the
+// flat labelColour value untouched; sgs_text_colour_decl() emits a plain
+// `color:` declaration for a flat value or the background-clip:text
+// declarations for a gradient. sgs_text_colour_gradient_fallback_rule() is the
+// MANDATORY @supports companion — a gradient with no background-clip:text
+// support would otherwise render invisible text (omitted for a flat value,
+// where it is a no-op). Same recipe as sgs/quote's attribution colour.
+$label_colour_effective = sgs_resolve_text_colour_or_gradient( $label_colour, $label_colour_gradient );
+$label_colour_decl      = sgs_text_colour_decl( $label_colour_effective );
+
 $legend_decls = array();
-if ( '' !== $label_colour ) {
-	$legend_decls[] = 'color:' . sgs_colour_value( $label_colour );
+if ( '' !== $label_colour_decl ) {
+	$legend_decls[] = $label_colour_decl;
 }
 if ( '' !== $label_margin_bottom ) {
 	$mb_safe = sgs_css_length_value( $label_margin_bottom );
@@ -549,6 +561,10 @@ if ( '' !== $label_margin_bottom ) {
 }
 if ( $legend_decls ) {
 	$scoped_css[] = "{$sel_label}{" . implode( ';', $legend_decls ) . ';}';
+}
+$label_colour_gradient_fallback = sgs_text_colour_gradient_fallback_rule( $sel_label, $label_colour_effective );
+if ( '' !== $label_colour_gradient_fallback ) {
+	$scoped_css[] = $label_colour_gradient_fallback;
 }
 
 // ---------------------------------------------------------------------------

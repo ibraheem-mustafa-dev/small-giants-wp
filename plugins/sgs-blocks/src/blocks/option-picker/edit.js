@@ -35,7 +35,7 @@ import {
 	SgsBorderControl,
 	MediaElementPanel,
 } from '../../components';
-import { colourVar } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /* ── Options ─────────────────────────────────────────────────────────────── */
@@ -167,6 +167,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		label,
 		showLabel,
 		labelColour,
+		labelColourGradient,
 		labelMarginBottom,
 		optionItems,
 		defaultSelected,
@@ -347,6 +348,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'label',
 						label: __( 'Label colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -354,6 +356,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: labelColour,
 								onChange: ( val ) => setAttributes( { labelColour: val ?? '' } ),
 								linked: true,
+								gradientValue: labelColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { labelColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -939,7 +944,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<legend
 						className="sgs-option-picker__label"
 						style={ {
-							...( labelColour       ? { color:        colourVar( labelColour ) }  : {} ),
+							...resolveTextColourPreviewStyle( labelColour, labelColourGradient, colourVar ),
 							...( labelMarginBottom ? { marginBottom: labelMarginBottom }         : {} ),
 						} }
 					>
