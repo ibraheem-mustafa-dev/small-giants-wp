@@ -477,6 +477,14 @@
 			"type": "string",
 			"default": "accent"
 		},
+		"toggleLabelHoverColour": {
+			"type": "string",
+			"default": ""
+		},
+		"toggleLabelHoverColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"sgsAnimation": {
 			"type": "string",
 			"default": "slide-up"

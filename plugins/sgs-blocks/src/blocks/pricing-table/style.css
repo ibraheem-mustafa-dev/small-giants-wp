@@ -455,11 +455,18 @@
 	font-weight: 700;
 }
 
-/* Inactive button hover: light tint */
-.sgs-pricing-table__billing-toggle--style-button
-	.sgs-pricing-table__toggle-label:hover,
-.sgs-pricing-table__toggle--style-button
-	.sgs-pricing-table__toggle-label:hover {
+/* Inactive button hover tint is client-controllable via the
+   `toggleLabelHoverColour` attribute (render.php emits a scoped
+   `:hover`/`:focus-visible` rule at real specificity, winning once a client
+   sets a value). The rule below is the DEFAULT tint, kept at zero
+   specificity via :where() so an unset attribute still shows today's
+   look unchanged. */
+:where(
+	.sgs-pricing-table__billing-toggle--style-button
+		.sgs-pricing-table__toggle-label:hover,
+	.sgs-pricing-table__toggle--style-button
+		.sgs-pricing-table__toggle-label:hover
+) {
 	background-color: color-mix(
 		in srgb,
 		var(--wp--preset--color--primary, #0f7e80) 10%,
@@ -467,12 +474,14 @@
 	);
 }
 
-/* Fallback for browsers without color-mix */
+/* Fallback for browsers without color-mix (same :where()-zeroed default) */
 @supports not (color: color-mix(in srgb, black 10%, transparent)) {
-	.sgs-pricing-table__billing-toggle--style-button
-		.sgs-pricing-table__toggle-label:hover,
-	.sgs-pricing-table__toggle--style-button
-		.sgs-pricing-table__toggle-label:hover {
+	:where(
+		.sgs-pricing-table__billing-toggle--style-button
+			.sgs-pricing-table__toggle-label:hover,
+		.sgs-pricing-table__toggle--style-button
+			.sgs-pricing-table__toggle-label:hover
+	) {
 		background-color: rgba(15, 126, 128, 0.1);
 	}
 }

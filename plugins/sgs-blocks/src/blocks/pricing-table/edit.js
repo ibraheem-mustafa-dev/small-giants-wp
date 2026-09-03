@@ -131,6 +131,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		popularBadgeText,
 		popularBadgeColour,
 		popularBadgeBackground,
+		toggleLabelHoverColour,
+		toggleLabelHoverColourGradient,
 	} = attributes;
 
 	const [ palette ] = useSettings( 'color.palette' );
@@ -239,12 +241,16 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			{ /* D619 — ONE grouped, SGS-OWNED colour panel (own PanelBody, default
-			   InspectorControls group), rendered FIRST. All 7 colour attrs on this
-			   block are BLOCK-LEVEL (uniform across every plan/tier, confirmed via
-			   render.php's "BLOCK-LEVEL — emitted once as a scoped rule" comments)
-			   and single-state — no hover attribute exists for any of them
-			   (ctaStyle's `:hover` rules in style.css are static CSS-preset
-			   selectors keyed on the class, not an attribute-driven colour state).
+			   InspectorControls group), rendered FIRST. All 7 original colour attrs
+			   on this block are BLOCK-LEVEL (uniform across every plan/tier,
+			   confirmed via render.php's "BLOCK-LEVEL — emitted once as a scoped
+			   rule" comments) and single-state — no hover attribute existed for
+			   any of them (ctaStyle's `:hover` rules in style.css are static
+			   CSS-preset selectors keyed on the class, not an attribute-driven
+			   colour state). `toggleLabelHoverColour` below is the one genuine
+			   hover-only exception — it replaces a previously hardcoded
+			   `color-mix()` hover tint on the billing-toggle label with no
+			   backing attribute (mirrors business-info's hover-only rows).
 			   Replaces the DesignTokenPicker rows previously scattered across the
 			   Colours/CTA Button/Popular Badge panels below. */ }
 			<SgsColourPanel
@@ -340,6 +346,22 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: popularBadgeBackground,
 								onChange: ( val ) => setAttributes( { popularBadgeBackground: val ?? '' } ),
 								linked: true,
+							},
+						],
+					},
+					{
+						key: 'toggle-label-hover',
+						label: __( 'Billing toggle label hover colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: toggleLabelHoverColour,
+								onChange: ( val ) => setAttributes( { toggleLabelHoverColour: val ?? '' } ),
+								linked: true,
+								gradientValue: toggleLabelHoverColourGradient,
+								onGradientChange: ( val ) => setAttributes( { toggleLabelHoverColourGradient: val ?? '' } ),
 							},
 						],
 					},

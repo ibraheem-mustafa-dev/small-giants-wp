@@ -63,6 +63,9 @@ $badge_text            = sanitize_text_field( $attributes['popularBadgeText'] ??
 $badge_colour          = $attributes['popularBadgeColour'] ?? 'white';
 $badge_bg              = $attributes['popularBadgeBackground'] ?? 'accent';
 
+$toggle_label_hover_colour          = $attributes['toggleLabelHoverColour'] ?? '';
+$toggle_label_hover_colour_gradient = $attributes['toggleLabelHoverColourGradient'] ?? '';
+
 // ── billingToggle — backward-compat: legacy boolean true → 'monthly-yearly', false → 'none' ──
 $raw_billing_toggle = $attributes['billingToggle'] ?? 'monthly-yearly';
 if ( true === $raw_billing_toggle || 'true' === $raw_billing_toggle ) {
@@ -499,6 +502,21 @@ if ( $cta_colour || $cta_background ) {
 }
 if ( $title_colour ) {
 	$responsive_css .= $root_sel . ' .sgs-pricing-table__name,' . $root_sel . ' .sgs-pricing-table__title{color:' . $colour_val( $title_colour ) . '}';
+}
+// Billing-toggle label hover tint — previously a hardcoded color-mix() (+
+// rgba fallback) in style.css with no backing attribute; replaced by this
+// operator-controlled attribute (D-pending). Button-style only, matching the
+// original CSS's scoping (the text-style toggle uses colour/track, not a
+// background tint). Hover-only: an empty attribute means no hover tint at
+// all, not a hardcoded fallback.
+$pt_toggle_label_hover_decl = sgs_background_paint_decl( $toggle_label_hover_colour, $toggle_label_hover_colour_gradient );
+if ( '' !== $pt_toggle_label_hover_decl ) {
+	$pt_toggle_label_hover_decls = array( $pt_toggle_label_hover_decl . ';' );
+	$responsive_css             .= sgs_emit_state_colour_css(
+		$root_sel . ' .sgs-pricing-table__billing-toggle--style-button .sgs-pricing-table__toggle-label',
+		array(),
+		$pt_toggle_label_hover_decls
+	);
 }
 
 // Ribbon: the --sgs-pt-ribbon-bg var (written inline per-plan above) needs a
