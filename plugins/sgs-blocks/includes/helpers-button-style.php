@@ -253,21 +253,48 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 			);
 		} elseif ( function_exists( 'sgs_border_gradient_css' ) && '' !== $colour_border_hover_gradient ) {
 			// Resting border stays flat/unset; only the hover state gains a
-			// gradient ring, scoped to :hover only (this call's own
-			// :focus-visible convention, matching $hover_decls above).
-			$gradient_width      = null !== $border_width_shorthand
+			// gradient ring. sgs_border_gradient_css() has no hover-only mode
+			// (empty $normal_paint short-circuits to '', and its OWN guarded
+			// branch only repaints ::before's background — the mask geometry
+			// lives in the base ::before rule, so a hover paint with no
+			// resting ring has no geometry to fill) — so the ring is painted
+			// via $normal_paint against a selector scoped to the STATE
+			// pseudo-class instead of the element. Touch-safety needs the two
+			// states split, each carrying its own guard treatment: the
+			// `:hover` half through both layers (SGS_HOVER_NOT_TOUCH for
+			// layer 2, sgs_hover_media_wrap() for layer 1 — both from
+			// helpers-hover-state.php, never hand-rolled here), the
+			// `:focus-visible` half — keyboard-reachable, matching
+			// $hover_decls above's convention — left unguarded so a keyboard
+			// user on a touchscreen laptop still sees the ring on focus.
+			$gradient_width = null !== $border_width_shorthand
 				? $border_width_shorthand
 				: ( null !== $border_width ? $border_width . 'px' : '2px' );
+			$selector_parts = array_map( 'trim', explode( ',', $selector ) );
+
 			$hover_only_selector = implode(
 				',',
 				array_map(
 					static function ( $part ) {
-						return $part . ':hover,' . $part . ':focus-visible';
+						return SGS_HOVER_NOT_TOUCH . ' ' . $part . ':hover';
 					},
-					array_map( 'trim', explode( ',', $selector ) )
+					$selector_parts
 				)
 			);
-			$css                .= sgs_border_gradient_css( $hover_only_selector, $colour_border_hover_gradient, null, $gradient_width );
+			$focus_only_selector = implode(
+				',',
+				array_map(
+					static function ( $part ) {
+						return $part . ':focus-visible';
+					},
+					$selector_parts
+				)
+			);
+
+			$css .= sgs_hover_media_wrap(
+				sgs_border_gradient_css( $hover_only_selector, $colour_border_hover_gradient, null, $gradient_width )
+			);
+			$css .= sgs_border_gradient_css( $focus_only_selector, $colour_border_hover_gradient, null, $gradient_width );
 		}
 
 		return $css;
