@@ -62,6 +62,31 @@ function defaultPhpTargets( includesDir ) {
 		.map( ( f ) => path.join( includesDir, f ) );
 }
 
+/**
+ * Every block's own render.php — a SECOND PHP surface for job (b), added
+ * 2026-09-03 (D934/D937 handoff). `defaultPhpTargets()` above only ever read
+ * `includes/`, non-recursively, and never looked at `src/blocks/*\/render.php`
+ * at all — measured, 20 of 31 block render.php files build a raw, unguarded
+ * `:hover` rule. Same shape as `defaultPhpTargets()`: one directory read, one
+ * filter, no recursion (each block owns exactly one render.php).
+ */
+function defaultBlockRenderTargets( blocksDir ) {
+	if ( ! fs.existsSync( blocksDir ) ) {
+		return [];
+	}
+	const targets = [];
+	for ( const entry of fs.readdirSync( blocksDir, { withFileTypes: true } ) ) {
+		if ( ! entry.isDirectory() ) {
+			continue;
+		}
+		const renderPath = path.join( blocksDir, entry.name, 'render.php' );
+		if ( fs.existsSync( renderPath ) ) {
+			targets.push( renderPath );
+		}
+	}
+	return targets;
+}
+
 function runCssCheck( cssDir ) {
 	if ( ! fs.existsSync( cssDir ) ) {
 		return { ranOk: false, reason: `directory does not exist: ${ cssDir }`, findings: [] };
@@ -108,10 +133,10 @@ function runCssCheck( cssDir ) {
 	};
 }
 
-function runPhpCheck( includesDir ) {
-	const targets = defaultPhpTargets( includesDir );
+function runPhpCheck( includesDir, blocksDir ) {
+	const targets = [ ...defaultPhpTargets( includesDir ), ...defaultBlockRenderTargets( blocksDir ) ];
 	if ( 0 === targets.length ) {
-		return { ranOk: false, reason: `no PHP files found under ${ includesDir }`, findings: [] };
+		return { ranOk: false, reason: `no PHP files found under ${ includesDir } or ${ blocksDir }`, findings: [] };
 	}
 
 	let stdout;
@@ -154,12 +179,13 @@ function main() {
 		? path.resolve( cssDirArg )
 		: path.resolve( __dirname, '..', '..', 'build', 'blocks' );
 	const includesDir = path.resolve( __dirname, '..', '..', 'includes' );
+	const blocksDir = path.resolve( __dirname, '..', '..', 'src', 'blocks' );
 
 	console.log( '[hover-guard check] CSS surface:', cssDir );
-	console.log( '[hover-guard check] PHP surface:', includesDir );
+	console.log( '[hover-guard check] PHP surface:', includesDir, 'and', blocksDir );
 
 	const cssResult = runCssCheck( cssDir );
-	const phpResult = runPhpCheck( includesDir );
+	const phpResult = runPhpCheck( includesDir, blocksDir );
 
 	let exitCode = 0;
 

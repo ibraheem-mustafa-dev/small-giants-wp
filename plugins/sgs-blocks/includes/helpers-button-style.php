@@ -61,9 +61,22 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 	 *                         be a comma-separated selector list (e.g. an
 	 *                         id/class-scoped selector for every render
 	 *                         branch that shares this CTA element).
+	 * @param bool   $bg_layer Opt-in (default false, preserves the pre-existing
+	 *                         same-selector emission for every other caller). When
+	 *                         true, the background paint moves onto a `::after` layer
+	 *                         via `sgs_block_background_layer_css()` instead of sharing
+	 *                         the base rule with `color:` — frees `{$prefix}ColourText`
+	 *                         for a future text-gradient sibling (D937/D938/D940 recipe).
+	 * @param bool   $bg_layer_positioned When $bg_layer is true AND the caller's own
+	 *                         selector already carries a non-static `position` in its
+	 *                         stylesheet, pass true to skip re-declaring
+	 *                         `position:relative` (would silently override the existing
+	 *                         positioning) — the caller's stylesheet must then carry
+	 *                         `isolation:isolate` itself (pricing-table badge precedent,
+	 *                         D938).
 	 * @return string CSS text (no <style> wrapper); '' when nothing is set.
 	 */
-	function sgs_button_element_style_css( array $attrs, string $prefix, string $selector ): string {
+	function sgs_button_element_style_css( array $attrs, string $prefix, string $selector, bool $bg_layer = false, bool $bg_layer_positioned = false ): string {
 		$read = static function ( string $base ) use ( $attrs, $prefix ) {
 			$key = $prefix . $base;
 			return isset( $attrs[ $key ] ) ? $attrs[ $key ] : '';
@@ -88,8 +101,8 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		// D636 border-gradient rollout — sibling attributes, gradient-wins-when-set.
 		$colour_border_gradient       = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) $read( 'ColourBorderGradient' ) ) : '';
 		$colour_border_hover_gradient = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) $read( 'ColourBorderHoverGradient' ) ) : '';
-		$font_weight         = (string) $read( 'FontWeight' );
-		$width_type          = (string) $read( 'WidthType' );
+		$font_weight                  = (string) $read( 'FontWeight' );
+		$width_type                   = (string) $read( 'WidthType' );
 
 		$border_style_raw = (string) $read( 'BorderStyle' );
 		$allowed_borders  = array( 'solid', 'dashed', 'dotted', 'none' );
@@ -137,7 +150,9 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		$base_decls = array();
 
 		$bg_decl = sgs_background_paint_decl( $colour_bg, $colour_bg_gradient );
-		if ( '' !== $bg_decl ) {
+		// $bg_layer routes this paint onto a `::after` layer below instead —
+		// see the block after $hover_decls is built.
+		if ( ! $bg_layer && '' !== $bg_decl ) {
 			$base_decls[] = $bg_decl . ';';
 		}
 		if ( '' !== $colour_text ) {
@@ -194,7 +209,7 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		$hover_decls = array();
 
 		$bg_hover_decl = sgs_background_paint_decl( $colour_bg_hover, $colour_bg_hover_gradient );
-		if ( '' !== $bg_hover_decl ) {
+		if ( ! $bg_layer && '' !== $bg_hover_decl ) {
 			$hover_decls[] = $bg_hover_decl . ';';
 		}
 		if ( '' !== $colour_text_hover ) {
@@ -229,6 +244,34 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 			$hover_decl_str = implode( '', $hover_decls );
 			$css           .= sgs_hover_guarded_rule( $hover_selector, $hover_decl_str );
 			$css           .= $focus_selector . '{' . $hover_decl_str . '}';
+		}
+
+		// ── Background `::after` layer (opt-in via $bg_layer) ──────────────
+		// Frees `color:` on the base rule for a future text-gradient sibling —
+		// D937/D938/D940 recipe, applied here for every caller that opts in
+		// rather than duplicated per block.
+		if ( $bg_layer && ( '' !== $bg_decl || '' !== $bg_hover_decl ) ) {
+			if ( $bg_layer_positioned ) {
+				// Caller's own selector already carries a non-static `position`
+				// in its stylesheet — skip sgs_block_background_layer_css()'s
+				// `position:relative` (would override it) and hand-compose the
+				// `::after` layer directly, comma-safe (mirrors D940's fix).
+				$after_selector = implode(
+					',',
+					array_map(
+						static function ( $part ) {
+							return trim( $part ) . '::after';
+						},
+						explode( ',', $selector )
+					)
+				);
+				$css           .= "{$after_selector}{content:\"\";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;" . $bg_decl . ';}';
+				if ( '' !== $bg_hover_decl && $bg_hover_decl !== $bg_decl ) {
+					$css .= sgs_hover_state_rules( $selector, $bg_hover_decl . ';', ':focus-within', '::after' );
+				}
+			} else {
+				$css .= sgs_block_background_layer_css( $selector, $bg_decl, $bg_hover_decl );
+			}
 		}
 
 		// ── Border gradient (D636 border builder) — masked ::before ring,

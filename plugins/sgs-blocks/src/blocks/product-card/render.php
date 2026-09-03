@@ -509,10 +509,15 @@ if ( 'typed' === $source_mode ) {
 	// — NOT the bound `.product-card__view` / `.product-card__add-to-cart`
 	// selectors, which never render in typed markup. Folded into
 	// $sgs_card_typo_css so ONE <style> tag carries every typed-mode override.
+	// bg_layer=true (D940 batch): moves ctaColourBackground onto a `::after`
+	// layer, freeing ctaColourText for a future text-gradient sibling. Not
+	// positioned (confirmed — no `position` on this selector in style.css),
+	// so the helper's own `position:relative` is safe here.
 	$sgs_card_typo_css .= sgs_button_element_style_css(
 		$attributes,
 		'cta',
-		'.' . $sgs_card_uid . ' .sgs-product-card__cta--primary'
+		'.' . $sgs_card_uid . ' .sgs-product-card__cta--primary',
+		true
 	);
 
 	// In-body TRIAL tag box (padding / background / radius / display) — rendered
@@ -606,10 +611,14 @@ if ( 'typed' === $source_mode ) {
 // class (sgs-button--{style}) and those selectors don't exist there, so a typed
 // card must NOT ship this dead <style>. One rule governs the CTA across every
 // bound branch (R-31-9 / CG-9). $sgs_card_typo_tag is REBUILT to fold it in.
+// bg_layer=true (D940 batch): moves ctaColourBackground onto a `::after`
+// layer per branch (D940's comma-split fix), freeing ctaColourText for a
+// future text-gradient sibling. Neither branch is positioned in style.css.
 $sgs_card_typo_css .= sgs_button_element_style_css(
 	$attributes,
 	'cta',
-	'.' . $sgs_card_uid . ' .product-card__view, .' . $sgs_card_uid . ' .product-card__add-to-cart'
+	'.' . $sgs_card_uid . ' .product-card__view, .' . $sgs_card_uid . ' .product-card__add-to-cart',
+	true
 );
 $sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
 

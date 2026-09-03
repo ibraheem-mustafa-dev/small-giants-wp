@@ -85,7 +85,12 @@ if ( $dialog_rules ) {
 // button-element style emitter with every other built-in CTA (helpers-button-style.php)
 // rather than a hand-rolled rule set. Superseded the hardcoded
 // .sgs-modal__close:hover rule that used to live in style.css.
-$close_button_css = sgs_button_element_style_css( $attributes, 'close', $root_sel . ' .sgs-modal__close' );
+// bg_layer=true (D940 batch): moves closeColourBackground onto a `::after`
+// layer, freeing closeColourText for a future text-gradient sibling.
+// bg_layer_positioned=true because `.sgs-modal__close` is already
+// `position:absolute` in style.css (top/right corner placement) — skips the
+// helper's own `position:relative` so it isn't silently overridden.
+$close_button_css = sgs_button_element_style_css( $attributes, 'close', $root_sel . ' .sgs-modal__close', true, true );
 if ( $close_button_css ) {
 	$scoped_css_rules[] = $close_button_css;
 }

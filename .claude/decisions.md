@@ -1,3 +1,67 @@
+## D942 [ROUTINE] — D936 exclusion batch: 6 of 9 rows unblocked via precedent, not fresh design calls
+
+**2026-09-03.** Following D940's council verdict (nothing in the 9-row batch was safe to
+dispatch mechanically), Bean pushed back on treating four rows as open design decisions:
+*"why can't those be sorted by using our helpers or modelling the setup in a similar situation
+in another block?"* — the project's own standing rule
+([[feedback_diff_against_a_surface_where_it_already_works]]). Checking each against real
+precedent resolved all four without inventing anything new:
+
+1. **`nav-menu.itemColour`** — blocked by the existing `hoverStyle='underline'` bar, which owns
+   `.sgs-nav-menu__link::after`. Confirmed via grep that `::before` is completely unused
+   anywhere in nav-menu's own CSS — same free-slot situation `sgs_border_gradient_css()` already
+   exploits elsewhere. Not fixed this session (needs its own `::before`-targeted variant,
+   deferred with the rest of the harder rows); recorded as mechanically solvable, not an open
+   question.
+2. **`form.submitColour` / `modal.triggerColour`** — the blocking class defaults
+   (`:where(.sgs-form__button--primary)`, `.sgs-modal__trigger--primary`) were checked directly:
+   both declare `background-color` only, never `background-image`. Since the operator's own
+   scoped rule already out-specifies the class default today, a future gradient sibling only
+   needs one extra `background-color:transparent` declaration in that same already-winning
+   rule — no need to duplicate the class's actual colour value, no `::after` layer required at
+   all. Not fixed this session (no gradient sibling attribute exists yet to trigger it); recorded
+   as mechanically solvable.
+3. **`nav-menu.burgerColour`** — was a routing mistake, not a design gap. `sgs/icon` already has
+   `sgs_svg_stroke_gradient()` (`includes/helpers-svg-gradient.php`) — a dedicated SVG
+   `<linearGradient>` + `stroke:url(#id)` mechanism, entirely separate from text-clip, built
+   exactly for colouring an icon. The burger glyph is an inline SVG via `currentColor`, not
+   text — it should route through that existing function if/when it gets a gradient option, not
+   `sgs_text_colour_decl()`. Not a "should this even happen" question.
+4. **`product-card.tagTextColour`** — fragile only because `tagBackgroundColour` defaults to
+   empty. `pricing-table.popularBadgeColour`/`Background` (this session, below) had the
+   identical shape and stopped being fragile the moment they got concrete non-empty defaults.
+   Same fix applies here — not built this session, recorded as the precedent to follow.
+
+**Implemented and verified this session** (the 5 rows with no open question at all, following
+the D937/D938 recipe or its shared-helper generalisation):
+
+- **`sgs_button_element_style_css()`** (`includes/helpers-button-style.php`) gained two opt-in
+  parameters, `$bg_layer` and `$bg_layer_positioned`, both defaulting `false` — zero behaviour
+  change for every existing caller (form's prev button, google-reviews' buttons, etc.) that
+  doesn't pass them. When `$bg_layer` is true, the background moves onto `::after` via
+  `sgs_block_background_layer_css()` (or a hand-composed position-safe variant when
+  `$bg_layer_positioned` is also true) instead of sharing the base rule with `color:`. Verified
+  against three shapes with a standalone fixture: default (unchanged), unpositioned+bg_layer
+  (full helper), comma-joined+positioned (hand-composed, D940-safe).
+- **`modal.closeColourText`** — `bg_layer=true, bg_layer_positioned=true` (the close button is
+  `position:absolute` in style.css). style.css's own static default background/hover-background
+  also moved off `.sgs-modal__close` onto `.sgs-modal__close::after` (same reasoning as D938 —
+  leaving it on the base selector would have reintroduced the collision for the untouched-default
+  state). `isolation:isolate` added next to the existing `position:absolute`.
+- **`product-card.ctaColourText`** — both call sites (typed mode, single selector; bound mode,
+  comma-joined `.product-card__view, .product-card__add-to-cart`) now pass `bg_layer=true`.
+  Neither is positioned. The bound-mode case is the exact comma-joined shape D940 fixed —
+  verified both branches independently carry their own `::after`.
+- **`nav-menu.navColour`** and **`pricing-table.ctaColour`** — both hand-migrated directly (not
+  through the shared button helper, since they're not button-shaped), same recipe as D937/D938.
+  `pricing-table.ctaColour` verified via the QA harness; `nav-menu.navColour` verified by
+  isolating the exact CSS-building snippet and running it standalone (the harness's `$content`
+  is always empty and `nav-menu` needs either a real WP menu object or InnerBlocks content to
+  render any markup at all — a harness limitation, not a code concern, noted for future QA work
+  on this block).
+
+All 6 regression-checked together at the end; D937/D938's original two rows still pass unchanged.
+
 ## D941 [INCIDENT] — D939's fix palette was checked against a stale texture, not the live reference; it produced a rainbow the reference doesn't have. Corrected.
 
 **2026-09-03, same session.** Bean, on the D939 result: *"check the colours of the actual

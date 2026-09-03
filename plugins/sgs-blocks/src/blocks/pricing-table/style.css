@@ -78,17 +78,20 @@
 	z-index: 1;
 }
 
-/* Popular badge */
+/* Popular badge. Colour/background are PHP-emitted (popularBadgeColour/
+   Background, render.php) — no static default here, or it would repaint the
+   same selector PHP already owns and reintroduce the text/background
+   collision the D937 recipe exists to remove. `isolation: isolate` contains
+   the background `::after` layer's `z-index: -1` to this element alone. */
 .sgs-pricing-table__badge {
 	position: absolute;
+	isolation: isolate;
 	top: calc(var(--sgs-pricing-padding) * -0.5);
 	right: var(--sgs-pricing-padding);
 	padding: 0.25rem 1rem;
 	border-radius: 999px;
 	font-size: 0.875rem;
 	font-weight: 600;
-	color: var(--wp--preset--color--text-inverse, #fff);
-	background-color: var(--wp--preset--color--accent, #d4a843);
 	text-transform: uppercase;
 	letter-spacing: 0.025em;
 }

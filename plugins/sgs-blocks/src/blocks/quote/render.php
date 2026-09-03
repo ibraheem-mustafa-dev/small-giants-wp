@@ -291,14 +291,20 @@ $css_attrib_margin       = sgs_responsive_css_rule(
 
 $scoped_css = array();
 
+// --- Background paint (rest + hover), routed onto a `::after` layer rather
+// than the root selector. The root's own `color`/`textColourHover` needs to
+// stay free of a same-selector background so a future gradient sibling can
+// use `background-clip:text` without this fill swallowing it (D936).
+$box_bg_decl       = ! $inherit_style ? sgs_background_paint_decl( $bg_colour, $bg_colour_gradient ) : '';
+$box_bg_hover_decl = sgs_background_paint_decl( $hover_bg, $hover_bg_gradient );
+if ( $box_bg_decl || $box_bg_hover_decl ) {
+	$scoped_css[] = sgs_block_background_layer_css( $root_sel, $box_bg_decl, $box_bg_hover_decl );
+}
+
 // --- Hover states ---
 $hover_rules = array();
 if ( $hover_colour ) {
 	$hover_rules[] = 'color:' . sgs_colour_value( $hover_colour );
-}
-$hover_bg_decl = sgs_background_paint_decl( $hover_bg, $hover_bg_gradient );
-if ( $hover_bg_decl ) {
-	$hover_rules[] = $hover_bg_decl;
 }
 if ( $box_shadow_hover ) {
 	$hover_rules[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow_hover, $box_shadow_hover_colour );
@@ -324,10 +330,6 @@ if ( $hover_rules || $has_scale ) {
 $wrapper_decls = array();
 
 if ( ! $inherit_style ) {
-	$bg_decl = sgs_background_paint_decl( $bg_colour, $bg_colour_gradient );
-	if ( $bg_decl ) {
-		$wrapper_decls[] = $bg_decl;
-	}
 	if ( 'none' !== $border_style ) {
 		if ( $has_border_width ) {
 			$bwt             = '' !== $border_width_top ? $border_width_top : '0';

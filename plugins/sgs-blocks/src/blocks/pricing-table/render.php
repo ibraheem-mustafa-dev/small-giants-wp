@@ -467,15 +467,21 @@ if ( '' !== $pt_preset_bg_slug ) {
 // every plan card), so each is emitted ONCE as a scoped rule here rather than
 // per-plan inline — only ribbonColour genuinely varies per plan (handled via
 // the --sgs-pt-ribbon-bg CSS var written inline above).
-if ( $badge_colour || $badge_bg ) {
-	$pt_badge_decls = array();
-	if ( $badge_colour ) {
-		$pt_badge_decls[] = 'color:' . $colour_val( $badge_colour );
-	}
-	if ( $badge_bg ) {
-		$pt_badge_decls[] = 'background-color:' . $colour_val( $badge_bg );
-	}
-	$responsive_css .= $root_sel . ' .sgs-pricing-table__badge{' . implode( ';', $pt_badge_decls ) . '}';
+$pt_badge_sel = $root_sel . ' .sgs-pricing-table__badge';
+if ( $badge_colour ) {
+	$responsive_css .= $pt_badge_sel . '{color:' . $colour_val( $badge_colour ) . ';}';
+}
+if ( $badge_bg ) {
+	// Background painted on its OWN `::after` layer, not the badge element's own
+	// selector — `.sgs-pricing-table__badge` is already `position:absolute`
+	// (style.css), so this skips `sgs_block_background_layer_css()`'s hardcoded
+	// `position:relative` (would override the badge's existing absolute
+	// positioning and break its top/right placement). The badge already
+	// qualifies as a positioned ancestor for an absolutely-positioned `::after`;
+	// style.css carries the matching `isolation:isolate` to contain the
+	// `z-index:-1` layer. Leaves `color` free of a same-selector background for
+	// a future `popularBadgeColourGradient` sibling (D936/D937 recipe).
+	$responsive_css .= $pt_badge_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background-color:' . $colour_val( $badge_bg ) . ';}';
 }
 // D636 Task 1b — sibling gradient attribute wins when set+valid. The
 // block-local $colour_val() closure only ever emits a preset-slug var(), so
@@ -515,15 +521,17 @@ if ( '' !== $feature_colour_effective ) {
 	}
 	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $feature_sel, $feature_colour_effective );
 }
-if ( $cta_colour || $cta_background ) {
-	$pt_cta_decls = array();
-	if ( $cta_colour ) {
-		$pt_cta_decls[] = 'color:' . $colour_val( $cta_colour );
-	}
-	if ( $cta_background ) {
-		$pt_cta_decls[] = 'background-color:' . $colour_val( $cta_background );
-	}
-	$responsive_css .= $root_sel . ' .sgs-pricing-table__cta{' . implode( ';', $pt_cta_decls ) . '}';
+// bg_layer equivalent (D940 batch): background moves onto a `::after` layer
+// so `ctaColour` is free of a same-selector background for a future
+// ctaColourGradient sibling (none exists yet — this just unblocks it).
+// `.sgs-pricing-table__cta` is not positioned in style.css, so the full
+// helper (position:relative + isolation:isolate) is safe here.
+$pt_cta_sel = $root_sel . ' .sgs-pricing-table__cta';
+if ( $cta_background ) {
+	$responsive_css .= sgs_block_background_layer_css( $pt_cta_sel, 'background-color:' . $colour_val( $cta_background ) );
+}
+if ( $cta_colour ) {
+	$responsive_css .= $pt_cta_sel . '{color:' . $colour_val( $cta_colour ) . ';}';
 }
 // Task 2 (cluster A) — titleColour/titleColourGradient sibling pair. The
 // declaration paints onto a COMMA-JOINED selector pair (`.sgs-pricing-table__name`

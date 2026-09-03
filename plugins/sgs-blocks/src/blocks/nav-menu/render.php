@@ -848,19 +848,17 @@ $nav_bg_gradient = sgs_css_gradient_value( $attributes['navBgGradient'] ?? '' );
 $nav_colour   = isset( $attributes['navColour'] ) ? (string) $attributes['navColour'] : '';
 $nav_bg_hover = isset( $attributes['navBgHover'] ) ? (string) $attributes['navBgHover'] : '';
 
-$nav_decls = '';
-if ( '' !== $nav_bg ) {
-	$nav_decls .= sgs_background_paint_decl( $nav_bg, $nav_bg_gradient ) . ';';
+// bg_layer=true equivalent (D940 batch): background moves onto a `::after`
+// layer so `navColour` is free of a same-selector background for a future
+// navColourGradient sibling. $uid_sel is not positioned in style.css, so the
+// full helper (position:relative + isolation:isolate) is safe here.
+$nav_bg_decl       = sgs_background_paint_decl( $nav_bg, $nav_bg_gradient );
+$nav_bg_hover_decl = '' !== $nav_bg_hover ? 'background-color:' . sgs_colour_value( $nav_bg_hover ) : '';
+if ( '' !== $nav_bg_decl || '' !== $nav_bg_hover_decl ) {
+	$css .= sgs_block_background_layer_css( $uid_sel, $nav_bg_decl, $nav_bg_hover_decl );
 }
 if ( '' !== $nav_colour ) {
-	$nav_decls .= 'color:' . sgs_colour_value( $nav_colour ) . ';';
-}
-if ( '' !== $nav_decls ) {
-	$css .= $uid_sel . '{' . $nav_decls . '}';
-}
-
-if ( '' !== $nav_bg_hover ) {
-	$css .= $uid_sel . ':hover{background-color:' . sgs_colour_value( $nav_bg_hover ) . ';}';
+	$css .= $uid_sel . '{color:' . sgs_colour_value( $nav_colour ) . ';}';
 }
 
 // 4b. Item colours (resting). Base is `inherit` in style.css; an unset slug

@@ -154,8 +154,13 @@
  * an unset attribute means this still fires and today's look is unchanged.
  * Duration: fast (150ms) per Group J spec.
  */
+/* Background lives on `::after` (D940 batch), not the element itself — frees
+   `color` for a future closeColourTextGradient sibling without a same-selector
+   background clipping it away. `isolation: isolate` contains the `::after`
+   layer's `z-index: -1` to this element alone. */
 .sgs-modal__close {
 	position: absolute;
+	isolation: isolate;
 	top: 1rem;
 	right: 1rem;
 	z-index: 10;
@@ -167,17 +172,28 @@
 	padding: 0;
 	border: none;
 	border-radius: 50%;
-	background-color: var(--wp--preset--color--border, #e0e0e0);
 	color: var(--wp--preset--color--text, #1e1e1e);
 	cursor: pointer;
-	transition:
-		background-color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
-		color            var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
+	transition: color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.sgs-modal__close::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	border-radius: inherit;
+	pointer-events: none;
+	background-color: var(--wp--preset--color--border, #e0e0e0);
+	transition: background-color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
 :where(.sgs-modal__close:hover) {
-	background-color: var(--wp--preset--color--primary-dark, #0A5B5D);
 	color: var(--wp--preset--color--text-inverse, #ffffff);
+}
+
+:where(.sgs-modal__close:hover::after) {
+	background-color: var(--wp--preset--color--primary-dark, #0A5B5D);
 }
 
 /* :focus-visible ring using SGS focus-ring tokens */

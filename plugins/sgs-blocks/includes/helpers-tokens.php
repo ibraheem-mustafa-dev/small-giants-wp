@@ -875,8 +875,23 @@ function sgs_block_background_layer_css( string $selector, string $paint_decl, s
 		return '';
 	}
 
+	// A comma-joined $selector (e.g. two alternate CTA markup shapes sharing
+	// one style rule) must have `::after` appended to EVERY branch, not just
+	// the last — plain string concatenation would silently drop the layer
+	// from every branch but the final one. Mirrors sgs_hover_state_rules()'s
+	// existing per-branch splitting (helpers-hover-state.php:109).
+	$after_selector = implode(
+		',',
+		array_map(
+			static function ( $part ) {
+				return trim( $part ) . '::after';
+			},
+			explode( ',', $selector )
+		)
+	);
+
 	$css  = "{$selector}{position:relative;isolation:isolate;}";
-	$css .= "{$selector}::after{content:\"\";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;";
+	$css .= "{$after_selector}{content:\"\";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;";
 	$css .= $paint_decl . ';}';
 
 	if ( '' !== $hover_paint_decl && $hover_paint_decl !== $paint_decl ) {
