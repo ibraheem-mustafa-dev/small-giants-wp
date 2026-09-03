@@ -254,9 +254,19 @@ pink-magenta / orange, never green/yellow/cyan — and choosing a new 4-stop pal
 interpolation path was verified in a Python simulation of the actual OKLCH code BEFORE shipping,
 not just eyeballed from the four endpoint hues. Applied to the demo page via REST, no shader
 change either time. Screenshot-verified against the fresh reference; `fidelity:compare` re-run
-twice, unaffected both times (3/3, unchanged numbers). The flat 4-stop 1D gradient vs the
-reference's 2D-varying texture remains a named, deliberately unbuilt architectural limit — no
-design gate opened.
+twice, unaffected both times (3/3, unchanged numbers).
+
+✅ **The 1D-vs-2D texture gap named above is CLOSED (D944, 2026-09-03).** Bean spotted it by eye
+and pushed the investigation: their shader samples the palette texture on BOTH uv axes (confirmed
+reading their fragment shader); ours varied only horizontally. A first candidate fix (normalised
+k-means colour-region blend) was measured against the reference's own palette-a.png and found
+structurally wrong — 0% near-white/near-pure vs the reference's real 0.8%/2.4% — because a
+normalised blend can never show true white or true single-colour purity. The real mechanism is
+alpha-COMPOSITED paint over white, not an averaged blend. `buildFieldImageData()` (procedural
+noise-warped blobs, real alpha-over compositing, zero dependency on the reference's asset) matches
+the reference's measured category (mean/white%/std all close), verified at the TEXTURE level per
+Bean's own correction that a live-page comparison is too confounded to be the primary gate.
+Geometry/shader untouched; deployed to the canary, all gates green.
 
 ### ▶ NEXT — Bean's named visual sign-off (the only open item)
 

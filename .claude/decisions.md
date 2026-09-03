@@ -1,3 +1,58 @@
+## D944 [ROUTINE] — generative-background: 1D gradient texture replaced with an alpha-composited organic colour field
+
+**2026-09-03.** Bean pushed past the D939/D941 colour fix with a sharper observation: *"theirs has
+colour differences between the fibres of the cloth, the colour isn't a gradient of horizontal
+strips as the variance occurs at different heights and widths."* Investigated the reference's
+actual code, not just its look.
+
+**Proven, not assumed.** `shaders/39798.glsl:265` samples its palette texture as
+`texture2D(u_paletteTexture, vec2(uv.x, uv.y))` — BOTH axes. Our `buildGradientImageData()`
+painted one interpolated row and copied it down every `y` — colour could only ever track
+horizontal position, regardless of how the fold geometry twisted vertically (the vertex shader's
+own `v_uv.y` genuinely drives two of the three fold rotations, in both engines — the geometry was
+always fine; only the texture was flat).
+
+**A second, deeper measurement correction mid-session.** Bean then asked for the actual per-colour
+distribution/weight, not just "is it 2D": *"theirs has some areas where it's completely white...
+ours is literally a mix of purple and orange."* Measured `palette-a.png` directly — a per-pixel
+"how much ink is here" proxy (`1 - min(R,G,B)/255`) has mean 0.436, **0.8% near-white, 2.4%
+near-fully-saturated, std-dev 0.168**. A NORMALISED weighted blend (candidate fix built first —
+k-means colour-region masks, softmax weights always summing to 100% colour) measured 0%/0%/std
+0.06 on the same test — structurally incapable of true white or true single-colour purity, no
+matter how it's tuned, because every pixel is forced to blend some amount of all 4 colours.
+
+**Root cause: the reference is alpha-COMPOSITED (paint over a white canvas, real coverage/opacity
+per blob), not a normalised weighted AVERAGE.** Rebuilt `buildFieldImageData()` accordingly:
+procedurally-placed colour blobs (deterministic per the 4 client colours, so re-theming reproduces
+predictably), edges warped by a small value-noise field for organic/torn boundaries (not smooth
+circles), composited via real alpha-over blending in linear-light sRGB starting from white. Our
+own generated output measured mean 0.477 / near-white 5.6% / std 0.156 — same category as the
+reference, verified the same way, not eyeballed.
+
+**Verification discipline, per Bean's explicit correction of method:** *"it's easy to compare
+colour distribution on 2 square PNGs, it's not easy to do it on live pages with content and other
+post-processing that could trick us into thinking a match is off."* Validated primarily at the
+TEXTURE level (our generated canvas vs their palette PNG, same histogram, apples-to-apples) —
+extracted via a standalone Playwright harness reading the built module's canvas directly, not the
+full live page. The live screenshot (posted for context, not as the pass/fail gate) shows visibly
+richer colour with the fine striation texture now actually legible against a varied base, where it
+read as flat before.
+
+**No dependency on the reference's asset.** Blob positions/sizes/warp are entirely our own
+procedural placement — nothing extracted from or derived from `palette-a.png`'s actual content.
+Bean separately confirmed the mask-extraction alternative (splitting their file into recolourable
+region masks) is not a legal concern for this project (researched earlier), but the procedural
+route was built because it matched the measured target category equally well without any asset
+dependency at all.
+
+**Geometry/shader untouched.** This only replaces the 2D colour-source canvas
+(`fx-generative-background.js`) the WebGL shader samples as `u_texture` — `verify-transform.mjs`
+and `fidelity-compare.mjs` (which use the reference's own `palette-a.png` as texture on BOTH sides
+of the comparison, never this module's output) are unaffected by construction, re-run and
+confirmed unchanged.
+
+**Outstanding:** Bean's named visual sign-off, still the standing acceptance gate.
+
 ## D943 [ROUTINE] — D936 batch closed (all 9 rows); hover-guard scanner's function-body blind spot fixed
 
 **2026-09-03.** Two independent workstreams, dispatched in parallel (`/dispatching-parallel-agents`,

@@ -201,6 +201,22 @@ Screenshot-verified against the fresh reference; `npm run fidelity:compare` re-r
 unaffected both times (3/3, unchanged numbers — that instrument measures shape, not colour).
 Full account: D939 + D941 (read together).
 
+✅ **1D gradient texture replaced with an alpha-composited organic field (D944, 2026-09-03).**
+Bean pushed past the colour fix to a real architectural gap he spotted by eye: their palette
+varies in BOTH directions (the reference shader samples `texture2D(u_paletteTexture, uv.x, uv.y)`
+— confirmed by reading their fragment shader directly), while `buildGradientImageData()` painted
+one row and copied it down every `y`. A second, sharper correction mid-build: a NORMALISED
+weighted blend (candidate fix, built first) can never show true white or true single-colour
+purity because every pixel is forced to sum to 100% colour — measured against the reference's own
+palette-a.png (0.8% near-white / 2.4% near-pure / std 0.168) it scored 0%/0%/std 0.06. The real
+mechanism is alpha-COMPOSITED paint over white, not an averaged blend. `buildFieldImageData()`
+(procedural noise-warped blobs, alpha-over in linear sRGB, no dependency on the reference's asset)
+measures mean 0.477/near-white 5.6%/std 0.156 — same category, verified at the TEXTURE level
+(generated canvas vs their PNG, apples-to-apples) per Bean's own methodological correction that a
+live-page comparison is too confounded by geometry/shader/content to be the primary gate. Geometry
+untouched; `fidelity-compare.mjs` unaffected by construction (it uses the reference's own texture
+on both sides). Full account: D944.
+
 **Still outstanding: Bean's NAMED visual sign-off against the "B-movie 3D VFX" risk.** No number
 closes that — it is his eye, and the acceptance criteria say so.
 
