@@ -1,12 +1,12 @@
 -- SGS framework knowledge-base schema
--- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-08-24
+-- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-09-03
 -- by: python dbschema/check_schema_drift.py --regenerate
 -- Do NOT hand-edit: byte-fidelity to the live schema is the entire point.
 -- Regenerate rather than patch, then run: python dbschema/check_schema_drift.py --check
 --
 -- EXCLUDED: SQLite-internal objects (sqlite_*) — SQLite creates these itself and
 -- REFUSES an explicit CREATE ('object name reserved for internal use').
--- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_components_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_animation_tokens_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex_attribute_gap_candidates_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_excluded_properties_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_preset_implications_1, sqlite_autoindex_fx_effects_1, sqlite_autoindex_schema_migrations_1
+-- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_components_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_animation_tokens_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_excluded_properties_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_preset_implications_1, sqlite_autoindex_fx_effects_1, sqlite_autoindex_schema_migrations_1
 
 -- table: animation_tokens
 CREATE TABLE animation_tokens (
@@ -29,17 +29,6 @@ CREATE TABLE array_item_schema (
                 field_order  INTEGER, role TEXT,
                 PRIMARY KEY (block_slug, array_attr, field_key)
             );
-
--- table: attribute_gap_candidates
-CREATE TABLE attribute_gap_candidates (
-    id             INTEGER PRIMARY KEY AUTOINCREMENT,
-    block_slug     TEXT    NOT NULL,
-    attr_name      TEXT    NOT NULL,
-    stem           TEXT,
-    proposed_action TEXT,
-    created_at     TEXT    DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (block_slug, attr_name)
-);
 
 -- table: block_attributes
 CREATE TABLE block_attributes (

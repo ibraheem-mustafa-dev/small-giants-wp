@@ -5,7 +5,7 @@ Routes every CSS rule from a mockup to exactly one of four destinations:
   D0 — Global / reset rules  → unscoped in variation CSS (top of file)
   D1 — Typed-attr lift       → block attrs with token-snap (per-section JSON sidecar)
   D2 — Wrapper CSS fallback  → scoped to .page-id-N in variation CSS
-  D3 — Gap candidates        → write to attribute_gap_candidates DB + D2 fallback
+  D3 — Gap candidates        → D2 fallback
 
 Hard rule (Spec 16 §R5): every CSS rule MUST hit exactly one of D0/D1/D2/D3.
 No silent drops. Malformed rules are logged and routed to D2 rather than dropped.
@@ -689,45 +689,6 @@ def _infer_role(css_prop: str) -> str:
     if css_prop in ("padding", "margin", "gap", "top", "right", "bottom", "left"):
         return "spacing"
     return "visual"
-
-
-# ---------------------------------------------------------------------------
-# D3 DB write helper
-# ---------------------------------------------------------------------------
-
-def write_d3_to_db(d3_entries: list[dict], sgs_db_path: Path) -> int:
-    """Write D3 gap candidates to sgs-framework.db.attribute_gap_candidates.
-
-    Uses INSERT OR IGNORE on (block_slug, attr_name) unique constraint so
-    running the router multiple times is idempotent.
-
-    Returns the number of rows actually inserted (0 for duplicates).
-    """
-    if not d3_entries:
-        return 0
-
-    db = _get_db()
-    inserted = 0
-    for entry in d3_entries:
-        try:
-            proposed_attr = db.propose_attr_name(
-                entry["block_slug"],
-                entry["css_property"],
-                entry.get("source_class", ""),
-            )
-            db.write_attribute_gap_candidate(
-                block_slug=entry["block_slug"],
-                css_property=entry["css_property"],
-                raw_value=entry.get("raw_value", ""),
-                source_class=entry.get("source_class", ""),
-                source_run_id=entry.get("run_id", ""),
-                proposed_attr=proposed_attr,
-            )
-            inserted += 1
-        except Exception as exc:  # noqa: BLE001
-            log.warning("css_router: D3 DB write failed for %s.%s: %s",
-                        entry.get("block_slug"), entry.get("css_property"), exc)
-    return inserted
 
 
 # ---------------------------------------------------------------------------

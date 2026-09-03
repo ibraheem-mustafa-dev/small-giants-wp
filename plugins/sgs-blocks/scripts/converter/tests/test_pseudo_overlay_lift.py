@@ -3,7 +3,7 @@
 Guards:
   1. rt-pseudo-before (sgs/info-box, no overlay attr family) stays an HONEST
      GAP: every pseudo declaration is captured (never silently dropped) and
-     written to attribute_gap_candidates — never inlined.
+     recorded via content_gap_collector — never inlined.
   2. A container-KIND block that DOES declare the overlay family
      (sgs/container) LIFTS a linear-gradient ::before onto
      overlayGradient/overlayGradientAngle/overlayGradientFrom/
@@ -13,7 +13,6 @@ Guards:
   4. The selector-stripper isolates pseudo-elements from state pseudo-classes
      and plain selectors (mirrors test_state_strip_selector_shapes).
 """
-import sqlite3
 import sys
 from pathlib import Path
 
@@ -23,6 +22,7 @@ import pytest  # noqa: E402
 from bs4 import BeautifulSoup  # noqa: E402
 
 from converter.db import db_lookup  # noqa: E402
+from converter.services import content_gap_collector  # noqa: E402
 from converter.services.pseudo_overlay import (  # noqa: E402
     _strip_pseudo_element_from_selector,
     collect_pseudo_decls_for_element,
@@ -31,6 +31,18 @@ from converter.services.pseudo_overlay import (  # noqa: E402
 )
 from converter.services.css_pass import _build_css_attrs  # noqa: E402
 from converter.context import Recognition  # noqa: E402
+
+
+def _gapped_props(gaps: list[dict]) -> set[str]:
+    """Extract the css-property name from each recorded content-gap's detail
+    string (format: "unmapped pseudo-element css: {prop}={val!r}")."""
+    out = set()
+    for g in gaps:
+        detail = g["detail"]
+        marker = "unmapped pseudo-element css: "
+        if marker in detail:
+            out.add(detail.split(marker, 1)[1].split("=", 1)[0])
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -59,21 +71,6 @@ _INFO_BOX_RULES = {
 
 def _info_box_section():
     return BeautifulSoup(_INFO_BOX_HTML, "html.parser").find("section")
-
-
-def _cleanup_gap_rows(block_slug: str) -> None:
-    """Delete any attribute_gap_candidates rows this test wrote, so repeated
-    runs don't accumulate stale rows in the shared framework DB (INSERT OR
-    IGNORE means a stale row from a prior failed run would otherwise mask a
-    genuine new-row assertion)."""
-    conn = sqlite3.connect(db_lookup.SGS_DB)
-    try:
-        conn.execute(
-            "DELETE FROM attribute_gap_candidates WHERE block_slug = ?", (block_slug,)
-        )
-        conn.commit()
-    finally:
-        conn.close()
 
 
 # ---------------------------------------------------------------------------
@@ -214,87 +211,62 @@ def test_parse_unmappable_returns_none():
 
 def test_resolve_lifts_onto_container_overlay_family():
     """sgs/container declares the overlay family — a gradient ::before lifts."""
-    _cleanup_gap_rows("sgs/container")
-    try:
-        pseudo_decls = {
-            "before": {
-                "background": "linear-gradient(135deg, #5a28a0 0%, #1464c8 100%)",
-                "content": '""',
-                "z-index": "0",
-            }
+    content_gap_collector.clear()
+    pseudo_decls = {
+        "before": {
+            "background": "linear-gradient(135deg, #5a28a0 0%, #1464c8 100%)",
+            "content": '""',
+            "z-index": "0",
         }
-        attrs = resolve_pseudo_overlay("sgs/container", pseudo_decls, ".sgs-info-box")
-        assert attrs["overlayGradient"] == (
-            "linear-gradient(135deg, #5a28a0 0%, #1464c8 100%)"
-        )
+    }
+    attrs = resolve_pseudo_overlay("sgs/container", pseudo_decls, ".sgs-info-box")
+    assert attrs["overlayGradient"] == (
+        "linear-gradient(135deg, #5a28a0 0%, #1464c8 100%)"
+    )
 
-        # The NON-mappable pseudo props (content, z-index) still got an honest
-        # gap row on sgs/container — mapping `background` doesn't excuse the rest.
-        conn = sqlite3.connect(db_lookup.SGS_DB)
-        try:
-            rows = conn.execute(
-                "SELECT stem FROM attribute_gap_candidates WHERE block_slug = ?",
-                ("sgs/container",),
-            ).fetchall()
-        finally:
-            conn.close()
-        gapped_props = {r[0] for r in rows}
-        assert "content" in gapped_props
-        assert "z-index" in gapped_props
-        assert "background" not in gapped_props, "mapped property must NOT also gap"
-    finally:
-        _cleanup_gap_rows("sgs/container")
+    # The NON-mappable pseudo props (content, z-index) still got an honest
+    # gap recorded on sgs/container — mapping `background` doesn't excuse the rest.
+    gapped_props = _gapped_props(content_gap_collector.flush())
+    assert "content" in gapped_props
+    assert "z-index" in gapped_props
+    assert "background" not in gapped_props, "mapped property must NOT also gap"
 
 
 def test_resolve_solid_colour_onto_container():
-    _cleanup_gap_rows("sgs/container")
-    try:
-        pseudo_decls = {"before": {"background": "rgba(10, 10, 10, 0.6)"}}
-        attrs = resolve_pseudo_overlay("sgs/container", pseudo_decls, ".sgs-info-box")
-        assert attrs["backgroundOverlayColour"] == "rgba(10, 10, 10, 0.6)"
-        # D581: no separate opacity attr — the 0.6 alpha rides in the colour.
-        assert "backgroundOverlayOpacity" not in attrs
-    finally:
-        _cleanup_gap_rows("sgs/container")
+    pseudo_decls = {"before": {"background": "rgba(10, 10, 10, 0.6)"}}
+    attrs = resolve_pseudo_overlay("sgs/container", pseudo_decls, ".sgs-info-box")
+    assert attrs["backgroundOverlayColour"] == "rgba(10, 10, 10, 0.6)"
+    # D581: no separate opacity attr — the 0.6 alpha rides in the colour.
+    assert "backgroundOverlayOpacity" not in attrs
 
 
 def test_resolve_honest_gap_when_block_has_no_overlay_family():
     """The rt-pseudo-before fixture's premise: sgs/info-box has NO overlay attr
     family at all → every pseudo decl (including background) is an honest gap,
     never silently dropped, never lifted onto a non-existent attr."""
-    _cleanup_gap_rows("sgs/info-box")
-    try:
-        pseudo_decls = {
-            "before": {
-                "background": "linear-gradient(135deg, rgba(90,40,160,0.55) 0%, rgba(20,100,200,0.35) 100%)",
-                "content": '""',
-                "position": "absolute",
-                "inset": "0",
-                "z-index": "0",
-                "pointer-events": "none",
-            }
+    content_gap_collector.clear()
+    pseudo_decls = {
+        "before": {
+            "background": "linear-gradient(135deg, rgba(90,40,160,0.55) 0%, rgba(20,100,200,0.35) 100%)",
+            "content": '""',
+            "position": "absolute",
+            "inset": "0",
+            "z-index": "0",
+            "pointer-events": "none",
         }
-        attrs = resolve_pseudo_overlay("sgs/info-box", pseudo_decls, ".sgs-info-box")
-        assert attrs == {}, "sgs/info-box has no overlay attrs — nothing should be lifted"
+    }
+    attrs = resolve_pseudo_overlay("sgs/info-box", pseudo_decls, ".sgs-info-box")
+    assert attrs == {}, "sgs/info-box has no overlay attrs — nothing should be lifted"
 
-        conn = sqlite3.connect(db_lookup.SGS_DB)
-        try:
-            rows = conn.execute(
-                "SELECT stem, proposed_action FROM attribute_gap_candidates WHERE block_slug = ?",
-                ("sgs/info-box",),
-            ).fetchall()
-        finally:
-            conn.close()
-        gapped_props = {r[0] for r in rows}
-        # Every pseudo property (including background) must be gapped — none silently dropped.
-        assert gapped_props == {
-            "background", "content", "position", "inset", "z-index", "pointer-events",
-        }
-        # No inline-style cheat text anywhere in the proposed_action strings.
-        for _stem, action in rows:
-            assert 'style="' not in action
-    finally:
-        _cleanup_gap_rows("sgs/info-box")
+    gaps = content_gap_collector.flush()
+    gapped_props = _gapped_props(gaps)
+    # Every pseudo property (including background) must be gapped — none silently dropped.
+    assert gapped_props == {
+        "background", "content", "position", "inset", "z-index", "pointer-events",
+    }
+    # No inline-style cheat text anywhere in the recorded detail strings.
+    for g in gaps:
+        assert 'style="' not in g["detail"]
 
 
 # ---------------------------------------------------------------------------
@@ -324,18 +296,14 @@ def _info_box_recognition() -> Recognition:
     not db_lookup.SGS_DB.exists(), reason="requires the live sgs-framework.db"
 )
 def test_build_css_attrs_lifts_gradient_overlay_for_container():
-    _cleanup_gap_rows("sgs/container")
-    try:
-        section = _info_box_section()
-        merged = _build_css_attrs(_container_recognition(), section, _INFO_BOX_RULES, is_root=True)
-        assert merged.get("overlayGradient") == (
-            "linear-gradient(135deg, rgba(90, 40, 160, 0.55) 0%, "
-            "rgba(20, 100, 200, 0.35) 100%)"
-        )
-        # No inline style carrying the overlay — attrs only (R-22-6).
-        assert "style" not in merged or "gradient" not in str(merged.get("style", ""))
-    finally:
-        _cleanup_gap_rows("sgs/container")
+    section = _info_box_section()
+    merged = _build_css_attrs(_container_recognition(), section, _INFO_BOX_RULES, is_root=True)
+    assert merged.get("overlayGradient") == (
+        "linear-gradient(135deg, rgba(90, 40, 160, 0.55) 0%, "
+        "rgba(20, 100, 200, 0.35) 100%)"
+    )
+    # No inline style carrying the overlay — attrs only (R-22-6).
+    assert "style" not in merged or "gradient" not in str(merged.get("style", ""))
 
 
 @pytest.mark.skipif(
@@ -345,27 +313,16 @@ def test_build_css_attrs_gaps_pseudo_for_info_box():
     """The rt-pseudo-before regression, exercised through the real dispatch
     (_build_css_attrs) rather than resolve_pseudo_overlay directly — proves
     the wiring in css_pass.py actually fires on the live call path."""
-    _cleanup_gap_rows("sgs/info-box")
-    try:
-        section = _info_box_section()
-        merged = _build_css_attrs(_info_box_recognition(), section, _INFO_BOX_RULES, is_root=True)
-        # sgs/info-box has no overlay attrs — nothing overlay-shaped in merged.
-        assert "overlayGradient" not in merged
-        assert "backgroundOverlayColour" not in merged
+    content_gap_collector.clear()
+    section = _info_box_section()
+    merged = _build_css_attrs(_info_box_recognition(), section, _INFO_BOX_RULES, is_root=True)
+    # sgs/info-box has no overlay attrs — nothing overlay-shaped in merged.
+    assert "overlayGradient" not in merged
+    assert "backgroundOverlayColour" not in merged
 
-        conn = sqlite3.connect(db_lookup.SGS_DB)
-        try:
-            rows = conn.execute(
-                "SELECT stem FROM attribute_gap_candidates WHERE block_slug = ?",
-                ("sgs/info-box",),
-            ).fetchall()
-        finally:
-            conn.close()
-        gapped_props = {r[0] for r in rows}
-        assert "background" in gapped_props
-        assert "content" in gapped_props
-    finally:
-        _cleanup_gap_rows("sgs/info-box")
+    gapped_props = _gapped_props(content_gap_collector.flush())
+    assert "background" in gapped_props
+    assert "content" in gapped_props
 
 
 # ---------------------------------------------------------------------------
@@ -408,6 +365,6 @@ def test_parse_gradient_edge_cases_map_verbatim(value):
     ],
 )
 def test_parse_gradient_unmappable_returns_none(value):
-    # None → the caller writes an honest attribute_gap_candidates row, never a
-    # garbage overlay attr (Spec 31 §3.A step 8).
+    # None → the caller records an honest content gap, never a garbage
+    # overlay attr (Spec 31 §3.A step 8).
     assert parse_overlay_background(value) is None

@@ -475,13 +475,7 @@ def stage_0_7_css_lift(mockup_path: Path, client: str, run_dir: Path,
         out_path = _client_variation_css_path(client, run_dir)
         total_chars = 0
 
-    # ---- 5. Write D3 gap candidates to sgs-framework.db ----
     d3_inserted = 0
-    if d3_entries:
-        try:
-            d3_inserted = _css_router_mod.write_d3_to_db(d3_entries, sgs_db_path=None)
-        except Exception as exc:  # noqa: BLE001
-            warnings.append(f"D3 gap candidate DB write failed: {exc}")
 
     output = {
         "output_path": str(out_path.relative_to(REPO)) if out_path.exists() else "",

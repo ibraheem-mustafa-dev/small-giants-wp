@@ -1566,7 +1566,6 @@ for the verb you happen to have in mind.
 | `fanout-overlay-sibling-attrs.py` | manifest+npm | D6 (hover + responsive-tier siblings) and |
 | `fingerprint-builder/audit-attr-vocabulary-v2.py` | — | Audit v2 — multi-suffix decomposition. |
 | `fix-spacing-preset-names.py` | — | Renames numeric spacing-preset ``name`` fields (e.g. "2".."9") in per-client |
-| `gap-detection/detect.py` | manifest+script-call+skill | Spec 19 Stage 10 — Gap Detection |
 | `generate-attr-role-map.py` | manifest+script-call | Spec 35 orphan-triage support. Dumps `block_attributes.role` for every |
 | `generate-block-reference.py` | script-call | SGS Blocks Reference Generator |
 | `generate-db-catalogue.py` | script-call | DERIVE the DB column catalogue in .claude/dev-setup.md. |
@@ -1753,7 +1752,6 @@ for the verb you happen to have in mind.
 | `orchestrator/preflight_chain.py` | script-call+skill | - Spec 31 Phase 5e.1 + 5e.2. |
 | `orchestrator/register_patterns.py` | hook+script-call | - Spec 31 Phase 6 Step 0 +REGISTER tail. |
 | `orchestrator/stage1_boundary_hook.py` | hook+script-call+skill | - Spec 31 Phase 5c.4 Stage 1 BOUNDARY hook. |
-| `orchestrator/stage_attribute_promotion.py` | manifest+skill | Operator-driven attribute-gap promotion stage. |
 | `orchestrator/staged_merge.py` | hook+script-call+skill | - Spec 31 Phase 5e.3 staged-merge orchestrator. |
 | `orchestrator/staged_output.py` | script-call+skill | - Spec 31 Phase 5b.1 staged-output dir convention. |
 | `orchestrator/surface_pipeline_logs.py` | script-call | Surface structured per-severity logs from trace.jsonl at pipeline end. |
@@ -1771,7 +1769,6 @@ for the verb you happen to have in mind.
 | `orchestrator/test_preflight_chain.py` | — | Spec 31 Phase 5e.1 + 5e.2 self-test for preflight_chain.py. |
 | `orchestrator/test_register_patterns.py` | — | Spec 31 Phase 6 Step 0 -- register_patterns.py contract tests. |
 | `orchestrator/test_stage1_boundary_hook.py` | — | Spec 31 Phase 5c.4 self-test for stage1_boundary_hook. |
-| `orchestrator/test_stage_attribute_promotion.py` | — | Tests for stage_attribute_promotion.py — P2.ii operator-driven promotion CLI. |
 | `orchestrator/test_staged_merge.py` | — | Spec 31 Phase 5e.3 self-test for staged_merge.py. |
 | `orchestrator/test_staged_output.py` | — | Spec 31 Phase 5b.1 self-test for staged_output.py. |
 | `orchestrator/test_validate_stage_artifact.py` | — | Spec 31 Phase 5b.2 self-test for validate-stage-artifact.py. |
@@ -2223,7 +2220,6 @@ python plugins/sgs-blocks/scripts/generate-db-catalogue.py
 
 **New modules:**
 - `plugins/sgs-blocks/scripts/orchestrator/css_router.py` (661 LOC) — Spec 22 §FR-22-5 four-destination router (D0/D1/D2/D3)
-- `plugins/sgs-blocks/scripts/orchestrator/stage_attribute_promotion.py` — operator-driven CLI for promoting gap candidates into block.json schema
 - `plugins/sgs-blocks/scripts/orchestrator/essence_match_detector.py` — cv2 walker tier for essence-match-with-differences → block-variation emit
 - `plugins/sgs-blocks/includes/class-variation-rest.php` — sgs/v1/active-variation REST endpoint
 - `plugins/sgs-blocks/includes/variations/class-sgs-block-variations.php` — PHP variations loader
