@@ -1,0 +1,44 @@
+{
+	"_comment_schema": [
+		"Declared data for php-hover-scan.php's cross-file resolution job. NOT",
+		"a hardcoded if/else chain — this file is the ONLY place a shared CSS",
+		"emitter's shape is named; the scanner reads it generically. Adding a",
+		"new emitter to detect means adding a row here, never editing the",
+		"scanner's control flow.",
+		"",
+		"Each key is a shared CSS-emitting function name (as it appears in",
+		"includes/*.php, NOT includes/helpers-hover-state.php itself — that",
+		"file is the guard DEFINER and is exempt from every job in this",
+		"scanner, cross-file included).",
+		"",
+		"selector_param_index    (int) 0-based position of the argument that",
+		"                        carries a CSS SELECTOR string. Required.",
+		"guard_gate_param_index  (int) 0-based position of the argument whose",
+		"                        value decides whether the callee's guarded",
+		"                        branch runs for that selector. Required.",
+		"guard_skip_literals     (string[]) exact call-site token text (case-",
+		"                        insensitive) that PROVES the guarded branch",
+		"                        is skipped when passed at guard_gate_param_index",
+		"                        -- e.g. the bare PHP keyword \"null\", or an",
+		"                        explicit empty-string literal. Only single-",
+		"                        token, unambiguous spellings belong here --",
+		"                        this is a lookup table of PROOFS, not a",
+		"                        pattern-match guess."
+	],
+	"sgs_border_gradient_css": {
+		"selector_param_index": 0,
+		"guard_gate_param_index": 2,
+		"guard_skip_literals": [ "null" ],
+		"_defined_in": "includes/helpers-tokens.php",
+		"_signature": "sgs_border_gradient_css( string $selector, string $normal_paint, ?string $hover_paint = null, string $width = '2px' )",
+		"_why": "with $hover_paint literally null, sgs_border_gradient_css()'s own two sgs_hover_state_rules() calls never run, so a hover-carrying $selector reaches the function's unconditional base-rule emission ({$selector}{...} / {$selector}::before{...}) with no guard applied anywhere in the call."
+	},
+	"sgs_block_background_layer_css": {
+		"selector_param_index": 0,
+		"guard_gate_param_index": 2,
+		"guard_skip_literals": [ "''", "\"\"" ],
+		"_defined_in": "includes/helpers-tokens.php",
+		"_signature": "sgs_block_background_layer_css( string $selector, string $paint_decl, string $hover_paint_decl = '' )",
+		"_why": "same shape as sgs_border_gradient_css, with the empty string as its literal skip value instead of null (its default). Included to prove the registry is genuinely reusable across more than one function, not a single hardcoded case dressed as data. Zero real call sites exist for this function at the time this registry was written (grep-confirmed), so it currently never fires -- kept here for when a future caller is added."
+	}
+}

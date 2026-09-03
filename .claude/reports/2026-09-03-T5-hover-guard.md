@@ -532,3 +532,231 @@ the updated classification rules too.
   reproduction scope.
 - No changes outside `scripts/hover-guard/`. No git commands run. No `package.json`/`src/`/
   `includes/` edits.
+
+---
+
+## 11. Update 2026-09-03 — cross-file PHP resolution (closes the flagged blind spot)
+
+**Prerequisite note.** Between my last update and this one, `plugins/sgs-blocks/scripts/hover-guard/`
+was committed and pushed by another process (commit `2a9cf59e7`), and a third ruling — approved by
+the repo owner — landed in `classify.js` on disk: `background-position` moved into
+`MOTION_PROPERTIES`, because `business-info`'s attribution link is a matched pair (a generic
+`:hover` dims to `opacity: 0.8`; a more specific `:hover` cancels it via `background-position` +
+`opacity: 1`), and guarding only one half would leave the link visibly dimmed on touch with nothing
+to undo it. I re-read `classify.js` fresh before touching anything (files shared with another
+session cannot be assumed unchanged) and confirmed it on disk exactly as described. All fixtures
+were rebuilt from the current `src/` before any of this section's verification ran.
+
+### Verified before building (per this repo's prove-the-cause rule)
+
+Read both files named in the brief directly:
+- `includes/helpers-button-style.php:261-270` — in the `elseif` branch (only
+  `$colour_border_hover_gradient` set), builds `$hover_only_selector` via `array_map()` appending
+  `':hover,' . $part . ':focus-visible'` to each selector part, then calls
+  `sgs_border_gradient_css( $hover_only_selector, $colour_border_hover_gradient, null, $gradient_width )`
+  — **the third argument, `$hover_paint`, is the literal PHP keyword `null`.**
+- `includes/helpers-tokens.php:1217-1241`, `sgs_border_gradient_css()` — the guard-emitting branch
+  (`sgs_hover_state_rules()` × 2) is gated on `null !== $hover_paint && ...`; with a literal `null`
+  passed, that branch never runs, and the function's UNCONDITIONAL base-rule emission
+  (`"{$selector}{border-color:transparent;...}"` / `"{$selector}::before{...}"`, no guard call
+  anywhere) is all that fires — for a `$selector` that already carries `:hover`.
+
+Confirmed: a real, unguarded hover rule reaches production, and it's invisible to Job A because
+neither file's own function body contains a `:hover` literal AND lacks a guard call simultaneously
+— `helpers-button-style.php`'s enclosing function DOES build a `:hover` literal (in the `array_map`
+closure) but never calls a guard function directly (it calls `sgs_border_gradient_css()` instead),
+so the OLD per-function-body scan actually already fails this function under Job A's own rule —
+verified: `sgs_button_element_style_css()` shows `has_hover_literal: true, calls_guard: false` in
+Job A's own output, i.e. **Job A independently flags this same function for an unrelated reason**
+(it hand-builds `:hover` and calls a non-guard-named helper). That's a real, pre-existing Job A
+finding too, separate from the specific cross-file mechanism this update targets — the brief's
+"blind spot" is specifically about a function whose OWN body has NO `:hover` literal at all (so Job
+A has nothing to trigger on), which is the general case Job B needs to cover; this particular
+example happens to also trip Job A, which is not a contradiction, just two different detectors both
+correctly finding something.
+
+**Also enumerated every real call site of `sgs_border_gradient_css()`** (`grep -rn` across
+`includes/*.php`) before writing the registry, to know exactly what the detector would need to get
+right without false-positiving:
+
+| Call site | Selector argument | Selector carries `:hover`? | Gate argument | Expected outcome |
+|---|---|---|---|---|
+| `class-sgs-container-wrapper.php:2151` | `'.' . $uid . '.sgs-container--grid > .sgs-container'` | No (plain concatenation, no `:hover` token) | ternary | clean |
+| `helpers-button-style.php:248` | `$selector` (function parameter, never locally reassigned) | No | ternary | clean |
+| `helpers-button-style.php:270` | `$hover_only_selector` (locally built, carries `:hover`) | **Yes** | literal `null` | **the real bug** |
+| `helpers-colour-variants.php:286` | `$selector` (function parameter, never locally reassigned) | No | `'' !== $hover_paint ? $hover_paint : null` | clean |
+
+### What was built
+
+**`php-emitter-registry.json`** (new file) — declared data, not control flow. Two entries:
+`sgs_border_gradient_css` (the proven case above: `selector_param_index: 0`,
+`guard_gate_param_index: 2`, `guard_skip_literals: ["null"]`) and `sgs_block_background_layer_css`
+(same shape, `guard_skip_literals: ["''", "\"\""]` since its default/skip value is an empty string
+rather than `null` — included specifically to prove the registry is genuinely reusable across more
+than one function's shape, not a single case dressed as data; it currently has **zero real call
+sites**, grep-confirmed, so it contributes nothing to any count below and will only start mattering
+if a future caller is added).
+
+**`php-hover-scan.php`** — extended with JOB B (cross-file registry resolution), documented in full
+in its own docblock (method, the exact one-hop resolution rule, and the limitations). In brief, for
+every call to a registered function found in a scanned function's body:
+1. Classify the `selector_param_index` argument as **carries hover** (`yes`/`no`/`unresolved`) via
+   exactly one hop: a direct literal containing `:hover` → `yes`; a bare `$variable` locally
+   assigned (`=`/`.=`, same function only) a value whose right-hand side contains `:hover` anywhere
+   → `yes`; a bare `$variable` with NO local assignment in this function (a pass-through parameter)
+   → `no` (a genuinely confident statement about THIS function, not a guess about its caller); a
+   plain concatenation of literals/traced-variables with none of them hover-carrying → `no`;
+   anything more complex (a function call, a ternary, an unrecognised token) → `unresolved`.
+2. Only when step 1 is `yes`: classify the `guard_gate_param_index` argument as **skip / fires /
+   unresolved** against the registry's `guard_skip_literals` — a single-token exact match (e.g. the
+   bare keyword `null`) → `skip` (FLAG); a single non-skip-listed string literal → `fires` (clean,
+   the guarded branch runs); anything else (a variable, a ternary, a nested call) → `unresolved`.
+
+**`check.js`** — extended `runPhpCheck()` to also surface `cross_file_calls` /
+`cross_file_flags` / `cross_file_unresolved`, and the overall exit code now also fails on any
+cross-file flag or unresolved case, not just Job A failures.
+
+**No fix applied to the button-style/border-gradient defect itself** — detection only, per the
+brief.
+
+### Verification 1 — positive control
+
+```
+[hover-guard check] PHP cross-file: 4 calls to registered shared emitters, 3 resolve clean,
+1 flagged unguarded, 0 unresolved.
+  [php-cross-file] .../includes/helpers-button-style.php:270 sgs_button_element_style_css()
+    passes a hover-carrying selector into sgs_border_gradient_css() on a call path where
+    its guard is proven skipped
+```
+Raw JSON from `php-hover-scan.php`:
+```json
+"cross_file_flags": [
+    {
+        "caller_function": "sgs_button_element_style_css",
+        "file": "includes/helpers-button-style.php",
+        "line": 270,
+        "callee": "sgs_border_gradient_css",
+        "resolution": "flagged-unguarded"
+    }
+]
+```
+The checker now flags exactly the case the brief described, at the exact line.
+
+### Verification 2 — negative control, confirmed it landed
+
+The REAL ordinary-path call site (`helpers-button-style.php:248`, `$hover_paint` non-null, the
+guarded branch runs) already resolves clean in the full scan — `resolution: "clean-no-hover"` (its
+selector is the untainted `$selector` parameter, so it never even reaches the gate check). To prove
+I actually exercised the GATE-FIRES branch of the detector (not just the selector-is-clean
+short-circuit, which the real call site happens to take), I wrote an isolated synthetic fixture
+where the selector genuinely DOES carry `:hover` (built the same way as the real bug) but the gate
+argument is a real, non-empty, non-null literal — the shape of the TRUE "ordinary path where
+`$hover_paint` is non-null":
+```php
+function sgs_fake_caller_guarded_path( string $selector ): string {
+	$hover_only_selector = implode( ',', array_map(
+		static function ( $part ) { return $part . ':hover,' . $part . ':focus-visible'; },
+		array_map( 'trim', explode( ',', $selector ) )
+	) );
+	sgs_hover_media_wrap( '' ); // satisfies job A only, isolates job B under test
+	return sgs_border_gradient_css( $hover_only_selector, '#000', 'linear-gradient(#fff,#000)', '2px' );
+}
+```
+Scanner output: `"resolution": "clean-guard-fires"`, `cross_file_flags: []`, exit code **0**. This
+proves the break existed to be caught (the selector genuinely resolves `yes`, exercising the same
+taint-tracing path as the real bug) and that the detector correctly does NOT flag it once the gate
+argument proves the guard fires. Fixture then deleted.
+
+### Verification 3 — anti-vacuity: the registry drives the result
+
+Same target file (`includes/helpers-button-style.php`), same scanner code, only the registry
+content changed:
+```
+== with REAL registry (should FLAG) ==
+exit: 1
+"cross_file_flags": [ { ...line 270, "resolution": "flagged-unguarded" } ]
+
+== with an EMPTY {} registry (must NOT flag) ==
+exit: 0
+"cross_file_calls": [], "cross_file_flags": [], "cross_file_unresolved": []
+```
+The finding disappears with an empty-but-valid registry — proving the registry's declared content,
+not a hardcoded shortcut, is what drives the result. A future "0 findings" is a real 0, not a dead
+lookup silently matching nothing.
+
+**Distinguished from a BROKEN registry, which must never silently pass either** — pointed
+`--registry=` at a nonexistent path:
+```
+SCAN ERROR: could not load emitter registry at .../does/not/exist.json — cross-file job (B) cannot run.
+"had_error": true
+exit: 2
+```
+An empty valid registry (`{}`) means "nothing registered, 0 real findings, honestly." An unreadable
+registry means "job B cannot run at all" and fails loudly (exit 2) — never fabricated as a silent 0.
+
+### Verification 4 — full run
+
+CSS surface (unchanged mechanism, all 3 CSS rulings applied):
+```
+[hover-guard check] CSS: scanned 62 files, 211 hover members total, 121 already guarded,
+87 colour (out of scope), 3 text-decoration-only (out of scope), 0 findings.
+```
+Matches the coordinator's own accounting exactly: 121 guarded + 87 colour + 3 text-decoration = 211.
+
+PHP surface:
+```
+[hover-guard check] PHP: scanned 977 functions, 0 within-function findings.
+[hover-guard check] PHP cross-file: 4 calls to registered shared emitters, 3 resolve clean,
+1 flagged unguarded, 0 unresolved.
+```
+**How many PHP hover emitters exist, how many resolve, how many are UNRESOLVED** — stated plainly:
+- **2 functions** carry a `:hover` string literal directly in their own body (Job A candidates) —
+  both correctly call a guard function somewhere in that same body (0 Job A failures).
+- **4 call sites** exist anywhere in the scanned files to a registered shared emitter (Job B) — **3
+  resolve confidently clean**, **1 resolves confidently unguarded** (the real bug), **0 unresolved**.
+- Overall `check.js` exit code: **1 (FAIL)** — correct and intended. The whole point of this task
+  was proving the bug exists before anyone changes the code that has it; a green run at this point
+  would mean the detector isn't working.
+
+### Verification 5 — honest limitations (accurate, not reassuring)
+
+What this still cannot see, stated plainly for the docs to carry forward:
+- **Two-hop flows.** If the hover-carrying value were assembled in a function TWO calls away from
+  the registered emitter (e.g. function A builds a `:hover` selector, passes it as a plain
+  parameter to function B, which passes that same parameter straight through to the registered
+  emitter), this scan resolves function B's own call as `no` (correctly, at that one hop — B's
+  local body never assigns the tainted value) and never looks further up to A. This is a genuine,
+  deliberate boundary, not an oversight — the brief explicitly ruled out general taint analysis.
+- **Dynamic function calls.** `$fn(...)`, `call_user_func( 'sgs_border_gradient_css', ... )`, or any
+  call where the callee name isn't a literal `T_STRING` token immediately followed by `(` is
+  invisible — the scan only recognises direct, statically-named calls.
+- **Selectors built in a caller's caller**, i.e. exactly the pass-through-parameter case above,
+  restated: a parameter that is clean *within* the function that calls the registered emitter, but
+  was itself built from a `:hover`-carrying expression somewhere further up the call chain, resolves
+  `no` here. This is the SAME boundary as two-hop flows, named separately because it's the shape
+  most likely to recur in this codebase (parameters are passed through several helper layers
+  routinely).
+- **Any emitter not yet in `php-emitter-registry.json`.** The scan only inspects calls to the two
+  function names currently registered. A third shared CSS emitter with the same
+  guard-skipped-on-null shape, if one exists elsewhere in the tree, will not be found until it is
+  added as a new declared row — this was NOT re-audited beyond the two functions named/found in
+  this task; only `sgs_border_gradient_css()` and `sgs_block_background_layer_css()` were checked.
+- **Equality-based guard skipping is untouched.** `sgs_border_gradient_css()`'s guard is ALSO
+  skipped when `$hover_paint === $normal_paint` (both non-null) — a runtime value comparison this
+  scan cannot evaluate statically in general, so it is not attempted. Only the literal-`null`/
+  literal-empty-string shortcut is detected, because that is the ONLY case provable from source text
+  alone without evaluating expressions.
+
+### Files touched for this update (still only inside `scripts/hover-guard/`)
+
+- `php-emitter-registry.json` — new, declared data.
+- `php-hover-scan.php` — Job B added (cross-file resolution), docblock rewritten to cover both jobs
+  and the limitations above; CLI now accepts `--registry=<path>`, defaulting to the co-located
+  `php-emitter-registry.json`.
+- `check.js` — `runPhpCheck()` surfaces the three new fields; exit logic extended to fail on a
+  cross-file flag or an unresolved cross-file case, not just Job A failures.
+- `test-fixtures/pre-transform-baseline/` and `test-fixtures/build-copy/` rebuilt fresh from current
+  `src/` (Ruling 3 landing externally meant the previous copies were stale).
+- No changes outside `scripts/hover-guard/`. No git commands run. No `includes/`/`src/`/
+  `package.json` edits — the button-style/border-gradient defect itself is untouched, exactly as
+  instructed.

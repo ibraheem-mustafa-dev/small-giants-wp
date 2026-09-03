@@ -2,7 +2,7 @@
 'use strict';
 
 /**
- * Build-failing checker. Two jobs (per the brief):
+ * Build-failing checker. Three jobs (per the brief):
  *
  *   (a) Fail if any `:hover` rule in the scanned CSS is left unguarded and
  *       motion-only, OR could not be classified with confidence
@@ -11,6 +11,15 @@
  *       `:hover` selector without ever calling a guard function in the
  *       same function body — see php-hover-scan.php's own docblock for the
  *       exact method and its documented limitation.
+ *   (c) Fail if a hover-carrying selector, built in one function, flows
+ *       (traced ONE hop) into a registered shared CSS-emitting helper
+ *       (`php-emitter-registry.json`) on a call path where that helper's
+ *       own guarded branch is proven skipped — the cross-file case job (a)
+ *       cannot see because the emitting function's own body carries no
+ *       `:hover` literal at all. Also fails on an UNRESOLVED cross-file
+ *       case (can't prove clean, can't prove broken) rather than silently
+ *       passing it — see php-hover-scan.php's docblock for exactly what
+ *       this can and cannot resolve.
  *
  * Never fabricates a PASS. If a target directory/file is missing, or the
  * PHP scan cannot run, this exits non-zero and prints NOT RUN rather than
@@ -133,6 +142,9 @@ function runPhpCheck( includesDir ) {
 		ranOk: true,
 		functionsScanned: parsed.functions.length,
 		findings: parsed.failures,
+		crossFileCalls: parsed.cross_file_calls || [],
+		crossFileFlags: parsed.cross_file_flags || [],
+		crossFileUnresolved: parsed.cross_file_unresolved || [],
 	};
 }
 
@@ -174,18 +186,39 @@ function main() {
 		exitCode = 1;
 	} else {
 		console.log(
-			`[hover-guard check] PHP: scanned ${ phpResult.functionsScanned } functions, ${ phpResult.findings.length } findings.`
+			`[hover-guard check] PHP: scanned ${ phpResult.functionsScanned } functions, ${ phpResult.findings.length } within-function findings.`
 		);
 		for ( const f of phpResult.findings ) {
 			console.error( `  [php] ${ f.file }:${ f.line } function ${ f.name }() builds :hover without calling a guard function` );
 		}
-		if ( phpResult.findings.length > 0 ) {
+
+		const cfCalls = phpResult.crossFileCalls || [];
+		const cfFlags = phpResult.crossFileFlags || [];
+		const cfUnresolved = phpResult.crossFileUnresolved || [];
+		const cfClean = cfCalls.length - cfFlags.length - cfUnresolved.length;
+		console.log(
+			`[hover-guard check] PHP cross-file: ${ cfCalls.length } calls to registered shared emitters, ${ cfClean } resolve clean, ${ cfFlags.length } flagged unguarded, ${ cfUnresolved.length } unresolved.`
+		);
+		for ( const f of cfFlags ) {
+			console.error(
+				`  [php-cross-file] ${ f.file }:${ f.line } ${ f.caller_function }() passes a hover-carrying selector into ${ f.callee }() on a call path where its guard is proven skipped`
+			);
+		}
+		for ( const f of cfUnresolved ) {
+			console.error(
+				`  [php-cross-file] ${ f.file }:${ f.line } ${ f.caller_function }() -> ${ f.callee }() UNRESOLVED (${ f.resolution }) — cannot confirm guarded or unguarded`
+			);
+		}
+
+		if ( phpResult.findings.length > 0 || cfFlags.length > 0 || cfUnresolved.length > 0 ) {
 			exitCode = 1;
 		}
 	}
 
 	if ( 0 === exitCode ) {
-		console.log( '[hover-guard check] PASS — 0 unguarded motion hover rules, 0 unclassified rules, 0 unguarded PHP hover emitters.' );
+		console.log(
+			'[hover-guard check] PASS — 0 unguarded motion hover rules, 0 unclassified rules, 0 unguarded PHP hover emitters (within-function or cross-file), 0 unresolved cross-file cases.'
+		);
 	} else {
 		console.error( '[hover-guard check] FAIL' );
 	}
