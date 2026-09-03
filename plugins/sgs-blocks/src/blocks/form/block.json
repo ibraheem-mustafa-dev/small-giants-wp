@@ -191,6 +191,70 @@
 			"type": "string",
 			"default": "primary"
 		},
+		"prevColourBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"prevColourBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"prevColourBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"prevColourBackgroundHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"tileBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileBorderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"tileBorderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"tileBorderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelBorderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelBorderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelBorderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelBackgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelBackgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelBackgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"requireLogin": {
 			"type": "boolean",
 			"default": false

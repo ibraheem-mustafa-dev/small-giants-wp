@@ -42,6 +42,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		formFocusRingWidth,
 		formFocusRingOpacity,
 		formFocusRingOffset,
+		prevColourBackground,
+		prevColourBackgroundHover,
+		prevColourBackgroundGradient,
+		prevColourBackgroundHoverGradient,
+		tileBorderColour,
+		tileBorderColourHover,
+		tileBorderColourGradient,
+		tileBorderColourHoverGradient,
+		fileLabelBorderColour,
+		fileLabelBorderColourHover,
+		fileLabelBorderColourGradient,
+		fileLabelBorderColourHoverGradient,
+		fileLabelBackgroundColour,
+		fileLabelBackgroundColourHover,
+		fileLabelBackgroundColourGradient,
+		fileLabelBackgroundColourHoverGradient,
 	} = attributes;
 
 	// Auto-generate formId from clientId on first insert.
@@ -166,6 +182,110 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: formFocusRingColour,
 								onChange: ( val ) => setAttributes( { formFocusRingColour: val || 'primary' } ),
 								linked: true,
+							},
+						],
+					},
+					{
+						key: 'prev-button-background',
+						label: __( 'Previous button background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: prevColourBackground,
+								onChange: ( val ) => setAttributes( { prevColourBackground: val ?? '' } ),
+								linked: true,
+								gradientValue: prevColourBackgroundGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { prevColourBackgroundGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: prevColourBackgroundHover,
+								onChange: ( val ) => setAttributes( { prevColourBackgroundHover: val ?? '' } ),
+								linked: true,
+								gradientValue: prevColourBackgroundHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { prevColourBackgroundHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'tile-border',
+						label: __( 'Tile border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: tileBorderColour,
+								onChange: ( val ) => setAttributes( { tileBorderColour: val ?? '' } ),
+								linked: true,
+								gradientValue: tileBorderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { tileBorderColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: tileBorderColourHover,
+								onChange: ( val ) => setAttributes( { tileBorderColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: tileBorderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { tileBorderColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'file-label-border',
+						label: __( 'File upload border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: fileLabelBorderColour,
+								onChange: ( val ) => setAttributes( { fileLabelBorderColour: val ?? '' } ),
+								linked: true,
+								gradientValue: fileLabelBorderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { fileLabelBorderColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: fileLabelBorderColourHover,
+								onChange: ( val ) => setAttributes( { fileLabelBorderColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: fileLabelBorderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { fileLabelBorderColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'file-label-background',
+						label: __( 'File upload background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: fileLabelBackgroundColour,
+								onChange: ( val ) => setAttributes( { fileLabelBackgroundColour: val ?? '' } ),
+								linked: true,
+								gradientValue: fileLabelBackgroundColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { fileLabelBackgroundColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: fileLabelBackgroundColourHover,
+								onChange: ( val ) => setAttributes( { fileLabelBackgroundColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: fileLabelBackgroundColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { fileLabelBackgroundColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

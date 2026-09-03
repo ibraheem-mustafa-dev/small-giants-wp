@@ -342,7 +342,12 @@ select.sgs-form-field__input {
 	position: relative;
 }
 
-.sgs-form-tile:hover {
+/* Hover border-colour is client-controllable (tileBorderColour/Hover) via
+   sgs_emit_state_colour_css() in render.php, emitted at real specificity so
+   it wins once a client sets a value. The rule below is the DEFAULT look,
+   kept at zero specificity via :where() so an unset attribute still shows
+   today's look unchanged. */
+:where(.sgs-form-tile:hover) {
 	border-color: var(--wp--preset--color--primary, #0f7e80);
 }
 
@@ -448,7 +453,13 @@ select.sgs-form-field__input {
 	transition: border-color 0.2s, background-color 0.2s;
 }
 
-.sgs-form-field__file-label:hover {
+/* Hover border/background colours are client-controllable
+   (fileLabelBorderColour/Hover, fileLabelBackgroundColour/Hover) via
+   sgs_emit_state_colour_css() in render.php, emitted at real specificity so
+   it wins once a client sets a value. The rule below is the DEFAULT look,
+   kept at zero specificity via :where() so an unset attribute still shows
+   today's look unchanged. */
+:where(.sgs-form-field__file-label:hover) {
 	border-color: var(--wp--preset--color--primary, #0f7e80);
 	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
 }
@@ -676,7 +687,12 @@ select.sgs-form-field__input {
 	color: var(--wp--preset--color--text, #1e1e1e);
 }
 
-.sgs-form__button--prev:hover {
+/* Hover background-colour is client-controllable (prevColourBackground/Hover)
+   via sgs_button_element_style_css() in render.php, emitted at real
+   specificity so it wins once a client sets a value. The rule below is the
+   DEFAULT look, kept at zero specificity via :where() so an unset attribute
+   still shows today's look unchanged. */
+:where(.sgs-form__button--prev:hover) {
 	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
 }
 

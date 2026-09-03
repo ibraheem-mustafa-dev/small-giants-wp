@@ -243,6 +243,83 @@ if ( $progress_colour ) {
 	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__progress{--sgs-progress-colour:' . sgs_colour_value( $progress_colour ) . ';}';
 }
 
+// Prev-button, tile + file-label hover colours — moved off style.css hardcoded
+// `:hover` rules into scoped attribute-driven CSS (mirrors the submit-button
+// pattern above). Uses the SAME uid so everything lands in ONE scoped <style>.
+$sgs_form_prev_css = function_exists( 'sgs_button_element_style_css' )
+	? sgs_button_element_style_css( $attributes, 'prev', '.' . $sgs_form_uid . ' .sgs-form__button--prev' )
+	: '';
+if ( '' !== $sgs_form_prev_css ) {
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		$sgs_form_supports_classes[] = $sgs_form_uid;
+	}
+	$sgs_form_supports_css .= $sgs_form_prev_css;
+}
+
+// Tile border — routed through the shared sgs_border_states_css() emitter
+// (helpers-colour-variants.php) so a gradient sibling comes free: that helper
+// owns the flat-vs-gradient branch (a masked ::before ring only when a
+// gradient is actually set) rather than this block hand-building decls.
+$sgs_form_tile_border_css = function_exists( 'sgs_border_states_css' )
+	? sgs_border_states_css(
+		'.' . $sgs_form_uid . ' .sgs-form-tile',
+		$attributes,
+		array(
+			'base'           => 'tileBorderColour',
+			'hover'          => 'tileBorderColourHover',
+			'gradient'       => 'tileBorderColourGradient',
+			'hover_gradient' => 'tileBorderColourHoverGradient',
+		)
+	)
+	: '';
+if ( '' !== $sgs_form_tile_border_css ) {
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		$sgs_form_supports_classes[] = $sgs_form_uid;
+	}
+	$sgs_form_supports_css .= $sgs_form_tile_border_css;
+}
+
+// File-label border + background — this selector mixes TWO mechanisms (border
+// AND fill), so it cannot be a single sgs_border_states_css()/sgs_fill_states_css()
+// call the way the tile is. Call each shared emitter separately (both return
+// FINISHED css for their own selector, per their own docblocks) and concatenate;
+// this is the least invasive swap that keeps the file-label's existing
+// one-selector-two-properties shape while still getting gradient support on both.
+$sgs_form_file_label_sel = '.' . $sgs_form_uid . ' .sgs-form-field__file-label';
+
+$sgs_form_file_border_css = function_exists( 'sgs_border_states_css' )
+	? sgs_border_states_css(
+		$sgs_form_file_label_sel,
+		$attributes,
+		array(
+			'base'           => 'fileLabelBorderColour',
+			'hover'          => 'fileLabelBorderColourHover',
+			'gradient'       => 'fileLabelBorderColourGradient',
+			'hover_gradient' => 'fileLabelBorderColourHoverGradient',
+		)
+	)
+	: '';
+
+$sgs_form_file_fill_css = function_exists( 'sgs_fill_states_css' )
+	? sgs_fill_states_css(
+		$sgs_form_file_label_sel,
+		$attributes,
+		array(
+			'base'           => 'fileLabelBackgroundColour',
+			'hover'          => 'fileLabelBackgroundColourHover',
+			'gradient'       => 'fileLabelBackgroundColourGradient',
+			'hover_gradient' => 'fileLabelBackgroundColourHoverGradient',
+		)
+	)
+	: '';
+
+if ( '' !== $sgs_form_file_border_css || '' !== $sgs_form_file_fill_css ) {
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		$sgs_form_supports_classes[] = $sgs_form_uid;
+	}
+	$sgs_form_supports_css .= $sgs_form_file_border_css . $sgs_form_file_fill_css;
+}
+
 // Build focus ring CSS custom properties for :focus-visible on form inputs.
 // Opacity attribute is stored as 0-100 integer; CSS needs 0-1 decimal.
 // absint() sanitises every value before interpolation.
