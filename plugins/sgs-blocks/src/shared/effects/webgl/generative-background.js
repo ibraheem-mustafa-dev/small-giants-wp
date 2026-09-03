@@ -383,6 +383,27 @@ uniform float u_colourAttenuation;
 uniform float u_parabolaPower;
 uniform float u_depthFadeScale;
 uniform vec3 u_ground;
+/*
+ * DEBUG-ONLY, DEFAULT OFF — never touched by shipped code paths.
+ * fx-generative-background.js never sets this uniform, so it reads GLSL's
+ * own default-zero-init for a bool (false) on every real page. Exists so
+ * scripts/generative-background/silhouette-probe.mjs (systematic-debugging,
+ * 2026-09-03) can isolate LAYERS 1-3 (geometry/twist — the folded mesh's
+ * on-screen footprint) from every fragment-level effect below (grading,
+ * glow-gate, striation, depth-fade, grain), to find out which one the
+ * measured silhouette-coverage deficit vs the reference (D925) actually
+ * belongs to. Do not wire this to any client-facing control.
+ */
+uniform bool u_silhouetteDebug;
+uniform bool u_depthFadeDebugOff;
+// DEBUG-ONLY, default off — see the block comment above these uniforms'
+// first use for why they exist. Bisecting the remaining candidates after
+// u_depthFadeDebugOff alone recovered only ~2% of the measured coverage
+// gap, disproving it as the dominant cause (systematic-debugging Phase 3 —
+// a hypothesis test that failed, not skipped).
+uniform bool u_gradingDebugOff;
+uniform bool u_additiveEffectsDebugOff;
+uniform bool u_legacyStriationDebugOff;
 
 in vec2 v_uv;
 in float v_depth;
@@ -473,30 +494,86 @@ float grain( vec2 fragCoord ) {
 }
 
 void main() {
+	// DEBUG-ONLY silhouette isolation (see u_silhouetteDebug's declaration
+	// above) — bypasses texture sampling AND every fragment effect below.
+	// Any pixel the rasteriser reaches at all (i.e. the folded mesh's
+	// on-screen footprint from layers 1-3 alone) paints flat opaque white;
+	// nothing else in this function runs for that pixel.
+	if ( u_silhouetteDebug ) {
+		// Bright magenta, deliberately NOT white/near-white — the page
+		// background AND the ground colour are both near-white, so a white
+		// silhouette would be indistinguishable from "unpainted" under the
+		// coverage detector's quantised-background-key heuristic. Caught
+		// live: an earlier version of this used white and measured 0.0%
+		// coverage on every sample, which was the probe being vacuous, not
+		// a real finding.
+		outColour = vec4( 1.0, 0.0, 1.0, 1.0 );
+		return;
+	}
+
 	vec3 colour = texture( u_texture, v_uv ).rgb;
 
 	// §3(a) fine-line striation / glow-gate layer — added BEFORE grading so
 	// the grading chain applies to the combined result.
+	//
+	// DEBUG-ONLY (systematic-debugging, 2026-09-03): u_additiveEffectsDebugOff
+	// bypasses every term that ADDS colour on top of the base texture sample
+	// (this fine-noise/glow-gate contribution, the legacy periodic striation
+	// below, and the camera-facing lift below) as ONE group, distinct from
+	// u_gradingDebugOff (a TRANSFORM of existing colour) and
+	// u_depthFadeDebugOff (already tested, ruled out as dominant). Never set
+	// by shipped code.
 	float glowGate = sgsGlowGate( v_uv );
-	float striationNoise = sgsStriationNoise( v_uv );
-	float atten = 1.0 - colour.b * u_colourAttenuation;
-	float parabolaFalloff = 1.0 - sgsParabola( v_uv.x, u_parabolaPower );
-	colour += striationNoise * u_striationStrength * atten * glowGate * parabolaFalloff;
+	if ( ! u_additiveEffectsDebugOff ) {
+		float striationNoise = sgsStriationNoise( v_uv );
+		float atten = 1.0 - colour.b * u_colourAttenuation;
+		float parabolaFalloff = 1.0 - sgsParabola( v_uv.x, u_parabolaPower );
+		colour += striationNoise * u_striationStrength * atten * glowGate * parabolaFalloff;
+	}
 
-	colour = grade( colour );
+	if ( ! u_gradingDebugOff ) {
+		colour = grade( colour );
+	}
 
-	// §3(b) legacy periodic-line striations — secondary detail layer.
-	float glow = striations( v_uv );
-	colour += glow * 0.06;
+	// DEBUG-ONLY (systematic-debugging, 2026-09-03): u_legacyStriationDebugOff
+	// isolates JUST this one term, split out from u_additiveEffectsDebugOff's
+	// bundle. Worth isolating specifically because it is the ONE additive
+	// term with NO reference counterpart in this comparison's light-theme
+	// preset — the module's own docblock calls it "the reference's OTHER,
+	// dark-theme technique". The fine-noise texture term and the
+	// camera-facing lift below are both magnitude-matched to
+	// shaders/39798.glsl's real light-theme formula (strength 0.15 vs
+	// reference's 0.2; identical (1-pdy)*0.25 lift) — this one is not
+	// ported from anywhere in that file at all.
+	if ( ! u_additiveEffectsDebugOff && ! u_legacyStriationDebugOff ) {
+		// §3(b) legacy periodic-line striations — secondary detail layer.
+		float glow = striations( v_uv );
+		colour += glow * 0.06;
+	}
 
-	// A slight overall lift where the surface faces the camera flat-on
-	// (glow gate low), independent of the fine-texture contribution above.
-	colour += ( 1.0 - glowGate ) * 0.25;
+	if ( ! u_additiveEffectsDebugOff ) {
+		// A slight overall lift where the surface faces the camera flat-on
+		// (glow gate low), independent of the fine-texture contribution above.
+		colour += ( 1.0 - glowGate ) * 0.25;
+	}
 
 	// Depth fade — recede toward the ground colour with distance from the
 	// camera, using the vertex shader's own clip-space Z.
-	float depthFade = clamp( v_depth * u_depthFadeScale, 0.0, 1.0 );
-	colour = mix( colour, u_ground, depthFade );
+	//
+	// DEBUG-ONLY (systematic-debugging, 2026-09-03): u_depthFadeDebugOff,
+	// like u_silhouetteDebug above, is never set by shipped code — every
+	// real page uploads 0 (false), identical to this mix always running, the
+	// pre-existing behaviour. Exists to isolate THIS ONE effect (as opposed
+	// to u_silhouetteDebug, which bypasses ALL of them at once) — the
+	// reference shader (shaders/39798.glsl, read in full) has no depth/fog/
+	// ground-mix mechanism anywhere in it, making this the single most
+	// likely fragment-effect contributor to the measured coverage deficit,
+	// worth testing in isolation rather than only as part of "all effects
+	// off".
+	if ( ! u_depthFadeDebugOff ) {
+		float depthFade = clamp( v_depth * u_depthFadeScale, 0.0, 1.0 );
+		colour = mix( colour, u_ground, depthFade );
+	}
 
 	float g = ( grain( gl_FragCoord.xy ) - 0.5 ) * ( 8.0 / 255.0 );
 	colour += g;
@@ -762,6 +839,16 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 	gl.uniform1f( u( 'u_parabolaPower' ), parabolaPower );
 	gl.uniform1f( u( 'u_depthFadeScale' ), DEFAULT_DEPTH_FADE_SCALE );
 	gl.uniform3fv( u( 'u_ground' ), ground );
+	// DEBUG-ONLY, opt-in — see u_silhouetteDebug's declaration in
+	// FRAGMENT_SHADER above. `fx-generative-background.js` never sets
+	// `opts.silhouetteDebug`, so every real page uploads `0` here, identical
+	// to the pre-existing behaviour (no uniform, GLSL's own zero-init) this
+	// line replaces.
+	gl.uniform1i( u( 'u_silhouetteDebug' ), opts.silhouetteDebug ? 1 : 0 );
+	gl.uniform1i( u( 'u_depthFadeDebugOff' ), opts.depthFadeDebugOff ? 1 : 0 );
+	gl.uniform1i( u( 'u_gradingDebugOff' ), opts.gradingDebugOff ? 1 : 0 );
+	gl.uniform1i( u( 'u_additiveEffectsDebugOff' ), opts.additiveEffectsDebugOff ? 1 : 0 );
+	gl.uniform1i( u( 'u_legacyStriationDebugOff' ), opts.legacyStriationDebugOff ? 1 : 0 );
 
 	const speed = typeof opts.speed === 'number' ? opts.speed : 1;
 

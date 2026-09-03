@@ -1,3 +1,61 @@
+## D926 [ROUTINE] — generative-background fidelity: root cause PROVEN via systematic-debugging — not geometry, an unclamped additive-brightness stack in the fragment shader, dominated by one unported term
+
+**2026-09-03.** Continues D925 same session, via `/systematic-debugging`'s four-phase protocol.
+D925 left the silhouette-IoU finding (ours covers 7-12 points less of the frame than the rig) with
+one open confound: the painted mask isn't a true geometric silhouette, so a fragment-level effect
+blending toward background could explain it without any real shape divergence. This entry closes
+that gap with a proven cause, not an inference.
+
+**Phase 1-2 (evidence, pattern comparison):** read `shaders/39798.glsl` (the reference's own
+light-theme fragment shader) in full. It has NO depth/fog/ground-mix mechanism anywhere — no `fog`,
+no `THREE.Fog`, `u_clearColor` is declared but never referenced in `main()`, and the renderer's own
+clear colour is fully transparent. Our engine's depth-fade (`mix(colour, u_ground, depthFade)`) has
+no counterpart there — the obvious first suspect.
+
+**Phase 3 (hypothesis, minimal tests, one variable at a time) — built `u_silhouetteDebug` and four
+further debug-only uniforms** (`u_depthFadeDebugOff`, `u_gradingDebugOff`,
+`u_additiveEffectsDebugOff`, `u_legacyStriationDebugOff`) in `generative-background.js`, all
+default-OFF and confirmed a no-op on shipped output before AND after every edit
+(`capture-render.mjs` re-run after each change: identical 34.6% painted / 23 hues throughout).
+New `scripts/generative-background/silhouette-probe.mjs` isolates each fragment effect against the
+already-recorded rig coverage from `fidelity-baseline.json`:
+
+| Toggled off alone | Coverage gap recovered |
+|---|---|
+| Depth-fade (the leading suspect from Phase 1-2) | **2%** — disproven |
+| Grading (contrast/saturation/hue) | 14% |
+| Legacy periodic-line striation (`colour += glow * 0.06`) | **62%** |
+| All additive terms together (striation-noise + legacy-striation + camera-facing lift) | 120% (overshoots) |
+| Everything (pure geometry silhouette) | 96% — matches rig within 0.4pt avg |
+
+⛔ **The leading hypothesis from reading the reference (depth-fade) was WRONG when tested in
+isolation** — exactly the trap the iron law exists to prevent: "has no reference counterpart" is
+not the same as "is the cause", and the disproof came from measurement, not further reasoning.
+
+**PROVEN ROOT CAUSE:** geometry/twist (layers 1-3) is essentially correct — silhouette-only
+coverage matches the rig within 0.4 points average, confirming `verify-transform.mjs`'s existing
+7/7 (which covers layers 1-2 numerically but not layer 3's shader) extends to the rasterised
+result too. The deficit is a fragment-shader problem: THREE unclamped positive-additive brightness
+terms stack on an already-light pastel palette, pushing enough pixels over the
+"quantised-as-background" threshold to shrink measured coverage. **The single largest contributor
+(62% alone) is the one term with literally no counterpart in the reference's light-theme shader** —
+the module's own docblock already named it as borrowed from "the reference's OTHER, dark-theme
+technique", applied here to a light-theme comparison. The other two terms (fine-noise texture,
+camera-facing lift) are individually magnitude-matched to the reference (0.15 vs reference's 0.2;
+identical `(1-pdy)*0.25` formula) but still contribute once stacked.
+
+⚠ **Not yet fixed — this is a visual/creative call, not a mechanical one.** Per the plan's own
+acceptance criteria, no number closes this track; Bean's named visual sign-off does. Removing or
+rebalancing a live, shipped visual effect needs his call on the fix-shape, not a unilateral edit.
+Candidates for that conversation: drop the legacy striation term entirely (0 counterpart in this
+theme); scale all three additive terms down proportionally; or accept the current look as a
+deliberate divergence and lower/retire the fidelity ceiling for this specific effect. The debug
+uniforms stay in the shipped file (all default-off, zero measured behaviour change, confirmed
+repeatedly) as reusable diagnostic infrastructure for whichever fix-shape is chosen.
+
+Files: `generative-background.js` (5 new debug-only uniforms + gates), new
+`scripts/generative-background/silhouette-probe.mjs`, `poc-replica.html` (5 new query params).
+
 ## D925 [ROUTINE] — generative-background fidelity: two named alternative causes eliminated with evidence, a new silhouette-IoU measurement finds real shape divergence, cause still not proven
 
 **2026-09-03.** Continues D886-D888. Per this project's prove-the-cause-before-fix rule, D888

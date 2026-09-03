@@ -220,7 +220,7 @@ Named, not fixed; deserves its own session.
 ⛔ **TWO SEPARATE TRACKS. Never re-merge them.** They shared one plan file once and it cost a full
 session (D838). No phase number is shared.
 
-### ▶ B. GENERATIVE BACKGROUND ENGINE (Phase 3 — engine BUILT + LIVE; fidelity gap OPEN)
+### ▶ B. GENERATIVE BACKGROUND ENGINE (Phase 3 — engine BUILT + LIVE; ROOT CAUSE PROVEN, fix-shape needs Bean's call)
 
 ⭐ **Plan: `.claude/plans/2026-08-27-generative-background-engine.md`. Read D886, D887, D888
 before touching this track — they supersede the technique spec's Animation section and record
@@ -250,31 +250,28 @@ Palette PNG stays off-limits as a shipped asset — it is a measurement fixture,
 returns 0). A `git clean -xdf` destroys every reference number permanently. The tracked
 `fidelity-baseline.json` + `reference-matrices.json` are what survive it.
 
-**2026-09-03 (D925) — both D888 alternative causes eliminated with evidence; a real (properly
-built, committed-script) silhouette IoU now exists.** Ground colour was checked and ruled out
-(numbers unchanged to 2 d.p. once the comparator was fed production's real resolved theme token
-instead of the engine's hardcoded near-white default). Harness drift was fixed, not just flagged
-— `harness-lib.mjs` now owns the one shared server/MIME/GPU-flags for all four Chromium scripts,
-proven behaviour-preserving (byte-identical output on every one, post-refactor). New
-`silhouette_iou` measurement (unlike the withdrawn 89.3% figure, this one has a committed script
-and committed inputs): **IoU 0.756–0.799 across all three phases, our side consistently covering
-7–12 points LESS of the frame than the rig.** Real evidence for shape divergence — **still not a
-proven cause**: the painted mask isn't a true geometric silhouette, and the never-verified
-fragment-level effects (glow/striation/depth-fade) could shrink apparent coverage without any real
-shape difference. Layers 1–3's geometry/twist stay proven correct throughout (`verify-transform.mjs`
-7/7, unchanged).
+**2026-09-03 (D925/D926) — root cause PROVEN via `/systematic-debugging`, not inferred.** D925
+closed both D888 alternative causes (ground colour: negligible effect, measured; harness drift:
+fixed, `harness-lib.mjs`) and added a real committed silhouette-IoU measurement (0.756–0.799, ours
+covering 7–12pts less of the frame). D926 closed the remaining confound: 5 default-off debug
+uniforms in `generative-background.js` (confirmed no-op on shipped output, repeatedly) isolate each
+fragment effect. **Geometry/twist is NOT the cause** — pure-silhouette coverage matches the rig
+within 0.4pt avg. The leading suspect from reading the reference shader (depth-fade — the rig's own
+`shaders/39798.glsl` has no ground-mix mechanism at all) recovered only **2%** of the gap alone —
+disproven by test, not assumed guilty for lacking a counterpart. **Real cause: three unclamped
+additive-brightness terms stack in the fragment shader** on an already-light palette. The single
+largest (62% alone) has literally no reference counterpart — it's the module's own admitted
+borrow from "the reference's OTHER, dark-theme technique" (`colour += glow * 0.06`), applied here
+to a light-theme comparison. New `scripts/generative-background/silhouette-probe.mjs` reproduces
+the full isolation.
 
-### ▶ NEXT — isolate geometry from fragment shading to find which one the silhouette gap belongs to
+### ▶ NEXT — Bean's call on the fix-shape (this is visual/creative, not mechanical)
 
-Both D888 alternative causes are now closed (see D925 above). What's left is separating the
-silhouette-IoU finding's TWO remaining explanations: real geometry/twist divergence (layer 3, or
-the 2026-08-28 `noiseWobble` addendum — added AFTER `verify-transform.mjs` was built, so not
-covered by its 7/7), vs. the fragment-level effects (glow-gate/striation/depth-fade — rebuilt
-against reference but tuned by eye, never verified against reference constants) shrinking the SAME
-geometry's apparent coverage via a stronger depth-fade-toward-ground blend. A flat-unlit-fill probe
-mode (geometry only, no fragment effects) on both sides, diffed for silhouette alone, is the next
-concrete step — not yet built. `npm run fidelity:compare` reproduces every figure including the
-new silhouette IoU; `check:transform-parity` is wired and survives the rig's deletion.
+Root cause is proven; the fix is not mechanical. Candidates: drop the unported legacy-striation
+term entirely; scale all three additive terms down proportionally; or accept the current look and
+retire/lower the fidelity ceiling for this effect specifically. Per the plan's own acceptance
+criteria, Bean's named visual sign-off closes this track, not a number. `npm run fidelity:compare`
+still reproduces every tracked figure unchanged; `check:transform-parity` still 7/7.
 
 **Shipped this session:** `chromeOffsetPx()` moved to the Tier V shared home so a vanilla consumer
 can read the sticky-header height; the progress marker re-mapped to a **reading line** and the two

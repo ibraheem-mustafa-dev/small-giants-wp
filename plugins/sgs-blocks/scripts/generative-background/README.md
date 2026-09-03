@@ -106,14 +106,59 @@ hypothesis could be trusted. Both were checked for real, not assumed:
 answering "do the two renders occupy the same screen pixels", independent of any colour
 difference within the overlap. **Result: IoU 0.76–0.80 across all three sampled phases, and our
 side consistently covers LESS of the frame than the rig at every phase (39–41% vs 46–52%).** This
-is real, direct evidence for shape divergence, not an inference from directionality — but it is
-**not yet a proven cause**: the "painted" mask is "differs from the dominant background colour by
-quantised-key", not a true geometric silhouette, so a stronger depth-fade-toward-ground blend on
-our side (§2/§3's fragment effects, which were tuned by eye against the canary and never verified
-against reference) could shrink the SAME underlying geometry's apparent coverage without any real
-shape difference. **The next elimination step, not yet done:** isolate layers 1–3 (geometry only,
-flat unlit fill, no glow-gate/striation/depth-fade) from the fragment-level effects, to find out
-which one the silhouette gap actually belongs to before touching either.
+was real, direct evidence for shape divergence — but on its own, not yet a proven cause: the
+"painted" mask is "differs from the dominant background colour by quantised-key", not a true
+geometric silhouette, so a fragment effect blending toward background could shrink the SAME
+underlying geometry's apparent coverage without any real shape difference.
+
+## The root cause, PROVEN via `/systematic-debugging` (same session, D926)
+
+**It is NOT geometry.** `scripts/generative-background/silhouette-probe.mjs` renders our engine
+with every fragment effect bypassed (`u_silhouetteDebug`, a flat-colour debug mode — magenta, not
+white, because both the page background AND the ground colour are near-white and a white
+silhouette would be invisible to the coverage detector) and compares JUST the on-screen footprint
+of layers 1–3 against the rig's already-recorded coverage. **Result: 0.4 points average gap** —
+essentially a match, confirming `verify-transform.mjs`'s 7/7 (which only covers layers 1–2
+numerically, not layer 3's actual shader) extends to the rasterised result too.
+
+**The leading suspect from reading the reference shader was WRONG.** `shaders/39798.glsl` (the
+rig's own light-theme fragment shader) has no depth/fog/ground-mix mechanism anywhere in it — the
+obvious first guess. Isolating our depth-fade alone (`u_depthFadeDebugOff`) recovered only **2%**
+of the gap. "Has no reference counterpart" turned out not to mean "is the cause" — disproven by a
+minimal test, not assumed guilty by reasoning, exactly per the iron law.
+
+**The real cause: three unclamped, purely-additive brightness terms stack in the fragment shader**
+on an already-light pastel palette, pushing enough pixels over the "close enough to background"
+quantisation threshold to shrink measured coverage:
+
+| Toggled off alone (debug uniform) | % of the gap recovered |
+|---|---|
+| `u_depthFadeDebugOff` | 2% |
+| `u_gradingDebugOff` | 14% |
+| `u_legacyStriationDebugOff` (`colour += glow * 0.06`) | **62%** |
+| `u_additiveEffectsDebugOff` (all three additive terms together) | 120% (overshoots) |
+| `u_silhouetteDebug` (everything — pure geometry) | 96% |
+
+The single largest contributor, alone, is the one term with **no reference counterpart at all** —
+the module's own docblock already named it as borrowed from "the reference's OTHER, dark-theme
+technique", applied here to a light-theme comparison. The other two additive terms (fine-noise
+texture strength 0.15 vs the reference's 0.2; an identical `(1-pdy)*0.25` camera-facing lift) are
+each individually magnitude-matched to the reference — they only matter once stacked with the
+legacy term and each other.
+
+⚠ **Not fixed.** This is a visual/creative call on a live, shipped effect, not a mechanical bug —
+per this plan's own acceptance criteria, Bean's named visual sign-off closes it, not a number. See
+`decisions.md` D926 for the fix-shape options on the table.
+
+### The 5 debug uniforms — default-off, confirmed no-op, reusable
+
+`u_silhouetteDebug`, `u_depthFadeDebugOff`, `u_gradingDebugOff`, `u_additiveEffectsDebugOff`,
+`u_legacyStriationDebugOff` (`generative-background.js`) and their matching `poc-replica.html`
+query params (`?silhouette=1`, `?depthfade=0`, `?grading=0`, `?additive=0`,
+`?legacystriation=0`). Every one defaults to the pre-existing behaviour when unset — confirmed via
+`capture-render.mjs` after every single edit this session (identical 34.6% painted / 23 hues
+throughout, before and after all five additions). Never wired to any client-facing control; kept
+in the shipped file as reusable diagnostic infrastructure for whichever fix-shape gets chosen.
 
 - `mean_abs_pct` — the average per-pixel colour difference, as a percentage of the 0–255
   range, measured over the shared crop box (`fidelity-baseline.json`'s top-level `crop`

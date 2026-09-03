@@ -126,11 +126,24 @@
  *                 wanting an apples-to-apples comparison MUST resolve the
  *                 same token production resolves and pass it here explicitly
  *                 — see fidelity-compare.mjs's GROUND_COLOUR constant.
+ *   ?silhouette=1 — DEBUG-ONLY (systematic-debugging, 2026-09-03). Sets
+ *                 `opts.silhouetteDebug`, which makes the engine paint a flat
+ *                 white silhouette wherever the folded mesh (layers 1-3)
+ *                 rasterises, bypassing every fragment-level effect (grading,
+ *                 glow-gate, striation, depth-fade, grain). Used by
+ *                 silhouette-probe.mjs to isolate geometry/twist coverage
+ *                 from fragment-shading coverage — never set by anything
+ *                 shipped.
  */
 import { createGenerativeBackground } from '../../src/shared/effects/webgl/generative-background.js';
 
 const q   = new URLSearchParams( location.search );
 const PAL = ( q.get( 'pal' ) || 'palette-a' ).replace( /[^a-z0-9-]/gi, '' );
+const SILHOUETTE_DEBUG = q.get( 'silhouette' ) === '1';
+const DEPTH_FADE_DEBUG_OFF = q.get( 'depthfade' ) === '0';
+const GRADING_DEBUG_OFF = q.get( 'grading' ) === '0';
+const ADDITIVE_DEBUG_OFF = q.get( 'additive' ) === '0';
+const LEGACY_STRIATION_DEBUG_OFF = q.get( 'legacystriation' ) === '0';
 const GROUND_MATCH = ( q.get( 'ground' ) || '' ).match(
 	/^([0-9.]+),([0-9.]+),([0-9.]+)$/
 );
@@ -316,6 +329,11 @@ if ( ! gl ) {
 		textureSource: img,
 		speed: 1,
 		groundColour: GROUND_COLOUR,
+		silhouetteDebug: SILHOUETTE_DEBUG,
+		depthFadeDebugOff: DEPTH_FADE_DEBUG_OFF,
+		gradingDebugOff: GRADING_DEBUG_OFF,
+		additiveEffectsDebugOff: ADDITIVE_DEBUG_OFF,
+		legacyStriationDebugOff: LEGACY_STRIATION_DEBUG_OFF,
 	} );
 
 	if ( ! handle ) {

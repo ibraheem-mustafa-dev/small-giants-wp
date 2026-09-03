@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-03T13:45:46.053Z",
-  "runDir": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T13-45-46-051Z-107204",
+  "generatedAt": "2026-09-03T14:08:21.240Z",
+  "runDir": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T14-08-21-239Z-112220",
   "sampleTimes": [
     17500,
     27500,
@@ -645,9 +645,9 @@
     },
     "2_side_by_side": {
       "uTime": 17500,
-      "ours": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T13-45-46-051Z-107204/2-side-by-side-ours.png",
+      "ours": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T14-08-21-239Z-112220/2-side-by-side-ours.png",
       "rigMatched": {
-        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T13-45-46-051Z-107204/2-side-by-side-rig-matched.png",
+        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T14-08-21-239Z-112220/2-side-by-side-rig-matched.png",
         "settings": {
           "blendOff": true,
           "nopost": true
@@ -655,7 +655,7 @@
         "note": "The exact settings that produced the rung-1 percentages — pair this with `ours`."
       },
       "rigDefault": {
-        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T13-45-46-051Z-107204/2-side-by-side-rig-default.png",
+        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T14-08-21-239Z-112220/2-side-by-side-rig-default.png",
         "settings": {
           "blendOff": false,
           "nopost": false
