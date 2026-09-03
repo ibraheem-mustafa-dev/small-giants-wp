@@ -11,8 +11,11 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 Plain English, for Bean. The framework is a WordPress block system that clones any design draft
 into native blocks a non-technical client can then edit. Five tracks worked on it historically,
-sharing one `main`; **only ONE is active now (Bean, 2026-08-30)** — the path-scoped commit hook
-still applies, but 'another track holds this file' is no longer a live constraint.
+sharing one `main`. ⚠ **A 2026-08-30 note here claimed only one track was active and that 'another
+track holds this file' was no longer live. That was FALSE on 2026-09-03**: a second session held ~29
+`src/blocks/*/edit.js` files uncommitted for hours and landed D933 mid-session. Treat concurrent
+occupancy as LIVE — path-scope every commit, re-verify file ownership immediately before it, and
+never `git stash` or `git checkout --` a shared file.
 
 Right now: the cloning pipeline and the motion system are both stable. Client controls closed out
 2026-09-02 (Waves 6-7 committed, deployed, live-verified). The live front is the **uniformity
@@ -40,10 +43,20 @@ yet, so breakage there costs time, not money.
 
 ## State Snapshot
 
-- **Branch:** `main`, ONE active track there. Commit with explicit paths (a hook enforces it). The
+- **Branch:** `main`. ⚠ **A concurrent session was active on this tree throughout 2026-09-03** —
+  it held ~29 `src/blocks/*/edit.js` files uncommitted for hours and landed D933. Commit with
+  explicit paths (a hook enforces it), re-verify ownership immediately before each commit, and
+  never `git stash` / `git checkout --` a shared file. Where local and remote had diverged,
+  pushing was done by cherry-picking into a throwaway worktree rather than rebasing a dirty tree.
+  The
   gap-candidates retirement worktree/branch are gone — merged via PR #37 (`61c2e813b`), confirmed
   in `git log --all` and the worktree no longer exists; do not go looking for it.
 - **Canary:** WP 7.1. Deploy via `build-deploy.py --target sandybrown` — the only sanctioned path.
+- **Verification:** `scripts/qa/assert-css-effect.js` runs a block's real render.php standalone and
+  asserts the CSS it emits — no deploy, seconds to run, 82 of 83 blocks (only `sgs/buybox` is NOT
+  RUN, deliberately: reaching its CSS path would mean faking a WooCommerce product graph). Use it
+  for any colour/CSS change. `scripts/toolindex/query.py "<what you need>"` finds a script by
+  description when you do not know its filename.
 - **Build:** green on `main`. Session 4's `01`/`21` fixes verified via self-test + re-run scan
   (`node scripts/inspector-scan/run.js --json`, both 0 flagged) — one unrelated ratchet violation
   surfaced (`28-fix-durability`, 1 over its 0 ceiling), not this session's scope, not fixed here.
@@ -60,8 +73,13 @@ yet, so breakage there costs time, not money.
 
 **Invoke `/autopilot` first.**
 
-⚠ **Multiple tracks have touched `main` historically; ONE is active now — the uniformity sweep
-(section below). Sections below are per-track, read only the one you're continuing.**
+⭐ **Start here: `.claude/prompts/2026-09-04-background-layer-and-contrast.md`.** The live front is
+the COLOUR track — the `::after` background layer, which all 11 excluded text-gradient rows need
+before any of them can proceed. Do ONE by hand and record the recipe before scripting anything:
+`sgs_block_background_layer_css()` has never been used more than once and is unproven at scale.
+
+⚠ **Sections below are per-track — read only the one you're continuing.** Two sessions were active
+on `main` on 2026-09-03; assume concurrent occupancy is possible and path-scope every commit.
 The **motion** track owns `⛔ `sgs-framework.db` is ONE shared file — DB work sequentially, not parallel.
 
 ## ▶ UNIFORMITY SWEEP TRACK — `01-tab-group` + `21-render-without-control` BOTH CLOSED 2026-09-03 (session 4, D933)
@@ -110,65 +128,60 @@ from an agent report again.
 **Earlier history (D918/D919/D922/D924/D930/D933).** Full accounts in `decisions.md`, not
 duplicated here.
 
-## ▶ COLOUR TRACK — 2026-09-03 (session 2): category B LANDED, DB writer bug fixed, codemod autofix run (3 real bugs found + fixed). Detail: D928/D929.
+## ▶ COLOUR TRACK — 2026-09-03 (session 5): text-gradient batch shipped 10 rows, 11 excluded with reasons. Detail: D936.
 
-⭐ **Next prompt is a DIFFERENT question, not a continuation of this task list:
-`.claude/prompts/2026-09-03-mechanical-repair-scripting.md`, `/brainstorming explore` mode.**
-The category-B work below (previously the live task list) is DONE — this section is now history,
-read for context, not for a next action.
+⭐ **Next prompt: `.claude/prompts/2026-09-04-background-layer-and-contrast.md`.** The next body of
+work is the `::after` background layer, which every one of the 11 excluded rows needs first.
 
-**Shipped this session (D928/D929 have the full account):**
-- Category B closed: `google-reviews`/`modal`/`form`/`pricing-table`'s hardcoded hover colours
-  (no backing attribute) + `option-picker`'s pill hover (FR-35-5 exception deliberately reversed,
-  overriding the live gate's own `needsHover:false` too — Bean's explicit call). Fill/border
-  gradient extension across the same blocks via `sgs_button_element_style_css()`.
-- A genuine DB-writer bug (found via `/qc-council`, two independent raters): `css_state` missing
-  from Stage 1's pre-reseed reset list, so a stale value survived every `/sgs-update` reseed
-  indefinitely. Fixed `9f2851150`.
-- Ran `scripts/colour-codemod/fix.js --fix --apply` (the one existing scripted repair in this
-  codebase) on its 6 accepted rows. **3 of 6 shipped genuinely broken** — a selector collision, a
-  gradient-only gate omission (found on 2 blocks), a mis-inserted block targeting the wrong
-  element entirely — none caught by `php -l`, JSON validation, or the full 86-gate build chain.
-  All 3 found via live deploy + reading the actual lifted CSS, all 3 fixed and re-verified live.
-  Commit `2ad141986`.
+**Shipped this session (D934/D935/D936 carry the full account):**
+- **Text gradients on 10 rows / 5 blocks** — testimonial (summary/name/role/org/rating),
+  pricing-table (title/feature), quote (attribution), brand-strip (name), option-picker (label).
+  Every row coordinator-verified independently of its implementer: TRUE claim PASSES, deliberately
+  FALSE claim FAILS, `@supports` fallback emitted, flat path unregressed.
+- **A CSS-effect assertion harness** (`scripts/qa/assert-css-effect.js`) — runs a block's real
+  render.php standalone and asserts the CSS it actually emits, no deploy. Fails-before/passes-after
+  on all three of 2026-09-02's defects. 81 of 83 blocks execute.
+- **Touch-safe hover guard at build time** (`scripts/hover-guard/`, wired into postbuild) — 105
+  findings to 0; 121 guarded, 87 colour, 3 text-decoration-only. Its cross-file scan exposed and
+  then closed a REAL shipped bug: an unguarded hover-only border ring in `helpers-button-style.php`.
+- **A tool index** (`scripts/toolindex/`) — finds a script from a description rather than a filename.
 
-⭐ **Measured, not assumed: the text-colour-gradient backlog is 43 elements across ~35 blocks**
-(queried directly against `textSharesElementWithBackground()`,
-`scripts/inspector-scan/rules/31-golden-colour-control.js:163` — an existing, already-adopted
-detector, not hand-derived). Named as its own project — closing it means moving each element's
-background paint to a `::after` layer via `sgs_block_background_layer_css()`, never automated,
-never built more than once.
+⛔ **ELIGIBILITY FOR A TEXT GRADIENT IS NOT "the colour is painted directly".** The element must
+also paint NO background on its own selector — `background-clip:text` clips the element's entire
+background painting area to the glyph shapes, so such an element renders invisible text AND no fill,
+silently, while still passing a naive `color` assertion. A background arrives THREE ways and only
+the first is visible to element-manifest scanning: (1) declared on the same manifest entry; (2) a
+DEFAULT STYLE-VARIANT class (`form`/`modal` `--primary`); (3) a SIBLING ATTRIBUTE on the same
+selector (`nav-menu.burgerBg`). Scoping by (1) alone put 22 rows in scope; adding (2) and (3) cut it
+to 11 — running the original 22 would have shipped 7 elements with invisible text.
 
-**Still open, untouched this session, carried forward as-is:**
-- **Category C — motion-only hover guard.** 76 rules across 25 blocks (`transform` 54, `opacity`
-  9, `opacity+transform` 6, `filter`-family 7), confirmed via direct grep, none currently wrapped
-  in the touch-hover guard. No script exists for this yet.
-- **The pre-existing colour-codemod backlog** — `survey.js` still reports 252 rows across 65
-  blocks; `fix.js`'s real accepted scope (now proven, not assumed) is a small fraction of what
-  `survey.js` calls AUTOFIXABLE, and 3 of its 6 real applications this session were wrong. Widening
-  this tool's scope before improving its verification story is exactly the open question the next
-  prompt explores.
-- 35 custom-property rows (fail in `style.css`, no phase owns it) and 132 below-min-states (a
-  hover sibling per row — different dimension, different storage).
-
-⚠ **No contrast guard exists anywhere in the colour components.** A client can pick a pale gradient
-on white and get unreadable text with no warning, against the framework's own WCAG 2.1 AA baseline.
-Named, not fixed; deserves its own session.
+**Open, carried forward:**
+- **11 rows blocked pending the `::after` background layer** — full list with reasons in
+  `.claude/plans/2026-09-03-cluster-a-text-gradient-batch.md` and
+  `.claude/reports/2026-09-03-A0-unverified-rows.md`. `sgs_block_background_layer_css()` has never
+  been used more than once: treat it as unproven at scale, do ONE by hand first.
+- **Text-gradient attrMap key is split framework-wide** — 24 attrs use `css:background-image`, 14
+  use `css:color-gradient`, and ONLY `background-image` has a `property_suffixes` row. Pre-existing,
+  measured this session, NOT resolved: reconciling it changes cloning-pipeline routing, so it is a
+  design decision rather than a cleanup.
+- **No contrast guard exists anywhere.** A client can pick a pale gradient on white and get
+  unreadable text with no warning. ⛔ Bean-ruled 2026-09-03: it must only ever WARN, never block.
+- `fix.js` remains exhausted (0 fixable); the remaining refusals are B-cluster (custom-property
+  indirection) and a third mechanism routing through WP core's own style engine.
 
 ### Guardrails carried from this session
 
-- **A tool passing its own self-test + the full build gate chain is not proof it's correct** —
-  `fix.js` proved this twice (this session, and its earlier string-literal-splice incident). Live
-  deploy + reading the actual rendered CSS is the only thing that caught either.
-- **A concurrent second session can run the whole time on this shared tree** — hit repeatedly
-  this session (files appearing/disappearing from `git status`, a `git checkout --` that nearly
-  destroyed another session's uncommitted line, caught and restored byte-for-byte). Re-verify
-  file ownership before every commit, always with explicit path scoping.
-- **Per-agent green is not evidence** — run `gate:fast` centrally once after batches land.
-- **A moved survey verdict cannot see a superseded writer left behind** — read the diff's minus lines.
-- **Removing a writer can leave provably-dead guards**; prune by proof, never heuristic.
-- **Never quote a doc's count into a commit message**; paste the tool's output.
-- **Never fabricate `verdict: PASS`** — use the scoped `SGS_VISUAL_GATE_SKIP` bypass, never `--no-verify`.
+- **A gate refusing your commit may be reporting a real bug in someone else's work.** Four bypass
+  attempts were spent before reading the message; the finding was genuine both times.
+- **Fix the DECLARATION a derived value comes from, never the derived row** (D935) — a raw DB
+  `UPDATE` is correct until the next reseed and then silently is not.
+- **`php -l` does not catch an undefined variable** — it is valid PHP and renders as an empty value.
+  Only an emitted-CSS assertion catches that class.
+- **Verify a subagent's numbers by re-running its command, not by reading its summary** — but check
+  your OWN invocation first: several blocks need content attributes set before the target element
+  renders at all, and a missing one looks exactly like a failed fix.
+- **A negative control that reports zero cases is vacuous, not passing** — assert the control's
+  own preconditions landed before trusting its verdict.
 
 ## ▶ MOTION TRACK (A closed+live; B Phase 2 closed, Phase 3 next)
 

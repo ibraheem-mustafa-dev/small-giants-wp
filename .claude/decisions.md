@@ -1,3 +1,86 @@
+## D936 [ROUTINE] — Cluster A text gradients: 9 rows shipped, 13 excluded with reasons
+
+**2026-09-03.** `sgs/testimonial` (summary/name/role/org/rating), `sgs/pricing-table`
+(title/feature), `sgs/quote` (attribution), `sgs/brand-strip` (name) gained text-gradient
+support via the D636 triad. Commits `cae4ad768`, `0c011888e`, `96c1070e2`.
+
+⛔ **ELIGIBILITY IS NOT "the colour is painted directly".** The gate is whether the element
+ALSO paints a background on its own selector — `background-clip:text` clips the element's
+entire background painting area to the glyph shapes, so such an element renders invisible
+text AND no fill, silently, while still passing a naive `color` assertion.
+
+A background reaches an element **three** ways, and only the first is visible to
+element-manifest scanning:
+1. declared on the same `supports.sgs.elements` entry (7 rows blocked this way);
+2. a DEFAULT STYLE-VARIANT CLASS — `form.submitColour` and `modal.triggerColour` are blocked
+   because `submitStyle`/`triggerStyle` default to `'primary'`, whose class paints a background
+   on the same button;
+3. a SIBLING ATTRIBUTE landing on the same rendered selector — `nav-menu.burgerColour` is
+   blocked by `burgerBg`.
+`product-card.tagTextColour` is the starkest case: `style.css` gives the trial tag a solid
+accent background with ZERO operator configuration.
+
+Scoping by mechanism (1) alone put 22 rows in scope; adding (2) and (3) cut it to 11. Running
+the original 22 would have shipped at least 7 elements with invisible text.
+
+Excluded pending the `sgs_block_background_layer_css()` `::after` treatment: modal.closeColourText,
+nav-menu.itemColour, nav-menu.navColour, pricing-table.ctaColour, pricing-table.popularBadgeColour,
+product-card.ctaColourText, quote.textColourHover, form.submitColour, modal.triggerColour,
+nav-menu.burgerColour, product-card.tagTextColour. Analysis:
+`.claude/reports/2026-09-03-A0-unverified-rows.md`; plan + both exclusion lists:
+`.claude/plans/2026-09-03-cluster-a-text-gradient-batch.md`.
+
+## D935 [INCIDENT] — a raw DB UPDATE does not survive a reseed; declare it in block.json
+
+**2026-09-03.** D933 fixed `sgs/buybox.borderColourGradient` with a direct
+`UPDATE block_attributes SET css_property=...`. That sets the value but declares it nowhere the
+reseed reads, so the row was a ROGUE SEED by the db-consistency gate's own definition — "would
+vanish on the next reseed". A Stage 1 reseed run later the same day exposed it and the commit
+gate correctly refused.
+
+Root cause proven before fixing, not inferred: buybox genuinely paints a border gradient
+(`render.php:563` calls `sgs_border_gradient_css()`), and every other block declaring this
+attribute carries BOTH a `css_property` and a `css_element`. buybox alone had the property with
+the element empty, because its wrapper `attrMap` never declared it. The seed was right; the
+manifest was incomplete.
+
+Fixed at the manifest — one `css:border-color-gradient` entry on buybox's wrapper element — then
+`extract-signatures.py --task-a-only` (JSON-only, 1476→1477) and a Stage 1 reseed. Now resolves to
+`css_element='wrapper'` alongside its four sibling gradients. Commit `bbdd78c6e`.
+
+**Rule: when a DB value is wrong, fix the DECLARATION it is derived from, not the row.** A row
+edited directly is correct until the next reseed and then silently is not.
+
+## D934 [ROUTINE] — touch-safe hover guard extended to static CSS, checked on both surfaces
+
+**2026-09-03.** `includes/helpers-hover-state.php` guarded hover rules emitted from PHP, but
+per-block `style.css` is enqueued by WordPress as an ordinary stylesheet and never passes through
+PHP. Measured: 211 hover selector members across 62 blocks, **zero guarded**.
+
+Fixed at the build chokepoint (`scripts/hover-guard/`, wired into `package.json` postbuild), for
+the same reason `class-sgs-css-registry.php` chose one `render_block` filter over ~60 per-block
+edits: one mechanism covers every rule that exists AND every rule written later. 105 findings → 0;
+121 guarded, 87 colour (the PHP helpers own those), 3 `text-decoration`-only link hovers.
+
+Both layers are always applied and neither covers the other's devices —
+`@media (hover: hover) and (pointer: fine)` fixes phones and pure-touch tablets;
+`:where(:root:not(.sgs-touch-input))` fixes hybrids, because that media feature describes only the
+device's PRIMARY pointer and a touchscreen laptop reports hover-capable all session.
+
+`background-position` counts as motion: business-info's attribution link is a matched pair (a
+generic `:hover` dims to `opacity:0.8`, a more specific one cancels it with `opacity:1` +
+`background-position`), and guarding one half only would leave the link dimmed on touch with
+nothing to undo it.
+
+The checker scans BOTH surfaces and resolves ONE hop across a call boundary via a declared
+registry (`php-emitter-registry.json`), which exposed a real shipped bug: `helpers-button-style.php`
+passed a `:hover`-carrying selector into `sgs_border_gradient_css()` with a null gate, so its
+guarded branch was skipped and a hover-only border ring shipped unguarded. Fixed by splitting the
+selector — hover through both guards, `:focus-visible` left unguarded for keyboard users. The
+detector then had to learn to recognise EXTERNAL guarding (layer-2 constant in the selector AND the
+call wrapped in the layer-1 helper), proven not to be a relaxation by three controls: the original
+bug still flags, and each half-guard alone still flags. Commits `2a9cf59e7`, `f24bc86ee`, `4509b66dd`.
+
 ## D933 [ROUTINE] — 01-tab-group and 21-render-without-control both closed to zero (32→0, 54→0)
 
 **2026-09-03.** Continuation of D930. Worked both `inspector-scan` rules to a genuine 0 across
