@@ -760,3 +760,385 @@ What this still cannot see, stated plainly for the docs to carry forward:
 - No changes outside `scripts/hover-guard/`. No git commands run. No `includes/`/`src/`/
   `package.json` edits — the button-style/border-gradient defect itself is untouched, exactly as
   instructed.
+
+---
+
+## 12. Update 2026-09-03 — the defect fixed (`includes/helpers-button-style.php` only)
+
+**Read both files fresh before changing anything** (per this repo's prove-the-cause rule, and
+because another session may have touched shared files since my last read): `helpers-button-style.php`
+lines 234-271 confirmed byte-identical to the brief's description; `helpers-hover-state.php` lines
+44-157 re-read in full and confirmed `sgs_hover_media_wrap()`'s own docblock (lines 140-146)
+literally prescribes the exact caller-side pattern the coordinator proposed: *"such a caller
+prefixes SGS_HOVER_NOT_TOUCH onto the selector it passes to that helper itself"* then wraps the
+result in `sgs_hover_media_wrap()`. Also confirmed `helpers-button-style.php` already calls
+`sgs_hover_guarded_rule()` (line 230) without its own `require_once` for
+`helpers-hover-state.php` — it's loaded upstream via `render-helpers.php` — so the fix needs no new
+`require_once` either.
+
+### The fix
+
+Only `includes/helpers-button-style.php`'s `elseif` branch (the one the brief names) was changed.
+`includes/helpers-tokens.php` was **not** touched — the call-site-only fix works (see the CSS
+evidence below), so the "only if you can show it genuinely cannot work without it" condition for
+touching that file never applied.
+
+```php
+} elseif ( function_exists( 'sgs_border_gradient_css' ) && '' !== $colour_border_hover_gradient ) {
+	// [comment explaining the mask-geometry constraint and the split-selector shape — see file]
+	$gradient_width = /* unchanged */;
+	$selector_parts  = array_map( 'trim', explode( ',', $selector ) );
+
+	$hover_only_selector = implode( ',', array_map(
+		static function ( $part ) { return SGS_HOVER_NOT_TOUCH . ' ' . $part . ':hover'; },
+		$selector_parts
+	) );
+	$focus_only_selector = implode( ',', array_map(
+		static function ( $part ) { return $part . ':focus-visible'; },
+		$selector_parts
+	) );
+
+	$css .= sgs_hover_media_wrap(
+		sgs_border_gradient_css( $hover_only_selector, $colour_border_hover_gradient, null, $gradient_width )
+	);
+	$css .= sgs_border_gradient_css( $focus_only_selector, $colour_border_hover_gradient, null, $gradient_width );
+}
+```
+
+Both halves still call the shared `sgs_border_gradient_css()` helper (per the brief — reuse it, don't
+hand-roll the mask geometry). `$hover_paint` stays `null` in both calls, exactly as before — the
+paint is carried by `$normal_paint` against a STATE-scoped selector now, not by the (unusable, per
+the brief's already-ruled-out alternative) `$hover_paint` parameter. `SGS_HOVER_NOT_TOUCH` and
+`sgs_hover_media_wrap()` are used exactly as declared in `helpers-hover-state.php` — neither the
+media query text nor the `:where()` prefix is hand-written at the call site.
+
+### Verification 1 — `check.js` exit status (reported exactly, not rounded to what was expected)
+
+```
+[hover-guard check] CSS: scanned 62 files, 211 hover members total, 121 already guarded,
+87 colour (out of scope), 3 text-decoration-only (out of scope), 0 findings.
+[hover-guard check] PHP: scanned 977 functions, 0 within-function findings.
+[hover-guard check] PHP cross-file: 5 calls to registered shared emitters, 4 resolve clean,
+1 flagged unguarded, 0 unresolved.
+  [php-cross-file] includes/helpers-button-style.php:295 sgs_button_element_style_css()
+    passes a hover-carrying selector into sgs_border_gradient_css() on a call path where
+    its guard is proven skipped
+[hover-guard check] FAIL
+```
+
+**This is not the "4 calls, 4 clean, 0 flagged" the brief expected, and I want to be exact about
+why rather than paper over it — no thresholds, registry, or detector code were touched to try to
+close this gap.**
+
+1. **The call count is 5, not 4**, because the fix splits the ONE old call into TWO (hover half +
+   focus half) — the brief's own prescribed shape naturally does this; a single combined
+   `{sel}:hover,{sel}:focus-visible` selector cannot receive two different guard treatments (guarded
+   vs unguarded) as one call.
+2. **The remaining 1 flag is on the fix's OWN hover-guarding call** (line 295 — the one wrapped in
+   `sgs_hover_media_wrap()`), not a surviving copy of the original bug. Verified this is a **false
+   positive**, not a residual defect: `php-emitter-registry.json`'s rule for
+   `sgs_border_gradient_css` is "a literal `null` third argument proves the guarded branch is
+   skipped" — true in general, but this NEW call site supplies BOTH guard layers from OUTSIDE the
+   callee (the selector already carries the `SGS_HOVER_NOT_TOUCH` prefix — layer 2 — before it's
+   passed in, and the caller wraps the callee's ENTIRE return value in `sgs_hover_media_wrap()` —
+   layer 1) — exactly the pattern `sgs_hover_media_wrap()`'s own docblock describes for an "opaque
+   rule from another helper" that "cannot have the layer-2 guard injected into it" any other way.
+   The registry's one-hop, declared-data model (correctly, per its own scope) has no field for
+   "this call is guarded by its caller's wrapping, not by its own gate argument" — closing that
+   would mean extending `php-emitter-registry.json`'s schema, which is explicitly out of this task's
+   scope ("If you find yourself editing anything under scripts/hover-guard/ to make this pass,
+   stop"). I did not touch it. The evidence that this is a false positive, not a live bug, is
+   Verification 2 below: the actual emitted CSS for this exact call.
+
+### Verification 2 — the fix, proven by emitted CSS (before / after, real function, real WP shims stripped)
+
+Ran `sgs_button_element_style_css()` directly (a tiny standalone PHP harness loading the real
+`includes/*.php` files outside WordPress) with `ctaColourBorderHoverGradient` set and nothing else —
+the exact "button with ONLY a hover border gradient" case the brief names.
+
+**BEFORE** (captured from a scratch-reverted copy of the original code — see Verification 3):
+```css
+.sgs-fake-cta:hover,.sgs-fake-cta:focus-visible{border-color:transparent;position:relative;background-clip:padding-box;}
+.sgs-fake-cta:hover,.sgs-fake-cta:focus-visible::before{content:"";position:absolute;inset:0;margin:-2px;border-radius:inherit;padding:2px;background:linear-gradient(90deg,#fff,#000);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}
+```
+No `@media`, no `:where()` — unguarded, exactly the defect.
+
+**AFTER** (the real, current `includes/helpers-button-style.php`):
+```css
+@media (hover: hover) and (pointer: fine){
+:where(:root:not(.sgs-touch-input)) .sgs-fake-cta:hover{border-color:transparent;position:relative;background-clip:padding-box;}
+:where(:root:not(.sgs-touch-input)) .sgs-fake-cta:hover::before{content:"";position:absolute;inset:0;margin:-2px;border-radius:inherit;padding:2px;background:linear-gradient(90deg,#fff,#000);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}
+}
+.sgs-fake-cta:focus-visible{border-color:transparent;position:relative;background-clip:padding-box;}
+.sgs-fake-cta:focus-visible::before{content:"";position:absolute;inset:0;margin:-2px;border-radius:inherit;padding:2px;background:linear-gradient(90deg,#fff,#000);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}
+```
+(reformatted with line breaks for readability; the real output is one line)
+
+**The hover half carries BOTH guards** (`@media (hover: hover) and (pointer: fine)` outside,
+`:where(:root:not(.sgs-touch-input))` prefixed on the selector inside). **The focus half carries
+NEITHER** — plain `.sgs-fake-cta:focus-visible` / `::before`, no media wrapper, no `:where()`
+prefix, reachable by a keyboard user on any device.
+
+### Verification 3 — negative control, confirmed it landed
+
+`check.js`'s PHP target directory is hardcoded to `../../includes` (not parameterised), so a scratch
+revert can't be swapped in through `check.js` itself — I invoked the same underlying command
+`check.js` runs (`php-hover-scan.php`) directly against a scratch copy instead, which is the
+equivalent proof.
+
+1. Copied `includes/helpers-button-style.php` (the FIXED version) to a scratch directory.
+2. Textually reverted ONLY the `elseif` branch back to the original buggy shape (`$hover_only_selector`
+   combining `:hover,:focus-visible` in one string, passed with a literal `null` third argument —
+   byte-for-byte the code this task started from). `php -l` confirmed the revert is syntactically
+   valid.
+3. Ran `php-hover-scan.php` against the REVERTED scratch copy:
+   ```
+   "cross_file_flags": [ { ..."line": 270, "callee": "sgs_border_gradient_css",
+     "resolution": "flagged-unguarded" } ]
+   exit: 1
+   ```
+   Flags again, at the ORIGINAL line 270 — confirms the revert genuinely reintroduced the bug (not a
+   no-op revert silently "passing" for an unrelated reason).
+4. Ran it against the REAL (fixed) file for contrast — flags at line 295 (the false positive
+   analysed in Verification 1), not line 270. The bug's own line is gone; a different line is now
+   flagged, for a different and explained reason.
+5. Scratch copy discarded; the real file was never touched during this control.
+
+### Verification 4 — mouse rendering unchanged, with evidence
+
+Comparing the BEFORE and AFTER blocks in Verification 2, the **hover declarations are byte-identical**
+between the two: `border-color:transparent;position:relative;background-clip:padding-box;` on the
+base rule, and the identical `::before{content:"";position:absolute;inset:0;margin:-2px;border-radius:inherit;padding:2px;background:linear-gradient(90deg,#fff,#000);-webkit-mask:...;-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}`
+on the pseudo-element — same mask geometry, same gradient, same everything. **A mouse user sees
+exactly the same ring as before** because: (1) a mouse satisfies `(hover: hover) and (pointer: fine)`,
+so the `@media` guard passes; (2) a mouse user's `<html>` never gains `.sgs-touch-input` (that class
+is only set by a touch `pointerdown`), so `:root:not(.sgs-touch-input)` matches; both guard
+conditions pass, the guarded rule fires, with declarations identical to the unguarded original. The
+ONLY behavioural change is for a TOUCH tap: before, the ring appeared and never went away (no guard
+at all — the exact defect); after, `@media (hover: hover)` alone already excludes most touch
+devices, and the reactive `.sgs-touch-input` class additionally excludes a touchscreen laptop/hybrid
+device whose primary pointer still reports hover-capable.
+
+### Verification 5 — `php -l` and other callers
+
+```
+$ php -l includes/helpers-button-style.php
+No syntax errors detected in includes/helpers-button-style.php
+```
+(the only file touched — `includes/helpers-tokens.php` was read but not written, `php -l` on it is
+moot since it's byte-identical to before this task)
+
+**Other callers of `sgs_border_gradient_css()`, enumerated and re-read line-by-line after the fix to
+confirm they are untouched:**
+
+| Caller | File:line | Touched? | Why unaffected |
+|---|---|---|---|
+| `sgs_button_element_style_css()`'s `if` branch | `helpers-button-style.php:244-253` | No | Different branch (both a resting AND a hover gradient set) — the `elseif` is the ONLY branch this task changed |
+| `class SGS_Container_Wrapper::render()` | `class-sgs-container-wrapper.php:2151` | No | Own call site, own selector construction, never referenced the `elseif` branch |
+| `sgs_border_states_css()` | `helpers-colour-variants.php:286` | No | Same — independent call site |
+| `sgs_border_gradient_css()` itself | `helpers-tokens.php:1217-1241` | No | Not edited — confirmed byte-identical via direct re-read; the fix is entirely call-site-side, so its signature, defaults, and internal guarded-branch logic are unchanged for every caller |
+
+No caller's behaviour changes because none of their code was touched — the fix only changes HOW the
+`elseif` branch in `helpers-button-style.php` calls the shared, unmodified helper.
+
+### Honest summary for the repo owner's decision
+
+The defect described in the brief is fixed and verified three independent ways: direct CSS
+execution (both guard layers present on hover, neither on focus, declarations byte-identical to
+before for a mouse user), a negative control that reverts and re-triggers the original detector
+finding at its original line, and `php -l` plus a full read-through of every other caller showing
+zero blast radius. What is NOT achieved is a fully green `check.js` — the cross-file detector, using
+its current declared registry (which I did not touch, per instruction), cannot distinguish "guarded
+by the callee's own gate parameter" (what it currently checks) from "guarded by the caller wrapping
+the callee's opaque return value" (what this fix does, using the exact helper
+`sgs_hover_media_wrap()` was built for). Closing that gap is a `php-emitter-registry.json` schema
+question for a future task, not something I attempted to route around here.
+
+---
+
+## 13. Update 2026-09-03 — external-guard recognition (closes the false positive, honestly)
+
+Scope for this update: `plugins/sgs-blocks/scripts/hover-guard/` only, per the coordinator's message
+lifting the previous ban specifically for this bounded extension. `includes/` was NOT touched again
+— the fix from §12 stands untouched.
+
+### The gap, restated precisely
+
+`php-emitter-registry.json`'s existing rule answers "did the CALLEE guard itself?" — sound, and
+still needed for the general case. It has nothing to say about a call the CALLER guards from
+OUTSIDE the callee, which is exactly the shape the §12 fix uses (and the exact shape
+`sgs_hover_media_wrap()`'s own docblock was written for): layer 2 baked into the selector
+expression before it's passed in, layer 1 wrapping the callee's whole return value.
+
+### What was built — declared data, not a hardcoded condition
+
+**`php-emitter-registry.json`** gained one new reserved top-level key, `__guard_recognition__`
+(double-underscore so it can never collide with a real `sgs_*` function name — the loader treats it
+specially, everything else keeps working exactly as before):
+```json
+"__guard_recognition__": {
+	"layer1_wrapper_functions": [ "sgs_hover_media_wrap" ],
+	"layer2_selector_constant": "SGS_HOVER_NOT_TOUCH"
+}
+```
+
+**`php-hover-scan.php`** — `load_registry()` now returns `{emitters, guard_recognition}` instead of
+a flat emitter map (every call site updated accordingly). Three new functions, used ONLY by the new
+check, sitting alongside (not replacing) the existing hover-taint logic:
+- `build_local_taint_map()` — a generalised version of the existing one-hop assignment tracer,
+  parameterised by a `callable` needle-matcher, so the SAME bounded one-hop rule (direct literal, or
+  a locally-assigned variable in the SAME function) now also answers "does this contain the layer-2
+  constant?", not just "does this contain `:hover`?".
+- `arg_carries_constant()` — checks a call argument's span for the registry's declared
+  `layer2_selector_constant` token, using that taint map.
+- `find_enclosing_call_name()` — scans backward through balanced brackets from just before a call's
+  name token to find the name of the function whose argument list directly contains it (correctly
+  returns null for grouping parens, control-structure parens like `if (`/`foreach (` — those
+  tokenize as a keyword, not `T_STRING` — or any non-call enclosing bracket).
+
+**The decision point** (in `scan_file()`'s Job B loop): once a selector argument is proven
+hover-carrying (unchanged from before), the scanner now checks external-guard recognition
+FIRST, and only falls through to the existing gate-argument check when it does NOT prove both
+halves:
+```php
+$hasLayer2   = arg_carries_constant( $tokens, $selectorSpan, $constMap, $guardRecognition['layer2_selector_constant'] );
+$enclosingFn = find_enclosing_call_name( $tokens, $call['name_idx'] - 1, $bodyStart );
+$hasLayer1   = null !== $enclosingFn && in_array( $enclosingFn, $guardRecognition['layer1_wrapper_functions'], true );
+
+if ( $hasLayer1 && $hasLayer2 ) {
+	$record['resolution'] = 'clean-externally-guarded';
+	// ... no finding, gate argument never consulted
+} else {
+	// falls through to the UNCHANGED gate-argument check
+}
+```
+Nothing about the existing gate-argument logic changed — it still runs, unmodified, whenever
+external-guard recognition doesn't PROVE both layers.
+
+### Verification 1 — `check.js` exits 0, exact line
+
+```
+[hover-guard check] PHP cross-file: 5 calls to registered shared emitters, 5 resolve clean,
+0 flagged unguarded, 0 unresolved.
+```
+Full run:
+```
+[hover-guard check] CSS: scanned 62 files, 211 hover members total, 121 already guarded,
+87 colour (out of scope), 3 text-decoration-only (out of scope), 0 findings.
+[hover-guard check] PHP: scanned 977 functions, 0 within-function findings.
+[hover-guard check] PHP cross-file: 5 calls to registered shared emitters, 5 resolve clean,
+0 flagged unguarded, 0 unresolved.
+[hover-guard check] PASS — 0 unguarded motion hover rules, 0 unclassified rules,
+0 unguarded PHP hover emitters (within-function or cross-file), 0 unresolved cross-file cases.
+```
+Exit code confirmed `0` via `$?` immediately after the run.
+
+### Verification 2 — negative control: the original bug is STILL caught
+
+Copied `includes/helpers-button-style.php` to a scratch directory and textually reverted ONLY the
+`elseif` branch back to the exact pre-fix shape (the single combined `{sel}:hover,{sel}:focus-visible`
+selector, literal `null` gate, no wrapper call at all). Confirmed the revert actually landed before
+trusting anything:
+```
+$ grep -n "SGS_HOVER_NOT_TOUCH\|sgs_hover_media_wrap\|hover_only_selector" <scratch copy>
+261:            $hover_only_selector = implode(
+270:            $css                .= sgs_border_gradient_css( $hover_only_selector, $colour_border_hover_gradient, null, $gradient_width );
+```
+(no `SGS_HOVER_NOT_TOUCH`, no `sgs_hover_media_wrap` — the guard code genuinely isn't there)
+
+Scanned the reverted copy:
+```
+exit: 1
+"cross_file_flags": [ { ..."line": 270, "callee": "sgs_border_gradient_css",
+  "resolution": "flagged-unguarded" } ]
+```
+**Still flags, at the original line 270, with the same resolution as before this extension.** The
+external-guard check cannot fire here — there is no `sgs_hover_media_wrap()` call and no
+`SGS_HOVER_NOT_TOUCH` constant anywhere in the reverted body — so it correctly falls straight
+through to the unchanged gate check, which still catches it. Confirms the extension is additive,
+not a relaxation.
+
+### Verification 3 — partial-guard controls (both halves, separately)
+
+**(a) Layer-1 wrapper present, layer-2 constant ABSENT** (`sgs_hover_media_wrap()` wraps the call,
+but the selector is built as plain `$part . ':hover'` with no `SGS_HOVER_NOT_TOUCH` anywhere):
+```
+exit: 1
+"cross_file_flags": [ { ...
+  "resolution": "flagged-unguarded" } ]
+```
+Still flagged — a media-query guard with no zero-specificity touch-class scoping still leaves every
+hybrid touchscreen device (still reporting hover-capable) broken; correctly not accepted as
+"guarded".
+
+**(b) Layer-2 constant present, layer-1 wrapper ABSENT** (the selector carries
+`SGS_HOVER_NOT_TOUCH`, but `sgs_border_gradient_css()` is called directly, not nested inside
+`sgs_hover_media_wrap()`):
+```
+exit: 1
+"cross_file_flags": [ { ...
+  "resolution": "flagged-unguarded" } ]
+```
+Still flagged (Job A also separately flags this synthetic function, since it hand-builds `:hover`
+and calls no guard function by name — a harmless additional true signal, not a conflict) — zero
+specificity with no media-query tier at all still ships an ungated rule; correctly not accepted as
+"guarded" either.
+
+**Neither half alone is treated as sufficient.** Both controls prove the extension requires POSITIVE
+PROOF of both layers, exactly as specified, and does not "bless a half-guard as complete."
+
+### Verification 4 — anti-vacuity, again
+
+Same real file, empty `{}` registry (which zeroes BOTH the emitter list AND
+`guard_recognition`, since the empty object has neither key):
+```
+exit: 0
+"cross_file_calls": [], "cross_file_flags": [], "cross_file_unresolved": []
+```
+0 calls, 0 flags — proves the whole mechanism, base emitter detection AND the new external-guard
+recognition, is genuinely driven by the registry's declared content. A future "0 findings" against
+the real registry is a real 0, not a dead lookup silently matching nothing.
+
+### Verification 5 — honest limitations of this extension specifically
+
+- **A wrapper applied two calls away is invisible.** `find_enclosing_call_name()` checks only the
+  IMMEDIATE enclosing call. If a future refactor introduced an intermediate helper —
+  `some_helper( sgs_border_gradient_css(...) )` where `some_helper()` itself, elsewhere, wraps ITS
+  OWN return value in `sgs_hover_media_wrap()` — this extension would not see the outer wrap and
+  would (safely) fall through to the gate check, which would then flag it. That is the conservative
+  failure direction (a false flag on genuinely-safe code, requiring a human to add a second
+  registered wrapper layer or restructure), not the dangerous one (a real bug passing silently).
+- **A selector whose layer-2 prefix arrives via a variable from ANOTHER function is invisible.**
+  `arg_carries_constant()`'s taint tracing is the same one-hop bound as the existing hover-taint
+  check — scoped to the SAME calling function's own body. A selector built with
+  `SGS_HOVER_NOT_TOUCH` in a helper function, then passed as a plain parameter into the function
+  that calls the registered emitter, resolves as "constant not found" at this hop and again falls
+  through to the (correctly failing) gate check.
+- **Any wrapper function not named in `layer1_wrapper_functions`, or any constant not matching
+  `layer2_selector_constant` exactly, is invisible** — by design, this is declared data, not pattern
+  matching. A second layer-1 wrapper introduced later needs its name added to the registry.
+- **A wrapper call using a different argument shape** — e.g. `sgs_hover_media_wrap( $x, $y )` with
+  the emitter call buried inside `$x`'s own construction rather than passed directly as the
+  wrapper's argument — is not traced; `find_enclosing_call_name()` only proves the emitter call is
+  LEXICALLY inside the wrapper's own parameter list, not that its value flows into what the wrapper
+  actually uses.
+- **This still inherits every limitation from §11's original Job B docblock** (two-hop flows,
+  dynamic function calls, `call_user_func()`, an emitter not yet registered) — none of those changed.
+
+In every one of these blind spots, the FAILURE DIRECTION is conservative: an un-recognised external
+guard falls through to the existing gate check, which still flags a hover-carrying selector with a
+skip-listed gate argument. The extension can produce a false FLAG on code that later turns out to be
+safe (a nuisance, fixable by extending the declared registry), never a false CLEAN on code that
+isn't — which is the property that matters for a touch-safety gate.
+
+### Files touched for this update (still only inside `scripts/hover-guard/`)
+
+- `php-emitter-registry.json` — new `__guard_recognition__` reserved key (declared data).
+- `php-hover-scan.php` — `load_registry()` return shape changed to `{emitters, guard_recognition}`
+  (all call sites updated); three new functions (`build_local_taint_map()`, `arg_carries_constant()`,
+  `find_enclosing_call_name()`); the Job B decision loop gained the external-guard check ahead of
+  the unchanged gate check; docblock rewritten to document the new step and its limitations.
+- No changes to `check.js`, `classify.js`, `transform.js`, `audit.js`, `selector-split.js`,
+  `run-transform.js`, or any test fixture.
+- No changes outside `scripts/hover-guard/`. No git commands run. `includes/helpers-button-style.php`
+  (the §12 fix) untouched.

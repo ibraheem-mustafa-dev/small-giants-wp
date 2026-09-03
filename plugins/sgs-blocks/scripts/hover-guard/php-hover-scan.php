@@ -51,17 +51,41 @@
  *      ternary, string interpolation mixing multiple sources) that doesn't
  *      resolve to a plain literal-or-traced-variable is UNRESOLVED — this
  *      scan never guesses past what it can prove.
- *   2. Only when step 1 is YES: reads the registry's
- *      `guard_gate_param_index` argument at that SAME call site and checks
- *      whether its exact token text matches one of the registry's
- *      `guard_skip_literals` for that function (e.g. the bare keyword
- *      `null`) — a PROVEN case where the callee's guarded branch is
- *      skipped, so the hover-carrying selector reaches an unconditional,
- *      unguarded emission inside the callee. That is a FLAG. If the gate
- *      argument is a single literal NOT in the skip list (a genuine
- *      non-empty string, say), the guarded branch is confidently assumed to
- *      run — no finding. Anything else (a variable, a ternary, a nested
- *      call) is UNRESOLVED, not guessed at either way.
+ *   2. Only when step 1 is YES, checks whether the call is EXTERNALLY
+ *      GUARDED (added 2026-09-03, see "EXTERNAL-GUARD RECOGNITION" below)
+ *      — if so, no finding, full stop, without ever consulting the gate
+ *      argument. Otherwise:
+ *   3. Reads the registry's `guard_gate_param_index` argument at that SAME
+ *      call site and checks whether its exact token text matches one of
+ *      the registry's `guard_skip_literals` for that function (e.g. the
+ *      bare keyword `null`) — a PROVEN case where the callee's guarded
+ *      branch is skipped, so the hover-carrying selector reaches an
+ *      unconditional, unguarded emission inside the callee. That is a
+ *      FLAG. If the gate argument is a single literal NOT in the skip list
+ *      (a genuine non-empty string, say), the guarded branch is
+ *      confidently assumed to run — no finding. Anything else (a
+ *      variable, a ternary, a nested call) is UNRESOLVED, not guessed at
+ *      either way.
+ *
+ * EXTERNAL-GUARD RECOGNITION (added 2026-09-03). Step 1/3 above ask "did the
+ * CALLEE guard itself?" — sound, but silent about a call the CALLER guards
+ * from OUTSIDE the callee: layer 2 baked into the selector expression
+ * itself, layer 1 wrapping the callee's whole return value
+ * (`sgs_hover_media_wrap( sgs_border_gradient_css( ... ) )` is the real
+ * shape this closes — see `includes/helpers-button-style.php`'s border-
+ * gradient hover branch). A call is EXTERNALLY GUARDED only when BOTH are
+ * independently PROVEN at that exact call site — this is a POSITIVE PROOF
+ * requirement, not a relaxation of step 3, and either alone still falls
+ * through to step 3 and can still be flagged:
+ *   (a) the selector argument's expression — same one-hop tracing as step 1
+ *       — contains the registry's declared `layer2_selector_constant`
+ *       (e.g. `SGS_HOVER_NOT_TOUCH`) as a literal constant-name token; AND
+ *   (b) the call itself sits as an argument (at any position, any nesting
+ *       depth is NOT required — the immediate enclosing call is what's
+ *       checked) inside a call to one of the registry's declared
+ *       `layer1_wrapper_functions` (e.g. `sgs_hover_media_wrap`).
+ * Both names are DECLARED DATA under the reserved registry key
+ * `__guard_recognition__` — never hardcoded here.
  *
  * `includes/helpers-hover-state.php` itself is excluded from BOTH jobs — it
  * is the DEFINER of `:hover` construction and of the guard functions, not a
@@ -81,6 +105,13 @@
  *     through as a bare parameter (deliberately resolved as "no" at the
  *     current hop — see step 1 above); or any emitter not yet added to the
  *     registry.
+ *   - EXTERNAL-GUARD RECOGNITION is bounded the SAME way: the layer-2
+ *     constant must appear within ONE hop of the selector argument (a
+ *     direct literal, or a locally-assigned variable in the SAME calling
+ *     function); the layer-1 wrapper must be the IMMEDIATE enclosing call,
+ *     not a wrapper applied two calls away; and a wrapper function not
+ *     named in `layer1_wrapper_functions` is invisible, exactly like an
+ *     emitter not named in the main registry.
  *
  * Output: JSON to stdout — {"functions", "failures", "cross_file_calls",
  * "cross_file_flags", "cross_file_unresolved", "had_error"}.
@@ -103,11 +134,17 @@ const GUARD_FUNCTIONS = array(
 /** Token types treated as insignificant whitespace/comments when reducing a span to its meaningful tokens. */
 const SKIPPABLE_TOKEN_TYPES = array( T_WHITESPACE, T_COMMENT, T_DOC_COMMENT );
 
+/** Reserved registry key for the external-guard recognition metadata — chosen
+ *  double-underscore so it can never collide with a real `sgs_*` function name. */
+const GUARD_RECOGNITION_KEY = '__guard_recognition__';
+
 /**
- * Load the declared cross-file emitter registry.
+ * Load the declared cross-file emitter registry, plus the declared
+ * external-guard recognition metadata (layer-1 wrapper function names,
+ * layer-2 constant name) under the reserved `__guard_recognition__` key.
  *
  * @param string $path
- * @return array<string, array{selector_param_index:int, guard_gate_param_index:int, guard_skip_literals:string[]}>|null Null on any read/parse failure.
+ * @return array{emitters: array<string, array{selector_param_index:int, guard_gate_param_index:int, guard_skip_literals:string[]}>, guard_recognition: array{layer1_wrapper_functions: string[], layer2_selector_constant: string}}|null Null on any read/parse failure.
  */
 function load_registry( string $path ): ?array {
 	if ( ! is_readable( $path ) ) {
@@ -121,21 +158,43 @@ function load_registry( string $path ): ?array {
 	if ( ! is_array( $decoded ) ) {
 		return null;
 	}
-	$registry = array();
+
+	$guardRecognition = array(
+		'layer1_wrapper_functions' => array(),
+		'layer2_selector_constant' => '',
+	);
+	if ( isset( $decoded[ GUARD_RECOGNITION_KEY ] ) && is_array( $decoded[ GUARD_RECOGNITION_KEY ] ) ) {
+		$grEntry = $decoded[ GUARD_RECOGNITION_KEY ];
+		if ( isset( $grEntry['layer1_wrapper_functions'] ) && is_array( $grEntry['layer1_wrapper_functions'] ) ) {
+			$guardRecognition['layer1_wrapper_functions'] = array_map( 'strval', $grEntry['layer1_wrapper_functions'] );
+		}
+		if ( isset( $grEntry['layer2_selector_constant'] ) && is_string( $grEntry['layer2_selector_constant'] ) ) {
+			$guardRecognition['layer2_selector_constant'] = $grEntry['layer2_selector_constant'];
+		}
+	}
+
+	$emitters = array();
 	foreach ( $decoded as $fn_name => $entry ) {
+		if ( GUARD_RECOGNITION_KEY === $fn_name ) {
+			continue; // consumed above, not an emitter row
+		}
 		if ( 0 === strpos( (string) $fn_name, '_' ) ) {
 			continue; // schema-doc keys, e.g. _comment_schema
 		}
 		if ( ! is_array( $entry ) || ! isset( $entry['selector_param_index'], $entry['guard_gate_param_index'] ) ) {
 			continue; // malformed row — silently dropping a row here is safe: it simply won't be detected, never a false accusation
 		}
-		$registry[ $fn_name ] = array(
+		$emitters[ $fn_name ] = array(
 			'selector_param_index'   => (int) $entry['selector_param_index'],
 			'guard_gate_param_index' => (int) $entry['guard_gate_param_index'],
 			'guard_skip_literals'    => array_map( 'strval', $entry['guard_skip_literals'] ?? array() ),
 		);
 	}
-	return $registry;
+
+	return array(
+		'emitters'          => $emitters,
+		'guard_recognition' => $guardRecognition,
+	);
 }
 
 /**
@@ -240,18 +299,20 @@ function classify_gate_arg( array $tokens, array $span, array $skipLiterals ): s
  * @param array $tokens
  * @param int   $bodyStart
  * @param int   $bodyEnd
- * @param array<string,array> $registry
- * @return array<int, array{function:string, line:int, args: array<int, array{0:int,1:int}>}>
+ * @param array<string,array> $emitters
+ * @return array<int, array{function:string, line:int, name_idx:int, args: array<int, array{0:int,1:int}>}>
  */
-function find_registered_calls( array $tokens, int $bodyStart, int $bodyEnd, array $registry ): array {
+function find_registered_calls( array $tokens, int $bodyStart, int $bodyEnd, array $emitters ): array {
 	$calls = array();
 	$i     = $bodyStart;
 	while ( $i <= $bodyEnd ) {
 		$t = $tokens[ $i ];
-		if ( ! is_array( $t ) || T_STRING !== $t[0] || ! isset( $registry[ $t[1] ] ) ) {
+		if ( ! is_array( $t ) || T_STRING !== $t[0] || ! isset( $emitters[ $t[1] ] ) ) {
 			$i++;
 			continue;
 		}
+
+		$nameIdx = $i;
 
 		$j = $i + 1;
 		while ( $j <= $bodyEnd && is_array( $tokens[ $j ] ) && in_array( $tokens[ $j ][0], SKIPPABLE_TOKEN_TYPES, true ) ) {
@@ -303,12 +364,158 @@ function find_registered_calls( array $tokens, int $bodyStart, int $bodyEnd, arr
 		$calls[] = array(
 			'function' => $t[1],
 			'line'     => $t[2],
+			'name_idx' => $nameIdx,
 			'args'     => $args,
 		);
 
 		$i = $close + 1;
 	}
 	return $calls;
+}
+
+/**
+ * One-hop taint map, generalised: for every `$var = ...;` / `$var .= ...;`
+ * statement inside [bodyStart, bodyEnd], record whether its right-hand-side
+ * span contains a token that `$needleMatches` accepts, anywhere (including
+ * inside a nested closure, since the closure body is lexically part of the
+ * RHS span). A variable with NO local assignment found is simply absent
+ * from the map — callers treat "absent" as a confident "not tainted at
+ * this hop".
+ *
+ * @param array    $tokens
+ * @param int      $bodyStart
+ * @param int      $bodyEnd
+ * @param callable $needleMatches function( array|string $token ): bool
+ * @return array<string, bool>
+ */
+function build_local_taint_map( array $tokens, int $bodyStart, int $bodyEnd, callable $needleMatches ): array {
+	$map = array();
+	for ( $i = $bodyStart; $i <= $bodyEnd; $i++ ) {
+		$t = $tokens[ $i ];
+		if ( ! is_array( $t ) || T_VARIABLE !== $t[0] ) {
+			continue;
+		}
+		$varName = $t[1];
+
+		$j = $i + 1;
+		while ( $j <= $bodyEnd && is_array( $tokens[ $j ] ) && in_array( $tokens[ $j ][0], SKIPPABLE_TOKEN_TYPES, true ) ) {
+			$j++;
+		}
+		if ( $j > $bodyEnd ) {
+			continue;
+		}
+		$opTok    = $tokens[ $j ];
+		$isAssign = ( '=' === $opTok ) || ( is_array( $opTok ) && T_CONCAT_EQUAL === $opTok[0] );
+		if ( ! $isAssign ) {
+			continue;
+		}
+
+		$rhsStart = $j + 1;
+		$depth    = 0;
+		$rhsEnd   = null;
+		for ( $k = $rhsStart; $k <= $bodyEnd; $k++ ) {
+			$tk = $tokens[ $k ];
+			if ( '(' === $tk || '[' === $tk || '{' === $tk || ( is_array( $tk ) && ( T_CURLY_OPEN === $tk[0] || T_DOLLAR_OPEN_CURLY_BRACES === $tk[0] ) ) ) {
+				$depth++;
+			} elseif ( ')' === $tk || ']' === $tk || '}' === $tk ) {
+				$depth--;
+			} elseif ( 0 === $depth && ';' === $tk ) {
+				$rhsEnd = $k - 1;
+				break;
+			}
+		}
+		if ( null === $rhsEnd || $rhsEnd < $rhsStart ) {
+			continue; // malformed or empty RHS — don't guess
+		}
+
+		$matched = false;
+		for ( $p = $rhsStart; $p <= $rhsEnd; $p++ ) {
+			if ( $needleMatches( $tokens[ $p ] ) ) {
+				$matched = true;
+				break;
+			}
+		}
+
+		if ( $matched ) {
+			$map[ $varName ] = true; // sticky — one matching assignment taints the variable for the rest of the function
+		} elseif ( ! isset( $map[ $varName ] ) ) {
+			$map[ $varName ] = false;
+		}
+	}
+	return $map;
+}
+
+/**
+ * One-hop classification for "does this argument span contain the layer-2
+ * guard constant?" — same bounded shape as classify_arg_hover(): a direct
+ * token match, or a bare `$variable` traced to a local assignment (via
+ * $constMap) whose right-hand side contained the constant. No attempt to
+ * resolve anything more complex.
+ *
+ * @param array $tokens
+ * @param array{0:int,1:int} $span
+ * @param array<string,bool> $constMap
+ * @param string $constantName
+ * @return bool
+ */
+function arg_carries_constant( array $tokens, array $span, array $constMap, string $constantName ): bool {
+	if ( '' === $constantName || $span[1] < $span[0] ) {
+		return false;
+	}
+	for ( $p = $span[0]; $p <= $span[1]; $p++ ) {
+		$t = $tokens[ $p ];
+		if ( is_array( $t ) && T_STRING === $t[0] && $constantName === $t[1] ) {
+			return true;
+		}
+		if ( is_array( $t ) && T_VARIABLE === $t[0] && ! empty( $constMap[ $t[1] ] ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Find the name of the function whose argument list DIRECTLY contains
+ * position `$beforeIdx` (i.e. the nearest enclosing call, scanning
+ * backward through balanced brackets from just before some inner
+ * expression). Returns null when the nearest enclosing bracket isn't a
+ * function call (e.g. plain grouping parens, an `if (`/`foreach (`
+ * control-structure paren — those tokenize as a keyword, not T_STRING, so
+ * they're correctly excluded — or an array/block bracket), or when nothing
+ * encloses the position within this function body.
+ *
+ * @param array $tokens
+ * @param int   $beforeIdx Token index to start scanning backward from.
+ * @param int   $bodyStart Lower bound — never scans outside the enclosing function body.
+ * @return string|null
+ */
+function find_enclosing_call_name( array $tokens, int $beforeIdx, int $bodyStart ): ?string {
+	$depth = 0;
+	for ( $k = $beforeIdx; $k >= $bodyStart; $k-- ) {
+		$tk = $tokens[ $k ];
+		if ( ')' === $tk || ']' === $tk || '}' === $tk ) {
+			$depth++;
+			continue;
+		}
+		if ( '(' === $tk || '[' === $tk || '{' === $tk ) {
+			if ( 0 !== $depth ) {
+				$depth--;
+				continue;
+			}
+			if ( '(' !== $tk ) {
+				return null; // enclosed by [ or { — not a call's argument list
+			}
+			$m = $k - 1;
+			while ( $m >= $bodyStart && is_array( $tokens[ $m ] ) && in_array( $tokens[ $m ][0], SKIPPABLE_TOKEN_TYPES, true ) ) {
+				$m--;
+			}
+			if ( $m >= $bodyStart && is_array( $tokens[ $m ] ) && T_STRING === $tokens[ $m ][0] ) {
+				return $tokens[ $m ][1];
+			}
+			return null; // '(' not preceded by a plain function name (grouping parens, a control keyword, etc.)
+		}
+	}
+	return null;
 }
 
 /**
@@ -385,7 +592,7 @@ function build_local_assignment_map( array $tokens, int $bodyStart, int $bodyEnd
 
 /**
  * @param string $path
- * @param array<string,array>|null $registry
+ * @param array{emitters: array<string,array>, guard_recognition: array{layer1_wrapper_functions: string[], layer2_selector_constant: string}}|null $registry
  * @return array{functions: array, failures: array, cross_file_calls: array, cross_file_flags: array, cross_file_unresolved: array, error: string|null}
  */
 function scan_file( string $path, ?array $registry ): array {
@@ -519,13 +726,21 @@ function scan_file( string $path, ?array $registry ): array {
 			}
 
 			// ── JOB B: cross-file registry resolution ──────────────────────
-			if ( ! empty( $registry ) ) {
-				$calls = find_registered_calls( $tokens, $bodyStart, $bodyEnd, $registry );
+			$emitters         = $registry['emitters'] ?? array();
+			$guardRecognition = $registry['guard_recognition'] ?? array(
+				'layer1_wrapper_functions' => array(),
+				'layer2_selector_constant' => '',
+			);
+			if ( ! empty( $emitters ) ) {
+				$calls = find_registered_calls( $tokens, $bodyStart, $bodyEnd, $emitters );
 				if ( ! empty( $calls ) ) {
 					$localMap = build_local_assignment_map( $tokens, $bodyStart, $bodyEnd );
+					// Lazily built — only needed once a call's selector proves
+					// hover-carrying, and only if guard_recognition names anything.
+					$constMap = null;
 
 					foreach ( $calls as $call ) {
-						$entry           = $registry[ $call['function'] ];
+						$entry           = $emitters[ $call['function'] ];
 						$selectorIdx     = $entry['selector_param_index'];
 						$gateIdx         = $entry['guard_gate_param_index'];
 						$selectorSpan    = $call['args'][ $selectorIdx ] ?? array( 1, 0 ); // empty span => "not passed"
@@ -551,7 +766,35 @@ function scan_file( string $path, ?array $registry ): array {
 							continue;
 						}
 
-						// selectorVerdict === 'yes' — check the gate.
+						// selectorVerdict === 'yes' — try external-guard recognition
+						// FIRST (a positive proof, checked before the gate — see the
+						// module docblock's "EXTERNAL-GUARD RECOGNITION" section).
+						if ( '' !== $guardRecognition['layer2_selector_constant'] && ! empty( $guardRecognition['layer1_wrapper_functions'] ) ) {
+							if ( null === $constMap ) {
+								$constantName = $guardRecognition['layer2_selector_constant'];
+								$constMap     = build_local_taint_map(
+									$tokens,
+									$bodyStart,
+									$bodyEnd,
+									static function ( $token ) use ( $constantName ) {
+										return is_array( $token ) && T_STRING === $token[0] && $constantName === $token[1];
+									}
+								);
+							}
+							$hasLayer2 = arg_carries_constant( $tokens, $selectorSpan, $constMap, $guardRecognition['layer2_selector_constant'] );
+							$enclosingFn = find_enclosing_call_name( $tokens, $call['name_idx'] - 1, $bodyStart );
+							$hasLayer1   = null !== $enclosingFn && in_array( $enclosingFn, $guardRecognition['layer1_wrapper_functions'], true );
+
+							if ( $hasLayer1 && $hasLayer2 ) {
+								$record['resolution'] = 'clean-externally-guarded';
+								$crossFileCalls[]      = $record;
+								continue;
+							}
+						}
+
+						// Not externally guarded (or guard_recognition names nothing)
+						// — fall through to the callee's own gate argument, exactly
+						// as before this update.
 						$gateSpan    = $call['args'][ $gateIdx ] ?? array( 1, 0 );
 						$gateVerdict = classify_gate_arg( $tokens, $gateSpan, $entry['guard_skip_literals'] );
 
@@ -616,7 +859,13 @@ if ( null === $registry ) {
 	// never-fabricate-a-pass rule a registry load failure is treated as a
 	// scan error (exit 2), not a silent "0 cross-file findings".
 	$hadError = true;
-	$registry = array();
+	$registry = array(
+		'emitters'          => array(),
+		'guard_recognition' => array(
+			'layer1_wrapper_functions' => array(),
+			'layer2_selector_constant' => '',
+		),
+	);
 } else {
 	$hadError = false;
 }
