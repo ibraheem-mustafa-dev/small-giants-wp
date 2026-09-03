@@ -259,6 +259,20 @@ and strike that residual if it matches.
 
 ## framework
 
+### P-COLOUR-NAV-MENU-BURGER-GRADIENT — nav-menu's burger icon needs the SVG-gradient mechanism, not the text-gradient one
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-04
+
+`nav-menu.burgerColour` was one of D936's 9 background-collision rows and was found (D942) to be
+a miscategorisation, not a same-recipe fix: the burger's visible glyph is an inline SVG icon
+coloured via `currentColor`, not rendered text, so `background-clip:text` (the mechanism every
+other row in that batch used) has no defined effect on it. A working precedent already exists —
+`sgs_svg_stroke_gradient()` (`includes/helpers-svg-gradient.php`), which `sgs/icon` already uses
+for exactly this shape (an SVG `<linearGradient>` + `stroke:url(#id)`). Needs a new colour-gradient
+attribute wired onto `nav-menu`'s burger icon through that existing function — not built.
+
+**Trigger:** the colour track resuming general gradient rollout work, or an operator request for
+a gradient burger icon specifically.
+
 ### P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL — two decisions the consolidation track was waiting on
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
 

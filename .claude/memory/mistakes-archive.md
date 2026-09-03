@@ -6,6 +6,32 @@ under any name — see `.claude/reports/2026-08-12-doc-audit-register.md` §5).
 
 ---
 
+## 2026-09-04 (session 6 handoff) — 2-entry prune, oldest by date, moved verbatim, to make room for 2 new stubs at cap
+
+### [2026-08-15] A grep for a string the style engine never emits is not evidence a block lacks an emitter
+- **Pattern key:** `grep-for-a-literal-emitted-string-is-blind-to-passthrough-emitters`
+- **Evidence:** claimed `sgs/info-box` had "no typography emitter" on `grep -c text-align render.php`
+  = 0. Wrong instrument — the block emits typography via a wholesale `style.typography` →
+  `wp_style_engine_get_styles()` passthrough that never contains the literal string `text-align`; six
+  of seven declared supports were already emitting correctly through it.
+- **Rule:** before concluding "no emitter" from a string grep, check whether the property could be
+  emitted by an array/object passthrough to a style-engine call rather than a hand-written property
+  name. A passthrough emits without ever containing the property's CSS name as a literal string.
+
+### [2026-08-15] Two per-block-scoped control-detection scans agreeing was not evidence they were right — both missed the same shape
+- **Pattern key:** `two-instruments-agreeing-only-counts-if-they-could-fail-differently`
+- **Evidence:** the wrapper-capability census's first control-detection pass scoped its scan per
+  block file and reported 36 live colour controls as "missing" — a real control existed but was
+  bound via an indirection map living in a shared component's default parameter, one file away from
+  the block being scanned. A second independent-looking scan built the same per-block scoping and
+  agreed, because it had the identical blind spot, not because the finding was correct.
+- **Rule:** a control can be bound by a literal key, a computed key, an indirection map in another
+  file, or native `supports` — detect what a control DOES, not its name or its file location. Two
+  detectors "agreeing" is only real corroboration if they could plausibly fail in different ways;
+  identical scoping assumptions produce identical false positives, not confirmation.
+
+---
+
 ## 2026-09-03 (border-migration handoff) — 1-entry prune, oldest by date, moved verbatim, to make room for a new stub at cap
 
 ### [2026-08-11] querySelector grabbed the site header's container instead of my test block, and I nearly reported a working migration as broken

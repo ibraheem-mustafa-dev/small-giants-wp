@@ -5,14 +5,23 @@ the same commit. Invoke `/autopilot` first.
 
 ## What closed since the superseded prompt was written
 
-The whole D936 background-collision batch is DONE — all 9 rows, live-verified on the sandybrown
+**8 of D936's 9-row background-collision batch are DONE and live-verified** on the sandybrown
 canary via the real deployed PHP (not just the local harness). Read `.claude/decisions.md` D937,
-D938, D940, D942, D943 (top of file) for the full recipe and what each row needed. The hover-guard
-scanner's function-body blind spot is also fixed (D943) — it now genuinely scans every block's
-`render.php`, not just `includes/`.
+D938, D940, D942, D943, D945 (top of file) for the full recipe, what each row needed, and the live
+verification results. The hover-guard scanner's function-body blind spot is also fixed (D943) — it
+now genuinely scans every block's `render.php`, not just `includes/`.
 
-Nothing from that track is open. Do not re-open it or re-verify it — it's closed, with live
-evidence.
+⛔ **The 9th row, `nav-menu.burgerColour`, is NOT fixed — do not assume it is.** D945 corrects an
+earlier overclaim of "9 of 9" in this same batch, caught by this handoff's own `/qc` check. It's a
+miscategorisation, not a same-recipe fix: the "text" is an inline SVG icon coloured via
+`currentColor`, and `background-clip:text` (this whole batch's mechanism) does nothing to an SVG
+path fill. It needs `sgs_svg_stroke_gradient()` (the mechanism `sgs/icon` already has for exactly
+this) plus a new colour-gradient attribute on the burger icon that doesn't exist yet — a different,
+unbuilt feature. Tracked in `parking.md` (`P-COLOUR-NAV-MENU-BURGER-GRADIENT`), not this track's
+job to build unless it becomes the priority.
+
+Everything else from that track is closed. Do not re-open or re-verify the 8 — they're done, with
+live evidence.
 
 ## First action
 
@@ -20,7 +29,7 @@ Invoke `/autopilot`, then read the Mandatory Reading below. First BUILD action i
 gradient contrast-measurement method (worst-stop vs both-stops vs sampled) — a five-minute design
 call, not a research project — then wiring the WARN notice into `GradientCapableColourControl.js`.
 
-## Mandatory reading
+## Mandatory READING
 
 1. `.claude/decisions.md` D943 (top of file) — what shipped tonight, and why the hover-guard
    check is advisory (not blocking) until the 24 findings below are triaged.
@@ -89,10 +98,12 @@ point of making it advisory now, not the end state.
   '[0-9]+' | sort -n | tail -1`) immediately before writing any new decisions.md entry; a
   collision happened twice tonight (D939/D941 already taken by the other session) and was
   caught only by re-checking.
-- Before treating anything as a "design decision" needing your own judgement call, check
-  whether another block already solved the identical shape first — the D942 4-question example
-  (nav-menu.itemColour/form/modal/nav-menu.burgerColour) resolved cleanly this way after being
-  wrongly filed as open design questions.
+- Before treating anything as a "design decision" needing your own judgement call, check whether
+  another block already solved the identical shape first — the D942 4-question example
+  (nav-menu.itemColour/form/modal) resolved cleanly this way after being wrongly filed as open
+  design questions. `nav-menu.burgerColour` was the 4th question in that same review, but it
+  resolved to "this needs a different feature entirely, not a design call" — read D942 before
+  assuming its outcome matches the other three.
 - Deploys need a clean `npm run build` — if it fails on something that looks unrelated to your
   change, check `git log` for what landed earlier the same day before assuming you broke it.
   Twice tonight the real cause was pre-existing debt from earlier same-day work, not the change
@@ -107,3 +118,12 @@ point of making it advisory now, not the end state.
 | `/systematic-debugging` | Before any fix whose cause is not proven |
 | `/subagent-driven-development` or `/dispatching-parallel-agents` | The 24-file batch, once triaged by tier — tiers are independent enough to parallelise |
 | `/handoff` | Session close |
+
+## Tool bindings
+
+| Tool | Use for |
+|---|---|
+| `node scripts/qa/assert-css-effect.js` | Verifying any block's emitted CSS from a real render.php run, no deploy needed |
+| `node scripts/hover-guard/check.js` | Current state of the 24 findings; re-run after each tier's fix |
+| `wp eval` on the sandybrown canary (SSH, `.claude/secrets/sandybrown.env`) | Live verification via a block's real registered `render_callback` when the QA harness can't render the block |
+| `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` | The one sanctioned deploy path |

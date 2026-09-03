@@ -1,11 +1,35 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-09-03 (session 3) (2 new entries added — a shared LEDGER.md near-
-overwrite, and retirement-narration comments left in retired code; 2 oldest entries pruned to
-archive to hold the ~30 cap.)
+**Last updated:** 2026-09-04 (session 6) (2 new entries added — the CSS-lift-file gotcha and the
+D-ceiling recheck-before-every-write rule; 2 oldest entries pruned to archive to hold the ~30 cap.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-04] A live page rendering "no CSS" for a fixed block may just mean the CSS was lifted elsewhere
+- **Pattern key:** `check-the-lifted-css-file-before-concluding-emitted-css-is-missing`
+- **Evidence:** grepped the raw fetched HTML of a live verification page for six blocks' expected
+  `::after`/`::before` background rules — zero found, for every single one, right after a deploy
+  that had just passed all payload checks. Nearly concluded the fix hadn't actually deployed.
+  SGS lifts every block's scoped `<style>` tag out of its rendered HTML on the front end
+  (`class-sgs-css-registry.php`'s `render_block` filter) into a content-hash-named external file
+  (`uploads/sgs-css/sgs-<epoch>-<hash>.css`) — the page's own inline `<style>` tags are only the
+  STATIC enqueued `style.css` content, never the per-instance scoped CSS. Fetching that external
+  file (its URL is in the page's own `<head>`) found every expected rule correctly present.
+- **Rule:** on this project, "the live page's raw HTML has no scoped `<style>` for this block" is
+  never evidence the CSS didn't emit — check for a lifted external `uploads/sgs-css/*.css` file
+  before concluding anything is broken. Grep that file, not the page body.
+
+### [2026-09-04] Re-check the decisions.md D-ceiling immediately before every write, not once per session
+- **Pattern key:** `recheck-d-ceiling-immediately-before-every-decisions-md-write`
+- **Evidence:** checked the D-ceiling once at session start, then wrote D939 and later D941 —
+  both already claimed by a concurrent session's own commits that landed between the initial check
+  and the write. Caught only because the Edit tool's "file changed on disk" warning fired and a
+  fresh `grep` was run before trusting the number, not because anything enforced it.
+- **Rule:** on a shared-`main` project with a concurrently active session, re-run
+  `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
+  immediately before writing a new decisions.md entry — every time, not once per session. A
+  stale ceiling from even ten minutes earlier can already be wrong.
+
 ### [2026-09-03] Nearly overwrote a shared LEDGER.md straight over a concurrent session's uncommitted work
 - **Pattern key:** `check-git-diff-not-status-on-shared-replace-never-append-docs`
 - **Feedback file:** [feedback_check_git_diff_not_status_on_shared_docs.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_check_git_diff_not_status_on_shared_docs.md)
@@ -238,29 +262,7 @@ archive to hold the ~30 cap.)
   genuinely right, use the scoped `SGS_VISUAL_GATE_SKIP` + mandatory `SGS_VISUAL_GATE_REASON` (which
   logs an audit trail), never `--no-verify` (which disables six unrelated passing gates).
 
-### [2026-08-15] A grep for a string the style engine never emits is not evidence a block lacks an emitter
-- **Pattern key:** `grep-for-a-literal-emitted-string-is-blind-to-passthrough-emitters`
-- **Evidence:** claimed `sgs/info-box` had "no typography emitter" on `grep -c text-align render.php`
-  = 0. Wrong instrument — the block emits typography via a wholesale `style.typography` →
-  `wp_style_engine_get_styles()` passthrough that never contains the literal string `text-align`; six
-  of seven declared supports were already emitting correctly through it.
-- **Rule:** before concluding "no emitter" from a string grep, check whether the property could be
-  emitted by an array/object passthrough to a style-engine call rather than a hand-written property
-  name. A passthrough emits without ever containing the property's CSS name as a literal string.
-
-### [2026-08-15] Two per-block-scoped control-detection scans agreeing was not evidence they were right — both missed the same shape
-- **Pattern key:** `two-instruments-agreeing-only-counts-if-they-could-fail-differently`
-- **Evidence:** the wrapper-capability census's first control-detection pass scoped its scan per
-  block file and reported 36 live colour controls as "missing" — a real control existed but was
-  bound via an indirection map living in a shared component's default parameter, one file away from
-  the block being scanned. A second independent-looking scan built the same per-block scoping and
-  agreed, because it had the identical blind spot, not because the finding was correct.
-- **Rule:** a control can be bound by a literal key, a computed key, an indirection map in another
-  file, or native `supports` — detect what a control DOES, not its name or its file location. Two
-  detectors "agreeing" is only real corroboration if they could plausibly fail in different ways;
-  identical scoping assumptions produce identical false positives, not confirmation.
-
-*(10 entries dated 2026-08-04 through 2026-08-14 pruned to `memory/mistakes-archive.md` — oldest
+*(12 entries dated 2026-08-04 through 2026-08-15 pruned to `memory/mistakes-archive.md` — oldest
 by date, moved verbatim, to make room at cap. See `memory/mistakes-archive.md` for the full
 history of prunes.)*
 
