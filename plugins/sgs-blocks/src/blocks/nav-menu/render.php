@@ -891,7 +891,25 @@ if ( '' !== $item_colour ) {
 	$css .= $link_sel . '{color:' . sgs_colour_value( $item_colour ) . ';}';
 }
 if ( '' !== $item_bg_hex ) {
-	$css .= $link_sel . '{background-color:' . esc_attr( $item_bg_hex ) . ';border-radius:' . esc_attr( (string) $item_radius ) . 'px;}';
+	/*
+	 * D942 recipe item 1 (`itemColour`): `itemColour`'s `color:` and
+	 * `itemBg`'s `background-color:` used to paint the SAME selector
+	 * ($link_sel) — a same-selector text/background collision that would
+	 * block a future `itemColourGradient` sibling from using
+	 * `background-clip:text` (it clips the element's whole background
+	 * paint area, not just this declaration). The usual fix is
+	 * `sgs_block_background_layer_css()`, which moves the paint onto a
+	 * `::after` layer, but `$link_sel` already legitimately owns
+	 * `::after` for the hoverStyle='underline' bar below — two
+	 * pseudo-elements cannot share one selector. `::before` is confirmed
+	 * unused anywhere else in this block's own CSS, so the background
+	 * moves there instead (same shape, hand-composed for the free slot).
+	 * Applies regardless of hoverStyle, same as the resting paint it
+	 * replaces.
+	 */
+	$item_bg_before_decl = sgs_background_paint_decl( $item_bg_hex, null );
+	$css                .= $link_sel . '{position:relative;isolation:isolate;border-radius:' . esc_attr( (string) $item_radius ) . 'px;}';
+	$css                .= $link_sel . '::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . $item_bg_before_decl . ';}';
 }
 
 // 4c. Hover / focus-visible / current-page state. [aria-current="page"] is set

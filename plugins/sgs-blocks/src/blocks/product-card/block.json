@@ -785,13 +785,13 @@
 		},
 		"tagBackgroundColour": {
 			"type": "string",
-			"default": "",
-			"description": "Background colour for the in-body trial tag. Theme token slug or raw CSS colour. Empty = the style.css default (accent tint). Cloning converter lifts the draft trial-tag background-color here."
+			"default": "accent",
+			"description": "Background colour for the in-body trial tag. Theme token slug or raw CSS colour. Matches the retired style.css class default (accent tint) so an untouched card renders unchanged. Cloning converter lifts the draft trial-tag background-color here."
 		},
 		"tagTextColour": {
 			"type": "string",
-			"default": "",
-			"description": "Text colour for the in-body trial tag. Theme token slug or raw CSS colour. Empty = the style.css default. Cloning converter lifts the draft trial-tag color here."
+			"default": "text",
+			"description": "Text colour for the in-body trial tag. Theme token slug or raw CSS colour. Matches the retired style.css class default so an untouched card renders unchanged. Cloning converter lifts the draft trial-tag color here."
 		},
 		"tagBorderRadius": {
 			"type": [ "string", "number" ],

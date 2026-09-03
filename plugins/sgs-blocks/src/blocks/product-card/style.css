@@ -1065,10 +1065,14 @@
 	margin: 0;
 }
 
-.product-card .sgs-product-card__tag--trial {
-	background: var( --wp--preset--color--accent, #f5d050 );
-	color: var( --wp--preset--color--text, #3a2e26 );
-}
+/* .sgs-product-card__tag--trial's background/colour class default REMOVED
+   2026-09-03 (D942 recipe item 3, mirrors D938's pricing-table badge fix):
+   `tagBackgroundColour`/`tagTextColour` now default to `accent`/`text` in
+   block.json (matching this rule's old literal values) instead of `""`, so
+   render.php's scoped `.{uid}.sgs-product-card__tag--trial` rule ALWAYS
+   emits both declarations and always wins this class default by source
+   order (the block's own <style> prints after this enqueued stylesheet) —
+   this rule was provably unreachable, not merely redundant. */
 
 .product-card .sgs-product-card__tag--featured {
 	/* WCAG-safe across ANY client palette: a light tint of the client primary

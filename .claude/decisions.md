@@ -1,3 +1,53 @@
+## D943 [ROUTINE] — D936 batch closed (all 9 rows); hover-guard scanner's function-body blind spot fixed
+
+**2026-09-03.** Two independent workstreams, dispatched in parallel (`/dispatching-parallel-agents`,
+disjoint files, no conflict), both independently re-verified before commit.
+
+**D942's remaining 3 rows, built:**
+- `nav-menu.itemColour` — `itemBg` moves to `.sgs-nav-menu__link::before` (not `::after`, which
+  the `hoverStyle='underline'` bar already owns) via a hand-composed positioned layer;
+  `itemColour`/`itemColourHover` stay on the link itself. Deliberately scoped to the RESTING
+  background only — `itemBgHover` (pill-mode only, WCAG-contrast-driven, targets a different
+  selector) was left untouched rather than folded in, since moving it wasn't the same
+  same-selector collision this row was about. Verified by isolating the exact CSS-building
+  snippet and running it standalone (same technique D942 used for `nav-menu.navColour` — the
+  full-block harness can't render nav-menu's markup at all). First verification attempt hit a
+  HARNESS limitation, not a code bug: `sgs_resolve_palette_hex()` always degrades to `''` in the
+  QA harness's stub environment (no real theme.json palette loaded, documented behaviour in
+  `wp-stubs.php`) — re-verified by feeding a raw hex directly, confirming the `::before` emission
+  logic itself is correct.
+- `form.submitColour` / `modal.triggerColour` — one `background-color:transparent` declaration
+  added to the already-winning scoped rule, gated on no explicit `submitBackground`/
+  `triggerBackground` being set (so it never cancels an operator's real override). No
+  `sgs_block_background_layer_css()` call needed — the class default only ever painted
+  `background-color`, so cascade alone cancels it. `assert-css-effect.js --self-test` (which
+  includes form/modal fixtures from the D940-era background-gradient work) still passes clean —
+  no regression.
+- `product-card.tagTextColour` — `tagBackgroundColour`/`tagTextColour` block.json defaults
+  changed `""`→`"accent"`/`"text"` (matching the retired style.css literal values, same fix
+  shape as D938's pricing-table badge). The now-unreachable `.product-card
+  .sgs-product-card__tag--trial` static class rule removed from style.css. `render.php`'s
+  existing consumption (`sgs_label_box_css_rule()`, `sgs_colour_value()`) needed no code change —
+  confirmed by reading it: neither has an empty-string special case.
+
+**D934's hover-guard scanner — the real fix, not just the file-list change.** Confirmed this
+session that pointing `check.js` at `src/blocks/*/render.php` (last session's fix) was a no-op:
+`php-hover-scan.php`'s `scan_file()` only ever walked named `function(){}` bodies, and SGS
+`render.php` files declare none (a hard project rule — redeclaring a function fatals WordPress on
+a page's second block instance). Fixed by extracting the existing per-function JOB A/B logic into
+`analyze_span()`, then computing the complement of every function body's token range across the
+whole file — the "gap segments" — and running the same analysis over those too, attributed to a
+synthetic `<top-level>` (or `<top-level:LINE>` when a file mixes functions and top-level code).
+Proven both ways: a new `--self-test` (15 assertions — broken/clean/named-function fixtures,
+including a check that a real function's finding isn't swallowed into the synthetic label) passes
+independently re-run; the real scan went from **0 → 24 within-function findings across 24 distinct
+render.php files** (2216 functions/spans scanned, up from 995 — the file-list fix was correctly
+wired, it just had nothing to find until this). Spot-checked `sgs/button/render.php:434`'s
+`transform:scale()` hover rule by hand — a genuine unguarded motion hover, not scanner noise.
+
+**Fixing the 24 (now confirmed real) findings is NOT done — still open, per the tiered plan in
+the original next-session handoff.** This closes the DETECTOR gap only.
+
 ## D942 [ROUTINE] — D936 exclusion batch: 6 of 9 rows unblocked via precedent, not fresh design calls
 
 **2026-09-03.** Following D940's council verdict (nothing in the 9-row batch was safe to

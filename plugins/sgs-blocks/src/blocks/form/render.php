@@ -222,6 +222,19 @@ if ( $submit_colour || $submit_background || $submit_background_gradient ) {
 	$sgs_form_submit_decls = array();
 	if ( $submit_colour ) {
 		$sgs_form_submit_decls[] = 'color:' . sgs_colour_value( $submit_colour );
+		if ( ! $submit_background && ! $submit_background_gradient ) {
+			// D942 recipe item 2: the style-variant class default
+			// (`:where(.sgs-form__button--primary)`, form/style.css) paints a
+			// `background-color` on this same selector. This scoped rule
+			// already out-specifies that class default today, so cancel it
+			// here via pure cascade rather than duplicating the class's
+			// actual colour value — frees `submitColour` for a future
+			// `submitColourGradient` sibling (`background-clip:text` would
+			// otherwise be clipped by the class's inherited fill). Only when
+			// the operator hasn't set an explicit `submitBackground` — that
+			// already wins this same rule below and must not be cancelled.
+			$sgs_form_submit_decls[] = 'background-color:transparent';
+		}
 	}
 	if ( $submit_background || $submit_background_gradient ) {
 		// Both gates must include the gradient var, not just the flat colour —

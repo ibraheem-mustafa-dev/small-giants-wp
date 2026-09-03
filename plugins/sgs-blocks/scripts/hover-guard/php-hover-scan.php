@@ -591,6 +591,210 @@ function build_local_assignment_map( array $tokens, int $bodyStart, int $bodyEnd
 }
 
 /**
+ * Run JOB A (function-body co-occurrence) + JOB B (cross-file registry
+ * resolution) over one token span — either a named function's body, or a
+ * top-level "gap" span (code that lives outside every function body, the
+ * common shape of an SGS `render.php` file, which never declares a named
+ * function per this project's "no top-level function in per-render PHP"
+ * rule — see this file's module docblock + `plugins/sgs-blocks/CLAUDE.md`).
+ *
+ * Pure extraction of the logic previously inlined in `scan_file()`'s main
+ * loop — behaviour for the named-function case is unchanged. `$name` is
+ * either the real function name, or a synthetic `<top-level>` /
+ * `<top-level:LINE>` label supplied by the caller for a gap span.
+ *
+ * @param array                $tokens
+ * @param int                  $spanStart
+ * @param int                  $spanEnd
+ * @param string               $name
+ * @param int                  $line
+ * @param string               $path
+ * @param array{emitters: array<string,array>, guard_recognition: array{layer1_wrapper_functions: string[], layer2_selector_constant: string}}|null $registry
+ * @return array{function_entry: array, failures: array, cross_file_calls: array, cross_file_flags: array, cross_file_unresolved: array}
+ */
+function analyze_span( array $tokens, int $spanStart, int $spanEnd, string $name, int $line, string $path, ?array $registry ): array {
+	$failures            = array();
+	$crossFileCalls      = array();
+	$crossFileFlags      = array();
+	$crossFileUnresolved = array();
+
+	// ── JOB A: body co-occurrence ───────────────────────────────────────
+	$hasHover   = false;
+	$callsGuard = false;
+	for ( $b = $spanStart; $b <= $spanEnd; $b++ ) {
+		$t = $tokens[ $b ];
+		if ( is_array( $t ) && in_array( $t[0], array( T_CONSTANT_ENCAPSED_STRING, T_ENCAPSED_AND_WHITESPACE, T_STRING ), true ) ) {
+			if ( false !== strpos( $t[1], ':hover' ) ) {
+				$hasHover = true;
+			}
+		}
+		if ( is_array( $t ) && T_STRING === $t[0] && in_array( $t[1], GUARD_FUNCTIONS, true ) ) {
+			$callsGuard = true;
+		}
+	}
+
+	$functionEntry = array(
+		'name'              => $name,
+		'file'              => $path,
+		'line'              => $line,
+		'has_hover_literal' => $hasHover,
+		'calls_guard'       => $callsGuard,
+	);
+
+	if ( $hasHover && ! $callsGuard ) {
+		$failures[] = array(
+			'name' => $name,
+			'file' => $path,
+			'line' => $line,
+		);
+	}
+
+	// ── JOB B: cross-file registry resolution ───────────────────────────
+	$emitters         = $registry['emitters'] ?? array();
+	$guardRecognition = $registry['guard_recognition'] ?? array(
+		'layer1_wrapper_functions' => array(),
+		'layer2_selector_constant' => '',
+	);
+	if ( ! empty( $emitters ) ) {
+		$calls = find_registered_calls( $tokens, $spanStart, $spanEnd, $emitters );
+		if ( ! empty( $calls ) ) {
+			$localMap = build_local_assignment_map( $tokens, $spanStart, $spanEnd );
+			// Lazily built — only needed once a call's selector proves
+			// hover-carrying, and only if guard_recognition names anything.
+			$constMap = null;
+
+			foreach ( $calls as $call ) {
+				$entry           = $emitters[ $call['function'] ];
+				$selectorIdx     = $entry['selector_param_index'];
+				$gateIdx         = $entry['guard_gate_param_index'];
+				$selectorSpan    = $call['args'][ $selectorIdx ] ?? array( 1, 0 ); // empty span => "not passed"
+				$selectorVerdict = classify_arg_hover( $tokens, $selectorSpan, $localMap );
+
+				$record = array(
+					'caller_function' => $name,
+					'file'             => $path,
+					'line'             => $call['line'],
+					'callee'           => $call['function'],
+				);
+
+				if ( 'no' === $selectorVerdict ) {
+					$record['resolution'] = 'clean-no-hover';
+					$crossFileCalls[]      = $record;
+					continue;
+				}
+
+				if ( 'unresolved' === $selectorVerdict ) {
+					$record['resolution'] = 'unresolved-selector';
+					$crossFileCalls[]      = $record;
+					$crossFileUnresolved[] = $record;
+					continue;
+				}
+
+				// selectorVerdict === 'yes' — try external-guard recognition
+				// FIRST (a positive proof, checked before the gate — see the
+				// module docblock's "EXTERNAL-GUARD RECOGNITION" section).
+				if ( '' !== $guardRecognition['layer2_selector_constant'] && ! empty( $guardRecognition['layer1_wrapper_functions'] ) ) {
+					if ( null === $constMap ) {
+						$constantName = $guardRecognition['layer2_selector_constant'];
+						$constMap     = build_local_taint_map(
+							$tokens,
+							$spanStart,
+							$spanEnd,
+							static function ( $token ) use ( $constantName ) {
+								return is_array( $token ) && T_STRING === $token[0] && $constantName === $token[1];
+							}
+						);
+					}
+					$hasLayer2 = arg_carries_constant( $tokens, $selectorSpan, $constMap, $guardRecognition['layer2_selector_constant'] );
+					$enclosingFn = find_enclosing_call_name( $tokens, $call['name_idx'] - 1, $spanStart );
+					$hasLayer1   = null !== $enclosingFn && in_array( $enclosingFn, $guardRecognition['layer1_wrapper_functions'], true );
+
+					if ( $hasLayer1 && $hasLayer2 ) {
+						$record['resolution'] = 'clean-externally-guarded';
+						$crossFileCalls[]      = $record;
+						continue;
+					}
+				}
+
+				// Not externally guarded (or guard_recognition names nothing)
+				// — fall through to the callee's own gate argument, exactly
+				// as before this update.
+				$gateSpan    = $call['args'][ $gateIdx ] ?? array( 1, 0 );
+				$gateVerdict = classify_gate_arg( $tokens, $gateSpan, $entry['guard_skip_literals'] );
+
+				if ( 'skip' === $gateVerdict ) {
+					$record['resolution'] = 'flagged-unguarded';
+					$crossFileCalls[]      = $record;
+					$crossFileFlags[]      = $record;
+				} elseif ( 'fires' === $gateVerdict ) {
+					$record['resolution'] = 'clean-guard-fires';
+					$crossFileCalls[]      = $record;
+				} else {
+					$record['resolution'] = 'unresolved-gate';
+					$crossFileCalls[]      = $record;
+					$crossFileUnresolved[] = $record;
+				}
+			}
+		}
+	}
+
+	return array(
+		'function_entry'        => $functionEntry,
+		'failures'              => $failures,
+		'cross_file_calls'      => $crossFileCalls,
+		'cross_file_flags'      => $crossFileFlags,
+		'cross_file_unresolved' => $crossFileUnresolved,
+	);
+}
+
+/**
+ * Compute the complement of a set of consumed [start,end] token-index ranges
+ * over [0, $count-1] — the "gap segments" a function-body walk never visits.
+ * `$consumedRanges` is assumed sorted ascending by start and non-overlapping
+ * (true by construction: `scan_file()`'s main loop only ever advances
+ * forward past a body it just consumed).
+ *
+ * @param int                        $count
+ * @param array<int, array{0:int,1:int}> $consumedRanges
+ * @return array<int, array{0:int,1:int}>
+ */
+function compute_gap_segments( int $count, array $consumedRanges ): array {
+	$segments = array();
+	$cursor   = 0;
+	foreach ( $consumedRanges as $range ) {
+		list( $rs, $re ) = $range;
+		if ( $rs > $cursor ) {
+			$segments[] = array( $cursor, $rs - 1 );
+		}
+		$cursor = max( $cursor, $re + 1 );
+	}
+	if ( $cursor <= $count - 1 ) {
+		$segments[] = array( $cursor, $count - 1 );
+	}
+	return $segments;
+}
+
+/**
+ * Line number of the first token carrying one, within a span — used to name
+ * a synthetic `<top-level:LINE>` gap segment.
+ *
+ * @param array $tokens
+ * @param int   $start
+ * @param int   $end
+ * @return int 0 if no token in the span carries a line number (shouldn't
+ *             happen for a non-empty meaningful span, but never guessed at).
+ */
+function first_line_in_span( array $tokens, int $start, int $end ): int {
+	for ( $p = $start; $p <= $end; $p++ ) {
+		$t = $tokens[ $p ];
+		if ( is_array( $t ) ) {
+			return $t[2];
+		}
+	}
+	return 0;
+}
+
+/**
  * @param string $path
  * @param array{emitters: array<string,array>, guard_recognition: array{layer1_wrapper_functions: string[], layer2_selector_constant: string}}|null $registry
  * @return array{functions: array, failures: array, cross_file_calls: array, cross_file_flags: array, cross_file_unresolved: array, error: string|null}
@@ -625,6 +829,7 @@ function scan_file( string $path, ?array $registry ): array {
 	$crossFileCalls       = array();
 	$crossFileFlags       = array();
 	$crossFileUnresolved  = array();
+	$consumedRanges       = array();
 	$count                = count( $tokens );
 	$i                    = 0;
 
@@ -694,131 +899,48 @@ function scan_file( string $path, ?array $registry ): array {
 				$m++;
 			}
 
-			// ── JOB A: function-body co-occurrence ─────────────────────────
-			$hasHover   = false;
-			$callsGuard = false;
-			for ( $b = $bodyStart; $b <= $bodyEnd; $b++ ) {
-				$t = $tokens[ $b ];
-				if ( is_array( $t ) && in_array( $t[0], array( T_CONSTANT_ENCAPSED_STRING, T_ENCAPSED_AND_WHITESPACE, T_STRING ), true ) ) {
-					if ( false !== strpos( $t[1], ':hover' ) ) {
-						$hasHover = true;
-					}
-				}
-				if ( is_array( $t ) && T_STRING === $t[0] && in_array( $t[1], GUARD_FUNCTIONS, true ) ) {
-					$callsGuard = true;
-				}
-			}
+			$result = analyze_span( $tokens, $bodyStart, $bodyEnd, $name, $line, $path, $registry );
 
-			$functions[] = array(
-				'name'              => $name,
-				'file'              => $path,
-				'line'              => $line,
-				'has_hover_literal' => $hasHover,
-				'calls_guard'       => $callsGuard,
-			);
+			$functions[]         = $result['function_entry'];
+			$failures             = array_merge( $failures, $result['failures'] );
+			$crossFileCalls       = array_merge( $crossFileCalls, $result['cross_file_calls'] );
+			$crossFileFlags       = array_merge( $crossFileFlags, $result['cross_file_flags'] );
+			$crossFileUnresolved  = array_merge( $crossFileUnresolved, $result['cross_file_unresolved'] );
 
-			if ( $hasHover && ! $callsGuard ) {
-				$failures[] = array(
-					'name' => $name,
-					'file' => $path,
-					'line' => $line,
-				);
-			}
-
-			// ── JOB B: cross-file registry resolution ──────────────────────
-			$emitters         = $registry['emitters'] ?? array();
-			$guardRecognition = $registry['guard_recognition'] ?? array(
-				'layer1_wrapper_functions' => array(),
-				'layer2_selector_constant' => '',
-			);
-			if ( ! empty( $emitters ) ) {
-				$calls = find_registered_calls( $tokens, $bodyStart, $bodyEnd, $emitters );
-				if ( ! empty( $calls ) ) {
-					$localMap = build_local_assignment_map( $tokens, $bodyStart, $bodyEnd );
-					// Lazily built — only needed once a call's selector proves
-					// hover-carrying, and only if guard_recognition names anything.
-					$constMap = null;
-
-					foreach ( $calls as $call ) {
-						$entry           = $emitters[ $call['function'] ];
-						$selectorIdx     = $entry['selector_param_index'];
-						$gateIdx         = $entry['guard_gate_param_index'];
-						$selectorSpan    = $call['args'][ $selectorIdx ] ?? array( 1, 0 ); // empty span => "not passed"
-						$selectorVerdict = classify_arg_hover( $tokens, $selectorSpan, $localMap );
-
-						$record = array(
-							'caller_function' => $name,
-							'file'             => $path,
-							'line'             => $call['line'],
-							'callee'           => $call['function'],
-						);
-
-						if ( 'no' === $selectorVerdict ) {
-							$record['resolution'] = 'clean-no-hover';
-							$crossFileCalls[]      = $record;
-							continue;
-						}
-
-						if ( 'unresolved' === $selectorVerdict ) {
-							$record['resolution'] = 'unresolved-selector';
-							$crossFileCalls[]      = $record;
-							$crossFileUnresolved[] = $record;
-							continue;
-						}
-
-						// selectorVerdict === 'yes' — try external-guard recognition
-						// FIRST (a positive proof, checked before the gate — see the
-						// module docblock's "EXTERNAL-GUARD RECOGNITION" section).
-						if ( '' !== $guardRecognition['layer2_selector_constant'] && ! empty( $guardRecognition['layer1_wrapper_functions'] ) ) {
-							if ( null === $constMap ) {
-								$constantName = $guardRecognition['layer2_selector_constant'];
-								$constMap     = build_local_taint_map(
-									$tokens,
-									$bodyStart,
-									$bodyEnd,
-									static function ( $token ) use ( $constantName ) {
-										return is_array( $token ) && T_STRING === $token[0] && $constantName === $token[1];
-									}
-								);
-							}
-							$hasLayer2 = arg_carries_constant( $tokens, $selectorSpan, $constMap, $guardRecognition['layer2_selector_constant'] );
-							$enclosingFn = find_enclosing_call_name( $tokens, $call['name_idx'] - 1, $bodyStart );
-							$hasLayer1   = null !== $enclosingFn && in_array( $enclosingFn, $guardRecognition['layer1_wrapper_functions'], true );
-
-							if ( $hasLayer1 && $hasLayer2 ) {
-								$record['resolution'] = 'clean-externally-guarded';
-								$crossFileCalls[]      = $record;
-								continue;
-							}
-						}
-
-						// Not externally guarded (or guard_recognition names nothing)
-						// — fall through to the callee's own gate argument, exactly
-						// as before this update.
-						$gateSpan    = $call['args'][ $gateIdx ] ?? array( 1, 0 );
-						$gateVerdict = classify_gate_arg( $tokens, $gateSpan, $entry['guard_skip_literals'] );
-
-						if ( 'skip' === $gateVerdict ) {
-							$record['resolution'] = 'flagged-unguarded';
-							$crossFileCalls[]      = $record;
-							$crossFileFlags[]      = $record;
-						} elseif ( 'fires' === $gateVerdict ) {
-							$record['resolution'] = 'clean-guard-fires';
-							$crossFileCalls[]      = $record;
-						} else {
-							$record['resolution'] = 'unresolved-gate';
-							$crossFileCalls[]      = $record;
-							$crossFileUnresolved[] = $record;
-						}
-					}
-				}
-			}
+			$consumedRanges[] = array( $bodyStart, $bodyEnd );
 
 			$i = $bodyEnd + 1;
 			continue;
 		}
 
 		$i++;
+	}
+
+	// ── Top-level ("gap") code — everything NOT inside a named function
+	// body. This is the primary case for a scanned SGS `render.php` file,
+	// which never declares a named top-level function (a hard project rule
+	// — see this file's module docblock). Without this pass `scan_file()`
+	// structurally cannot see a hover rule built in plain top-to-bottom
+	// script code.
+	$gapSegments = array();
+	foreach ( compute_gap_segments( $count, $consumedRanges ) as $seg ) {
+		if ( ! empty( meaningful_tokens( $tokens, $seg[0], $seg[1] ) ) ) {
+			$gapSegments[] = $seg;
+		}
+	}
+
+	$multipleGaps = count( $gapSegments ) > 1;
+	foreach ( $gapSegments as $seg ) {
+		$gapLine = first_line_in_span( $tokens, $seg[0], $seg[1] );
+		$gapName = $multipleGaps ? "<top-level:{$gapLine}>" : '<top-level>';
+
+		$result = analyze_span( $tokens, $seg[0], $seg[1], $gapName, $gapLine, $path, $registry );
+
+		$functions[]         = $result['function_entry'];
+		$failures             = array_merge( $failures, $result['failures'] );
+		$crossFileCalls       = array_merge( $crossFileCalls, $result['cross_file_calls'] );
+		$crossFileFlags       = array_merge( $crossFileFlags, $result['cross_file_flags'] );
+		$crossFileUnresolved  = array_merge( $crossFileUnresolved, $result['cross_file_unresolved'] );
 	}
 
 	return array(
@@ -831,7 +953,145 @@ function scan_file( string $path, ?array $registry ): array {
 	);
 }
 
+/**
+ * Self-test for the top-level ("gap segment") scan added 2026-09-03 — proves
+ * `scan_file()` can now see a hover rule built OUTSIDE any named function,
+ * the shape every SGS `render.php` file actually has (top-level script code,
+ * no function wrapper — a top-level function in per-render PHP fatals
+ * WordPress on the block's second use, so no real render.php can ever
+ * exercise the OLD, function-body-only code path).
+ *
+ * Two minimal synthetic fixtures, written to real temp files (the tokenizer
+ * needs real PHP source, not a string held in memory):
+ *   1. BROKEN  — top-level code builds `{$sel}:hover{...}` and calls no
+ *      guard function anywhere. Must be reported as a failure.
+ *   2. CLEAN   — the identical shape, but also calls
+ *      `sgs_hover_state_rules()` in the same top-level span. Must be clean.
+ *
+ * This is a FAIL-then-PASS pair, not just a PASS check — a scanner that
+ * always reports "no findings" (the exact pre-fix bug: 0 PHP findings
+ * across every render.php, regardless of content) would pass a PASS-only
+ * fixture. Asserting the BROKEN fixture fails is what proves the gap-segment
+ * pass is actually running, not silently skipped.
+ *
+ * @return int 0 on all assertions passing, 1 otherwise.
+ */
+function run_self_test(): int {
+	$emptyRegistry = array(
+		'emitters'          => array(),
+		'guard_recognition' => array(
+			'layer1_wrapper_functions' => array(),
+			'layer2_selector_constant' => '',
+		),
+	);
+
+	$failCount = 0;
+	$assert    = static function ( bool $condition, string $label ) use ( &$failCount ) {
+		if ( $condition ) {
+			fwrite( STDOUT, "  PASS: {$label}\n" );
+		} else {
+			fwrite( STDOUT, "  FAIL: {$label}\n" );
+			$failCount++;
+		}
+	};
+
+	// ── Fixture 1: BROKEN — top-level, unguarded ────────────────────────
+	$brokenSource = <<<'PHP'
+<?php
+$sel = '.sgs-x__y';
+$hover_selector = "{$sel}:hover{color:red;}";
+echo $hover_selector;
+PHP;
+
+	$brokenPath = tempnam( sys_get_temp_dir(), 'sgs-hover-selftest-broken-' ) . '.php';
+	file_put_contents( $brokenPath, $brokenSource );
+
+	$brokenResult = scan_file( $brokenPath, $emptyRegistry );
+	@unlink( $brokenPath );
+
+	$assert( null === $brokenResult['error'], 'broken fixture: scan completes without error' );
+	$assert( 1 === count( $brokenResult['failures'] ), 'broken fixture: exactly one failure reported' );
+	if ( 1 === count( $brokenResult['failures'] ) ) {
+		$assert( '<top-level>' === $brokenResult['failures'][0]['name'], 'broken fixture: failure is attributed to a synthetic <top-level> span, not silently dropped' );
+	}
+	$assert( 1 === count( $brokenResult['functions'] ), 'broken fixture: one function-shaped entry emitted for the gap segment' );
+	if ( 1 === count( $brokenResult['functions'] ) ) {
+		$assert( true === $brokenResult['functions'][0]['has_hover_literal'], 'broken fixture: has_hover_literal correctly true' );
+		$assert( false === $brokenResult['functions'][0]['calls_guard'], 'broken fixture: calls_guard correctly false' );
+	}
+
+	// ── Fixture 2: CLEAN — identical shape, calls the guard ─────────────
+	$cleanSource = <<<'PHP'
+<?php
+$sel = '.sgs-x__y';
+$hover_rule = "{$sel}:hover{color:red;}";
+$css = sgs_hover_state_rules( $sel, 'color:red;' );
+echo $hover_rule . $css;
+PHP;
+
+	$cleanPath = tempnam( sys_get_temp_dir(), 'sgs-hover-selftest-clean-' ) . '.php';
+	file_put_contents( $cleanPath, $cleanSource );
+
+	$cleanResult = scan_file( $cleanPath, $emptyRegistry );
+	@unlink( $cleanPath );
+
+	$assert( null === $cleanResult['error'], 'clean fixture: scan completes without error' );
+	$assert( 0 === count( $cleanResult['failures'] ), 'clean fixture: zero failures reported' );
+	$assert( 1 === count( $cleanResult['functions'] ), 'clean fixture: one function-shaped entry emitted for the gap segment' );
+	if ( 1 === count( $cleanResult['functions'] ) ) {
+		$assert( true === $cleanResult['functions'][0]['has_hover_literal'], 'clean fixture: has_hover_literal correctly true' );
+		$assert( true === $cleanResult['functions'][0]['calls_guard'], 'clean fixture: calls_guard correctly true' );
+	}
+
+	// ── Negative control: a file with a NAMED function still works ──────
+	// (proves the refactor didn't regress the pre-existing JOB A path).
+	$namedFnSource = <<<'PHP'
+<?php
+function sgs_test_render_thing() {
+	$sel = '.sgs-x__y';
+	$hover_selector = "{$sel}:hover{color:red;}";
+	echo $hover_selector;
+}
+PHP;
+
+	$namedFnPath = tempnam( sys_get_temp_dir(), 'sgs-hover-selftest-namedfn-' ) . '.php';
+	file_put_contents( $namedFnPath, $namedFnSource );
+
+	$namedFnResult = scan_file( $namedFnPath, $emptyRegistry );
+	@unlink( $namedFnPath );
+
+	$assert( null === $namedFnResult['error'], 'named-function fixture: scan completes without error' );
+	$assert( 1 === count( $namedFnResult['failures'] ), 'named-function fixture: exactly one failure reported' );
+	if ( 1 === count( $namedFnResult['failures'] ) ) {
+		$assert( 'sgs_test_render_thing' === $namedFnResult['failures'][0]['name'], 'named-function fixture: failure attributed to the real function name, not a synthetic gap label' );
+	}
+	// A `<?php` open tag is itself a meaningful token (not whitespace/
+	// comment), so the gap BEFORE the function keyword still produces one
+	// synthetic `<top-level>` functions[] entry — it correctly carries no
+	// hover literal and is not a failure. Two functions[] entries total:
+	// the harmless top-level gap + the one real named-function failure.
+	$assert( 2 === count( $namedFnResult['functions'] ), 'named-function fixture: exactly one real function entry + one harmless top-level gap entry for the opening tag' );
+	foreach ( $namedFnResult['functions'] as $fnEntry ) {
+		if ( '<top-level>' === $fnEntry['name'] ) {
+			$assert( false === $fnEntry['has_hover_literal'], 'named-function fixture: the top-level gap entry (just the open tag) carries no hover literal' );
+		}
+	}
+
+	if ( 0 === $failCount ) {
+		fwrite( STDOUT, "\nSELF-TEST: PASS (all assertions green)\n" );
+	} else {
+		fwrite( STDOUT, "\nSELF-TEST: FAIL ({$failCount} assertion(s) failed)\n" );
+	}
+
+	return 0 === $failCount ? 0 : 1;
+}
+
 $args = array_slice( $argv, 1 );
+
+if ( in_array( '--self-test', $args, true ) ) {
+	exit( run_self_test() );
+}
+
 if ( empty( $args ) ) {
 	fwrite( STDERR, "usage: php php-hover-scan.php [--registry=path] <file.php> [<file.php> ...]\n" );
 	exit( 2 );

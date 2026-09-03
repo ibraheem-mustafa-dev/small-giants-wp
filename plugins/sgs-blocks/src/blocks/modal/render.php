@@ -39,6 +39,20 @@ $root_sel = '.' . $uid;
 $trigger_rules = array();
 if ( $trigger_colour ) {
 	$trigger_rules[] = 'color:' . sgs_colour_value( $trigger_colour );
+	if ( ! $trigger_background && ! $trigger_background_gradient ) {
+		// D942 recipe item 2: the style-variant class default
+		// (`.sgs-modal__trigger--primary`, modal/style.css) paints a
+		// `background-color` on this same selector. This scoped rule
+		// already out-specifies that class default today (via
+		// selector-compounding), so cancel it here via pure cascade
+		// rather than duplicating the class's actual colour value —
+		// frees `triggerColour` for a future `triggerColourGradient`
+		// sibling (`background-clip:text` would otherwise be clipped by
+		// the class's inherited fill). Only when the operator hasn't set
+		// an explicit `triggerBackground` — that already wins this same
+		// rule below and must not be cancelled.
+		$trigger_rules[] = 'background-color:transparent';
+	}
 }
 if ( $trigger_background || $trigger_background_gradient ) {
 	// Gate must include the gradient var, not just the flat colour — a
