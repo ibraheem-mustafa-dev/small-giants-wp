@@ -59,8 +59,8 @@ one per detector reporting findings, each with a plain-English problem/effect, a
 "Your call" checklist. Plan: `.claude/plans/2026-08-30-uniformity-sweep-execution.md`.
 
 **Two dedicated next-session prompts, split deliberately (see below for why):**
-- **Mixed backlog sweep (37's residue, 01, 21):**
-  `.claude/prompts/2026-09-03-detector-backlog-post-media-atom.md`
+- **Remaining backlog sweep (01, 21 — `37` is fully closed, D924):**
+  `.claude/prompts/2026-09-03-detector-backlog-post-bg-panel-fix.md`
 - **`31-golden-colour-control` (own track below, D923):**
   `.claude/prompts/2026-09-03-golden-colour-continuation.md` — the grant-build prompt is DELETED;
   the codemod route was returned NO-GO by a 6-persona council. Read the new prompt's grounding
