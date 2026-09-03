@@ -1,3 +1,38 @@
+## D941 [INCIDENT] — D939's fix palette was checked against a stale texture, not the live reference; it produced a rainbow the reference doesn't have. Corrected.
+
+**2026-09-03, same session.** Bean, on the D939 result: *"check the colours of the actual
+original, it is not a rainbow."* He was right. D939 sampled hues from a cached palette PNG
+(`.claude/scratch/stripe-hero-poc/assets/palette-a.png`, captured 2026-08-25) and picked an
+orange (41°) and a pale blue (214°) whose hue delta (173°) sat just under the OKLCH shorter-arc
+interpolator's 180° direction threshold — pushing the interpolation the LONG way round, straight
+through yellow/green/cyan (visible in the shipped strip: `#ABDF87`, `#8EE8BC`, `#90EAE4`). D939's
+own text noted this as "an accidental full rainbow... kept — it answers the brief" — that
+judgement call was wrong; I should have checked it against the actual reference before shipping
+it, not assumed a wider hue spread was automatically closer to the brief.
+
+**Re-checked properly this time:** screenshotted `stripe.com/gb` fresh and sampled the SCREENSHOT
+PIXELS directly (not a stale texture file) across a grid of points on the ribbon. Every sampled
+hue falls in one of three families — blue-violet (~244-270°), pink-magenta (~289-325°), orange/
+coral (~18-36°) — and **none fall in the 90-180° green/yellow/cyan range at all.**
+
+**Fix:** new 4-stop palette drawn from those three families —
+`#533AFD` (blue-violet, H248), `#FE86E9` (pink-magenta, H310), `#FE8D2C` (orange, H28),
+`#9E5FE5` (violet, H268) — chosen so every adjacent-pair hue delta stays on the warm/cool side
+that avoids green (verified by simulating the actual OKLCH interpolation code in Python before
+shipping: the full 20-stop generated strip stays within H248→H0/360→H23→H268, never entering
+90-180°). Applied to page 3228 via the same REST path as D939.
+
+**Verification, not assumption this time:** ran the interpolation simulation FIRST and printed
+every generated stop's hue before touching the live page. Screenshot after the change shows
+blue→violet→magenta→orange with no green/cyan banding. `fidelity:compare` re-run again, still
+3/3, numbers unchanged.
+
+**Lesson:** a wider hue spread is not the same thing as "matches the reference's hue spread" —
+verify the actual interpolation PATH (which hues the gradient passes through between stops), not
+just the endpoint stops' own hues. And check the reference itself, not a copy of it that may be
+stale, before calling a fix done. `.claude/decisions.md` D939 (three entries below) should be
+read together with this one, not on its own.
+
 ## D939 [ROUTINE] — generative-background colour vibrancy: root cause was hue range, not saturation; fixed on the demo page with no shader change
 
 **2026-09-03.** Closes the last open item on the generative-background engine (D925-D927 fidelity,
@@ -113,6 +148,55 @@ line) and put `isolation:isolate` in `style.css` next to the existing position d
 — the helper is right for the common case (an unpositioned element) but wrong for an
 already-positioned one, and this is the second time in two rows the "harder" flag in the D936 plan
 was correct.
+
+## D940 [INCIDENT] — `sgs_block_background_layer_css()` dropped a `::after` layer on comma-joined selectors; fixed, and /qc-council caught the rest of the batch was unsafe
+
+**2026-09-03.** Two council raters (Explore agents, cross-checking the 9-row D936 exclusion
+batch before any dispatch) found a real pre-existing bug in `sgs_block_background_layer_css()`
+(`includes/helpers-tokens.php:873`), independent of the text-gradient work: it string-concatenates
+`::after` onto `$selector` without splitting on comma first, so a comma-joined selector (e.g.
+`sgs/product-card`'s bound-mode CTA, `.uid .product-card__view, .uid .product-card__add-to-cart`)
+only gets the `::after` on the LAST branch — the first selector's background layer silently
+vanishes. Fixed by mirroring `sgs_hover_state_rules()`'s existing per-branch splitting
+(`helpers-hover-state.php:109`). Verified with a standalone fixture (both branches now carry
+`::after`) and no regression on the two already-shipped rows (D937/D938).
+
+**The council's real finding: none of the 9 remaining rows are safe for a mechanical batch fix.**
+Per-row verdicts:
+
+- **Safe to apply the D937/D938 recipe as-is:** `nav-menu.navColour`, `pricing-table.ctaColour`
+  (once a `ctaColourGradient` sibling attribute is added — doesn't exist yet).
+- **Needs the position-safe hand-composed variant** (element already positioned, same shape as
+  D938): `modal.closeColourText` — its shared emitter (`sgs_button_element_style_css()`) also
+  serves `product-card.ctaColourText`, so this is a shared-helper-level change, not block-local.
+- **Genuine open design conflict, not mechanical:** `nav-menu.itemColour` — `.sgs-nav-menu__link`
+  already legitimately owns a real `::after` (the `hoverStyle='underline'` bar), and both are
+  independently operator-controllable. A new background `::after` would collide whenever an
+  operator picks underline + sets a gradient. Needs a scoping decision before any fix.
+- **Background source isn't attribute-driven, so the helper cannot see it at all:**
+  `form.submitColour` (`:where(.sgs-form__button--primary)` class default, de-specified to
+  `0,0,0`) and `modal.triggerColour` (`.sgs-modal__trigger--primary` class default, real
+  specificity `0,1,0` — currently wins only by selector-compounding, a fragile win). Neither is
+  blocked TODAY (the scoped attribute rule already out-specifies the class default), but a future
+  text-gradient sibling can't be added without either duplicating the class default's value as a
+  synthesized `$paint_decl`, or gating the gradient option behind the style variant.
+- **Mechanically compatible, but the premise is questionable:** `nav-menu.burgerColour` — both
+  paint sources are attribute-driven on the same selector (textbook helper shape), but the
+  "text" is actually an inline SVG icon coloured via `currentColor`, not rendered text.
+  `background-clip:text` has no defined effect on an SVG path fill — offering a text-gradient
+  control here would likely just make the icon invisible. Scope question: should this row even
+  get the feature?
+- **Premise correction + split case:** `product-card.tagTextColour` — `tagBackgroundColour` DOES
+  exist as an attribute (the D936 exclusion list's "zero operator input" framing was only true
+  for the unset-default state). When set, it's already helper-compatible. When unset, the
+  background is a static `style.css:1068` class default, currently beaten only by source-order
+  (a specificity TIE, not a real win — fragile to any future change in stylesheet load order).
+
+**Decision: do not dispatch a mechanical batch.** Every row needs either a shared-helper change
+(modal/product-card), a scoping decision (nav-menu.itemColour, nav-menu.burgerColour), or a
+design call on duplicating a CSS class default as a synthesized paint value
+(form/modal/product-card's unset case) before any subagent implementation. Full per-row detail:
+this session's two council rater transcripts (not separately filed — see this entry).
 
 ## D936 [ROUTINE] — Cluster A text gradients: 9 rows shipped, 13 excluded with reasons
 

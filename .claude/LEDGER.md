@@ -244,15 +244,19 @@ attributes set, so the effect never started — Bean saw an empty container and 
 "not the Stripe cloth animation". Fixed; confirmed via screenshot, not markup presence (which is
 what missed it the first time).
 
-✅ **Colour vibrancy FIXED (D939, 2026-09-03).** Measured, not guessed: the demo's four colours
-were already comparably saturated/light to the reference's own palette (checked via
-`getComputedStyle` + HSL, and by sampling `palette-a.png` at 5 rows) — the real defect was HUE
-RANGE, not saturation. Three of four stops sat in a 15° pink band; the reference sweeps blue →
-orange → pink → violet. Fixed by re-sampling the reference texture for a genuinely hue-diverse
-4-stop palette (orange/pale-blue/violet/pink) and applying it to the demo page via REST — no
-shader change. Screenshot-verified dramatically richer; `fidelity:compare` re-run, unaffected
-(3/3, unchanged numbers). The flat 4-stop 1D gradient vs the reference's 2D-varying texture
-remains a named, deliberately unbuilt architectural limit — no design gate opened.
+✅ **Colour vibrancy FIXED (D939, corrected D941, 2026-09-03).** The real defect was HUE RANGE,
+not saturation/lightness — three of four demo stops sat in a 15° pink band. **D939's first fix
+was wrong**: it picked stops whose interpolation path crossed green/yellow/cyan, shipping a
+literal rainbow. Bean caught it on sight ("check the colours of the actual original, it is not a
+rainbow"). **D941 corrected it** by sampling the reference's live screenshot pixels directly
+(not a stale cached texture) — its hues cluster in exactly three families, blue-violet /
+pink-magenta / orange, never green/yellow/cyan — and choosing a new 4-stop palette whose
+interpolation path was verified in a Python simulation of the actual OKLCH code BEFORE shipping,
+not just eyeballed from the four endpoint hues. Applied to the demo page via REST, no shader
+change either time. Screenshot-verified against the fresh reference; `fidelity:compare` re-run
+twice, unaffected both times (3/3, unchanged numbers). The flat 4-stop 1D gradient vs the
+reference's 2D-varying texture remains a named, deliberately unbuilt architectural limit — no
+design gate opened.
 
 ### ▶ NEXT — Bean's named visual sign-off (the only open item)
 

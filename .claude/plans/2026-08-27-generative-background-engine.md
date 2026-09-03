@@ -185,15 +185,21 @@ engine had no equivalent scaling at all, running ~25x too fast. Fixed with a ref
 constant. The static-phase fidelity numbers above are unaffected (that instrument samples fixed
 moments, not real playback speed).
 
-✅ **Colour vibrancy FIXED (D939, 2026-09-03).** Root cause was hue range, not saturation/
-lightness (both were already comparable to the reference's own palette, measured off
-`palette-a.png`) — three of the four demo colours sat in a 15° pink band plus one orange
-outlier, a near-monochrome gradient with no internal colour contrast, against a ground colour
-close in lightness to the ribbon. Fixed by re-sampling the reference texture for a genuinely
-hue-diverse 4-stop palette (orange/pale-blue/violet/pink, 41°→214°→294°→327°) and applying it to
-the demo page — no shader or engine code change. Screenshot-verified dramatically richer;
-`npm run fidelity:compare` re-run and unaffected (3/3, unchanged numbers — that instrument
-measures shape, not colour). Full account: D939.
+✅ **Colour vibrancy FIXED (D939, corrected D941, 2026-09-03).** Root cause was hue range, not
+saturation/lightness — three of the four demo colours sat in a 15° pink band plus one orange
+outlier, a near-monochrome gradient with no internal colour contrast. **D939's first fix was
+itself wrong** — it picked stops whose OKLCH interpolation path passed through green/yellow/cyan,
+producing a literal rainbow the reference does not have (Bean caught it: "check the colours of
+the actual original, it is not a rainbow"). **D941 corrected it**: sampled the reference's real
+screenshot pixels directly (not a cached texture file) and found its hues cluster in exactly
+three families — blue-violet (~244-270°), pink-magenta (~289-325°), orange (~18-36°), never
+green/yellow/cyan. New palette (`#533AFD`/`#FE86E9`/`#FE8D2C`/`#9E5FE5`) chosen so every
+adjacent-pair interpolation path stays on the warm/cool side and never crosses green — verified by
+simulating the actual interpolation code in Python BEFORE shipping, not just eyeballing the four
+endpoint hues. Applied to the demo page — no shader or engine code change either time.
+Screenshot-verified against the fresh reference; `npm run fidelity:compare` re-run twice,
+unaffected both times (3/3, unchanged numbers — that instrument measures shape, not colour).
+Full account: D939 + D941 (read together).
 
 **Still outstanding: Bean's NAMED visual sign-off against the "B-movie 3D VFX" risk.** No number
 closes that — it is his eye, and the acceptance criteria say so.
