@@ -91,6 +91,8 @@ function buildRootPreviewStyle( attributes ) {
 		width,
 		pillBgColour,
 		pillTextColour,
+		pillBgColourHover,
+		pillTextColourHover,
 		pillBorderColour,
 		pillSelectedBgColour,
 		pillSelectedTextColour,
@@ -145,6 +147,8 @@ function buildRootPreviewStyle( attributes ) {
 	// FR-32-4), same channel render.php emits on the root element's style.
 	if ( pillBgColour )               rootStyle[ '--sgs-op-bg' ]              = colourVar( pillBgColour );
 	if ( pillTextColour )             rootStyle[ '--sgs-op-text' ]            = colourVar( pillTextColour );
+	if ( pillBgColourHover )          rootStyle[ '--sgs-op-bg-hover' ]        = colourVar( pillBgColourHover );
+	if ( pillTextColourHover )        rootStyle[ '--sgs-op-text-hover' ]      = colourVar( pillTextColourHover );
 	if ( pillBorderColour )           rootStyle[ '--sgs-op-border' ]          = colourVar( pillBorderColour );
 	if ( pillSelectedBgColour )       rootStyle[ '--sgs-op-sel-bg' ]          = colourVar( pillSelectedBgColour );
 	if ( pillSelectedTextColour )     rootStyle[ '--sgs-op-sel-text' ]        = colourVar( pillSelectedTextColour );
@@ -171,7 +175,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		colourPreset,
 		showSelectedTick,
 		pillBgColour,
+		pillBgColourHover,
 		pillTextColour,
+		pillTextColourHover,
 		pillBorderColour,
 		pillBorderColourGradient,
 		pillSelectedBgColour,
@@ -322,15 +328,20 @@ export default function Edit( { attributes, setAttributes } ) {
 			   sits at the top of the inspector (mirrors sgs/button). Replaces
 			   the scattered DesignTokenPicker rows that used to live in the
 			   "Colours" ToolsPanel + the Label/Border panels below.
-			   GROUND-TRUTH (style.css:186-196 base+:hover rule reusing
-			   --sgs-op-bg/text/border; :checked rule at 200/246/277 switching
-			   to --sgs-op-sel-*; block.json pill-element note, FR-35-5):
-			   pillBgColour/pillTextColour/pillBorderColour are the RESTING
-			   state (the DB's "hover" css_state label is wrong — there is no
-			   distinct hover-only attribute, :hover reuses the resting vars
-			   as a fallback). The true second state is "current"
-			   (pillSelected*Colour, driven by :checked). Grouped here as
-			   Normal/Current pairs per pill property, all `linked: true`. */ }
+			   GROUND-TRUTH (style.css:186-289 base+:hover+:checked rules;
+			   block.json pill-element note, FR-35-5): pillBgColour/
+			   pillTextColour/pillBorderColour are the RESTING state.
+			   UPDATE (2026-09-03, block owner reversal): the pill's :hover
+			   USED TO reuse the resting vars with no distinct hover-only
+			   attribute — that FR-35-5 exception has been reversed, so
+			   pillBgColourHover/pillTextColourHover now exist as real
+			   attributes (mirroring sgs/nav-menu's item-bg/item-text
+			   normal+hover rows) and are wired as a genuine "Hover" state
+			   below, between Normal and Current. pillBorderColour has no
+			   hover sibling (out of scope for this reversal). The
+			   remaining second state is "current" (pillSelected*Colour,
+			   driven by :checked). Grouped here as Normal/Hover/Current
+			   triples per pill property, all `linked: true`. */ }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -358,6 +369,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								linked: true,
 							},
 							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: pillBgColourHover,
+								onChange: ( val ) => setAttributes( { pillBgColourHover: val ?? '' } ),
+								linked: true,
+							},
+							{
 								key: 'current',
 								label: __( 'Current', 'sgs-blocks' ),
 								value: pillSelectedBgColour,
@@ -375,6 +393,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: pillTextColour,
 								onChange: ( val ) => setAttributes( { pillTextColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: pillTextColourHover,
+								onChange: ( val ) => setAttributes( { pillTextColourHover: val ?? '' } ),
 								linked: true,
 							},
 							{

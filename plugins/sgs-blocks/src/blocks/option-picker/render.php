@@ -18,12 +18,13 @@
  * Because the root can carry the anchor `id` (ToC), the scoped uid is a CLASS
  * (`sgs-op-{md5}`, container/quote-style), never an `id`.
  *
- * Pill resting/selected colour + border-radius are attribute-driven CSS custom
- * PROPERTY VALUES (`--sgs-op-*`) consumed by style.css's `.sgs-option-picker`
- * class rules — never inline property declarations. Per Spec 32 FR-32-4 as
- * amended 2026-07-18 (D345), inline `--var` declarations are FORBIDDEN too —
- * every `--sgs-op-*` value (root resting/selected/radius vars + the per-pill
- * swatch bg/text vars) is emitted into the block's OWN scoped `.{uid}`
+ * Pill resting/hover/selected colour + border-radius are attribute-driven CSS
+ * custom PROPERTY VALUES (`--sgs-op-*`) consumed by style.css's
+ * `.sgs-option-picker` class rules — never inline property declarations. Per
+ * Spec 32 FR-32-4 as amended 2026-07-18 (D345), inline `--var` declarations
+ * are FORBIDDEN too — every `--sgs-op-*` value (root resting/hover/selected/
+ * radius vars + the per-pill swatch bg/text vars) is emitted into the
+ * block's OWN scoped `.{uid}`
  * `<style>` tag, never as an inline `style="--var:…"` attribute. This is
  * also what makes the pill states CLONEABLE: the universal styling-lift
  * (Spec 31 §3.B B2) matches each attr's `derived_selector` against the draft's
@@ -95,6 +96,14 @@ $colour_preset        = $attributes['colourPreset'] ?? '';
 $show_selected_tick   = array_key_exists( 'showSelectedTick', $attributes ) ? (bool) $attributes['showSelectedTick'] : true;
 $pill_bg_colour       = $attributes['pillBgColour'] ?? '';
 $pill_text_colour     = $attributes['pillTextColour'] ?? '';
+
+// Pill HOVER colours — real attributes since 2026-09-03 (FR-35-5 exception
+// reversed by the block owner). Empty = fall through to the existing
+// static preset-variant hover look via the CSS var() fallback chain in
+// style.css (no behaviour change for an instance with nothing configured).
+$pill_bg_colour_hover   = $attributes['pillBgColourHover'] ?? '';
+$pill_text_colour_hover = $attributes['pillTextColourHover'] ?? '';
+
 $pill_border_colour   = $attributes['pillBorderColour'] ?? '';
 $pill_border_gradient = sgs_css_gradient_value( $attributes['pillBorderColourGradient'] ?? '' );
 $pill_sel_bg_colour   = $attributes['pillSelectedBgColour'] ?? '';
@@ -278,11 +287,15 @@ $pill_padding_mobile_obj = is_array( $pill_padding_tiers['mobile'] ) ? $pill_pad
 
 // ---------------------------------------------------------------------------
 // 6. Scoped CSS custom-PROPERTY VALUES (never property declarations, never
-// inline) for pill resting/selected colour + radius, root border colour.
-// Per Spec 32 FR-32-4 as amended 2026-07-18 (D345), these are emitted into
-// the scoped `{$root_sel}{--var:value;…}` rule below (§7) — NOT as an
-// inline `style="--var:value"` attribute — consumed by style.css's class
-// rules via var(--sgs-op-*, …).
+// inline) for pill resting/hover/selected colour + radius, root border
+// colour. Per Spec 32 FR-32-4 as amended 2026-07-18 (D345), these are
+// emitted into the scoped `{$root_sel}{--var:value;…}` rule below (§7) —
+// NOT as an inline `style="--var:value"` attribute — consumed by
+// style.css's class rules via var(--sgs-op-*, …). The --sgs-op-*-hover
+// vars (2026-09-03) feed the SAME :hover rules that used to reuse the
+// resting vars as a fallback — style.css chains
+// var(--sgs-op-*-hover, var(--sgs-op-*, <old hardcoded default>)) so an
+// instance with nothing configured renders byte-identically to before.
 // ---------------------------------------------------------------------------
 
 $var_decls = array();
@@ -292,6 +305,12 @@ if ( $pill_bg_colour ) {
 }
 if ( $pill_text_colour ) {
 	$var_decls[] = '--sgs-op-text:' . sgs_colour_value( $pill_text_colour );
+}
+if ( $pill_bg_colour_hover ) {
+	$var_decls[] = '--sgs-op-bg-hover:' . sgs_colour_value( $pill_bg_colour_hover );
+}
+if ( $pill_text_colour_hover ) {
+	$var_decls[] = '--sgs-op-text-hover:' . sgs_colour_value( $pill_text_colour_hover );
 }
 if ( $pill_border_colour ) {
 	$var_decls[] = '--sgs-op-border:' . sgs_colour_value( $pill_border_colour );

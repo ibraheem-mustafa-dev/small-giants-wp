@@ -188,12 +188,15 @@
 	border: 2px solid var(--sgs-op-border, var(--wp--preset--color--text, currentColor));
 }
 
-/* Considering state (hover / focus-within on the label) */
+/* Considering state (hover / focus-within on the label). --sgs-op-*-hover
+   (2026-09-03) is a real client-configurable override; unset falls through
+   the same chain as before (--sgs-op-bg/text, then the hardcoded default),
+   so an instance with nothing configured renders byte-identically. */
 .sgs-option-picker--outlined .sgs-option-picker__option:hover  .sgs-option-picker__pill,
 .sgs-option-picker--outlined .sgs-option-picker__option:focus-within .sgs-option-picker__pill {
-	background-color: var(--sgs-op-bg, var(--wp--preset--color--secondary, #f3f4f6));
+	background-color: var(--sgs-op-bg-hover, var(--sgs-op-bg, var(--wp--preset--color--secondary, #f3f4f6)));
 	border-color:     var(--sgs-op-border, var(--wp--preset--color--primary, currentColor));
-	color:            var(--sgs-op-text, var(--wp--preset--color--primary, currentColor));
+	color:            var(--sgs-op-text-hover, var(--sgs-op-text, var(--wp--preset--color--primary, currentColor)));
 }
 
 /* Selected state — CSS-only via :checked sibling */
@@ -240,7 +243,7 @@
 
 .sgs-option-picker--filled .sgs-option-picker__option:hover  .sgs-option-picker__pill,
 .sgs-option-picker--filled .sgs-option-picker__option:focus-within .sgs-option-picker__pill {
-	background-color: var(--sgs-op-bg, var(--wp--preset--color--surface-alt, #d1d5db));
+	background-color: var(--sgs-op-bg-hover, var(--sgs-op-bg, var(--wp--preset--color--surface-alt, #d1d5db)));
 }
 
 .sgs-option-picker--filled .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill {
@@ -271,7 +274,7 @@
 
 .sgs-option-picker--ghost .sgs-option-picker__option:hover  .sgs-option-picker__pill,
 .sgs-option-picker--ghost .sgs-option-picker__option:focus-within .sgs-option-picker__pill {
-	background-color: var(--wp--preset--color--secondary, rgba(0, 0, 0, 0.05));
+	background-color: var(--sgs-op-bg-hover, var(--wp--preset--color--secondary, rgba(0, 0, 0, 0.05)));
 }
 
 .sgs-option-picker--ghost .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill {
