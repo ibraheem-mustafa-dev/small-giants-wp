@@ -810,6 +810,110 @@ hand-roll a bespoke colour `PanelBody` — mount this component instead.
   `trust-bar` (verify: `grep -l "<DesignTokenPicker" src/blocks/*/edit.js`). `sgs/product-card`
   is the fully-standardised reference (1 `SgsColourPanel` mount, 0 raw pickers).
 
+### Colour EMISSION helpers — the render.php side (2026-09-03)
+
+**Written because the gap cost real time.** A 2026-09-03 session spent most of its length
+hand-fixing render.php CSS assembly one block at a time before realising several of these
+helpers already existed and already did the job. This section is the "which one do I call"
+reference that should have existed first. All live in `includes/helpers-tokens.php` (the
+primitives) and `includes/helpers-colour-variants.php` (the per-mechanism composers) unless
+noted. Every one is autoloaded via `render-helpers.php`.
+
+**The primitives (everything else is built from these two):**
+
+| Function | Signature | Does |
+|---|---|---|
+| `sgs_colour_value()` | `( ?string $value ): string` | Resolves a token slug to `var(--wp--preset--color--X)` or passes a raw CSS colour through. The floor every other helper reads through. |
+| `sgs_background_paint_decl()` | `( ?string $colour, ?string $gradient ): string` | ONE declaration — `background-color:X` or `background-image:linear-gradient(...)` (gradient wins when valid), no trailing `;`. The single shared gate for "does this fill paint a gradient". |
+
+**The state emitter (the thing every mechanism ultimately calls to become real CSS):**
+
+| Function | Signature | Does |
+|---|---|---|
+| `sgs_emit_state_colour_css()` | `( string $selector, array $decls_normal, array $decls_hover ): string` | Given a selector + raw declaration arrays, emits `{sel}{…}` plus a touch-guarded `:hover`/`:focus-visible` pair via `sgs_hover_state_rules()`. The lowest-level shared primitive — every mechanism below either calls this directly or is this shape hand-inlined. |
+
+**Per-mechanism composers — pick ONE based on what the element actually paints:**
+
+| Mechanism | Function | Returns | When to use |
+|---|---|---|---|
+| **Fill (background)** | `sgs_fill_decls( $attributes, $map )` | `{normal:string[], hover:string[]}` — raw declarations, NOT finished CSS | The element shares its selector with OTHER declarations you're already assembling (compose into one rule yourself, then call `sgs_emit_state_colour_css()` once). |
+| **Fill (background)** | `sgs_fill_states_css( $selector, $attributes, $map )` | Finished CSS | The element owns its own standalone rule for JUST this fill — no composing needed. |
+| **Text** | `sgs_text_decls( $attributes, $map )` | `{normal:string[], hover:string[]}` | ⚠ Returns ONLY the `color:` declaration. If the resolved value is a gradient, you MUST separately call `sgs_text_colour_gradient_fallback_rule()` (below) — this function will not do it for you, and a bare `color:linear-gradient(...)` is invalid CSS the browser silently drops. |
+| **Border** | `sgs_border_states_css( $selector, $attributes, $map )` | Finished CSS (the ONLY one of the four that returns finished CSS unconditionally) | A border gradient needs a masked `::before` ring construct that requires BOTH states at once (delegates to `sgs_border_gradient_css()`), so there is no honest per-state-declaration form. |
+
+All four `$map` shapes are identical: `['base'=>attr, 'hover'=>attr, 'gradient'=>attr, 'hover_gradient'=>attr]` — only `base` is required, everything else optional. **Attribute names are the caller's own** (Bean's ruling, 2026-08-22) — the map adapts to whatever a block already calls its attrs; nothing gets renamed to fit the helper.
+
+**The button-element aggregate — for a genuinely button-shaped element only:**
+
+| Function | Signature | Does |
+|---|---|---|
+| `sgs_button_element_style_css()` | `( array $attrs, string $prefix, string $selector ): string` (`includes/helpers-button-style.php`) | ONE call reads `{prefix}ColourBackground`/`ColourText`/`ColourBorder` + `Hover` siblings + `ColourBackgroundGradient`/`ColourBackgroundHoverGradient` (added 2026-09-03) + `ColourBorderGradient`/`ColourBorderHoverGradient` (pre-existing, D636), plus border-style/width/radius, font-weight/size, padding, width-type — ALL from one prefixed attribute set. |
+
+⛔ **This helper supports fill gradient and border gradient, but deliberately NOT text
+gradient.** A button-shaped element paints text and background on the SAME selector, and a
+text gradient needs `background-clip:text` — which would clip that same-selector background
+paint to the glyph shapes. Adding text gradient here needs the `::after`-layer treatment
+below applied FIRST; it cannot be bolted onto this helper as-is. `sgs/button` itself does not
+use this helper (it has its own, richer emitter) — this one is for OTHER blocks' built-in
+CTA-shaped elements (product-card's CTA, container's CTA, etc.) and now also modal's close
+button / form's prev button, google-reviews' write-review and arrow buttons (2026-09-03).
+
+**Real text gradient — the only path that supports it, and its precondition:**
+
+| Function | Signature | Does |
+|---|---|---|
+| `sgs_resolve_text_colour_or_gradient()` | `( ?string $flat, ?string $gradient ): string` | Picks the gradient when valid, else the flat colour. |
+| `sgs_text_colour_decl()` | `( ?string $value ): string` | For a flat colour: `color:X`. For a gradient: `background-image:X;-webkit-background-clip:text;background-clip:text;color:transparent`. |
+| `sgs_text_colour_gradient_fallback_rule()` | `( string $selector, ?string $value ): string` | No-op for a flat colour. For a gradient: emits the MANDATORY `@supports not ((background-clip:text))` fallback. **Always call this alongside `sgs_text_colour_decl()`** — omit it and a gradient degrades to invisible text on any browser lacking `background-clip:text`. |
+
+⛔ **Precondition: the element must NOT also paint a background on the same selector.**
+`background-clip:text` clips the element's WHOLE background painting area — background
+colour included — to the glyph shapes. If the element needs both a text gradient AND a
+background, move the background onto a `::after` layer first:
+
+| Function | Signature | Does |
+|---|---|---|
+| `sgs_block_background_layer_css()` | `( string $selector, string $paint_decl, string $hover_paint_decl = '' ): string` (`helpers-tokens.php`) | Moves a block's background paint off the element itself onto a `::after` pseudo-element, freeing the element for `background-clip:text`. Uses `::after` specifically because `sgs_border_gradient_css()` already owns `::before` on every block this applies to. |
+
+**Which blocks currently need this precondition solved before they can offer a text
+gradient**: 43 elements across ~35 blocks currently declare BOTH a `css:color*` and a
+`css:background*` member on the same `supports.sgs.elements` entry (query:
+`SELECT block_slug,css_element FROM block_attributes …` isn't quite right — the live check is
+reading each block.json's `supports.sgs.elements[*].attrMap` for an element with both a
+`css:color*` key and a genuinely separate `css:background*` key, i.e. NOT the attribute's own
+`{attr}Gradient` sibling). This is `textSharesElementWithBackground()` in
+`scripts/inspector-scan/rules/31-golden-colour-control.js:163` — an EXISTING, already-adopted
+exemption mechanism, not something to hand-derive per block. It reads the element manifest,
+so no block list is hardcoded and none needs to be kept in sync by hand. This is a real,
+sizeable backlog (button, container, hero, product-card, trust-bar, nav-menu, cta-section,
+info-box, and ~27 more) — closing all of it is its own project, not a quick follow-up.
+
+**The bespoke custom-property pattern — NOT a shared helper, block-private by design:**
+
+`sgs/option-picker`'s ENTIRE colour system (base/hover/selected/border, across three style
+variants — outlined/filled/ghost) is built this way rather than through any of the above:
+render.php emits `--sgs-op-*` CSS custom-property VALUES (`$var_decls[] = '--sgs-op-bg-hover:'
+. sgs_colour_value(...)`), and style.css's per-variant rules consume them via a `var(--sgs-op-
+bg-hover, var(--sgs-op-bg, <preset-default>))` fallback chain. **Use this pattern only when a
+block has multiple STYLE VARIANTS sharing one underlying colour concept with different
+property combinations per variant** — the button/fill/text/border helpers above all assume
+one selector with one flat set of colour states, which doesn't fit that shape. There is no
+shared helper for this pattern; every adopter hand-rolls its own `--sgs-x-*` chain. It does
+NOT support gradient without extra work: a gradient needs `background-image`, and a
+`var(--x, …)` chain feeding a fixed `background-color:` declaration can't switch CSS property
+based on whether the resolved value is a gradient — that would need a second custom property
+or a conditional PHP branch choosing which property to emit, not yet built anywhere.
+
+**Decision table:**
+
+| Element shape | Use |
+|---|---|
+| One selector, needs background AND/OR border AND/OR text colour, all flat-or-gradient except text | `sgs_button_element_style_css()` if genuinely button-shaped (has border/font-weight/padding too); otherwise compose `sgs_fill_decls()`/`sgs_text_decls()`/`sgs_border_states_css()` yourself |
+| One selector, background/border only, no text | `sgs_fill_states_css()` and/or `sgs_border_states_css()` directly |
+| One selector, text gradient needed AND no background on that same selector | `sgs_resolve_text_colour_or_gradient()` → `sgs_text_colour_decl()` → `sgs_text_colour_gradient_fallback_rule()` (MANDATORY companion) |
+| One selector, text gradient needed AND a background too | Same as above, but first move the background to `sgs_block_background_layer_css()` |
+| Multiple style variants, one colour concept, different properties per variant | The bespoke `--sgs-x-*` custom-property pattern (option-picker is the reference) — gradient needs its own design here, not a drop-in |
+
 ### Hover Controls Spec (Phase 2)
 
 Blocks with interactive hover states MUST expose these controls in the editor inspector:
