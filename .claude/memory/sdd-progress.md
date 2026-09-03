@@ -521,3 +521,14 @@ Task 1: complete (focal-point wired, commit 651aa7155, coordinator-verified)
 
   object-fit + focal-point are WIRED but their controls are NOT yet best-of-breed -
   both revisited against the census.
+
+---
+
+## RUN 2026-09-03 — Cluster A text-gradient batch (9 rows, 4 blocks)
+Plan: .claude/plans/2026-09-03-cluster-a-text-gradient-batch.md
+Scope narrowed from 22 to 9: 7 rows blocked by the same-selector background precondition, 6 unverified (not in element manifest).
+Task 1: complete (sgs/testimonial, 5 rows — summary/name/role/org/rating; coordinator-verified: TRUE passes + FALSE fails on all 5, @supports fallback emitted, flat path unregressed)
+Task 2: complete (sgs/pricing-table, title+feature; coordinator-verified incl. comma-joined selector covering __title AND __name)
+Task 3: complete (sgs/quote, attribution; textColourHover correctly excluded, no gradient sibling added)
+Task 4: complete (sgs/brand-strip, name; existing backgroundColourGradient unaffected)
+BATCH COMPLETE — 9 rows, 4 blocks. 11 rows excluded with reasons (see plan).
