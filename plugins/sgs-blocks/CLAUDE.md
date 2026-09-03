@@ -810,6 +810,62 @@ hand-roll a bespoke colour `PanelBody` — mount this component instead.
   `trust-bar` (verify: `grep -l "<DesignTokenPicker" src/blocks/*/edit.js`). `sgs/product-card`
   is the fully-standardised reference (1 `SgsColourPanel` mount, 0 raw pickers).
 
+### Touch-safe HOVER helpers — `includes/helpers-hover-state.php` (2026-09-03)
+
+**The ONE place a `:hover` rule is built.** On a touchscreen a tap engages `:hover` and it
+STICKS until the user taps elsewhere — clients report it as "I tap it and the colour won't go
+back", indistinguishable from a broken control. Call one of these rather than writing a bare
+`{sel}:hover{…}` anywhere.
+
+| Function | Signature | Use when |
+|---|---|---|
+| `sgs_hover_state_rules()` | `( string $selector, string $decls, string $focus = ':focus-visible', string $suffix = '' ): string` | **The default.** You have a base selector and want the hover + focus pair built correctly. Splits the focus rule out and leaves it unguarded, which is what keyboard users need. |
+| `sgs_hover_guarded_rule()` | `( string $hover_selector, string $decls ): string` | You already hold `:hover` selectors and want just the guarded rule. Pass ONLY `:hover` selectors — emit focus separately, yourself, unguarded. |
+| `sgs_hover_media_wrap()` | `( string $rule ): string` | You have a complete rule and need only layer 1 wrapped around it. |
+
+**Two layers, both required. Neither covers the other's devices.**
+
+| Constant | Layer | Covers |
+|---|---|---|
+| `SGS_HOVER_MEDIA` = `@media (hover: hover) and (pointer: fine)` | 1 — pure CSS, works on a page shipping no JS | Phones, pure-touch tablets |
+| `SGS_HOVER_NOT_TOUCH` = `:where(:root:not(.sgs-touch-input))` | 2 — reactive class set from the last `pointerdown` | Hybrids: touchscreen laptops, Surface, iPad + trackpad |
+
+⛔ **Layer 1 alone is not enough, and this is measured, not theoretical.** The media feature
+describes the device's PRIMARY pointer only — a hybrid reports hover-capable and KEEPS
+reporting it for the whole session even while being poked with a finger. Do not delete either
+layer believing the other covers it.
+
+⚠ **`:focus-visible` / `:focus-within` stay OUTSIDE both guards** — they are keyboard-reachable,
+and a keyboard user on a touchscreen laptop still needs the focus state. Callers split the
+hover selector from the focus selector rather than emitting one combined rule.
+
+⚠ **Layer 2 is wrapped in `:where()` so it contributes ZERO specificity.** A hover rule must
+keep out-ranking its own resting rule by the `:hover` pseudo-class alone. A guard that raises
+specificity produces a rule that silently loses — indistinguishable from one that is absent.
+
+**Static `style.css` is a SECOND surface this helper cannot reach.** Per-block `style.css`
+files are enqueued by WordPress as ordinary stylesheets and never pass through PHP, so a
+motion `:hover` rule written there gets no guard from these functions. That surface is covered
+at build time instead, by `scripts/hover-guard/`:
+
+| Script | Does |
+|---|---|
+| `run-transform.js` | Wraps motion-only `:hover` rules in BOTH guards, operating on compiled CSS in `build/blocks/*/style.css`. Idempotent; nests correctly inside an existing `@media`; splits a selector list that mixes `:hover` with `:focus-visible`. |
+| `check.js` | Fails on any `:hover` rule the transform cannot classify confidently, so an odd shape surfaces as a build error rather than being silently mangled. Scans BOTH surfaces — the block CSS files AND these PHP emitters — so an unguarded hover rule added on either one is caught by a single check rather than falling between two half-checks. |
+
+Out of scope by design, and not a bug: colour-family hover rules (the PHP helpers above already
+own those) and `text-decoration`-only hover on links (a stuck underline is cosmetic, not a
+control that looks broken — but `text-decoration` COMBINED with a motion property is still
+guarded).
+
+⚠ **The transform runs on BUILD OUTPUT, so `src/**/style.css` still reads as unguarded.** That
+is expected. Do not "fix" a source file by hand-adding a guard — read `check.js`'s output for
+the real state.
+
+⚠ **The PHP half's finding count means "none this method can detect", not "none exist".** Its
+scan is per-function-body, so a hover rule reached through a cross-file data flow is invisible
+to it — one such case is known in `helpers-tokens.php`'s `sgs_border_gradient_css()`.
+
 ### Colour EMISSION helpers — the render.php side (2026-09-03)
 
 **Written because the gap cost real time.** A 2026-09-03 session spent most of its length

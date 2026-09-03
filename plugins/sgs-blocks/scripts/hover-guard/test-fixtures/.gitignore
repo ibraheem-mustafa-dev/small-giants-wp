@@ -1,0 +1,8 @@
+# Regenerable verification scratch: full copies of every block's style.css, made
+# by the verification runs (~1.5MB of duplicated CSS). Recreate by copying
+# src/blocks/*/style.css into build-copy/ and running run-transform.js against it.
+# anti-vacuity-dead-detector.js is NOT ignored — it is the deliberately-broken
+# detector the anti-vacuity control needs, and the control cannot be reproduced
+# without it.
+build-copy/
+pre-transform-baseline/

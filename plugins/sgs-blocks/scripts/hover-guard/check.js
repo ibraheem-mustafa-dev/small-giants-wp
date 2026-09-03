@@ -1,0 +1,196 @@
+#!/usr/bin/env node
+'use strict';
+
+/**
+ * Build-failing checker. Two jobs (per the brief):
+ *
+ *   (a) Fail if any `:hover` rule in the scanned CSS is left unguarded and
+ *       motion-only, OR could not be classified with confidence
+ *       (ambiguous hover/focus selector mix, or undecidable declarations).
+ *   (b) Fail if any PHP emission helper under `includes/` builds a
+ *       `:hover` selector without ever calling a guard function in the
+ *       same function body — see php-hover-scan.php's own docblock for the
+ *       exact method and its documented limitation.
+ *
+ * Never fabricates a PASS. If a target directory/file is missing, or the
+ * PHP scan cannot run, this exits non-zero and prints NOT RUN rather than
+ * silently reporting 0 findings.
+ *
+ * @package SGS\Blocks
+ */
+
+const fs = require( 'fs' );
+const path = require( 'path' );
+const { execFileSync } = require( 'child_process' );
+const { auditCss } = require( './audit.js' );
+
+function findStyleCssFiles( baseDir ) {
+	const found = [];
+	if ( ! fs.existsSync( baseDir ) ) {
+		return found;
+	}
+	for ( const entry of fs.readdirSync( baseDir, { withFileTypes: true } ) ) {
+		const full = path.join( baseDir, entry.name );
+		if ( entry.isDirectory() ) {
+			const candidate = path.join( full, 'style.css' );
+			if ( fs.existsSync( candidate ) ) {
+				found.push( candidate );
+			}
+			found.push( ...findStyleCssFiles( full ).filter( ( f ) => f !== candidate ) );
+		}
+	}
+	return found;
+}
+
+/** Default PHP files scanned for job (b). helpers-hover-state.php excluded — it is the definer. */
+function defaultPhpTargets( includesDir ) {
+	if ( ! fs.existsSync( includesDir ) ) {
+		return [];
+	}
+	return fs
+		.readdirSync( includesDir )
+		.filter( ( f ) => f.endsWith( '.php' ) && 'helpers-hover-state.php' !== f )
+		.map( ( f ) => path.join( includesDir, f ) );
+}
+
+function runCssCheck( cssDir ) {
+	if ( ! fs.existsSync( cssDir ) ) {
+		return { ranOk: false, reason: `directory does not exist: ${ cssDir }`, findings: [] };
+	}
+	const files = findStyleCssFiles( cssDir );
+	if ( 0 === files.length ) {
+		return { ranOk: false, reason: `no style.css files found under ${ cssDir }`, findings: [] };
+	}
+
+	const findings = [];
+	let totalHover = 0;
+	let colourSkipped = 0;
+	let textDecorationSkipped = 0;
+	let alreadyGuarded = 0;
+
+	for ( const file of files ) {
+		const css = fs.readFileSync( file, 'utf8' );
+		const result = auditCss( css, file );
+
+		totalHover += result.totalHoverMembers;
+		colourSkipped += result.colourSkippedCount;
+		textDecorationSkipped += result.textDecorationSkippedCount;
+		alreadyGuarded += result.alreadyGuardedCount;
+
+		for ( const f of result.unguardedMotion ) {
+			findings.push( { file, ...f } );
+		}
+		for ( const f of result.ambiguous ) {
+			findings.push( { file, ...f } );
+		}
+		for ( const f of result.unclassified ) {
+			findings.push( { file, ...f } );
+		}
+	}
+
+	return {
+		ranOk: true,
+		filesScanned: files.length,
+		totalHover,
+		colourSkipped,
+		textDecorationSkipped,
+		alreadyGuarded,
+		findings,
+	};
+}
+
+function runPhpCheck( includesDir ) {
+	const targets = defaultPhpTargets( includesDir );
+	if ( 0 === targets.length ) {
+		return { ranOk: false, reason: `no PHP files found under ${ includesDir }`, findings: [] };
+	}
+
+	let stdout;
+	let status;
+	try {
+		stdout = execFileSync( 'php', [ path.join( __dirname, 'php-hover-scan.php' ), ...targets ], {
+			encoding: 'utf8',
+		} );
+		status = 0;
+	} catch ( err ) {
+		// execFileSync throws on non-zero exit; the JSON is still on stdout.
+		stdout = err.stdout ? err.stdout.toString() : '';
+		status = typeof err.status === 'number' ? err.status : null;
+	}
+
+	if ( 2 === status || null === status ) {
+		return { ranOk: false, reason: `php-hover-scan.php could not complete (exit ${ status })`, findings: [], raw: stdout };
+	}
+
+	let parsed;
+	try {
+		parsed = JSON.parse( stdout );
+	} catch ( e ) {
+		return { ranOk: false, reason: `php-hover-scan.php produced non-JSON output: ${ e.message }`, findings: [], raw: stdout };
+	}
+
+	return {
+		ranOk: true,
+		functionsScanned: parsed.functions.length,
+		findings: parsed.failures,
+	};
+}
+
+function main() {
+	const cssDirArg = process.argv[ 2 ];
+	const cssDir = cssDirArg
+		? path.resolve( cssDirArg )
+		: path.resolve( __dirname, '..', '..', 'build', 'blocks' );
+	const includesDir = path.resolve( __dirname, '..', '..', 'includes' );
+
+	console.log( '[hover-guard check] CSS surface:', cssDir );
+	console.log( '[hover-guard check] PHP surface:', includesDir );
+
+	const cssResult = runCssCheck( cssDir );
+	const phpResult = runPhpCheck( includesDir );
+
+	let exitCode = 0;
+
+	if ( ! cssResult.ranOk ) {
+		console.error( `[hover-guard check] CSS check NOT RUN — ${ cssResult.reason }` );
+		exitCode = 1;
+	} else {
+		console.log(
+			`[hover-guard check] CSS: scanned ${ cssResult.filesScanned } files, ${ cssResult.totalHover } hover members total, ${ cssResult.alreadyGuarded } already guarded, ${ cssResult.colourSkipped } colour (out of scope), ${ cssResult.textDecorationSkipped } text-decoration-only (out of scope), ${ cssResult.findings.length } findings.`
+		);
+		for ( const f of cssResult.findings ) {
+			console.error( `  [css] ${ f.file }:${ f.line } [${ f.kind }] ${ f.selector }` );
+		}
+		if ( cssResult.findings.length > 0 ) {
+			exitCode = 1;
+		}
+	}
+
+	if ( ! phpResult.ranOk ) {
+		console.error( `[hover-guard check] PHP check NOT RUN — ${ phpResult.reason }` );
+		if ( phpResult.raw ) {
+			console.error( phpResult.raw );
+		}
+		exitCode = 1;
+	} else {
+		console.log(
+			`[hover-guard check] PHP: scanned ${ phpResult.functionsScanned } functions, ${ phpResult.findings.length } findings.`
+		);
+		for ( const f of phpResult.findings ) {
+			console.error( `  [php] ${ f.file }:${ f.line } function ${ f.name }() builds :hover without calling a guard function` );
+		}
+		if ( phpResult.findings.length > 0 ) {
+			exitCode = 1;
+		}
+	}
+
+	if ( 0 === exitCode ) {
+		console.log( '[hover-guard check] PASS — 0 unguarded motion hover rules, 0 unclassified rules, 0 unguarded PHP hover emitters.' );
+	} else {
+		console.error( '[hover-guard check] FAIL' );
+	}
+
+	process.exit( exitCode );
+}
+
+main();
