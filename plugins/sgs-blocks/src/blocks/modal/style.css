@@ -147,7 +147,11 @@
 /*
  * Close button — 2.75rem = 44px: WCAG 2.2 SC 2.5.5 touch target.
  * Idle: border-subtle bg (chip semantic, 12.0:1 with text icon — FIX #11).
- * Hover: primary-dark bg + text-inverse icon (8.88:1 — FIX #5).
+ * Hover colour is attribute-driven (closeColourBackground/closeColourText +
+ * Hover siblings) via sgs_button_element_style_css() in render.php, emitted
+ * at real specificity so it wins once a client sets a value. The :hover
+ * rule below is the DEFAULT look, kept at zero specificity via :where() —
+ * an unset attribute means this still fires and today's look is unchanged.
  * Duration: fast (150ms) per Group J spec.
  */
 .sgs-modal__close {
@@ -171,7 +175,7 @@
 		color            var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
-.sgs-modal__close:hover {
+:where(.sgs-modal__close:hover) {
 	background-color: var(--wp--preset--color--primary-dark, #0A5B5D);
 	color: var(--wp--preset--color--text-inverse, #ffffff);
 }

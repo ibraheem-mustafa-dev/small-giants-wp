@@ -76,6 +76,14 @@ if ( $trigger_rules ) {
 if ( $dialog_rules ) {
 	$scoped_css_rules[] = $root_sel . ' .sgs-modal__dialog{' . implode( ';', $dialog_rules ) . '}';
 }
+// Close button — button-shaped (background + text colour), so it shares the
+// button-element style emitter with every other built-in CTA (helpers-button-style.php)
+// rather than a hand-rolled rule set. Superseded the hardcoded
+// .sgs-modal__close:hover rule that used to live in style.css.
+$close_button_css = sgs_button_element_style_css( $attributes, 'close', $root_sel . ' .sgs-modal__close' );
+if ( $close_button_css ) {
+	$scoped_css_rules[] = $close_button_css;
+}
 $scoped_css = implode( '', $scoped_css_rules );
 
 // Render.

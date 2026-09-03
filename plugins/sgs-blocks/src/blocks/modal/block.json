@@ -117,6 +117,30 @@
 		"overlayOpacity": {
 			"type": "number",
 			"default": 50
+		},
+		"closeColourBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"closeColourBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"closeColourBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"closeColourBackgroundHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"closeColourText": {
+			"type": "string",
+			"default": ""
+		},
+		"closeColourTextHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

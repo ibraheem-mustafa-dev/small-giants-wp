@@ -65,6 +65,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		modalBackground,
 		overlayColour,
 		overlayOpacity,
+		closeColourBackground,
+		closeColourBackgroundHover,
+		closeColourBackgroundGradient,
+		closeColourBackgroundHoverGradient,
+		closeColourText,
+		closeColourTextHover,
 	} = attributes;
 
 	const [ palette ] = useSettings( 'color.palette' );
@@ -174,10 +180,54 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
+					{
+						key: 'closeText',
+						label: __( 'Close button icon colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: closeColourText,
+								onChange: ( val ) => setAttributes( { closeColourText: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: closeColourTextHover,
+								onChange: ( val ) => setAttributes( { closeColourTextHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'closeBackground',
+						label: __( 'Close button background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: closeColourBackground,
+								onChange: ( val ) => setAttributes( { closeColourBackground: val ?? '' } ),
+								gradientValue: closeColourBackgroundGradient,
+								onGradientChange: ( val ) => setAttributes( { closeColourBackgroundGradient: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: closeColourBackgroundHover,
+								onChange: ( val ) => setAttributes( { closeColourBackgroundHover: val ?? '' } ),
+								gradientValue: closeColourBackgroundHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { closeColourBackgroundHoverGradient: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Trigger Button', 'sgs-blocks' ) }>
+				<PanelBody title={ __( 'Modal Settings', 'sgs-blocks' ) }>
 					<TextControl
 						label={ __( 'Button text', 'sgs-blocks' ) }
 						value={ triggerText }
@@ -197,9 +247,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-				</PanelBody>
-
-				<PanelBody title={ __( 'Modal Settings', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Max width', 'sgs-blocks' ) }
 						value={ maxWidth }
