@@ -787,6 +787,11 @@ const PREFIXED_HELPER_SUFFIXES = {
 		'ColourText',
 		'ColourBorder',
 		'ColourBorderGradient',
+		// Added 2026-09-03 alongside the helper's own fill-gradient branch —
+		// sgs_background_paint_decl() reads these two by the same $prefix.
+		// 'Suffix' concatenation as every other entry in this list.
+		'ColourBackgroundGradient',
+		'ColourBackgroundHoverGradient',
 		'ColourBackgroundHover',
 		'ColourTextHover',
 		'ColourBorderHover',

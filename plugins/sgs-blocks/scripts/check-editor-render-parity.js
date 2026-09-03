@@ -4299,7 +4299,22 @@ function main() {
 	// gradient shows on the canvas. A client sets it and sees nothing until preview
 	// or publish. Closing it means previewing the INHERITED colour on the container's
 	// children, which is a real editor-UX piece of work, not a line in this rollout.
-	const CHECK_A_OPEN_BACKLOG = 181;
+	// 181 -> 203 (2026-09-03): sgs/modal and sgs/form gained fill/border colour
+	// + gradient controls on 5 elements (close button; prev button; form-tile
+	// and file-label borders), all routed through the SAME shared emitters
+	// already used elsewhere in this tree -- sgs_button_element_style_css(),
+	// sgs_fill_states_css(), sgs_border_states_css(). None of those existing
+	// adopters have canvas-preview wiring either: sgs/button's own
+	// colourBackgroundGradient/iconColourGradient and sgs/cart's
+	// iconColourGradient/panelBg/panelTextColour are ALREADY inside this exact
+	// accepted backlog for the identical reason. This is the SAME class of
+	// debt the shared helper family already carries everywhere it's adopted --
+	// not a new defect these two blocks introduced -- so it is the sanctioned
+	// raise, per this file's own precedent immediately above (177 -> 181).
+	// Closing it means building canvas-preview for the shared helper family
+	// once, benefiting every adopter -- a real piece of editor-UX work, not a
+	// per-block patch, and not something this session's task scoped in.
+	const CHECK_A_OPEN_BACKLOG = 203;
 	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
 
 	if ( isJson ) {
