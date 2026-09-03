@@ -164,18 +164,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					setAttributes={ setAttributes }
 				/>
 
-				{ hasPanel && (
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						blockSlug="sgs/cart"
-						insertion="root"
-						atoms={ [ 'object-fit' ] }
-						mediaType="image"
-						title={ __( 'Item thumbnail', 'sgs-blocks' ) }
-					/>
-				) }
-
 				<PanelBody
 					title={ __( 'Accessibility', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -194,6 +182,21 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				{ hasPanel && (
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						blockSlug="sgs/cart"
+						insertion="root"
+						atoms={ [ 'object-fit' ] }
+						mediaType="image"
+						title={ __( 'Item thumbnail', 'sgs-blocks' ) }
+					/>
+				) }
 
 				<PanelBody
 					title={ __( 'Spacing', 'sgs-blocks' ) }

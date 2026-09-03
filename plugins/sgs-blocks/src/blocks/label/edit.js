@@ -277,7 +277,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					},
 				] }
 			/>
-			<InspectorControls>
+			<InspectorControls group="styles">
 				<PanelBody
 					title={ __( 'Typography', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -474,7 +474,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ToolsPanelItem>
 					</ToolsPanel>
 				</PanelBody>
+			</InspectorControls>
 
+			{ /* ── Settings tab (structural — no CSS property) ─────────────── */ }
+			<InspectorControls>
 				<PanelBody
 					title={ __( 'Box', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -530,7 +533,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					/>
 				</PanelBody>
+			</InspectorControls>
 
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				<PanelBody
 					title={ __( 'Spacing', 'sgs-blocks' ) }
 					initialOpen={ false }

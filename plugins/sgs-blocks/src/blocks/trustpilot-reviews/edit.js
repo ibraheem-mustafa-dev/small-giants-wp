@@ -89,6 +89,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		trustScore,
 		trustScoreLabel,
 		totalReviews,
+		reviewsAverage,
 		showSourceHeader,
 		showSubtitle,
 		subtitleText,
@@ -219,19 +220,6 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Trustpilot Reviews Settings', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'Card title heading level', 'sgs-blocks' ) }
-						value={ headingLevel || 'h3' }
-						options={ HEADING_LEVEL_OPTIONS }
-						onChange={ ( value ) => setAttributes( { headingLevel: value } ) }
-						help={ __(
-							'Pick the level that fits your page outline — usually H3 or H4 under a page-level H2.',
-							'sgs-blocks'
-						) }
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
 				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
 				<PanelBody title={ __( 'Source', 'sgs-blocks' ) }>
 					<SelectControl
@@ -275,6 +263,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								trustScore: 0,
 								trustScoreLabel: '',
 								totalReviews: 0,
+								reviewsAverage: 0,
 								showSubtitle: false,
 								subtitleText: 'Showing our latest reviews',
 							} )
@@ -348,6 +337,22 @@ export default function Edit( { attributes, setAttributes } ) {
 								min={ 0 }
 								onChange={ ( value ) => setAttributes( { totalReviews: parseInt( value, 10 ) || 0 } ) }
 								help={ __( 'Leave 0 to auto-derive from the reviews list.', 'sgs-blocks' ) }
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Reviews average (Schema.org)', 'sgs-blocks' ) }
+							hasValue={ () => reviewsAverage !== 0 }
+							onDeselect={ () => setAttributes( { reviewsAverage: 0 } ) }
+						>
+							<NumberControl
+								label={ __( 'Reviews average (Schema.org)', 'sgs-blocks' ) }
+								value={ reviewsAverage }
+								min={ 0 }
+								max={ 5 }
+								step={ 0.1 }
+								onChange={ ( value ) => setAttributes( { reviewsAverage: parseFloat( value ) || 0 } ) }
+								help={ __( 'Rating value used in the review structured data. Leave 0 to calculate automatically from your reviews.', 'sgs-blocks' ) }
 								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
@@ -691,6 +696,23 @@ export default function Edit( { attributes, setAttributes } ) {
 						</div>
 					</ToolsPanel>
 				) }
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Trustpilot Reviews Settings', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Card title heading level', 'sgs-blocks' ) }
+						value={ headingLevel || 'h3' }
+						options={ HEADING_LEVEL_OPTIONS }
+						onChange={ ( value ) => setAttributes( { headingLevel: value } ) }
+						help={ __(
+							'Pick the level that fits your page outline — usually H3 or H4 under a page-level H2.',
+							'sgs-blocks'
+						) }
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }

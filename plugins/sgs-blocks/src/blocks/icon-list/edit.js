@@ -153,6 +153,7 @@ export default function Edit({ attributes, setAttributes }) {
     iconColourHover,
     iconColourGradient,
     iconSize,
+    dividers,
     textColour,
     gap,
     style,
@@ -503,23 +504,6 @@ export default function Edit({ attributes, setAttributes }) {
           </PanelBody>
         )}
 
-        {"typed" === resolvedSource && (
-          <PanelBody title={__("Items", "sgs-blocks")}>
-            {items.map((item, index) => (
-              <ItemEditor
-                key={index}
-                item={item}
-                fallback={fallback}
-                onChange={(updated) => updateItem(index, updated)}
-                onRemove={() => removeItem(index)}
-              />
-            ))}
-            <Button variant="secondary" onClick={addItem}>
-              {__("Add item", "sgs-blocks")}
-            </Button>
-          </PanelBody>
-        )}
-
         <PanelBody title={__("Appearance", "sgs-blocks")} initialOpen={false}>
           {/* Spec 35 Part B: 2–5 short options → ToggleGroupControl, not a Select. */}
           <ToggleGroupControl
@@ -567,7 +551,34 @@ export default function Edit({ attributes, setAttributes }) {
             __nextHasNoMarginBottom
           	__next40pxDefaultSize
           />
+          <ToggleControl
+            label={__("Dividers between items", "sgs-blocks")}
+            checked={!!dividers}
+            onChange={(val) => setAttributes({ dividers: val })}
+            __nextHasNoMarginBottom
+          />
         </PanelBody>
+
+      </InspectorControls>
+
+      {/* ── Styles tab ─────────────────────────────────────────────── */}
+      <InspectorControls group="styles">
+        {"typed" === resolvedSource && (
+          <PanelBody title={__("Items", "sgs-blocks")}>
+            {items.map((item, index) => (
+              <ItemEditor
+                key={index}
+                item={item}
+                fallback={fallback}
+                onChange={(updated) => updateItem(index, updated)}
+                onRemove={() => removeItem(index)}
+              />
+            ))}
+            <Button variant="secondary" onClick={addItem}>
+              {__("Add item", "sgs-blocks")}
+            </Button>
+          </PanelBody>
+        )}
 
         <PanelBody title={__("Text Styling", "sgs-blocks")} initialOpen={false}>
           <TypographyControls

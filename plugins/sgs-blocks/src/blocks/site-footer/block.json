@@ -108,12 +108,11 @@
 					"attrMap": {
 						"css:grid-template-columns": "columns",
 						"css:justify-content": "justifyContent",
-						"css:align-content": "alignContent",
 						"css:align-items": "alignItems",
 						"css:flex-direction": "flexDirection",
 						"css:flex-wrap": "flexWrap"
 					},
-					"_note": "Arrangement members map explicitly because this element declares no `prefix`. css:grid-template-columns maps to the `columns` COUNT attribute (SGS_Container_Wrapper expands it to repeat(N,1fr)) — this block has no explicit gridTemplateColumns ratio attribute, unlike sgs/container. css:align-items maps to `alignItems` (class-sgs-container-wrapper.php:247 reads alignItems||alignItems). display / justify-items / order / overflow / grid-template-rows / grid-auto-rows have no attribute on this block and remain honest GAPs."
+					"_note": "Arrangement members map explicitly because this element declares no `prefix`. css:grid-template-columns maps to the `columns` COUNT attribute (SGS_Container_Wrapper expands it to repeat(N,1fr)) — this block has no explicit gridTemplateColumns ratio attribute, unlike sgs/container. css:align-items maps to `alignItems` (class-sgs-container-wrapper.php:247 reads alignItems||alignItems). `alignContent` was REMOVED (2026-09-03, Bean-directed): the shared wrapper only ever emits align-content in its GRID branch (class-sgs-container-wrapper.php ~1297) and this block's `layout` is fixed to 'flex' with no picker to reach grid, so the attribute could never produce CSS — genuinely dead schema, not a gap. display / justify-items / order / overflow / grid-template-rows / grid-auto-rows have no attribute on this block and remain honest GAPs."
 				},
 				"content-band": {
 					"label": "Content band",
@@ -141,6 +140,11 @@
 		"sgs/site-footer-row"
 	],
 	"attributes": {
+		"layout": {
+			"type": "string",
+			"default": "flex",
+			"description": "Fixed to 'flex' — the footer shell is always a vertical flex stack of its rows. No client-facing picker (mirrors sgs/container's layout enum only in that it is the same attribute name the shared wrapper reads via class-sgs-container-wrapper.php's elseif('flex'===$layout) branch); declaring it here is what makes flexDirection/flexWrap (below) actually reach rendered CSS instead of being dead attributes (21-render-without-control)."
+		},
 		"padding": {
 			"type": "object",
 			"default": {}
@@ -206,19 +210,6 @@
 		"marginMobile": {
 			"type": "object",
 			"default": {}
-		},
-		"alignContent": {
-			"type": "string",
-			"default": "stretch",
-			"enum": [
-				"stretch",
-				"start",
-				"center",
-				"end",
-				"space-between",
-				"space-around",
-				"space-evenly"
-			]
 		},
 		"backgroundAttachment": {
 			"type": "string",
@@ -353,7 +344,8 @@
 		},
 		"flexDirection": {
 			"type": "string",
-			"default": "",
+			"default": "column",
+			"description": "Default 'column' (not the CSS-initial 'row'/''): this block's THREE rows (top/columns/bottom) must keep stacking vertically once `layout` starts resolving to 'flex' and the shared wrapper actually emits display:flex on the content band. A '' default here would flip the rows to sit side-by-side by row-axis default — a visual regression this attribute's own addition would otherwise cause. flexWrap's column-axis invariant (class-sgs-container-wrapper.php) then coerces wrap->nowrap for this direction, matching the pre-existing block-flow stacking exactly.",
 			"enum": [
 				"",
 				"row",
@@ -474,15 +466,6 @@
 		"shapeDividerTopInvert": {
 			"type": "boolean",
 			"default": false
-		},
-		"tagName": {
-			"type": "string",
-			"enum": [
-				"footer",
-				"div",
-				"section"
-			],
-			"default": "footer"
 		},
 		"alignItems": {
 			"type": "string",

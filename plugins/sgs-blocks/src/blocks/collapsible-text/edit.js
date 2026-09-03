@@ -90,6 +90,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					) }
 				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 					<TypographyControls
 						attributes={ attributes }

@@ -276,6 +276,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				 * these controls add the SGS Tablet/Mobile tier overrides
 				 * (contract §B, mirrors sgs/quote + sgs/media).
 				 */ }
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				<PanelBody title={ __( 'Responsive spacing', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }

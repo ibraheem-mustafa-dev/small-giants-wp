@@ -17,6 +17,7 @@ import { useEffect } from '@wordpress/element';
 import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel,
 	SgsBorderControl,
 } from '../../components';
+import { NumberControl } from '../../components/primitives';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 const SUBMIT_STYLE_OPTIONS = [
@@ -35,6 +36,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		successRedirect,
 		honeypot,
 		storeSubmissions,
+		requireLogin,
+		rateLimit,
 		submitColour,
 		submitBackground,
 		progressBarColour,
@@ -382,6 +385,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 						__nextHasNoMarginBottom
 					/>
+					<ToggleControl
+						label={ __( 'Require Login', 'sgs-blocks' ) }
+						checked={ requireLogin }
+						onChange={ ( value ) =>
+							setAttributes( { requireLogin: value } )
+						}
+						help={ __(
+							'Only allow logged-in users to submit this form.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<NumberControl
+						label={ __( 'Rate Limit', 'sgs-blocks' ) }
+						value={ rateLimit }
+						min={ 1 }
+						onChange={ ( value ) =>
+							setAttributes( { rateLimit: parseInt( value, 10 ) || 5 } )
+						}
+						help={ __(
+							'Maximum submissions allowed per IP address, per hour.',
+							'sgs-blocks'
+						) }
+						__next40pxDefaultSize
+					/>
 				</PanelBody>
 
 				<PanelBody
@@ -409,6 +437,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				<PanelBody
 					title={ __( 'Focus State', 'sgs-blocks' ) }
 					initialOpen={ false }

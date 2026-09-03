@@ -24,6 +24,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		width,
 		allowedTypes,
 		maxSize,
+		uploadText,
 	} = attributes;
 
 	const className = [
@@ -64,6 +65,23 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) =>
 							setAttributes( { helpText: val } )
 						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<TextControl
+						label={ __( 'Drop-zone text', 'sgs-blocks' ) }
+						value={ uploadText }
+						onChange={ ( val ) =>
+							setAttributes( { uploadText: val } )
+						}
+						placeholder={ __(
+							'Drag a file here or click to browse',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'Leave blank to use the default drop-zone copy.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

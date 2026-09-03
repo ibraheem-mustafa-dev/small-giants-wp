@@ -349,6 +349,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
 					<SelectControl
 						label={ __( 'Text align', 'sgs-blocks' ) }
@@ -418,7 +422,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					/>
 				</PanelBody>
+			</InspectorControls>
 
+			<InspectorControls>
 				<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
 					<TextControl
 						label={ __( 'Accessible label', 'sgs-blocks' ) }

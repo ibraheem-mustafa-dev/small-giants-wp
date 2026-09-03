@@ -610,6 +610,58 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</ToolsPanel>
 
+				{ /* ---- Hover ---- */ }
+				<PanelBody
+					title={ __( 'Hover', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TextControl
+						label={ __( 'Scale on hover (e.g. 1.03)', 'sgs-blocks' ) }
+						value={ scaleHover }
+						onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
+						placeholder="1.03"
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ /* Text colour on hover + Background on hover moved to the
+					   top-level SgsColourPanel (D618/D621) — "Text colour
+					   (hover)" and "Background colour" (hover state) rows. */ }
+					<ShadowControl
+						label={ __( 'Box shadow on hover', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'boxShadowHover',
+							colour: 'boxShadowHoverColour',
+						} }
+					/>
+					<RangeControl
+						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+						value={ parseInt( transitionDuration, 10 ) || 300 }
+						onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
+						min={ 0 } max={ 1000 } step={ 50 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<SelectControl
+						label={ __( 'Transition easing', 'sgs-blocks' ) }
+						value={ transitionEasing }
+						options={ [
+							{ label: 'ease-in-out', value: 'ease-in-out' },
+							{ label: 'ease', value: 'ease' },
+							{ label: 'ease-in', value: 'ease-in' },
+							{ label: 'ease-out', value: 'ease-out' },
+							{ label: 'linear', value: 'linear' },
+						] }
+						onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				{ /* ---- Wrapper ---- */ }
 				{ ! inheritStyle && (
 					<PanelBody
@@ -821,54 +873,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
-				{ /* ---- Hover ---- */ }
-				<PanelBody
-					title={ __( 'Hover', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<TextControl
-						label={ __( 'Scale on hover (e.g. 1.03)', 'sgs-blocks' ) }
-						value={ scaleHover }
-						onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
-						placeholder="1.03"
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ /* Text colour on hover + Background on hover moved to the
-					   top-level SgsColourPanel (D618/D621) — "Text colour
-					   (hover)" and "Background colour" (hover state) rows. */ }
-					<ShadowControl
-						label={ __( 'Box shadow on hover', 'sgs-blocks' ) }
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						attrNames={ {
-							base: 'boxShadowHover',
-							colour: 'boxShadowHoverColour',
-						} }
-					/>
-					<RangeControl
-						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
-						value={ parseInt( transitionDuration, 10 ) || 300 }
-						onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
-						min={ 0 } max={ 1000 } step={ 50 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Transition easing', 'sgs-blocks' ) }
-						value={ transitionEasing }
-						options={ [
-							{ label: 'ease-in-out', value: 'ease-in-out' },
-							{ label: 'ease', value: 'ease' },
-							{ label: 'ease-in', value: 'ease-in' },
-							{ label: 'ease-out', value: 'ease-out' },
-							{ label: 'linear', value: 'linear' },
-						] }
-						onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
 			</InspectorControls>
 
 			{ /* Canvas — body children (InnerBlocks) + attribution (RichText) sit as

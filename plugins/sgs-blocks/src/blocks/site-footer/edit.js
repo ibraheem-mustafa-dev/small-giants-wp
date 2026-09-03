@@ -26,6 +26,7 @@ import { ResponsiveBoxControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiv
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { backgroundPreview, spacingPreview } from '../../utils';
 
 const ALLOWED_BLOCKS = [ 'sgs/site-footer-row' ];
@@ -263,9 +264,31 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		marginMobile: attributes.marginMobile,
 	}, previewTier );
 
+	// Layout preview (`layout` is FIXED to 'flex' — see the Layout PanelBody
+	// below for why this block never exposes a picker, and never previews
+	// `alignContent` — mirrors class-sgs-container-wrapper.php's flex branch
+	// (~1303-1361) exactly, same shape as sgs/container's own edit.js flex
+	// branch (~line 295-315), including the column-axis + wrap invariant:
+	// a wrapped column-axis flex container sizes each line from its items
+	// rather than being handed the parent's own cross size (CSS Flexbox L1
+	// 9.4), so the canvas must show the SAME coercion the live page gets
+	// rather than looking fine here and breaking on publish.
+	const flexDirectionPreview = attributes.flexDirection || 'column';
+	const flexWrapPreview = attributes.flexWrap || 'wrap';
+	const isColumnAxisPreview = 0 === flexDirectionPreview.indexOf( 'column' );
+	const effectiveFlexWrapPreview =
+		isColumnAxisPreview && ( 'wrap' === flexWrapPreview || 'wrap-reverse' === flexWrapPreview )
+			? 'nowrap'
+			: flexWrapPreview;
+	const layoutPreview = {
+		display: 'flex',
+		flexDirection: flexDirectionPreview,
+		flexWrap: effectiveFlexWrapPreview,
+	};
+
 	const blockProps = useBlockProps( {
 		className: [ 'sgs-site-footer', bgPreview.className ].filter( Boolean ).join( ' ' ),
-		style: { ...bgPreview.style, ...spacePreview },
+		style: { ...bgPreview.style, ...spacePreview, ...layoutPreview },
 	} );
 	const refEl = useRef( null );
 
@@ -498,6 +521,53 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+				</PanelBody>
+
+				{ /* Layout — this block's own `layout` attribute is FIXED to 'flex'
+				     (block.json declares no enum, no picker: the footer shell is
+				     always a vertical stack of its three rows). Hand-rolled here
+				     rather than mounting the shared LayoutPanel component (used by
+				     sgs/container + sgs/site-footer-row): that component also
+				     renders an "Align content" SelectControl, gated on
+				     layout being 'grid' — a mode this block can never reach, since
+				     there is no picker to change `layout` away from 'flex'. Mounting
+				     it here would ship a control that can structurally never take
+				     effect, exactly the defect this change exists to remove.
+				     block.json declares no `alignContent` attribute at all — the
+				     shared wrapper only ever emits align-content in its GRID branch
+				     (class-sgs-container-wrapper.php ~1297), never the flex one
+				     (~1303-1361), so there was no CSS path for it while this block
+				     renders flex-only (2026-09-03). Flex direction + Flex wrap ARE
+				     genuinely honoured by that same flex branch, so they get real
+				     controls + real canvas preview below (mirrors sgs/container's
+				     own edit.js flex-branch preview, ~line 295-315). */ }
+				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+					<ToggleGroupControl
+						label={ __( 'Flex direction', 'sgs-blocks' ) }
+						value={ attributes.flexDirection || 'column' }
+						onChange={ ( val ) => setAttributes( { flexDirection: val } ) }
+						help={ __( 'Column (the default) stacks the three footer rows top to bottom. Row places them side by side.', 'sgs-blocks' ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						<ToggleGroupControlOption value="row" label={ __( 'Row', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="row-reverse" label={ __( 'Row rev.', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="column" label={ __( 'Column', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="column-reverse" label={ __( 'Col. rev.', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
+					<ToggleGroupControl
+						label={ __( 'Flex wrap', 'sgs-blocks' ) }
+						value={ attributes.flexWrap || 'wrap' }
+						onChange={ ( val ) => setAttributes( { flexWrap: val } ) }
+						help={ __( 'No effect while Flex direction is Column or Col. rev. — a wrapped column axis would ignore the footer width, so the frontend always forces No wrap for those directions.', 'sgs-blocks' ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						<ToggleGroupControlOption value="wrap" label={ __( 'Wrap', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="nowrap" label={ __( 'No wrap', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
 				</PanelBody>
 
 				{ /* Responsive spacing (padding + margin) — box-object interface

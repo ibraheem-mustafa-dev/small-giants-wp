@@ -244,56 +244,6 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				{ /* NO-INLINE + NO-WRAPPER (2026-07-10): content-KIND, box+width only —
-				     dropped SGS_Container_Wrapper (D294) in favour of block-private
-				     scoped output (matches sgs/quote). Padding/margin route to the
-				     WP-native style.spacing.* object (base) + custom Tablet/Mobile
-				     box-object tiers; only shown in inline mode — announcement mode
-				     is always full-width + fixed. */ }
-				{ ! isAnnouncement && (
-					<PanelBody title={ __( 'Wrapper', 'sgs-blocks' ) } initialOpen={ false }>
-						<SgsLengthControl
-							presets={ false }
-							label={ __( 'Outer max-width', 'sgs-blocks' ) }
-							value={ maxWidth || '' }
-							units={ LENGTH_UNITS }
-							onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
-							help={ __( 'Exact CSS length, e.g. 800px. Leave blank for no cap.', 'sgs-blocks' ) }
-						/>
-						<ResponsiveBoxControl
-							label={ __( 'Padding', 'sgs-blocks' ) }
-							presets
-							values={ {
-								base: style?.spacing?.padding ?? {},
-								tablet: paddingTablet ?? {},
-								mobile: paddingMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								if ( 'base' === tier ) {
-									setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-								} else {
-									setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-								}
-							} }
-						/>
-						<ResponsiveBoxControl
-							label={ __( 'Margin', 'sgs-blocks' ) }
-							presets
-							values={ {
-								base: style?.spacing?.margin ?? {},
-								tablet: marginTablet ?? {},
-								mobile: marginMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								if ( 'base' === tier ) {
-									setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-								} else {
-									setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-								}
-							} }
-						/>
-					</PanelBody>
-				) }
 				{ /* Outer PanelBody removed 2026-08-13 — it duplicated this
 				   ToolsPanel's own "Banner settings" title with no
 				   initialOpen, so the client saw the same words twice for
@@ -462,6 +412,60 @@ export default function Edit( { attributes, setAttributes } ) {
 							</ToolsPanelItem>
 						) }
 					</ToolsPanel>
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				{ /* NO-INLINE + NO-WRAPPER (2026-07-10): content-KIND, box+width only —
+				     dropped SGS_Container_Wrapper (D294) in favour of block-private
+				     scoped output (matches sgs/quote). Padding/margin route to the
+				     WP-native style.spacing.* object (base) + custom Tablet/Mobile
+				     box-object tiers; only shown in inline mode — announcement mode
+				     is always full-width + fixed. */ }
+				{ ! isAnnouncement && (
+					<PanelBody title={ __( 'Wrapper', 'sgs-blocks' ) } initialOpen={ false }>
+						<SgsLengthControl
+							presets={ false }
+							label={ __( 'Outer max-width', 'sgs-blocks' ) }
+							value={ maxWidth || '' }
+							units={ LENGTH_UNITS }
+							onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
+							help={ __( 'Exact CSS length, e.g. 800px. Leave blank for no cap.', 'sgs-blocks' ) }
+						/>
+						<ResponsiveBoxControl
+							label={ __( 'Padding', 'sgs-blocks' ) }
+							presets
+							values={ {
+								base: style?.spacing?.padding ?? {},
+								tablet: paddingTablet ?? {},
+								mobile: paddingMobile ?? {},
+							} }
+							onChange={ ( tier, next ) => {
+								if ( 'base' === tier ) {
+									setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+								} else {
+									setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+								}
+							} }
+						/>
+						<ResponsiveBoxControl
+							label={ __( 'Margin', 'sgs-blocks' ) }
+							presets
+							values={ {
+								base: style?.spacing?.margin ?? {},
+								tablet: marginTablet ?? {},
+								mobile: marginMobile ?? {},
+							} }
+							onChange={ ( tier, next ) => {
+								if ( 'base' === tier ) {
+									setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+								} else {
+									setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+								}
+							} }
+						/>
+					</PanelBody>
+				) }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }

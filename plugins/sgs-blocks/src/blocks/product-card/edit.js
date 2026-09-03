@@ -1693,6 +1693,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							}
 							__nextHasNoMarginBottom
 						/>
+						<ToggleControl
+							label={ __(
+								'Show option pickers',
+								'sgs-blocks'
+							) }
+							help={ __(
+								'Off suppresses all option-picker renders (both variable-axis and non-variable pill paths) and falls through to the static From-price card appearance. Useful on collection grids where picker UI is unwanted.',
+								'sgs-blocks'
+							) }
+							checked={ attributes.showPickers !== false }
+							onChange={ ( v ) =>
+								setAttributes( { showPickers: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
 					</PanelBody>
 				) }
 

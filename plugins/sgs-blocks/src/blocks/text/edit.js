@@ -14,6 +14,7 @@ import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
+	InspectorAdvancedControls,
 	RichText,
 } from '@wordpress/block-editor';
 import {
@@ -30,7 +31,12 @@ import {
 	SgsColourPanel,
 	SgsLengthControl,
 	SgsBorderControl,
+	DesignTokenPicker,
+	GradientCapableColourControl,
+	ShadowControl,
+	shadowAttrKeys,
 } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
 
 // ---------------------------------------------------------------------------
@@ -87,6 +93,25 @@ const MAX_WIDTH_UNITS = [
 	{ value: 'ch', label: 'ch', default: 65 },
 ];
 
+// Mirrors render.php's $allowed_units for customWidth (px/em/rem/%/vw/vh) —
+// a unit outside this set is rejected server-side, so the editor never offers one.
+const CUSTOM_WIDTH_UNITS = [
+	{ value: 'px', label: 'px', default: 300 },
+	{ value: 'em', label: 'em', default: 20 },
+	{ value: 'rem', label: 'rem', default: 20 },
+	{ value: '%', label: '%', default: 50 },
+	{ value: 'vw', label: 'vw', default: 50 },
+	{ value: 'vh', label: 'vh', default: 50 },
+];
+
+const EASING_OPTIONS = [
+	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
+	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+];
+
 // LETTER_SPACING_UNITS removed — letter-spacing is now rendered exclusively by
 // the shared TypographyControls component (showLetterSpacing={ true }); the
 // local duplicate UnitControl that used this constant was removed alongside it.
@@ -131,6 +156,8 @@ function buildEditorStyle( attributes ) {
 		textAlign,
 		maxWidth,
 		maxWidthUnit,
+		customWidth,
+		customWidthUnit,
 		borderWidth,
 		borderStyle,
 		borderColour,
@@ -194,6 +221,12 @@ function buildEditorStyle( attributes ) {
 	}
 	if ( maxWidth ) {
 		previewStyle.maxWidth = `${ maxWidth }${ maxWidthUnit }`;
+	}
+	// Custom width overrides max-width when both are set — mirrors render.php's
+	// step-4 "only one is emitted" rule, so the canvas preview matches the
+	// frontend rather than showing both competing rules.
+	if ( '' !== customWidth && null !== customWidth && undefined !== customWidth ) {
+		previewStyle.width = `${ customWidth }${ customWidthUnit }`;
 	}
 
 	// Box-object interface contract §5: base padding/margin/border-radius come
@@ -356,6 +389,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		textColourGradient,
 		textColourHover,
 		textColourHoverGradient,
+		scaleHover,
+		customWidth,
+		customWidthUnit,
+		inheritStyle,
+		transitionDuration,
+		transitionEasing,
 	} = attributes;
 
 	// Drop-cap ::first-letter preview — gate the class only when dropCap is on
@@ -373,64 +412,21 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			{ /* Colour panel FIRST (D618/D619, sgs/button pattern). Text
-			   colour and background colour each pair their resting value
-			   with a Hover state (textColourHover/backgroundColourHover).
-			   Border colour and the first-letter drop-cap colour stay
-			   single-state — neither has a hover counterpart. */ }
+			{ /* Colour panel FIRST (D618/D619, sgs/button pattern) — now holding
+			   ONLY the first-letter drop-cap colour. `text`'s own colour and
+			   `background`'s colour used to share this one panel between TWO
+			   different declared elements (Spec 35 THE PLACEMENT RULE
+			   violation) — text's colour has moved into the Typography panel
+			   below (text's TIER-2 Text-family panel) and background's colour
+			   into its own new TIER-1 Background panel, each rendered via the
+			   same raw row components (`DesignTokenPicker` /
+			   `GradientCapableColourControl`) SgsColourPanel itself uses, so
+			   the control shape is unchanged for the client. first-letter is
+			   the Drop cap element's own colour and stays here — its "Drop
+			   cap" PanelBody below is already a TIER-1 element panel and is
+			   left untouched. */ }
 			<SgsColourPanel
 				rows={ [
-					{
-						key: 'textColour',
-						label: __( 'Text colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: textColour,
-								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
-								linked: true,
-								gradientValue: textColourGradient,
-								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: textColourHover,
-								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
-								linked: true,
-								gradientValue: textColourHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
-						key: 'backgroundColour',
-						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: backgroundColour,
-								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
-								linked: true,
-								gradientValue: backgroundColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { backgroundColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: backgroundColourHover,
-								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
-								linked: true,
-								gradientValue: backgroundColourHoverGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
-							},
-						],
-					},
 					{
 						key: 'firstLetterColour',
 						label: __( 'First-letter colour', 'sgs-blocks' ),
@@ -456,8 +452,20 @@ export default function Edit( { attributes, setAttributes } ) {
 					},
 				] }
 			/>
-			<InspectorControls>
-				{ /* ---- Typography ---- */ }
+			{ /* ── Styles tab (Spec 35 THE PLACEMENT RULE, D537) ────────────────
+			   `text` is this block's isWrapper:true element with clusters
+			   [text, fill, layout, motion] — its controls split into
+			   property-family panels rather than one merged element panel.
+			   `background` is a real, separate declared element (its own
+			   `::after` paint layer) and gets its own TIER-1 panel. */ }
+			<InspectorControls group="styles">
+				{ /* ---- Typography — `text`'s TIER-2 "Text" family panel ----
+				   Holds every text-cluster control: font properties, text
+				   align (moved out of the old standalone "Layout" panel —
+				   align is a text-family property, not a box/layout one) and
+				   the element's own colour (moved out of the shared Colour
+				   panel above — text's colour belongs with text's other
+				   properties, not bundled with `background`'s). */ }
 				<PanelBody
 					title={ __( 'Typography', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -562,13 +570,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-				</PanelBody>
-
-				{ /* ---- Layout ---- */ }
-				<PanelBody
-					title={ __( 'Layout', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
 					<SelectControl
 						label={ __( 'Text align', 'sgs-blocks' ) }
 						value={ textAlign }
@@ -579,6 +580,88 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ /* Text colour — moved out of the shared Colour panel above
+					   (was jammed together with `background`'s colour there);
+					   this is `text`'s own css:color member and belongs with
+					   its other text-cluster properties. Same row component
+					   SgsColourPanel itself uses (`GradientCapableColourControl`,
+					   since this row previously carried `gradientCapable: true`),
+					   so the control is pixel-identical for the client. */ }
+					<GradientCapableColourControl
+						label={ __( 'Text colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: textColourHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+							},
+						] }
+					/>
+				</PanelBody>
+
+				{ /* ---- Background — `background`'s own TIER-1 panel ----
+				   A real declared element (the block's `::after` paint layer,
+				   Spec 35 element manifest), not a wrapper — it gets its own
+				   panel rather than sharing one with `text`. Same row
+				   component SgsColourPanel itself uses (`DesignTokenPicker`
+				   — this row never carried `gradientCapable: true`, so the
+				   component choice is unchanged from before the move). */ }
+				<PanelBody
+					title={ __( 'Background', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<DesignTokenPicker
+						label={ __( 'Background colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: backgroundColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+							},
+						] }
+					/>
+				</PanelBody>
+
+				{ /* ---- Layout — `text`'s TIER-2 "Layout" family panel ----
+				   Max width (was the old standalone "Layout" panel, minus
+				   textAlign which moved to Typography above), margin/padding
+				   (was "Spacing") and border/radius (was "Border") all
+				   collapse into one panel — box-shape properties of the same
+				   `text` wrapper element, per THE PLACEMENT RULE's TIER-2
+				   property-family grouping rather than three separate
+				   ungrouped panels. */ }
+				<PanelBody
+					title={ __( 'Layout', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					{ /* Max width — SgsLengthControl (number + unit in one input) */ }
 					<SgsLengthControl
 						label={ __( 'Max width', 'sgs-blocks' ) }
@@ -590,13 +673,26 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 						presets={ false }
 					/>
-				</PanelBody>
 
-				{ /* ---- Spacing ---- */ }
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
+					{ /* Custom width — split-scalar customWidth/customWidthUnit pair,
+					   same SgsLengthControl composeUnit/parseUnit shape as Max width
+					   above and sgs/label's lineHeight/lineHeightUnit. render.php
+					   emits `width:` from these when set (overriding max-width — only
+					   one is emitted server-side). */ }
+					<SgsLengthControl
+						label={ __( 'Custom width', 'sgs-blocks' ) }
+						value={ composeUnit( customWidth, customWidthUnit ) }
+						units={ CUSTOM_WIDTH_UNITS }
+						onChange={ ( raw ) => {
+							const { num, unit } = parseUnit( raw, customWidthUnit || 'px' );
+							setAttributes( {
+								customWidth: undefined === num ? '' : String( num ),
+								customWidthUnit: unit,
+							} );
+						} }
+						presets={ false }
+					/>
+
 					{ /* Box-object interface contract §B (100% box-group): base padding/
 					   margin route to WP-native style.spacing (mirrors sgs/container +
 					   sgs/button); tablet/mobile tiers are the SGS object attrs
@@ -636,21 +732,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 						} }
 					/>
-				</PanelBody>
 
-				{ /* ---- Border ----
-				   Box-object interface contract §1/§5: borderWidth is an SGS custom
-				   object attr (base only, no tiers — mirrors sgs/button); border-radius
-				   routes to WP-native style.border.radius (base only — this block has
-				   no radius tiers). */ }
-				<PanelBody
-					title={ __( 'Border', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-										{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
-					   (width/style/colour) mirroring native's BorderBoxControl layout,
-					   matching sgs/product-card + sgs/quote. Border-radius is unchanged
-					   (stays WP-native). */ }
+					{ /* Box-object interface contract §1/§5: borderWidth is an SGS custom
+					   object attr (base only, no tiers — mirrors sgs/button); border-radius
+					   routes to WP-native style.border.radius (base only — this block has
+					   no radius tiers). Task 0 codemod (migrate-border-control.js) -- one
+					   composite row (width/style/colour) mirroring native's
+					   BorderBoxControl layout, matching sgs/product-card + sgs/quote. */ }
 					<SgsBorderControl
 						widthValues={ borderWidth ?? {} }
 						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
@@ -689,7 +777,94 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /* ---- Drop cap ---- */ }
+				{ /* ---- Effects — `text`'s TIER-2 "motion" family panel ----
+				   Box shadow (base + hover, each its own independent
+				   ShadowControl mount — mirrors sgs/quote's two-mount pattern
+				   exactly, since ShadowControl's own internal Normal/Hover
+				   tabs would write a differently-shaped hover-colour attr
+				   name than the one already declared here), hover scale, and
+				   the hover-transition timing pair. All motion-cluster
+				   members of the `text` element's attrMap. */ }
+				<PanelBody
+					title={ __( 'Effects', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ShadowControl
+						label={ __( 'Box shadow', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ shadowAttrKeys( 'boxShadow', { colour: true } ) }
+					/>
+					<ShadowControl
+						label={ __( 'Box shadow (hover)', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ shadowAttrKeys( 'boxShadowHover', { colour: true } ) }
+					/>
+					<RangeControl
+						label={ __( 'Hover scale', 'sgs-blocks' ) }
+						value={ parseFloat( scaleHover ) || 1 }
+						onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
+						min={ 1 }
+						max={ 1.1 }
+						step={ 0.01 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<RangeControl
+						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+						value={ transitionDuration ?? 300 }
+						onChange={ ( val ) => setAttributes( { transitionDuration: val } ) }
+						min={ 0 }
+						max={ 1000 }
+						step={ 50 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ /* D812 (2026-08-26): a 2-5 option enum with longest rendered
+					   label <=12 chars renders as ToggleGroupControl, not
+					   SelectControl (this enum: 5 options, longest label 11
+					   chars — "Ease in-out"). Reference: sgs/heading's identical
+					   transitionEasing mount (both blocks share the same
+					   enum shape, fixed there first). */ }
+					<ToggleGroupControl
+						label={ __( 'Transition easing', 'sgs-blocks' ) }
+						value={ transitionEasing }
+						onChange={ ( val ) => setAttributes( { transitionEasing: val || 'ease' } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						{ EASING_OPTIONS.map( ( option ) => (
+							<ToggleGroupControlOption
+								key={ option.value }
+								value={ option.value }
+								label={ option.label }
+							/>
+						) ) }
+					</ToggleGroupControl>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* Inherit-style escape hatch — Advanced tab, exact copy of
+			   sgs/heading's placement (InspectorAdvancedControls, not a
+			   block-private "Advanced" PanelBody — that would silently break
+			   the guarantee that the real Advanced slot is pinned last on
+			   every block, per the 2026-09-02 uniformity-sweep fix). */ }
+			<InspectorAdvancedControls>
+				<ToggleControl
+					label={ __( 'Inherit style from parent', 'sgs-blocks' ) }
+					help={ __( 'When enabled, all block-level typography styles are suppressed and the element inherits from its parent container.', 'sgs-blocks' ) }
+					checked={ !! inheritStyle }
+					onChange={ ( val ) => setAttributes( { inheritStyle: val } ) }
+				/>
+			</InspectorAdvancedControls>
+
+			{ /* ============================================================
+			     Settings tab — Drop cap (TIER-1, its own already-exempt
+			     element panel; left untouched per Spec 35 THE PLACEMENT RULE)
+			     ============================================================ */ }
+			<InspectorControls>
 				<PanelBody
 					title={ __( 'Drop cap', 'sgs-blocks' ) }
 					initialOpen={ false }

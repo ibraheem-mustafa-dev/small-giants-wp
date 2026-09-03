@@ -109,7 +109,7 @@
 					"label": "Body text",
 					"order": 3,
 					"clusters": [],
-					"_note": "The body attribute has no dedicated typography/colour attrs of its own — it inherits the wrapper's native text colour and the theme's body typography by cascade, mirroring quote's 'quote-body' pattern."
+					"_note": "Rendered by the InnerBlocks sgs/text child (.sgs-cta-section__body). It has no dedicated typography/colour attrs of its own on this block — it inherits the wrapper's native text colour and the theme's body typography by cascade, mirroring quote's 'quote-body' pattern."
 				},
 				"ribbon": {
 					"label": "Ribbon",
@@ -222,11 +222,6 @@
 			"type": "string"
 		},
 		"headline": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"body": {
 			"type": "string",
 			"default": "",
 			"role": "content"
@@ -707,7 +702,6 @@
 	"example": {
 		"attributes": {
 			"headline": "Your Compelling Headline Goes Here",
-			"body": "A brief supporting statement that explains your value proposition.",
 			"layout": "centred",
 			"buttons": [
 				{

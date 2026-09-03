@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl, ToggleControl, Icon } from '@wordpress/components';
+import { PanelBody, TextControl, ToggleControl, SelectControl, Icon } from '@wordpress/components';
 import { ResponsiveBoxControl, SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
@@ -27,6 +27,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		dragToScroll,
 		dragMomentum,
 		loopCarousel,
+		showLadder,
+		framingMode,
+		decoyEnabled,
 		style,
 		marginTablet,
 		marginMobile,
@@ -150,64 +153,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 				<PanelBody
-					title={ __( 'Gallery images', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					{ /* Two independently-scoped media elements — 'main' is the
-					     large PDP display image, 'thumb' is the thumbnail-rail
-					     image (a distinct role, not the same image rendered
-					     twice). Mirrors sgs/before-after's before/after pattern
-					     so a client can set a different fit for each. Rule
-					     37-media-no-handroll. */ }
-					<p className="sgs-buybox__media-panel-label">
-						{ __( 'Main image', 'sgs-blocks' ) }
-					</p>
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="main"
-						blockSlug="sgs/buybox"
-						insertion="element"
-						atoms={ [ 'object-fit' ] }
-						mediaType="image"
-						scope="element"
-					/>
-					<p className="sgs-buybox__media-panel-label">
-						{ __( 'Thumbnail images', 'sgs-blocks' ) }
-					</p>
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="thumb"
-						blockSlug="sgs/buybox"
-						insertion="element"
-						atoms={ [ 'object-fit' ] }
-						mediaType="image"
-						scope="element"
-					/>
-				</PanelBody>
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-				</PanelBody>
-				<PanelBody
 					title={ __( 'Gallery interaction', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
@@ -266,6 +211,148 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
+
+				{ /* ── Value ladder panel ── */ }
+				<PanelBody
+					title={ __( 'Value ladder', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ToggleControl
+						label={ __( 'Show price ladder', 'sgs-blocks' ) }
+						help={ __(
+							'Off shows just the price and per-item note — suited to browsing grids.',
+							'sgs-blocks'
+						) }
+						checked={ false !== showLadder }
+						onChange={ ( v ) =>
+							setAttributes( { showLadder: v } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Savings framing', 'sgs-blocks' ) }
+						help={ __(
+							'How per-unit savings are worded on the price-per-unit ladder. Savings only show when a single-unit reference price is set + confirmed on the product editor.',
+							'sgs-blocks'
+						) }
+						value={ framingMode || 'loss-aversion' }
+						options={ [
+							{
+								value: 'loss-aversion',
+								label: __(
+									'Loss aversion ("save 8p each vs buying singly")',
+									'sgs-blocks'
+								),
+							},
+							{
+								value: 'savings',
+								label: __(
+									'Savings ("save 8p each")',
+									'sgs-blocks'
+								),
+							},
+							{
+								value: 'neutral',
+								label: __(
+									'Neutral (no saving text)',
+									'sgs-blocks'
+								),
+							},
+						] }
+						onChange={ ( v ) =>
+							setAttributes( { framingMode: v } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<ToggleControl
+						label={ __(
+							'Promote the second-largest pack',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'Places a "Most popular" badge on the second-largest pack (decoy pricing). A per-product setting on the product editor overrides this for that product.',
+							'sgs-blocks'
+						) }
+						checked={ !! decoyEnabled }
+						onChange={ ( v ) =>
+							setAttributes( { decoyEnabled: v } )
+						}
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				<PanelBody
+					title={ __( 'Gallery images', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					{ /* Two independently-scoped media elements — 'main' is the
+					     large PDP display image, 'thumb' is the thumbnail-rail
+					     image (a distinct role, not the same image rendered
+					     twice). Mirrors sgs/before-after's before/after pattern
+					     so a client can set a different fit for each. Rule
+					     37-media-no-handroll. */ }
+					<p className="sgs-buybox__media-panel-label">
+						{ __( 'Main image', 'sgs-blocks' ) }
+					</p>
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="main"
+						blockSlug="sgs/buybox"
+						insertion="element"
+						atoms={ [ 'object-fit' ] }
+						mediaType="image"
+						scope="element"
+					/>
+					<p className="sgs-buybox__media-panel-label">
+						{ __( 'Thumbnail images', 'sgs-blocks' ) }
+					</p>
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="thumb"
+						blockSlug="sgs/buybox"
+						insertion="element"
+						atoms={ [ 'object-fit' ] }
+						mediaType="image"
+						scope="element"
+					/>
+				</PanelBody>
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						presets
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+				</PanelBody>
+				{ /* NOTE (2026-09-03 investigation): this panel currently shows as
+				   EXEMPT from routing in the inspector-scan `01-tab-group` report
+				   because `borderColourGradient`'s DB row (block_attributes) has a
+				   NULL css_property, so the detector misreads it as a structural
+				   no-CSS anchor. That DB row is wrong — border-colour-gradient is
+				   real CSS (sgs/accordion's equivalent row correctly carries
+				   'border-color-gradient'). This IS genuine border styling (width/
+				   style/colour/radius are all real CSS), so it is routed to Styles
+				   here to match sgs/accordion's Border panel — do not revert this
+				   once the DB row is corrected and the exemption naturally clears. */ }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }

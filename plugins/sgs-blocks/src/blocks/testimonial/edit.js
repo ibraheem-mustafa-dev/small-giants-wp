@@ -220,6 +220,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		scaleHover,
 		shadowHover,
 		shadowHoverColour,
+		staggerDelay,
 	} = attributes;
 
 	// Effective variant = this card's own explicit choice, else the parent
@@ -1255,6 +1256,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								transitionEasing: 'ease-in-out',
 								scaleHover: '',
 								shadowHover: '',
+								staggerDelay: 0,
 							} )
 						}
 					>
@@ -1381,6 +1383,23 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									base: 'shadowHover',
 									colour: 'shadowHoverColour',
 								} }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Stagger delay (ms)', 'sgs-blocks' ) }
+							hasValue={ () => !! staggerDelay }
+							onDeselect={ () => setAttributes( { staggerDelay: 0 } ) }
+						>
+							<RangeControl
+								label={ __( 'Stagger delay (ms)', 'sgs-blocks' ) }
+								help={ __( 'When several testimonial cards sit side by side, each is delayed by a multiple of this value on entrance.', 'sgs-blocks' ) }
+								value={ staggerDelay }
+								onChange={ ( val ) => setAttributes( { staggerDelay: val } ) }
+								min={ 0 }
+								max={ 500 }
+								step={ 25 }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>

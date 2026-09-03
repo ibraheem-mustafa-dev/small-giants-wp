@@ -296,7 +296,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					</ResponsiveOverride>
 				</PanelBody>
+			</InspectorControls>
 
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				{ /* 37-media-no-handroll remediation (2026-09-03) — the result-row
 				   product thumbnail's crop mode is a genuine client control now
 				   (style.css no longer hardcodes object-fit:cover; the shared
@@ -310,6 +313,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					prefix=""
 					blockSlug="sgs/product-search"
 					insertion="root"
+					group="styles"
 					atoms={ [ 'object-fit' ] }
 					mediaType="image"
 					scope="element"
