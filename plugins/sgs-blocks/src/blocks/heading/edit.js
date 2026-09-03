@@ -10,6 +10,7 @@ import {
 	SelectControl,
 	RadioControl,
 	ToggleControl,
+	RangeControl,
 } from '@wordpress/components';
 import {
 	TypographyControls,
@@ -17,7 +18,10 @@ import {
 	SgsColourPanel,
 	SgsBorderControl,
 	SgsLengthControl,
+	ShadowControl,
+	shadowAttrKeys,
 } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
@@ -73,6 +77,36 @@ const LETTER_SPACING_UNITS = [
 	{ value: 'em', label: 'em', default: 0 },
 	{ value: 'rem', label: 'rem', default: 0 },
 	{ value: 'px', label: 'px', default: 0 },
+];
+
+// Heading's own block.json default is 'ease' (NOT team-member/gallery's
+// 'ease-in-out') — the options list is copied from those siblings, the
+// default stays heading's own.
+const EASING_OPTIONS = [
+	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
+	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+];
+
+// No existing shared component or sibling pattern for CSS text-wrap anywhere
+// in the framework (sgs/heading is the only block with this attribute).
+const TEXT_WRAP_OPTIONS = [
+	{ label: __( '— default —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Wrap', 'sgs-blocks' ), value: 'wrap' },
+	{ label: __( 'Balance', 'sgs-blocks' ), value: 'balance' },
+	{ label: __( 'No wrap', 'sgs-blocks' ), value: 'nowrap' },
+	{ label: __( 'Pretty', 'sgs-blocks' ), value: 'pretty' },
+];
+
+const CUSTOM_WIDTH_UNITS = [
+	{ value: 'px', label: 'px', default: undefined },
+	{ value: '%', label: '%', default: undefined },
+	{ value: 'em', label: 'em', default: undefined },
+	{ value: 'rem', label: 'rem', default: undefined },
+	{ value: 'vw', label: 'vw', default: undefined },
+	{ value: 'vh', label: 'vh', default: undefined },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -137,6 +171,7 @@ function buildTextStyle( attributes ) {
 		textTransform,
 		fontStyle,
 		textDecoration,
+		textWrap,
 	} = attributes;
 
 	const style = {
@@ -153,6 +188,8 @@ function buildTextStyle( attributes ) {
 		fontFamily: fontFamily || undefined,
 		fontStyle: fontStyle || undefined,
 		textDecoration: textDecoration || undefined,
+		// render.php allowlist: wrap/nowrap/balance/pretty/stable.
+		textWrap: textWrap || undefined,
 	};
 
 	return Object.fromEntries(
@@ -173,7 +210,7 @@ function boxShorthand( box, keys ) {
 
 /** Build wrapper-level inline style for the editor canvas (mirrors render.php $wrapper_inline). */
 function buildWrapperStyle( attributes ) {
-	const { textAlign, backgroundColour, borderWidth, borderStyle, borderColour, borderColourGradient, style, inheritStyle } = attributes;
+	const { textAlign, backgroundColour, borderWidth, borderStyle, borderColour, borderColourGradient, style, inheritStyle, customWidth, customWidthUnit } = attributes;
 	const wrapperStyle = {};
 	// Contract §A (render.php): inheritStyle suppresses block-level wrapper
 	// styling (background/border/text-align) and inherits from the parent —
@@ -184,6 +221,12 @@ function buildWrapperStyle( attributes ) {
 		}
 		if ( backgroundColour ) {
 			wrapperStyle.backgroundColor = colourVar( backgroundColour ) || undefined;
+		}
+		// Custom width — mirrors render.php's sgs_heading_spacing_val() numeric
+		// guard (a non-numeric raw value emits nothing, same as the server).
+		if ( '' !== customWidth && null !== customWidth && undefined !== customWidth
+			&& /^-?\d+(\.\d+)?$/.test( String( customWidth ).trim() ) ) {
+			wrapperStyle.width = `${ customWidth }${ customWidthUnit || 'px' }`;
 		}
 		// Border-width preview — SGS custom object attr (base only, no tiers).
 		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
@@ -256,6 +299,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		paddingMobile,
 		marginTablet,
 		marginMobile,
+		scaleHover,
+		customWidth,
+		customWidthUnit,
+		transitionDuration,
+		transitionEasing,
+		textWrap,
 	} = attributes;
 
 	const isSubheading = headingRole === 'subheading';
@@ -377,6 +426,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				{ /* ── Typography panel ── */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 					{ /*
@@ -414,6 +467,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ /* text-wrap — no shared component/sibling pattern exists (heading
+					   is the only block with this attribute); render.php already
+					   reads + emits it. */ }
+					<SelectControl
+						label={ __( 'Text wrap', 'sgs-blocks' ) }
+						value={ textWrap }
+						options={ TEXT_WRAP_OPTIONS }
+						onChange={ ( val ) => setAttributes( { textWrap: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 
 					{ /* Letter spacing — SgsLengthControl (number + unit in one input) */ }
 					<SgsLengthControl
@@ -437,6 +501,22 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+					{ /* Custom width — ONE SgsLengthControl mount, split-scalar pattern
+					   (customWidth stores the raw number as a string; render.php calls
+					   sgs_heading_spacing_val( $custom_width, $custom_width_unit )). */ }
+					<SgsLengthControl
+						label={ __( 'Custom width', 'sgs-blocks' ) }
+						value={ composeUnit( customWidth, customWidthUnit ) }
+						units={ CUSTOM_WIDTH_UNITS }
+						onChange={ ( raw ) => {
+							const { num, unit } = parseUnit( raw, customWidthUnit || 'px' );
+							setAttributes( {
+								customWidth: ( num === undefined || num === null ) ? '' : String( num ),
+								customWidthUnit: unit,
+							} );
+						} }
+						presets={ false }
 					/>
 				</PanelBody>
 
@@ -478,6 +558,65 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { [ radiusKey ]: next } );
 						} }
 					/>
+				</PanelBody>
+
+				{ /* ── Effects panel ── Box shadow (2 states, mirroring sgs/quote's
+				   two SEPARATE ShadowControl mounts) + hover scale + transition
+				   duration/easing. */ }
+				<PanelBody title={ __( 'Effects', 'sgs-blocks' ) } initialOpen={ false }>
+					<ShadowControl
+						label={ __( 'Box shadow', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ shadowAttrKeys( 'boxShadow', { colour: true } ) }
+					/>
+					<ShadowControl
+						label={ __( 'Box shadow (hover)', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ shadowAttrKeys( 'boxShadowHover', { colour: true } ) }
+					/>
+					<RangeControl
+						label={ __( 'Hover scale', 'sgs-blocks' ) }
+						value={ parseFloat( scaleHover ) || 1 }
+						onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
+						min={ 1 }
+						max={ 1.1 }
+						step={ 0.01 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<RangeControl
+						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+						value={ transitionDuration }
+						onChange={ ( val ) => setAttributes( { transitionDuration: val } ) }
+						min={ 0 }
+						max={ 1000 }
+						step={ 50 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ /* D812 (2026-08-26): a 2-5 option enum with longest rendered
+					   label <=12 chars renders as ToggleGroupControl, not
+					   SelectControl (this enum: 5 options, longest label 11
+					   chars — "Ease in-out"). Reference: sgs/mega-aside's Format
+					   ToggleGroupControl mount. */ }
+					<ToggleGroupControl
+						label={ __( 'Transition easing', 'sgs-blocks' ) }
+						value={ transitionEasing }
+						onChange={ ( val ) => setAttributes( { transitionEasing: val || 'ease' } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						{ EASING_OPTIONS.map( ( option ) => (
+							<ToggleGroupControlOption
+								key={ option.value }
+								value={ option.value }
+								label={ option.label }
+							/>
+						) ) }
+					</ToggleGroupControl>
 				</PanelBody>
 
 				{ /* ── Spacing panel ── Box-object interface contract §B/§E:

@@ -282,6 +282,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				<PanelBody
 					title={ __( 'Alignment', 'sgs-blocks' ) }
 					initialOpen={ false }

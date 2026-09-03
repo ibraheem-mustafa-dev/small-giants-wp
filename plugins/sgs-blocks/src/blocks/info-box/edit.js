@@ -9,6 +9,9 @@ import {
 import {
 	PanelBody,
 	SelectControl,
+	RangeControl,
+	ToggleControl,
+	TextControl,
 } from '@wordpress/components';
 import { createBlock } from '@wordpress/blocks';
 import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, fillRow, textRow, SgsLengthControl,
@@ -176,6 +179,14 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 ];
 
+const EASING_OPTIONS = [
+	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
+	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+];
+
 const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Top', 'sgs-blocks' ), value: 'top' },
 	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
@@ -291,6 +302,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		borderColourGradient,
 		shadowHover,
 		shadowHoverColour,
+		scaleHover,
+		grayscaleHover,
+		transitionDuration,
+		transitionEasing,
 	} = attributes;
 
 	// (The resting border-gradient row's Solid/Gradient mode is owned by
@@ -604,6 +619,42 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						value={ effectHover }
 						options={ HOVER_EFFECT_OPTIONS }
 						onChange={ ( val ) => setAttributes( { effectHover: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<TextControl
+						label={ __( 'Scale on hover (e.g. 1.03)', 'sgs-blocks' ) }
+						value={ scaleHover }
+						onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
+						placeholder="1.03"
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<ToggleControl
+						label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
+						checked={ grayscaleHover }
+						onChange={ ( val ) => setAttributes( { grayscaleHover: val } ) }
+						help={ __(
+							'Desaturates the media at rest; restores full colour on hover.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+						value={ parseInt( transitionDuration, 10 ) || 300 }
+						onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
+						min={ 0 }
+						max={ 1000 }
+						step={ 50 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<SelectControl
+						label={ __( 'Transition easing', 'sgs-blocks' ) }
+						value={ transitionEasing }
+						options={ EASING_OPTIONS }
+						onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

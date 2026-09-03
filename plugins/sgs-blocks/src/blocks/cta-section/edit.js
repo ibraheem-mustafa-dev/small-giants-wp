@@ -73,6 +73,17 @@ const LAYOUT_OPTIONS = [
 	{ label: __( 'Split', 'sgs-blocks' ), value: 'split' },
 ];
 
+// Mirrors sgs/team-member's EASING_OPTIONS (built 2026-09-03) — kept as a
+// separate literal per-block rather than a shared import; no shared constant
+// exists for this yet.
+const EASING_OPTIONS = [
+	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
+	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+];
+
 export default function Edit( { attributes, setAttributes, name } ) {
 	const {
 		ribbon,
@@ -301,6 +312,36 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							},
 						],
 					},
+					{
+						/* Root BACKGROUND colour (`backgroundColour`, default 'accent') — a
+						   palette-slug-only control mirroring sgs/hero / sgs/quote's own
+						   backgroundColour row. render.php never emits inline CSS for this
+						   value; it re-adds the native `has-background`/`has-{slug}-
+						   background-color` classes (color support is skip-serialised) so
+						   the theme's own preset CSS paints it — see render.php's
+						   `$cta_preset_bg_slug` block. No gradient sibling: unlike
+						   sgs/quote, this block does not declare `backgroundColourGradient`.
+						   `backgroundColourHover` (render.php:80/214-215) has no gradient
+						   sibling either — the hover state below is a plain colour swap. */
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: attributes.backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes.backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
 					attributes.shadow && {
 						key: 'shadow',
 						label: __( 'Shadow colour', 'sgs-blocks' ),
@@ -514,6 +555,34 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							colour: 'shadowColour',
 							hoverColour: 'shadowColourHover',
 						} }
+					/>
+				</PanelBody>
+
+				{ /* Transition duration/easing — governs the hover colour shifts wired
+					above (backgroundColourHover/textColourHover/borderColourHover) via
+					sgs_transition_vars() (render.php:116). Plain PanelBody, matching this
+					block's own house style — NOT team-member's ToolsPanel wrapper (this
+					block has no existing Hover/Transition panel to extend). */ }
+				<PanelBody title={ __( 'Transition', 'sgs-blocks' ) } initialOpen={ false }>
+					<RangeControl
+						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+						value={ parseInt( attributes.transitionDuration, 10 ) || 300 }
+						onChange={ ( val ) =>
+							setAttributes( { transitionDuration: String( val ) } )
+						}
+						min={ 0 }
+						max={ 1000 }
+						step={ 50 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<SelectControl
+						label={ __( 'Transition easing', 'sgs-blocks' ) }
+						value={ attributes.transitionEasing }
+						options={ EASING_OPTIONS }
+						onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 

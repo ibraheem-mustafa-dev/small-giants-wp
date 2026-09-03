@@ -28,7 +28,7 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 ];
-import { IconPicker, IconPreview, ResponsiveBoxControl, SgsColourPanel, fillRow, SgsBorderControl } from '../../components';
+import { IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker } from '../../components';
 import { colourVar } from '../../utils';
 
 const CONNECTOR_OPTIONS = [
@@ -258,12 +258,22 @@ export default function Edit( { attributes, setAttributes } ) {
 			   fields on the `step` object (StepEditor's own fields are number/
 			   title/description/icon only — no colour field). Every state sets
 			   linked: true per D619. */ }
-			<SgsColourPanel
-				rows={ [
-					{
-						key: 'number',
-						label: __( 'Number colour', 'sgs-blocks' ),
-						states: [
+			{ /* Spec 35 THE PLACEMENT RULE (D537) — colour splits FOUR ways across
+			   the declared elements rather than one mixed "Colour" panel:
+			   number colour+background+hover -> "Step number badge"; title
+			   colour -> "Step title" (paired with its headingLevel content
+			   control below); description colour -> "Step description";
+			   wrapper text+background+hover -> the wrapper's own TIER-2
+			   Text & fill family panel (the wrapper is isWrapper:true, so it
+			   resolves by property-family, not a per-element panel). Built
+			   directly with DesignTokenPicker (mirrors what SgsColourPanel
+			   does internally) since SgsColourPanel has no per-caller title
+			   override and these four panels each need a different title. */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Step number badge', 'sgs-blocks' ) } className="sgs-colour-panel">
+					<DesignTokenPicker
+						label={ __( 'Number colour', 'sgs-blocks' ) }
+						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
@@ -271,23 +281,35 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { numberColour: val ?? '' } ),
 								linked: true,
 							},
-						],
-					},
-					fillRow( {
-						key: 'numberBackground',
-						label: __( 'Number background colour', 'sgs-blocks' ),
-						attrs: {
-							base: 'numberBackground',
-							hover: 'numberBackgroundHover',
-							gradient: 'numberBackgroundGradient',
-						},
-						attributes,
-						setAttributes,
-					} ),
-					{
-						key: 'title',
-						label: __( 'Title colour', 'sgs-blocks' ),
-						states: [
+						] }
+					/>
+					{ ( () => {
+						const numberBackgroundRow = fillRow( {
+							key: 'numberBackground',
+							label: __( 'Number background colour', 'sgs-blocks' ),
+							attrs: {
+								base: 'numberBackground',
+								hover: 'numberBackgroundHover',
+								gradient: 'numberBackgroundGradient',
+							},
+							attributes,
+							setAttributes,
+						} );
+						return (
+							<DesignTokenPicker
+								label={ numberBackgroundRow.label }
+								states={ numberBackgroundRow.states }
+							/>
+						);
+					} )() }
+				</PanelBody>
+			</InspectorControls>
+
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Step title', 'sgs-blocks' ) } className="sgs-colour-panel">
+					<DesignTokenPicker
+						label={ __( 'Title colour', 'sgs-blocks' ) }
+						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
@@ -295,12 +317,16 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
 								linked: true,
 							},
-						],
-					},
-					{
-						key: 'description',
-						label: __( 'Description colour', 'sgs-blocks' ),
-						states: [
+						] }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Step description', 'sgs-blocks' ) } className="sgs-colour-panel">
+					<DesignTokenPicker
+						label={ __( 'Description colour', 'sgs-blocks' ) }
+						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
@@ -308,12 +334,20 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { descriptionColour: val ?? '' } ),
 								linked: true,
 							},
-						],
-					},
-					{
-						key: 'wrapperText',
-						label: __( 'Wrapper text colour', 'sgs-blocks' ),
-						states: [
+						] }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* WRAPPER element (isWrapper:true) — TIER 2, property-family panel
+			   (Text + Fill), not a per-element panel. Border/spacing (also
+			   wrapper, Layout family) stay in the default Settings group
+			   below, merged into ONE "Layout" panel per THE PLACEMENT RULE. */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Text & fill', 'sgs-blocks' ) } className="sgs-colour-panel">
+					<DesignTokenPicker
+						label={ __( 'Wrapper text colour', 'sgs-blocks' ) }
+						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
@@ -328,12 +362,11 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
 								linked: true,
 							},
-						],
-					},
-					{
-						key: 'wrapperBackground',
-						label: __( 'Wrapper background colour', 'sgs-blocks' ),
-						states: [
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Wrapper background colour', 'sgs-blocks' ) }
+						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
@@ -348,12 +381,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
 								linked: true,
 							},
-						],
-					},
-				] }
-			/>
+						] }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
 			<InspectorControls>
-				<PanelBody title={ __( 'Process Steps Settings', 'sgs-blocks' ) }>
+				<PanelBody title={ __( 'Step title', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Heading level', 'sgs-blocks' ) }
 						value={ headingLevel || 'h3' }
@@ -457,11 +491,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /* ── Border panel ── Box-object interface contract §1/§5: borderWidth
+				{ /* ── Layout panel (wrapper TIER-2 family) ── Border + spacing merged
+				   into ONE panel per THE PLACEMENT RULE: both are `layout`-cluster
+				   members on the `wrapper` element (block.json attrMap), so they
+				   share the same property-family panel rather than two separate
+				   catch-all panels. Box-object interface contract §1/§5: borderWidth
 				   is an SGS custom object attr (base only, no tiers); border-radius
 				   routes to WP-native style.border.radius (skip-serialised → scoped,
 				   matches sgs/heading + sgs/quote). */ }
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
 										{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
 					   (width/style/colour) mirroring native's BorderBoxControl layout,
 					   matching sgs/product-card + sgs/quote. Border-radius is unchanged
@@ -505,13 +543,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { [ radiusKey ]: next } );
 						} }
 					/>
-				</PanelBody>
 
-				{ /* ── Spacing panel ── Box-object interface contract §B/§E: padding/
-				   margin base routes to WP-native style.spacing.* (skip-serialised →
-				   scoped); tiers are the paddingTablet/paddingMobile + marginTablet/
-				   marginMobile object attrs. */ }
-				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+				{ /* Padding/margin — same `layout` cluster on the wrapper element,
+				   merged into this panel (was a separate "Spacing" panel). Box-object
+				   interface contract §B/§E: padding/margin base routes to WP-native
+				   style.spacing.* (skip-serialised → scoped); tiers are the
+				   paddingTablet/paddingMobile + marginTablet/marginMobile object
+				   attrs. */ }
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
 						presets

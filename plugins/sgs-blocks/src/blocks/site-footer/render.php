@@ -27,7 +27,9 @@
  * RESIDUAL (mirrors the header's parked P-HEADER-DOUBLE-SLOT-NEST): if the
  * rules engine ever falls through (has_served() hands a second slot back to
  * core), core WOULD wrap a second sgs/site-footer in its own <footer> = nested
- * landmarks. Operators can select 'div' via tagName if that case ever ships.
+ * landmarks. Fix at the rules-engine level (has_served()) if that is ever hit
+ * for real — never via an operator-facing tag override; this block IS the
+ * page's single contentinfo landmark and always renders as <footer>.
  *
  * Variables from WordPress:
  *   $attributes  array     Block attributes.
@@ -272,7 +274,10 @@ echo SGS_Container_Wrapper::render(
 	$content,
 	SGS_Container_Wrapper::resolve_kind( $block, 'section' ),
 	array(
-		'tag'           => isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'footer',
+		// ALWAYS <footer> — a site footer is a page-unique landmark; offering a
+		// plain <div> tag choice would let someone break the page's accessibility
+		// landmark structure from a dropdown.
+		'tag'           => 'footer',
 		'extra_classes' => $classes,
 		'extra_attrs'   => array( 'id' => $uid ),
 	)

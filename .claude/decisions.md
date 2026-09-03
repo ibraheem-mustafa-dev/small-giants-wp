@@ -1,3 +1,50 @@
+## D933 [ROUTINE] — 01-tab-group and 21-render-without-control both closed to zero (32→0, 54→0)
+
+**2026-09-03.** Continuation of D930. Worked both `inspector-scan` rules to a genuine 0 across
+83 blocks via parallel-dispatched `wp-sgs-developer` agents, in batches, verified after each wave.
+
+`01-tab-group` (32→0): 20 blocks needed only a `group="styles"` tag move; `team-member`,
+`buybox`, `social-icons` had their own small bugs (buybox's Border panel was self-exempting
+because its `borderColourGradient` DB row was missing a `css_property` seed — fixed directly,
+`UPDATE block_attributes SET css_property='border-color-gradient' WHERE block_slug='sgs/buybox'
+AND attr_name='borderColourGradient'`, matching `sgs/accordion`'s correctly-seeded row); the
+remaining 9 blocks (`card-grid`, `gallery`, `google-reviews`, `multi-button`, `process-steps`,
+`site-footer-row`, `site-header-row`, `text`, `timeline`) got real TIER-1/TIER-2 panel
+restructuring per THE PLACEMENT RULE (Spec 35 Part O).
+
+`21-render-without-control` (54→0, though the true pre-session count needed re-verifying twice —
+an earlier subagent's "48" and "detector blind spot" theory were both wrong on inspection, see
+below): every fix reused an existing shared control rather than inventing one — `ShadowControl`
++ `SgsLengthControl` for `heading`/`text` (which also needed two new `boxShadowColour`/
+`boxShadowHoverColour` attributes added, or the control's colour swatch would have silently
+no-op'd), `product-card`'s existing controls copied onto `buybox` (and vice-versa for
+`showPickers`), `team-member`'s transition pair copied onto `cta-section`. `cta-section`'s
+`backgroundColourHover` needed the control only — the attribute was already declared, just
+unused (an earlier claim that "another session was already fixing this" was checked and found
+false — the comment was stale, removed). `cta-section.body` and `site-footer.alignContent` were
+confirmed dead schema and deleted outright (no back-compat shim — matches D270's no-deprecation
+policy); `site-footer.tagName` was collapsed to a single-value enum then, on a direct comparison
+against `site-header` (which never declared the attribute at all — hardcodes `<footer>` in
+render.php), removed entirely to genuinely match.
+
+Two claims from the investigation phase were checked and found wrong before any fix was built:
+(1) a subagent claimed a `--json` scan-mode bug inflated `01-tab-group` to 47 — both modes
+measured identically at 32 when re-run directly; (2) a subagent claimed a hover-effects
+"detector blind spot" explained ~20 of the `21-render-without-control` findings — the real
+attributes (`scaleHover`, `transitionDuration`, etc.) are block-owned, not the unrelated
+`sgs*`-prefixed universal extension the subagent read instead; those findings were real gaps,
+not detector noise. Both corrected by direct source verification before dispatching fixes —
+per Bean's explicit instruction not to hand-code controls without confirming the shared
+mechanism first.
+
+`rules.json`'s ratchet ceilings updated 57→0 and 146→0 for the two rules (the 146 pre-session
+figure was itself stale/inflated by another concurrent session's media/hero work landing in the
+same window — see that rule's own `advisoryReason` for the caveat). Both rules are candidates for
+advisory→gate promotion now that their backlog is genuinely zero; not promoted in this pass —
+flagged for a deliberate decision.
+
+Only `31-golden-colour-control` (253 open) remains untouched, as scoped from the start.
+
 ## D931 [ROUTINE] — attribute-gap-candidates mechanism retired (drafted, in a worktree, not yet merged)
 
 **2026-09-03.** A routine `/sgs-update` run flagged the largest-ever single-run drop in

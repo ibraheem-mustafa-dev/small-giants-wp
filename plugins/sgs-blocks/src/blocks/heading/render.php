@@ -135,11 +135,13 @@ $text_decoration      = isset( $attributes['textDecoration'] ) ? sanitize_text_f
 // object attrs. The flat per-side + {family}Unit attrs are removed.
 $background_colour          = $attributes['backgroundColour'] ?? '';
 $background_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
-$border_colour               = $attributes['borderColour'] ?? '';
+$border_colour              = $attributes['borderColour'] ?? '';
 // D636 border-colour gradient — sibling attribute, wins over $border_colour when set.
-$border_colour_gradient      = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-$box_shadow        = $attributes['boxShadow'] ?? '';
-$box_shadow_hover  = $attributes['boxShadowHover'] ?? '';
+$border_colour_gradient  = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+$box_shadow              = $attributes['boxShadow'] ?? '';
+$box_shadow_hover        = $attributes['boxShadowHover'] ?? '';
+$box_shadow_colour       = $attributes['boxShadowColour'] ?? '';
+$box_shadow_hover_colour = $attributes['boxShadowHoverColour'] ?? '';
 
 $transition_duration_raw = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
 $transition_duration     = $transition_duration_raw > 0 ? $transition_duration_raw : 300;
@@ -147,8 +149,8 @@ $transition_easing_raw   = $attributes['transitionEasing'] ?? 'ease';
 $allowed_easings         = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
 $transition_easing       = in_array( $transition_easing_raw, $allowed_easings, true ) ? $transition_easing_raw : 'ease';
 
-$hover_scale               = isset( $attributes['scaleHover'] ) && null !== $attributes['scaleHover'] ? (float) $attributes['scaleHover'] : null;
-$hover_colour              = $attributes['textColourHover'] ?? '';
+$hover_scale  = isset( $attributes['scaleHover'] ) && null !== $attributes['scaleHover'] ? (float) $attributes['scaleHover'] : null;
+$hover_colour = $attributes['textColourHover'] ?? '';
 // D636 — sibling-attribute shape, see $text_colour_gradient above.
 $hover_colour_gradient     = $attributes['textColourHoverGradient'] ?? '';
 $hover_background          = $attributes['backgroundColourHover'] ?? '';
@@ -360,7 +362,7 @@ if ( ! $inherit_style ) {
 		$wrapper_decls[] = 'border-color:' . sgs_colour_value( $border_colour );
 	}
 	if ( $box_shadow ) {
-		$wrapper_decls[] = 'box-shadow:' . sgs_shadow_value( $box_shadow );
+		$wrapper_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
 	}
 	if ( '' !== $custom_width ) {
 		$cw_val = sgs_heading_spacing_val( $custom_width, $custom_width_unit );
@@ -411,7 +413,7 @@ if ( '' !== $hover_colour_effective ) {
 // root element) — it is emitted on the `::after` background layer instead,
 // alongside the resting-state background, in step 5b below.
 if ( $box_shadow_hover ) {
-	$hover_rules[] = 'box-shadow:' . sgs_shadow_value( $box_shadow_hover );
+	$hover_rules[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow_hover, $box_shadow_hover_colour );
 }
 $has_scale = null !== $hover_scale && abs( $hover_scale - 1.0 ) > 0.001;
 if ( $has_scale ) {

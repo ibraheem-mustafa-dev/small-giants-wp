@@ -3,7 +3,12 @@ doc_type: strategic-plan
 title: "Element-driven inspector — one model for panels, colour, background and hover"
 spec_ref: .claude/specs/35 (control-type contract) — CO-2, CO-28, COLOUR, STATE, BORDER
 date: 2026-08-08
-status: DESIGN — awaiting Bean sign-off, nothing built
+status: ADOPTED — became THE PLACEMENT RULE, Spec 35 Part O (D537, 2026-08-09). 9 blocks
+                built against it directly on 2026-09-03 (D933): card-grid, gallery,
+                google-reviews, multi-button, process-steps, site-footer-row, site-header-row,
+                text, timeline — each restructured into TIER-1 per-element panels + TIER-2
+                property-family panels. This status line is a correction, not new build work —
+                it was stale for weeks while the design was already live and enforced.
 supersedes: "the 2026-08-08 hand-sorted Settings/Styles split (commit dfba396b) — see §8"
 ---
 

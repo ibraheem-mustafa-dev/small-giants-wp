@@ -30,7 +30,7 @@ supersedes:     C:\Users\Bean\.claude\plans\this-session-is-dedicated-pure-heart
 | **1 — build the detectors** | 6 rules + the commit-time trigger | 🔄 **4 of 6 shipped; trigger ✅ live (D675)** |
 | **1.5 — golden control schema** | The canonical SHAPE every control must have, as data (`scripts/consistency/golden-controls.json`) + rule 31 enforcing it + the commit-time trigger | 🔄 **schema ✅, rule 31 ✅ advisory (409), commit-time trigger ✅ live**, hover-helper (C1) design gate ✅ **CLEARED (D677)** — build ⬜ not started |
 | **2 — hero** | The thirteen defects fixed, each with its gate | ⬜ not started (deliberately); **2 non-standalone repairs already landed** — 8 dead `gridItem*` attrs deleted (D672), rule 21 ratcheted 259→253 |
-| **3 — rollout** | Every detector at `openBacklog: 0`, promoted to gate | ⬜ not started |
+| **3 — rollout** | Every detector at `openBacklog: 0`, promoted to gate | 🔄 **2 of ~24 advisory detectors at `openBacklog: 0`** — `01-tab-group` (57→0, D933, 2026-09-03) and `21-render-without-control` (146→0, D933, 2026-09-03), both re-verified live via `node run.js --json`, neither yet promoted to gate mode (flagged as a candidate, not decided). Everything else in this phase (the Track B file-shard roster below, the seven stale-claim corrections, promotion decisions for the other ~22 detectors) is untouched. |
 | **4 — correct the records** | 6 stale doc claims fixed | ⬜ not started |
 | **5 — the golden-control audit (closing stage)** | One script enforcing colour + hover uniformly across every block, `sgs/button` the only exception | ⬜ not started; blocked on C1 → C2 (§7 Phase 5) |
 

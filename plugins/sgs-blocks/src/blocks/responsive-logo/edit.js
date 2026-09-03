@@ -412,7 +412,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						rows={ 2 }
 					/>
 				</PanelBody>
+			</InspectorControls>
 
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				{ /* ── Panel 3b: Maximum size per device ── */ }
 				<PanelBody
 					title={ __( 'Maximum size (per device)', 'sgs-blocks' ) }

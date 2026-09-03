@@ -162,6 +162,81 @@ export default function Edit({ attributes, setAttributes }) {
           setAttributes={ setAttributes }
           kind="layout"
         />
+        <PanelBody title={__("Accordion Settings", "sgs-blocks")}>
+          <SelectControl
+            label={__("Style", "sgs-blocks")}
+            value={accordionStyle}
+            options={STYLE_OPTIONS}
+            onChange={(val) => setAttributes({ accordionStyle: val })}
+            __nextHasNoMarginBottom
+          	__next40pxDefaultSize
+          />
+          <SelectControl
+            label={__("Icon position", "sgs-blocks")}
+            value={iconPosition}
+            options={ICON_POSITION_OPTIONS}
+            onChange={(val) => setAttributes({ iconPosition: val })}
+            __nextHasNoMarginBottom
+          	__next40pxDefaultSize
+          />
+          <IconPicker
+            label={__("Open icon", "sgs-blocks")}
+            value={{ source: "lucide", name: openIcon }}
+            onChange={( { name } ) => setAttributes({ openIcon: name })}
+            sources={ [ 'lucide' ] }
+          />
+          <IconPicker
+            label={__("Close icon", "sgs-blocks")}
+            value={{ source: "lucide", name: closeIcon }}
+            onChange={( { name } ) => setAttributes({ closeIcon: name })}
+            sources={ [ 'lucide' ] }
+          />
+          <ToggleControl
+            label={__("Allow multiple open", "sgs-blocks")}
+            help={__(
+              "Allow more than one item to be expanded at the same time.",
+              "sgs-blocks",
+            )}
+            checked={allowMultiple}
+            onChange={(val) => setAttributes({ allowMultiple: val })}
+            __nextHasNoMarginBottom
+          />
+          <RangeControl
+            label={__("Default open item", "sgs-blocks")}
+            help={__(
+              "-1 = all closed, 0 = first item, 1 = second, etc.",
+              "sgs-blocks",
+            )}
+            value={defaultOpen}
+            onChange={(val) => setAttributes({ defaultOpen: val })}
+            min={-1}
+            max={20}
+            step={1}
+            __nextHasNoMarginBottom
+          	__next40pxDefaultSize
+          />
+        </PanelBody>
+
+        <PanelBody
+          title={__("FAQ structured data (AI search & Bing)", "sgs-blocks")}
+          initialOpen={false}
+        >
+          <ToggleControl
+            label={__("Enable FAQ Schema", "sgs-blocks")}
+            help={__(
+              "Outputs schema.org FAQPage JSON-LD. Google removed the FAQ rich result (May 2026), but AI search engines (ChatGPT, Perplexity, Google AI Overviews) and Bing still use it to cite your Q&A. Only enable when items contain genuine Q&A content.",
+              "sgs-blocks",
+            )}
+            checked={faqSchema}
+            onChange={(val) => setAttributes({ faqSchema: val })}
+            __nextHasNoMarginBottom
+          />
+        </PanelBody>
+
+      </InspectorControls>
+
+      {/* ── Styles tab ─────────────────────────────────────────────── */}
+      <InspectorControls group="styles">
         {/* Responsive spacing (padding + margin) — box-object interface contract
             (.claude/plans/2026-07-09-box-object-interface-contract.md §5). Base tier
             writes to the WP-native style.spacing object (also visible in the Styles >
@@ -246,76 +321,6 @@ export default function Edit({ attributes, setAttributes }) {
               const radiusKey = tier === "base" ? "borderRadius" : tier === "tablet" ? "borderRadiusTablet" : "borderRadiusMobile";
               setAttributes( { [ radiusKey ]: next } );
             } }
-          />
-        </PanelBody>
-        <PanelBody title={__("Accordion Settings", "sgs-blocks")}>
-          <SelectControl
-            label={__("Style", "sgs-blocks")}
-            value={accordionStyle}
-            options={STYLE_OPTIONS}
-            onChange={(val) => setAttributes({ accordionStyle: val })}
-            __nextHasNoMarginBottom
-          	__next40pxDefaultSize
-          />
-          <SelectControl
-            label={__("Icon position", "sgs-blocks")}
-            value={iconPosition}
-            options={ICON_POSITION_OPTIONS}
-            onChange={(val) => setAttributes({ iconPosition: val })}
-            __nextHasNoMarginBottom
-          	__next40pxDefaultSize
-          />
-          <IconPicker
-            label={__("Open icon", "sgs-blocks")}
-            value={{ source: "lucide", name: openIcon }}
-            onChange={( { name } ) => setAttributes({ openIcon: name })}
-            sources={ [ 'lucide' ] }
-          />
-          <IconPicker
-            label={__("Close icon", "sgs-blocks")}
-            value={{ source: "lucide", name: closeIcon }}
-            onChange={( { name } ) => setAttributes({ closeIcon: name })}
-            sources={ [ 'lucide' ] }
-          />
-          <ToggleControl
-            label={__("Allow multiple open", "sgs-blocks")}
-            help={__(
-              "Allow more than one item to be expanded at the same time.",
-              "sgs-blocks",
-            )}
-            checked={allowMultiple}
-            onChange={(val) => setAttributes({ allowMultiple: val })}
-            __nextHasNoMarginBottom
-          />
-          <RangeControl
-            label={__("Default open item", "sgs-blocks")}
-            help={__(
-              "-1 = all closed, 0 = first item, 1 = second, etc.",
-              "sgs-blocks",
-            )}
-            value={defaultOpen}
-            onChange={(val) => setAttributes({ defaultOpen: val })}
-            min={-1}
-            max={20}
-            step={1}
-            __nextHasNoMarginBottom
-          	__next40pxDefaultSize
-          />
-        </PanelBody>
-
-        <PanelBody
-          title={__("FAQ structured data (AI search & Bing)", "sgs-blocks")}
-          initialOpen={false}
-        >
-          <ToggleControl
-            label={__("Enable FAQ Schema", "sgs-blocks")}
-            help={__(
-              "Outputs schema.org FAQPage JSON-LD. Google removed the FAQ rich result (May 2026), but AI search engines (ChatGPT, Perplexity, Google AI Overviews) and Bing still use it to cite your Q&A. Only enable when items contain genuine Q&A content.",
-              "sgs-blocks",
-            )}
-            checked={faqSchema}
-            onChange={(val) => setAttributes({ faqSchema: val })}
-            __nextHasNoMarginBottom
           />
         </PanelBody>
 

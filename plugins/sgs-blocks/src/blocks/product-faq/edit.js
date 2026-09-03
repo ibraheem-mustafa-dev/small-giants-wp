@@ -231,6 +231,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				<PanelBody
 					title={ __( 'Structured data (SEO)', 'sgs-blocks' ) }
 					initialOpen={ false }

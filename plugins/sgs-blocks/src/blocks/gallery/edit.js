@@ -31,6 +31,7 @@ import {
 import { ResponsiveBoxControls, MEDIA_SIZING_RATIO_OPTIONS,
 	SgsBorderControl,
 	resolveColourToken,
+	ShadowControl,
 } from '../../components';
 import {
 	PanelBody,
@@ -212,6 +213,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		overlayColourHover,
 		scaleHover,
 		imageZoomHover,
+		grayscaleHover,
+		staggerDelay,
 		effectHover,
 		transitionDuration,
 		transitionEasing,
@@ -409,8 +412,18 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ /* ============================================================
 			     Inspector panels
 			     ============================================================ */ }
-			<InspectorControls>
-				<PanelBody title={ __( 'Container / Wrapper', 'sgs-blocks' ) }>
+			{ /* ── Styles tab (D537/Spec 35 THE PLACEMENT RULE) ──────────────────
+			   `grid` is the block's isWrapper:true element with clusters
+			   [fill, layout, animation] (cluster-member-sets.json). It has no
+			   colour attrs beyond native `color.background`/`color.text`
+			   (already routed via WordPress's own native colour UI) and no
+			   client-facing animation controls here, so only the LAYOUT
+			   family has real content — gap/align/justify (LayoutPanel),
+			   padding/margin/max-width/content-width (ResponsiveBoxControls)
+			   and border/radius (SgsBorderControl) collapse into ONE TIER-2
+			   Layout panel rather than three separate ungrouped panels. */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ true }>
 					{ /* showLayout={false}: this block owns its own Layout and Columns
 					     controls below — see the import comment. Gap is still wanted. */ }
 					<LayoutPanel
@@ -418,28 +431,58 @@ export default function Edit( { attributes, setAttributes } ) {
 						setAttributes={ setAttributes }
 						showLayout={ false }
 					/>
+					{ /*
+					  Spec 37 FR-37-16 object model — ONE control owning padding, margin,
+					  max-width and content-width across all three tiers, each on the
+					  {desktop,tablet,mobile} shape.
+
+					  Replaces TWO panels that were both defective here:
+					  * <ResponsiveSpacingPanel> rendered 16 tablet/mobile spacing controls
+					    writing paddingTopTablet… — attributes NO block.json declares, so
+					    WordPress silently DISCARDED every value on save. A client could set
+					    tablet padding, save, and watch it vanish with no error. This was the
+					    panel's last mount; it is deleted with this change.
+					  * <WidthPanel> drove maxWidth/contentWidth on the flat STRING model,
+					    which this block has now left.
+
+					  Gallery therefore declares NO supports.spacing: all box CSS flows
+					  through the object model here and is emitted by SGS_Container_Wrapper
+					  under the object value model, exactly as site-header-row /
+					  site-footer-row / nav-menu already do. One system, not two.
+					*/ }
+					<ResponsiveBoxControls attributes={ attributes } setAttributes={ setAttributes } />
+					{ /* Border + radius — collapsed into this same Layout family panel
+					   (was a standalone "Border" PanelBody further down; border is a
+					   box-shape property of the same `grid` wrapper element). */ }
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						radiusValues={ {
+							base: attributes.borderRadius ?? {},
+							tablet: attributes.borderRadiusTablet ?? {},
+							mobile: attributes.borderRadiusMobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
+							setAttributes( { [ radiusKey ]: next } );
+						} }
+					/>
 				</PanelBody>
-				{ /*
-				  Spec 37 FR-37-16 object model — ONE panel owning padding, margin,
-				  max-width and content-width across all three tiers, each on the
-				  {desktop,tablet,mobile} shape.
+			</InspectorControls>
 
-				  Replaces TWO panels that were both defective here:
-				  * <ResponsiveSpacingPanel> rendered 16 tablet/mobile spacing controls
-				    writing paddingTopTablet… — attributes NO block.json declares, so
-				    WordPress silently DISCARDED every value on save. A client could set
-				    tablet padding, save, and watch it vanish with no error. This was the
-				    panel's last mount; it is deleted with this change.
-				  * <WidthPanel> drove maxWidth/contentWidth on the flat STRING model,
-				    which this block has now left.
-
-				  Gallery therefore declares NO supports.spacing: all box CSS flows
-				  through the object model here and is emitted by SGS_Container_Wrapper
-				  under the object value model, exactly as site-header-row /
-				  site-footer-row / nav-menu already do. One system, not two.
-				*/ }
-				<ResponsiveBoxControls attributes={ attributes } setAttributes={ setAttributes } />
-
+			{ /* ============================================================
+			     Inspector panels — Settings tab (structural + content)
+			     ============================================================ */ }
+			<InspectorControls>
 				{ /* Panel 1: Images */ }
 				<PanelBody
 					title={ __( 'Images', 'sgs-blocks' ) }
@@ -664,6 +707,38 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<ToggleControl
+						label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
+						checked={ grayscaleHover }
+						onChange={ set( 'grayscaleHover' ) }
+						help={ __(
+							'Desaturates images at rest; restores full colour on hover.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Stagger delay (ms)', 'sgs-blocks' ) }
+						help={ __(
+							'Each image is delayed by a multiple of this value on entrance.',
+							'sgs-blocks'
+						) }
+						value={ staggerDelay }
+						onChange={ set( 'staggerDelay' ) }
+						min={ 0 }
+						max={ 500 }
+						step={ 25 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<ShadowControl
+						label={ __( 'Hover shadow', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'shadowHover',
+						} }
+					/>
 				</PanelBody>
 
 				{ /* Panel 6: Carousel (conditional — only when layout = carousel) */ }
@@ -811,30 +886,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ToolsPanelItem>
 					</ToolsPanel>
 				) }
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
-					<SgsBorderControl
-						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
-						widthPresets={ [ '10', '20', '30' ] }
-						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
-						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
-						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
-						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
-						colourLinked={ true }
-						radiusValues={ {
-							base: attributes.borderRadius ?? {},
-							tablet: attributes.borderRadiusTablet ?? {},
-							mobile: attributes.borderRadiusMobile ?? {},
-						} }
-						onRadiusChange={ ( tier, next ) => {
-							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-							setAttributes( { [ radiusKey ]: next } );
-						} }
-					/>
-				</PanelBody>
+				{ /* Border moved to the "Layout" panel in the Styles tab above
+				   (Spec 35 THE PLACEMENT RULE — border is a box-shape property
+				   of the `grid` wrapper element, grouped with padding/margin/
+				   max-width/gap rather than left as its own ungrouped panel). */ }
 			</InspectorControls>
 
 			{ /* ============================================================

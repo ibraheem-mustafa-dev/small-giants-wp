@@ -340,7 +340,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+			</InspectorControls>
 
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				<PanelBody
 					title={ __( 'Animation', 'sgs-blocks' ) }
 					initialOpen={ false }

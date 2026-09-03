@@ -17,6 +17,7 @@ import {
 	RadioControl,
 } from '@wordpress/components';
 import {
+	DesignTokenPicker,
 	IconPicker,
 	ResponsiveBoxControl,
 	SgsColourPanel,
@@ -705,50 +706,26 @@ export default function Edit( { attributes, setAttributes } ) {
 								},
 						  ]
 						: [] ),
-					{
-						key: 'connector',
-						label: __( 'Connector colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: connectorColour,
-								onChange: ( val ) => setAttributes( { connectorColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'connectorFill',
-						label: __( 'Connector fill colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: connectorFillColour,
-								onChange: ( val ) =>
-									setAttributes( { connectorFillColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'date',
-						label: __( 'Date colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: dateColour,
-								onChange: ( val ) => setAttributes( { dateColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+					/* connector/connectorFill/date colour rows moved OUT of
+					   this shared panel (Spec 35 D622 / SgsColourPanel's own
+					   docblock: "an element-scoped colour belongs in ITS OWN
+					   element's TIER 1 panel" — this panel is only for the
+					   wrapper + unclaimed [row-stripe] colours). connector/
+					   connectorFill now render inside the existing
+					   "Connector" element panel below; date now renders
+					   inside the new "Entry date" element panel. */
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Timeline Settings', 'sgs-blocks' ) }>
+				{ /* ── Entry title (TIER 1 — matches the `title` element's own
+				     "Entry title" label in supports.sgs.elements, block.json)
+				     ── headingLevel is this element's only editor-facing
+				     control (its colour is the shared wrapper text colour —
+				     an honest gap, see the block.json `title` element note),
+				     so this panel holds just that one control. Renamed from
+				     "Timeline Settings", which was a catch-all name for the
+				     single title-tag control it always held. */ }
+				<PanelBody title={ __( 'Entry title', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Heading level', 'sgs-blocks' ) }
 						value={ headingLevel || 'h3' }
@@ -979,13 +956,84 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
+					{ /* Moved in from the shared SgsColourPanel (Spec 35 D622 —
+					     an element-scoped colour belongs in its own element's
+					     TIER 1 panel; "connector" is a declared element whose
+					     attrMap claims both of these). Same row shape, same
+					     attributes, just relocated. */ }
+					<DesignTokenPicker
+						label={ __( 'Connector colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: connectorColour,
+								onChange: ( val ) => setAttributes( { connectorColour: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Connector fill colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: connectorFillColour,
+								onChange: ( val ) =>
+									setAttributes( { connectorFillColour: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
 				</PanelBody>
 
-				{/* ── Spacing ── Box-object interface contract §B/§E: padding/margin
-				   base routes to WP-native style.spacing.* (skip-serialised → scoped,
-				   not inline); tiers are the paddingTablet/paddingMobile +
-				   marginTablet/marginMobile object attrs. */}
-				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+				{ /* ── Entry date (TIER 1 — matches the `date` element's own
+				     "Entry date" label in supports.sgs.elements, block.json).
+				     dateColour moved in from the shared SgsColourPanel for the
+				     same D622 reason as Connector's rows above. */ }
+				<PanelBody title={ __( 'Entry date', 'sgs-blocks' ) } initialOpen={ false }>
+					<DesignTokenPicker
+						label={ __( 'Date colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: dateColour,
+								onChange: ( val ) => setAttributes( { dateColour: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+				</PanelBody>
+
+				</InspectorControls>
+
+				{ /* ── Styles tab — property-family panel, mirrors sgs/icon's
+				     own Layout/Spacing panels (both under group="styles")
+				     ── Padding, margin & border (wrapper TIER 2 — property-family
+				   "layout" cluster per cluster-member-sets.json; padding/
+				   margin/border-width/border-colour/border-radius are all
+				   members of that one cluster on the wrapper element, so
+				   they now share one panel rather than two. Named "Padding,
+				   margin & border" rather than "Layout" to avoid colliding
+				   with the pre-existing "Layout" panel above, which holds
+				   structural/no-CSS content-arrangement controls (orientation,
+				   contentLayout, mobileLayout, …) — a different thing from
+				   this property-family panel, despite the shared cluster
+				   name.
+
+				   Box-object interface contract §B/§E: padding/margin base
+				   routes to WP-native style.spacing.* (skip-serialised ->
+				   scoped, not inline); tiers are the paddingTablet/
+				   paddingMobile + marginTablet/marginMobile object attrs.
+				   Box-object interface contract §1/§5: borderWidth is an SGS
+				   custom object attr (base only, no tiers — no WP-native
+				   per-side width support); border-radius routes to WP-native
+				   style.border.radius (base) + borderRadiusTablet/Mobile
+				   tiers. */}
+				<InspectorControls group="styles">
+				<PanelBody title={ __( 'Padding, margin & border', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
 						presets
@@ -1018,14 +1066,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 						} }
 					/>
-				</PanelBody>
-
-				{/* ── Border ── Box-object interface contract §1/§5: borderWidth is
-				   an SGS custom object attr (base only, no tiers — no WP-native
-				   per-side width support); border-radius routes to WP-native
-				   style.border.radius (base) + borderRadiusTablet/Mobile tiers. */}
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
-										{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
+					{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
 					   (width/style/colour) mirroring native's BorderBoxControl layout,
 					   matching sgs/product-card + sgs/quote. Border-radius is unchanged
 					   (stays WP-native). */ }
@@ -1053,7 +1094,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					/>
 				</PanelBody>
+				</InspectorControls>
 
+				<InspectorControls>
 				{/* ── Animation ── */}
 				<PanelBody title={ __( 'Scroll reveal', 'sgs-blocks' ) } initialOpen={ false }>
 					<SelectControl

@@ -20,9 +20,10 @@ import {
 	ToolsPanel,
 	ToolsPanelItem,
 } from '@wordpress/components';
-import { ResponsiveOverride, SgsColourPanel,
+import { ResponsiveOverride,
 	SgsBorderControl,
 	resolveColourToken,
+	DesignTokenPicker,
 } from '../../components';
 import MediaElementPanel from '../../components/MediaElementPanel';
 
@@ -80,24 +81,22 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			{ /* D619 — ONE grouped, SGS-OWNED colour panel, rendered FIRST so
-			   it sits at the top of the inspector. Replaces the "Star
-			   Colour" `SelectControl` that used to sit in the "Appearance"
-			   panel below. That control offered only 3 fixed slugs
-			   (accent/primary/success); render.php resolves `starColour`
-			   through `sgs_colour_value()` — the same slug-or-hex resolver
-			   every other SgsColourPanel row uses — so it is a genuine free
-			   colour setting, not a true enum, and now gets the full
-			   palette picker like every other colour on this block.
-			   `supports.color` sub-flags are now false so WordPress
-			   generates no native colour UI to overlap with this panel. No
-			   hover pair exists for this attribute. */ }
-			<SgsColourPanel
-				rows={ [
-					{
-						key: 'star',
-						label: __( 'Star colour', 'sgs-blocks' ),
-						states: [
+			{ /* Spec 35 THE PLACEMENT RULE (D537) — the single mixed "Colour"
+			   panel is split per declared element: star fill -> "Star icon";
+			   arrow text/fill/border+hover -> "Slider arrow"; write-review
+			   text/fill+hover -> "Write-review button". Built directly with
+			   DesignTokenPicker (mirrors what SgsColourPanel does internally)
+			   since SgsColourPanel has no per-caller title override and each
+			   element needs its own panel name. `dotColour` (the slider
+			   pagination dot) has NO declared element in block.json's
+			   supports.sgs.elements — an unclaimed `fill`-family attribute —
+			   so it keeps its own small property-family panel rather than
+			   being folded into an element it doesn't belong to. */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Star icon', 'sgs-blocks' ) } className="sgs-colour-panel">
+					<DesignTokenPicker
+						label={ __( 'Star colour', 'sgs-blocks' ) }
+						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
@@ -105,54 +104,16 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { starColour: val || 'accent' } ),
 								linked: true,
 							},
-						],
-					},
-					{
-						key: 'write-review-bg',
-						label: __( 'Write-review button background', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: writeReviewColourBackground,
-								onChange: ( val ) => setAttributes( { writeReviewColourBackground: val ?? '' } ),
-								gradientValue: writeReviewColourBackgroundGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { writeReviewColourBackgroundGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: writeReviewColourBackgroundHover,
-								onChange: ( val ) => setAttributes( { writeReviewColourBackgroundHover: val ?? '' } ),
-								gradientValue: writeReviewColourBackgroundHoverGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { writeReviewColourBackgroundHoverGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
-						key: 'write-review-text',
-						label: __( 'Write-review button text', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: writeReviewColourText,
-								onChange: ( val ) => setAttributes( { writeReviewColourText: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: writeReviewColourTextHover,
-								onChange: ( val ) => setAttributes( { writeReviewColourTextHover: val ?? '' } ),
-							},
-						],
-					},
-					{
-						key: 'arrow-bg',
-						label: __( 'Slider arrow background', 'sgs-blocks' ),
-						states: [
+						] }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Slider arrow', 'sgs-blocks' ) } className="sgs-colour-panel">
+					<DesignTokenPicker
+						label={ __( 'Slider arrow background', 'sgs-blocks' ) }
+						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
@@ -171,12 +132,11 @@ export default function Edit( { attributes, setAttributes } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { arrowColourBackgroundHoverGradient: val ?? '' } ),
 							},
-						],
-					},
-					{
-						key: 'arrow-text',
-						label: __( 'Slider arrow icon colour', 'sgs-blocks' ),
-						states: [
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Slider arrow icon colour', 'sgs-blocks' ) }
+						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
@@ -189,12 +149,11 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: arrowColourTextHover,
 								onChange: ( val ) => setAttributes( { arrowColourTextHover: val ?? '' } ),
 							},
-						],
-					},
-					{
-						key: 'arrow-border',
-						label: __( 'Slider arrow border', 'sgs-blocks' ),
-						states: [
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Slider arrow border', 'sgs-blocks' ) }
+						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
@@ -213,12 +172,64 @@ export default function Edit( { attributes, setAttributes } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { arrowColourBorderHoverGradient: val ?? '' } ),
 							},
-						],
-					},
-					{
-						key: 'dot',
-						label: __( 'Slider pagination dot colour', 'sgs-blocks' ),
-						states: [
+						] }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Write-review button', 'sgs-blocks' ) } className="sgs-colour-panel">
+					<DesignTokenPicker
+						label={ __( 'Write-review button background', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: writeReviewColourBackground,
+								onChange: ( val ) => setAttributes( { writeReviewColourBackground: val ?? '' } ),
+								gradientValue: writeReviewColourBackgroundGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { writeReviewColourBackgroundGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: writeReviewColourBackgroundHover,
+								onChange: ( val ) => setAttributes( { writeReviewColourBackgroundHover: val ?? '' } ),
+								gradientValue: writeReviewColourBackgroundHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { writeReviewColourBackgroundHoverGradient: val ?? '' } ),
+							},
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Write-review button text', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: writeReviewColourText,
+								onChange: ( val ) => setAttributes( { writeReviewColourText: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: writeReviewColourTextHover,
+								onChange: ( val ) => setAttributes( { writeReviewColourTextHover: val ?? '' } ),
+							},
+						] }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* dotColour — unclaimed `fill`-family attribute, no declared
+			   element. Kept as its own minimal property-family panel rather
+			   than folded into an element panel it does not belong to. */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Fill', 'sgs-blocks' ) } className="sgs-colour-panel">
+					<DesignTokenPicker
+						label={ __( 'Slider pagination dot colour', 'sgs-blocks' ) }
+						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
@@ -237,10 +248,11 @@ export default function Edit( { attributes, setAttributes } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { dotColourHoverGradient: val ?? '' } ),
 							},
-						],
-					},
-				] }
-			/>
+						] }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
 			<InspectorControls>
 				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
 				<PanelBody title={ __( 'Variant', 'sgs-blocks' ) }>
@@ -274,8 +286,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					</Notice>
 				</PanelBody>
 
+				{ /* INNER element (block.json's `inner`, the grid/flex layout —
+				   Spec 35 THE PLACEMENT RULE TIER 1) — `columns` is its only
+				   content control today. Was a generic "Layout" panel; renamed
+				   so it reads as the element it actually belongs to rather
+				   than a catch-all. */ }
 				{ [ 'grid', 'slider', 'wall' ].includes( variant ) && (
-					<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
+					<PanelBody title={ __( 'Inner', 'sgs-blocks' ) }>
 						{ /*
 							  columns is a TIER OBJECT — ONE attr holding
 							  {desktop,tablet,mobile} (Spec 35 pass 4). It must
@@ -591,7 +608,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ToolsPanelItem>
 					</ToolsPanel>
 				) }
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				{ /* WRAPPER element (isWrapper:true) — border/radius resolve to its
+				   TIER-2 Layout property family (block.json attrMap: css:border-*
+				   -> borderWidth/Style/Colour/Radius on the `layout` cluster).
+				   Was a generic "Border" catch-all panel; renamed to the family
+				   name per THE PLACEMENT RULE. */ }
+				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
 						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }

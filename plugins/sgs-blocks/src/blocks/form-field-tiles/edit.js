@@ -22,6 +22,12 @@ const WIDTH_OPTIONS = [
 	{ label: __( 'One third', 'sgs-blocks' ), value: 'third' },
 ];
 
+const SELECTED_STYLE_OPTIONS = [
+	{ label: __( 'Checkmark', 'sgs-blocks' ), value: 'checkmark' },
+	{ label: __( 'Border', 'sgs-blocks' ), value: 'border' },
+	{ label: __( 'Background', 'sgs-blocks' ), value: 'background' },
+];
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		fieldName,
@@ -32,6 +38,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		width,
 		tiles,
 		multiSelect,
+		selectedStyle,
 		columns,
 		backgroundColour,
 		textColour,
@@ -130,6 +137,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								multiSelect: false,
 								columns: { desktop: 3, tablet: 2, mobile: 1 },
 								width: 'full',
+								selectedStyle: 'checkmark',
 							} )
 						}
 					>
@@ -238,6 +246,24 @@ export default function Edit( { attributes, setAttributes } ) {
 								value={ width }
 								options={ WIDTH_OPTIONS }
 								onChange={ ( val ) => setAttributes( { width: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Selected tile style', 'sgs-blocks' ) }
+							hasValue={ () => selectedStyle !== 'checkmark' }
+							onDeselect={ () =>
+								setAttributes( { selectedStyle: 'checkmark' } )
+							}
+						>
+							<SelectControl
+								label={ __( 'Selected tile style', 'sgs-blocks' ) }
+								value={ selectedStyle }
+								options={ SELECTED_STYLE_OPTIONS }
+								onChange={ ( val ) =>
+									setAttributes( { selectedStyle: val } )
+								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>

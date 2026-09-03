@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-09-03 (session 3)
+last_updated: 2026-09-03 (session 4)
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -18,14 +18,11 @@ Right now: the cloning pipeline and the motion system are both stable. Client co
 2026-09-02 (Waves 6-7 committed, deployed, live-verified). The live front is the **uniformity
 sweep** — running the framework's own detector/audit scripts, clearing real findings, and fixing
 the detectors themselves where they're wrong, so the client's editor/canvas/live-page experience
-has no clear blockers. This session closed most of `37-media-no-handroll` (71 → 44 findings) —
-17 blocks got a real client-facing crop control, the overlay atom gained responsive tiering, and
-a 4-persona `/qc-council` review caught two real bugs before they shipped. Deployed and
-live-verified on the canary. `37`'s remaining 44 findings then closed to 0 the same day (D924):
-the held design chat about `sgs/container`'s background settled that a whole-block background
-panel is a separate, non-element-based system, never meant to be compared against the media-atom
-layer — a detector fix, not a build. Two items remain fully open (`01`, `21`). One dedicated
-build-session prompt stays separate (below). A second track ran in parallel on **colour** (D923, then D928/D929 in a follow-on session):
+has no clear blockers. Session 3 closed `37-media-no-handroll` fully (71 → 0). **Session 4
+(2026-09-03, D933) closed the other two open items to zero: `01-tab-group` (32 → 0) and
+`21-render-without-control` (54 → 0)** — full account below. Only `31-golden-colour-control`
+(253 open) remains open in
+this track. A second track ran in parallel on **colour** (D923, then D928/D929 in a follow-on session):
 rule 31 fell 276 → 250 via a detector fix plus a gradient rollout across 16 blocks; the
 `grant.js` codemod plan was abandoned after an adversarial council found the route untested
 against cheaper alternatives. The follow-on session then closed the remaining hardcoded-hover
@@ -37,22 +34,26 @@ recognised defect shapes should become scripted repairs, given that evidence. A 
 shipped `01-tab-group`'s mixed-panel exemption rule (48 → 32) + fixed modal's overlay colour/
 opacity split, then found and started retiring an unwanted, unfinished feature
 (`attribute_gap_candidates`) surfaced by a routine `/sgs-update` anomaly — drafted in an isolated
-worktree, NOT YET merged; full detail in its own track section below. The canary test site is
+worktree, since merged via PR #37 (session 4). The canary test site is
 sandybrown-nightingale-600381.hostingersite.com; there are no live client sites on this framework
 yet, so breakage there costs time, not money.
 
 ## State Snapshot
 
-- **Branch:** `main`, ONE active track there. Commit with explicit paths (a hook enforces it). A
-  SEPARATE worktree also exists for gap-candidates work (below) — don't branch again in the shared
-  main working directory while a concurrent session may be committing there.
+- **Branch:** `main`, ONE active track there. Commit with explicit paths (a hook enforces it). The
+  gap-candidates retirement worktree/branch are gone — merged via PR #37 (`61c2e813b`), confirmed
+  in `git log --all` and the worktree no longer exists; do not go looking for it.
 - **Canary:** WP 7.1. Deploy via `build-deploy.py --target sandybrown` — the only sanctioned path.
-- **Build:** green on `main`, 86/86 prebuild gates verified 2026-09-03 at `2ad141986`; colour-track
-  blocks live-verified against the real lifted CSS. Session 3's detector/panel fixes verified via
-  self-test + re-run scan (no deploy needed). Nothing uncommitted on `main`; the gap-candidates
-  worktree branch is drafted + tested but NOT merged.
-- **Live fronts:** the uniformity sweep + gap-candidates retirement (below). Client controls,
-  cloning, consolidation are closed; motion is stable with named next steps in its own section.
+- **Build:** green on `main`. Session 4's `01`/`21` fixes verified via self-test + re-run scan
+  (`node scripts/inspector-scan/run.js --json`, both 0 flagged) — one unrelated ratchet violation
+  surfaced (`28-fix-durability`, 1 over its 0 ceiling), not this session's scope, not fixed here.
+  `npm run gate:fast` showed scattered pre-existing/concurrent failures throughout the session,
+  each traced by content and confirmed unrelated to the files actually touched — re-run it fresh
+  next session rather than trusting this line's snapshot.
+- **Live fronts:** `31-golden-colour-control` (below). `01`/`21` closed this session,
+  gap-candidates retirement already merged (PR #37). Client controls, cloning, consolidation are
+  closed; motion is stable with
+  named next steps in its own section.
 - **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
 
 # ▶ NEXT SESSION STARTS HERE
@@ -63,93 +64,51 @@ yet, so breakage there costs time, not money.
 (section below). Sections below are per-track, read only the one you're continuing.**
 The **motion** track owns `⛔ `sgs-framework.db` is ONE shared file — DB work sequentially, not parallel.
 
-## ▶ UNIFORMITY SWEEP TRACK — 2026-09-03 (session 3): 01-tab-group 48→32 + modal overlay fixed; 21 + gap-candidates retirement still open
+## ▶ UNIFORMITY SWEEP TRACK — `01-tab-group` + `21-render-without-control` BOTH CLOSED 2026-09-03 (session 4, D933)
 
-⭐ **Read `.claude/reports/2026-09-02-findings-INDEX.md` FIRST — it is the map.** Twelve reports,
-one per detector reporting findings, each with a plain-English problem/effect, a ranked menu and a
-"Your call" checklist. Plan: `.claude/plans/2026-08-30-uniformity-sweep-execution.md`.
+⭐ **Read `.claude/reports/2026-09-02-findings-INDEX.md` for the still-open `31` detector.** The
+`01`/`21` reports it indexed are now historical — both rules are at 0, re-verify via
+`node scripts/inspector-scan/run.js --json` before trusting this line in a future session.
 
-**Session 3 shipped, both on `main`:**
-- **`01-tab-group` mixed-panel exemption** (via `/subagent-driven-development`, cross-model
-  reviewed): a panel with a structural/no-CSS anchor control keeps its CSS-styling siblings
-  grouped with it in Settings, not split to Styles — Bean's ruling, reversing an earlier "split
-  mixed panels" assumption. 48 → 32 findings. Verified against 5 named worked examples
-  individually, not just the aggregate count.
-- **Modal's overlay colour+opacity** now live together in one Styles-tab panel (were split:
-  colour in the generic colour panel, opacity alone in Settings) — matches the existing 8-block
-  `BackgroundPanel.js` precedent exactly (colour picker with alpha off + a plain opacity slider,
-  same panel).
+**Session 4 closed both remaining detectors in this track to zero, via `/dispatching-parallel-agents`
+in several waves, each verified live after landing — full account: D933.**
 
-**NEW, mid-flight — attribute-gap-candidates retirement.** Never-finished, never-wanted promotion
-workflow, retired at Bean's direction (found via a `/sgs-update` anomaly that traced to a real
-test bug hitting the live DB). 16 files drafted + individually tested in an isolated worktree
-(`c:\Users\Bean\Projects\small-giants-wp-gap-retirement`, branch
-`fix/retire-attribute-gap-candidates`) — NOT yet merged; schema drop + full gate run + commit/PR
-still needed. Full breakdown in the continuation prompt below.
+- `01-tab-group` 32 → 0: 20 blocks needed only a `group="styles"` tag move; `team-member`,
+  `buybox`, `social-icons` had their own small bugs (buybox's Border panel was self-exempting on
+  a missing DB `css_property` seed, fixed directly in `sgs-framework.db`); the remaining 9 blocks
+  got real TIER-1/TIER-2 panel restructuring per THE PLACEMENT RULE (Spec 35 Part O). `rules.json`
+  ratchet ceiling lowered 57 → 0.
+- `21-render-without-control` 54 → 0: every fix reused an existing shared control — `ShadowControl`
+  + `SgsLengthControl` for `heading`/`text`, `product-card`'s controls copied onto `buybox` (and
+  vice versa for `showPickers`), `team-member`'s transition pair copied onto `cta-section`.
+  `cta-section.body` and `site-footer.alignContent`/`tagName` were confirmed dead schema and
+  deleted outright (D270 no-deprecation policy), not worked around. `rules.json` ceiling lowered
+  146 → 0 (that pre-session figure was itself inflated by unrelated concurrent work landing in the
+  same window — see the rule's own `advisoryReason`).
+- Both rules are candidates for advisory → gate promotion now that their backlog is genuinely
+  zero — flagged, not promoted in this pass; a deliberate call for a future session.
+- Two investigation-phase claims were checked and found WRONG before any fix was dispatched (a
+  `--json` scan-mode bug; a hover-effects "detector blind spot") — both real gaps, not detector
+  noise. Bean's explicit instruction mid-session: don't hand-code a control, map it to an existing
+  shared mechanism first, verified by source. See `feedback_map_to_shared_mechanism_before_building_controls.md`.
 
-**Three prompts, split deliberately:**
-- **Detector violations (`01`, 32 open + `21`, 54 open, untriaged):**
-  `.claude/prompts/2026-09-03-detector-violations-01-and-21.md` (supersedes
-  `2026-09-03-detector-backlog-post-bg-panel-fix.md`, which is deleted — its `01` count and scope
-  is pre-session-3).
-- **Gap-candidates retirement merge (mid-flight, isolated worktree):**
-  `.claude/prompts/2026-09-03-gap-candidates-retirement-and-detector-backlog.md` — deliberately
-  scoped to that thread only, do not fold in the detector violations prompt above.
-- **`31-golden-colour-control` category-B is LANDED (D928/D929) — its continuation prompt is
-  DELETED.** New prompt, different question: **`.claude/prompts/2026-09-03-mechanical-repair-scripting.md`**
-  — opens in `/brainstorming explore` mode (Bean's explicit instruction) on whether the defect
-  shapes recognised this session (motion-hover-guard, gate-omission, missing-element-manifest,
-  text-gradient-backlog) can become scripted, batchable repairs, given that this session's ONE
-  existing scripted repair (`colour-codemod/fix.js`) still shipped 3 real bugs past its own
-  self-test and the full 86-gate build chain. Full account: D929.
+**Gap-candidates retirement is DONE** — merged via PR #37 (`61c2e813b`), confirmed in `git log
+--all`; its worktree, branch and prompt file are all correctly gone. Not this track's work, noted
+here only because this track's own LEDGER section previously (wrongly) called it open.
 
-### This session's close — D922 has the full account, this is a pointer
+**What's left in this track:** `31-golden-colour-control` (253 open, its own dedicated
+~5.4h build task — D754's plan). Nothing else open here.
 
-Closed most of **37-media-no-handroll** (71 → 44 findings): 17 blocks migrated onto the shared
-media-atom system for `object-fit`/`object-position`, giving clients real crop controls; the
-overlay atom gained tablet/mobile tiering. Two real bugs caught by `/qc-council` before ship (a
-child-block override, a dead duplicate control with a live double-emission risk) — full account
-+ the detector blind-spot finding + why the full wrapper-overlay swap was refused: D922.
-Deployed + live-verified on sandybrown; 16 visual-diff reports written (intent-capture, live CSS
-+ a populated `product-card` instance checked). Border-migration (previous session) — D921.
+⛔ **Working shape carried forward, still true: dispatch each fix the MOMENT Bean decides it,
+keep discussing while agents work.** Verify every agent's result yourself — `git diff --stat`,
+re-run the detector, spot-check the diff. This session's dispatched agents twice used `git stash`
+on the shared tree mid-task (self-correcting each time, verified after); several also
+misattributed sibling agents' own uncommitted work as an unrelated "concurrent session" — see
+`feedback_sibling_parallel_agents_misattribute_each_others_work.md` before trusting that framing
+from an agent report again.
 
-`31-golden-colour-control`'s status, unchanged: D754's plan has 2 of 6 work units done, but
-`grant.js` — the actual capability tool — doesn't exist yet. ~5.4h BUILD task with its own
-feasibility spike, own dedicated prompt, never folded into a mixed backlog session.
-
-**`37`'s remaining 44 findings — CLOSED same day (D924), not a build.** The held design chat
-about `sgs/container`/`cta-section`/`nav-drawer`'s background-image sizing happened: a whole-block
-background panel (size/position/repeat/attachment/overlay/video/SVG/Ken-Burns/parallax) is a
-separate, non-element-based system — it was never supposed to be compared against
-`supports.sgs.mediaElements` at all, reversing a 2026-09-02 decision that had deliberately kept
-Ken-Burns/parallax firing as a "media" signal. On investigation, `multi-button`/`physics-canvas`/
-`site-footer`/`site-header`'s "documented debt, needs the atom's marker-class gap solved first"
-findings turned out to be the identical misclassification — not 4 separate gaps, one detector fix.
-Fixed in `37-media-no-handroll.js` (bare `background`/`bg`-prefix discriminator, 3 new self-test
-fixtures), not by building the atom's caller-supplied-selector capability. 44 → 0, full detail
-D924. No wrapper/render code touched, no deploy needed.
-
-**What's left — 3 open items:** `01` (32 after session 3's mixed-panel rework, coarse-proxy check
-— verify by eye) · `21` (54, pre-existing backlog, not yet triaged block-by-block) ·
-gap-candidates retirement (drafted, needs merge — see pointer above). `31` (277) stays fully out
-of this prompt.
-
-⛔ **Working shape carried forward from the prior session, unchanged: dispatch each fix the MOMENT
-Bean decides it and keep discussing while the agent works — do NOT batch every fix to the end.**
-Verify every agent's result yourself (`git diff --stat`, re-run the detector, read a sample of the
-actual diff) — this session caught a broken import, a syntax error, curly-quote flattening, an
-invalid-UTF-8 byte, and an undestructured-attribute `ReferenceError` this way, none of which a
-trusting read of an agent's own "done, verified" self-report would have caught.
-
-**Earlier history (D918: the scattered-controls prototype deletion + 9 CONTESTED attrMap gaps
-resolved; D919: the decide-first batch closure + hero split-media bug).** Compressed to this
-pointer — full accounts live in `decisions.md`, not duplicated here.
-
-⭐ **OPEN QUESTION, still needs an early ruling — carried forward, not yet resolved.** 31 baseline
-entries classified `detector-limitation` — per this project's own rule ("a false positive is a
-detector bug, never baseline fodder") these are rule violations sitting in a baseline, not a
-normal outcome. Full list + which detector each belongs to: the INDEX report's disposition
-section (`.claude/reports/2026-09-02-findings-INDEX.md`).
+**Earlier history (D918/D919/D922/D924/D930/D933).** Full accounts in `decisions.md`, not
+duplicated here.
 
 ## ▶ COLOUR TRACK — 2026-09-03 (session 2): category B LANDED, DB writer bug fixed, codemod autofix run (3 real bugs found + fixed). Detail: D928/D929.
 

@@ -304,6 +304,128 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
+				{ /* ---- Size & alignment ---- */ }
+				<PanelBody
+					title={ __( 'Size & alignment', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					{ /*
+					  `width` is a TIER OBJECT (Spec 35 pass 2) — same pattern as
+					  `thickness` below.
+					*/ }
+					<ResponsiveOverride
+						label={ __( 'Width', 'sgs-blocks' ) }
+						value={ width }
+						onChange={ ( obj ) => setAttributes( { width: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<SgsLengthControl
+								presets={ false }
+								label={ __( 'Width', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ composeUnit( ownValue, widthUnit ) }
+								placeholder={
+									inherited
+										? composeUnit( effectiveValue, widthUnit )
+										: ''
+								}
+								units={ WIDTH_UNITS }
+								onChange={ ( raw ) => {
+									const { num, unit } = parseUnit(
+										raw,
+										widthUnit
+									);
+									setOwnValue( num === undefined ? '' : num );
+									setAttributes( { widthUnit: unit } );
+								} }
+							/>
+						) }
+					</ResponsiveOverride>
+					<SelectControl
+						label={ __( 'Alignment', 'sgs-blocks' ) }
+						help={ __(
+							'Position when width is less than 100%.',
+							'sgs-blocks'
+						) }
+						value={ alignment }
+						options={ ALIGNMENT_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { alignment: val } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
+
+				{ /* ---- Content ---- */ }
+				<PanelBody
+					title={ __( 'Content', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<SelectControl
+						label={ __( 'Content in middle', 'sgs-blocks' ) }
+						value={ contentMode }
+						options={ CONTENT_MODE_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { contentMode: val } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+
+					{ 'icon' === contentMode && (
+						<>
+							<IconPicker
+								label={ __( 'Icon', 'sgs-blocks' ) }
+								value={ {
+									source: attributes.contentIconSource,
+									name: currentIconName( attributes ),
+								} }
+								onChange={ handleIconChange }
+							/>
+							<RangeControl
+								label={ __( 'Icon size (px)', 'sgs-blocks' ) }
+								value={ contentIconSize }
+								onChange={ ( val ) =>
+									setAttributes( { contentIconSize: val } )
+								}
+								min={ 12 }
+								max={ 96 }
+								step={ 2 }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							{ /* Icon colour moved to the top-level SgsColourPanel
+							   (D618/D621) — "Content colour" row. */ }
+						</>
+					) }
+
+					{ 'text' === contentMode && (
+						<>
+							<TextControl
+								label={ __( 'Label text', 'sgs-blocks' ) }
+								value={ contentText }
+								onChange={ ( val ) =>
+									setAttributes( { contentText: val } )
+								}
+								placeholder={ __( 'OR', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							{ /* Text colour moved to the top-level SgsColourPanel
+							   (D618/D621) — "Content colour" row. */ }
+							<TypographyControls
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix="content"
+							/>
+						</>
+					) }
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				{ /* ---- Line ---- */ }
 				<ToolsPanel
 					label={ __( 'Line', 'sgs-blocks' ) }
@@ -440,125 +562,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
-
-				{ /* ---- Size & alignment ---- */ }
-				<PanelBody
-					title={ __( 'Size & alignment', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					{ /*
-					  `width` is a TIER OBJECT (Spec 35 pass 2) — same pattern as
-					  `thickness` above.
-					*/ }
-					<ResponsiveOverride
-						label={ __( 'Width', 'sgs-blocks' ) }
-						value={ width }
-						onChange={ ( obj ) => setAttributes( { width: obj } ) }
-					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<SgsLengthControl
-								presets={ false }
-								label={ __( 'Width', 'sgs-blocks' ) }
-								hideLabelFromVision
-								value={ composeUnit( ownValue, widthUnit ) }
-								placeholder={
-									inherited
-										? composeUnit( effectiveValue, widthUnit )
-										: ''
-								}
-								units={ WIDTH_UNITS }
-								onChange={ ( raw ) => {
-									const { num, unit } = parseUnit(
-										raw,
-										widthUnit
-									);
-									setOwnValue( num === undefined ? '' : num );
-									setAttributes( { widthUnit: unit } );
-								} }
-							/>
-						) }
-					</ResponsiveOverride>
-					<SelectControl
-						label={ __( 'Alignment', 'sgs-blocks' ) }
-						help={ __(
-							'Position when width is less than 100%.',
-							'sgs-blocks'
-						) }
-						value={ alignment }
-						options={ ALIGNMENT_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { alignment: val } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
-
-				{ /* ---- Content ---- */ }
-				<PanelBody
-					title={ __( 'Content', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<SelectControl
-						label={ __( 'Content in middle', 'sgs-blocks' ) }
-						value={ contentMode }
-						options={ CONTENT_MODE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { contentMode: val } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-
-					{ 'icon' === contentMode && (
-						<>
-							<IconPicker
-								label={ __( 'Icon', 'sgs-blocks' ) }
-								value={ {
-									source: attributes.contentIconSource,
-									name: currentIconName( attributes ),
-								} }
-								onChange={ handleIconChange }
-							/>
-							<RangeControl
-								label={ __( 'Icon size (px)', 'sgs-blocks' ) }
-								value={ contentIconSize }
-								onChange={ ( val ) =>
-									setAttributes( { contentIconSize: val } )
-								}
-								min={ 12 }
-								max={ 96 }
-								step={ 2 }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							{ /* Icon colour moved to the top-level SgsColourPanel
-							   (D618/D621) — "Content colour" row. */ }
-						</>
-					) }
-
-					{ 'text' === contentMode && (
-						<>
-							<TextControl
-								label={ __( 'Label text', 'sgs-blocks' ) }
-								value={ contentText }
-								onChange={ ( val ) =>
-									setAttributes( { contentText: val } )
-								}
-								placeholder={ __( 'OR', 'sgs-blocks' ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							{ /* Text colour moved to the top-level SgsColourPanel
-							   (D618/D621) — "Content colour" row. */ }
-							<TypographyControls
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-								prefix="content"
-							/>
-						</>
-					) }
-				</PanelBody>
 
 				{ /* ---- Spacing ---- Box-object interface contract §B/§E: padding/
 				   margin base routes to WP-native style.spacing.* (scoped, not

@@ -395,6 +395,55 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
+				<PanelBody title={ __( 'Appearance', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Style', 'sgs-blocks' ) }
+						value={ iconStyle }
+						options={ STYLE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { iconStyle: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<RangeControl
+						label={ __( 'Icon size (px)', 'sgs-blocks' ) }
+						value={ iconSize }
+						onChange={ ( val ) => setAttributes( { iconSize: val } ) }
+						min={ 16 }
+						max={ 64 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<SpacingControl
+						label={ __( 'Gap', 'sgs-blocks' ) }
+						value={ gap }
+						onChange={ ( val ) => setAttributes( { gap: val } ) }
+					/>
+					<SelectControl
+						label={ __( 'Icon colour source', 'sgs-blocks' ) }
+						value={ colourMode }
+						options={ COLOUR_MODE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { colourMode: val } ) }
+						help={ 'brand' === colourMode
+							? __( 'Each icon uses its official brand colour (Facebook blue, Instagram pink, etc.) at rest.', 'sgs-blocks' )
+							: __( 'Every icon uses the theme colour below at rest. Edit in the Colour panel at the top.', 'sgs-blocks' )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				{ /* NOTE (2026-09-03 investigation): "Social Links" appears TWICE
+				   in this file — once here (Site Info source: read-only notice)
+				   and once below (manual source: the full icon-list editor).
+				   Confirmed NOT a dead/orphaned duplicate: the ternary on
+				   `isSiteInfoSource` means exactly one of the two ever mounts,
+				   both are live code paths reachable by toggling "Link source"
+				   above. Confusingly named (identical titles, different
+				   content) but functioning as designed — a rename is a
+				   separate, out-of-scope UX fix, not attempted here. */ }
 				{ isSiteInfoSource ? (
 					<PanelBody title={ __( 'Social Links', 'sgs-blocks' ) }>
 						<Notice status="info" isDismissible={ false }>
@@ -486,43 +535,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					</Button>
 				</PanelBody>
 				) }
-
-				<PanelBody title={ __( 'Appearance', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
-						label={ __( 'Style', 'sgs-blocks' ) }
-						value={ iconStyle }
-						options={ STYLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { iconStyle: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<RangeControl
-						label={ __( 'Icon size (px)', 'sgs-blocks' ) }
-						value={ iconSize }
-						onChange={ ( val ) => setAttributes( { iconSize: val } ) }
-						min={ 16 }
-						max={ 64 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SpacingControl
-						label={ __( 'Gap', 'sgs-blocks' ) }
-						value={ gap }
-						onChange={ ( val ) => setAttributes( { gap: val } ) }
-					/>
-					<SelectControl
-						label={ __( 'Icon colour source', 'sgs-blocks' ) }
-						value={ colourMode }
-						options={ COLOUR_MODE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { colourMode: val } ) }
-						help={ 'brand' === colourMode
-							? __( 'Each icon uses its official brand colour (Facebook blue, Instagram pink, etc.) at rest.', 'sgs-blocks' )
-							: __( 'Every icon uses the theme colour below at rest. Edit in the Colour panel at the top.', 'sgs-blocks' )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
 
 				{ /* ── Spacing panel ── Box-object interface contract §B/§E: padding/
 				   margin base routes to WP-native style.spacing.* (skip-serialised,

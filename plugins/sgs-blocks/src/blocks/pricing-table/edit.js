@@ -376,22 +376,6 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Pricing Table Settings', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'Heading level', 'sgs-blocks' ) }
-						value={ headingLevel || 'h3' }
-						options={ HEADING_LEVEL_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { headingLevel: val } )
-						}
-						help={ __(
-							'Pick the level that fits your page outline — usually H3 under a page-level H2.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
 					<RangeControl
 						label={ __( 'Columns', 'sgs-blocks' ) }
@@ -491,6 +475,26 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) =>
 							setAttributes( { popularBadgeText: val } )
 						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Pricing Table Settings', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Heading level', 'sgs-blocks' ) }
+						value={ headingLevel || 'h3' }
+						options={ HEADING_LEVEL_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { headingLevel: val } )
+						}
+						help={ __(
+							'Pick the level that fits your page outline — usually H3 under a page-level H2.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

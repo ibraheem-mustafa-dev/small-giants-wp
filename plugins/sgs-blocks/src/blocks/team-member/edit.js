@@ -37,6 +37,7 @@ import {
 	PanelBody,
 	SelectControl,
 	ToggleControl,
+	RangeControl,
 	Button,
 } from '@wordpress/components';
 import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow,
@@ -58,6 +59,14 @@ const PHOTO_SHAPES = [
 	{ label: __( 'Circle', 'sgs-blocks' ), value: 'circle' },
 	{ label: __( 'Rounded', 'sgs-blocks' ), value: 'rounded' },
 	{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
+];
+
+const EASING_OPTIONS = [
+	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
+	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
 ];
 
 // D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
@@ -276,6 +285,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		cardShadowColour,
 		shadowHover,
 		shadowHoverColour,
+		scaleHover,
+		imageZoomHover,
+		grayscaleHover,
+		transitionDuration,
+		transitionEasing,
 		displayMode,
 		socialLinks,
 		paddingTablet,
@@ -451,6 +465,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							cardShadowColour: null,
 							shadowHover: '',
 							shadowHoverColour: null,
+							scaleHover: '',
+							imageZoomHover: false,
+							grayscaleHover: false,
+							transitionDuration: '300',
+							transitionEasing: 'ease-in-out',
 						} )
 					}
 				>
@@ -575,15 +594,80 @@ export default function Edit( { attributes, setAttributes } ) {
 							} }
 						/>
 					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Hover scale', 'sgs-blocks' ) }
+						hasValue={ () => !! scaleHover }
+						onDeselect={ () => setAttributes( { scaleHover: '' } ) }
+					>
+						<RangeControl
+							label={ __( 'Hover scale', 'sgs-blocks' ) }
+							value={ parseFloat( scaleHover ) || 1 }
+							onChange={ ( val ) => setAttributes( { scaleHover: String( val ) } ) }
+							min={ 1 }
+							max={ 1.1 }
+							step={ 0.01 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
+						hasValue={ () => imageZoomHover !== false }
+						onDeselect={ () => setAttributes( { imageZoomHover: false } ) }
+					>
+						<ToggleControl
+							label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
+							help={ __( 'Zooms the photo inside the card on hover.', 'sgs-blocks' ) }
+							checked={ imageZoomHover }
+							onChange={ ( val ) => setAttributes( { imageZoomHover: val } ) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
+						hasValue={ () => grayscaleHover !== false }
+						onDeselect={ () => setAttributes( { grayscaleHover: false } ) }
+					>
+						<ToggleControl
+							label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
+							help={ __( 'Desaturates the photo at rest; restores full colour on hover.', 'sgs-blocks' ) }
+							checked={ grayscaleHover }
+							onChange={ ( val ) => setAttributes( { grayscaleHover: val } ) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+						hasValue={ () => transitionDuration !== '300' }
+						onDeselect={ () => setAttributes( { transitionDuration: '300' } ) }
+					>
+						<RangeControl
+							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+							value={ parseInt( transitionDuration, 10 ) || 300 }
+							onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
+							min={ 0 }
+							max={ 1000 }
+							step={ 50 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Transition easing', 'sgs-blocks' ) }
+						hasValue={ () => transitionEasing !== 'ease-in-out' }
+						onDeselect={ () => setAttributes( { transitionEasing: 'ease-in-out' } ) }
+					>
+						<SelectControl
+							label={ __( 'Transition easing', 'sgs-blocks' ) }
+							value={ transitionEasing }
+							options={ EASING_OPTIONS }
+							onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
 				</ToolsPanel>
 
-				{ /* Responsive photo family. Uses the SHARED <ResponsiveControl>
-				   rather than one loose picker per tier: the prebuild oldshape
-				   audit rejects a responsive family edited without it, and the
-				   shared switcher also drives WordPress's native device preview,
-				   so choosing a tablet photo resizes the canvas and shows it.
-				   Three stacked pickers cannot do that and give the client three
-				   things to understand instead of one. */ }
 				<PanelBody title={ __( 'Photo', 'sgs-blocks' ) } initialOpen={ false }>
 					<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
 						{ __( 'Optional — set a different photo per device. Leave a tier blank to inherit the one above it.', 'sgs-blocks' ) }
@@ -615,6 +699,34 @@ export default function Edit( { attributes, setAttributes } ) {
 					     client two identically-labelled controls. See block.json's
 					     _comment_mediaElements for the full correction. */ }
 				</PanelBody>
+
+				{ ! isCompact && (
+					<PanelBody title={ __( 'Social Links', 'sgs-blocks' ) } initialOpen={ false }>
+						<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
+							{ __( 'Social profile links displayed below the bio. Hidden in Compact mode.', 'sgs-blocks' ) }
+						</p>
+						{ socialLinks.map( ( link, index ) => (
+							<SocialLinkItemEditor
+								key={ index }
+								item={ link }
+								index={ index }
+								onChange={ ( updated ) => updateSocialLink( index, updated ) }
+								onRemove={ () => removeSocialLink( index ) }
+							/>
+						) ) }
+						<Button
+							variant="secondary"
+							onClick={ addSocialLink }
+							style={ { width: '100%', justifyContent: 'center' } }
+						>
+							{ __( 'Add social link', 'sgs-blocks' ) }
+						</Button>
+					</PanelBody>
+				) }
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 
 				{ /* Box-object interface contract §B/§E: padding/margin base routes
 				   to WP-native style.spacing.* (skip-serialised → scoped, not
@@ -669,29 +781,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ ! isCompact && (
-					<PanelBody title={ __( 'Social Links', 'sgs-blocks' ) } initialOpen={ false }>
-						<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
-							{ __( 'Social profile links displayed below the bio. Hidden in Compact mode.', 'sgs-blocks' ) }
-						</p>
-						{ socialLinks.map( ( link, index ) => (
-							<SocialLinkItemEditor
-								key={ index }
-								item={ link }
-								index={ index }
-								onChange={ ( updated ) => updateSocialLink( index, updated ) }
-								onRemove={ () => removeSocialLink( index ) }
-							/>
-						) ) }
-						<Button
-							variant="secondary"
-							onClick={ addSocialLink }
-							style={ { width: '100%', justifyContent: 'center' } }
-						>
-							{ __( 'Add social link', 'sgs-blocks' ) }
-						</Button>
-					</PanelBody>
-				) }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }

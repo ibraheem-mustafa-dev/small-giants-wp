@@ -76,6 +76,7 @@
 						"css:border-color-gradient": "borderColourGradient",
 						"css:border-radius": "borderRadius",
 						"css:box-shadow": "boxShadow",
+						"css:box-shadow-color": "boxShadowColour",
 						"css:width": "customWidth",
 						"css:max-width": "maxWidth",
 						"css:transition-duration": "transitionDuration",
@@ -87,6 +88,7 @@
 							"attrMap": {
 								"css:color": "textColourHover",
 								"css:box-shadow": "boxShadowHover",
+								"css:box-shadow-color": "boxShadowHoverColour",
 								"css:color-gradient": "textColourHoverGradient",
 								"css:border-color": "borderColourHover"
 							}
@@ -322,6 +324,14 @@
 			"default": ""
 		},
 		"boxShadowHover": {
+			"type": "string",
+			"default": ""
+		},
+		"boxShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"boxShadowHoverColour": {
 			"type": "string",
 			"default": ""
 		},

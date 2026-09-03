@@ -139,13 +139,20 @@ $border_colour = $attributes['borderColour'] ?? '';
 // above, painted via the shared masked ::before ring mechanism.
 $border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 
-// Box shadow — preset slug or empty.
-$box_shadow       = $attributes['boxShadow'] ?? '';
-$box_shadow_hover = $attributes['boxShadowHover'] ?? '';
+// Box shadow — preset slug, or a raw shape built by ShadowControl (offset/
+// blur/spread), composed with its sibling colour attr via
+// sgs_shadow_value_composed() (helpers-tokens.php) — mirrors sgs/quote's
+// render.php exactly, so a client-built custom shadow shape renders correctly
+// instead of being mangled by sanitize_html_class() into a broken CSS
+// custom-property reference.
+$box_shadow              = $attributes['boxShadow'] ?? '';
+$box_shadow_hover        = $attributes['boxShadowHover'] ?? '';
+$box_shadow_colour       = $attributes['boxShadowColour'] ?? '';
+$box_shadow_hover_colour = $attributes['boxShadowHoverColour'] ?? '';
 
 // Hover state.
-$hover_scale               = isset( $attributes['scaleHover'] ) ? (float) $attributes['scaleHover'] : null;
-$hover_colour              = $attributes['textColourHover'] ?? '';
+$hover_scale  = isset( $attributes['scaleHover'] ) ? (float) $attributes['scaleHover'] : null;
+$hover_colour = $attributes['textColourHover'] ?? '';
 // D636 — sibling-attribute shape, see $text_colour_gradient above.
 $hover_colour_gradient     = $attributes['textColourHoverGradient'] ?? '';
 $hover_background          = $attributes['backgroundColourHover'] ?? '';
@@ -295,10 +302,13 @@ if ( $has_border_width && 'none' !== $border_style ) {
 	$base_decls[] = 'border-color:' . sgs_colour_value( $border_colour );
 }
 
-// Box shadow — preset slug maps to CSS custom property.
+// Box shadow — preset slug OR a raw ShadowControl-built shape, composed with
+// its sibling colour attr. sanitize_html_class() previously mangled a raw
+// custom shape (e.g. "0px 4px 12px 0px") into a broken preset-var reference —
+// sgs_shadow_value_composed() (helpers-tokens.php) handles both cases
+// correctly, mirroring sgs/quote's render.php.
 if ( $box_shadow ) {
-	$safe_slug    = sanitize_html_class( $box_shadow );
-	$base_decls[] = 'box-shadow:var(--wp--preset--shadow--' . $safe_slug . ')';
+	$base_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
 }
 
 // ---------------------------------------------------------------------------
@@ -541,8 +551,7 @@ if ( $has_hover ) {
 		$hover_decls[] = 'transform:scale(' . round( $hover_scale, 3 ) . ')';
 	}
 	if ( $box_shadow_hover ) {
-		$safe_hover_slug = sanitize_html_class( $box_shadow_hover );
-		$hover_decls[]   = 'box-shadow:var(--wp--preset--shadow--' . $safe_hover_slug . ')';
+		$hover_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow_hover, $box_shadow_hover_colour );
 	}
 	if ( '' !== $border_colour_hover ) {
 		$hover_decls[] = 'border-color:' . sgs_colour_value( $border_colour_hover );
@@ -550,7 +559,7 @@ if ( $has_hover ) {
 
 	if ( $hover_decls || '' !== $first_letter_colour_hover ) {
 		// Operator-supplied duration + easing replace the hardcoded 200ms/ease.
-		$css_hover  = $scope . '{transition:color ' . $transition_duration . 'ms ' . $transition_easing . ',background-color ' . $transition_duration . 'ms ' . $transition_easing . ',transform ' . $transition_duration . 'ms ' . $transition_easing . ',box-shadow ' . $transition_duration . 'ms ' . $transition_easing . ';}';
+		$css_hover = $scope . '{transition:color ' . $transition_duration . 'ms ' . $transition_easing . ',background-color ' . $transition_duration . 'ms ' . $transition_easing . ',transform ' . $transition_duration . 'ms ' . $transition_easing . ',box-shadow ' . $transition_duration . 'ms ' . $transition_easing . ';}';
 		if ( $hover_decls ) {
 			$css_hover .= $scope . ':hover,' . $scope . ':focus-visible{' . implode( ';', $hover_decls ) . '}';
 			$css_hover .= sgs_text_colour_gradient_fallback_rule( $scope . ':hover,' . $scope . ':focus-visible', $hover_colour_effective );
@@ -598,7 +607,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 // ---------------------------------------------------------------------------
 // 8. Output.
 //
-// 
+//
 // wpautop() is hooked to 'the_content' filter (priority 10). Block render output
 // does NOT pass through 'the_content' — WordPress calls render_block() before the
 // filter chain, and render_block output is stitched back into the already-filtered
