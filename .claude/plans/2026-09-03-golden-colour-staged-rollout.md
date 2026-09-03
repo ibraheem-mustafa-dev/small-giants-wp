@@ -152,6 +152,38 @@ that set, splice textually and preserve the file's own indent character instead.
 
 **Est. 20 min.** Zero new code. This is the <5-minute entry point.
 
+## ⛔ PHASE 2 IS EMPTY — measured 2026-09-03, the council's claim was WRONG
+
+`node scripts/colour-codemod/fix.js --fix` reports **0 fixable, 74 refused**. Not one row.
+
+The Ship-PM's "12 rows closable right now with no new code" came from `survey.js`, and the
+survey is right on its own terms: 12 rows verdict `AUTOFIXABLE:helper-at-existing-selector`
+with `needsGradient: false`, exactly as claimed. **But `fix.js` applies a further narrowing
+the survey does not model, and refuses all 12.**
+
+| Refusal | Rows | What it means |
+|---|---|---|
+| `no-explicit-normal-state` | 11 | The row's sole state IS the hover state |
+| `no-literal-selector-prefix-in-same-statement` | 1 | `mega-panel.borderColour`; hover-sink fallback also failed |
+
+⭐ **The `no-explicit-normal-state` group is the interesting one, and it is a DETECTOR
+question, not a fix.** These rows are attributes like `borderColourHover`,
+`shadowHoverColour`, `iconGlyphColourHover` — the control *is* the hover sibling. Rule 31
+counts them as "1 state, below the required 2", but there is no hover-of-a-hover to add;
+the resting value comes from elsewhere (often native WP colour support). `fix.js` refuses
+to synthesise a normal state precisely because that would misrepresent the design.
+
+**Measured scope: 14 of the 175 non-conformant rows have an attribute name that is itself a
+hover attr** — modest, not a mass false-positive class, but real. This project's own rule is
+that a false positive is a DETECTOR BUG, never baseline fodder, so rule 31 arguably needs to
+distinguish "missing its hover sibling" from "IS the hover sibling". **Not fixed here — named
+as a residual with its measurement, for a session that owns the detector.**
+
+⚠ **The wider lesson, and it cost a phase:** `survey.js`'s headline "of 175 non-conformant
+rows, 22 are AUTOFIXABLE (13%)" is optimistic against what the fixer will actually do, which
+is zero. Two tools, one question, two answers. Do not plan work off the survey's autofixable
+count without running `fix.js --fix` (dry run, writes nothing) to confirm it agrees.
+
 ---
 
 ## Phase 3 — Finish the text-colour rollout that was already started
