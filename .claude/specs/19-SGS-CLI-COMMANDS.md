@@ -406,16 +406,14 @@ wp --user=1 eval '$rules = get_option("sgs_header_rules", []); foreach($rules as
 
 ---
 
-## 2026-05-20 — Out-of-scope but operator-relevant: stage_attribute_promotion.py CLI
+## 2026-05-20 — `stage_attribute_promotion.py` — DELETED 2026-09-02, do not rebuild
 
-This spec owns the `wp sgs *` PHP CLI surface (12 commands via WP-CLI). A separate operator-driven Python CLI shipped in the orchestrator scope this session:
+⛔ **Retired as part of retiring the attribute-gap-detection mechanism.** The gap-detection feature (writer: `gap-detection/detect.py`, promotion workflow: `stage_attribute_promotion.py`, DB table: `sgs-framework.db.attribute_gap_candidates`) was never finished and the project owner confirmed it was never wanted as a completed feature. Note: `converter/services/gap_writer.py` is a DIFFERENT, unrelated, still-live module — it builds the in-memory `GAP` object for the converter's real conservation ledger and was never part of this retired mechanism; do not confuse the two similarly-named files. The "honest gap" concept — ensuring no CSS property silently disappears from a clone — is preserved via in-memory ledger tracking inside the converter, NOT via this DB-backed promotion path. The workflow consisted of:
+- (deleted) `python stage_attribute_promotion.py list --top N` — ranked candidates from the retired `attribute_gap_candidates` table
+- (deleted) `python stage_attribute_promotion.py promote --id <row_id>` — mutate block.json + render.php on promotion
+- (deleted) `python stage_attribute_promotion.py status` — show promoted vs pending counts
 
-**`plugins/sgs-blocks/scripts/orchestrator/stage_attribute_promotion.py`** (commit `37c92950`):
-- `python stage_attribute_promotion.py list --top N` — ranked candidates from `attribute_gap_candidates` (uimax + sgs-framework DBs)
-- `python stage_attribute_promotion.py promote --id <row_id>` — mutate block.json + render.php (manual confirm gate)
-- `python stage_attribute_promotion.py status` — promoted vs pending counts
-
-NOT a `wp sgs` subcommand because (a) it mutates source files outside WP runtime, (b) it requires manual operator confirmation gate, (c) it operates on dev-machine artefacts not server state. If future maintenance wants a `wp sgs promote-attribute` wrapper around it, that would belong in this spec.
+This was a development-tool convenience for surfacing and promoting CSS-gap findings; it was never deployed to production or called by any automated pipeline. **Do NOT rebuild it** — the gap mechanism persists via in-memory detection in the converter itself.
 
 ## 7. Adjacent CLI scripts (non-wp-sgs)
 
@@ -504,9 +502,9 @@ one DB, one query tool.
 
 ---
 
-### `stage_attribute_promotion.py`
+### `stage_attribute_promotion.py` — RETIRED 2026-09-02
 
-(See above — 2026-05-20 section.)
+(See retirement note above — 2026-05-20 section.)
 
 ---
 

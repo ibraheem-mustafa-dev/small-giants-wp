@@ -40,21 +40,6 @@ from converter.services.state_value_lift import (  # noqa: E402
 )
 
 
-def _cleanup_gap_rows(block_slug: str) -> None:
-    """Delete any attribute_gap_candidates rows this test wrote, so repeated
-    runs don't accumulate stale rows in the shared framework DB."""
-    conn = sqlite3.connect(db_lookup.SGS_DB)
-    try:
-        conn.execute(
-            "DELETE FROM attribute_gap_candidates WHERE block_slug = ?", (block_slug,)
-        )
-        conn.commit()
-    except sqlite3.OperationalError:
-        pass
-    finally:
-        conn.close()
-
-
 # ---------------------------------------------------------------------------
 # 1. sgs/button hover scale — the headline case (no base `scale` attr exists).
 # ---------------------------------------------------------------------------
@@ -70,7 +55,6 @@ def test_button_hover_scale_lifts_via_direct_state_lookup():
     node = BeautifulSoup(_BUTTON_HTML, "html.parser").find("a")
     rec = recognise(node)
     assert rec.slug == "sgs/button"
-    _cleanup_gap_rows(rec.slug)
     markup = build_block_markup(rec, node, css_rules=_BUTTON_RULES)
     assert '"scaleHover":1.05' in markup, markup
     # Never emitted as the raw CSS function-call string.
@@ -129,7 +113,6 @@ def test_card_grid_hover_grayscale_lifts_as_boolean():
     node = BeautifulSoup(_CARD_GRID_HTML, "html.parser").find("section")
     rec = recognise(node)
     assert rec.slug == "sgs/card-grid"
-    _cleanup_gap_rows(rec.slug)
     markup = build_block_markup(rec, node, css_rules=_CARD_GRID_RULES)
     assert '"grayscaleHover"' not in markup, (
         "A root-scoped filter was written into grayscaleHover, which renders the INVERSE "
@@ -160,17 +143,16 @@ _DECORATIVE_IMAGE_RULES = {
 }
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
-))
 def test_decorative_image_top_left_lift_after_unexclude():
+    """positionX/positionY are now tier objects (block.json: type object,
+    default {"desktop": N}) — the converter lifts top/left onto the desktop
+    tier, not a flat value."""
     node = BeautifulSoup(_DECORATIVE_IMAGE_HTML, "html.parser").find("img")
     rec = recognise(node)
     assert rec.slug == "sgs/decorative-image"
-    _cleanup_gap_rows(rec.slug)
     markup = build_block_markup(rec, node, css_rules=_DECORATIVE_IMAGE_RULES)
-    assert '"positionY":20' in markup, markup
-    assert '"positionX":65' in markup, markup
+    assert '"positionY":{"desktop":"20"}' in markup, markup
+    assert '"positionX":{"desktop":"65"}' in markup, markup
 
 
 # ---------------------------------------------------------------------------
@@ -364,7 +346,6 @@ def _info_box_markup(filter_value: str) -> str:
     node = BeautifulSoup(_INFO_BOX_HTML, "html.parser").find("div")
     rec = recognise(node)
     assert rec.slug == "sgs/info-box", rec.slug
-    _cleanup_gap_rows(rec.slug)
     return build_block_markup(
         rec,
         node,
@@ -405,12 +386,10 @@ def test_fractional_grayscale_gaps_rather_than_rendering_as_100_percent():
 def test_fractional_grayscale_returns_a_tracked_gap_not_a_silent_fallthrough():
     """The drop must be TRACKED, which is the whole point of the change.
 
-    Asserted at the resolver, not against attribute_gap_candidates: gap_writer's
-    own docstring states it builds the GAP and that "persistence to the
-    attribute_gap_candidates DB table is a step-3 concern (the slice's ledger IS
-    the record)". Querying that table here would assert a mechanism this layer
-    does not own — it returned an empty set on the first run of this test even
-    though the resolver was behaving correctly.
+    Asserted at the resolver, which is the layer that actually owns building
+    the GAP object — gap_writer's own docstring says the slice's ledger IS
+    the record. A test asserting against something this layer doesn't own
+    would be brittle by construction.
 
     Returning None instead of a GAP would be the silent drop: None means "not
     mine, fall through", and the ordinary chain would carry it to a

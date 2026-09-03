@@ -33,8 +33,8 @@ hover, but for pseudo-ELEMENTS instead of pseudo-CLASSES):
   4. Every OTHER pseudo declaration (on any block, mapped or not — e.g.
      ``content``/``position``/``inset``/``z-index``/``pointer-events``, or
      ANY pseudo declaration on a block with no overlay family at all) is
-     written as an honest ``attribute_gap_candidates`` row via
-     ``db_lookup.write_attribute_gap_candidate`` — never silently dropped,
+     recorded as an honest ``ContentGap`` via
+     ``content_gap_collector.record_content_gap`` — never silently dropped,
      never inlined as ``style=`` (R-22-6/R-31-15).
 
 No block-slug literal anywhere (scanned by gates/no_slug_literal) — the
@@ -47,7 +47,9 @@ from typing import Any
 
 from bs4 import Tag
 
+from converter.context import ContentGap
 from converter.db import db_lookup
+from converter.services import content_gap_collector
 from converter.services.styling_helpers import collect_css_decls_for_element
 
 # ---------------------------------------------------------------------------
@@ -418,12 +420,12 @@ def resolve_pseudo_overlay(
                 # Unparseable, OR the block declares only a USELESS subset of the
                 # mapped family (e.g. the gradient FLAG but neither colour) →
                 # honest gap, never a half-written overlay that renders nothing.
-            db_lookup.write_attribute_gap_candidate(
+            content_gap_collector.record_content_gap(
+                ContentGap(
+                    where=f"{block_slug}.{pseudo_sel}",
+                    detail=f"unmapped pseudo-element css: {prop}={val!r}",
+                ),
                 block_slug=block_slug,
-                css_property=prop,
-                raw_value=val,
-                source_class=pseudo_sel,
-                source_run_id=source_run_id,
             )
 
     return mapped_attrs

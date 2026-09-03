@@ -219,8 +219,9 @@ def _build_css_attrs(
         # class/tag matcher excludes any selector whose final compound carries a
         # ':' — same guard that isolates :hover). Collected + resolved separately
         # here so it is never silently dropped: lifted onto the universal overlay
-        # attr family when rec.slug declares it, else an honest
-        # attribute_gap_candidates row per unmapped property (R-22-6/R-31-15).
+        # attr family when rec.slug declares it, else an honest ContentGap
+        # recorded via content_gap_collector per unmapped property
+        # (R-22-6/R-31-15).
         pseudo_decls = collect_pseudo_decls_for_element(node, css_rules)
         if pseudo_decls:
             node_classes = node.get("class", []) or []

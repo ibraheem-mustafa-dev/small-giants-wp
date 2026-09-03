@@ -385,42 +385,6 @@ def derive_selector(block_slug: str, canonical_slot: str) -> str:
     return f".sgs-{short_slug}__{canonical_slot}"
 
 
-# ---------------------------------------------------------------------------
-# Gap candidate table management
-# ---------------------------------------------------------------------------
-
-GAP_CANDIDATES_DDL = """
-CREATE TABLE IF NOT EXISTS attribute_gap_candidates (
-    id             INTEGER PRIMARY KEY AUTOINCREMENT,
-    block_slug     TEXT    NOT NULL,
-    attr_name      TEXT    NOT NULL,
-    stem           TEXT,
-    proposed_action TEXT,
-    created_at     TEXT    DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (block_slug, attr_name)
-)
-"""
-
-
-def ensure_gap_table(conn: sqlite3.Connection) -> None:
-    conn.execute(GAP_CANDIDATES_DDL)
-    conn.commit()
-
-
-def insert_gap_candidate(
-    conn: sqlite3.Connection,
-    block_slug: str,
-    attr_name: str,
-    stem: str,
-) -> None:
-    conn.execute(
-        """
-        INSERT OR IGNORE INTO attribute_gap_candidates
-            (block_slug, attr_name, stem, proposed_action)
-        VALUES (?, ?, ?, 'new-canonical-slot-needed')
-        """,
-        (block_slug, attr_name, stem),
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -681,9 +645,6 @@ def run() -> None:
     # The formula-derived selector below stands on its own; the override layer
     # corrects the ~60 fingerprint-covered pairs afterwards. No fingerprints load here.
 
-    # Ensure gap candidates table exists
-    ensure_gap_table(conn)
-
     # Fetch un-touched block_attributes rows only (Phase 3 §3.7 + §3.8
     # incremental-safety: never overwrite any of canonical_slot / role /
     # derived_selector values that earlier runs or backfills have already
@@ -709,7 +670,6 @@ def run() -> None:
     resolved_count = 0
     gap_count = 0
     updates: list[tuple[str, str, str, int]] = []  # (canonical_slot, role, derived_selector, id)
-    gap_inserts: list[tuple[str, str, str]] = []   # (block_slug, attr_name, stem)
     # Role-only updates for rows where canonical_slot did NOT resolve but role
     # is independently derivable (2026-08-04, see the root-cause report at
     # .claude/reports/2026-08-04-attribute-seeding-root-cause.md §2). Writing
@@ -801,11 +761,10 @@ def run() -> None:
             updates.append((canonical_slot, final_role, final_selector, row_id))
             resolved_count += 1
         else:
-            # Gap candidate — canonical_slot stays NULL in block_attributes.
+            # canonical_slot stays NULL in block_attributes.
             # (The fingerprint derived_selector write for slot-less known attrs moved
             # to ATTR_CLASSIFICATION_OVERRIDES, the final Stage-1 writer, so extraction
             # capability is preserved there — P-FINGERPRINT-MIGRATION 2026-07-03.)
-            gap_inserts.append((block_slug, attr_name, stem))
             gap_count += 1
 
             # role is written independently, even though canonical_slot did
@@ -835,10 +794,6 @@ def run() -> None:
             "UPDATE block_attributes SET role = ? WHERE id = ?",
             role_only_updates,
         )
-
-    # Batch INSERT gap candidates (INSERT OR IGNORE handles idempotency)
-    for block_slug, attr_name, stem in gap_inserts:
-        insert_gap_candidate(conn, block_slug, attr_name, stem)
 
     conn.commit()
 
@@ -922,12 +877,6 @@ def run() -> None:
     cur.execute("SELECT COUNT(*) FROM block_attributes WHERE canonical_slot IS NOT NULL")
     populated_count: int = cur.fetchone()[0]
 
-    cur.execute(
-        "SELECT COUNT(*) FROM attribute_gap_candidates "
-        "WHERE proposed_action = 'new-canonical-slot-needed'"
-    )
-    gap_candidate_total: int = cur.fetchone()[0]
-
     # 5 random sample rows
     cur.execute(
         """
@@ -967,20 +916,6 @@ def run() -> None:
     print(f"role-only populated (no slot) : {len(role_only_updates)}")
     print(f"Gap candidates (this run)     : {gap_count}")
     print(f"DB canonical_slot non-null    : {populated_count}")
-    print(f"Gap candidates in DB total    : {gap_candidate_total}")
-    print()
-
-    if gap_candidate_total > 100:
-        print(
-            "WARNING: gap candidate count exceeds 100. "
-            "The slot vocabulary likely has gaps — review attribute_gap_candidates."
-        )
-    elif gap_candidate_total <= 50:
-        print(f"Gap candidate count ({gap_candidate_total}) is healthy (<= 50).")
-    else:
-        print(f"Gap candidate count ({gap_candidate_total}) is elevated (51-100). "
-              "Consider reviewing attribute_gap_candidates.")
-
     print()
     print("5 sample rows:")
     print("-" * 70)

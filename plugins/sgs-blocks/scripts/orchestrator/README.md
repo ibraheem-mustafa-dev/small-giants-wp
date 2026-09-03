@@ -41,7 +41,7 @@ python plugins/sgs-blocks/scripts/orchestrator/check_flat_tier_regression.py
 
 `orchestrator_main.py` (the autonomy chain) · `preflight_chain.py` · `staged_merge.py` ·
 `staged_output.py` · `autonomy_gate.py` · `stage1_boundary_hook.py` ·
-`stage_attribute_promotion.py` · `register_patterns.py` · `surface_pipeline_logs.py`
+`register_patterns.py` · `surface_pipeline_logs.py`
 
 **Apply modules — operator-gated by FR21 contract; they stage and emit commands, never
 auto-mutate live WordPress**

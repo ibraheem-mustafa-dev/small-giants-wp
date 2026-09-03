@@ -1,8 +1,7 @@
 {
-  "hash": "59f160105d8762dcb53cf6d9b0dde9f47bf67ed20846d2575b270362ed26f3a8",
+  "hash": "3552d223c73dede943d967f983881d09db66dc20ac7f00f1318ec931bca42059",
   "keys": [
     "convsrc:classname:converter\\services\\section_passes.py:className",
-    "hdict:stage_attribute_promotion.py:_CSS_PROP_PHP",
     "imp:build\\blocks\\accordion\\style.css:transition-duration",
     "imp:build\\blocks\\adaptive-nav\\style.css:transition-duration",
     "imp:build\\blocks\\collapsible-text\\style.css:transition-duration",
