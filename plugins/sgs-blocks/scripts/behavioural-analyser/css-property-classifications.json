@@ -815,6 +815,16 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "subtitleColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "subtitle",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "subtitleFontSize",
       "fields": {
         "css_property": "font-size",
@@ -835,6 +845,16 @@
       "fields": {
         "css_property": "color",
         "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "titleColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "title",
+        "css_state": "hover"
       }
     },
     {
@@ -1308,7 +1328,8 @@
       "attr": "prevColourBackground",
       "fields": {
         "css_property": "background-color",
-        "css_element": "button"
+        "role": "color",
+        "css_element": "prev-button"
       }
     },
     {
@@ -1316,7 +1337,9 @@
       "attr": "prevColourBackgroundHover",
       "fields": {
         "css_property": "background-color",
-        "css_element": "button"
+        "role": "color",
+        "css_element": "prev-button",
+        "css_state": "hover"
       }
     },
     {
@@ -1326,14 +1349,6 @@
         "css_property": "background-color",
         "role": "color",
         "css_element": "progress-bar"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "submitBackground",
-      "fields": {
-        "css_property": "background-color",
-        "css_element": "submit-button"
       }
     },
     {
@@ -1447,6 +1462,8 @@
       "attr": "arrowColourBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
         "css_element": "arrow"
       }
     },
@@ -1455,7 +1472,10 @@
       "attr": "arrowColourBackgroundHover",
       "fields": {
         "css_property": "background-color",
-        "css_element": "arrow"
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "arrow",
+        "css_state": "hover"
       }
     },
     {
@@ -1463,6 +1483,8 @@
       "attr": "arrowColourBorder",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
         "css_element": "arrow"
       }
     },
@@ -1471,7 +1493,10 @@
       "attr": "arrowColourBorderHover",
       "fields": {
         "css_property": "border-color",
-        "css_element": "arrow"
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "arrow",
+        "css_state": "hover"
       }
     },
     {
@@ -1479,6 +1504,8 @@
       "attr": "arrowColourText",
       "fields": {
         "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
         "css_element": "arrow"
       }
     },
@@ -1487,7 +1514,10 @@
       "attr": "arrowColourTextHover",
       "fields": {
         "css_property": "color",
-        "css_element": "arrow"
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "arrow",
+        "css_state": "hover"
       }
     },
     {
@@ -1523,6 +1553,8 @@
       "attr": "writeReviewColourBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
         "css_element": "write-review"
       }
     },
@@ -1531,7 +1563,10 @@
       "attr": "writeReviewColourBackgroundHover",
       "fields": {
         "css_property": "background-color",
-        "css_element": "write-review"
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "write-review",
+        "css_state": "hover"
       }
     },
     {
@@ -1539,6 +1574,8 @@
       "attr": "writeReviewColourText",
       "fields": {
         "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
         "css_element": "write-review"
       }
     },
@@ -1547,7 +1584,10 @@
       "attr": "writeReviewColourTextHover",
       "fields": {
         "css_property": "color",
-        "css_element": "write-review"
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "write-review",
+        "css_state": "hover"
       }
     },
     {
@@ -2504,6 +2544,7 @@
       "attr": "closeColourBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "close"
       }
     },
@@ -2512,7 +2553,9 @@
       "attr": "closeColourBackgroundHover",
       "fields": {
         "css_property": "background-color",
-        "css_element": "close"
+        "role": "color",
+        "css_element": "close",
+        "css_state": "hover"
       }
     },
     {
@@ -2520,6 +2563,7 @@
       "attr": "closeColourText",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "close"
       }
     },
@@ -2528,16 +2572,9 @@
       "attr": "closeColourTextHover",
       "fields": {
         "css_property": "color",
-        "css_element": "close"
-      }
-    },
-    {
-      "slug": "sgs/modal",
-      "attr": "modalBackground",
-      "fields": {
-        "css_property": "background-color",
         "role": "color",
-        "css_element": "dialog"
+        "css_element": "close",
+        "css_state": "hover"
       }
     },
     {
@@ -2555,14 +2592,6 @@
       "fields": {
         "css_property": "opacity",
         "css_element": "backdrop"
-      }
-    },
-    {
-      "slug": "sgs/modal",
-      "attr": "triggerBackground",
-      "fields": {
-        "css_property": "background-color",
-        "css_element": "trigger"
       }
     },
     {
@@ -3296,7 +3325,9 @@
       "attr": "borderColourHover",
       "fields": {
         "css_property": "border-color",
-        "css_element": "card"
+        "role": "color",
+        "css_element": "card",
+        "css_state": "hover"
       }
     },
     {
@@ -3459,6 +3490,16 @@
         "css_property": "color",
         "role": "color",
         "css_element": "price"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "priceColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "price",
+        "css_state": "hover"
       }
     },
     {
@@ -6897,6 +6938,31 @@
       }
     },
     {
+      "slug": "sgs/form",
+      "attr": "prevColourBackgroundGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "prev-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "prevColourBackgroundHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "prev-button",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitBackgroundGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "submit-button"
+      }
+    },
+    {
       "slug": "sgs/form-field-tiles",
       "attr": "alignContent",
       "fields": {
@@ -7371,6 +7437,44 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "arrowColourBackgroundGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "arrowColourBackgroundHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "arrow",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "arrowColourBorderGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "arrowColourBorderHoverGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "arrow",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "borderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
@@ -7502,6 +7606,25 @@
         "css_property": "anim:easing",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewColourBackgroundGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "write-review"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "writeReviewColourBackgroundHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "write-review",
+        "css_state": "hover"
       }
     },
     {
@@ -8335,6 +8458,40 @@
         "css_property": "padding",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/modal",
+      "attr": "closeColourBackgroundGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/modal",
+      "attr": "closeColourBackgroundHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "close",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/modal",
+      "attr": "modalBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "dialog"
+      }
+    },
+    {
+      "slug": "sgs/modal",
+      "attr": "triggerBackgroundGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "trigger"
       }
     },
     {

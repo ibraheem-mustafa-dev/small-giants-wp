@@ -2938,6 +2938,24 @@
         "css_element": "split-media"
       },
       "_why": "2026-08-28 NULL css_element fix (§6). Fallback-mechanism-only attr — the desktop sibling (splitMediaObjectPosition) already claims the attrMap key on this element, so the tablet tier falls through the classifier unresolved (narrow resolver gap, worked around here rather than debugged further). css_property is already correctly derived as 'object-position' (verified against block_attributes before writing this entry) — only css_element was missing. 'split-media' is the element declared 2026-08-15 for this same block (see sgs/hero splitImageMobileObjectPosition history in this file's header comment / CLAUDE.md) to close an earlier css_element drift orphan on the same family."
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitBackground",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "submit-button"
+      },
+      "_why": "2026-09-03 rogue-seed fix. submitBackground resolves via the submit-button element's bare {prefix}{suffix} default convention (no attrMap entry) — extract-signatures.py's classifier only ever records attrMap/states-declared attrs (see its own _record() docstring), so a pure-convention attr can never appear in css-property-classifications.json regardless of how many times it is regenerated, even though block_attributes correctly carries css_property='background-color' via a separate resolver path. Declared here so db-consistency's rogue-seed check recognises the value as understood rather than unexplained drift. Not a classifier bug to fix — the classifier's own scope is attrMap-only by design."
+    },
+    {
+      "slug": "sgs/modal",
+      "attr": "triggerBackground",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "trigger"
+      },
+      "_why": "2026-09-03 rogue-seed fix. Same shape as sgs/form.submitBackground immediately above — triggerBackground resolves via the trigger element's bare {prefix}{suffix} default convention (no attrMap entry), which extract-signatures.py's classifier never records regardless of regeneration. Declared here so db-consistency's rogue-seed check recognises the value as understood rather than unexplained drift."
     }
   ]
 }
