@@ -238,9 +238,64 @@ if ( ! function_exists( 'wp_style_engine_get_styles' ) ) {
 // complete, and intentionally so — a harness call that reaches these is a
 // caller bug (wrong `source` attribute), not a gap in the harness.
 if ( ! class_exists( 'WP_Query' ) ) {
+	/**
+	 * Faithful "zero posts found" WP_Query stub (2026-09-03, A6).
+	 *
+	 * FABRICATES: nothing that a CSS assertion can read. This class invents
+	 * only STRUCTURE — an empty result set — never a post title, excerpt,
+	 * colour, or any other value. `have_posts()` always returns false and
+	 * `the_post()` is a no-op, so any render.php loop written as
+	 * `while ( $query->have_posts() ) { $query->the_post(); ... }` executes
+	 * its loop body zero times and falls straight through to that render's
+	 * own "nothing found" branch — the same honest empty-result path a real
+	 * WP_Query takes on a site with no matching posts. `max_num_pages` is 0,
+	 * matching WP core's real behaviour for a query with zero results.
+	 *
+	 * Why this is legitimate here but the class was previously left as a
+	 * bare unusable stub: `sgs/post-grid` ALWAYS constructs a `new
+	 * WP_Query()` on its manual/default render path (it has no `source`
+	 * discriminator gating the call, unlike sgs/card-grid's `source==='query'`
+	 * branch below) — so leaving `have_posts()`/`the_post()` undefined does
+	 * not skip a branch, it fatals EVERY post-grid render, including the
+	 * pure block-attribute-driven CSS (card colours, hover states, the
+	 * `--sgs-card-bg`/`--sgs-hover-*` custom properties) that render.php
+	 * emits BEFORE and INDEPENDENTLY of the post loop. Card-level markup
+	 * (title/excerpt/image per post) still never renders under this stub —
+	 * that is a real, disclosed gap (see "UNABLE TO DETECT" in the harness
+	 * report), not a silent gloss.
+	 *
+	 * sgs/card-grid's own `new WP_Query()` call (its 'query' source mode) is
+	 * NOT exercised by this stub becoming more capable — the harness forces
+	 * `source` to 'manual' unless a caller explicitly overrides it (see
+	 * render-css-harness.php), so card-grid never reaches this class's
+	 * constructor at all under the default harness contract. Any future
+	 * caller that DOES opt into `source: 'query'` gets the same honest
+	 * "zero posts" result, never fabricated post content.
+	 */
 	class WP_Query {
-		public array $posts = array();
+		public array $posts         = array();
+		public int $max_num_pages   = 0;
+		private int $current_index = -1;
+
 		public function __construct( $args = array() ) {}
+
+		/**
+		 * Always false — mirrors the real WP_Query's own "no posts matched"
+		 * result. Never fabricates a post to iterate over.
+		 */
+		public function have_posts(): bool {
+			return $this->current_index + 1 < count( $this->posts );
+		}
+
+		/**
+		 * No-op advance — real WP_Query sets up global $post / $wp_query
+		 * post data here; this stub's $posts array is always empty, so
+		 * there is never a post to set up. Present only so render.php's
+		 * `$query->the_post();` call site resolves instead of fataling.
+		 */
+		public function the_post(): void {
+			++$this->current_index;
+		}
 	}
 }
 
@@ -672,6 +727,56 @@ if ( ! function_exists( 'get_nav_menu_locations' ) ) {
 		return array();
 	}
 }
+
+// ─────────────────────────────────────────────────────────────────────────
+// DELIBERATELY NOT STUBBED: sgs/buybox (2026-09-03, A6 investigation).
+//
+// buybox/render.php's WooCommerce-absent fallback calls the WP core function
+// do_blocks() (undefined here), so the block reports NOT RUN today. That
+// looks like a one-line fix (stub do_blocks() to a no-op) — it is not,
+// and stubbing it would make the harness WORSE, not better:
+//
+// do_blocks() only fires on buybox's WC-ABSENT/simple-product/manifest-null
+// fallback branch, which renders ZERO of the block's own markup and emits
+// NO <style> tag at all (it just echoes core WC block placeholders). Making
+// that branch "run" would produce a permanently vacuous harness result —
+// every CSS assertion against it would fail, on the TRUE claim and the
+// FALSE claim alike, because no scoped <style> is ever printed on that path.
+// That is a false unblock (see the harness README's discrimination
+// requirement), not a real one, so it was rejected.
+//
+// Reaching buybox's REAL CSS-emitting code (the backgroundColour/textColour/
+// border scoped <style> block, guarded behind `class_exists('WooCommerce')`
+// AND a variable product AND a non-null Product_Manifest::build() result)
+// would require fabricating a working WC_Product_Variable with real child
+// variations — wc_get_product(), ->is_type('variable'), ->get_children(),
+// ->get_variation_attributes(), plus, inside Product_Manifest::build()
+// itself (plugins/sgs-blocks/includes/class-product-manifest.php, read in
+// full for this investigation): $wpdb tax-rate + post_modified queries,
+// get_transient()/set_transient(), wc_get_price_decimals(),
+// wc_get_price_to_display(), wc_get_price_excluding_tax(),
+// wc_get_price_including_tax(), ->is_on_sale(), ->is_in_stock(),
+// ->get_image_id(), get_term_by(), get_term_meta(), wc_attribute_label(),
+// and Configurator_Meta's sanitisers — a real product/variation/pricing
+// object graph, not a thin WP/external-API boundary stand-in.
+//
+// That is not "minimum structure for the render path to execute" (the
+// WP_Query one-empty-post-set stub above, or the google-reviews class stub
+// below, are that). It is reconstructing a working slice of WooCommerce's
+// own commerce data model inside a test harness — exactly the kind of
+// fabrication this file's own header rules out ("Real SGS logic ... is
+// NEVER stubbed here"; Product_Manifest::build() IS real SGS logic, and the
+// commerce values it produces would be invented, not computed). Even though
+// none of those invented values (price, stock, variation attrs) would
+// directly satisfy a COLOUR assertion, building and maintaining that much
+// fabricated commerce surface is not something a future reader could audit
+// for CSS-safety with confidence, and it is disproportionate to what a CSS-
+// effect harness needs.
+//
+// Verdict: sgs/buybox stays NOT RUN. An honest NOT RUN — and exit non-zero
+// — is the correct outcome per this harness's own documented contract, not
+// a gap to paper over with a fake product graph.
+// ─────────────────────────────────────────────────────────────────────────
 
 // google-reviews/render.php calls two static methods on the real
 // SGS\Blocks\Google_Reviews_Settings (includes/google-reviews-settings.php).
