@@ -269,8 +269,18 @@ function makeValueNoise( width, height, cell, rng ) {
  */
 function buildFieldImageData( stops, width, height ) {
 	const rng = mulberry32( seedFromColours( stops ) );
-	const noiseX = makeValueNoise( width, height, width * 0.28, mulberry32( rng() * 4294967296 ) );
-	const noiseY = makeValueNoise( width, height, width * 0.28, mulberry32( rng() * 4294967296 ) );
+	// ⚠ Blob scale is deliberately SMALL relative to the canvas — measured, not
+	// guessed. A UV-visualisation debug render of the actual folded geometry
+	// (D944 follow-up) proved the on-screen ribbon only ever samples roughly
+	// the top ~45% of this canvas's V range, though it does use the full U
+	// range. Any blob layout tuned to "look right" on the whole 320x320 canvas
+	// therefore has roughly HALF its detail invisible on the real shape.
+	// Higher density (more, smaller blobs) is the fix that holds regardless of
+	// exactly which sub-window a given fold preset ends up revealing, rather
+	// than hand-tuning placement to one measured window that could shift with
+	// a different preset.
+	const noiseX = makeValueNoise( width, height, width * 0.12, mulberry32( rng() * 4294967296 ) );
+	const noiseY = makeValueNoise( width, height, width * 0.12, mulberry32( rng() * 4294967296 ) );
 
 	const stopsLinear = stops.map( ( [ r, g, b ] ) => [
 		srgbToLinear( r ),
@@ -278,10 +288,10 @@ function buildFieldImageData( stops, width, height ) {
 		srgbToLinear( b ),
 	] );
 
-	const N_BLOBS = 11;
+	const N_BLOBS = 26;
 	const blobs = [];
 	for ( let i = 0; i < N_BLOBS; i++ ) {
-		const radius = ( 0.3 + rng() * 0.3 ) * width;
+		const radius = ( 0.1 + rng() * 0.12 ) * width;
 		blobs.push( {
 			cx: rng() * width,
 			cy: rng() * height,
@@ -301,8 +311,8 @@ function buildFieldImageData( stops, width, height ) {
 	const data = new Uint8ClampedArray( width * height * 4 );
 	for ( let y = 0; y < height; y++ ) {
 		for ( let x = 0; x < width; x++ ) {
-			const warpX = ( noiseX( x, y ) - 0.5 ) * width * 0.22;
-			const warpY = ( noiseY( x, y ) - 0.5 ) * height * 0.22;
+			const warpX = ( noiseX( x, y ) - 0.5 ) * width * 0.1;
+			const warpY = ( noiseY( x, y ) - 0.5 ) * height * 0.1;
 
 			// Alpha-over compositing, linear-light, starting from white.
 			let r = 1;
