@@ -62,7 +62,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', $sgs_blocks_dir . '/' );
 }
 
+// Real value — mirrors `define( 'SGS_BLOCKS_PATH', plugin_dir_path( __FILE__ ) )`
+// in plugins/sgs-blocks/sgs-blocks.php:28. A few render.php files (e.g.
+// google-reviews) build an asset URL from this constant.
+if ( ! defined( 'SGS_BLOCKS_PATH' ) ) {
+	define( 'SGS_BLOCKS_PATH', $sgs_blocks_dir . '/' );
+}
+
+// Real values — mirrors plugins/sgs-blocks/sgs-blocks.php:45-46. business-info's
+// 'attribution' displayType reads these directly (never client-configurable —
+// see that render.php branch's own doc comment).
+if ( ! defined( 'SGS_ATTRIBUTION_URL' ) ) {
+	define( 'SGS_ATTRIBUTION_URL', 'https://smallgiantsstudio.co.uk/' );
+}
+if ( ! defined( 'SGS_ATTRIBUTION_TEXT' ) ) {
+	define( 'SGS_ATTRIBUTION_TEXT', 'Website by Small Giants Studio' );
+}
+
 require_once __DIR__ . '/wp-stubs.php';
+
+// Real SGS code, not a stub — every form-field-* render.php calls
+// SGS\Blocks\Forms\field_id()/field_open()/etc. via `use function` imports,
+// but (per plugins/sgs-blocks/sgs-blocks.php:73) those functions are loaded
+// once by the plugin bootstrap, never by the individual render.php files
+// themselves. The harness has no bootstrap, so it must load this file the
+// same way the bootstrap does — require_once'ing the real implementation,
+// never reimplementing field_id()/field_open()/etc. as stubs here.
+require_once $sgs_blocks_dir . '/includes/forms/field-render-helpers.php';
 
 /**
  * Parse --flag value / --flag=value style CLI args.
