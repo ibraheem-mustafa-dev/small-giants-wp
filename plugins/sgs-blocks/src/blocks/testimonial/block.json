@@ -129,7 +129,8 @@
 					"prefix": "name",
 					"attrMap": {
 						"css:color": "nameColour",
-						"css:font-size": "nameFontSize"
+						"css:font-size": "nameFontSize",
+						"css:background-image": "nameColourGradient"
 					}
 				},
 				"reviewer-role": {
@@ -140,7 +141,8 @@
 					],
 					"prefix": "role",
 					"attrMap": {
-						"css:color": "roleColour"
+						"css:color": "roleColour",
+						"css:background-image": "roleColourGradient"
 					}
 				},
 				"org-name": {
@@ -151,7 +153,8 @@
 					],
 					"prefix": "org",
 					"attrMap": {
-						"css:color": "orgColour"
+						"css:color": "orgColour",
+						"css:background-image": "orgColourGradient"
 					}
 				},
 				"avatar-image": {
@@ -181,7 +184,8 @@
 					"prefix": "rating",
 					"attrMap": {
 						"css:font-size": "ratingSize",
-						"css:color": "ratingColour"
+						"css:color": "ratingColour",
+						"css:background-image": "ratingColourGradient"
 					}
 				},
 				"summary": {
@@ -193,7 +197,8 @@
 					"prefix": "summary",
 					"attrMap": {
 						"css:color": "summaryColour",
-						"css:font-size": "summaryFontSize"
+						"css:font-size": "summaryFontSize",
+						"css:background-image": "summaryColourGradient"
 					},
 					"_note": "The summary phrase — <p class=\"sgs-testimonial__summary\"> (render.php:699), styled at render.php:276-283 (color <- summaryColour, font-size <- summaryFontSize). A SEPARATE element from quote-text, which is the <blockquote class=\"sgs-testimonial__quote\"> (render.php:704, styled :288-309): two different DOM nodes, so one entry cannot cover both, and quote-text's prefix \"quote\" can never reach a summary* attribute. Before this element existed summaryColour had no manifest home, so css_property stayed NULL and survey.js/rule 31/the cloning pipeline were all blind to it."
 				}
@@ -401,6 +406,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"summaryColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"nameFontWeight": {
 			"type": "string",
 			"default": "700"
@@ -418,11 +427,23 @@
 			"type": "string",
 			"default": ""
 		},
+		"nameColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"roleColour": {
 			"type": "string",
 			"default": ""
 		},
+		"roleColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"orgColour": {
+			"type": "string",
+			"default": ""
+		},
+		"orgColourGradient": {
 			"type": "string",
 			"default": ""
 		},
@@ -431,6 +452,10 @@
 			"default": 16
 		},
 		"ratingColour": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingColourGradient": {
 			"type": "string",
 			"default": ""
 		},

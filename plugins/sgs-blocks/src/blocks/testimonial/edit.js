@@ -203,10 +203,15 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		quoteLineHeight,
 		summaryFontSize,
 		summaryColour,
+		summaryColourGradient,
 		nameColour,
+		nameColourGradient,
 		roleColour,
+		roleColourGradient,
 		orgColour,
+		orgColourGradient,
 		ratingColour,
+		ratingColourGradient,
 		ratingSize,
 		nameFontWeight,
 		nameFontSize,
@@ -278,20 +283,23 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		lineHeight: quoteLineHeight || undefined,
 		marginBottom: quoteMarginBottom || undefined,
 	};
+	// summary/name/role/org/rating colours (2026-09-03) — the sibling
+	// {attr}ColourGradient wins when set+valid, same recipe as quoteColour/
+	// quoteColourGradient above.
 	const summaryStyle = {
-		color: summaryColour || undefined,
+		...resolveTextColourPreviewStyle( summaryColour, summaryColourGradient ),
 		fontSize: summaryFontSize ? fontSizeVar( summaryFontSize ) : undefined,
 	};
-	const nameStyle = { color: nameColour || undefined };
-	const roleStyle = { color: roleColour || undefined };
-	const orgStyle = { color: orgColour || undefined };
+	const nameStyle = resolveTextColourPreviewStyle( nameColour, nameColourGradient );
+	const roleStyle = resolveTextColourPreviewStyle( roleColour, roleColourGradient );
+	const orgStyle = resolveTextColourPreviewStyle( orgColour, orgColourGradient );
 	// ratingSize mirrors render.php:487/499, which sets the same pixel value as
 	// the frontend SVG stars' width/height. The canvas renders the rating as a
 	// text glyph ('★'.repeat(...)) rather than SVG, so the equivalent visual
 	// control is font-size — matches block.json's own attrMap
 	// ("css:font-size": "ratingSize", block.json:134).
 	const ratingStyle = {
-		color: ratingColour || undefined,
+		...resolveTextColourPreviewStyle( ratingColour, ratingColourGradient ),
 		fontSize: ratingSize ? ratingSize + 'px' : undefined,
 	};
 
@@ -431,6 +439,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					showSummary && {
 						key: 'summary',
 						label: __( 'Summary colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -439,12 +448,16 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onChange: ( val ) =>
 									setAttributes( { summaryColour: val ?? '' } ),
 								linked: true,
+								gradientValue: summaryColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { summaryColourGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'name',
 						label: __( 'Name colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -453,12 +466,16 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onChange: ( val ) =>
 									setAttributes( { nameColour: val ?? '' } ),
 								linked: true,
+								gradientValue: nameColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { nameColourGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'role',
 						label: __( 'Role colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -467,12 +484,16 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onChange: ( val ) =>
 									setAttributes( { roleColour: val ?? '' } ),
 								linked: true,
+								gradientValue: roleColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { roleColourGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'org',
 						label: __( 'Organisation colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -481,6 +502,9 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onChange: ( val ) =>
 									setAttributes( { orgColour: val ?? '' } ),
 								linked: true,
+								gradientValue: orgColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { orgColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -489,6 +513,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						showRating && {
 							key: 'rating',
 							label: __( 'Rating colour', 'sgs-blocks' ),
+							gradientCapable: true,
 							states: [
 								{
 									key: 'normal',
@@ -497,6 +522,9 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									onChange: ( val ) =>
 										setAttributes( { ratingColour: val ?? '' } ),
 									linked: true,
+									gradientValue: ratingColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { ratingColourGradient: val ?? '' } ),
 								},
 							],
 						},

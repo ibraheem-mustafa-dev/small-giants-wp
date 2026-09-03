@@ -124,15 +124,25 @@ $quote_style           = in_array( $attributes['quoteFontStyle'] ?? '', array( '
 $quote_line_height     = sgs_css_length_sanitise( trim( (string) ( $attributes['quoteLineHeight'] ?? '' ) ) );
 $quote_margin_bot      = sgs_container_gap_value( $attributes['quoteMarginBottom'] ?? '' );
 $summary_font_size     = sgs_font_size_value( $attributes['summaryFontSize'] ?? '' );
-$summary_colour        = sgs_colour_value( $attributes['summaryColour'] ?? '' );
-$name_colour           = sgs_colour_value( $attributes['nameColour'] ?? '' );
-$name_font_weight      = in_array( (string) ( $attributes['nameFontWeight'] ?? '700' ), array( '400', '500', '600', '700', '800', '900' ), true )
+// D636-shape sibling gradient attrs (2026-09-03) — kept RAW (not pre-resolved
+// via sgs_colour_value()) for the same reason as $quote_colour_raw above: a
+// gradient needs the multi-declaration background-clip:text shape, which
+// sgs_resolve_text_colour_or_gradient()/sgs_text_colour_decl() build from the
+// raw attribute value, not from an already-resolved flat colour.
+$summary_colour_raw      = (string) ( $attributes['summaryColour'] ?? '' );
+$summary_colour_gradient = (string) ( $attributes['summaryColourGradient'] ?? '' );
+$name_colour_raw         = (string) ( $attributes['nameColour'] ?? '' );
+$name_colour_gradient    = (string) ( $attributes['nameColourGradient'] ?? '' );
+$name_font_weight        = in_array( (string) ( $attributes['nameFontWeight'] ?? '700' ), array( '400', '500', '600', '700', '800', '900' ), true )
 	? (string) $attributes['nameFontWeight']
 	: '700';
-$role_colour           = sgs_colour_value( $attributes['roleColour'] ?? '' );
-$org_colour            = sgs_colour_value( $attributes['orgColour'] ?? '' );
-$rating_colour         = sgs_colour_value( $attributes['ratingColour'] ?? '' );
-$rating_size           = isset( $attributes['ratingSize'] ) && (int) $attributes['ratingSize'] > 0 ? absint( $attributes['ratingSize'] ) : 16;
+$role_colour_raw         = (string) ( $attributes['roleColour'] ?? '' );
+$role_colour_gradient    = (string) ( $attributes['roleColourGradient'] ?? '' );
+$org_colour_raw          = (string) ( $attributes['orgColour'] ?? '' );
+$org_colour_gradient     = (string) ( $attributes['orgColourGradient'] ?? '' );
+$rating_colour_raw       = (string) ( $attributes['ratingColour'] ?? '' );
+$rating_colour_gradient  = (string) ( $attributes['ratingColourGradient'] ?? '' );
+$rating_size             = isset( $attributes['ratingSize'] ) && (int) $attributes['ratingSize'] > 0 ? absint( $attributes['ratingSize'] ) : 16;
 
 // ── Hover / animation (shell-level) ─────────────────────────────────────────
 // backgroundColourHover / textColourHover are NOT read here: the shared fill
@@ -278,22 +288,40 @@ $sgs_el_rule = function ( $selector_suffix, array $decls ) use ( $root_sel ) {
 	return $root_sel . ' ' . $selector_suffix . '{' . implode( ';', $pairs ) . ';}';
 };
 
-// Rating (shared class across both the stars + scale rating nodes).
-$rating_rule = $sgs_el_rule( '.sgs-testimonial__rating', array( 'color' => $rating_colour ) );
-if ( '' !== $rating_rule ) {
-	$scoped_css[] = $rating_rule;
+// Rating (shared class across both the stars + scale rating nodes). Colour
+// is built via the shared text/gradient recipe (D636 shape, same as $quote_
+// colour below) rather than $sgs_el_rule()'s one-prop-per-key map: a gradient
+// needs four declarations plus a separate @supports fallback rule that map
+// cannot carry.
+$rating_colour_sel       = $root_sel . ' .sgs-testimonial__rating';
+$rating_colour_effective = sgs_resolve_text_colour_or_gradient( $rating_colour_raw, $rating_colour_gradient );
+if ( '' !== $rating_colour_effective ) {
+	$rating_colour_decl = sgs_text_colour_decl( $rating_colour_effective );
+	if ( '' !== $rating_colour_decl ) {
+		$scoped_css[] = $rating_colour_sel . '{' . $rating_colour_decl . ';}';
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $rating_colour_sel, $rating_colour_effective );
 }
 
-// Summary phrase.
+// Summary phrase. Font-size stays on the shared per-element rule builder;
+// colour is built separately (same reasoning as the rating rule above).
 $summary_rule = $sgs_el_rule(
 	'.sgs-testimonial__summary',
 	array(
-		'color'     => $summary_colour,
 		'font-size' => $summary_font_size,
 	)
 );
 if ( '' !== $summary_rule ) {
 	$scoped_css[] = $summary_rule;
+}
+$summary_colour_sel       = $root_sel . ' .sgs-testimonial__summary';
+$summary_colour_effective = sgs_resolve_text_colour_or_gradient( $summary_colour_raw, $summary_colour_gradient );
+if ( '' !== $summary_colour_effective ) {
+	$summary_colour_decl = sgs_text_colour_decl( $summary_colour_effective );
+	if ( '' !== $summary_colour_decl ) {
+		$scoped_css[] = $summary_colour_sel . '{' . $summary_colour_decl . ';}';
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $summary_colour_sel, $summary_colour_effective );
 }
 
 // Quote.
@@ -349,14 +377,14 @@ if ( '' !== $quote_colour_hover ) {
 // live in ONE emitted rule instead of two separate declarations of
 // font-weight on the same selector (D192/R-22-13: one shared mechanism,
 // never a bespoke duplicate).
-$name_rule = $sgs_el_rule(
-	'.sgs-testimonial__name',
-	array(
-		'color' => $name_colour,
-	)
-);
-if ( '' !== $name_rule ) {
-	$scoped_css[] = $name_rule;
+$name_colour_sel       = $root_sel . ' .sgs-testimonial__name';
+$name_colour_effective = sgs_resolve_text_colour_or_gradient( $name_colour_raw, $name_colour_gradient );
+if ( '' !== $name_colour_effective ) {
+	$name_colour_decl = sgs_text_colour_decl( $name_colour_effective );
+	if ( '' !== $name_colour_decl ) {
+		$scoped_css[] = $name_colour_sel . '{' . $name_colour_decl . ';}';
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $name_colour_sel, $name_colour_effective );
 }
 $name_typography_css = sgs_typography_css_rule( $attributes, 'name', $root_sel . ' .sgs-testimonial__name' );
 if ( '' !== $name_typography_css ) {
@@ -364,15 +392,25 @@ if ( '' !== $name_typography_css ) {
 }
 
 // Reviewer role.
-$role_rule = $sgs_el_rule( '.sgs-testimonial__role', array( 'color' => $role_colour ) );
-if ( '' !== $role_rule ) {
-	$scoped_css[] = $role_rule;
+$role_colour_sel       = $root_sel . ' .sgs-testimonial__role';
+$role_colour_effective = sgs_resolve_text_colour_or_gradient( $role_colour_raw, $role_colour_gradient );
+if ( '' !== $role_colour_effective ) {
+	$role_colour_decl = sgs_text_colour_decl( $role_colour_effective );
+	if ( '' !== $role_colour_decl ) {
+		$scoped_css[] = $role_colour_sel . '{' . $role_colour_decl . ';}';
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $role_colour_sel, $role_colour_effective );
 }
 
 // Organisation.
-$org_rule = $sgs_el_rule( '.sgs-testimonial__org', array( 'color' => $org_colour ) );
-if ( '' !== $org_rule ) {
-	$scoped_css[] = $org_rule;
+$org_colour_sel       = $root_sel . ' .sgs-testimonial__org';
+$org_colour_effective = sgs_resolve_text_colour_or_gradient( $org_colour_raw, $org_colour_gradient );
+if ( '' !== $org_colour_effective ) {
+	$org_colour_decl = sgs_text_colour_decl( $org_colour_effective );
+	if ( '' !== $org_colour_decl ) {
+		$scoped_css[] = $org_colour_sel . '{' . $org_colour_decl . ';}';
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $org_colour_sel, $org_colour_effective );
 }
 
 // ---------------------------------------------------------------------------
