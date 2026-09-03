@@ -36,6 +36,10 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 	 *   ctaColourBackgroundHover  string
 	 *   ctaColourTextHover        string
 	 *   ctaColourBorderHover      string
+	 *   ctaColourBackgroundGradient       string  (optional — resolved via
+	 *                                     sgs_background_paint_decl(), wins
+	 *                                     over the flat background when set)
+	 *   ctaColourBackgroundHoverGradient  string  (optional, hover sibling)
 	 *   ctaBorderStyle            string  (solid|dashed|dotted|none)
 	 *   ctaBorderWidth            number  (px)
 	 *   ctaBorderRadius           number  (px)
@@ -71,6 +75,16 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		$colour_bg_hover     = (string) $read( 'ColourBackgroundHover' );
 		$colour_text_hover   = (string) $read( 'ColourTextHover' );
 		$colour_border_hover = (string) $read( 'ColourBorderHover' );
+		// Fill (background) gradient — delegates to the same shared primitive
+		// sgs_fill_decls() uses, so this is a swap-in, not new paint logic.
+		// Text gradient is deliberately NOT added here: this element's text
+		// and background share one selector, and background-clip:text would
+		// clip the background paint to the glyph shapes. That needs the
+		// sgs_block_background_layer_css() ::after-layer treatment first —
+		// tracked as a named follow-up, not silently dropped.
+		$colour_bg_gradient       = (string) $read( 'ColourBackgroundGradient' );
+		$colour_bg_hover_gradient = (string) $read( 'ColourBackgroundHoverGradient' );
+
 		// D636 border-gradient rollout — sibling attributes, gradient-wins-when-set.
 		$colour_border_gradient       = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) $read( 'ColourBorderGradient' ) ) : '';
 		$colour_border_hover_gradient = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) $read( 'ColourBorderHoverGradient' ) ) : '';
@@ -122,8 +136,9 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		// ── Base rule ─────────────────────────────────────────────────────
 		$base_decls = array();
 
-		if ( '' !== $colour_bg ) {
-			$base_decls[] = 'background-color:' . sgs_colour_value( $colour_bg ) . ';';
+		$bg_decl = sgs_background_paint_decl( $colour_bg, $colour_bg_gradient );
+		if ( '' !== $bg_decl ) {
+			$base_decls[] = $bg_decl . ';';
 		}
 		if ( '' !== $colour_text ) {
 			$base_decls[] = 'color:' . sgs_colour_value( $colour_text ) . ';';
@@ -178,8 +193,9 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		// ── Hover / focus-visible rule ────────────────────────────────────
 		$hover_decls = array();
 
-		if ( '' !== $colour_bg_hover ) {
-			$hover_decls[] = 'background-color:' . sgs_colour_value( $colour_bg_hover ) . ';';
+		$bg_hover_decl = sgs_background_paint_decl( $colour_bg_hover, $colour_bg_hover_gradient );
+		if ( '' !== $bg_hover_decl ) {
+			$hover_decls[] = $bg_hover_decl . ';';
 		}
 		if ( '' !== $colour_text_hover ) {
 			$hover_decls[] = 'color:' . sgs_colour_value( $colour_text_hover ) . ';';
