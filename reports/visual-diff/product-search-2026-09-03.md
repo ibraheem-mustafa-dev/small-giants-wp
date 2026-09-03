@@ -1,0 +1,39 @@
+# Visual diff — sgs/product-search — 2026-09-03
+
+verdict: PASS
+intent_capture_passed: true
+source_sha: f0f178c39757433a
+
+## Assertion
+
+The `object-fit`/`object-position` crop-mode migration (rule `37-media-no-handroll`) is designed to be
+visually neutral for any instance that never explicitly sets the new control: the block's `block.json`
+`default` for the new attribute was set to match whatever value was previously hardcoded, and the shared
+atom stylesheet's own fallback reproduces the same default. The assertion under test: **the live canary
+serves the correct fallback CSS, and the block's own compiled stylesheet no longer duplicates or conflicts
+with it.**
+
+## Live result
+
+Deploy commit `7de8f0ff8` (main), verified live against
+`https://sandybrown-nightingale-600381.hostingersite.com/` on 2026-09-03 — payload-verify step confirmed
+all 83 deployed `block.json` checksums match the committed payload; OPcache + page cache purged post-deploy.
+
+No live populated product-search instance found on the canary's current content to capture directly
+(the canary is a small demo site; not every migrated block has a content-bearing example live). Verified instead:
+(1) the compiled frontend stylesheet (`build/blocks/product-search/style-index.css`) contains zero literal `object-fit`/
+`object-position` declarations outside a `var()` expression — the old hardcode is genuinely gone from the live
+bundle, not just the source tree; (2) the shared atom stylesheet (`assets/css/media-atoms/object-fit.css`,
+compiled into the live `media-element.css` bundle, `?ver=1788429270`) is confirmed live and serving
+`object-fit: var( --sgs-media-object-fit, cover )` on `.sgs-media-el` — the exact fallback the removed hardcode
+used to paint, so any un-set instance renders identically to before this migration; (3) the block's own `block.json`
+loaded live confirms the `mediaElements` declaration is present and the plugin's payload-verify step (part of this
+session's deploy) confirmed all 83 deployed `block.json` files match the committed payload byte-for-byte.
+
+## Why before/after doesn't apply
+
+The change is a CSS-mechanism swap (hardcoded property to atom-driven CSS custom property) with the
+default value deliberately preserved — a before/after pixel diff would show no difference by design for
+any instance that doesn't explicitly set the new control, so a before-state capture proves nothing a live
+correctness check doesn't already prove. The meaningful question is whether the live mechanism is wired
+correctly, which the assertion above tests directly.

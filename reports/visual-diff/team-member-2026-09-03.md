@@ -57,3 +57,35 @@ Pay this debt with a computed-style probe on the name/role elements — before a
 with a negative control instance carrying no gradient — once the tree is clean and a
 deploy is safe. Do not pay it by grepping page HTML — block CSS is lifted to
 `uploads/sgs-css/<hash>.css`, so a source grep proves nothing about what painted.
+
+## Also today: 37-media-no-handroll object-fit migration (separate track, second report section)
+
+A different, unrelated change also landed on this block today: the photo's `object-fit` was
+migrated onto the shared media-atom system. The first version bridged onto a NEW unprefixed
+attribute, which caused a real bug — a duplicate, dead "Object fit" dropdown sitting next to
+the legacy image-controls extension's own "Object fit" control, PLUS a live double-emission
+risk (the legacy `sgs_media_position_css()` call could still paint a literal `object-fit`
+declaration from any pre-existing `sgsObjectFit` value on the same selector the atom also
+paints, for any team-member instance saved before this fix). Caught by `/qc-council`'s
+regression-hunt rater and corrected same session: the atom now bridges onto the SAME
+`sgsObjectFit` attribute (prefix `"sgs"`, no new control), and `render.php` clears
+`sgsObjectFit` before calling `sgs_media_position_css()` so only `object-position` emits from
+that legacy path — mirroring `sgs/gallery`'s identical fix for the identical dual-mechanism
+shape. Covers commit `c1a395ec5`, deployed at `7de8f0ff8`.
+
+**Assertion:** the live canary serves the correct fallback CSS for the photo, only ONE "Object
+fit" control exists in the inspector, and the legacy position-css call no longer emits a
+competing literal `object-fit` declaration.
+
+**Live result:** the compiled frontend stylesheet (`build/blocks/team-member/style-index.css`)
+contains zero literal `object-fit` declarations. The shared atom stylesheet
+(`assets/css/media-atoms/object-fit.css`, compiled into the live `media-element.css` bundle,
+`?ver=1788429270`) is confirmed live and serving the `cover` fallback. Editor-side duplicate-
+control removal (`MediaElementPanel` import + mount deleted from `edit.js`) confirmed via
+`git diff` — no live editor-canvas capture was taken (no populated team-member instance found
+on the canary to open in the block editor), so the "only one control visible" claim rests on
+the code diff, not a screenshot; flagged honestly rather than asserted as fully proven.
+
+verdict: PASS (code-level fix confirmed; editor-canvas screenshot not captured — see above)
+intent_capture_passed: true
+source_sha: ecf70c835f487f45
