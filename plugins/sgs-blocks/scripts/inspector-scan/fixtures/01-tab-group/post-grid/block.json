@@ -1,0 +1,12 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/post-grid",
+	"title": "Fixture: post-grid (mixed structural+CSS panel exemption)",
+	"category": "sgs",
+	"attributes": {
+		"layout": { "type": "string", "default": "grid" },
+		"columns": { "type": "object", "default": {} },
+		"aspectRatio": { "type": "string", "default": "" },
+		"cardStyle": { "type": "string", "default": "default" }
+	}
+}

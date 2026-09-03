@@ -338,11 +338,132 @@ function getSharedOwnerScan( ctx ) {
 	return result;
 }
 
+// ---------------------------------------------------------------------------
+// Structural/behavioural-control resolution (rule 01, 2026-09-03) — "does this
+// attribute have a CSS property behind it at all?"
+// ---------------------------------------------------------------------------
+//
+// GROUND-TRUTH, measured live against sgs-framework.db before writing this:
+// `block_attributes.css_property` is the Spec 31 declarative routing column,
+// but it is NOT a complete "has CSS" census — 2045 of 3549 rows (58%) have a
+// NULL css_property tree-wide, and that NULL population is a MIX of (a)
+// genuinely structural/behavioural attrs (sgs/audio.playerStyle,
+// sgs/post-grid.layout — real variant pickers with no CSS form) and (b) box-
+// model attrs the DB routes through `box_family` instead of `css_property`
+// (sgs/audio.paddingTablet/marginTablet — real CSS, css_property NULL,
+// box_family:'padding'/'margin') and (c) other genuinely-CSS attrs (object/
+// number-typed dimensions like sgs/container.columns, sgs/feature-grid.
+// minItemWidth) that Spec 31's declarative routing simply hasn't reached yet.
+// Trusting NULL alone would over-exempt (b) and (c) — measured: `role='layout'`
+// alone mixes `sgs/container.layout` (genuinely structural) with
+// `sgs/container.columns`/`contentWidth`/`minColumnWidth` (genuinely CSS,
+// still NULL) in the SAME role bucket, so role cannot discriminate either.
+//
+// The predicate below only trusts NULL/pseudo css_property for a SCALAR
+// selector/toggle shape (attr_type 'string' or 'boolean', never 'object'/
+// 'number'), which is exactly the vocabulary the sibling rule's own FIX text
+// already names (variant/tagName/layout/autoplay/showDots/required — verified
+// live, every one of those is string-or-boolean with css_property AND
+// box_family both null) and additionally excludes a dimension-UNIT companion
+// (`fooUnit`) — a Unit attr's own row is usually unpopulated too, but it always
+// pairs with a real CSS dimension and must never be treated as the reason a
+// mixed panel is exempt.
+const DB_CANDIDATES = [
+	path.join( require( 'os' ).homedir(), '.agents', 'skills', 'sgs-wp-engine', 'sgs-framework.db' ),
+	path.resolve( __dirname, '..', 'sgs-framework.db' ),
+];
+
+// Inline (not a new .py file — this module is the one file this task may add
+// code to) — reads block_attributes with NO role filter, unlike
+// export-colour-css-property.py's colour-only query, because a structural
+// control can be any role (behaviour/layout/technical/enum-mode/...).
+const STRUCTURAL_ATTR_MAP_PY = [
+	'import sys, sqlite3, json, os',
+	'paths = sys.argv[1:]',
+	'db = None',
+	'for p in paths:',
+	'    if os.path.exists(p) and os.path.getsize(p) > 0:',
+	'        db = p',
+	'        break',
+	'if db is None:',
+	'    sys.exit(1)',
+	'conn = sqlite3.connect(db)',
+	'cur = conn.cursor()',
+	'cur.execute("SELECT block_slug, attr_name, attr_type, css_property, box_family FROM block_attributes")',
+	'out = {}',
+	'for slug, attr, attr_type, css_property, box_family in cur.fetchall():',
+	'    out.setdefault(slug, {})[attr] = {"attr_type": attr_type, "css_property": css_property, "box_family": box_family}',
+	'conn.close()',
+	'print(json.dumps(out))',
+].join( '\n' );
+
+/**
+ * The DB's `{ block_slug: { attr_name: { attr_type, css_property, box_family } } }`
+ * map for EVERY attribute (not role-filtered), shelled out to Python once per
+ * ctx and memoised on it. Deliberately its OWN ctx field (`__tabGroupStructuralAttrMap`)
+ * rather than reusing rule 31's `ctx.__colourCssPropertyMap` — that field's
+ * shape (`{ slug: { attr: cssProperty|null } }`, a flat string) is a
+ * DIFFERENT contract golden.js's `getColourCssPropertyMap` depends on; writing
+ * a rich object into it would silently break rule 31's mechanism resolution
+ * for every colour row in a real run (`ctx` is one shared object across all
+ * rules — confirmed live in run.js `runAllRules(table, ctx)`). FAILS CLOSED
+ * like its sibling: a DB the query can't reach throws rather than resolving
+ * every attribute as "no CSS", which would look identical to "every panel is
+ * legitimately exempt" — the exact false-clean this mechanism must avoid.
+ */
+function getStructuralAttrMap( ctx ) {
+	if ( ctx.__tabGroupStructuralAttrMap ) return ctx.__tabGroupStructuralAttrMap;
+	const { spawnSync } = require( 'child_process' );
+	const result = spawnSync( 'python', [ '-c', STRUCTURAL_ATTR_MAP_PY, ...DB_CANDIDATES ], {
+		encoding: 'utf8',
+	} );
+	if ( result.status !== 0 || ! result.stdout ) {
+		throw new Error(
+			'getStructuralAttrMap: sgs-framework.db read failed — refusing to silently treat every ' +
+				`attribute as structural. stderr: ${ result.stderr || '(none)' }`
+		);
+	}
+	const map = JSON.parse( result.stdout );
+	ctx.__tabGroupStructuralAttrMap = map;
+	return map;
+}
+
+/**
+ * Does this ONE attribute's DB row show "no CSS property behind it at all" —
+ * i.e. is it a genuine structural/behavioural control (variant picker,
+ * tagName, autoplay toggle, ...) rather than a real CSS-styling control? See
+ * the header note above `DB_CANDIDATES` for the full reasoning.
+ *
+ * @param {string} attrName
+ * @param {{attr_type:?string, css_property:?string, box_family:?string}|undefined} row
+ * @return {boolean}
+ */
+function isStructuralNoCssAttr( attrName, row ) {
+	if ( ! row ) return false; // no DB row at all -> unknown, assume it MIGHT carry CSS (never over-exempt on absence)
+	if ( row.box_family ) return false; // box-model attrs route CSS through box_family, not css_property (padding/margin/border)
+	const cssProperty = row.css_property;
+	if ( cssProperty ) {
+		const tokens = String( cssProperty )
+			.split( ',' )
+			.map( ( t ) => t.trim() )
+			.filter( Boolean );
+		// A token with no ':' is a real CSS property name (kebab-case). A
+		// colon-prefixed token (fx:pin, anim:stagger) is JS behavioural config,
+		// never real CSS — falls through to the type-shape check below.
+		if ( tokens.some( ( t ) => ! t.includes( ':' ) ) ) return false;
+	}
+	if ( 'string' !== row.attr_type && 'boolean' !== row.attr_type ) return false;
+	if ( /Unit$/.test( attrName ) ) return false; // a dimension-unit companion always pairs with real CSS
+	return true;
+}
+
 module.exports = {
 	discover,
 	resolveComponentFiles,
 	discoverBlockDirNames,
 	getSharedOwnerScan,
+	getStructuralAttrMap,
+	isStructuralNoCssAttr,
 	COMPONENTS_INDEX,
 	COMPONENTS_DIR,
 	REAL_SRC,

@@ -1,0 +1,11 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/advanced-panel-with-structural-anchor",
+	"title": "Fixture: InspectorAdvancedControls x structural-anchor interaction",
+	"category": "sgs",
+	"attributes": {
+		"labelText": { "type": "string", "default": "" },
+		"iconColour": { "type": "string", "default": "" },
+		"variant": { "type": "string", "default": "default" }
+	}
+}
