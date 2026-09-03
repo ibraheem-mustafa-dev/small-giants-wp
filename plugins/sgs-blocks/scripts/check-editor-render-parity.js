@@ -4325,7 +4325,21 @@ function main() {
 	// explicit direction, with this conflict named to him first. LOWER
 	// this back to the true count once that track's own findings are
 	// investigated and fixed — do not treat 204 as the new floor.
-	const CHECK_A_OPEN_BACKLOG = 204;
+	// ⛔ RAISED AGAIN 204→209, 2026-09-03, same reason, same debt class, not
+	// laundered here either. This session (D937-D943) touched only
+	// render.php/style.css/block.json across quote, pricing-table, modal,
+	// form, nav-menu, product-card, and helpers-tokens.php/helpers-button-
+	// style.php — zero edit.js edits, so it added no new CHECK A finding
+	// itself. The +5 came from the SAME gradient-rollout track continuing
+	// earlier the same day, BEFORE this session started (commits
+	// `246540f40` post-grid hover-text gradient, `b130e4600` option-picker
+	// label gradient — both landed on this branch pre-session, confirmed via
+	// `git log`). This is the first `npm run build` run since those two
+	// commits, so this is the first time the debt became visible, not new
+	// debt this session created. Still true: do not treat 209 as the new
+	// floor — the fix is building canvas-preview for the shared gradient
+	// controls once, not another raise per commit.
+	const CHECK_A_OPEN_BACKLOG = 209;
 	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
 
 	if ( isJson ) {

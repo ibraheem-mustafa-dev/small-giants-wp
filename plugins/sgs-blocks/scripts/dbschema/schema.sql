@@ -1,5 +1,5 @@
 -- SGS framework knowledge-base schema
--- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-09-03
+-- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-09-04
 -- by: python dbschema/check_schema_drift.py --regenerate
 -- Do NOT hand-edit: byte-fidelity to the live schema is the entire point.
 -- Regenerate rather than patch, then run: python dbschema/check_schema_drift.py --check
