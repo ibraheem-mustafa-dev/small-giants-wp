@@ -12,7 +12,7 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { resolveColourToken, SgsColourPanel } from '../../components';
+import { resolveColourToken, SgsColourPanel, DesignTokenPicker } from '../../components';
 
 const TRIGGER_STYLE_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
@@ -150,6 +150,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: triggerBackground,
 								onChange: ( val ) => setAttributes( { triggerBackground: val ?? '' } ),
+								gradientValue: attributes.triggerBackgroundGradient,
+								onGradientChange: ( val ) => setAttributes( { triggerBackgroundGradient: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -163,19 +165,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: modalBackground,
 								onChange: ( val ) => setAttributes( { modalBackground: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'overlay',
-						label: __( 'Overlay colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: overlayColour,
-								onChange: ( val ) => setAttributes( { overlayColour: val ?? '' } ),
+								gradientValue: attributes.modalBackgroundGradient,
+								onGradientChange: ( val ) => setAttributes( { modalBackgroundGradient: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -273,11 +264,28 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
+			</InspectorControls>
 
-				<PanelBody
-					title={ __( 'Overlay', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
+			{ /* Overlay colour + opacity live together in one Styles-tab panel,
+			   matching the precedent BackgroundPanel.js already sets for
+			   container/cta-section/hero/multi-button/physics-canvas/site-
+			   footer/site-header/trust-bar (D717): a colour picker with alpha
+			   OFF (opacity is a separate CSS property with its own control,
+			   so two transparency mechanisms never fight over the same
+			   stored value) followed by a plain opacity slider, both in the
+			   panel for whatever they're applied to — not paired via the
+			   colour picker's own API. */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Overlay', 'sgs-blocks' ) }>
+					<DesignTokenPicker
+						label={ __( 'Overlay colour', 'sgs-blocks' ) }
+						value={ overlayColour }
+						onChange={ ( val ) =>
+							setAttributes( { overlayColour: val ?? '' } )
+						}
+						linked
+						enableAlpha={ false }
+					/>
 					<RangeControl
 						label={ __( 'Overlay opacity', 'sgs-blocks' ) }
 						value={ overlayOpacity }
