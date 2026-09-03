@@ -216,28 +216,23 @@ Named, not fixed; deserves its own session.
 ⛔ **TWO SEPARATE TRACKS. Never re-merge them.** They shared one plan file once and it cost a full
 session (D838). No phase number is shared.
 
-### ▶ B. GENERATIVE BACKGROUND ENGINE (Phase 3 — engine BUILT + LIVE; fidelity FIXED, PASSING 3/3 — Bean's visual sign-off still open)
+### ▶ B. GENERATIVE BACKGROUND ENGINE (Phase 3 — fidelity FIXED 3/3; speed FIXED; colour vibrancy OPEN — next prompt below)
 
 ⭐ **Plan: `.claude/plans/2026-08-27-generative-background-engine.md`. Read D886, D887, D888
 before touching this track — they supersede the technique spec's Animation section and record
 two withdrawn claims.**
 
-**Shipped and live on the canary:** all three layers of the fold. Layer 1 (CPU fold) + layer 2
-(object transform) live in `webgl/generative-background-transform.js`, verified against matrices
-extracted from the running rig; layer 3 was already correct. A missing depth buffer (`depth:
-false`, no `DEPTH_TEST`) was the stair-step artefact — the fold overlaps itself, so draw order
-decided the visible surface. Fixed `ba01581df`, live-verified. Frame cost 0.240ms / 0.300ms.
+**Shipped and live on the canary:** all three fold layers, verified against matrices extracted
+from the running rig. A missing depth buffer was the stair-step artefact, fixed `ba01581df`.
+Frame cost 0.240ms / 0.300ms.
 
-**The gap was REAL, is now FIXED and measured closed** (`fidelity-baseline.json`, tracked). At
-effective phases 0.70/1.10/1.90 the divergence went **5.29%→2.81% / 4.71%→2.35% / 5.63%→2.73%
-crop-wide** — **3 of 3 now pass the 5% ceiling** (was 2 of 3 failing). It did not collapse when a
-25,000x phase-mismatch bug was fixed alone (that ruled out a measurement artefact); it DID collapse
-once the real cause (below) was fixed.
+**The gap was REAL, is now FIXED and measured closed** (`fidelity-baseline.json`, tracked):
+**5.29%→2.81% / 4.71%→2.35% / 5.63%→2.73%** crop-wide — **3 of 3 now pass the 5% ceiling** (was 2
+of 3 failing).
 
-⛔ **TWO CLAIMS WERE ASSERTED PREVIOUSLY AND ARE WITHDRAWN — do not resurrect either.**
-An 89.3% silhouette IoU (no script, no committed inputs, a `background:#fff` hack in its capture
-path), and "a systematic colour cast" (over-read `bias_over_abs`, which measures directionality
-not spatial uniformity). See D888.
+⛔ **TWO CLAIMS ASSERTED PREVIOUSLY ARE WITHDRAWN — do not resurrect either.** An 89.3% silhouette
+IoU (no script, no committed inputs), and "a systematic colour cast" (over-read `bias_over_abs`).
+See D888.
 
 ⛔ **D880: Bean authorised porting the reference's VERTEX SHADER mechanism** (that file only).
 Palette PNG stays off-limits as a shipped asset — it is a measurement fixture, read in place from
@@ -248,30 +243,42 @@ returns 0). A `git clean -xdf` destroys every reference number permanently. The 
 `fidelity-baseline.json` + `reference-matrices.json` are what survive it.
 
 **2026-09-03 (D925-D927) — root cause PROVEN via `/systematic-debugging`, then FIXED mechanically
-(Bean: "this is a mechanical fix, we're cloning something pre-existing").** D925 closed both D888
-alternative causes. D926 proved geometry/twist was never the cause (silhouette coverage matches
-the rig within 0.4pt avg) and isolated the fragment shader as the real one — the leading suspect
-(depth-fade) recovered only 2% alone when tested, disproven rather than assumed guilty. D927 went
-further: every fragment-shader constant was checked against the reference's actual measured
-values (`index.html`'s light preset `P` + the hardcoded literals in `shaders/39798.glsl`'s
-`surfaceColor()`) rather than accepted as "tuned by eye". Found `DEFAULT_GLOW_AMOUNT` was ~20x the
-reference's real value (40.0 vs 1.98) — gating BOTH the fine-noise term and the camera-facing
-lift — plus 7 more constants all wrong. **Deleted** (not corrected) the §3(b) legacy periodic-line
-striation term entirely: its hardcoded `425.0` frequency is the reference's DARK-theme preset's
-`lineAmount`, not light's (`1`), and the light theme's real shader never references it at all —
-proven, not assumed, by reading `shaders/98230.glsl` (dark) directly, which DOES have an
-equivalent mechanism, confirming depth-fade is real for dark ground and fabricated for light — now
-gated on `u_ground`'s own luminance rather than deleted.
+(Bean: "this is a mechanical fix, we're cloning something pre-existing").** Not geometry —
+silhouette coverage matches the rig within 0.4pt avg. Every fragment-shader constant was checked
+against the reference's real measured values (not "tuned by eye"): `DEFAULT_GLOW_AMOUNT` was ~20x
+too large, 7 more constants also wrong. Deleted (not corrected) one whole effect ported from the
+reference's DARK theme into a light-only comparison. Gated depth-fade to dark ground only —
+confirmed real for dark, fabricated for light, by reading both reference shaders directly.
 
 **Result: 3/3 phases pass** (2.81/2.35/2.73%, ceiling 5%); `bias_over_abs` ~0.9 (systematic) →
 ~0.3 (not); silhouette IoU 0.77-0.80 → 0.90-0.96; SHADED/SILHOUETTE coverage now match exactly
 per-phase. `verify-transform.mjs` still 7/7.
 
-### ▶ NEXT — Bean's named visual sign-off (the plan's other acceptance criterion, unaffected by the numbers passing)
+**Same session — live playback speed fixed (D930/D932).** Bean, live-testing: "ours is super fast
+compared to the original." Same shape of bug as the fidelity gap: the reference scales its time
+input (`u_speed=4e-5`) before animating; the shipped engine had none — running ~25x too fast.
+Fixed with a reference-derived `TIME_SCALE` constant; diagnostic tooling updated to match.
+Fidelity numbers unaffected (re-verified, not assumed).
 
-Numbers pass; a residual ~1.8pt OVER-coverage (opposite sign from before) is noted, not chased.
-"B-movie 3D VFX" is a look judgement no measurement closes — his eye is still the other half of
-done. `npm run fidelity:compare` now exits 0 ("All rungs passed").
+**A demo-page bug caught live, not shipped silently:** the first test page had no colour
+attributes set, so the effect never started — Bean saw an empty container and correctly called it
+"not the Stripe cloth animation". Fixed; confirmed via screenshot, not markup presence (which is
+what missed it the first time).
+
+⛔ **OPEN — colour vibrancy, NOT investigated.** Same live test: "ours is faint/muted, the
+original is vibrant and rich." Next prompt:
+`.claude/prompts/2026-09-03-generative-background-colour-vibrancy.md` (supersedes the deleted
+`2026-08-30-generative-background-fidelity-gap.md` — that gap is closed). Two untested
+hypotheses: the demo's colour picks were too pale (cheap to test first), or the shader's two
+brightness-only-additive terms wash out an already-pale palette (needs isolation). A real
+architectural limit is also named: the engine's colour model is a flat 4-stop horizontal
+gradient; the reference's texture varies in both directions — do not build a fix for that
+without a design conversation first.
+
+### ▶ NEXT — colour vibrancy (above), then Bean's named visual sign-off
+
+Fidelity and speed pass; colour vibrancy is open. "B-movie 3D VFX" is a look judgement no
+measurement closes — Bean's eye is still the other half of done.
 
 **Shipped this session:** `chromeOffsetPx()` moved to the Tier V shared home so a vanilla consumer
 can read the sticky-header height; the progress marker re-mapped to a **reading line** and the two

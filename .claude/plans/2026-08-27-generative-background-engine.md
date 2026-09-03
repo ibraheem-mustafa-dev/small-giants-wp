@@ -156,35 +156,42 @@ Only after Phase 1. Absorb D794's must-fix register into
 **Gate:** the completed spec goes through `/adversarial-council` again. D794 said NO-GO on the thin
 version; the rewrite must earn a GO before any build.
 
-## Phase 3 — Build: ENGINE SHIPPED 2026-08-29. Fidelity gap OPEN.
+## Phase 3 — Build: ENGINE SHIPPED 2026-08-29. Fidelity gap CLOSED (D925-D927). Speed fixed (D930/D932). Colour vibrancy OPEN.
 
 **Read D886, D887 and D888 before touching this track.** They supersede the technique spec's
 Animation section and record two claims that were asserted and withdrawn.
 
 **Shipped and live on the canary.** All three layers of the fold mechanism: the CPU fold and the
-static object transform now live in `webgl/generative-background-transform.js`, verified against
+static object transform live in `webgl/generative-background-transform.js`, verified against
 matrices extracted from the running reference rig; layer 3 was already correct. A missing depth
-buffer — `depth: false`, `DEPTH_TEST` never enabled — was the stair-step artefact: the fold passes
-back over itself by design, so with no depth buffer draw order decided which surface was visible.
-Frame cost 0.240ms against a 0.300ms ceiling.
+buffer — `depth: false`, `DEPTH_TEST` never enabled — was the stair-step artefact, fixed. Frame
+cost 0.240ms against a 0.300ms ceiling.
 
-**A reproducible fidelity instrument now exists**, built after `/adversarial-council` returned
-NO-GO on a larger harness design (D887). `npm run fidelity:compare` re-derives every figure;
+**The fidelity instrument.** `npm run fidelity:compare` re-derives every figure;
 `fidelity-baseline.json` and `reference-matrices.json` are tracked and survive the rig's deletion.
 
-**The measured gap is REAL and remains open.** At effective phases 0.70/1.10/1.90 the divergence
-from the reference is 5.29% / 4.71% / 5.63% crop-wide, and 10.71% / 9.90% / 10.64% over the
-painted region — 2 of 3 over the 5% ceiling. It did not collapse when a 25,000x phase-mismatch bug
-was corrected, so it is not an artefact of the measurement.
+**The measured gap was real and is now CLOSED, via `/systematic-debugging` (D925-D927).** Not
+geometry — layers 1-3 match the rig's coverage within 0.4pt average. The real cause: several
+fragment-shader constants (glow amount, grading, fine-noise) were tuned by eye instead of read off
+the reference — one was ~20x too large — plus one whole effect (a line-texture pattern) ported
+from the reference's DARK theme into a build only ever compared against the light one. Corrected
+every constant against the reference's actual measured values; deleted the wrongly-borrowed
+effect. **3 of 3 sampled phases now pass** (2.81% / 2.35% / 2.73%, was 5.29% / 4.71% / 5.63%, 2 of
+3 failing). Full account: D925, D926, D927.
 
-⛔ **The cause is NOT established, and one guess has already been withdrawn.** Painted coverage
-differs by 8 points and distinct hue count by 2.7x — a tone shift cannot change coverage, so shape
-divergence is the leading UNTESTED hypothesis. Two named alternatives must be eliminated first:
-the comparator currently measures the module's `DEFAULT_*` constants rather than the block's
-shipped attributes, and four Chromium harnesses have drifted apart.
+**Live playback speed fixed (D930/D932).** Bean, testing on a real page: "ours is super fast
+compared to the original." The reference scales its time input before animating; the shipped
+engine had no equivalent scaling at all, running ~25x too fast. Fixed with a reference-derived
+constant. The static-phase fidelity numbers above are unaffected (that instrument samples fixed
+moments, not real playback speed).
+
+⛔ **OPEN — colour vibrancy.** Same live test, same session: "the colours on our version are like
+super faint/muted whereas the original is very vibrant and rich." Not yet investigated. Next
+prompt: `.claude/prompts/2026-09-03-generative-background-colour-vibrancy.md`.
 
 **Still outstanding: Bean's NAMED visual sign-off against the "B-movie 3D VFX" risk.** No number
-closes that — it is his eye, and the acceptance criteria say so.
+closes that — it is his eye, and the acceptance criteria say so. The colour-vibrancy issue is
+likely part of what that sign-off would catch.
 
 ---
 
