@@ -38,6 +38,10 @@
 			"collection": true,
 			"imageControls": true,
 			"imageControlsExplicit": true,
+			"_comment_mediaElements": "Rule 37-media-no-handroll fix (D-pending). Grid-thumbnail object-fit now routes through the shared media-element atom layer instead of a style.css literal. NOT a new client control: prefix 'sgs' resolves (sgs_media_element_attr) to the SAME 'sgsObjectFit' attribute the legacy universal image-controls extension (imageControls/imageControlsExplicit above) already injects and already exposes an 'Object Fit' dropdown for in the inspector — adding a second ObjectFitField here would give the client two controls for one property. render.php reads that existing value through SGS_Media_Element::style() and marks the grid <img> with the atom's scope class; style.css no longer hardcodes object-fit on .sgs-gallery__img, relying on assets/css/media-atoms/object-fit.css's cover fallback (identical default). The lightbox full-view image is deliberately NOT part of this — it keeps its own hardcoded object-fit:contain (style.css), which is not client-controllable.",
+			"mediaElements": [
+				{ "prefix": "sgs", "context": "element", "atoms": [ "object-fit" ] }
+			],
 			"fx": {
 				"draggable": true,
 				"providesNatively": [

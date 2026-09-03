@@ -75,6 +75,12 @@ if ( ! function_exists( 'sgs_media_element_stored_attr' ) ) {
 			'sgs/decorative-image'  => array(
 				'decorMedia' => 'decorMedia',
 			),
+			'sgs/brand-strip'       => array(
+				// Mirrors STORED_AS in src/components/MediaElementControls.js —
+				// this block's pre-existing logo-fit dropdown already stores
+				// `logoFit`, kept as the only UI rather than renamed.
+				'objectFit' => 'logoFit',
+			),
 		);
 
 		if ( ! isset( $stored_as[ $block_slug ] ) ) {

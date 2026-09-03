@@ -640,15 +640,52 @@ if ( '' !== $role_colour_effective ) {
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $role_colour_sel, $role_colour_effective );
 }
 
-// --- Photo object-fit/object-position (Spec 35 capability-routing doctrine
-// mechanism (c), Part 9) — explicit call to the shared helper with this
-// block's OWN known selector, since supports.sgs.imageControlsExplicit=true
-// opts this block out of the guessing render_block filter
-// (includes/image-controls.php). Returns '' when unset, leaving style.css's
-// hardcoded `object-fit:cover` default in place (style.css:46). ---
-$photo_position_css = sgs_media_position_css( $attributes, 'sgs', $root_sel . ' .sgs-team-member__photo img' );
+// --- Photo object-position (Spec 35 capability-routing doctrine mechanism
+// (c), Part 9) — explicit call to the shared helper with this block's OWN
+// known selector, since supports.sgs.imageControlsExplicit=true opts this
+// block out of the guessing render_block filter (includes/image-controls.php).
+// Returns '' when unset.
+// ⛔ object-fit is CLEARED from this call (37-media-no-handroll fix,
+// CORRECTED 2026-09-03 via /qc-council — mirrors sgs/gallery's identical
+// fix): sgsObjectFit is now owned exclusively by the media-atom layer below,
+// which reads the SAME attribute (bridged via mediaElements prefix "sgs").
+// Without this clear, any team-member instance saved BEFORE this fix with a
+// real sgsObjectFit value would have this call emit a literal
+// `object-fit:<value>;` on the identical selector the atom also paints,
+// silently overriding the atom's CSS-custom-property rule for existing
+// content — a live double-emission bug, not just a duplicate control. ---
+$photo_position_css = sgs_media_position_css(
+	array_merge( $attributes, array( 'sgsObjectFit' => '' ) ),
+	'sgs',
+	$root_sel . ' .sgs-team-member__photo img'
+);
 if ( '' !== $photo_position_css ) {
 	$scoped_css[] = $photo_position_css;
+}
+
+// --- Photo object-fit (37-media-no-handroll remediation, 2026-09-03,
+// CORRECTED same day via /qc-council) — the crop MODE is bridged onto the
+// SAME pre-existing sgsObjectFit attribute the legacy image-controls
+// extension already exposes an 'Object fit' dropdown for (block.json
+// supports.sgs.mediaElements, prefix "sgs") — NOT a new attribute, so no
+// second control was added. style.css no longer hardcodes object-fit:cover;
+// the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}`
+// atom stylesheet paints the identical default. sgs_render_media() (called
+// at step 7 to build $photo_base_img, folded into $photo_html) takes no
+// class argument, so the marker classes (`sgs-media-el` + the per-instance
+// scope class) are injected into the already-built $photo_html string here,
+// once $uid exists — same closure-not-top-level-function shape as
+// sgs/testimonial's $sgs_media_el_classes (render.php, same date;
+// feedback_no_top_level_function_in_per_render_php.md).
+if ( '' !== $photo_html && class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_tm_scope_class = SGS_Media_Element::scope_class( $uid, 'sgs' );
+	$sgs_tm_marker_cls  = implode( ' ', SGS_Media_Element::element_classes( $sgs_tm_scope_class ) );
+	$photo_html         = preg_replace( '/class="sgs-media /', 'class="' . $sgs_tm_marker_cls . ' sgs-media ', $photo_html, 1 );
+
+	$sgs_tm_fit_css = SGS_Media_Element::style( $attributes, 'sgs', 'sgs/team-member', $uid, array( 'object-fit' ) );
+	if ( '' !== $sgs_tm_fit_css ) {
+		$scoped_css[] = $sgs_tm_fit_css;
+	}
 }
 
 // ---------------------------------------------------------------------------

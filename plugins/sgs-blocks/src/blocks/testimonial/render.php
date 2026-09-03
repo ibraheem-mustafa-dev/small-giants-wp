@@ -637,6 +637,28 @@ if ( ! empty( $meta_parts ) ) {
 // so each tier gets its OWN `.sgs-testimonial__avatar--{tier}` wrapper rather
 // than a modifier on the <img> — same visible result, and the toggle lands on an
 // element this block already owns.
+//
+// 37-media-no-handroll remediation (2026-09-03) — sgs_render_media() also has
+// no way to add the mediaElements marker classes (`sgs-media-el` + the
+// per-instance scope class) to the tag it returns, so this small local closure
+// injects them into the ALREADY-BUILT html string. A top-level `function` here
+// would fatal on a second block instance on the same page
+// (feedback_no_top_level_function_in_per_render_php.md), so this stays a
+// closure assigned to a local var, matching the `$sgs_avatar_tier_sel` pattern
+// below. Every avatar art-direction tier (desktop/tablet/mobile) shares ONE
+// scope class — they are mutually-exclusive-by-viewport `display:none`
+// swaps of the SAME conceptual media element, not independent slots, so one
+// `avatarObjectFit`/`avatarObjectFitTablet`/`avatarObjectFitMobile` triad
+// correctly governs whichever tier is visible at a given width.
+$sgs_media_el_classes = static function ( $html, $prefix ) use ( $uid ) {
+	if ( '' === $html || ! class_exists( 'SGS_Media_Element' ) ) {
+		return $html;
+	}
+	$sgs_scope_class = SGS_Media_Element::scope_class( $uid, $prefix );
+	$sgs_marker_cls  = implode( ' ', SGS_Media_Element::element_classes( $sgs_scope_class ) );
+	return preg_replace( '/class="sgs-media /', 'class="' . $sgs_marker_cls . ' sgs-media ', $html, 1 );
+};
+
 $avatar_html  = '';
 $avatar_tiers = array();
 foreach ( array( 'Tablet', 'Mobile' ) as $sgs_tier ) {
@@ -654,12 +676,14 @@ foreach ( array( 'Tablet', 'Mobile' ) as $sgs_tier ) {
 	if ( '' === $sgs_tier_inner ) {
 		continue;
 	}
+	$sgs_tier_inner                          = $sgs_media_el_classes( $sgs_tier_inner, 'avatar' );
 	$avatar_tiers[ strtolower( $sgs_tier ) ] = $sgs_tier_inner;
 }
 
 if ( ! empty( $avatar_media['url'] ) ) {
 	$avatar_media_render = $avatar_decorative ? array_merge( $avatar_media, array( 'alt' => '' ) ) : $avatar_media;
 	$avatar_inner        = sgs_render_media( $avatar_media_render, 'sgs/testimonial' );
+	$avatar_inner        = $sgs_media_el_classes( $avatar_inner, 'avatar' );
 	if ( '' !== $avatar_inner ) {
 		$avatar_base_cls = 'sgs-testimonial__avatar';
 		if ( ! empty( $avatar_tiers ) ) {
@@ -707,43 +731,43 @@ $work_html = '';
 if ( ! empty( $work_media['url'] ) ) {
 	$work_media_render = $work_media_decorative ? array_merge( $work_media, array( 'alt' => '' ) ) : $work_media;
 	$work_inner        = sgs_render_media( $work_media_render, 'sgs/testimonial' );
+	$work_inner        = $sgs_media_el_classes( $work_inner, 'work' );
 	if ( '' !== $work_inner ) {
 		$work_aria = $work_media_decorative ? ' aria-hidden="true"' : '';
 		$work_html = '<figure class="sgs-testimonial__work"' . $work_aria . '>' . $work_inner . '</figure>';
 	}
 }
 
-// --- Image controls (supports.sgs.imageControls + imageControlsExplicit) ---
-// This block has THREE image slots (avatar / org logo / work media) but only
-// ONE of them is a genuine per-instance crop-control candidate. Design
-// decision (verified against style.css before writing, not guessed):
-// - avatar (.sgs-testimonial__avatar img)  — style.css:89-95 already fixes
-// object-fit:cover + border-radius:50% (a circular headshot crop). This
-// is a component-owned constant, same status as sgs/label's fixed
-// fontSize:12 (CLAUDE.md's DEFAULT-vs-HARDCODE test) — every avatar in
-// every testimonial needs the identical circular cover-crop, so exposing
-// a per-instance override adds an inspector control with no real use.
+// --- Image controls (37-media-no-handroll remediation, 2026-09-03) ---
+// This block has THREE image slots (avatar / org logo / work media).
+// Design decision (verified against style.css before writing, not guessed):
+// - avatar (.sgs-testimonial__avatar img) — style.css no longer hardcodes
+// object-fit; the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,
+// cover)}` atom stylesheet paints the SAME default circular cover-crop, but a
+// client can now override the crop MODE per instance via `avatarObjectFit`
+// (border-radius:50% stays a genuine fixed constant — a non-circular avatar is
+// not a supported shape here).
 // - org logo (.sgs-testimonial__logo img) — style.css:101-107 fixes
 // object-fit:contain. A logo must NEVER be cropped (cropping a client's
-// own brand mark is a defect, not a style choice), so this is also a
+// own brand mark is a defect, not a style choice), so this stays a
 // component-owned constant, not a client control.
-// - work media (.sgs-testimonial__work img/video) — style.css:113-119 sets
-// NO object-fit at all (natural aspect ratio only). Case-study photos
-// vary wildly in composition/aspect ratio, so THIS is the one slot with
-// a genuine per-instance crop need. Wired explicitly (known selector,
-// matches the team-member/gallery/testimonial-slider precedent) rather
-// than relying on the generic render_block guessing injector, since the
-// generic mechanism's 3 CSS selectors only reach a <figure>-wrapped
-// image — the avatar/logo `<div>` wrappers would never be reached by it
-// anyway, so leaving it generic silently only "worked" for this one slot
-// by accident.
-$work_media_position_css = sgs_media_position_css(
-	$attributes,
-	'sgs',
-	$root_sel . ' .sgs-testimonial__work img, ' . $root_sel . ' .sgs-testimonial__work video'
-);
-if ( '' !== $work_media_position_css ) {
-	$scoped_css[] = $work_media_position_css;
+// - work media (.sgs-testimonial__work img/video) — case-study photos vary
+// wildly in composition/aspect ratio, so this is the one slot with a
+// genuine per-instance crop need. Both avatar and work are now wired via the
+// independently-scoped `mediaElements` atoms (block.json supports.sgs),
+// replacing the old block-level imageControls/imageControlsExplicit +
+// sgs_media_position_css() pair this comment used to describe — that shared
+// mechanism set ONE crop for the whole block; these are genuinely
+// per-slot, matching sgs/before-after's Wave 5b precedent.
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_avatar_fit_css = SGS_Media_Element::style( $attributes, 'avatar', 'sgs/testimonial', $uid, array( 'object-fit' ) );
+	if ( '' !== $sgs_avatar_fit_css ) {
+		$scoped_css[] = $sgs_avatar_fit_css;
+	}
+	$sgs_work_fit_css = SGS_Media_Element::style( $attributes, 'work', 'sgs/testimonial', $uid, array( 'object-fit', 'focal-point' ) );
+	if ( '' !== $sgs_work_fit_css ) {
+		$scoped_css[] = $sgs_work_fit_css;
+	}
 }
 
 // ── Text nodes (gated) — NO inline style="" any more; every declaration is

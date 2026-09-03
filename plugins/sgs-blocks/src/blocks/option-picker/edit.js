@@ -33,6 +33,7 @@ import {
 	SgsColourPanel,
 	SgsLengthControl,
 	SgsBorderControl,
+	MediaElementPanel,
 } from '../../components';
 import { colourVar } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -737,6 +738,26 @@ export default function Edit( { attributes, setAttributes } ) {
 								pillPadding: { ...pillPadding, [ tierKey ]: next },
 							} );
 						} }
+					/>
+				</PanelBody>
+
+				{ /* Swatch image — the image-swatch <img> (render.php §"Swatch
+				   rendering") is a fixed 2rem crop of a WooCommerce attribute
+				   term's image, not a picker this block's own attributes drive —
+				   but the fit MODE is still a legitimate client choice, so this
+				   panel is always available (which options actually carry an
+				   image swatch depends on WC term-meta, invisible to the editor
+				   ahead of render). */ }
+				<PanelBody title={ __( 'Swatch image', 'sgs-blocks' ) } initialOpen={ false }>
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="swatch"
+						blockSlug="sgs/option-picker"
+						insertion="element"
+						atoms={ [ 'object-fit' ] }
+						mediaType="image"
+						scope="element"
 					/>
 				</PanelBody>
 

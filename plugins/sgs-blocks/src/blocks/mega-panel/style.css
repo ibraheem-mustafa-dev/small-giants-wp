@@ -358,7 +358,15 @@
 .wp-block-sgs-mega-panel .sgs-mega-aside .sgs-media__img,
 .wp-block-sgs-mega-panel .sgs-mega-aside img {
 	max-height: 170px;
-	object-fit: cover;
+	/* 37-media-no-handroll remediation (2026-09-03) — this rule's specificity
+	   (0,3,0) is BEATEN by render.php's scoped `$aside_sel` rule (0,4,0:
+	   `.{uid}.wp-block-sgs-mega-panel .sgs-mega-aside .sgs-media__img`), so
+	   this declaration never actually wins and was dead weight (measured,
+	   not assumed — see render.php's own note at the matching rule). Kept as
+	   `var()` with the same `cover` fallback rather than deleted outright, so
+	   this stylesheet still paints something sane if render.php's scoped
+	   `<style>` is ever absent from the page. */
+	object-fit: var( --sgs-media-object-fit, cover );
 	width: 100%;
 	border-radius: 12px;
 }

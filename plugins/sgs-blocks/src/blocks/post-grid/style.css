@@ -96,7 +96,10 @@
 .sgs-post-grid--list .sgs-post-grid__image img {
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
+	/* object-fit: removed (37-media-no-handroll) — this and the grid-mode
+	   .sgs-post-grid__img rule below both targeted the SAME <img>, now
+	   controlled by the shared media-atom system (assets/css/media-atoms/
+	   object-fit.css). See render.php's SGS_Media_Element::style() call. */
 }
 
 /* ==========================================================================
@@ -252,7 +255,9 @@
 	display: block;
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
+	/* object-fit: removed (37-media-no-handroll) — see the list-mode rule
+	   above; the shared media-atom system now controls this property for
+	   both selectors. */
 	transition: transform var( --sgs-transition-duration ) var( --sgs-transition-easing );
 }
 

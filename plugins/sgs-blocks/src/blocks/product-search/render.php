@@ -155,6 +155,22 @@ if ( $sgs_ps_colour_decls ) {
 	$sgs_scoped_css[] = '.' . $sgs_style_uid . '{' . implode( ';', $sgs_ps_colour_decls ) . ';}';
 }
 
+// --- Result thumbnail object-fit (37-media-no-handroll remediation,
+// 2026-09-03) — the shared media-atom system computes the custom-property
+// VALUE server-side, keyed on $sgs_style_uid (the same no-inline
+// scoped-styling uid class already on the wrapper for every display mode).
+// view.js adds the matching `sgs-media-el` + $sgs_style_uid marker classes
+// to each thumbnail <img> it builds at fetch time (there is no
+// server-rendered <img> here to attach classes to directly — the results
+// list is JS-built from a live REST response). style.css no longer
+// hardcodes object-fit:cover on the result-row thumbnail. ---
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_ps_fit_css = SGS_Media_Element::style( $attributes, '', 'sgs/product-search', $sgs_style_uid, array( 'object-fit' ) );
+	if ( '' !== $sgs_ps_fit_css ) {
+		$sgs_scoped_css[] = $sgs_ps_fit_css;
+	}
+}
+
 // --- Base padding/margin — WP-native style.spacing objects (skip-serialised
 // in block.json → not auto-inlined by get_block_wrapper_attributes()).
 // Emitted scoped via the stable core style engine. ---

@@ -179,6 +179,28 @@ if ( $sgs_cart_vars ) {
 	$scoped_css[] = $sel . '{' . implode( ';', $sgs_cart_vars ) . '}';
 }
 
+// ── Media-element atom layer (rule 37-media-no-handroll fix) — item-thumbnail
+// object-fit only. The thumbnail <img> itself is added to the DOM later by
+// panel-render.js/item-row-template.js (Store API hydration), never by this
+// file — but the CSS custom property is set here, on the PHP-rendered wrapper
+// ($uid is already a class on it, see $wrapper_classes above), and inherits
+// down to the .sgs-media-el marker item-row-template.js appends regardless of
+// when that element is inserted. `class_exists()` guards a class the plugin
+// loader always registers; kept for the same "never fatal if load order
+// changes" reason sgs/gallery/sgs/hero guard it.
+if ( $has_panel && class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_cart_media_css = SGS_Media_Element::style(
+		$attributes,
+		'',
+		'sgs/cart',
+		$uid,
+		array( 'object-fit' )
+	);
+	if ( '' !== $sgs_cart_media_css ) {
+		$scoped_css[] = $sgs_cart_media_css;
+	}
+}
+
 // ── Wrapper classes ───────────────────────────────────────────────────────────
 $wrapper_classes = array( 'sgs-cart', $uid, 'sgs-cart--mode-' . $effective_mode );
 if ( ! $wc_active ) {

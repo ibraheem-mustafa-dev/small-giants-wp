@@ -37,6 +37,7 @@ import { MEDIA_SIZING_RATIO_OPTIONS,
 	resolveColourToken,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import MediaElementPanel from '../../components/MediaElementPanel';
 
 // -------------------------------------------------------------------------
 // Static option arrays (defined outside component to avoid re-creation)
@@ -777,6 +778,20 @@ export default function Edit( { attributes, setAttributes } ) {
 										onChange={ set( 'imageSize' ) }
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
+									/>
+									{ /* 37-media-no-handroll: object-fit for the featured-image <img>
+									     (sgs-post-grid__img), one media-atom control covering both the
+									     grid-mode and list-mode selectors in style.css — same element,
+									     rendered once per card by Post_Grid_REST::render_card(). */ }
+									<MediaElementPanel
+										attributes={ attributes }
+										setAttributes={ setAttributes }
+										prefix=""
+										blockSlug="sgs/post-grid"
+										insertion="element"
+										atoms={ [ 'object-fit' ] }
+										mediaType="image"
+										scope="element"
 									/>
 									<ToggleControl
 										label={ __( 'Featured images are decorative', 'sgs-blocks' ) }

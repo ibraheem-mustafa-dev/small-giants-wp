@@ -32,6 +32,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"_comment_overlayNotAdopted": "backgroundOverlayColour/Opacity/OpacityTablet/OpacityMobile/ColourHover/BlendMode are deliberately NOT routed through supports.sgs.mediaElements' overlay atom (detector rule 37-media-no-handroll) -- same reasoning as sgs/container (see its block.json for the full note): this block's overlay renders through the shared SGS_Container_Wrapper, whose own sgs_overlay_decls()-based emission is already more capable than the atom (until the atom system gains a caller-supplied-selector mode). Tracked as a future atom-layer capability, not a silent gap.",
 			"containerKind": "layout",
 			"boxFamilies": {
 				"padding": [

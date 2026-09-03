@@ -16,6 +16,7 @@ import {
 	SgsColourPanel,
 	SgsLengthControl,
 	SgsBorderControl,
+	MediaElementPanel,
 } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import {
@@ -2215,6 +2216,36 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						placeholder="220px"
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+					{ /* Media-element atom controls (rule 37-media-no-handroll).
+					     'main' governs every render branch's main product image
+					     (typed, bound read-only, bound variable-configurator —
+					     they never render simultaneously, so ONE control is
+					     correct per R-31-9). 'thumb' governs only the bound
+					     variable-configurator's thumbnail-rail images, a
+					     distinct element with its own 48x48 box. Mirrors
+					     sgs/before-after's + sgs/buybox's independently-scoped
+					     per-element panels. */ }
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="main"
+						blockSlug="sgs/product-card"
+						insertion="element"
+						atoms={ [ 'object-fit', 'focal-point' ] }
+						mediaType="image"
+						scope="element"
+						previewUrl={ image }
+					/>
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="thumb"
+						blockSlug="sgs/product-card"
+						insertion="element"
+						atoms={ [ 'object-fit' ] }
+						mediaType="image"
+						scope="element"
 					/>
 				</PanelBody>
 

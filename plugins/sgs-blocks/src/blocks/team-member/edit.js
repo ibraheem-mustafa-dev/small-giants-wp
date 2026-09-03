@@ -607,6 +607,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { photoDecorative: val } ) }
 						__nextHasNoMarginBottom
 					/>
+					{ /* 37-media-no-handroll remediation (2026-09-03, CORRECTED via
+					     /qc-council same day): NO new control here. The photo's crop
+					     mode is bridged onto the pre-existing 'Object fit' dropdown
+					     the legacy image-controls extension already renders (writes
+					     sgsObjectFit) — mounting a second MediaElementPanel gave the
+					     client two identically-labelled controls. See block.json's
+					     _comment_mediaElements for the full correction. */ }
 				</PanelBody>
 
 				{ /* Box-object interface contract §B/§E: padding/margin base routes

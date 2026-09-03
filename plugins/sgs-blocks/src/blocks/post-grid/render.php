@@ -219,6 +219,15 @@ $query       = new WP_Query( $query_args );
 $total_pages = (int) $query->max_num_pages;
 
 // -------------------------------------------------------------------------
+// Per-instance uid — computed here (moved up from the NO-INLINE CSS section
+// below) because $card_params, built next, needs it (37-media-no-handroll:
+// threaded through to render_card() so the featured-image <img> can carry
+// the media-atom marker class). $root_sel (uid-derived) still builds down
+// in the CSS section where it is used.
+// -------------------------------------------------------------------------
+$uid = sanitize_html_class( 'sgs-post-grid-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 ) );
+
+// -------------------------------------------------------------------------
 // Params array passed to render_card() — mirrors REST endpoint params.
 // -------------------------------------------------------------------------
 $card_params = array(
@@ -240,6 +249,10 @@ $card_params = array(
 	'categoryBadgeColour'   => $attributes['categoryBadgeColour'] ?? 'text-inverse',
 	'categoryBadgeBgColour' => $attributes['categoryBadgeBgColour'] ?? 'primary',
 	'readMoreColour'        => $attributes['readMoreColour'] ?? 'primary',
+	// 37-media-no-handroll: threaded through to render_card() so the
+	// featured-image <img> can carry the media-atom marker class — see the
+	// $sgs_pg_uid comment in class-post-grid-rest.php.
+	'uid'                   => $uid,
 );
 
 // -------------------------------------------------------------------------
@@ -311,6 +324,11 @@ $sgs_query_data = wp_json_encode(
 			'carouselSpeed'         => $carousel_speed,
 			'carouselShowDots'      => $carousel_show_dots,
 			'carouselShowArrows'    => $carousel_show_arrows,
+			// 37-media-no-handroll: round-tripped so AJAX-paginated cards'
+			// featured images carry the same media-atom marker class as the
+			// initial render's — see the $sgs_pg_uid comment in
+			// class-post-grid-rest.php.
+			'uid'                   => $uid,
 		),
 		static function ( $v ) {
 			return '' !== $v && null !== $v;
@@ -466,7 +484,7 @@ $inner_html = ob_get_clean();
 // already handles scoped internally (reads $attributes['style']['spacing']
 // directly) — not duplicated here.
 // -------------------------------------------------------------------------
-$uid      = 'sgs-post-grid-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
+// $uid is computed earlier (before $card_params) — see the comment there.
 $root_sel = '.' . $uid . '.wp-block-sgs-post-grid';
 
 $post_grid_classes = array(
@@ -538,6 +556,23 @@ if ( '' !== $post_grid_preset_text_slug ) {
 if ( '' !== $post_grid_preset_bg_slug ) {
 	$post_grid_classes[] = 'has-background';
 	$post_grid_classes[] = 'has-' . $post_grid_preset_bg_slug . '-background-color';
+}
+
+// 37-media-no-handroll: the featured-image object-fit control. Emitted ONCE
+// here (a `.{uid}{...}` bare-selector rule, not per-card) — every card's
+// <img class="sgs-post-grid__img sgs-media-el {uid}"> shares the same
+// block-level value (see the $sgs_pg_uid comment in class-post-grid-rest.php
+// for how AJAX-injected cards pick up the same rule). Replaces the two
+// hardcoded `object-fit: cover` declarations style.css used to carry
+// (grid-mode .sgs-post-grid__img + list-mode .sgs-post-grid--list
+// .sgs-post-grid__image img — both target this one element) — when unset,
+// assets/css/media-atoms/object-fit.css's own var() fallback already
+// resolves to 'cover', so removing them changes nothing by default.
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$post_grid_media_css = SGS_Media_Element::style( $attributes, '', 'sgs/post-grid', $uid, array( 'object-fit' ) );
+	if ( '' !== $post_grid_media_css ) {
+		$responsive_css .= $post_grid_media_css;
+	}
 }
 
 // FR-32-4 as amended (D345): the per-instance card custom-property VALUES used

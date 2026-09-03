@@ -4,6 +4,7 @@ import { PanelBody, TextControl, ToggleControl, Icon } from '@wordpress/componen
 import { ResponsiveBoxControl, SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
+	MediaElementPanel,
 } from '../../components';
 
 /**
@@ -146,6 +147,43 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+				</PanelBody>
+				<PanelBody
+					title={ __( 'Gallery images', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					{ /* Two independently-scoped media elements — 'main' is the
+					     large PDP display image, 'thumb' is the thumbnail-rail
+					     image (a distinct role, not the same image rendered
+					     twice). Mirrors sgs/before-after's before/after pattern
+					     so a client can set a different fit for each. Rule
+					     37-media-no-handroll. */ }
+					<p className="sgs-buybox__media-panel-label">
+						{ __( 'Main image', 'sgs-blocks' ) }
+					</p>
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="main"
+						blockSlug="sgs/buybox"
+						insertion="element"
+						atoms={ [ 'object-fit' ] }
+						mediaType="image"
+						scope="element"
+					/>
+					<p className="sgs-buybox__media-panel-label">
+						{ __( 'Thumbnail images', 'sgs-blocks' ) }
+					</p>
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="thumb"
+						blockSlug="sgs/buybox"
+						insertion="element"
+						atoms={ [ 'object-fit' ] }
+						mediaType="image"
+						scope="element"
 					/>
 				</PanelBody>
 				<PanelBody

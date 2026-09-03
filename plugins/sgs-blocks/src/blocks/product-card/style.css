@@ -65,11 +65,14 @@
 	--sgs-product-card-bg: transparent;
 }
 
+/* object-fit/object-position now governed by the media-element atom layer
+   (rule 37-media-no-handroll — .sgs-media-el, assets/css/media-element.css),
+   which carries the SAME cover/center-center defaults this rule used to
+   hardcode, so an untouched card renders byte-identical. */
 .product-card .product-card-img {
 	width: 100%;
 	/* Var emitted by render.php when the imageHeight attr is set (F3 fix). */
 	height: var( --sgs-product-card-image-height, 220px );
-	object-fit: cover;
 	display: block;
 }
 
@@ -788,12 +791,13 @@
 	background: var( --wp--preset--color--surface-alt, #f5f7f7 );
 }
 
-/* Main image fills the fixed-height box, centred, scaled to cover. */
+/* Main image fills the fixed-height box. object-fit/object-position now
+   governed by the media-element atom layer (rule 37-media-no-handroll —
+   .sgs-media-el default cover/center-center matches what this rule used to
+   hardcode, so an untouched card renders byte-identical). */
 .product-card--live .product-card__media .product-card-img {
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
-	object-position: center;
 	display: block;
 	margin: 0;
 }
@@ -840,11 +844,13 @@
 	border-color: var( --wp--preset--color--primary, #1F7A7A );
 }
 
-/* Thumb image fills the button box. */
+/* Thumb image fills the button box. object-fit now governed by the
+   media-element atom layer (rule 37-media-no-handroll — .sgs-media-el
+   default cover matches what this rule used to hardcode, so an untouched
+   card renders byte-identical). */
 .product-card--live .product-card__thumb img {
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
 	display: block;
 }
 
@@ -1014,11 +1020,13 @@
  * and the cascade is predictable.
  */
 
-/* Image — fills the full card width at the fixed image-height. */
+/* Image — fills the full card width at the fixed image-height. object-fit
+   now governed by the media-element atom layer (rule 37-media-no-handroll —
+   .sgs-media-el default cover matches what this rule used to hardcode, so
+   an untouched card renders byte-identical). */
 .product-card .sgs-product-card__image {
 	width: 100%;
 	height: var( --sgs-product-card-image-height, 220px );
-	object-fit: cover;
 	display: block;
 }
 

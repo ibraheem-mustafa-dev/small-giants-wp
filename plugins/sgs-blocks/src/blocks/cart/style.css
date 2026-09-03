@@ -387,10 +387,16 @@
 	border-bottom: 1px solid rgba(128, 128, 128, 0.25);
 }
 
+/* object-fit is deliberately NOT declared here (rule 37-media-no-handroll
+   fix) — item-row-template.js appends the shared .sgs-media-el marker class
+   to this <img> at runtime, so assets/css/media-atoms/object-fit.css's
+   `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` rule owns it
+   (identical `cover` fallback to the value this replaces). The placeholder
+   `<span>` sharing this selector is unaffected either way — object-fit does
+   nothing on a non-replaced element. */
 .sgs-cart__item-thumb {
 	width: 48px;
 	height: 48px;
-	object-fit: cover;
 	border-radius: 4px;
 	background-color: rgba(128, 128, 128, 0.12);
 }

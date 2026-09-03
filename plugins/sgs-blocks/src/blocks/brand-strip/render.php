@@ -65,8 +65,10 @@ $tile_padding        = isset( $attributes['tilePadding'] ) ? absint( $attributes
 $tile_radius         = isset( $attributes['tileRadius'] ) ? absint( $attributes['tileRadius'] ) : 16;
 $tile_shape_raw      = $attributes['tileShape'] ?? 'square';
 $tile_shape          = in_array( $tile_shape_raw, array( 'square', 'circle', 'none' ), true ) ? $tile_shape_raw : 'square';
-$logo_fit_raw        = $attributes['logoFit'] ?? 'contain';
-$logo_fit            = in_array( $logo_fit_raw, array( 'contain', 'cover' ), true ) ? $logo_fit_raw : 'contain';
+// logoFit (contain|cover, default contain) is no longer read here — it is
+// routed through the shared media-element atom layer (SGS_Media_Element::
+// style() below), bridged via STORED_AS so the pre-existing control keeps
+// its stored attribute name. See includes/media/atoms/object-fit.php.
 $tile_bg_colour      = $attributes['tileBackgroundColour'] ?? '';
 $tile_border_width   = isset( $attributes['tileBorderWidth'] ) ? absint( $attributes['tileBorderWidth'] ) : 0;
 $tile_border_colour  = $attributes['tileBorderColour'] ?? '';
@@ -219,7 +221,6 @@ $css_vars = array_merge(
 		// `html :where([style*="border-width"]){border-style:solid}`, which then
 		// paints a phantom 3px currentColor border on this root (D-2026-07-17).
 		'--sgs-tile-border-thickness:' . $tile_border_width . 'px',
-		'--sgs-logo-fit:' . $logo_fit,
 	)
 );
 if ( $fade_edges ) {
@@ -268,6 +269,20 @@ $scoped_css = array();
 // is NOT subject to safecss_filter_attr, so functional colours survive here.
 if ( ! empty( $css_vars ) ) {
 	$scoped_css[] = $root_sel . '{' . implode( ';', $css_vars ) . '}';
+}
+
+// --- Media-element atom layer — object-fit for the logo <img>, routed
+// through the shared atom (supports.sgs.mediaElements in block.json) rather
+// than the block's own --sgs-logo-fit custom property. The pre-existing
+// `logoFit` control (contain|cover, default contain) stays the only UI —
+// STORED_AS in helpers-media-element.php bridges the atom onto it. The
+// marker classes the shared `.sgs-media-el` stylesheet rule reads are added
+// to each logo <img> below, in the logos-HTML build loop. ---
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_bs_media_css = SGS_Media_Element::style( $attributes, '', 'sgs/brand-strip', $uid, array( 'object-fit' ) );
+	if ( '' !== $sgs_bs_media_css ) {
+		$scoped_css[] = $sgs_bs_media_css;
+	}
 }
 
 // --- Base spacing (padding/margin) + native border (width/style/colour/
@@ -549,6 +564,20 @@ if ( ! empty( $logos ) ) {
 		$logo_html = sgs_render_media( $media, 'sgs/brand-strip' );
 		if ( '' === $logo_html ) {
 			continue;
+		}
+		// Marker classes for the shared media-element atom layer (see the
+		// object-fit emission above) — every logo shares the SAME scope
+		// class (unprefixed, single element per block), so the atom's
+		// --sgs-media-object-fit value applies to each tile identically.
+		if ( class_exists( 'SGS_Media_Element' ) ) {
+			$sgs_bs_scope_class  = SGS_Media_Element::scope_class( $uid, '' );
+			$sgs_bs_marker_class = implode( ' ', SGS_Media_Element::element_classes( $sgs_bs_scope_class ) );
+			$logo_html           = preg_replace(
+				'/(<img\b[^>]*\bclass="[^"]*)"/',
+				'$1 ' . $sgs_bs_marker_class . '"',
+				$logo_html,
+				1
+			);
 		}
 		if ( $logo_decorative ) {
 			// Belt-and-braces alongside the empty alt above — aria-hidden

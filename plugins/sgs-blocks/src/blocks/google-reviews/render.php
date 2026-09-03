@@ -213,6 +213,23 @@ $reviews = array_slice( $filtered_reviews, 0, $max_reviews );
 $gr_uid      = 'sgs-gr-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 $gr_root_sel = '.' . $gr_uid . '.wp-block-sgs-google-reviews';
 
+// -------------------------------------------------------------------------
+// Media-element atom layer (rule 37-media-no-handroll fix) — reviewer avatar
+// object-fit only. `class_exists()` guards a class the plugin loader always
+// registers; kept for the same "never fatal if load order changes" reason
+// `sgs/gallery` and `sgs/before-after` guard it. Classes are appended to
+// each avatar `<img>` below (the review loop) — `.sgs-media-el` is the
+// shared marker the generated assets/css/media-atoms/object-fit.css rule
+// targets, `$gr_media_scope` is the per-instance scope the atom's
+// custom-property value below is set on. One block-wide value applies to
+// every avatar (there is no per-review styling control on this block).
+$gr_media_scope   = '';
+$gr_media_classes = array();
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$gr_media_scope   = SGS_Media_Element::scope_class( $gr_uid, '' );
+	$gr_media_classes = SGS_Media_Element::element_classes( $gr_media_scope );
+}
+
 $gr_extra_classes = array(
 	'sgs-google-reviews',
 	$gr_uid,
@@ -238,6 +255,21 @@ $gr_extra_styles = array(
 // this block's OWN scoped <style> (do NOT pass via wrapper extra_styles —
 // that inlines).
 $gr_responsive_css = '';
+
+// Media-element atom layer — object-fit only (rule 37-media-no-handroll fix).
+// Emits `.{scope}{--sgs-media-object-fit:…}` which
+// assets/css/media-atoms/object-fit.css's `.sgs-media-el` rule consumes. No
+// value set -> no declaration -> that stylesheet's own `cover` fallback
+// applies, matching the removed style.css default exactly (style.css).
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$gr_responsive_css .= SGS_Media_Element::style(
+		$attributes,
+		'',
+		'sgs/google-reviews',
+		$gr_uid,
+		array( 'object-fit' )
+	);
+}
 
 $gr_style_engine_args = array();
 
@@ -540,6 +572,7 @@ else :
 								loading="lazy"
 								width="48"
 								height="48"
+								<?php echo $gr_media_classes ? 'class="' . esc_attr( implode( ' ', $gr_media_classes ) ) . '"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped via esc_attr() above. ?>
 							/>
 						<?php else : ?>
 							<div class="sgs-google-reviews__avatar-initials">

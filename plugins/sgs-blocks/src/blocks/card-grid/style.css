@@ -47,6 +47,15 @@
 	aspect-ratio: var(--sgs-card-grid-aspect, 16/10);
 }
 
+/* `.sgs-card-grid__image` is the EDITOR-CANVAS preview class only (edit.js
+   hand-builds its own <img>/<video> here, not sgs_render_media() — unlike
+   sgs/gallery this block's editor canvas is not a ServerSideRender mirror of
+   render.php). The FRONTEND element never carries this class — its object-fit
+   is governed by render.php's higher-specificity
+   `.sgs-card-grid__image-wrap img/video` rule (rule 37-media-no-handroll fix:
+   now the shared .sgs-media-el atom marker, see render.php). `object-fit:cover`
+   stays here as the editor canvas's own default so removing the frontend
+   hardcode does not regress the canvas preview. */
 .sgs-card-grid__image {
 	width: 100%;
 	height: 100%;

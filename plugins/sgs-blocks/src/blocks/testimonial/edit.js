@@ -35,6 +35,7 @@ import {
 	SgsLengthControl,
 	SgsBorderControl,
 	resolveColourToken,
+	MediaElementPanel,
 } from '../../components';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -875,6 +876,25 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								} }
 							</ResponsiveControl>
 						) }
+						{ /* 37-media-no-handroll remediation (2026-09-03) — the author
+						     photo's crop mode is a genuine per-instance client control
+						     now (style.css no longer hardcodes object-fit:cover; the
+						     shared media-atoms stylesheet paints the same default).
+						     Gated on an author photo existing, same as the art-direction
+						     control above — a crop control for a photo that is not
+						     there would be a dead control. */ }
+						{ showAvatar && avatarMedia?.url && (
+							<MediaElementPanel
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix="avatar"
+								blockSlug="sgs/testimonial"
+								insertion="element"
+								atoms={ [ 'object-fit' ] }
+								mediaType="image"
+								scope="element"
+							/>
+						) }
 						{ showLogo && (
 							<MediaPanel
 								label={ __( 'Organisation logo', 'sgs-blocks' ) }
@@ -933,6 +953,27 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									setAttributes( { workMediaDecorative: val } )
 								}
 								__nextHasNoMarginBottom
+							/>
+						) }
+						{ /* 37-media-no-handroll remediation (2026-09-03) — replaces the
+						     old block-level imageControls/imageControlsExplicit
+						     "Image Controls" panel (a single shared sgsObjectFit/
+						     sgsObjectPosition pair) with an independently-scoped
+						     object-fit + focal-point control for THIS slot only,
+						     matching sgs/before-after's Wave 5b precedent. Case-study
+						     photos/videos vary wildly in composition, so both the crop
+						     mode and crop focus are genuine per-instance needs here. */ }
+						{ showWork && workMedia?.url && (
+							<MediaElementPanel
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix="work"
+								blockSlug="sgs/testimonial"
+								insertion="element"
+								atoms={ [ 'object-fit', 'focal-point' ] }
+								mediaType={ workMedia?.type === 'video' ? 'video' : 'image' }
+								scope="element"
+								previewUrl={ workMedia?.type === 'video' ? '' : workMedia?.url || '' }
 							/>
 						) }
 					</PanelBody>

@@ -119,11 +119,23 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 		 */
 		$sgs_pcard_feat_badge = ( 'featured' === $sgs_pcard_variant ) ? $sgs_pcard_feat : '';
 
+		// Media-element atom marker (rule 37-media-no-handroll / block.json
+		// supports.sgs.mediaElements 'main'). Same scope class every other
+		// main-image render site in render.php carries — see render.php's
+		// "Media-element atom layer" comment for the full explanation.
+		// Guarded so a request that somehow reaches this file before the
+		// class autoloads still renders with the plain base class (mirrors
+		// buybox/gallery-col.php's own guard).
+		$sgs_pcard_image_class = 'sgs-product-card__image';
+		if ( '' !== $card_uid && class_exists( 'SGS_Media_Element' ) ) {
+			$sgs_pcard_image_class .= ' ' . implode( ' ', SGS_Media_Element::element_classes( SGS_Media_Element::scope_class( $card_uid, 'main' ) ) );
+		}
+
 		if ( '' !== $sgs_pcard_image ) :
 			?>
 			<div class="sgs-product-card__media-wrap">
 				<img
-					class="sgs-product-card__image"
+					class="<?php echo esc_attr( $sgs_pcard_image_class ); ?>"
 					src="<?php echo esc_url( $sgs_pcard_image ); ?>"
 					alt="<?php echo esc_attr( $sgs_pcard_alt ); ?>"
 					loading="lazy"

@@ -46,12 +46,16 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
-			"imageControls": true,
-			"imageControlsExplicit": true,
+			"_comment_orgLogoNotAdopted": "orgLogo's object-fit:contain (style.css) is deliberately NOT a client control and NOT routed through the media-atom layer -- a logo must never be cropped, so there is no orgLogoObjectFit attribute to adopt in the first place. Disclosed here (in addition to the existing style.css comment) for consistency with the other _comment_*NotAdopted notes added during the 37-media-no-handroll remediation, per /qc-council 2026-09-03.",
 			"containerKind": "content",
 			"scalarContentLift": true,
 			"presetSelectors": [
 				"effectHover"
+			],
+			"_comment_mediaElements": "37-media-no-handroll remediation (2026-09-03). Replaces the old universal imageControls/imageControlsExplicit single sgsObjectFit/sgsObjectPosition pair (block-level, shared by whichever slot's render.php happened to call sgs_media_position_css()) with two independently-scoped media elements, one per slot, mirroring sgs/before-after's Wave 5b migration. `avatar` gets object-fit only (a fixed-crop circular headshot has no genuine focal-point need beyond the fit mode). `work` gets object-fit + focal-point, replacing the position control the old mechanism gave it 1:1 — case-study media varies in composition, so both crop mode and crop focus are genuine per-instance needs. The org logo is deliberately excluded — see elements.org-logo-image below.",
+			"mediaElements": [
+				{ "prefix": "avatar", "context": "element", "atoms": [ "object-fit" ] },
+				{ "prefix": "work", "context": "element", "atoms": [ "object-fit", "focal-point" ] }
 			],
 			"elements": {
 				"quote-box": {
@@ -154,7 +158,7 @@
 					"label": "Avatar image",
 					"order": 6,
 					"clusters": [],
-					"_note": "Deliberately NOT reachable by the universal image-controls mechanism (design decision, 2026-08-17): style.css:89-95 fixes object-fit:cover + border-radius:50% (circular headshot crop) as a component-owned constant — every avatar needs the same crop treatment, matching the CLAUDE.md DEFAULT-vs-HARDCODE test's 'component's own constant stays' carve-out (same status as sgs/label's fixed fontSize:12). Rendered inside a plain `<div>` (render.php), which the generic mechanism's 3 selectors (`> img` / `.wp-block-image > img` / `figure > img`) never reach anyway — leaving it declared-but-unreached would just be a silent no-op, so it is excluded by design rather than left accidentally dead. Only work-media below is wired for genuine per-instance crop control."
+					"_note": "37-media-no-handroll remediation (2026-09-03) — REVERSES the 2026-08-17 note this used to carry. The circular cover-crop is still the component-owned DEFAULT (style.css's hardcoded object-fit:cover was removed; the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` atom stylesheet now paints the identical default), but it is no longer immovable — a client can override it per instance via the `avatar` mediaElements entry above (`avatarObjectFit`/`avatarObjectFitTablet`/`avatarObjectFitMobile`, auto-registered server-side from supports.sgs.mediaElements — see includes/media-element-attrs-register.php). Border-radius:50% stays a genuine fixed constant (a non-circular avatar is not a supported shape here). Rendered inside a plain `<div>` (render.php) — the marker classes are added explicitly via SGS_Media_Element::element_classes(), not via the generic render_block guessing injector, so the plain-`<div>` wrapper is no longer a reachability problem."
 				},
 				"org-logo-image": {
 					"label": "Organisation logo",
@@ -166,7 +170,7 @@
 					"label": "Work / case-study media",
 					"order": 8,
 					"clusters": [],
-					"_note": "The ONE image slot this block wires for genuine per-instance crop control (design decision, 2026-08-17) — case-study photos vary in composition/aspect ratio, unlike the fixed-crop avatar/logo slots above. `imageControlsExplicit:true` + an explicit `sgs_media_position_css()` call in render.php targets the known selector `.sgs-testimonial__work img, .sgs-testimonial__work video` directly (matches the team-member/gallery/testimonial-slider precedent), rather than relying on the generic render_block guessing injector — which only coincidentally reached this `<figure>`-wrapped slot and never the avatar/logo `<div>`-wrapped ones."
+					"_note": "37-media-no-handroll remediation (2026-09-03) — migrated off the old block-level imageControls/imageControlsExplicit + sgs_media_position_css() mechanism (design decision, 2026-08-17) onto the independently-scoped `work` mediaElements entry above (object-fit + focal-point), matching sgs/before-after's Wave 5b precedent 1:1. Still the one image slot with a genuine per-instance crop need — case-study photos vary in composition/aspect ratio, unlike the fixed-crop avatar/logo slots. SGS_Media_Element::element_classes()/style() target the same known `.sgs-testimonial__work img, .sgs-testimonial__work video` selector explicitly in render.php; the generic render_block guessing injector is still never relied on."
 				},
 				"rating": {
 					"label": "Rating",

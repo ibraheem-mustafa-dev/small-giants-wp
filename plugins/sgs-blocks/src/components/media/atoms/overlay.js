@@ -39,6 +39,23 @@
  * controls without a colour or gradient to tint — `disclosure()` reports
  * them `hidden` in that case, and `css()` never emits them either.
  *
+ * ── `OverlayOpacity` is TIERED (2026-09-03, closing the detector-backlog gap
+ * against `class-sgs-container-wrapper.php`'s `backgroundOverlayOpacityTablet`/
+ * `Mobile`) ─────────────────────────────────────────────────────────────────
+ * `OverlayOpacity` has been in `MEDIA_TIERED_BASES` (`MediaElementControls.js`)
+ * for some time already, so the L1 injection layer
+ * (`media-element-attrs-register.php` server-side, `mediaAttrKeys()` in the
+ * editor) already registers `overlayOpacityTablet`/`overlayOpacityMobile`
+ * (and their prefixed siblings) on every current adopter of this atom — this
+ * atom's OWN `attrKeys()`/`css()` were simply not reading them yet. Only
+ * OPACITY is tiered, matching the wrapper's own doc comment
+ * (`class-sgs-container-wrapper.php:417-422`): the responsive need is "a
+ * heavier scrim on the small screen", an opacity change, not a different hue
+ * — colour/gradient/blend-mode stay untiered. Nesting mobile -> tablet ->
+ * desktop -> the CSS initial (1) mirrors `object-fit.js`'s reasoning
+ * (`assets/css/media-atoms/object-fit.css`'s own comment): an unset mobile
+ * value must fall through to tablet, not jump straight past it to desktop.
+ *
  * `css()` mirrors `includes/media/atoms/overlay.php`'s
  * `sgs_media_atom_overlay_css()` byte-for-byte — enforced by
  * `scripts/tests/test-media-atom-parity.mjs`.
@@ -125,8 +142,33 @@ export function attrKeys( prefix, blockSlug ) {
 		gradient: mediaStoredAttrName( blockSlug, prefix, 'OverlayGradient' ),
 		gradientHover: mediaStoredAttrName( blockSlug, prefix, 'OverlayGradientHover' ),
 		opacity: mediaStoredAttrName( blockSlug, prefix, 'OverlayOpacity' ),
+		opacityTablet: mediaStoredAttrName( blockSlug, prefix, 'OverlayOpacityTablet' ),
+		opacityMobile: mediaStoredAttrName( blockSlug, prefix, 'OverlayOpacityMobile' ),
 		blendMode: mediaStoredAttrName( blockSlug, prefix, 'OverlayBlendMode' ),
 	};
+}
+
+/**
+ * Clamp a raw opacity candidate to 0-100 and format it as the CSS fraction
+ * string this atom stores (`0.3`, not `0.300000000000004` JS float noise).
+ * Shared by the base and both tier declarations in `css()` below — mirrors
+ * `sgs_overlay_decls()`'s own rounding.
+ *
+ * @param {*} raw Raw candidate.
+ * @return {{pct: number, fraction: string}|null} `null` when not a finite
+ *                  number, or when the clamped value is 100 (the CSS
+ *                  initial/no-op — never emitted, same as the base always
+ *                  has).
+ */
+function formatOpacityDecl( raw ) {
+	if ( 'number' !== typeof raw || ! Number.isFinite( raw ) ) {
+		return null;
+	}
+	const pct = Math.max( 0, Math.min( 100, raw ) );
+	if ( 100 === pct ) {
+		return null;
+	}
+	return { pct, fraction: String( Math.round( ( pct / 100 ) * 10000 ) / 10000 ) };
 }
 
 /**
@@ -207,15 +249,19 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 		decls.push( `--sgs-media-overlay-colour-hover:${ hoverPaint.value }` );
 	}
 
-	const opacityRaw = attributes[ keys.opacity ];
-	if ( 'number' === typeof opacityRaw && Number.isFinite( opacityRaw ) ) {
-		const pct = Math.max( 0, Math.min( 100, opacityRaw ) );
-		if ( 100 !== pct ) {
-			// Trim trailing zeros the same way sgs_overlay_decls() does, so
-			// 0.3 stays 0.3 rather than 0.300000000000004 (JS float noise).
-			const normalised = String( Math.round( ( pct / 100 ) * 10000 ) / 10000 );
-			decls.push( `--sgs-media-overlay-opacity:${ normalised }` );
-		}
+	const opacity = formatOpacityDecl( attributes[ keys.opacity ] );
+	if ( opacity ) {
+		decls.push( `--sgs-media-overlay-opacity:${ opacity.fraction }` );
+	}
+
+	const opacityTablet = formatOpacityDecl( attributes[ keys.opacityTablet ] );
+	if ( opacityTablet ) {
+		decls.push( `--sgs-media-overlay-opacity-tablet:${ opacityTablet.fraction }` );
+	}
+
+	const opacityMobile = formatOpacityDecl( attributes[ keys.opacityMobile ] );
+	if ( opacityMobile ) {
+		decls.push( `--sgs-media-overlay-opacity-mobile:${ opacityMobile.fraction }` );
 	}
 
 	const blendMode = attributes[ keys.blendMode ];

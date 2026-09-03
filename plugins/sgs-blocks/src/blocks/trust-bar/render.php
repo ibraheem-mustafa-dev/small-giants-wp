@@ -23,6 +23,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-typography.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-media-element.php';
 
 // --- Unique ID for scoped typography <style> ----------------------------------
 $uid = wp_unique_id( 'sgs-tb-' );
@@ -72,7 +73,9 @@ $badge_image_size          = isset( $attributes['badgeImageSize'] ) ? absint( $a
 $badge_image_shadow        = isset( $attributes['badgeImageShadow'] ) ? (string) $attributes['badgeImageShadow'] : '';
 $badge_image_shadow_colour = isset( $attributes['badgeImageShadowColour'] ) ? (string) $attributes['badgeImageShadowColour'] : '';
 $badge_image_shadow_colour_hover = isset( $attributes['badgeImageShadowColourHover'] ) ? (string) $attributes['badgeImageShadowColourHover'] : '';
-$badge_image_object_fit    = sanitize_html_class( $attributes['badgeImageObjectFit'] ?? 'contain' );
+// badgeImageObjectFit is read directly by SGS_Media_Element::style() (the
+// shared object-fit atom, rule 37-media-no-handroll) further down — no local
+// sanitised copy needed here.
 // Grid columns are driven by the gridTemplateColumns attr via the shared wrapper helper.
 // Gap is consumed by the shared wrapper helper directly from $attributes['gap'].
 
@@ -383,13 +386,29 @@ if ( $label_colour_val ) {
 // --- image-badge appearance (no-inline contract: scoped rule, not inline style=) -----
 // Mirrors icon-circle's own control set (size/shadow/border-radius) plus an
 // image-specific object-fit control. Only emitted when the variant is active.
+// Media-element atom layer (rule 37-media-no-handroll) — badgeImageObjectFit
+// already matches mediaAttrName('badgeImage','ObjectFit'), so it is wired
+// directly onto the shared object-fit atom rather than a hand-rolled
+// `object-fit:` declaration. Computed once (not per item, below) because the
+// scope class/CSS are the same for every badge image in this block instance;
+// only fires when the image-badge branch actually renders an <img>.
+$tb_badge_img_marker_class_attr = '';
+if ( 'image-badge' === $badge_style && class_exists( 'SGS_Media_Element' ) ) {
+	$tb_badge_img_scope_class       = SGS_Media_Element::scope_class( $uid, 'badgeImage' );
+	$tb_badge_img_marker_class_attr = ' ' . implode( ' ', SGS_Media_Element::element_classes( $tb_badge_img_scope_class ) );
+
+	$tb_badge_img_atom_css = SGS_Media_Element::style( $attributes, 'badgeImage', 'sgs/trust-bar', $uid, array( 'object-fit' ) );
+	if ( '' !== $tb_badge_img_atom_css ) {
+		$tb_extra_scoped_css .= $tb_badge_img_atom_css;
+	}
+}
+
 if ( 'image-badge' === $badge_style ) {
 	$img_sel   = $uid_scope . ' .sgs-trust-bar__badge-img';
 	$img_decls = array();
 
 	$img_decls[] = 'width:' . $badge_image_size . 'px';
 	$img_decls[] = 'height:' . $badge_image_size . 'px';
-	$img_decls[] = 'object-fit:' . ( in_array( $badge_image_object_fit, array( 'cover', 'contain' ), true ) ? $badge_image_object_fit : 'contain' );
 
 	if ( '' !== $badge_image_border_radius ) {
 		$safe_img_radius = preg_replace( '/[^A-Za-z0-9\s%().,\-]/', '', $badge_image_border_radius );
@@ -558,10 +577,11 @@ foreach ( $items as $tb_item_index => $item ) {
 		$badge_content = '';
 		if ( $media_url ) {
 			$badge_content .= sprintf(
-				'<img src="%s" alt="%s"%s class="sgs-trust-bar__badge-img" loading="lazy" />',
+				'<img src="%s" alt="%s"%s class="sgs-trust-bar__badge-img%s" loading="lazy" />',
 				esc_url( $media_url ),
 				esc_attr( $media_alt ),
-				$item_decorative ? ' aria-hidden="true"' : ''
+				$item_decorative ? ' aria-hidden="true"' : '',
+				esc_attr( $tb_badge_img_marker_class_attr )
 			);
 		}
 		if ( $item_label ) {

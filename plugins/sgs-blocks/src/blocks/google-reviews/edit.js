@@ -24,6 +24,7 @@ import { ResponsiveOverride, SgsColourPanel,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
+import MediaElementPanel from '../../components/MediaElementPanel';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -233,6 +234,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						checked={ showAvatar }
 						onChange={ ( value ) => setAttributes( { showAvatar: value } ) }
 					/>
+
+					{ showAvatar && (
+						<MediaElementPanel
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							blockSlug="sgs/google-reviews"
+							insertion="element"
+							atoms={ [ 'object-fit' ] }
+							mediaType="image"
+						/>
+					) }
 
 					<ToggleControl
 						label={ __( 'Show dates', 'sgs-blocks' ) }

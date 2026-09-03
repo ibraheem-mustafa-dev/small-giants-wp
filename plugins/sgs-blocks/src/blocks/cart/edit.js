@@ -3,6 +3,7 @@ import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, Notice } from '@wordpress/components';
 import { IconPreview, ResponsiveBoxControl, SgsColourPanel } from '../../components';
 import { colourVar } from '../../utils';
+import MediaElementPanel from '../../components/MediaElementPanel';
 import PanelSettingsControls from './PanelSettingsControls';
 import TriggerSettingsControls from './TriggerSettingsControls';
 
@@ -162,6 +163,18 @@ export default function Edit( { attributes, setAttributes } ) {
 					hideWhenEmpty={ hideWhenEmpty }
 					setAttributes={ setAttributes }
 				/>
+
+				{ hasPanel && (
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						blockSlug="sgs/cart"
+						insertion="root"
+						atoms={ [ 'object-fit' ] }
+						mediaType="image"
+						title={ __( 'Item thumbnail', 'sgs-blocks' ) }
+					/>
+				) }
 
 				<PanelBody
 					title={ __( 'Accessibility', 'sgs-blocks' ) }

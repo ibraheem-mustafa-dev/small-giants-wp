@@ -39,6 +39,8 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 				gradientHover: keys.gradientHover,
 			} }
 			opacityKey={ keys.opacity }
+			opacityTabletKey={ keys.opacityTablet }
+			opacityMobileKey={ keys.opacityMobile }
 			blendModeKey={ keys.blendMode }
 			paintDisabled={ 'disabled' === disc.state }
 			disabledReason={ disc.hiddenReason || '' }

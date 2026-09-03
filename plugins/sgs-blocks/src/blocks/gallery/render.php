@@ -205,6 +205,25 @@ $root_sel = '.' . $uid . '.wp-block-sgs-gallery';
 $gallery_responsive_css = '';
 
 // -------------------------------------------------------------------------
+// Media-element atom layer (rule 37-media-no-handroll fix) — grid-thumbnail
+// object-fit only. `class_exists()` guards a class the plugin loader always
+// registers; kept for the same "never fatal if load order changes" reason
+// `sgs/before-after` and `sgs/hero` guard it. Classes are added to the SAME
+// <img> already carrying `sgs-gallery__img` (built via wp_get_attachment_image()
+// below) — `.sgs-media-el` is the shared marker the generated
+// assets/css/media-atoms/object-fit.css rule targets, `$sgs_gallery_media_scope`
+// is the per-instance scope the atom's custom-property value below is set on.
+// The `.sgs-gallery__lightbox-img` (style.css, `object-fit:contain`) does NOT
+// get these classes — that element is deliberately excluded, see style.css.
+$sgs_gallery_media_scope   = '';
+$sgs_gallery_media_classes = array();
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_gallery_media_scope   = SGS_Media_Element::scope_class( $uid, 'sgs' );
+	$sgs_gallery_media_classes = SGS_Media_Element::element_classes( $sgs_gallery_media_scope );
+}
+$sgs_gallery_img_class = implode( ' ', array_filter( array_merge( array( 'sgs-gallery__img' ), $sgs_gallery_media_classes ) ) );
+
+// -------------------------------------------------------------------------
 // Responsive gap tiers (gapTablet / gapMobile).
 //
 // WHY this lives here and not in SGS_Container_Wrapper: the wrapper DOES read
@@ -258,18 +277,43 @@ if ( '' !== $gap_mobile ) {
 // Explicit image-controls crop (Spec 35 capability-routing doctrine, Part 9,
 // mechanism (c)). block.json declares `imageControlsExplicit:true` so the
 // universal render_block guessing-filter (includes/image-controls.php) bails
-// out for this block — this is the ONLY source of the sgsObjectPosition /
-// sgsObjectFit CSS now. Block-wide only (one crop setting for every grid
+// out for this block. Block-wide only (one crop setting for every grid
 // item — per-item cropping is an explicit non-goal, the array `mediaItems`
 // attribute has no per-item position/fit fields). Selector targets every
-// grid-item `<img>` uniformly via `.sgs-gallery__img` (style.css:218-224 —
-// the hardcoded `object-fit:cover` there is the intentional default; this
-// uid-scoped rule has higher specificity and overrides it only when the
-// operator sets a custom value). Deliberately excludes
-// `.sgs-gallery__lightbox-img` (style.css:477, `object-fit:contain`) — a
+// grid-item `<img>` uniformly via `.sgs-gallery__img`. Deliberately excludes
+// `.sgs-gallery__lightbox-img` (style.css, `object-fit:contain`) — a
 // separate, natural-size element per the block census, never scoped by this
 // selector.
-$gallery_responsive_css .= sgs_media_position_css( $attributes, 'sgs', $root_sel . ' .sgs-gallery__img' );
+//
+// object-fit split out (rule 37-media-no-handroll fix): `sgsObjectFit` is now
+// read by the media-element atom below, not here — pass a copy with it
+// cleared so this call only ever emits `object-position` (its `sgsObjectFit`
+// half would otherwise duplicate the atom's `var(--sgs-media-object-fit)`
+// declaration on the SAME element with higher specificity, silently making
+// the atom's value dead the moment an operator set one). Object-position has
+// no atom coverage yet (`focal-point`, not in scope for this fix) and stays
+// on this explicit mechanism unchanged.
+$gallery_responsive_css .= sgs_media_position_css(
+	array_merge( $attributes, array( 'sgsObjectFit' => '' ) ),
+	'sgs',
+	$root_sel . ' .sgs-gallery__img'
+);
+
+// Media-element atom layer — object-fit only (rule 37-media-no-handroll fix).
+// Reads the SAME `sgsObjectFit` attribute the block already stores (see the
+// block.json `_comment_mediaElements`); emits `.{scope}{--sgs-media-object-fit:…}`
+// which assets/css/media-atoms/object-fit.css's `.sgs-media-el` rule consumes.
+// No value set -> no declaration -> that stylesheet's own `cover` fallback
+// applies, matching the removed style.css default exactly (style.css).
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$gallery_responsive_css .= SGS_Media_Element::style(
+		$attributes,
+		'sgs',
+		'sgs/gallery',
+		$uid,
+		array( 'object-fit' )
+	);
+}
 
 $gallery_style_engine_args = array();
 
@@ -453,7 +497,7 @@ ob_start();
 										false,
 										array_merge(
 											array(
-												'class'   => 'sgs-gallery__img',
+												'class'   => $sgs_gallery_img_class,
 												'loading' => $index < 4 ? 'eager' : 'lazy',
 											),
 											// Item 18 (decorative-image-aria): overriding 'alt' here beats
@@ -465,7 +509,10 @@ ob_start();
 									);
 								} else {
 									// Video items, or images without an attachment ID, render via the
-									// shared media-slot helper — emits <img> or <video> as needed.
+									// shared media-slot helper — emits <img> or <video> as needed. Pre-
+									// existing gap, unchanged by this fix: sgs_render_media() does not
+									// receive `sgs-gallery__img` (or the new media-element marker) either,
+									// so this path never carried the object-fit rule.
 									echo $item_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — sgs_render_media() escapes internally.
 								}
 								?>
@@ -499,7 +546,7 @@ ob_start();
 									false,
 									array_merge(
 										array(
-											'class'   => 'sgs-gallery__img',
+											'class'   => $sgs_gallery_img_class,
 											'loading' => $index < 4 ? 'eager' : 'lazy',
 										),
 										// Item 18 (decorative-image-aria) — see the lightbox branch above
@@ -508,6 +555,8 @@ ob_start();
 									)
 								);
 							} else {
+								// Pre-existing gap, unchanged by this fix — see the lightbox branch
+								// above.
 								echo $item_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — sgs_render_media() escapes internally.
 							}
 							?>

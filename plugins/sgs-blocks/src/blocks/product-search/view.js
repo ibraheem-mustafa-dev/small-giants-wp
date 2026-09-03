@@ -80,6 +80,20 @@ function initInstance( root ) {
 			: maxResultsDesktop;
 	}
 
+	// 37-media-no-handroll remediation (2026-09-03) — the result thumbnail's
+	// object-fit VALUE is computed server-side (render.php, via the shared
+	// media-atom system) and scoped to the block's existing no-inline
+	// scoped-styling uid class ($sgs_style_uid, PHP-side name), which is
+	// already present on `root`'s classList for every display mode
+	// (render.php's `$wrapper_attrs` — the pattern is `sgs-ps-` + 8 hex
+	// chars). Find it here once so each thumbnail <img> created below can
+	// carry the matching `sgs-media-el` marker + this scope class, which is
+	// what makes the shared `.sgs-media-el` atom stylesheet rule apply to an
+	// element that render.php never directly rendered.
+	const mediaScopeClass = Array.from( root.classList ).find( ( c ) =>
+		/^sgs-ps-[0-9a-f]{8}$/.test( c )
+	);
+
 	// Display-mode detection — set by render.php as data-display.
 	// icon: <details>/<summary> DISCLOSURE (FR-36-10).
 	// full-screen-overlay / command-palette: <dialog> DIALOG (FR-36-10),
@@ -396,6 +410,13 @@ function initInstance( root ) {
 					img.loading = 'lazy';
 					img.width = 40;
 					img.height = 40;
+					// 37-media-no-handroll remediation (2026-09-03) — marker
+					// classes for the shared media-atom object-fit rule; see
+					// the mediaScopeClass comment above.
+					img.classList.add( 'sgs-media-el' );
+					if ( mediaScopeClass ) {
+						img.classList.add( mediaScopeClass );
+					}
 					li.appendChild( img );
 				}
 

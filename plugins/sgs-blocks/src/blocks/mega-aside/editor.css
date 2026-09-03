@@ -17,10 +17,14 @@
 	gap: 16px;
 }
 
+/* object-fit intentionally absent — mirrors style.css's own removal (rule
+   37-media-no-handroll, 2026-09-03): it was silently overriding the child
+   sgs/media block's own already-adopted object-fit atom/control (which
+   already defaults to `cover` via the shared `.sgs-media-el` marker). See
+   style.css for the full rationale. */
 .sgs-mega-aside > .wp-block-sgs-media img,
 .sgs-mega-aside > .wp-block-sgs-media video {
 	max-height: 170px;
-	object-fit: cover;
 	width: 100%;
 	border-radius: 12px;
 }

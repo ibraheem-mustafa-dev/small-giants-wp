@@ -58,8 +58,15 @@ export function itemRowHtml( item, totals ) {
 	const qty = Number( item.quantity ) || 0;
 	const qtyInputId = `sgs-cart-qty-${ key }`;
 
+	// `sgs-media-el` (rule 37-media-no-handroll fix) is the shared media-element
+	// atom marker (includes/class-sgs-media-element.php /
+	// assets/css/media-atoms/object-fit.css) — this thumbnail is added to the
+	// DOM here, client-side, but the `--sgs-media-object-fit` custom property
+	// it reads is set server-side on the block wrapper (render.php), so the
+	// marker class is all this template needs to add for the atom's CSS rule
+	// to apply once the image is inserted.
 	const thumbHtml = thumb
-		? `<img class="sgs-cart__item-thumb" src="${ escapeHtml(
+		? `<img class="sgs-cart__item-thumb sgs-media-el" src="${ escapeHtml(
 				thumb
 		  ) }" alt="" width="48" height="48" loading="lazy" />`
 		: '<span class="sgs-cart__item-thumb sgs-cart__item-thumb--placeholder" aria-hidden="true"></span>';

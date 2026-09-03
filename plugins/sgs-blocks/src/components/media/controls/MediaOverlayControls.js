@@ -11,11 +11,46 @@
  *
  * Bare rows only — mounts no `InspectorControls`/`PanelBody`.
  *
+ * ── Opacity is TIERED (2026-09-03) ──────────────────────────────────────
+ * `opacityTabletKey`/`opacityMobileKey` are OPTIONAL — a caller that omits
+ * them (none currently do; `overlay.control.js` now always passes them)
+ * would get the old flat `RangeControl` back untouched, so this is a
+ * back-compatible addition. When supplied, the row is wrapped in
+ * `ResponsiveControl` (the same pattern `object-fit.control.js` uses for its
+ * tiered `ObjectFit` row) so it reads/writes whichever device tier the
+ * global toggle currently has active, with an inherit hint mirroring
+ * `resolveInheritedFit()`'s mobile -> tablet -> desktop -> default chain.
+ *
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
 import { RangeControl, SelectControl } from '@wordpress/components';
 import GradientOverlayControl from '../../GradientOverlayControl.js';
+import ResponsiveControl from '../../ResponsiveControl.js';
+
+/** Same 'no override' value the atom's CSS var() chain falls back to (1 = 100%). */
+const DEFAULT_OPACITY = 100;
+
+/**
+ * Resolve what a tier VISUALLY falls back to, for the inherit hint — mirrors
+ * the CSS cascade in `assets/css/media-atoms/overlay.css` (mobile -> tablet
+ * -> desktop -> the 100% default).
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {Object} tierKeys   `{desktop, tablet, mobile}` attribute names.
+ * @param {string} tier       'tablet' | 'mobile'.
+ * @return {number} The value this tier inherits when it has no explicit one.
+ */
+function resolveInheritedOpacity( attributes, tierKeys, tier ) {
+	if ( 'mobile' === tier ) {
+		return (
+			attributes[ tierKeys.tablet ] ??
+			attributes[ tierKeys.desktop ] ??
+			DEFAULT_OPACITY
+		);
+	}
+	return attributes[ tierKeys.desktop ] ?? DEFAULT_OPACITY;
+}
 
 const BLEND_MODE_OPTIONS = [
 	{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
@@ -38,6 +73,9 @@ const BLEND_MODE_OPTIONS = [
  * @param {Function} props.setAttributes
  * @param {Object}   props.attrNames        `{gradient, solid, solidHover, gradientHover}`.
  * @param {string}   props.opacityKey
+ * @param {string}   [props.opacityTabletKey] Tablet tier sibling — omit for
+ *                                            the old untiered flat row.
+ * @param {string}   [props.opacityMobileKey] Mobile tier sibling.
  * @param {string}   props.blendModeKey
  * @param {boolean}  props.paintDisabled     True when there is no colour and
  *                                          no gradient — opacity/blend are inert.
@@ -48,10 +86,17 @@ export default function MediaOverlayControls( {
 	setAttributes,
 	attrNames,
 	opacityKey,
+	opacityTabletKey,
+	opacityMobileKey,
 	blendModeKey,
 	paintDisabled,
 	disabledReason = '',
 } ) {
+	const isTiered = Boolean( opacityTabletKey && opacityMobileKey );
+	const tierKeys = isTiered
+		? { desktop: opacityKey, tablet: opacityTabletKey, mobile: opacityMobileKey }
+		: null;
+
 	return (
 		<>
 			<GradientOverlayControl
@@ -61,17 +106,63 @@ export default function MediaOverlayControls( {
 				solidLabel={ __( 'Overlay colour', 'sgs-blocks' ) }
 			/>
 			<div aria-disabled={ paintDisabled }>
-				<RangeControl
-					label={ __( 'Overlay opacity (%)', 'sgs-blocks' ) }
-					value={ 'number' === typeof attributes[ opacityKey ] ? attributes[ opacityKey ] : 100 }
-					min={ 0 }
-					max={ 100 }
-					disabled={ paintDisabled }
-					help={ paintDisabled ? disabledReason : undefined }
-					onChange={ ( v ) => setAttributes( { [ opacityKey ]: v } ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
+				{ isTiered ? (
+					<ResponsiveControl
+						label={ __( 'Overlay opacity (%)', 'sgs-blocks' ) }
+						value={ attributes[ tierKeys.desktop ] }
+						isInherited={ ( tier ) =>
+							'desktop' !== tier && 'number' !== typeof attributes[ tierKeys[ tier ] ]
+						}
+						resolvedValue={ ( tier ) =>
+							resolveInheritedOpacity( attributes, tierKeys, tier )
+						}
+						onReset={ ( tier ) =>
+							setAttributes( { [ tierKeys[ tier ] ]: null } )
+						}
+					>
+						{ ( breakpoint ) => {
+							const tierValue = attributes[ tierKeys[ breakpoint ] ];
+							const hasExplicitTierValue =
+								'desktop' === breakpoint || 'number' === typeof tierValue;
+							return (
+								<RangeControl
+									label={ __( 'Overlay opacity (%)', 'sgs-blocks' ) }
+									value={
+										hasExplicitTierValue
+											? ( 'number' === typeof tierValue ? tierValue : DEFAULT_OPACITY )
+											: undefined
+									}
+									initialPosition={
+										hasExplicitTierValue
+											? undefined
+											: resolveInheritedOpacity( attributes, tierKeys, breakpoint )
+									}
+									min={ 0 }
+									max={ 100 }
+									disabled={ paintDisabled }
+									help={ paintDisabled ? disabledReason : undefined }
+									onChange={ ( v ) =>
+										setAttributes( { [ tierKeys[ breakpoint ] ]: v } )
+									}
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							);
+						} }
+					</ResponsiveControl>
+				) : (
+					<RangeControl
+						label={ __( 'Overlay opacity (%)', 'sgs-blocks' ) }
+						value={ 'number' === typeof attributes[ opacityKey ] ? attributes[ opacityKey ] : 100 }
+						min={ 0 }
+						max={ 100 }
+						disabled={ paintDisabled }
+						help={ paintDisabled ? disabledReason : undefined }
+						onChange={ ( v ) => setAttributes( { [ opacityKey ]: v } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				) }
 			</div>
 			<div aria-disabled={ paintDisabled }>
 				<SelectControl

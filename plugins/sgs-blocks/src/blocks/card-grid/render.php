@@ -110,6 +110,25 @@ $query_category      = absint( $attributes['queryCategory'] ?? 0 );
 $uid      = 'sgs-cg-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-card-grid';
 
+// -------------------------------------------------------------------------
+// Media-element atom layer (rule 37-media-no-handroll fix) — card-image
+// object-fit only. `class_exists()` guards a class the plugin loader always
+// registers; kept for the same "never fatal if load order changes" reason
+// `sgs/gallery` and `sgs/before-after` guard it. Classes are appended to the
+// `<img>`/`<video>` markup `sgs_render_media()` already returns (see the
+// per-item loop below) — `.sgs-media-el` is the shared marker the generated
+// assets/css/media-atoms/object-fit.css rule targets, `$sgs_cg_media_scope`
+// is the per-instance scope the atom's custom-property value below is set
+// on. This is one shared block-wide value applied to every card (mirrors the
+// existing sgs_media_position_css() call below — items[] has no per-card
+// object-fit field).
+$sgs_cg_media_scope   = '';
+$sgs_cg_media_classes = array();
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_cg_media_scope   = SGS_Media_Element::scope_class( $uid, 'sgs' );
+	$sgs_cg_media_classes = SGS_Media_Element::element_classes( $sgs_cg_media_scope );
+}
+
 // NO-INLINE: this block emits zero inline style property declarations.
 // Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
 // --check. Values are read from $attributes['style'] and emitted into THIS
@@ -292,11 +311,35 @@ if ( '' !== $card_border_gradient ) {
 // never collide; harmless no-op in the wc-product/cpt-collection branches
 // below, which delegate to sgs/product-card and never render
 // `.sgs-card-grid__image-wrap` at all.
+//
+// object-fit split out (rule 37-media-no-handroll fix): `sgsObjectFit` is now
+// read by the media-element atom below, not here — pass a copy with it
+// cleared so this call only ever emits `object-position` (its `sgsObjectFit`
+// half would otherwise duplicate the atom's `var(--sgs-media-object-fit)`
+// declaration on the SAME element with higher specificity, silently making
+// the atom's value dead the moment an operator set one). Object-position has
+// no atom coverage yet and stays on this explicit mechanism unchanged.
 $card_grid_native_css .= sgs_media_position_css(
-	$attributes,
+	array_merge( $attributes, array( 'sgsObjectFit' => '' ) ),
 	'sgs',
 	$root_sel . ' .sgs-card-grid__image-wrap img, ' . $root_sel . ' .sgs-card-grid__image-wrap video'
 );
+
+// Media-element atom layer — object-fit only (rule 37-media-no-handroll fix).
+// Reads the SAME `sgsObjectFit` attribute the block already stores (see the
+// block.json `_comment_mediaElements`); emits `.{scope}{--sgs-media-object-fit:…}`
+// which assets/css/media-atoms/object-fit.css's `.sgs-media-el` rule consumes.
+// No value set -> no declaration -> that stylesheet's own `cover` fallback
+// applies, matching the removed style.css default exactly (style.css).
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$card_grid_native_css .= SGS_Media_Element::style(
+		$attributes,
+		'sgs',
+		'sgs/card-grid',
+		$uid,
+		array( 'object-fit' )
+	);
+}
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add them
@@ -818,6 +861,21 @@ foreach ( $items as $index => $item ) :
 		$item_media['alt'] = '';
 	}
 	$media_html = ! empty( $item_media ) ? sgs_render_media( $item_media, 'sgs/card-grid' ) : '';
+	// Media-element atom layer (rule 37-media-no-handroll fix) — append the
+	// `.sgs-media-el` marker + per-instance scope class onto the FIRST
+	// <img>/<video> tag `sgs_render_media()` returned, so this element inherits
+	// the `--sgs-media-object-fit` custom property set on $root_sel above and
+	// picks up assets/css/media-atoms/object-fit.css's rule. `sgs_render_media()`
+	// has no classes parameter (shared helper, out of this fix's scope), so the
+	// class is appended here via a scoped regex rather than editing that helper.
+	if ( '' !== $media_html && ! empty( $sgs_cg_media_classes ) ) {
+		$media_html = preg_replace(
+			'/(<(?:img|video)\b[^>]*\bclass=")/',
+			'$1' . esc_attr( implode( ' ', $sgs_cg_media_classes ) ) . ' ',
+			$media_html,
+			1
+		);
+	}
 	?>
 	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item"<?php echo $link_attr; ?>>
 		<div class="sgs-card-grid__image-wrap"<?php echo $item_decorative ? ' aria-hidden="true"' : ''; ?>>

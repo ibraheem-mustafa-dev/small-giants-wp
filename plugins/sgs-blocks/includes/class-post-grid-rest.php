@@ -201,6 +201,15 @@ class Post_Grid_REST {
 				'default'           => '',
 				'sanitize_callback' => 'sanitize_text_field',
 			],
+			// 37-media-no-handroll: the block's own uid, round-tripped by
+			// view.js so AJAX-paginated cards' featured images carry the same
+			// media-atom marker class as the initial render's — see the
+			// $sgs_pg_uid comment in render_card().
+			'uid'                   => [
+				'type'              => 'string',
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_html_class',
+			],
 		];
 	}
 
@@ -332,6 +341,17 @@ class Post_Grid_REST {
 		$aspect_ratio  = isset( $params['aspectRatio'] ) ? sanitize_text_field( $params['aspectRatio'] ) : '16/10';
 		$card_index    = isset( $params['_card_index'] ) ? absint( $params['_card_index'] ) : 1;
 
+		// 37-media-no-handroll: the block's own uid, threaded through so the
+		// featured-image <img> can carry the shared media-atom marker class
+		// (SGS_Media_Element::scope_class()). render.php passes it via
+		// $card_params for the initial render; view.js's AJAX pagination
+		// round-trips it back as a REST param (see render.php's
+		// $sgs_query_data 'uid' key) so cards injected later match the SAME
+		// `.{uid}{--sgs-media-object-fit:…}` rule already printed in the
+		// page's <head> on first load — that rule is a bare class selector,
+		// so it matches DOM added after the stylesheet was parsed.
+		$sgs_pg_uid = isset( $params['uid'] ) && is_string( $params['uid'] ) ? sanitize_html_class( $params['uid'] ) : '';
+
 		// FR-32-4 as amended (D345): the per-instance colour + aspect custom
 		// property VALUES are NO LONGER emitted inline on the card root. They are
 		// emitted once, by render.php, as a scoped
@@ -374,6 +394,16 @@ class Post_Grid_REST {
 
 			if ( 0 === $card_index ) {
 				$img_attrs['fetchpriority'] = 'high';
+			}
+
+			// 37-media-no-handroll: media-atom marker classes (see the $sgs_pg_uid
+			// comment above). Appended to the same `class` attr `get_the_post_
+			// thumbnail()` already receives — one <img>, one class string.
+			if ( '' !== $sgs_pg_uid && class_exists( 'SGS_Media_Element' ) ) {
+				$img_attrs['class'] .= ' ' . implode(
+					' ',
+					SGS_Media_Element::element_classes( SGS_Media_Element::scope_class( $sgs_pg_uid, '' ) )
+				);
 			}
 
 			if ( has_post_thumbnail( $post_id ) ) {

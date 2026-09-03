@@ -441,8 +441,19 @@ if ( ! $show_headings ) {
 // on the frontend, where it is the content row's direct child).
 $css .= $aside_sel . '{flex:0 0 ' . ( '' !== $aside_width ? $aside_width : '340px' ) . ';width:' . ( '' !== $aside_width ? $aside_width : '340px' ) . ';}';
 // Cap the aside media so a tall image never dominates the fixed-width aside
-// column — a modest banner, object-fit cover, matching the editor cap.
-$css .= $aside_sel . ' .sgs-media__img,' . $aside_sel . ' img{max-height:170px;object-fit:cover;width:100%;border-radius:12px;}';
+// column — a modest banner, matching the editor cap. max-height/width/
+// border-radius stay fixed panel constants; object-fit is now a genuine
+// client control (37-media-no-handroll remediation, 2026-09-03) via the
+// shared media-atom system. The aside's img is rendered by a CHILD block
+// (sgs/mega-aside, parent-paints-child per CF-10), so there is no element
+// this panel itself renders to attach the `sgs-media-el` marker class to —
+// instead the atom's VALUE is set as a custom property on this panel's OWN
+// root ($uid, prefix ''), which the aside img reads via var() since custom
+// properties inherit down through the InnerBlocks tree.
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$css .= SGS_Media_Element::style( $attributes, '', 'sgs/mega-panel', $uid, array( 'object-fit' ) );
+}
+$css .= $aside_sel . ' .sgs-media__img,' . $aside_sel . ' img{max-height:170px;object-fit:var(--sgs-media-object-fit,cover);width:100%;border-radius:12px;}';
 
 /*
  * Group-heading EYEBROW (BUILD-SPEC §3 columns: "group heading shown

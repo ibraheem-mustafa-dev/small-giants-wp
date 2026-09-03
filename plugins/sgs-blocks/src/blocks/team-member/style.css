@@ -43,7 +43,12 @@
 .sgs-team-member__photo img {
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
+	/* object-fit removed 2026-09-03 (37-media-no-handroll remediation) — the
+	   shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}`
+	   atom stylesheet (assets/css/media-atoms/object-fit.css) now paints the
+	   identical `cover` default, but a client can override the crop MODE
+	   per instance via the new `objectFit` mediaElements control (render.php,
+	   block.json supports.sgs.mediaElements). */
 	display: block;
 }
 

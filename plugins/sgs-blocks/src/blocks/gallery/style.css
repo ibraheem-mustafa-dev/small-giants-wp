@@ -214,12 +214,15 @@
 	opacity: 0.4;
 }
 
-/* The image itself */
+/* The image itself. object-fit is deliberately NOT declared here (rule
+ * 37-media-no-handroll fix) — the grid <img> also carries the `.sgs-media-el`
+ * marker class (render.php), so assets/css/media-atoms/object-fit.css's
+ * `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` rule owns it,
+ * defaulting to the same `cover` this rule used to hardcode. */
 .sgs-gallery__img {
 	display:    block;
 	width:      100%;
 	height:     auto;
-	object-fit: cover;
 	transition: transform var( --sgs-transition-duration ) var( --sgs-transition-easing );
 }
 
@@ -512,6 +515,11 @@ body.sgs-gallery-lightbox-open {
 	display:    block;
 	max-width:  90vw;
 	max-height: 80vh;
+	/* Lightbox full-view treatment — intentionally NOT client-controlled. The
+	 * lightbox exists to show the whole image uncropped; a client-set
+	 * object-fit here (e.g. cover) would defeat that purpose. Deliberately
+	 * excluded from the media-element atom layer wired onto the grid
+	 * thumbnail (`.sgs-gallery__img` above) — see render.php. */
 	object-fit: contain;
 	border-radius: 4px;
 	opacity: 0;

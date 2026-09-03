@@ -196,6 +196,21 @@ $radio_name = $uid . '-choice';
 $legend_id  = $uid . '-legend';
 $root_sel   = '.' . $uid . '.wp-block-sgs-option-picker';
 
+// Media-element atom layer (rule 37-media-no-handroll) — the image-swatch
+// marker classes, computed once (every swatch <img> in this instance shares
+// the same 'swatch' scope, since there is one client-facing fit control per
+// picker instance, not per option). `.sgs-media-el` is the shared marker
+// assets/css/media-atoms/object-fit.css's rule targets; `$sgs_op_swatch_scope`
+// is the per-instance scope the atom's custom-property VALUE (§7 below) is
+// set on. Mirrors sgs/gallery's identical pattern.
+$sgs_op_swatch_scope   = '';
+$sgs_op_swatch_classes = array();
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_op_swatch_scope   = SGS_Media_Element::scope_class( $uid, 'swatch' );
+	$sgs_op_swatch_classes = SGS_Media_Element::element_classes( $sgs_op_swatch_scope );
+}
+$sgs_op_swatch_img_class = implode( ' ', array_filter( array_merge( array( 'sgs-option-picker__swatch', 'sgs-option-picker__swatch--image' ), $sgs_op_swatch_classes ) ) );
+
 // ---------------------------------------------------------------------------
 // 5. WP-native style.* (skip-serialised → emitted scoped, never inline).
 // ---------------------------------------------------------------------------
@@ -317,6 +332,17 @@ if ( $border_colour ) {
 // ---------------------------------------------------------------------------
 
 $scoped_css = array();
+
+// --- Swatch image object-fit (media-element atom layer, rule
+// 37-media-no-handroll) — no `swatchObjectFit` value set -> style() returns
+// '' -> nothing appended -> the shared stylesheet's own `.sgs-media-el`
+// `cover` fallback governs, matching the removed style.css hardcode exactly. ---
+if ( '' !== $sgs_op_swatch_scope && class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_op_swatch_css = SGS_Media_Element::style( $attributes, 'swatch', 'sgs/option-picker', $uid, array( 'object-fit' ) );
+	if ( '' !== $sgs_op_swatch_css ) {
+		$scoped_css[] = $sgs_op_swatch_css;
+	}
+}
 
 // --- Root custom-property VALUES (§6) — the ONLY per-instance override
 // channel (Spec 32 FR-32-4), scoped here rather than emitted inline. ---
@@ -605,9 +631,13 @@ foreach ( $valid_items as $item ) {
 				$img_url           = $src_data[0];
 				$img_w             = absint( $src_data[1] );
 				$img_h             = absint( $src_data[2] );
+				// Marker classes computed once above ($sgs_op_swatch_img_class) —
+				// media-element atom layer, object-fit only (rule
+				// 37-media-no-handroll; see block.json's `_comment_mediaElements`).
 				$swatch_image_html = sprintf(
-					'<img src="%s" alt="" class="sgs-option-picker__swatch sgs-option-picker__swatch--image" width="%d" height="%d" loading="lazy" decoding="async" aria-hidden="true" />',
+					'<img src="%s" alt="" class="%s" width="%d" height="%d" loading="lazy" decoding="async" aria-hidden="true" />',
 					esc_url( $img_url ),
+					esc_attr( $sgs_op_swatch_img_class ),
 					$img_w,
 					$img_h
 				);

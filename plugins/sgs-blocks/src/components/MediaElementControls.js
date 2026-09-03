@@ -410,6 +410,13 @@ export const STORED_AS = {
 	'sgs/decorative-image': {
 		decorMedia: 'decorMedia',
 	},
+	'sgs/brand-strip': {
+		// Pre-existing client control, kept as the only UI — this block's
+		// logo-fit dropdown already writes `logoFit` (enum contain|cover,
+		// default contain). Bridged onto the shared object-fit atom rather
+		// than renamed, per the zero-renames rule above.
+		objectFit: 'logoFit',
+	},
 };
 
 /**

@@ -52,6 +52,10 @@
 			"scalarStylingLift": true,
 			"imageControls": true,
 			"imageControlsExplicit": true,
+			"_comment_mediaElements": "Rule 37-media-no-handroll fix. Card-image object-fit now routes through the shared media-element atom layer instead of a style.css literal. NOT a new client control: prefix 'sgs' resolves (sgs_media_element_attr) to the SAME 'sgsObjectFit' attribute the legacy universal image-controls extension (imageControls/imageControlsExplicit above) already injects and already exposes an 'Object Fit' dropdown for in the inspector -- adding a second ObjectFitField here would give the client two controls for one property. render.php reads that existing value through SGS_Media_Element::style() and marks each card's <img>/<video> with the atom's scope class; style.css no longer hardcodes object-fit on .sgs-card-grid__image, relying on assets/css/media-atoms/object-fit.css's cover fallback (identical default). Mirrors sgs/gallery's identical fix.",
+			"mediaElements": [
+				{ "prefix": "sgs", "context": "element", "atoms": [ "object-fit" ] }
+			],
 			"arrayContentLift": true,
 			"presetSelectors": [
 				"effectHover"

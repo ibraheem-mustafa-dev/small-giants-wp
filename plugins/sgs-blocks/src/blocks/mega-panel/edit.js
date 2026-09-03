@@ -53,6 +53,7 @@ import {
 	SgsLengthControl,
 	fillRow,
 } from '../../components';
+import MediaElementPanel from '../../components/MediaElementPanel';
 import { colourVar } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -670,6 +671,23 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</>
 					) }
+					{ /* 37-media-no-handroll remediation (2026-09-03) — the aside
+					   banner's crop mode is a genuine client control now
+					   (style.css/render.php no longer hardcode object-fit:cover;
+					   the shared media-atoms system paints the same default).
+					   The aside's image is rendered by a CHILD block (sgs/mega-
+					   aside), so this is parent-paints-child (CF-10), same as
+					   this panel's other Aside-panel controls above. */ }
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+						blockSlug="sgs/mega-panel"
+						insertion="element"
+						atoms={ [ 'object-fit' ] }
+						mediaType="image"
+						scope="element"
+					/>
 				</PanelBody>
 			</InspectorControls>
 

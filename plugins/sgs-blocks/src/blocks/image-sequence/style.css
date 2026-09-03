@@ -30,13 +30,18 @@
 	aspect-ratio: 16 / 9;
 }
 
+/* object-fit is NOT declared here (rule 37-media-no-handroll) — both
+   elements carry the shared media-element atom marker `.sgs-media-el`
+   (render.php), which resolves `object-fit: var(--sgs-media-object-fit,
+   cover)` from assets/css/media-atoms/object-fit.css. Byte-identical resting
+   crop to the old local hardcode; see block.json's `_comment_mediaElements`
+   for why no client control is exposed for it. */
 .sgs-image-sequence__thumbnail,
 .sgs-image-sequence__canvas {
 	position: absolute;
 	inset: 0;
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
 }
 
 .sgs-image-sequence__canvas {

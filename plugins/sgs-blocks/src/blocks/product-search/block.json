@@ -27,6 +27,10 @@
 			"wide"
 		],
 		"sgs": {
+			"_comment_mediaElements": "37-media-no-handroll remediation (2026-09-03). The result-row product thumbnail (`.sgs-product-search__results [role=\"option\"] img`) is built at runtime by view.js (a live REST-fetched results list), not by render.php — there is no server-rendered <img> to attach the marker class to at render time. The scoped custom-property VALUE is still computed server-side by SGS_Media_Element::style() (keyed on the block's existing no-inline scoped-styling uid class, $sgs_style_uid, already present on the wrapper for every display mode), and view.js adds the `sgs-media-el` marker + that same uid class onto each thumbnail <img> it creates, so the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` atom stylesheet paints it. style.css no longer hardcodes object-fit:cover.",
+			"mediaElements": [
+				{ "prefix": "", "context": "element", "atoms": [ "object-fit" ] }
+			],
 			"boxFamilies": {
 				"padding": [
 					"paddingTablet",

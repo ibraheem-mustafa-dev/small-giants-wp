@@ -13,6 +13,7 @@ import {
 	ResponsiveOverride,
 	SgsColourPanel,
 } from '../../components';
+import MediaElementPanel from '../../components/MediaElementPanel';
 
 // NumberControl is experimental — fall back gracefully to TextControl if absent.
 let NumberControl;
@@ -295,6 +296,25 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					</ResponsiveOverride>
 				</PanelBody>
+
+				{ /* 37-media-no-handroll remediation (2026-09-03) — the result-row
+				   product thumbnail's crop mode is a genuine client control now
+				   (style.css no longer hardcodes object-fit:cover; the shared
+				   media-atoms stylesheet paints the same default). The thumbnail
+				   only exists in the live results list (view.js), never in this
+				   static editor preview, so this mounts its own panel rather than
+				   nesting inside an existing preview-bound control. */ }
+				<MediaElementPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					prefix=""
+					blockSlug="sgs/product-search"
+					insertion="root"
+					atoms={ [ 'object-fit' ] }
+					mediaType="image"
+					scope="element"
+					title={ __( 'Result thumbnail', 'sgs-blocks' ) }
+				/>
 
 				<PanelBody
 					title={ __( 'Spacing', 'sgs-blocks' ) }

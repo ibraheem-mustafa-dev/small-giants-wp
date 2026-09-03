@@ -22,6 +22,10 @@
 		"sgs": {
 			"containerKind": "section",
 			"containerMirror": false,
+			"_comment_mediaElements": "37-media-no-handroll remediation (2026-09-03). The aside's media is rendered by a CHILD block (sgs/mega-aside, parent-paints-child per CF-10) — this panel never renders an <img>/<video> of its own, so there is no element to attach the `sgs-media-el` marker class to. The atom's VALUE is instead set as a custom property on the panel's OWN root ($uid, prefix ''), which the aside's img reads via var() since custom properties inherit down the InnerBlocks tree (see render.php's `object-fit` block near the aside-width rule). style.css/render.php no longer hardcode object-fit:cover on the aside media.",
+			"mediaElements": [
+				{ "prefix": "", "context": "element", "atoms": [ "object-fit" ] }
+			],
 			"boxFamilies": {
 				"panelPadding": [ "panelPadding" ]
 			},

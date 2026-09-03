@@ -379,11 +379,16 @@
 /* ── Image swatch ────────────────────────────────────────────────── */
 
 .sgs-option-picker__swatch--image {
-	/* Constrain to a consistent square; the <img> fills it via object-fit. */
+	/* Constrain to a consistent square; the <img> fills it via the shared
+	   media-element atom layer's object-fit (rule 37-media-no-handroll) —
+	   the <img> carries `.sgs-media-el` (render.php), which resolves
+	   `object-fit: var(--sgs-media-object-fit, cover)` from
+	   assets/css/media-atoms/object-fit.css. Byte-identical resting crop to
+	   the old local hardcode; block.json's "Swatch image" panel (prefix
+	   'swatch') now lets a client override it per instance. */
 	width: 2rem;
 	height: 2rem;
 	border-radius: 4px;
-	object-fit: cover;
 	/* F4 (visual-polish): 0.15 keyline matches the colour-chip keyline so a
 	   pale/off-white product photo (live-caught: coconut swatch) never
 	   disappears against a white pill. */

@@ -22,6 +22,10 @@
 			"collection": true,
 			"arrayContentLift": true,
 			"containerMirror": false,
+			"_comment_mediaElements": "Bridges the pre-existing `logoFit` control (contain|cover, default contain) onto the shared object-fit atom via STORED_AS in MediaElementControls.js/helpers-media-element.php — no new attribute, no new UI, the logo-fit dropdown stays the only control.",
+			"mediaElements": [
+				{ "prefix": "", "context": "element", "atoms": [ "object-fit" ] }
+			],
 			"hideExtensions": [
 				"clickEffects",
 				"parallax"

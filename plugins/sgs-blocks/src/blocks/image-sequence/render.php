@@ -149,6 +149,24 @@ $root_sel = '.' . $uid;
 $scoped_css   = array();
 $scoped_css[] = "{$root_sel}{aspect-ratio:" . $aspect_ratio . ';}';
 
+// Shared media-element atom layer (rule 37-media-no-handroll) — object-fit
+// ONLY, no client control (see block.json's `_comment_mediaElements`: the
+// canvas's own drawCover() always centre-crops every frame with zero
+// configurability, so exposing a fit control here would let an operator set
+// a value the canvas can never honour). `style()` returns '' with no
+// `objectFit`/`objectFitTablet`/`objectFitMobile` attribute set (none is
+// ever written — no edit.js control writes it), so nothing is appended to
+// $scoped_css; the shared stylesheet's own `.sgs-media-el{object-fit:var(
+// --sgs-media-object-fit,cover)}` default (assets/css/media-atoms/
+// object-fit.css) supplies the exact same 'cover' resting behaviour the old
+// local hardcode did — just sourced from the shared layer, not duplicated.
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_is_media_css = SGS_Media_Element::style( $attributes, '', 'sgs/image-sequence', $uid, array( 'object-fit' ) );
+	if ( '' !== $sgs_is_media_css ) {
+		$scoped_css[] = $sgs_is_media_css;
+	}
+}
+
 // ART-DIRECTION TIERS (2026-08-07) — the fail-open <img> only. The canvas frame
 // sequence already art-directs itself through its own per-tier pipelines
 // (tierDesktop/tierTablet/tierMobile), so this closes the one surface that could
@@ -173,7 +191,12 @@ foreach ( array( 'Tablet', 'Mobile' ) as $sgs_tier ) {
 	);
 }
 
-$thumb_class = 'sgs-image-sequence__thumbnail';
+// `sgs-media-el` is the shared media-element atom layer's marker for the
+// replaced element (SGS_Media_Element::CLASS_ELEMENT) — carried by the
+// thumbnail <img>(s) AND the canvas below so both read the shared
+// stylesheet's `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}`
+// default rule (see the `$sgs_is_media_css` block above).
+$thumb_class = 'sgs-image-sequence__thumbnail sgs-media-el';
 if ( ! empty( $sgs_tier_thumbs ) ) {
 	// ⛔ Build tier selectors from $root_sel — a BARE single-class token
 	// ('.' . $uid, above), never a multi-member selector list: a descendant
@@ -202,7 +225,7 @@ $block_props = get_block_wrapper_attributes(
 );
 
 $canvas_attrs = array(
-	'class'       => 'sgs-image-sequence__canvas',
+	'class'       => 'sgs-image-sequence__canvas sgs-media-el',
 	'aria-hidden' => 'true',
 );
 
@@ -255,7 +278,7 @@ echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.Outpu
 );
 
 foreach ( $sgs_tier_thumbs as $sgs_tier_key => $sgs_tier_media ) {
-	$sgs_tier_attrs = array( 'class' => 'sgs-image-sequence__thumbnail sgs-image-sequence__thumbnail--' . $sgs_tier_key );
+	$sgs_tier_attrs = array( 'class' => 'sgs-image-sequence__thumbnail sgs-media-el sgs-image-sequence__thumbnail--' . $sgs_tier_key );
 	if ( $thumbnail_decorative ) {
 		$sgs_tier_attrs['aria-hidden'] = 'true';
 	}

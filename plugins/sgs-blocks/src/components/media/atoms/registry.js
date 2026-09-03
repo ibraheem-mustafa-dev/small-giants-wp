@@ -214,6 +214,19 @@ export const MEDIA_ATOMS = {
 			'sgs/container': {
 				backgroundSize: 'backdrop vocabulary — cover/contain/auto, no fill/none/scale-down',
 			},
+			// `fit`'s bases are `[ 'ObjectFit', 'Size' ]` — declaring the atom for
+			// ANY prefix injects both, even when only ObjectFit is wanted (no
+			// per-base selection exists in a `mediaElements` entry). trust-bar's
+			// `badgeImage` prefix generates `badgeImageSize` for the `Size` base,
+			// which collides BY NAME ONLY with the block's own pre-existing
+			// `badgeImageSize` (a NUMBER px dimension driving the badge <img>'s
+			// width/height, block.json since before this atom adoption) — not the
+			// same concept as the atom's backdrop `Size` (a background-size STRING
+			// keyword). The element context never renders a background on the
+			// badge image, so the atom's Size resolution is inert here regardless.
+			'sgs/trust-bar': {
+				badgeImageSize: 'pre-existing NUMBER px dimension (width+height), unrelated to the Size base\'s background-size vocabulary',
+			},
 		},
 		vocabulary: {
 			element: [ 'cover', 'contain', 'fill', 'none', 'scale-down' ],

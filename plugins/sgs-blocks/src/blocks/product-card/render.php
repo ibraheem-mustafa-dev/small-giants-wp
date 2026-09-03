@@ -225,29 +225,57 @@ if ( null !== $sgs_card_padding_shorthand ) {
 	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .product-card-body,.' . $sgs_card_uid . ' .sgs-product-card__body{padding:' . $sgs_card_padding_shorthand . ';}';
 }
 
-// ── Explicit media-position (Spec 35 capability-routing doctrine, mechanism
-// (c)) — replaces the guessed-root render_block injector (image-controls.php),
-// which can never find the right element among this block's several <img>
-// roles. Targets ONLY the card's MAIN product image — the element the fixed
-// --sgs-product-card-image-height box + hardcoded object-fit:cover in
-// style.css governs (lines 50-56, 711-718, 937-942) — never the thumbnail
-// strip (.product-card__thumb img, a distinct role with its own 48×48 box,
-// never height-var-governed) or the no-image SVG placeholder. Covers every
-// render branch's own main-image class: the typed built-in element
-// (.sgs-product-card__image, product-card-builtin-render.php), the bound
-// read-only/non-variable-live image (.product-card-img), and the bound
-// variable-configurator image nested one level deeper inside
-// .product-card__media (same element, .product-card-img class, but a
-// higher-specificity style.css override rule at that nesting requires an
-// equally-deep selector here to win). ONE control governs the main image
-// everywhere it can appear (R-31-9 / CG-9) — computed once, before the
-// typed/bound branch split, so it flows into every branch's assembled
-// $sgs_card_typo_css.
-$sgs_card_typo_css .= sgs_media_position_css(
-	$attributes,
-	'sgs',
-	'.' . $sgs_card_uid . ' .sgs-product-card__image, .' . $sgs_card_uid . ' .product-card-img, .' . $sgs_card_uid . ' .product-card__media .product-card-img'
-);
+// ── Media-element atom layer (rule 37-media-no-handroll) — replaces the
+// former sgs_media_position_css() hand-roll (which never had a declared
+// sgsObjectFit/sgsObjectPosition attribute pair or any editor control, so it
+// always emitted ''). Two independently-scoped elements, per block.json's
+// supports.sgs.mediaElements:
+//
+// - 'main' covers EVERY render branch's main product image (typed
+// .sgs-product-card__image, bound read-only/non-variable .product-card-img,
+// bound variable-configurator .product-card__media .product-card-img) —
+// deliberately ONE control (R-31-9 / CG-9), since only one branch ever
+// renders per page load. Each render site carries the SAME
+// sgs_media_element_scope_class( $sgs_card_uid, 'main' ) marker class, so
+// this ONE scoped rule (keyed to that class) governs whichever branch is
+// live. Replaces style.css's hardcoded object-fit:cover / object-position:
+// center on the main image (both atoms default to those exact values via
+// assets/css/media-atoms/object-fit.css + focal-point.css, so an untouched
+// card renders byte-identical).
+// - 'thumb' covers the bound variable-configurator's thumbnail-rail image
+// (.product-card__thumb img) — a distinct role, never governed by 'main'.
+//
+// Computed once, before the typed/bound branch split, so it flows into every
+// branch's assembled $sgs_card_typo_css.
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_card_typo_css .= SGS_Media_Element::style(
+		$attributes,
+		'main',
+		'sgs/product-card',
+		$sgs_card_uid,
+		array( 'object-fit', 'focal-point' )
+	);
+	$sgs_card_typo_css .= SGS_Media_Element::style(
+		$attributes,
+		'thumb',
+		'sgs/product-card',
+		$sgs_card_uid,
+		array( 'object-fit' )
+	);
+}
+
+// Marker classes for every main-image render site + the thumbnail-rail site
+// (see the atom-layer block above). Built once, reused verbatim at each of
+// this file's <img> tags plus passed into product-card-builtin-render.php
+// for the typed element. class_exists()-guarded so a request that somehow
+// reaches this file before the class autoloads still renders with the plain
+// base class (mirrors buybox/gallery-col.php's own guard).
+$sgs_pc_main_img_class  = 'product-card-img';
+$sgs_pc_thumb_img_class = '';
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_pc_main_img_class .= ' ' . implode( ' ', SGS_Media_Element::element_classes( SGS_Media_Element::scope_class( $sgs_card_uid, 'main' ) ) );
+	$sgs_pc_thumb_img_class = implode( ' ', SGS_Media_Element::element_classes( SGS_Media_Element::scope_class( $sgs_card_uid, 'thumb' ) ) );
+}
 
 // ── Block-private colour/border (R2c, B-3/B-8) → scoped, NOT inline ──────
 // block.json's native color/border supports are now radius-only + gradients
@@ -731,7 +759,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 	<?php if ( '' !== $sgs_resolved_img ) : ?>
 		<?php // F7: media-wrap = positioning context for the featured overlay badge. ?>
 		<div class="sgs-product-card__media-wrap">
-			<img class="product-card-img" src="<?php echo esc_url( $sgs_resolved_img ); ?>" alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>" loading="lazy" decoding="async">
+			<img class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>" src="<?php echo esc_url( $sgs_resolved_img ); ?>" alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>" loading="lazy" decoding="async">
 			<?php if ( '' !== $sgs_badge_overlay ) : ?>
 				<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_badge_overlay ); ?></span>
 			<?php endif; ?>
@@ -1118,7 +1146,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
 				<?php endif; ?>
 				<img
-					class="product-card-img"
+					class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>"
 					src="<?php echo esc_url( $image_src ); ?>"
 					alt="<?php echo esc_attr( $sgs_img_override ? $sgs_resolved_img_alt : $data['image_alt'] ); ?>"
 					<?php echo $def_img_w > 0 ? 'width="' . esc_attr( (string) $def_img_w ) . '"' : ''; ?>
@@ -1167,6 +1195,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					aria-label="<?php echo $thumb_aria_label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr applied above. ?>"
 				>
 					<img
+						class="<?php echo esc_attr( $sgs_pc_thumb_img_class ); ?>"
 						src="<?php echo esc_url( $thumb['url'] ); ?>"
 						alt="<?php echo esc_attr( $thumb['alt'] ); ?>"
 						<?php echo $thumb['w'] > 0 ? 'width="' . esc_attr( (string) $thumb['w'] ) . '"' : ''; ?>
@@ -1563,7 +1592,7 @@ ob_start();
 	<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
 	<?php endif; ?>
 	<img
-		class="product-card-img"
+		class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>"
 		src="<?php echo esc_url( $sgs_resolved_img ); ?>"
 		alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>"
 		loading="eager"
