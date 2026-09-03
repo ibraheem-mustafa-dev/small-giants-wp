@@ -195,7 +195,7 @@ to 11 — running the original 22 would have shipped 7 elements with invisible t
 ⛔ **TWO SEPARATE TRACKS. Never re-merge them.** They shared one plan file once and it cost a full
 session (D838). No phase number is shared.
 
-### ▶ B. GENERATIVE BACKGROUND ENGINE (Phase 3 — fidelity FIXED 3/3; speed FIXED; colour vibrancy OPEN — next prompt below)
+### ▶ B. GENERATIVE BACKGROUND ENGINE (Phase 3 — fidelity FIXED 3/3; speed FIXED; colour vibrancy FIXED — Bean's visual sign-off is the only open item)
 
 ⭐ **Plan: `.claude/plans/2026-08-27-generative-background-engine.md`. Read D886, D887, D888
 before touching this track — they supersede the technique spec's Animation section and record
@@ -244,19 +244,19 @@ attributes set, so the effect never started — Bean saw an empty container and 
 "not the Stripe cloth animation". Fixed; confirmed via screenshot, not markup presence (which is
 what missed it the first time).
 
-⛔ **OPEN — colour vibrancy, NOT investigated.** Same live test: "ours is faint/muted, the
-original is vibrant and rich." Next prompt:
-`.claude/prompts/2026-09-03-generative-background-colour-vibrancy.md` (supersedes the deleted
-`2026-08-30-generative-background-fidelity-gap.md` — that gap is closed). Two untested
-hypotheses: the demo's colour picks were too pale (cheap to test first), or the shader's two
-brightness-only-additive terms wash out an already-pale palette (needs isolation). A real
-architectural limit is also named: the engine's colour model is a flat 4-stop horizontal
-gradient; the reference's texture varies in both directions — do not build a fix for that
-without a design conversation first.
+✅ **Colour vibrancy FIXED (D939, 2026-09-03).** Measured, not guessed: the demo's four colours
+were already comparably saturated/light to the reference's own palette (checked via
+`getComputedStyle` + HSL, and by sampling `palette-a.png` at 5 rows) — the real defect was HUE
+RANGE, not saturation. Three of four stops sat in a 15° pink band; the reference sweeps blue →
+orange → pink → violet. Fixed by re-sampling the reference texture for a genuinely hue-diverse
+4-stop palette (orange/pale-blue/violet/pink) and applying it to the demo page via REST — no
+shader change. Screenshot-verified dramatically richer; `fidelity:compare` re-run, unaffected
+(3/3, unchanged numbers). The flat 4-stop 1D gradient vs the reference's 2D-varying texture
+remains a named, deliberately unbuilt architectural limit — no design gate opened.
 
-### ▶ NEXT — colour vibrancy (above), then Bean's named visual sign-off
+### ▶ NEXT — Bean's named visual sign-off (the only open item)
 
-Fidelity and speed pass; colour vibrancy is open. "B-movie 3D VFX" is a look judgement no
+Fidelity, speed and colour vibrancy all pass/fixed. "B-movie 3D VFX" is a look judgement no
 measurement closes — Bean's eye is still the other half of done.
 
 **Shipped this session:** `chromeOffsetPx()` moved to the Tier V shared home so a vanilla consumer

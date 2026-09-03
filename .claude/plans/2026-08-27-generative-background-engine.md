@@ -185,13 +185,18 @@ engine had no equivalent scaling at all, running ~25x too fast. Fixed with a ref
 constant. The static-phase fidelity numbers above are unaffected (that instrument samples fixed
 moments, not real playback speed).
 
-⛔ **OPEN — colour vibrancy.** Same live test, same session: "the colours on our version are like
-super faint/muted whereas the original is very vibrant and rich." Not yet investigated. Next
-prompt: `.claude/prompts/2026-09-03-generative-background-colour-vibrancy.md`.
+✅ **Colour vibrancy FIXED (D939, 2026-09-03).** Root cause was hue range, not saturation/
+lightness (both were already comparable to the reference's own palette, measured off
+`palette-a.png`) — three of the four demo colours sat in a 15° pink band plus one orange
+outlier, a near-monochrome gradient with no internal colour contrast, against a ground colour
+close in lightness to the ribbon. Fixed by re-sampling the reference texture for a genuinely
+hue-diverse 4-stop palette (orange/pale-blue/violet/pink, 41°→214°→294°→327°) and applying it to
+the demo page — no shader or engine code change. Screenshot-verified dramatically richer;
+`npm run fidelity:compare` re-run and unaffected (3/3, unchanged numbers — that instrument
+measures shape, not colour). Full account: D939.
 
 **Still outstanding: Bean's NAMED visual sign-off against the "B-movie 3D VFX" risk.** No number
-closes that — it is his eye, and the acceptance criteria say so. The colour-vibrancy issue is
-likely part of what that sign-off would catch.
+closes that — it is his eye, and the acceptance criteria say so.
 
 ---
 

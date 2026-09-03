@@ -1,3 +1,119 @@
+## D939 [ROUTINE] — generative-background colour vibrancy: root cause was hue range, not saturation; fixed on the demo page with no shader change
+
+**2026-09-03.** Closes the last open item on the generative-background engine (D925-D927 fidelity,
+D930/D932 speed). Bean, live-testing: *"the colours on our version are like super faint/muted
+whereas the original is very vibrant and rich."*
+
+**Measured, not guessed.** Read the four live custom properties off the demo page
+(`getComputedStyle` on the marked element): `#FDADEB`/`#FEC7A1`/`#DEACD4`/`#FFACDA`. Converted to
+HSL: L 0.77-0.84, S 0.43-1.00 — comparable to the reference's own palette texture (sampled
+`palette-a.png` at 5 rows: most stops there are L 0.7-0.85, S 0.8-1.0 too). **Saturation and
+lightness were never the defect.** The real fault: three of the four stops sit in a 15° pink band
+(312-327°) plus one orange outlier — a near-monochrome gradient with no internal colour contrast —
+while the reference sweeps blue -> orange -> pink -> violet. The ground colour (`#fbf3dc`, L≈0.92)
+also sits close in lightness to the ribbon, flattening contrast against the reference's white
+ground.
+
+This also clears the fragment shader of blame: the additive brightness terms (`colour +=
+(1.0-glowGate)*0.25`, D926/D927) are correctly ported and wash pale colours toward white on BOTH
+engines — the reference's palette just has enough hue/lightness range that some regions survive the
+lift saturated while others fade, reading as "rich". Our uniform pink palette had nothing to
+survive on.
+
+**Fix:** picked a new 4-stop demo palette by sampling `palette-a.png` for genuine hue variety —
+`#FEB10C` (orange, H41 L0.52), `#D3E6FF` (pale blue, H214 L0.91), `#C544D3` (violet, H294 L0.55),
+`#F586C3` (pink, H327 L0.74) — spanning 41°→214°→294°→327°, two low-lightness saturated anchors
+and two lighter ones. Applied via a direct REST `content` update to page 3228 (the block has no
+InnerBlocks, self-closing `sgs/container` comment — a plain attribute find-replace). No shader or
+engine code touched.
+
+**Result, screenshot-verified:** the OKLCH shorter-arc hue interpolation between the orange (41°)
+and pale-blue (214°) stops crosses the LONG way round through green/cyan (delta=173°, just under
+the 180° "which way" threshold) — an accidental full rainbow (orange→yellow→mint→cyan→pale
+blue→violet→pink) that reads as strikingly richer and closer to the reference's look than
+intended. Kept — it answers the brief.
+
+**Verification:** `npm run fidelity:compare` still 3/3 rungs passing, numbers unchanged (2.81% /
+2.35% / 2.73%) — that instrument measures shape/geometry against `poc-replica.html`, not the demo
+page's colours, so this confirms the colour change touched nothing it shouldn't. Hypothesis B (the
+shader's own maths) was never tested in isolation because hypothesis A alone closed the visible
+gap — per the plan's own "cheapest first, stop once closed" rule. The structural gap (a 1D 4-stop
+gradient vs the reference's genuinely 2D-varying texture) remains a named, deliberately unbuilt
+architectural limit — no design gate opened this session.
+
+**Outstanding:** Bean's named visual sign-off on the live page — a screenshot match is not the
+plan's actual closing gate.
+
+## D937 [ROUTINE] — `sgs/quote.textColourHover` adopts the `::after` background layer; recipe recorded
+
+**2026-09-03.** First hand migration off D936's exclusion list. `sgs/quote`'s `box` element
+(the `<blockquote>` root) painted `textColourHover`'s `color:` and
+`backgroundColourHover`/`backgroundColourHoverGradient`'s `background-*` on the SAME selector,
+`{root_sel}:hover,{root_sel}:focus-within`, and the resting-state `backgroundColour`/
+`backgroundColourGradient` painted the SAME root at rest too — blocking a future
+`textColourHoverGradient` sibling per D936's rule (`background-clip:text` would clip that
+background paint away).
+
+**Fix:** moved both the resting and hover background paint onto `sgs_block_background_layer_css()`
+(`includes/helpers-tokens.php:873` — already live on 9 other blocks, not a new mechanism), which
+paints on a `::after` pseudo-element instead. `render.php` change: compute
+`$box_bg_decl`/`$box_bg_hover_decl` via the existing `sgs_background_paint_decl()`, pass both to
+the helper, drop the old pushes into `$hover_rules` and `$wrapper_decls`. `color`/`textColourHover`
+stay on the root selector, now free of a same-selector background.
+
+**Verified**, not eyeballed — `scripts/qa/assert-css-effect.js` against the real render.php: the
+root selector no longer emits `background-color` at rest, `::after` carries the resting paint,
+`:hover::after` carries the hover paint (touch-guarded, via the helper's internal
+`sgs_hover_state_rules()` call), and `color`/`:hover,:focus-within` still lands on the root
+selector unchanged.
+
+**The recipe, for the remaining 10 rows in D936's exclusion list:** identify the background
+source(s) reaching the same selector as the text-colour attribute (manifest-declared sibling,
+default style-variant class, or a separate sibling attribute — D936's three mechanisms), compute
+each as a `sgs_background_paint_decl()` call gated the same way the existing code gates it, pass
+rest+hover to `sgs_block_background_layer_css( $root_sel_or_element_sel, $rest, $hover )`, delete
+the old same-selector pushes. `pricing-table.popularBadgeColour` is next (harder: a third source,
+a `style.css` static default, also needs folding in). The other 9 cross the 3-block detector
+threshold — census tool already exists
+(`textSharesElementWithBackground()`, `scripts/inspector-scan/rules/31-golden-colour-control.js:163`)
+so `/qc-council` gates the batch decision, not a fresh detector build.
+
+## D938 [ROUTINE] — `sgs/pricing-table.popularBadgeColour` adopts a POSITION-SAFE variant of the `::after` layer
+
+**2026-09-03.** Second row off D936's exclusion list, and the harder one D937 flagged. The badge
+(`.sgs-pricing-table__badge`) is already `position:absolute` in `style.css` (it's an overlay
+pinned to the plan card's corner). `sgs_block_background_layer_css()` unconditionally emits
+`{selector}{position:relative;isolation:isolate;}` — on an element that's ALREADY positioned,
+that would override `position:absolute` with `position:relative` (PHP's scoped `<style>` renders
+after the enqueued stylesheet, same specificity, later source wins), pulling the badge out of its
+pinned corner and into normal document flow.
+
+**Fix (hand-composed, not a call to the shared helper):** the badge already qualifies as a
+positioned ancestor for its own `::after` (needs no extra `position:relative`), so render.php
+emits the `::after{position:absolute;inset:0;z-index:-1;...}` layer directly, carrying only the
+background paint — no position re-declaration. `isolation:isolate` moved to `style.css` (static,
+structural, not attribute-driven) alongside the existing `position:absolute`. `color:` stays on
+the base `.sgs-pricing-table__badge` selector, unblocked for a future
+`popularBadgeColourGradient` sibling — same intent as D937, different mechanics.
+
+**Also removed:** `style.css`'s own `color`/`background-color` defaults on `.sgs-pricing-table__badge`
+(`var(--wp--preset--color--text-inverse)`/`var(--wp--preset--color--accent)`) — these were already
+DEAD before this change (both `popularBadgeColour`/`popularBadgeBackground` default non-empty in
+block.json, `'text'`/`'accent'`, so PHP always painted over them), and leaving the background line
+in place would have reintroduced the exact same-selector collision on `.sgs-pricing-table__badge`
+this fix removes.
+
+**Verified** via `assert-css-effect.js`: base selector carries `color` only, `::after` carries
+`background-color` + `position:absolute` independent of the base's own position declaration.
+
+**Recipe update for the remaining 9 rows:** before reaching for `sgs_block_background_layer_css()`
+directly, check whether the target element already carries its own `position` value (grep the
+block's `style.css`). If it does, hand-compose the `::after` layer (paint decl only, no position
+line) and put `isolation:isolate` in `style.css` next to the existing position declaration instead
+— the helper is right for the common case (an unpositioned element) but wrong for an
+already-positioned one, and this is the second time in two rows the "harder" flag in the D936 plan
+was correct.
+
 ## D936 [ROUTINE] — Cluster A text gradients: 9 rows shipped, 13 excluded with reasons
 
 **2026-09-03.** `sgs/testimonial` (summary/name/role/org/rating), `sgs/pricing-table`
