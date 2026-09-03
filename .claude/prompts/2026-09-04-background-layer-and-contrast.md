@@ -64,6 +64,33 @@ Verification is not optional and not by eye. `scripts/qa/assert-css-effect.js` r
 deliberately FALSE claim that FAILS — a harness passing both proves nothing. Also assert the
 BACKGROUND still paints (on `::after`) after the move; that is the regression this task can cause.
 
+## Task 1b — the hover guard's third surface (measured 2026-09-03, NOT closed)
+
+The touch-hover guard shipped this session covers TWO surfaces: static per-block `style.css` (via
+the build transform) and the PHP emission helpers under `includes/` (via `check.js`'s PHP scan).
+
+⛔ **It does NOT cover the blocks' own `render.php`, which is the largest surface.** Measured:
+**30 of the 31 block `render.php` files that construct a `:hover` rule call no guard helper at
+all.** `check.js`'s PHP target list is `includes/` only (`defaultPhpTargets()`).
+
+One instance was found and fixed by accident this session — `sgs/post-grid`'s hover-text rule was
+hand-rolled while every other hover row in that same file already used `sgs_hover_state_rules()`.
+Nothing would have caught it; a task happened to touch that line.
+
+⚠ **30 is an upper bound on FILES, not a defect count.** A raw `:hover` in a render.php may be
+colour-only (deliberately out of scope — the colour helpers own those), focus-paired, or carry no
+motion property at all. The work is to CLASSIFY them, not to wrap them:
+1. Point `check.js`'s PHP scan at `src/blocks/*/render.php` as well and see what it reports. The
+   classifier already distinguishes motion / colour / text-decoration-only and refuses to guess.
+2. Expect a large first number and do NOT batch-fix it. Confirm the classifier's verdicts on a
+   handful by hand first — a per-file scan cannot see a hover rule assembled across a call, which
+   is the whole reason the one-hop registry exists.
+3. Anything it cannot classify must FAIL the build rather than be guessed at, exactly as the CSS
+   side already behaves.
+
+This is arguably higher value than Task 2: a stuck hover is visible to every mobile visitor on
+every affected block, and the mechanism to fix it is already built and proven.
+
 ## Task 2 — contrast guard (Bean-ruled: WARN, NEVER BLOCK)
 
 ⛔ **Bean's explicit ruling, 2026-09-03: the contrast guard must only ever WARN. It must never

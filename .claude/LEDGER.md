@@ -156,6 +156,13 @@ selector (`nav-menu.burgerBg`). Scoping by (1) alone put 22 rows in scope; addin
 to 11 — running the original 22 would have shipped 7 elements with invisible text.
 
 **Open, carried forward:**
+- ⛔ **The hover guard covers TWO of THREE surfaces.** Static `style.css` and the `includes/` PHP
+  emitters are checked; the blocks' own `render.php` is NOT — `check.js`'s PHP target list is
+  `includes/` only. Measured 2026-09-03: **30 of the 31 block `render.php` files that construct a
+  `:hover` call no guard helper**. That is an upper bound on FILES, not a defect count (a raw
+  `:hover` may be colour-only, focus-paired, or motion-free) — the work is to point the existing
+  classifier at that directory and CLASSIFY, not to batch-wrap. One instance (`post-grid`) was
+  found only because an unrelated task happened to touch the line.
 - **11 rows blocked pending the `::after` background layer** — full list with reasons in
   `.claude/plans/2026-09-03-cluster-a-text-gradient-batch.md` and
   `.claude/reports/2026-09-03-A0-unverified-rows.md`. `sgs_block_background_layer_css()` has never
