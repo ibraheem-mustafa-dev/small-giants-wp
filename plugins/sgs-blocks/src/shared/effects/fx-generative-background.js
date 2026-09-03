@@ -10,37 +10,40 @@
  *
  *   1. CSS static gradient (`fx-generative-background.css`) — the true no-JS
  *      state, and what every visitor sees before JS runs at all.
- *   2. The OKLCH-built `<canvas>` 2D image (below) — painted FIRST, always,
+ *   2. The organic-field `<canvas>` 2D image (below) — painted FIRST, always,
  *      unconditionally, the instant the four colours parse. This is colour
  *      maths, not rendering — no GPU context needed — so it never fails for
  *      a reason the WebGL layer would also fail for.
  *   3. The WebGL2 folded-ribbon shape (`webgl/generative-background.js`) —
- *      attempted ON TOP, using layer 2's own canvas as its colour texture
- *      (§2 — "reuse Step 1's OKLCH build code, don't reimplement"). Revealed
- *      only after its OWN first successful draw; on any failure, layer 2
- *      stays exactly as it was already painted.
+ *      attempted ON TOP, using layer 2's own canvas as its colour texture.
+ *      Revealed only after its OWN first successful draw; on any failure,
+ *      layer 2 stays exactly as it was already painted.
  *
  * This is the ONLY WebGL context this effect ever opens; it owns the
  * lifecycle (IntersectionObserver / visibilitychange / context-loss / SC
  * 2.2.2 pause / bfcache), mirroring `fx-wave-gradient.js`'s contract.
  *
- * ── WHY OKLCH, NOT A PLAIN CSS/CANVAS GRADIENT ─────────────────────────────
+ * ── WHY AN ALPHA-COMPOSITED ORGANIC FIELD, NOT A GRADIENT ──────────────────
  *
- * `CanvasRenderingContext2D.createLinearGradient()` interpolates in sRGB,
- * which produces a visible muddy grey band between non-hue-adjacent colours
- * (a straight chord across the hue circle dips toward its centre — true in
- * sRGB, linear RGB, Lab AND OKLab, since all four are Cartesian). OKLCH is
- * the POLAR form of the same perceptual space (Lightness, Chroma, hue
- * Angle): interpolating hue as an ANGLE around the wheel — the shorter arc —
- * routes around that grey centre instead of through it. This module
- * therefore does its own per-pixel interpolation and writes the result via
- * `putImageData`, rather than delegating to the canvas gradient API.
+ * Measured directly against the reference's own palette texture (D941/D942):
+ * it is not a 1D gradient stretched into a square — colour varies in BOTH
+ * directions, its per-pixel "how much ink is here" coverage has real
+ * variance (some areas read as genuine white page showing through, some as
+ * a single fully-saturated colour, most as a blend between neighbours), and
+ * its blob edges are organic/torn rather than smooth circles. A flat
+ * horizontal interpolation (this file's previous approach) cannot produce
+ * any of that regardless of how many colour stops it uses.
  *
- * The conversion pipeline (sRGB gamma -> linear-light sRGB -> LMS -> OKLab ->
- * OKLCH, and the same steps in reverse) is documented, public maths — the
- * CSS Color Module Level 4 reference formulas, credited to Björn Ottosson's
- * OKLab publication. No third-party shader or library source is used or
- * ported (KJC-4, `.claude/plans/2026-08-27-generative-background-engine.md`).
+ * `buildFieldImageData()` below reproduces that CATEGORY of texture from our
+ * own maths — deterministic per the four client colours (so re-theming
+ * reproduces predictably, and two instances with the same colours look the
+ * same), with no dependency on any third-party asset: colour blobs are
+ * placed procedurally, warped by a small value-noise field for organic
+ * (non-circular) edges, and composited with real alpha-over blending in
+ * linear-light sRGB starting from a white canvas — the same compositing
+ * order that produces genuine white gaps and genuine near-pure patches,
+ * which a normalised weighted blend (every pixel forced to sum to 100%
+ * colour) structurally cannot.
  *
  * ── FAIL-OPEN ─────────────────────────────────────────────────────────────
  *
@@ -48,8 +51,8 @@
  * draw. If canvas 2D is unavailable or the colours cannot be parsed, the
  * stylesheet's static CSS gradient stays visible. If WebGL2 is unsupported,
  * a shader fails to compile/link, the capability gate declines, or the
- * context is lost and never recovers, the OKLCH 2D-canvas image stays
- * visible — never a blank rectangle.
+ * context is lost and never recovers, the organic-field 2D-canvas image
+ * stays visible — never a blank rectangle.
  *
  * @package
  */
@@ -151,9 +154,11 @@ function parseCssColour( raw ) {
 }
 
 /*
- * ── OKLCH colour maths (CSS Color Module Level 4 reference formulas) ──────
- * Public, documented conversion pipeline. Written from the published
- * matrices, not ported from any third-party source.
+ * ── Linear-light sRGB conversion (public, documented — CSS Color Module
+ *    Level 4 reference formulas) ────────────────────────────────────────────
+ * Needed so blob compositing below happens in LINEAR light, not gamma-
+ * encoded sRGB — compositing two colours in gamma space visibly darkens
+ * their overlap versus how light actually combines.
  */
 
 /** sRGB gamma-encoded channel (0-1) -> linear-light. */
@@ -174,132 +179,157 @@ function linearToSrgb( c ) {
 	return 12.92 * c;
 }
 
-/** Linear-light sRGB [r,g,b] -> OKLab [L,a,b]. */
-function linearSrgbToOklab( [ r, g, b ] ) {
-	const l = 0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b;
-	const m = 0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b;
-	const s = 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b;
-	const l_ = Math.cbrt( l );
-	const m_ = Math.cbrt( m );
-	const s_ = Math.cbrt( s );
-	return [
-		0.2104542553 * l_ + 0.793617785 * m_ - 0.0040720468 * s_,
-		1.9779984951 * l_ - 2.428592205 * m_ + 0.4505937099 * s_,
-		0.0259040371 * l_ + 0.7827717662 * m_ - 0.808675766 * s_,
-	];
-}
-
-/** OKLab [L,a,b] -> linear-light sRGB [r,g,b]. */
-function oklabToLinearSrgb( [ L, a, b ] ) {
-	const l_ = L + 0.3963377774 * a + 0.2158037573 * b;
-	const m_ = L - 0.1055613458 * a - 0.0638541728 * b;
-	const s_ = L - 0.0894841775 * a - 1.291485548 * b;
-	const l = l_ * l_ * l_;
-	const m = m_ * m_ * m_;
-	const s = s_ * s_ * s_;
-	return [
-		4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
-		-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
-		-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
-	];
-}
-
-/** sRGB 0-1 [r,g,b] -> OKLCH {l, c, h(degrees)}. */
-function srgbToOklch( rgb ) {
-	const linear = rgb.map( srgbToLinear );
-	const [ L, a, b ] = linearSrgbToOklab( linear );
-	const c = Math.sqrt( a * a + b * b );
-	let h = ( Math.atan2( b, a ) * 180 ) / Math.PI;
-	if ( h < 0 ) {
-		h += 360;
-	}
-	return { l: L, c, h };
-}
-
-/** OKLCH {l, c, h(degrees)} -> sRGB 0-1 [r,g,b], gamut-clamped. */
-function oklchToSrgb( { l, c, h } ) {
-	const hRad = ( h * Math.PI ) / 180;
-	const a = c * Math.cos( hRad );
-	const b = c * Math.sin( hRad );
-	const linear = oklabToLinearSrgb( [ l, a, b ] );
-	// Gamma round-trip, then clamp to the sRGB gamut — an OKLCH interpolation
-	// between two in-gamut colours can produce an out-of-gamut intermediate;
-	// an unclamped value produces a colour-clipping artefact that looks
-	// exactly like the banding this whole fix exists to remove.
-	return linear.map( ( v ) => Math.max( 0, Math.min( 1, linearToSrgb( v ) ) ) );
-}
-
-/**
- * Interpolate the hue ANGLE around the shorter arc — a polar interpolation
- * needs a stated direction, unlike a Cartesian one.
- *
- * @param {number} h1 Start hue, degrees.
- * @param {number} h2 End hue, degrees.
- * @param {number} t  0-1 interpolation factor.
- * @return {number} Interpolated hue, degrees (0-360).
+/*
+ * ── Deterministic PRNG + value noise ───────────────────────────────────────
+ * mulberry32 — public-domain, widely-published 32-bit PRNG (not third-party
+ * source in the licence sense; a common one-line utility, same category as
+ * the Rodrigues rotation formula already used elsewhere in this effect).
+ * Seeded from the four client colours so the same palette always produces
+ * the same blob layout, and a different palette produces a different one.
  */
-function lerpHue( h1, h2, t ) {
-	let delta = h2 - h1;
-	if ( delta > 180 ) {
-		delta -= 360;
-	} else if ( delta < -180 ) {
-		delta += 360;
-	}
-	let h = h1 + delta * t;
-	if ( h < 0 ) {
-		h += 360;
-	}
-	return h % 360;
-}
-
-/**
- * Interpolate between two OKLCH colours: L and C linearly, hue around the
- * shorter arc (§2's colour-space correction).
- *
- * @param {Object} a OKLCH start.
- * @param {Object} b OKLCH end.
- * @param {number} t 0-1 interpolation factor.
- * @return {Object} OKLCH midpoint.
- */
-function lerpOklch( a, b, t ) {
-	return {
-		l: a.l + ( b.l - a.l ) * t,
-		c: a.c + ( b.c - a.c ) * t,
-		h: lerpHue( a.h, b.h, t ),
+function mulberry32( seed ) {
+	let a = seed;
+	return function () {
+		a |= 0;
+		a = ( a + 0x6d2b79f5 ) | 0;
+		let t = Math.imul( a ^ ( a >>> 15 ), 1 | a );
+		t = ( t + Math.imul( t ^ ( t >>> 7 ), 61 | t ) ) ^ t;
+		return ( ( t ^ ( t >>> 14 ) ) >>> 0 ) / 4294967296;
 	};
 }
 
 /**
- * Build the gradient ImageData: N evenly-spaced stops, interpolated in OKLCH
- * along the shorter hue arc between each adjacent pair, painted as a
- * horizontal band replicated down every row.
+ * Hash the four sRGB stops into a 32-bit seed.
  *
- * @param {number[][]} stops sRGB 0-1 colours, in stop order.
- * @param {number}     width Image width, px.
+ * @param {number[][]} stops sRGB 0-1 colours.
+ * @return {number} A 32-bit integer seed.
+ */
+function seedFromColours( stops ) {
+	let h = 0x811c9dc5;
+	for ( const [ r, g, b ] of stops ) {
+		for ( const v of [ r, g, b ] ) {
+			h ^= Math.round( v * 255 );
+			h = Math.imul( h, 0x01000193 );
+		}
+	}
+	return h >>> 0;
+}
+
+/**
+ * A small bilinear-interpolated value-noise field, sampled lazily per pixel.
+ * Used to warp blob edges so they read as organic/torn rather than smooth
+ * circles — matching the reference texture's actual character (measured,
+ * D941/D942), not a stylistic flourish.
+ *
+ * @param {number}   width  Field width, px.
+ * @param {number}   height Field height, px.
+ * @param {number}   cell   Lattice cell size, px.
+ * @param {Function} rng    A `mulberry32()` generator.
+ * @return {Function} `(x, y) => number` sampling the smoothed field, 0-1.
+ */
+function makeValueNoise( width, height, cell, rng ) {
+	const gw = Math.floor( width / cell ) + 2;
+	const gh = Math.floor( height / cell ) + 2;
+	const grid = new Float32Array( gw * gh );
+	for ( let i = 0; i < grid.length; i++ ) {
+		grid[ i ] = rng();
+	}
+	const smooth = ( t ) => t * t * ( 3 - 2 * t );
+	return ( x, y ) => {
+		const gx = x / cell;
+		const gy = y / cell;
+		const x0 = Math.floor( gx );
+		const y0 = Math.floor( gy );
+		const x1 = Math.min( x0 + 1, gw - 1 );
+		const y1 = Math.min( y0 + 1, gh - 1 );
+		const fx = smooth( gx - x0 );
+		const fy = smooth( gy - y0 );
+		const v00 = grid[ y0 * gw + x0 ];
+		const v10 = grid[ y0 * gw + x1 ];
+		const v01 = grid[ y1 * gw + x0 ];
+		const v11 = grid[ y1 * gw + x1 ];
+		const top = v00 * ( 1 - fx ) + v10 * fx;
+		const bot = v01 * ( 1 - fx ) + v11 * fx;
+		return top * ( 1 - fy ) + bot * fy;
+	};
+}
+
+/**
+ * Build the organic colour-field ImageData: N procedurally-placed, noise-
+ * warped colour blobs, alpha-composited over a white canvas in linear-light
+ * sRGB. Reproduces the reference palette texture's measured CATEGORY of
+ * result — real coverage variance (white gaps, near-pure patches, blended
+ * overlaps), never a 1D gradient — from our own maths, with no dependency
+ * on any third-party asset (D941/D942).
+ *
+ * @param {number[][]} stops  sRGB 0-1 colours, exactly 4.
+ * @param {number}     width  Image width, px.
  * @param {number}     height Image height, px.
  * @return {ImageData} The built image.
  */
-function buildGradientImageData( stops, width, height ) {
-	const oklchStops = stops.map( srgbToOklch );
-	const segments = oklchStops.length - 1;
-	const row = new Uint8ClampedArray( width * 4 );
+function buildFieldImageData( stops, width, height ) {
+	const rng = mulberry32( seedFromColours( stops ) );
+	const noiseX = makeValueNoise( width, height, width * 0.28, mulberry32( rng() * 4294967296 ) );
+	const noiseY = makeValueNoise( width, height, width * 0.28, mulberry32( rng() * 4294967296 ) );
 
-	for ( let x = 0; x < width; x++ ) {
-		const pos = segments <= 0 ? 0 : ( x / ( width - 1 ) ) * segments;
-		const seg = Math.min( segments - 1, Math.floor( pos ) );
-		const t = segments <= 0 ? 0 : pos - seg;
-		const oklch = lerpOklch( oklchStops[ seg ], oklchStops[ seg + 1 ], t );
-		const [ r, g, b ] = oklchToSrgb( oklch );
-		const i = x * 4;
-		row[ i ] = Math.round( r * 255 );
-		row[ i + 1 ] = Math.round( g * 255 );
-		row[ i + 2 ] = Math.round( b * 255 );
-		row[ i + 3 ] = 255;
+	const stopsLinear = stops.map( ( [ r, g, b ] ) => [
+		srgbToLinear( r ),
+		srgbToLinear( g ),
+		srgbToLinear( b ),
+	] );
+
+	const N_BLOBS = 11;
+	const blobs = [];
+	for ( let i = 0; i < N_BLOBS; i++ ) {
+		const radius = ( 0.3 + rng() * 0.3 ) * width;
+		blobs.push( {
+			cx: rng() * width,
+			cy: rng() * height,
+			radius,
+			coreFrac: 0.15 + rng() * 0.25,
+			coreAlpha: 0.85 + rng() * 0.15,
+			colour: stopsLinear[ i % stopsLinear.length ],
+		} );
+	}
+	// Random draw order so no single colour slot systematically paints last
+	// (and therefore always "wins" every overlap) on every instance.
+	for ( let i = blobs.length - 1; i > 0; i-- ) {
+		const j = Math.floor( rng() * ( i + 1 ) );
+		[ blobs[ i ], blobs[ j ] ] = [ blobs[ j ], blobs[ i ] ];
 	}
 
 	const data = new Uint8ClampedArray( width * height * 4 );
 	for ( let y = 0; y < height; y++ ) {
-		data.set( row, y * width * 4 );
+		for ( let x = 0; x < width; x++ ) {
+			const warpX = ( noiseX( x, y ) - 0.5 ) * width * 0.22;
+			const warpY = ( noiseY( x, y ) - 0.5 ) * height * 0.22;
+
+			// Alpha-over compositing, linear-light, starting from white.
+			let r = 1;
+			let g = 1;
+			let b = 1;
+			for ( const blob of blobs ) {
+				const dx = x - blob.cx + warpX;
+				const dy = y - blob.cy + warpY;
+				const d = Math.sqrt( dx * dx + dy * dy );
+				// Smoothstep from a flat full-alpha core to zero at radius —
+				// NOT a power falloff starting at the centre, which never lets
+				// a blob reach true near-full coverage anywhere.
+				const edge0 = blob.radius * blob.coreFrac;
+				const t = Math.min( 1, Math.max( 0, ( d - edge0 ) / ( blob.radius - edge0 ) ) );
+				const fall = t * t * ( 3 - 2 * t );
+				const a = blob.coreAlpha * ( 1 - fall );
+				r = blob.colour[ 0 ] * a + r * ( 1 - a );
+				g = blob.colour[ 1 ] * a + g * ( 1 - a );
+				b = blob.colour[ 2 ] * a + b * ( 1 - a );
+			}
+
+			const i = ( y * width + x ) * 4;
+			data[ i ] = Math.round( linearToSrgb( r ) * 255 );
+			data[ i + 1 ] = Math.round( linearToSrgb( g ) * 255 );
+			data[ i + 2 ] = Math.round( linearToSrgb( b ) * 255 );
+			data[ i + 3 ] = 255;
+		}
 	}
 	return new ImageData( data, width, height );
 }
@@ -359,7 +389,7 @@ function attachStaticCanvas( el, colours ) {
 		return null;
 	}
 
-	const imageData = buildGradientImageData( colours, IMAGE_WIDTH, IMAGE_HEIGHT );
+	const imageData = buildFieldImageData( colours, IMAGE_WIDTH, IMAGE_HEIGHT );
 	ctx.putImageData( imageData, 0, 0 );
 
 	el.appendChild( canvas );
