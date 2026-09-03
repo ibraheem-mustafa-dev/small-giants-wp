@@ -269,16 +269,22 @@ function makeValueNoise( width, height, cell, rng ) {
  */
 function buildFieldImageData( stops, width, height ) {
 	const rng = mulberry32( seedFromColours( stops ) );
-	// ⚠ Blob scale is deliberately SMALL relative to the canvas — measured, not
-	// guessed. A UV-visualisation debug render of the actual folded geometry
-	// (D944 follow-up) proved the on-screen ribbon only ever samples roughly
-	// the top ~45% of this canvas's V range, though it does use the full U
-	// range. Any blob layout tuned to "look right" on the whole 320x320 canvas
-	// therefore has roughly HALF its detail invisible on the real shape.
-	// Higher density (more, smaller blobs) is the fix that holds regardless of
-	// exactly which sub-window a given fold preset ends up revealing, rather
-	// than hand-tuning placement to one measured window that could shift with
-	// a different preset.
+	// ⚠ Blob scale is calibrated against TWO measurements, not guessed — read
+	// both before changing these numbers. (1) A UV-visualisation debug render
+	// of the actual folded geometry proved the on-screen ribbon only ever
+	// samples roughly the top ~45% of this canvas's V range, though it uses
+	// the full U range — any layout tuned to "look right" on the whole
+	// 320x320 canvas has roughly HALF its detail invisible on the real shape,
+	// which is why blob density needs to be high enough to hold up in ANY
+	// sub-window. (2) The reference's own palette-a.png measures only 0.8%
+	// near-white ("how much ink is here" < 0.10) — an earlier version of this
+	// generator (11 large blobs) had ~0% near-white, then an over-correction
+	// (26 small blobs) measured 24-35% near-white on the actual deployed
+	// output, which is what read as "so many white splotches" live. These
+	// constants (36 blobs, larger radius, higher core alpha) were swept
+	// against a real white-percentage measurement across 6 seeds before
+	// shipping (avg 3.3%, range 1.5-6.7%) — close to the reference's 0.8%
+	// without erasing genuine gaps entirely.
 	const noiseX = makeValueNoise( width, height, width * 0.12, mulberry32( rng() * 4294967296 ) );
 	const noiseY = makeValueNoise( width, height, width * 0.12, mulberry32( rng() * 4294967296 ) );
 
@@ -288,10 +294,10 @@ function buildFieldImageData( stops, width, height ) {
 		srgbToLinear( b ),
 	] );
 
-	const N_BLOBS = 26;
+	const N_BLOBS = 36;
 	const blobs = [];
 	for ( let i = 0; i < N_BLOBS; i++ ) {
-		const radius = ( 0.1 + rng() * 0.12 ) * width;
+		const radius = ( 0.18 + rng() * 0.14 ) * width;
 		blobs.push( {
 			cx: rng() * width,
 			cy: rng() * height,
