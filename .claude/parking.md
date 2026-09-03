@@ -45,6 +45,25 @@ same file, same underlying issue. Superseded entry archived to `memory/parking-a
 
 *Entry count is deliberately NOT cached here — it drifted to three different figures (58 here, 61 below, 62 raw) before this line was cut on 2026-08-22. Measure it: `grep -c "^### P-" .claude/parking.md` minus the fenced template example, or read `handoff-preflight.py --check`.*
 
+### P-MEDIA-ATOM-CALLER-SUPPLIED-SELECTOR — overlay atom can't paint onto a caller's own marker
+
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-03
+
+Every media atom paints via one of two hardcoded marker classes (`sgs-media-box`/`sgs-media-el`,
+`SGS_Media_Element::box_classes()`/`element_classes()`) — there is no way for an existing shared
+component with its OWN marker (`class-sgs-container-wrapper.php`'s `.sgs-container__overlay`
+sibling span, used by 28 blocks) to consume an atom's custom-property values without adopting the
+atom's marker scheme wholesale. This is what blocks `class-sgs-container-wrapper.php`'s overlay
+CSS from ever routing through the shared `overlay` atom (7 blocks' `backgroundOverlay*` findings
+stay documented debt on rule `37-media-no-handroll` until this is solved — see D922).
+
+Needs a genuinely new atom capability: paint via the atom's custom properties on a
+caller-supplied selector, not just the two fixed marker classes. Investigated but not designed
+2026-09-03 — confirmed zero precedent anywhere in the atom system (16 atoms, all element/box
+scoped). A real design task, not a quick fix; the wrapper's own overlay CSS is currently MORE
+capable than the atom (has tiering the atom didn't, until D922's tiering fix), so this is not
+urgent — the wrapper works fine as-is, this is purely a dedup opportunity.
+
 ### P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT — a page-embedded nav's dropdown is overlapped
 
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-31

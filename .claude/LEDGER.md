@@ -18,21 +18,24 @@ Right now: the cloning pipeline and the motion system are both stable. Client co
 2026-09-02 (Waves 6-7 committed, deployed, live-verified). The live front is the **uniformity
 sweep** — running the framework's own detector/audit scripts, clearing real findings, and fixing
 the detectors themselves where they're wrong, so the client's editor/canvas/live-page experience
-has no clear blockers. The prior session closed three items (03, 18, 21's appendix); this session
-closed a fourth — **border-migration** (`card-grid`/`multi-button`/`trust-bar` off native
-WordPress border support), deployed and live-verified on the canary, plus two real bugs the
-migration tool itself had. Three items remain, one dedicated build-session prompt stays separate
-(below). The canary test site is sandybrown-nightingale-600381.hostingersite.com; there are no
-live client sites on this framework yet, so breakage there costs time, not money.
+has no clear blockers. This session closed most of `37-media-no-handroll` (71 → 44 findings) —
+17 blocks got a real client-facing crop control, the overlay atom gained responsive tiering, and
+a 4-persona `/qc-council` review caught two real bugs before they shipped. Deployed and
+live-verified on the canary. Two items remain fully open (`01`, `21`), plus 8 blocks' worth of
+`37` residue held pending a design chat about `sgs/container`. One dedicated build-session prompt
+stays separate (below) — it also now carries a retrospective on why the last session's
+verification pass cost so much, worth reading before starting it. The canary test site is
+sandybrown-nightingale-600381.hostingersite.com; there are no live client sites on this framework
+yet, so breakage there costs time, not money.
 
 ## State Snapshot
 
 - **Branch:** `main`, ONE active track. Commit with explicit paths (a hook enforces it).
 - **Canary:** WP 7.1. Deploy via `build-deploy.py --target sandybrown` — the only sanctioned path.
-- **Build:** green, **85/85 gate:fast + 3/3 gate:full** gates, verified 2026-09-03 at `3f05435ad`
-  (deployed same commit — fast-forward). Canary deployed once this session; all 3 migrated blocks
-  live-verified against the real deployed build via `check-border-roundtrip.js` (not just a code
-  read or a gate pass). Nothing uncommitted at session close (`cb42f834e`).
+- **Build:** green, `run-gates.py --tier full` (3/3) verified 2026-09-03 at `7de8f0ff8`, deployed
+  same commit (fast-forward). Canary deployed once this session; migrated blocks live-verified
+  against the real deployed CSS bundle + a live populated `product-card` instance (not just a
+  code read or a gate pass). Nothing uncommitted at session close (`a47cc502a`).
 - **Live fronts:** the uniformity sweep (below). Client controls, cloning, consolidation are closed;
   motion is stable with named next steps in its own section.
 - **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
@@ -45,53 +48,38 @@ live client sites on this framework yet, so breakage there costs time, not money
 (section below). Sections below are per-track, read only the one you're continuing.**
 The **motion** track owns `⛔ `sgs-framework.db` is ONE shared file — DB work sequentially, not parallel.
 
-## ▶ UNIFORMITY SWEEP TRACK — 2026-09-03: border-migration CLOSED + live-verified; 3 items remain, 1 dedicated build prompt
+## ▶ UNIFORMITY SWEEP TRACK — 2026-09-03: 37-media-no-handroll mostly CLOSED + live-verified; 2 items remain, 1 dedicated build prompt
 
 ⭐ **Read `.claude/reports/2026-09-02-findings-INDEX.md` FIRST — it is the map.** Twelve reports,
 one per detector reporting findings, each with a plain-English problem/effect, a ranked menu and a
 "Your call" checklist. Plan: `.claude/plans/2026-08-30-uniformity-sweep-execution.md`.
 
 **Two dedicated next-session prompts, split deliberately (see below for why):**
-- **Mixed backlog sweep (37, 01, 21's own pre-existing 54):**
-  `.claude/prompts/2026-09-03-detector-backlog-post-border.md`
-- **`31-golden-colour-control` build session (separate — it's a build task, not triage):**
+- **Mixed backlog sweep (37's residue, 01, 21):**
+  `.claude/prompts/2026-09-03-detector-backlog-post-media-atom.md`
+- **`31-golden-colour-control` build session (separate — it's a build task, not triage; now
+  carries a retrospective on why the last session's verification cost so much — read it first):**
   `.claude/prompts/2026-09-03-golden-colour-grant-build.md`
 
-### This session's close (D921 has the full account — this is a pointer, not a duplicate)
+### This session's close — D922 has the full account, this is a pointer
 
-Closed **border-migration**: `card-grid`/`multi-button`/`trust-bar` moved off native WordPress
-`__experimentalBorder` support onto block-private attributes (Shape B), matching `sgs/accordion`'s
-proven pattern. The `ambiguous-anchor` refusal blocking `migrate-border-shape-b.js --survey` had
-two distinct root causes (not one) — `card-grid`/`trust-bar` accumulate CSS into multiple
-`*_css`-named variables with no name-based way to tell which is the border sink;
-`multi-button` never named its root selector at all. Fixed by tracing which accumulator
-structurally receives the border-specific `wp_style_engine_get_styles()` output, and giving
-`multi-button` a named `$root_sel`. Found and fixed two real bugs in the migration tool's own
-output along the way: a double-border-emission risk in `multi-button` (a leftover whole-object
-native read competing with the new private-attr emission), and cascading dead
-`if ( ! empty( $X ) )` guards in `card-grid`/`trust-bar` (pruned by proof — zero remaining writes
-to `$X` makes `empty($X)` unconditionally true forever). Deployed to sandybrown and live-verified
-with `scripts/qa/check-border-roundtrip.js` against the real DOM — all 3 blocks PASS (border paints
-from attributes, negative control clean). `card-grid` needed one addition to the probe tool itself
-(a `FIXTURES` entry supplying a minimal item, since its default `manual` source renders nothing
-with zero items) — a probe-authoring gap, not a migration bug.
+Closed most of **37-media-no-handroll** (71 → 44 findings): 17 blocks migrated onto the shared
+media-atom system for `object-fit`/`object-position`, giving clients real crop controls; the
+overlay atom gained tablet/mobile tiering. Two real bugs caught by `/qc-council` before ship (a
+child-block override, a dead duplicate control with a live double-emission risk) — full account
++ the detector blind-spot finding + why the full wrapper-overlay swap was refused: D922.
+Deployed + live-verified on sandybrown; 16 visual-diff reports written (intent-capture, live CSS
++ a populated `product-card` instance checked). Border-migration (previous session) — D921.
 
-Visual-diff gate paid as debt, same pattern as `accordion-2026-08-29.md`: committed with the
-scoped bypass (`SGS_VISUAL_GATE_SKIP=card-grid,multi-button,trust-bar`), reports written once the
-live proof existed — `reports/visual-diff/card-grid-2026-09-03.md`,
-`multi-button-2026-09-03.md`, `trust-bar-2026-09-03.md`.
+`31-golden-colour-control`'s status, unchanged: D754's plan has 2 of 6 work units done, but
+`grant.js` — the actual capability tool — doesn't exist yet. ~5.4h BUILD task with its own
+feasibility spike, own dedicated prompt, never folded into a mixed backlog session.
 
-⛔ **`31-golden-colour-control`'s status, corrected the prior session — still holds, not re-trusted
-blindly.** D754's plan has two of six work units done (`U2` manifest-seed, `U1` triage), but
-`grant.js` — the actual capability tool — does not exist anywhere in the tree, confirmed by search.
-This is a ~5.4-hour BUILD task with its own feasibility spike, not a triage-and-dispatch item — it
-has its own dedicated prompt (above) precisely so it doesn't get folded into a mixed backlog
-session by mistake.
-
-**What's left — 3 items, ranked in the mixed-backlog prompt:** `37` (71, mechanical) · `01` (57,
-coarse-proxy check — verify by eye) · `21`'s own pre-existing 54-item backlog (separate from the
-appendix a prior session closed, not yet triaged block-by-block). `31` (277) is out of this
-prompt entirely — see its own build-session prompt.
+**What's left — 2 open items + 1 held:** `01` (56, coarse-proxy check — verify by eye) · `21`
+(54, pre-existing backlog, not yet triaged block-by-block) · `37`'s remaining 44 findings across
+`container`/`cta-section`/`nav-drawer` (backdrop-scope, first adoption, held for a design chat)
+and `multi-button`/`physics-canvas`/`site-footer`/`site-header` (overlay, documented debt, needs
+the atom's marker-class gap solved first — see D922). `31` (277) stays fully out of this prompt.
 
 ⛔ **Working shape carried forward from the prior session, unchanged: dispatch each fix the MOMENT
 Bean decides it and keep discussing while the agent works — do NOT batch every fix to the end.**

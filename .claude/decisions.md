@@ -1,3 +1,61 @@
+## D922 [ROUTINE] — 37-media-no-handroll: 17 blocks onto the shared object-fit atom, overlay tiering extended, live-verified + /qc-council reviewed
+
+**2026-09-03.** Closes most of `37-media-no-handroll` (71 → 44 findings). Commits `c1a395ec5`,
+`7de8f0ff8`, `a47cc502a`. 17 blocks (card-grid, cart, google-reviews, image-sequence,
+mega-aside, option-picker, product-search, team-member, mega-panel, gallery, info-box, buybox,
+post-grid, testimonial, brand-strip, trust-bar, product-card) migrated hand-rolled
+`object-fit`/`object-position` CSS onto the shared media-atom system, giving clients a real
+per-instance crop control wherever one was genuinely missing (not just a mechanism swap — Bean
+confirmed "add real client controls" as the depth, not "clear the finding cheaply").
+
+**Two real bugs caught by `/qc-council`'s regression-hunt rater, both fixed same session:**
+`mega-aside` had a hardcoded CSS override silently defeating an already-working control on its
+CHILD block (`sgs/media`); `team-member`/`product-card` shipped a dead duplicate "Object fit"
+dropdown next to the new one — `team-member`'s version also carried a live double-emission risk
+for existing content (the legacy `sgs_media_position_css()` call could still paint a literal
+`object-fit` on the same selector the atom now owns). Both bridged onto the pre-existing
+attribute instead (mirroring `sgs/gallery`'s already-correct pattern), matching the discipline
+several independently-dispatched agents already applied on their own — several blocks already
+had a working, differently-named control (`sgs/gallery`'s `sgsObjectFit`, `sgs/brand-strip`'s
+`logoFit`) and were bridged via `STORED_AS` rather than duplicated.
+
+**Detector blind spot found and checked for recurrence:** rule 37's `mediaElements`-adoption
+check is block-wide, not per-attribute — adopting the atom for one attribute silently clears the
+detector for every OTHER media-family attribute on that block, wired or not. Confirmed across
+all 15 migrated blocks; only `trust-bar` was affected (its `backgroundOverlay*` attrs), and it's
+now documented via `_comment_overlayNotAdopted` rather than silently gapped.
+
+**Category B (overlay atom) — extended, not fully swapped.** The `overlay` media-atom gained
+tablet/mobile tiering for `OverlayOpacity` (JS/PHP parity verified, byte-identical fixture
+cross-check). The full swap of `class-sgs-container-wrapper.php` (used by 28 blocks) onto this
+atom was investigated and explicitly refused before writing any code: it would silently drop the
+tablet/mobile overlay-opacity control 7 blocks already expose to clients (the atom had no tier
+support at investigation time) AND the atom paints via a fixed `sgs-media-box` marker class the
+wrapper doesn't use. Bean chose "extend the atom first" over the two cheaper options (document-
+only, or park it). The marker-class gap remains open — needs a new "caller-supplied-selector"
+atom capability, named as its own future item, not folded into this session.
+
+**Held, not fixed:** `container`/`cta-section`/`nav-drawer`'s remaining `37` findings
+(background-image sizing) — first-ever adoption of the atom's "backdrop" scope; `sgs/container`
+is the shared wrapper, so this needs Bean's design sign-off before building, per rule 7.
+
+**Verification:** `php -l` clean on every touched PHP file; detector re-run confirms the count;
+dead-controls gate clean; a 4-persona `/qc-council` (regression hunt, atom-layer safety audit,
+detector blind-spot audit, cross-agent convention consistency) reviewed the full diff — every
+finding it raised was fixed or confirmed a non-issue before commit; deployed to sandybrown
+(`build-deploy.py --blocks-only`) and live-verified against the real canary (fetched the live
+compiled CSS bundle, confirmed the atom's fallback rule is live and every migrated block's
+compiled stylesheet has zero unexpected literal `object-fit` declarations; `product-card`
+additionally verified against a live populated instance — marker class present, computed style
+resolves to `cover`). Visual-diff reports: 16 `*-2026-09-03.md` files under
+`reports/visual-diff/` (intent-capture format), two of which (`card-grid`, `team-member`,
+`trust-bar`) were appended to an existing same-day report from a different concurrent track
+rather than overwritten, after an accidental clobber of both was caught and reverted.
+
+**Retrospective:** `.claude/reports/2026-09-03-media-atom-migration-lessons.md` — why
+verification cost ~75% of this session's context window, and what to do differently before
+`31-golden-colour-control` (277 findings, same shape of work at larger scale).
+
 ## D921 [ROUTINE] — border-migration closed: card-grid/multi-button/trust-bar off native `__experimentalBorder`, migration tool's own bugs fixed, live-verified on canary
 
 **2026-09-03.** Closes the border-migration item from the uniformity-sweep backlog. All 3
