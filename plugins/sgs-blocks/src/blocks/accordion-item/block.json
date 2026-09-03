@@ -50,7 +50,8 @@
 						"css:border-color": "borderColour",
 						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
-						"css:border-color-gradient": "borderColourGradient"
+						"css:border-color-gradient": "borderColourGradient",
+						"css:background-image": "textColourGradient"
 					},
 					"_note": "CONTENT-KIND composite mirror (SGS_Container_Wrapper 'content' kind) — no `layer` (root is a leaf details wrapper, not a grid/section layer), so the 12 ARRANGEMENT members are never asked. block.json declares no `spacing`/`typography` supports at all on this block, so padding/margin/gap/font-* are honest gaps, not omissions."
 				},
@@ -121,6 +122,10 @@
 			"default": ""
 		},
 		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
 			"type": "string",
 			"default": ""
 		},

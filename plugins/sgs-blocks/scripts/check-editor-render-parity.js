@@ -4277,7 +4277,29 @@ function main() {
 	// (`quoteColourHover` must be suppressed) and an over-match control
 	// (`panelHoverLayout` must still be flagged); each was verified to FAIL when
 	// deliberately broken, so neither is vacuous.
-	const CHECK_A_OPEN_BACKLOG = 177;
+	// 177 -> 181 (2026-09-03): the text-colour gradient rollout gave eight blocks a
+	// `textColourGradient` sibling. Each one's FLAT partner `textColour` was ALREADY
+	// inside the accepted 177 for the identical reason, so this is the sanctioned
+	// raise -- pre-existing debt this run made visible -- not a new class of defect.
+	//
+	// Why these are structurally unpreviewable rather than merely unfinished:
+	// accordion-item / collapsible-text / feature-grid / form-field-tiles /
+	// form-step / site-footer-row / site-header-row / tab are all InnerBlocks
+	// CONTAINERS. Their text colour is INHERITED by child blocks through CSS; there
+	// is no single canvas text node to paint. Painting the wrapper instead would
+	// misrepresent the rendered result, and a parent painting its children's text is
+	// the HC2 pattern this project bans outright.
+	//
+	// Measured, not inferred: 8 new gradient findings, net +4, because four blocks
+	// that DO own a text node (counter, media, product-faq, product-faq-item) gained
+	// a real `resolveTextColourPreviewStyle()` preview in the same pass and dropped
+	// out. So the rollout previewed every block that could be previewed.
+	//
+	// ⚠ RESIDUAL, named not hidden: on these eight, NEITHER the flat colour nor its
+	// gradient shows on the canvas. A client sets it and sees nothing until preview
+	// or publish. Closing it means previewing the INHERITED colour on the container's
+	// children, which is a real editor-UX piece of work, not a line in this rollout.
+	const CHECK_A_OPEN_BACKLOG = 181;
 	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
 
 	if ( isJson ) {

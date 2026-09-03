@@ -93,25 +93,22 @@ if ( '' !== $tab_preset_bg_slug ) {
 // TAB'S OWN scoped <style> via the stable core API. Mirrors sgs/hero + sgs/tabs.
 $tab_responsive_css = '';
 
-$tab_style_engine_args = array();
 
-$tab_color_args = array();
-// ⚠ EVERY value goes through sgs_colour_value() before the style engine
-// (D684). DesignTokenPicker stores a token SLUG ('primary') when a palette
-// swatch is picked with linked:true. wp_style_engine_get_styles() neither
-// resolves nor rejects a bare slug — it emits the literal `color:primary;`,
-// invalid CSS the browser drops, so the client's chosen text colour silently
-// does nothing (proven live on the canary). sgs_colour_value() maps a slug to
-// var(--wp--preset--color--…), passes a raw hex through unchanged, and
-// rejects a declaration breakout. Mirrors sgs/site-header-row.
-if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-	$tab_text_value = sgs_colour_value( (string) $attributes['textColour'] );
-	if ( '' !== $tab_text_value ) {
-		$tab_color_args['text'] = $tab_text_value;
+// Text colour (flat or gradient) — gradient sibling attribute wins when set+valid
+// (D636 sibling-attribute shape). sgs_text_colour_decl()/sgs_colour_value() both
+// resolve a palette SLUG to var(--wp--preset--color--…) so a bare slug never
+// reaches the browser as invalid CSS. Mirrors sgs/counter's labelColour.
+$tab_text_colour           = (string) ( $attributes['textColour'] ?? '' );
+$tab_text_colour_gradient  = (string) ( $attributes['textColourGradient'] ?? '' );
+$tab_text_colour_effective = sgs_resolve_text_colour_or_gradient( $tab_text_colour, $tab_text_colour_gradient );
+if ( '' !== $tab_text_colour_effective ) {
+	$tab_text_colour_decl = sgs_text_colour_decl( $tab_text_colour_effective );
+	if ( '' !== $tab_text_colour_decl ) {
+		$tab_responsive_css .= "{$root_sel}{{$tab_text_colour_decl};}";
 	}
-}
-if ( ! empty( $tab_color_args ) ) {
-	$tab_style_engine_args['color'] = $tab_color_args;
+	// MANDATORY companion, not optional — see sgs/counter render.php for the
+	// browser-support rationale. No-op for a flat colour.
+	$tab_responsive_css .= sgs_text_colour_gradient_fallback_rule( $root_sel, $tab_text_colour_effective );
 }
 
 // Background (colour + gradient, resting + hover) is owned by the shared fill
@@ -141,15 +138,14 @@ if ( '' !== $tab_fill_css ) {
 // (native border_args removed by the Shape-B migration -- width/style/colour
 //  are block-private attrs now, emitted below)
 
-if ( ! empty( $tab_style_engine_args ) ) {
-	$tab_scoped_styles = wp_style_engine_get_styles(
-		$tab_style_engine_args,
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $tab_scoped_styles['css'] ) ) {
-		$tab_responsive_css .= $tab_scoped_styles['css'];
-	}
-}
+// The native style-engine colour path is GONE, deliberately. Text colour now
+// renders through sgs_resolve_text_colour_or_gradient() + sgs_text_colour_decl()
+// above, because wp_style_engine_get_styles()'s color.text input cannot carry a
+// gradient (background-clip:text is not a colour value). The border half was
+// already removed by the Shape-B migration, so nothing was left to feed the
+// engine and its guards were provably dead -- check-render-undefined-vars
+// caught them as always-falsy. Do not reinstate: an empty args array emits no
+// CSS, so this was dead code, not a safety net.
 
 // Output the block's own scoped color/border CSS (if any). wp_strip_all_tags
 // (NOT esc_html) blocks a </style> breakout while leaving CSS combinators

@@ -160,6 +160,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{
 						key: 'caption',
 						label: __( 'Caption colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -167,6 +168,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: attributes.captionColour,
 								onChange: ( val ) => setAttributes( { captionColour: val ?? '' } ),
 								linked: true,
+								gradientValue: attributes.captionColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { captionColourGradient: val ?? '' } ),
 							},
 						],
 					},

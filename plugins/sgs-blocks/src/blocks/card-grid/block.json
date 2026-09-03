@@ -156,9 +156,10 @@
 					],
 					"prefix": "title",
 					"attrMap": {
-						"tag": "headingLevel"
+						"tag": "headingLevel",
+						"css:background-image": "titleColourGradient"
 					},
-					"_note": "Renamed from 'card-title' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__title` (render.php:702,713), not `.sgs-card-grid__card-title`. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:759, `.sgs-card-grid__title`) but doesn't match the `title` prefix convention, so it needs an explicit map for check-hardcoded-render-defaults.js's E12 gate to resolve it to THIS element."
+					"_note": "Renamed from 'card-title' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__title` (render.php:702,713), not `.sgs-card-grid__card-title`. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:759, `.sgs-card-grid__title`) but doesn't match the `title` prefix convention, so it needs an explicit map for check-hardcoded-render-defaults.js's E12 gate to resolve it to THIS element. `titleColourGradient` (2026-09-03) is the text-colour gradient sibling to titleColour, same background-clip:text mechanism as sgs/counter's numberColourGradient."
 				},
 				"subtitle": {
 					"label": "Card subtitle",
@@ -167,7 +168,10 @@
 						"text"
 					],
 					"prefix": "subtitle",
-					"_note": "Renamed from 'card-subtitle' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__subtitle` (render.php:705,716), not `.sgs-card-grid__card-subtitle`."
+					"attrMap": {
+						"css:background-image": "subtitleColourGradient"
+					},
+					"_note": "Renamed from 'card-subtitle' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__subtitle` (render.php:705,716), not `.sgs-card-grid__card-subtitle`. `subtitleColourGradient` (2026-09-03) is the text-colour gradient sibling to subtitleColour, same background-clip:text mechanism."
 				},
 				"badge": {
 					"label": "Card badge",
@@ -269,9 +273,17 @@
 			"type": "string",
 			"default": "primary"
 		},
+		"titleColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"subtitleColour": {
 			"type": "string",
 			"default": "text"
+		},
+		"subtitleColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"titleFontSize": {
 			"type": "object",

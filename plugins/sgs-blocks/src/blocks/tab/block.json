@@ -48,7 +48,8 @@
 						"css:border-color": "borderColour",
 						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
-						"css:border-color-gradient": "borderColourGradient"
+						"css:border-color-gradient": "borderColourGradient",
+						"css:background-image": "textColourGradient"
 					},
 					"_note": "CONTENT-KIND composite mirror (SGS_Container_Wrapper 'content' kind) — no `layer` (this is the tab PANEL wrapper, a leaf, not a grid/section layer). block.json declares no `spacing`/`typography` supports on this block, so padding/margin/font-* are honest gaps."
 				},
@@ -102,6 +103,10 @@
 			"default": ""
 		},
 		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
 			"type": "string",
 			"default": ""
 		},

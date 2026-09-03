@@ -11,7 +11,7 @@ import { SgsColourPanel, fillRow,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
-import { colourVar } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 
 const CHEVRON_SVG = (
 	<svg
@@ -50,6 +50,7 @@ function buildWrapperStyle( attributes ) {
 		backgroundColour,
 		backgroundColourGradient,
 		textColour,
+		textColourGradient,
 		borderWidth,
 		borderStyle,
 		borderColour,
@@ -62,11 +63,15 @@ function buildWrapperStyle( attributes ) {
 	// backgroundColour/textColour attrs (SgsColourPanel) instead of
 	// style.color.background/.text (supports.color.background/.text are now
 	// false). Mirrors sgs/quote's buildWrapperStyle.
-	if ( textColour ) {
-		wrapperStyle.color = /^#|^rgb|^hsl/.test( textColour )
-			? textColour
-			: colourVar( textColour );
-	}
+	// D636 gap-closure — textColourGradient sibling wins when set+valid,
+	// switching the preview to the background-clip:text shape (matches
+	// render.php's sgs_resolve_text_colour_or_gradient()/sgs_text_colour_decl()).
+	Object.assign(
+		wrapperStyle,
+		resolveTextColourPreviewStyle( textColour, textColourGradient, ( val ) =>
+			/^#|^rgb|^hsl/.test( val ) ? val : colourVar( val )
+		)
+	);
 	if ( backgroundColour ) {
 		wrapperStyle.backgroundColor = /^#|^rgb|^hsl/.test( backgroundColour )
 			? backgroundColour
@@ -106,7 +111,7 @@ function buildWrapperStyle( attributes ) {
 }
 
 export default function Edit( { attributes, setAttributes, context } ) {
-	const { question, isOpen, textColour } = attributes;
+	const { question, isOpen, textColour, textColourGradient } = attributes;
 	// Editor-canvas desync fix (CHECK A, 2026-08-13): this used to hardcode
 	// useState( true ) with a comment justifying it as "always editable" —
 	// which meant the `isOpen` ("Open by default") toggle had ZERO visible
@@ -180,6 +185,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -188,6 +194,9 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onChange: ( val ) =>
 									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourGradient: val ?? '' } ),
 							},
 						],
 					},

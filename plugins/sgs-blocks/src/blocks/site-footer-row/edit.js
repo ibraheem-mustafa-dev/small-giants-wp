@@ -187,6 +187,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		gridTemplateColumns,
 		gridTemplateRows,
 		textColour,
+		textColourGradient,
 	} = attributes;
 
 	const isGrid = 'grid' === layout;
@@ -331,6 +332,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{
 						key: 'text',
 						label: __( 'Row text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -339,6 +341,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onChange: ( val ) =>
 									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourGradient: val ?? '' } ),
 							},
 						],
 					},

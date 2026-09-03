@@ -69,8 +69,11 @@ $toc_style         = $attributes['tocStyle'] ?? 'card';
 // Fallbacks match block.json defaults so the scoped colour rules always emit
 // (matches the pre-migration behaviour where inline styles were always emitted).
 $title_colour  = $attributes['titleColour'] ?? 'text';
+$title_colour_gradient = $attributes['titleColourGradient'] ?? '';
 $link_colour   = $attributes['linkColour'] ?? 'text-muted';
+$link_colour_gradient  = $attributes['linkColourGradient'] ?? '';
 $active_colour = $attributes['activeLinkColour'] ?? 'primary';
+$active_colour_gradient = $attributes['activeLinkColourGradient'] ?? '';
 
 // ---------------------------------------------------------------------------
 // 3. Parse headings from post content.
@@ -308,14 +311,29 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 // raw CSS colours, and var() passthrough identically to sgs/label). Emitted
 // scoped, never inline. Active rule emitted AFTER the base link rule so it
 // wins the tie on equal specificity by source order. ---
-if ( $title_colour ) {
-	$scoped_css[] = "{$title_sel}{color:" . sgs_colour_value( $title_colour ) . ';}';
+$title_colour_effective = sgs_resolve_text_colour_or_gradient( $title_colour, $title_colour_gradient );
+if ( '' !== $title_colour_effective ) {
+	$title_colour_decl = sgs_text_colour_decl( $title_colour_effective );
+	if ( '' !== $title_colour_decl ) {
+		$scoped_css[] = "{$title_sel}{{$title_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $title_sel, $title_colour_effective );
 }
-if ( $link_colour ) {
-	$scoped_css[] = "{$link_sel}{color:" . sgs_colour_value( $link_colour ) . ';}';
+$link_colour_effective = sgs_resolve_text_colour_or_gradient( $link_colour, $link_colour_gradient );
+if ( '' !== $link_colour_effective ) {
+	$link_colour_decl = sgs_text_colour_decl( $link_colour_effective );
+	if ( '' !== $link_colour_decl ) {
+		$scoped_css[] = "{$link_sel}{{$link_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $link_sel, $link_colour_effective );
 }
-if ( $active_colour ) {
-	$scoped_css[] = "{$active_sel}{color:" . sgs_colour_value( $active_colour ) . ';}';
+$active_colour_effective = sgs_resolve_text_colour_or_gradient( $active_colour, $active_colour_gradient );
+if ( '' !== $active_colour_effective ) {
+	$active_colour_decl = sgs_text_colour_decl( $active_colour_effective );
+	if ( '' !== $active_colour_decl ) {
+		$scoped_css[] = "{$active_sel}{{$active_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $active_sel, $active_colour_effective );
 }
 
 // ---------------------------------------------------------------------------

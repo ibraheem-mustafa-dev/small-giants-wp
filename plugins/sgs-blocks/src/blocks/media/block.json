@@ -63,7 +63,12 @@
 					"clusters": [
 						"text"
 					],
-					"prefix": "caption"
+					"prefix": "caption",
+					"attrMap": {
+						"css:color": "captionColour",
+						"css:background-image": "captionColourGradient"
+					},
+					"_note": "captionColourGradient is the text-colour gradient sibling to captionColour, same background-clip:text mechanism as sgs/counter's labelColour/labelColourGradient (D636 gap-closure). css:color was previously undeclared here even though render.php (step 8, `.sgs-media__caption`) already emits it — this attrMap entry documents the existing flat-colour path as well as adding the new gradient one."
 				}
 			}
 		},
@@ -478,6 +483,10 @@
 			]
 		},
 		"captionColour": {
+			"type": "string",
+			"default": ""
+		},
+		"captionColourGradient": {
 			"type": "string",
 			"default": ""
 		},

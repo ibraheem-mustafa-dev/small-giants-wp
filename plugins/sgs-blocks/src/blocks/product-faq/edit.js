@@ -35,7 +35,7 @@ import { ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, fillRow,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
-import { colourVar } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 
 const HEADING_LEVEL_OPTIONS = [
 	{ label: __( 'Heading 2', 'sgs-blocks' ), value: 'h2' },
@@ -75,7 +75,7 @@ function boxShorthand( box, keys ) {
 // (radius/width/style/colour — all skip-serialised so useBlockProps() no
 // longer auto-applies them) + the SGS kept-scalar width family.
 function buildWrapperStyle( attributes ) {
-	const { style, maxWidth, backgroundColour, textColour } = attributes;
+	const { style, maxWidth, backgroundColour, textColour, textColourGradient } = attributes;
 	const wrapperStyle = {};
 
 	// D635-pattern migration: background/text preview now reads the flat
@@ -87,11 +87,15 @@ function buildWrapperStyle( attributes ) {
 			? backgroundColour
 			: colourVar( backgroundColour );
 	}
-	if ( textColour ) {
-		wrapperStyle.color = /^#|^rgb|^hsl/.test( textColour )
-			? textColour
-			: colourVar( textColour );
-	}
+	// D636 gap-closure — textColourGradient sibling wins when set+valid,
+	// switching the preview to the background-clip:text shape (matches
+	// render.php's sgs_resolve_text_colour_or_gradient()/sgs_text_colour_decl()).
+	Object.assign(
+		wrapperStyle,
+		resolveTextColourPreviewStyle( textColour, textColourGradient, ( val ) =>
+			/^#|^rgb|^hsl/.test( val ) ? val : colourVar( val )
+		)
+	);
 
 	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( radiusPreview ) {
@@ -136,6 +140,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginMobile,
 		maxWidth,
 		textColour,
+		textColourGradient,
 	} = attributes;
 
 	const ALLOWED_HEADING_LEVELS = [ 'h2', 'h3', 'h4', 'p' ];
@@ -182,6 +187,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -190,6 +196,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) =>
 									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourGradient: val ?? '' } ),
 							},
 						],
 					},

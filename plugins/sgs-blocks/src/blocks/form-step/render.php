@@ -53,13 +53,6 @@ $sgs_fs_style_engine_input = array();
 // supports are off; the SgsColourPanel writes here instead). Background
 // (colour + gradient, resting + hover) is owned by the shared fill emitter
 // below, NOT by the style engine and NOT by supports.color.gradients.
-$sgs_fs_color_args = array();
-if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-	$sgs_fs_color_args['text'] = (string) $attributes['textColour'];
-}
-if ( ! empty( $sgs_fs_color_args ) ) {
-	$sgs_fs_style_engine_input['color'] = $sgs_fs_color_args;
-}
 if ( ! empty( $sgs_fs_style_group['border'] ) && is_array( $sgs_fs_style_group['border'] ) ) {
 	$sgs_fs_border_raw = $sgs_fs_style_group['border'];
 	$sgs_fs_border     = array();
@@ -109,6 +102,27 @@ if ( ! empty( $sgs_fs_style_engine_input ) ) {
 	);
 	if ( ! empty( $sgs_fs_engine_styles['css'] ) ) {
 		$sgs_fs_supports_css       = $sgs_fs_engine_styles['css'];
+		$sgs_fs_supports_classes[] = $sgs_fs_uid;
+	}
+}
+
+// Text colour — gradient-capable paint path (D636 gap-closure, sibling
+// attribute shape, matches sgs/counter's labelColour/labelColourGradient).
+// Emitted as its own scoped rule rather than via wp_style_engine_get_styles'
+// color.text (which would write an invalid `color:` declaration for a
+// gradient string) — sgs_text_colour_decl() picks flat colour vs
+// background-clip:text automatically, and the fallback rule is mandatory
+// alongside it (self-no-ops on a flat colour).
+$sgs_fs_text_colour           = isset( $attributes['textColour'] ) ? (string) $attributes['textColour'] : '';
+$sgs_fs_text_colour_gradient  = isset( $attributes['textColourGradient'] ) ? (string) $attributes['textColourGradient'] : '';
+$sgs_fs_text_colour_effective = sgs_resolve_text_colour_or_gradient( $sgs_fs_text_colour, $sgs_fs_text_colour_gradient );
+if ( '' !== $sgs_fs_text_colour_effective ) {
+	$sgs_fs_text_colour_decl = sgs_text_colour_decl( $sgs_fs_text_colour_effective );
+	if ( '' !== $sgs_fs_text_colour_decl ) {
+		$sgs_fs_supports_css .= "{$sgs_fs_sel}{{$sgs_fs_text_colour_decl};}";
+	}
+	$sgs_fs_supports_css .= sgs_text_colour_gradient_fallback_rule( $sgs_fs_sel, $sgs_fs_text_colour_effective );
+	if ( ! in_array( $sgs_fs_uid, $sgs_fs_supports_classes, true ) ) {
 		$sgs_fs_supports_classes[] = $sgs_fs_uid;
 	}
 }

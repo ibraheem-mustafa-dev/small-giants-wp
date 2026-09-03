@@ -76,7 +76,8 @@
 						"css:font-style": "fontStyle",
 						"css:line-height": "lineHeight",
 						"css:color": "textColour",
-						"css:text-align": "native:typography.textAlign"
+						"css:text-align": "native:typography.textAlign",
+						"css:background-image": "textColourGradient"
 					},
 					"_note": "typography.fontSize is deliberately disabled at block level (supports.typography.fontSize:false) — this block's own bare fontSize/fontWeight/fontStyle/lineHeight attrs are the real, non-native control set for the body text. An empty-string prefix does NOT trigger the default-convention resolver (it's checked with `if (element.prefix)`, and '' is falsy), so every member here needs an explicit attrMap entry rather than relying on bare-attribute matching."
 				}
@@ -158,6 +159,10 @@
 			"default": ""
 		},
 		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
 			"type": "string",
 			"default": ""
 		}

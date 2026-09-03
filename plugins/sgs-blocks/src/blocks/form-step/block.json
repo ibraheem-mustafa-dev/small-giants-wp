@@ -54,9 +54,10 @@
 						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
 						"css:width": "contentWidth",
-						"css:border-color-gradient": "borderColourGradient"
+						"css:border-color-gradient": "borderColourGradient",
+						"css:background-image": "textColourGradient"
 					},
-					"_note": "CONTENT-kind composite (WS-4 composite-mirror, render.php:104-117) — width/spacing layer only via SGS_Container_Wrapper('content'). block.json declares no `margin` spacing support (only padding) and no typography support, so those members are honest gaps. Layer CONTENT names the structural role (naming discipline, FR-35-1) — this block has no GRID layer."
+					"_note": "CONTENT-kind composite (WS-4 composite-mirror, render.php:104-117) — width/spacing layer only via SGS_Container_Wrapper('content'). block.json declares no `margin` spacing support (only padding) and no typography support, so those members are honest gaps. Layer CONTENT names the structural role (naming discipline, FR-35-1) — this block has no GRID layer. textColourGradient is the text-colour gradient sibling to textColour, same background-clip:text mechanism as sgs/counter's labelColour/labelColourGradient (D636 gap-closure)."
 				}
 			},
 			"boxFamilies": {
@@ -101,6 +102,10 @@
 			"default": ""
 		},
 		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
 			"type": "string",
 			"default": ""
 		},

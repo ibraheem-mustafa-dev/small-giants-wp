@@ -77,9 +77,10 @@
 						"css:border-color": "borderColour",
 						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
-						"css:border-color-gradient": "borderColourGradient"
+						"css:border-color-gradient": "borderColourGradient",
+						"css:background-image": "textColourGradient"
 					},
-					"_note": "Content-KIND composite (supports.sgs.containerKind='content', D294 box+width only) — every style control here is a WordPress-native wrapper support (typography/color/spacing/border) plus maxWidth; no per-element (heading/icon) typography attrs exist on this block, so heading/icon text styling is an honest gap inherited from the wrapper, not independently controlled."
+					"_note": "Content-KIND composite (supports.sgs.containerKind='content', D294 box+width only) — every style control here is a WordPress-native wrapper support (typography/color/spacing/border) plus maxWidth; no per-element (heading/icon) typography attrs exist on this block, so heading/icon text styling is an honest gap inherited from the wrapper, not independently controlled. textColourGradient is the text-colour gradient sibling to textColour, same background-clip:text mechanism as sgs/counter's labelColour/labelColourGradient (D636 gap-closure)."
 				}
 			}
 		}
@@ -105,6 +106,10 @@
 			"default": ""
 		},
 		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
 			"type": "string",
 			"default": ""
 		},

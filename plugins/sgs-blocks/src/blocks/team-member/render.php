@@ -94,7 +94,9 @@ $heading_level          = in_array( $attributes['headingLevel'] ?? '', $allowed_
 $sgs_role               = $attributes['role'] ?? '';
 $bio                    = $attributes['bio'] ?? '';
 $name_colour            = $attributes['nameColour'] ?? '';
+$name_colour_gradient   = $attributes['nameColourGradient'] ?? '';
 $role_colour            = $attributes['roleColour'] ?? 'text-muted';
+$role_colour_gradient   = $attributes['roleColourGradient'] ?? '';
 $card_style             = $attributes['cardStyle'] ?? 'elevated';
 $photo_shape            = $attributes['photoShape'] ?? 'circle';
 $hover_scale            = $attributes['scaleHover'] ?? '';
@@ -619,11 +621,23 @@ if ( $mobile_box_decls ) {
 
 // --- Name / role scoped colour rules (converted from inline `style="color:…"`
 // — contract §A: no inline property declarations on descendants). ---
-if ( $name_colour ) {
-	$scoped_css[] = $root_sel . ' .sgs-team-member__name{color:' . sgs_colour_value( $name_colour ) . ';}';
+$name_colour_sel       = $root_sel . ' .sgs-team-member__name';
+$role_colour_sel       = $root_sel . ' .sgs-team-member__role';
+$name_colour_effective = sgs_resolve_text_colour_or_gradient( $name_colour, $name_colour_gradient );
+if ( '' !== $name_colour_effective ) {
+	$name_colour_decl = sgs_text_colour_decl( $name_colour_effective );
+	if ( '' !== $name_colour_decl ) {
+		$scoped_css[] = "{$name_colour_sel}{{$name_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $name_colour_sel, $name_colour_effective );
 }
-if ( $role_colour ) {
-	$scoped_css[] = $root_sel . ' .sgs-team-member__role{color:' . sgs_colour_value( $role_colour ) . ';}';
+$role_colour_effective = sgs_resolve_text_colour_or_gradient( $role_colour, $role_colour_gradient );
+if ( '' !== $role_colour_effective ) {
+	$role_colour_decl = sgs_text_colour_decl( $role_colour_effective );
+	if ( '' !== $role_colour_decl ) {
+		$scoped_css[] = "{$role_colour_sel}{{$role_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $role_colour_sel, $role_colour_effective );
 }
 
 // --- Photo object-fit/object-position (Spec 35 capability-routing doctrine

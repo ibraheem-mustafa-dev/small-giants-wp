@@ -25,7 +25,7 @@ import { ShadowControl, TypographyControls, ResponsiveBoxControl, LinkPopoverFie
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import MediaPicker from '../../components/MediaPicker';
 import CollectionPanel from './components/collection-panel';
-import { colourVar, spacingVar, resolveResponsiveTier } from '../../utils';
+import { colourVar, spacingVar, resolveResponsiveTier, resolveTextColourPreviewStyle } from '../../utils';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
@@ -250,7 +250,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		aspectRatio,
 		effectHover,
 		titleColour,
+		titleColourGradient,
 		subtitleColour,
+		subtitleColourGradient,
 		cardBackground,
 		cardBackgroundGradient,
 		cardBorderColour,
@@ -328,13 +330,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-card-grid-aspect': aspectRatio,
 	};
 
-	const titleStyle = {
-		color: colourVar( titleColour ) || undefined,
-	};
+	const titleStyle = resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar );
 
-	const subtitleStyle = {
-		color: colourVar( subtitleColour ) || undefined,
-	};
+	const subtitleStyle = resolveTextColourPreviewStyle( subtitleColour, subtitleColourGradient, colourVar );
 
 	const updateItem = ( index, updatedItem ) => {
 		const updated = [ ...items ];
@@ -385,6 +383,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'title',
 						label: __( 'Title colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -392,12 +391,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: titleColour,
 								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
 								linked: true,
+								gradientValue: titleColourGradient,
+								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'subtitle',
 						label: __( 'Subtitle colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -405,6 +407,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: subtitleColour,
 								onChange: ( val ) => setAttributes( { subtitleColour: val ?? '' } ),
 								linked: true,
+								gradientValue: subtitleColourGradient,
+								onGradientChange: ( val ) => setAttributes( { subtitleColourGradient: val ?? '' } ),
 							},
 						],
 					},

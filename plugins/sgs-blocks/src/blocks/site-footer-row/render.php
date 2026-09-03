@@ -67,23 +67,23 @@ $css = '';
 // Read the resolved values from $attributes['style'] and emit them into this
 // block's own scoped <style>. Mirrors sgs/site-header-row exactly.
 
-$sfr_style_engine_args = array();
 
-$sfr_color_args = array();
-// ⚠ EVERY value goes through sgs_colour_value() before the style engine.
-// DesignTokenPicker stores a token SLUG ('primary') when a palette swatch is
-// picked with linked:true. The style engine does NOT resolve a bare slug and
-// does NOT reject it either — PROVEN on the canary 2026-08-19 via
-// wp_style_engine_get_styles(['color'=>['background'=>'primary']]), which
-// returns the literal `background-color:primary;`. That is invalid CSS, so the
-// browser drops the declaration and the client's chosen colour SILENTLY does
-// nothing. sgs_colour_value() turns a slug into var(--wp--preset--color--…),
-// passes a raw hex through untouched, and rejects a declaration breakout.
-if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-	$sfr_text_value = sgs_colour_value( (string) $attributes['textColour'] );
-	if ( '' !== $sfr_text_value ) {
-		$sfr_color_args['text'] = $sfr_text_value;
+// Text colour (flat or gradient) — gradient sibling attribute wins when
+// set+valid (D636 sibling-attribute shape). sgs_text_colour_decl() resolves a
+// palette SLUG to var(--wp--preset--color--…) the same way sgs_colour_value()
+// does, so a bare slug never reaches the browser as invalid CSS. Mirrors
+// sgs/counter's labelColour / sgs/tab's textColour.
+$sfr_text_colour           = (string) ( $attributes['textColour'] ?? '' );
+$sfr_text_colour_gradient  = (string) ( $attributes['textColourGradient'] ?? '' );
+$sfr_text_colour_effective = sgs_resolve_text_colour_or_gradient( $sfr_text_colour, $sfr_text_colour_gradient );
+if ( '' !== $sfr_text_colour_effective ) {
+	$sfr_text_colour_decl = sgs_text_colour_decl( $sfr_text_colour_effective );
+	if ( '' !== $sfr_text_colour_decl ) {
+		$css .= "{$root_sel}{{$sfr_text_colour_decl};}";
 	}
+	// MANDATORY companion, not optional — see sgs/counter render.php for the
+	// browser-support rationale. No-op for a flat colour.
+	$css .= sgs_text_colour_gradient_fallback_rule( $root_sel, $sfr_text_colour_effective );
 }
 // Background (colour + gradient, resting + hover) is owned by the shared fill
 // emitter, NOT by the style engine and NOT by supports.color.gradients.
@@ -108,22 +108,18 @@ $sfr_fill_css = sgs_fill_states_css(
 if ( '' !== $sfr_fill_css ) {
 	$css .= $sfr_fill_css;
 }
-if ( ! empty( $sfr_color_args ) ) {
-	$sfr_style_engine_args['color'] = $sfr_color_args;
-}
 
 // (native border_args removed by the Shape-B migration -- width/style/colour
 //  are block-private attrs now, emitted below)
 
-if ( ! empty( $sfr_style_engine_args ) ) {
-	$sfr_scoped_styles = wp_style_engine_get_styles(
-		$sfr_style_engine_args,
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $sfr_scoped_styles['css'] ) ) {
-		$css .= $sfr_scoped_styles['css'];
-	}
-}
+// The native style-engine colour path is GONE, deliberately. Text colour now
+// renders through sgs_resolve_text_colour_or_gradient() + sgs_text_colour_decl()
+// above, because wp_style_engine_get_styles()'s color.text input cannot carry a
+// gradient (background-clip:text is not a colour value). The border half was
+// already removed by the Shape-B migration, so nothing was left to feed the
+// engine and its guards were provably dead -- check-render-undefined-vars
+// caught them as always-falsy. Do not reinstate: an empty args array emits no
+// CSS, so this was dead code, not a safety net.
 
 // Skip-serialised `color` support also stops WP adding has-*-color classes onto
 // the wrapper — re-add them so preset palette colours still resolve (mirrors hero/quote).

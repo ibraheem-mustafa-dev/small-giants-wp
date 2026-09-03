@@ -36,7 +36,7 @@ const CHEVRON_SVG = (
 );
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
-	const { title, isOpen, backgroundColour, textColour } = attributes;
+	const { title, isOpen, backgroundColour, textColour, textColourGradient } = attributes;
 
 	// Position of this item among its accordion siblings — mirrors sgs/tab's
 	// index derivation, needed to compare against the parent's `defaultOpen`
@@ -137,6 +137,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -145,6 +146,9 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								onChange: ( val ) =>
 									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourGradient: val ?? '' } ),
 							},
 						],
 					},

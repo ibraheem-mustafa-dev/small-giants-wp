@@ -265,7 +265,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		role,
 		bio,
 		nameColour,
+		nameColourGradient,
 		roleColour,
+		roleColourGradient,
 		cardStyle,
 		photoShape,
 		photoDecorative,
@@ -376,6 +378,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'nameColour',
 						label: __( 'Name colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -383,12 +386,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: nameColour,
 								onChange: ( val ) => setAttributes( { nameColour: val ?? '' } ),
 								linked: true,
+								gradientValue: nameColourGradient,
+								onGradientChange: ( val ) => setAttributes( { nameColourGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'roleColour',
 						label: __( 'Role colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -396,6 +402,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: roleColour,
 								onChange: ( val ) => setAttributes( { roleColour: val ?? '' } ),
 								linked: true,
+								gradientValue: roleColourGradient,
+								onGradientChange: ( val ) => setAttributes( { roleColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -720,7 +728,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					value={ name }
 					onChange={ ( val ) => setAttributes( { name: val } ) }
 					placeholder={ __( 'Name', 'sgs-blocks' ) }
-					style={ { color: colourVar( nameColour ) || undefined } }
+					style={ resolveTextColourPreviewStyle( nameColour, nameColourGradient, colourVar ) }
 				/>
 				<RichText
 					tagName="p"
@@ -728,7 +736,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					value={ role }
 					onChange={ ( val ) => setAttributes( { role: val } ) }
 					placeholder={ __( 'Role / Title', 'sgs-blocks' ) }
-					style={ { color: colourVar( roleColour ) || undefined } }
+					style={ resolveTextColourPreviewStyle( roleColour, roleColourGradient, colourVar ) }
 				/>
 				{ ! isCompact && (
 					<RichText

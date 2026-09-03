@@ -65,7 +65,8 @@
 						"css:align-items": "alignItems",
 						"css:flex-direction": "flexDirection",
 						"css:flex-wrap": "flexWrap",
-						"css:border-color-gradient": "borderColourGradient"
+						"css:border-color-gradient": "borderColourGradient",
+						"css:background-image": "textColourGradient"
 					},
 					"_note": "No `display`/`order`/`overflow` attribute exists on this block — honest GAPs. Children are sgs/info-box InnerBlocks (allowedBlocks) which own their own typography/fill — this block declares no per-item element."
 				}
@@ -181,6 +182,10 @@
 			"default": ""
 		},
 		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
 			"type": "string",
 			"default": ""
 		},

@@ -93,12 +93,22 @@ if ( '' !== $sgs_ai_stroke_grad['css'] ) {
 // NO-INLINE: this block emits zero inline style property declarations.
 // Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
 
-$style_engine_args = array();
-
-$color_args = array();
-if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-	$color_args['text'] = (string) $attributes['textColour'];
+// D636 — sibling gradient attribute wins when set+valid.
+$text_colour           = (string) ( $attributes['textColour'] ?? '' );
+$text_colour_gradient  = (string) ( $attributes['textColourGradient'] ?? '' );
+$text_colour_effective = sgs_resolve_text_colour_or_gradient( $text_colour, $text_colour_gradient );
+if ( '' !== $text_colour_effective ) {
+	$text_colour_decl = sgs_text_colour_decl( $text_colour_effective );
+	if ( '' !== $text_colour_decl ) {
+		$responsive_css .= "{$root_sel}{{$text_colour_decl};}";
+	}
+	// MANDATORY companion, not optional: a gradient reaches the browser as
+	// background-clip:text, and without this @supports fallback a browser
+	// lacking that support gets a bare `color:` holding a gradient string,
+	// which it drops silently. No-op for a flat colour.
+	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_effective );
 }
+
 // Background (colour + gradient, resting + hover) is owned by the shared fill
 // emitter, NOT by the style engine and NOT by supports.color.gradients.
 //
@@ -122,22 +132,9 @@ $sgs_ai_fill_css = sgs_fill_states_css(
 if ( '' !== $sgs_ai_fill_css ) {
 	$responsive_css .= $sgs_ai_fill_css;
 }
-if ( ! empty( $color_args ) ) {
-	$style_engine_args['color'] = $color_args;
-}
 
 // (native border_args removed by the Shape-B migration -- width/style/colour
-//  are block-private attrs now, emitted below)
-
-if ( ! empty( $style_engine_args ) ) {
-	$scoped_styles = wp_style_engine_get_styles(
-		$style_engine_args,
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $scoped_styles['css'] ) ) {
-		$responsive_css .= $scoped_styles['css'];
-	}
-}
+// are block-private attrs now, emitted below)
 
 // Retrieve Lucide SVGs for open and close states. Fall back to inline chevrons
 // if the icon name does not exist in the library (e.g. typo by the editor).

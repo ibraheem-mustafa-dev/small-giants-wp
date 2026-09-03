@@ -235,9 +235,7 @@ if ( '' !== $tp_preset_bg_slug ) {
 // spacing/typography supports, so only color + border are re-emitted here.
 $tp_responsive_css = '';
 
-$tp_style_engine_args = array();
 
-$tp_color_args = array();
 // ⚠ EVERY value goes through sgs_colour_value() before the style engine
 // (D684). DesignTokenPicker stores a token SLUG ('primary') when a palette
 // swatch is picked with linked:true. wp_style_engine_get_styles() neither
@@ -246,14 +244,20 @@ $tp_color_args = array();
 // does nothing (proven live on the canary). sgs_colour_value() maps a slug to
 // var(--wp--preset--color--…), passes a raw hex through unchanged, and
 // rejects a declaration breakout. Mirrors sgs/site-header-row.
-if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-	$tp_text_value = sgs_colour_value( (string) $attributes['textColour'] );
-	if ( '' !== $tp_text_value ) {
-		$tp_color_args['text'] = $tp_text_value;
+// D-pending (2026-09-03) — textColourGradient is the sibling gradient attr;
+// the gradient wins when set+valid. The style engine cannot emit a
+// background-clip:text declaration, so once a gradient is present this
+// bypasses wp_style_engine_get_styles() entirely and emits via the shared
+// text-colour-or-gradient helpers instead (mirrors sgs/counter).
+$tp_text_colour          = (string) ( $attributes['textColour'] ?? '' );
+$tp_text_colour_gradient = (string) ( $attributes['textColourGradient'] ?? '' );
+$tp_text_colour_effective = sgs_resolve_text_colour_or_gradient( $tp_text_colour, $tp_text_colour_gradient );
+if ( '' !== $tp_text_colour_effective ) {
+	$tp_text_colour_decl = sgs_text_colour_decl( $tp_text_colour_effective );
+	if ( '' !== $tp_text_colour_decl ) {
+		$tp_responsive_css .= "{$tp_root_sel}{{$tp_text_colour_decl};}";
 	}
-}
-if ( ! empty( $tp_color_args ) ) {
-	$tp_style_engine_args['color'] = $tp_color_args;
+	$tp_responsive_css .= sgs_text_colour_gradient_fallback_rule( $tp_root_sel, $tp_text_colour_effective );
 }
 
 // Background (colour + gradient, resting + hover) is owned by the shared fill
@@ -283,15 +287,14 @@ if ( '' !== $tp_fill_css ) {
 // (native border_args removed by the Shape-B migration -- width/style/colour
 //  are block-private attrs now, emitted below)
 
-if ( ! empty( $tp_style_engine_args ) ) {
-	$tp_scoped_styles = wp_style_engine_get_styles(
-		$tp_style_engine_args,
-		array( 'selector' => $tp_root_sel )
-	);
-	if ( ! empty( $tp_scoped_styles['css'] ) ) {
-		$tp_responsive_css .= $tp_scoped_styles['css'];
-	}
-}
+// The native style-engine colour path is GONE, deliberately. Text colour now
+// renders through sgs_resolve_text_colour_or_gradient() + sgs_text_colour_decl()
+// above, because wp_style_engine_get_styles()'s color.text input cannot carry a
+// gradient (background-clip:text is not a colour value). The border half was
+// already removed by the Shape-B migration, so nothing was left to feed the
+// engine and its guards were provably dead -- check-render-undefined-vars
+// caught them as always-falsy. Do not reinstate: an empty args array emits no
+// CSS, so this was dead code, not a safety net.
 
 $tp_extra_styles = array(
 	sprintf(

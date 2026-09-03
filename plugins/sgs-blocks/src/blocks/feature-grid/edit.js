@@ -128,6 +128,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		justifyItems,
 		backgroundColour,
 		textColour,
+		textColourGradient,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -161,6 +162,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -169,6 +171,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) =>
 									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourGradient: val ?? '' } ),
 							},
 						],
 					},

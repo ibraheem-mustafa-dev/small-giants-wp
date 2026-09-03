@@ -75,6 +75,7 @@ $allowed_caption_tags   = array( 'figcaption', 'div' );
 $caption_tag_raw        = $attributes['captionTag'] ?? 'figcaption';
 $caption_tag            = in_array( $caption_tag_raw, $allowed_caption_tags, true ) ? $caption_tag_raw : 'figcaption';
 $caption_colour         = isset( $attributes['captionColour'] ) ? (string) $attributes['captionColour'] : '';
+$caption_colour_gradient = isset( $attributes['captionColourGradient'] ) ? (string) $attributes['captionColourGradient'] : '';
 $caption_font_size      = isset( $attributes['captionFontSize'] ) && null !== $attributes['captionFontSize'] ? absint( $attributes['captionFontSize'] ) : 0;
 $caption_font_size_unit = isset( $attributes['captionFontSizeUnit'] ) ? (string) $attributes['captionFontSizeUnit'] : 'px';
 
@@ -402,15 +403,26 @@ if ( null !== $css_order_mobile ) {
 // the caption element nested inside the scoped wrapper.
 // ---------------------------------------------------------------------------
 $caption_decls = array();
-if ( '' !== $caption_colour ) {
-	$caption_decls[] = 'color:' . sgs_colour_value( $caption_colour );
+$caption_sel   = $id_wrap . ' .sgs-media__caption';
+// D636 gap-closure — captionColour gains a gradient-capable paint path
+// (sibling attribute, matches sgs/counter's labelColour/labelColourGradient).
+// sgs_text_colour_decl() picks flat colour vs background-clip:text
+// automatically from a single resolved value; the fallback rule is the
+// mandatory companion (self-no-ops on a flat colour).
+$caption_colour_effective = sgs_resolve_text_colour_or_gradient( $caption_colour, $caption_colour_gradient );
+if ( '' !== $caption_colour_effective ) {
+	$caption_colour_decl = sgs_text_colour_decl( $caption_colour_effective );
+	if ( '' !== $caption_colour_decl ) {
+		$caption_decls[] = $caption_colour_decl;
+	}
 }
 if ( $caption_font_size > 0 ) {
 	$caption_decls[] = 'font-size:' . $caption_font_size . sgs_media_validate_unit( $caption_font_size_unit );
 }
 if ( $caption_decls ) {
-	$responsive_css .= $id_wrap . ' .sgs-media__caption{' . implode( ';', $caption_decls ) . '}';
+	$responsive_css .= $caption_sel . '{' . implode( ';', $caption_decls ) . '}';
 }
+$responsive_css .= sgs_text_colour_gradient_fallback_rule( $caption_sel, $caption_colour_effective );
 
 // ---------------------------------------------------------------------------
 // 9. Build caption element (no inline style attr — see step 8 above).

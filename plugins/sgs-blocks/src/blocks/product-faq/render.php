@@ -231,14 +231,6 @@ if ( ! empty( $native_border ) ) {
 	$base_style_engine_args['border'] = sgs_gate_native_border_style( $native_border );
 }
 
-$color_args = array();
-if ( '' !== $style_color_text ) {
-	$color_args['text'] = $style_color_text;
-}
-if ( ! empty( $color_args ) ) {
-	$base_style_engine_args['color'] = $color_args;
-}
-
 $sgs_pf_fill_css = sgs_fill_states_css(
 	$root_sel,
 	$attributes,
@@ -272,6 +264,23 @@ if ( ! empty( $base_style_engine_args ) ) {
 	if ( ! empty( $base_scoped_styles['css'] ) ) {
 		$scoped_css[] = $base_scoped_styles['css'];
 	}
+}
+
+// D636 gap-closure — textColour gains a gradient-capable paint path
+// (sibling attribute, matches sgs/counter's labelColour/labelColourGradient).
+// Emitted as its own scoped rule rather than via wp_style_engine_get_styles'
+// color.text (which would write an invalid `color:` declaration for a
+// gradient string) — sgs_text_colour_decl() picks flat colour vs
+// background-clip:text automatically, and the fallback rule is mandatory
+// alongside it (self-no-ops on a flat colour).
+$style_color_text_gradient = isset( $attributes['textColourGradient'] ) ? (string) $attributes['textColourGradient'] : '';
+$text_colour_effective     = sgs_resolve_text_colour_or_gradient( $style_color_text, $style_color_text_gradient );
+if ( '' !== $text_colour_effective ) {
+	$text_colour_decl = sgs_text_colour_decl( $text_colour_effective );
+	if ( '' !== $text_colour_decl ) {
+		$scoped_css[] = "{$root_sel}{{$text_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_effective );
 }
 
 // --- Width (base only — outer maxWidth). ---

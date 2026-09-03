@@ -70,7 +70,9 @@ if ( ! in_array( $aspect_ratio, $allowed_ratios, true ) ) {
 $hover_effect = sanitize_key( $attributes['effectHover'] ?? 'zoom' );
 
 $title_colour        = $attributes['titleColour'] ?? '';
+$title_colour_gradient    = $attributes['titleColourGradient'] ?? '';
 $subtitle_colour     = $attributes['subtitleColour'] ?? '';
+$subtitle_colour_gradient = $attributes['subtitleColourGradient'] ?? '';
 $hover_bg            = $attributes['backgroundColourHover'] ?? '';
 $hover_bg_gradient   = $attributes['backgroundColourHoverGradient'] ?? '';
 $hover_text          = $attributes['textColourHover'] ?? '';
@@ -683,11 +685,25 @@ $sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'subtitle', '.' . $s
 // Per-item title/subtitle colour (was inline `style="color:…"` on every
 // title/subtitle element — moved to a scoped rule keyed off the same uid so
 // no rendered element carries an inline CSS property declaration).
-if ( $title_colour ) {
-	$sgs_grid_typo_css .= '.' . $sgs_grid_uid . ' .sgs-card-grid__title{color:' . sgs_colour_value( $title_colour ) . '}';
+// titleColourGradient/subtitleColourGradient (2026-09-03) are the sibling
+// gradient attrs — gradient wins when set+valid (sgs_resolve_text_colour_or_gradient).
+$sgs_grid_title_sel    = '.' . $sgs_grid_uid . ' .sgs-card-grid__title';
+$sgs_grid_subtitle_sel = '.' . $sgs_grid_uid . ' .sgs-card-grid__subtitle';
+$title_colour_effective = sgs_resolve_text_colour_or_gradient( $title_colour, $title_colour_gradient );
+if ( '' !== $title_colour_effective ) {
+	$title_colour_decl = sgs_text_colour_decl( $title_colour_effective );
+	if ( '' !== $title_colour_decl ) {
+		$sgs_grid_typo_css .= "{$sgs_grid_title_sel}{{$title_colour_decl};}";
+	}
+	$sgs_grid_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_grid_title_sel, $title_colour_effective );
 }
-if ( $subtitle_colour ) {
-	$sgs_grid_typo_css .= '.' . $sgs_grid_uid . ' .sgs-card-grid__subtitle{color:' . sgs_colour_value( $subtitle_colour ) . '}';
+$subtitle_colour_effective = sgs_resolve_text_colour_or_gradient( $subtitle_colour, $subtitle_colour_gradient );
+if ( '' !== $subtitle_colour_effective ) {
+	$subtitle_colour_decl = sgs_text_colour_decl( $subtitle_colour_effective );
+	if ( '' !== $subtitle_colour_decl ) {
+		$sgs_grid_typo_css .= "{$sgs_grid_subtitle_sel}{{$subtitle_colour_decl};}";
+	}
+	$sgs_grid_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_grid_subtitle_sel, $subtitle_colour_effective );
 }
 
 $sgs_grid_typo_tag = '' !== $sgs_grid_typo_css ? '<style>' . wp_strip_all_tags( $sgs_grid_typo_css ) . '</style>' : '';

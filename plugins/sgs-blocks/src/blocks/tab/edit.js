@@ -10,7 +10,7 @@ import { SgsColourPanel, fillRow,
 } from '../../components';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { label, textColour } = attributes;
+	const { label, textColour, textColourGradient } = attributes;
 
 	// Determine which tab index this block occupies in the parent.
 	const tabIndex = useSelect(
@@ -116,6 +116,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -124,6 +125,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onChange: ( val ) =>
 									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourGradient: val ?? '' } ),
 							},
 						],
 					},

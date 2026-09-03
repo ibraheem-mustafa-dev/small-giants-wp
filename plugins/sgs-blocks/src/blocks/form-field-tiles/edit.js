@@ -35,6 +35,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		columns,
 		backgroundColour,
 		textColour,
+		textColourGradient,
 	} = attributes;
 
 	// columns is a TIER OBJECT (Spec 35 pass 4) — this control only ever edits
@@ -96,6 +97,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -104,6 +106,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) =>
 									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourGradient: val ?? '' } ),
 							},
 						],
 					},

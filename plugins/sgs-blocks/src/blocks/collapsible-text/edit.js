@@ -20,7 +20,7 @@ import {
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, fillRow } from '../../components';
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { text, collapsible, collapsedLines, style, paddingTablet, paddingMobile, marginTablet, marginMobile, backgroundColour, textColour } = attributes;
+	const { text, collapsible, collapsedLines, style, paddingTablet, paddingMobile, marginTablet, marginMobile, backgroundColour, textColour, textColourGradient } = attributes;
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-collapsible-text',
@@ -45,6 +45,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -53,6 +54,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) =>
 									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourGradient: val ?? '' } ),
 							},
 						],
 					},

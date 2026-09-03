@@ -16,7 +16,7 @@ import {
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
-import { colourVar } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 
 const STYLE_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
@@ -106,8 +106,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		listStyle,
 		tocStyle,
 		titleColour,
+		titleColourGradient,
 		linkColour,
+		linkColourGradient,
 		activeLinkColour,
+		activeLinkColourGradient,
 		style,
 		paddingTablet,
 		paddingMobile,
@@ -189,13 +192,22 @@ export default function Edit( { attributes, setAttributes } ) {
 			   colour" pairs linkColour (normal) with activeLinkColour — the
 			   scroll-spy CURRENT-item colour, a CURRENT state per FR-35-5,
 			   not a hover — labelled "Active" per block.json's own
-			   `states.current` naming. "Title colour" stays a separate
-			   single-state row. */ }
+			   `states.current` naming. Row is now gradientCapable
+			   (2026-09-03); GradientCapableColourControl renders ONE
+			   control per row for ALL its states, so BOTH states carry
+			   their own gradientValue/onGradientChange pair
+			   (linkColourGradient / activeLinkColourGradient) — mirrors
+			   sgs/hero's text row (normal+hover, both gradient-capable).
+			   Giving only one state a working handler would leave the
+			   other's popover one Gradient-toggle click from a crash.
+			   "Title colour" stays a separate single-state row, also now
+			   gradient-capable. */ }
 			<SgsColourPanel
 				rows={ [
 					{
 						key: 'linkColour',
 						label: __( 'Link colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -203,6 +215,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: linkColour,
 								onChange: ( val ) => setAttributes( { linkColour: val ?? '' } ),
 								linked: true,
+								gradientValue: linkColourGradient,
+								onGradientChange: ( val ) => setAttributes( { linkColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'current',
@@ -210,12 +224,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: activeLinkColour,
 								onChange: ( val ) => setAttributes( { activeLinkColour: val ?? '' } ),
 								linked: true,
+								gradientValue: activeLinkColourGradient,
+								onGradientChange: ( val ) => setAttributes( { activeLinkColourGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'titleColour',
 						label: __( 'Title colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -223,6 +240,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: titleColour,
 								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
 								linked: true,
+								gradientValue: titleColourGradient,
+								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -459,11 +478,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ title && (
 							<summary
 								className="sgs-toc__title"
-								style={ {
-									color:
-										colourVar( titleColour ) ||
-										undefined,
-								} }
+								style={ resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar ) }
 							>
 								{ title }
 							</summary>
@@ -474,11 +489,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									<li
 										key={ i }
 										className={ `sgs-toc__item sgs-toc__item--h${ heading.level }` }
-										style={ {
-											color:
-												colourVar( linkColour ) ||
-												undefined,
-										} }
+										style={ resolveTextColourPreviewStyle( linkColour, linkColourGradient, colourVar ) }
 									>
 										{ /* First item previews the scroll-spy "active" state as a
 										   representative sample — the real active link is determined
@@ -489,12 +500,11 @@ export default function Edit( { attributes, setAttributes } ) {
 											className={ `sgs-toc__link${ 0 === i ? ' sgs-toc__link--active' : '' }` }
 											style={
 												0 === i
-													? {
-															color:
-																colourVar( activeLinkColour ) ||
-																colourVar( linkColour ) ||
-																undefined,
-													  }
+													? resolveTextColourPreviewStyle(
+															activeLinkColour || linkColour,
+															activeLinkColourGradient || linkColourGradient,
+															colourVar
+													  )
 													: undefined
 											}
 										>
@@ -517,10 +527,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ title && (
 							<p
 								className="sgs-toc__title"
-								style={ {
-									color:
-										colourVar( titleColour ) || undefined,
-								} }
+								style={ resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar ) }
 							>
 								{ title }
 							</p>
@@ -531,11 +538,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									<li
 										key={ i }
 										className={ `sgs-toc__item sgs-toc__item--h${ heading.level }` }
-										style={ {
-											color:
-												colourVar( linkColour ) ||
-												undefined,
-										} }
+										style={ resolveTextColourPreviewStyle( linkColour, linkColourGradient, colourVar ) }
 									>
 										{ /* First item previews the scroll-spy "active" state as a
 										   representative sample — the real active link is determined
@@ -546,12 +549,11 @@ export default function Edit( { attributes, setAttributes } ) {
 											className={ `sgs-toc__link${ 0 === i ? ' sgs-toc__link--active' : '' }` }
 											style={
 												0 === i
-													? {
-															color:
-																colourVar( activeLinkColour ) ||
-																colourVar( linkColour ) ||
-																undefined,
-													  }
+													? resolveTextColourPreviewStyle(
+															activeLinkColour || linkColour,
+															activeLinkColourGradient || linkColourGradient,
+															colourVar
+													  )
 													: undefined
 											}
 										>

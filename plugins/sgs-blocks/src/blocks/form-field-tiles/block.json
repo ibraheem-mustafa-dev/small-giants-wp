@@ -48,7 +48,8 @@
 						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
 						"css:width": "contentWidth",
-						"css:border-color-gradient": "borderColourGradient"
+						"css:border-color-gradient": "borderColourGradient",
+						"css:background-image": "textColourGradient"
 					},
 					"_note": "block.json declares no typography/spacing support on this block — the wrapper's font/padding/margin members are honest gaps. color+border are skip-serialised and emitted into a scoped style keyed to the field's uid class (render.php:59-114), mirroring sgs/container."
 				},
@@ -277,6 +278,10 @@
 			"default": ""
 		},
 		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
 			"type": "string",
 			"default": ""
 		},

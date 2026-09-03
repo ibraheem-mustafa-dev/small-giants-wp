@@ -187,14 +187,20 @@ $root_sel = '.' . $uid . '.sgs-feature-grid';
 // class-scoped `.{$uid}.sgs-feature-grid` colour/border rules match this element.
 $classes = array( 'sgs-feature-grid', $mode_class, $uid );
 
-$fg_style_engine_args = array();
-
-$fg_color_args = array();
-if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-	$fg_color_args['text'] = (string) $attributes['textColour'];
-}
-if ( ! empty( $fg_color_args ) ) {
-	$fg_style_engine_args['color'] = $fg_color_args;
+// D636 — sibling gradient attribute wins when set+valid.
+$fg_text_colour           = isset( $attributes['textColour'] ) ? (string) $attributes['textColour'] : '';
+$fg_text_colour_gradient  = isset( $attributes['textColourGradient'] ) ? (string) $attributes['textColourGradient'] : '';
+$fg_text_colour_effective = sgs_resolve_text_colour_or_gradient( $fg_text_colour, $fg_text_colour_gradient );
+if ( '' !== $fg_text_colour_effective ) {
+	$fg_text_colour_decl = sgs_text_colour_decl( $fg_text_colour_effective );
+	if ( '' !== $fg_text_colour_decl ) {
+		$css .= "{$root_sel}{{$fg_text_colour_decl};}";
+	}
+	// MANDATORY companion, not optional: a gradient reaches the browser as
+	// background-clip:text, and without this @supports fallback a browser
+	// lacking that support gets a bare `color:` holding a gradient string,
+	// which it drops silently. No-op for a flat colour.
+	$css .= sgs_text_colour_gradient_fallback_rule( $root_sel, $fg_text_colour_effective );
 }
 
 // Background (colour + gradient, resting + hover) is owned by the shared fill
@@ -222,17 +228,7 @@ if ( '' !== $fg_fill_css ) {
 }
 
 // (native border_args removed by the Shape-B migration -- width/style/colour
-//  are block-private attrs now, emitted below)
-
-if ( ! empty( $fg_style_engine_args ) ) {
-	$fg_scoped_styles = wp_style_engine_get_styles(
-		$fg_style_engine_args,
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $fg_scoped_styles['css'] ) ) {
-		$css .= $fg_scoped_styles['css'];
-	}
-}
+// are block-private attrs now, emitted below)
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add them

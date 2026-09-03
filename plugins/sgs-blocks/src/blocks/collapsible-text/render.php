@@ -167,18 +167,19 @@ if ( $mobile_decls ) {
 // the style engine; preset SLUGS get the standard has-* classes re-added
 // manually below. ---
 
-$color_args = array();
-if ( '' !== $style_color_text ) {
-	$color_args['text'] = $style_color_text;
-}
-if ( ! empty( $color_args ) ) {
-	$color_scoped_styles = wp_style_engine_get_styles(
-		array( 'color' => $color_args ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $color_scoped_styles['css'] ) ) {
-		$scoped_css[] = $color_scoped_styles['css'];
+// D636 — sibling gradient attribute wins when set+valid.
+$text_colour_gradient  = isset( $attributes['textColourGradient'] ) ? (string) $attributes['textColourGradient'] : '';
+$text_colour_effective = sgs_resolve_text_colour_or_gradient( $style_color_text, $text_colour_gradient );
+if ( '' !== $text_colour_effective ) {
+	$text_colour_decl = sgs_text_colour_decl( $text_colour_effective );
+	if ( '' !== $text_colour_decl ) {
+		$scoped_css[] = "{$root_sel}{{$text_colour_decl};}";
 	}
+	// MANDATORY companion, not optional: a gradient reaches the browser as
+	// background-clip:text, and without this @supports fallback a browser
+	// lacking that support gets a bare `color:` holding a gradient string,
+	// which it drops silently. No-op for a flat colour.
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_effective );
 }
 
 // Background (colour + gradient, resting + hover) is owned by the shared fill

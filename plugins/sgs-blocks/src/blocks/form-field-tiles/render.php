@@ -66,13 +66,14 @@ $sgs_ft_style_engine_input = array();
 // supports are off; the SgsColourPanel writes here instead). Background
 // (colour + gradient, resting + hover) is owned by the shared fill emitter
 // below, NOT by the style engine and NOT by supports.color.gradients.
-$sgs_ft_color_args = array();
-if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-	$sgs_ft_color_args['text'] = (string) $attributes['textColour'];
-}
-if ( ! empty( $sgs_ft_color_args ) ) {
-	$sgs_ft_style_engine_input['color'] = $sgs_ft_color_args;
-}
+//
+// D636 — sibling gradient attribute wins when set+valid. Text colour is kept
+// OUT of $sgs_ft_style_engine_input (which stays border-only) because a
+// gradient needs the background-clip:text mechanism (sgs_text_colour_decl()),
+// not the native style engine's plain `color` declaration.
+$sgs_ft_text_colour           = isset( $attributes['textColour'] ) ? (string) $attributes['textColour'] : '';
+$sgs_ft_text_colour_gradient  = isset( $attributes['textColourGradient'] ) ? (string) $attributes['textColourGradient'] : '';
+$sgs_ft_text_colour_effective = sgs_resolve_text_colour_or_gradient( $sgs_ft_text_colour, $sgs_ft_text_colour_gradient );
 if ( ! empty( $sgs_ft_style_group['border'] ) && is_array( $sgs_ft_style_group['border'] ) ) {
 	$sgs_ft_border_raw = $sgs_ft_style_group['border'];
 	$sgs_ft_border     = array();
@@ -122,6 +123,19 @@ if ( ! empty( $sgs_ft_style_engine_input ) ) {
 		$sgs_ft_supports_css       = $sgs_ft_engine_styles['css'];
 		$sgs_ft_supports_classes[] = $sgs_ft_uid;
 	}
+}
+
+// D636 — sibling gradient attribute wins when set+valid.
+if ( '' !== $sgs_ft_text_colour_effective ) {
+	$sgs_ft_text_colour_decl = sgs_text_colour_decl( $sgs_ft_text_colour_effective );
+	if ( '' !== $sgs_ft_text_colour_decl ) {
+		$sgs_ft_supports_css .= "{$sgs_ft_sel}{{$sgs_ft_text_colour_decl};}";
+	}
+	// MANDATORY companion, not optional: a gradient reaches the browser as
+	// background-clip:text, and without this @supports fallback a browser
+	// lacking that support gets a bare `color:` holding a gradient string,
+	// which it drops silently. No-op for a flat colour.
+	$sgs_ft_supports_css .= sgs_text_colour_gradient_fallback_rule( $sgs_ft_sel, $sgs_ft_text_colour_effective );
 }
 
 // Background (colour + gradient, resting + hover) is owned by the shared fill
