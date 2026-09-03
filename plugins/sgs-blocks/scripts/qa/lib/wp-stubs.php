@@ -348,3 +348,343 @@ if ( ! function_exists( 'wp_interactivity_data_wp_context' ) ) {
 		return 'data-wp-context=\'' . json_encode( $context ) . '\'';
 	}
 }
+
+if ( ! function_exists( 'esc_html__' ) ) {
+	function esc_html__( string $text, string $domain = 'default' ): string {
+		return esc_html( $text );
+	}
+}
+
+if ( ! function_exists( 'tag_escape' ) ) {
+	/**
+	 * Real WP core keeps only [a-zA-Z0-9_:] in a tag name — reproduced
+	 * verbatim (minus the tag_escape filter hook, which has no listeners in
+	 * this harness) so heading/label's dynamic-tag CSS selector reflects the
+	 * same sanitised tag string a live site would emit.
+	 */
+	function tag_escape( string $tag_name ): string {
+		return strtolower( preg_replace( '/[^a-zA-Z0-9_:]/', '', $tag_name ) );
+	}
+}
+
+if ( ! function_exists( 'wp_kses' ) ) {
+	function wp_kses( $content, $allowed_html, $allowed_protocols = array() ): string {
+		// No allowlist filtering — the harness has no HTML-sanitisation policy
+		// to reproduce, and every render.php call site here passes markup it
+		// generated itself, not untrusted input. Matches wp_kses_post()'s
+		// existing pass-through convention immediately above.
+		return (string) $content;
+	}
+}
+
+if ( ! function_exists( 'is_singular' ) ) {
+	function is_singular( $post_types = '' ): bool {
+		// The harness runs outside any WP_Query — there is no current page.
+		return false;
+	}
+}
+
+if ( ! function_exists( 'get_queried_object_id' ) ) {
+	function get_queried_object_id(): int {
+		return 0;
+	}
+}
+
+if ( ! function_exists( 'wp_get_global_settings' ) ) {
+	function wp_get_global_settings( array $path = array(), array $options = array() ) {
+		// Empty settings tree — every SGS caller (sgs_resolve_palette_hex())
+		// is documented to degrade to its own $fallback when global settings
+		// are unavailable, so this is the faithful "unavailable" state, not
+		// an invented palette.
+		return array();
+	}
+}
+
+if ( ! function_exists( 'wp_enqueue_style' ) ) {
+	function wp_enqueue_style( string $handle, string $src = '', array $deps = array(), $ver = false, string $media = 'all' ): void {
+		// No-op — matches do_action()'s convention (harness has no registered
+		// asset queue to append to).
+	}
+}
+
+if ( ! function_exists( 'has_action' ) ) {
+	function has_action( string $tag, $function_to_check = false ) {
+		// Matches do_action()'s "no listeners registered" convention.
+		return false;
+	}
+}
+
+if ( ! function_exists( '_n_noop' ) ) {
+	/**
+	 * Reproduces WP core's return shape exactly (singular/plural/context/
+	 * domain keys) since callers read those keys directly via
+	 * translate_nooped_plural(), not just the raw strings.
+	 */
+	function _n_noop( string $singular, string $plural, string $domain = 'default' ): array {
+		return array(
+			0          => $singular,
+			1          => $plural,
+			'singular' => $singular,
+			'plural'   => $plural,
+			'context'  => null,
+			'domain'   => $domain,
+		);
+	}
+}
+
+if ( ! function_exists( 'get_theme_mod' ) ) {
+	function get_theme_mod( string $name, $default = false ) {
+		// No theme mods registered in the harness — the documented
+		// "mod not set" behaviour is to return $default.
+		return $default;
+	}
+}
+
+if ( ! function_exists( 'get_the_ID' ) ) {
+	function get_the_ID() {
+		// No current post in the harness's rendering context.
+		return 0;
+	}
+}
+
+if ( ! function_exists( 'get_query_var' ) ) {
+	function get_query_var( string $var, $default = '' ) {
+		// No global WP_Query has run, so every query var is unset.
+		return $default;
+	}
+}
+
+if ( ! function_exists( 'get_posts' ) ) {
+	function get_posts( array $args = array() ): array {
+		// No posts exist in the harness — faithful "nothing found" result,
+		// matching the empty-array fallback documented on every SGS caller
+		// (class-sgs-nav-menu-source.php falls through to its next source).
+		return array();
+	}
+}
+
+if ( ! function_exists( 'get_post' ) ) {
+	function get_post( $post = null ) {
+		// No current/specified post exists in the harness.
+		return null;
+	}
+}
+
+if ( ! function_exists( 'get_option' ) ) {
+	function get_option( string $option, $default = false ) {
+		// No options table in the harness — every option is unset.
+		return $default;
+	}
+}
+
+if ( ! function_exists( 'is_archive' ) ) {
+	function is_archive(): bool {
+		// Same "no current WP_Query" reasoning as is_singular() above.
+		return false;
+	}
+}
+
+if ( ! function_exists( 'wp_is_serving_rest_request' ) ) {
+	function wp_is_serving_rest_request(): bool {
+		// The harness is a plain CLI process, never a REST route — needed by
+		// the real SGS\Blocks\sgs_is_frontend_render() (require_once'd below).
+		return false;
+	}
+}
+
+if ( ! function_exists( 'wp_kses_allowed_html' ) ) {
+	function wp_kses_allowed_html( $context = '' ): array {
+		// No core allowlist reproduced — matches wp_kses()'s own pass-through
+		// convention above (this harness has no HTML-sanitisation policy to
+		// mirror). Callers that array_merge() this in still get their own
+		// explicit local allowlist entries.
+		return array();
+	}
+}
+
+if ( ! function_exists( 'add_action' ) ) {
+	function add_action( string $tag, $function_to_add, int $priority = 10, int $accepted_args = 1 ): bool {
+		// No-op — matches do_action()'s "harness has no registered listeners"
+		// convention (nothing here ever fires wp_footer etc.).
+		return true;
+	}
+}
+
+if ( ! function_exists( 'translate_nooped_plural' ) ) {
+	/**
+	 * Real WP core selects singular/plural by count and then runs the result
+	 * through translate() — no translation catalogue exists in this harness
+	 * (mirrors __()'s pass-through above), so this returns the untranslated
+	 * English string WP core would fall back to.
+	 */
+	function translate_nooped_plural( array $nooped_plural, $count, string $domain = 'default' ): string {
+		return 1 === (int) $count ? (string) $nooped_plural['singular'] : (string) $nooped_plural['plural'];
+	}
+}
+
+if ( ! function_exists( 'get_theme_file_path' ) ) {
+	function get_theme_file_path( string $file = '' ): string {
+		// No theme is loaded in this harness. Returning a path that
+		// deliberately cannot exist keeps the caller's own file_exists()
+		// check honest (falls through to its "no header content" empty
+		// return) instead of fabricating a file that does not really exist.
+		return '/sgs-qa-harness-no-theme-loaded/' . ltrim( $file, '/' );
+	}
+}
+
+// Reproduces SGS\Blocks\sgs_is_frontend_render() (class-sgs-css-registry.php)
+// verbatim — declared in its own namespaced file for the same PHP-syntax
+// reason as google-reviews-settings-stub.php below (a namespaced declaration
+// cannot live in the same file as this file's unnamespaced global stubs).
+// Not require_once'ing the real parent file: it also add_filter()s a
+// render_block consolidation hook and defines CSS-cache-directory/glob/
+// unlink filesystem helpers at load time that have nothing to do with a
+// block's CSS output and would need their own filesystem stubbing to load
+// safely standalone.
+require_once __DIR__ . '/sgs-is-frontend-render-stub.php';
+
+// Real SGS logic (SGS\Blocks\Sgs_Schema, includes/class-sgs-schema.php) — a
+// small, side-effect-free static encoder class (no add_action/add_filter, no
+// filesystem access), so it is loaded for real rather than stubbed.
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-schema.php';
+
+// Real SGS logic (SGS\Blocks\Sgs_Site_Info, includes/class-sgs-site-info.php)
+// — static-only, no top-level add_action/add_filter, and its get()/
+// get_esc_html()/get_esc_url() paths call only get_option()/esc_html()/
+// esc_url(), all already stubbed above — so it is loaded for real. Every
+// key comes back '' (get_option()'s stubbed "unset" default), which is the
+// faithful "no business info configured" state, not fabricated content.
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-site-info.php';
+
+if ( ! function_exists( 'is_search' ) ) {
+	function is_search(): bool {
+		// Same "no current WP_Query" reasoning as is_singular()/is_archive().
+		return false;
+	}
+}
+
+if ( ! function_exists( 'plugins_url' ) ) {
+	function plugins_url( string $path = '', string $plugin = '' ): string {
+		return 'https://example.test/wp-content/plugins/' . ltrim( $path, '/' );
+	}
+}
+
+if ( ! function_exists( 'is_404' ) ) {
+	function is_404(): bool {
+		// Same "no current WP_Query" reasoning as is_singular()/is_archive()/is_search().
+		return false;
+	}
+}
+
+if ( ! function_exists( 'human_time_diff' ) ) {
+	/**
+	 * Faithful-enough subset of WP core's human_time_diff(): same threshold
+	 * ladder (mins/hours/days/weeks/months/years), same rounding, without the
+	 * i18n plural-string catalogue (matches this file's __() pass-through
+	 * convention — every unit noun stays English, e.g. "6 months" not a
+	 * translated/pluralised phrase).
+	 */
+	function human_time_diff( int $from, int $to = 0 ): string {
+		if ( 0 === $to ) {
+			$to = time();
+		}
+		$diff = abs( $to - $from );
+		if ( $diff < HOUR_IN_SECONDS ) {
+			$mins = (int) round( $diff / MINUTE_IN_SECONDS );
+			$mins = max( 1, $mins );
+			return $mins . ' min' . ( 1 === $mins ? '' : 's' );
+		}
+		if ( $diff < DAY_IN_SECONDS ) {
+			$hours = (int) round( $diff / HOUR_IN_SECONDS );
+			return $hours . ' hour' . ( 1 === $hours ? '' : 's' );
+		}
+		if ( $diff < WEEK_IN_SECONDS ) {
+			$days = (int) round( $diff / DAY_IN_SECONDS );
+			return $days . ' day' . ( 1 === $days ? '' : 's' );
+		}
+		if ( $diff < MONTH_IN_SECONDS ) {
+			$weeks = (int) round( $diff / WEEK_IN_SECONDS );
+			return $weeks . ' week' . ( 1 === $weeks ? '' : 's' );
+		}
+		if ( $diff < YEAR_IN_SECONDS ) {
+			$months = (int) round( $diff / MONTH_IN_SECONDS );
+			return $months . ' month' . ( 1 === $months ? '' : 's' );
+		}
+		$years = (int) round( $diff / YEAR_IN_SECONDS );
+		return $years . ' year' . ( 1 === $years ? '' : 's' );
+	}
+}
+
+if ( ! defined( 'MINUTE_IN_SECONDS' ) ) {
+	define( 'MINUTE_IN_SECONDS', 60 );
+}
+if ( ! defined( 'HOUR_IN_SECONDS' ) ) {
+	define( 'HOUR_IN_SECONDS', 3600 );
+}
+if ( ! defined( 'DAY_IN_SECONDS' ) ) {
+	define( 'DAY_IN_SECONDS', 86400 );
+}
+if ( ! defined( 'WEEK_IN_SECONDS' ) ) {
+	define( 'WEEK_IN_SECONDS', 604800 );
+}
+if ( ! defined( 'MONTH_IN_SECONDS' ) ) {
+	define( 'MONTH_IN_SECONDS', 2592000 );
+}
+if ( ! defined( 'YEAR_IN_SECONDS' ) ) {
+	define( 'YEAR_IN_SECONDS', 31536000 );
+}
+
+if ( ! function_exists( 'wp_get_nav_menus' ) ) {
+	function wp_get_nav_menus( array $args = array() ): array {
+		// No classic nav-menu terms exist in the harness — faithful "site
+		// has no classic menu" result, matching the empty-array fallback
+		// documented on its caller.
+		return array();
+	}
+}
+
+if ( ! function_exists( 'is_wp_error' ) ) {
+	function is_wp_error( $thing ): bool {
+		return $thing instanceof \WP_Error;
+	}
+}
+
+if ( ! class_exists( 'WP_Error' ) ) {
+	class WP_Error {
+		public function __construct( $code = '', $message = '', $data = '' ) {}
+	}
+}
+
+if ( ! function_exists( 'get_pages' ) ) {
+	function get_pages( array $args = array() ): array {
+		// No pages exist in the harness — faithful "nothing to expand"
+		// result for from_page_list()'s no-ref fallback.
+		return array();
+	}
+}
+
+if ( ! function_exists( 'get_nav_menu_locations' ) ) {
+	function get_nav_menu_locations(): array {
+		// No classic theme menu locations are registered in the harness —
+		// faithful "nothing assigned" result, matching the empty-array
+		// fallback documented on its caller (falls through to the next
+		// resolution source).
+		return array();
+	}
+}
+
+// google-reviews/render.php calls two static methods on the real
+// SGS\Blocks\Google_Reviews_Settings (includes/google-reviews-settings.php).
+// That file is NOT require_once'd here: its bottom line runs
+// Google_Reviews_Settings::init(), which registers admin_menu/admin_init/
+// wp_ajax_* hooks via add_action() and pulls in register_setting(),
+// add_options_page(), add_settings_section() and friends — none of which
+// exist in this harness and none of which affect the block's CSS output.
+// This mirrors the WP_Query stub-class convention already established
+// above: a thin stand-in for a WP/external-API boundary the manual render
+// path is never meant to exercise faithfully.
+// Declared in its own file (google-reviews-settings-stub.php) because it
+// lives in the SGS\Blocks namespace — mixing a namespaced class with this
+// file's unnamespaced global-scope function stubs in one file is a PHP
+// parse error, not a style choice.
+require_once __DIR__ . '/google-reviews-settings-stub.php';
