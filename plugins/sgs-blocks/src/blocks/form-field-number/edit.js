@@ -92,11 +92,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-				</PanelBody>
-				<PanelBody
-					title={ __( 'Number Constraints', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
 					<TextControl
 						label={ __( 'Minimum value', 'sgs-blocks' ) }
 						value={ min }

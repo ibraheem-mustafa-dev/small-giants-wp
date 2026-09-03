@@ -72,11 +72,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-				</PanelBody>
-				<PanelBody
-					title={ __( 'Postcode Lookup', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
 					<ToggleControl
 						label={ __( 'Enable postcode lookup', 'sgs-blocks' ) }
 						checked={ enableLookup }
@@ -89,11 +84,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						__nextHasNoMarginBottom
 					/>
-				</PanelBody>
-				<PanelBody
-					title={ __( 'Address Fields', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
 					<p>
 						{ __(
 							'Select which address fields to show:',

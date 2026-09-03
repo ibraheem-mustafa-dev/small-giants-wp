@@ -103,12 +103,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Options', 'sgs-blocks' ) }
-					initialOpen={ true }
-				>
 					{ options.map( ( option, index ) => (
 						<div
 							key={ index }

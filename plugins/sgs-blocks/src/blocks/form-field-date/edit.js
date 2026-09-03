@@ -91,11 +91,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-				</PanelBody>
-				<PanelBody
-					title={ __( 'Date Constraints', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
 					<TextControl
 						label={ __( 'Minimum date', 'sgs-blocks' ) }
 						value={ minDate }

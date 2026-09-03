@@ -48,6 +48,18 @@ const EXPORT_RE = /export\s*\{([^}]*)\}\s*from\s*['"](\.\/[^'"]+)['"]/g;
 const PANEL_OPEN_TAG_RE = /<(PanelBody|ToolsPanel)\b/; // \b excludes ToolsPanelItem
 const IMG_OPEN_TAG_RE = /<img\b/;
 
+// GROUND-TRUTH (added 2026-09-03, fixing a rule-01 false positive on
+// sgs/mega-aside): a shared component can itself render
+// `<InspectorControls group="...">` internally — e.g. SgsColourPanel renders
+// `<InspectorControls group="styles"><PanelBody>...`. A block that mounts
+// such a component IS routed (the group prop lives in the shared component's
+// own source), but rule 01's per-block regex only scans the BLOCK's own
+// edit.js text and can never see it there. `selfRoutesGroup` records the
+// literal group name a component's OWN source routes to (or `null`), same
+// evidence source (cache.strippedText()) and same one-directive-per-file
+// simplicity as `wrapsPanel`/`wrapsImage` above.
+const SELF_GROUP_RE = /<InspectorControls\b[^>]*\bgroup\s*=\s*\{?["']([a-zA-Z-]+)["']/;
+
 function barrelExportedNames( cache ) {
 	if ( ! fs.existsSync( COMPONENTS_INDEX ) ) return {};
 	const raw = cache ? cache.text( COMPONENTS_INDEX ) : fs.readFileSync( COMPONENTS_INDEX, 'utf8' );
@@ -99,11 +111,14 @@ function discover( cache ) {
 		const fullPath = path.join( COMPONENTS_DIR, file );
 		let wrapsPanel = false;
 		let wrapsImage = false;
+		let selfRoutesGroup = null;
 		if ( cache ) {
 			const stripped = cache.strippedText( fullPath );
 			if ( stripped ) {
 				wrapsPanel = PANEL_OPEN_TAG_RE.test( stripped );
 				wrapsImage = IMG_OPEN_TAG_RE.test( stripped );
+				const groupMatch = SELF_GROUP_RE.exec( stripped );
+				selfRoutesGroup = groupMatch ? groupMatch[ 1 ] : null;
 			}
 		}
 		exportsMap[ name ] = {
@@ -111,6 +126,7 @@ function discover( cache ) {
 			exported: exportedByRel.has( rel ),
 			wrapsPanel,
 			wrapsImage,
+			selfRoutesGroup,
 		};
 	}
 

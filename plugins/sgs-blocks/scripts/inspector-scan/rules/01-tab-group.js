@@ -40,11 +40,34 @@ const { makeFinding } = require( '../core/finding' );
 const GROUP_PROP_RE = /<InspectorControls\b[^>]*\bgroup\s*=\s*\{?["']([a-zA-Z-]+)["']/g;
 const ADVANCED_SPAN_RE = /<InspectorAdvancedControls\b[^]*?<\/InspectorAdvancedControls>/g;
 
-function panelTagNames( ctx ) {
+// GROUND-TRUTH (2026-09-03, fixing a false positive on sgs/mega-aside, then
+// corrected same-day after a live re-scan proved the first shape wrong): a
+// shared component can itself render `<InspectorControls group="...">`
+// internally (e.g. SgsColourPanel renders group="styles"). Such a component
+// counts as ROUTED, not as a panel needing a routing decision — so it is
+// EXCLUDED from panelTagNames entirely (mirrors how InspectorAdvancedControls
+// content is already excluded below, same reasoning: something that is
+// already known-routed shouldn't count toward "panels lacking routing").
+//
+// The first version of this fix instead short-circuited the WHOLE block to
+// "routed" the moment ANY self-routing component was used anywhere in its
+// file. That was wrong: 65/83 blocks mount SgsColourPanel, and most of them
+// ALSO have several genuinely unrouted styling panels alongside it (e.g.
+// sgs/counter's Text Styling/Decoration/Spacing/Border-radius/Border panels
+// have nothing to do with SgsColourPanel's colour row). The short-circuit
+// collapsed the rule's findings from 56 to 2 in one live re-scan — it wasn't
+// closing mega-aside's blind spot, it was gutting the whole backlog. This
+// exclusion-from-count shape instead lets mega-aside clear (its ONLY other
+// panel, "Aside", drops the total below the 2-panel threshold) while
+// sgs/counter and friends still correctly flag on their remaining unrouted
+// panels.
+function panelTagNames( ctx, { excludeSelfRouting } = {} ) {
 	const names = [ 'PanelBody', 'ToolsPanel' ];
 	if ( ctx.components && ctx.components.ok ) {
 		for ( const [ name, info ] of Object.entries( ctx.components.exportsMap ) ) {
-			if ( info.wrapsPanel ) names.push( name );
+			if ( ! info.wrapsPanel ) continue;
+			if ( excludeSelfRouting && info.selfRoutesGroup ) continue;
+			names.push( name );
 		}
 	}
 	return names;
@@ -75,9 +98,9 @@ module.exports = {
 		// panels", and does not need a group prop of its own.
 		const textOutsideAdvanced = rawStripped.replace( ADVANCED_SPAN_RE, '' );
 
-		const tagNames = panelTagNames( ctx );
+		const tagNames = panelTagNames( ctx, { excludeSelfRouting: true } );
 		const panelCount = countPanels( textOutsideAdvanced, tagNames );
-		if ( panelCount < 2 ) return []; // single settings surface — nothing to route between
+		if ( panelCount < 2 ) return []; // single settings surface (or fully covered by self-routing components) — nothing left to route between
 
 		GROUP_PROP_RE.lastIndex = 0;
 		const groupMatches = [ ...rawStripped.matchAll( GROUP_PROP_RE ) ];
@@ -107,6 +130,7 @@ module.exports = {
 			'multi-panel-with-group',
 			'single-panel',
 			'single-settings-plus-advanced',
+			'panel-plus-self-routing-component',
 		],
 	},
 };

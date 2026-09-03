@@ -83,12 +83,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Upload Settings', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
 					<TextControl
 						label={ __( 'Allowed file types', 'sgs-blocks' ) }
 						value={ allowedTypes }
