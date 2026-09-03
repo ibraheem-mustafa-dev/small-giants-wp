@@ -1,3 +1,79 @@
+## D923 [ROUTINE] — 31-golden-colour-control: detector fix + gradient rollout, 276 → 250; the grant.js codemod route abandoned
+
+**2026-09-03.** Commits `06e02c4e5`, `0266beff0`, `3b78c8895`, `305f9170c`, `86e994427`,
+`c3864134f`, `c2853d258`, `66cb0880f`, `bbc60164a`.
+
+**The route changed before any of it was built.** A 6-persona `/adversarial-council` returned
+NO-GO on D754's `grant.js` codemod plan. Four of six independently found the route had never been
+tested against a cheaper alternative, and two cheaper ones existed in the tree. Three of the
+plan's load-bearing rules were confidently wrong on facts a single grep falsifies. Superseded by
+a staged route: ship what existing tooling delivers, measure, then decide on a codemod. `grant.js`
+was never written and is no longer the plan.
+
+**Phase 0 — a live build-breaker removed.** `borderRow.js` was deleted at `dd2989ec2`, but
+`adopt.js` still made it the FIRST branch of `decideHelper()` and added it to the barrel import,
+so any border row reaching `adopt.js --fix --apply` would have written an unresolvable named
+import into a live block's `edit.js` — killing that block's editor. Its self-test asserted the
+broken emit as CORRECT, so the suite was green *because* it produced the bug. `sgs/hero|
+below-min-states|border-colour` was already a measured collision key, so a heaviest-first sweep
+reached it. New standing control: every name the codemod can emit must be exported from
+`src/components/index.js`. Two claims in `golden-controls.json` were false the same way —
+`borderRow.js` and `DeviceTabs` both described as live files that do not exist.
+
+**Phase 1 — touch-safe hover, 9 emit sites across 4 shared files.** No `@media (hover: hover)`
+existed anywhere in the paint helpers, so a tap on a touchscreen engaged `:hover` and it stuck.
+Two layers, Bean-ruled: pure CSS (works with no JS, fixes phones) plus a reactive
+`.sgs-touch-input` class on `<html>` (fixes hybrids). Both are needed —
+`src/shared/effects/motion-utils.js` had already measured and recorded that the media feature
+describes only the device's PRIMARY pointer, so a hybrid reports hover-capable all session while
+being poked with a finger. `:focus-visible`/`:focus-within` stay OUTSIDE both guards; folding
+them in would have removed the focus state from every touch device. New gate
+`test-hover-state-guard`, mutation-proven by exit code.
+
+**Phase 2 was empty, and the reason is the lesson.** `fix.js` reports 0 fixable / 74 refused,
+while `survey.js` reports 40 AUTOFIXABLE. Both are right on their own terms: the survey models
+fewer constraints than the fixer enforces. **Never plan work off the survey's autofixable count
+without running `fix.js --fix` as a dry run.**
+
+**Detector fix — 18 rows counted as missing a hover state that ARE a state.** Three legitimate
+shapes: the hover half of a split control whose resting half lives in `SgsBorderControl` (adding
+a `normal` state there would create a SECOND writer for an attribute another control owns — the
+fix would be the bug); a colour for a hover-only feature; a state-scoped row painting only the
+current panel. Gated on `golden-controls.json`'s own `_meta.stateVocabulary.real`, never on the
+attribute NAME — the schema's own `states.derivation.why` warns that `pauseOnHover` contains
+"Hover" and is a boolean. A name proxy was tried and was wrong in both directions. Paired
+fixtures: `sole-declared-state-row` (mustNotFlag) and the identical-but-for-the-state-key
+`sole-unknown-state-row` (mustFlag), so a typo cannot buy silent exemption.
+
+**Rollout — 16 blocks gained a gradient-capable text paint path.** Finishes, for those
+attributes, what `778879732` started and explicitly left open ("~78 candidate text-colour
+attributes"). ⚠ **Reading `778879732` for the pattern produces broken code** — its gradient
+shared one attribute and its preview helper took two arguments; both have changed. Two sessions
+have now hit this.
+
+⛔ **TWO REAL DEFECTS THAT EVERY AGENT'S OWN GREEN MISSED**, caught by running gates centrally:
+dead always-empty `if(!empty())` guards left behind in four blocks after the style-engine writer
+was removed (pruned by proof), and `check-editor-render-parity` 4 over ceiling (raised 177 → 181
+only after confirming each new gradient's FLAT partner was already inside the accepted count and
+the affected blocks are InnerBlocks containers with no canvas node to paint).
+
+**Measured, on `survey.js` untouched:** no-paint-path 104 → 85; AUTOFIXABLE 22 → 40; CONFORMANT
+77 → 78; total held at 252. Rule 31 276 → 250, ratchet lowered to 250 with zero slack.
+
+**Two correct refusals, left refused:** `sgs/site-header` (its block.json already declares
+`colourExemptions.text.rule = "gradient"`) and `sgs/card-grid.card-text` (paints a multi-element
+card container, so no single element owns it).
+
+⛔ **NOT LIVE-VERIFIED.** All 16 visual-diff reports carry `verdict: PARTIAL`; none was fabricated
+to PASS. ⚠ Seven of them (accordion-item, collapsible-text, feature-grid, form-field-tiles,
+site-footer-row, site-header-row, tab) were written by dispatched agents in a heading shape with
+NO `verdict:` field at all, so the gate could never have read them — the scoped bypass meant the
+malformed shape was never surfaced at commit time. Headers added during this handoff's QC pass.
+`team-member-2026-09-03.md` holds TWO reports: this track's (PARTIAL, first) above the media-atom
+track's (PASS, live-verified); both kept, with a disambiguation note. The canary deploy was blocked at the time by the parallel track's uncommitted work and
+`--allow-dirty` was not used. That track has since deployed, so the probe is now runnable and is
+the first owed item.
+
 ## D922 [ROUTINE] — 37-media-no-handroll: 17 blocks onto the shared object-fit atom, overlay tiering extended, live-verified + /qc-council reviewed
 
 **2026-09-03.** Closes most of `37-media-no-handroll` (71 → 44 findings). Commits `c1a395ec5`,

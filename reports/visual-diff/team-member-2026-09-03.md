@@ -4,6 +4,11 @@ verdict: PARTIAL — static and census evidence PASS; live capture NOT RUN
 intent_capture_passed: false
 source_sha: not-a-staged-hash (live capture blocked, see "What is NOT verified")
 
+⚠ TWO REPORTS IN THIS FILE, both kept deliberately. The one above covers the
+text-colour GRADIENT rollout (verdict PARTIAL, no live capture). A SECOND report for the
+media-atom migration follows further down with its own `verdict: PASS` — that track DID
+deploy and live-verify. Neither supersedes the other; they cover different changes to the
+same block on the same day. Read the verdict nearest the section you care about.
 Covers the text-colour gradient rollout reaching `sgs/team-member`'s `nameColour` and
 `roleColour` rows.
 

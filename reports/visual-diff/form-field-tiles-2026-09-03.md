@@ -1,5 +1,17 @@
 # Visual Diff Report: form-field-tiles (2026-09-03)
 
+verdict: PARTIAL — static and census evidence only; live capture NOT RUN
+intent_capture_passed: false
+source_sha: not-a-staged-hash (live capture was blocked, see below)
+
+⚠ Header added 2026-09-03 during the handoff QC pass. The report body below was written
+by a dispatched agent in a different heading shape that carried NO `verdict:` field at
+all, so the visual-diff gate could not have read it. The commit used the scoped
+`SGS_VISUAL_GATE_SKIP` bypass, so the malformed shape was never surfaced at commit time.
+The verdict is PARTIAL, not PASS: the canary deploy was blocked by a concurrent track's
+uncommitted work, so no live capture exists for this block. The owed check is a
+computed-style probe on the painted element with a negative control.
+
 ## Change Category
 Gradient-capable text-colour paint path (survey row: `sgs/form-field-tiles` / `text` / `textColour`)
 

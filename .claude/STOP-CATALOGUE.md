@@ -2967,3 +2967,52 @@ against an external spec, because the fixtures were written from the same wrong 
 matching E15-E20), zero removed, zero reworded, zero ritual questions touched. Unique `STOP-*`
 tokens **323 -> 325**. Ritual questions in §C: unchanged — verified via
 `awk '/^## C\./,/^## D\./' .claude/STOP-CATALOGUE.md | grep -cE '^[0-9]+\. '` before and after.
+
+### E23. Earned 2026-09-03 — colour track: a measurement that agrees with you about the wrong question, D923
+
+⛔ **STOP-TWO-TOOLS-ANSWERING-ONE-QUESTION-CAN-DISAGREE-AND-BOTH-BE-RIGHT.** `survey.js` reported
+**40 rows AUTOFIXABLE**; `fix.js` — the tool that would actually do the fixing — reported **0
+fixable, 74 refused**. Neither is buggy: the survey models fewer constraints than the fixer
+enforces, so its verdict is an upper bound, not a work list. An adversarial council read the survey
+figure, called it "12 rows closable right now with no new code", and a whole planned phase was
+built on it. The phase was empty. **Before planning work off any census count, run the tool that
+would DO the work in dry-run mode and believe that number instead.** A count is only as good as the
+tool that will act on it.
+
+⛔ **STOP-A-MOVED-VERDICT-CANNOT-SEE-A-SUPERSEDED-WRITER-LEFT-BEHIND.** Every agent in a 15-block
+rollout verified its work by watching the survey verdict move off
+`no-gradient-capable-paint-path-found`, and every one was right — that verdict measures whether a
+gradient-capable path now EXISTS. It is structurally blind to the old flat writer still emitting a
+competing `color:` on the same element, which is the two-owners defect the whole programme exists to
+remove. **Read the diff's MINUS lines.** A success criterion that cannot see the failure mode is not
+a check, however honestly it is reported.
+
+⛔ **STOP-REMOVING-A-WRITER-CAN-LEAVE-PROVABLY-DEAD-GUARDS-THAT-FAIL-THE-BUILD.** Stripping the text
+colour out of `wp_style_engine_get_styles()` left `$X_color_args` / `$X_style_engine_args` declared,
+never written again, and read only inside `if ( ! empty( … ) )` — always-falsy by construction, in
+four blocks at once. `check-render-undefined-vars` caught all seven. Prune such a branch **by proof**
+(enumerate every write; zero remaining writes means the guard is unconditionally dead) and never by
+heuristic. Same class as the Shape-B border migration hit the same day, which is the point: the
+class recurs whenever a writer is removed from a shared accumulator.
+
+⛔ **STOP-A-RELATIVE-PATH-IS-CORRECT-WHERE-THE-AGENT-STANDS-AND-WRONG-WHERE-THE-GATE-LOOKS.** Two of
+four dispatched agents wrote their visual-diff reports to `plugins/sgs-blocks/reports/visual-diff/`
+while reporting the path as `reports/visual-diff/…` — true relative to their working directory, and
+invisible to the commit gate, which reads the repo ROOT. Their self-reports were honest and still
+misleading. **Give a dispatched agent an ABSOLUTE path for any artefact a gate will look for**, and
+verify the file where the gate reads it, not where the agent says it wrote it.
+
+⛔ **STOP-AN-EXEMPTION-NEEDS-A-CONTROL-PROVING-A-TYPO-CANNOT-BUY-IT.** Rule 31 was taught to exempt a
+row whose SOLE declared state is a real non-`normal` state. Gated on the schema's own
+`_meta.stateVocabulary.real`, never on the attribute NAME — the schema's own `states.derivation.why`
+warns that `pauseOnHover` contains "Hover" and is a boolean. A name-based proxy was tried first and
+was wrong in BOTH directions. The load-bearing half is the paired fixture: `sole-declared-state-row`
+(mustNotFlag) beside the identical-but-for-the-state-key `sole-unknown-state-row` (mustFlag).
+**Without the over-match control, an exemption is a way to switch a rule off by misspelling a word.**
+
+**D101 carry-forward receipt for E23.** Five STOP entries added (narrative `⛔ **STOP-…**` style,
+matching E15-E22), zero removed, zero reworded, zero ritual questions touched. Ritual questions in
+§C unchanged — verified with `awk '/^## C\./,/^## D\./' .claude/STOP-CATALOGUE.md | grep -cE '^[0-9]+\. '`
+before and after. Per the `stop-floor.json` note, these narrative-style tokens are deliberately NOT
+added to that floor: its extractor matches only `- **STOP-…` bulleted items, so asserting them there
+would make the check fail against a floor it can never satisfy.
