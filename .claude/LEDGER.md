@@ -21,9 +21,11 @@ the detectors themselves where they're wrong, so the client's editor/canvas/live
 has no clear blockers. This session closed most of `37-media-no-handroll` (71 → 44 findings) —
 17 blocks got a real client-facing crop control, the overlay atom gained responsive tiering, and
 a 4-persona `/qc-council` review caught two real bugs before they shipped. Deployed and
-live-verified on the canary. Two items remain fully open (`01`, `21`), plus 8 blocks' worth of
-`37` residue held pending a design chat about `sgs/container`. One dedicated build-session prompt
-stays separate (below). A second track ran in parallel on **colour** (D923): rule 31 fell
+live-verified on the canary. `37`'s remaining 44 findings then closed to 0 the same day (D924):
+the held design chat about `sgs/container`'s background settled that a whole-block background
+panel is a separate, non-element-based system, never meant to be compared against the media-atom
+layer — a detector fix, not a build. Two items remain fully open (`01`, `21`). One dedicated
+build-session prompt stays separate (below). A second track ran in parallel on **colour** (D923): rule 31 fell
 276 → 250 via a detector fix plus a gradient rollout across 16 blocks, and the planned
 `grant.js` codemod was abandoned after an adversarial council found the route untested
 against cheaper alternatives. Its owed live probe is the first thing to run. The canary test site is
@@ -50,7 +52,7 @@ yet, so breakage there costs time, not money.
 (section below). Sections below are per-track, read only the one you're continuing.**
 The **motion** track owns `⛔ `sgs-framework.db` is ONE shared file — DB work sequentially, not parallel.
 
-## ▶ UNIFORMITY SWEEP TRACK — 2026-09-03: 37-media-no-handroll mostly CLOSED + live-verified; 2 items remain, 1 dedicated build prompt
+## ▶ UNIFORMITY SWEEP TRACK — 2026-09-03: 37-media-no-handroll CLOSED (44→0) + live-verified; 2 items remain, 1 dedicated build prompt
 
 ⭐ **Read `.claude/reports/2026-09-02-findings-INDEX.md` FIRST — it is the map.** Twelve reports,
 one per detector reporting findings, each with a plain-English problem/effect, a ranked menu and a
@@ -78,11 +80,20 @@ Deployed + live-verified on sandybrown; 16 visual-diff reports written (intent-c
 `grant.js` — the actual capability tool — doesn't exist yet. ~5.4h BUILD task with its own
 feasibility spike, own dedicated prompt, never folded into a mixed backlog session.
 
-**What's left — 2 open items + 1 held:** `01` (56, coarse-proxy check — verify by eye) · `21`
-(54, pre-existing backlog, not yet triaged block-by-block) · `37`'s remaining 44 findings across
-`container`/`cta-section`/`nav-drawer` (backdrop-scope, first adoption, held for a design chat)
-and `multi-button`/`physics-canvas`/`site-footer`/`site-header` (overlay, documented debt, needs
-the atom's marker-class gap solved first — see D922). `31` (277) stays fully out of this prompt.
+**`37`'s remaining 44 findings — CLOSED same day (D924), not a build.** The held design chat
+about `sgs/container`/`cta-section`/`nav-drawer`'s background-image sizing happened: a whole-block
+background panel (size/position/repeat/attachment/overlay/video/SVG/Ken-Burns/parallax) is a
+separate, non-element-based system — it was never supposed to be compared against
+`supports.sgs.mediaElements` at all, reversing a 2026-09-02 decision that had deliberately kept
+Ken-Burns/parallax firing as a "media" signal. On investigation, `multi-button`/`physics-canvas`/
+`site-footer`/`site-header`'s "documented debt, needs the atom's marker-class gap solved first"
+findings turned out to be the identical misclassification — not 4 separate gaps, one detector fix.
+Fixed in `37-media-no-handroll.js` (bare `background`/`bg`-prefix discriminator, 3 new self-test
+fixtures), not by building the atom's caller-supplied-selector capability. 44 → 0, full detail
+D924. No wrapper/render code touched, no deploy needed.
+
+**What's left — 2 open items:** `01` (56, coarse-proxy check — verify by eye) · `21` (54,
+pre-existing backlog, not yet triaged block-by-block). `31` (277) stays fully out of this prompt.
 
 ⛔ **Working shape carried forward from the prior session, unchanged: dispatch each fix the MOMENT
 Bean decides it and keep discussing while the agent works — do NOT batch every fix to the end.**

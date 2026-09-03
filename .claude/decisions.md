@@ -1,3 +1,27 @@
+## D924 [ROUTINE] — 37-media-no-handroll: background panel is not a media element; 44 → 0
+
+**2026-09-03.** Bean-directed. Closes the `37-media-no-handroll` backlog held item
+(`.claude/LEDGER.md`'s `sgs/container`/`sgs/cta-section`/`sgs/nav-drawer` background-image
+sizing) — and, on investigation, three more blocks previously filed separately as "documented
+debt, not fixed" (`sgs/multi-button`, `sgs/physics-canvas`, `sgs/site-footer`,
+`sgs/site-header`), because their findings were the identical misclassification.
+
+**The call:** a whole-block background (size/position/repeat/attachment/overlay/video/SVG
+backdrop, Ken-Burns/parallax motion included) is a separate, already-standardised, non-element
+based panel (`SGS_Container_Wrapper`'s `sgs_overlay_decls()`, or block-private for
+`sgs/nav-drawer`) — not a media element (a client-configurable `<img>`/`<video>`). It was never
+supposed to be compared against `supports.sgs.mediaElements`. This reverses a decision baked into
+the detector one day earlier (2026-09-02), which deliberately kept Ken-Burns/parallax firing as a
+"media" signal on the opposite reasoning.
+
+**The fix:** `scripts/inspector-scan/rules/37-media-no-handroll.js` — a bare `background`/`bg`
+attribute-name prefix (no element name in front of it) is the background panel; an element-name
+prefix (`splitMediaObjectFit`, `mediaOverlayColour`) is still a real media-element finding.
+Verified this discriminator holds across every occurrence in the tree — no element-prefixed
+occurrence of the flagged attribute family exists anywhere. Detector findings: 44 → 0 across all
+7 blocks; no other rule's finding count moved (full `--json` before/after diff); `npm run
+gate:fast` 86/86 green. Detector + docs only — no wrapper/render behaviour change, no deploy.
+
 ## D923 [ROUTINE] — 31-golden-colour-control: detector fix + gradient rollout, 276 → 250; the grant.js codemod route abandoned
 
 **2026-09-03.** Commits `06e02c4e5`, `0266beff0`, `3b78c8895`, `305f9170c`, `86e994427`,

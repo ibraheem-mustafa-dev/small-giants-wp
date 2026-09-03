@@ -272,6 +272,56 @@ const MEDIA_CSS_PROPERTIES = [
 	'mix-blend-mode',
 ];
 
+// ── Background-panel exclusion (added 2026-09-03, Bean-directed) ─────────
+// A whole-block background (size/position/repeat/attachment/overlay/video/
+// SVG backdrop, including Ken-Burns/parallax motion on it) is a SEPARATE,
+// already-standardised, non-element-based system — owned by
+// `SGS_Container_Wrapper` for every block that mirrors `sgs/container`, or
+// block-private for a block like `sgs/nav-drawer` that renders its backdrop
+// outside the wrapper. It is not a media element (an `<img>`/`<video>` a
+// client points at their own file and picks an object-fit for), and was
+// never supposed to be compared against `supports.sgs.mediaElements`.
+//
+// This SUPERSEDES the 2026-09-02 "ken-burns"/"parallax" keyword addition to
+// MEDIA_CONTEXT_KEYWORDS below, which deliberately kept container's
+// Ken-Burns zoom firing as a "media" finding on the reasoning that
+// background-image motion IS media-element behaviour. Investigated
+// 2026-09-03 and reversed: the background panel is its own system, motion
+// on it included.
+//
+// The discriminator that makes this a universal exclusion rather than a
+// per-block carve-out (rule 3, no carve-outs): every genuine media-element
+// attribute in this codebase carries an ELEMENT-NAME PREFIX before the
+// property suffix (`splitMediaObjectPosition`, `mediaOverlayColour`,
+// `logoFit`, `badgeImageObjectFit`). The background-panel family is always
+// BARE-PREFIXED — the attribute name itself starts with `background`/`bg`
+// (`backgroundOverlayColour`, `backgroundSize`, `bgParallax`, `bgKenBurns`)
+// with no element name in front of it. Verified live across all 7 blocks
+// this rule flagged for the bare-`backgroundOverlay*` shape (sgs/container,
+// sgs/cta-section, sgs/multi-button, sgs/physics-canvas, sgs/site-footer,
+// sgs/site-header) plus sgs/nav-drawer's direct-css-write shape — every one
+// is bare-prefixed; no element-prefixed occurrence of this attribute family
+// exists anywhere in the tree.
+const BG_PANEL_ATTR_REGEX = /^(background|bg)[A-Z]/;
+
+// Condition-2 exclusion: literal PHP variable/class markers of the shared
+// background-panel implementation, read directly off the three affected
+// blocks' render.php/style.css (not guessed) — `sgs/container`
+// (`bg_video`/`bg_svg`/`--ken-burns`/`--parallax`/`sgs_overlay_decls`),
+// `sgs/cta-section` (`has_image_bg`/`has_video_bg`/`has_bg_image`/
+// `resolved_media`/`background_image`/`--has-bg-image`), `sgs/nav-drawer`
+// (`has_bg_image`/`bg_image`/`bg_size`/`bg_position`/`sgs_nd_media_decls`).
+// A match inside a window/selector carrying one of these markers is the
+// shared background panel, not a media element — even when a generic
+// keyword like "video"/"image"/"svg"/"media" would otherwise also match.
+// `video-bg`/`image-bg` are container's own LCP-fast-path selector classes
+// (`.sgs-container__video-bg`/`__image-bg`) — a real `<video>`/`<img>` tag,
+// but a fixed `object-fit:cover` with no client-facing control at all
+// (there is no `objectFit` attribute behind it), i.e. an implementation
+// detail of the backdrop panel, not a media element a client configures.
+const BG_PANEL_CONTEXT_REGEX =
+	/has_bg_image|has_image_bg|has_video_bg|bg_image|bg_video|bg_svg|bg_size|bg_position|resolved_media|background_image|sgs_overlay_decls|sgs_nd_media_decls|--has-bg-image|video-bg|image-bg|ken-burns|parallax/i;
+
 function propertyPresenceRegex( prop ) {
 	return new RegExp( '\\b' + prop.replace( /-/g, '\\-' ) + '\\s*:', 'i' );
 }
@@ -427,10 +477,17 @@ function isMediaContextMatch( fullText, lineStartOffset, matchIndexInLine, isCss
 	const absoluteIndex = lineStartOffset + matchIndexInLine;
 	if ( isCss ) {
 		const { selector, body } = findEnclosingCssRule( fullText, absoluteIndex );
+		// Background-panel exclusion runs FIRST and short-circuits to "not
+		// media context" even when a generic keyword below would otherwise
+		// match — see the BG_PANEL_CONTEXT_REGEX docblock above.
+		if ( BG_PANEL_CONTEXT_REGEX.test( selector ) || BG_PANEL_CONTEXT_REGEX.test( body ) ) {
+			return false;
+		}
 		if ( MEDIA_CONTEXT_KEYWORDS.test( stripDataUris( selector ) ) ) return true;
 		return backgroundImageIsRealAsset( body );
 	}
 	const windowText = phpWindowAround( fullText, absoluteIndex );
+	if ( BG_PANEL_CONTEXT_REGEX.test( windowText ) ) return false;
 	if ( MEDIA_CONTEXT_KEYWORDS.test( stripDataUris( windowText ) ) ) return true;
 	return backgroundImageIsRealAsset( windowText );
 }
@@ -475,6 +532,7 @@ module.exports = {
 		if ( ! adopted ) {
 			const attrNames = Object.keys( data.attributes || {} );
 			for ( const attrName of attrNames ) {
+				if ( BG_PANEL_ATTR_REGEX.test( attrName ) ) continue; // background panel, not a media element
 				const matchedSuffix = MEDIA_ATTR_SUFFIXES.find( ( s ) => attrName.includes( s ) );
 				if ( ! matchedSuffix ) continue;
 				findings.push(
@@ -588,12 +646,15 @@ module.exports = {
 			'declared-attr-no-mediaelements',
 			'direct-object-fit-in-style',
 			'direct-write-in-render',
+			'element-prefixed-overlay-still-flagged',
 		],
 		mustNotFlag: [
 			'adopted-mediaelements-silent',
 			'render-calls-shared-helper-silent',
 			'style-uses-media-custom-property',
 			'ordinary-block-no-media',
+			'bg-panel-attr-not-flagged',
+			'bg-panel-css-not-flagged',
 		],
 	},
 };
