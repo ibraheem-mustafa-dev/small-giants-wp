@@ -126,11 +126,35 @@ carried this work). Gradient paints via `background-clip:text`, the `@supports` 
 hover sits inside the guard, **7 focus rules and 0 inside it**, both negative controls clean. All 16
 reports carry the measured addendum.
 
-⛔ **NEW Task 1 — the residual that probe exposed, and it is bigger than what was fixed.** The hover
-guard covers PHP-EMITTED hover only. **233 `:hover` lines across 40 block `style.css` files are
-unguarded** — sticky-hover on touch persists for every one. A fix at the emitter covers only what the
-emitter emits. *Execution:* decide scope with Bean first — it is a shared-surface sweep, not a
-mechanical one. *≈unscoped.*
+⛔ **NEW Task 1 — the residual that probe exposed, now CATEGORISED. One number was three problems.**
+The hover guard covers PHP-EMITTED hover only. Hand-written `:hover` in block `style.css` is
+unguarded — **187 rules across 40 blocks**, split by what they actually do and by how fixable each
+part is. ⚠ The earlier "233 lines" figure counted lines including comments; these are RULES.
+
+| Category | Rules | Blocks | Mechanisable? |
+|---|---|---|---|
+| **C — motion-only hover** (`transform` 54, `opacity` 9, `opacity+transform` 6, `filter` 6, 4 others) | **80** | — | **YES, script.** 8 property-sets, ONE uniform transform: wrap in `@media (hover: hover) and (pointer: fine)`. Touches no colour, changes no specificity. |
+| **A — colour hover, attribute EXISTS** | 73 | 26 | **Detect yes, apply NO.** Fix is `:where()`, which sets specificity to ZERO — a real behaviour change needing per-rule proof it does not lose a fight it currently wins. |
+| **B — colour hover, NO attribute** | 26 | 7 | **NO.** The client cannot change these at all. Adding a control is a design decision, not a transform. `google-reviews` 6 · `pricing-table` 6 · `modal` 4 · `accordion` 3 · `form` 3 · `option-picker` 3 · `breadcrumbs` 1. |
+
+⭐ **Only 1 of 99 colour-family hover rules uses the sanctioned `:where()` fallback shape** that
+`plugins/sgs-blocks/CLAUDE.md` item 4 requires. The other 98 are bare selectors. They probably lose
+anyway — the helper emits at (0,3,0) (`.uid.wp-block-x:hover`, confirmed in the live probe CSS)
+against a bare (0,2,0) — so the client's setting wins **by accident of specificity, not by design**.
+A rule that loses is indistinguishable from one that is absent; `:where()` is what makes it deliberate.
+
+**Why the helpers did not already cover this, since it looks like they should:** the five colour
+helper variants emit from ATTRIBUTES. A `style.css` rule has no attribute to read, so no helper
+could ever have produced it. "Plug and play" was always scoped to attribute-backed colour. Category
+B is the honest gap in that scoping; category A is a conformance gap; category C was never colour's
+job at all.
+
+**Shape of the fix — the project's own rule decides it.** `CLAUDE.md`: "MORE THAN 3 BLOCKS? BUILD
+THE DETECTOR FIRST." At 40 blocks the deliverable is a survey → fix → check triad with a self-test
+(D542), NOT a fan-out of agents. ⛔ **Do not dispatch Haiku subagents at this**: A and B are
+judgement calls, and this session already measured what happens when N agents each re-derive one
+independently.
+*Execution:* C first (build the codemod, it is the clean one). A and B need Bean's scope call.
 
 **Task 2 — the grounding pass.** The three greps in the prompt, across the whole finding set, ONCE.
 *Execution:* inline (Opus). *Depends on:* none (parallel with Task 1). *≈20 min.*
