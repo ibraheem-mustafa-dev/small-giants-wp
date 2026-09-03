@@ -689,6 +689,16 @@
  * (no custom properties set means the pseudo-element paints fully
  * transparent and `pointer-events: none` keeps it out of the interaction
  * path).
+ *
+ * ── `--sgs-media-overlay-opacity` is TIERED (2026-09-03) ───────────────────
+ * Only opacity varies per device (a heavier scrim on a small screen) —
+ * colour/gradient/blend-mode stay untiered, matching
+ * `class-sgs-container-wrapper.php:417-422`'s own rationale. The tablet/
+ * mobile `@media` cascade below mirrors `object-fit.css`'s nesting EXACTLY:
+ * same breakpoints (`max-width:1023px` tablet, `max-width:767px` mobile),
+ * same mobile -> tablet -> desktop -> fallback nesting order, so an unset
+ * mobile value falls through to tablet rather than jumping straight past it
+ * to desktop.
  */
 
 .sgs-media-box {
@@ -711,6 +721,27 @@
 .sgs-media-box:focus-within::after {
 	background-color: var( --sgs-media-overlay-colour-hover, var( --sgs-media-overlay-colour, transparent ) );
 	background-image: var( --sgs-media-overlay-gradient-hover, var( --sgs-media-overlay-gradient, none ) );
+}
+
+@media (max-width: 1023px) {
+	.sgs-media-box::after {
+		opacity: var(
+			--sgs-media-overlay-opacity-tablet,
+			var( --sgs-media-overlay-opacity, 1 )
+		);
+	}
+}
+
+@media (max-width: 767px) {
+	.sgs-media-box::after {
+		opacity: var(
+			--sgs-media-overlay-opacity-mobile,
+			var(
+				--sgs-media-overlay-opacity-tablet,
+				var( --sgs-media-overlay-opacity, 1 )
+			)
+		);
+	}
 }
 
 /* ── shadow.css ──────────────────────────────────────────────────────── */
