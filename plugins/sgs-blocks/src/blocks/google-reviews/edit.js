@@ -52,6 +52,26 @@ export default function Edit( { attributes, setAttributes } ) {
 		dragToScroll,
 		dragMomentum,
 		loopCarousel,
+		writeReviewColourBackground,
+		writeReviewColourBackgroundHover,
+		writeReviewColourBackgroundGradient,
+		writeReviewColourBackgroundHoverGradient,
+		writeReviewColourText,
+		writeReviewColourTextHover,
+		arrowColourBackground,
+		arrowColourBackgroundHover,
+		arrowColourBackgroundGradient,
+		arrowColourBackgroundHoverGradient,
+		arrowColourText,
+		arrowColourTextHover,
+		arrowColourBorder,
+		arrowColourBorderHover,
+		arrowColourBorderGradient,
+		arrowColourBorderHoverGradient,
+		dotColour,
+		dotColourHover,
+		dotColourGradient,
+		dotColourHoverGradient,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -84,6 +104,138 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: starColour,
 								onChange: ( val ) => setAttributes( { starColour: val || 'accent' } ),
 								linked: true,
+							},
+						],
+					},
+					{
+						key: 'write-review-bg',
+						label: __( 'Write-review button background', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: writeReviewColourBackground,
+								onChange: ( val ) => setAttributes( { writeReviewColourBackground: val ?? '' } ),
+								gradientValue: writeReviewColourBackgroundGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { writeReviewColourBackgroundGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: writeReviewColourBackgroundHover,
+								onChange: ( val ) => setAttributes( { writeReviewColourBackgroundHover: val ?? '' } ),
+								gradientValue: writeReviewColourBackgroundHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { writeReviewColourBackgroundHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'write-review-text',
+						label: __( 'Write-review button text', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: writeReviewColourText,
+								onChange: ( val ) => setAttributes( { writeReviewColourText: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: writeReviewColourTextHover,
+								onChange: ( val ) => setAttributes( { writeReviewColourTextHover: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'arrow-bg',
+						label: __( 'Slider arrow background', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: arrowColourBackground,
+								onChange: ( val ) => setAttributes( { arrowColourBackground: val ?? '' } ),
+								gradientValue: arrowColourBackgroundGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { arrowColourBackgroundGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: arrowColourBackgroundHover,
+								onChange: ( val ) => setAttributes( { arrowColourBackgroundHover: val ?? '' } ),
+								gradientValue: arrowColourBackgroundHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { arrowColourBackgroundHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'arrow-text',
+						label: __( 'Slider arrow icon colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: arrowColourText,
+								onChange: ( val ) => setAttributes( { arrowColourText: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: arrowColourTextHover,
+								onChange: ( val ) => setAttributes( { arrowColourTextHover: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'arrow-border',
+						label: __( 'Slider arrow border', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: arrowColourBorder,
+								onChange: ( val ) => setAttributes( { arrowColourBorder: val ?? '' } ),
+								gradientValue: arrowColourBorderGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { arrowColourBorderGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: arrowColourBorderHover,
+								onChange: ( val ) => setAttributes( { arrowColourBorderHover: val ?? '' } ),
+								gradientValue: arrowColourBorderHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { arrowColourBorderHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'dot',
+						label: __( 'Slider pagination dot colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: dotColour,
+								onChange: ( val ) => setAttributes( { dotColour: val ?? '' } ),
+								gradientValue: dotColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { dotColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: dotColourHover,
+								onChange: ( val ) => setAttributes( { dotColourHover: val ?? '' } ),
+								gradientValue: dotColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { dotColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

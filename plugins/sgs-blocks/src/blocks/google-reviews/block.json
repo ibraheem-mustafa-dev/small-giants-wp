@@ -365,6 +365,94 @@
 		"borderRadiusMobile": {
 			"type": "object",
 			"default": {}
+		},
+		"writeReviewColourBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"writeReviewColourBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"writeReviewColourBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the write-review button's fill instead of a flat colour (delegates to sgs_background_paint_decl()). Non-empty wins over writeReviewColourBackground."
+		},
+		"writeReviewColourBackgroundHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of writeReviewColourBackgroundGradient."
+		},
+		"writeReviewColourText": {
+			"type": "string",
+			"default": ""
+		},
+		"writeReviewColourTextHover": {
+			"type": "string",
+			"default": ""
+		},
+		"arrowColourBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"arrowColourBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"arrowColourBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the slider arrow's fill instead of a flat colour (delegates to sgs_background_paint_decl()). Non-empty wins over arrowColourBackground."
+		},
+		"arrowColourBackgroundHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of arrowColourBackgroundGradient."
+		},
+		"arrowColourText": {
+			"type": "string",
+			"default": ""
+		},
+		"arrowColourTextHover": {
+			"type": "string",
+			"default": ""
+		},
+		"arrowColourBorder": {
+			"type": "string",
+			"default": ""
+		},
+		"arrowColourBorderHover": {
+			"type": "string",
+			"default": ""
+		},
+		"arrowColourBorderGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the slider arrow's border with a masked ring instead of a flat colour (D636 mechanism, already supported by sgs_button_element_style_css()). Non-empty wins over arrowColourBorder."
+		},
+		"arrowColourBorderHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of arrowColourBorderGradient."
+		},
+		"dotColour": {
+			"type": "string",
+			"default": ""
+		},
+		"dotColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"dotColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the slider pagination dot's fill instead of a flat colour (delegates to sgs_background_paint_decl()). Non-empty wins over dotColour."
+		},
+		"dotColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of dotColourGradient."
 		}
 	},
 	"editorScript": "file:./index.js",

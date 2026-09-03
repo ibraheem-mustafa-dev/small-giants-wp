@@ -271,6 +271,40 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 	);
 }
 
+// Write-review button + slider arrow (button-shaped elements) — shared
+// helper reads the prefixed attrs and emits a fully guarded base + hover/
+// focus-visible rule in one call. Selectors match the elements' own BEM
+// classes in style.css so this replaces (not duplicates) the hardcoded
+// hover rules removed there.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-style.php';
+$gr_responsive_css .= sgs_button_element_style_css( $attributes, 'writeReview', $gr_root_sel . ' .sgs-google-reviews__write-review' );
+$gr_responsive_css .= sgs_button_element_style_css( $attributes, 'arrow', $gr_root_sel . ' .sgs-google-reviews__arrow' );
+
+// Review-dot indicator — not button-shaped (background-colour/fill only),
+// uses the lighter state-colour emitter instead of the button helper.
+// Fill gradient wins over the flat colour when set (same shared primitive as
+// sgs_button_element_style_css()'s background-gradient handling above), via
+// sgs_background_paint_decl() — returns a full declaration with no trailing
+// semicolon, so append one when pushing into the decls array (this file's
+// existing convention).
+$gr_dot_colour                = (string) ( $attributes['dotColour'] ?? '' );
+$gr_dot_colour_hover          = (string) ( $attributes['dotColourHover'] ?? '' );
+$gr_dot_colour_gradient       = (string) ( $attributes['dotColourGradient'] ?? '' );
+$gr_dot_colour_hover_gradient = (string) ( $attributes['dotColourHoverGradient'] ?? '' );
+$gr_dot_decls_normal          = array();
+$gr_dot_decls_hover           = array();
+$gr_dot_bg_decl               = sgs_background_paint_decl( $gr_dot_colour, $gr_dot_colour_gradient );
+if ( '' !== $gr_dot_bg_decl ) {
+	$gr_dot_decls_normal[] = $gr_dot_bg_decl . ';';
+}
+$gr_dot_bg_hover_decl = sgs_background_paint_decl( $gr_dot_colour_hover, $gr_dot_colour_hover_gradient );
+if ( '' !== $gr_dot_bg_hover_decl ) {
+	$gr_dot_decls_hover[] = $gr_dot_bg_hover_decl . ';';
+}
+if ( $gr_dot_decls_normal || $gr_dot_decls_hover ) {
+	$gr_responsive_css .= sgs_emit_state_colour_css( $gr_root_sel . ' .sgs-google-reviews__dot::before', $gr_dot_decls_normal, $gr_dot_decls_hover );
+}
+
 $gr_style_engine_args = array();
 
 $gr_color_args = array();
