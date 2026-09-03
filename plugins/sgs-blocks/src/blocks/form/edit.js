@@ -155,6 +155,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: submitBackground,
 								onChange: ( val ) => setAttributes( { submitBackground: val ?? '' } ),
+								gradientValue: attributes.submitBackgroundGradient,
+								onGradientChange: ( val ) => setAttributes( { submitBackgroundGradient: val ?? '' } ),
 								linked: true,
 							},
 						],

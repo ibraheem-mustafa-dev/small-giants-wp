@@ -250,8 +250,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		aspectRatio,
 		effectHover,
 		titleColour,
+		titleColourHover,
 		titleColourGradient,
 		subtitleColour,
+		subtitleColourHover,
 		subtitleColourGradient,
 		cardBackground,
 		cardBackgroundGradient,
@@ -394,6 +396,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: titleColourGradient,
 								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: titleColourHover,
+								onChange: ( val ) => setAttributes( { titleColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					{
@@ -410,6 +419,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: subtitleColourGradient,
 								onGradientChange: ( val ) => setAttributes( { subtitleColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: subtitleColourHover,
+								onChange: ( val ) => setAttributes( { subtitleColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					{

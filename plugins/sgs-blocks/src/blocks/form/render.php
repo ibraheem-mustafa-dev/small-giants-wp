@@ -52,6 +52,7 @@ $honeypot          = $attributes['honeypot'] ?? true;
 $store_submissions = $attributes['storeSubmissions'] ?? true;
 $submit_colour     = $attributes['submitColour'] ?? '';
 $submit_background = $attributes['submitBackground'] ?? '';
+$submit_background_gradient = sgs_css_gradient_value( $attributes['submitBackgroundGradient'] ?? '' );
 $progress_colour   = $attributes['progressBarColour'] ?? 'primary';
 
 // Count form steps from inner blocks (not rendered content).
@@ -211,7 +212,7 @@ if ( '' !== $sgs_form_preset_bg ) {
 // scoped rule on `.uid .sgs-form__button--submit`. Uses the SAME uid as the
 // color/border/typography supports above (generated eagerly here when none
 // of those already needed one) so everything lands in ONE scoped <style>.
-if ( $submit_colour || $submit_background ) {
+if ( $submit_colour || $submit_background || $submit_background_gradient ) {
 	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
 		// The uid is hoisted above; this now registers the CLASS exactly once. It
 		// used to key on empty($sgs_form_uid), which the hoist made permanently
@@ -222,8 +223,11 @@ if ( $submit_colour || $submit_background ) {
 	if ( $submit_colour ) {
 		$sgs_form_submit_decls[] = 'color:' . sgs_colour_value( $submit_colour );
 	}
-	if ( $submit_background ) {
-		$sgs_form_submit_decls[] = 'background-color:' . sgs_colour_value( $submit_background );
+	if ( $submit_background || $submit_background_gradient ) {
+		// Both gates must include the gradient var, not just the flat colour —
+		// a gradient-only instance previously emitted zero CSS at all (same
+		// defect class as modal's triggerBackgroundGradient, found live 2026-09-03).
+		$sgs_form_submit_decls[] = sgs_background_paint_decl( $submit_background, $submit_background_gradient );
 	}
 	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__button--submit{' . implode( ';', $sgs_form_submit_decls ) . '}';
 }

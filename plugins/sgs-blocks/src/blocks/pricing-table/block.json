@@ -134,7 +134,14 @@
 						"css:color": "priceColour",
 						"css:background-image": "priceColourGradient"
 					},
-					"_note": "Only colour is block-level and independently controlled for `.sgs-pricing-table__price` — no priceFontSize/Weight exists, an honest gap. priceColourGradient (D636 Task 1b) is the text-colour gradient sibling to priceColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "priceColourHover"
+							}
+						}
+					},
+					"_note": "Only colour is block-level and independently controlled for `.sgs-pricing-table__price` — no priceFontSize/Weight exists, an honest gap. priceColourGradient (D636 Task 1b) is the text-colour gradient sibling to priceColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member. `states.hover.attrMap` added 2026-09-03 — without it priceColourHover cross-attributed to css_element='toggle-label' via the CSS-scan signal (a genuine classifier confusion, same class as the option-picker pillBgColour bug fixed earlier this session; explicit attrMap is always authoritative over the derived signal)."
 				},
 				"feature": {
 					"label": "Feature list item",
@@ -626,6 +633,10 @@
 		"borderRadiusMobile": {
 			"type": "object",
 			"default": {}
+		},
+		"priceColourHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

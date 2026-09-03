@@ -102,13 +102,15 @@
 						"hover": {
 							"attrMap": {
 								"css:background-color": "backgroundColourHover",
+								"css:border-color": "borderColourHover",
 								"css:transform": "scaleHover",
 								"css:box-shadow": "shadowHover"
 							},
 							"noBaseByDesign": [
-								"css:transform"
+								"css:transform",
+								"css:border-color"
 							],
-							"_noBaseByDesignNote": "css:transform (scaleHover) legitimately has NO resting counterpart: a card's resting scale is 1 by definition, so a 'resting scale' control would be clutter rather than capability. Bean-ruled 2026-08-20. NOT a suppression hatch — css:box-shadow was ALSO hover-only on this element and was fixed by BUILDING the resting control (shadow/shadowColour), not by adding it here. Use only where the resting value is genuinely implicit."
+							"_noBaseByDesignNote": "css:transform (scaleHover) legitimately has NO resting counterpart: a card's resting scale is 1 by definition, so a 'resting scale' control would be clutter rather than capability. Bean-ruled 2026-08-20. NOT a suppression hatch — css:box-shadow was ALSO hover-only on this element and was fixed by BUILDING the resting control (shadow/shadowColour), not by adding it here. Use only where the resting value is genuinely implicit. css:border-color (borderColourHover) added 2026-09-03: same shape — no cardBorderColour base attribute exists on this element at all, hover-only by the same original design as scaleHover."
 						}
 					},
 					"_note": "cardStyle (card/flat/overlay/minimal) is a preset, not a Layout-cluster control; no static border/padding/radius attrs exist for the card — background/shadow are client-overridable (cardBgColour/shadow+shadowColour), the rest hover-only (backgroundColourHover/borderColourHover/shadowHover), same shape as sgs/card-grid's card-tile gap. scaleHover is declared here (css:transform on the card element's :hover) so the generator seeds it css_property='transform' / css_element='card' / css_state='hover' — fixing the derived-classifier smell (was 'background-color,transform' / css_state NULL) at SOURCE (R-31-1 declarative channel) and giving the per-element state-lift a clean row to route the draft's `.sgs-post-grid__card:hover{transform:scale(N)}` onto. shadowHover added to this attrMap 2026-08-16 (shadow-architecture migration off the preset-only picker, matching sgs/card-grid's card-tile 'css:box-shadow':'shadowHover' hover mapping) — shadowHoverColour (the sibling colour attr) is classified via scripts/attr-classification-overrides.json, same pattern as the other shadow-colour companion attrs (D621/D622). shadow/shadowColour added 2026-08-20 to close a STATE_WITHOUT_BASE conformance gap (client could style shadowHover but had no resting shadow attribute) — mirrors the hover pair exactly, on the BASE attrMap rather than a state. An unset shadow is an honest gap: style.css's `--sgs-card-shadow` custom property keeps its existing hardcoded default (the cardStyle preset's look), and render.php only emits an inline override of that same property when shadow is non-empty, so the preset is unchanged until the client sets a value. shadowColour is the companion colour attr, same pattern as shadowHoverColour."

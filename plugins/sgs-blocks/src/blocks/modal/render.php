@@ -18,9 +18,11 @@ $trigger_text       = $attributes['triggerText'] ?? __( 'Open Modal', 'sgs-block
 $trigger_style      = $attributes['triggerStyle'] ?? 'primary';
 $trigger_colour     = $attributes['triggerColour'] ?? '';
 $trigger_background = $attributes['triggerBackground'] ?? '';
+$trigger_background_gradient = sgs_css_gradient_value( $attributes['triggerBackgroundGradient'] ?? '' );
 $max_width          = $attributes['maxWidth'] ?? 'medium';
 $close_on_overlay   = $attributes['closeOnOverlay'] ?? true;
 $modal_background   = $attributes['modalBackground'] ?? 'white';
+$modal_background_gradient = sgs_css_gradient_value( $attributes['modalBackgroundGradient'] ?? '' );
 $overlay_colour     = sgs_colour_value( $attributes['overlayColour'] ?? 'text' );
 $overlay_opacity    = $attributes['overlayOpacity'] ?? 50;
 
@@ -38,14 +40,17 @@ $trigger_rules = array();
 if ( $trigger_colour ) {
 	$trigger_rules[] = 'color:' . sgs_colour_value( $trigger_colour );
 }
-if ( $trigger_background ) {
-	$trigger_rules[] = 'background-color:' . sgs_colour_value( $trigger_background );
+if ( $trigger_background || $trigger_background_gradient ) {
+	// Gate must include the gradient var, not just the flat colour — a
+	// gradient-only instance (no flat triggerBackground set) previously
+	// emitted zero CSS at all (found live, 2026-09-03).
+	$trigger_rules[] = sgs_background_paint_decl( $trigger_background, $trigger_background_gradient );
 }
 
 // Dialog background colour — same treatment.
 $dialog_rules = array();
 if ( $modal_background ) {
-	$dialog_rules[] = 'background-color:' . sgs_colour_value( $modal_background );
+	$dialog_rules[] = sgs_background_paint_decl( $modal_background, $modal_background_gradient );
 }
 
 // Backdrop styles stay as CSS custom-PROPERTY VALUES (not real property

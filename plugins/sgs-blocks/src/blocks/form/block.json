@@ -112,7 +112,31 @@
 						"fill"
 					],
 					"prefix": "submit",
-					"_note": "submitColour/submitBackground resolve via the default {prefix}{suffix} convention (Colour/Background suffixes). Rendered as a scoped rule on `.uid .sgs-form__button--submit` (render.php:211-228, contract §A) — not inline."
+					"attrMap": {
+						"css:background-image": "submitBackgroundGradient"
+					},
+					"_note": "submitColour/submitBackground resolve via the default {prefix}{suffix} convention (Colour/Background suffixes). Rendered as a scoped rule on `.uid .sgs-form__button--submit` (render.php:211-228, contract §A) — not inline. submitBackgroundGradient's attrMap entry added 2026-09-03 (the default convention has no Gradient-suffix awareness, so the gradient sibling floated as an unclaimed orphan)."
+				},
+				"prev-button": {
+					"label": "Previous-step button",
+					"order": 3,
+					"clusters": [
+						"fill"
+					],
+					"prefix": "prev",
+					"attrMap": {
+						"css:background-color": "prevColourBackground",
+						"css:background-image": "prevColourBackgroundGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "prevColourBackgroundHover",
+								"css:background-image": "prevColourBackgroundHoverGradient"
+							}
+						}
+					},
+					"_note": "The multi-step form's Previous button (.sgs-form__button--prev), distinct from submit-button. Added 2026-09-03 alongside the hover-colour + gradient migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'prev', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation."
 				},
 				"progress-bar": {
 					"label": "Progress bar",
@@ -433,6 +457,10 @@
 		"borderRadiusMobile": {
 			"type": "object",
 			"default": {}
+		},
+		"submitBackgroundGradient": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"providesContext": {

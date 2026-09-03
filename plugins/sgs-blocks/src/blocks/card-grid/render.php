@@ -282,6 +282,25 @@ if ( $card_grid_hover_decls ) {
 		$card_grid_hover_decls
 	);
 }
+// titleColourHover/subtitleColourHover target DIFFERENT elements than the
+// item-level decls above (.sgs-card-grid__title / __subtitle, not
+// .sgs-card-grid__item) — each needs its OWN emission at its OWN selector,
+// not a shared array, or one attribute's `color:` declaration silently wins
+// over the other's on the same rule when both are set (found live, 2026-09-03).
+if ( '' !== ( $attributes['titleColourHover'] ?? '' ) ) {
+	$card_grid_native_css .= sgs_emit_state_colour_css(
+		$root_sel . ' .sgs-card-grid__title',
+		array(),
+		array( 'color:' . sgs_colour_value( $attributes['titleColourHover'] ) )
+	);
+}
+if ( '' !== ( $attributes['subtitleColourHover'] ?? '' ) ) {
+	$card_grid_native_css .= sgs_emit_state_colour_css(
+		$root_sel . ' .sgs-card-grid__subtitle',
+		array(),
+		array( 'color:' . sgs_colour_value( $attributes['subtitleColourHover'] ) )
+	);
+}
 
 // --- Border gradient (D636 border builder) — masked ::before, replaces the
 // flat border-colour paint above when set (the resting --sgs-card-border-color

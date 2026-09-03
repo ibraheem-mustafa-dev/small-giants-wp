@@ -1,3 +1,127 @@
+# Visual diff — sgs/pricing-table — 2026-09-03 (colour-codemod hover sibling: priceColourHover) (bugfix re-verification)
+
+verdict: PASS
+intent_capture_passed: true
+source_sha: d2304f74d2ca0239
+
+Re-verification of the FAIL below. `render.php` was hand-fixed since that report: `priceColourHover`
+now gets its own independent `sgs_emit_state_colour_css()` call on `.sgs-pricing-table__price`,
+placed right after the existing base `priceColour`/`priceColourGradient` emission — no longer
+nested inside the unrelated billing-toggle-label-hover code block, no longer gated on
+`toggleLabelHoverColour` being set, no longer misrouted to
+`.sgs-pricing-table__billing-toggle--style-button .sgs-pricing-table__toggle-label`.
+
+## Deploy notes for this section
+
+Same deploy as card-grid's re-verification section in `reports/visual-diff/card-grid-2026-09-03.md`
+(top of that file) — read there for the full explanation of the unrelated `prebuild` gate ceiling
+breach and the direct `wp-scripts build` + `build-deploy.py --skip-build --allow-dirty
+--skip-oldshape-audit` workaround. Same deploy run covered all 4 blocks in this wave. (Note: the
+unrelated editor-canvas-desync ratchet breach documented there includes one finding for
+`[sgs/pricing-table] priceColourHover` itself — that gate checks whether a control has a live
+EDITOR-CANVAS preview effect, a different question from whether render.php emits correct CSS,
+which is what this report verifies. Not the same defect, not fixed or fixable from this dispatch.)
+
+## Live re-verification (lifted CSS, probe page 3227, deleted after)
+
+Authored two pricing-table instances: the first with `priceColourHover:"#ab00cd"` set and
+`toggleLabelHoverColour` deliberately LEFT UNSET (to prove independence from that unrelated
+attribute — this is the exact combination the FAIL report showed as broken, since the old code
+only ran when `toggleLabelHoverColour` was ALSO set); the second with nothing set (negative
+control). Both instances render with the block's own default `plans` array (block.json declares a
+real default, no manual authoring needed).
+
+```
+positive (uid sgs-pricing-5313e184, priceColourHover:"#ab00cd", toggleLabelHoverColour UNSET):
+  .sgs-pricing-5313e184.wp-block-sgs-pricing-table .sgs-pricing-table__price{color:var(--wp--preset--color--text)}
+  .sgs-pricing-5313e184.wp-block-sgs-pricing-table .sgs-pricing-table__price:hover{color:#ab00cd}
+  .sgs-pricing-5313e184.wp-block-sgs-pricing-table .sgs-pricing-table__price:focus-visible{color:#ab00cd}
+  <- zero .sgs-pricing-table__toggle-label rules anywhere in the lifted stylesheet for this uid
+     (grepped the whole file for `__toggle-label`: no matches at all, either instance).
+
+negative (uid sgs-pricing-6071d41c, nothing set):
+  .sgs-pricing-6071d41c.wp-block-sgs-pricing-table .sgs-pricing-table__price{color:var(--wp--preset--color--text)}
+  <- resting-state rule only, no :hover rule.
+```
+
+| Assertion | Result |
+|---|---|
+| 1 — hover colour renders on `.sgs-pricing-table__price`, independent of `toggleLabelHoverColour` | ✅ PASS — `#ab00cd` renders correctly on `.sgs-pricing-table__price:hover` (+ `:focus-visible`), with `toggleLabelHoverColour` left completely unset. This directly disproves the old gate's dependency on that unrelated attribute — the FAIL report's root cause is confirmed fixed. |
+| 2 — negative control clean | ✅ PASS — no hover rule at all when `priceColourHover` is unset; resting-state price colour unaffected. |
+| 3 (new) — toggle-label CSS unaffected | ✅ PASS — no `.sgs-pricing-table__toggle-label` rule of any kind appears for either instance, confirming the fix didn't leave a stray emission on the old (wrong) selector. |
+
+---
+
+# Visual diff — sgs/pricing-table — 2026-09-03 (colour-codemod hover sibling: priceColourHover)
+
+verdict: FAIL
+intent_capture_passed: true
+source_sha: PLACEHOLDER
+
+Covers the colour-conformance codemod's addition of `priceColourHover` as a Hover sibling to the
+pre-existing `priceColour` attribute. Deploy method identical to card-grid's 2026-09-03 section —
+see that file for the full "Deploy notes".
+
+## Assertions — stated before measuring
+
+1. `priceColourHover` set to a test colour renders a `:hover` rule on `.sgs-pricing-table__price`
+   (the actual class, confirmed by reading `render.php` rather than assumed).
+2. **Negative control:** default instance (no hover colour set) shows no such rule.
+
+## Live results — measured on the canary (lifted stylesheet)
+
+```
+positive (uid sgs-pricing-e218a71b, priceColourHover:#ff00aa set):
+  .sgs-pricing-e218a71b.wp-block-sgs-pricing-table .sgs-pricing-table__price{color:var(--wp--preset--color--text)}
+  <- resting-state rule only. NO :hover rule anywhere for this uid. NO occurrence of #ff00aa
+     anywhere in the 28KB lifted stylesheet for either instance on the page.
+
+negative (uid sgs-pricing-6071d41c, nothing set): byte-identical CSS shape to the positive
+  instance above (same resting-state price rule, no hover rule) — i.e. setting priceColourHover
+  produced ZERO measurable difference in the rendered output versus not setting it at all.
+```
+
+| Assertion | Result |
+|---|---|
+| 1 — hover colour renders on `.sgs-pricing-table__price` | ❌ FAIL — completely absent, not even at the wrong selector. |
+| 2 — negative control clean | Vacuous pass — the positive and negative instances are indistinguishable, which is the finding, not a working negative control. |
+
+## Root cause (read directly in `render.php:505-523`, confirmed live via the emission above)
+
+The codemod inserted `priceColourHover`'s handling INSIDE the pre-existing billing-toggle
+label-hover-tint block, not as its own independent emission:
+
+```php
+$pt_toggle_label_hover_decl = sgs_background_paint_decl( $toggle_label_hover_colour, $toggle_label_hover_colour_gradient );
+if ( '' !== $pt_toggle_label_hover_decl ) {
+    $pt_toggle_label_hover_decls = array( $pt_toggle_label_hover_decl . ';' );
+if ( '' !== ( $attributes['priceColourHover'] ?? '' ) ) {
+    $pt_toggle_label_hover_decls[] = 'color:' . sgs_colour_value( $attributes['priceColourHover'] );
+}
+    $responsive_css .= sgs_emit_state_colour_css(
+        $root_sel . ' .sgs-pricing-table__billing-toggle--style-button .sgs-pricing-table__toggle-label',
+        array(), $pt_toggle_label_hover_decls
+    );
+}
+```
+
+Two independent defects, either one alone would already be a FAIL:
+
+1. **Wrong selector.** Even when it does run, `priceColourHover`'s declaration lands on
+   `.sgs-pricing-table__billing-toggle--style-button .sgs-pricing-table__toggle-label` — the
+   billing-period toggle label — not `.sgs-pricing-table__price`.
+2. **Wrong gate.** The whole block is gated on `'' !== $pt_toggle_label_hover_decl` — i.e. it
+   only runs at all when the UNRELATED `toggleLabelHoverColour`/`toggleLabelHoverColourGradient`
+   attributes are also set. In this test (and in any normal client use of `priceColourHover` in
+   isolation) that attribute is empty, so the gate is false and `priceColourHover` never reaches
+   any CSS emission at all — confirmed live: identical output with and without it set.
+
+This needs its own independent `if` block, mirroring how `titleColour` (`render.php:503-505`)
+gets its own unconditional emission — not something fixable from this dispatch (render.php
+off-limits per brief).
+
+---
+
 # Visual diff — sgs/pricing-table — 2026-09-03 (gradient support)
 
 verdict: PASS

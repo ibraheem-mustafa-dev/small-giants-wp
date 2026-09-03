@@ -123,6 +123,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		headingLevel,
 		titleColour,
 		priceColour,
+		priceColourHover,
 		priceColourGradient,
 		featureColour,
 		ctaStyle,
@@ -282,6 +283,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: priceColourGradient,
 								onGradientChange: ( val ) => setAttributes( { priceColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: priceColourHover,
+								onChange: ( val ) => setAttributes( { priceColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					{

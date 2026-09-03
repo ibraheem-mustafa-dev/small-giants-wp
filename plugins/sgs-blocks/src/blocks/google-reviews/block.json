@@ -99,6 +99,61 @@
 						"css:fill": "starColour"
 					},
 					"_note": "The rating-stars SVG (sgs_render_stars_svg(), render.php:341-390) — full/half-fill stars carry an enum-modifier class on the wrapper (sgs-google-reviews--star-{slug}, render.php:222) that style.css keys off (.sgs-google-reviews--star-{slug} .sgs-google-reviews__star--full{fill:...}, style.css:168-176). starColour's PRIMARY, visible effect is this SVG fill — earlier classification derived background-color instead, because the same attribute ALSO feeds --sgs-gr-star-colour (render.php:230-232), a custom property with a SECOND, low-visibility consumer: .sgs-google-reviews__breakdown-fill (style.css:120, the ratings-breakdown bars, hidden unless showBreakdown is on) and .sgs-google-reviews__dot.is-active::before (style.css:579, the slider pagination dot). Same one-attribute-drives-two-unrelated-CSS-properties-on-two-unrelated-elements shape as product-search's `input` element note for inputBorderColour — declared on the primary, named node (the star SVG); the background-color consumer rides the same underlying value rather than getting a second manifest entry. Palette-coverage gap (style.css only recognises 2 legacy enum values against the full open-palette control) is a separate, unfixed client-facing bug — not addressed by this classification fix."
+				},
+				"arrow": {
+					"label": "Slider arrow",
+					"order": 4,
+					"layer": "OUTER",
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "arrow",
+					"attrMap": {
+						"css:background-color": "arrowColourBackground",
+						"css:background-image": "arrowColourBackgroundGradient",
+						"css:color": "arrowColourText",
+						"css:border-color": "arrowColourBorder",
+						"css:border-color-gradient": "arrowColourBorderGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "arrowColourBackgroundHover",
+								"css:background-image": "arrowColourBackgroundHoverGradient",
+								"css:color": "arrowColourTextHover",
+								"css:border-color": "arrowColourBorderHover",
+								"css:border-color-gradient": "arrowColourBorderHoverGradient"
+							}
+						}
+					},
+					"_note": "The prev/next slider-arrow button (.sgs-google-reviews__arrow). Added 2026-09-03 alongside the hover-colour + gradient migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'arrow', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation."
+				},
+				"write-review": {
+					"label": "Write-review button",
+					"order": 5,
+					"layer": "OUTER",
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"prefix": "writeReview",
+					"attrMap": {
+						"css:background-color": "writeReviewColourBackground",
+						"css:background-image": "writeReviewColourBackgroundGradient",
+						"css:color": "writeReviewColourText"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "writeReviewColourBackgroundHover",
+								"css:background-image": "writeReviewColourBackgroundHoverGradient",
+								"css:color": "writeReviewColourTextHover"
+							}
+						}
+					},
+					"_note": "The 'Write a review' CTA button (.sgs-google-reviews__write-review). Added 2026-09-03 alongside the hover-colour + gradient migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'writeReview', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation."
 				}
 			},
 			"fx": {

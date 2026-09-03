@@ -487,6 +487,17 @@ if ( '' !== $price_colour_effective ) {
 	}
 	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $price_sel, $price_colour_effective );
 }
+// priceColourHover — own independent emission on .sgs-pricing-table__price.
+// Previously mis-inserted inside the UNRELATED billing-toggle-label-hover
+// block below (wrong selector, wrong gate — only ran when
+// toggleLabelHoverColour was also set) — found live, 2026-09-03.
+if ( '' !== ( $attributes['priceColourHover'] ?? '' ) ) {
+	$responsive_css .= sgs_emit_state_colour_css(
+		$root_sel . ' .sgs-pricing-table__price',
+		array(),
+		array( 'color:' . sgs_colour_value( $attributes['priceColourHover'] ) )
+	);
+}
 if ( $feature_colour ) {
 	$responsive_css .= $root_sel . ' .sgs-pricing-table__feature{color:' . $colour_val( $feature_colour ) . '}';
 }
