@@ -579,7 +579,7 @@ function normalStateGradientAttrName( statesArray ) {
 // invisible to every static check, and the finding count DROPPED — which reads exactly
 // like progress. Same class as D738, at architectural scale: across 64 blocks the
 // census would have reported near-zero findings while measuring nothing.
-const ROW_HELPER_NAMES = new Set( [ 'fillRow', 'textRow', 'borderRow' ] );
+const ROW_HELPER_NAMES = new Set( [ 'fillRow', 'textRow' ] );
 
 /**
  * A call to a known row helper, or null.

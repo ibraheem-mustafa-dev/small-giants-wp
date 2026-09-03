@@ -3,7 +3,7 @@
 /**
  * adopt.js — rewrites an eligible inline colour-row object literal (inside
  * `<SgsColourPanel rows={[...]}>`) into a call to the shared row helper it is
- * semantically identical to: fillRow / textRow / borderRow
+ * semantically identical to: fillRow / textRow
  * (`src/components/colour-variants/*.js`, exported from the barrel
  * `src/components/index.js`).
  *
@@ -66,7 +66,7 @@ const BABEL_PARSE_OPTS = {
 	errorRecovery: false,
 };
 
-const ROW_HELPERS = [ 'fillRow', 'textRow', 'borderRow' ];
+const ROW_HELPERS = [ 'fillRow', 'textRow' ];
 const ALLOWED_ROW_PROPS = [ 'key', 'label', 'states', 'gradientCapable', 'borderStyle', 'onBorderStyleChange' ];
 const ALLOWED_STATE_PROPS = [ 'key', 'label', 'value', 'onChange', 'linked', 'gradientValue', 'onGradientChange' ];
 
@@ -315,7 +315,7 @@ function evaluateRow( rowNode ) {
  * back to the base attribute's.
  */
 function decideHelper( map, slug, evalResult ) {
-	if ( evalResult.borderStyleProp ) return { ok: true, helper: 'borderRow' };
+	if ( evalResult.borderStyleProp ) return { ok: false, reason: 'border-helper-missing' };
 	if ( evalResult.gradientCapableLiteralTrue ) return { ok: true, helper: 'textRow' };
 
 	const slugMap = map[ slug ] || {};
@@ -329,7 +329,7 @@ function decideHelper( map, slug, evalResult ) {
 	if ( effective.length > 1 ) return { ok: false, reason: 'multiple-mechanisms-ambiguous:' + effective.join( '|' ) };
 	const m = effective[ 0 ];
 	if ( m === 'text' ) return { ok: true, helper: 'textRow' };
-	if ( m === 'border' ) return { ok: true, helper: 'borderRow' };
+	if ( m === 'border' ) return { ok: false, reason: 'border-helper-missing' };
 	if ( m === 'fill' || m === 'stroke' ) return { ok: true, helper: 'fillRow' };
 	return { ok: false, reason: 'shadow-mechanism-not-adoptable' };
 }
@@ -874,19 +874,44 @@ function runSelfTest() {
 		assert( after === before, 'applying an empty edit set must be a byte-identical no-op' );
 	} );
 
-	// --- borderRow adoption: passthrough + helper choice by borderStyle presence ---
+	// --- Border rows are REFUSED: the helper they used to adopt no longer exists ---
+	// `src/components/colour-variants/borderRow.js` was DELETED at dd2989ec2 and is
+	// not exported from the barrel. Until this codemod emitted a refusal, it wrote
+	// `import { borderRow } from '../../components'` into real block edit.js files —
+	// a webpack export-not-found that kills that block's editor. The previous version
+	// of THIS test asserted the broken emit as correct, so the suite stayed green
+	// while producing it. If a border row helper is ever restored, re-point the
+	// branches in decideHelper() and this fixture in the SAME commit.
 	const fxBorder = makeFixture( tmpRoot, 'fixture-border', FIXTURE_HEADER + FIXTURE_BORDER_ROW + FIXTURE_FOOTER );
 	const editFileBorder = path.join( fxBorder, 'edit.js' );
 
-	check( 'borderRow row plans as adoptable (borderStyle present -> borderRow, mechanism ignored)', () => {
+	check( 'border row is refused by name, file byte-identical, no borderRow emitted', () => {
+		const before = fs.readFileSync( editFileBorder, 'utf8' );
 		const plan = planFile( dbPlain, editFileBorder );
-		assert( plan.adopted.length === 1, 'expected 1 adoptable row, got ' + plan.adopted.length + ' refusals: ' + JSON.stringify( plan.refusals ) );
-		assert( plan.adopted[ 0 ].helper === 'borderRow', 'expected borderRow, got ' + plan.adopted[ 0 ].helper );
-		const src = fs.readFileSync( editFileBorder, 'utf8' );
-		const newSrc = applyEdits( src, plan.edits );
-		assert( /borderRow\(\s*\{/.test( newSrc ), 'expected a borderRow( { ... } ) call' );
-		assert( /borderStyle,/.test( newSrc ), 'expected the borderStyle passthrough to survive adoption' );
-		assert( /onBorderStyleChange:/.test( newSrc ), 'expected the onBorderStyleChange passthrough to survive adoption' );
+		assert( plan.adopted.length === 0, 'expected 0 adoptable rows, got ' + plan.adopted.length );
+		assert( plan.refusals.length === 1, 'expected exactly 1 refusal, got ' + plan.refusals.length );
+		assert( plan.refusals[ 0 ].reason === 'REFUSED:border-helper-missing', 'wrong reason: ' + plan.refusals[ 0 ].reason );
+		const after = applyEdits( before, plan.edits );
+		assert( after === before, 'a refused row must leave the file byte-identical' );
+		assert( ! /borderRow/.test( after ), 'no borderRow reference may survive into emitted output' );
+	} );
+
+	check( 'emit vocabulary is a subset of the components barrel exports', () => {
+		// The check that would have caught dd2989ec2 on the day it landed: every
+		// helper this codemod can WRITE must be exported from src/components/index.js,
+		// because that is the import it writes alongside the call.
+		const barrel = fs.readFileSync(
+			path.join( __dirname, '..', '..', 'src', 'components', 'index.js' ),
+			'utf8'
+		);
+		const missing = ROW_HELPERS.filter(
+			( name ) => ! barrel.includes( 'as ' + name + ' }' )
+		);
+		assert(
+			missing.length === 0,
+			'ROW_HELPERS names not exported from src/components/index.js: ' + missing.join( ', ' ) +
+				' — a codemod that emits an unresolvable import breaks the block it edits'
+		);
 	} );
 
 	// --- Refusal control: computed states array ---
