@@ -866,5 +866,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 92
+  },
+  {
+    "id": "test-hover-state-guard",
+    "cmd": "node scripts/tests/test-hover-state-guard.mjs",
+    "tier": "fast",
+    "added_D": "D922",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 93
   }
 ]

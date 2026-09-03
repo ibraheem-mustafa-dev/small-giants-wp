@@ -210,7 +210,9 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 				)
 			);
 
-			$css .= $hover_selector . ',' . $focus_selector . '{' . implode( '', $hover_decls ) . '}';
+			$hover_decl_str = implode( '', $hover_decls );
+			$css           .= sgs_hover_guarded_rule( $hover_selector, $hover_decl_str );
+			$css           .= $focus_selector . '{' . $hover_decl_str . '}';
 		}
 
 		// ── Border gradient (D636 border builder) — masked ::before ring,

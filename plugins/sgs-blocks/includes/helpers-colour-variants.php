@@ -278,7 +278,7 @@ function sgs_border_states_css( string $selector, array $attributes, array $map 
 			// :focus-within paired with :hover so keyboard users reach the same
 			// state as mouse users — the same reasoning sgs_border_gradient_css()
 			// applies.
-			$css .= $selector . ':hover,' . $selector . ':focus-within{border-color:' . $hover_paint . ';}';
+			$css .= sgs_hover_state_rules( $selector, 'border-color:' . $hover_paint . ';', ':focus-within' );
 		}
 		return $css;
 	}

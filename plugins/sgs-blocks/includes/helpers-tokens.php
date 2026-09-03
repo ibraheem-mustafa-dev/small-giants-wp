@@ -880,7 +880,7 @@ function sgs_block_background_layer_css( string $selector, string $paint_decl, s
 	$css .= $paint_decl . ';}';
 
 	if ( '' !== $hover_paint_decl && $hover_paint_decl !== $paint_decl ) {
-		$css .= "{$selector}:hover::after,{$selector}:focus-within::after{{$hover_paint_decl};}";
+		$css .= sgs_hover_state_rules( $selector, $hover_paint_decl . ';', ':focus-within', '::after' );
 	}
 
 	return $css;
@@ -1233,8 +1233,8 @@ function sgs_border_gradient_css( string $selector, string $normal_paint, ?strin
 		// stylesheet (a more specific selector than the plain base rule
 		// above) would otherwise still win the cascade on hover and repaint
 		// the real border solid, fighting the mask ring for the same pixels.
-		$css .= "{$selector}:hover,{$selector}:focus-within{border-color:transparent;}";
-		$css .= "{$selector}:hover::before,{$selector}:focus-within::before{background:{$hover_paint};}";
+		$css .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' );
+		$css .= sgs_hover_state_rules( $selector, "background:{$hover_paint};", ':focus-within', '::before' );
 	}
 
 	return $css;
@@ -1280,7 +1280,7 @@ function sgs_emit_state_colour_css( string $selector, array $decls_normal, array
 	}
 
 	if ( $decls_hover ) {
-		$css .= "{$selector}:hover,{$selector}:focus-visible{" . implode( ';', $decls_hover ) . '}';
+		$css .= sgs_hover_state_rules( $selector, implode( ';', $decls_hover ), ':focus-visible' );
 	}
 
 	return $css;

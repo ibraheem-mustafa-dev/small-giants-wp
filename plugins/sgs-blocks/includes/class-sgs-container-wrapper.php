@@ -2170,7 +2170,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				}
 				$gi_bg_hover_decl = sgs_background_paint_decl( $grid_item_background_hover, $grid_item_background_hover_gradient );
 				if ( '' !== $gi_bg_hover_decl ) {
-					$responsive_css .= $gi_bg_sel . ':hover,' . $gi_bg_sel . ':focus-within{' . $gi_bg_hover_decl . ';}';
+					$responsive_css .= sgs_hover_state_rules( $gi_bg_sel, $gi_bg_hover_decl . ';', ':focus-within' );
 				}
 			}
 
@@ -2194,8 +2194,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				if ( '' !== $gi_text_hover ) {
 					$gi_text_hover_decl = sgs_text_colour_decl( $gi_text_hover );
 					if ( '' !== $gi_text_hover_decl ) {
-						$responsive_css .= $gi_text_sel . ':hover{' . $gi_text_hover_decl . ';}' . $gi_text_sel . ':focus-within{' . $gi_text_hover_decl . ';}';
-						$responsive_css .= sgs_text_colour_gradient_fallback_rule( $gi_text_sel . ':hover', $gi_text_hover );
+						$responsive_css .= sgs_hover_state_rules( $gi_text_sel, $gi_text_hover_decl . ';', ':focus-within' );
+						$responsive_css .= sgs_hover_media_wrap( sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $gi_text_sel . ':hover', $gi_text_hover ) );
 					}
 				}
 			}
@@ -2255,7 +2255,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			if ( $shadow && $shadow_colour_hover && $uid ) {
 				$shadow_hover_value = sgs_shadow_value_composed( $shadow, $shadow_colour_hover );
 				if ( '' !== $shadow_hover_value ) {
-					$responsive_css .= '.' . $uid . ':hover,.' . $uid . ':focus-within{box-shadow:' . $shadow_hover_value . '}';
+					$responsive_css .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );
 				}
 			}
 
