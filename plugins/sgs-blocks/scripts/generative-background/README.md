@@ -59,21 +59,24 @@ conversion and drove both sides with the same raw value — 25,000x apart in act
 its own precondition check compared the raw uniforms and passed.** That bug is fixed; the
 numbers below are from the corrected run.
 
-**The headline figures, as of the last committed run (this session — ground colour + silhouette
-IoU added; numbers below are effectively unchanged from the 2026-08-29 corrected-phase-mapping
-run, see "what's been eliminated" below):**
+**The headline figures, as of the last committed run (D927 — root-cause fix applied, all rungs
+now PASS):**
 
 | `u_time` (rig raw) | effective phase | `mean_abs_pct` (crop-wide) | masked mean_abs_pct (painted-only) | `bias_over_abs` | silhouette IoU |
 |---|---|---|---|---|---|
-| 17,500 | 0.70 | 5.28% ⚠ OVER | 10.69% | 0.942 | 0.772 |
-| 27,500 | 1.10 | 4.70% | 9.88% | 0.915 | 0.799 |
-| 47,500 | 1.90 | 5.62% ⚠ OVER | 10.61% | 0.871 | 0.756 |
+| 17,500 | 0.70 | **2.81%** | **5.71%** | **0.394** | **0.903** |
+| 27,500 | 1.10 | **2.35%** | **5.03%** | **0.276** | **0.925** |
+| 47,500 | 1.90 | **2.73%** | **5.42%** | **0.327** | **0.960** |
 
-**Verdict: FIDELITY FAILURE — 2 of 3 sampled times over the 5% ceiling** (`verdict.overCeilingTimes`
-in the JSON). Fixing the phase-mapping bug did **not** collapse or meaningfully narrow the gap —
-the numbers before and after the fix are within a point of each other (4.61–5.40% before, at the
-wrong phases entirely, vs 4.71–5.63% now, at correct phases). That consistency is itself informative:
-whatever is causing this divergence is not sensitive to which moment of the animation gets sampled.
+**Verdict: ALL RUNGS PASSED — 3 of 3 sampled times under the 5% ceiling** (`npm run
+fidelity:compare` exits 0). None of the three now flags `SYSTEMATIC` (the `bias_over_abs` > 0.5
+threshold) — the directional colour cast D888 first measured is gone, not just reduced.
+
+For the history of how this closed — the phase-mapping bug that DIDN'T move these numbers
+(2026-08-29), the two D888 alternative causes ruled out with evidence, and the
+`/systematic-debugging` investigation that found and fixed the real cause — see "What's been
+eliminated" and "The root cause" below. Kept as the record of HOW this was proven, not just what
+the final numbers are.
 
 ## What's been eliminated this session, with evidence — and what's genuinely new
 
@@ -111,9 +114,9 @@ was real, direct evidence for shape divergence — but on its own, not yet a pro
 geometric silhouette, so a fragment effect blending toward background could shrink the SAME
 underlying geometry's apparent coverage without any real shape difference.
 
-## The root cause, PROVEN via `/systematic-debugging` (same session, D926)
+## The root cause, PROVEN via `/systematic-debugging`, then FIXED (D926/D927)
 
-**It is NOT geometry.** `scripts/generative-background/silhouette-probe.mjs` renders our engine
+**It was NOT geometry.** `scripts/generative-background/silhouette-probe.mjs` renders our engine
 with every fragment effect bypassed (`u_silhouetteDebug`, a flat-colour debug mode — magenta, not
 white, because both the page background AND the ground colour are near-white and a white
 silhouette would be invisible to the coverage detector) and compares JUST the on-screen footprint
@@ -127,38 +130,57 @@ obvious first guess. Isolating our depth-fade alone (`u_depthFadeDebugOff`) reco
 of the gap. "Has no reference counterpart" turned out not to mean "is the cause" — disproven by a
 minimal test, not assumed guilty by reasoning, exactly per the iron law.
 
-**The real cause: three unclamped, purely-additive brightness terms stack in the fragment shader**
-on an already-light pastel palette, pushing enough pixels over the "close enough to background"
-quantisation threshold to shrink measured coverage:
+**D926's bisection found three unclamped additive brightness terms stacking** (legacy periodic
+striation alone: 62% of the gap; the fine-noise texture and camera-facing lift: the rest once
+stacked). **D927 went further, on Bean's direction that this is a mechanical cloning task with a
+real ground truth** — every fragment-shader constant was checked against the reference's actual
+measured values (`index.html`'s light preset `P`, and the hardcoded literals inside
+`shaders/39798.glsl`'s `surfaceColor()`), not just whether each TERM existed:
 
-| Toggled off alone (debug uniform) | % of the gap recovered |
-|---|---|
-| `u_depthFadeDebugOff` | 2% |
-| `u_gradingDebugOff` | 14% |
-| `u_legacyStriationDebugOff` (`colour += glow * 0.06`) | **62%** |
-| `u_additiveEffectsDebugOff` (all three additive terms together) | 120% (overshoots) |
-| `u_silhouetteDebug` (everything — pure geometry) | 96% |
+| Constant | Was (tuned by eye) | Reference (measured) |
+|---|---|---|
+| `GRADE_CONTRAST` | 1.05 | **1.0** |
+| `GRADE_HUE_SHIFT` | 0.0 | **-0.0016** |
+| `DEFAULT_GLOW_AMOUNT` | 40.0 | **1.98** — ~20x too large |
+| `DEFAULT_GLOW_POWER` | 2.0 | **0.806** |
+| `DEFAULT_GLOW_RAMP` | 0.5 | **0.834** |
+| `DEFAULT_STRIATION_STRENGTH` | 0.15 | **0.2** |
+| `DEFAULT_STRIATION_FREQ` | 40.0 | **600.0** |
+| `DEFAULT_COLOUR_ATTENUATION` | 1.0 | **0.9** |
+| `DEFAULT_PARABOLA_POWER` | 1.0 | **3.0** |
 
-The single largest contributor, alone, is the one term with **no reference counterpart at all** —
-the module's own docblock already named it as borrowed from "the reference's OTHER, dark-theme
-technique", applied here to a light-theme comparison. The other two additive terms (fine-noise
-texture strength 0.15 vs the reference's 0.2; an identical `(1-pdy)*0.25` camera-facing lift) are
-each individually magnitude-matched to the reference — they only matter once stacked with the
-legacy term and each other.
+`DEFAULT_GLOW_AMOUNT`'s ~20x miscalibration is load-bearing beyond its own term — it gates BOTH
+the fine-noise contribution and the camera-facing lift.
 
-⚠ **Not fixed.** This is a visual/creative call on a live, shipped effect, not a mechanical bug —
-per this plan's own acceptance criteria, Bean's named visual sign-off closes it, not a number. See
-`decisions.md` D926 for the fix-shape options on the table.
+**The legacy periodic-line striation term was DELETED, not corrected** — its hardcoded `425.0`
+line-frequency is the reference's DARK-theme preset's `lineAmount` (`index.html:244`), not the
+light theme's (`1`, `index.html:231`), and the light theme's real shader never references
+`u_lineAmount` at all. No correction exists for a term ported from the wrong preset.
 
-### The 5 debug uniforms — default-off, confirmed no-op, reusable
+**Depth-fade was gated, not deleted** — checked the reference's actual dark-theme shader
+(`shaders/98230.glsl`) directly: it DOES have a structurally equivalent mechanism, so depth-fade
+is real for dark ground and fabricated for light. Now gated on `u_ground`'s own luminance.
 
-`u_silhouetteDebug`, `u_depthFadeDebugOff`, `u_gradingDebugOff`, `u_additiveEffectsDebugOff`,
-`u_legacyStriationDebugOff` (`generative-background.js`) and their matching `poc-replica.html`
-query params (`?silhouette=1`, `?depthfade=0`, `?grading=0`, `?additive=0`,
-`?legacystriation=0`). Every one defaults to the pre-existing behaviour when unset — confirmed via
-`capture-render.mjs` after every single edit this session (identical 34.6% painted / 23 hues
-throughout, before and after all five additions). Never wired to any client-facing control; kept
-in the shipped file as reusable diagnostic infrastructure for whichever fix-shape gets chosen.
+**Result: all 3 sampled phases now pass** — see the headline table at the top of this README.
+`verify-transform.mjs` still 7/7 (layers 1–2 untouched); `silhouette-probe.mjs`'s SHADED and
+SILHOUETTE coverage now match exactly at every phase — fragment shading no longer erases any of
+the geometry's own footprint.
+
+⚠ **Still outstanding: Bean's NAMED visual sign-off.** A passing number was never the sole
+acceptance gate — "B-movie 3D VFX" is a look judgement no measurement closes. See `decisions.md`
+D927 for the full before/after and the small residual (~1.8pt OVER-coverage, opposite sign from
+before, not investigated further this session).
+
+### `u_silhouetteDebug` — the one debug uniform kept, default-off, reusable
+
+D926 built 5 debug-only uniforms to bisect the fragment effects; 4 (`u_depthFadeDebugOff`,
+`u_gradingDebugOff`, `u_additiveEffectsDebugOff`, `u_legacyStriationDebugOff`) were removed once
+D927 turned their findings into real fixes (corrected constants, deleted code, real gating) —
+keeping a debug toggle for behaviour the source no longer has would be dead weight. `u_silhouetteDebug`
+(`generative-background.js`) stays as general-purpose diagnostic infrastructure — `poc-replica.html`'s
+`?silhouette=1` still works, `silhouette-probe.mjs` still uses it as the ongoing geometry-vs-shading
+regression check. Confirmed a no-op on shipped output via `capture-render.mjs` throughout D926's
+build (repeated re-checks after every edit). Never wired to any client-facing control.
 
 - `mean_abs_pct` — the average per-pixel colour difference, as a percentage of the 0–255
   range, measured over the shared crop box (`fidelity-baseline.json`'s top-level `crop`

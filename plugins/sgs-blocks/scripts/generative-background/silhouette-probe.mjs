@@ -1,34 +1,24 @@
 /**
- * silhouette-probe.mjs — systematic-debugging Phase 3 minimal test.
+ * silhouette-probe.mjs — geometry-vs-shading regression check.
  *
- * HYPOTHESIS (stated before running, per the iron law): the measured
- * silhouette-coverage deficit (D925 — ours covers 7-12 points LESS of the
- * frame than the rig at every sampled phase, IoU 0.756-0.799) is NOT a
- * geometry/twist bug. It is caused by our engine's depth-fade-to-ground
- * mechanism (generative-background.js FRAGMENT_SHADER, `mix(colour, u_ground,
- * depthFade)`), which has NO counterpart anywhere in the reference shader —
- * confirmed by reading `.claude/scratch/stripe-hero-poc/shaders/39798.glsl`
- * in full: no fog, no ground-mix, `u_clearColor` is declared but never
- * referenced, and the renderer's own clear colour is fully transparent
- * (alpha 0). That mechanism blends part of our silhouette toward near-white,
- * which the coverage detector (quantised-key vs dominant background colour)
- * then correctly reads as "background" — eating into our measured coverage
- * without any real shape divergence.
+ * ORIGIN (systematic-debugging, 2026-09-03, D926/D927). Built to isolate the
+ * measured silhouette-coverage deficit (D925 — ours covered 7-12 points LESS
+ * of the frame than the rig) into "geometry/twist" vs "fragment shading".
+ * That investigation is DONE — it found geometry/twist was never the
+ * problem, and traced the real cause to three fragment-shader constants
+ * copied wrong from the reference plus one term (`§3(b)` periodic
+ * striations) ported from the WRONG preset entirely. Both are now fixed at
+ * the source (see DEFAULT_GLOW_AMOUNT/POWER/RAMP,
+ * DEFAULT_STRIATION_STRENGTH/FREQ/COLOUR_ATTENUATION/PARABOLA_POWER's
+ * declaration comments in generative-background.js).
  *
- * TEST: compare OUR OWN silhouette-only coverage (u_silhouetteDebug=true —
- * flat white wherever layers 1-3's folded mesh rasterises, bypassing EVERY
- * fragment effect) against OUR OWN normal shaded coverage, at the same three
- * sampled phases fidelity-compare.mjs already uses. This isolates geometry
- * from fragment shading WITHOUT needing the rig at all for the key
- * comparison — the rig's own already-recorded coverage (fidelity-baseline.json)
- * is printed alongside for context, not re-captured.
- *
- * If silhouette-only coverage ≈ rig coverage: geometry/twist is
- *   essentially correct: the fragment effects are the cause.
- * If silhouette-only coverage is ALSO well below rig coverage: geometry/twist
- *   itself diverges — layer 3 (or the 2026-08-28 noiseWobble addendum, added
- *   after verify-transform.mjs was built and not covered by it) needs
- *   investigating next.
+ * This script now serves as the ongoing REGRESSION check: SHADED coverage
+ * (the real, corrected shipped render) should track SILHOUETTE coverage
+ * (pure geometry, `u_silhouetteDebug` — still a general-purpose diagnostic
+ * uniform, kept for exactly this) much more closely than before the fix.
+ * Compares both against the rig's already-recorded coverage
+ * (`fidelity-baseline.json`) at the same three sampled phases
+ * `fidelity-compare.mjs` uses.
  *
  * Usage: node scripts/generative-background/silhouette-probe.mjs
  *
@@ -108,19 +98,7 @@ print(json.dumps({'coverage': (total - dominant) / total if total else 0.0, 'uni
 	return JSON.parse( stdout.trim() );
 }
 
-async function captureOurs(
-	browser,
-	origin,
-	t,
-	{
-		silhouette = false,
-		depthFadeOff = false,
-		gradingOff = false,
-		additiveOff = false,
-		legacyStriationOff = false,
-	} = {},
-	outPng
-) {
+async function captureOurs( browser, origin, t, { silhouette = false } = {}, outPng ) {
 	const page = await browser.newPage( { viewport: VIEWPORT, deviceScaleFactor: 1 } );
 	const problems = [];
 	page.on( 'console', ( m ) => {
@@ -131,11 +109,7 @@ async function captureOurs(
 		const url =
 			`${ origin }${ REPLICA_PATH }?t=${ oursTimeFor( t ) }&pal=${ PALETTE }` +
 			`&ground=${ GROUND_COLOUR.join( ',' ) }` +
-			( silhouette ? '&silhouette=1' : '' ) +
-			( depthFadeOff ? '&depthfade=0' : '' ) +
-			( gradingOff ? '&grading=0' : '' ) +
-			( additiveOff ? '&additive=0' : '' ) +
-			( legacyStriationOff ? '&legacystriation=0' : '' );
+			( silhouette ? '&silhouette=1' : '' );
 		await page.goto( url, { waitUntil: 'load' } );
 		await page.waitForFunction( () => window.__ready === true, { timeout: 30000 } );
 		const err = await page.evaluate( () => window.__err || null );
@@ -164,10 +138,8 @@ const browser = await launchGpuBrowser( chromium );
 console.log( `Crop box (from fidelity-baseline.json): [${ cropX },${ cropY },${ cropX + cropW },${ cropY + cropH }]\n` );
 
 const MODES = [
-	{ key: 'shaded', label: 'SHADED (normal)', opts: {} },
-	{ key: 'noLegacyStriation', label: 'LEGACY-STRIATION off', opts: { legacyStriationOff: true } },
-	{ key: 'noAdditive', label: 'ADDITIVE off', opts: { additiveOff: true } },
-	{ key: 'silhouette', label: 'SILHOUETTE (all off)', opts: { silhouette: true } },
+	{ key: 'shaded', label: 'SHADED (corrected)', opts: {} },
+	{ key: 'silhouette', label: 'SILHOUETTE (pure geometry)', opts: { silhouette: true } },
 ];
 
 console.log( 'phase   | rig coverage | ' + MODES.map( ( m ) => m.label ).join( ' | ' ) );
@@ -197,21 +169,12 @@ try {
 console.log( '\n── Verdict ──' );
 const avg = ( key ) => results.reduce( ( s, r ) => s + ( r.rigCoverage - r[ key ] ), 0 ) / results.length;
 const avgGapShaded = avg( 'shaded' );
-if ( avgGapShaded <= 0 ) {
-	console.log( 'No shaded gap to explain — nothing to conclude.' );
-} else {
-	for ( const mode of MODES ) {
-		if ( mode.key === 'shaded' ) continue;
-		const gap = avg( mode.key );
-		const recovered = 1 - gap / avgGapShaded;
-		console.log(
-			`${ mode.label.padEnd( 24 ) }: gap ${ ( gap * 100 ).toFixed( 1 ) } pts, ` +
-				`${ ( recovered * 100 ).toFixed( 0 ) }% of the SHADED gap recovered`
-		);
-	}
-	console.log(
-		'\nRead this as elimination, per-effect: whichever single toggle above recovers most of the ' +
-			'gap on its own is the dominant contributor. If none does individually but SILHOUETTE ' +
-			'(all off) does, the effects interact — no single one dominates.'
-	);
-}
+const avgGapSilhouette = avg( 'silhouette' );
+console.log( `Average (rig - ours) gap, SHADED (corrected)   : ${ ( avgGapShaded * 100 ).toFixed( 1 ) } points` );
+console.log( `Average (rig - ours) gap, SILHOUETTE (geometry): ${ ( avgGapSilhouette * 100 ).toFixed( 1 ) } points` );
+console.log(
+	`\nBoth should now sit close together (D926/D927's fix removed the fragment-shading ` +
+		`divergence that used to separate them by ~9pts). A large gap reopening between the two ` +
+		`means a fragment-shading regression; a large SILHOUETTE gap on its own means a geometry ` +
+		`regression — check verify-transform.mjs first in that case.`
+);

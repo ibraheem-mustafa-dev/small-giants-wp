@@ -1,3 +1,84 @@
+## D927 [ROUTINE] — generative-background fidelity: FIXED and PASSING — corrected every fragment-shader constant against the reference, deleted the wrong-preset term, gated depth-fade to dark-ground only
+
+**2026-09-03.** Closes D925/D926 same session. Bean corrected the framing D926 closed with:
+this is a cloning task with a measurable ground truth, not a creative judgement call — every
+constant that doesn't match the reference is a bug to fix, not a look to preserve. That reframing
+turned out to expose MORE mismatches than D926's isolation tests alone had found, because those
+tests only asked "does this TERM exist in the reference" — not "do this term's own CONSTANTS match
+the reference's real measured values".
+
+**Extracted the reference's actual numbers, not tuned-by-eye guesses.** `index.html`'s light-theme
+preset `P` (lines 221-232) and the plain literals hardcoded inside `surfaceColor()` in
+`shaders/39798.glsl` (confirmed `USE_NOISE_BANDS` is NOT defined on the live hero — index.html:369
+— so these literals are what the light theme actually uses, not a conditionally-compiled
+per-band override):
+
+| Constant | Was (tuned by eye) | Reference (measured) |
+|---|---|---|
+| `GRADE_CONTRAST` | 1.05 | **1.0** |
+| `GRADE_HUE_SHIFT` | 0.0 | **-0.00159265358979299** |
+| `DEFAULT_GLOW_AMOUNT` | 40.0 | **1.98** — ~20x too large, the single biggest miscalibration |
+| `DEFAULT_GLOW_POWER` | 2.0 | **0.806** |
+| `DEFAULT_GLOW_RAMP` | 0.5 | **0.834** |
+| `DEFAULT_STRIATION_STRENGTH` | 0.15 | **0.2** |
+| `DEFAULT_STRIATION_FREQ` | 40.0 | **600.0** |
+| `DEFAULT_COLOUR_ATTENUATION` | 1.0 | **0.9** |
+| `DEFAULT_PARABOLA_POWER` | 1.0 | **3.0** |
+
+`DEFAULT_GLOW_AMOUNT` is load-bearing beyond its own term — it gates BOTH the fine-noise
+contribution AND the camera-facing lift, so a 20x-inflated value was over-driving two mechanisms
+at once, not one.
+
+**Deleted, not corrected: the §3(b) "legacy periodic-line striation" term** (D926's proven single
+largest contributor, 62% of the gap alone). Its hardcoded `425.0` line-frequency constant is the
+reference's DARK-theme preset's `lineAmount` (`index.html:244`), not the light theme's
+(`lineAmount: 1`, `index.html:231`) — and the light theme's real fragment shader
+(`shaders/39798.glsl`, read in full) never references `u_lineAmount`/`u_lineThickness`/
+`u_lineDerivativePower` at all. It was ported from the wrong preset into a build being measured
+against the light one. No correction exists for a term that shouldn't be there.
+
+**Depth-fade: gated to dark ground, not deleted.** Checked the reference's DARK-theme fragment
+shader (`shaders/98230.glsl`) directly, not assumed — it DOES have a structurally equivalent
+mechanism (`depthFade = clamp(0,1, z*6.0); color = mix(u_clearColor, color, a*(1-depthFade))`),
+so depth-fade is real and reference-backed for dark ground, just fabricated for light (D926
+already proved it recovers only 2% of the gap in isolation, consistent with light's real shader
+having none at all). Gated on `u_ground`'s own luminance (`dot(u_ground, vec3(0.299,0.587,0.114))
+< 0.5`) rather than adding a new uniform — the existing ground colour already carries the signal.
+`DEFAULT_DEPTH_FADE_SCALE` stays a local tuning constant (the reference's own `z*6.0` is scoped to
+its own frustum/camera and is not a portable literal, unlike everything else in this entry).
+
+**Result — clean PASS, not a partial improvement:**
+
+| Sampled phase | Crop-wide (before → after) | Painted-only (before → after) | Silhouette IoU (before → after) | `bias_over_abs` (before → after) |
+|---|---|---|---|---|
+| 0.70 | 5.28% ⚠ → **2.81%** | 10.69% → **5.71%** | 0.772 → **0.903** | 0.942 → **0.394** |
+| 1.10 | 4.70% → **2.35%** | 9.88% → **5.03%** | 0.799 → **0.925** | 0.915 → **0.276** |
+| 1.90 | 5.62% ⚠ → **2.73%** | 10.61% → **5.42%** | 0.756 → **0.960** | 0.871 → **0.327** |
+
+**All 3 of 3 sampled phases now pass the 5% ceiling** (`npm run fidelity:compare` exits 0 — "All
+rungs passed"), against 2 of 3 failing before this entry. `bias_over_abs` dropping below the 0.5
+"systematic" threshold at every phase confirms the directional colour cast D888 first measured is
+gone, not just reduced. `verify-transform.mjs` still 7/7 (layers 1-2 untouched by this fix).
+`silhouette-probe.mjs`'s SHADED and SILHOUETTE coverage now match EXACTLY at every phase
+(48.1/48.1%, 46.1/46.1%, 49.5/49.5%) — fragment shading no longer erases any of the geometry's own
+footprint, closing the loop D926 opened.
+
+⚠ **Residual, small and opposite-signed.** Ours now covers ~1.8 points MORE of the frame than the
+rig on average (was ~9pts LESS before this fix) — a much smaller overshoot in the other direction.
+Not investigated further this session; candidates if it matters later: `DEFAULT_DEPTH_FADE_SCALE`'s
+un-portable literal (2.0, never cross-checked against anything since the reference's own `6.0` is
+frustum-scoped and not directly comparable), or the fine-noise term's own frequency/amplitude
+interacting differently with our fold geometry than the reference's differently-shaped mesh.
+
+**Still outstanding per the plan's acceptance criteria: Bean's NAMED visual sign-off.** The
+numbers now pass; a passing number was never the sole gate — "B-movie 3D VFX" is a look
+judgement no measurement closes.
+
+Files: `generative-background.js` (corrected constants, deleted dead-code debug toggles now
+superseded by real fixes, deleted the legacy striation term, gated depth-fade),
+`silhouette-probe.mjs` (repurposed from bisection tool to regression check), `poc-replica.html`
+(removed dead query params for the deleted toggles).
+
 ## D926 [ROUTINE] — generative-background fidelity: root cause PROVEN via systematic-debugging — not geometry, an unclamped additive-brightness stack in the fragment shader, dominated by one unported term
 
 **2026-09-03.** Continues D925 same session, via `/systematic-debugging`'s four-phase protocol.

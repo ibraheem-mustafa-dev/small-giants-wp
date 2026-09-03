@@ -194,28 +194,63 @@ const DEFAULT_DISPLACEMENT_FREQ_Z = REFERENCE_PRESET.displaceFrequencyZ;
 const DEFAULT_FOLD_FREQ = REFERENCE_PRESET.twistFrequency;
 const DEFAULT_FOLD_POWER = REFERENCE_PRESET.twistPower;
 
-/** Near-identity grading defaults (technique spec §2 — "near-identity" is the point). */
-const GRADE_CONTRAST = 1.05;
+/*
+ * ── Grading + glow-gate + fine-noise defaults — MEASURED FROM THE REFERENCE,
+ *    not tuned by eye (corrected 2026-09-03, systematic-debugging root-cause
+ *    fix, D926/D927). ─────────────────────────────────────────────────────
+ *
+ * Every constant below was WRONG — this file previously asserted these were
+ * "tuned against the live canary rather than transferred from the reference
+ * ... not transferable as literals", which is true of the depth-fade SCALE
+ * (a frustum-scoped constant, genuinely not portable) but was never true of
+ * these: they are read directly off `.claude/scratch/stripe-hero-poc/`, the
+ * reference rig, and are exactly as portable as the layer-1/2 transform
+ * constants D882/D886 already ported the same way.
+ *
+ * GRADE_CONTRAST/SATURATION/HUE_SHIFT — the light-theme preset `P` in
+ * index.html:221-232 (`colorContrast: 1, colorSaturation: 1,
+ * colorHueShift: -0.00159265358979299`), not an invented "near-identity"
+ * choice.
+ *
+ * DEFAULT_GLOW_AMOUNT/POWER/RAMP — same `P` preset (`glowAmount: 1.98,
+ * glowPower: 0.806, glowRamp: 0.834`). The previous value
+ * (`glowAmount: 40.0`) was ~20x the reference's — the single biggest
+ * miscalibration found, and load-bearing: this uniform gates BOTH the
+ * fine-noise contribution below AND the camera-facing lift.
+ *
+ * DEFAULT_STRIATION_STRENGTH/FREQ/COLOUR_ATTENUATION/PARABOLA_POWER — NOT
+ * preset-driven; hardcoded literals inside the reference's `surfaceColor()`
+ * (`shaders/39798.glsl:267-270`: `strength = 0.2; freq = 600.0;
+ * colorAtten = 0.9; paraPow = 3.0`). Confirmed `USE_NOISE_BANDS` is NOT
+ * defined on the live hero (index.html:369 — "noise bands exist but ...
+ * are inert"), so these plain literals are what the light theme actually
+ * uses, not the conditionally-compiled per-band override path.
+ */
+const GRADE_CONTRAST = 1.0;
 const GRADE_SATURATION = 1.0;
-const GRADE_HUE_SHIFT = 0.0;
+const GRADE_HUE_SHIFT = -0.00159265358979299;
+
+const DEFAULT_GLOW_AMOUNT = 1.98;
+const DEFAULT_GLOW_POWER = 0.806;
+const DEFAULT_GLOW_RAMP = 0.834;
+const DEFAULT_STRIATION_STRENGTH = 0.2;
+const DEFAULT_STRIATION_FREQ = 600.0;
+const DEFAULT_COLOUR_ATTENUATION = 0.9;
+const DEFAULT_PARABOLA_POWER = 3.0;
 
 /*
- * ── Striation / glow-gate + depth-fade defaults (§3, 2026-08-28 build) ─────
- * Starting-point values, overridable per instance via `opts`, tuned against
- * the live canary rather than transferred from the reference (its constants
- * are tuned to ITS OWN frustum/UV scale, not transferable as literals — see
- * task brief). `DEFAULT_DEPTH_FADE_SCALE` is NOT exposed as a client control
- * (a rendering-tuning constant scoped to this build's own frustum, not a
- * creative choice) — see `resize()`'s frustum-sizing comment for the maths
- * this value was derived from.
+ * ── Depth fade — DARK-GROUND ONLY, matching the reference exactly ─────────
+ * `shaders/39798.glsl` (light theme) has NO depth/fog/ground-mix mechanism
+ * anywhere in it. `shaders/98230.glsl` (dark theme) DOES have one —
+ * structurally the same "mix toward the ground colour as distance
+ * increases" shape (`depthFade = clamp(0,1, z*6.0); color = mix(u_clearColor,
+ * color, a*(1-depthFade))`) — so this is a real, reference-backed mechanism
+ * for the dark preset, not an invention, and is now gated to apply ONLY when
+ * `u_ground` is dark (see FRAGMENT_SHADER main()). `DEFAULT_DEPTH_FADE_SCALE`
+ * stays a local tuning constant (the reference's own `z*6.0` is scoped to
+ * ITS frustum/camera, genuinely not a portable literal — see `resize()`'s
+ * frustum-sizing comment) and stays NOT exposed as a client control.
  */
-const DEFAULT_GLOW_AMOUNT = 40.0;
-const DEFAULT_GLOW_POWER = 2.0;
-const DEFAULT_GLOW_RAMP = 0.5;
-const DEFAULT_STRIATION_STRENGTH = 0.15;
-const DEFAULT_STRIATION_FREQ = 40.0;
-const DEFAULT_COLOUR_ATTENUATION = 1.0;
-const DEFAULT_PARABOLA_POWER = 1.0;
 const DEFAULT_DEPTH_FADE_SCALE = 2.0;
 const DEFAULT_GROUND = [ 0.98, 0.98, 0.97 ];
 
@@ -386,24 +421,13 @@ uniform vec3 u_ground;
 /*
  * DEBUG-ONLY, DEFAULT OFF — never touched by shipped code paths.
  * fx-generative-background.js never sets this uniform, so it reads GLSL's
- * own default-zero-init for a bool (false) on every real page. Exists so
- * scripts/generative-background/silhouette-probe.mjs (systematic-debugging,
- * 2026-09-03) can isolate LAYERS 1-3 (geometry/twist — the folded mesh's
- * on-screen footprint) from every fragment-level effect below (grading,
- * glow-gate, striation, depth-fade, grain), to find out which one the
- * measured silhouette-coverage deficit vs the reference (D925) actually
- * belongs to. Do not wire this to any client-facing control.
+ * own default-zero-init for a bool (false) on every real page. Kept as
+ * general-purpose diagnostic infrastructure (systematic-debugging,
+ * 2026-09-03) — isolates LAYERS 1-3 (geometry/twist, the folded mesh's
+ * on-screen footprint) from every fragment-level effect for future fidelity
+ * checks. Do not wire this to any client-facing control.
  */
 uniform bool u_silhouetteDebug;
-uniform bool u_depthFadeDebugOff;
-// DEBUG-ONLY, default off — see the block comment above these uniforms'
-// first use for why they exist. Bisecting the remaining candidates after
-// u_depthFadeDebugOff alone recovered only ~2% of the measured coverage
-// gap, disproving it as the dominant cause (systematic-debugging Phase 3 —
-// a hypothesis test that failed, not skipped).
-uniform bool u_gradingDebugOff;
-uniform bool u_additiveEffectsDebugOff;
-uniform bool u_legacyStriationDebugOff;
 
 in vec2 v_uv;
 in float v_depth;
@@ -472,20 +496,6 @@ float sgsStriationNoise( vec2 uv ) {
 	return highFreq * 0.5 + 0.5;
 }
 
-/*
- * §3(b) — periodic lines, derivative-antialiased (the reference's OTHER,
- * dark-theme technique — kept as a lower-priority secondary detail layer,
- * see module docblock). |sin(u*N)| for large N; line thickness derived from
- * the screen-space derivative of the UV, so lines thicken/fade where the
- * surface turns rather than aliasing into moiré.
- */
-float striations( vec2 uv ) {
-	float n = 425.0;
-	float line = abs( sin( uv.y * n ) );
-	float width = fwidth( uv.y * n ) * 1200.0;
-	return pow( 1.0 - smoothstep( 0.0, max( width, 0.001 ), line ), 3.0 );
-}
-
 /* §4 — hash-based grain, five lines, no texture. */
 float grain( vec2 fragCoord ) {
 	vec3 p3 = fract( vec3( fragCoord.xyx ) * 0.1031 );
@@ -514,63 +524,44 @@ void main() {
 	vec3 colour = texture( u_texture, v_uv ).rgb;
 
 	// §3(a) fine-line striation / glow-gate layer — added BEFORE grading so
-	// the grading chain applies to the combined result.
-	//
-	// DEBUG-ONLY (systematic-debugging, 2026-09-03): u_additiveEffectsDebugOff
-	// bypasses every term that ADDS colour on top of the base texture sample
-	// (this fine-noise/glow-gate contribution, the legacy periodic striation
-	// below, and the camera-facing lift below) as ONE group, distinct from
-	// u_gradingDebugOff (a TRANSFORM of existing colour) and
-	// u_depthFadeDebugOff (already tested, ruled out as dominant). Never set
-	// by shipped code.
+	// the grading chain applies to the combined result. Formula and all four
+	// constants (u_striationStrength/Freq/u_colourAttenuation/u_parabolaPower)
+	// now match surfaceColor() in shaders/39798.glsl exactly (D926/D927 —
+	// see DEFAULT_STRIATION_STRENGTH's declaration comment for the source).
 	float glowGate = sgsGlowGate( v_uv );
-	if ( ! u_additiveEffectsDebugOff ) {
-		float striationNoise = sgsStriationNoise( v_uv );
-		float atten = 1.0 - colour.b * u_colourAttenuation;
-		float parabolaFalloff = 1.0 - sgsParabola( v_uv.x, u_parabolaPower );
-		colour += striationNoise * u_striationStrength * atten * glowGate * parabolaFalloff;
-	}
+	float striationNoise = sgsStriationNoise( v_uv );
+	float atten = 1.0 - colour.b * u_colourAttenuation;
+	float parabolaFalloff = 1.0 - sgsParabola( v_uv.x, u_parabolaPower );
+	colour += striationNoise * u_striationStrength * atten * glowGate * parabolaFalloff;
 
-	if ( ! u_gradingDebugOff ) {
-		colour = grade( colour );
-	}
+	colour = grade( colour );
 
-	// DEBUG-ONLY (systematic-debugging, 2026-09-03): u_legacyStriationDebugOff
-	// isolates JUST this one term, split out from u_additiveEffectsDebugOff's
-	// bundle. Worth isolating specifically because it is the ONE additive
-	// term with NO reference counterpart in this comparison's light-theme
-	// preset — the module's own docblock calls it "the reference's OTHER,
-	// dark-theme technique". The fine-noise texture term and the
-	// camera-facing lift below are both magnitude-matched to
-	// shaders/39798.glsl's real light-theme formula (strength 0.15 vs
-	// reference's 0.2; identical (1-pdy)*0.25 lift) — this one is not
-	// ported from anywhere in that file at all.
-	if ( ! u_additiveEffectsDebugOff && ! u_legacyStriationDebugOff ) {
-		// §3(b) legacy periodic-line striations — secondary detail layer.
-		float glow = striations( v_uv );
-		colour += glow * 0.06;
-	}
-
-	if ( ! u_additiveEffectsDebugOff ) {
-		// A slight overall lift where the surface faces the camera flat-on
-		// (glow gate low), independent of the fine-texture contribution above.
-		colour += ( 1.0 - glowGate ) * 0.25;
-	}
-
-	// Depth fade — recede toward the ground colour with distance from the
-	// camera, using the vertex shader's own clip-space Z.
+	// A slight overall lift where the surface faces the camera flat-on
+	// (glow gate low) — matches shaders/39798.glsl's
+	// "color += (1.0 - pdy) * 0.25" exactly.
 	//
-	// DEBUG-ONLY (systematic-debugging, 2026-09-03): u_depthFadeDebugOff,
-	// like u_silhouetteDebug above, is never set by shipped code — every
-	// real page uploads 0 (false), identical to this mix always running, the
-	// pre-existing behaviour. Exists to isolate THIS ONE effect (as opposed
-	// to u_silhouetteDebug, which bypasses ALL of them at once) — the
-	// reference shader (shaders/39798.glsl, read in full) has no depth/fog/
-	// ground-mix mechanism anywhere in it, making this the single most
-	// likely fragment-effect contributor to the measured coverage deficit,
-	// worth testing in isolation rather than only as part of "all effects
-	// off".
-	if ( ! u_depthFadeDebugOff ) {
+	// The old section 3(b) "legacy periodic-line striation" term that used
+	// to sit here is DELETED, not disabled (D926/D927, systematic-debugging
+	// root-cause fix). It hardcoded 425.0 as its line frequency — the
+	// reference's DARK-theme preset's lineAmount (index.html:244), not the
+	// light theme's (lineAmount: 1, index.html:231) — and the light theme's
+	// own real fragment shader (shaders/39798.glsl, read in full) never
+	// references u_lineAmount/u_lineThickness/u_lineDerivativePower at all:
+	// this term was ported from the wrong preset into a build that only
+	// ever compares against the light one. Isolating it alone recovered 62%
+	// of the measured silhouette-coverage deficit — the single largest
+	// contributor of any fragment effect tested.
+	colour += ( 1.0 - glowGate ) * 0.25;
+
+	// Depth fade — DARK-GROUND ONLY (D926/D927). shaders/39798.glsl
+	// (light theme) has no depth/fog/ground-mix mechanism anywhere in it;
+	// shaders/98230.glsl (dark theme) does have one, structurally the same
+	// "recede toward the ground colour with distance" shape. Gating on the
+	// ground colour's own luminance means this needs no extra uniform beyond
+	// what already exists, and matches the reference's actual per-theme
+	// behaviour instead of always running.
+	float groundLuma = dot( u_ground, vec3( 0.299, 0.587, 0.114 ) );
+	if ( groundLuma < 0.5 ) {
 		float depthFade = clamp( v_depth * u_depthFadeScale, 0.0, 1.0 );
 		colour = mix( colour, u_ground, depthFade );
 	}
@@ -845,10 +836,6 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 	// to the pre-existing behaviour (no uniform, GLSL's own zero-init) this
 	// line replaces.
 	gl.uniform1i( u( 'u_silhouetteDebug' ), opts.silhouetteDebug ? 1 : 0 );
-	gl.uniform1i( u( 'u_depthFadeDebugOff' ), opts.depthFadeDebugOff ? 1 : 0 );
-	gl.uniform1i( u( 'u_gradingDebugOff' ), opts.gradingDebugOff ? 1 : 0 );
-	gl.uniform1i( u( 'u_additiveEffectsDebugOff' ), opts.additiveEffectsDebugOff ? 1 : 0 );
-	gl.uniform1i( u( 'u_legacyStriationDebugOff' ), opts.legacyStriationDebugOff ? 1 : 0 );
 
 	const speed = typeof opts.speed === 'number' ? opts.speed : 1;
 

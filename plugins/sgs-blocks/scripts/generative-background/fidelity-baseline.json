@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-03T14:08:21.240Z",
-  "runDir": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T14-08-21-239Z-112220",
+  "generatedAt": "2026-09-03T14:44:13.517Z",
+  "runDir": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T14-44-13-516Z-94728",
   "sampleTimes": [
     17500,
     27500,
@@ -42,12 +42,12 @@
         "reference": "derive-rig.png",
         "candidate": "0a-rig-2.png",
         "crop": [
-          531,
+          477,
           0,
           1440,
           761
         ],
-        "pixels": 691749,
+        "pixels": 732843,
         "mean_abs_255": 0,
         "mean_abs_pct": 0,
         "signed_mean": {
@@ -80,28 +80,28 @@
       "refSha256": "ff78f100d689eefe9982a94ab8c45b93820696e41cb1b31478101c43cab9592c",
       "candSha256": "d3c4c8863cb4cccb515617adfbf98a13ec438e03941ae99588f3129c17c3ebff",
       "predicted": {
-        "predicted_signed_mean_channel": 1.4509410205146664,
-        "predicted_abs_mean_over_all_channels": 0.48364700683822215
+        "predicted_signed_mean_channel": 1.3695798417942178,
+        "predicted_abs_mean_over_all_channels": 0.4565266139314059
       },
       "measured": {
         "label": "0b positive control (+3/255 on G)",
         "reference": "derive-rig.png",
         "candidate": "0b-rig-perturbed.png",
         "crop": [
-          531,
+          477,
           0,
           1440,
           761
         ],
-        "pixels": 691749,
-        "mean_abs_255": 0.48364700683822215,
-        "mean_abs_pct": 0.18966549287773418,
+        "pixels": 732843,
+        "mean_abs_255": 0.456526613931406,
+        "mean_abs_pct": 0.17903004467898273,
         "signed_mean": {
           "R": 0,
-          "G": 1.4509410205146664,
+          "G": 1.3695798417942178,
           "B": 0
         },
-        "bias_over_abs": 1,
+        "bias_over_abs": 0.9999999999999999,
         "within_pct": {
           "4": 100,
           "8": 100,
@@ -131,25 +131,25 @@
         "reference": "derive-rig.png",
         "candidate": "0c-rig-hi.png",
         "crop": [
-          531,
+          477,
           0,
           1440,
           761
         ],
-        "pixels": 691749,
-        "mean_abs_255": 5.591239018777042,
-        "mean_abs_pct": 2.192642752461585,
+        "pixels": 732843,
+        "mean_abs_255": 5.277711597163376,
+        "mean_abs_pct": 2.06969082241701,
         "signed_mean": {
-          "R": -1.2255456820320665,
-          "G": -2.9826757971460744,
-          "B": 1.5581012766191205
+          "R": -1.1568234942545674,
+          "G": -2.815422948707977,
+          "B": 1.4707311115750576
         },
-        "bias_over_abs": 0.3437713141596604,
+        "bias_over_abs": 0.34377131415966045,
         "within_pct": {
-          "4": 63.704465058858055,
-          "8": 71.2274249764004,
-          "16": 79.367371691177,
-          "32": 86.5566845777876
+          "4": 65.73972870041742,
+          "8": 72.84084039828448,
+          "16": 80.5243415028867,
+          "32": 87.31051534912662
         },
         "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
         "worst_single_channel_255": 147,
@@ -170,7 +170,7 @@
     "1_geometry_shading": {
       "perTime": {
         "17500": {
-          "oursSha256": "474a09d1bf99baa4c1aa921fd03945c8f7c7bb35e10cfe06db6b2999bdf78758",
+          "oursSha256": "8774bd0670b593428100a6a1c39fbf39e37d41e79577c3de8fe5f6c63d7dc734",
           "rigSha256": "ff78f100d689eefe9982a94ab8c45b93820696e41cb1b31478101c43cab9592c",
           "glstate": {
             "ours": {
@@ -261,9 +261,9 @@
               "width": 1110,
               "height": 761,
               "total": 844710,
-              "opaque": 270289,
-              "coverage": 0.31997845414402576,
-              "unique": 162
+              "opaque": 352247,
+              "coverage": 0.4170034686460442,
+              "unique": 364
             },
             "rig": {
               "width": 1110,
@@ -279,51 +279,51 @@
             "reference": "1-rig-t17500.png",
             "candidate": "1-ours-t17500.png",
             "crop": [
-              531,
+              477,
               0,
               1440,
               761
             ],
-            "pixels": 691749,
-            "mean_abs_255": 13.459456151484618,
-            "mean_abs_pct": 5.278218098621419,
+            "pixels": 732843,
+            "mean_abs_255": 7.167383737035081,
+            "mean_abs_pct": 2.810738720405914,
             "signed_mean": {
-              "R": 4.43987486790729,
-              "G": 17.803678791006565,
-              "B": 15.806883710710098
+              "R": 0.49600528353276213,
+              "G": 2.5467078214569834,
+              "B": 5.421543222763948
             },
-            "bias_over_abs": 0.9423470740910254,
+            "bias_over_abs": 0.39364695395603716,
             "within_pct": {
-              "4": 50.44286294595294,
-              "8": 50.77867839346352,
-              "16": 51.611784043056076,
-              "32": 54.93481016958463
+              "4": 51.534366842557,
+              "8": 54.78867915774593,
+              "16": 68.70270985736371,
+              "32": 83.03210919664922
             },
             "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
-            "worst_single_channel_255": 130,
+            "worst_single_channel_255": 101,
             "ceiling_pct": 5,
-            "under_ceiling": false,
+            "under_ceiling": true,
             "crop_scale": 1
           },
           "maskedStats": {
-            "total_pixels": 691749,
-            "painted_pixels": 341344,
-            "background_fraction": 0.5065493408736406,
-            "masked_mean_abs_255": 27.260586583231774,
-            "masked_mean_abs_pct": 10.690426111071284
+            "total_pixels": 732843,
+            "painted_pixels": 360983,
+            "background_fraction": 0.5074210983798713,
+            "masked_mean_abs_255": 14.550732305953465,
+            "masked_mean_abs_pct": 5.706169531746457
           },
           "silhouette": {
-            "ref_coverage": 0.4836060478583995,
-            "cand_coverage": 0.3907327657864341,
-            "intersection_px": 263479,
-            "union_px": 341344,
-            "iou": 0.7718870113433955
+            "ref_coverage": 0.456487951716807,
+            "cand_coverage": 0.48065820373531576,
+            "intersection_px": 325798,
+            "union_px": 360983,
+            "iou": 0.9025300360404783
           },
-          "underCeiling": false,
-          "systematicBias": true
+          "underCeiling": true,
+          "systematicBias": false
         },
         "27500": {
-          "oursSha256": "36bd265a0bf6d17491bd9eb7654a0b0029c3c480e88607101ca88c3a875156d7",
+          "oursSha256": "d89c7373bab671ebcf347cb912b3e1ffe7e826098488c2fb5ca0879814181941",
           "rigSha256": "5ac68bb0502a5410c1f2e6da3e5161371808e449f082fb00fb664250d4a0440b",
           "glstate": {
             "ours": {
@@ -414,9 +414,9 @@
               "width": 1110,
               "height": 761,
               "total": 844710,
-              "opaque": 272094,
-              "coverage": 0.3221152821678446,
-              "unique": 147
+              "opaque": 337609,
+              "coverage": 0.3996744444839057,
+              "unique": 344
             },
             "rig": {
               "width": 1110,
@@ -432,51 +432,51 @@
             "reference": "1-rig-t27500.png",
             "candidate": "1-ours-t27500.png",
             "crop": [
-              531,
+              477,
               0,
               1440,
               761
             ],
-            "pixels": 691749,
-            "mean_abs_255": 11.987849639103201,
-            "mean_abs_pct": 4.701117505530667,
+            "pixels": 732843,
+            "mean_abs_255": 5.982141695651956,
+            "mean_abs_pct": 2.345937919863512,
             "signed_mean": {
-              "R": 3.6405459205578903,
-              "G": 17.617366992941083,
-              "B": 11.651218866958969
+              "R": 0.6717632562499745,
+              "G": 2.4912430083933392,
+              "B": 1.785570715692174
             },
-            "bias_over_abs": 0.9150690844256045,
+            "bias_over_abs": 0.2757416564222753,
             "within_pct": {
-              "4": 52.37521123991505,
-              "8": 52.50011203485657,
-              "16": 52.833325382472545,
-              "32": 56.86845951349406
+              "4": 54.82729588738652,
+              "8": 58.857899986763876,
+              "16": 75.5497425778782,
+              "32": 89.3285464963164
             },
             "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
-            "worst_single_channel_255": 154,
+            "worst_single_channel_255": 125,
             "ceiling_pct": 5,
             "under_ceiling": true,
             "crop_scale": 1
           },
           "maskedStats": {
-            "total_pixels": 691749,
-            "painted_pixels": 329219,
-            "background_fraction": 0.5240773748859775,
-            "masked_mean_abs_255": 25.1842836126307,
-            "masked_mean_abs_pct": 9.87618965201204
+            "total_pixels": 732843,
+            "painted_pixels": 341684,
+            "background_fraction": 0.5337555247167538,
+            "masked_mean_abs_255": 12.830482746241167,
+            "masked_mean_abs_pct": 5.0315618612710455
           },
           "silhouette": {
-            "ref_coverage": 0.4629526027504196,
-            "cand_coverage": 0.39334209373631185,
-            "intersection_px": 263122,
-            "union_px": 329219,
-            "iou": 0.7992309070861645
+            "ref_coverage": 0.43699264371768576,
+            "cand_coverage": 0.46068393912475114,
+            "intersection_px": 316172,
+            "union_px": 341684,
+            "iou": 0.9253345196146147
           },
           "underCeiling": true,
-          "systematicBias": true
+          "systematicBias": false
         },
         "47500": {
-          "oursSha256": "55bfcc0936c80e80e0d9aee729f01c8dde9b7ae8f0b01cb9e857b66c9aa56e88",
+          "oursSha256": "c56f3b8e96bc3ced13f2278a94d79b376dadd170f7b43fff061b368287ddb887",
           "rigSha256": "21b6d8f18370ead8b765f0ceb77278bb38502a493ec8bc581b87ceb0db650a1f",
           "glstate": {
             "ours": {
@@ -567,9 +567,9 @@
               "width": 1110,
               "height": 761,
               "total": 844710,
-              "opaque": 283475,
-              "coverage": 0.3355885451811864,
-              "unique": 155
+              "opaque": 363119,
+              "coverage": 0.4298741579950516,
+              "unique": 369
             },
             "rig": {
               "width": 1110,
@@ -585,52 +585,52 @@
             "reference": "1-rig-t47500.png",
             "candidate": "1-ours-t47500.png",
             "crop": [
-              531,
+              477,
               0,
               1440,
               761
             ],
-            "pixels": 691749,
-            "mean_abs_255": 14.320902042021986,
-            "mean_abs_pct": 5.616040016479211,
+            "pixels": 732843,
+            "mean_abs_255": 6.9530545196356295,
+            "mean_abs_pct": 2.726688046915933,
             "signed_mean": {
-              "R": 5.837907969509172,
-              "G": 20.446542026081715,
-              "B": 11.122535775259523
+              "R": 2.412131930031398,
+              "G": 4.285104722293861,
+              "B": 0.13183860663197983
             },
-            "bias_over_abs": 0.8706850462605095,
+            "bias_over_abs": 0.3273896980419052,
             "within_pct": {
-              "4": 47.05160397774337,
-              "8": 47.21076575463066,
-              "16": 47.664398502925195,
-              "32": 50.98800287387477
+              "4": 51.53136483530579,
+              "8": 56.957902306496756,
+              "16": 77.22950208980642,
+              "32": 86.01282948735268
             },
             "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
             "worst_single_channel_255": 181,
             "ceiling_pct": 5,
-            "under_ceiling": false,
+            "under_ceiling": true,
             "crop_scale": 1
           },
           "maskedStats": {
-            "total_pixels": 691749,
-            "painted_pixels": 365926,
-            "background_fraction": 0.4710133299795157,
-            "masked_mean_abs_255": 27.067852516629046,
-            "masked_mean_abs_pct": 10.614844124168252
+            "total_pixels": 732843,
+            "painted_pixels": 368454,
+            "background_fraction": 0.49722655466450527,
+            "masked_mean_abs_255": 13.829398875662452,
+            "masked_mean_abs_pct": 5.423293676730373
           },
           "silhouette": {
-            "ref_coverage": 0.519100136032,
-            "cand_coverage": 0.4097945931255412,
-            "intersection_px": 276636,
-            "union_px": 365926,
-            "iou": 0.7559889157917175
+            "ref_coverage": 0.48999171718908413,
+            "cand_coverage": 0.49549357775130554,
+            "intersection_px": 353752,
+            "union_px": 368454,
+            "iou": 0.9600981397949269
           },
-          "underCeiling": false,
-          "systematicBias": true
+          "underCeiling": true,
+          "systematicBias": false
         }
       },
       "crop": [
-        531,
+        477,
         0,
         1440,
         761
@@ -645,9 +645,9 @@
     },
     "2_side_by_side": {
       "uTime": 17500,
-      "ours": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T14-08-21-239Z-112220/2-side-by-side-ours.png",
+      "ours": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T14-44-13-516Z-94728/2-side-by-side-ours.png",
       "rigMatched": {
-        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T14-08-21-239Z-112220/2-side-by-side-rig-matched.png",
+        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T14-44-13-516Z-94728/2-side-by-side-rig-matched.png",
         "settings": {
           "blendOff": true,
           "nopost": true
@@ -655,7 +655,7 @@
         "note": "The exact settings that produced the rung-1 percentages — pair this with `ours`."
       },
       "rigDefault": {
-        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T14-08-21-239Z-112220/2-side-by-side-rig-default.png",
+        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T14-44-13-516Z-94728/2-side-by-side-rig-default.png",
         "settings": {
           "blendOff": false,
           "nopost": false
@@ -695,19 +695,16 @@
     "maxCoverage": 0.005
   },
   "crop": [
-    531,
+    477,
     0,
     1440,
     761
   ],
   "cropDerivation": "Union of the painted-pixel bounding boxes (both sides, background = the modal 5-bit-quantised colour within the shared canvas box) at the FIRST sampled u_time, both sides captured under rung 1's exact settings, padded 24px outward on every side and clipped back to the canvas box. Padding outward — rather than the tight bbox — is deliberate: our known defect class is edges, and DEFAULT_CROP's own documented flaw is that it avoids exactly those. This SAME box is reused for 0a/0b/0c and rung 1 — never a per-rung crop.",
   "verdict": {
-    "fidelityFailed": true,
-    "overCeilingTimes": [
-      17500,
-      47500
-    ],
-    "exitCode": 1,
-    "summary": "FIDELITY FAILURE — 2 of 3 sampled u_time values exceeded the 5% ceiling: [17500, 47500]."
+    "fidelityFailed": false,
+    "overCeilingTimes": [],
+    "exitCode": 0,
+    "summary": "All 3 sampled u_time values passed the 5% ceiling."
   }
 }

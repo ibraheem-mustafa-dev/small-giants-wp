@@ -220,7 +220,7 @@ Named, not fixed; deserves its own session.
 ⛔ **TWO SEPARATE TRACKS. Never re-merge them.** They shared one plan file once and it cost a full
 session (D838). No phase number is shared.
 
-### ▶ B. GENERATIVE BACKGROUND ENGINE (Phase 3 — engine BUILT + LIVE; ROOT CAUSE PROVEN, fix-shape needs Bean's call)
+### ▶ B. GENERATIVE BACKGROUND ENGINE (Phase 3 — engine BUILT + LIVE; fidelity FIXED, PASSING 3/3 — Bean's visual sign-off still open)
 
 ⭐ **Plan: `.claude/plans/2026-08-27-generative-background-engine.md`. Read D886, D887, D888
 before touching this track — they supersede the technique spec's Animation section and record
@@ -232,10 +232,11 @@ extracted from the running rig; layer 3 was already correct. A missing depth buf
 false`, no `DEPTH_TEST`) was the stair-step artefact — the fold overlaps itself, so draw order
 decided the visible surface. Fixed `ba01581df`, live-verified. Frame cost 0.240ms / 0.300ms.
 
-**The measured gap, and it is REAL** (`fidelity-baseline.json`, tracked): at effective phases
-0.70/1.10/1.90 the divergence from the reference is **5.29% / 4.71% / 5.63% crop-wide, 10.71% /
-9.90% / 10.64% over the painted region** — 2 of 3 over the 5% ceiling. It did not collapse when a
-25,000x phase-mismatch bug was fixed, so it is not a measurement artefact.
+**The gap was REAL, is now FIXED and measured closed** (`fidelity-baseline.json`, tracked). At
+effective phases 0.70/1.10/1.90 the divergence went **5.29%→2.81% / 4.71%→2.35% / 5.63%→2.73%
+crop-wide** — **3 of 3 now pass the 5% ceiling** (was 2 of 3 failing). It did not collapse when a
+25,000x phase-mismatch bug was fixed alone (that ruled out a measurement artefact); it DID collapse
+once the real cause (below) was fixed.
 
 ⛔ **TWO CLAIMS WERE ASSERTED PREVIOUSLY AND ARE WITHDRAWN — do not resurrect either.**
 An 89.3% silhouette IoU (no script, no committed inputs, a `background:#fff` hack in its capture
@@ -250,28 +251,31 @@ Palette PNG stays off-limits as a shipped asset — it is a measurement fixture,
 returns 0). A `git clean -xdf` destroys every reference number permanently. The tracked
 `fidelity-baseline.json` + `reference-matrices.json` are what survive it.
 
-**2026-09-03 (D925/D926) — root cause PROVEN via `/systematic-debugging`, not inferred.** D925
-closed both D888 alternative causes (ground colour: negligible effect, measured; harness drift:
-fixed, `harness-lib.mjs`) and added a real committed silhouette-IoU measurement (0.756–0.799, ours
-covering 7–12pts less of the frame). D926 closed the remaining confound: 5 default-off debug
-uniforms in `generative-background.js` (confirmed no-op on shipped output, repeatedly) isolate each
-fragment effect. **Geometry/twist is NOT the cause** — pure-silhouette coverage matches the rig
-within 0.4pt avg. The leading suspect from reading the reference shader (depth-fade — the rig's own
-`shaders/39798.glsl` has no ground-mix mechanism at all) recovered only **2%** of the gap alone —
-disproven by test, not assumed guilty for lacking a counterpart. **Real cause: three unclamped
-additive-brightness terms stack in the fragment shader** on an already-light palette. The single
-largest (62% alone) has literally no reference counterpart — it's the module's own admitted
-borrow from "the reference's OTHER, dark-theme technique" (`colour += glow * 0.06`), applied here
-to a light-theme comparison. New `scripts/generative-background/silhouette-probe.mjs` reproduces
-the full isolation.
+**2026-09-03 (D925-D927) — root cause PROVEN via `/systematic-debugging`, then FIXED mechanically
+(Bean: "this is a mechanical fix, we're cloning something pre-existing").** D925 closed both D888
+alternative causes. D926 proved geometry/twist was never the cause (silhouette coverage matches
+the rig within 0.4pt avg) and isolated the fragment shader as the real one — the leading suspect
+(depth-fade) recovered only 2% alone when tested, disproven rather than assumed guilty. D927 went
+further: every fragment-shader constant was checked against the reference's actual measured
+values (`index.html`'s light preset `P` + the hardcoded literals in `shaders/39798.glsl`'s
+`surfaceColor()`) rather than accepted as "tuned by eye". Found `DEFAULT_GLOW_AMOUNT` was ~20x the
+reference's real value (40.0 vs 1.98) — gating BOTH the fine-noise term and the camera-facing
+lift — plus 7 more constants all wrong. **Deleted** (not corrected) the §3(b) legacy periodic-line
+striation term entirely: its hardcoded `425.0` frequency is the reference's DARK-theme preset's
+`lineAmount`, not light's (`1`), and the light theme's real shader never references it at all —
+proven, not assumed, by reading `shaders/98230.glsl` (dark) directly, which DOES have an
+equivalent mechanism, confirming depth-fade is real for dark ground and fabricated for light — now
+gated on `u_ground`'s own luminance rather than deleted.
 
-### ▶ NEXT — Bean's call on the fix-shape (this is visual/creative, not mechanical)
+**Result: 3/3 phases pass** (2.81/2.35/2.73%, ceiling 5%); `bias_over_abs` ~0.9 (systematic) →
+~0.3 (not); silhouette IoU 0.77-0.80 → 0.90-0.96; SHADED/SILHOUETTE coverage now match exactly
+per-phase. `verify-transform.mjs` still 7/7.
 
-Root cause is proven; the fix is not mechanical. Candidates: drop the unported legacy-striation
-term entirely; scale all three additive terms down proportionally; or accept the current look and
-retire/lower the fidelity ceiling for this effect specifically. Per the plan's own acceptance
-criteria, Bean's named visual sign-off closes this track, not a number. `npm run fidelity:compare`
-still reproduces every tracked figure unchanged; `check:transform-parity` still 7/7.
+### ▶ NEXT — Bean's named visual sign-off (the plan's other acceptance criterion, unaffected by the numbers passing)
+
+Numbers pass; a residual ~1.8pt OVER-coverage (opposite sign from before) is noted, not chased.
+"B-movie 3D VFX" is a look judgement no measurement closes — his eye is still the other half of
+done. `npm run fidelity:compare` now exits 0 ("All rungs passed").
 
 **Shipped this session:** `chromeOffsetPx()` moved to the Tier V shared home so a vanilla consumer
 can read the sticky-header height; the progress marker re-mapped to a **reading line** and the two
