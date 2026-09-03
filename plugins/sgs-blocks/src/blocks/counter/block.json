@@ -74,7 +74,11 @@
 					"clusters": [
 						"text"
 					],
-					"prefix": "label"
+					"prefix": "label",
+					"attrMap": {
+						"css:background-image": "labelColourGradient"
+					},
+					"_note": "labelColourGradient is the text-colour gradient sibling to labelColour, same background-clip:text mechanism as the number element's numberColourGradient (D636 Task 1b). Finishes the text-colour gradient rollout 778879732 started and explicitly left open."
 				},
 				"icon": {
 					"label": "Icon",
@@ -150,6 +154,10 @@
 		"labelColour": {
 			"type": "string",
 			"default": "text-muted"
+		},
+		"labelColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"labelFontSize": {
 			"type": "object",

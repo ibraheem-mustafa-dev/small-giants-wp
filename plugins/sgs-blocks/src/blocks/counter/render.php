@@ -57,6 +57,7 @@ $number_colour = $attributes['numberColour'] ?? '';
 // backgroundOverlayColour/overlayGradient.
 $number_colour_gradient = $attributes['numberColourGradient'] ?? '';
 $label_colour           = $attributes['labelColour'] ?? '';
+$label_colour_gradient  = $attributes['labelColourGradient'] ?? '';
 $icon                   = $attributes['icon'] ?? '';
 $accent_stroke          = ! empty( $attributes['accentStroke'] );
 
@@ -109,8 +110,17 @@ if ( '' !== $number_colour_effective ) {
 	}
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $number_sel, $number_colour_effective );
 }
-if ( $label_colour ) {
-	$scoped_css[] = "{$label_sel}{color:" . sgs_colour_value( $label_colour ) . ';}';
+$label_colour_effective = sgs_resolve_text_colour_or_gradient( $label_colour, $label_colour_gradient );
+if ( '' !== $label_colour_effective ) {
+	$label_colour_decl = sgs_text_colour_decl( $label_colour_effective );
+	if ( '' !== $label_colour_decl ) {
+		$scoped_css[] = "{$label_sel}{{$label_colour_decl};}";
+	}
+	// MANDATORY companion, not optional: a gradient reaches the browser as
+	// background-clip:text, and without this @supports fallback a browser
+	// lacking that support gets a bare `color:` holding a gradient string,
+	// which it drops silently. No-op for a flat colour.
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_sel, $label_colour_effective );
 }
 
 // ---------------------------------------------------------------------------

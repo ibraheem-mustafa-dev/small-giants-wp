@@ -51,6 +51,7 @@ export default function Edit({ attributes, setAttributes }) {
     numberColour,
     numberColourGradient,
     labelColour,
+    labelColourGradient,
     icon,
     accentStroke,
     paddingTablet,
@@ -83,9 +84,7 @@ export default function Edit({ attributes, setAttributes }) {
 
   const numberStyle = resolveTextColourPreviewStyle(numberColour, numberColourGradient, colourVar);
 
-  const labelStyle = {
-    color: colourVar(labelColour) || undefined,
-  };
+  const labelStyle = resolveTextColourPreviewStyle(labelColour, labelColourGradient, colourVar);
 
   return (
     <>
@@ -116,6 +115,7 @@ export default function Edit({ attributes, setAttributes }) {
           {
             key: "label",
             label: __("Label colour", "sgs-blocks"),
+            gradientCapable: true,
             states: [
               {
                 key: "normal",
@@ -123,6 +123,8 @@ export default function Edit({ attributes, setAttributes }) {
                 value: labelColour,
                 onChange: (val) => setAttributes({ labelColour: val ?? "" }),
                 linked: true,
+                gradientValue: labelColourGradient,
+                onGradientChange: (val) => setAttributes({ labelColourGradient: val ?? "" }),
               },
             ],
           },
