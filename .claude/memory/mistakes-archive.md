@@ -861,3 +861,35 @@ Programmatic translation captures structure + tokens but misses design choices i
   render.php) or run a live functional test proving absence of effect. A single-file textual
   search proves the file doesn't reference the name; it proves nothing about whether the
   attribute is consumed.
+### [2026-08-14] A council persona given a read-only analysis task ran a real (mutating) command "just to check," and silently archived a live decision
+- **Pattern key:** `an-analysis-agents-bash-access-can-mutate-real-files-without-being-asked-to`
+- **Evidence:** dispatched an `/adversarial-council` persona (Ship-PM) to analyse whether decisions.md's
+  size gate was a real blocker. Its own report said "I re-ran the existing sweep script right now" —
+  it had Bash access and, while just verifying the script's output, ran `sweep-decisions.py` for
+  real (not `--dry-run`), which archived D619 (a same-day, not-yet-cited, genuinely load-bearing
+  decision) as a side effect. Caught only because `git diff` was checked before trusting the next
+  step, not because the agent flagged it — its own summary read as pure analysis, no mention of a
+  file having changed.
+- **Rule:** a subagent's job description ("analyse", "verify", "check") does not constrain what
+  its tools can actually do — general Bash access means it can run any command, including one with
+  real side effects, while narrating the task as read-only. Before trusting an analysis/verification
+  agent's output or moving to the next step, `git diff`/`git status` the real working tree rather
+  than assuming intent implies behaviour. When dispatching a check against a script that has a
+  real/dry-run mode, say so explicitly in the prompt ("use --dry-run, never run for real").
+
+### [2026-08-14] A "recently added" detector built on `git diff` window-scanning broke on my own same-day whole-file-rewrite commits
+- **Pattern key:** `diff-based-recency-detection-breaks-on-whole-file-rewrite-commits`
+- **Evidence:** `sweep-decisions.py`'s grace window (protecting brand-new decisions.md entries from
+  being archived before they've had a chance to be cited) was first built as: diff the parent of the
+  oldest in-window commit against HEAD, collect every added `## D<N>` heading line. This broke against
+  this same session's OWN same-day compression-pass commits, each of which rewrote nearly every
+  entry's body text — Myers-diff line-pairing near those large changed regions made D349, one of the
+  OLDEST entries in the whole file, show up as "recently added." Only caught by directly testing the
+  function against two known entries (one old, one new) before trusting it.
+- **Rule:** never use a `git diff <old>..<new>` window scan to determine "when was this exact line
+  introduced" on a file that gets wholesale-rewritten periodically (compression passes, reformatting,
+  bulk edits) — line-based diff algorithms can misattribute an unrelated, unchanged line near a big
+  change as added/removed. Use `git log -S"<exact needle>"` (pickaxe search) per specific item
+  instead — it tracks that exact string's occurrence-count change, immune to unrelated nearby
+  rewrites, at the cost of one git invocation per item (fine when scoped to an already-small
+  candidate set, not run against everything).

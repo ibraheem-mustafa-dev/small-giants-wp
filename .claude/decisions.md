@@ -1,3 +1,77 @@
+## D931 [ROUTINE] — attribute-gap-candidates mechanism retired (drafted, in a worktree, not yet merged)
+
+**2026-09-03.** A routine `/sgs-update` run flagged the largest-ever single-run drop in
+`attribute_gap_candidates` (3963 → 3782, -181). Investigation found two test files
+(`test_state_value_lift.py`, `test_pseudo_overlay_lift.py`) running a blanket
+`DELETE FROM attribute_gap_candidates WHERE block_slug = ?` directly against the LIVE
+`sgs-framework.db`, not a fixture — real, ongoing data loss on every gate run. Bean's actual
+point once raised: the whole feature this table backs — a promotion workflow surfacing CSS
+attributes present in a cloned draft but missing from the equivalent block, for a human to
+review and add — was never finished and never wanted. Decision: retire it fully.
+
+Deleted `gap-detection/detect.py`, `orchestrator/stage_attribute_promotion.py` + its test.
+Trimmed the table's CREATE/INSERT/health-check out of `behavioural-analyser/assign-canonical.py`
+(canonical-slot backfill logic, the file's real job, untouched). Removed
+`write_attribute_gap_candidate()`/`propose_attr_name()` from `converter/db/db_lookup.py` and
+`write_d3_to_db()` from `orchestrator/css_router.py` — **D3 classification itself and its D2
+fallback emission are unchanged**, so the real never-silently-drop coverage-conservation
+guarantee is unaffected; only the extra DB-backed bookkeeping layer is gone.
+
+One call site needed a real replacement, not just deletion: `pseudo_overlay.py`'s honest-gap
+write (unmapped `::before`/`::after` CSS) now goes through `content_gap_collector.record_content_gap()`
+— the converter's existing, always-on (not opt-in like `--debug-trace`) content-gap ledger,
+which already gets written to `content-gaps.json` per clone run and feeds a real, previously
+under-fed gate (`ledger/content_gap_check.py`). Both rewritten test files now assert against
+this in-memory ledger instead of querying the DB. One genuinely stale `xfail` was also fixed in
+the same pass: `test_decorative_image_top_left_lift_after_unexclude` asserted a pre-migration
+flat value shape for `positionX`/`positionY`, which are now tier objects in both `block.json`
+and `render.php` (`sgs_responsive_normalise_object()`) — the migration it was waiting on had
+already landed; the test just never got updated. Now a real passing assertion, not a suppressed
+xfail.
+
+⛔ **Working shape carried forward, applied mid-session after a correction:** no active code
+comment or doc should narrate retirement history ("RETIRED 2026-09-03, this used to..."). Write
+clean code describing current behaviour only; history belongs in the commit message and here,
+not scattered inline. Several early edits needed correcting for this.
+
+Done in an isolated worktree (`c:\Users\Bean\Projects\small-giants-wp-gap-retirement`, branch
+`fix/retire-attribute-gap-candidates` off `054048d41`) rather than the shared main working
+directory, because a concurrent session was actively committing to `main` throughout — branching
+there would have silently diverted their next commit onto this branch instead. 16 files changed,
+each individually tested (converter test suite green, no xfail). **NOT yet merged** — still
+needs: dropping the live table + regenerating `schema.sql`, a full `npm run gate:fast` /
+`pytest-oracle-converter` run, a `/sgs-update` re-run to confirm the Stage 13 CSV export
+self-corrects, a second read-through of the two Haiku-dispatched sub-tasks (dead-file cleanup,
+spec retirement notes — one factual error already caught: a spec initially named
+`converter/services/gap_writer.py` as retired, which is wrong, it's a separate unrelated
+still-live module), then commit + push + PR (branch+PR per this project's own "risky/converter
+change" rule, not a direct commit to `main`). Continuation prompt:
+`.claude/prompts/2026-09-03-gap-candidates-retirement-and-detector-backlog.md`.
+
+## D930 [ROUTINE] — 01-tab-group mixed-panel exemption (48→32) + modal overlay colour/opacity fixed
+
+**2026-09-03.** Extended the `01-tab-group` inspector detector: a panel containing at least one
+structural/behavioural control with no CSS property behind it (a variant picker, a layout-mode
+radio, a preset picker) now exempts the WHOLE panel from needing `group="styles"`, even when the
+same panel also has real CSS-styling controls — Bean's ruling, reversing an earlier "split mixed
+panels across tabs" assumption. The CSS controls are meant to stay grouped with their structural
+sibling in Settings. Built via `/subagent-driven-development` (Sonnet implementer, cross-model
+Sonnet reviewer per `/delegate`), verified against 5 named worked examples individually (not just
+the aggregate): `sgs/audio` and `sgs/image-sequence` clear entirely; `sgs/post-grid`'s Layout
+panel clears (the mixed case the rule exists for); `sgs/multi-button` and `sgs/text` correctly
+stay flagged (pure CSS, no structural anchor). 48 → 32 findings. Full 83-block self-test suite
+passes; rule 31 (253 findings) byte-identical before/after, confirming no shared-context
+interference. Commit `0e1bd63f0`.
+
+Also fixed, found while explaining the modal case to Bean: `overlayColour`/`overlayOpacity`
+control the same visual thing (the modal's dimmed backdrop) but were split across two tabs.
+Matches the existing 8-block `BackgroundPanel.js` precedent exactly (a colour picker with alpha
+switched OFF — D717's reasoning, two transparency mechanisms fighting over one stored value is
+what corrupted a colour token before — followed by a plain opacity slider, both in one panel) —
+no shared-component change needed, `overlayColour` just moved out of the generic `SgsColourPanel`
+rows array into its own dedicated Styles-tab panel alongside the opacity slider. Commit
+`5ac5922d6`.
+
 ## D929 [ROUTINE] — colour-codemod fix.js autofix: 6 rows applied, 3 shipped broken past the full gate chain, all 3 found live and fixed
 
 **2026-09-03.** Ran `scripts/colour-codemod/fix.js --fix --apply` on the 6 rows it accepted
