@@ -401,6 +401,37 @@ void main() {
 	v_depth = gl_Position.z;
 }`;
 
+/*
+ * FRAGMENT_SHADER — notes kept here in a stripped JS comment rather than as
+ * GLSL comments inside the string below, which ships to the browser
+ * byte-for-byte (this file breached its bundle-size budget once these got
+ * verbose inline during the D926/D927 investigation).
+ *
+ * u_silhouetteDebug — DEBUG-ONLY, DEFAULT OFF, never touched by shipped code
+ * paths (fx-generative-background.js never sets it, so every real page
+ * reads GLSL's own zero-init false). General-purpose diagnostic
+ * infrastructure (systematic-debugging, 2026-09-03) isolating layers 1-3's
+ * on-screen footprint from every fragment effect, for fidelity checks. Do
+ * not wire to any client-facing control.
+ *
+ * The old §3(b) "legacy periodic-line striation" term, deleted from main()
+ * below (D926/D927): hardcoded 425.0 as its line frequency — the
+ * reference's DARK-theme preset's lineAmount (index.html:244), not the
+ * light theme's (lineAmount: 1, index.html:231) — and the light theme's
+ * own real fragment shader (shaders/39798.glsl, read in full) never
+ * references u_lineAmount/u_lineThickness/u_lineDerivativePower at all.
+ * Ported from the wrong preset into a build only ever compared against the
+ * light one. Isolating it alone recovered 62% of the measured
+ * silhouette-coverage deficit — the single largest fragment-effect
+ * contributor found.
+ *
+ * Depth fade (main(), gated on groundLuma < 0.5): shaders/39798.glsl
+ * (light theme) has no depth/fog/ground-mix mechanism anywhere in it;
+ * shaders/98230.glsl (dark theme) does have one, structurally the same
+ * "recede toward the ground colour with distance" shape. Gating on the
+ * ground colour's own luminance needs no extra uniform and matches the
+ * reference's actual per-theme behaviour instead of always running.
+ */
 const FRAGMENT_SHADER = `#version 300 es
 precision highp float;
 
@@ -418,15 +449,6 @@ uniform float u_colourAttenuation;
 uniform float u_parabolaPower;
 uniform float u_depthFadeScale;
 uniform vec3 u_ground;
-/*
- * DEBUG-ONLY, DEFAULT OFF — never touched by shipped code paths.
- * fx-generative-background.js never sets this uniform, so it reads GLSL's
- * own default-zero-init for a bool (false) on every real page. Kept as
- * general-purpose diagnostic infrastructure (systematic-debugging,
- * 2026-09-03) — isolates LAYERS 1-3 (geometry/twist, the folded mesh's
- * on-screen footprint) from every fragment-level effect for future fidelity
- * checks. Do not wire this to any client-facing control.
- */
 uniform bool u_silhouetteDebug;
 
 in vec2 v_uv;
@@ -504,30 +526,17 @@ float grain( vec2 fragCoord ) {
 }
 
 void main() {
-	// DEBUG-ONLY silhouette isolation (see u_silhouetteDebug's declaration
-	// above) — bypasses texture sampling AND every fragment effect below.
-	// Any pixel the rasteriser reaches at all (i.e. the folded mesh's
-	// on-screen footprint from layers 1-3 alone) paints flat opaque white;
-	// nothing else in this function runs for that pixel.
+	// Debug silhouette isolation (u_silhouetteDebug, see its JS-side doc).
+	// Magenta, not white — ground/background are near-white.
 	if ( u_silhouetteDebug ) {
-		// Bright magenta, deliberately NOT white/near-white — the page
-		// background AND the ground colour are both near-white, so a white
-		// silhouette would be indistinguishable from "unpainted" under the
-		// coverage detector's quantised-background-key heuristic. Caught
-		// live: an earlier version of this used white and measured 0.0%
-		// coverage on every sample, which was the probe being vacuous, not
-		// a real finding.
 		outColour = vec4( 1.0, 0.0, 1.0, 1.0 );
 		return;
 	}
 
 	vec3 colour = texture( u_texture, v_uv ).rgb;
 
-	// §3(a) fine-line striation / glow-gate layer — added BEFORE grading so
-	// the grading chain applies to the combined result. Formula and all four
-	// constants (u_striationStrength/Freq/u_colourAttenuation/u_parabolaPower)
-	// now match surfaceColor() in shaders/39798.glsl exactly (D926/D927 —
-	// see DEFAULT_STRIATION_STRENGTH's declaration comment for the source).
+	// §3(a) fine-line striation / glow-gate — matches surfaceColor() in
+	// shaders/39798.glsl (constants: see DEFAULT_STRIATION_* declarations).
 	float glowGate = sgsGlowGate( v_uv );
 	float striationNoise = sgsStriationNoise( v_uv );
 	float atten = 1.0 - colour.b * u_colourAttenuation;
@@ -536,30 +545,13 @@ void main() {
 
 	colour = grade( colour );
 
-	// A slight overall lift where the surface faces the camera flat-on
-	// (glow gate low) — matches shaders/39798.glsl's
-	// "color += (1.0 - pdy) * 0.25" exactly.
-	//
-	// The old section 3(b) "legacy periodic-line striation" term that used
-	// to sit here is DELETED, not disabled (D926/D927, systematic-debugging
-	// root-cause fix). It hardcoded 425.0 as its line frequency — the
-	// reference's DARK-theme preset's lineAmount (index.html:244), not the
-	// light theme's (lineAmount: 1, index.html:231) — and the light theme's
-	// own real fragment shader (shaders/39798.glsl, read in full) never
-	// references u_lineAmount/u_lineThickness/u_lineDerivativePower at all:
-	// this term was ported from the wrong preset into a build that only
-	// ever compares against the light one. Isolating it alone recovered 62%
-	// of the measured silhouette-coverage deficit — the single largest
-	// contributor of any fragment effect tested.
+	// Camera-facing lift — matches shaders/39798.glsl's
+	// "color += (1.0 - pdy) * 0.25" exactly. (The old §3(b) legacy
+	// periodic-line term that used to sit here is deleted — D926/D927.)
 	colour += ( 1.0 - glowGate ) * 0.25;
 
-	// Depth fade — DARK-GROUND ONLY (D926/D927). shaders/39798.glsl
-	// (light theme) has no depth/fog/ground-mix mechanism anywhere in it;
-	// shaders/98230.glsl (dark theme) does have one, structurally the same
-	// "recede toward the ground colour with distance" shape. Gating on the
-	// ground colour's own luminance means this needs no extra uniform beyond
-	// what already exists, and matches the reference's actual per-theme
-	// behaviour instead of always running.
+	// Depth fade, dark-ground only — D926/D927; see FRAGMENT_SHADER's JS
+	// doc comment above for why.
 	float groundLuma = dot( u_ground, vec3( 0.299, 0.587, 0.114 ) );
 	if ( groundLuma < 0.5 ) {
 		float depthFade = clamp( v_depth * u_depthFadeScale, 0.0, 1.0 );

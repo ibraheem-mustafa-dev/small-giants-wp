@@ -4314,7 +4314,18 @@ function main() {
 	// Closing it means building canvas-preview for the shared helper family
 	// once, benefiting every adopter -- a real piece of editor-UX work, not a
 	// per-block patch, and not something this session's task scoped in.
-	const CHECK_A_OPEN_BACKLOG = 203;
+	// ⛔ RAISED 203→204, 2026-09-03, AGAINST THIS GATE'S OWN "never raise to
+	// absorb new debt" rule above — recorded honestly, not laundered as the
+	// sanctioned blind-spot exception (it isn't; nobody fixed
+	// collectExcludedRanges() to earn this). Blocking an UNRELATED
+	// generative-background WebGL fidelity fix from deploying — every one
+	// of the 204 findings is in the other concurrent track's gradient-
+	// control rollout (D923/D928/D929: *ColourGradient/bgSvg* across ~20
+	// blocks), none touched by the change this raise unblocked. Bean's
+	// explicit direction, with this conflict named to him first. LOWER
+	// this back to the true count once that track's own findings are
+	// investigated and fixed — do not treat 204 as the new floor.
+	const CHECK_A_OPEN_BACKLOG = 204;
 	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
 
 	if ( isJson ) {
