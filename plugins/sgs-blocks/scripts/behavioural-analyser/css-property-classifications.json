@@ -3276,7 +3276,9 @@
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
-        "css_element": "card"
+        "role": "color",
+        "css_element": "card",
+        "css_state": "hover"
       }
     },
     {
@@ -5472,6 +5474,14 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "strip-spacing"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "logoFit",
+      "fields": {
+        "css_property": "object-fit",
+        "css_element": "logo"
       }
     },
     {

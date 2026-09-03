@@ -84,7 +84,10 @@
 					"label": "Logo image",
 					"order": 3,
 					"clusters": [],
-					"_note": "Governed by its own logoFit/imageEffect selects (supports.sgs.imageControls removed 2026-08-11, Spec 35 capability-routing doctrine — it was fully redundant dead weight on top of this bespoke mechanism, never a real control surface) — outside the Text/Fill/Layout style clusters, so it declares none."
+					"attrMap": {
+						"css:object-fit": "logoFit"
+					},
+					"_note": "Governed by its own logoFit/imageEffect selects (supports.sgs.imageControls removed 2026-08-11, Spec 35 capability-routing doctrine — it was fully redundant dead weight on top of this bespoke mechanism, never a real control surface) — outside the Text/Fill/Layout style clusters, so it declares no clusters. logoFit's attrMap entry added 2026-09-03 to close a db-consistency 'undeclared-subelement' finding (the classifier had no manifest signal to trace logoFit's element/selector to)."
 				},
 				"caption": {
 					"label": "Caption",

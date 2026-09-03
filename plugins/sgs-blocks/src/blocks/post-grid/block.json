@@ -101,6 +101,7 @@
 					"states": {
 						"hover": {
 							"attrMap": {
+								"css:background-color": "backgroundColourHover",
 								"css:transform": "scaleHover",
 								"css:box-shadow": "shadowHover"
 							},
