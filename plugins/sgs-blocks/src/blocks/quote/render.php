@@ -80,9 +80,10 @@ if ( ! $has_body && ! $has_attribution ) {
 // 3. Extract + validate attribution slot attributes.
 // ---------------------------------------------------------------------------
 
-$attrib_tag         = $attributes['attributionTag'] ?? 'footer';
-$attrib_colour      = $attributes['attributionColour'] ?? '';
-$attrib_margin_unit = $attributes['attributionMarginUnit'] ?? 'px';
+$attrib_tag             = $attributes['attributionTag'] ?? 'footer';
+$attrib_colour          = $attributes['attributionColour'] ?? '';
+$attrib_colour_gradient = $attributes['attributionColourGradient'] ?? '';
+$attrib_margin_unit     = $attributes['attributionMarginUnit'] ?? 'px';
 
 // Validate attribution tag.
 if ( ! in_array( $attrib_tag, array( 'footer', 'div', 'cite' ), true ) ) {
@@ -220,12 +221,24 @@ $root_sel = '.' . $uid . '.wp-block-sgs-quote';
 
 $attrib_scope = $root_sel . ' .wp-block-sgs-quote__attribution';
 
-$attrib_decls = array();
-if ( $attrib_colour ) {
-	$attrib_decls[] = 'color:' . sgs_colour_value( $attrib_colour );
+// Flat-or-gradient (D636 "text" builder) — sgs_resolve_text_colour_or_gradient()
+// picks the gradient sibling attribute when it's set and valid, otherwise the
+// flat attributionColour value untouched; sgs_text_colour_decl() emits a plain
+// `color:` declaration for a flat value or the background-clip:text gradient
+// declarations for a gradient. sgs_text_colour_gradient_fallback_rule() is the
+// MANDATORY @supports companion — a gradient with no background-clip:text
+// support would otherwise render invisible text (omitted for a flat value,
+// where it is a no-op).
+$attrib_colour_effective = sgs_resolve_text_colour_or_gradient( $attrib_colour, $attrib_colour_gradient );
+
+$attrib_decls       = array();
+$attrib_colour_decl = sgs_text_colour_decl( $attrib_colour_effective );
+if ( '' !== $attrib_colour_decl ) {
+	$attrib_decls[] = $attrib_colour_decl;
 }
 
-$css_attrib_base = $attrib_decls ? ( $attrib_scope . '{' . implode( ';', $attrib_decls ) . ';}' ) : '';
+$css_attrib_base            = $attrib_decls ? ( $attrib_scope . '{' . implode( ';', $attrib_decls ) . ';}' ) : '';
+$css_attrib_colour_fallback = sgs_text_colour_gradient_fallback_rule( $attrib_scope, $attrib_colour_effective );
 
 // Attribution font-size/weight/style/family/decoration/transform/line-height —
 // the shared TypographyControls companion helper, sgs_typography_css_rule()
@@ -482,6 +495,9 @@ if ( ! $inherit_style ) {
 // --- Attribution slot scoped CSS (base + tiers) ---
 if ( $css_attrib_base ) {
 	$scoped_css[] = $css_attrib_base;
+}
+if ( $css_attrib_colour_fallback ) {
+	$scoped_css[] = $css_attrib_colour_fallback;
 }
 if ( $css_attrib_typography ) {
 	$scoped_css[] = $css_attrib_typography;

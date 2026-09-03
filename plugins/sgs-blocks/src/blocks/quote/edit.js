@@ -54,7 +54,7 @@ import {
 	TypographyControls,
 	SgsBorderControl,
 } from '../../components';
-import { colourVar } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // ---------------------------------------------------------------------------
@@ -196,14 +196,16 @@ function buildWrapperStyle( attributes ) {
 function buildAttribStyle( attributes ) {
 	const {
 		attributionColour,
+		attributionColourGradient,
 		attributionMarginTop, attributionMarginUnit,
 	} = attributes;
-	const style = {};
-	if ( attributionColour ) {
-		style.color = /^#|^rgb|^hsl/.test( attributionColour )
-			? attributionColour
-			: colourVar( attributionColour );
-	}
+	const style = {
+		...resolveTextColourPreviewStyle(
+			attributionColour,
+			attributionColourGradient,
+			( val ) => ( /^#|^rgb|^hsl/.test( val ) ? val : colourVar( val ) )
+		),
+	};
 	// attributionMarginTop is a TIER OBJECT — the canvas preview (desktop-only;
 	// responsive tiers render via PHP) reads the desktop tier. Typography
 	// (font-size/weight/family/style/decoration/transform/line-height) no
@@ -227,6 +229,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		attributionTag,
 		attributionEnabled,
 		attributionColour,
+		attributionColourGradient,
 		// attributionFontSize / attributionMarginTop are TIER OBJECTS
 		// {desktop,tablet,mobile} as of Spec 35 pass 3b (2026-08-11) — the
 		// *Tablet/*Mobile siblings no longer exist.
@@ -392,6 +395,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'attributionColour',
 						label: __( 'Attribution colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -399,6 +403,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: attributionColour,
 								onChange: ( val ) => setAttributes( { attributionColour: val ?? '' } ),
 								linked: true,
+								gradientValue: attributionColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { attributionColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -453,6 +460,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							attributionEnabled: true,
 							attributionTag: 'footer',
 							attributionColour: '',
+							attributionColourGradient: '',
 							attributionFontStyle: '',
 							attributionFontWeight: '',
 							attributionFontSizeUnit: 'px',

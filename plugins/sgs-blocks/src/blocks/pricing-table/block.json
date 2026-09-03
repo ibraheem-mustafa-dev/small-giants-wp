@@ -115,13 +115,15 @@
 					"label": "Plan name",
 					"order": 3,
 					"clusters": [
-						"text"
+						"text",
+						"fill"
 					],
 					"attrMap": {
 						"css:color": "titleColour",
+						"css:background-image": "titleColourGradient",
 						"tag": "headingLevel"
 					},
-					"_note": "Rendered once per plan into `.sgs-pricing-table__name` (block.json `selectors.typography` also targets the back-compat `.sgs-pricing-table__title` alias). Only colour is block-level and independently controlled — no titleFontSize/Weight exists, an honest gap. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:379/381) but this element has no `prefix` declared, so it needs an explicit map."
+					"_note": "Rendered once per plan into `.sgs-pricing-table__name` (block.json `selectors.typography` also targets the back-compat `.sgs-pricing-table__title` alias). Only colour is block-level and independently controlled — no titleFontSize/Weight exists, an honest gap. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:379/381) but this element has no `prefix` declared, so it needs an explicit map. titleColourGradient (cluster A Task 2) is the text-colour gradient sibling to titleColour — background-clip:text mechanism, same recipe as priceColour/priceColourGradient; the 'fill' cluster was added solely to place this member. The rendered declaration paints onto a comma-joined selector pair (`.sgs-pricing-table__name,.sgs-pricing-table__title`) — see render.php's `$title_sel`."
 				},
 				"price": {
 					"label": "Price",
@@ -147,12 +149,14 @@
 					"label": "Feature list item",
 					"order": 5,
 					"clusters": [
-						"text"
+						"text",
+						"fill"
 					],
 					"attrMap": {
-						"css:color": "featureColour"
+						"css:color": "featureColour",
+						"css:background-image": "featureColourGradient"
 					},
-					"_note": "Only colour is block-level and independently controlled for `.sgs-pricing-table__feature` — no featureFontSize/Weight exists, an honest gap."
+					"_note": "Only colour is block-level and independently controlled for `.sgs-pricing-table__feature` — no featureFontSize/Weight exists, an honest gap. featureColourGradient (cluster A Task 2) is the text-colour gradient sibling to featureColour — background-clip:text mechanism, same recipe as priceColour/priceColourGradient; the 'fill' cluster was added solely to place this member."
 				},
 				"cta": {
 					"label": "CTA button",
@@ -450,6 +454,10 @@
 			"type": "string",
 			"default": "text"
 		},
+		"titleColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"priceColour": {
 			"type": "string",
 			"default": "text"
@@ -461,6 +469,10 @@
 		"featureColour": {
 			"type": "string",
 			"default": "text"
+		},
+		"featureColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"ctaStyle": {
 			"type": "string",

@@ -122,10 +122,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		pricingTableStyle: style,
 		headingLevel,
 		titleColour,
+		titleColourGradient,
 		priceColour,
 		priceColourHover,
 		priceColourGradient,
 		featureColour,
+		featureColourGradient,
 		ctaStyle,
 		ctaColour,
 		ctaBackground,
@@ -259,6 +261,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'title',
 						label: __( 'Title colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -266,6 +269,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: titleColour,
 								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
 								linked: true,
+								gradientValue: titleColourGradient,
+								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -295,6 +300,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'feature',
 						label: __( 'Feature colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -302,6 +308,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: featureColour,
 								onChange: ( val ) => setAttributes( { featureColour: val ?? '' } ),
 								linked: true,
+								gradientValue: featureColourGradient,
+								onGradientChange: ( val ) => setAttributes( { featureColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -606,12 +614,11 @@ export default function Edit( { attributes, setAttributes } ) {
 											'Plan name…',
 											'sgs-blocks'
 										) }
-										style={ {
-											color:
-												colourVar(
-													titleColour
-												) || undefined,
-										} }
+										style={ resolveTextColourPreviewStyle(
+											titleColour,
+											titleColourGradient,
+											colourVar
+										) }
 									/>
 									<div className="sgs-pricing-table__price-wrapper">
 										<RichText
@@ -771,10 +778,11 @@ export default function Edit( { attributes, setAttributes } ) {
 														'sgs-blocks'
 													) }
 													style={ {
-														color:
-															colourVar(
-																featureColour
-															) || undefined,
+														...resolveTextColourPreviewStyle(
+															featureColour,
+															featureColourGradient,
+															colourVar
+														),
 														opacity: feature.included ? 1 : 0.5,
 													} }
 												/>

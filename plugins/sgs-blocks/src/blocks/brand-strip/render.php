@@ -59,7 +59,8 @@ $columns_tablet      = isset( $attributes['columnsTablet'] ) ? max( 1, absint( $
 $columns_mobile      = isset( $attributes['columnsMobile'] ) ? max( 1, absint( $attributes['columnsMobile'] ) ) : 2;
 $show_names          = ! empty( $attributes['showNames'] );
 $pause_on_hover      = ! isset( $attributes['pauseOnHover'] ) || (bool) $attributes['pauseOnHover'];
-$name_colour         = $attributes['nameColour'] ?? '';
+$name_colour          = $attributes['nameColour'] ?? '';
+$name_colour_gradient = $attributes['nameColourGradient'] ?? '';
 $logo_gap            = isset( $attributes['logoGap'] ) ? absint( $attributes['logoGap'] ) : 0;
 $tile_padding        = isset( $attributes['tilePadding'] ) ? absint( $attributes['tilePadding'] ) : 10;
 $tile_radius         = isset( $attributes['tileRadius'] ) ? absint( $attributes['tileRadius'] ) : 16;
@@ -432,8 +433,21 @@ if ( $show_names && function_exists( 'sgs_typography_css_rule' ) ) {
 	if ( '' !== $name_typography_css ) {
 		$scoped_css[] = $name_typography_css;
 	}
-	if ( '' !== $name_colour ) {
-		$scoped_css[] = "{$root_sel} .sgs-brand-strip__name{color:" . sgs_colour_value( $name_colour ) . ';}';
+	// D636 text-colour gradient sibling — the gradient wins over the flat
+	// colour when set+valid (sgs_resolve_text_colour_or_gradient()), painted
+	// via sgs_text_colour_decl() (color:X for flat, background-clip:text for
+	// a gradient) with the mandatory @supports fallback rule for browsers
+	// without clip-text support. The caption paints no background of its own
+	// (style.css .sgs-brand-strip__name), so background-clip:text is safe here.
+	$name_text_effective = sgs_resolve_text_colour_or_gradient( $name_colour, $name_colour_gradient );
+	$name_text_decl      = sgs_text_colour_decl( $name_text_effective );
+	if ( '' !== $name_text_decl ) {
+		$name_sel     = "{$root_sel} .sgs-brand-strip__name";
+		$scoped_css[] = "{$name_sel}{" . $name_text_decl . ';}';
+		$name_text_fallback_rule = sgs_text_colour_gradient_fallback_rule( $name_sel, $name_text_effective );
+		if ( '' !== $name_text_fallback_rule ) {
+			$scoped_css[] = $name_text_fallback_rule;
+		}
 	}
 	// Caption alignment. text-align is not part of the shared typography
 	// emitter's property set, so it is emitted here against the same selector.

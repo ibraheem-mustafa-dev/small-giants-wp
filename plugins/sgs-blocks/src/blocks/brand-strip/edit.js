@@ -254,6 +254,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		showNames,
 		pauseOnHover,
 		nameColour,
+		nameColourGradient,
 		nameTextAlign,
 		logoGap,
 		tilePadding,
@@ -437,15 +438,25 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'caption',
 						label: __( 'Caption colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: nameColour,
 								onChange: ( val ) => setAttributes( { nameColour: val } ),
+								gradientValue: nameColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { nameColourGradient: val ?? '' } ),
 							},
+						],
+					},
+					{
+						key: 'captionHover',
+						label: __( 'Caption colour (hover)', 'sgs-blocks' ),
+						states: [
 							{
-								key: 'hover',
+								key: 'normal',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: itemTextColourHover,
 								onChange: ( val ) => setAttributes( { itemTextColourHover: val } ),

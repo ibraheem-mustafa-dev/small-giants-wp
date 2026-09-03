@@ -99,7 +99,8 @@
 					"attrMap": {
 						"css:font-size": "nameFontSize",
 						"css:font-weight": "nameFontWeight",
-						"css:color": "nameColour"
+						"css:color": "nameColour",
+						"css:color-gradient": "nameColourGradient"
 					}
 				},
 				"name": {
@@ -313,6 +314,11 @@
 		"nameColour": {
 			"type": "string",
 			"default": ""
+		},
+		"nameColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painted through the caption text via background-clip:text. Non-empty wins over nameColour at render time (D636)."
 		},
 		"logoGap": {
 			"type": "number",
