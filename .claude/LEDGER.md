@@ -87,11 +87,14 @@ test bug hitting the live DB). 16 files drafted + individually tested in an isol
 `fix/retire-attribute-gap-candidates`) — NOT yet merged; schema drop + full gate run + commit/PR
 still needed. Full breakdown in the continuation prompt below.
 
-**Two dedicated next-session prompts, split deliberately (see below for why):**
-- **Remaining backlog + gap-candidates finish (01 fully closed to session-3 state, 21, gap-candidates
-  merge):** `.claude/prompts/2026-09-03-gap-candidates-retirement-and-detector-backlog.md`
-  (supersedes `2026-09-03-detector-backlog-post-bg-panel-fix.md`, which is now stale — the `01`
-  count and scope described there is pre-session-3).
+**Three prompts, split deliberately:**
+- **Detector violations (`01`, 32 open + `21`, 54 open, untriaged):**
+  `.claude/prompts/2026-09-03-detector-violations-01-and-21.md` (supersedes
+  `2026-09-03-detector-backlog-post-bg-panel-fix.md`, which is deleted — its `01` count and scope
+  is pre-session-3).
+- **Gap-candidates retirement merge (mid-flight, isolated worktree):**
+  `.claude/prompts/2026-09-03-gap-candidates-retirement-and-detector-backlog.md` — deliberately
+  scoped to that thread only, do not fold in the detector violations prompt above.
 - **`31-golden-colour-control` category-B is LANDED (D928/D929) — its continuation prompt is
   DELETED.** New prompt, different question: **`.claude/prompts/2026-09-03-mechanical-repair-scripting.md`**
   — opens in `/brainstorming explore` mode (Bean's explicit instruction) on whether the defect

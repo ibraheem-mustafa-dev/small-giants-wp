@@ -1,20 +1,15 @@
-# Gap-candidates retirement (in a worktree, needs finishing) + remaining detector backlog
+# Gap-candidates retirement (in a worktree, needs finishing)
 
-**Written 2026-09-03, supersedes `2026-09-03-detector-backlog-post-bg-panel-fix.md` (deleted in
-the same commit as this file).** Invoke `/autopilot` first.
+**Written 2026-09-03.** **Scope: this thread only.** The inspector-scan detector backlog
+(`01-tab-group`, `21-render-without-control`) has its own separate prompt:
+`.claude/prompts/2026-09-03-detector-violations-01-and-21.md` — don't mix the two, they touch
+unrelated parts of the codebase. Invoke `/autopilot` first.
 
 ## Where you left off
 
-Two threads closed out this session, both on `main`, both pushed:
-
-1. **The `01-tab-group` inspector detector rework** — mixed-panel exemption rule (a panel with a
-   structural/no-CSS control groups its CSS siblings in Settings rather than splitting them to
-   Styles). 56 → 24 open findings across two commits (`0e1bd63f0`, plus mega-aside/form-field
-   fixes earlier). Full detail already in `.claude/decisions.md`'s head.
-2. **Modal's overlay-opacity split fixed** (`5ac5922d6`) — colour and opacity now live together
-   in one Styles-tab panel, matching the 8-block `BackgroundPanel.js` precedent.
-
-A third thread is **mid-flight, in an isolated git worktree, not yet committed**:
+This thread is **mid-flight, in an isolated git worktree, not yet committed**. (Two unrelated
+threads also closed this session — `01-tab-group`'s detector rework and modal's overlay-opacity
+fix — both on `main`, both pushed; see the detector-violations prompt above if picking those up.)
 
 ### Attribute-gap-candidates retirement — needs finishing
 
@@ -89,28 +84,22 @@ Confirm the 16-file diff is still there and nothing else touched it.
 6. **Clean up the worktree** once merged: `git worktree remove` from the main working directory
    (never delete the folder by hand — see the worktree gotchas in project memory).
 
-## Also still open from the original detector backlog (unrelated to the above)
+## Unrelated work also still open
 
-| Item | Size | Status |
-|---|---|---|
-| `21-render-without-control` | 54 findings | Untriaged — next item after the gap-candidates thread closes |
-| `31-golden-colour-control` | — | Deliberately out of scope — runs as its own session. Read `.claude/reports/2026-09-03-media-atom-migration-lessons.md` first if picking this up |
-
-`image-sequence`'s panel-merge work (Frame source + Responsive frame sources, deferred pending a
-live-editor look) is also still open — see `.claude/decisions.md` head for the exact scope agreed.
+The inspector-scan detector backlog (`01-tab-group` real remaining work, `21-render-without-control`
+fully untriaged, `31-golden-colour-control` deliberately parked as its own session) and
+`image-sequence`'s deferred panel merges all live in
+`.claude/prompts/2026-09-03-detector-violations-01-and-21.md` — not this prompt. Don't fold them
+into this thread's session.
 
 ## Rules worth carrying forward
 
-- **A control that "doesn't work" already works somewhere — diff against it, don't design from
-  scratch.** Confirmed again this session: the modal overlay-opacity fix came from finding the
-  8-block `BackgroundPanel.js` precedent, not from inventing a new API on the shared colour
-  component (the first plan was wrong and would have added unnecessary shared-component risk).
 - **When the user pushes back on a technical claim, investigate concretely before answering —
-  don't just re-assert or just agree.** Twice this session: Bean's "opacity isn't usually paired
-  with the colour picker" correction was right and led to finding the real precedent; his
-  "gap-candidates column is no longer used" claim was checked and found subtly wrong (it WAS
-  still wired in and load-bearing for a real promotion workflow) before his follow-up reframed the
-  actual point (the feature was never wanted finished, which is a different and correct claim).
+  don't just re-assert or just agree.** Bean's "gap-candidates column is no longer used" claim was
+  checked and found subtly wrong (it WAS still wired in and load-bearing for a real promotion
+  workflow) before his follow-up reframed the actual point (the feature was never wanted
+  finished — a different and correct claim). Investigating the first claim concretely is what
+  surfaced the real bug (the live-DB test corruption) before the retirement decision was even made.
 - **A shared working directory with a concurrent session means branch operations need a
   worktree**, not a plain `git checkout -b` — confirmed necessary again this session.
 - **Path-scoped commits in this repo need explicit per-file paths for brand-new (untracked)
