@@ -218,6 +218,41 @@ that is what the `::after` split exists for (`helpers-tokens.php:842-849`).
 
 **Est. 90 min.**
 
+### ⛔ THE PATTERN — verified against CURRENT code, 2026-09-03. Do NOT read `778879732` for it.
+
+Exemplar commit: **`305f9170c`** (`sgs/counter.labelColour`). Copy that, not the historical diff.
+
+**The reference commit's pattern is STALE and following it produces a broken result.** At
+`778879732` the gradient shared ONE attribute and `resolveTextColourPreviewStyle()` took two
+arguments. The storage model has since moved to a separate `{attr}Gradient` sibling and the
+helper takes **three**. A first attempt here was built from that diff, emitted a two-argument
+call, and was reverted rather than patched. **Read the CURRENT wiring of an already-migrated
+sibling in the same file** — `counter.numberColour` is the cleanest.
+
+Four changes per attribute, all required:
+
+| File | Change |
+|---|---|
+| `block.json` | add `{attr}Gradient` (string, default `""`); add `"css:background-image": "{attr}Gradient"` to the owning element's `attrMap` |
+| `render.php` | read the gradient attr; `sgs_resolve_text_colour_or_gradient( $flat, $grad )` → `sgs_text_colour_decl()` → `sgs_text_colour_gradient_fallback_rule()` |
+| `edit.js` | destructure the gradient attr; row gains `gradientCapable: true` plus `gradientValue`/`onGradientChange` on the state; preview swaps to `resolveTextColourPreviewStyle( flat, gradient, colourVar )` |
+| `reports/visual-diff/` | a `block.json` change trips the visual-diff gate — one report per block |
+
+⚠ Call `sgs_text_colour_gradient_fallback_rule()` **unconditionally**. It self-no-ops on a
+flat colour, so there is no condition for a caller to get wrong; omitting it lets a gradient
+reach the browser as a bare `color:` holding a gradient string, which is dropped silently.
+
+**How to know it worked, without trusting yourself:** re-run `survey.js` — untouched — and the
+row moves off `REFUSED:…no-gradient-capable-paint-path-found`. On the exemplar it became
+`AUTOFIXABLE:wire-state-emitter`, the tree-wide refusal count fell by exactly one, and the
+total held. A grant that did nothing cannot produce that, and one that broke the render cannot
+hide behind it.
+
+**Scope note:** this closes the GRADIENT dimension only. The rows stay non-conformant on
+`below-min-states` until they also gain a hover sibling — which is the pipeline working as
+designed: grant makes the paint path gradient-capable, then `survey → fix` adds the hover.
+Do not try to do both dimensions in one edit.
+
 ---
 
 ## Phase 4 — Deploy and probe ⭐ THE CLOSURE POINT
