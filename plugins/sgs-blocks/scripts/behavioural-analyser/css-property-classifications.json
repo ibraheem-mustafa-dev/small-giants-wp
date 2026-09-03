@@ -5700,6 +5700,14 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "textColour",
       "fields": {
         "css_property": "color",
