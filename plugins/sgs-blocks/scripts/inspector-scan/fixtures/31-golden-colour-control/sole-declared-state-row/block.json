@@ -1,0 +1,11 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/sole-declared-state-row",
+	"title": "Fixture: row whose SOLE state is a declared, admitted, non-normal state ('hover') — it IS a state, not a row missing one (must NOT flag)",
+	"category": "sgs",
+	"attributes": {
+		"borderColour": { "type": "string", "default": "" },
+		"borderColourHover": { "type": "string", "default": "" },
+		"borderColourHoverGradient": { "type": "string", "default": "" }
+	}
+}

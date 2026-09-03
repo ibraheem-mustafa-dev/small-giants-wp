@@ -746,6 +746,70 @@ function statesArrayHasGradient( statesArray ) {
 // `supports.sgs.elements.<el>.states` entry, floored at 2 (golden-controls.
 // json `controls.colour.states.minimum`). No match / no resolvable attrName
 // => the schema's stated default floor of 2.
+// ── Declared state vocabulary (2026-09-03) ───────────────────────────────
+// The REAL, admitted state names, read from golden-controls.json's own
+// `_meta.stateVocabulary.real` rather than hardcoded here (R-31-1: no
+// hardcoded dicts; the schema is the source and a new state is admitted by
+// editing it, not by editing this file).
+//
+// `normal` is deliberately NOT in that vocabulary — it is the resting state
+// every row has by definition, not a named state a row opts into.
+let _stateVocabCache = null;
+function declaredStateVocabulary() {
+	if ( _stateVocabCache ) return _stateVocabCache;
+	let names = [];
+	try {
+		const real = loadSchema()?._meta?.stateVocabulary?.real;
+		if ( real && typeof real === 'object' ) names = Object.keys( real );
+	} catch ( e ) {
+		names = [];
+	}
+	_stateVocabCache = new Set( names );
+	return _stateVocabCache;
+}
+
+/**
+ * The row's SOLE state key, when the row declares exactly one state and that
+ * state names a real, admitted, non-`normal` state.
+ *
+ * WHY THIS EXISTS. The 2-state floor asks "can the client set this colour's
+ * hover?". It is the wrong question for a row that is ITSELF a single named
+ * state — measured 2026-09-03, nine such rows across seven blocks, in three
+ * distinct legitimate shapes:
+ *
+ *   1. The HOVER HALF of a split control (6 rows). `sgs/testimonial`'s row is
+ *      literally labelled "Border colour (hover)" and paints
+ *      `borderColourHover`; the RESTING half is `borderColour`, owned by
+ *      `SgsBorderControl` — a different component this rule cannot see.
+ *      ⛔ Adding a `normal` state here would create a SECOND WRITER for an
+ *      attribute another control already owns, which is the duplicate-control
+ *      defect this project bans. The "fix" would be the bug.
+ *   2. A colour for a HOVER-ONLY FEATURE (2 rows). `info-box`'s shadowHover row
+ *      is gated behind the `shadowHover` toggle and colours a shadow that only
+ *      exists on hover. There is no resting thing to colour.
+ *   3. A STATE-SCOPED row (1 row). `sgs/tabs`' panel-border paints the CURRENT
+ *      panel; `current` is the only state a panel has.
+ *
+ * ⚠ The key is read from the row's DECLARED state, never inferred from the
+ * attribute name — golden-controls.json's own `states.derivation.why` warns
+ * that `pauseOnHover`/`grayscaleHover` contain "Hover" and are booleans, and
+ * that `tabActiveTextColour` renders as `[aria-selected="true"]`, not `:active`.
+ * A name-based proxy was tried first and was wrong in BOTH directions: it
+ * missed `tabs.panelBorderColour` (no "Hover" in the name) and would have
+ * caught boolean attrs that are not colour rows at all.
+ *
+ * @param {Object} statesArray The row's `states` ArrayExpression node.
+ * @return {string|null} The sole declared state key, or null if this row is not that shape.
+ */
+function soleDeclaredStateKey( statesArray ) {
+	if ( ! statesArray || statesArray.type !== 'ArrayExpression' ) return null;
+	const objects = statesArray.elements.filter( ( el ) => el && el.type === 'ObjectExpression' );
+	if ( objects.length !== 1 || statesArray.elements.length !== 1 ) return null;
+	const key = stringLiteralValue( objProp( objects[ 0 ], 'key' ) );
+	if ( ! key || key === 'normal' ) return null;
+	return declaredStateVocabulary().has( key ) ? key : null;
+}
+
 function requiredStatesFor( elements, attrName ) {
 	if ( ! attrName || ! elements || typeof elements !== 'object' ) return 2;
 	for ( const el of Object.values( elements ) ) {
@@ -878,6 +942,8 @@ module.exports = {
 	normalStateGradientAttrName,
 	statesArrayHasGradient,
 	requiredStatesFor,
+	soleDeclaredStateKey,
+	declaredStateVocabulary,
 	slugify,
 	MECHANISM_BY_CSS_PROPERTY,
 	resolveMechanismFromCssProperty,

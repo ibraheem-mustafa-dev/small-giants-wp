@@ -219,6 +219,7 @@ const {
 	normalStateAttrName,
 	statesArrayHasGradient,
 	requiredStatesFor,
+	soleDeclaredStateKey,
 	slugify,
 	reachedComponents,
 	resolveMechanismFromCssProperty,
@@ -742,7 +743,24 @@ module.exports = {
 				hasRealReason( statesExemption.reason ) &&
 				! hoverAttrExists;
 
-			if ( statesCount < required && ! statesExempt ) {
+			// ── State-scoped rows are not "missing" a state ──────────────
+			// A row declaring exactly ONE state whose key is a real, admitted,
+			// non-`normal` state is not a row that forgot its hover — it is a row
+			// that IS a state. Measured 2026-09-03: nine rows, seven blocks, three
+			// legitimate shapes (the hover half of a split control whose resting
+			// half lives in SgsBorderControl; a colour for a hover-only feature;
+			// a panel painted only when current). See soleDeclaredStateKey()'s
+			// docblock in core/golden.js for the per-shape evidence.
+			//
+			// ⛔ This does NOT weaken the 2-state floor (golden-controls.json
+			// states.minimumMeans, Bean 2026-08-19). For the split-control shape,
+			// "add a normal state" would give a second control write-access to an
+			// attribute SgsBorderControl already owns — the duplicate-writer defect
+			// this project bans. The floor still binds every row that declares a
+			// `normal` state, or an unkeyed one, or a key outside the vocabulary.
+			const soleStateKey = soleDeclaredStateKey( statesArray );
+
+			if ( statesCount < required && ! statesExempt && ! soleStateKey ) {
 				findings.push( {
 					...makeFinding( {
 						rule: ruleId,
@@ -1148,8 +1166,20 @@ module.exports = {
 			// 'textrow-helper-gradient' below — identical fixtures, one helper
 			// name apart, proving the fix matches without over-matching.
 			'fillrow-helper-on-text-attr',
+			// OVER-MATCH CONTROL for the sole-declared-state exemption
+			// (2026-09-03). Identical to 'sole-declared-state-row' below apart
+			// from the state KEY, which is outside golden-controls.json's
+			// _meta.stateVocabulary.real. A typo must not buy silent exemption
+			// from the state floor, or the floor stops meaning anything.
+			'sole-unknown-state-row',
 		],
 		mustNotFlag: [
+			// A row whose SOLE state is a declared, admitted, non-normal state IS
+			// a state — not a row missing one. Nine real rows, seven blocks,
+			// measured 2026-09-03. For the split-control shape the resting half
+			// is owned by SgsBorderControl, so adding a 'normal' state here would
+			// create a second writer for that attribute: the fix would be the bug.
+			'sole-declared-state-row',
 			'two-state-with-gradient',
 			'three-state-required-by-element',
 			'gradient-capable-text-row',
