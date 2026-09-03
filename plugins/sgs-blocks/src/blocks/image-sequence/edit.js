@@ -255,15 +255,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Agency-managed block', 'sgs-blocks' ) }>
-					<Notice status="warning" isDismissible={ false }>
-						{ __(
-							'This block is hidden from the block inserter (agency-only) because setting it up needs a command-line tool with ffmpeg installed — not something a client is expected to do. This existing instance still works normally; you can still edit its settings here. To add this effect to a NEW section, ask Small Giants Studio to prepare the frames and place the block.',
-							'sgs-blocks'
-						) }
-					</Notice>
-				</PanelBody>
-
 				<PanelBody title={ __( 'Thumbnail', 'sgs-blocks' ) }>
 					<p>
 						{ __(
