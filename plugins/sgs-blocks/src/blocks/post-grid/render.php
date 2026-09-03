@@ -162,12 +162,18 @@ $image_decorative = (bool) ( $attributes['imageDecorative'] ?? false );
 
 // Hover colour shifts — resolved from token slug or raw CSS colour. Emitted
 // further down (once $root_sel exists) as real declarations via
-// sgs_emit_state_colour_css() / a hand-built ancestor-hover rule for text
-// (see the comment at the emission site), scoped to `.sgs-post-grid__card`.
-// Bean-locked: no hardcoded fallback colour — unset stays unset.
+// sgs_emit_state_colour_css() / sgs_hover_state_rules() ancestor-hover rules
+// for text (see the comment at the emission site), scoped to
+// `.sgs-post-grid__card`. Bean-locked: no hardcoded fallback colour — unset
+// stays unset.
 $hover_bg     = ! empty( $attributes['backgroundColourHover'] ) ? sgs_colour_value( $attributes['backgroundColourHover'] ) : '';
-$hover_text   = ! empty( $attributes['textColourHover'] ) ? sgs_colour_value( $attributes['textColourHover'] ) : '';
 $hover_border = ! empty( $attributes['borderColourHover'] ) ? sgs_colour_value( $attributes['borderColourHover'] ) : '';
+// textColourHover is NOT pre-resolved with sgs_colour_value() here — the raw
+// value must reach sgs_resolve_text_colour_or_gradient() below un-mangled, so
+// that helper can tell a flat slug/colour apart from a gradient function
+// string. Resolution to a real CSS value happens inside sgs_text_colour_decl().
+$hover_text_raw          = (string) ( $attributes['textColourHover'] ?? '' );
+$hover_text_gradient_raw = (string) ( $attributes['textColourHoverGradient'] ?? '' );
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
 
@@ -611,18 +617,33 @@ if ( $hover_border ) {
 
 // Text: NOT routed through sgs_emit_state_colour_css() — that helper's fixed
 // template only supports "this selector's own :hover" (it appends `:hover`
-// directly onto $selector). The original text-hover CSS is the OPPOSITE
-// shape: hovering the CARD changes the colour of four DESCENDANT elements
-// (title link / excerpt / meta / read-more), each of which already carries
-// its own explicit resting `color` declaration — an explicit declaration on
-// an element always beats an inherited value regardless of specificity, so
-// setting `color` on the card itself would not reach them. Hand-built here
-// instead, but following the same contract as the helper: real declarations
-// only, no hardcoded fallback, emitted only when the operator has actually
-// set a hover text colour. `:focus-within` (not `:focus-visible`) is the
+// directly onto $selector). This text-hover CSS is the OPPOSITE shape:
+// hovering the CARD changes the colour of four DESCENDANT elements (title
+// link / excerpt / meta / read-more), each of which already carries its own
+// explicit resting `color` declaration — an explicit declaration on an
+// element always beats an inherited value regardless of specificity, so
+// setting `color` on the card itself would not reach them.
+// sgs_hover_state_rules()'s `$suffix` parameter exists for exactly this
+// ancestor-hover shape — it lands AFTER the pseudo-class, giving
+// `{card}:hover {target}` — so this still goes through the ONE shared
+// touch-safe hover mechanism (helpers-hover-state.php) rather than
+// hand-rolling a `:hover` rule. `:focus-within` (not `:focus-visible`) is the
 // correct pseudo-class for this ancestor-hover shape, since the element that
 // receives focus (the read-more link) is a descendant, not the card itself.
-if ( $hover_text ) {
+//
+// Flat-or-gradient (D636 "text" builder) — sgs_resolve_text_colour_or_gradient()
+// picks textColourHoverGradient when set + valid, leaving the flat
+// textColourHover value untouched. sgs_text_colour_decl() emits a plain
+// `color:` declaration for a flat colour, or the background-clip:text trio of
+// declarations for a gradient. sgs_text_colour_gradient_fallback_rule() is the
+// MANDATORY companion @supports fallback for browsers without
+// background-clip:text (a no-op for a flat colour) — emitted only once the
+// value is known to be a gradient, real declarations only, no hardcoded
+// fallback colour, emitted only when the operator has actually set a hover
+// text colour or gradient.
+$hover_text_effective = sgs_resolve_text_colour_or_gradient( $hover_text_raw, $hover_text_gradient_raw );
+$hover_text_decl      = sgs_text_colour_decl( $hover_text_effective );
+if ( $hover_text_decl ) {
 	$post_grid_hover_text_targets = array(
 		' .sgs-post-grid__title a',
 		' .sgs-post-grid__excerpt',
@@ -630,9 +651,16 @@ if ( $hover_text ) {
 		' .sgs-post-grid__readmore',
 	);
 	foreach ( $post_grid_hover_text_targets as $post_grid_hover_text_target ) {
-		$responsive_css .= $post_grid_card_sel . ':hover' . $post_grid_hover_text_target . ','
-			. $post_grid_card_sel . ':focus-within' . $post_grid_hover_text_target
-			. '{color:' . $hover_text . '}';
+		$responsive_css .= sgs_hover_state_rules( $post_grid_card_sel, $hover_text_decl, ':focus-within', $post_grid_hover_text_target );
+
+		// Companion rule — one call per target, matching sgs_hover_state_rules()
+		// above (a comma-joined selector list here is safe: unlike
+		// sgs_hover_state_rules(), sgs_text_colour_gradient_fallback_rule() takes
+		// $selector as an opaque string and never appends a pseudo-class to it).
+		$responsive_css .= sgs_text_colour_gradient_fallback_rule(
+			$post_grid_card_sel . ':hover' . $post_grid_hover_text_target . ',' . $post_grid_card_sel . ':focus-within' . $post_grid_hover_text_target,
+			$hover_text_effective
+		);
 	}
 }
 

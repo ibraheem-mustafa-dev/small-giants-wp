@@ -389,6 +389,11 @@
 		"textColourHover": {
 			"type": "string"
 		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the card's descendant text (title link/excerpt/meta/read-more) on hover with a masked text-clip gradient instead of a flat colour (D636 text-gradient rollout). Non-empty wins over textColourHover."
+		},
 		"borderColourHover": {
 			"type": "string"
 		},
