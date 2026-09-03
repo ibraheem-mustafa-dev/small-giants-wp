@@ -17,7 +17,7 @@
 
 **Menu (D752/D754-settled — do not re-litigate the scope, only the sequencing):**
 1. **[Recommended] Run `colour-codemod/fix.js --fix --apply`** — auto-fixes what it can (last session: 25 of 178 non-conformant rows, 14%, were mechanically fixable; 3 landed).
-2. **The bulk of what remains (D754) needs a capability-grant pass FIRST** — most rows can't paint hover/gradient without `render.php` gaining a real selector/mechanism. See `.claude/plans/2026-08-23-colour-capability-grant-design.md` if it exists, or design that pass before attempting more of this list by hand.
+2. **The bulk of what remains (D754) needs a capability-grant pass FIRST** — most rows can't paint hover/gradient without `render.php` gaining a real selector/mechanism. Design: `.claude/plans/archive/2026-08-23-colour-capability-grant-design.md` (archived at 51deda006). Superseded by the staged rollout plan -- the codemod route was returned NO-GO by a 6-persona adversarial council on 2026-09-03; ship existing-tooling value first, decide on a codemod after measuring real per-block cost.
 3. Leave as accepted, actively-worked debt (D752 ruling stands).
 
 **Grouped by shape below** — `below-min-states` (150) needs a hover-state row added; `missing-gradient` (127) needs a gradient sibling added.

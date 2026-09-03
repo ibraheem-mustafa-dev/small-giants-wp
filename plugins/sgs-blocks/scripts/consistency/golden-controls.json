@@ -74,7 +74,7 @@
           "paintHelper": "sgs_border_gradient_css()",
           "rowShape": "states[] + per-state gradient",
           "requiredSiblings": "{attr}Gradient per state",
-          "helperAdoption": "The row-builder helper src/components/colour-variants/borderRow.js has ZERO adopters tree-wide as of 2026-08-30 (no `import` of it and no `borderRow(` call anywhere under src/blocks/*/edit.js — verified by grep). Do not assume it is wired into any block; a caller building a border row today constructs the row object inline instead. Fill and text siblings (fillRow.js, textRow.js) ARE adopted — this is a per-helper gap, not a family-wide one."
+          "helperAdoption": "The row-builder helper src/components/colour-variants/borderRow.js WAS DELETED at commit dd2989ec2 and is NOT exported from src/components/index.js. This entry previously described it as a live file with zero adopters, which was false. Border colour is owned by SgsBorderControl (44 adopters), not by a colour row. colour-codemod/adopt.js refuses border rows with REFUSED:border-helper-missing rather than emitting a call to a deleted module, and its self-test asserts every name it can emit is exported from the barrel. Fill and text siblings (fillRow.js, textRow.js) DO exist and ARE adopted. Re-verified 2026-09-03."
         },
         "overlay": {
           "livesAs": "SIBLING control (in BackgroundPanel) — NOT a SgsColourPanel row (Bean-ruled 2026-08-22: 'still a variation of the colour control which makes it a sibling control')",
@@ -1014,7 +1014,7 @@
             "liveInstances": "0 remaining as of D563's fix, per the spec's own text — not independently re-verified this session"
           }
         ],
-        "matchRule": "DeviceTabs is banned as an exact JSX identifier (Set membership) despite being dead code — it is STILL exported from components/index.js, so a future block could reintroduce a working mount; the ban stands even at 0 live instances, same discipline as colour's zero-instance regression guards."
+        "matchRule": "DeviceTabs is banned as an exact JSX identifier (Set membership). The ban stands, but its previous justification was false: this entry claimed DeviceTabs is STILL exported from components/index.js. It is not - DeviceTabs.js does not exist and the barrel has no such export (verified 2026-09-03). The ban is now a pure regression guard against reintroduction, same discipline as colour's zero-instance guards."
       },
       "nativeUi": {
         "_note": "This type wraps other types (length-unit, box-4value, colour tiers, etc.) rather than owning a native competitor of its own — see the wrapped type's own nativeUi row."

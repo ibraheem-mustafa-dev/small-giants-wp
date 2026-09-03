@@ -3,7 +3,7 @@ doc_type: plan
 title: Colour capability-grant — implementation plan
 date: 2026-08-23
 status: U2 CLOSED 2026-08-24 (no_css_property 27 -> 4, the 4 are option-picker's by design). U1 triaged by census, not by hand. U3/U4 unstarted.
-design: .claude/plans/2026-08-23-colour-capability-grant-design.md
+design: .claude/plans/archive/2026-08-23-colour-capability-grant-design.md  # ARCHIVED at 51deda006
 slot: next session
 governing: D542 (triad), D744 (capability moves), D750 (parse attr JSON), D751 (native-colour-ui closed), D752 (THE MANDATE), D294 (wrapper vs block-private). [D753 records a prove-the-cause miss; context only, not load-bearing here]
 ---
