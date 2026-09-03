@@ -114,17 +114,25 @@ different problems with three different answers.
 |---|---|---|---|
 | **C — motion-only** (`transform` 54, `opacity` 9, `opacity+transform` 6, `filter` 6, 4 others) | **80** | — | **YES.** 8 property-sets, one uniform transform: wrap in `@media (hover: hover) and (pointer: fine)`. No colour touched, no specificity changed. Build this one. |
 | **A — colour hover, attribute EXISTS** | 73 | 26 | **Detect yes, apply NO.** The fix is `:where()`, which sets specificity to ZERO. That is a behaviour change: prove per rule that it does not lose a contest it currently wins. |
-| **B — colour hover, NO attribute** | 26 | 7 | **NO.** The client cannot change these at all. Adding a control is a design decision. `google-reviews` 6 · `pricing-table` 6 · `modal` 4 · `accordion` 3 · `form` 3 · `option-picker` 3 · `breadcrumbs` 1. |
+| **B — colour hover, NO attribute** | 26 | 7 | **YES — and it is already RULED, not a design call.** D752 + `golden-controls.json` `states.minimumMeans`: every colour row carries at least two states by default, "no propose-and-defer, no per-block approval gate". Each becomes an attribute + control + helper emission, AND the hardcoded rule is DELETED as the superseded writer. Same 4-change pattern proven 16x this session. `google-reviews` 6 · `pricing-table` 6 · `modal` 4 · `accordion` 3 · `form` 3 · `option-picker` 3 · `breadcrumbs` 1. |
 
 ⭐ **1 of 99 colour-family hover rules uses the `:where()` fallback shape** that
 `plugins/sgs-blocks/CLAUDE.md` item 4 requires. The other 98 are bare selectors. They probably lose
 to the helper anyway — it emits at (0,3,0) (`.uid.wp-block-x:hover`, confirmed in live probe CSS)
 against a bare (0,2,0) — so a client's setting wins **by accident of specificity, not by design**.
 
+⛔ **CORRECTION — category B is NOT an open design decision, and calling it one re-opened a settled
+ruling.** D752 states it verbatim: hover and gradient are applied "everywhere the rule wants them —
+no propose-and-defer, no per-block approval gate", and it says in terms **do NOT re-litigate it**.
+`golden-controls.json`'s `states.minimumMeans` says the same independently: every colour row carries
+at least two states by default. So "the client cannot change these" is the DEFECT STATEMENT for all
+26 rules, not a question to put back to Bean. They are well-specified work: the same four-change
+pattern this session ran 16 times, plus deleting the hardcoded rule the new emission supersedes.
+
 **Why the helpers did not already cover this.** The five colour helper variants emit from
 ATTRIBUTES. A stylesheet rule has no attribute to read, so no helper could have produced it.
 "Plug and play" was always scoped to attribute-backed colour: category B is the real gap in that
-scoping, A is a conformance gap, C was never colour's job.
+scoping — and D752 already ruled it must be CLOSED. A is a conformance gap; C was never colour's job.
 
 ⛔ **Build the detector, do not fan out agents.** `CLAUDE.md`: "MORE THAN 3 BLOCKS? BUILD THE
 DETECTOR FIRST." At 40 blocks the deliverable is a survey → fix → check triad with a self-test

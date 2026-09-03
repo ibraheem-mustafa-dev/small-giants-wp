@@ -135,13 +135,21 @@ part is. ⚠ The earlier "233 lines" figure counted lines including comments; th
 |---|---|---|---|
 | **C — motion-only hover** (`transform` 54, `opacity` 9, `opacity+transform` 6, `filter` 6, 4 others) | **80** | — | **YES, script.** 8 property-sets, ONE uniform transform: wrap in `@media (hover: hover) and (pointer: fine)`. Touches no colour, changes no specificity. |
 | **A — colour hover, attribute EXISTS** | 73 | 26 | **Detect yes, apply NO.** Fix is `:where()`, which sets specificity to ZERO — a real behaviour change needing per-rule proof it does not lose a fight it currently wins. |
-| **B — colour hover, NO attribute** | 26 | 7 | **NO.** The client cannot change these at all. Adding a control is a design decision, not a transform. `google-reviews` 6 · `pricing-table` 6 · `modal` 4 · `accordion` 3 · `form` 3 · `option-picker` 3 · `breadcrumbs` 1. |
+| **B — colour hover, NO attribute** | 26 | 7 | **YES — and it is already RULED, not a design call.** D752 + `golden-controls.json` `states.minimumMeans`: every colour row carries at least two states by default, "no propose-and-defer, no per-block approval gate". Each becomes an attribute + control + helper emission, AND the hardcoded rule is DELETED as the superseded writer. Same 4-change pattern proven 16x this session. `google-reviews` 6 · `pricing-table` 6 · `modal` 4 · `accordion` 3 · `form` 3 · `option-picker` 3 · `breadcrumbs` 1. |
 
 ⭐ **Only 1 of 99 colour-family hover rules uses the sanctioned `:where()` fallback shape** that
 `plugins/sgs-blocks/CLAUDE.md` item 4 requires. The other 98 are bare selectors. They probably lose
 anyway — the helper emits at (0,3,0) (`.uid.wp-block-x:hover`, confirmed in the live probe CSS)
 against a bare (0,2,0) — so the client's setting wins **by accident of specificity, not by design**.
 A rule that loses is indistinguishable from one that is absent; `:where()` is what makes it deliberate.
+
+⛔ **CORRECTION — category B is NOT an open design decision, and calling it one re-opened a settled
+ruling.** D752 states it verbatim: hover and gradient are applied "everywhere the rule wants them —
+no propose-and-defer, no per-block approval gate", and it says in terms **do NOT re-litigate it**.
+`golden-controls.json`'s `states.minimumMeans` says the same independently: every colour row carries
+at least two states by default. So "the client cannot change these" is the DEFECT STATEMENT for all
+26 rules, not a question to put back to Bean. They are well-specified work: the same four-change
+pattern this session ran 16 times, plus deleting the hardcoded rule the new emission supersedes.
 
 **Why the helpers did not already cover this, since it looks like they should:** the five colour
 helper variants emit from ATTRIBUTES. A `style.css` rule has no attribute to read, so no helper
@@ -154,7 +162,7 @@ THE DETECTOR FIRST." At 40 blocks the deliverable is a survey → fix → check 
 (D542), NOT a fan-out of agents. ⛔ **Do not dispatch Haiku subagents at this**: A and B are
 judgement calls, and this session already measured what happens when N agents each re-derive one
 independently.
-*Execution:* C first (build the codemod, it is the clean one). A and B need Bean's scope call.
+*Execution:* C first (build the codemod, it is the clean one), then B (ruled by D752, dispatchable on the proven pattern). Only A needs a per-rule specificity check.
 
 **Task 2 — the grounding pass.** The three greps in the prompt, across the whole finding set, ONCE.
 *Execution:* inline (Opus). *Depends on:* none (parallel with Task 1). *≈20 min.*
