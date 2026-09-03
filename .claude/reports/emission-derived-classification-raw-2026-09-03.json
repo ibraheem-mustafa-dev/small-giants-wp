@@ -1246,6 +1246,9 @@
       "sgs/pricing-table::popularBadgeBackground": [
         "background-color"
       ],
+      "sgs/pricing-table::priceColourHover": [
+        "color"
+      ],
       "sgs/pricing-table::featureColour": [
         "color"
       ],
@@ -1256,9 +1259,6 @@
         "background-color"
       ],
       "sgs/pricing-table::titleColour": [
-        "color"
-      ],
-      "sgs/pricing-table::priceColourHover": [
         "color"
       ],
       "sgs/pricing-table::borderStyle": [
@@ -2912,7 +2912,7 @@
     ]
   },
   "task_b": {
-    "written": 0,
+    "written": 2,
     "dual_bound_written": 0,
     "disagreements": [],
     "unresolved": [
@@ -3494,6 +3494,11 @@
       },
       {
         "block": "sgs/gallery",
+        "control": "ShadowControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/gallery",
         "control": "MediaGalleryPicker",
         "reason": "no attribute reference found in value/checked/onChange"
       },
@@ -3654,13 +3659,13 @@
       },
       {
         "block": "sgs/icon-list",
-        "control": "Button",
-        "reason": "no attribute reference found in value/checked/onChange"
+        "control": "IconPicker",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['defaultIconSource', 'icon']"
       },
       {
         "block": "sgs/icon-list",
-        "control": "IconPicker",
-        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['defaultIconSource', 'icon']"
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
       },
       {
         "block": "sgs/icon-list",
@@ -3869,16 +3874,6 @@
       },
       {
         "block": "sgs/notice-banner",
-        "control": "ResponsiveBoxControl",
-        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['paddingMobile', 'paddingTablet']"
-      },
-      {
-        "block": "sgs/notice-banner",
-        "control": "ResponsiveBoxControl",
-        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['marginMobile', 'marginTablet']"
-      },
-      {
-        "block": "sgs/notice-banner",
         "control": "IconPicker",
         "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['iconName', 'iconSource']"
       },
@@ -3886,6 +3881,16 @@
         "block": "sgs/notice-banner",
         "control": "ToggleControl",
         "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['iconName', 'iconSource']"
+      },
+      {
+        "block": "sgs/notice-banner",
+        "control": "ResponsiveBoxControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['paddingMobile', 'paddingTablet']"
+      },
+      {
+        "block": "sgs/notice-banner",
+        "control": "ResponsiveBoxControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['marginMobile', 'marginTablet']"
       },
       {
         "block": "sgs/option-picker",
@@ -4204,17 +4209,17 @@
       },
       {
         "block": "sgs/quote",
-        "control": "ResponsiveBoxControl",
-        "reason": "no attribute reference found in value/checked/onChange"
-      },
-      {
-        "block": "sgs/quote",
-        "control": "ResponsiveBoxControl",
-        "reason": "no attribute reference found in value/checked/onChange"
-      },
-      {
-        "block": "sgs/quote",
         "control": "ShadowControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/quote",
+        "control": "ResponsiveBoxControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/quote",
+        "control": "ResponsiveBoxControl",
         "reason": "no attribute reference found in value/checked/onChange"
       },
       {
@@ -4469,6 +4474,11 @@
       },
       {
         "block": "sgs/team-member",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/team-member",
         "control": "ResponsiveBoxControl",
         "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['paddingMobile', 'paddingTablet']"
       },
@@ -4476,11 +4486,6 @@
         "block": "sgs/team-member",
         "control": "ResponsiveBoxControl",
         "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['marginMobile', 'marginTablet']"
-      },
-      {
-        "block": "sgs/team-member",
-        "control": "Button",
-        "reason": "no attribute reference found in value/checked/onChange"
       },
       {
         "block": "sgs/team-member",
