@@ -237,11 +237,10 @@ decided the visible surface. Fixed `ba01581df`, live-verified. Frame cost 0.240m
 9.90% / 10.64% over the painted region** — 2 of 3 over the 5% ceiling. It did not collapse when a
 25,000x phase-mismatch bug was fixed, so it is not a measurement artefact.
 
-⛔ **TWO CLAIMS WERE ASSERTED THIS SESSION AND ARE WITHDRAWN — do not resurrect either.**
+⛔ **TWO CLAIMS WERE ASSERTED PREVIOUSLY AND ARE WITHDRAWN — do not resurrect either.**
 An 89.3% silhouette IoU (no script, no committed inputs, a `background:#fff` hack in its capture
 path), and "a systematic colour cast" (over-read `bias_over_abs`, which measures directionality
-not spatial uniformity). **Painted coverage differs 7.7 points at t=17500 and hue count 2.3x — a tone shift
-cannot change coverage. Shape divergence is the leading UNTESTED hypothesis.** See D888.
+not spatial uniformity). See D888.
 
 ⛔ **D880: Bean authorised porting the reference's VERTEX SHADER mechanism** (that file only).
 Palette PNG stays off-limits as a shipped asset — it is a measurement fixture, read in place from
@@ -251,14 +250,31 @@ Palette PNG stays off-limits as a shipped asset — it is a measurement fixture,
 returns 0). A `git clean -xdf` destroys every reference number permanently. The tracked
 `fidelity-baseline.json` + `reference-matrices.json` are what survive it.
 
-### ▶ NEXT — investigate the ~10.6% painted-region gap against the SHAPE hypothesis
+**2026-09-03 (D925) — both D888 alternative causes eliminated with evidence; a real (properly
+built, committed-script) silhouette IoU now exists.** Ground colour was checked and ruled out
+(numbers unchanged to 2 d.p. once the comparator was fed production's real resolved theme token
+instead of the engine's hardcoded near-white default). Harness drift was fixed, not just flagged
+— `harness-lib.mjs` now owns the one shared server/MIME/GPU-flags for all four Chromium scripts,
+proven behaviour-preserving (byte-identical output on every one, post-refactor). New
+`silhouette_iou` measurement (unlike the withdrawn 89.3% figure, this one has a committed script
+and committed inputs): **IoU 0.756–0.799 across all three phases, our side consistently covering
+7–12 points LESS of the frame than the rig.** Real evidence for shape divergence — **still not a
+proven cause**: the painted mask isn't a true geometric silhouette, and the never-verified
+fragment-level effects (glow/striation/depth-fade) could shrink apparent coverage without any real
+shape difference. Layers 1–3's geometry/twist stay proven correct throughout (`verify-transform.mjs`
+7/7, unchanged).
 
-Prompt: `.claude/prompts/2026-08-30-generative-background-fidelity-gap.md`. Two named follow-ups
-first (both live alternative explanations): drive the replica through the PRODUCTION option path
-(it currently measures the module's `DEFAULT_*` constants, not the block's shipped attributes),
-and a shared `harness-lib.mjs` — four Chromium harnesses have already drifted, one roots where the
-palette 403s. `npm run fidelity:compare` reproduces every figure; `check:transform-parity` is
-wired and survives the rig's deletion.
+### ▶ NEXT — isolate geometry from fragment shading to find which one the silhouette gap belongs to
+
+Both D888 alternative causes are now closed (see D925 above). What's left is separating the
+silhouette-IoU finding's TWO remaining explanations: real geometry/twist divergence (layer 3, or
+the 2026-08-28 `noiseWobble` addendum — added AFTER `verify-transform.mjs` was built, so not
+covered by its 7/7), vs. the fragment-level effects (glow-gate/striation/depth-fade — rebuilt
+against reference but tuned by eye, never verified against reference constants) shrinking the SAME
+geometry's apparent coverage via a stronger depth-fade-toward-ground blend. A flat-unlit-fill probe
+mode (geometry only, no fragment effects) on both sides, diffed for silhouette alone, is the next
+concrete step — not yet built. `npm run fidelity:compare` reproduces every figure including the
+new silhouette IoU; `check:transform-parity` is wired and survives the rig's deletion.
 
 **Shipped this session:** `chromeOffsetPx()` moved to the Tier V shared home so a vanilla consumer
 can read the sticky-header height; the progress marker re-mapped to a **reading line** and the two

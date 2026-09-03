@@ -110,11 +110,37 @@
  *                 rig's own default (index.html:250). This PNG is a
  *                 measurement fixture only: never referenced from
  *                 plugins/ runtime code, never committed, never deployed.
+ *   ?ground=<r>,<g>,<b> — sRGB 0-1 triple passed through as
+ *                 `opts.groundColour`. Without this, createGenerativeBackground()
+ *                 falls to its own DEFAULT_GROUND = [0.98,0.98,0.97] — a
+ *                 hardcoded near-white that production NEVER actually uses.
+ *                 In production, `fx-generative-background.js` reads the
+ *                 LIVE `--sgs-genbg-ground` custom property (resolved by
+ *                 `includes/fx-generative-background.php` from the client's
+ *                 own theme token, e.g. `surface`), which this bare-engine
+ *                 page — deliberately bypassing that whole boot module —
+ *                 never sets. Left unset, this page renders against a ground
+ *                 colour production never actually ships, which is a real
+ *                 divergence source distinct from the shape/geometry
+ *                 question this harness otherwise exists to answer. A driver
+ *                 wanting an apples-to-apples comparison MUST resolve the
+ *                 same token production resolves and pass it here explicitly
+ *                 — see fidelity-compare.mjs's GROUND_COLOUR constant.
  */
 import { createGenerativeBackground } from '../../src/shared/effects/webgl/generative-background.js';
 
 const q   = new URLSearchParams( location.search );
 const PAL = ( q.get( 'pal' ) || 'palette-a' ).replace( /[^a-z0-9-]/gi, '' );
+const GROUND_MATCH = ( q.get( 'ground' ) || '' ).match(
+	/^([0-9.]+),([0-9.]+),([0-9.]+)$/
+);
+const GROUND_COLOUR = GROUND_MATCH
+	? [ parseFloat( GROUND_MATCH[ 1 ] ), parseFloat( GROUND_MATCH[ 2 ] ), parseFloat( GROUND_MATCH[ 3 ] ) ]
+	: undefined; // undefined, not null — createGenerativeBackground()'s own
+	// `Array.isArray(opts.groundColour) ? opts.groundColour : DEFAULT_GROUND`
+	// check only falls through to its default on a non-array, so leaving this
+	// unset (rather than guessing a value) preserves the existing behaviour
+	// exactly when no ?ground= is supplied.
 const T_MATCH = location.search.match( /[?&]t=([0-9.]+)/ );
 // I1 fix: the rig's own [0-9.]+ shape matches a string of dots alone (e.g.
 // "?t=..."), which parseFloat() turns into NaN — T_DEFAULT was previously
@@ -289,6 +315,7 @@ if ( ! gl ) {
 	const handle = await createGenerativeBackground( canvas, {
 		textureSource: img,
 		speed: 1,
+		groundColour: GROUND_COLOUR,
 	} );
 
 	if ( ! handle ) {

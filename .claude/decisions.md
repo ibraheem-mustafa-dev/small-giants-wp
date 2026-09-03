@@ -1,3 +1,58 @@
+## D925 [ROUTINE] — generative-background fidelity: two named alternative causes eliminated with evidence, a new silhouette-IoU measurement finds real shape divergence, cause still not proven
+
+**2026-09-03.** Continues D886-D888. Per this project's prove-the-cause-before-fix rule, D888
+named two live alternative explanations that had to be checked before the shape-divergence
+hypothesis could be trusted. Both checked this session, for real, with measurement rather than
+assumption:
+
+**1. Wrong comparator configuration — ELIMINATED, not assumed.** `poc-replica.html` calls
+`createGenerativeBackground()` with no fold/displacement/glow options at all. Confirmed
+`block.json` declares no `default` for any of the nine geometry attrs, so a fresh block instance
+genuinely falls through to the same `DEFAULT_*` constants the comparator already used for those —
+not a gap. Ground colour was the one real exception: production resolves it from a live theme
+token (`includes/fx-generative-background.php` → `SGS_FX_GENBG_GROUND_TOKENS['light'] = 'surface'`
+→ `#FAF9F6`) written as `--sgs-genbg-ground`, which `poc-replica.html` never sets because it
+bypasses `fx-generative-background.js` entirely — it fell to the engine's hardcoded
+`DEFAULT_GROUND = [0.98,0.98,0.97]` instead. Fixed: `poc-replica.html` gained a `?ground=` param;
+`fidelity-compare.mjs` resolves and passes the real token value. **Measured effect: none worth
+noting** (5.29→5.28%, 4.71→4.70%, 5.63→5.62% across the three sampled phases) — the two colours
+were already near-identical sRGB triples. Ruled out with a number, not by inspection.
+
+**2. Harness drift — FIXED, proven behaviour-preserving.** New `harness-lib.mjs` owns the one
+shared `serve()`, MIME map, and GPU launch-flag list that `fidelity-compare.mjs`,
+`capture-render.mjs`, `flip-probe.mjs` and `extract-reference-matrices.mjs` previously each
+hand-rolled (already measurably drifted — different roots, `capture-render.mjs`'s own server
+403ing the palette PNG another script needed). All four re-run post-refactor and diffed against
+their pre-refactor output: `fidelity-compare.mjs`'s headline numbers unchanged; `flip-probe.mjs`'s
+sha256/diffs unchanged (`flipY=true` conclusion unchanged); `extract-reference-matrices.mjs`'s
+`reference-matrices.json` is a zero-byte git diff; `verify-transform.mjs` still 7/7. A refactor
+that changed behaviour would have shown up in at least one of these; none did.
+
+**New: a direct silhouette (shape-only) measurement.** Added a `silhouette_iou` Python subcommand
+to `fidelity-compare.mjs` computing intersection-over-union between each side's own painted mask —
+answering "do the two renders occupy the same screen pixels" independent of any colour difference
+within the overlap, rather than inferring shape from `bias_over_abs` (which D888 already
+established cannot distinguish tone from geometry). **Result: IoU 0.756–0.799 across all three
+sampled phases, and OUR side consistently covers 7–12 points LESS of the frame than the rig at
+every phase** (39.1–41.0% vs 46.3–51.9%). Real, direct evidence for shape divergence.
+
+⛔ **NOT YET A PROVEN CAUSE — one more confound stands between this result and a fix.** The
+"painted" mask is "differs from the dominant background colour by quantised key", not a true
+geometric silhouette. §2/§3's fragment-level effects (glow-gate, striation, depth-fade) were
+rebuilt against the reference's fragment shaders but tuned by eye against the canary, never
+verified against reference constants (unlike layers 1–3's geometry/twist, which `verify-transform.mjs`
+proves numerically, 7/7, unchanged by anything in this session). A stronger depth-fade-toward-ground
+blend on our side could shrink the SAME underlying geometry's apparent painted coverage without any
+real shape difference — exactly the trap the project's own `measurement-vs-eye` rule and D886's
+withdrawn 89.3% IoU both warn about. **Next elimination step, not yet done:** isolate layers 1–3
+(geometry only, flat unlit fill) from the fragment effects to find out which one the silhouette gap
+actually belongs to.
+
+Commits: (uncommitted at time of writing — see `git log` for the landing commit).
+Files: `poc-replica.html`, `fidelity-compare.mjs`, new `harness-lib.mjs`, `capture-render.mjs`,
+`flip-probe.mjs`, `extract-reference-matrices.mjs`, `fidelity-baseline.json`, this directory's
+`README.md`.
+
 ## D924 [ROUTINE] — 37-media-no-handroll: background panel is not a media element; 44 → 0
 
 **2026-09-03.** Bean-directed. Closes the `37-media-no-handroll` backlog held item

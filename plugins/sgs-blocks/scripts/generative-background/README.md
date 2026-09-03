@@ -59,19 +59,61 @@ conversion and drove both sides with the same raw value — 25,000x apart in act
 its own precondition check compared the raw uniforms and passed.** That bug is fixed; the
 numbers below are from the corrected run.
 
-**The headline figures, as of the last committed run (2026-08-29, corrected phase mapping):**
+**The headline figures, as of the last committed run (this session — ground colour + silhouette
+IoU added; numbers below are effectively unchanged from the 2026-08-29 corrected-phase-mapping
+run, see "what's been eliminated" below):**
 
-| `u_time` (rig raw) | effective phase | `mean_abs_pct` (crop-wide) | masked mean_abs_pct (painted-only) | `bias_over_abs` |
-|---|---|---|---|---|
-| 17,500 | 0.70 | 5.29% ⚠ OVER | 10.71% | 0.943 |
-| 27,500 | 1.10 | 4.71% | 9.90% | 0.916 |
-| 47,500 | 1.90 | 5.63% ⚠ OVER | 10.64% | 0.871 |
+| `u_time` (rig raw) | effective phase | `mean_abs_pct` (crop-wide) | masked mean_abs_pct (painted-only) | `bias_over_abs` | silhouette IoU |
+|---|---|---|---|---|---|
+| 17,500 | 0.70 | 5.28% ⚠ OVER | 10.69% | 0.942 | 0.772 |
+| 27,500 | 1.10 | 4.70% | 9.88% | 0.915 | 0.799 |
+| 47,500 | 1.90 | 5.62% ⚠ OVER | 10.61% | 0.871 | 0.756 |
 
 **Verdict: FIDELITY FAILURE — 2 of 3 sampled times over the 5% ceiling** (`verdict.overCeilingTimes`
 in the JSON). Fixing the phase-mapping bug did **not** collapse or meaningfully narrow the gap —
 the numbers before and after the fix are within a point of each other (4.61–5.40% before, at the
 wrong phases entirely, vs 4.71–5.63% now, at correct phases). That consistency is itself informative:
 whatever is causing this divergence is not sensitive to which moment of the animation gets sampled.
+
+## What's been eliminated this session, with evidence — and what's genuinely new
+
+Two named alternative explanations (D888) had to be ruled out before the shape-divergence
+hypothesis could be trusted. Both were checked for real, not assumed:
+
+1. **Wrong comparator configuration — ELIMINATED.** `poc-replica.html` calls
+   `createGenerativeBackground()` with no fold/displacement/glow options, so a fresh block
+   instance genuinely falls through to the same `DEFAULT_*` constants (`block.json` declares no
+   `default` for any of the nine geometry attrs — confirmed). Ground colour was the one exception:
+   production resolves it from a live theme token (`--sgs-genbg-ground`, `surface` = `#FAF9F6`),
+   which the bare-engine replica page never set, defaulting instead to the engine's hardcoded
+   `DEFAULT_GROUND` (`[0.98,0.98,0.97]`, near-white). `poc-replica.html` now accepts `?ground=`
+   and `fidelity-compare.mjs` passes the real resolved token. **Measured effect: none worth
+   noting** (5.29→5.28%, 4.71→4.70%, 5.63→5.62%) — the two colours were already near-identical
+   sRGB triples, so this genuinely was not the cause, now proven rather than assumed.
+2. **Harness drift — FIXED, not just ruled out.** `harness-lib.mjs` now owns the one shared
+   `serve()`, MIME map, and GPU launch-flag list; `fidelity-compare.mjs`, `capture-render.mjs`,
+   `flip-probe.mjs` and `extract-reference-matrices.mjs` all import it instead of four
+   independently-drifted copies. Proven behaviour-preserving, not just asserted: every one of the
+   four scripts was re-run post-refactor and produced byte-identical output to its
+   pre-refactor run (`fidelity-compare.mjs`'s headline numbers unchanged to 2 d.p.;
+   `flip-probe.mjs`'s sha256/diffs unchanged; `extract-reference-matrices.mjs`'s
+   `reference-matrices.json` output is a zero-byte git diff against the committed copy;
+   `verify-transform.mjs` still 7/7).
+
+**New this session: a direct silhouette (shape-only) measurement, not inferred from
+`bias_over_abs`.** `silhouette_iou` (new `compare.py`-adjacent Python subcommand in
+`fidelity-compare.mjs`) computes intersection-over-union between each side's own painted mask —
+answering "do the two renders occupy the same screen pixels", independent of any colour
+difference within the overlap. **Result: IoU 0.76–0.80 across all three sampled phases, and our
+side consistently covers LESS of the frame than the rig at every phase (39–41% vs 46–52%).** This
+is real, direct evidence for shape divergence, not an inference from directionality — but it is
+**not yet a proven cause**: the "painted" mask is "differs from the dominant background colour by
+quantised-key", not a true geometric silhouette, so a stronger depth-fade-toward-ground blend on
+our side (§2/§3's fragment effects, which were tuned by eye against the canary and never verified
+against reference) could shrink the SAME underlying geometry's apparent coverage without any real
+shape difference. **The next elimination step, not yet done:** isolate layers 1–3 (geometry only,
+flat unlit fill, no glow-gate/striation/depth-fade) from the fragment-level effects, to find out
+which one the silhouette gap actually belongs to before touching either.
 
 - `mean_abs_pct` — the average per-pixel colour difference, as a percentage of the 0–255
   range, measured over the shared crop box (`fidelity-baseline.json`'s top-level `crop`
@@ -194,6 +236,15 @@ Development-time tools used to build `reference-matrices.json` and investigate s
 divergences (the `flipY` texture bug, palette extraction, etc.) while the rig was available.
 Kept for provenance of how the committed data was produced; not expected to run again once the
 rig is gone.
+
+### `harness-lib.mjs` — shared plumbing, no rig dependency of its own
+
+The ONE static-file-server implementation, MIME map, and GPU launch-flag list every script above
+imports, rather than each hand-rolling its own (D888 named the resulting drift — different roots,
+different traversal guards, one server 403ing a palette PNG another needed — as a live alternative
+explanation for part of the fidelity gap, separate from shape/colour). Not runnable standalone; it
+has no CLI of its own. If you're modifying how any of the four scripts above serve files or launch
+Chromium, change it here, not in the caller.
 
 ## Two traps that have already cost real time on this codebase
 

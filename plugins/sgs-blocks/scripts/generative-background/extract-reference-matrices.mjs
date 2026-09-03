@@ -27,11 +27,10 @@
  */
 
 import { chromium } from 'playwright';
-import { createServer } from 'node:http';
-import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { join, extname, resolve, normalize, sep } from 'node:path';
+import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { serve as serveRoot, launchGpuBrowser, VIEWPORT } from './harness-lib.mjs';
 
 const HERE = fileURLToPath( new URL( '.', import.meta.url ) );
 const REPO_ROOT = resolve( HERE, '..', '..', '..', '..' );
@@ -51,75 +50,29 @@ if ( ! existsSync( join( RIG_DIR, 'index.html' ) ) ) {
 	process.exit( 1 );
 }
 
-const MIME = {
-	'.html': 'text/html; charset=utf-8',
-	'.js': 'text/javascript; charset=utf-8',
-	'.mjs': 'text/javascript; charset=utf-8',
-	'.json': 'application/json; charset=utf-8',
-	'.glsl': 'text/plain; charset=utf-8',
-	'.png': 'image/png',
-	'.webp': 'image/webp',
-	'.md': 'text/plain; charset=utf-8',
-};
-
 /**
  * Minimal static server over the rig directory. The rig `fetch()`es its shader
  * files, which the file:// origin forbids, so a real HTTP origin is required.
+ * Delegates to harness-lib.mjs's shared `serve()` (index-fallback ON,
+ * matching this file's pre-extraction behaviour exactly — see that module's
+ * header, D888).
  *
  * @return {Promise<{origin: string, close: Function}>} Server handle.
  */
 function serveRig() {
-	const server = createServer( async ( req, res ) => {
-		try {
-			const urlPath = decodeURIComponent( ( req.url || '/' ).split( '?' )[ 0 ] );
-			const rel = urlPath === '/' ? '/index.html' : urlPath;
-			// Contain the served path inside RIG_DIR — a traversal here would
-			// expose the wider repo to anything else listening on localhost.
-			const target = normalize( join( RIG_DIR, rel ) );
-			if ( target !== RIG_DIR && ! target.startsWith( RIG_DIR + sep ) ) {
-				res.writeHead( 403 );
-				res.end( 'forbidden' );
-				return;
-			}
-			const body = await readFile( target );
-			res.writeHead( 200, {
-				'Content-Type': MIME[ extname( target ) ] || 'application/octet-stream',
-			} );
-			res.end( body );
-		} catch {
-			res.writeHead( 404 );
-			res.end( 'not found' );
-		}
-	} );
-
-	return new Promise( ( res ) => {
-		server.listen( 0, '127.0.0.1', () => {
-			const { port } = server.address();
-			res( {
-				origin: `http://127.0.0.1:${ port }`,
-				close: () => new Promise( ( r ) => server.close( r ) ),
-			} );
-		} );
-	} );
+	return serveRoot( { root: RIG_DIR, indexFallback: true } );
 }
 
 const rig = await serveRig();
 
-const browser = await chromium.launch( {
-	args: [
-		'--use-gl=angle',
-		'--use-angle=default',
-		'--ignore-gpu-blocklist',
-		'--enable-gpu',
-		'--enable-webgl',
-	],
-} );
+const browser = await launchGpuBrowser( chromium );
 
 // The rig sizes its frustum from the canvas, so the viewport IS an input to
 // the projection matrix. Record it alongside the numbers — a matrix compared
 // against a differently-sized viewport is a meaningless comparison, and this
-// is exactly the provenance-field problem a past probe hit.
-const VIEWPORT = { width: 1440, height: 900 };
+// is exactly the provenance-field problem a past probe hit. Shared with
+// fidelity-compare.mjs (harness-lib.mjs's VIEWPORT) — both need the SAME
+// 1440x900 box for their numbers to be comparable to each other.
 
 const page = await browser.newPage( {
 	viewport: VIEWPORT,

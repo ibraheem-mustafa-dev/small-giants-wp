@@ -87,13 +87,19 @@
  */
 
 import { chromium } from 'playwright';
-import { createServer } from 'node:http';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
-import { join, extname, resolve, normalize, relative, sep } from 'node:path';
+import { join, resolve, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
+import {
+	serve as serveRoot,
+	launchGpuBrowser,
+	PAINTED_MIN_COVERAGE,
+	PAINTED_MIN_UNIQUE_HUES,
+	VIEWPORT,
+} from './harness-lib.mjs';
 
 const HERE = fileURLToPath( new URL( '.', import.meta.url ) );
 const REPO_ROOT = resolve( HERE, '..', '..', '..', '..' );
@@ -103,6 +109,23 @@ const PYTHON = process.env.SGS_PYTHON || 'python';
 const RIG_PATH = '/.claude/scratch/stripe-hero-poc/index.html';
 const REPLICA_PATH = '/plugins/sgs-blocks/scripts/generative-background/poc-replica.html';
 const PALETTE = 'palette-a';
+
+// ⛔ GROUND COLOUR FIX (this session). poc-replica.html calls
+// createGenerativeBackground() with no `groundColour` unless told, which falls
+// to generative-background.js's hardcoded DEFAULT_GROUND = [0.98,0.98,0.97].
+// Production never actually renders against that constant — a block's own
+// fold/disp/glow attributes DO fall through to the same shipping defaults (no
+// block.json `default` is declared for any of them, confirmed), but ground
+// colour is resolved differently: includes/fx-generative-background.php reads
+// the client's theme token (SGS_FX_GENBG_GROUND_TOKENS['light'] = 'surface')
+// and writes it as the live `--sgs-genbg-ground` custom property, which
+// poc-replica.html never sets because it bypasses fx-generative-background.js
+// entirely. theme.json's `surface` token is `#FAF9F6` — resolve it here so
+// "ours" renders against what production actually ships, not a coincidental
+// near-match. (#FAF9F6 -> 250/255, 249/255, 246/255 — close to, but not
+// exactly, the hardcoded default, which is itself worth having proven rather
+// than assumed.)
+const GROUND_COLOUR = Object.freeze( [ 250 / 255, 249 / 255, 246 / 255 ] );
 
 // ⛔ C1 FIX (2026-08-29, whole-branch review). The rig SCALES u_time INSIDE
 // its shader — shaders/68467.glsl:230, `displace(..., u_time * u_speed, ...)`
@@ -162,16 +185,15 @@ const PERTURB_DELTA = 3;
 // shows the box from x=330 to the viewport's own right edge, width
 // 1440-330=1110, not the canvas element's own 1393. Confirmed live: an
 // unclipped box made compare.py exit non-zero with "crop exceeds image".
-const VIEWPORT = { width: 1440, height: 900 };
 const CANVAS_BOX = { x: 330, y: 0, width: VIEWPORT.width - 330, height: 761 };
 const DPR = 1; // Pinned both sides — a known state divergence otherwise (rig default 2, ours 1.5).
 
 // Painted-geometry thresholds — the SAME numbers capture-render.mjs gates on
-// (2% coverage floor, 8 distinct 5-bit-quantised hues floor). Re-derived here
-// against a saved PNG via Python/PIL rather than the live gl buffer, because
+// (2% coverage floor, 8 distinct 5-bit-quantised hues floor), now the single
+// shared harness-lib.mjs constants (imported above) rather than two
+// independently-typed copies. Re-derived here against a saved PNG via
+// Python/PIL rather than the live gl buffer, because
 // preserveDrawingBuffer:false makes a post-composite gl.readPixels() lie.
-const PAINTED_MIN_COVERAGE = 0.02;
-const PAINTED_MIN_UNIQUE_HUES = 8;
 
 // C1 symmetry check: outside the shared canvas box, painted coverage on
 // EITHER side must stay under this floor. Anything above it is either the
@@ -265,54 +287,20 @@ class HarnessError extends Error {}
  *
  * @return {Promise<{origin: string, close: Function}>} Server handle.
  */
+/**
+ * Serve BOTH trees this comparison needs — plugins/sgs-blocks (the shipping
+ * engine + poc-replica.html) and .claude/scratch (the reference rig + its
+ * palette PNGs) — from ONE root, because capture-render.mjs's own server
+ * roots at plugins/sgs-blocks and 403s anything outside it, which is too
+ * narrow for poc-replica.html's palette fetch. Delegates to harness-lib.mjs's
+ * shared `serve()` (extensionless-`.js` resolution ON, matching this file's
+ * pre-extraction behaviour exactly) — see that module's header for why this
+ * used to be a hand-rolled copy and no longer is (D888).
+ *
+ * @return {Promise<{origin: string, close: Function}>} Server handle.
+ */
 function serve() {
-	const MIME = {
-		'.html': 'text/html; charset=utf-8',
-		'.js': 'text/javascript; charset=utf-8',
-		'.mjs': 'text/javascript; charset=utf-8',
-		'.json': 'application/json; charset=utf-8',
-		'.css': 'text/css; charset=utf-8',
-		'.glsl': 'text/plain; charset=utf-8',
-		'.png': 'image/png',
-		'.webp': 'image/webp',
-	};
-	const server = createServer( async ( req, res ) => {
-		try {
-			const urlPath = decodeURIComponent( ( req.url || '/' ).split( '?' )[ 0 ] );
-			// Extensionless bundler-style import resolution (generative-background.js
-			// does `from './capability'`) — same convenience capture-render.mjs's own
-			// serve() provides, widened to REPO_ROOT.
-			let target = normalize( join( REPO_ROOT, urlPath ) );
-			if ( ! existsSync( target ) && ! extname( target ) ) {
-				if ( existsSync( target + '.js' ) ) {
-					target += '.js';
-				}
-			}
-			// Traversal guard against the WIDER root — kept, not removed.
-			if ( target !== REPO_ROOT && ! target.startsWith( REPO_ROOT + sep ) ) {
-				res.writeHead( 403 );
-				res.end( 'forbidden' );
-				return;
-			}
-			const body = await readFile( target );
-			res.writeHead( 200, {
-				'Content-Type': MIME[ extname( target ) ] || 'application/octet-stream',
-			} );
-			res.end( body );
-		} catch {
-			res.writeHead( 404 );
-			res.end( 'not found' );
-		}
-	} );
-	return new Promise( ( r ) => {
-		server.listen( 0, '127.0.0.1', () => {
-			const { port } = server.address();
-			r( {
-				origin: `http://127.0.0.1:${ port }`,
-				close: () => new Promise( ( x ) => server.close( x ) ),
-			} );
-		} );
-	} );
+	return serveRoot( { root: REPO_ROOT, resolveExtensionless: true } );
 }
 
 /*
@@ -465,6 +453,45 @@ elif cmd == 'maskedmean':
         'background_fraction': 1.0 - (painted_px / total_px if total_px else 0.0),
         'masked_mean_abs_255': masked_abs_mean,
         'masked_mean_abs_pct': 100.0 * masked_abs_mean / 255.0,
+    }))
+
+elif cmd == 'silhouette_iou':
+    # silhouette_iou <ref> <cand> <x> <y> <w> <h>  -- SHAPE-ONLY comparison,
+    # isolating geometry/twist from colour/shading (D886/D888's leading
+    # UNTESTED hypothesis). Each side's PAINTED mask (pixels differing from
+    # THAT side's own background, exactly painted_mask()'s logic in
+    # 'maskedmean' above) is a pure silhouette -- it says nothing about HUE,
+    # only "does the folded ribbon cover this pixel". Intersection-over-union
+    # of the two masks is 1.0 for identical silhouettes and falls toward 0.0
+    # as they diverge in shape or position, regardless of any colour
+    # difference within the overlap. This is deliberately a SEPARATE
+    # computation from 'maskedmean' (which unions the two masks and measures
+    # colour distance inside the union) -- IoU measures whether the masks
+    # occupy the SAME pixels at all, which a colour metric cannot answer:
+    # two silhouettes offset by several pixels but identically coloured
+    # where they happen to overlap would score near-0% on 'maskedmean' and
+    # still fail this check, and that distinction is the whole point of
+    # building it.
+    ref_path, cand_path = sys.argv[2], sys.argv[3]
+    x, y, w, h = (int(v) for v in sys.argv[4:8])
+
+    def painted_mask(path):
+        region = np.asarray(Image.open(path).convert('RGB').crop((x, y, x + w, y + h)), dtype=np.int16)
+        keys = quantised_keys(region)
+        vals, counts = np.unique(keys, return_counts=True)
+        bg_key = vals[np.argmax(counts)]
+        return keys != bg_key
+
+    ref_mask = painted_mask(ref_path)
+    cand_mask = painted_mask(cand_path)
+    intersection = int(np.logical_and(ref_mask, cand_mask).sum())
+    union = int(np.logical_or(ref_mask, cand_mask).sum())
+    print(json.dumps({
+        'ref_coverage': float(ref_mask.sum()) / ref_mask.size,
+        'cand_coverage': float(cand_mask.sum()) / cand_mask.size,
+        'intersection_px': intersection,
+        'union_px': union,
+        'iou': (intersection / union) if union else 0.0,
     }))
 
 elif cmd == 'gen_solid':
@@ -688,7 +715,10 @@ async function captureReplica( browser, origin, t, outPng ) {
 	page.on( 'pageerror', ( e ) => problems.push( String( e ) ) );
 
 	try {
-		await page.goto( `${ origin }${ REPLICA_PATH }?t=${ t }&pal=${ PALETTE }`, { waitUntil: 'load' } );
+		await page.goto(
+			`${ origin }${ REPLICA_PATH }?t=${ t }&pal=${ PALETTE }&ground=${ GROUND_COLOUR.join( ',' ) }`,
+			{ waitUntil: 'load' }
+		);
 		await page.waitForFunction( () => window.__ready === true, { timeout: 30000 } );
 
 		const err = await page.evaluate( () => window.__err || null );
@@ -1082,9 +1112,7 @@ async function main() {
 	try {
 		await mkdir( RUN_DIR, { recursive: true } );
 		site = await serve();
-		browser = await chromium.launch( {
-			args: [ '--use-gl=angle', '--use-angle=default', '--ignore-gpu-blocklist', '--enable-gpu', '--enable-webgl' ],
-		} );
+		browser = await launchGpuBrowser( chromium );
 
 		const webglOk = await ( async () => {
 			const p = await browser.newPage();
@@ -1400,6 +1428,23 @@ async function main() {
 					`(background/clip fraction: ${ ( masked.background_fraction * 100 ).toFixed( 1 ) }%)`
 			);
 
+			// SILHOUETTE-ONLY (shape, not colour) — the D886/D888 leading
+			// UNTESTED hypothesis, tested directly rather than inferred from
+			// bias_over_abs. Reuses the two PNGs already captured for this
+			// rung; no new render mode, no shader change (a shader edit is a
+			// higher-blast-radius change than this diagnostic needs to earn
+			// first — see the plan's Step 3).
+			const silhouette = py( [
+				'silhouette_iou', rigPng, oursPng,
+				String( cropBox[ 0 ] ), String( cropBox[ 1 ] ),
+				String( cropBox[ 2 ] - cropBox[ 0 ] ), String( cropBox[ 3 ] - cropBox[ 1 ] ),
+			] );
+			console.log(
+				`    silhouette IoU=${ silhouette.iou.toFixed( 3 ) } ` +
+					`(rig coverage ${ ( silhouette.ref_coverage * 100 ).toFixed( 1 ) }%, ` +
+					`ours coverage ${ ( silhouette.cand_coverage * 100 ).toFixed( 1 ) }%)`
+			);
+
 			const underCeiling = cmp1.mean_abs_pct < FIDELITY_CEILING_PCT;
 			if ( ! underCeiling ) {
 				fidelityFailed = true;
@@ -1414,6 +1459,7 @@ async function main() {
 				painted: { ours: ours.painted, rig: rig.painted },
 				stats: cmp1,
 				maskedStats: masked,
+				silhouette,
 				underCeiling,
 				systematicBias: systematic,
 			};

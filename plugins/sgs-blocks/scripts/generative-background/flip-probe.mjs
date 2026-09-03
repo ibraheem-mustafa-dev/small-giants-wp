@@ -52,11 +52,11 @@
  */
 
 import { chromium } from 'playwright';
-import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
-import { extname, resolve, normalize, sep, join } from 'node:path';
+import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
+import { serve as serveRoot, launchGpuBrowser } from './harness-lib.mjs';
 
 const HERE = fileURLToPath( new URL( '.', import.meta.url ) );
 // Repo root, not PLUGIN_ROOT — this probe needs to reach
@@ -67,32 +67,15 @@ const REPO_ROOT = resolve( HERE, '..', '..', '..', '..' );
 const PALETTE_PATH = resolve( REPO_ROOT, '.claude/scratch/stripe-hero-poc/assets/palette-a.png' );
 const PALETTE_URL = '/.claude/scratch/stripe-hero-poc/assets/palette-a.png';
 
-const MIME = { '.png': 'image/png', '.html': 'text/html; charset=utf-8' };
-
+/**
+ * Delegates to harness-lib.mjs's shared `serve()` — no extensionless
+ * resolution (this probe never served a bundler-style import, matching its
+ * pre-extraction behaviour exactly, D888).
+ *
+ * @return {Promise<{origin: string, close: Function}>} Server handle.
+ */
 function serve() {
-	const server = createServer( async ( req, res ) => {
-		try {
-			const urlPath = decodeURIComponent( ( req.url || '/' ).split( '?' )[ 0 ] );
-			const target = normalize( join( REPO_ROOT, urlPath ) );
-			if ( target !== REPO_ROOT && ! target.startsWith( REPO_ROOT + sep ) ) {
-				res.writeHead( 403 );
-				res.end( 'forbidden' );
-				return;
-			}
-			const body = await readFile( target );
-			res.writeHead( 200, { 'Content-Type': MIME[ extname( target ) ] || 'application/octet-stream' } );
-			res.end( body );
-		} catch {
-			res.writeHead( 404 );
-			res.end( 'not found' );
-		}
-	} );
-	return new Promise( ( r ) => {
-		server.listen( 0, '127.0.0.1', () => {
-			const { port } = server.address();
-			r( { origin: `http://127.0.0.1:${ port }`, close: () => new Promise( ( x ) => server.close( x ) ) } );
-		} );
-	} );
+	return serveRoot( { root: REPO_ROOT } );
 }
 
 // PROVENANCE (I3): SHA-256 of the exact bytes served, computed independently
@@ -102,9 +85,7 @@ const paletteBytes = await readFile( PALETTE_PATH );
 const paletteSha256 = createHash( 'sha256' ).update( paletteBytes ).digest( 'hex' );
 
 const site = await serve();
-const browser = await chromium.launch( {
-	args: [ '--use-gl=angle', '--use-angle=default', '--ignore-gpu-blocklist', '--enable-gpu', '--enable-webgl' ],
-} );
+const browser = await launchGpuBrowser( chromium );
 
 let result;
 let provenance;

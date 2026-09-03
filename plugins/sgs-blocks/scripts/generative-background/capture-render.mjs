@@ -26,11 +26,14 @@
  */
 
 import { chromium } from 'playwright';
-import { createServer } from 'node:http';
-import { readFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
-import { join, extname, resolve, normalize, sep } from 'node:path';
+import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+	serve as serveRoot,
+	launchGpuBrowser,
+	PAINTED_MIN_COVERAGE,
+	PAINTED_MIN_UNIQUE_HUES,
+} from './harness-lib.mjs';
 
 const HERE = fileURLToPath( new URL( '.', import.meta.url ) );
 const PLUGIN_ROOT = resolve( HERE, '..', '..' );
@@ -40,76 +43,23 @@ const outArg = process.argv.indexOf( '--out' );
 const OUT_FILE =
 	outArg !== -1 && process.argv[ outArg + 1 ]
 		? resolve( process.argv[ outArg + 1 ] )
-		: join( HERE, 'render.png' );
-
-const MIME = {
-	'.html': 'text/html; charset=utf-8',
-	'.js': 'text/javascript; charset=utf-8',
-	'.mjs': 'text/javascript; charset=utf-8',
-	'.json': 'application/json; charset=utf-8',
-	'.css': 'text/css; charset=utf-8',
-	'.png': 'image/png',
-};
+		: resolve( HERE, 'render.png' );
 
 /**
  * Serve the plugin root so the harness's relative `../../src/...` import
- * resolves as a real module URL.
+ * resolves as a real module URL. Delegates to harness-lib.mjs's shared
+ * `serve()` (extensionless-`.js` resolution ON, matching this file's
+ * pre-extraction behaviour exactly — see that module's header, D888).
  *
  * @return {Promise<{origin: string, close: Function}>} Server handle.
  */
 function serve() {
-	const server = createServer( async ( req, res ) => {
-		try {
-			const urlPath = decodeURIComponent( ( req.url || '/' ).split( '?' )[ 0 ] );
-			// Resolve extensionless module specifiers. The source modules use
-			// bundler-style imports (`from './capability'`), which webpack
-			// resolves but raw browser ESM does not — without this the harness
-			// 404s on every internal import and the page never signals ready.
-			// This is a dev-server convenience only; it changes nothing about
-			// what ships.
-			let target = normalize( join( PLUGIN_ROOT, urlPath ) );
-			if ( ! existsSync( target ) && ! extname( target ) ) {
-				if ( existsSync( target + '.js' ) ) {
-					target += '.js';
-				}
-			}
-			if ( target !== PLUGIN_ROOT && ! target.startsWith( PLUGIN_ROOT + sep ) ) {
-				res.writeHead( 403 );
-				res.end( 'forbidden' );
-				return;
-			}
-			const body = await readFile( target );
-			res.writeHead( 200, {
-				'Content-Type': MIME[ extname( target ) ] || 'application/octet-stream',
-			} );
-			res.end( body );
-		} catch {
-			res.writeHead( 404 );
-			res.end( 'not found' );
-		}
-	} );
-	return new Promise( ( r ) => {
-		server.listen( 0, '127.0.0.1', () => {
-			const { port } = server.address();
-			r( {
-				origin: `http://127.0.0.1:${ port }`,
-				close: () => new Promise( ( x ) => server.close( x ) ),
-			} );
-		} );
-	} );
+	return serveRoot( { root: PLUGIN_ROOT, resolveExtensionless: true } );
 }
 
 const site = await serve();
 
-const browser = await chromium.launch( {
-	args: [
-		'--use-gl=angle',
-		'--use-angle=default',
-		'--ignore-gpu-blocklist',
-		'--enable-gpu',
-		'--enable-webgl',
-	],
-} );
+const browser = await launchGpuBrowser( chromium );
 
 const page = await browser.newPage( {
 	viewport: { width: 1393, height: 761 },
@@ -246,14 +196,14 @@ if ( ! stats.width || ! stats.height ) {
 	console.error( 'FAIL: canvas has zero area — nothing could have been painted.' );
 	failed = true;
 }
-if ( coverage < 0.02 ) {
+if ( coverage < PAINTED_MIN_COVERAGE ) {
 	console.error(
 		'FAIL: almost nothing painted. Either the geometry is outside the frustum ' +
 			'or the draw call never ran.'
 	);
 	failed = true;
 }
-if ( stats.unique < 8 ) {
+if ( stats.unique < PAINTED_MIN_UNIQUE_HUES ) {
 	console.error(
 		'FAIL: the output is essentially one flat colour. This is what a cleared ' +
 			'buffer looks like — "not blank" is not the same as "the effect drew".'

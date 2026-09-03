@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-29T17:22:05.749Z",
-  "runDir": "plugins/sgs-blocks/scripts/generative-background/runs/2026-08-29T17-22-05-748Z-61236",
+  "generatedAt": "2026-09-03T13:45:46.053Z",
+  "runDir": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T13-45-46-051Z-107204",
   "sampleTimes": [
     17500,
     27500,
@@ -170,7 +170,7 @@
     "1_geometry_shading": {
       "perTime": {
         "17500": {
-          "oursSha256": "ae0acd32ef4cb5925e2f6c668e65ee49bdcdcc74580b713b5a5c40c19a044ae6",
+          "oursSha256": "474a09d1bf99baa4c1aa921fd03945c8f7c7bb35e10cfe06db6b2999bdf78758",
           "rigSha256": "ff78f100d689eefe9982a94ab8c45b93820696e41cb1b31478101c43cab9592c",
           "glstate": {
             "ours": {
@@ -261,8 +261,8 @@
               "width": 1110,
               "height": 761,
               "total": 844710,
-              "opaque": 269563,
-              "coverage": 0.31911898758153684,
+              "opaque": 270289,
+              "coverage": 0.31997845414402576,
               "unique": 162
             },
             "rig": {
@@ -285,19 +285,19 @@
               761
             ],
             "pixels": 691749,
-            "mean_abs_255": 13.483296687093151,
-            "mean_abs_pct": 5.287567328271824,
+            "mean_abs_255": 13.459456151484618,
+            "mean_abs_pct": 5.278218098621419,
             "signed_mean": {
-              "R": 4.439765001467295,
-              "G": 17.859472149580267,
-              "B": 15.846863529979805
+              "R": 4.43987486790729,
+              "G": 17.803678791006565,
+              "B": 15.806883710710098
             },
-            "bias_over_abs": 0.9430458432207857,
+            "bias_over_abs": 0.9423470740910254,
             "within_pct": {
-              "4": 50.465125356162424,
-              "8": 50.795013798357495,
-              "16": 51.62624015358172,
-              "32": 54.89202008242874
+              "4": 50.44286294595294,
+              "8": 50.77867839346352,
+              "16": 51.611784043056076,
+              "32": 54.93481016958463
             },
             "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
             "worst_single_channel_255": 130,
@@ -307,16 +307,23 @@
           },
           "maskedStats": {
             "total_pixels": 691749,
-            "painted_pixels": 341217,
-            "background_fraction": 0.5067329334773162,
-            "masked_mean_abs_255": 27.3189641782209,
-            "masked_mean_abs_pct": 10.713319285576823
+            "painted_pixels": 341344,
+            "background_fraction": 0.5065493408736406,
+            "masked_mean_abs_255": 27.260586583231774,
+            "masked_mean_abs_pct": 10.690426111071284
+          },
+          "silhouette": {
+            "ref_coverage": 0.4836060478583995,
+            "cand_coverage": 0.3907327657864341,
+            "intersection_px": 263479,
+            "union_px": 341344,
+            "iou": 0.7718870113433955
           },
           "underCeiling": false,
           "systematicBias": true
         },
         "27500": {
-          "oursSha256": "e60b081ed30fb2b602159e9720db1fa14d7028636e7a4bffc851fc5461aa77a8",
+          "oursSha256": "36bd265a0bf6d17491bd9eb7654a0b0029c3c480e88607101ca88c3a875156d7",
           "rigSha256": "5ac68bb0502a5410c1f2e6da3e5161371808e449f082fb00fb664250d4a0440b",
           "glstate": {
             "ours": {
@@ -407,9 +414,9 @@
               "width": 1110,
               "height": 761,
               "total": 844710,
-              "opaque": 271420,
-              "coverage": 0.3213173751938535,
-              "unique": 146
+              "opaque": 272094,
+              "coverage": 0.3221152821678446,
+              "unique": 147
             },
             "rig": {
               "width": 1110,
@@ -431,19 +438,19 @@
               761
             ],
             "pixels": 691749,
-            "mean_abs_255": 12.012173490673641,
-            "mean_abs_pct": 4.710656270852408,
+            "mean_abs_255": 11.987849639103201,
+            "mean_abs_pct": 4.701117505530667,
             "signed_mean": {
-              "R": 3.640430271673685,
-              "G": 17.675208782376266,
-              "B": 11.685864381444715
+              "R": 3.6405459205578903,
+              "G": 17.617366992941083,
+              "B": 11.651218866958969
             },
-            "bias_over_abs": 0.9157794094220981,
+            "bias_over_abs": 0.9150690844256045,
             "within_pct": {
-              "4": 52.37969263417801,
-              "8": 52.5017022070144,
-              "16": 52.831735210314726,
-              "32": 56.838101681390214
+              "4": 52.37521123991505,
+              "8": 52.50011203485657,
+              "16": 52.833325382472545,
+              "32": 56.86845951349406
             },
             "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
             "worst_single_channel_255": 154,
@@ -453,16 +460,23 @@
           },
           "maskedStats": {
             "total_pixels": 691749,
-            "painted_pixels": 329193,
-            "background_fraction": 0.5241149607733441,
-            "masked_mean_abs_255": 25.237384553539513,
-            "masked_mean_abs_pct": 9.897013550407653
+            "painted_pixels": 329219,
+            "background_fraction": 0.5240773748859775,
+            "masked_mean_abs_255": 25.1842836126307,
+            "masked_mean_abs_pct": 9.87618965201204
+          },
+          "silhouette": {
+            "ref_coverage": 0.4629526027504196,
+            "cand_coverage": 0.39334209373631185,
+            "intersection_px": 263122,
+            "union_px": 329219,
+            "iou": 0.7992309070861645
           },
           "underCeiling": true,
           "systematicBias": true
         },
         "47500": {
-          "oursSha256": "c23798e4b485eb9397cfe8bb845a1759abebf24106cb3ef44973a823cb2c1afe",
+          "oursSha256": "55bfcc0936c80e80e0d9aee729f01c8dde9b7ae8f0b01cb9e857b66c9aa56e88",
           "rigSha256": "21b6d8f18370ead8b765f0ceb77278bb38502a493ec8bc581b87ceb0db650a1f",
           "glstate": {
             "ours": {
@@ -553,8 +567,8 @@
               "width": 1110,
               "height": 761,
               "total": 844710,
-              "opaque": 282740,
-              "coverage": 0.33471842407453445,
+              "opaque": 283475,
+              "coverage": 0.3355885451811864,
               "unique": 155
             },
             "rig": {
@@ -577,32 +591,39 @@
               761
             ],
             "pixels": 691749,
-            "mean_abs_255": 14.3501453080043,
-            "mean_abs_pct": 5.6275079639232555,
+            "mean_abs_255": 14.320902042021986,
+            "mean_abs_pct": 5.616040016479211,
             "signed_mean": {
-              "R": 5.8377503979044425,
-              "G": 20.505615476133684,
-              "B": 11.163784841033381
+              "R": 5.837907969509172,
+              "G": 20.446542026081715,
+              "B": 11.122535775259523
             },
-            "bias_over_abs": 0.8712374197853493,
+            "bias_over_abs": 0.8706850462605095,
             "within_pct": {
-              "4": 47.053194149901195,
-              "8": 47.20975382689386,
-              "16": 47.66382025850417,
-              "32": 50.962849241560164
+              "4": 47.05160397774337,
+              "8": 47.21076575463066,
+              "16": 47.664398502925195,
+              "32": 50.98800287387477
             },
             "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
-            "worst_single_channel_255": 182,
+            "worst_single_channel_255": 181,
             "ceiling_pct": 5,
             "under_ceiling": false,
             "crop_scale": 1
           },
           "maskedStats": {
             "total_pixels": 691749,
-            "painted_pixels": 365918,
-            "background_fraction": 0.4710248948679362,
-            "masked_mean_abs_255": 27.123748125718514,
-            "masked_mean_abs_pct": 10.636763970870005
+            "painted_pixels": 365926,
+            "background_fraction": 0.4710133299795157,
+            "masked_mean_abs_255": 27.067852516629046,
+            "masked_mean_abs_pct": 10.614844124168252
+          },
+          "silhouette": {
+            "ref_coverage": 0.519100136032,
+            "cand_coverage": 0.4097945931255412,
+            "intersection_px": 276636,
+            "union_px": 365926,
+            "iou": 0.7559889157917175
           },
           "underCeiling": false,
           "systematicBias": true
@@ -624,9 +645,9 @@
     },
     "2_side_by_side": {
       "uTime": 17500,
-      "ours": "plugins/sgs-blocks/scripts/generative-background/runs/2026-08-29T17-22-05-748Z-61236/2-side-by-side-ours.png",
+      "ours": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T13-45-46-051Z-107204/2-side-by-side-ours.png",
       "rigMatched": {
-        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-08-29T17-22-05-748Z-61236/2-side-by-side-rig-matched.png",
+        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T13-45-46-051Z-107204/2-side-by-side-rig-matched.png",
         "settings": {
           "blendOff": true,
           "nopost": true
@@ -634,7 +655,7 @@
         "note": "The exact settings that produced the rung-1 percentages — pair this with `ours`."
       },
       "rigDefault": {
-        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-08-29T17-22-05-748Z-61236/2-side-by-side-rig-default.png",
+        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-09-03T13-45-46-051Z-107204/2-side-by-side-rig-default.png",
         "settings": {
           "blendOff": false,
           "nopost": false
