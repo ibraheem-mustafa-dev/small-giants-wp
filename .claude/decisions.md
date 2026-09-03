@@ -1,3 +1,61 @@
+## D921 [ROUTINE] — border-migration closed: card-grid/multi-button/trust-bar off native `__experimentalBorder`, migration tool's own bugs fixed, live-verified on canary
+
+**2026-09-03.** Closes the border-migration item from the uniformity-sweep backlog. All 3
+remaining `NATIVE_FULL` blocks (`card-grid`, `multi-button`, `trust-bar`) migrated to
+block-private border attributes (Shape B), matching `sgs/accordion`'s proven pattern.
+
+**Root cause of the `ambiguous-anchor` refusal, found by reading the code, not guessing.**
+`migrate-border-shape-b.js --survey` refused all 3 blocks, but for two different reasons:
+`card-grid`/`trust-bar` each accumulate CSS into multiple `*_css`-named variables (the script's
+disambiguation rule was "more than one candidate → refuse, don't guess"); `multi-button` has a
+single unambiguous accumulator but never named its root selector, building
+`.{uid}.sgs-multi-button` inline on every use instead of via a `$root_sel` local. Fixed by
+widening the script to trace which accumulator structurally receives the output of the
+border-specific `wp_style_engine_get_styles()` call (not a naming heuristic — verified against
+both real blocks), and giving `multi-button` a named `$root_sel` matching every other migrated
+block's convention (behaviour-preserving — same string, just named).
+
+**Two real bugs in the migration tool's own output, found and fixed before deploy, not just
+the anchor refusal:**
+1. `multi-button` still read the WHOLE native `$attributes['style']['border']` object (not
+   sub-keyed, so the script's native-read stripper — which only recognised sub-keyed reads —
+   never matched it) into a second, competing `wp_style_engine_get_styles()` call. Would have
+   double-painted a border on any stored content still carrying old native border data. Fixed by
+   widening the stripper to also recognise the whole-object-read shape.
+2. `card-grid`/`trust-bar` were left with permanently-dead `if ( ! empty( $X ) )` guards once
+   their native reads were stripped — flagged correctly by `check-render-undefined-vars` as
+   "always falsy". Pruned by PROOF (a variable with zero remaining writes anywhere in the file
+   makes `empty()` on it unconditionally true forever, so the guard is unreachable regardless of
+   its body) rather than a heuristic, and the fix runs to a fixed point because the shape
+   cascades (removing one dead guard can make the accumulator it fed into vacuous too — measured
+   live on `trust-bar`, two levels deep). The accumulator DECLARATIONS themselves were
+   deliberately left alone — the migration script's own self-test asserts a bare
+   `$X = array();` initializer must survive even once nothing writes to it, since this
+   function's job is removing native reads and their direct orphaned consumers, not general
+   dead-variable elimination.
+
+**Deployed and live-verified, not just gate-green.** Full deploy to sandybrown (`gate:full`
+3/3, payload verified, motion probes green), then `scripts/qa/check-border-roundtrip.js`
+against the real DOM: all 3 blocks paint the correct colour/width/style from the new attributes,
+and the negative control (`borderStyle:"none"`) paints nothing. `card-grid` needed one addition
+to the probe tool itself — its default `manual` source returns `''` outright when `items` is
+empty, so the generic attribute-only probe instance rendered nothing to measure (correctly
+reported `NOT RUN`, not a false pass). Added a `FIXTURES` entry (the same extension point
+already used for `before-after`/`option-picker`) supplying one minimal item.
+
+**Visual-diff gate paid as debt, same pattern as `accordion-2026-08-29.md`:** committed with
+the scoped bypass (`SGS_VISUAL_GATE_SKIP=card-grid,multi-button,trust-bar`) because the capture
+needs the code live on the canary, which needs the commit to exist first; the reports
+(`reports/visual-diff/card-grid-2026-09-03.md`, `multi-button-2026-09-03.md`,
+`trust-bar-2026-09-03.md`) were written once the live proof existed.
+
+Commits `3f05435ad` (fix), `75319f9df` (visual-diff debt paid), `cb42f834e` (prompt swap — old
+`.claude/prompts/2026-09-03-detector-backlog-remaining.md` superseded by
+`2026-09-03-detector-backlog-post-border.md`, deleted in the same commit per the
+delete-prompt-files-once-their-session-is-over rule). DB reseeded via `/sgs-update` for the 21
+new attributes. Self-test (175 assertions, 67 negative controls), `--check`, full 85/85
+`gate:fast` + 3/3 `gate:full`, and `npm run build` all green.
+
 ## D920 [ROUTINE] — uniformity-sweep decide-first batch part 3 closed (03, 18, 21-appendix); media-atom decorative rename regression fixed; qc-council caught a real undefined-ref bug before deploy
 
 **2026-09-03.** Closes three more items from the uniformity-sweep backlog (`.claude/reports/2026-09-02-findings-INDEX.md`), all dispatch-on-decision per Bean's directive from the prior session:

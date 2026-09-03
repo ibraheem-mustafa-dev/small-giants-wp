@@ -18,20 +18,21 @@ Right now: the cloning pipeline and the motion system are both stable. Client co
 2026-09-02 (Waves 6-7 committed, deployed, live-verified). The live front is the **uniformity
 sweep** — running the framework's own detector/audit scripts, clearing real findings, and fixing
 the detectors themselves where they're wrong, so the client's editor/canvas/live-page experience
-has no clear blockers. This session closed three more items (03, 18, 21's appendix) with full
-live verification against the deployed canary, and split the remaining backlog into two dedicated
-next-session prompts (below). The canary test site is sandybrown-nightingale-600381.hostingersite.com;
-there are no live client sites on this framework yet, so breakage there costs time, not money.
+has no clear blockers. The prior session closed three items (03, 18, 21's appendix); this session
+closed a fourth — **border-migration** (`card-grid`/`multi-button`/`trust-bar` off native
+WordPress border support), deployed and live-verified on the canary, plus two real bugs the
+migration tool itself had. Three items remain, one dedicated build-session prompt stays separate
+(below). The canary test site is sandybrown-nightingale-600381.hostingersite.com; there are no
+live client sites on this framework yet, so breakage there costs time, not money.
 
 ## State Snapshot
 
 - **Branch:** `main`, ONE active track. Commit with explicit paths (a hook enforces it).
 - **Canary:** WP 7.1. Deploy via `build-deploy.py --target sandybrown` — the only sanctioned path.
-- **Build:** green, **85/85 gate:fast + 3/3 gate:full** gates, verified 2026-09-03 at `4b10bad32`.
-  Canary deployed twice this session (once mid-session to unblock live verification, once
-  post-commit to carry a same-session fix live) and re-verified — 13 blocks' decorative/panel
-  changes each got their own live REST-probe capture against the real deployed build, not just a
-  code read. Nothing uncommitted at session close.
+- **Build:** green, **85/85 gate:fast + 3/3 gate:full** gates, verified 2026-09-03 at `3f05435ad`
+  (deployed same commit — fast-forward). Canary deployed once this session; all 3 migrated blocks
+  live-verified against the real deployed build via `check-border-roundtrip.js` (not just a code
+  read or a gate pass). Nothing uncommitted at session close (`cb42f834e`).
 - **Live fronts:** the uniformity sweep (below). Client controls, cloning, consolidation are closed;
   motion is stable with named next steps in its own section.
 - **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
@@ -44,47 +45,53 @@ there are no live client sites on this framework yet, so breakage there costs ti
 (section below). Sections below are per-track, read only the one you're continuing.**
 The **motion** track owns `⛔ `sgs-framework.db` is ONE shared file — DB work sequentially, not parallel.
 
-## ▶ UNIFORMITY SWEEP TRACK — 2026-09-03: 03/18/21-appendix CLOSED + live-verified; 5 items remain, 2 dedicated prompts
+## ▶ UNIFORMITY SWEEP TRACK — 2026-09-03: border-migration CLOSED + live-verified; 3 items remain, 1 dedicated build prompt
 
 ⭐ **Read `.claude/reports/2026-09-02-findings-INDEX.md` FIRST — it is the map.** Twelve reports,
 one per detector reporting findings, each with a plain-English problem/effect, a ranked menu and a
 "Your call" checklist. Plan: `.claude/plans/2026-08-30-uniformity-sweep-execution.md`.
 
 **Two dedicated next-session prompts, split deliberately (see below for why):**
-- **Mixed backlog sweep (border-migration, 37, 01, 21's own pre-existing 54):**
-  `.claude/prompts/2026-09-03-detector-backlog-remaining.md`
+- **Mixed backlog sweep (37, 01, 21's own pre-existing 54):**
+  `.claude/prompts/2026-09-03-detector-backlog-post-border.md`
 - **`31-golden-colour-control` build session (separate — it's a build task, not triage):**
   `.claude/prompts/2026-09-03-golden-colour-grant-build.md`
 
-### This session's close (D920 has the full account — this is a pointer, not a duplicate)
+### This session's close (D921 has the full account — this is a pointer, not a duplicate)
 
-Closed **03-dense-panel-candidate** (13→0), **18-decorative-image-aria** (16→4, remaining 4 are
-confirmed detector false positives), and **21-render-without-control**'s 14-finding appendix (all
-resolved — hero's Alignment & grid panel + hover controls, media's caption typography,
-testimonial-slider's dead-attribute cleanup). Extended rule 18's detector to recurse into repeater
-`items.properties` (two new self-test fixtures prove it). Fixed a same-day regression from the
-earlier `{element}Decorative` naming sweep (`sgs/media`'s decorative checkbox silently wrote to an
-undeclared attribute — 6 files fixed, zero stale references remain). A `/qc-council` pass ahead of
-commit caught real bugs before deploy: a hero `ReferenceError` waiting to fire, an enum-control-shape
-violation (D812), and — found DURING live verification itself — `sgs/gallery`'s lightbox
-Interactivity-API context leaking a decorative image's real alt text independently of the already-
-correct render-loop gate. All 13 touched blocks got their own `reports/visual-diff/<block>-2026-09-02.md`
-`intent_capture_passed` report, each backed by a real REST-probe capture against the deployed canary
-(not just a code read) — re-verify the method before trusting a future report at the same path
-without reading it first (see `mistakes.md`'s newest entry — a near-miss this session).
+Closed **border-migration**: `card-grid`/`multi-button`/`trust-bar` moved off native WordPress
+`__experimentalBorder` support onto block-private attributes (Shape B), matching `sgs/accordion`'s
+proven pattern. The `ambiguous-anchor` refusal blocking `migrate-border-shape-b.js --survey` had
+two distinct root causes (not one) — `card-grid`/`trust-bar` accumulate CSS into multiple
+`*_css`-named variables with no name-based way to tell which is the border sink;
+`multi-button` never named its root selector at all. Fixed by tracing which accumulator
+structurally receives the border-specific `wp_style_engine_get_styles()` output, and giving
+`multi-button` a named `$root_sel`. Found and fixed two real bugs in the migration tool's own
+output along the way: a double-border-emission risk in `multi-button` (a leftover whole-object
+native read competing with the new private-attr emission), and cascading dead
+`if ( ! empty( $X ) )` guards in `card-grid`/`trust-bar` (pruned by proof — zero remaining writes
+to `$X` makes `empty($X)` unconditionally true forever). Deployed to sandybrown and live-verified
+with `scripts/qa/check-border-roundtrip.js` against the real DOM — all 3 blocks PASS (border paints
+from attributes, negative control clean). `card-grid` needed one addition to the probe tool itself
+(a `FIXTURES` entry supplying a minimal item, since its default `manual` source renders nothing
+with zero items) — a probe-authoring gap, not a migration bug.
 
-⛔ **`31-golden-colour-control`'s status was corrected this session — do not re-trust an older
-"unblocked" claim.** D754's plan has two of six work units done (`U2` manifest-seed, `U1` triage),
-but `grant.js` — the actual capability tool — does not exist anywhere in the tree, confirmed by
-search. This is a ~5.4-hour BUILD task with its own feasibility spike, not a triage-and-dispatch
-item — it has its own dedicated prompt (above) precisely so it doesn't get folded into a mixed
-backlog session by mistake.
+Visual-diff gate paid as debt, same pattern as `accordion-2026-08-29.md`: committed with the
+scoped bypass (`SGS_VISUAL_GATE_SKIP=card-grid,multi-button,trust-bar`), reports written once the
+live proof existed — `reports/visual-diff/card-grid-2026-09-03.md`,
+`multi-button-2026-09-03.md`, `trust-bar-2026-09-03.md`.
 
-**What's left — 5 items, ranked in the mixed-backlog prompt:** border-migration's 3 remaining
-blocks (`card-grid`/`multi-button`/`trust-bar`) · `37` (71, mechanical) · `01` (57, coarse-proxy
-check — verify by eye) · `21`'s own pre-existing 54-item backlog (separate from the appendix this
-session closed, not yet triaged block-by-block). `31` (277) is out of this prompt entirely — see
-its own build-session prompt.
+⛔ **`31-golden-colour-control`'s status, corrected the prior session — still holds, not re-trusted
+blindly.** D754's plan has two of six work units done (`U2` manifest-seed, `U1` triage), but
+`grant.js` — the actual capability tool — does not exist anywhere in the tree, confirmed by search.
+This is a ~5.4-hour BUILD task with its own feasibility spike, not a triage-and-dispatch item — it
+has its own dedicated prompt (above) precisely so it doesn't get folded into a mixed backlog
+session by mistake.
+
+**What's left — 3 items, ranked in the mixed-backlog prompt:** `37` (71, mechanical) · `01` (57,
+coarse-proxy check — verify by eye) · `21`'s own pre-existing 54-item backlog (separate from the
+appendix a prior session closed, not yet triaged block-by-block). `31` (277) is out of this
+prompt entirely — see its own build-session prompt.
 
 ⛔ **Working shape carried forward from the prior session, unchanged: dispatch each fix the MOMENT
 Bean decides it and keep discussing while the agent works — do NOT batch every fix to the end.**

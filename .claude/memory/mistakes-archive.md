@@ -6,6 +6,13 @@ under any name — see `.claude/reports/2026-08-12-doc-audit-register.md` §5).
 
 ---
 
+## 2026-09-03 (border-migration handoff) — 1-entry prune, oldest by date, moved verbatim, to make room for a new stub at cap
+
+### [2026-08-11] querySelector grabbed the site header's container instead of my test block, and I nearly reported a working migration as broken
+- **Pattern key:** `queryselector-returns-first-document-match-not-your-test-instance`
+- **Feedback file:** [feedback_queryselector_first_match_not_test_instance.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_queryselector_first_match_not_test_instance.md)
+- **Rule:** `document.querySelector('.wp-block-sgs-container')` on a live verification page matched the site header's nav container (same shared block type, renders first in document order) instead of the test content block further down the page — silently, no error. Always scope live-verification DOM queries to the content container (`.entry-content <selector>`) or the block's own unique uid class, never a bare block-type class, on any page with shared header/footer chrome.
+
 ## 2026-09-03 — 7-entry prune (36 → 30 active before the new stub, 30 after), oldest by date, moved verbatim, to make room for a new stub at cap
 
 ### [2026-08-09] I wrote "these gates ban the raw components" into a spec without reading either rule body — both claims were false

@@ -1,11 +1,16 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-09-03 (1 new entry added — a dated report filename nearly caused a
-same-day evidence overwrite; caught before commit. 7 oldest entries pruned to archive to
-restore the ~30 cap.)
+**Last updated:** 2026-09-03 (1 new entry added — a dead code-cleanup pass fixing one codemod
+bug uncovered a second, cascading one; 1 oldest entry pruned to archive to hold the ~30 cap.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-03] Fixing one bug in a codemod's dead-code stripper revealed a second, cascading one — patching the already-migrated output by hand would have re-derived both fixes twice
+- **Pattern key:** `revert-and-rerun-a-codemod-dont-hand-patch-its-output`
+- **Feedback file:** [feedback_revert_and_rerun_a_codemod_dont_hand_patch_its_output.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_revert_and_rerun_a_codemod_dont_hand_patch_its_output.md)
+- **Rule:** After `migrate-border-shape-b.js --fix --apply` migrated `card-grid`/`multi-button`/`trust-bar` off native border support, `check-render-undefined-vars` flagged a dead `if ( ! empty( $X ) )` guard left behind once the script's own native-read stripper removed every write to `$X`. Fixing the stripper and re-running against the ALREADY-migrated files (rather than reverting first) would have meant re-deriving the fix by hand a second time when a cascading case showed up next (removing one dead guard made the accumulator it fed into vacuous too, on `trust-bar`, two levels deep) — and a hand-patched file drifts from what the script would generate fresh, so the next legitimate re-run produces an unreviewable diff. `git checkout --` the affected files, fix the script, re-run `--survey`/`--fix --apply`, repeat until clean — every time a codemod's OWN bug is found mid-migration, not just the first time.
+
+
 ### [2026-09-03] A dated report filename is not proof the file is new — nearly overwrote a same-day, genuinely live-verified report
 - **Pattern key:** `read-before-overwrite-dated-report-files`
 - **Feedback file:** [feedback_read_before_overwrite_dated_report_files.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_read_before_overwrite_dated_report_files.md)
@@ -275,12 +280,8 @@ restore the ~30 cap.)
   search proves the file doesn't reference the name; it proves nothing about whether the
   attribute is consumed.
 
-### [2026-08-11] querySelector grabbed the site header's container instead of my test block, and I nearly reported a working migration as broken
-- **Pattern key:** `queryselector-returns-first-document-match-not-your-test-instance`
-- **Feedback file:** [feedback_queryselector_first_match_not_test_instance.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_queryselector_first_match_not_test_instance.md)
-- **Rule:** `document.querySelector('.wp-block-sgs-container')` on a live verification page matched the site header's nav container (same shared block type, renders first in document order) instead of the test content block further down the page — silently, no error. Always scope live-verification DOM queries to the content container (`.entry-content <selector>`) or the block's own unique uid class, never a bare block-type class, on any page with shared header/footer chrome.
-
 *(7 entries dated 2026-08-04 through 2026-08-09 pruned to `memory/mistakes-archive.md` on
 2026-09-03 — oldest by date, moved verbatim, to make room at cap. 36 -> 30 active after the
-prune + 1 new entry.)*
+prune + 1 new entry. A further 1 entry, 2026-08-11's querySelector mistake, pruned the same
+day for the border-migration handoff — see `memory/mistakes-archive.md`.)*
 
