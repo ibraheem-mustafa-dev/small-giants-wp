@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-09-03
+last_updated: 2026-09-03 (session 3)
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -25,23 +25,34 @@ live-verified on the canary. `37`'s remaining 44 findings then closed to 0 the s
 the held design chat about `sgs/container`'s background settled that a whole-block background
 panel is a separate, non-element-based system, never meant to be compared against the media-atom
 layer — a detector fix, not a build. Two items remain fully open (`01`, `21`). One dedicated
-build-session prompt stays separate (below). A second track ran in parallel on **colour** (D923): rule 31 fell
-276 → 250 via a detector fix plus a gradient rollout across 16 blocks, and the planned
-`grant.js` codemod was abandoned after an adversarial council found the route untested
-against cheaper alternatives. Its owed live probe is the first thing to run. The canary test site is
+build-session prompt stays separate (below). A second track ran in parallel on **colour** (D923, then D928/D929 in a follow-on session):
+rule 31 fell 276 → 250 via a detector fix plus a gradient rollout across 16 blocks; the
+`grant.js` codemod plan was abandoned after an adversarial council found the route untested
+against cheaper alternatives. The follow-on session then closed the remaining hardcoded-hover
+backlog (category B) on 5-6 blocks, found and fixed a real DB-writer bug via `/qc-council`, and
+ran this codebase's one existing scripted colour-repair tool (`fix.js`) — which shipped 3 real
+bugs past its own self-test and the full build gate chain, all caught only by live verification
+and fixed. Next session opens in `/brainstorming explore` mode on whether more of these
+recognised defect shapes should become scripted repairs, given that evidence. A third session
+shipped `01-tab-group`'s mixed-panel exemption rule (48 → 32) + fixed modal's overlay colour/
+opacity split, then found and started retiring an unwanted, unfinished feature
+(`attribute_gap_candidates`) surfaced by a routine `/sgs-update` anomaly — drafted in an isolated
+worktree, NOT YET merged; full detail in its own track section below. The canary test site is
 sandybrown-nightingale-600381.hostingersite.com; there are no live client sites on this framework
 yet, so breakage there costs time, not money.
 
 ## State Snapshot
 
-- **Branch:** `main`, ONE active track. Commit with explicit paths (a hook enforces it).
+- **Branch:** `main`, ONE active track there. Commit with explicit paths (a hook enforces it). A
+  SEPARATE worktree also exists for gap-candidates work (below) — don't branch again in the shared
+  main working directory while a concurrent session may be committing there.
 - **Canary:** WP 7.1. Deploy via `build-deploy.py --target sandybrown` — the only sanctioned path.
-- **Build:** green, `run-gates.py --tier full` (3/3) verified 2026-09-03 at `7de8f0ff8`, deployed
-  same commit (fast-forward). Canary deployed once this session; migrated blocks live-verified
-  against the real deployed CSS bundle + a live populated `product-card` instance (not just a
-  code read or a gate pass). Nothing uncommitted at session close (`a47cc502a`).
-- **Live fronts:** the uniformity sweep (below). Client controls, cloning, consolidation are closed;
-  motion is stable with named next steps in its own section.
+- **Build:** green on `main`, 86/86 prebuild gates verified 2026-09-03 at `2ad141986`; colour-track
+  blocks live-verified against the real lifted CSS. Session 3's detector/panel fixes verified via
+  self-test + re-run scan (no deploy needed). Nothing uncommitted on `main`; the gap-candidates
+  worktree branch is drafted + tested but NOT merged.
+- **Live fronts:** the uniformity sweep + gap-candidates retirement (below). Client controls,
+  cloning, consolidation are closed; motion is stable with named next steps in its own section.
 - **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
 
 # ▶ NEXT SESSION STARTS HERE
@@ -52,19 +63,42 @@ yet, so breakage there costs time, not money.
 (section below). Sections below are per-track, read only the one you're continuing.**
 The **motion** track owns `⛔ `sgs-framework.db` is ONE shared file — DB work sequentially, not parallel.
 
-## ▶ UNIFORMITY SWEEP TRACK — 2026-09-03: 37-media-no-handroll CLOSED (44→0) + live-verified; 2 items remain, 1 dedicated build prompt
+## ▶ UNIFORMITY SWEEP TRACK — 2026-09-03 (session 3): 01-tab-group 48→32 + modal overlay fixed; 21 + gap-candidates retirement still open
 
 ⭐ **Read `.claude/reports/2026-09-02-findings-INDEX.md` FIRST — it is the map.** Twelve reports,
 one per detector reporting findings, each with a plain-English problem/effect, a ranked menu and a
 "Your call" checklist. Plan: `.claude/plans/2026-08-30-uniformity-sweep-execution.md`.
 
+**Session 3 shipped, both on `main`:**
+- **`01-tab-group` mixed-panel exemption** (via `/subagent-driven-development`, cross-model
+  reviewed): a panel with a structural/no-CSS anchor control keeps its CSS-styling siblings
+  grouped with it in Settings, not split to Styles — Bean's ruling, reversing an earlier "split
+  mixed panels" assumption. 48 → 32 findings. Verified against 5 named worked examples
+  individually, not just the aggregate count.
+- **Modal's overlay colour+opacity** now live together in one Styles-tab panel (were split:
+  colour in the generic colour panel, opacity alone in Settings) — matches the existing 8-block
+  `BackgroundPanel.js` precedent exactly (colour picker with alpha off + a plain opacity slider,
+  same panel).
+
+**NEW, mid-flight — attribute-gap-candidates retirement.** Never-finished, never-wanted promotion
+workflow, retired at Bean's direction (found via a `/sgs-update` anomaly that traced to a real
+test bug hitting the live DB). 16 files drafted + individually tested in an isolated worktree
+(`c:\Users\Bean\Projects\small-giants-wp-gap-retirement`, branch
+`fix/retire-attribute-gap-candidates`) — NOT yet merged; schema drop + full gate run + commit/PR
+still needed. Full breakdown in the continuation prompt below.
+
 **Two dedicated next-session prompts, split deliberately (see below for why):**
-- **Remaining backlog sweep (01, 21 — `37` is fully closed, D924):**
-  `.claude/prompts/2026-09-03-detector-backlog-post-bg-panel-fix.md`
-- **`31-golden-colour-control` (own track below, D923):**
-  `.claude/prompts/2026-09-03-golden-colour-continuation.md` — the grant-build prompt is DELETED;
-  the codemod route was returned NO-GO by a 6-persona council. Read the new prompt's grounding
-  pass first; it front-loads the retrospective's three greps.
+- **Remaining backlog + gap-candidates finish (01 fully closed to session-3 state, 21, gap-candidates
+  merge):** `.claude/prompts/2026-09-03-gap-candidates-retirement-and-detector-backlog.md`
+  (supersedes `2026-09-03-detector-backlog-post-bg-panel-fix.md`, which is now stale — the `01`
+  count and scope described there is pre-session-3).
+- **`31-golden-colour-control` category-B is LANDED (D928/D929) — its continuation prompt is
+  DELETED.** New prompt, different question: **`.claude/prompts/2026-09-03-mechanical-repair-scripting.md`**
+  — opens in `/brainstorming explore` mode (Bean's explicit instruction) on whether the defect
+  shapes recognised this session (motion-hover-guard, gate-omission, missing-element-manifest,
+  text-gradient-backlog) can become scripted, batchable repairs, given that this session's ONE
+  existing scripted repair (`colour-codemod/fix.js`) still shipped 3 real bugs past its own
+  self-test and the full 86-gate build chain. Full account: D929.
 
 ### This session's close — D922 has the full account, this is a pointer
 
@@ -92,8 +126,10 @@ Fixed in `37-media-no-handroll.js` (bare `background`/`bg`-prefix discriminator,
 fixtures), not by building the atom's caller-supplied-selector capability. 44 → 0, full detail
 D924. No wrapper/render code touched, no deploy needed.
 
-**What's left — 2 open items:** `01` (56, coarse-proxy check — verify by eye) · `21` (54,
-pre-existing backlog, not yet triaged block-by-block). `31` (277) stays fully out of this prompt.
+**What's left — 3 open items:** `01` (32 after session 3's mixed-panel rework, coarse-proxy check
+— verify by eye) · `21` (54, pre-existing backlog, not yet triaged block-by-block) ·
+gap-candidates retirement (drafted, needs merge — see pointer above). `31` (277) stays fully out
+of this prompt.
 
 ⛔ **Working shape carried forward from the prior session, unchanged: dispatch each fix the MOMENT
 Bean decides it and keep discussing while the agent works — do NOT batch every fix to the end.**
@@ -112,94 +148,46 @@ detector bug, never baseline fodder") these are rule violations sitting in a bas
 normal outcome. Full list + which detector each belongs to: the INDEX report's disposition
 section (`.claude/reports/2026-09-02-findings-INDEX.md`).
 
-## ▶ COLOUR TRACK — 2026-09-03: rule 31 276 → 250; grant.js route ABANDONED. Detail: D923.
+## ▶ COLOUR TRACK — 2026-09-03 (session 2): category B LANDED, DB writer bug fixed, codemod autofix run (3 real bugs found + fixed). Detail: D928/D929.
 
-⭐ **Prompt: `.claude/prompts/2026-09-03-golden-colour-continuation.md`. Read its grounding pass
-before writing any dispatch prompt — that is the whole point of the rewrite.**
+⭐ **Next prompt is a DIFFERENT question, not a continuation of this task list:
+`.claude/prompts/2026-09-03-mechanical-repair-scripting.md`, `/brainstorming explore` mode.**
+The category-B work below (previously the live task list) is DONE — this section is now history,
+read for context, not for a next action.
 
-⛔ **`grant.js` is NOT the plan any more and must not be rebuilt from D754.** A 6-persona
-`/adversarial-council` returned NO-GO — four of six found the codemod route was never tested
-against a cheaper alternative, and three of the plan's load-bearing rules were wrong on facts one
-grep falsifies.
+**Shipped this session (D928/D929 have the full account):**
+- Category B closed: `google-reviews`/`modal`/`form`/`pricing-table`'s hardcoded hover colours
+  (no backing attribute) + `option-picker`'s pill hover (FR-35-5 exception deliberately reversed,
+  overriding the live gate's own `needsHover:false` too — Bean's explicit call). Fill/border
+  gradient extension across the same blocks via `sgs_button_element_style_css()`.
+- A genuine DB-writer bug (found via `/qc-council`, two independent raters): `css_state` missing
+  from Stage 1's pre-reseed reset list, so a stale value survived every `/sgs-update` reseed
+  indefinitely. Fixed `9f2851150`.
+- Ran `scripts/colour-codemod/fix.js --fix --apply` (the one existing scripted repair in this
+  codebase) on its 6 accepted rows. **3 of 6 shipped genuinely broken** — a selector collision, a
+  gradient-only gate omission (found on 2 blocks), a mis-inserted block targeting the wrong
+  element entirely — none caught by `php -l`, JSON validation, or the full 86-gate build chain.
+  All 3 found via live deploy + reading the actual lifted CSS, all 3 fixed and re-verified live.
+  Commit `2ad141986`.
 
-**Shipped (D923 has the account — this is a pointer):** a live build-breaker in `adopt.js`
-removed; touch-safe hover across 9 emit sites in 4 shared files (two layers, new
-`test-hover-state-guard` gate); a detector fix worth 18 rows; a gradient paint path across 16
-blocks. Both ratchets lowered to the measured floor, zero slack.
+⭐ **Measured, not assumed: the text-colour-gradient backlog is 43 elements across ~35 blocks**
+(queried directly against `textSharesElementWithBackground()`,
+`scripts/inspector-scan/rules/31-golden-colour-control.js:163` — an existing, already-adopted
+detector, not hand-derived). Named as its own project — closing it means moving each element's
+background paint to a `::after` layer via `sgs_block_background_layer_css()`, never automated,
+never built more than once.
 
-**Measured on `survey.js`, untouched:** no-paint-path 104 → 85 · AUTOFIXABLE 22 → 40 · total held
-at 252. Rule 31 **250** (below-min-states 132, missing-gradient 118).
-
-### ▶ NEXT — orchestration plan
-
-**Task 1 — ✅ DONE 2026-09-03. The live probe RAN** (canary page 3212, after the parallel deploy
-carried this work). Gradient paints via `background-clip:text`, the `@supports` companion emits,
-hover sits inside the guard, **7 focus rules and 0 inside it**, both negative controls clean. All 16
-reports carry the measured addendum.
-
-⛔ **NEW Task 1 — the residual that probe exposed, now CATEGORISED. One number was three problems.**
-The hover guard covers PHP-EMITTED hover only. Hand-written `:hover` in block `style.css` is
-unguarded — **187 rules across 40 blocks**, split by what they actually do and by how fixable each
-part is. ⚠ The earlier "233 lines" figure counted lines including comments; these are RULES.
-
-| Category | Rules | Blocks | Mechanisable? |
-|---|---|---|---|
-| **C — motion-only hover** (`transform` 54, `opacity` 9, `opacity+transform` 6, `filter` 6, 4 others) | **80** | — | **YES, script.** 8 property-sets, ONE uniform transform: wrap in `@media (hover: hover) and (pointer: fine)`. Touches no colour, changes no specificity. |
-| **A — colour hover, attribute EXISTS** | 73 | 26 | **Detect yes, apply NO.** Fix is `:where()`, which sets specificity to ZERO — a real behaviour change needing per-rule proof it does not lose a fight it currently wins. |
-| **B — colour hover, NO attribute** | 26 | 7 | **YES — and it is already RULED, not a design call.** D752 + `golden-controls.json` `states.minimumMeans`: every colour row carries at least two states by default, "no propose-and-defer, no per-block approval gate". Each becomes an attribute + control + helper emission, AND the hardcoded rule is DELETED as the superseded writer. Same 4-change pattern proven 16x this session. `google-reviews` 6 · `pricing-table` 6 · `modal` 4 · `accordion` 3 · `form` 3 · `option-picker` 3 · `breadcrumbs` 1. |
-
-⭐ **Only 1 of 99 colour-family hover rules uses the sanctioned `:where()` fallback shape** that
-`plugins/sgs-blocks/CLAUDE.md` item 4 requires. The other 98 are bare selectors. They probably lose
-anyway — the helper emits at (0,3,0) (`.uid.wp-block-x:hover`, confirmed in the live probe CSS)
-against a bare (0,2,0) — so the client's setting wins **by accident of specificity, not by design**.
-A rule that loses is indistinguishable from one that is absent; `:where()` is what makes it deliberate.
-
-⛔ **CORRECTION — category B is NOT an open design decision, and calling it one re-opened a settled
-ruling.** D752 states it verbatim: hover and gradient are applied "everywhere the rule wants them —
-no propose-and-defer, no per-block approval gate", and it says in terms **do NOT re-litigate it**.
-`golden-controls.json`'s `states.minimumMeans` says the same independently: every colour row carries
-at least two states by default. So "the client cannot change these" is the DEFECT STATEMENT for all
-26 rules, not a question to put back to Bean. They are well-specified work: the same four-change
-pattern this session ran 16 times, plus deleting the hardcoded rule the new emission supersedes.
-
-**Why the helpers did not already cover this, since it looks like they should:** the five colour
-helper variants emit from ATTRIBUTES. A `style.css` rule has no attribute to read, so no helper
-could ever have produced it. "Plug and play" was always scoped to attribute-backed colour. Category
-B is the honest gap in that scoping; category A is a conformance gap; category C was never colour's
-job at all.
-
-**Shape of the fix — the project's own rule decides it.** `CLAUDE.md`: "MORE THAN 3 BLOCKS? BUILD
-THE DETECTOR FIRST." At 40 blocks the deliverable is a survey → fix → check triad with a self-test
-(D542), NOT a fan-out of agents. ⛔ **Do not dispatch Haiku subagents at this**: A and B are
-judgement calls, and this session already measured what happens when N agents each re-derive one
-independently.
-*Execution:* C first (build the codemod, it is the clean one), then B (ruled by D752, dispatchable on the proven pattern). Only A needs a per-rule specificity check.
-
-**Task 2 — the grounding pass.** The three greps in the prompt, across the whole finding set, ONCE.
-*Execution:* inline (Opus). *Depends on:* none (parallel with Task 1). *≈20 min.*
-*Acceptance:* every flagged block sorted into bridge-onto-existing / build-new / dead-CSS /
-shared-function batches BEFORE any brief is written.
-
-**Task 3 — the 40 AUTOFIXABLE rows.** Delegated, sonnet via `/delegate`,
-`/dispatching-parallel-agents` (one block set each). *Depends on:* Task 2. *≈60 min.*
-*Brief:* run `fix.js --fix` as a DRY RUN and believe it over the survey count — the two tools answer
-the same question differently and that gap already cost one planned phase.
-*Acceptance:* verdicts migrate AND the diff's minus lines show the old writer gone.
-
-**Task 4 — the 85 no-paint-path rows.** Same four-change pattern as the 16 done (exemplar
-`305f9170c`; ⚠ never read `778879732` for it). Delegated, sonnet, parallel with Task 3.
-*Depends on:* Task 2. *≈120 min.*
-
-**Task 5 — `/qc-council` once over the whole landed diff**, never per block. *Depends on:* 3 + 4.
-
-```
-Task 1 ─┐
-Task 2 ─┴─► Task 3 + Task 4 (parallel) ─► Task 5 ─► gate:fast ─► commit
-```
-
-**Not scoped here:** the 35 custom-property rows (they fail in `style.css`, which no phase owns —
-scope it before starting) and 132 below-min-states (a hover sibling per row: a different dimension
-with different storage; do not fold it into the gradient work).
+**Still open, untouched this session, carried forward as-is:**
+- **Category C — motion-only hover guard.** 76 rules across 25 blocks (`transform` 54, `opacity`
+  9, `opacity+transform` 6, `filter`-family 7), confirmed via direct grep, none currently wrapped
+  in the touch-hover guard. No script exists for this yet.
+- **The pre-existing colour-codemod backlog** — `survey.js` still reports 252 rows across 65
+  blocks; `fix.js`'s real accepted scope (now proven, not assumed) is a small fraction of what
+  `survey.js` calls AUTOFIXABLE, and 3 of its 6 real applications this session were wrong. Widening
+  this tool's scope before improving its verification story is exactly the open question the next
+  prompt explores.
+- 35 custom-property rows (fail in `style.css`, no phase owns it) and 132 below-min-states (a
+  hover sibling per row — different dimension, different storage).
 
 ⚠ **No contrast guard exists anywhere in the colour components.** A client can pick a pale gradient
 on white and get unreadable text with no warning, against the framework's own WCAG 2.1 AA baseline.
@@ -207,11 +195,16 @@ Named, not fixed; deserves its own session.
 
 ### Guardrails carried from this session
 
-- **Per-agent green is not evidence** — run `gate:fast` centrally once after batches land; it caught
-  two defects every agent's own verification passed.
+- **A tool passing its own self-test + the full build gate chain is not proof it's correct** —
+  `fix.js` proved this twice (this session, and its earlier string-literal-splice incident). Live
+  deploy + reading the actual rendered CSS is the only thing that caught either.
+- **A concurrent second session can run the whole time on this shared tree** — hit repeatedly
+  this session (files appearing/disappearing from `git status`, a `git checkout --` that nearly
+  destroyed another session's uncommitted line, caught and restored byte-for-byte). Re-verify
+  file ownership before every commit, always with explicit path scoping.
+- **Per-agent green is not evidence** — run `gate:fast` centrally once after batches land.
 - **A moved survey verdict cannot see a superseded writer left behind** — read the diff's minus lines.
-- **Removing a writer can leave provably-dead guards** that fail `check-render-undefined-vars`; prune
-  by proof, never heuristic.
+- **Removing a writer can leave provably-dead guards**; prune by proof, never heuristic.
 - **Never quote a doc's count into a commit message**; paste the tool's output.
 - **Never fabricate `verdict: PASS`** — use the scoped `SGS_VISUAL_GATE_SKIP` bypass, never `--no-verify`.
 

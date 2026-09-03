@@ -3,6 +3,30 @@
 **Written 2026-09-03.** Supersedes `2026-09-03-golden-colour-continuation.md`, deleted in the
 same commit. Invoke `/autopilot` first.
 
+## First action
+
+Invoke `/autopilot`, then `/brainstorming explore` (topic: mechanical repair scripting, see
+below). Do not read further into this file to find a build task — there isn't one. This is an
+exploration prompt.
+
+## Mandatory READING
+
+1. The "What actually happened today" section below, in full — it's the evidence base, not
+   background colour.
+2. `.claude/LEDGER.md`'s "▶ COLOUR TRACK" section — current state of everything this prompt
+   references.
+3. `plugins/sgs-blocks/CLAUDE.md`'s "Colour EMISSION helpers" section (added this session) —
+   needed context for any shape involving colour/gradient emission.
+
+## Tool bindings
+
+| Need | Tool |
+|---|---|
+| Re-check a colour-conformance row's real state | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "..."` against `sgs-framework.db` |
+| Re-run the existing scripted repair (read-only) | `node plugins/sgs-blocks/scripts/colour-codemod/fix.js --fix` (dry run, no `--apply`) |
+| Re-check the text-gradient backlog count | `node plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js` (or re-run the manifest query documented in D928) |
+| Live-verify any shape's actual rendered CSS | Deploy to sandybrown canary + read `uploads/sgs-css/`, never raw page HTML |
+
 ## Start in `/brainstorming explore` mode — not design
 
 Bean's explicit instruction: open with `/brainstorming explore` and stay there. Do not converge
@@ -48,7 +72,7 @@ around it.
 
 ## Candidate defect shapes this session actually recognised (the exploration's raw material)
 
-Don't treat this as a todo list — it's the set of "shapes" the user is asking whether scripting
+Don't treat this as a work queue — it's the set of "shapes" the user is asking whether scripting
 would help with. Explore what's actually true about each before assuming any answer:
 
 1. **Motion-only `:hover` rules missing the touch-hover guard** — 76 rules across 25 blocks,

@@ -845,3 +845,19 @@ Programmatic translation captures structure + tokens but misses design choices i
 - **Pattern key:** `an-option-name-that-does-not-exist-is-discarded-in-silence`
 - **Evidence (D422):** The smoother passed `smoothTouch: false` to keep phone scrolling native. That option does not exist in Lenis 1.3.25 (zero occurrences in `lenis.mjs` AND `lenis.d.ts`); unknown keys are destructured past with no warning. The guarantee was delivered entirely by the vendor default and would have flipped if upstream changed it. Real name `syncTouch`. Found by the pre-commit qc-council.
 - **Rule:** Verify every option key against the INSTALLED version's types/source — not memory, not another major version's docs — and pass values you depend on EXPLICITLY rather than relying on a default that happens to agree.
+
+### [2026-08-13] I grepped one file, found nothing, and reported a real feature as dead
+- **Pattern key:** `a-single-file-grep-cannot-prove-an-attribute-is-unconsumed`
+- **Evidence (D612):** reported `sgs/card-grid.productFeatured`/`productOnSale`/`productInStock`
+  as dead controls because a grep of `render.php` alone found zero occurrences. All three ARE
+  consumed — through a shared helper, `includes/class-card-grid-products.php`, which `render.php`
+  calls conditionally (`source === 'wc-product'`) at line 378. A dispatched agent built a
+  "fix" before discovering, via a live functional test on the canary (not another grep), that
+  the feature already worked correctly. Same blind-spot CLASS as D603 (a different tool, an
+  editor-preview checker, missed attrs reaching output only through a shared PHP helper) —
+  recurring independently in a THIRD context now (a general research grep, not a built detector).
+- **Rule:** before reporting "X is unused"/"dead"/"never consumed" from a grep, either search the
+  WHOLE consuming surface (every file the block's render path can call into, not just its own
+  render.php) or run a live functional test proving absence of effect. A single-file textual
+  search proves the file doesn't reference the name; it proves nothing about whether the
+  attribute is consumed.

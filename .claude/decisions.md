@@ -1,3 +1,74 @@
+## D929 [ROUTINE] — colour-codemod fix.js autofix: 6 rows applied, 3 shipped broken past the full gate chain, all 3 found live and fixed
+
+**2026-09-03.** Ran `scripts/colour-codemod/fix.js --fix --apply` on the 6 rows it accepted
+(`card-grid` title/subtitle hover, `form`/`modal` gradient siblings, `pricing-table` price
+hover) — the ONE existing scripted repair for a recognised colour-conformance shape in this
+codebase, built with the project's own survey→fix→check→self-test triad. `php -l`, JSON
+validation, and the full 86-gate build chain all passed. **Live deploy + reading the actual
+lifted CSS then found 3 of the 6 were genuinely broken**, none caught by any static check:
+
+1. `card-grid` — `titleColourHover`/`subtitleColourHover` both wrote into ONE shared decls
+   array emitted on `.sgs-card-grid__item:hover` — setting both meant one silently overwrote
+   the other. Fixed: independent `sgs_emit_state_colour_css()` call per attribute, each on its
+   own real selector (`.sgs-card-grid__title` / `.sgs-card-grid__subtitle`).
+2. `form` + `modal` — `submitBackgroundGradient`/`triggerBackgroundGradient` set ALONE (no flat
+   colour) emitted zero CSS, because the surrounding gate checked only the flat variable. Fixed
+   both gates to also check the gradient variable.
+3. `pricing-table` — `priceColourHover` was mis-inserted inside the UNRELATED billing-toggle-
+   label-hover code block: wrong selector (`.toggle-label` not `.price`), wrong gate (only ran
+   when `toggleLabelHoverColour` was also set). Fixed: independent emission on
+   `.sgs-pricing-table__price`.
+
+All 3 fixes live-verified on sandybrown with positive + negative instances, including a
+first-ever test of the gradient-only case on `form` (previously only flagged as a risk, never
+driven). Reports: `reports/visual-diff/{card-grid,form,modal,pricing-table}-2026-09-03.md`
+("bugfix re-verification" sections). Commit `2ad141986`.
+
+**Also this session (same colour track, before the codemod run):** a genuine DB-writer bug
+found via `/qc-council` (two independent raters, cross-checked against a working comparator
+block before any fix was proposed) — `css_state` was missing from Stage 1's pre-reseed reset
+list (`css_layer`/`css_element`/`css_tier` were reset, `css_state` wasn't), so a stale value
+survived every `/sgs-update` reseed indefinitely. Caught live on `sgs/option-picker.pillBgColour`
+(a base attribute wrongly carrying `css_state='hover'`). Fixed at `9f2851150`. Also closed 12
+zero-tolerance "hover attribute with no declared state" findings across 6 blocks by declaring
+proper `supports.sgs.elements` manifests (`72a9fb7ec`, plus the manifest work folded into
+`2ad141986`), and wrote a new "Colour EMISSION helpers" reference section in
+`plugins/sgs-blocks/CLAUDE.md` (`991fe78ae`) — most of this session's length went to hand-
+deriving which shared PHP helper to call before discovering several already existed.
+
+**Standing lesson, carried into the next prompt:** a defect shape being "recognised" (survey.js
+already classifies it, `fix.js` already has a codemod for it) is not the same as the FIX being
+safe to trust unverified — this is the second time in this project's history a scripted repair
+for a known shape shipped real breakage past its own self-test and the full gate chain (the
+first: fix.js's earlier string-literal splice, D-history predates this entry). Next session
+opens in `/brainstorming explore` mode on exactly this question — see
+`.claude/prompts/2026-09-03-mechanical-repair-scripting.md`.
+
+## D928 [ROUTINE] — golden-colour hover/gradient migration: 5-7 blocks landed, category-B closed, text-gradient backlog measured at 43 elements
+
+**2026-09-03.** Closed `31-golden-colour-control`'s category-B backlog (hardcoded `:hover`
+colour rules with no backing attribute) for `google-reviews`/`modal`/`form`/`pricing-table`,
+plus `option-picker`'s pill hover (deliberately reversing its own FR-35-5 exception per Bean's
+explicit instruction, overriding both the spec note and the live gate's own `needsHover:false`
+measurement). Each element wired through the shared emission helpers documented in D929's
+CLAUDE.md addition, not hand-rolled CSS. Commits: `23d7ea1d7` (form), `bcc7c04e0`
+(pricing-table), `edda94356` (option-picker + a real edit.js `ReferenceError` fix), plus the
+gradient extension across the same blocks (`b9f26d898` extends `sgs_button_element_style_css()`
+with fill-gradient support, now shared by every adopter).
+
+**Measured, not assumed, before scripting anything:** the text-colour-gradient backlog this
+track deferred is real and already has a live detector —
+`textSharesElementWithBackground()` in `scripts/inspector-scan/rules/31-golden-colour-control.js:163`
+— queried directly against every block manifest rather than hand-derived: **43 elements across
+~35 blocks** have text and background sharing one selector (button, container, hero,
+product-card, trust-bar, nav-menu, cta-section, info-box, site-header, tabs, and ~26 more). The
+FIX (moving the background paint to a `::after` layer via `sgs_block_background_layer_css()`)
+has never been automated or built more than once — named as its own project, not folded into
+this session.
+
+Full account of the codemod run that followed, the 3 bugs it shipped, and the DB-writer fix:
+**D929, immediately below.**
+
 ## D927 [ROUTINE] — generative-background fidelity: FIXED and PASSING — corrected every fragment-shader constant against the reference, deleted the wrong-preset term, gated depth-fade to dark-ground only
 
 **2026-09-03.** Closes D925/D926 same session. Bean corrected the framing D926 closed with:

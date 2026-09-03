@@ -1,10 +1,23 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-09-03 (1 new entry added — a dead code-cleanup pass fixing one codemod
-bug uncovered a second, cascading one; 1 oldest entry pruned to archive to hold the ~30 cap.)
+**Last updated:** 2026-09-03 (session 2) (1 new entry added — a codemod's self-test AND the full
+build gate chain both passed while 3 of its 6 applied rows shipped genuinely broken, caught only
+by live deploy; 1 oldest entry pruned to archive to hold the ~30 cap.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-03] A codemod's self-test AND the full 86-gate build chain both passed while 3 of 6 applied fixes shipped genuinely broken
+- **Pattern key:** `a-codemods-self-test-passing-is-not-proof-its-real-output-is-correct`
+- **Feedback file:** [feedback_a_codemods_self_test_passing_is_not_proof_its_real_output_is_correct.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_codemods_self_test_passing_is_not_proof_its_real_output_is_correct.md)
+- **Rule:** `colour-codemod/fix.js --fix --apply` (recurrence of a 2026-09-02 incident with the SAME
+  tool) shipped 3 semantically-wrong rows — a selector collision, a gate missing a gradient-only
+  input case, a block mis-inserted into an unrelated element's logic — past `php -l`, JSON
+  validation, AND the full 86-gate build chain, all green. Only live deploy + reading the actual
+  rendered CSS caught any of them. Escalates the prior lesson: passing the FULL static gate chain
+  is also not proof of correctness for semantic defects (wrong selector, wrong gate condition,
+  wrong insertion point) that no static check can see. Full account:
+  `~/.claude/memory/learning/2026-09-03-codemod-verification-must-include-live-deploy-not-just-gates.md`.
+
 ### [2026-09-03] Fixing one bug in a codemod's dead-code stripper revealed a second, cascading one — patching the already-migrated output by hand would have re-derived both fixes twice
 - **Pattern key:** `revert-and-rerun-a-codemod-dont-hand-patch-its-output`
 - **Feedback file:** [feedback_revert_and_rerun_a_codemod_dont_hand_patch_its_output.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_revert_and_rerun_a_codemod_dont_hand_patch_its_output.md)
@@ -264,24 +277,7 @@ bug uncovered a second, cascading one; 1 oldest entry pruned to archive to hold 
   rewrites, at the cost of one git invocation per item (fine when scoped to an already-small
   candidate set, not run against everything).
 
-### [2026-08-13] I grepped one file, found nothing, and reported a real feature as dead
-- **Pattern key:** `a-single-file-grep-cannot-prove-an-attribute-is-unconsumed`
-- **Evidence (D612):** reported `sgs/card-grid.productFeatured`/`productOnSale`/`productInStock`
-  as dead controls because a grep of `render.php` alone found zero occurrences. All three ARE
-  consumed — through a shared helper, `includes/class-card-grid-products.php`, which `render.php`
-  calls conditionally (`source === 'wc-product'`) at line 378. A dispatched agent built a
-  "fix" before discovering, via a live functional test on the canary (not another grep), that
-  the feature already worked correctly. Same blind-spot CLASS as D603 (a different tool, an
-  editor-preview checker, missed attrs reaching output only through a shared PHP helper) —
-  recurring independently in a THIRD context now (a general research grep, not a built detector).
-- **Rule:** before reporting "X is unused"/"dead"/"never consumed" from a grep, either search the
-  WHOLE consuming surface (every file the block's render path can call into, not just its own
-  render.php) or run a live functional test proving absence of effect. A single-file textual
-  search proves the file doesn't reference the name; it proves nothing about whether the
-  attribute is consumed.
-
-*(7 entries dated 2026-08-04 through 2026-08-09 pruned to `memory/mistakes-archive.md` on
-2026-09-03 — oldest by date, moved verbatim, to make room at cap. 36 -> 30 active after the
-prune + 1 new entry. A further 1 entry, 2026-08-11's querySelector mistake, pruned the same
-day for the border-migration handoff — see `memory/mistakes-archive.md`.)*
+*(8 entries dated 2026-08-04 through 2026-08-13 pruned to `memory/mistakes-archive.md` — oldest
+by date, moved verbatim, to make room at cap. See `memory/mistakes-archive.md` for the full
+history of prunes.)*
 
