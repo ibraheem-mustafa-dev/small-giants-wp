@@ -127,26 +127,26 @@ const PALETTE = 'palette-a';
 // than assumed.)
 const GROUND_COLOUR = Object.freeze( [ 250 / 255, 249 / 255, 246 / 255 ] );
 
-// ⛔ C1 FIX (2026-08-29, whole-branch review). The rig SCALES u_time INSIDE
-// its shader — shaders/68467.glsl:230, `displace(..., u_time * u_speed, ...)`
-// — with u_speed = 4e-5 (index.html:222, the live light-theme preset `P`).
-// Ours uses u_time RAW in its own shader (generative-background.js's
-// VERTEX_SHADER, no internal speed multiplier at all — the JS-side `speed`
-// option only scales what gets UPLOADED, at draw() call time). So the
-// EFFECTIVE phase fed to the noise function is `raw_u_time * RIG_SPEED` on
-// the rig, but just `raw_u_time` on ours. Driving both sides with the SAME
-// raw ?t= value (the original bug) put them 1/RIG_SPEED = 25,000x apart in
-// phase — far beyond simplex noise's ~1-unit decorrelation length — while
-// precondition 3 asserted the RAW uniforms matched and passed, because they
-// did; the EFFECTIVE phases never matched at all. An assertion that passes
-// while meaning nothing is exactly the failure this instrument exists to
-// catch — reproduced inside the instrument itself.
+// ⛔ C1 FIX (2026-08-29) + TIME_SCALE FIX (2026-09-03, D930). The rig SCALES
+// u_time INSIDE its shader — shaders/68467.glsl:230,
+// `displace(..., u_time * u_speed, ...)` — with u_speed = 4e-5
+// (index.html:222, the live light-theme preset `P`). Ours originally used
+// u_time RAW with no internal multiplier at all (the C1-era comment here
+// said so) — that was ALSO a live production bug (Bean, 2026-09-03: "ours
+// is super fast"), not just a measurement-tooling gap. Fixed at the source
+// now: `generative-background.js`'s `draw(seconds)` applies its own
+// `TIME_SCALE = 0.04` (= 1000 * 4e-5, the reference's ms-to-real-second
+// conversion folded in) before upload, so `draw()`'s `seconds` argument now
+// means real elapsed seconds, matching its production tick-loop caller.
 //
-// Fix: SAMPLE_TIMES are the RIG's raw ?t= values (unchanged meaning — this
-// is what gets passed straight to the rig's own ?t= parameter). To reach
-// the SAME effective phase, the replica must be driven with
-// `oursTimeFor(t) = t * RIG_SPEED` instead of `t` directly (see
-// oursTimeFor() below and its use at every captureReplica() call site).
+// This driver must therefore convert the OPPOSITE way it used to:
+// previously it had to pre-apply RIG_SPEED itself (the engine did no
+// scaling); now the engine does the reference-matched scaling internally,
+// so this driver only needs a plain ms->seconds unit conversion — the rig's
+// raw ?t= values ARE milliseconds (`u_time = timeOffset + seconds*1000`).
+// `oursTimeFor(t) = t / 1000` reaches the exact same final u_time as the
+// old `t * RIG_SPEED` did, now that the 4e-5-equivalent factor lives inside
+// draw() itself instead of being duplicated here.
 //
 // Values chosen to sit inside the rig's REAL operating range, not an
 // arbitrary small number: its runtime (non-?t=) path computes
@@ -158,19 +158,22 @@ const GROUND_COLOUR = Object.freeze( [ 250 / 255, 249 / 255, 246 / 255 ] );
 // safely past simplex noise's ~1-unit decorrelation length (deliberate: 0c
 // below needs a REAL, unambiguous discrimination signal, not a hair's-
 // breadth one).
-const RIG_SPEED = 4e-5; // shaders/68467.glsl:230 * index.html:222 (P preset).
+const RIG_SPEED = 4e-5; // shaders/68467.glsl:230 * index.html:222 (P preset) — kept for precondition-3's effective-phase check below, not for oursTimeFor() any more.
 const SAMPLE_TIMES = Object.freeze( [ 17500, 27500, 47500 ] ); // Rig's raw ?t= values.
 
 /**
- * The u_time value to drive the REPLICA with for a given RIG raw ?t= value,
- * so both sides land on the SAME effective shader phase. See the C1 fix
- * comment above SAMPLE_TIMES for the full derivation.
+ * The value to drive the REPLICA with (poc-replica.html's `?t=`, forwarded
+ * straight to `draw()`) for a given RIG raw ?t= value, so both sides land
+ * on the SAME effective shader phase. See the TIME_SCALE FIX comment above
+ * SAMPLE_TIMES for the full derivation — this is now a plain unit
+ * conversion (the rig's raw value is milliseconds; `draw()` expects real
+ * seconds), not a manual reference-speed multiply.
  *
- * @param {number} rigRawTime The rig's raw ?t= value.
- * @return {number} The value to pass to poc-replica.html's ?t=.
+ * @param {number} rigRawTime The rig's raw ?t= value (milliseconds).
+ * @return {number} The value to pass to poc-replica.html's ?t= (seconds).
  */
 function oursTimeFor( rigRawTime ) {
-	return rigRawTime * RIG_SPEED;
+	return rigRawTime / 1000;
 }
 
 // 0b's positive-control perturbation: +3/255 on the green channel.

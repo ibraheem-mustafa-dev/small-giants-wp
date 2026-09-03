@@ -38,12 +38,15 @@ const REPLICA_PATH = '/plugins/sgs-blocks/scripts/generative-background/poc-repl
 const PALETTE = 'palette-a';
 const PYTHON = process.env.SGS_PYTHON || 'python';
 
-// SAME raw ?t= values as fidelity-compare.mjs's SAMPLE_TIMES, SAME
-// RIG_SPEED conversion — the whole point is to sample at the identical
-// effective phases already recorded in fidelity-baseline.json.
-const RIG_SPEED = 4e-5;
+// SAME raw ?t= values as fidelity-compare.mjs's SAMPLE_TIMES, same
+// oursTimeFor() conversion — the whole point is to sample at the identical
+// effective phases already recorded in fidelity-baseline.json. Now a plain
+// ms->seconds unit conversion (D930): draw()'s own internal TIME_SCALE
+// applies the reference-matched speed factor, so this driver no longer
+// duplicates it — see fidelity-compare.mjs's matching comment for the
+// full derivation.
 const SAMPLE_TIMES = Object.freeze( [ 17500, 27500, 47500 ] );
-const oursTimeFor = ( rigRawTime ) => rigRawTime * RIG_SPEED;
+const oursTimeFor = ( rigRawTime ) => rigRawTime / 1000;
 
 // Same theme-token ground colour as D925's fix, so this probe isn't
 // reintroducing the already-eliminated ground-colour variable.

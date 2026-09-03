@@ -135,7 +135,10 @@
  *                 from fragment-shading coverage — never set by anything
  *                 shipped.
  */
-import { createGenerativeBackground } from '../../src/shared/effects/webgl/generative-background.js';
+import {
+	createGenerativeBackground,
+	TIME_SCALE,
+} from '../../src/shared/effects/webgl/generative-background.js';
 
 const q   = new URLSearchParams( location.search );
 const PAL = ( q.get( 'pal' ) || 'palette-a' ).replace( /[^a-z0-9-]/gi, '' );
@@ -296,31 +299,27 @@ if ( ! gl ) {
 		// contract member a safe null-returning shape, and failObservably()
 		// has set __err + __ready above.
 	} else {
-	// speed:1 is load-bearing, not a stylistic default. draw( seconds ) sets
-	// u_time = seconds * speed (generative-background.js draw()); pinning
-	// speed to 1 makes u_time === the raw value __drawAtRawTime() is given.
+	// speed:1 is load-bearing, not a stylistic default — it makes
+	// draw(seconds) apply ONLY its own internal TIME_SCALE (no extra
+	// client-facing multiplier), so the live uniform is uTime*TIME_SCALE,
+	// matching the assertion in __drawAtRawTime() below.
 	//
-	// ⚠ M5 CORRECTION (2026-08-29, whole-branch review — this comment's
-	// PREVIOUS wording was the proximate cause of a Critical finding,
-	// C1: it claimed __drawAtRawTime's argument "is exactly what the rig's
-	// own absolute ?t= does… no further scaling once T_ABS is set", citing
-	// index.html:471. That is true of index.html's own JS assignment
-	// (`waveUniforms.u_time.value = T_ABS`) — and FALSE of the shader that
-	// then consumes it. The rig's live vertex shader
-	// (.claude/scratch/stripe-hero-poc/shaders/68467.glsl:230) computes
-	// `u_time * u_speed` INSIDE the GLSL, with u_speed = 4e-5 (index.html's
-	// light-theme preset). So the EFFECTIVE phase reaching the noise
-	// function is `T_ABS * 4e-5` on the rig, not `T_ABS` itself. Our own
-	// shader (generative-background.js's VERTEX_SHADER) has NO such internal
-	// multiplier — it consumes u_time raw — so the value this page is
-	// driven with via __drawAtRawTime() IS the effective phase on THIS side.
-	// A caller wanting the SAME effective phase as a given rig ?t= value
-	// must therefore pass `rigValue * 4e-5` here, NOT `rigValue` directly.
-	// fidelity-compare.mjs's `RIG_SPEED` constant + `oursTimeFor()` helper
-	// now do exactly that; before this fix they didn't, and precondition 3
-	// (a raw-uniform equality check) passed while the two engines were
-	// ~25,000x apart in actual phase — reproduced inside the very
-	// instrument meant to catch it.
+	// ⚠ HISTORY (kept — the failure mode this file exists to prevent
+	// recurring). Two DIFFERENT bugs have lived on this exact line, in
+	// OPPOSITE directions. C1 (2026-08-29): this comment once claimed
+	// __drawAtRawTime's argument needed no scaling at all, because "our
+	// shader consumes u_time raw" — true at the time, but the ENGINE
+	// itself (not just this diagnostic page) was missing the reference's
+	// internal `u_time * u_speed` scaling (shaders/68467.glsl:230,
+	// u_speed=4e-5), which is also why the live production effect ran
+	// ~25,000x faster in EFFECTIVE phase than intended. D930 (2026-09-03,
+	// Bean: "ours is super fast") fixed that at the source — draw() now
+	// applies its own `TIME_SCALE = 0.04` (the reference's ms-to-real-
+	// second-equivalent factor) before every upload. This diagnostic page
+	// and fidelity-compare.mjs's `oursTimeFor()` were updated to match:
+	// this driver no longer needs to pre-apply RIG_SPEED itself (the
+	// engine does the reference-matched scaling now), just a plain
+	// ms->seconds unit conversion.
 	const handle = await createGenerativeBackground( canvas, {
 		textureSource: img,
 		speed: 1,
@@ -422,11 +421,17 @@ if ( ! gl ) {
 				return null;
 			}
 
-			if ( Math.abs( lastUTime - uTime ) > 1e-6 ) {
+			// D930: draw()'s own internal TIME_SCALE (0.04, reference-matched —
+			// see its declaration comment in generative-background.js) now
+			// applies BEFORE upload, so the live uniform is uTime*TIME_SCALE*
+			// speed, not uTime raw. speed is pinned to 1 above.
+			const expectedUTime = uTime * TIME_SCALE;
+			if ( Math.abs( lastUTime - expectedUTime ) > 1e-6 ) {
 				console.error(
 					'ASSERTION FAILED: __drawAtRawTime requested u_time=' +
-						uTime + ' but the live uniform reads ' + lastUTime +
-						' — the seconds*speed conversion (speed pinned to 1) ' +
+						uTime + ' (expected live uniform ' + expectedUTime +
+						' after TIME_SCALE) but the live uniform reads ' + lastUTime +
+						' — the seconds*TIME_SCALE*speed conversion (speed pinned to 1) ' +
 						'did not land as expected.'
 				);
 			}

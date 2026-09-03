@@ -143,6 +143,50 @@ this session.
 Full account of the codemod run that followed, the 3 bugs it shipped, and the DB-writer fix:
 **D929, immediately below.**
 
+## D932 [ROUTINE] — generative-background: live playback speed fixed (~25x too fast, same phase-scaling bug D888 found in tooling, never fixed in the shipped engine)
+
+**2026-09-03.** Bean, live-testing the D927-fixed engine on a real page: "ours is super fast
+compared to the original." Investigated, not guessed: the reference's vertex shader
+(`shaders/68467.glsl:230`) scales its raw time uniform by `u_speed = 4e-5` (`index.html`'s P/QR
+presets) BEFORE it ever reaches the noise/displacement functions. `generative-background.js`'s
+shipped `draw(seconds)` uploaded real elapsed seconds with NO equivalent internal scale factor at
+all — the client-facing `speed` option only ever multiplied on top of raw seconds, defaulting to
+1. Effective noise phase advanced at ~1.0/real-second on ours vs the reference's measured
+0.04/real-second (independently re-derived twice already this session, in `fidelity-compare.mjs`'s
+own `RIG_SPEED` constant) — ~25x too fast, matching Bean's report exactly.
+
+**Fixed:** new exported `TIME_SCALE = 0.04` constant (`= 1000ms/s × reference's u_speed 4e-5`),
+applied inside `draw()`: `u_time = seconds * TIME_SCALE * speed`. Client-facing `speed` (default 1)
+now means "the reference's own real-world pace" instead of "raw seconds".
+
+**Diagnostic tooling updated to match, not left stale.** `fidelity-compare.mjs`'s and
+`silhouette-probe.mjs`'s `oursTimeFor()` previously had to pre-apply `RIG_SPEED` themselves
+(the engine did no scaling); now the engine scales internally, so the driver only needs a plain
+ms→seconds unit conversion (`t / 1000`) — re-derived algebraically, not copy-pasted. `poc-replica.html`'s
+own internal self-check assertion (comparing the live `u_time` uniform readback against what was
+requested) updated to expect `uTime * TIME_SCALE`, not raw `uTime`.
+
+**Re-verified, not assumed unaffected:** `npm run fidelity:compare` still passes 3/3 phases with
+IDENTICAL numbers to D927 (2.81/2.35/2.73%) — expected, since that harness samples fixed effective
+phases via `?t=`, independent of real-world clock speed; the fix only changes LIVE rAF-driven
+playback pace, which that static-phase harness never measured. `verify-transform.mjs` still 7/7.
+
+**Colours, same session:** Bean asked for the reference's actual palette for this POC, not an
+arbitrary demo pick. Sampled `.claude/scratch/stripe-hero-poc/assets/palette-a.png` directly
+(4 points along its horizontal midline: `#FDADEB #FEC7A1 #DEACD4 #FFACDA`) — the closest honest
+match available, since the reference's real texture varies in BOTH x and y (confirmed by sampling
+3 rows), while our engine's colour model only supports a horizontal 4-stop OKLCH blend replicated
+identically down every row (`buildGradientImageData()`). Vertical variation cannot be reproduced
+without a real feature build, not something to fold into a same-session colour tweak.
+
+**A real, separate bug caught along the way, honestly reported not silently deployed:** the first
+version of the live demo page (post 3228) had NO colour attributes set at all, so
+`fx-generative-background.js`'s `readColours()` failed and the effect never started — Bean was
+shown an empty container, not even a broken version of the effect, and correctly called it out
+("this is a background effect not the Stripe cloth animation"). Fixed by setting real colour
+attrs; confirmed live via Playwright screenshot (two captures, visibly animating) before reporting
+back, not via markup/script-tag presence alone — the exact gap that caused the first miss.
+
 ## D927 [ROUTINE] — generative-background fidelity: FIXED and PASSING — corrected every fragment-shader constant against the reference, deleted the wrong-preset term, gated depth-fade to dark-ground only
 
 **2026-09-03.** Closes D925/D926 same session. Bean corrected the framing D926 closed with:

@@ -255,6 +255,28 @@ const DEFAULT_DEPTH_FADE_SCALE = 2.0;
 const DEFAULT_GROUND = [ 0.98, 0.98, 0.97 ];
 
 /*
+ * ── Internal time scale — MEASURED FROM THE REFERENCE, not a guess ────────
+ * The reference's own vertex shader scales its raw time uniform before it
+ * ever reaches the noise/displacement functions:
+ * `shaders/68467.glsl:230` — `displace(uv, position, u_time * u_speed, ...)`,
+ * with `u_speed = 4e-5` (`index.html`'s light AND dark presets both use this
+ * exact value). Its `u_time` itself is uploaded in MILLISECONDS
+ * (`timeOffset + seconds*1000`), so the effective phase advances at
+ * `1000 * 4e-5 = 0.04` per real second — independently re-derived the same
+ * way by `fidelity-compare.mjs`'s own `RIG_SPEED` constant.
+ *
+ * This engine's `draw(seconds)` receives real elapsed SECONDS already (not
+ * milliseconds), and previously uploaded them to `u_time` completely
+ * unscaled — with no equivalent of the reference's `u_speed` at all. That
+ * made the noise phase advance ~25x faster than the reference (1.0/s vs
+ * the reference's 0.04/s), which is what "ours is super fast" (Bean,
+ * 2026-09-03) was actually measuring. `TIME_SCALE` is the missing
+ * multiplier, applied so the client-facing `speed` option's default (1)
+ * now means "the reference's own real-world pace", not "raw seconds".
+ */
+export const TIME_SCALE = 0.04;
+
+/*
  * ── Ashima Arts / Stefan Gustavson 3D simplex noise (MIT) ──────────────────
  * Duplicated verbatim from `wave-gradient.js` — see module docblock for why
  * this is a documented duplicate, not an import.
@@ -900,7 +922,7 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 			return false;
 		}
 		gl.useProgram( program );
-		gl.uniform1f( timeLoc, seconds * speed );
+		gl.uniform1f( timeLoc, seconds * TIME_SCALE * speed );
 		gl.uniform1i( textureLoc, 0 );
 		gl.activeTexture( gl.TEXTURE0 );
 		gl.bindTexture( gl.TEXTURE_2D, texture );
