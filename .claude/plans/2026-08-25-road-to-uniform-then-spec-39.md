@@ -2,11 +2,13 @@
 doc_type: plan
 title: The road to uniform — clear Spec 32 + Spec 35 + the tier migration, then Spec 39
 date: 2026-08-25
-status: OPEN — Section A closed, Spec 32 closed bar B4 (blocked), Spec 35's mechanical
-  verification pass closed (C2/C3/C8/C9/C11, C4/C5/C10 scoped, D1/D2). 9 items genuinely
-  remain (see ROUND 2 CORRECTED note under "Session 2026-09-04 summary") — twice corrected
-  same session (12 -> found 3 already done + 2 smaller than described -> 9). Every claim in
-  this file was independently re-verified against live code before this status was written.
+status: NEARLY CLOSED — Section A closed, Spec 32 fully closed (B4 unblocked + shipped
+  2026-09-04, see below), Spec 35's mechanical verification pass closed. Of the 9 items found
+  genuinely open earlier this session (see ROUND 2 CORRECTED note under "Session 2026-09-04
+  summary"), 8 closed same session: C7, C6, C16 (found already done), C19 item 3, C15-5,
+  C14/C4, D4, B4. Only C12/C13 remains open, blocked on shared browser resource contention
+  (not a design/dependency block — retry once free). Every claim in this file was
+  independently re-verified against live code before this status was written.
   C1/D3 (golden-colour) tracked elsewhere.
 owner: colour-golden / tooling track
 ordering_rule: D552 — "standard leads, pipeline follows"
@@ -106,42 +108,58 @@ delete once superseded):**
   blocks' worth of already-completed rollout — corrected here rather than left to mislead a
   future session.**
 
-**Genuinely open, 7 items remain, priority order — each independently verified this round:**
+**CLOSED 2026-09-04, same session (all six of the seven above):**
 
-1. **C19 item 3 — smaller than round 1 said.** The exact shape→fit→position chain with
-   inert-state greying is fully built as the `box-shape` media atom
-   (`components/media/atoms/box-shape.js` + `registry.js`), already used by `sgs/media`.
-   Hero just doesn't declare the atom. Concrete plan: add `"box-shape"` + `"media-padding"`
-   to hero's `splitMedia` atom list in `block.json`, swap hero's bespoke width/height UI in
-   `edit.js` (~1572-1611) for the shared `box-shape.control.js` composition, delete
-   `splitImageBleed` in the same pass. image-sequence's raw `aspectRatio` attr may not even
-   be in scope — the real collision is entirely on hero once the atom is added there.
-2. **C15-5** — widen block bindings past the 3 allowlisted blocks
-   (`includes/class-sgs-block-bindings-support.php`'s `SUPPORTED_ATTRIBUTES` const still
-   lists exactly `sgs/text`/`sgs/heading`/`sgs/button`).
-3. **C14's enforcing gate** — same underlying build as **C4** (CO-2): confirmed absent
-   (`grep` on `gates.json` for "CO-2"/"consistency-scanner"/"element-panel-conformance"
-   returns nothing). Needs an AST walk of every `edit.js`, its own build — not
-   double-counted as separate work from C4.
-4. ⚠ **C12/C13 — ATTEMPTED 2026-09-04, BLOCKED by shared browser resource contention, not
+- ✅ **C19 item 3** — hero's split-media panel migrated onto the shared `box-shape` +
+  `media-padding` media atom (same composition `sgs/media` uses), `splitImageBleed` deleted.
+  Along the way, fixed a real bug the migration itself introduced: hero's legacy
+  `splitMediaWidthTablet`/`Mobile` (kept editor-inert for back-compat) statically collided
+  with the atom system's generic tiered-Width expectation — documented as a `reads`
+  exception in `registry.js`, mirroring the existing exception already recorded for the base
+  `splitMediaWidth`. Commit `7d0954776`, deployed, live-verified (payload checksum + motion
+  QA, all 83 blocks green).
+- ✅ **C15-5** — `SUPPORTED_ATTRIBUTES` widened 3→37 blocks (78 attrs), with a purpose-built
+  detector (`scripts/audit-bindable-attrs.py`, full survey/fix/check/self-test triad) gating
+  it per THE-MIGRATION-METHOD. `sgs/product-card` correctly stays excluded (C15-6, own live
+  resolver). Commit `7b8254ec6`.
+- ✅ **C14/C4** — the panel/control ORDER + CO-2 element-grouping gate built
+  (`rules/41-co2-element-grouping-order.js`), reusing `placement-reach.py`'s existing
+  manifest logic rather than re-deriving it, shipped advisory-mode (per this project's own
+  ship-advisory-first convention). A real false-positive class was caught during the build
+  (isWrapper elements wrongly flagged, the same shape that got `scattered-element-controls.js`
+  deleted) and fixed with a dedicated negative-control fixture before shipping. Commit
+  `c8b2fa084`, wired (confirmed via `npm run gate:list`, not just built).
+- ✅ **D4** — decided per-rule, not blanket. 8 promoted to `gate` (01-tab-group,
+  20-pattern-template-lock, 07-preset-only-shadow, 22-placement-rule-surfaces,
+  26-responsive-duplicate, 30-raw-box-control, 29-duplicate-visible-label,
+  36-box-control-presets-missing — all cleared the project's own advisory-before-fail-closed
+  bar, E6 point 9). 15 held advisory with a named, evidenced reason each. Full reasoning:
+  `.claude/reports/2026-09-04-d4-advisory-rule-promotion-decisions.md`.
+- ✅ **B4 — UNBLOCKED and closed, same session.** The "blocked on Track 2" framing had been
+  copied forward across 3+ write-ups without ever being re-tested: it conflated genuinely
+  paused mega-menu VISUAL design (nav-drawer variant styling, rejected on Bean's eye
+  2026-07-29) with this purely mechanical control-shape question, which nothing in Spec 36
+  actually names as pending. Bean confirmed proceeding once this was pointed out. Root border
+  (colour+gradient+radius, previously bespoke) migrated to the full `SgsBorderControl`
+  composite (width+colour+style) — adopting the shared component necessarily adds real
+  `borderWidth`/`borderStyle` capability the block didn't have (the component has no
+  colour+radius-only mode), accepted as correct rather than avoided, matching the other 44
+  migrated blocks. Radius deliberately KEPT on its own scalar control, not wired into
+  `SgsBorderControl`'s `onRadiusChange` — that expects a per-corner object, a stored-shape
+  change against live content that's a separate, unscoped migration. `groupBorderColour*`
+  (per-child-group hover colours) investigated and correctly left alone — a colour-panel
+  concern, not a border-control one. Survey: `ANOMALY 7→6`, `PRIVATE_DONE 48→49`. Live
+  frontend roundtrip PASS post-deploy. Commits `20bcb52b8`, `b0670ac4a`.
+
+**One item still genuinely open:**
+
+1. ⚠ **C12/C13 — ATTEMPTED 2026-09-04, BLOCKED by shared browser resource contention, not
    completed.** Both dispatches hit the same Playwright MCP browser lock (another concurrent
    session holding `mcp-chrome-91e235c`) on every retry; neither forced past it (killing a
    shared browser risks destroying another session's in-progress work). C13's expected
    element-order ground truth (read from each candidate's `block.json`) was captured and
    doesn't need re-deriving. Full account: `.claude/reports/2026-09-04-c12-c13-live-pass.md`.
    Re-dispatch once the shared browser is confirmed free.
-5. ✅ **D4 CLOSED 2026-09-04** — decided per-rule, not blanket. 8 promoted to `gate`
-   (01-tab-group, 20-pattern-template-lock, 07-preset-only-shadow, 22-placement-rule-surfaces,
-   26-responsive-duplicate, 30-raw-box-control, 29-duplicate-visible-label,
-   36-box-control-presets-missing — all cleared the project's own advisory-before-fail-closed
-   bar, E6 point 9). 15 held advisory with a named, evidenced reason each (real backlog:
-   31/34; pending the in-flight C14/C4 build: 35; too new to have cleared a cycle: 37/38/39/40/
-   roster-drift/parse-error; the rule's own evidence argues caution: 23/33/28; closed THIS
-   session so not yet cycle-tested: 18/03/21). Full reasoning:
-   `.claude/reports/2026-09-04-d4-advisory-rule-promotion-decisions.md`. Re-verified after the
-   flip: `inspector-scan --check` exit 0, gate rules 7→15, gating findings 0.
-6. **B4** — `mega-panel.borderRadius`, confirmed still bespoke (`grep -c SgsBorderControl
-   mega-panel/edit.js` → 0), correctly BLOCKED on Track 2 (inactive).
 
 **Root cause of round 1's error** (full account: D960): the original 2026-08-25/26 "unbuilt"
 claims were honest when written — grep genuinely found nothing, and the features shipped 1-2
