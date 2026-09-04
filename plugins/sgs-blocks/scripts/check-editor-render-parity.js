@@ -4339,7 +4339,27 @@ function main() {
 	// debt this session created. Still true: do not treat 209 as the new
 	// floor — the fix is building canvas-preview for the shared gradient
 	// controls once, not another raise per commit.
-	const CHECK_A_OPEN_BACKLOG = 209;
+	// ⛔ RAISED AGAIN 209→211, 2026-09-04, third occurrence of the identical
+	// pattern. Blocking deployment of the D946/D947 generative-background
+	// fixes (a separate track this same session), which touched only
+	// fx-generative-background.js/webgl/generative-background.js/fx.js and
+	// added zero new CHECK A findings itself (confirmed: `git log -- <the
+	// affected block edit.js files>` shows none of them touched by the
+	// generative-background commits). The +2 traces to commit `2d1acab31`
+	// ("feat(a11y): shared WCAG contrast module + opt-in gradient contrast
+	// check (pilot)"), a concurrent session's edit to the SHARED
+	// `GradientCapableColourControl.js` component — every one of the 211
+	// findings is a `*ColourGradient`/`bgSvg*` attribute across ~30 unrelated
+	// blocks (site-header, trust-bar, timeline, product-search, etc.), the
+	// same shared-gradient-control debt class as both prior raises, none
+	// touched by this raise's unblocked change. Bean's explicit direction,
+	// with this conflict named to him first (same discipline as the 204/209
+	// raises). LOWER this back to the true count once the a11y-contrast
+	// track's own findings are investigated and fixed — do not treat 211 as
+	// the new floor. The actual fix, unchanged from the last two times this
+	// was written here, is building canvas-preview for the shared gradient
+	// controls once, not a fourth raise on the next unrelated commit.
+	const CHECK_A_OPEN_BACKLOG = 211;
 	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
 
 	if ( isJson ) {
