@@ -26,7 +26,7 @@ import {
 	Button,
 	Notice,
 } from '@wordpress/components';
-import { NumberControl, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { NumberControl, ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
 // allow-list exactly (render.php validates the same set independently).
@@ -56,11 +56,6 @@ const DATA_SOURCE_OPTIONS = [
 const EMPTY_STATE_OPTIONS = [
 	{ label: __( 'Hide section (no gap)', 'sgs-blocks' ), value: 'hide' },
 	{ label: __( 'Show "Reviews coming soon"', 'sgs-blocks' ), value: 'coming-soon' },
-];
-
-const THEME_OPTIONS = [
-	{ label: __( 'Light', 'sgs-blocks' ), value: 'light' },
-	{ label: __( 'Dark', 'sgs-blocks' ), value: 'dark' },
 ];
 
 const CARD_STYLE_OPTIONS = [
@@ -456,13 +451,17 @@ export default function Edit( { attributes, setAttributes } ) {
 							);
 						} }
 					</ResponsiveOverride>
-					<SelectControl
+					<ToggleGroupControl
 						label={ __( 'Theme', 'sgs-blocks' ) }
 						value={ theme }
-						options={ THEME_OPTIONS }
 						onChange={ ( value ) => setAttributes( { theme: value } ) }
+						isBlock
+						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
+					>
+						<ToggleGroupControlOption value="light" label={ __( 'Light', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="dark" label={ __( 'Dark', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
 					<SelectControl
 						label={ __( 'Card style', 'sgs-blocks' ) }
 						value={ cardStyle }
