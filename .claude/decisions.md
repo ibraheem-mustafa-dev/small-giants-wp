@@ -1,3 +1,38 @@
+## D958 [ROUTINE] — D957 undercounted the road-to-uniform remainder as 2 items; it was 12
+
+**2026-09-04, same session as D957, caught by Bean directly asking "aren't there way more
+remaining items than those 2?"** He was right. D957's "what's left: C6, C7" was true of the
+mechanical verification batch (C2-C11, D1/D2) this session actually touched, but silently
+dropped everything Bean had already decided on 2026-08-27 and 2026-08-26 (C14-C19) that was
+never built, plus C12/C13 (live passes) and D4 (a promote/demote decision never made). None of
+that was newly discovered — it was sitting in the same plan doc D957 cited, just not carried
+into the "what's left" summary.
+
+**The real list, 12 items, full detail + priority order in
+`.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`'s CORRECTED note:** C7 (4 blocks,
+decorative-image/ARIA), C6 (10 blocks, ToolsPanel), **C15-2/C15-3 (the client-facing
+block-bindings editor UI — Bean's own words, "THE headline item... everything else is
+secondary," Size M, and the single biggest piece of unbuilt scope in the whole backlog)**,
+C15-5 (widen bindings past 3 blocks), C16 (spacing-preset build), C19 item 3 (hero's
+box-shape control chain), C18 residual (the approved-but-unbuilt visual column-shape picker),
+C15-1 (version-floor guard, P3 hygiene), C14's enforcing gate (= C4, already correctly scoped
+this session as its own AST-walk build, cross-referenced not double-counted), C12/C13 (live
+passes), D4 (advisory-rule promote/demote decision, never actioned), B4 (mega-panel, correctly
+still blocked on Track 2).
+
+**Root cause of the undercount:** D957 and the LEDGER's "NEXT SESSION STARTS HERE" section
+were written directly from the reconciliation work JUST DONE (the mechanical verification
+pass), not from a fresh, complete re-read of the plan's full scope table. The verification
+pass was itself accurate — every individual C2/C3/C8/C9/C11/C4/C5/C10 claim held up under the
+independent QC subagent's check — but the SUMMARY built from it silently narrowed "what's
+left" to only the items that pass had touched, dropping the six settled-but-unbuilt items and
+three others that were never in scope for this session's pass at all. QC checked "does the
+doc match the commits" and correctly said yes; it did not check "does the doc match the full
+plan" — a different, larger question this entry exists to record so it isn't skipped again.
+
+`.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`, `.claude/LEDGER.md` both corrected
+in place same session, same commit as this entry.
+
 ## D957 [ROUTINE] — road-to-uniform reconciled and closed to 2 real items: a stale 11-day plan mostly resolved itself, three parallel scoping tasks all came back "don't build blind"
 
 **2026-09-04.** Handed a dispatch prompt claiming 222 open inspector-scan findings and 24

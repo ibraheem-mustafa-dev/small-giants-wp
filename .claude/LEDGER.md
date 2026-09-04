@@ -20,8 +20,10 @@ work: fixed a genuine blind spot in the tier-migration detector (3 blocks were s
 unmigrated because their base attribute used a non-standard name), migrated all 3, deployed
 and live-verified each on the real canary. Then scoped three more small items (C4/C5/C10) via
 parallel isolated-worktree agents — all three came back "don't build this blind," each with
-solid evidence, which is itself the correct outcome (no forced/hollow work shipped). Two items
-remain genuinely open (C6, C7) — a fresh next-session prompt is ready. A parallel session ran a
+solid evidence, which is itself the correct outcome (no forced/hollow work shipped).
+**CORRECTED same session — Bean caught an undercount: 12 real items remain, not 2** (Bean's own
+2026-08-27 decisions settled the DESIGN of six of them, C14-C19, but none was ever built). Full
+list in the plan doc, not repeated here. A parallel session ran a
 large text-gradient colour rollout throughout this session too (not this session's work — see
 its own decisions.md entries). Canary: sandybrown-nightingale-600381.hostingersite.com; no
 live client sites yet. **Everything reported fixed this session was deployed to the canary and
@@ -53,26 +55,21 @@ guard — see COLOUR TRACK below for detail (kept, not rewritten).
 
 **Invoke `/autopilot` first.**
 
-Two genuinely open items remain from the road-to-uniform backlog — everything else in that
-11-day-old plan is now closed, descoped-with-evidence, or correctly still blocked. Full
-closed/blocked/open breakdown: `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`'s
-"Session 2026-09-04 summary" — read that, do not re-derive from the plan's older prose.
+**12 real items remain from the road-to-uniform backlog — NOT 2.** An earlier version of this
+section said only C6/C7 were left; Bean caught the undercount same-session. Full prioritised
+list (C7, C6, C15-2/C15-3 [the headline item — client-facing block-bindings editor UI, Size M],
+C15-5, C16, C19 item 3, C18 residual, C15-1, C14's gate [= C4, already scoped as its own build],
+C12/C13, D4, B4-blocked) lives in
+`.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`'s "CORRECTED" note under "Session
+2026-09-04 summary" — read that in full, do not work from a shorter list anywhere else,
+including the dispatch prompt below (it was written before the correction and covers C6/C7
+only — still a valid starting point, just not the whole picture).
 
-Fresh dispatch prompt ready: `.claude/prompts/2026-09-04-road-to-uniform-c6-c7-prompt.md`.
+Dispatch prompt (partial scope, C6/C7 only):
+`.claude/prompts/2026-09-04-road-to-uniform-c6-c7-prompt.md`.
 
-- **C6** — 10 blocks need `PanelBody` → `ToolsPanel` conversion (mechanical; build a shared
-  helper once, then batch-adopt, per Bean's steer this session).
-- **C7** — 4 blocks (`cta-section`, `decorative-image`, `nav-drawer`, `social-icons`) need a
-  decorative-image/ARIA control each. Real per-block design work — WCAG 2.1 AA is a project
-  non-negotiable, not optional polish. A shared control COMPONENT is still worth building once;
-  the per-block "is this decorative" decision is not something a codemod can make.
-
-Re-verify both counts before trusting them (`node plugins/sgs-blocks/scripts/inspector-scan/
-run.js --json`, rules `03-dense-panel-candidate` / `18-decorative-image-aria`, FLAGGED only) —
-they were 10 and 4 at session close, but the tree moves fast.
-
-If C6/C7 are already done or a different priority is more urgent, `31-golden-colour-control`
-(241 open) is the largest untouched backlog on the project generally.
+C1/D3 (`31-golden-colour-control`, 241 open) is tracked separately — has its own active plan
+and a parallel session working it. Don't duplicate.
 
 ⚠ **Concurrent occupancy on `main` is the norm, not the exception** — path-scope every commit,
 re-check `git status`/branch and the decisions.md D-ceiling immediately before each write, and
@@ -81,7 +78,7 @@ message the other active session (check `ListAgents`) rather than guessing or fo
 (`STOP-A-PEERS-CLAIM-ABOUT-WHO-CAUSED-A-CHANGE-IS-NOT-VERIFIED-BY-DEFAULT`) before trusting a
 peer's account of who owns an uncommitted change — verify with `git diff` yourself.
 
-## ▶ ROAD-TO-UNIFORM RECONCILIATION — CLOSED bar C6/C7 (session 8). Full detail: D957.
+## ▶ ROAD-TO-UNIFORM RECONCILIATION — CLOSED bar 12 real items (session 8). Full detail: D957/D958.
 
 **Section A (tier-migration blind spot, D777's residual) — CLOSED.** `migrate-tier-object.py`'s
 detector couldn't see an attribute whose base declares as `<prop>Desktop` instead of bare
@@ -102,7 +99,8 @@ documented ~600-false-positive failure from this exact codebase; found and fixed
 contradiction (CO-15 vs Part L) along the way. C10 (brand-strip picker swap) is an
 architectural mismatch, not a like-for-like swap.
 
-**What's left:** C6, C7 (see NEXT SESSION START above).
+**What's left: 12 real items, see NEXT SESSION START above** (not just C6/C7 — that was this
+session's own undercount, caught and corrected same day, D958).
 
 ## ▶ UNIFORMITY SWEEP TRACK — CLOSED bar one detector. Detail: D918/D919/D922/D924/D930/D933.
 

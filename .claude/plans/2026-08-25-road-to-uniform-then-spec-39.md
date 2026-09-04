@@ -2,8 +2,10 @@
 doc_type: plan
 title: The road to uniform — clear Spec 32 + Spec 35 + the tier migration, then Spec 39
 date: 2026-08-25
-status: OPEN — Section A closed, Spec 32 closed bar B4 (blocked), Spec 35 mechanical batch
-  mostly closed or descoped; C6/C7 are the two genuinely open items left
+status: OPEN — Section A closed, Spec 32 closed bar B4 (blocked). Spec 35's mechanical
+  verification pass (C2/C3/C8/C9/C11, D1/D2) is closed and C4/C5/C10 are properly scoped
+  (not built), but that left 12 genuinely unbuilt items untouched — see the CORRECTED note
+  under "Session 2026-09-04 summary" below. C1/D3 (golden-colour) tracked elsewhere.
 owner: colour-golden / tooling track
 ordering_rule: D552 — "standard leads, pipeline follows"
 ---
@@ -35,16 +37,48 @@ each item's own note for the command and evidence.
 - **Also fixed along the way:** a genuinely dead code block in `hero/render.php`
   (unreachable both before and after the textAlign migration, for different reasons).
 
-**Genuinely still open — only two items left in the whole mechanical batch:**
-- **C6** — 10 blocks need `PanelBody` → `ToolsPanel` conversion (mechanical; a shared
-  helper built once should cover most/all of them, per Bean's steer this session).
-- **C7** — 4 blocks (`cta-section`, `decorative-image`, `nav-drawer`, `social-icons`)
-  need a decorative-image/ARIA control each — real per-block design work, not a batch
-  codemod, though a shared control COMPONENT is still worth building once.
+**CORRECTED 2026-09-04, same day — the line above undercounted.** Bean caught it: "aren't
+there way more remaining items than those 2?" Yes. Closing C4/C5/C10 by scoping (not
+building) and closing C2/C3/C8/C9/C11 by verification left the REAL backlog exactly where
+it was — Bean's own 2026-08-27 decisions (C14-C19) settled the DESIGN of six items but none
+of the code was ever written. Full, honest remaining list, in rough priority order:
 
-**Not touched this session, still pending:** the C12/C13 live-pass items, C14-C19's
-actual build work (Bean's 2026-08-27 decisions — settled, not yet implemented), and
-Spec 39 itself (correctly still gated behind the above per D552).
+1. **C7** — 4 blocks need a decorative-image/ARIA control (WCAG, real per-block design).
+2. **C6** — 10 blocks need `PanelBody` → `ToolsPanel` (mechanical, shared helper once).
+3. **C15-2/C15-3** — the client-facing block-bindings editor UI (register the source in
+   JS + `getFieldsList()`). Bean's own words: "THE headline item... everything else is
+   secondary." Size M. **This is the single biggest piece of unbuilt scope in the whole
+   backlog and was completely missing from the earlier summary.**
+4. **C15-5** — widen block bindings past the 3 blocks that currently support them
+   (image/card/hero/shop can't carry a binding at all). Needs the coverage detector
+   `THE-MIGRATION-METHOD.md`'s commit gate will demand at the 4th file edited.
+5. **C16** — spacing-preset build (design settled; the preset→unit-switch logic is the
+   part Bean flagged as easy to get wrong).
+6. **C19 item 3** — hero's box-shape control chain (`aspectRatio` vs `imageHeight`
+   competing, `object-fit`→`object-position`→`imagePadding` ordering + inert-state
+   greying). Items 1-2 of C19 are done in spec, item 3 is the unbuilt remainder.
+7. **C18 residual** — the visual column-shape picker Bean approved 2026-07-28 (Spec 37
+   §3.3) — grep finds no implementation.
+8. **C15-1** — version-floor guard, `Requires at least: 6.7` → `6.9` for the block-bindings
+   filter. Re-graded P3 (Bean's call) — trivial, take it in passing whenever C15 work starts.
+9. **C14's enforcing gate** — same underlying build as **C4** (CO-2), already correctly
+   scoped this session as its own AST-walk-sized build, not mechanical. Not double-counted
+   as separate work — cross-referenced here so it isn't lost.
+10. **C12/C13** — live-pass items (a11y-audit keyboard/contrast/`aria-describedby`; an
+    element-first panel-ordering walkthrough). No code — just needs doing.
+11. **D4** — decide, per advisory inspector-scan rule, whether to promote to gating or
+    record why it stays advisory forever. Never actioned.
+12. **B4** — `mega-panel.borderRadius`, correctly still BLOCKED on Track 2 (not
+    actionable until that track resumes — not "open" in the sense of "pick this up
+    next", but not resolved either).
+
+**Not this backlog, tracked separately, do not duplicate:** C1 / D3 (both = the
+`31-golden-colour-control` rollout, 241 open) — has its own active plan and a parallel
+session working it throughout this session.
+
+Spec 39 itself stays correctly gated behind ALL of the above per D552 (standard leads,
+pipeline follows) — that gate has not moved, and closing 2 of 14 real items does not
+change it.
 
 **Working norm this session, worth carrying forward:** `main` had 2-4 other sessions
 committing concurrently throughout (colour-gradient rollout, D948 Phase 3). Every deploy
