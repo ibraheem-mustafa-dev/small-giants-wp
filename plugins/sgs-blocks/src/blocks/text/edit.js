@@ -359,6 +359,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		fontWeight,
 		lineHeight,
 		lineHeightUnit,
+		letterSpacing,
 		fontStyle,
 		textDecoration,
 		textTransform,
