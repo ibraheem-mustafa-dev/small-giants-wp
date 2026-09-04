@@ -43,6 +43,8 @@
 						"css:background-color": "panelBg",
 						"css:max-width": "maxWidth",
 						"css:padding": "panelPadding",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
 						"css:border-radius": "borderRadius",
 						"css:gap": "groupGap",
@@ -191,6 +193,17 @@
 		"bgBlur": {
 			"type": "boolean",
 			"default": false
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {},
+			"_note": "B4 (2026-09-04) — SgsBorderControl migration. Empty object = unset; render.php falls back to 1px on every side so a pre-existing instance (which never wrote this attr) keeps its exact current 1px-solid hairline unchanged. Base tier only per SgsBorderControl's own contract (D294 2026-08-29: per-device border width has no real use case)."
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [ "none", "solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset" ],
+			"default": "solid",
+			"_note": "B4 (2026-09-04) — paired with borderWidth above. Default 'solid' matches the pre-migration hardcoded `border:1px solid` shorthand, so a fresh/existing instance renders identically."
 		},
 		"borderColour": {
 			"type": "string",

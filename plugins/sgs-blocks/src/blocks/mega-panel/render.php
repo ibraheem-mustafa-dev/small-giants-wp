@@ -112,6 +112,26 @@ $panel_bg_raw      = isset( $attributes['panelBg'] ) ? (string) $attributes['pan
 $border_colour_raw = isset( $attributes['borderColour'] ) ? (string) $attributes['borderColour'] : '';
 $border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 $border_radius     = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['borderRadius'] ?? '20px' ) : '20px';
+
+// B4 (2026-09-04, SgsBorderControl migration): width + style, NEW attrs. Each
+// side falls back to 1px / 'solid' falls back independently so a pre-existing
+// instance (which never wrote these attrs) renders the EXACT same hairline
+// as the old hardcoded `border:1px solid var(--sgs-mm-panel-border);` shorthand
+// this replaces below (§3). Oracle: sgs/accordion-item's own Shape-B width/
+// style resolution (scripts/migrate-border-shape-b.js).
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $border_width_obj['top'] ?? '' ) : '';
+$border_width_right  = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $border_width_obj['right'] ?? '' ) : '';
+$border_width_bottom = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $border_width_obj['bottom'] ?? '' ) : '';
+$border_width_left   = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $border_width_obj['left'] ?? '' ) : '';
+$border_width_top    = '' !== $border_width_top ? $border_width_top : '1px';
+$border_width_right  = '' !== $border_width_right ? $border_width_right : '1px';
+$border_width_bottom = '' !== $border_width_bottom ? $border_width_bottom : '1px';
+$border_width_left   = '' !== $border_width_left ? $border_width_left : '1px';
+
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style_raw      = isset( $attributes['borderStyle'] ) ? (string) $attributes['borderStyle'] : 'solid';
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'solid';
 $aside_width       = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['asideWidth'] ?? '340px' ) : '340px';
 $aside_separator   = is_array( $attributes['asideSeparator'] ?? null ) ? $attributes['asideSeparator'] : array( 'style' => 'line' );
 
@@ -303,16 +323,35 @@ if ( function_exists( 'sgs_emit_responsive_css' ) ) {
 	}
 }
 
+// G5 (Bean, 2026-08-26): a style with no width must render NO border — CSS's
+// initial border-width is `medium` (~3px), so an ungated `border-style:` alone
+// paints an unwanted border. $has_border_width is always true here by
+// construction (every side falls back to '1px' above unless the operator
+// explicitly sets one, including an explicit 0 to remove it), but the
+// condition still has to ENCLOSE the emission for the shared detector
+// (check-border-style-without-width.py) to recognise it as gated.
+$has_border_width = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
 $css .= $root_sel . '{'
 	. 'border-radius:' . ( '' !== $border_radius ? $border_radius : '20px' ) . ';'
-	. 'border:1px solid var(--sgs-mm-panel-border);'
 	. 'box-shadow:0 30px 80px -30px rgba(0,0,0,.28),0 2px 8px -2px rgba(0,0,0,.08);'
 	. 'container-type:inline-size;'
 	. '}';
 
+if ( $has_border_width ) {
+	$css .= $root_sel . '{'
+		. 'border-style:' . $border_style . ';'
+		. 'border-width:' . "{$border_width_top} {$border_width_right} {$border_width_bottom} {$border_width_left}" . ';'
+		. 'border-color:var(--sgs-mm-panel-border);'
+		. '}';
+}
+
 // Border gradient (D636 border builder) — masked ::before on the panel root.
+// Mask ring thickness now follows the operator's own top-side width (B4,
+// 2026-09-04) instead of a hardcoded '1px', so the gradient ring stays in
+// step with a resized border.
 if ( '' !== $border_colour_gradient ) {
-	$css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '1px' );
+	$css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, $border_width_top );
 }
 
 if ( $bg_blur ) {

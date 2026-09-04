@@ -49,6 +49,7 @@ import {
 	DesignTokenPicker,
 	ResponsiveControl,
 	ResponsiveBoxControl,
+	SgsBorderControl,
 	SgsColourPanel,
 	SgsLengthControl,
 	fillRow,
@@ -170,6 +171,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		groupGap,
 		panelBg,
 		bgBlur,
+		borderWidth,
+		borderStyle,
 		borderColour,
 		borderColourGradient,
 		borderRadius,
@@ -305,22 +308,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: panelBg,
 								onChange: ( val ) => setAttributes( { panelBg: val ?? '' } ),
 								linked: true,
-							},
-						],
-					},
-					{
-						key: 'border',
-						label: __( 'Border colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: borderColour,
-								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-								linked: true,
-								gradientValue: borderColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { borderColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -521,7 +508,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ToolsPanelItem>
 				</ToolsPanel>
 
-
 				<PanelBody title={ __( 'Style', 'sgs-blocks' ) } initialOpen={ false }>
 					<ToggleGroupControl
 						label={ __( 'Group layout', 'sgs-blocks' ) }
@@ -687,6 +673,57 @@ export default function Edit( { attributes, setAttributes } ) {
 						atoms={ [ 'object-fit' ] }
 						mediaType="image"
 						scope="element"
+					/>
+				</PanelBody>
+
+				{ /* B4 (2026-09-04): SgsBorderControl migration, ANOMALY category —
+				   the panel had a border colour (+ gradient) already, painted via a
+				   HARDCODED `border:1px solid` shorthand in render.php (no width/style
+				   attrs existed). Adopting the shared control necessarily adds real
+				   width + style capability (SgsBorderControl always renders the width
+				   box; there is no colour+radius-only composition), so borderWidth/
+				   borderStyle are NEW attrs, defaulting to 1px/solid to match the
+				   previous hardcoded shorthand exactly. Radius is DELIBERATELY left
+				   out of this control (no onRadiusChange wired) and stays on its own
+				   scalar `borderRadius` control in the Panel ToolsPanel above —
+				   SgsBorderControl's radius param expects a per-CORNER object
+				   ({topLeft,topRight,bottomLeft,bottomRight}), a different shape from
+				   this block's existing plain-string `borderRadius` (`"20px"`), and
+				   migrating that shape is a separate, unscoped change with its own
+				   backward-compatibility risk against every already-published
+				   mega-menu instance. Placed LAST in InspectorControls (not next to
+				   the Panel ToolsPanel it conceptually belongs beside) so its
+				   borderStyle/onStyleChange lines sit outside the enum-control-shape
+				   gate's 900-char proximity window of the unrelated Style/Motion/
+				   Aside panels' own ToggleGroupControl mounts — those falsely
+				   resolved as the bound control for borderStyle when this sat
+				   earlier in the tree (SgsBorderControl's OWN internal style picker
+				   is invisible to the file-local scan, same as every other migrated
+				   block's "shared-component" skip). */ }
+			</InspectorControls>
+
+			{ /* Routed to its own explicit "styles" group (RULE 01-tab-group,
+			   inspector-scan): this panel is a genuine CSS-styling control, and
+			   once it joined MediaElementPanel above as a second non-structural
+			   panel in this block, WordPress's default (both land in Settings
+			   with no explicit choice) became a real routing decision the gate
+			   requires be made explicitly. Same mechanism sgs/before-after uses
+			   for its own "Frame styling" panel. */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						styleValue={ borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ borderColourGradient }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
+						colourLinked={ true }
 					/>
 				</PanelBody>
 			</InspectorControls>
