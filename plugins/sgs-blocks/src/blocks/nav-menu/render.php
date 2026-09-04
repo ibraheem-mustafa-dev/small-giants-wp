@@ -1009,6 +1009,21 @@ if ( 'pill' === $hover_style && '' !== $item_bg_hover_hex ) {
 		: $u_colour;
 
 	/*
+	 * Gradient sibling (D948 rollout). The ::after bar is a standalone
+	 * decorative element — no other declaration paints this selector's
+	 * background — so this is a safe direct swap, no ::after-layer split
+	 * needed (contrast the itemBg/navBg cases where a text colour or a
+	 * second background shares the element). Non-empty underlineColourGradient
+	 * wins over the flat underlineColour; when both are empty the pre-existing
+	 * 'currentColor' fallback is preserved.
+	 */
+	$underline_colour_gradient = sgs_css_gradient_value( $attributes['underlineColourGradient'] ?? '' );
+	$u_paint_decl              = sgs_background_paint_decl( (string) ( $attributes['underlineColour'] ?? '' ), $underline_colour_gradient );
+	if ( '' === $u_paint_decl ) {
+		$u_paint_decl = 'background-color:' . $u_colour;
+	}
+
+	/*
 	 * A pseudo-element suffix must be applied to EACH selector in the list, not
 	 * concatenated onto the imploded string — `'a,b,c' . '::after'` attaches
 	 * ::after to `c` alone, so the bar would animate on [aria-current] only and

@@ -594,6 +594,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: underlineColour,
 					onChange: ( val ) => setAttributes( { underlineColour: val ?? '' } ),
+					gradientValue: attributes.underlineColourGradient,
+					onGradientChange: ( val ) => setAttributes( { underlineColourGradient: val ?? '' } ),
 					linked: true,
 				},
 				{

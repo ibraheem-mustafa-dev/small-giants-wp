@@ -119,6 +119,7 @@
 					"prefix": "underline",
 					"attrMap": {
 						"css:background-color": "underlineColour",
+						"css:background-image": "underlineColourGradient",
 						"css:height": "underlineThickness",
 						"css:bottom": "underlineOffset"
 					},
@@ -129,7 +130,7 @@
 							}
 						}
 					},
-					"_note": "The ::after bar rendered only when hoverStyle='underline' (render.php:369-377). underlineThickness maps to css:height (the bar's own height, not the item's) and underlineOffset maps to css:bottom (its position:absolute offset) — both attrMap'd explicitly since neither matches the default {prefix}{suffix} convention for those members. `selected` reuses the same hover state (render.php's $hover_after_sel covers :hover/:focus-visible/[aria-current] identically), so no separate selected mapping is declared to avoid a duplicate finding."
+					"_note": "The ::after bar rendered only when hoverStyle='underline' (render.php:369-377). underlineThickness maps to css:height (the bar's own height, not the item's) and underlineOffset maps to css:bottom (its position:absolute offset) — both attrMap'd explicitly since neither matches the default {prefix}{suffix} convention for those members. `selected` reuses the same hover state (render.php's $hover_after_sel covers :hover/:focus-visible/[aria-current] identically), so no separate selected mapping is declared to avoid a duplicate finding. underlineColourGradient added 2026-09-04 (D948 rollout) -- non-empty wins over underlineColour, resting state only (mirrors indicatorColourGradient's precedent: a standalone decorative element with no competing background on the same selector, so a direct swap via sgs_background_paint_decl() is safe, no ::after-layer split needed)."
 				},
 				"indicator": {
 					"label": "Sliding indicator",
@@ -318,6 +319,10 @@
 			"default": ""
 		},
 		"underlineColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"underlineColourGradient": {
 			"type": "string",
 			"default": ""
 		},
