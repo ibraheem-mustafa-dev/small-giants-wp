@@ -8,13 +8,13 @@ Invoke /autopilot before doing anything else.
 
 > **PRUNED 2026-08-02: every COMPLETED step was DELETED from this file.** Closed work lives in
 > `decisions.md` (D-numbered) and `git log`, not here. **If a step has a `### Step` heading below,
-> it is OPEN.** (Step O/Step U below are pre-existing exceptions to that convention, out of
-> today's scope — Step O is a completed step whose heading was never pruned; Step U is deliberately
-> reframed ongoing debt-tracking, not a blocking gate.) 3 remain by heading count
-> (`grep -c '^### Step' <this file>`) — but only **Step 21 is genuinely open work now.** Step 20 and
-> Step R-residual closed 2026-09-04 by decisions the register hadn't caught up to (D723,
-> D839/FR-38-33, a straightforward deletion). **Step 12 closed 2026-09-04, same session, in full**
-> (D949 + D951) — see the struck-through summary just above Step O below.
+> it is OPEN.** 2 remain by heading count (`grep -c '^### Step' <this file>`), both pre-existing
+> exceptions to that convention out of today's scope: Step O is a completed step whose heading was
+> never pruned; Step U is deliberately reframed ongoing debt-tracking, not a blocking gate.
+> **Every dispatched item this wave closed 2026-09-04, same
+> session:** Step 12 (D949/D951), Step 20 and Step R-residual (decisions the register hadn't caught
+> up to — D723, D839/FR-38-33), and Step 21 itself (D952/D953) — see the struck-through summaries
+> below. This wave-D register is now fully closed bar Step U's ongoing, non-blocking debt-tracking.
 
 > **Closed since the prune:** Step 8 (FR-38-27, 2026-08-02) · Step Y (both loop arms measured, `216508ce`) · Step W/X/Z earlier · and
 > M3 (indus-foods snapshot push — DELETED by Bean, not parked; see `LEDGER.md`).
@@ -134,14 +134,23 @@ Waves A–E are closed. This session closed **Step X** (the three-list drift gat
   completion, so do not go looking for them. Decisions: D722 (closures), D723 (scroll-smoother),
   D727 (comments explain function, not change).
 
-### Step 21 — re-run the adversarial council [OPEN — DELIBERATELY LAST]
-  **Model:** inline · **Time:** 30 min · **Deps:** every other step above, no exceptions
-  Run `/adversarial-council` on the post-wave surface to catch what these fixes introduced. The
-  2026-07-31 run found what a single reviewer never would; a second round after the fixes is the
-  documented two-round pattern. Compare grades against B−/B−/C+/C+/C−/D+.
-  ⚠ Council findings are HYPOTHESES — fact-check before acting. **Proven again 2026-08-02:** a rater
-  claimed a token was "chosen because D463 measured it"; the token was hardcoded 2026-04-29 and D463
-  is 2026-08-02, measuring a different token entirely.
+> **Step 21 — CLOSED 2026-09-04** (D952/D953, `decisions.md`). Six-persona council run against
+> D949/D951, grades D/C+/C/C+/D/F — below the 2026-07-31 baseline (B−/B−/C+/C+/C−/D+), and the
+> council's own point stood: it found what a single reviewer wouldn't have. Every finding
+> fact-checked before acting (per this step's own warning) — independently re-verified the
+> ghost-row query, the missing-attribute count, and the type-coercion bug against the real code
+> before fixing any of them, not taken on the council's word. Five real defects found, all fixed
+> same session: the D949 ghost-row self-destruct bug, the 29-of-78 incomplete attribute roster,
+> hardcoded string types breaking a real PHP strict-boolean check, missing value coercion, and a
+> separate pre-existing stored-XSS-class defect in the converter's block-comment serialiser
+> (`emit_block_markup` + a second identical emitter + a re-parse consumer that would have silently
+> stripped the fix — found by tracing every reachable consumer, not assumed safe). Regression test
+> coverage added for the fx-lift path specifically (the Verification-Skeptic's finding) and for the
+> escaping fix (17 tests, each paired with a negative control proving the payload is genuinely
+> dangerous unescaped). Two shared-worktree collisions handled by checking with the owning session
+> rather than forcing past a gate; one genuine near-miss (a commit briefly swept up a concurrent
+> subagent's in-progress edit to the same file) caught and corrected by the subagent's own
+> follow-up commit — recorded honestly, not glossed over.
 
 ---
 
