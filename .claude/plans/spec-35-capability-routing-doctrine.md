@@ -35,6 +35,45 @@ supersedes: "spec-35-media-positioning-standard-design.md (b202f965) — same se
 > fix or remove `sgs/image-sequence`'s dead `imageControls` declaration, then flip it to blocking.
 > Evidence: `.claude/reports/2026-08-17-track1b-spec35-32-completion-audit.md`.
 
+> ✅ **THIRD CORRECTION — 2026-09-04 session close-out audit. All four items this doc's `status`
+> line still calls open are now closed. Read each individually — they closed in different ways,
+> not by one sweep:**
+>
+> 1. **Part 6 gate promotion (the `||` above).** STALE — the `||`-wrapped `prebuild` chain it
+>    describes no longer exists. The 2026-08-24 `gates.json` refactor (commit `5d2ee0b17`,
+>    documented in `plugins/sgs-blocks/CLAUDE.md`) moved every gate into `scripts/gates.json` +
+>    `run-gates.py`, which has no advisory/`||` concept — a listed `tier:"fast"` gate fails the
+>    whole `prebuild` on any non-zero exit. `surveys-check-image-controls-support` (`gates.json`
+>    `order:13`, added `D585`/`ceec53b3`) is a plain hard gate today. Verified live: `--check`
+>    exits 0, 0 violations. Nothing to promote.
+> 2. **`testimonial`/`image-sequence` per-item design decision.** Both closed, separately:
+>    `image-sequence`'s dead `imageControls` declaration carries its own removal reason directly
+>    in `block.json` (2026-08-17) — the JS canvas that takes over from the SSR thumbnail always
+>    centre-crops with zero configurability, so no control could ever be honoured.
+>    `sgs/testimonial` turned out NOT to be the flat-array-of-N-items shape this doc's Part 4
+>    assumed — it's a single instance with three fixed named media slots. All three are already
+>    resolved: `avatarMedia` (object-fit atom, shipped), `workMedia` (object-fit + focal-point
+>    atoms, shipped, full crop control), `orgLogo` (deliberately fixed —
+>    `max-width:140px;height:auto;max-height:56px;object-fit:contain` as a component-owned
+>    constant, NOT client-overridable, "a logo must never be cropped" — decided 2026-08-17,
+>    **reconfirmed 2026-09-03**). No remaining build.
+> 3. **Part 4's multi-image item-schema extension.** Still genuinely open — but narrower than
+>    this doc's Part 4 list: `before-after` is done (a 2-named-slot block via the same atom
+>    mechanism, not a true array), so the real worklist is `gallery`/`card-grid`/`trust-bar`/
+>    `testimonial` [-slider, not the singular block above] plus checking `brand-strip`. Not yet
+>    built as of this correction.
+> 4. **Part 7 Phase 2.2 native-supports census.** DONE 2026-09-04.
+>    `scripts/surveys/survey-native-supports.py` existed and self-tested (29/0) but had never
+>    been run. Run and committed:
+>    `reports/migrations/native-supports-census-2026-09-04.json` — 106 (block,family) pairs, 0
+>    `NEEDS-INNER-ROUTING`/`ZERO-CAPABILITY`/`SKIP-STRANDED`/`UNCLEAR`. Native `supports.color` is
+>    declared on 60 blocks with every sub-flag `false` (verified directly against every
+>    `block.json`, not just the script's own count) — `SgsColourPanel` is the real mechanism
+>    everywhere, per `plugins/sgs-blocks/CLAUDE.md`'s "Colour controls" section.
+>
+> **Net: only item 3 remains open**, and its real scope is 4 blocks, not the 5 this doc's Part 4
+> originally named.
+
 # Capability routing doctrine
 
 ## Context — what this is, and why it is not a media doc
