@@ -55,6 +55,9 @@
 				"contentBandPadding": [
 					"contentBandPadding"
 				],
+				"contentBandMargin": [
+					"contentBandMargin"
+				],
 				"gridItemPadding": [
 					"gridItemPadding"
 				],
@@ -694,6 +697,12 @@
 			"default": {}
 		},
 		"contentBandPadding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"contentBandMargin": {
 			"type": "object",
 			"default": {
 				"desktop": {}

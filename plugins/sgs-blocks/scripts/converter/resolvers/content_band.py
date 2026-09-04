@@ -59,10 +59,7 @@ from converter.services.value_serialise import value_serialise
 # ---------------------------------------------------------------------------
 
 _WIDTH_PROPS = frozenset({"max-width", "width", "--content-width"})
-_GAP_MARGIN_MINH = frozenset({
-    "gap", "row-gap", "column-gap", "min-height",
-    "margin", "margin-top", "margin-right", "margin-bottom", "margin-left",
-})
+_GAP_MINH = frozenset({"gap", "row-gap", "column-gap", "min-height"})
 
 
 def _layer_priorities(prop: str) -> tuple[str, ...]:
@@ -71,47 +68,139 @@ def _layer_priorities(prop: str) -> tuple[str, ...]:
         return ("CONTENT", "OUTER")
     if prop.startswith("padding"):
         return ("CONTENT", "OUTER", "GRID")
-    if prop in _GAP_MARGIN_MINH:
+    if prop.startswith("margin"):
+        # margin* now tries CONTENT first, mirroring padding's own chain
+        # (Defect 3, qc-council-validated 2026-09-04): a sole-passthrough
+        # band's margin declaration reaches this resolver via fold_band_css
+        # (a wrapper WITH a sibling never reaches content_band.py at all — it
+        # becomes its own sgs/container block via a completely separate
+        # extraction path, so this change cannot and does not affect that
+        # case). CONTENT is tried before GRID/OUTER so a block declaring a
+        # merged contentBandMargin* box family (gated in
+        # _content_band_box_write below) wins over the OUTER self-merge
+        # fallback that previously absorbed a margin shorthand wholesale.
+        return ("CONTENT", "GRID", "OUTER")
+    if prop in _GAP_MINH:
         return ("GRID", "OUTER")
     return ("CONTENT", "OUTER")
 
 
-def _content_band_box_write(decl: Any, ctx: Any) -> Write | None:
-    """Route a ``padding-{side}`` CONTENT-layer declaration into the merged
-    ``contentBandPadding{Tier}`` box-object attr (box-object interface contract
-    §3/§4, ``.claude/plans/2026-07-09-box-object-interface-contract.md``),
-    when the owning block declares that ``box_family`` — closing the
+# The two box-shorthand CSS base properties this router folds into a merged
+# CONTENT-band object attr. A recognition SET, not a property->attr map — the
+# actual suffix ('BandPadding' / 'BandMargin') is derived live from
+# property_suffixes below, never hardcoded (R-31-1).
+_BAND_BOX_PROPS = frozenset({"padding", "margin"})
+
+
+def _band_family_suffix(base_prop: str, conn: Any) -> str | None:
+    """Derive the box-object family suffix (e.g. ``'BandPadding'``) for a base
+    CSS property (``'padding'``/``'margin'``) by reading its longhand
+    per-side suffix from ``property_suffixes`` (DB-first, R-31-1 — never a
+    hardcoded property->attr dict) and stripping the ``'Top'`` side tail —
+    the same band-mirror vocabulary already seeded for the longhand sides
+    (see ``attr_for_area_property``'s Band-prefix exclusion filter, D194).
+
+    Returns ``None`` when the per-side rows aren't seeded yet (e.g.
+    ``BandMargin*`` before Defect 3's DB reseed lands) — the caller correctly
+    treats that as "the box-object path doesn't apply", never a guess.
+
+    ``property_suffixes`` seeds TWO distinct rows per longhand side (e.g.
+    ``PaddingTop`` for the flat OUTER family, ``BandPaddingTop`` for the
+    CONTENT-band family this router owns) — both share ``css_property`` and
+    ``role``, so the ``'Band'`` name prefix is the only live discriminator
+    between them; filtered here rather than picking whichever row SQLite
+    returns first.
+    """
+    row = conn.execute(
+        "SELECT suffix FROM property_suffixes WHERE css_property = ? AND suffix LIKE 'Band%'",
+        (f"{base_prop}-top",),
+    ).fetchone()
+    if row is None or not row[0].endswith("Top"):
+        return None
+    return row[0][: -len("Top")]
+
+
+def _content_band_box_write(decl: Any, ctx: Any) -> Write | list[Write] | GAP | None:
+    """Route a ``padding``/``margin`` CONTENT-layer declaration — longhand
+    per-side (``padding-top`` etc) OR shorthand (``padding: 10px 20px``) — into
+    the merged ``contentBandPadding{Tier}``/``contentBandMargin{Tier}``
+    box-object attr (box-object interface contract §3/§4,
+    ``.claude/plans/2026-07-09-box-object-interface-contract.md``), when the
+    owning block declares that ``box_family`` — closing (a) the
     previously-HONEST content-band-padding routing gap documented in this
     module's header (container declares ``contentBandPadding*`` as a merged
     OBJECT attr, never the flat ``contentPadding{Side}*`` the ordinary
-    layer-priority chain derives).
+    layer-priority chain derives), and (b) the shorthand-misroute defect: a
+    bare ``padding: 20px`` used to fail the longhand-only ``padding-`` guard
+    and fall through to the OUTER-layer ``padding`` self-merge, silently
+    landing on the block-ROOT attr instead of the CONTENT-band one — a real
+    collision risk with a genuine OUTER ``padding`` on the same node
+    (qc-council-validated Defect 2, 2026-09-04).
 
-    Returns ``None`` (never a GAP) when the box-object path doesn't apply —
-    the caller falls through to the unchanged layer-priority chain. Gated on
-    ``db_lookup.box_family_for``, NEVER an attr-name regex (§3/§6 AST gate).
+    Returns ``None`` (never a GAP) when the box-object path doesn't apply at
+    all — the caller falls through to the unchanged layer-priority chain.
+    Once the box-object destination IS the gate match, an unparseable
+    shorthand value returns an honest GAP rather than silently falling
+    through to the wrong layer. Gated on ``db_lookup.box_family_for``, NEVER
+    an attr-name regex (§3/§6 AST gate).
     """
+    # Local import: root_supports -> dispatch_spine -> converter.resolvers
+    # (this package's own __init__) is a real circular-import chain at module
+    # level (proven — a top-level import here breaks the whole resolvers
+    # package on load), exactly why the OUTER self-merge branch below already
+    # imports this same function locally, aliased.
+    from converter.services.root_supports import _parse_padding_shorthand
+
     prop = decl.property
-    if not prop.startswith("padding-"):
+    base_prop: str | None = None
+    side: str | None = None
+    for candidate in _BAND_BOX_PROPS:
+        if prop == candidate:
+            base_prop = candidate
+            break
+        if prop.startswith(f"{candidate}-"):
+            maybe_side = prop[len(candidate) + 1:]
+            if maybe_side in ("top", "right", "bottom", "left"):
+                base_prop = candidate
+                side = maybe_side
+            break
+    if base_prop is None:
         return None
-    side = prop[len("padding-"):]
-    if side not in ("top", "right", "bottom", "left"):
+
+    band_suffix = _band_family_suffix(base_prop, ctx.conn)
+    if band_suffix is None:
         return None
 
     prefix = db_lookup.layer_attr_prefix("CONTENT") or ""
-    # 'BandPadding' is the universal CSS-architecture band-mirror vocabulary —
-    # the SAME family root already seeded in property_suffixes ('BandPaddingTop'
-    # etc — see attr_for_area_property's Band-prefix exclusion filter, D194).
-    # Not a per-block literal (R-31-1 permitted-constant, same class as
-    # _LAYER_PREFIXES itself).
-    family = f"{prefix}BandPadding"
+    family = f"{prefix}{band_suffix}"
     object_attr = tier_state_suffix(family, decl, ctx.conn)
     box_family = db_lookup.box_family_for(ctx.block_slug, object_attr)
     if box_family != family:
         return None
 
-    resolved = _resolve_co_declared_var(strip_important(decl.value).strip(), {})
-    value = token_snap(prop, value_serialise("string", None, resolved), ctx.conn)
-    return Write(attr=object_attr, value={side: value}, property=prop, tier=decl.tier)
+    raw = strip_important(decl.value).strip()
+
+    if side is not None:
+        resolved = _resolve_co_declared_var(raw, {})
+        value = token_snap(prop, value_serialise("string", None, resolved), ctx.conn)
+        return Write(attr=object_attr, value={side: value}, property=prop, tier=decl.tier)
+
+    # Shorthand form (`padding: 10px 20px 30px 40px`, CSS top/right/bottom/left
+    # order) — parse into the same 4 sides the longhand path accumulates one
+    # at a time, token-snapping each side independently so a per-side token
+    # slug or var() resolves identically to the longhand path.
+    sides = _parse_padding_shorthand(raw)
+    if sides is None:
+        return gap_writer(
+            ctx, decl, GapOrigin.NO_DESTINATION,
+            f"{prop} value {decl.value!r} is not a parseable 1-4-value CSS "
+            f"box shorthand for merged CONTENT-band object attr {object_attr!r}",
+        )
+    value = {
+        s: token_snap(prop, value_serialise("string", None, _resolve_co_declared_var(v, {})), ctx.conn)
+        for s, v in sides.items()
+    }
+    return Write(attr=object_attr, value=value, property=prop, tier=decl.tier)
 
 
 def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:

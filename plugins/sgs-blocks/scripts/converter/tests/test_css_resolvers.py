@@ -16,7 +16,7 @@ import sqlite3
 import pytest
 
 from converter.context import Ctx, Decl
-from converter.models import Write
+from converter.models import GAP, GapOrigin, Write
 from converter.resolvers import content_band, grid, typography
 from converter.db.db_lookup import SGS_DB
 
@@ -68,6 +68,126 @@ def test_content_band_padding_transfers_to_content_band_padding_attr(conn):
     out = content_band.resolve(Decl("padding-top", "20px", "Base"), _ctx(conn))
     assert isinstance(out, Write)
     assert (out.attr, out.value) == ("contentBandPadding", {"top": "20px"})
+
+
+def test_content_band_padding_shorthand_transfers_to_content_band_padding_attr(conn):
+    """Defect 2 regression (qc-council-validated, 2026-09-04): a bare shorthand
+    `padding: 20px` used to fail `_content_band_box_write`'s longhand-only
+    `padding-` guard and fall through to the OUTER-layer `padding` self-merge —
+    a silent MISROUTE onto the block-ROOT attr instead of the CONTENT-band one,
+    worse than an honest gap because it could collide with a genuine OUTER
+    `padding` on the same node with zero diagnostic. A single-value shorthand
+    must land on the SAME `contentBandPadding` object attr as the longhand
+    path, with all four sides carrying the one value.
+    """
+    out = content_band.resolve(Decl("padding", "20px", "Base"), _ctx(conn))
+    assert isinstance(out, Write)
+    assert out.attr == "contentBandPadding"
+    assert out.value == {"top": "20px", "right": "20px", "bottom": "20px", "left": "20px"}
+
+
+def test_content_band_padding_shorthand_4value_transfers_in_css_order(conn):
+    """The 4-value shorthand form resolves per-side in CSS's own
+    top/right/bottom/left order, not e.g. clockwise-from-top-left or any other
+    ordering — this is the exact ordering bug class a naive re-split of the
+    shorthand could introduce silently.
+    """
+    out = content_band.resolve(
+        Decl("padding", "10px 20px 30px 40px", "Base"), _ctx(conn)
+    )
+    assert isinstance(out, Write)
+    assert out.attr == "contentBandPadding"
+    assert out.value == {
+        "top": "10px", "right": "20px", "bottom": "30px", "left": "40px",
+    }
+
+
+def test_content_band_padding_shorthand_unparseable_gaps_honestly(conn):
+    """Once the box-object destination IS the gate match (sgs/container DOES
+    declare contentBandPadding as a box family), an unparseable shorthand value
+    must return an honest GAP — never silently fall through to the wrong OUTER
+    layer, which is exactly the class of bug Defect 2 was."""
+    out = content_band.resolve(
+        Decl("padding", "not, a, valid, shorthand", "Base"), _ctx(conn)
+    )
+    assert isinstance(out, GAP)
+    assert out.origin == GapOrigin.NO_DESTINATION
+
+
+def test_content_band_margin_sole_child_case_once_box_family_seeded(conn, monkeypatch):
+    """Defect 3 (qc-council-CONDITIONAL, 2026-09-04): confirmed via code reading
+    that a sole-passthrough band's margin declaration reaches this resolver via
+    fold_band_css -> process_element -> content_band.resolve (is_root=False,
+    CONTENT layer_detect) — the ONLY case a DB-seed fix can affect, since a
+    wrapper WITH A SIBLING never reaches content_band.py at all
+    (`_sole_passthrough_child` in extraction.py refuses on
+    `len(element_children) != 1`, routing the sibling case through its own
+    fresh sgs/container root/OUTER extraction instead).
+
+    sgs/container does NOT yet declare a `contentBandMargin` box family in the
+    live DB as of this fix (block.json's `supports.sgs.boxFamilies` +
+    `contentBandMargin` attribute were added in this same change, but the
+    regenerative DB seed step — `/sgs-update` — was NOT run: `sgs-update-v2.py`
+    itself carries uncommitted changes from another concurrent track on this
+    shared worktree, so re-seeding now would attribute unreviewed changes to
+    this fix). This test proves the CODE is correct independent of that seed
+    step, by monkeypatching `db_lookup.box_family_for` AND `content_band.
+    _band_family_suffix` (the latter added when the box-suffix lookup moved
+    off a hardcoded dict onto a live `property_suffixes` query, R-31-1 —
+    `BandMarginTop` isn't seeded yet either, so this must be faked alongside
+    `box_family_for` for the post-seed state to be fully simulated) to the
+    post-seed state the declarative block.json change + a future
+    `property_suffixes` seed will produce once `/sgs-update` runs.
+    """
+    from converter.db import db_lookup
+
+    real_box_family_for = db_lookup.box_family_for
+
+    def _fake_box_family_for(block_slug, attr_name):
+        if block_slug == "sgs/container" and attr_name == "contentBandMargin":
+            return "contentBandMargin"
+        return real_box_family_for(block_slug, attr_name)
+
+    monkeypatch.setattr(db_lookup, "box_family_for", _fake_box_family_for)
+
+    real_band_family_suffix = content_band._band_family_suffix
+
+    def _fake_band_family_suffix(base_prop, conn_arg):
+        if base_prop == "margin":
+            return "BandMargin"
+        return real_band_family_suffix(base_prop, conn_arg)
+
+    monkeypatch.setattr(content_band, "_band_family_suffix", _fake_band_family_suffix)
+
+    out = content_band.resolve(Decl("margin-top", "15px", "Base"), _ctx(conn))
+    assert isinstance(out, Write)
+    assert (out.attr, out.value) == ("contentBandMargin", {"top": "15px"})
+
+    out2 = content_band.resolve(Decl("margin", "15px", "Base"), _ctx(conn))
+    assert isinstance(out2, Write)
+    assert out2.attr == "contentBandMargin"
+    assert out2.value == {"top": "15px", "right": "15px", "bottom": "15px", "left": "15px"}
+
+
+def test_content_band_margin_sole_child_case_gaps_honestly_before_seed(conn):
+    """Negative control / current-state regression lock: BEFORE `/sgs-update`
+    seeds the `contentBandMargin` box family into the live DB, a longhand
+    margin declaration on a sole-passthrough band still gaps honestly (never
+    silently misroutes) and a shorthand margin still self-merges onto the
+    OUTER `margin` attr (the pre-existing, unrelated-to-this-fix OUTER
+    self-merge branch) — exactly the rater's own measured baseline. This test
+    exists so the moment `/sgs-update` IS run for sgs/container, this
+    assertion breaks LOUDLY (not silently) and must be updated alongside it —
+    it is a live marker of "the DB seed step is still outstanding", not a
+    permanent contract.
+    """
+    out = content_band.resolve(Decl("margin-top", "15px", "Base"), _ctx(conn))
+    assert isinstance(out, GAP)
+    assert out.origin == GapOrigin.NO_DESTINATION
+
+    out2 = content_band.resolve(Decl("margin", "15px", "Base"), _ctx(conn))
+    assert isinstance(out2, Write)
+    assert out2.attr == "margin"
 
 
 def test_content_band_metamorphic_value_scale(conn):
