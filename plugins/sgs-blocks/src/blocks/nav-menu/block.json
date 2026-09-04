@@ -52,7 +52,8 @@
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:background-color": "navBg",
-						"css:color": "navColour"
+						"css:color": "navColour",
+						"css:color-gradient": "navColourGradient"
 					},
 					"states": {
 						"hover": {
@@ -87,6 +88,7 @@
 					"prefix": "item",
 					"attrMap": {
 						"css:color": "itemColour",
+						"css:color-gradient": "itemColourGradient",
 						"css:background-color": "itemBg",
 						"css:border-radius": "itemRadius",
 						"css:font-size": "itemFontSize",
@@ -260,6 +262,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"navColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the nav text with a background-clip:text mechanism instead of a flat colour (D956 text-colour gradient rollout). Non-empty wins over navColour. Safe unconditionally -- navBg already paints on a separate ::after layer (sgs_block_background_layer_css()), never this same selector."
+		},
 		"navBgHover": {
 			"type": "string",
 			"default": ""
@@ -267,6 +274,11 @@
 		"itemColour": {
 			"type": "string",
 			"default": ""
+		},
+		"itemColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting nav-item text with a background-clip:text mechanism instead of a flat colour (D956 text-colour gradient rollout). Non-empty wins over itemColour. Safe unconditionally -- itemBg already paints on a ::before layer (D942 recipe item 1), never this same selector. Not offered on hover: itemColourHover's 'pill' style auto-computes its colour for WCAG contrast against itemBgHover."
 		},
 		"itemBg": {
 			"type": "string",

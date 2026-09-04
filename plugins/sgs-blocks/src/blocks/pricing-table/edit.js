@@ -130,9 +130,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		featureColourGradient,
 		ctaStyle,
 		ctaColour,
+		ctaColourGradient,
 		ctaBackground,
 		popularBadgeText,
 		popularBadgeColour,
+		popularBadgeColourGradient,
 		popularBadgeBackground,
 		toggleLabelHoverColour,
 		toggleLabelHoverColourGradient,
@@ -316,6 +318,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'cta-text',
 						label: __( 'CTA text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -323,6 +326,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: ctaColour,
 								onChange: ( val ) => setAttributes( { ctaColour: val ?? '' } ),
 								linked: true,
+								gradientValue: ctaColourGradient,
+								onGradientChange: ( val ) => setAttributes( { ctaColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -342,6 +347,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'badge-text',
 						label: __( 'Popular badge text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -349,6 +355,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: popularBadgeColour,
 								onChange: ( val ) => setAttributes( { popularBadgeColour: val ?? '' } ),
 								linked: true,
+								gradientValue: popularBadgeColourGradient,
+								onGradientChange: ( val ) => setAttributes( { popularBadgeColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -568,8 +576,10 @@ export default function Edit( { attributes, setAttributes } ) {
 									<div
 										className="sgs-pricing-table__badge"
 										style={ {
-											color: colourVar(
-												popularBadgeColour
+											...resolveTextColourPreviewStyle(
+												popularBadgeColour,
+												popularBadgeColourGradient,
+												colourVar
 											),
 											backgroundColor: colourVar(
 												popularBadgeBackground
@@ -886,12 +896,19 @@ export default function Edit( { attributes, setAttributes } ) {
 								     ctaColour/ctaBackground's DesignTokenPickers have no
 								     `linked` prop, so they always store a raw CSS value,
 								     never a slug -- resolveColourToken() (not colourVar(),
-								     which is slug-only) is the correct resolver. */ }
+								     which is slug-only) is the correct resolver.
+								     ctaColourGradient (D956) previews via the shared
+								     resolveTextColourPreviewStyle() -- byte-identical to
+								     the old flat-only style for an unset gradient. */ }
 								{ '' !== ( plan.ctaText ?? __( 'Get started', 'sgs-blocks' ) ) && (
 								<div
 									className={ `sgs-pricing-table__cta sgs-pricing-table__cta--${ ctaStyle }` }
 									style={ {
-										color: resolveColourToken( ctaColour, palette ) || undefined,
+										...resolveTextColourPreviewStyle(
+											ctaColour,
+											ctaColourGradient,
+											( v ) => resolveColourToken( v, palette )
+										),
 										backgroundColor:
 											resolveColourToken( ctaBackground, palette ) || undefined,
 									} }

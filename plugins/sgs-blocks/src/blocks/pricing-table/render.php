@@ -468,8 +468,17 @@ if ( '' !== $pt_preset_bg_slug ) {
 // per-plan inline — only ribbonColour genuinely varies per plan (handled via
 // the --sgs-pt-ribbon-bg CSS var written inline above).
 $pt_badge_sel = $root_sel . ' .sgs-pricing-table__badge';
-if ( $badge_colour ) {
-	$responsive_css .= $pt_badge_sel . '{color:' . $colour_val( $badge_colour ) . ';}';
+// D936/D937 recipe -- sibling gradient wins when set+valid. Safe
+// unconditionally: badge_bg (below) paints on its own `::after` layer,
+// never this same selector.
+$badge_colour_gradient  = (string) ( $attributes['popularBadgeColourGradient'] ?? '' );
+$badge_colour_effective = sgs_resolve_text_colour_or_gradient( $badge_colour, $badge_colour_gradient );
+if ( '' !== $badge_colour_effective ) {
+	$badge_colour_decl = sgs_text_colour_decl( $badge_colour_effective );
+	if ( '' !== $badge_colour_decl ) {
+		$responsive_css .= $pt_badge_sel . '{' . $badge_colour_decl . '}';
+	}
+	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $pt_badge_sel, $badge_colour_effective );
 }
 if ( $badge_bg ) {
 	// Background painted on its OWN `::after` layer, not the badge element's own
@@ -530,8 +539,16 @@ $pt_cta_sel = $root_sel . ' .sgs-pricing-table__cta';
 if ( $cta_background ) {
 	$responsive_css .= sgs_block_background_layer_css( $pt_cta_sel, 'background-color:' . $colour_val( $cta_background ) );
 }
-if ( $cta_colour ) {
-	$responsive_css .= $pt_cta_sel . '{color:' . $colour_val( $cta_colour ) . ';}';
+// D956 -- sibling gradient wins when set+valid. Safe unconditionally now
+// that ctaBackground (above) paints on its own `::after` layer.
+$cta_colour_gradient  = (string) ( $attributes['ctaColourGradient'] ?? '' );
+$cta_colour_effective = sgs_resolve_text_colour_or_gradient( $cta_colour, $cta_colour_gradient );
+if ( '' !== $cta_colour_effective ) {
+	$cta_colour_decl = sgs_text_colour_decl( $cta_colour_effective );
+	if ( '' !== $cta_colour_decl ) {
+		$responsive_css .= $pt_cta_sel . '{' . $cta_colour_decl . '}';
+	}
+	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $pt_cta_sel, $cta_colour_effective );
 }
 // Task 2 (cluster A) — titleColour/titleColourGradient sibling pair. The
 // declaration paints onto a COMMA-JOINED selector pair (`.sgs-pricing-table__name`

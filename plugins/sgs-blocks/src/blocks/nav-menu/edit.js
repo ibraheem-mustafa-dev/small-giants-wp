@@ -157,8 +157,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		listColumns,
 		navBg,
 		navColour,
+		navColourGradient,
 		navBgHover,
 		itemColour,
+		itemColourGradient,
 		itemBg,
 		itemColourHover,
 		itemBgHover,
@@ -513,6 +515,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{
 			key: 'nav-text',
 			label: __( 'Nav text colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -520,12 +523,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: navColour,
 					onChange: ( val ) => setAttributes( { navColour: val ?? '' } ),
 					linked: true,
+					gradientValue: navColourGradient,
+					onGradientChange: ( val ) => setAttributes( { navColourGradient: val ?? '' } ),
 				},
 			],
 		},
 		{
 			key: 'item-text',
 			label: __( 'Item text colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -533,6 +539,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: itemColour,
 					onChange: ( val ) => setAttributes( { itemColour: val ?? '' } ),
 					linked: true,
+					gradientValue: itemColourGradient,
+					onGradientChange: ( val ) => setAttributes( { itemColourGradient: val ?? '' } ),
 				},
 				{
 					key: 'hover',

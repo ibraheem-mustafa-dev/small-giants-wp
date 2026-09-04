@@ -167,9 +167,10 @@
 					],
 					"attrMap": {
 						"css:color": "ctaColour",
+						"css:color-gradient": "ctaColourGradient",
 						"css:background-color": "ctaBackground"
 					},
-					"_note": "`ctaStyle` (accent/outline/etc. preset) is a variant/behaviour field, not an independent style control, so it is not mapped. No independent CTA font-size/border/padding attrs exist — honest gaps."
+					"_note": "`ctaStyle` (accent/outline/etc. preset) is a variant/behaviour field, not an independent style control, so it is not mapped. No independent CTA font-size/border/padding attrs exist — honest gaps. ctaColourGradient (2026-09-04, D956) is the text-colour gradient sibling to ctaColour, safe unconditionally since ctaBackground already paints on a separate ::after layer (render.php sgs_block_background_layer_css())."
 				},
 				"badge": {
 					"label": "Popular badge",
@@ -181,9 +182,10 @@
 					],
 					"attrMap": {
 						"css:color": "popularBadgeColour",
+						"css:color-gradient": "popularBadgeColourGradient",
 						"css:background-color": "popularBadgeBackground"
 					},
-					"_note": "`popularBadgeText` (the badge copy) is a content field, not a style control — it correctly surfaces as an ORPHAN under this element's `popularBadge` prefix, matching the FR-35-4 pattern (wired to a real attribute, invisible to cluster-coherence, no separate note needed to suppress it)."
+					"_note": "`popularBadgeText` (the badge copy) is a content field, not a style control — it correctly surfaces as an ORPHAN under this element's `popularBadge` prefix, matching the FR-35-4 pattern (wired to a real attribute, invisible to cluster-coherence, no separate note needed to suppress it). popularBadgeColourGradient (2026-09-04, D936/D937) is the text-colour gradient sibling, safe unconditionally since popularBadgeBackground paints on the badge's own `::after` layer (render.php), not this selector."
 				},
 				"ribbon": {
 					"label": "Per-plan ribbon",
@@ -481,6 +483,11 @@
 		"ctaColour": {
 			"type": "string"
 		},
+		"ctaColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the CTA text with a background-clip:text mechanism instead of a flat colour (D956 text-colour gradient rollout). Non-empty wins over ctaColour. Safe unconditionally -- ctaBackground already paints on a separate ::after layer (sgs_block_background_layer_css())."
+		},
 		"ctaBackground": {
 			"type": "string"
 		},
@@ -491,6 +498,11 @@
 		"popularBadgeColour": {
 			"type": "string",
 			"default": "text"
+		},
+		"popularBadgeColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the popular badge's text with a background-clip:text mechanism instead of a flat colour (D936/D937 text-colour gradient rollout). Non-empty wins over popularBadgeColour. Safe unconditionally -- popularBadgeBackground already paints on the badge's own ::after layer."
 		},
 		"popularBadgeBackground": {
 			"type": "string",

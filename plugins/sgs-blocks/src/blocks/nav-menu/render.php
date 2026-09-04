@@ -846,6 +846,10 @@ $css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );
 $nav_bg       = isset( $attributes['navBg'] ) ? (string) $attributes['navBg'] : '';
 $nav_bg_gradient = sgs_css_gradient_value( $attributes['navBgGradient'] ?? '' );
 $nav_colour   = isset( $attributes['navColour'] ) ? (string) $attributes['navColour'] : '';
+// D956 -- sibling gradient wins when set+valid. Safe unconditionally: navBg
+// already lives on a SEPARATE `::after` layer below, never $uid_sel itself.
+$nav_colour_gradient  = isset( $attributes['navColourGradient'] ) ? (string) $attributes['navColourGradient'] : '';
+$nav_colour_effective = sgs_resolve_text_colour_or_gradient( $nav_colour, $nav_colour_gradient );
 $nav_bg_hover = isset( $attributes['navBgHover'] ) ? (string) $attributes['navBgHover'] : '';
 
 // bg_layer=true equivalent (D940 batch): background moves onto a `::after`
@@ -857,8 +861,12 @@ $nav_bg_hover_decl = '' !== $nav_bg_hover ? 'background-color:' . sgs_colour_val
 if ( '' !== $nav_bg_decl || '' !== $nav_bg_hover_decl ) {
 	$css .= sgs_block_background_layer_css( $uid_sel, $nav_bg_decl, $nav_bg_hover_decl );
 }
-if ( '' !== $nav_colour ) {
-	$css .= $uid_sel . '{color:' . sgs_colour_value( $nav_colour ) . ';}';
+if ( '' !== $nav_colour_effective ) {
+	$nav_colour_decl = sgs_text_colour_decl( $nav_colour_effective );
+	if ( '' !== $nav_colour_decl ) {
+		$css .= $uid_sel . '{' . $nav_colour_decl . ';}';
+	}
+	$css .= sgs_text_colour_gradient_fallback_rule( $uid_sel, $nav_colour_effective );
 }
 
 // 4b. Item colours (resting). Base is `inherit` in style.css; an unset slug
@@ -868,6 +876,14 @@ if ( '' !== $nav_colour ) {
 // against hover BACKGROUND in one toggle, so an operator could never set a
 // hover text colour at all — it was auto-computed and unreachable.
 $item_colour = isset( $attributes['itemColour'] ) ? (string) $attributes['itemColour'] : '';
+// D956 -- sibling gradient wins when set+valid. Safe unconditionally: itemBg
+// (below) paints on a `::before` layer, never $link_sel itself (D942 recipe
+// item 1's own comment at the itemBg block explains why ::after was unusable
+// here). Hover ($item_fg_hover) is NOT wired to gradient: 'pill' hoverStyle
+// auto-computes the text colour for WCAG contrast against itemBgHover, which
+// a client-chosen gradient can't meaningfully replace -- separate decision.
+$item_colour_gradient  = isset( $attributes['itemColourGradient'] ) ? (string) $attributes['itemColourGradient'] : '';
+$item_colour_effective = sgs_resolve_text_colour_or_gradient( $item_colour, $item_colour_gradient );
 $item_bg     = isset( $attributes['itemBg'] ) ? sanitize_html_class( $attributes['itemBg'] ) : '';
 $item_bg_hex = '' !== $item_bg ? sgs_resolve_palette_hex( $item_bg, '' ) : '';
 
@@ -887,8 +903,12 @@ $item_radius_hover = isset( $attributes['itemRadiusHover'] ) && null !== $attrib
 	? (float) $attributes['itemRadiusHover']
 	: $item_radius;
 
-if ( '' !== $item_colour ) {
-	$css .= $link_sel . '{color:' . sgs_colour_value( $item_colour ) . ';}';
+if ( '' !== $item_colour_effective ) {
+	$item_colour_decl = sgs_text_colour_decl( $item_colour_effective );
+	if ( '' !== $item_colour_decl ) {
+		$css .= $link_sel . '{' . $item_colour_decl . ';}';
+	}
+	$css .= sgs_text_colour_gradient_fallback_rule( $link_sel, $item_colour_effective );
 }
 if ( '' !== $item_bg_hex ) {
 	/*
