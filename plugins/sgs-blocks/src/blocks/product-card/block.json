@@ -185,6 +185,7 @@
 					"attrMap": {
 						"css:background-color": "ctaColourBackground",
 						"css:color": "ctaColourText",
+						"css:color-gradient": "ctaColourTextGradient",
 						"css:border-color": "ctaColourBorder",
 						"css:padding": "ctaPadding",
 						"css:border-color-gradient": "ctaColourBorderGradient"
@@ -194,12 +195,13 @@
 							"attrMap": {
 								"css:background-color": "ctaColourBackgroundHover",
 								"css:color": "ctaColourTextHover",
+								"css:color-gradient": "ctaColourTextHoverGradient",
 								"css:border-color": "ctaColourBorderHover",
 								"css:border-color-gradient": "ctaColourBorderHoverGradient"
 							}
 						}
 					},
-					"_note": "css:padding maps to the single ctaPadding box-object attr {top,right,bottom,left} — migrated from the ctaPaddingX/ctaPaddingY axis-pair scalars to the universal box-object standard (mirrors sgs/button's padding box family + the tagPadding attr already on this block). Resolves the prior converter AmbiguousLayerAttrError collision and the elementless-ctaPaddingX misroute onto the card root."
+					"_note": "css:padding maps to the single ctaPadding box-object attr {top,right,bottom,left} — migrated from the ctaPaddingX/ctaPaddingY axis-pair scalars to the universal box-object standard (mirrors sgs/button's padding box family + the tagPadding attr already on this block). Resolves the prior converter AmbiguousLayerAttrError collision and the elementless-ctaPaddingX misroute onto the card root. ctaColourTextGradient/ctaColourTextHoverGradient added 2026-09-04 (helpers-button-style.php D942/D956 gate) — keyed css:color-gradient since ctaColourBackground already claims css:background-color; sgs_button_element_style_css() only paints the text gradient per-state when that state's own background attr is unset."
 				}
 			}
 		},
@@ -329,6 +331,11 @@
 			"default": "",
 			"description": "Built-in CTA text colour override. EMPTY (default) = inherit the shared button-preset colour channel via the sgs-button--{style} class (composite-mirror, WCAG-correct per client — a light-primary palette gets dark CTA text automatically). Set a theme token slug or raw CSS colour only to override. (Was 'text-inverse', which force-painted near-white and failed WCAG on light palettes — D-pending.)"
 		},
+		"ctaColourTextGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the CTA's resting text with a background-clip:text mechanism instead of a flat colour (D636 text-colour gradient rollout). Non-empty wins over ctaColourText, and only paints when ctaColourBackground/ctaColourBackgroundGradient are unset (helpers-button-style.php D942/D956 gate — a gradient here would otherwise clip an operator-set CTA background)."
+		},
 		"ctaColourBorder": {
 			"type": "string",
 			"default": "",
@@ -348,6 +355,11 @@
 			"type": "string",
 			"default": "",
 			"description": "Built-in CTA hover text colour override. EMPTY (default) = inherit the shared button-preset hover colour channel via the sgs-button--{style} class. Set only to override. (Was 'text-inverse' — WCAG footgun on light palettes.)"
+		},
+		"ctaColourTextHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the CTA's hover text with a background-clip:text mechanism instead of a flat colour (D636 text-colour gradient rollout). Non-empty wins over ctaColourTextHover, and only paints when ctaColourBackgroundHover is unset (same D942/D956 gate as the resting state)."
 		},
 		"ctaColourBorderHover": {
 			"type": "string",

@@ -71,18 +71,20 @@
 					"attrMap": {
 						"css:background-color": "closeColourBackground",
 						"css:background-image": "closeColourBackgroundGradient",
-						"css:color": "closeColourText"
+						"css:color": "closeColourText",
+						"css:color-gradient": "closeColourTextGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:background-color": "closeColourBackgroundHover",
 								"css:background-image": "closeColourBackgroundHoverGradient",
-								"css:color": "closeColourTextHover"
+								"css:color": "closeColourTextHover",
+								"css:color-gradient": "closeColourTextHoverGradient"
 							}
 						}
 					},
-					"_note": "The dialog close button (.sgs-modal__close). Added 2026-09-03 alongside the hover-colour migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'close', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation."
+					"_note": "The dialog close button (.sgs-modal__close). Added 2026-09-03 alongside the hover-colour migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'close', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation. closeColourTextGradient/closeColourTextHoverGradient added 2026-09-04 (helpers-button-style.php D942/D956 gate) -- keyed css:color-gradient, distinct from the fill's css:background-image, since this element's real .sgs-modal__close background lives on a separate ::after pseudo-element (style.css:180), not this selector, so a text gradient here only ever competes with the OPERATOR-set closeColourBackground(Gradient), never the CSS-authored default. sgs_button_element_style_css() only paints the gradient when that operator background is unset (per-state)."
 				}
 			},
 			"hideExtensions": [
@@ -171,6 +173,14 @@
 			"default": ""
 		},
 		"closeColourTextHover": {
+			"type": "string",
+			"default": ""
+		},
+		"closeColourTextGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"closeColourTextHoverGradient": {
 			"type": "string",
 			"default": ""
 		},

@@ -702,10 +702,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// Built-in CTA styling (typed + bound share the same cta* attrs).
 		ctaColourBackground,
 		ctaColourText,
+		ctaColourTextGradient,
 		ctaColourBorder,
 		ctaColourBorderGradient,
 		ctaColourBackgroundHover,
 		ctaColourTextHover,
+		ctaColourTextHoverGradient,
 		ctaColourBorderHover,
 		ctaColourBorderHoverGradient,
 		ctaBorderStyle,
@@ -1208,6 +1210,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{
 			key: 'ctaText',
 			label: __( 'CTA text colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -1215,6 +1218,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: ctaColourText,
 					onChange: ( val ) => setAttributes( { ctaColourText: val ?? '' } ),
 					linked: true,
+					gradientValue: ctaColourTextGradient,
+					onGradientChange: ( val ) => setAttributes( { ctaColourTextGradient: val ?? '' } ),
 				},
 				{
 					key: 'hover',
@@ -1222,6 +1227,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: ctaColourTextHover,
 					onChange: ( val ) => setAttributes( { ctaColourTextHover: val ?? '' } ),
 					linked: true,
+					gradientValue: ctaColourTextHoverGradient,
+					onGradientChange: ( val ) => setAttributes( { ctaColourTextHoverGradient: val ?? '' } ),
 				},
 			],
 		},

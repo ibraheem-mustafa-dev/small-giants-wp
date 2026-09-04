@@ -796,6 +796,11 @@ const PREFIXED_HELPER_SUFFIXES = {
 		'ColourTextHover',
 		'ColourBorderHover',
 		'ColourBorderHoverGradient',
+		// Added 2026-09-04 (D942/D956 gate) — the helper's text-gradient
+		// branch reads these two the same $prefix.'Suffix' way; only paints
+		// per-state when that state's own ColourBackground(Hover) is unset.
+		'ColourTextGradient',
+		'ColourTextHoverGradient',
 		'BorderStyle',
 		'BorderWidth',
 		'BorderRadius',

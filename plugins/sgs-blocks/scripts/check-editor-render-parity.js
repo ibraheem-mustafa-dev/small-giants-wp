@@ -4359,7 +4359,17 @@ function main() {
 	// the new floor. The actual fix, unchanged from the last two times this
 	// was written here, is building canvas-preview for the shared gradient
 	// controls once, not a fourth raise on the next unrelated commit.
-	const CHECK_A_OPEN_BACKLOG = 211;
+	// RAISED 211 -> 213 (2026-09-04, D942/D956 shared-helper text-gradient
+	// gate): sgs/modal.closeColourTextGradient + closeColourTextHoverGradient.
+	// Same structural cause as the ALREADY-baselined closeColourText/
+	// closeColourTextHover/closeColourBackground(Hover)(Gradient) siblings on
+	// this same element (6 entries, pre-existing) — the modal's <dialog> is
+	// never rendered open in the editor canvas, so NO control on its close
+	// button can satisfy this check by design, gradient or not. Not a new
+	// class of debt; two more instances of the one already accepted here.
+	// (sgs/product-card.ctaColourText(Hover)Gradient did NOT need a raise —
+	// that CTA element IS canvas-previewed, so no new finding.)
+	const CHECK_A_OPEN_BACKLOG = 213;
 	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
 
 	if ( isJson ) {

@@ -90,13 +90,18 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		$colour_border_hover = (string) $read( 'ColourBorderHover' );
 		// Fill (background) gradient — delegates to the same shared primitive
 		// sgs_fill_decls() uses, so this is a swap-in, not new paint logic.
-		// Text gradient is deliberately NOT added here: this element's text
-		// and background share one selector, and background-clip:text would
-		// clip the background paint to the glyph shapes. That needs the
-		// sgs_block_background_layer_css() ::after-layer treatment first —
-		// tracked as a named follow-up, not silently dropped.
 		$colour_bg_gradient       = (string) $read( 'ColourBackgroundGradient' );
 		$colour_bg_hover_gradient = (string) $read( 'ColourBackgroundHoverGradient' );
+
+		// D942/D956 recipe — text gradient is added ONLY per-state, and ONLY
+		// when that state paints no competing background on this same
+		// selector (background-clip:text would otherwise clip a real
+		// background fill to the glyph shapes). When the operator sets an
+		// explicit ColourBackground(Hover), the text stays flat for that
+		// state — same accepted shape as sgs/modal's triggerColour and
+		// sgs/form's submitColour (D942/D956), not a silent regression.
+		$colour_text_gradient       = (string) $read( 'ColourTextGradient' );
+		$colour_text_hover_gradient = (string) $read( 'ColourTextHoverGradient' );
 
 		// D636 border-gradient rollout — sibling attributes, gradient-wins-when-set.
 		$colour_border_gradient       = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) $read( 'ColourBorderGradient' ) ) : '';
@@ -155,7 +160,20 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		if ( ! $bg_layer && '' !== $bg_decl ) {
 			$base_decls[] = $bg_decl . ';';
 		}
-		if ( '' !== $colour_text ) {
+		// D942/D956: a text gradient is safe on this selector only when no
+		// competing background paints here too ($bg_layer already moved it
+		// off, or nothing was set).
+		$text_gradient_safe    = $bg_layer || '' === $bg_decl;
+		$colour_text_effective = '';
+		if ( $text_gradient_safe ) {
+			$colour_text_effective = sgs_resolve_text_colour_or_gradient( $colour_text, $colour_text_gradient );
+			if ( '' !== $colour_text_effective ) {
+				$colour_text_decl = sgs_text_colour_decl( $colour_text_effective );
+				if ( '' !== $colour_text_decl ) {
+					$base_decls[] = $colour_text_decl . ';';
+				}
+			}
+		} elseif ( '' !== $colour_text ) {
 			$base_decls[] = 'color:' . sgs_colour_value( $colour_text ) . ';';
 		}
 		if ( '' !== $colour_border ) {
@@ -204,6 +222,9 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		if ( ! empty( $base_decls ) ) {
 			$css .= $selector . '{' . implode( '', $base_decls ) . '}';
 		}
+		if ( $text_gradient_safe && '' !== $colour_text_effective ) {
+			$css .= sgs_text_colour_gradient_fallback_rule( $selector, $colour_text_effective );
+		}
 
 		// ── Hover / focus-visible rule ────────────────────────────────────
 		$hover_decls = array();
@@ -212,7 +233,20 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		if ( ! $bg_layer && '' !== $bg_hover_decl ) {
 			$hover_decls[] = $bg_hover_decl . ';';
 		}
-		if ( '' !== $colour_text_hover ) {
+		// Same D942/D956 gate as the base rule above, evaluated against the
+		// HOVER background — a state can be gradient-safe even when the
+		// resting state is not, and vice versa.
+		$text_gradient_hover_safe    = $bg_layer || '' === $bg_hover_decl;
+		$colour_text_hover_effective = '';
+		if ( $text_gradient_hover_safe ) {
+			$colour_text_hover_effective = sgs_resolve_text_colour_or_gradient( $colour_text_hover, $colour_text_hover_gradient );
+			if ( '' !== $colour_text_hover_effective ) {
+				$colour_text_hover_decl = sgs_text_colour_decl( $colour_text_hover_effective );
+				if ( '' !== $colour_text_hover_decl ) {
+					$hover_decls[] = $colour_text_hover_decl . ';';
+				}
+			}
+		} elseif ( '' !== $colour_text_hover ) {
 			$hover_decls[] = 'color:' . sgs_colour_value( $colour_text_hover ) . ';';
 		}
 		if ( '' !== $colour_border_hover ) {
@@ -244,6 +278,10 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 			$hover_decl_str = implode( '', $hover_decls );
 			$css           .= sgs_hover_guarded_rule( $hover_selector, $hover_decl_str );
 			$css           .= $focus_selector . '{' . $hover_decl_str . '}';
+			if ( $text_gradient_hover_safe && '' !== $colour_text_hover_effective ) {
+				$css .= sgs_hover_media_wrap( sgs_text_colour_gradient_fallback_rule( $hover_selector, $colour_text_hover_effective ) );
+				$css .= sgs_text_colour_gradient_fallback_rule( $focus_selector, $colour_text_hover_effective );
+			}
 		}
 
 		// ── Background `::after` layer (opt-in via $bg_layer) ──────────────

@@ -73,6 +73,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		closeColourBackgroundHoverGradient,
 		closeColourText,
 		closeColourTextHover,
+		closeColourTextGradient,
+		closeColourTextHoverGradient,
 	} = attributes;
 
 	const [ palette ] = useSettings( 'color.palette' );
@@ -179,6 +181,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'closeText',
 						label: __( 'Close button icon colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -186,6 +189,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: closeColourText,
 								onChange: ( val ) => setAttributes( { closeColourText: val ?? '' } ),
 								linked: true,
+								gradientValue: closeColourTextGradient,
+								onGradientChange: ( val ) => setAttributes( { closeColourTextGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -193,6 +198,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: closeColourTextHover,
 								onChange: ( val ) => setAttributes( { closeColourTextHover: val ?? '' } ),
 								linked: true,
+								gradientValue: closeColourTextHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { closeColourTextHoverGradient: val ?? '' } ),
 							},
 						],
 					},
