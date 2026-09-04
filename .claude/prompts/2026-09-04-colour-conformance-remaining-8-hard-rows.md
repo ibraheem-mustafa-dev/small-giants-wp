@@ -28,6 +28,31 @@ read-only agent this session. Every claim below cites a `file:line` — verify b
 building. Treat this doc as a validated hypothesis, not an accepted spec (per this
 project's own `council-fix-shapes-are-hypotheses-not-specs` rule).
 
+## Task 0 — build the known-precedent registry (do this first, ~5 min, before any group)
+
+`sgs_svg_stroke_gradient()` has now been independently rediscovered 3 times as "the answer" for
+SVG paint-gradient, by 3 different investigations that didn't know it had already been found.
+That's wasted search time recurring on a schedule. Before starting Group 1-3's actual fixes,
+create (or extend, if it already exists from a prior session) a short registry mapping
+**problem shape → known precedent function**, so this stops happening. Home: a new
+`### Known precedent-function registry` subsection inside `plugins/sgs-blocks/CLAUDE.md`'s
+existing "Colour EMISSION helpers" section (it already tracks this kind of mechanism-to-helper
+mapping for colour specifically — extend it, don't build a second parallel doc).
+
+Seed it with what this session already found, verified:
+
+| Problem shape | Known precedent | Where |
+|---|---|---|
+| SVG paint (fill/stroke) gradient | `sgs_svg_stroke_gradient()` + `sgs_svg_inject_defs()` | `includes/helpers-svg-gradient.php:51,199` |
+| Ancestor-hover colour with gradient support | `sgs_hover_state_rules()`'s 4-arg form + `sgs_text_colour_gradient_fallback_rule()` (selector-agnostic) | `includes/helpers-hover-state.php`, `includes/helpers-tokens.php:1124`; worked example at `src/blocks/post-grid/render.php:670-689` |
+| Per-item dynamic-loop colour (repeater/query loop) | `:nth-child(N)`-scoped rule per iteration | `src/blocks/pricing-table/render.php:171,223-248` (`ribbonColour`) |
+| Fill or text colour, base+hover, flat-or-gradient, one owned rule | `sgs_fill_states_css()` / `sgs_text_states_css()` | `includes/helpers-colour-variants.php:109,215` |
+
+Add a new row here whenever a future session finds (or re-finds) a working precedent for a
+problem shape not yet listed — this is the structural fix for the "check for precedent before
+designing" rule now embedded in `/sgs-wp-engine` and `/wp-blocks` (2026-09-04): the registry is
+what makes that rule fast to apply instead of requiring a fresh grep-hunt every time.
+
 ## Group 1 — SVG fill gradient (1 row, precedent found, smallest scope)
 
 **Row:** `google-reviews.starColour`. Same architecture gap also affects
@@ -222,6 +247,7 @@ question), plus all 4 blocks' `block.json`/`render.php`/`edit.js`/`style.css`.
 | Skill | When |
 |---|---|
 | `/autopilot` | First — every session |
+| — | Task 0 (precedent registry) is a plain doc edit, ~5 min, no skill needed — do it before Group 1 |
 | `/dispatching-parallel-agents` | Groups 1-3 are disjoint files (google-reviews+star-rating, process-steps, post-grid) — safe to parallelize directly |
 | `/qc-council` or `/brainstorming` | MANDATORY before touching Group 4 — it is new architecture, not proven-pattern reuse |
 | `/sgs-wp-engine` | Framework context for any of the 4 groups |
