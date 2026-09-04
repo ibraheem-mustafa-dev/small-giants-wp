@@ -12,7 +12,7 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, ToggleControl, Notice } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
-import { ResponsiveBoxControl, SgsColourPanel } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel, DesignTokenPicker } from '../../components';
 
 /** Labels for the type selector drop-down. */
 const TYPE_OPTIONS = [
@@ -74,21 +74,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			<SgsColourPanel
 				rows={ [
 					{
-						key: 'icon',
-						label: __( 'Icon colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: iconColour,
-								onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
-								gradientValue: iconColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { iconColourGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
 						gradientCapable: true,
@@ -105,42 +90,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						],
 					},
 					{
-						key: 'label',
-						label: __( 'Label colour', 'sgs-blocks' ),
-						gradientCapable: true,
+						key: 'icon',
+						label: __( 'Icon colour', 'sgs-blocks' ),
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
-								value: labelColour,
-								onChange: ( val ) => setAttributes( { labelColour: val ?? '' } ),
-								gradientValue: labelColourGradient,
+								value: iconColour,
+								onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
+								gradientValue: iconColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { labelColourGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
-						key: 'link-hover-sweep',
-						label: __( 'Link hover colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: linkHoverBackgroundImage,
-								onChange: ( val ) => setAttributes( { linkHoverBackgroundImage: val ?? '' } ),
-							},
-						],
-					},
-					{
-						key: 'link-hover-fallback',
-						label: __( 'Link hover colour (older browsers)', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: linkHoverTextColour,
-								onChange: ( val ) => setAttributes( { linkHoverTextColour: val ?? '' } ),
+									setAttributes( { iconColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -192,6 +152,20 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
+						<DesignTokenPicker
+							label={ __( 'Label colour', 'sgs-blocks' ) }
+							states={ [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: labelColour,
+									onChange: ( val ) => setAttributes( { labelColour: val ?? '' } ),
+									gradientValue: labelColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { labelColourGradient: val ?? '' } ),
+								},
+							] }
+						/>
 					</PanelBody>
 				) }
 
@@ -213,6 +187,28 @@ export default function Edit( { attributes, setAttributes } ) {
 								__nextHasNoMarginBottom
 							/>
 						) }
+						<DesignTokenPicker
+							label={ __( 'Link hover colour', 'sgs-blocks' ) }
+							states={ [
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: linkHoverBackgroundImage,
+									onChange: ( val ) => setAttributes( { linkHoverBackgroundImage: val ?? '' } ),
+								},
+							] }
+						/>
+						<DesignTokenPicker
+							label={ __( 'Link hover colour (older browsers)', 'sgs-blocks' ) }
+							states={ [
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: linkHoverTextColour,
+									onChange: ( val ) => setAttributes( { linkHoverTextColour: val ?? '' } ),
+								},
+							] }
+						/>
 					</PanelBody>
 				) }
 

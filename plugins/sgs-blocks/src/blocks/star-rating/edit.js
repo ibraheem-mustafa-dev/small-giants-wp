@@ -7,7 +7,7 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, SgsColourPanel } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel, DesignTokenPicker } from '../../components';
 
 // Box-object interface contract §1: a 4-side box is an object with named
 // keys, each an already-unit-bearing CSS length string or absent (unset
@@ -146,19 +146,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			<SgsColourPanel
 				rows={ [
 					{
-						key: 'starColour',
-						label: __( 'Star colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: starColour,
-								onChange: ( val ) => setAttributes( { starColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
 						key: 'emptyColour',
 						label: __( 'Empty colour', 'sgs-blocks' ),
 						states: [
@@ -204,6 +191,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ ! isTpOfficial && (
+						<DesignTokenPicker
+							label={ __( 'Star colour', 'sgs-blocks' ) }
+							states={ [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: starColour,
+									onChange: ( val ) => setAttributes( { starColour: val ?? '' } ),
+									linked: true,
+								},
+							] }
+						/>
+					) }
 				</PanelBody>
 
 				{ /* Box-object interface contract §B/§E: padding/margin base routes to

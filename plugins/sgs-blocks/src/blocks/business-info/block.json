@@ -246,9 +246,11 @@
 					"attrMap": {
 						"css:font-size": "native:typography.fontSize",
 						"css:font-family": "native:typography.fontFamily",
+						"css:color": "textColour",
 						"css:background-image": "textColourGradient"
 					},
-					"_note_gradient": "textColourGradient (2026-09-04) is the text-colour gradient sibling to textColour, same background-clip:text mechanism as sgs/counter's numberColourGradient. Finishes the text-colour gradient rollout 778879732 started and explicitly left open."
+					"_note_gradient": "textColourGradient (2026-09-04) is the text-colour gradient sibling to textColour, same background-clip:text mechanism as sgs/counter's numberColourGradient. Finishes the text-colour gradient rollout 778879732 started and explicitly left open.",
+					"_note_ownership": "css:color -> textColour added explicitly 2026-09-04 (rule 41-co2 fix pass) — without it, placement-reach's cluster fallback misrouted textColour to the 'icon' element (icon also declares the 'text' cluster for its own iconColour), because textColour had no explicit claim of its own despite its gradient sibling being explicitly mapped. Found live: moving Icon's own colour attrs into a dedicated panel (closing a genuine CO-2 scatter) surfaced this as a NEW scatter on Icon (owned attrs falsely including textColour). Grounded fix, not a guess — textColour is this element's own base colour, sibling to the already-explicit textColourGradient."
 				},
 				"label": {
 					"label": "Label",

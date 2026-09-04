@@ -790,25 +790,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							__next40pxDefaultSize
 						/>
 					) }
-					{ /* Date position is an AXIS OF ITS OWN, not a content-layout
-					     value. MUI, Ant Design, PrimeReact and Vuetify all model it
-					     as a separate slot/prop — none forces a gutter when you pick
-					     "Single column". Shown only for Single column, because
-					     Alternating/Same side are inherently two-sided. */ }
-					{ orientation === 'vertical' && contentLayout === 'single-column' && (
-						<SelectControl
-							label={ __( 'Date position', 'sgs-blocks' ) }
-							value={ datePosition }
-							options={ DATE_POSITION_OPTIONS }
-							onChange={ ( val ) => setAttributes( { datePosition: val } ) }
-							help={ __(
-								"On phones the date always sits above the title, so there's room for it.",
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
 					<ToggleControl
 						label={ __( 'Alternating row colours', 'sgs-blocks' ) }
 						checked={ rowStripes }
@@ -832,6 +813,102 @@ export default function Edit( { attributes, setAttributes } ) {
 							'Stacked: today’s single-column layout. Swipeable cards: a horizontal scroll-snap row of cards, phones only (767px and below) — layout above that width is unaffected.',
 							'sgs-blocks'
 						) }
+					/>
+				</PanelBody>
+
+				{/* ── Connector ── */}
+				<PanelBody title={ __( 'Connector', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Connector style', 'sgs-blocks' ) }
+						value={ connectorStyle }
+						options={ CONNECTOR_OPTIONS }
+						onChange={ ( val ) => setAttributes( { connectorStyle: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<ToggleControl
+						label={ __( 'Fill connector on scroll', 'sgs-blocks' ) }
+						help={ __(
+							'The connector line fills in progressively as the timeline scrolls into view. Previews on the live site only.',
+							'sgs-blocks'
+						) }
+						checked={ !! connectorProgressFill }
+						onChange={ ( val ) =>
+							setAttributes( { connectorProgressFill: !! val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ /* Moved in from the shared SgsColourPanel (Spec 35 D622 —
+					     an element-scoped colour belongs in its own element's
+					     TIER 1 panel; "connector" is a declared element whose
+					     attrMap claims both of these). Same row shape, same
+					     attributes, just relocated. */ }
+					<DesignTokenPicker
+						label={ __( 'Connector colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: connectorColour,
+								onChange: ( val ) => setAttributes( { connectorColour: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Connector fill colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: connectorFillColour,
+								onChange: ( val ) =>
+									setAttributes( { connectorFillColour: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+				</PanelBody>
+
+				{ /* ── Entry date (TIER 1 — matches the `date` element's own
+				     "Entry date" label in supports.sgs.elements, block.json).
+				     dateColour moved in from the shared SgsColourPanel for the
+				     same D622 reason as Connector's rows. Positioned here
+				     (before Milestone size & media) so DOM order matches the
+				     declared order: date=4 must render before entry=5, and
+				     Milestone size & media owns entry's milestoneMinHeight/
+				     entryGap attrs. */ }
+				<PanelBody title={ __( 'Entry date', 'sgs-blocks' ) } initialOpen={ false }>
+					{ /* Date position is an AXIS OF ITS OWN, not a content-layout
+					     value. MUI, Ant Design, PrimeReact and Vuetify all model it
+					     as a separate slot/prop — none forces a gutter when you pick
+					     "Single column". Shown only for Single column, because
+					     Alternating/Same side are inherently two-sided. */ }
+					{ orientation === 'vertical' && contentLayout === 'single-column' && (
+						<SelectControl
+							label={ __( 'Date position', 'sgs-blocks' ) }
+							value={ datePosition }
+							options={ DATE_POSITION_OPTIONS }
+							onChange={ ( val ) => setAttributes( { datePosition: val } ) }
+							help={ __(
+								"On phones the date always sits above the title, so there's room for it.",
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+					<DesignTokenPicker
+						label={ __( 'Date colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: dateColour,
+								onChange: ( val ) => setAttributes( { dateColour: val ?? '' } ),
+								linked: true,
+							},
+						] }
 					/>
 				</PanelBody>
 
@@ -931,79 +1008,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
-
-				{/* ── Connector ── */}
-				<PanelBody title={ __( 'Connector', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
-						label={ __( 'Connector style', 'sgs-blocks' ) }
-						value={ connectorStyle }
-						options={ CONNECTOR_OPTIONS }
-						onChange={ ( val ) => setAttributes( { connectorStyle: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<ToggleControl
-						label={ __( 'Fill connector on scroll', 'sgs-blocks' ) }
-						help={ __(
-							'The connector line fills in progressively as the timeline scrolls into view. Previews on the live site only.',
-							'sgs-blocks'
-						) }
-						checked={ !! connectorProgressFill }
-						onChange={ ( val ) =>
-							setAttributes( { connectorProgressFill: !! val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					{ /* Moved in from the shared SgsColourPanel (Spec 35 D622 —
-					     an element-scoped colour belongs in its own element's
-					     TIER 1 panel; "connector" is a declared element whose
-					     attrMap claims both of these). Same row shape, same
-					     attributes, just relocated. */ }
-					<DesignTokenPicker
-						label={ __( 'Connector colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: connectorColour,
-								onChange: ( val ) => setAttributes( { connectorColour: val ?? '' } ),
-								linked: true,
-							},
-						] }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Connector fill colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: connectorFillColour,
-								onChange: ( val ) =>
-									setAttributes( { connectorFillColour: val ?? '' } ),
-								linked: true,
-							},
-						] }
-					/>
-				</PanelBody>
-
-				{ /* ── Entry date (TIER 1 — matches the `date` element's own
-				     "Entry date" label in supports.sgs.elements, block.json).
-				     dateColour moved in from the shared SgsColourPanel for the
-				     same D622 reason as Connector's rows above. */ }
-				<PanelBody title={ __( 'Entry date', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
-						label={ __( 'Date colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: dateColour,
-								onChange: ( val ) => setAttributes( { dateColour: val ?? '' } ),
-								linked: true,
-							},
-						] }
 					/>
 				</PanelBody>
 
