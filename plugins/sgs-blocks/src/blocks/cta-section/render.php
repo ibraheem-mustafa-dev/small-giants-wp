@@ -595,6 +595,27 @@ if ( in_array( $cta_wrapper_opts['tag'], array( 'nav', 'aside' ), true ) && ! em
 	);
 }
 
+// Spec 35 item 18 — the background image itself never becomes a frontend
+// <img> (it paints as a CSS background, always invisible to assistive tech
+// with no alt of its own — the only literal <img> is the operator-only
+// MediaPicker preview thumbnail in the editor). `backgroundImageDecorative`
+// defaults true to match that reality. The rare operator who explicitly
+// marks it non-decorative and supplies alt text on the picked image gets
+// the standard WCAG technique for an informative CSS background: role="img"
+// + aria-label on the painting element (G196/C9), applied here ONLY when no
+// landmark aria-label has already claimed the slot (mutually exclusive —
+// never overwrite a real landmark name).
+if (
+	empty( $cta_wrapper_opts['extra_attrs']['aria-label'] )
+	&& $has_image_bg
+	&& ! ( $attributes['backgroundImageDecorative'] ?? true )
+	&& ! empty( $resolved_media['alt'] )
+) {
+	$cta_wrapper_opts['extra_attrs']               = $cta_wrapper_opts['extra_attrs'] ?? array();
+	$cta_wrapper_opts['extra_attrs']['role']       = 'img';
+	$cta_wrapper_opts['extra_attrs']['aria-label'] = sanitize_text_field( $resolved_media['alt'] );
+}
+
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 echo SGS_Container_Wrapper::render(
 	$cta_helper_attrs,

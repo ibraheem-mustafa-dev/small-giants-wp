@@ -255,6 +255,11 @@
 			"type": "number",
 			"default": 30
 		},
+		"backgroundImageDecorative": {
+			"type": "boolean",
+			"default": true,
+			"_comment": "Spec 35 item 18 / {element}Decorative convention. render.php paints this image purely as a CSS background-image (never a frontend <img> tag), which is inherently decorative to assistive tech with no alt attribute involved — default true documents that. The only literal <img> is the operator-only MediaPicker preview thumbnail in edit.js's InspectorControls, which this attribute drives directly."
+		},
 		"stats": {
 			"type": "array",
 			"default": [],

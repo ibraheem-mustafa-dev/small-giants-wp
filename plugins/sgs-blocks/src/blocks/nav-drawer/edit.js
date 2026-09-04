@@ -146,6 +146,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		submenuModel,
 		ariaLabel,
 		backgroundImage,
+		backgroundImageDecorative,
 		backgroundSize,
 		backgroundPosition,
 		backgroundRepeat,
@@ -206,6 +207,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		padding: paddingFromBox( drawerPadding?.desktop ),
 	};
 
+	// Spec 35 item 18 — mirrors render.php's aria-describedby logic so the
+	// editor canvas reflects the same accessible-description decision the
+	// frontend makes (canvas/frontend parity, check-simple-surface-cap CHECK A).
+	const bgImageA11yProps =
+		backgroundImage?.url && ! ( backgroundImageDecorative ?? true ) && backgroundImage.alt
+			? { 'aria-describedby': `${ drawerRef || 'sgs-nav-drawer' }-bg-note` }
+			: {};
+
 	const blockProps = useBlockProps( {
 		// sgs-nav-drawer--close-{style} mirrors render.php:456 -- without it,
 		// the text-swap/burger-morph CSS (style.css:314-345, scoped under that
@@ -213,6 +222,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		// separate-x icon regardless of the closeStyle control.
 		className: `sgs-nav-drawer sgs-nav-drawer__editor sgs-nav-drawer--close-${ closeStyle || 'separate-x' }${ previewOpen ? '' : ' sgs-nav-drawer__editor--collapsed' }`,
 		style: shellStyle,
+		...bgImageA11yProps,
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
@@ -651,6 +661,33 @@ export default function Edit( { attributes, setAttributes } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
+							{ /* Spec 35 item 18 — see block.json's own comment on
+							     backgroundImageDecorative. Default true matches this
+							     image's existing behaviour (it paints as a CSS
+							     background, never announced to assistive tech). */ }
+							<ToggleControl
+								label={ __( 'Decorative image', 'sgs-blocks' ) }
+								help={ __(
+									'On (recommended): purely visual, adds no information. Turn off only if this image genuinely needs a description for screen-reader users.',
+									'sgs-blocks'
+								) }
+								checked={ backgroundImageDecorative ?? true }
+								onChange={ ( val ) => setAttributes( { backgroundImageDecorative: val } ) }
+								__nextHasNoMarginBottom
+							/>
+							{ ! ( backgroundImageDecorative ?? true ) && (
+								<TextControl
+									label={ __( 'Image description', 'sgs-blocks' ) }
+									value={ backgroundImage?.alt || '' }
+									onChange={ ( val ) =>
+										setAttributes( {
+											backgroundImage: { ...backgroundImage, alt: val },
+										} )
+									}
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
 						</>
 					) }
 				</PanelBody>

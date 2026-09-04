@@ -11,6 +11,7 @@ import {
 	Button,
 	RangeControl,
 	BoxControl,
+	ToggleControl,
 } from '@wordpress/components';
 import MediaPicker from '../../components/MediaPicker';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
@@ -92,6 +93,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		backgroundImage,
 		backgroundMedia,
 		backgroundImageOpacity,
+		backgroundImageDecorative,
 		gradientPreset,
 		stats,
 	} = attributes;
@@ -144,9 +146,21 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		wrapperStyle.boxShadow = shadowPreview;
 	}
 
+	// Spec 35 item 18 — mirrors render.php's role="img"/aria-label logic so the
+	// editor canvas reflects the same accessible-name decision the frontend
+	// makes (canvas/frontend parity, check-simple-surface-cap CHECK A).
+	const bgImageA11yProps =
+		activeMedia &&
+		activeMedia.type === 'image' &&
+		! ( backgroundImageDecorative ?? true ) &&
+		activeMedia.alt
+			? { role: 'img', 'aria-label': activeMedia.alt }
+			: {};
+
 	const blockProps = useBlockProps( {
 		className,
 		style: wrapperStyle,
+		...bgImageA11yProps,
 	} );
 
 	// The content column hosts the InnerBlocks (heading + body + buttons),
@@ -673,6 +687,37 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ activeMedia && activeMedia.type === 'image' && (
+						<>
+							{ /* Spec 35 item 18 — see block.json's own comment on
+							     backgroundImageDecorative. Default true matches this
+							     image's existing behaviour (it paints as a CSS
+							     background, never a frontend <img>). */ }
+							<ToggleControl
+								label={ __( 'Decorative image', 'sgs-blocks' ) }
+								help={ __(
+									'On (recommended): purely visual, adds no information. Turn off only if this image genuinely needs a description for screen-reader users.',
+									'sgs-blocks'
+								) }
+								checked={ backgroundImageDecorative ?? true }
+								onChange={ ( val ) => setAttributes( { backgroundImageDecorative: val } ) }
+								__nextHasNoMarginBottom
+							/>
+							{ ! ( backgroundImageDecorative ?? true ) && (
+								<TextControl
+									label={ __( 'Image description', 'sgs-blocks' ) }
+									value={ backgroundImage?.alt || '' }
+									onChange={ ( val ) =>
+										setAttributes( {
+											backgroundImage: { ...backgroundImage, alt: val },
+										} )
+									}
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
+						</>
+					) }
 				</PanelBody>
 			</InspectorControls>
 

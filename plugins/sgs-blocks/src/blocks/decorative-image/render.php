@@ -43,6 +43,11 @@ $sgs_css_num = static function ( $value, int $decimals = 4 ): float {
 $image_id            = $attributes['imageId'] ?? null;
 $image_url           = $attributes['imageUrl'] ?? '';
 $image_alt           = $attributes['imageAlt'] ?? '';
+// Spec 35 item 18 — default true (this block is decorative-by-design); an
+// operator who genuinely wants an accessible name can flip this in the
+// Accessibility panel, which is why $rendered_alt is not simply ''.
+$image_decorative    = (bool) ( $attributes['imageDecorative'] ?? true );
+$rendered_alt        = $image_decorative ? '' : $image_alt;
 
 // decorMedia is the unified image-or-video slot. For
 // back-compat, when only the legacy imageUrl is set, synthesise a decorMedia
@@ -200,13 +205,15 @@ $style_tag_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . 
 $img_attrs = array(
 	// `sgs-media-el` is the shared atom layer's marker for the REPLACED
 	// element (object-fit/focal-point read it) — added Wave 6, 2026-09-02.
-	'class'       => 'sgs-decorative-image sgs-media-el ' . $uid,
-	'aria-hidden' => 'true',
-	'role'        => 'presentation',
-	'alt'         => '',
-	'loading'     => 'lazy',
-	'decoding'    => 'async',
+	'class'    => 'sgs-decorative-image sgs-media-el ' . $uid,
+	'alt'      => $rendered_alt,
+	'loading'  => 'lazy',
+	'decoding' => 'async',
 );
+if ( $image_decorative ) {
+	$img_attrs['aria-hidden'] = 'true';
+	$img_attrs['role']        = 'presentation';
+}
 
 if ( $parallax_strength > 0 ) {
 	$img_attrs['data-parallax'] = esc_attr( $parallax_strength );
@@ -464,10 +471,12 @@ if ( $sgs_di_wants_wrapper ) {
 	$sgs_di_wrapper_class[] = $uid;
 
 	$wrapper_attrs = array(
-		'class'       => implode( ' ', $sgs_di_wrapper_class ),
-		'aria-hidden' => 'true',
-		'role'        => 'presentation',
+		'class' => implode( ' ', $sgs_di_wrapper_class ),
 	);
+	if ( $image_decorative ) {
+		$wrapper_attrs['aria-hidden'] = 'true';
+		$wrapper_attrs['role']        = 'presentation';
+	}
 	foreach ( $img_attrs as $sgs_key => $sgs_val ) {
 		if ( 0 === strpos( $sgs_key, 'data-' ) ) {
 			$wrapper_attrs[ $sgs_key ] = $sgs_val;
@@ -488,7 +497,7 @@ if ( $sgs_di_wants_wrapper ) {
 	// it inside its own wrapper.
 	$media_attrs = array(
 		'class'    => empty( $tier_imgs ) ? $sgs_media_class . ' sgs-media-el' : $img_attrs['class'],
-		'alt'      => '',
+		'alt'      => $rendered_alt,
 		'loading'  => 'lazy',
 		'decoding' => 'async',
 	);
@@ -513,7 +522,7 @@ if ( $sgs_di_wants_wrapper ) {
 	$media_html = sgs_responsive_image(
 		$image_id ? absint( $image_id ) : 0,
 		$image_url,
-		'',
+		$rendered_alt,
 		'large',
 		$media_attrs
 	);
@@ -523,7 +532,7 @@ if ( $sgs_di_wants_wrapper ) {
 		$media_html         .= sgs_responsive_image(
 			$tier_media['id'],
 			$tier_media['url'],
-			'',
+			$rendered_alt,
 			'large',
 			$tier_attrs
 		);
@@ -546,7 +555,7 @@ echo $style_tag_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotE
 echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes all attributes internally.
 	$image_id ? absint( $image_id ) : 0,
 	$image_url,
-	'', // Empty alt for decorative.
+	$rendered_alt, // Empty when decorative (default); operator-set imageAlt otherwise.
 	'large',
 	$img_attrs
 );
@@ -557,7 +566,7 @@ foreach ( $tier_imgs as $tier_key => $tier_media ) {
 	echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes all attributes internally.
 		$tier_media['id'],
 		$tier_media['url'],
-		'', // Empty alt for decorative.
+		$rendered_alt, // Empty when decorative (default); operator-set imageAlt otherwise.
 		'large',
 		$tier_attrs
 	);

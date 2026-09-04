@@ -219,6 +219,11 @@
 			"type": "object",
 			"default": {}
 		},
+		"backgroundImageDecorative": {
+			"type": "boolean",
+			"default": true,
+			"_comment": "Spec 35 item 18 / {element}Decorative convention. render.php paints this image as a CSS background (::before layer), never a frontend <img> — the only literal <img> is the operator-only preview thumbnail in edit.js. Default true documents that. When explicitly set false with alt text on the picked image, render.php adds an aria-describedby hidden note to the dialog (the dialog's own aria-label is already claimed for the drawer's accessible name, so the image description is layered on rather than overwriting it)."
+		},
 		"backgroundSize": {
 			"type": "string",
 			"default": "cover",

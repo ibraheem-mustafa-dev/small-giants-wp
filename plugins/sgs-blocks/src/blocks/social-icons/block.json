@@ -143,6 +143,11 @@
 					},
 					"rel": {
 						"type": "string"
+					},
+					"iconDecorative": {
+						"type": "boolean",
+						"default": true,
+						"_comment": "Spec 35 item 18 / {element}Decorative convention, scoped to the repeater item. Default true documents render.php's existing, always-correct WCAG pattern: the glyph <img>/<svg> is wrapped in an aria-hidden span (never announced), while the real accessible name lives on the wrapping <a>'s aria-label (built from `label`, above). Exposing a per-item override to make the glyph itself announced would double-announce alongside the link's own aria-label, so this is documented architecture rather than a client-facing toggle."
 					}
 				}
 			}

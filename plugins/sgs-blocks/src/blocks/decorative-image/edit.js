@@ -8,6 +8,7 @@ import {
 	RangeControl,
 	ToggleControl,
 	SelectControl,
+	TextControl,
 } from '@wordpress/components';
 import { ResponsiveControl, ResponsiveOverride } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
@@ -32,6 +33,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		imageId,
 		imageUrl,
 		imageAlt,
+		imageDecorative,
 		positionX,
 		positionY,
 		width,
@@ -159,6 +161,36 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				{ /* Accessibility (Spec 35 item 18) — this block is decorative-by-design
+				     (absolute-positioned floating graphic, no InnerBlocks) so the toggle
+				     defaults ON/decorative, matching what render.php has always done
+				     unconditionally. The rare operator who wants this image to carry a
+				     real accessible name can switch it off and set alt text — mirrors
+				     sgs/media's imageDecorative control. */ }
+				{ effectiveMedia && 'image' === effectiveMedia.type && (
+					<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
+						<ToggleControl
+							label={ __( 'Decorative image', 'sgs-blocks' ) }
+							help={ __(
+								'On (recommended): hidden from screen readers, since this image adds no information of its own. Turn off only if this image genuinely needs a text description.',
+								'sgs-blocks'
+							) }
+							checked={ imageDecorative ?? true }
+							onChange={ ( val ) => setAttributes( { imageDecorative: val } ) }
+							__nextHasNoMarginBottom
+						/>
+						{ ! ( imageDecorative ?? true ) && (
+							<TextControl
+								label={ __( 'Alt text', 'sgs-blocks' ) }
+								value={ imageAlt || '' }
+								onChange={ ( val ) => setAttributes( { imageAlt: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</PanelBody>
+				) }
+
 				{ /* Art direction (2026-08-07). Same device-switched shape as sgs/media
 				     and sgs/hero, so a client meets ONE interaction for "a different crop
 				     on narrow screens" wherever images appear. Rendered ONLY for image

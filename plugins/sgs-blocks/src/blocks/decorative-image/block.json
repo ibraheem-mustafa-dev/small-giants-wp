@@ -83,6 +83,11 @@
             "default": "",
             "role": "content"
         },
+        "imageDecorative": {
+            "type": "boolean",
+            "default": true,
+            "_comment": "Spec 35 item 18 / {element}Decorative convention (matches sgs/media's imageDecorative). Default true because this block IS the decorative-image primitive by design (absolute-positioned floating graphic, no InnerBlocks, permanently aria-hidden+role=presentation in render.php) — the toggle exists for the rare case an operator wants to expose imageAlt as a real accessible name instead of leaving it silent."
+        },
         "positionX": {
 			"type": "object",
 			"default": {"desktop": 50}

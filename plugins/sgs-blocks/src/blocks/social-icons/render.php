@@ -452,7 +452,12 @@ foreach ( $icons as $icon_item ) {
 	// uploaded glyph yet falls back to the generic 'link' Lucide icon so the
 	// row never renders a blank slot mid-authoring.
 	if ( '' !== $custom_url ) {
-		$glyph_html = sprintf( '<img src="%s" alt="" width="%d" height="%d" />', esc_url( $custom_url ), $icon_size, $icon_size );
+		// Spec 35 item 18 — default true (matches this glyph's existing,
+		// always-correct behaviour: it sits inside an aria-hidden span below,
+		// with the real accessible name on the wrapping <a>'s aria-label).
+		$icon_decorative = (bool) ( $icon_item['iconDecorative'] ?? true );
+		$custom_icon_alt = $icon_decorative ? '' : sanitize_text_field( $label_raw );
+		$glyph_html      = sprintf( '<img src="%s" alt="%s" width="%d" height="%d" />', esc_url( $custom_url ), esc_attr( $custom_icon_alt ), $icon_size, $icon_size );
 	} else {
 		$icon_name  = $platform_icons[ $platform ] ?? 'link';
 		$glyph_html = sgs_get_lucide_icon( $icon_name );

@@ -211,8 +211,16 @@ $submenu_model = in_array( $attributes['submenuModel'] ?? 'accordion', array( 'a
 // dimming the drawer's editable InnerBlocks content painted above it.
 // `.wp-block-sgs-nav-drawer` uses neither `::before` nor `::after` anywhere in
 // style.css, so the layer is free to claim (confirmed by reading the file).
-$bg_image         = $attributes['backgroundImage'] ?? array();
-$has_bg_image     = ! empty( $bg_image['url'] );
+$bg_image     = $attributes['backgroundImage'] ?? array();
+$has_bg_image = ! empty( $bg_image['url'] );
+
+// Spec 35 item 18 — see block.json's own comment on backgroundImageDecorative
+// for why this is aria-describedby rather than aria-label: the dialog root's
+// aria-label is already claimed for the drawer's own accessible name.
+$bg_image_decorative = (bool) ( $attributes['backgroundImageDecorative'] ?? true );
+$bg_image_alt        = $has_bg_image ? sanitize_text_field( $bg_image['alt'] ?? '' ) : '';
+$bg_image_needs_note = $has_bg_image && ! $bg_image_decorative && '' !== $bg_image_alt;
+
 $bg_size          = $attributes['backgroundSize'] ?? 'cover';
 $allowed_bg_sizes = array( 'cover', 'contain', 'auto' );
 if ( ! in_array( $bg_size, $allowed_bg_sizes, true ) ) {
@@ -646,6 +654,9 @@ $wrapper_args       = array(
 		? esc_attr( $attributes['ariaLabel'] )
 		: esc_attr__( 'Navigation menu', 'sgs-blocks' ),
 );
+if ( $bg_image_needs_note ) {
+	$wrapper_args['aria-describedby'] = $drawer_ref . '-bg-note';
+}
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 
 // ── The × close button — FIXED CHROME (FR-36-6). Rendered as a SIBLING of
@@ -666,6 +677,18 @@ $close_html = sprintf(
 	$sgs_nd_close_inner // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_html() applied above (text-swap) or trusted static markup (burger-morph spans / Lucide SVG).
 );
 
+// Spec 35 item 18 — the visually-hidden note the aria-describedby above
+// points at, only emitted when the operator marked the background image
+// non-decorative and supplied alt text (see block.json comment).
+$bg_image_note_html = '';
+if ( $bg_image_needs_note ) {
+	$bg_image_note_html = sprintf(
+		'<span id="%s" class="screen-reader-text">%s</span>',
+		esc_attr( $drawer_ref . '-bg-note' ),
+		esc_html( $bg_image_alt )
+	);
+}
+
 // ── Emit the scoped <style> then the dialog. wp_strip_all_tags (NOT esc_html)
 // blocks a </style> breakout while leaving CSS combinators intact; every value
 // reaching $css is pre-sanitised (sanitize_html_class slugs / $sgs_nd_css_*
@@ -677,9 +700,10 @@ if ( '' !== $css ) {
 }
 
 printf(
-	'<dialog %1$s>%2$s<div class="sgs-nav-drawer__body">%3$s</div></dialog>',
+	'<dialog %1$s>%2$s%3$s<div class="sgs-nav-drawer__body">%4$s</div></dialog>',
 	$wrapper_attributes,
 	$close_html,
+	$bg_image_note_html,
 	$content
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
