@@ -628,15 +628,17 @@ def run_mechanism_b(
     # Port of convert.py:4191-4307
     # ------------------------------------------------------------------
     if db_lookup.is_class_section_block(rec.slug):
-        for child in section_root.children:
-            if not isinstance(child, Tag):
-                continue
-            if id(child) in exclude_ids:
-                # FR-31-2.6 mutual exclusion: this element was consumed as a
-                # NESTED unit by the universal walk — it must not also emit as
-                # a child (the unit is conserved on the nested side).
-                continue
-            columns_seen += 1
+        def _process_composite_interior_column(child: Any) -> list:
+            """Process ONE composite-interior column; return its content results.
+
+            Isolated into its own function (2026-09-04 blast-radius fix) so the
+            caller can scope a per-column failure to a ContentGap instead of
+            losing the whole section — see the try/except around this call
+            below. ContentConservationError is a real conservation-invariant
+            violation (not a routing edge case) and is left to propagate
+            uncaught; the caller only degrades genuinely UNEXPECTED exceptions.
+            """
+            col_results: list = []
 
             cclasses: list[str] = child.get("class", []) or []
             csgs: list[str] = [c for c in cclasses if isinstance(c, str) and c.startswith("sgs-")]
@@ -653,11 +655,11 @@ def run_mechanism_b(
             if element is None:
                 # No BEM element — cannot route by slot; emit ContentGap (never silent).
                 # convert.py:4207-4213 falls back to generic walk(); here we gap-track.
-                results.append(ContentGap(
+                col_results.append(ContentGap(
                     _label(child),
                     "composite-interior column has no BEM __element — cannot route by slot",
                 ))
-                continue
+                return col_results
 
             # Ask the DB: is this a scalar-media column? (convert.py:4216)
             base_attr = db_lookup.scalar_media_attr_for(rec.slug, element)
@@ -702,12 +704,12 @@ def run_mechanism_b(
                 if not media_els:
                     # No media found → ContentGap (convert.py:4224-4229 silently
                     # skips; we emit a ContentGap per Rule 4 — no silent drops).
-                    results.append(ContentGap(
+                    col_results.append(ContentGap(
                         _label(child),
                         f"scalar-media column (attr={base_attr!r}) had no <img>/"
                         "<video>/<svg> descendant — media content not transferred",
                     ))
-                    continue
+                    return col_results
 
                 for media_el, media_kind in media_els:
                     media_classes: list[str] = media_el.get("class", []) or []
@@ -736,7 +738,7 @@ def run_mechanism_b(
                         # is the correct failure mode instead.
                         image_stem = db_lookup.scalar_media_type_stem(rec.slug or "", "image")
                         if image_stem is None:
-                            results.append(ContentGap(
+                            col_results.append(ContentGap(
                                 _label(media_el),
                                 f"scalar-media column (anchor={base_attr!r}) held an "
                                 "<img> but the block declares no image family "
@@ -745,13 +747,13 @@ def run_mechanism_b(
                             continue
                         target_attr = f"{image_stem}{tier_suffix}"
                         lifted = scalar_media_from_img(media_el, media_map=media_map or {})
-                        results.append(ScalarLift(attr=target_attr, value=lifted))
+                        col_results.append(ScalarLift(attr=target_attr, value=lifted))
                         continue
 
                     if media_kind == "video":
                         stem = db_lookup.scalar_media_type_stem(rec.slug or "", "video")
                         if stem is None:
-                            results.append(ContentGap(
+                            col_results.append(ContentGap(
                                 _label(media_el),
                                 f"scalar-media column (anchor={base_attr!r}) held a "
                                 "<video> but the block declares no video family "
@@ -760,12 +762,12 @@ def run_mechanism_b(
                             continue
                         target_attr = f"{stem}{tier_suffix}"
                         lifted = scalar_media_from_video(media_el, media_map=media_map or {})
-                        results.append(ScalarLift(attr=target_attr, value=lifted))
+                        col_results.append(ScalarLift(attr=target_attr, value=lifted))
                         # Bug fix: write the TYPE selector alongside the content
                         # (see the Branch A header comment) — base_attr here is
                         # the real anchor 'splitMediaType', so base_attr+tier_suffix
                         # is the literal block.json attr name, written directly.
-                        results.append(ScalarLift(attr=f"{base_attr}{tier_suffix}", value="video"))
+                        col_results.append(ScalarLift(attr=f"{base_attr}{tier_suffix}", value="video"))
                         continue
 
                     # media_kind == "svg" — CONTENT is written DIRECTLY as a
@@ -777,7 +779,7 @@ def run_mechanism_b(
                     # str, never a dict — do not change this shape.)
                     stem = db_lookup.scalar_media_type_stem(rec.slug or "", "svg")
                     if stem is None:
-                        results.append(ContentGap(
+                        col_results.append(ContentGap(
                             _label(media_el),
                             f"scalar-media column (anchor={base_attr!r}) held an "
                             "inline <svg> but the block declares no svg family "
@@ -786,18 +788,18 @@ def run_mechanism_b(
                         continue
                     markup = svg_markup_from_node(media_el)
                     if not markup:
-                        results.append(ContentGap(
+                        col_results.append(ContentGap(
                             _label(media_el),
                             f"scalar-media column (anchor={base_attr!r}) held an "
                             "inline <svg> that serialised to empty markup",
                         ))
                         continue
                     target_attr = f"{stem}{tier_suffix}"
-                    results.append(ScalarLift(attr=target_attr, value=markup))
+                    col_results.append(ScalarLift(attr=target_attr, value=markup))
                     # Bug fix: same TYPE-selector write as the video branch above
                     # — a SEPARATE plain-string ScalarLift, not folded into the
                     # content lift, so the content shape assertion above holds.
-                    results.append(ScalarLift(attr=f"{base_attr}{tier_suffix}", value="svg"))
+                    col_results.append(ScalarLift(attr=f"{base_attr}{tier_suffix}", value="svg"))
 
             else:
                 # ---- Branch B / C: content column (convert.py:4256-4307) ----
@@ -812,39 +814,89 @@ def run_mechanism_b(
                     content = _child_content_for_node(
                         child, child_slug, css_rules=css_rules, media_map=media_map
                     )
-                    results.append(ChildBlock(slug=child_slug, content=content))
+                    col_results.append(ChildBlock(slug=child_slug, content=content))
 
                 else:
                     # Branch C: slug-None transparent content wrapper — fold case.
                     # CSS for the slug-None wrapper folds via the unified cascade
                     # (fold_band_css / content_band priorities — EXECUTION Step 7);
-                    # CONTENT recursion iterates grandchildren here.
-                    grandchild_results: list = []
-                    for grandchild in child.children:
-                        if not isinstance(grandchild, Tag):
-                            continue
-                        if id(grandchild) in exclude_ids:
-                            continue  # consumed as a NESTED unit (FR-31-2.6)
+                    # CONTENT recursion iterates grandchildren here, to ARBITRARY
+                    # DEPTH (fixed 2026-09-04 — was one level only, dropping a
+                    # doubly-nested wrapper's content, e.g. `__inner > __body >
+                    # <p>`; see `_recurse_dissolved_children`'s docstring for the
+                    # full defect history). Shared with the GENERIC path's own
+                    # transparent-wrapper dissolve (`_route_generic_child`) per
+                    # R-31-9 — one mechanism, not two independently-built copies.
+                    def _resolve_grandchild(grandchild: Any) -> list | None:
                         gc_rec = recognise(grandchild)
-                        if gc_rec.slug is not None:
-                            gc_content = _child_content_for_node(
-                                grandchild, gc_rec.slug, css_rules=css_rules, media_map=media_map
-                            )
-                            grandchild_results.append(
-                                ChildBlock(slug=gc_rec.slug, content=gc_content)
-                            )
-                        else:
-                            grandchild_results.append(
-                                ContentGap(_label(grandchild), "grandchild unrecognised in slug-None fold")
-                            )
+                        if gc_rec.slug is None:
+                            return None
+                        gc_content = _child_content_for_node(
+                            grandchild, gc_rec.slug, css_rules=css_rules, media_map=media_map
+                        )
+                        return [ChildBlock(slug=gc_rec.slug, content=gc_content)]
+
+                    grandchild_results = _recurse_dissolved_children(
+                        child, exclude_ids, _resolve_grandchild,
+                        "grandchild unrecognised in slug-None fold",
+                    )
                     if grandchild_results:
-                        results.extend(grandchild_results)
+                        col_results.extend(grandchild_results)
                     else:
                         # Empty slug-None wrapper → ContentGap (never silent).
-                        results.append(ContentGap(
+                        col_results.append(ContentGap(
                             _label(child),
                             "slug-None content wrapper had no recognisable grandchildren",
                         ))
+
+            return col_results
+
+        for child in section_root.children:
+            if not isinstance(child, Tag):
+                continue
+            if id(child) in exclude_ids:
+                # FR-31-2.6 mutual exclusion: this element was consumed as a
+                # NESTED unit by the universal walk — it must not also emit as
+                # a child (the unit is conserved on the nested side).
+                continue
+            columns_seen += 1
+
+            # Per-column isolation (2026-09-04 blast-radius fix, see the
+            # ISSUE-REGISTER CRITICAL finding: entry.py's outer try/except used
+            # to be the ONLY failure boundary in this whole recursive call
+            # graph, so ANY unexpected exception anywhere inside ONE column's
+            # processing killed the ENTIRE section — including sibling columns
+            # that would have processed correctly on their own.
+            #
+            # ContentConservationError is a real conservation-invariant
+            # violation (this function's OWN "a column was silently dropped"
+            # guard, or a nested Mechanism-B recursion's) — it is NOT a
+            # per-column routing edge case, so it is left to propagate and
+            # fail the whole section loudly, unchanged from before this fix.
+            #
+            # Any OTHER exception (AttributeError/TypeError/IndexError/… from
+            # malformed/edge-case markup reaching code that assumed
+            # well-formed input) degrades to a scoped ContentGap naming the
+            # failing column + the exception — still loud (Rule 4: never
+            # silent), still visible in content_gaps, but no longer takes
+            # down content that has nothing to do with the failure.
+            try:
+                results.extend(_process_composite_interior_column(child))
+            except ContentConservationError:
+                raise
+            except Exception as exc:  # noqa: BLE001 — intentionally broad: this
+                # IS the scoping boundary; see the block comment above.
+                _LOG.error(
+                    "run_mechanism_b: unexpected %s while processing composite-"
+                    "interior column %s: %s",
+                    type(exc).__name__, _label(child), exc,
+                )
+                results.append(ContentGap(
+                    _label(child),
+                    f"unexpected {type(exc).__name__} while processing this "
+                    f"column: {exc} — this column's content was dropped, "
+                    "sibling columns were not affected",
+                ))
 
         # Conservation: every Tag child produced ≥1 result.
         result_count = sum(
@@ -881,9 +933,29 @@ def run_mechanism_b(
         if id(child) in exclude_ids:
             continue  # consumed as a NESTED unit by the universal walk (FR-31-2.6)
         columns_seen += 1
-        results.extend(_route_generic_child(
-            child, rec, allowed, exclude_ids, nested_filled, css_rules, media_map,
-        ))
+        # Per-child isolation (2026-09-04 blast-radius fix — same rationale as
+        # the composite-interior loop above): an unexpected exception inside
+        # ONE child's routing must not take out sibling children that would
+        # have processed fine. ContentConservationError is a real
+        # conservation-invariant violation and still propagates unscoped.
+        try:
+            results.extend(_route_generic_child(
+                child, rec, allowed, exclude_ids, nested_filled, css_rules, media_map,
+            ))
+        except ContentConservationError:
+            raise
+        except Exception as exc:  # noqa: BLE001 — intentional scoping boundary
+            _LOG.error(
+                "run_mechanism_b (generic): unexpected %s while processing "
+                "child %s: %s",
+                type(exc).__name__, _label(child), exc,
+            )
+            results.append(ContentGap(
+                _label(child),
+                f"unexpected {type(exc).__name__} while processing this "
+                f"child: {exc} — this child's content was dropped, sibling "
+                "children were not affected",
+            ))
 
     # Generic path conservation: every Tag child → ≥1 result.
     if len(results) < columns_seen:
@@ -894,7 +966,58 @@ def run_mechanism_b(
     return results
 
 
-def _route_generic_child(
+def _recurse_dissolved_children(
+    node: Any,
+    exclude_ids: frozenset[int],
+    resolve_one: Any,
+    gap_reason: str,
+) -> list:
+    """TRANSPARENT WRAPPER DISSOLVE — shared recursive-descent core (Bean-directed
+    2026-07-25; extracted 2026-09-04 to close a doubly-nested drop in Branch C).
+
+    A slug-None BEM wrapper is not content itself: its CSS folds up via the
+    composite band-fold and its children recurse in as if they were direct
+    children of the composite. THIS is the one recursion primitive both the
+    GENERIC path (`_route_generic_child`, below) and the COMPOSITE-INTERIOR
+    path's Branch C (`run_mechanism_b`'s class-section slug-None fold) now
+    share — R-31-9, one mechanism not two. Two independent copies of this
+    concept existed before this extraction, one made recursive and one not,
+    which is exactly how a doubly-nested wrapper (`__inner > __body > text`)
+    inside a class-section composite silently dropped its content: Branch C
+    descended exactly one level and gapped anything unresolved at that level,
+    never recursing further.
+
+    `resolve_one(child)` is the CALLER's own single-node routing logic — the
+    two callers' routing rules genuinely differ (the generic path has G1
+    parent-scoped tokens / global BEM alias / atomic-tag recognition / the
+    nested-attr pre-empt; Branch C is a plain `recognise()` +
+    `_child_content_for_node()`). Only the "recurse when unresolved, else gap"
+    shape below is shared. `resolve_one` must return a list of results when
+    `child` itself resolves to content, or `None` when `child` is unresolved
+    and dissolution should recurse into ITS OWN children instead.
+
+    Only a genuine leaf with no routable descendants anywhere down the chain
+    ever gaps — never a silent drop, and never a gap for an intermediate
+    wrapper level that DOES have real content further down (that was the bug:
+    the intermediate level gapped instead of trying its own children first).
+    """
+    out: list = []
+    for child in node.children:
+        if not isinstance(child, Tag) or id(child) in exclude_ids:
+            continue
+        resolved = resolve_one(child)
+        if resolved is not None:
+            out.extend(resolved)
+            continue
+        nested = _recurse_dissolved_children(child, exclude_ids, resolve_one, gap_reason)
+        if nested:
+            out.extend(nested)
+        else:
+            out.append(ContentGap(_label(child), gap_reason))
+    return out
+
+
+def _try_route_generic_child_once(
     child: Any,
     rec: Recognition,
     allowed: Any,
@@ -902,21 +1025,16 @@ def _route_generic_child(
     nested_filled: set[str],
     css_rules: dict | None,
     media_map: dict | None,
-) -> list:
-    """Route ONE child of a GENERIC (non-class-section) InnerBlocks composite
-    (accordion / tabs / form / quote …) and return its content results.
+) -> list | None:
+    """Attempt to resolve ONE generic-composite child to content WITHOUT
+    dissolving a transparent wrapper — that recursion lives one level up, in
+    `_route_generic_child`, via the shared `_recurse_dissolved_children`.
 
-    Called per direct child AND recursively for the grandchildren of a
-    transparent slug-None wrapper. TRANSPARENT-WRAPPER DISSOLVE (Bean-directed
-    2026-07-25): an `__inner`/`__body`/`__content` shell is NOT content — it must
-    DISSOLVE: its CSS folds up (the composite band-fold) and its children recurse
-    INTO this composite as direct children. Previously the generic path gapped an
-    unresolved wrapper as one opaque column and `continue`d — silently dropping
-    everything inside it (the sgs/tab `__inner > __content` text drop). The
-    composite-interior branch (run_mechanism_b, is_class_section_block) already
-    descends a slug-None wrapper's grandchildren; this brings the GENERIC path to
-    parity, made recursive so a nested chain (`__inner > __body > __text`) fully
-    dissolves. Universal (R-31-9): every generic InnerBlocks parent.
+    Returns a list of results when `child` resolves (via G1 parent-scoped
+    token / global BEM alias / atomic-tag recognition / the nested-attr
+    pre-empt, then G3 allow-list validation), or `None` when `child` has no
+    resolvable slug at all — the caller decides what to do with `None`
+    (recurse into `child`'s own children, or give up and gap).
     """
     out: list = []
     cclasses: list[str] = child.get("class", []) or []
@@ -968,24 +1086,7 @@ def _route_generic_child(
                 return out  # conserved on the nested side (FR-31-2.6 mutual exclusion)
 
     if child_slug is None:
-        # TRANSPARENT WRAPPER DISSOLVE (Bean 2026-07-25). The wrapper is not
-        # content itself — its CSS folds up via the composite band-fold, and its
-        # children recurse in here as direct children of the composite. Only a
-        # genuine leaf with no routable descendants still gaps (never silent).
-        for gc in child.children:
-            if not isinstance(gc, Tag) or id(gc) in exclude_ids:
-                continue
-            out.extend(_route_generic_child(
-                gc, rec, allowed, exclude_ids, nested_filled, css_rules, media_map,
-            ))
-        if out:
-            return out
-        out.append(ContentGap(
-            _label(child),
-            "generic child has no resolvable slug and dissolved to no content "
-            "(G1, global BEM, atomic-tag recognition, and wrapper descent all missed)",
-        ))
-        return out
+        return None
 
     # G3: validate child_slug against the parent's accepted block list.
     if allowed is None:
@@ -1010,6 +1111,53 @@ def _route_generic_child(
     )
     out.append(ChildBlock(slug=child_slug, content=content))
     return out
+
+
+def _route_generic_child(
+    child: Any,
+    rec: Recognition,
+    allowed: Any,
+    exclude_ids: frozenset[int],
+    nested_filled: set[str],
+    css_rules: dict | None,
+    media_map: dict | None,
+) -> list:
+    """Route ONE child of a GENERIC (non-class-section) InnerBlocks composite
+    (accordion / tabs / form / quote …) and return its content results.
+
+    Called per direct child. TRANSPARENT-WRAPPER DISSOLVE (Bean-directed
+    2026-07-25; refactored 2026-09-04 onto the shared `_recurse_dissolved_children`
+    core): an `__inner`/`__body`/`__content` shell is NOT content — it must
+    DISSOLVE: its CSS folds up (the composite band-fold) and its children recurse
+    INTO this composite as direct children, to arbitrary depth. Previously the
+    generic path gapped an unresolved wrapper as one opaque column and
+    `continue`d — silently dropping everything inside it (the sgs/tab
+    `__inner > __content` text drop). Universal (R-31-9): every generic
+    InnerBlocks parent.
+    """
+    resolved = _try_route_generic_child_once(
+        child, rec, allowed, exclude_ids, nested_filled, css_rules, media_map,
+    )
+    if resolved is not None:
+        return resolved
+
+    def _resolve_one(gc: Any) -> list | None:
+        return _try_route_generic_child_once(
+            gc, rec, allowed, exclude_ids, nested_filled, css_rules, media_map,
+        )
+
+    out = _recurse_dissolved_children(
+        child, exclude_ids, _resolve_one,
+        "generic child has no resolvable slug and dissolved to no content "
+        "(G1, global BEM, atomic-tag recognition, and wrapper descent all missed)",
+    )
+    if out:
+        return out
+    return [ContentGap(
+        _label(child),
+        "generic child has no resolvable slug and dissolved to no content "
+        "(G1, global BEM, atomic-tag recognition, and wrapper descent all missed)",
+    )]
 
 
 # ---------------------------------------------------------------------------
