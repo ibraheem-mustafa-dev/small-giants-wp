@@ -45,10 +45,20 @@ companions: Spec 32 (component styling/token contract — governs RENDERED outpu
 >
 > **Same-day follow-up (2026-09-04, closing this prompt's dispatch):** all 3 approved rules
 > SHIPPED — `42-no-op-reset-controls` (0 live findings), `43-colour-only-state-indicator`
-> (22 findings/12 blocks), `44-help-text-not-described` (3 findings), all advisory mode with
-> self-tests, PART L entries added below. The rule-41 backlog moved **61 → 55** (8 blocks
-> fixed, 6 net findings closed — see PART L for the full breakdown; colour-completeness
-> (rule 31) was explicitly left to the concurrent colour-track session, not touched here).
+> (22 findings/12 blocks), `44-help-text-not-described` (3 findings, since **CLOSED — 0 live
+> findings**, see below), all advisory mode with self-tests, PART L entries added below. The
+> rule-41 backlog moved **61 → 55** (8 blocks fixed, 6 net findings closed — see PART L for the
+> full breakdown; colour-completeness (rule 31) was explicitly left to the concurrent
+> colour-track session, not touched here).
+>
+> **`44-help-text-not-described` CLOSED same day (2026-09-04, follow-up dispatch):** all 3 live
+> findings fixed — `LinkPopoverControl.js:267` and `DateTimePickerField.js:101` (single trigger
+> `Button`, `id` added to `BaseControl` so its native `help` paragraph gets `${id}__help`, that
+> id wired via `aria-describedby` onto the trigger `Button`, matching `GradientCapableColourControl.js`'s
+> established pattern) and `DesignTokenPicker.js:583` (`ColorPalette` renders multiple swatch
+> buttons, not one focusable control, so the wrapper uses `role="group"` +
+> `aria-describedby={helpId}` — the same ARIA-group pattern `CircularOptionPicker`/`IconPicker`
+> already use elsewhere in this codebase). Re-run `run.js --json`: **0 live findings.**
 
 ## Why this exists
 
@@ -844,7 +854,8 @@ triad mechanism and the same enforcement stack.
       subtree. Precondition verified live first (WordPress DOES self-wire it for its own
       native `useBaseControlProps` controls — TextControl/ToggleControl/etc. — so the gate is
       correctly scoped to what self-wiring cannot reach). 3 live findings:
-      `LinkPopoverControl.js:267`, `DesignTokenPicker.js:583`, `DateTimePickerField.js:101`.
+      `LinkPopoverControl.js:267`, `DesignTokenPicker.js:583`, `DateTimePickerField.js:101` —
+      **all 3 CLOSED same day (2026-09-04 follow-up): 0 live findings**, see PART L below.
       Keyboard + contrast still have no static detector and need a repeat live pass, not a
       one-off.
 
@@ -875,13 +886,21 @@ triad mechanism and the same enforcement stack.
       **22 live findings** across 12 blocks, including all 3 candidates named to verify
       against: `sgs/post-grid`'s pagination current-page indicator, `sgs/product-card`'s
       active thumbnail, `sgs/buybox`'s current value-ladder row.
-- [~] **help text linked via `aria-describedby` (Part F)** — rule `44-help-text-not-described`
-      (built 2026-09-04, advisory mode, whole-tree scope — both real candidates are shared
-      `src/components/*.js` files, not any one block's edit.js). Precondition verified live
-      first: WordPress self-wires `aria-describedby` for its own native `useBaseControlProps`
-      controls, so the gate is scoped to a raw `<BaseControl help={...}>` mount wrapping a
-      non-self-wiring child with no `aria-describedby` in its subtree. **3 live findings**:
-      `LinkPopoverControl.js:267`, `DesignTokenPicker.js:583`, `DateTimePickerField.js:101`.
+- [x] **CLOSED 2026-09-04 (same-day follow-up).** help text linked via `aria-describedby`
+      (Part F) — rule `44-help-text-not-described` (built 2026-09-04, advisory mode,
+      whole-tree scope — both real candidates are shared `src/components/*.js` files, not any
+      one block's edit.js). Precondition verified live first: WordPress self-wires
+      `aria-describedby` for its own native `useBaseControlProps` controls, so the gate is
+      scoped to a raw `<BaseControl help={...}>` mount wrapping a non-self-wiring child with no
+      `aria-describedby` in its subtree. 3 live findings on introduction —
+      `LinkPopoverControl.js:267`, `DesignTokenPicker.js:583`, `DateTimePickerField.js:101` —
+      all fixed same day: the two single-trigger-`Button` components (`LinkPopoverControl`,
+      `DateTimePickerField`) now pass `id` to `BaseControl` and wire that id's `${id}__help`
+      onto the trigger `Button`'s `aria-describedby`, matching `GradientCapableColourControl.js`'s
+      established pattern; `DesignTokenPicker.js`'s `ColorPalette` mount (multiple swatch
+      buttons, no single focusable child) wraps in `role="group"` + `aria-describedby`, the same
+      ARIA-group pattern `CircularOptionPicker`/`IconPicker` already use elsewhere in this
+      codebase. Re-run `run.js --json`: **0 live findings.**
 
 **UNVERIFIED — investigated 2026-09-04, confirmed genuinely not buildable (1):**
 
@@ -926,7 +945,8 @@ not neglect — do not re-investigate without new information.
       `.claude/prompts/2026-09-04-spec32-35-closure-prompt.md`. **All 3 approved build tasks now
       SHIPPED (2026-09-04, advisory mode, see PART L's new entries below and rules.json):
       `42-no-op-reset-controls` (0 live findings), `43-colour-only-state-indicator`
-      (22 live findings), `44-help-text-not-described` (3 live findings).**
+      (22 live findings), `44-help-text-not-described` (3 live findings on introduction,
+      **CLOSED same day — 0 live findings**, see the entry above).**
 
 **NO LONGER UNVERIFIABLE (1) — a rule now exists:**
 

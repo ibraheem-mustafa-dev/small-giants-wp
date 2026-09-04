@@ -579,6 +579,16 @@ export default function DesignTokenPicker( {
 
 	const handleChange = makeChangeHandler( { linked, colours, onChange } );
 
+	// `${id}__help` matches the id BaseControl's own `help` paragraph gets via
+	// useBaseControlProps() (the same convention every native self-wiring
+	// control relies on). ColorPalette renders MULTIPLE swatch buttons, not
+	// one focusable control, so aria-describedby can't be pointed at a single
+	// child the way the trigger-Button controls in this file do — it lands
+	// on a `role="group"` wrapper instead, the same ARIA-group pattern
+	// CircularOptionPicker/IconPicker already use elsewhere in this codebase
+	// for exactly this multi-widget-swatch shape.
+	const helpId = help ? `${ id }__help` : undefined;
+
 	return (
 		<BaseControl
 			id={ id }
@@ -586,17 +596,19 @@ export default function DesignTokenPicker( {
 			help={ help }
 			__nextHasNoMarginBottom
 		>
-			<ColorPalette
-				colors={ colours }
-				value={ displayValue }
-				onChange={ handleChange }
-				clearable={ clearable }
-				disableCustomColors={ false }
-				enableAlpha={ enableAlpha }
-				// See the comment on the identical prop in SgsColourStateControl
-				// above — verified honoured at color-palette/index.tsx:190.
-				aria-label={ label }
-			/>
+			<div role="group" aria-describedby={ helpId }>
+				<ColorPalette
+					colors={ colours }
+					value={ displayValue }
+					onChange={ handleChange }
+					clearable={ clearable }
+					disableCustomColors={ false }
+					enableAlpha={ enableAlpha }
+					// See the comment on the identical prop in SgsColourStateControl
+					// above — verified honoured at color-palette/index.tsx:190.
+					aria-label={ label }
+				/>
+			</div>
 		</BaseControl>
 	);
 }

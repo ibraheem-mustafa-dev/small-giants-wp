@@ -38,6 +38,7 @@ import {
 	DateTimePicker,
 	Popover,
 } from '@wordpress/components';
+import { useInstanceId } from '@wordpress/compose';
 import { calendar as calendarIcon } from '@wordpress/icons';
 import './DateTimePickerField.css';
 
@@ -97,14 +98,23 @@ export default function DateTimePickerField( {
 
 	const triggerLabel = formatTriggerLabel( value, mode );
 
+	// `id` is required for BaseControl to give its own `help` paragraph an id
+	// (`${id}__help`, the same convention every native self-wiring control
+	// gets from useBaseControlProps()) — without it the paragraph renders
+	// with no id at all and nothing can point aria-describedby at it.
+	const instanceId = useInstanceId( DateTimePickerField, 'sgs-date-picker-field' );
+	const id = `sgs-date-picker-field-${ instanceId }`;
+	const helpId = help ? `${ id }__help` : undefined;
+
 	return (
-		<BaseControl label={ label } help={ help } __nextHasNoMarginBottom>
+		<BaseControl id={ id } label={ label } help={ help } __nextHasNoMarginBottom>
 			<Button
 				ref={ triggerRef }
 				variant="tertiary"
 				className="sgs-date-picker__row"
 				icon={ calendarIcon }
 				title={ triggerLabel || undefined }
+				aria-describedby={ helpId }
 				onClick={ () => setIsOpen( true ) }
 			>
 				<span className="sgs-date-picker__row-label">
