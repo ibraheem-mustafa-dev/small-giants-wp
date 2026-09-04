@@ -338,6 +338,44 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		prioritizedInserterBlocks: HEADER_PROMOTED_SLUGS,
 	} );
 
+	// Pilot WCAG contrast check on the Text row (D-pending, gap-candidate
+	// register task). The row's own `backgroundColour` is the effective
+	// background the text sits on when set; when the row leaves it blank the
+	// row paints no background of its own, so the parent `sgs/site-header`'s
+	// background shows through instead — the real thing the text is read
+	// against. Read the nearest `sgs/site-header` ancestor's `backgroundColour`
+	// for that fallback rather than assuming the row always has its own.
+	const parentHeaderBackgroundColour = useSelect(
+		( select ) => {
+			const { getBlockParentsByBlockName, getBlockAttributes } =
+				select( blockEditorStore );
+			const parents = getBlockParentsByBlockName(
+				clientId,
+				'sgs/site-header'
+			);
+			if ( ! parents.length ) {
+				return '';
+			}
+			return (
+				getBlockAttributes( parents[ 0 ] )?.backgroundColour || ''
+			);
+		},
+		[ clientId ]
+	);
+	// Only the parent header's background is a valid comparison target — it is
+	// only actually visible behind this row's text when the row paints no
+	// background of its own. When the row DOES have its own background/
+	// gradient, that (not the parent's) is what's behind the text, and this
+	// pilot doesn't check the row's own pairing — skip the check rather than
+	// comparing against a colour that isn't what's actually rendered (Bean,
+	// 2026-09-04).
+	const rowHasOwnBackground = Boolean(
+		attributes.backgroundColour || attributes.backgroundColourGradient
+	);
+	const textContrastAgainst = rowHasOwnBackground
+		? ''
+		: parentHeaderBackgroundColour;
+
 	// TIER 2 property-family rows for `row` (isWrapper) — Text / Fill, each in
 	// its own panel (THE PLACEMENT RULE, Spec 35 Part O). Built via the same
 	// row-descriptor helpers SgsColourPanel itself consumes, so the row SHAPE
@@ -381,6 +419,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<TextRowControl
 						label={ textRowDescriptor.label }
 						states={ textRowDescriptor.states }
+						{ ...( TextRowControl === GradientCapableColourControl
+							? { contrastAgainst: textContrastAgainst }
+							: {} ) }
 					/>
 				</PanelBody>
 

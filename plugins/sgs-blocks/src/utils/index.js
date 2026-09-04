@@ -6,6 +6,7 @@ export * from './cssLength';
 export * from './presetSettings';
 export * from './background-preview';
 export * from './spacing-preview';
+export * from './wcag-contrast';
 
 // Editor SVG sanitiser - mirrors the server's wp_kses() allowlist so
 // operator-supplied SVG is never mounted raw in the editor.

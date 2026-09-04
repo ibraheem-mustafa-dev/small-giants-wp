@@ -39,7 +39,7 @@
  * `SgsColourPanel` gained one additive prop (`gradientCapable` per row) that
  * chooses between the two controls; every existing row is unaffected.
  */
-import { useState } from '@wordpress/element';
+import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import {
 	Button,
@@ -47,6 +47,7 @@ import {
 	Dropdown,
 	Flex,
 	FlexItem,
+	Notice,
 	TabPanel,
 } from '@wordpress/components';
 import { useSettings } from '@wordpress/block-editor';
@@ -56,6 +57,12 @@ import { ColorPalette } from './colour-picker';
 import SgsGradientPicker from './gradient-picker';
 import { resolveColourToken } from './DesignTokenPicker';
 import BorderStyleControl from './BorderStyleControl';
+import {
+	calculateContrastRatio,
+	calculateRelativeLuminance,
+	meetsWCAG_AA,
+	worstGradientContrastRatio,
+} from '../utils/wcag-contrast';
 
 /**
  * A stored value is treated as a gradient when it parses as one of the three
@@ -81,7 +88,15 @@ export function isGradientValue( value ) {
  * whether the sibling gradient value is currently set (mirrors the
  * server-side "gradient wins when non-empty" resolution).
  */
-function StateContent( { state, colours, enableAlpha, clearable, ariaLabel } ) {
+function StateContent( {
+	state,
+	colours,
+	enableAlpha,
+	clearable,
+	ariaLabel,
+	contrastAgainst,
+	contrastLabel,
+} ) {
 	const [ localMode, setLocalMode ] = useState( null );
 	const gradientEnabled =
 		localMode !== null ? localMode : !! state.gradientValue;
@@ -90,8 +105,129 @@ function StateContent( { state, colours, enableAlpha, clearable, ariaLabel } ) {
 		? resolveColourToken( state.value, colours )
 		: state.value;
 
+	// Reference element for resolving `var(--wp--preset--color--x)` stops via
+	// getComputedStyle — see calculateRelativeLuminance's own docblock. Scoped
+	// to this state's own wrapper so the probe never leaks outside the popover.
+	const contrastRefEl = useRef( null );
+
+	// Resolve contrastAgainst the same way every other colour value in this
+	// component is resolved — it may be a raw hex/rgb/var() OR a theme
+	// palette token slug, matching DesignTokenPicker's own resolveColourToken
+	// convention.
+	const resolvedContrastAgainst = useMemo( () => {
+		if ( ! contrastAgainst ) {
+			return '';
+		}
+		return resolveColourToken( contrastAgainst, colours ) || contrastAgainst;
+	}, [ contrastAgainst, colours ] );
+
+	// WARN ONLY — never blocks saving, never throws on an unparseable colour
+	// (falls back to no notice). An EFFECT, not useMemo: calculateRelativeLuminance
+	// resolves a var() stop via getComputedStyle on contrastRefEl.current, which
+	// is only populated once the div below has actually mounted — useMemo runs
+	// during render, before that ref commit, and would read a stale/null probe
+	// element on first paint. Recomputed only when this state's own value/
+	// gradientValue or the resolved background changes, not on every render.
+	const [ contrastNotice, setContrastNotice ] = useState( null );
+
+	useEffect( () => {
+		if ( ! resolvedContrastAgainst ) {
+			setContrastNotice( null );
+			return;
+		}
+
+		try {
+			if ( gradientEnabled ) {
+				if ( ! state.gradientValue ) {
+					setContrastNotice( null );
+					return;
+				}
+				const ratio = worstGradientContrastRatio(
+					state.gradientValue,
+					resolvedContrastAgainst,
+					contrastRefEl.current
+				);
+				if ( ! meetsWCAG_AA( ratio, false ) ) {
+					setContrastNotice(
+						contrastLabel ||
+							sprintf(
+								/* translators: %s: contrast ratio, e.g. "2.1:1" */
+								__(
+									'Contrast ratio %s:1 is below the WCAG AA minimum of 4.5:1 for at least one gradient stop.',
+									'sgs-blocks'
+								),
+								ratio > 0 ? ratio.toFixed( 1 ) : '?'
+							)
+					);
+				} else {
+					setContrastNotice( null );
+				}
+				return;
+			}
+
+			if ( ! state.value ) {
+				setContrastNotice( null );
+				return;
+			}
+			const resolvedColour = state.linked
+				? resolveColourToken( state.value, colours )
+				: state.value;
+			if ( ! resolvedColour ) {
+				setContrastNotice( null );
+				return;
+			}
+			const backgroundLuminance = calculateRelativeLuminance(
+				resolvedContrastAgainst,
+				contrastRefEl.current
+			);
+			const colourLuminance = calculateRelativeLuminance(
+				resolvedColour,
+				contrastRefEl.current
+			);
+			const ratio = calculateContrastRatio( backgroundLuminance, colourLuminance );
+			if ( ! meetsWCAG_AA( ratio, false ) ) {
+				setContrastNotice(
+					contrastLabel ||
+						sprintf(
+							/* translators: %s: contrast ratio, e.g. "2.1:1" */
+							__(
+								'Contrast ratio %s:1 is below the WCAG AA minimum of 4.5:1.',
+								'sgs-blocks'
+							),
+							ratio > 0 ? ratio.toFixed( 1 ) : '?'
+						)
+				);
+			} else {
+				setContrastNotice( null );
+			}
+		} catch ( error ) {
+			// Never throw on an unparseable colour — fall back to no notice.
+			setContrastNotice( null );
+		}
+	}, [
+		gradientEnabled,
+		state.value,
+		state.gradientValue,
+		state.linked,
+		colours,
+		resolvedContrastAgainst,
+		contrastLabel,
+	] );
+
 	return (
-		<div className="sgs-gradient-capable-colour-control__state">
+		<div
+			className="sgs-gradient-capable-colour-control__state"
+			ref={ contrastRefEl }
+		>
+			{ contrastNotice && (
+				<Notice
+					status="warning"
+					isDismissible={ false }
+					className="sgs-contrast-notice"
+				>
+					{ contrastNotice }
+				</Notice>
+			) }
 			<ToggleGroupControl
 				label={ __( 'Colour type', 'sgs-blocks' ) }
 				value={ gradientEnabled ? 'gradient' : 'solid' }
@@ -161,6 +297,15 @@ function StateContent( { state, colours, enableAlpha, clearable, ariaLabel } ) {
  * @param {Function} [props.onGradientChange] Paired with `gradientValue` for the single-state form (canonical name).
  * @param {boolean}  [props.clearable=true]
  * @param {boolean}  [props.enableAlpha=true]
+ * @param {string}   [props.contrastAgainst]  Opt-in WCAG contrast check — a hex colour OR a
+ *                                             theme palette token slug to contrast the CURRENTLY
+ *                                             OPEN state's colour/gradient against. Resolved the
+ *                                             same way every other colour in this component is
+ *                                             (raw value or palette slug). Omit to skip the check
+ *                                             entirely (the default — no behaviour change for
+ *                                             existing callers).
+ * @param {string}   [props.contrastLabel]    Overrides the default "Contrast ratio X:1 is below…"
+ *                                             warning text when the check fails.
  */
 export default function GradientCapableColourControl( {
 	label,
@@ -180,6 +325,8 @@ export default function GradientCapableColourControl( {
 	onBorderStyleChange,
 	clearable = true,
 	enableAlpha = true,
+	contrastAgainst,
+	contrastLabel,
 } ) {
 	const [ colours ] = useSettings( 'color.palette' );
 	const instanceId = useInstanceId(
@@ -299,6 +446,8 @@ export default function GradientCapableColourControl( {
 													label,
 													s.label
 												) }
+												contrastAgainst={ contrastAgainst }
+												contrastLabel={ contrastLabel }
 											/>
 										</div>
 									);
@@ -312,6 +461,8 @@ export default function GradientCapableColourControl( {
 									enableAlpha={ enableAlpha }
 									clearable={ clearable }
 									ariaLabel={ label }
+									contrastAgainst={ contrastAgainst }
+									contrastLabel={ contrastLabel }
 								/>
 							</div>
 						) }

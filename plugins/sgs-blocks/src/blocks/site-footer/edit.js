@@ -28,6 +28,7 @@ import { ResponsiveBoxControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiv
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { backgroundPreview, spacingPreview } from '../../utils';
+import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from '../../utils/wcag-contrast';
 
 const ALLOWED_BLOCKS = [ 'sgs/site-footer-row' ];
 
@@ -44,83 +45,9 @@ const ALLOWED_BLOCKS = [ 'sgs/site-footer-row' ];
  * one child type. Do not re-add templateMode here.
  */
 
-/**
- * Compute WCAG 2.1 relative luminance from an sRGB hex, RGB, or CSS variable colour.
- * Mirrors the PHP sgs_wcag_relative_luminance() algorithm.
- *
- * @param {string} hex Colour: '#f3e5ab', 'rgb(243,229,171)', or 'var(--wp--preset--color--primary)'
- * @param {HTMLElement} refEl Reference element for computing CSS variables (optional)
- * @return {number} Relative luminance in [0.0, 1.0], or -1.0 on failure
- */
-function calculateRelativeLuminance( hex, refEl = null ) {
-	// Handle CSS variables: resolve via computed style on a probe element
-	if ( /^var\(/i.test( hex ) ) {
-		if ( ! refEl ) return -1.0;
-		const probe = document.createElement( 'div' );
-		probe.style.color = hex;
-		refEl.appendChild( probe );
-		const resolved = getComputedStyle( probe ).color;
-		refEl.removeChild( probe );
-		hex = resolved;
-	}
-
-	// Handle rgb() or rgba() — extract the numeric channels
-	const rgbMatch = hex.match( /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/ );
-	if ( rgbMatch ) {
-		const r = parseInt( rgbMatch[ 1 ], 10 ) / 255.0;
-		const g = parseInt( rgbMatch[ 2 ], 10 ) / 255.0;
-		const b = parseInt( rgbMatch[ 3 ], 10 ) / 255.0;
-
-		const linearise = ( c ) =>
-			c <= 0.03928 ? c / 12.92 : Math.pow( ( c + 0.055 ) / 1.055, 2.4 );
-
-		return 0.2126 * linearise( r ) + 0.7152 * linearise( g ) + 0.0722 * linearise( b );
-	}
-
-	// Handle hex: normalise, expand shorthand, parse
-	hex = hex.replace( /^#/, '' ).toUpperCase();
-	if ( hex.length === 3 ) {
-		hex = hex[ 0 ] + hex[ 0 ] + hex[ 1 ] + hex[ 1 ] + hex[ 2 ] + hex[ 2 ];
-	}
-	if ( hex.length !== 6 || ! /^[0-9A-F]+$/.test( hex ) ) {
-		return -1.0;
-	}
-
-	const r = parseInt( hex.substr( 0, 2 ), 16 ) / 255.0;
-	const g = parseInt( hex.substr( 2, 2 ), 16 ) / 255.0;
-	const b = parseInt( hex.substr( 4, 2 ), 16 ) / 255.0;
-
-	const linearise = ( c ) =>
-		c <= 0.03928 ? c / 12.92 : Math.pow( ( c + 0.055 ) / 1.055, 2.4 );
-
-	return 0.2126 * linearise( r ) + 0.7152 * linearise( g ) + 0.0722 * linearise( b );
-}
-
-/**
- * Calculate WCAG 2.1 contrast ratio between two luminance values.
- *
- * @param {number} l1 Luminance of first colour
- * @param {number} l2 Luminance of second colour
- * @return {number} Contrast ratio, or -1 on invalid input
- */
-function calculateContrastRatio( l1, l2 ) {
-	if ( l1 < 0 || l2 < 0 ) return -1;
-	const lighter = Math.max( l1, l2 );
-	const darker = Math.min( l1, l2 );
-	return ( lighter + 0.05 ) / ( darker + 0.05 );
-}
-
-/**
- * Determine if contrast meets WCAG 2.1 AA thresholds.
- *
- * @param {number} ratio Contrast ratio
- * @param {boolean} isLargeText True if text is 18px+ or 14px+ bold
- * @return {boolean} True if contrast meets AA standard
- */
-function meetsWCAG_AA( ratio, isLargeText = false ) {
-	if ( ratio < 0 ) return false;
-	return isLargeText ? ratio >= 3.0 : ratio >= 4.5;
-}
+// calculateRelativeLuminance / calculateContrastRatio / meetsWCAG_AA moved to
+// the shared `../../utils/wcag-contrast` module (imported above) — this was
+// a byte-identical duplicate of site-header/edit.js's copy.
 
 // Three rows matching the draft `.mm-footer`: an optional top strip (CTA /
 // newsletter, empty by default → zero output), a columns grid (brand + link
