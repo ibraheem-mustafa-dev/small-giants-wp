@@ -1,3 +1,43 @@
+## D962 [ROUTINE] — Spec 32/35 gates closure: keyword-filter side already covered gate-wide, blob-strip was the real gap; a detector bug unmasked 3 real D812 findings
+
+**2026-09-04, Spec 32/35 gates track (run concurrently with the colour-conformance track's
+session 11, same tree, coordinated live via cross-session messaging).** A prompt asked for a
+`preg_replace`-based CSS-injection sanitisation gate against a claimed "9 unaudited files"
+list. Investigation found neither premise held: the spec's own §5 text names no file list, and
+the codebase's real, already-adopted convention for the keyword-filter requirement is an
+enum-allowlist (`css-keyword-enums.json` + CHECK B in `check-editor-render-parity.js`, already
+blocking since 2026-08-20, 0 net-new). Built the gate around that existing convention instead of
+introducing a second, unused mechanism — surveyed the real ~49-file surface, found the keyword
+side already fully covered, and built the genuinely missing piece
+(`check-style-blob-sanitisation.py`, the `wp_strip_all_tags()` blob-level check) fresh.
+
+**A shared discovery, not planned:** `class-sgs-css-registry.php` already centrally sanitises
+every block's frontend `<style>` output via one `wp_strip_all_tags()` call — but the EDITOR path
+(ServerSideRender) bypasses that registry and renders each block's own `<style>` tag as-authored,
+per `helpers-scoped-instance-vars.php`'s own docblock. The real gap was narrower than either the
+original prompt or the initial plan assumed: editor-path safety for free-text values reaching a
+`<style>` tag directly, not frontend output (already covered).
+
+**The detector-bug-unmasks-real-findings pattern (worth naming for future sessions):** a
+root-caused fix to `check-enum-control-shape.py`'s window-based mark-matching heuristic (it
+picked the LAST matching same-type control in the file rather than the CLOSEST one, which is
+what produced the original `timeline.datePosition` false positive) unmasked 3 previously-hidden
+real violations the bug had been silently misclassifying (`hero.justifyItems`,
+`modal.triggerStyle`, `trustpilot-reviews.theme`). All 3 were then root-caused independently (3
+parallel subagents, `nav-drawer.closeStyle`/`submenuModel` as reference patterns) and
+FACT-CHECKED against source before any fix was applied — this caught one agent's proposed
+import from the wrong path (`@wordpress/components` directly instead of the project's
+`components/primitives` barrel — functionally harmless since the barrel is a pure re-export, but
+a real convention break) and one agent's omission of a now-dead options-array constant. Lesson:
+fixing a detector's own bug is itself a form of root-cause investigation whose OUTPUT (newly
+surfaced findings) still needs the full systematic-debugging treatment, not a rubber-stamp fix.
+
+**Commits:** `be6103869` (Spec 32 gate), `0ebfe205b` (Spec 35 rules 42/43/44), `49d7b1c14`/
+`9ad892ab8` (rule-41 round 1), `da6e3fd82` (detector bug fix), `86a8ea627`/`b8088d274`
+(2 live `sgs/post-grid` bugs found + fixed during post-deploy verification, unrelated to this
+track's own scope), `ba5dc407f`/`fee0631b8`/`c7f25aa75` (the 3 D812 fixes this decision covers).
+Full detail: `.claude/prompts/2026-09-04-spec32-35-gates-next-session.md`.
+
 ## D961 [ROUTINE] — qc-council audit found fix.js itself, not the render code, was blocking a large slice of the colour-gradient backlog; 3 real tool bugs fixed, one plan claim falsified
 
 **2026-09-04, colour-conformance track (separate from D957-D960's road-to-uniform track,

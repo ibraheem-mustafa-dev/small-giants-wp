@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-09-04 (session 11)
+last_updated: 2026-09-04 (colour-conformance session 11 + concurrent Spec 32/35 gates session)
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -48,6 +48,19 @@ architecture, flagged for a design gate). Full detail + exact fix-shapes:
 `.claude/prompts/2026-09-04-colour-conformance-remaining-8-hard-rows.md` (fresh this session,
 supersedes + deletes the session-11 continuation prompt, consumed).
 
+**A separate, concurrent session (`small-giants-wp-90`) ran a Spec 32/35 gates-closure track
+in parallel with colour-conformance session 11** — different scope, same tree, coordinated live
+via cross-session messaging throughout (verified file ownership via `git log`/`git diff` before
+ever acting on a peer's claim, per this project's own hardened discipline). Built the Spec 32
+CSS-injection blob-sanitisation gate, 3 new Spec 35 inspector anti-pattern detectors (rules
+42/43/44), closed 19 of the original 61 rule-41 element-grouping findings across 15 blocks, and
+root-caused + fixed 2 live-breaking bugs on `sgs/post-grid` found during live verification (a
+namespace fatal + a REST endpoint crash) — both deployed same night. Also root-caused and fixed
+3 D812 control-shape findings (`hero.justifyItems`/`modal.triggerStyle`/`trustpilot-reviews.theme`)
+via 3 parallel investigation subagents, independently fact-checked against source before
+applying (caught one agent's wrong import-path claim and one missing dead-code deletion before
+committing). Full detail: `.claude/prompts/2026-09-04-spec32-35-gates-next-session.md`.
+
 **Canary:** sandybrown-nightingale-600381.hostingersite.com; no live client sites yet.
 
 ## State Snapshot
@@ -67,6 +80,17 @@ supersedes + deletes the session-11 continuation prompt, consumed).
   (plan-doc write-ups), `e4b3f8456` (new prompt + delete old one). Peer commits interleaved
   throughout (pricing-table hover fix, rule-41 CO2 panel consolidation, 2 post-grid bugfixes
   including one live production fatal error) — not this session's work, see their own sessions.
+- **Spec 32/35 gates session commits (`small-giants-wp-90`, all on `main`, interleaved with the
+  above):** `be6103869` (Spec 32 CSS-injection blob-sanitisation gate), `0ebfe205b` (Spec 35
+  rules 42/43/44), `49d7b1c14`+`9ad892ab8` (rule-41 round 1, 8 blocks), `e4fd4ad90` (spec
+  close-out doc), `64396ecee` (root-caused the enum-control-shape detector's window-heuristic
+  bug and baselined `timeline.datePosition` as a documented workaround — root cause identified,
+  not yet fixed at this commit), `da6e3fd82` (the actual detector fix — closest-mark-wins
+  tie-break + regression test — which also unmasked 3 real D812 findings the bug had been
+  hiding), `86a8ea627`
+  (post-grid fatal namespace bug, deployed), `b8088d274` (post-grid REST uid crash, deployed),
+  `ba5dc407f`/`fee0631b8`/`c7f25aa75` (the 3 D812 control-shape fixes: hero.justifyItems,
+  modal.triggerStyle, trustpilot-reviews.theme). 2 deploys to sandybrown, both live-verified.
 - **Live fronts:** `31-golden-colour-control` — down to the 8 rows named above (from 241 at
   session 8). Everything else in this track's original scope unchanged from session 10.
 - **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
@@ -75,6 +99,12 @@ supersedes + deletes the session-11 continuation prompt, consumed).
 # ▶ NEXT SESSION STARTS HERE
 
 **Invoke `/autopilot` first.**
+
+**Two independent open threads exist right now — pick one, don't try to run both inline.** This
+section details the colour-conformance track (below). The Spec 32/35 gates track has its own
+full orchestration doc: `.claude/prompts/2026-09-04-spec32-35-gates-next-session.md` — lower
+urgency (no live incidents, ~27 rule-41 blocks + 1 deploy + verify queued, all low-risk), pick it
+up if the colour track is already claimed by another live session (`ListAgents` first).
 
 You are picking up the colour-conformance track's final stretch — 8 rows confirmed genuinely
 hard, 6 of them now have a working precedent found by dedicated investigation, none of it
@@ -201,6 +231,40 @@ when a dirty-tree gate blocks you.
 
 `01-tab-group` and `21-render-without-control` both closed to zero. Nothing else open — see
 COLOUR TRACK for `31-golden-colour-control`.
+
+## ▶ SPEC 32/35 GATES TRACK — 2026-09-04, run concurrently with colour session 11. Detail + full next-session orchestration: `.claude/prompts/2026-09-04-spec32-35-gates-next-session.md`.
+
+**Closed this session:** Spec 32 §5 CSS-injection blob-sanitisation gate (keyword-filter side
+verified already covered by CHECK B + existing allowlists — zero gap; the real gap, blob-level
+`wp_strip_all_tags()`, closed via `check-style-blob-sanitisation.py`, advisory-wired). 3 new Spec
+35 inspector detector rules — `42-no-op-reset-controls` (0 live findings), `43-colour-only-state-indicator`
+(22→12, 10 real fixes across 3 UI-shape patterns, rest confirmed false positives), `44-help-text-not-described`
+(3→0, all 3 shared components fixed + live-verified). Rule-41 element-grouping: 61→42 (19 closed
+across 15 blocks, 2 rounds).
+
+**Root-caused + fixed, not part of the original scope, found via live post-deploy verification:**
+`sgs/post-grid` had 2 separate live-breaking bugs — a namespace fatal
+(`SGS_Media_Element` called unqualified inside `SGS\Blocks`, `86a8ea627`) and a REST pagination
+endpoint crash (`sanitize_html_class` wired directly as a REST `sanitize_callback`, which WP
+always calls with 3 args the function can't take, `b8088d274`). Both deployed and
+live-confirmed fixed same night.
+
+**Root-caused + fixed, surfaced by the detector-bug fix:** fixing `check-enum-control-shape.py`'s
+window-heuristic bug (it could misattribute a finding to the WRONG nearby same-type control —
+this is what produced the original `timeline.datePosition` false positive) unmasked 3 previously
+-hidden real D812 findings. All 3 fixed via parallel root-cause investigation + independent
+fact-check against source (caught one agent's wrong import-path claim, one missing dead-code
+deletion) — `ba5dc407f`/`fee0631b8`/`c7f25aa75`.
+
+**Still open:** ~27 blocks remain on the rule-41 backlog (list in the prompt doc); rule 43 has 1
+pending recheck (a fix applied but not yet re-verified live); the 3 D812 fixes above are
+committed but NOT yet deployed/live-verified (blocked twice tonight by other sessions' WIP in
+`before-after`/`cart`/`gallery` — low-risk editor-only change, safe to leave queued); live
+Playwright verification of the 8 rule-41 blocks from round 1 got a partial pass (a stuck browser
+dialog blocked most of it, later cleared and rerun — 15 of 15 blocks confirmed PASS across both
+rounds by the second pass). 23 of 45 baseline/exemption files across the whole gate corpus carry
+real debt (~555 entries total) — not this track's job to clear, but worth knowing for anyone
+picking a next gate to work.
 
 ## ▶ COLOUR TRACK — session 11: sgs_text_decls() root-caused + hardened, 4 more rows closed, 8 handed off with precedent. Detail: `.claude/plans/2026-09-03-golden-colour-staged-rollout.md` + `.claude/prompts/2026-09-04-colour-conformance-remaining-8-hard-rows.md`.
 
