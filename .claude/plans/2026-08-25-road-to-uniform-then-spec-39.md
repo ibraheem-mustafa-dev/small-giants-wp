@@ -75,11 +75,17 @@ Fixed by mirroring `programme-progress.py`'s `base_bare`/`base_desktop` logic in
 Blast radius proven: `--survey` byte-identical for margin/padding/gap/borderRadius, exactly the
 three target families changed. 8 new fixtures incl. a non-vacuous negative control. 63/63 green.
 
-⛔ **RESIDUAL — do NOT run `--fix` on these three families yet.** `reads_attr_directly`,
-`edit_refs`, `render_state`, `edit_state` and `apply_block_json` still text-scan / write the BARE
-name, while these blocks genuinely use the suffixed key (verified: `brand-strip/render.php:57`
-reads `$attributes['columnsDesktop']`, never `$attributes['columns']`). `--survey`'s render/edit
-columns UNDER-REPORT for the three; `--check` is unaffected. Widening those five is the follow-up.
+✅ **Detector widening DONE 2026-09-04** — `reads_attr_directly`/`edit_refs`/`render_state`/
+`edit_state` now resolve the actual declared key via `_base_attr_key()`, so all three families
+classify correctly (RAW/LEGACY, not DELEGATED/UNCLEAR).
+
+✅ **`hero.textAlign` and `whatsapp-cta.showOn` MIGRATED end to end 2026-09-04** — S1 (block.json)
++ S2 (edit.js) + S3 (render.php) all done, both `--check` green, gate-chain (`npm run build`)
+clean, checked into `main`.
+
+⛔ **`brand-strip.columns` STILL FLAT — do NOT run `--fix` on it blind.** Its `block.json` already
+carries unrelated uncommitted work (logo item `_key`/`objectFit` fields, present before this
+session started) — apply the same S1/S2/S3 fix once that work lands or is reconciled, not before.
 ⚠ `audit-inline-styling.js` reports a **separate** "tier-without-base" count of **11 blocks**
 (per-side spacing + border/typography roots). It also does not recognise a `Desktop`-named base,
 so some of the 11 may be false positives of the same cause. **Not yet measured — do that before
@@ -90,6 +96,11 @@ Of the 37: the census (`reports/migrations/tier-object-all-properties-census.jso
 `migrate-tier-object.py --all-properties` for the live picture.
 
 ### B. Spec 32 — Component Styling & Token Contract (5 open)
+
+✅ **B1/B2/B3 CLOSED — verified live 2026-09-04, do not re-open.** `audit-inline-styling.js
+--check` → 0 violations, exit 0 (B1). D734 (2026-08-22): length-sanitiser migration DONE (B2).
+`check-box-family-guard.py --check` → 0 violations (B3). Only B4 (`mega-panel.borderRadius`,
+blocked on Track 2) and B5 (4 theme patterns using core blocks) remain genuinely unverified.
 
 | # | Item | Kind |
 |---|---|---|
@@ -206,6 +217,14 @@ visible because someone ran it by hand.
 ---
 
 ### D. inspector-scan — 945 advisory findings that CANNOT fail (added 2026-08-25, Bean asked)
+
+✅ **D1/D2 CLOSED, 2026-09-03 (D933) — verified live 2026-09-04, do not re-open from this
+section's old figures.** A fresh `node scripts/inspector-scan/run.js --json` run today shows
+`21-render-without-control` at **0 flagged** (was 222 here) and `34-declared-attr-unrendered`
+at **1 flagged** (was 319 here) — both driven to zero via parallel-dispatched fixes across 83
+blocks (`01-tab-group` also closed, 57→0). Ratchet ceilings updated 57→0 / 146→0 in
+`rules.json`. D4 (promote/demote each advisory rule) remains genuinely undecided. **Never quote
+the 222/319 figures below as current — they are the pre-fix baseline this note replaces.**
 
 ⛔ **THE BIGGEST GAP IN THIS REGISTER, AND IT WAS MISSED ON THE FIRST PASS.** Section C recorded
 the colour work as "the 29-row worklist" — a number taken from a PLAN FILE. Running the scanner
