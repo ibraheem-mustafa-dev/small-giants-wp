@@ -106,6 +106,8 @@
     "survey:control-parity": "python scripts/surveys/survey-control-parity.py --survey",
     "check:preset-token-naming": "python scripts/check-preset-token-naming.py --check",
     "check:palette-slug-refs": "python scripts/check-palette-slug-refs.py --check",
+    "check:preset-absence-no-slug-literal": "python scripts/converter/gates/check_preset_absence_no_slug_literal.py",
+    "check:orchestrator-rename": "python scripts/migrate-orchestrator-rename.py --check",
     "check:vacuous-guards": "python scripts/remove-vacuous-style-engine-guard.py --check",
     "check:ksort-before-hash": "python scripts/check-ksort-before-hash.py --check",
     "selftest:ksort-before-hash": "python scripts/check-ksort-before-hash.py --self-test",
