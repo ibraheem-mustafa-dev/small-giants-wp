@@ -35,6 +35,7 @@ import ContainerWrapperControls from '../container/components/ContainerWrapperCo
 import { MEDIA_SIZING_RATIO_OPTIONS,
 	SgsBorderControl,
 	resolveColourToken,
+	DesignTokenPicker,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import MediaElementPanel from '../../components/MediaElementPanel';
@@ -472,26 +473,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			<SgsColourPanel
 				rows={ [
 					{
-						key: 'card-bg',
-						label: __( 'Card background', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: cardBgColour,
-								onChange: ( val ) => setAttributes( { cardBgColour: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: backgroundColourHover,
-								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
 						key: 'title',
 						label: __( 'Title colour', 'sgs-blocks' ),
 						gradientCapable: true,
@@ -503,22 +484,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
 								gradientValue: titleColourGradient,
 								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'excerpt',
-						label: __( 'Excerpt colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: excerptColour,
-								onChange: ( val ) => setAttributes( { excerptColour: val ?? '' } ),
-								gradientValue: excerptColourGradient,
-								onGradientChange: ( val ) => setAttributes( { excerptColourGradient: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -566,22 +531,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						],
 					},
 					{
-						key: 'read-more',
-						label: __( 'Read more colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: readMoreColour,
-								onChange: ( val ) => setAttributes( { readMoreColour: val ?? '' } ),
-								gradientValue: readMoreColourGradient,
-								onGradientChange: ( val ) => setAttributes( { readMoreColourGradient: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
 						key: 'text-hover',
 						label: __( 'Text hover colour (title / excerpt / meta / read more)', 'sgs-blocks' ),
 						gradientCapable: true,
@@ -595,39 +544,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: textColourHoverGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { textColourHoverGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
-						key: 'border-hover',
-						label: __( 'Border hover colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: borderColourHover,
-								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'shadow',
-						label: __( 'Shadow colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: shadowColour,
-								onChange: ( val ) => setAttributes( { shadowColour: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: shadowHoverColour,
-								onChange: ( val ) => setAttributes( { shadowHoverColour: val ?? '' } ),
-								linked: true,
 							},
 						],
 					},
@@ -864,15 +780,38 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ set( 'showExcerpt' ) }
 						>
 							{ showExcerpt && (
-								<RangeControl
-									label={ __( 'Excerpt length (words)', 'sgs-blocks' ) }
-									value={ excerptLength }
-									onChange={ set( 'excerptLength' ) }
-									min={ 5 }
-									max={ 80 }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
+								<>
+									<RangeControl
+										label={ __( 'Excerpt length (words)', 'sgs-blocks' ) }
+										value={ excerptLength }
+										onChange={ set( 'excerptLength' ) }
+										min={ 5 }
+										max={ 80 }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+									{ /* Moved in from the shared SgsColourPanel (D622 —
+									     an element-scoped colour belongs in its own
+									     element's TIER 1 panel; "post excerpt" is a
+									     declared element whose attrMap claims
+									     excerptColour). */ }
+									<DesignTokenPicker
+										label={ __( 'Excerpt colour', 'sgs-blocks' ) }
+										states={ [
+											{
+												key: 'normal',
+												label: __( 'Normal', 'sgs-blocks' ),
+												value: excerptColour,
+												onChange: ( val ) =>
+													setAttributes( { excerptColour: val ?? '' } ),
+												linked: true,
+												gradientValue: excerptColourGradient,
+												onGradientChange: ( val ) =>
+													setAttributes( { excerptColourGradient: val ?? '' } ),
+											},
+										] }
+									/>
+								</>
 							) }
 						</SgsBooleanField>
 					</ToolsPanelItem>
@@ -931,13 +870,32 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ set( 'showReadMore' ) }
 						>
 							{ showReadMore && (
-								<TextControl
-									label={ __( 'Read more text', 'sgs-blocks' ) }
-									value={ readMoreText }
-									onChange={ set( 'readMoreText' ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
+								<>
+									<TextControl
+										label={ __( 'Read more text', 'sgs-blocks' ) }
+										value={ readMoreText }
+										onChange={ set( 'readMoreText' ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+									{ /* Moved in from the shared SgsColourPanel (D622). */ }
+									<DesignTokenPicker
+										label={ __( 'Read more colour', 'sgs-blocks' ) }
+										states={ [
+											{
+												key: 'normal',
+												label: __( 'Normal', 'sgs-blocks' ),
+												value: readMoreColour,
+												onChange: ( val ) =>
+													setAttributes( { readMoreColour: val ?? '' } ),
+												linked: true,
+												gradientValue: readMoreColourGradient,
+												onGradientChange: ( val ) =>
+													setAttributes( { readMoreColourGradient: val ?? '' } ),
+											},
+										] }
+									/>
+								</>
 							) }
 						</SgsBooleanField>
 					</ToolsPanelItem>
@@ -950,6 +908,42 @@ export default function Edit( { attributes, setAttributes } ) {
 						selected={ cardStyle }
 						options={ CARD_STYLE_OPTIONS }
 						onChange={ set( 'cardStyle' ) }
+					/>
+					{ /* Moved in from the shared SgsColourPanel (D622 — an
+					     element-scoped colour belongs in its own element's
+					     TIER 1 panel; "post card" is a declared element whose
+					     attrMap claims cardBgColour/backgroundColourHover/
+					     borderColourHover). */ }
+					<DesignTokenPicker
+						label={ __( 'Card background colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: cardBgColour,
+								onChange: ( val ) => setAttributes( { cardBgColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Card border hover colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
 					/>
 				</PanelBody>
 

@@ -29,6 +29,7 @@ import {
 	ResponsiveControl,
 	ShadowControl,
 	SgsColourPanel,
+	DesignTokenPicker,
 	TypographyControls,
 	fillRow,
 	textRow,
@@ -416,84 +417,6 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						],
 					},
 					{
-						key: 'quote',
-						label: __( 'Quote colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: quoteColour,
-								onChange: ( val ) =>
-									setAttributes( { quoteColour: val ?? '' } ),
-								linked: true,
-								gradientValue: quoteColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { quoteColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: quoteColourHover,
-								onChange: ( val ) =>
-									setAttributes( { quoteColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					showSummary && {
-						key: 'summary',
-						label: __( 'Summary colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: summaryColour,
-								onChange: ( val ) =>
-									setAttributes( { summaryColour: val ?? '' } ),
-								linked: true,
-								gradientValue: summaryColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { summaryColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: summaryColourHover,
-								onChange: ( val ) =>
-									setAttributes( { summaryColourHover: val ?? '' } ),
-								linked: true,
-								},
-						],
-					},
-					{
-						key: 'name',
-						label: __( 'Name colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: nameColour,
-								onChange: ( val ) =>
-									setAttributes( { nameColour: val ?? '' } ),
-								linked: true,
-								gradientValue: nameColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { nameColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: nameColourHover,
-								onChange: ( val ) =>
-									setAttributes( { nameColourHover: val ?? '' } ),
-								linked: true,
-								},
-						],
-					},
-					{
 						key: 'role',
 						label: __( 'Role colour', 'sgs-blocks' ),
 						gradientCapable: true,
@@ -519,60 +442,6 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								},
 						],
 					},
-					{
-						key: 'org',
-						label: __( 'Organisation colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: orgColour,
-								onChange: ( val ) =>
-									setAttributes( { orgColour: val ?? '' } ),
-								linked: true,
-								gradientValue: orgColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { orgColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: orgColourHover,
-								onChange: ( val ) =>
-									setAttributes( { orgColourHover: val ?? '' } ),
-								linked: true,
-								},
-						],
-					},
-					( effectiveVariant === 'rating-led' ||
-						effectiveVariant === 'classic-card' ) &&
-						showRating && {
-							key: 'rating',
-							label: __( 'Rating colour', 'sgs-blocks' ),
-							gradientCapable: true,
-							states: [
-								{
-									key: 'normal',
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: ratingColour,
-									onChange: ( val ) =>
-										setAttributes( { ratingColour: val ?? '' } ),
-									linked: true,
-									gradientValue: ratingColourGradient,
-									onGradientChange: ( val ) =>
-										setAttributes( { ratingColourGradient: val ?? '' } ),
-								},
-								{
-									key: 'hover',
-									label: __( 'Hover', 'sgs-blocks' ),
-									value: ratingColourHover,
-									onChange: ( val ) =>
-										setAttributes( { ratingColourHover: val ?? '' } ),
-									linked: true,
-									},
-							],
-						},
 					shadowHover && {
 						key: 'shadowHover',
 						label: __( 'Hover shadow colour', 'sgs-blocks' ),
@@ -998,6 +867,36 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								__nextHasNoMarginBottom
 							/>
 						) }
+						{ /* Moved in from the shared SgsColourPanel (D622 — an
+						     element-scoped colour belongs in its own element's
+						     TIER 1 panel; "organisation name" is a declared
+						     element whose attrMap claims orgColour). */ }
+						{ showLogo && (
+							<DesignTokenPicker
+								label={ __( 'Organisation colour', 'sgs-blocks' ) }
+								states={ [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: orgColour,
+										onChange: ( val ) =>
+											setAttributes( { orgColour: val ?? '' } ),
+										linked: true,
+										gradientValue: orgColourGradient,
+										onGradientChange: ( val ) =>
+											setAttributes( { orgColourGradient: val ?? '' } ),
+									},
+									{
+										key: 'hover',
+										label: __( 'Hover', 'sgs-blocks' ),
+										value: orgColourHover,
+										onChange: ( val ) =>
+											setAttributes( { orgColourHover: val ?? '' } ),
+										linked: true,
+									},
+								] }
+							/>
+						) }
 						{ showWork && (
 							<MediaPanel
 								label={ __( 'Work image or video', 'sgs-blocks' ) }
@@ -1126,6 +1025,36 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								__next40pxDefaultSize
 							/>
 						) }
+						{ /* Moved in from the shared SgsColourPanel (D622 — an
+						     element-scoped colour belongs in its own element's
+						     TIER 1 panel; "rating" is a declared element whose
+						     attrMap claims ratingColour). */ }
+						{ showRating && (
+							<DesignTokenPicker
+								label={ __( 'Rating colour', 'sgs-blocks' ) }
+								states={ [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: ratingColour,
+										onChange: ( val ) =>
+											setAttributes( { ratingColour: val ?? '' } ),
+										linked: true,
+										gradientValue: ratingColourGradient,
+										onGradientChange: ( val ) =>
+											setAttributes( { ratingColourGradient: val ?? '' } ),
+									},
+									{
+										key: 'hover',
+										label: __( 'Hover', 'sgs-blocks' ),
+										value: ratingColourHover,
+										onChange: ( val ) =>
+											setAttributes( { ratingColourHover: val ?? '' } ),
+										linked: true,
+									},
+								] }
+							/>
+						) }
 					</PanelBody>
 				) }
 
@@ -1234,6 +1163,35 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
+						{ /* Moved in from the shared SgsColourPanel (D622 — an
+						     element-scoped colour belongs in its own element's
+						     TIER 1 panel; "quote text" is a declared element
+						     whose attrMap claims quoteColour). Same row shape,
+						     same attributes, just relocated. */ }
+						<DesignTokenPicker
+							label={ __( 'Quote colour', 'sgs-blocks' ) }
+							states={ [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: quoteColour,
+									onChange: ( val ) =>
+										setAttributes( { quoteColour: val ?? '' } ),
+									linked: true,
+									gradientValue: quoteColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { quoteColourGradient: val ?? '' } ),
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: quoteColourHover,
+									onChange: ( val ) =>
+										setAttributes( { quoteColourHover: val ?? '' } ),
+									linked: true,
+								},
+							] }
+						/>
 						{ showSummary && (
 							<>
 								<ToolsPanelItem
@@ -1256,6 +1214,31 @@ export default function Edit( { attributes, setAttributes, context } ) {
 										__next40pxDefaultSize
 									/>
 								</ToolsPanelItem>
+								{ /* Moved in from the shared SgsColourPanel (D622). */ }
+								<DesignTokenPicker
+									label={ __( 'Summary colour', 'sgs-blocks' ) }
+									states={ [
+										{
+											key: 'normal',
+											label: __( 'Normal', 'sgs-blocks' ),
+											value: summaryColour,
+											onChange: ( val ) =>
+												setAttributes( { summaryColour: val ?? '' } ),
+											linked: true,
+											gradientValue: summaryColourGradient,
+											onGradientChange: ( val ) =>
+												setAttributes( { summaryColourGradient: val ?? '' } ),
+										},
+										{
+											key: 'hover',
+											label: __( 'Hover', 'sgs-blocks' ),
+											value: summaryColourHover,
+											onChange: ( val ) =>
+												setAttributes( { summaryColourHover: val ?? '' } ),
+											linked: true,
+										},
+									] }
+								/>
 							</>
 						) }
 						{ /*
@@ -1311,6 +1294,31 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
+						{ /* Moved in from the shared SgsColourPanel (D622). */ }
+						<DesignTokenPicker
+							label={ __( 'Name colour', 'sgs-blocks' ) }
+							states={ [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: nameColour,
+									onChange: ( val ) =>
+										setAttributes( { nameColour: val ?? '' } ),
+									linked: true,
+									gradientValue: nameColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { nameColourGradient: val ?? '' } ),
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: nameColourHover,
+									onChange: ( val ) =>
+										setAttributes( { nameColourHover: val ?? '' } ),
+									linked: true,
+								},
+							] }
+						/>
 					</ToolsPanel>
 				</PanelBody>
 
