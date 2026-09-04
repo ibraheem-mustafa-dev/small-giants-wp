@@ -123,8 +123,13 @@ delete once superseded):**
    (`grep` on `gates.json` for "CO-2"/"consistency-scanner"/"element-panel-conformance"
    returns nothing). Needs an AST walk of every `edit.js`, its own build — not
    double-counted as separate work from C4.
-4. **C12/C13** — live-pass items. Confirmed zero evidence either was ever run — no recent
-   a11y report, no panel-ordering artefact in `.claude/reports/`.
+4. ⚠ **C12/C13 — ATTEMPTED 2026-09-04, BLOCKED by shared browser resource contention, not
+   completed.** Both dispatches hit the same Playwright MCP browser lock (another concurrent
+   session holding `mcp-chrome-91e235c`) on every retry; neither forced past it (killing a
+   shared browser risks destroying another session's in-progress work). C13's expected
+   element-order ground truth (read from each candidate's `block.json`) was captured and
+   doesn't need re-deriving. Full account: `.claude/reports/2026-09-04-c12-c13-live-pass.md`.
+   Re-dispatch once the shared browser is confirmed free.
 5. ✅ **D4 CLOSED 2026-09-04** — decided per-rule, not blanket. 8 promoted to `gate`
    (01-tab-group, 20-pattern-template-lock, 07-preset-only-shadow, 22-placement-rule-surfaces,
    26-responsive-duplicate, 30-raw-box-control, 29-duplicate-visible-label,
