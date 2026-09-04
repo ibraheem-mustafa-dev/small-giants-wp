@@ -208,7 +208,19 @@ class Post_Grid_REST {
 			'uid'                   => [
 				'type'              => 'string',
 				'default'           => '',
-				'sanitize_callback' => 'sanitize_html_class',
+				// WP always calls a REST sanitize_callback as
+				// call_user_func( $cb, $value, $request, $key ) -- three args.
+				// sanitize_html_class( $classname, $fallback = '' ) only takes
+				// two, so the $request object silently binds to $fallback. When
+				// $value is empty (this param's own declared default), its
+				// fallback branch fires and recurses as
+				// sanitize_html_class( $request ), which then fatals inside
+				// preg_replace() (expects array|string, gets WP_REST_Request).
+				// This closure drops the extra WP-supplied args so only the
+				// real value ever reaches sanitize_html_class().
+				'sanitize_callback' => static function ( $value ) {
+					return sanitize_html_class( (string) $value );
+				},
 			],
 		];
 	}
