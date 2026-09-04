@@ -575,6 +575,18 @@ if ( '' !== $title_colour_effective ) {
 $pt_toggle_label_hover_decl = sgs_background_paint_decl( $toggle_label_hover_colour, $toggle_label_hover_colour_gradient );
 if ( '' !== $pt_toggle_label_hover_decl ) {
 	$pt_toggle_label_hover_decls = array( $pt_toggle_label_hover_decl . ';' );
+if ( '' !== ( $attributes['titleColourHover'] ?? '' ) ) {
+	$pt_toggle_label_hover_decls[] = 'color:' . sgs_colour_value( $attributes['titleColourHover'] );
+}
+if ( '' !== ( $attributes['featureColourHover'] ?? '' ) ) {
+	$pt_toggle_label_hover_decls[] = 'color:' . sgs_colour_value( $attributes['featureColourHover'] );
+}
+if ( '' !== ( $attributes['ctaColourHover'] ?? '' ) ) {
+	$pt_toggle_label_hover_decls[] = 'color:' . sgs_colour_value( $attributes['ctaColourHover'] );
+}
+if ( '' !== ( $attributes['popularBadgeColourHover'] ?? '' ) ) {
+	$pt_toggle_label_hover_decls[] = 'color:' . sgs_colour_value( $attributes['popularBadgeColourHover'] );
+}
 	$responsive_css             .= sgs_emit_state_colour_css(
 		$root_sel . ' .sgs-pricing-table__billing-toggle--style-button .sgs-pricing-table__toggle-label',
 		array(),

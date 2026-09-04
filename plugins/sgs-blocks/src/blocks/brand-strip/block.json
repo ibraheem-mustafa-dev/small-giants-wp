@@ -24,7 +24,13 @@
 			"containerMirror": false,
 			"_comment_mediaElements": "Bridges the pre-existing `logoFit` control (contain|cover, default contain) onto the shared object-fit atom via STORED_AS in MediaElementControls.js/helpers-media-element.php — no new attribute, no new UI, the logo-fit dropdown stays the only control.",
 			"mediaElements": [
-				{ "prefix": "", "context": "element", "atoms": [ "object-fit" ] }
+				{
+					"prefix": "",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
 			],
 			"hideExtensions": [
 				"clickEffects",
@@ -211,7 +217,10 @@
 					},
 					"objectFit": {
 						"type": "string",
-						"enum": [ "cover", "contain" ],
+						"enum": [
+							"cover",
+							"contain"
+						],
 						"default": "cover",
 						"description": "Per-item object-fit override. Logos are not photographs — object-fit only, no focal-point/crosshair (Bean-locked convention: see sgs/testimonial orgLogo + this block's own block-wide logoFit). Falls back to the block-wide logoFit default when unset."
 					}
@@ -252,7 +261,11 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 8, "tablet": 4, "mobile": 2}
+			"default": {
+				"desktop": 8,
+				"tablet": 4,
+				"mobile": 2
+			}
 		},
 		"showNames": {
 			"type": "boolean",
@@ -499,6 +512,10 @@
 		"borderRadius": {
 			"type": "object",
 			"default": {}
+		},
+		"nameColourHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

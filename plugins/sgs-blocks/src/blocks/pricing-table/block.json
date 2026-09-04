@@ -661,6 +661,22 @@
 		"priceColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"titleColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"featureColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"popularBadgeColourHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

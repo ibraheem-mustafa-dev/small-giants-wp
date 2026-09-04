@@ -313,6 +313,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginMobile,
 		borderRadiusTablet,
 		borderRadiusMobile,
+		nameColourHover,
 	} = attributes;
 
 	// Stable per-item `_key` for CSS scoping (Spec 35 Part 4) — backfilled
@@ -495,6 +496,12 @@ export default function Edit( { attributes, setAttributes } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { nameColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: nameColourHover,
+								onChange: ( val ) => setAttributes( { nameColourHover: val } ),
+								},
 						],
 					},
 					{

@@ -157,6 +157,7 @@ function designTokenPickerRows( cache, file ) {
 				attr: isArr ? normalStateAttrName( statesExpr ) : null,
 				statesCount: isArr ? statesExpr.elements.length : 1,
 				hasGradient: isArr ? statesArrayHasGradient( statesExpr ) : false,
+				statesNode: isArr ? statesExpr : null,
 			} );
 		},
 	} );
@@ -345,6 +346,24 @@ function findHoverSink( php ) {
 			hoverArrayVar: m[ 2 ],
 			insertBeforeLine: lineStart,
 			isBareExpr: true, // selectorTemplate is a PHP expression (e.g. `$root_sel`), not a string literal to re-embed in a double-quoted string
+		} );
+	}
+
+	// Shape C: sgs_hover_state_rules( SELECTOR, implode( ';', $hoverArr ), ... )
+	// — found live 2026-09-04 (qc-council audit): identical hover-array
+	// assembly shape to Shape A, just wrapped through the shared touch-safe
+	// hover-guard helper instead of a raw literal-prefixed concat. Same
+	// insertion contract as Shape B (bare array var + insertBeforeLine), so
+	// no new insertion logic is needed — only detection was missing.
+	const hoverStateRulesRe = /sgs_hover_state_rules\s*\(\s*([^,]+),\s*implode\s*\(\s*(['"]);\2\s*,\s*\$([A-Za-z_][A-Za-z0-9_]*)\s*\)/g;
+	while ( ( m = hoverStateRulesRe.exec( php ) ) ) {
+		const idx = m.index;
+		const lineStart = php.lastIndexOf( '\n', idx ) + 1;
+		candidates.push( {
+			selectorTemplate: m[ 1 ].trim(),
+			hoverArrayVar: m[ 3 ],
+			insertBeforeLine: lineStart,
+			isBareExpr: true,
 		} );
 	}
 
@@ -926,6 +945,68 @@ function applyGradientEditJsFix( editSrc, gp ) {
 	return { ok: true, src: newSrc };
 }
 
+// Add `hoverAttr` to the SAME destructuring `ObjectPattern` that already
+// destructures `baseIdent` from `attributes` — found via a fresh AST parse
+// (not the caller's stale one; the caller may be re-invoking this after an
+// earlier splice already shifted offsets). Refuses rather than guesses: a
+// file with no destructure block containing `baseIdent`, or with more than
+// one, or that fails to parse, is left untouched and reported.
+//
+// FOUND LIVE 2026-09-04 (qc-council audit): buildHoverStateSource() clones
+// the normal state's JSX and swaps in a brand-new bare identifier
+// (`hoverAttr`) for `value:`, but never added that identifier anywhere the
+// component could read it — every one of 11 real --apply runs this session
+// threw "no binding in scope" at check-undefined-refs.js. This closes that
+// gap as an independent, narrowly-scoped AST edit, rather than changing how
+// the state clone itself is built (an earlier attempt to read via
+// `attributes.X` instead broke unrelated self-tests that assume a bare
+// Identifier shape for the states-array value).
+function insertHoverAttrIntoDestructure( editSrc, baseIdent, hoverAttr ) {
+	let ast;
+	try {
+		ast = babelParser.parse( editSrc, BABEL_PARSE_OPTS );
+	} catch ( e ) {
+		return { ok: false, reason: 'destructure-insert-parse-failed' };
+	}
+	const traverse = require( '@babel/traverse' ).default;
+	const matches = [];
+	traverse( ast, {
+		ObjectPattern( p ) {
+			const props = p.node.properties;
+			const hasBase = props.some(
+				( prop ) =>
+					prop.type === 'ObjectProperty' &&
+					prop.shorthand &&
+					prop.key &&
+					prop.key.type === 'Identifier' &&
+					prop.key.name === baseIdent
+			);
+			if ( hasBase ) matches.push( p.node );
+		},
+	} );
+	if ( matches.length === 0 ) return { ok: false, reason: 'destructure-block-not-found-for-base-attr' };
+	if ( matches.length > 1 ) return { ok: false, reason: 'multiple-destructure-blocks-ambiguous' };
+
+	const node = matches[ 0 ];
+	const alreadyPresent = node.properties.some(
+		( prop ) =>
+			prop.type === 'ObjectProperty' &&
+			prop.shorthand &&
+			prop.key &&
+			prop.key.type === 'Identifier' &&
+			prop.key.name === hoverAttr
+	);
+	if ( alreadyPresent ) return { ok: true, src: editSrc };
+
+	const last = node.properties[ node.properties.length - 1 ];
+	const indent = indentOfLine( editSrc, last.start );
+	const between = editSrc.slice( last.end, node.end - 1 );
+	const commaMatch = between.match( /^\s*,/ );
+	const insertAt = commaMatch ? last.end + commaMatch[ 0 ].length : last.end;
+	const insertion = ( commaMatch ? '' : ',' ) + '\n' + indent + hoverAttr + ',';
+	return { ok: true, src: editSrc.slice( 0, insertAt ) + insertion + editSrc.slice( insertAt ) };
+}
+
 function applyEditJsFix( editSrc, plan ) {
 	if ( plan.kind === 'gradient' ) return applyGradientEditJsFix( editSrc, plan.gradientPlan );
 
@@ -946,7 +1027,12 @@ function applyEditJsFix( editSrc, plan ) {
 	const insertAt = commaMatch ? last.end + commaMatch[ 0 ].length : last.end;
 	const insertion = ( commaMatch ? '' : ',' ) + '\n' + indent + stateSrc.trim() + ',';
 	const newSrc = editSrc.slice( 0, insertAt ) + insertion + editSrc.slice( insertAt );
-	return { ok: true, src: newSrc };
+
+	if ( ! plan.baseIdent ) return { ok: false, reason: 'REFUSED:no-base-ident-for-destructure-insert' };
+	const destructureResult = insertHoverAttrIntoDestructure( newSrc, plan.baseIdent, plan.hoverAttr );
+	if ( ! destructureResult.ok ) return { ok: false, reason: 'REFUSED:' + destructureResult.reason };
+
+	return { ok: true, src: destructureResult.src };
 }
 
 function applyBlockJsonFix( blockJson, plan ) {
@@ -1108,9 +1194,58 @@ function collectPlans( db, cache ) {
 
 		// DesignTokenPicker-standalone rows: report tier-A ones as refused
 		// (named reason), never silently drop them from the census.
+		//
+		// The refusal REASON is derived the same way planRow() derives it for
+		// SgsColourPanel rows, not a single generic string for every case —
+		// found live 2026-09-04 (qc-council audit): the blanket message
+		// implied every row was blocked on "no hover-clone site", but several
+		// standalone rows already carry an explicit hover state in their own
+		// JSX (statesCount===2) and are refused purely on the SEPARATE
+		// gradient dimension (text-mechanism, Task 3 scope) — the exact same
+		// class fix.js already names accurately for SgsColourPanel rows. A
+		// row whose sole state is non-normal (e.g. a deliberate hover-only
+		// design) gets the SAME `no-explicit-normal-state` exemption reason
+		// planRow() uses, rather than being folded into the DesignTokenPicker
+		// bucket at all. Only a row that genuinely still needs the HOVER
+		// dimension keeps the standalone-shape refusal — that part of the
+		// original reason (fix.js cannot safely write a new row object into
+		// raw JSX) remains true and unchanged.
 		for ( const row of designTokenPickerRows( cache, editFile ) ) {
 			const verdict = surveyVerdictForRow( db, slug, row, phpText );
 			if ( verdict !== 'AUTOFIXABLE:helper-at-existing-selector' ) continue;
+
+			const explicitNormal = hasExplicitNormalState( row.statesNode );
+			if ( ! explicitNormal ) {
+				refusals.push( {
+					dir,
+					slug,
+					rowKey: row.rowKey,
+					attr: row.attr,
+					reason: 'REFUSED:no-explicit-normal-state (sole state is non-normal — likely paired with native WP colour support; synthesising a normal state would misrepresent the design)',
+				} );
+				continue;
+			}
+
+			const needsHover = row.statesCount < 2;
+			if ( ! needsHover ) {
+				const dbRow = row.attr && db[ slug ] ? db[ slug ][ row.attr ] : null;
+				const mech = resolveMechanismFromCssProperty( dbRow ? dbRow.css_property : null );
+				const mechanism = ! mech.unresolved && mech.mechanisms && mech.mechanisms.length === 1 ? mech.mechanisms[ 0 ] : null;
+				if ( mechanism === 'text' ) {
+					refusals.push( {
+						dir,
+						slug,
+						rowKey: row.rowKey,
+						attr: row.attr,
+						reason:
+							'REFUSED:gradient-path-deferred (text-mechanism gradient is background-clip:text, a ' +
+							'structurally different helper pair — Task 3 scope, not this pass; hover state already ' +
+							'present, this row is blocked on gradient alone)',
+					} );
+					continue;
+				}
+			}
+
 			refusals.push( {
 				dir,
 				slug,

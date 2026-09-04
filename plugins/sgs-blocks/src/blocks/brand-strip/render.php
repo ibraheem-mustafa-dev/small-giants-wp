@@ -362,6 +362,9 @@ $root_text_hover_decl      = sgs_text_colour_decl( $root_text_hover_effective );
 if ( '' !== $root_text_hover_decl ) {
 	$root_hover_decls[] = $root_text_hover_decl;
 }
+if ( '' !== ( $attributes['nameColourHover'] ?? '' ) ) {
+	$root_hover_decls[] = 'color:' . sgs_colour_value( $attributes['nameColourHover'] );
+}
 if ( $root_hover_decls ) {
 	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $root_hover_decls ), ':focus-within' );
 	// Focus fallback selector matches the guarded-hover-rule shape so the

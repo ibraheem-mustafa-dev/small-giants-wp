@@ -226,6 +226,11 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		shadowHover,
 		shadowHoverColour,
 		staggerDelay,
+		summaryColourHover,
+		nameColourHover,
+		roleColourHover,
+		orgColourHover,
+		ratingColourHover,
 	} = attributes;
 
 	// Effective variant = this card's own explicit choice, else the parent
@@ -452,6 +457,14 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { summaryColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: summaryColourHover,
+								onChange: ( val ) =>
+									setAttributes( { summaryColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					{
@@ -470,6 +483,14 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { nameColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: nameColourHover,
+								onChange: ( val ) =>
+									setAttributes( { nameColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					{
@@ -488,6 +509,14 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { roleColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: roleColourHover,
+								onChange: ( val ) =>
+									setAttributes( { roleColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					{
@@ -506,6 +535,14 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { orgColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: orgColourHover,
+								onChange: ( val ) =>
+									setAttributes( { orgColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					( effectiveVariant === 'rating-led' ||
@@ -526,6 +563,14 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									onGradientChange: ( val ) =>
 										setAttributes( { ratingColourGradient: val ?? '' } ),
 								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: ratingColourHover,
+									onChange: ( val ) =>
+										setAttributes( { ratingColourHover: val ?? '' } ),
+									linked: true,
+									},
 							],
 						},
 					shadowHover && {

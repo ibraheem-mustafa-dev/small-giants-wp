@@ -54,8 +54,21 @@
 			],
 			"_comment_mediaElements": "37-media-no-handroll remediation (2026-09-03). Replaces the old universal imageControls/imageControlsExplicit single sgsObjectFit/sgsObjectPosition pair (block-level, shared by whichever slot's render.php happened to call sgs_media_position_css()) with two independently-scoped media elements, one per slot, mirroring sgs/before-after's Wave 5b migration. `avatar` gets object-fit only (a fixed-crop circular headshot has no genuine focal-point need beyond the fit mode). `work` gets object-fit + focal-point, replacing the position control the old mechanism gave it 1:1 — case-study media varies in composition, so both crop mode and crop focus are genuine per-instance needs. The org logo is deliberately excluded — see elements.org-logo-image below.",
 			"mediaElements": [
-				{ "prefix": "avatar", "context": "element", "atoms": [ "object-fit" ] },
-				{ "prefix": "work", "context": "element", "atoms": [ "object-fit", "focal-point" ] }
+				{
+					"prefix": "avatar",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				},
+				{
+					"prefix": "work",
+					"context": "element",
+					"atoms": [
+						"object-fit",
+						"focal-point"
+					]
+				}
 			],
 			"elements": {
 				"quote-box": {
@@ -620,6 +633,26 @@
 		"borderRadiusMobile": {
 			"type": "object",
 			"default": {}
+		},
+		"summaryColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"nameColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"roleColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"orgColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingColourHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

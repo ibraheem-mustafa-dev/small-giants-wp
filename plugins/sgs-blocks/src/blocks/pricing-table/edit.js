@@ -138,6 +138,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		popularBadgeBackground,
 		toggleLabelHoverColour,
 		toggleLabelHoverColourGradient,
+		titleColourHover,
+		featureColourHover,
+		ctaColourHover,
+		popularBadgeColourHover,
 	} = attributes;
 
 	const [ palette ] = useSettings( 'color.palette' );
@@ -274,6 +278,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: titleColourGradient,
 								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: titleColourHover,
+								onChange: ( val ) => setAttributes( { titleColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					{
@@ -313,6 +324,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: featureColourGradient,
 								onGradientChange: ( val ) => setAttributes( { featureColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: featureColourHover,
+								onChange: ( val ) => setAttributes( { featureColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					{
@@ -329,6 +347,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: ctaColourGradient,
 								onGradientChange: ( val ) => setAttributes( { ctaColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: ctaColourHover,
+								onChange: ( val ) => setAttributes( { ctaColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					{
@@ -358,6 +383,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: popularBadgeColourGradient,
 								onGradientChange: ( val ) => setAttributes( { popularBadgeColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: popularBadgeColourHover,
+								onChange: ( val ) => setAttributes( { popularBadgeColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					{

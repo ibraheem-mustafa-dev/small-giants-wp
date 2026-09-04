@@ -586,6 +586,21 @@ if ( $stagger_delay ) {
 if ( $wrapper_vars ) {
 	$scoped_css[] = $root_sel . '{' . implode( ';', $wrapper_vars ) . '}';
 }
+if ( '' !== ( $attributes['summaryColourHover'] ?? '' ) ) {
+	$hover_decls[] = 'color:' . sgs_colour_value( $attributes['summaryColourHover'] );
+}
+if ( '' !== ( $attributes['nameColourHover'] ?? '' ) ) {
+	$hover_decls[] = 'color:' . sgs_colour_value( $attributes['nameColourHover'] );
+}
+if ( '' !== ( $attributes['roleColourHover'] ?? '' ) ) {
+	$hover_decls[] = 'color:' . sgs_colour_value( $attributes['roleColourHover'] );
+}
+if ( '' !== ( $attributes['orgColourHover'] ?? '' ) ) {
+	$hover_decls[] = 'color:' . sgs_colour_value( $attributes['orgColourHover'] );
+}
+if ( '' !== ( $attributes['ratingColourHover'] ?? '' ) ) {
+	$hover_decls[] = 'color:' . sgs_colour_value( $attributes['ratingColourHover'] );
+}
 if ( $hover_decls ) {
 	// Via the ONE shared hover-colour helper, which also emits the
 	// `:focus-visible` twin a keyboard user needs.
