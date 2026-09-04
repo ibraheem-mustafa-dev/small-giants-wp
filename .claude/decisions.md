@@ -1,3 +1,64 @@
+## D948 [ROUTINE] — hover-guard's 24 findings closed to zero; WCAG contrast guard built + rolled out; a dispatched agent's unscoped `git stash` wiped 16 already-committed-worth of fixes, recovered from memory
+
+**2026-09-04 (session 7).** Two tracks the session-6 LEDGER carried forward as "not started"/"never
+built" — both closed this session.
+
+**Hover-guard: 24 → 0 confirmed findings.** Tiered fix pass (motion → cross-file silent-bypass →
+shadow-only → colour-only), each tier verified with `node scripts/hover-guard/check.js` before
+moving to the next. All raw `:hover` selectors now route through `sgs_hover_state_rules()` /
+`sgs_hover_guarded_rule()` / the split guarded-hover-plus-unguarded-focus pattern (for callers
+handed an already-built selector by another helper, e.g. `sgs_border_gradient_css()`,
+`sgs_text_colour_gradient_fallback_rule()`). `nav-menu` had the largest concentration (9 sites
+across pill/text/underline hover styles, featured items, burger, sublink, drawer variant).
+**11 pre-existing UNRESOLVED cross-file cases remain** (brand-strip, button, filter-search,
+option-picker×2, social-icons, tabs×3, plus 2 in `helpers-tokens.php` itself) — never part of the
+confirmed 24, the scanner can't prove them guarded or unguarded either way; the `postbuild`
+advisory wrapper (search "D943") stays until each is read by hand. All 24 fixes PHP-lint clean
+(`php -l`); no live/deploy verification this session (JS build verified, PHP was not
+deployed/exercised against a real render).
+
+**Contrast guard built end-to-end, WARN-only per Bean's standing ruling.** New shared
+`src/utils/wcag-contrast.js` (dedupes the byte-identical WCAG maths that used to live separately
+in `site-header`/`site-footer` `edit.js`, adds `worstGradientContrastRatio()` — worst-stop method).
+`GradientCapableColourControl.js` gained opt-in `contrastAgainst`/`contrastLabel`/
+`contrastLargeText` props (the last selects WCAG's 3.0:1 UI-component threshold vs the 4.5:1 text
+default, reusing the existing `meetsWCAG_AA(ratio, isLargeText)` axis rather than adding a new
+one) — an advisory `Notice` inside the control's own popover, never blocking save, additive-only
+so every caller that doesn't pass the new props is unaffected. Wired into all 7 text-colour
+callers with a determinable background (`site-header-row`/`site-footer-row` pilot,
+`hero`/`text`/`card-grid`/`container`'s grid-item defaults + the shared `textRow.js`/
+`SgsColourPanel.js` plumbing); `table-of-contents` correctly left unwired (no background
+attribute, no fixed parent — structural, not residual). `SgsBorderControl.js` gained the
+pass-through props (defaulting `contrastLargeText` to `true`) but wiring `contrastAgainst` into
+any of the 44 blocks that mount it was explicitly NOT pursued — Bean's call to close the track
+here rather than carry a 44-block follow-up as parked work.
+
+**Two real bugs caught before commit, both independently reintroduced by different dispatched
+agents:** `contrastAgainst` only ever accepts a FLAT colour — `card-grid` and the first cut of
+`text/edit.js` (dispatched, haiku) each resolved it as "flat colour OR the gradient string",
+which fails to parse as a colour and produces an unconditional false "fails contrast" warning
+regardless of the real text colour. `GridItemDefaultsPanel.js` (handled inline, not dispatched)
+shipped the identical bug independently. Fixed uniformly: pass the flat background only when no
+gradient sibling is also set (the gradient, not the flat colour, is what actually paints).
+Caught by reading each dispatched diff before commit — none of it was caught by the build.
+
+**A dispatched subagent's `git stash`/`git stash pop` wiped 16 files' worth of already-completed
+hover-guard work, all uncommitted at the time.** The contrast-guard implementer, working directly
+in the main tree (worktree isolation is broken repo-wide — a `core.worktree` config redirect, not
+fixed this session per the no-git-config-changes rule), ran an unscoped `git stash` mid-task on
+this shared dirty tree; its own `git checkout stash@{0} -- <its files>` recovery restored ITS
+files but not the sibling hover-guard work also sitting uncommitted. Caught by a hover-guard
+re-check showing files already fixed as "unfixed" again — not by the agent's own report, which
+claimed success. Recovered by redoing all 16 files from the exact diffs already produced earlier
+in the same conversation (no data actually lost, just redone) and committing in small path-scoped
+batches immediately after each recovery step rather than batching everything to the end.
+
+**Standing takeaway, added to future dispatch prompts:** never let a dispatched agent run git
+commands on a non-worktree-isolated shared tree — the controller runs all git operations, one
+file/batch at a time, and subagents only edit + report back. Applied for the remainder of this
+session's `/dispatching-parallel-agents` batch (5 haiku branches wiring the text-colour rollout)
+with zero further incident.
+
 ## D947 [INCIDENT] — implementer subagent's report claimed three shader/JS fixes that were never actually committed; caught by direct verification, not trusted
 
 **2026-09-04.** An `/adversarial-council` review of the generative-background colour engine

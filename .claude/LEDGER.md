@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-09-04 (session 6)
+last_updated: 2026-09-04 (session 7)
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -10,69 +10,58 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 ## Human Summary
 
 Plain English, for Bean. The framework is a WordPress block system that clones any design draft
-into native blocks a non-technical client can then edit. Five tracks worked on it historically,
-sharing one `main`. ⚠ **A 2026-08-30 note here claimed only one track was active and that 'another
-track holds this file' was no longer live. That was FALSE on 2026-09-03**: a second session held ~29
-`src/blocks/*/edit.js` files uncommitted for hours and landed D933 mid-session. Treat concurrent
-occupancy as LIVE — path-scope every commit, re-verify file ownership immediately before it, and
-never `git stash` or `git checkout --` a shared file.
+into native blocks a non-technical client can then edit. Multiple sessions have shared one `main`
+concurrently, repeatedly — treat this as the norm, not the exception, every session.
 
 Right now: the cloning pipeline and the motion system are both stable. Client controls closed out
 2026-09-02. The uniformity sweep closed two of three detectors to zero in session 4; only
-`31-golden-colour-control` (253 open) remains, untouched since. **Session 6 (2026-09-04) closed
-8 of D936's 9-row batch**, live-verified on the deployed canary for the first time this track —
-the 9th (`nav-menu.burgerColour`) turned out to be a miscategorisation needing an unbuilt
-mechanism, now parked (D945, caught by this handoff's own `/qc` check). Along the way it fixed a
-real cross-block bug in the shared `::after` helper and fixed the
-hover-guard detector's actual blind spot (0 → 24 real findings, proven with a self-test) —
-session 5's fix had only pointed it at the right files without fixing the scanner logic that made
-it structurally blind to them. Three unrelated pre-existing blockers had to be cleared before the
-deploy would even run — none this session's fault, each traced via `git log`. Canary:
-sandybrown-nightingale-600381.hostingersite.com; no live client sites yet, so breakage there costs
-time, not money.
+`31-golden-colour-control` (253 open) remains, untouched since. **Session 7 (2026-09-04) closed
+both fronts session 6 left open**: the hover-guard's 24 confirmed findings are ALL fixed (0
+remaining, 11 unrelated pre-existing unresolved cases tracked separately), and the WCAG contrast
+guard was built from scratch and wired into all 7 determinable text-colour callers, WARN-only per
+Bean's ruling. Along the way, a dispatched subagent's unscoped `git stash` wiped 16 files' worth
+of already-done work on this shared tree — caught and fully recovered, not silently lost (D948).
+Canary: sandybrown-nightingale-600381.hostingersite.com; no live client sites yet, so breakage
+there costs time, not money. **Nothing this session was deployed or live-verified** — build/lint
+verified only.
 
 ## State Snapshot
 
-- **Branch:** `main`. ⚠ **A concurrent session was active on this tree across 2026-09-03 and
-  2026-09-04** — owns the generative-background/WebGL motion track, landed D939/D941/D944, plus
-  an untracked `webgl/uv-debug-test.html` scratch file (left alone). Two D-number collisions this
-  session (D939, D941), both caught only by re-checking the ceiling right before writing. Commit
-  with explicit paths (a hook enforces it), re-verify ownership before each commit, never
-  `git stash` / `git checkout --` a shared file.
+- **Branch:** `main`. Concurrent occupancy is the norm on this project — a second session (the
+  generative-background/WebGL motion track) was active throughout this session too, landing
+  D946/D947. Commit with explicit paths (a hook enforces it), re-verify ownership before each
+  commit, never `git stash` / `git checkout --` a shared file — see D948 for why that's not
+  theoretical.
 - **Canary:** WP 7.1. Deploy via `build-deploy.py --target sandybrown` — the only sanctioned path.
-  Session 6 deployed clean after clearing three unrelated pre-existing blockers (D943's commit) —
-  if a fresh build/deploy fails on something unrelated-looking, check `git log` first.
+  **Not deployed this session** — hover-guard/contrast-guard changes are build-verified
+  (`npx webpack`, `php -l`) but not exercised live.
 - **Verification:** `scripts/qa/assert-css-effect.js` runs a block's real render.php standalone and
-  asserts the CSS it emits — no deploy, seconds to run. For a block the harness can't render at all
-  (no real menu/InnerBlocks content — `nav-menu` is one), isolate the CSS-building PHP snippet and
-  run it standalone, or call the block's real registered `render_callback` directly via `wp eval`
-  on the canary (session 6's live-verification method — recipe + results in D945).
-  `scripts/toolindex/query.py "<what you need>"` finds a script by
-  description when you do not know its filename.
-- **Build:** green on `main`, deployed + live-verified 2026-09-04. `node scripts/hover-guard/check.js`
-  now correctly reports 24 real findings (was 0, a scanner blind spot, not a clean bill) — ADVISORY
-  in `postbuild` (search "D943") so it doesn't block deploys until triaged; don't silence further.
-- **Live fronts:** contrast guard (never built) + hover-guard's 24 findings (detector fixed, fixes
-  not started) — see COLOUR TRACK below. `31-golden-colour-control` (253 open) untouched since
-  session 4. Client controls, cloning, consolidation closed; motion stable (own section).
+  asserts the CSS it emits — no deploy, seconds to run. `scripts/toolindex/query.py "<what you
+  need>"` finds a script by description when you do not know its filename.
+- **Build:** green on `main`, NOT deployed this session. `node scripts/hover-guard/check.js` now
+  reports **0 confirmed findings** (was 24) — 11 pre-existing UNRESOLVED cross-file cases remain,
+  ADVISORY in `postbuild` (search "D943"/"D948") until each is read by hand.
+- **Live fronts:** hover-guard's 11 UNRESOLVED cross-file cases (never part of the confirmed 24,
+  optional). `31-golden-colour-control` (253 open) untouched since session 4 — its own plan
+  (`.claude/plans/2026-09-03-golden-colour-staged-rollout.md`) was corrected this session (its
+  "no contrast guard" gap note was stale; Phase 1's touch-hover-guard shipped D943). Client
+  controls, cloning, consolidation closed; motion stable (own section).
 - **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
 
 # ▶ NEXT SESSION STARTS HERE
 
 **Invoke `/autopilot` first.**
 
-⭐ **Start here: `.claude/prompts/2026-09-04-contrast-guard-and-hover-cleanup.md`.** The colour
-track's background-collision batch (D936) is closed and live-verified for 8 of its 9 rows — do
-not re-open those 8. `nav-menu.burgerColour` (the 9th) is parked separately (D945) — different,
-unbuilt mechanism, not this batch's recipe. The live front is the contrast guard (never built,
-WARN-only per Bean's ruling) and
-the hover-guard's 24 now-real findings (detector fixed this session, fixes not started, tiered
-plan in the prompt).
+Both fronts session 6 opened (contrast guard, hover-guard's 24 findings) are CLOSED this session
+— there is no dedicated next-session prompt file; read the COLOUR TRACK section below for what's
+genuinely still open (11 unresolved hover cases; `SgsBorderControl`'s 44-caller wiring, explicitly
+NOT parked, Bean's call to close it here). If picking up general framework work, start with
+`31-golden-colour-control` (253 open, its own ~5.4h build task, D754's plan) — the largest
+untouched backlog on the project — or deploy + live-verify this session's hover-guard/contrast-
+guard changes, which were never exercised against the real canary.
 
-⚠ **Sections below are per-track — read only the one you're continuing.** Concurrent occupancy on
-`main` is the norm on this project, not the exception — path-scope every commit and re-check the
-decisions.md D-ceiling immediately before writing a new entry.
-The **motion** track owns `⛔ `sgs-framework.db` is ONE shared file — DB work sequentially, not parallel.
+⚠ **Concurrent occupancy on `main` is the norm on this project, not the exception** — path-scope
+every commit and re-check the decisions.md D-ceiling immediately before writing a new entry.
 
 ## ▶ UNIFORMITY SWEEP TRACK — `01-tab-group` + `21-render-without-control` BOTH CLOSED 2026-09-03 (session 4, D933)
 
@@ -83,242 +72,149 @@ The **motion** track owns `⛔ `sgs-framework.db` is ONE shared file — DB work
 **Session 4 closed both remaining detectors in this track to zero, via `/dispatching-parallel-agents`
 in several waves, each verified live after landing — full account: D933.**
 
-- `01-tab-group` 32 → 0: 20 blocks needed only a `group="styles"` tag move; `team-member`,
-  `buybox`, `social-icons` had their own small bugs (buybox's Border panel was self-exempting on
-  a missing DB `css_property` seed, fixed directly in `sgs-framework.db`); the remaining 9 blocks
-  got real TIER-1/TIER-2 panel restructuring per THE PLACEMENT RULE (Spec 35 Part O). `rules.json`
-  ratchet ceiling lowered 57 → 0.
-- `21-render-without-control` 54 → 0: every fix reused an existing shared control — `ShadowControl`
-  + `SgsLengthControl` for `heading`/`text`, `product-card`'s controls copied onto `buybox` (and
-  vice versa for `showPickers`), `team-member`'s transition pair copied onto `cta-section`.
-  `cta-section.body` and `site-footer.alignContent`/`tagName` were confirmed dead schema and
-  deleted outright (D270 no-deprecation policy), not worked around. `rules.json` ceiling lowered
-  146 → 0 (that pre-session figure was itself inflated by unrelated concurrent work landing in the
-  same window — see the rule's own `advisoryReason`).
-- Both rules are candidates for advisory → gate promotion now that their backlog is genuinely
-  zero — flagged, not promoted in this pass; a deliberate call for a future session.
-- Two investigation-phase claims were checked and found WRONG before any fix was dispatched (a
-  `--json` scan-mode bug; a hover-effects "detector blind spot") — both real gaps, not detector
-  noise. Bean's explicit instruction mid-session: don't hand-code a control, map it to an existing
-  shared mechanism first, verified by source. See `feedback_map_to_shared_mechanism_before_building_controls.md`.
+- `01-tab-group` 32 → 0, `21-render-without-control` 54 → 0 — full recipe in `decisions.md` D933.
+  Both rules are candidates for advisory → gate promotion now their backlog is genuinely zero —
+  flagged, not promoted, a deliberate call for a future session.
+- Two investigation-phase claims were checked and found WRONG before any fix was dispatched — see
+  `feedback_map_to_shared_mechanism_before_building_controls.md`.
 
 **Gap-candidates retirement is DONE** — merged via PR #37 (`61c2e813b`), confirmed in `git log
---all`; its worktree, branch and prompt file are all correctly gone. Not this track's work, noted
-here only because this track's own LEDGER section previously (wrongly) called it open.
+--all`.
 
 **What's left in this track:** `31-golden-colour-control` (253 open, its own dedicated
-~5.4h build task — D754's plan). Nothing else open here.
+~5.4h build task — D754's plan, corrected this session per the COLOUR TRACK note above). Nothing
+else open here.
 
 ⛔ **Working shape carried forward, still true: dispatch each fix the MOMENT Bean decides it,
 keep discussing while agents work.** Verify every agent's result yourself — `git diff --stat`,
-re-run the detector, spot-check the diff. This session's dispatched agents twice used `git stash`
-on the shared tree mid-task (self-correcting each time, verified after); several also
+re-run the detector, spot-check the diff. Session 4's dispatched agents used `git stash` on the
+shared tree mid-task (self-correcting each time); session 7's contrast-guard agent did the same
+and did NOT self-correct for a sibling's files — see D948. Several session-4 agents also
 misattributed sibling agents' own uncommitted work as an unrelated "concurrent session" — see
-`feedback_sibling_parallel_agents_misattribute_each_others_work.md` before trusting that framing
-from an agent report again.
+`feedback_sibling_parallel_agents_misattribute_each_others_work.md`.
 
 **Earlier history (D918/D919/D922/D924/D930/D933).** Full accounts in `decisions.md`, not
 duplicated here.
 
-## ▶ COLOUR TRACK — 2026-09-04 (session 6): D936 batch — 8 of 9 rows CLOSED + live-verified, 1 parked (miscategorised). Hover-guard's real blind spot fixed. Detail: D937-D943, correction D945.
+## ▶ COLOUR TRACK — 2026-09-04 (session 7): hover-guard's 24 findings CLOSED (0 remaining); WCAG contrast guard BUILT + wired. Detail: D948 (session 7); D936-D945 (session 6, historical).
 
-⭐ **Next prompt: `.claude/prompts/2026-09-04-contrast-guard-and-hover-cleanup.md`.** The
-background-collision batch is done for the 8 real rows. What's left: `nav-menu.burgerColour`
-(parking.md, a different mechanism), the contrast guard (never built), and the hover-guard's 24
-real findings (fixes not started).
+⭐ **Both fronts session 6 left open are closed.** What's left: hover-guard's 11 pre-existing
+UNRESOLVED cross-file cases (optional, never part of the confirmed 24), and `SgsBorderControl`'s
+44-caller contrast wiring — explicitly NOT pursued or parked this session (Bean's call).
 
-**Shipped this session (D937-D943 carry the full account, D945 is the correction — read it too):**
-- **8 of D936's 9-row batch unblocked** for a future text gradient — `quote.textColourHover`,
-  `pricing-table.popularBadgeColour`/`ctaColour`, `modal.closeColourText`, `product-card.
-  ctaColourText`/`tagTextColour`, `nav-menu.navColour`/`itemColour`, `form.submitColour`, `modal.
-  triggerColour`. Three fix shapes depending on how the background reached the selector (moved to
-  `::after`; moved to `::before` when `::after` was already claimed by a hover-underline effect;
-  cancelled via `background-color:transparent` when the background came from a CSS class default
-  the PHP layer can't see) — `/qc-council` caught that a blind mechanical batch across all 9 would
-  have been wrong for most of them.
-- **The 9th, `nav-menu.burgerColour`, is NOT fixed** — miscategorised (D942): the "text" is an
-  SVG icon via `currentColor`, `background-clip:text` does nothing to it. Needs
-  `sgs_svg_stroke_gradient()` + a new attribute, not this batch's recipe. Parked (D945) after an
-  independent `/qc` check on this handoff caught the "9 of 9" overclaim.
-- **A real cross-block bug fixed**: `sgs_block_background_layer_css()` didn't split comma-joined
-  selectors before `::after`, silently dropping the layer on all but the last branch — hit
-  `product-card`'s bound-mode CTA.
-- **The hover-guard's ACTUAL blind spot fixed** (session 5's file-list fix had zero effect):
-  `php-hover-scan.php` only read named `function(){}` bodies; `render.php` declares none. Fixed by
-  also scanning the gaps between bodies. 0 → 24 findings across 24 files, self-test-proven.
-- **All 8 fixed rows live-verified on the deployed canary** (D945) — first time this track closed
-  with real deployed-code evidence (`wp eval` on each block's `render_callback`), not just the
-  local harness.
-- **Three unrelated pre-existing blockers cleared** to get the deploy to run — none this session's
-  fault, each traced via `git log`: a stale test-page content attribute, an editor-canvas-desync
-  ceiling exceeded by two earlier-same-day commits, and DB schema drift from a table D931 had
-  already decided to retire (drop just deferred).
+**Shipped this session (D948 carries the full account):**
+- **Hover-guard: 24 → 0 confirmed findings.** Tiered pass (motion → cross-file silent-bypass →
+  shadow-only → colour-only), each tier verified via `node scripts/hover-guard/check.js` before
+  the next. All raw `:hover` selectors now route through `sgs_hover_state_rules()` /
+  `sgs_hover_guarded_rule()` / the split guarded-hover-plus-unguarded-focus pattern. 11
+  pre-existing UNRESOLVED cross-file cases remain (brand-strip, button, filter-search,
+  option-picker×2, social-icons, tabs×3, plus 2 in `helpers-tokens.php`) — never part of the
+  confirmed 24, tracked via the `postbuild` advisory wrapper (search "D943"/"D948").
+- **Contrast guard built end-to-end, WARN-only.** New shared `src/utils/wcag-contrast.js`;
+  `GradientCapableColourControl.js` gained opt-in `contrastAgainst`/`contrastLabel`/
+  `contrastLargeText` (3.0:1 UI-component vs 4.5:1 text threshold, reusing the existing
+  `meetsWCAG_AA(ratio, isLargeText)` axis) — additive-only, advisory `Notice`, never blocks save.
+  Wired into all 7 text-colour callers with a determinable background (`site-header-row`/
+  `site-footer-row` pilot, `hero`/`text`/`card-grid`/`container`'s grid-item defaults, plus the
+  shared `textRow.js`/`SgsColourPanel.js` plumbing); `table-of-contents` correctly left unwired
+  (structural — no background attribute, no fixed parent). `SgsBorderControl.js` gained the
+  pass-through props but wiring any of its 44 callers was explicitly NOT pursued.
+- **Two real bugs caught before commit, independently reintroduced twice**: `contrastAgainst`
+  only accepts a FLAT colour — `card-grid`, the first cut of `text/edit.js`, and
+  `GridItemDefaultsPanel.js` each independently resolved it as "flat OR gradient string", which
+  fails to parse and produces an unconditional false "fails contrast" warning. Fixed uniformly:
+  pass the flat background only when no gradient sibling also wins the paint.
+- **A dispatched subagent's `git stash`/`git stash pop` wiped 16 files' worth of already-done
+  hover-guard work**, working directly in the main tree (worktree isolation is broken repo-wide —
+  a `core.worktree` redirect, not fixed this session). Caught by a hover-guard re-check, not the
+  agent's own report (which claimed success); recovered by redoing all 16 files from the exact
+  diffs already produced in-session and committing in small path-scoped batches. Full incident +
+  the standing dispatch rule it produced (controller runs all git ops, subagents only edit): D948.
+- **Doc reconciliation**: `plugins/sgs-blocks/package.json`'s `postbuild` advisory message
+  corrected (was still describing 24 open findings); `.claude/plans/2026-09-03-golden-colour-
+  staged-rollout.md`'s "no contrast guard" gap note corrected + its Phase 1 marked done (shipped
+  D943); the now-completed `.claude/prompts/2026-09-04-contrast-guard-and-hover-cleanup.md`
+  deleted.
 
-⛔ **ELIGIBILITY IS NOT "the colour is painted directly"** — still governing (`background-clip:text`
-clips the WHOLE background paint area). D936 has the three ways a background reaches a selector
-invisibly to element-manifest scanning.
+**Session 6 history (D936-D945), compressed — full detail in `decisions.md`:** closed 8 of 9 rows
+in a background-collision batch (text-gradient blocked by an opaque background reaching the
+selector three different invisible ways), live-verified on the deployed canary for the first time
+this track; the 9th (`nav-menu.burgerColour`) was a miscategorisation needing an unbuilt
+`sgs_svg_stroke_gradient()` mechanism, parked separately (not touched this session); fixed a real
+cross-block bug in `sgs_block_background_layer_css()` (comma-joined selectors weren't split
+before `::after`); fixed the hover-guard detector's actual blind spot (function bodies only —
+`render.php` declares none), which is what surfaced this session's 24 findings in the first place.
 
-⛔ **Before filing something as an open design decision, check whether another block already
-solved the identical shape.** Four rows here were wrongly filed that way; all four resolved
-cleanly against existing precedent (an unused pseudo-element slot; a class default with no
-`-image` property; an existing SVG-gradient mechanism; a sibling block's non-empty-default fix).
+⛔ **ELIGIBILITY IS NOT "the colour is painted directly"** — still governing
+(`background-clip:text` clips the WHOLE background paint area). D936 has the three ways a
+background reaches a selector invisibly to element-manifest scanning.
 
 **Open, carried forward:**
-- **Contrast guard still not built** — ⛔ Bean-ruled: WARN only, never block. Design call needed
-  (recommend worst-stop); full detail in the next prompt.
-- **The hover-guard's 24 real findings** — detector works, fixes not started. ADVISORY in
-  `package.json` postbuild ("D943") so it doesn't block deploys while triaged; tiered plan in the
-  next prompt.
-- **`nav-menu.burgerColour`** — parked (D945), needs `sgs_svg_stroke_gradient()` + a new attr.
+- **Hover-guard's 11 UNRESOLVED cross-file cases** — optional, scanner can't prove either way.
+- **`SgsBorderControl`'s 44-caller wiring** — plumbing built (D948), no callers wired, not parked.
+- **`nav-menu.burgerColour`** — needs `sgs_svg_stroke_gradient()` + a new attr (session 6, D945).
 - Text-gradient attrMap split (24 `css:background-image` vs 14 `css:color-gradient` attrs) and
-  `fix.js` (0 fixable) — both unchanged from session 5.
+  `fix.js` (0 fixable) — both unchanged since session 5.
 
 ### Guardrails carried from this session
 
-- **A build/deploy failure may be pre-existing debt, not a regression** — twice tonight
-  (editor-canvas ceiling, DB schema drift) traced to earlier-same-day work via `git log`.
-- **Fix the DECLARATION a value derives from, never the derived row** (D935) — reinforced by
-  retiring a table via `retire_table.py` (backup+archive+round-trip) not a bare `DROP TABLE`.
-- **Re-check the D-ceiling immediately before every write, not once per session** — two collisions
-  tonight (D939, D941), both caught only by re-grepping right before writing.
-- **A harness limitation can look exactly like a code bug** — `sgs_resolve_palette_hex()` always
-  degrades to `''` in the local QA harness (no real theme.json); a raw-hex test proved the code
-  was right all along.
-- **"No CSS" on a live page may just mean the CSS moved** — SGS lifts every block's scoped
-  `<style>` into `uploads/sgs-css/sgs-<epoch>-<hash>.css`; grep that, not the raw page HTML.
-- **A session's own summary of its work is a claim, not proof** — an independent `/qc` pass on
-  this very handoff caught an overclaimed "9 of 9" and an unrecorded live-verification event
-  (D945). Verify your own handoff before trusting it, same as any subagent's.
+- **Never let a dispatched agent run git commands on a non-worktree-isolated shared tree** — the
+  controller runs all git operations, one file/batch at a time; subagents only edit + report
+  back. D948's stash incident is why. Applied cleanly for the rest of this session's 5-branch
+  `/dispatching-parallel-agents` batch with zero further incident.
+- **A dispatched agent's own report of what it did is a claim, not proof** — two of five haiku
+  branches shipped the identical `contrastAgainst`-accepts-a-gradient-string bug independently;
+  read every diff before committing, don't trust the self-report.
+- **A build/deploy failure may be pre-existing debt, not a regression** (session 6) — check
+  `git log` first.
+- **Re-check the D-ceiling immediately before every write, not once per session** — standing rule,
+  concurrent occupancy makes this load-bearing every session, not just when collisions happen.
 
 ## ▶ MOTION TRACK (A closed+live; B Phase 2 closed, Phase 3 next)
 
-⛔ **TWO SEPARATE TRACKS. Never re-merge them.** They shared one plan file once and it cost a full
-session (D838). No phase number is shared.
+⛔ **TWO SEPARATE TRACKS. Never re-merge them.** No phase number is shared.
 
-### ▶ B. GENERATIVE BACKGROUND ENGINE (Phase 3 — fidelity FIXED 3/3; speed FIXED; colour vibrancy FIXED — Bean's visual sign-off is the only open item)
+### ▶ B. GENERATIVE BACKGROUND ENGINE (Phase 3 — fidelity/speed/colour all FIXED; Bean's visual sign-off is the only open item)
 
-⭐ **Plan: `.claude/plans/2026-08-27-generative-background-engine.md`. Read D886, D887, D888
-before touching this track — they supersede the technique spec's Animation section and record
-two withdrawn claims.**
+⭐ **Plan: `.claude/plans/2026-08-27-generative-background-engine.md`. Read D886-D888, D939-D948
+before touching this track.**
 
-**Shipped and live on the canary:** all three fold layers, verified against matrices extracted
-from the running rig. A missing depth buffer was the stair-step artefact, fixed `ba01581df`.
-Frame cost 0.240ms / 0.300ms.
+**Result as of session 6: 3/3 phases pass** (2.81/2.35/2.73%, ceiling 5%). Colour vibrancy fixed
+(D939, corrected D941); the 1D-vs-2D texture gap closed (D944, alpha-composited procedural field).
+Live playback speed fixed (D930/D932).
 
-**The gap was REAL, is now FIXED and measured closed** (`fidelity-baseline.json`, tracked):
-**5.29%→2.81% / 4.71%→2.35% / 5.63%→2.73%** crop-wide — **3 of 3 now pass the 5% ceiling** (was 2
-of 3 failing).
+**Session 7 additions (D946-D948, a concurrent session, not this LEDGER's authoring session):**
+D946 — blob-density white-coverage regression shipped without checking its own measurement against
+the reference baseline before deploy (24-35% near-white vs reference 0.8%), fixed + a process gate
+added. D947 — an implementer subagent's report claimed three shader/JS fixes that were never
+actually committed (`git show` + a local runtime test caught it, not the report); fixed directly.
 
 ⛔ **TWO CLAIMS ASSERTED PREVIOUSLY ARE WITHDRAWN — do not resurrect either.** An 89.3% silhouette
 IoU (no script, no committed inputs), and "a systematic colour cast" (over-read `bias_over_abs`).
 See D888.
 
 ⛔ **D880: Bean authorised porting the reference's VERTEX SHADER mechanism** (that file only).
-Palette PNG stays off-limits as a shipped asset — it is a measurement fixture, read in place from
-`.claude/scratch/`, never in `plugins/`. Three.js can never ship (page weight, not law).
+Palette PNG stays off-limits as a shipped asset. Three.js can never ship (page weight, not law).
 
-⭐ **Gate E stays held** — `.claude/scratch/stripe-hero-poc/` is in ZERO git files (`git ls-files`
-returns 0). A `git clean -xdf` destroys every reference number permanently. The tracked
-`fidelity-baseline.json` + `reference-matrices.json` are what survive it.
-
-**2026-09-03 (D925-D927) — root cause PROVEN via `/systematic-debugging`, then FIXED mechanically
-(Bean: "this is a mechanical fix, we're cloning something pre-existing").** Not geometry —
-silhouette coverage matches the rig within 0.4pt avg. Every fragment-shader constant was checked
-against the reference's real measured values (not "tuned by eye"): `DEFAULT_GLOW_AMOUNT` was ~20x
-too large, 7 more constants also wrong. Deleted (not corrected) one whole effect ported from the
-reference's DARK theme into a light-only comparison. Gated depth-fade to dark ground only —
-confirmed real for dark, fabricated for light, by reading both reference shaders directly.
-
-**Result: 3/3 phases pass** (2.81/2.35/2.73%, ceiling 5%); `bias_over_abs` ~0.9 (systematic) →
-~0.3 (not); silhouette IoU 0.77-0.80 → 0.90-0.96; SHADED/SILHOUETTE coverage now match exactly
-per-phase. `verify-transform.mjs` still 7/7.
-
-**Same session — live playback speed fixed (D930/D932).** Bean, live-testing: "ours is super fast
-compared to the original." Same shape of bug as the fidelity gap: the reference scales its time
-input (`u_speed=4e-5`) before animating; the shipped engine had none — running ~25x too fast.
-Fixed with a reference-derived `TIME_SCALE` constant; diagnostic tooling updated to match.
-Fidelity numbers unaffected (re-verified, not assumed).
-
-**A demo-page bug caught live, not shipped silently:** the first test page had no colour
-attributes set, so the effect never started — Bean saw an empty container and correctly called it
-"not the Stripe cloth animation". Fixed; confirmed via screenshot, not markup presence (which is
-what missed it the first time).
-
-✅ **Colour vibrancy FIXED (D939, corrected D941, 2026-09-03).** The real defect was HUE RANGE,
-not saturation/lightness — three of four demo stops sat in a 15° pink band. **D939's first fix
-was wrong**: it picked stops whose interpolation path crossed green/yellow/cyan, shipping a
-literal rainbow. Bean caught it on sight ("check the colours of the actual original, it is not a
-rainbow"). **D941 corrected it** by sampling the reference's live screenshot pixels directly
-(not a stale cached texture) — its hues cluster in exactly three families, blue-violet /
-pink-magenta / orange, never green/yellow/cyan — and choosing a new 4-stop palette whose
-interpolation path was verified in a Python simulation of the actual OKLCH code BEFORE shipping,
-not just eyeballed from the four endpoint hues. Applied to the demo page via REST, no shader
-change either time. Screenshot-verified against the fresh reference; `fidelity:compare` re-run
-twice, unaffected both times (3/3, unchanged numbers).
-
-✅ **The 1D-vs-2D texture gap named above is CLOSED (D944, 2026-09-03).** Bean spotted it by eye
-and pushed the investigation: their shader samples the palette texture on BOTH uv axes (confirmed
-reading their fragment shader); ours varied only horizontally. A first candidate fix (normalised
-k-means colour-region blend) was measured against the reference's own palette-a.png and found
-structurally wrong — 0% near-white/near-pure vs the reference's real 0.8%/2.4% — because a
-normalised blend can never show true white or true single-colour purity. The real mechanism is
-alpha-COMPOSITED paint over white, not an averaged blend. `buildFieldImageData()` (procedural
-noise-warped blobs, real alpha-over compositing, zero dependency on the reference's asset) matches
-the reference's measured category (mean/white%/std all close), verified at the TEXTURE level per
-Bean's own correction that a live-page comparison is too confounded to be the primary gate.
-Geometry/shader untouched; deployed to the canary, all gates green.
+⭐ **Gate E stays held** — `.claude/scratch/stripe-hero-poc/` is in ZERO git files. A
+`git clean -xdf` destroys every reference number permanently. `fidelity-baseline.json` +
+`reference-matrices.json` are what survive it.
 
 ### ▶ NEXT — Bean's named visual sign-off (the only open item)
 
 Fidelity, speed and colour vibrancy all pass/fixed. "B-movie 3D VFX" is a look judgement no
 measurement closes — Bean's eye is still the other half of done.
 
-**Shipped this session:** `chromeOffsetPx()` moved to the Tier V shared home so a vanilla consumer
-can read the sticky-header height; the progress marker re-mapped to a **reading line** and the two
-fill drivers collapsed to one; **`milestoneSize: full-height`** with hero-split media
-(+ `milestoneMinHeight`, `entryGap`); the root changed to a `<div>` with the `<ol>` inside it; and
-**`scrollEffect`** — Standard / Move with the scroll / Pin and reveal / Pin and slide sideways,
-gated on orientation, wired to the existing GSAP modules with `providesNatively` collapsing the
-generic picker into one surface.
-
-⛔ **FIVE defects, NONE caught by a gate.** (1) Deleting the CSS branch alone would have killed the
-fill on Chrome+Safari — `view.js` gated on BROWSER CAPABILITY, not on whether the stylesheet branch
-existed; Firefox would have looked perfect. Found by a cold reviewer. (2) A screenshot caught tall
-milestones visibly broken while five assertions passed. (3) The `<ol>` losing its UA padding reset
-put the node 20px off its own rail — found ONLY by comparing against geometry baselined before the
-change. (4) Horizontal orientation stopped laying out entirely after the root change — same
-coupling as the carousel, which WAS fixed in the same commit; missed because only the carousel was
-looked for. (5) The intermediate track `<div>` made `pinned-horizontal` attach and slide nothing.
-
-⛔ **A SPECIFICITY CONTEST LOST SILENTLY, AGAIN — third time in this feature.** Two candidate fixes
-for the tall-milestone layout both changed NOTHING: one had no free space to distribute, the other
-was correct CSS out-ranked by a `--media-under` rule at (0,4,0). Enumerating every rule matching the
-element is the only reliable move. **A losing rule is indistinguishable from an absent one.**
-
-⚠ **Corrections to earlier records, measured:** the marker sat at **109.8% and 116.7%** of viewport
-on a TALL block — below the screen, invisible — not the 87-91% logged from a short one; and the fill
-was **84.6%** complete when a reader starts, not 73%. Every prior figure came from a block SHORTER
-than the viewport, which is exactly what hid the defect. `same-side` also shipped on PREDICTIONS
-with no browser dispatched; Addendum 18 closed that debt — all six predictions held, rail/node
-exactly 712.5.
-
-⚠ **The design doc's "no GSAP loads at 375px" is FALSE and is withdrawn.** The modules ARE enqueued
-on mobile and do nothing: the registry sniffs `data-sgs-fx` server-side where the viewport is
-unknowable. Suppression is BEHAVIOURAL (no transforms, no pin-spacers, no GSAP objects — verified),
-never byte-level. Framework-wide, not timeline-specific.
-
 **Canary fixtures — `[GATE — DO NOT DELETE]`:** **3135** (tall + full-height marker probe, 1618px)
-and **3141** (scrollEffect matrix, all four values). Both are load-bearing for re-measuring; 3079
-and 3072 remain the layout probes.
+and **3141** (scrollEffect matrix, all four values). Both load-bearing for re-measuring; 3079 and
+3072 remain the layout probes.
 
 ### ▶ NEXT for the timeline
 
-Nothing outstanding. Three items were NAMED as out of scope rather than dropped, all in the design
-doc §3.4: `mediaParallax`/`mediaKenBurns` (deferred on the real D597 `@keyframes` collision — add
-them against a stable layout, not during one), per-image crop control under `object-fit: cover`, and
-`milestoneMediaDecorative` being block-wide rather than per-entry (negligible at thumbnail size,
-material now that images are full-height). Plus a **pre-existing 1px** node/rail offset on
-`single-column`, recorded in Addendum 21 and provably untouched by this session.
+Nothing outstanding. Three items NAMED as out of scope in the design doc §3.4:
+`mediaParallax`/`mediaKenBurns` (deferred on the real D597 `@keyframes` collision), per-image crop
+control under `object-fit: cover`, `milestoneMediaDecorative` being block-wide rather than
+per-entry. Plus a pre-existing 1px node/rail offset on `single-column` (Addendum 21).
 
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22. Detail: D725/D726, D731-D733.
 

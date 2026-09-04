@@ -111,7 +111,16 @@ collision key, so a heaviest-first sweep hits it.
 
 ---
 
-## Phase 1 — Touch-hover guard in the shared helpers (Bean-ruled)
+## Phase 1 — Touch-hover guard in the shared helpers (Bean-ruled) — ✅ DONE (D943, 2026-09-03)
+
+The shared helper family (`sgs_hover_state_rules()`/`sgs_hover_guarded_rule()`/
+`sgs_hover_media_wrap()`, `includes/helpers-hover-state.php`) shipped D943, same shape this
+phase specifies. **The CONSUMER-side rollout — every render.php call site that still built a raw
+`:hover` string instead of calling the new helper — was a SEPARATE, larger task, not part of
+this phase's estimate:** D948 (session 7, 2026-09-04) closed all 24 confirmed findings across 24
+files via `node scripts/hover-guard/check.js`. 11 pre-existing UNRESOLVED cross-file cases remain
+(the scanner can't prove them guarded or unguarded), tracked via the `postbuild` advisory
+wrapper, not this plan.
 
 `sgs_emit_state_colour_css()` (`includes/helpers-tokens.php:1275-1287`) emits
 `{sel}:hover,{sel}:focus-visible` unconditionally. There is no `@media (hover: hover)`
@@ -362,12 +371,21 @@ a `git revert` silently un-migrates blocks the progress table still lists as don
 reconciling the stamp set against a live `survey.js` run. Then "which blocks are done" is a
 command, not a document.
 
-**Known gaps, named not hidden:** there is **no contrast guard** anywhere in the colour
-components — a client can pick a pale gradient on white and get unreadable text with no
-warning, against the framework's stated WCAG 2.1 AA baseline. Out of scope here (this is a
-render-layer programme) but it must be stated in the Phase 4 report rather than silently
-shipped. Likewise the 35 custom-property rows fail **in `style.css`**, which no phase above
-touches — they stay refused with a named reason until a phase owns that file.
+**Known gaps, named not hidden:** ⚠ **CORRECTED 2026-09-04 (D948, session 7) — "no contrast
+guard" below is now FALSE.** A WCAG contrast guard was built as a separate side-track (not part
+of this plan's phases): `GradientCapableColourControl.js` gained opt-in `contrastAgainst`/
+`contrastLabel`/`contrastLargeText` props (advisory `Notice`, WARN-only, never blocks save),
+backed by the new shared `src/utils/wcag-contrast.js`. Wired into all 7 text-colour callers with
+a determinable background; `SgsBorderControl.js` (its 44 mounts) has the pass-through props but
+NOT wired to any real caller — Bean's call to close that follow-up rather than carry it as parked
+work. Whatever phase in THIS plan reaches colour-grant migration for a block should check whether
+that block is one of the 7 already-wired callers before assuming the gap below still applies to
+it. Original gap text, now historical: there is no contrast guard anywhere in the colour
+components — a client can pick a pale gradient on white and get unreadable text with no warning,
+against the framework's stated WCAG 2.1 AA baseline. Out of scope here (this is a render-layer
+programme) but it must be stated in the Phase 4 report rather than silently shipped. Likewise the
+35 custom-property rows fail **in `style.css`**, which no phase above touches — they stay refused
+with a named reason until a phase owns that file.
 
 **Stale pointers to fix in Phase 0's commit:** the archived design doc moved to
 `.claude/plans/archive/` at `51deda006`, but `2026-08-23-colour-capability-grant-PLAN.md`'s
@@ -402,4 +420,6 @@ U11 extension attribution (its numbers need re-taking: 15 `fx.js` mounts with 9 
 `states=`, plus `hover-effects.js`'s lazy-`require` mount that no import-following reach map
 can see, and 30 blocks declare `hover` against 16 declaring `fx`) · the 104 no-paint-path rows
 beyond the 20 single-shape blocks · the 35 custom-property rows · shadow colour · repeater-item
-colours · media-atom colours · a contrast guard · `grant.js` itself, pending Phase 5.
+colours · media-atom colours · `grant.js` itself, pending Phase 5. (The contrast guard entry
+formerly here is BUILT — see the correction above; `SgsBorderControl`'s 44-caller wiring is the
+one piece of it still genuinely deferred, deliberately not parked.)
