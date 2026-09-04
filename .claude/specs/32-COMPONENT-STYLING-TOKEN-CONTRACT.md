@@ -200,11 +200,59 @@ The correct design already existed pre-D283 (Spec 11 Decision 24, 2026-05-22): a
   2. **The assembled `<style>` blob** MUST pass `wp_strip_all_tags()` before echoing, so no attribute
      value can close the `<style>` element and open a `<script>`.
   *Done when:* every block emitting a scoped rule from a free-text attr applies (1), and every
-  `<style>` emit site applies (2). ⚠ **STILL NO GATE (re-confirmed 2026-09-04 via `/qc-council`
-  audit).** A road-to-uniform plan doc briefly claimed this closed on 2026-09-04, citing
-  `audit-inline-styling.js` (FR-32-1, a different requirement) as evidence — that claim was
-  wrong and has been corrected in that doc. This item is genuinely open; build shape +
-  dispatch: `.claude/prompts/2026-09-04-spec32-35-closure-prompt.md` Task 1.
+  `<style>` emit site applies (2).
+
+  **CLOSED 2026-09-04.** Both rules now have real, verified coverage — read this before
+  re-litigating either one from scratch:
+
+  - **Rule 1 (keyword allowlisting) was already covered, gate-wide, before this session.**
+    `check-editor-render-parity.js` CHECK B (promoted to blocking at R3-c, 2026-08-20) validates
+    literal PHP-variable-interpolated keyword values against
+    `plugins/sgs-blocks/scripts/css-keyword-enums.json` (object-fit, display, text-align,
+    text-transform, font-style, overflow, flex-direction, justify-content, align-items).
+    `borderStyle` is deliberately NOT in that table — it is covered instead by an identical
+    `in_array( $raw, $allowed, true )` local allowlist repeated verbatim at every emission site
+    (~45 `border_style_raw` sites in `src/blocks/*/render.php`, plus
+    `includes/media/atoms/box-shape.php`'s `sgs_media_atom_box_shape_validate_border_style()` and
+    `src/blocks/form/render.php`'s own copy) — a genuinely different, already-safe mechanism, not
+    a gap. Verified 2026-09-04 by reading every `borderStyle` emission site found by grep across
+    `src/` + `includes/`: zero unvalidated sites. Nothing added to `css-keyword-enums.json`; no
+    CHECK B change needed.
+  - **Rule 2 (blob-level `wp_strip_all_tags()`) had no gate at all before this session — now
+    closed by `plugins/sgs-blocks/scripts/check-style-blob-sanitisation.py`.** Survey/fix/check/
+    self-test triad (THE-MIGRATION-METHOD shape). It parses every render.php with a literal
+    `<style` tag (68 of 83 blocks) across four real emission shapes found live in this tree —
+    `printf`/`sprintf` with one-or-more `%s` placeholders (resolved by PLACEHOLDER POSITION, not
+    argument order, because `sprintf( '<style id="%s">%s</style>', esc_attr($uid),
+    wp_strip_all_tags($css) )` has the content arg SECOND), a `.`-concatenation chain of any
+    shape (plain, ternary-wrapped, or a multi-part interpolated-id opening tag — all three found
+    live: card-grid, product-card, team-member, trust-bar), and both heredoc variants (plain, and
+    an opening tag that itself interpolates PHP for an `id="…"` attribute — modal's shape).
+    18 self-test assertions across 8 fixtures (positive + negative for every shape, plus two
+    regression controls pinning false positives this gate itself produced and fixed during its
+    first real run — see the script's own header). `--check` is **PASS, 0 findings, 68/68
+    classified, 0 unclassified** as of 2026-09-04.
+  - **One real (if low-severity) violation was found and fixed:** `src/blocks/text/render.php`
+    was the single outlier against an otherwise-universal wrap convention — a bare
+    `printf( '<style>%s</style>', $responsive_css )` with no `wp_strip_all_tags()`. Every value
+    feeding `$responsive_css` there was independently constrained (length/colour/keyword-allowlist
+    helpers), so it was not exploitable *today*, but it carried no blob-level safety net against a
+    future free-text addition, unlike every sibling block. Fixed to match the standard idiom.
+  - **What was NOT touched (already correct, cited as reference):**
+    `class-sgs-css-registry.php` already wraps the whole collected frontend buffer in
+    `wp_strip_all_tags()` before the consolidated footer `<style>` — but that filter only fires on
+    a real frontend `render_block` pass, not the editor's ServerSideRender REST call, which is why
+    each render.php's OWN blob-level wrap is still load-bearing and this gate checks it directly.
+    `helpers-scoped-instance-vars.php`'s `sgs_append_scoped_var_style()` already calls
+    `wp_strip_all_tags()` internally — any render.php that only emits via that helper needs no
+    local wrap and is excluded from findings by construction (nothing to find). The generic
+    `render_custom_css()` filter (`includes/custom-css.php`, the `sgsCustomCss` free-text
+    residual) already wraps correctly too.
+  - **Gate status:** wired ADVISORY-only into `postbuild` (`(check || echo [ADVISORY] …)`,
+    matching the hover-guard precedent) for one build cycle before promotion to
+    `scripts/gates.json`'s blocking `fast` tier, per THE-MIGRATION-METHOD's staged-rollout
+    convention. `npm run check:style-blob-sanitisation` / `survey:style-blob-sanitisation` /
+    `selftest:style-blob-sanitisation` run it standalone.
 - **Accessibility:** every hover rule MUST have a keyboard-reachable counterpart. Which pseudo-class is not a free choice — it follows the element: the hover target is itself focusable (link/button/tabindex) → `:focus-visible`; the hover target is a CONTAINER whose focusable content sits inside it (card, list item, section) → `:focus-within`. A `:focus-visible` rule on a non-focusable container can never match — it reads as compliant in source while delivering nothing to a keyboard user. Contrast remains a snapshot-data concern, kept correctable because
   overrides are low-specificity var values, not an ID/`!important` ceiling.
 

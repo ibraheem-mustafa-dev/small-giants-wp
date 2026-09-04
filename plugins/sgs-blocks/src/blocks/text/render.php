@@ -625,7 +625,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 // ---------------------------------------------------------------------------
 
 if ( $responsive_css ) {
-	printf( '<style>%s</style>', $responsive_css ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	printf( '<style>%s</style>', wp_strip_all_tags( $responsive_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
 printf(
