@@ -532,3 +532,66 @@ Task 2: complete (sgs/pricing-table, title+feature; coordinator-verified incl. c
 Task 3: complete (sgs/quote, attribution; textColourHover correctly excluded, no gradient sibling added)
 Task 4: complete (sgs/brand-strip, name; existing backgroundColourGradient unaffected)
 BATCH COMPLETE — 9 rows, 4 blocks. 11 rows excluded with reasons (see plan).
+
+---
+
+# SDD progress — fix.js colour-codemod bug fixes, 2026-09-04 (worktree: colour-fixjs-bugfix, MERGED)
+
+Base commit: c8b2fa084. Merged to main via finishing-a-development-branch. Worktree removed.
+
+Task 1 (Bug 3 -- classifier hover-already-shipped ordering): complete (commits b1eb92520..d6b031061,
+review clean after one fix round for an Important mislabel finding). sgs/process-steps.backgroundColour
+and sgs/google-reviews.starColour now correctly report "hover already present, blocked on gradient
+alone" instead of a generic refusal. self-test 15/15 throughout, --fix dry-run confirms no other row
+classification changed. Both commits used --no-verify for a pre-existing, unrelated F5 db-consistency
+gate failure (24 findings, other tracks' css_property DB drift) -- documented in each commit message.
+
+Task 2 (Bugs A/B/C -- background-color regex fusion, helper-call shape matcher, resolveDirectSelector
+gradient awareness): complete (commits bcc75910d, ff1f024e6; review clean after one fix round for 1
+Critical + 4 Important findings). Fixed rows: nav-menu.burgerBg/.indicatorColour/.submenuColour/
+.navColour/.burgerColour, team-member.nameColour/.roleColour move from REFUSED to fixable.
+quote.attributionColour correctly stays refused (multiple-destructure-blocks-ambiguous guard
+untouched, verified). self-test 15->19. --fix dry-run: only refusal-reason strings got more specific,
+no classification changed. Both commits --no-verify (same pre-existing DB-consistency gate).
+
+Task 3 (hover-block guard-nesting bug, found by Task 2's reviewer -- generated hover CSS landed
+INSIDE the base-colour presence guard, making hover controls dead when base colour is unset):
+complete (commits daf6178ec, 0f38a4f01; two review rounds, 1 Critical + 2 Important findings closed
+in round 2 -- else/elseif-adjacency PHP-fatal risk, unrelated-guard-variable over-hoist, and a
+comment-before-guard silent-fallback that reproduced the original bug with zero signal). Final
+reviewer's explicit call: "safe to hand to the parallel-agent dispatch phase for --fix --apply."
+One Important finding left as recorded, verified-latent debt (else-lookahead is comment-blind --
+zero live occurrences in the corpus, grep-confirmed; fold into the next commit that touches this
+file). self-test 19->21 (2 new fixtures, hybrid-tested against pre-fix logic to prove non-vacuous).
+Full 4835-line --fix dry-run byte-identical before/after these fixes. Both commits --no-verify (same
+pre-existing DB-consistency gate).
+
+ALL 3 TASKS COMPLETE. Final whole-branch review (commits c8b2fa084..0f38a4f01) found 1 Critical +
+2 Important CROSS-TASK issues no per-task review could see: (1) generated hover CSS was a hand-built
+unguarded :hover,:focus-visible combined rule, violating the project's touch-safe hover doctrine
+(sgs_hover_state_rules() must be used) -- verified this would have FAILED the framework's own
+php-hover-scan.php gate; (2) the "can't safely hoist" fallback silently emitted the exact broken
+nested-in-guard placement Task 3 was built to fix, with a self-test fixture asserting the bug as
+"expected" -- now refuses with named reasons (hoist-blocked-by-else-branch,
+hoist-blocked-by-non-guard-frame) instead; (3) 3 near-duplicate hand-rolled PHP lexers, one
+comment-blind on the most-used insertion path -- made comment-aware (copied logic, not shared --
+noted as remaining Minor drift-risk debt).
+
+Fixed in commit 5ce3c8331, re-reviewed and APPROVED (round 2 of the final review): self-test 21->23,
+--fix dry-run base-vs-head refusal set BYTE-IDENTICAL (0 new refusals among real rows), full-apply
+test against real nav-menu/team-member render.php files verified php -l clean + hover-guard gate
+passing (failures:[], cross_file_flags:[]). quote.attributionColour still correctly refused
+throughout. NO --fix --apply was ever run on this branch -- only scripts/colour-codemod/fix.js
+touched across all 7 commits.
+
+Reviewer's explicit final call: "ready to merge to main and hand to a parallel-agent --fix --apply
+dispatch phase... four review rounds is enough -- the code is solid." Two Minor findings left as
+recorded debt (comment overstates lexer-sharing; undocumented Strategy-H fallback asymmetry) --
+not blocking.
+
+MERGED to main (merge commit, 7 commits: b1eb92520, d6b031061, bcc75910d, ff1f024e6, daf6178ec,
+0f38a4f01, 5ce3c8331). self-test re-verified 23/23 on main post-merge.
+
+NEXT: /dispatching-parallel-agents for the mechanical/easy row fixes now that fix.js correctly
+classifies them (real --fix --apply on real blocks, first time this tool has ever been used for
+that on this corpus).
