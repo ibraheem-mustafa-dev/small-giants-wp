@@ -17,6 +17,9 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 $trigger_text       = $attributes['triggerText'] ?? __( 'Open Modal', 'sgs-blocks' );
 $trigger_style      = $attributes['triggerStyle'] ?? 'primary';
 $trigger_colour     = $attributes['triggerColour'] ?? '';
+// D956 — triggerColourGradient is the gradient sibling (778879732 rollout,
+// Phase 3); the D942 comment below already anticipated + freed this slot.
+$trigger_colour_gradient = $attributes['triggerColourGradient'] ?? '';
 $trigger_background = $attributes['triggerBackground'] ?? '';
 $trigger_background_gradient = sgs_css_gradient_value( $attributes['triggerBackgroundGradient'] ?? '' );
 $max_width          = $attributes['maxWidth'] ?? 'medium';
@@ -37,8 +40,14 @@ $root_sel = '.' . $uid;
 // Trigger button colour/background — token-driven, sanitised then routed to
 // the block's own scoped <style> instead of an inline style="…" attribute.
 $trigger_rules = array();
-if ( $trigger_colour ) {
-	$trigger_rules[] = 'color:' . sgs_colour_value( $trigger_colour );
+// D956 — sibling gradient wins when set+valid, same resolve/decl/fallback
+// shape as sgs/counter's numberColour/labelColour.
+$trigger_colour_effective = sgs_resolve_text_colour_or_gradient( $trigger_colour, $trigger_colour_gradient );
+if ( '' !== $trigger_colour_effective ) {
+	$trigger_colour_decl = sgs_text_colour_decl( $trigger_colour_effective );
+	if ( '' !== $trigger_colour_decl ) {
+		$trigger_rules[] = $trigger_colour_decl;
+	}
 	if ( ! $trigger_background && ! $trigger_background_gradient ) {
 		// D942 recipe item 2: the style-variant class default
 		// (`.sgs-modal__trigger--primary`, modal/style.css) paints a
@@ -46,9 +55,9 @@ if ( $trigger_colour ) {
 		// already out-specifies that class default today (via
 		// selector-compounding), so cancel it here via pure cascade
 		// rather than duplicating the class's actual colour value —
-		// frees `triggerColour` for a future `triggerColourGradient`
-		// sibling (`background-clip:text` would otherwise be clipped by
-		// the class's inherited fill). Only when the operator hasn't set
+		// frees `triggerColour` for a `triggerColourGradient` sibling
+		// (`background-clip:text` would otherwise be clipped by the
+		// class's inherited fill). Only when the operator hasn't set
 		// an explicit `triggerBackground` — that already wins this same
 		// rule below and must not be cancelled.
 		$trigger_rules[] = 'background-color:transparent';
@@ -91,6 +100,9 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 $scoped_css_rules = array();
 if ( $trigger_rules ) {
 	$scoped_css_rules[] = $root_sel . ' .sgs-modal__trigger{' . implode( ';', $trigger_rules ) . '}';
+	// @supports fallback for a browser lacking background-clip:text — no-op
+	// when $trigger_colour_effective is a flat colour.
+	$scoped_css_rules[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ' .sgs-modal__trigger', $trigger_colour_effective );
 }
 if ( $dialog_rules ) {
 	$scoped_css_rules[] = $root_sel . ' .sgs-modal__dialog{' . implode( ';', $dialog_rules ) . '}';

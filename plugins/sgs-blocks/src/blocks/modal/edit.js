@@ -13,6 +13,7 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import { resolveColourToken, SgsColourPanel, DesignTokenPicker } from '../../components';
+import { resolveTextColourPreviewStyle } from '../../utils';
 
 const TRIGGER_STYLE_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
@@ -59,6 +60,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		triggerText,
 		triggerStyle,
 		triggerColour,
+		triggerColourGradient,
 		triggerBackground,
 		maxWidth,
 		closeOnOverlay,
@@ -104,7 +106,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// resolveColourToken() (not colourVar(), which is slug-only) is the
 	// correct resolver.
 	const triggerButtonStyle = {
-		color: resolveColourToken( triggerColour, palette ) || undefined,
+		...resolveTextColourPreviewStyle( triggerColour, triggerColourGradient, ( v ) => resolveColourToken( v, palette ) ),
 		backgroundColor: resolveColourToken( triggerBackground, palette ) || undefined,
 	};
 
@@ -131,12 +133,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'triggerText',
 						label: __( 'Button text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: triggerColour,
 								onChange: ( val ) => setAttributes( { triggerColour: val ?? '' } ),
+								gradientValue: triggerColourGradient,
+								onGradientChange: ( val ) => setAttributes( { triggerColourGradient: val ?? '' } ),
 								linked: true,
 							},
 						],

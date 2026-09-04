@@ -29,9 +29,10 @@
 					],
 					"prefix": "trigger",
 					"attrMap": {
-						"css:background-image": "triggerBackgroundGradient"
+						"css:background-image": "triggerBackgroundGradient",
+						"css:color-gradient": "triggerColourGradient"
 					},
-					"_note": "triggerColour/triggerBackground resolve via the default {prefix}{suffix} convention (Colour/Background suffixes). Rendered as a scoped rule `.uid .sgs-modal__trigger{...}` (render.php:37-43,73-75), not inline. triggerBackgroundGradient's attrMap entry added 2026-09-03 (the default convention has no Gradient-suffix awareness, so the gradient sibling floated as an unclaimed orphan)."
+					"_note": "triggerColour/triggerBackground resolve via the default {prefix}{suffix} convention (Colour/Background suffixes). Rendered as a scoped rule `.uid .sgs-modal__trigger{...}` (render.php:37-43,73-75), not inline. triggerBackgroundGradient's attrMap entry added 2026-09-03 (the default convention has no Gradient-suffix awareness, so the gradient sibling floated as an unclaimed orphan). triggerColourGradient's attrMap entry added D956 (778879732 rollout, Phase 3) -- text-colour gradient sibling to triggerColour, background-clip:text mechanism; the D942 comment in render.php already anticipated and freed this slot by cancelling the class default's background-color when no explicit triggerBackground is set."
 				},
 				"dialog": {
 					"label": "Dialog",
@@ -115,6 +116,10 @@
 		},
 		"triggerColour": {
 			"type": "string"
+		},
+		"triggerColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"triggerBackground": {
 			"type": "string"
