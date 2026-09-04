@@ -261,8 +261,22 @@ function resolveDirectSelector( php, varName ) {
 	// the SAME string literal, not a real statement boundary.
 	let start = php.lastIndexOf( '\n', idx );
 	start = start === -1 ? 0 : start + 1;
-	const semiIdx = php.indexOf( ';', idx );
+	// A naive `indexOf(';', idx)` truncates mid-string whenever the assembled
+	// CSS literal carries its OWN semicolon (e.g. `. ';}'` / `;}"`), exactly
+	// the shape `resolveTextGradientChainSelector`'s
+	// `findStatementEndRespectingStrings` was built to handle — reused here so
+	// this, the path most --apply insertions actually go through, gets the
+	// same protection (Finding 1, cross-tier review 2026-09-04).
+	const semiIdx = findStatementEndRespectingStrings( php, start );
 	if ( semiIdx === -1 ) return { ok: false, reason: 'unterminated-statement' };
+	// Minor finding (cross-tier review 2026-09-04): the old naive `indexOf(';', idx)`
+	// guaranteed semiIdx >= idx by construction (a forward search from idx can only
+	// find something at or after idx). `findStatementEndRespectingStrings` searches
+	// from `start` (the statement's own line start), not from `idx` (the helper
+	// call), so that guarantee is no longer automatic — refuse rather than emit a
+	// negative-length / backwards slice if it's ever violated (e.g. two statements
+	// sharing a line, or `start` landing inside an already-open string).
+	if ( semiIdx < idx ) return { ok: false, reason: 'statement-end-before-helper-call' };
 	const end = semiIdx + 1;
 	const stmt = php.slice( start, end );
 	const localIdx = idx - start;
@@ -297,6 +311,516 @@ function resolveDirectSelector( php, varName ) {
 		stmtEnd: end,
 		sinkVar,
 		sinkIsAppend,
+	};
+}
+
+/**
+ * Strategy T (text-gradient-chain) — a SECOND direct-pattern resolver,
+ * alongside resolveDirectSelector, for a text-mechanism row whose base
+ * attribute is routed through the canonical gradient-aware text-colour chain
+ * (`includes/helpers-tokens.php` — see plugins/sgs-blocks/CLAUDE.md "Real
+ * text gradient — the only path that supports it") rather than calling
+ * `sgs_text_colour_decl()` on the base var directly:
+ *
+ *   $effective = sgs_resolve_text_colour_or_gradient( <base value>, <gradient value> );
+ *   if ( '' !== $effective ) {
+ *       $decl = sgs_text_colour_decl( $effective );
+ *       if ( '' !== $decl ) { <a CSS-rule-assembly statement using $decl> }
+ *       ...gradient fallback...
+ *   }
+ *
+ * resolveDirectSelector never finds a candidate here — the base var (or, on
+ * some blocks, the raw `$attributes['attr']` read with NO intermediate var
+ * at all: sgs/nav-menu.submenuColour, sgs/product-card.tagTextColour) is
+ * never itself an argument to sgs_colour_value/sgs_text_colour_decl/
+ * sgs_background_paint_decl — it only reaches `sgs_text_colour_decl()`
+ * two hops later, via `$effective`. `sgs_resolve_text_colour_or_gradient()`
+ * being an unrecognised resolution path is exactly the Bug C gap; the base
+ * attribute sometimes having no intermediate variable at all is Bug B's
+ * "call inside ... a literal" shape. Fixed together because both blockers
+ * sit on the SAME three-statement chain and the second cannot be reached
+ * without the first.
+ *
+ * The consumption statement's selector text (a bare literal, a `$var`, or a
+ * `{$var}` double-quote interpolation — every shape observed live) is
+ * rebuilt as plain PHP source text safe to re-embed inside a NEW
+ * double-quoted string, exactly what `direct-new-statement` mode's inserted
+ * hover statement needs. No deep resolution of an outer selector variable
+ * (e.g. `$root_sel`) is attempted or needed — it is already in scope at the
+ * insertion point, so `{$name_colour_sel}` is valid PHP as-is.
+ */
+
+// The CSS these statements assemble routinely contains its OWN literal `;`
+// (`. ';}'`, `;}"`), so a naive `indexOf(';', …)` from mid-statement finds
+// that one first, short of the statement's real close. Scan quote-state
+// aware instead: `fromIdx` MUST be a position outside any string (a
+// statement's own start) for the initial `inString = null` to be correct.
+//
+// FINDING 3 (final whole-branch review, 2026-09-04): this used to be
+// string-aware but NOT comment-aware — a live gap, since `resolveDirectSelector`
+// ("the path most `--apply` insertions actually go through") depends on this
+// function and could be fed a statement carrying a comment before the real
+// close, e.g. `$arr[] = /* it's */ "sel{color:" . helper($v);` — the
+// apostrophe inside that comment would open a PHANTOM string, throwing off
+// every quote-state decision from that point on. Fixed by reusing the SAME
+// character-by-character comment-detection this file's other two lexers
+// (`scanBraceFrames`, `findMatchingBrace`) already use, rather than writing a
+// fourth independent implementation.
+function findStatementEndRespectingStrings( php, fromIdx ) {
+	let inString = null;
+	let inLineComment = false;
+	let inBlockComment = false;
+	for ( let i = fromIdx; i < php.length; i++ ) {
+		const ch = php[ i ];
+		if ( inLineComment ) {
+			if ( ch === '\n' ) inLineComment = false;
+			continue;
+		}
+		if ( inBlockComment ) {
+			if ( ch === '*' && php[ i + 1 ] === '/' ) {
+				inBlockComment = false;
+				i++;
+			}
+			continue;
+		}
+		if ( inString ) {
+			if ( '\\' === ch ) {
+				i++; // skip the escaped character, whatever it is
+				continue;
+			}
+			if ( ch === inString ) inString = null;
+			continue;
+		}
+		if ( '"' === ch || "'" === ch ) {
+			inString = ch;
+			continue;
+		}
+		if ( ch === '/' && php[ i + 1 ] === '/' ) {
+			inLineComment = true;
+			i++;
+			continue;
+		}
+		if ( ch === '#' ) {
+			inLineComment = true;
+			continue;
+		}
+		if ( ch === '/' && php[ i + 1 ] === '*' ) {
+			inBlockComment = true;
+			i++;
+			continue;
+		}
+		if ( ';' === ch ) return i;
+	}
+	return -1;
+}
+
+// ---------------------------------------------------------------------------
+// Hoisting a `direct-new-statement` insertion out of the base-value guard(s)
+// it would otherwise land inside (the bug this task fixes, cross-tier review
+// 2026-09-04, Bean-flagged). Every Strategy-T-shaped consumption statement
+// observed live sits nested inside one or two `if ( '' !== $var )` presence
+// guards testing the BASE attribute's resolved value (nav-menu:864/866,
+// team-member:629/631) — splicing the hover block at the consumption
+// statement's own `;` therefore lands it inside those same guards, so the
+// hover CSS silently never renders when the base colour is unset (a
+// legitimate client choice). The fix already shipped for `burgerBg`/
+// `burgerHoverColour` (nav-menu:1166-1173): each is its own TOP-LEVEL `if`,
+// sibling to the guard, not nested inside it. These two helpers find that
+// same outer boundary generically, string/comment aware, PHP-tokenizer-lite
+// (not a naive brace count — `{`/`}` inside a string or a `//`/`/* */`
+// comment must not be mistaken for real block delimiters).
+// ---------------------------------------------------------------------------
+
+// Returns the stack of `{ openPos, header }` frames — every unmatched `{`
+// still open at `uptoIdx`, scanning forward from php[0] — where `header` is
+// the raw source text between the previous statement/block boundary
+// (`;`/`{`/`}`) and the `{` itself (e.g. `if ( '' !== $nav_colour_effective )`).
+function scanBraceFrames( php, uptoIdx ) {
+	const stack = [];
+	let inString = null;
+	let inLineComment = false;
+	let inBlockComment = false;
+	let lastBoundary = 0;
+	for ( let i = 0; i < uptoIdx; i++ ) {
+		const ch = php[ i ];
+		if ( inLineComment ) {
+			if ( ch === '\n' ) inLineComment = false;
+			continue;
+		}
+		if ( inBlockComment ) {
+			if ( ch === '*' && php[ i + 1 ] === '/' ) {
+				inBlockComment = false;
+				i++;
+			}
+			continue;
+		}
+		if ( inString ) {
+			if ( ch === '\\' ) {
+				i++;
+				continue;
+			}
+			if ( ch === inString ) inString = null;
+			continue;
+		}
+		if ( ch === '"' || ch === "'" ) {
+			inString = ch;
+			continue;
+		}
+		if ( ch === '/' && php[ i + 1 ] === '/' ) {
+			inLineComment = true;
+			i++;
+			continue;
+		}
+		if ( ch === '#' ) {
+			inLineComment = true;
+			continue;
+		}
+		if ( ch === '/' && php[ i + 1 ] === '*' ) {
+			inBlockComment = true;
+			i++;
+			continue;
+		}
+		if ( ch === '{' ) {
+			stack.push( { openPos: i, header: php.slice( lastBoundary, i ).trim() } );
+			lastBoundary = i + 1;
+			continue;
+		}
+		if ( ch === '}' ) {
+			stack.pop();
+			lastBoundary = i + 1;
+			continue;
+		}
+		if ( ch === ';' ) {
+			lastBoundary = i + 1;
+		}
+	}
+	return stack;
+}
+
+// Given php[openPos] === '{', returns the index of its matching '}' (same
+// string/comment-aware scan as scanBraceFrames), or -1 if unterminated.
+function findMatchingBrace( php, openPos ) {
+	let depth = 0;
+	let inString = null;
+	let inLineComment = false;
+	let inBlockComment = false;
+	for ( let i = openPos; i < php.length; i++ ) {
+		const ch = php[ i ];
+		if ( inLineComment ) {
+			if ( ch === '\n' ) inLineComment = false;
+			continue;
+		}
+		if ( inBlockComment ) {
+			if ( ch === '*' && php[ i + 1 ] === '/' ) {
+				inBlockComment = false;
+				i++;
+			}
+			continue;
+		}
+		if ( inString ) {
+			if ( ch === '\\' ) {
+				i++;
+				continue;
+			}
+			if ( ch === inString ) inString = null;
+			continue;
+		}
+		if ( ch === '"' || ch === "'" ) {
+			inString = ch;
+			continue;
+		}
+		if ( ch === '/' && php[ i + 1 ] === '/' ) {
+			inLineComment = true;
+			i++;
+			continue;
+		}
+		if ( ch === '#' ) {
+			inLineComment = true;
+			continue;
+		}
+		if ( ch === '/' && php[ i + 1 ] === '*' ) {
+			inBlockComment = true;
+			i++;
+			continue;
+		}
+		if ( ch === '{' ) {
+			depth++;
+			continue;
+		}
+		if ( ch === '}' ) {
+			depth--;
+			if ( depth === 0 ) return i;
+			continue;
+		}
+	}
+	return -1;
+}
+
+// A bare presence guard on some variable — `if ( '' !== $var )` — the ONLY
+// enclosing-condition shape every observed base-value guard uses. Deliberately
+// narrow: REFUSES to hoist past anything else (an `elseif`, a compound
+// condition, a guard on an unrelated variable) rather than guessing that it's
+// safe to jump out of it too.
+//
+// `allowedVarNames` (Finding 2, cross-tier review round 2, 2026-09-04) — when
+// given (a non-empty array), the guard's OWN variable must be one of these —
+// the variable(s) this row's own base-attribute resolution chain is provably
+// known to have produced (`varInfo.varName` for the direct strategy;
+// `effectiveVar`/`declVar` for the text-gradient chain). Without this check
+// ANY `if ( '' !== $\w+ )`-shaped guard matched, including one on a totally
+// unrelated variable an outer, unrelated `if` happened to wrap the statement
+// in — hoisting past it moves the hover CSS somewhere it was never gated to
+// be. `allowedVarNames` omitted/empty means "no constraint known" (kept only
+// for defensive callers that haven't supplied one — every real call site in
+// this file always does).
+// Finding 3 (cross-tier review round 2, 2026-09-04): `header` is sliced from
+// the last `;`/`{`/`}` boundary — scanBraceFrames does NOT treat a comment as
+// a boundary, so a `// comment` (or `/* ... */`) line sitting between the
+// previous statement and the guard's own `if` stays embedded in `header`,
+// pushing the real `if` past position 0 and silently failing the `^if`
+// anchor. That failure is SILENT — no refusal reason, nothing — the codemod
+// just falls back to the original un-hoisted (broken) insertion with no
+// signal anything went wrong. Strip leading `//…`/`#…`/`/*…*/` comment text
+// before testing the anchor so a comment line no longer disables hoisting.
+function stripLeadingPhpComments( header ) {
+	let s = header;
+	for ( ;; ) {
+		const trimmed = s.replace( /^\s+/, '' );
+		if ( /^\/\//.test( trimmed ) || /^#/.test( trimmed ) ) {
+			const nl = trimmed.indexOf( '\n' );
+			s = nl === -1 ? '' : trimmed.slice( nl + 1 );
+			continue;
+		}
+		if ( /^\/\*/.test( trimmed ) ) {
+			const close = trimmed.indexOf( '*/' );
+			s = close === -1 ? '' : trimmed.slice( close + 2 );
+			continue;
+		}
+		return trimmed;
+	}
+}
+
+function isSimplePresenceGuard( header, allowedVarNames ) {
+	const cleaned = stripLeadingPhpComments( header );
+	const m = /^if\s*\(\s*''\s*!==\s*\$([A-Za-z_][A-Za-z0-9_]*)\s*\)$/.exec( cleaned );
+	if ( ! m ) return false;
+	if ( allowedVarNames && allowedVarNames.length && ! allowedVarNames.includes( m[ 1 ] ) ) return false;
+	return true;
+}
+
+// Given `php[idx]`, returns the index of the first non-whitespace character
+// at/after `idx` (Findings 1 and 3 both need "what comes right after this
+// position, skipping whitespace").
+function skipWhitespace( php, idx ) {
+	let i = idx;
+	while ( i < php.length && /\s/.test( php[ i ] ) ) i++;
+	return i;
+}
+
+// Walks OUTWARD from the consumption statement's own frames (innermost
+// first), hoisting the insertion point past every enclosing simple presence
+// guard whose variable is one of `allowedVarNames` (Finding 2), and stops —
+// returning the boundary reached so far — the moment an enclosing frame is
+// anything else (not conditional on the base attribute's own presence, per
+// the task brief's own phrasing). For a statement that isn't nested in any
+// such guard at all (frames empty, or the innermost frame doesn't match),
+// returns `stmtEnd` unchanged — the original behaviour.
+//
+// Finding 1 (cross-tier review round 2, 2026-09-04): a guard immediately
+// followed by `else`/`elseif` cannot be hoisted past — splicing the new
+// hover block between the guard's closing `}` and the following `else`/
+// `elseif` keyword is a PHP parse error.
+//
+// Finding 2 (final whole-branch review, 2026-09-04): the above used to REFUSE
+// to hoist past that guard by simply `break`ing with NO signal — the caller
+// then silently fell back to `plan.stmtEnd`, landing the hover rule NESTED
+// INSIDE the base-value guard (the exact dead-control bug Task 3 exists to
+// fix: it never renders when the client leaves the base colour unset). This
+// now returns `{ insertionPoint, refused, reason }` instead of a bare number
+// so the caller can REFUSE the whole row rather than silently emit that
+// known-broken placement. Two distinct refusal reasons, matching the two ways
+// hoisting can be structurally unsafe:
+//   - 'hoist-blocked-by-else-branch' — the guard is a real, matched presence
+//     guard on this row's own base var, but an `else`/`elseif` immediately
+//     follows its `}`, so hoisting past it would be a PHP parse error.
+//   - 'hoist-blocked-by-non-guard-frame' — the enclosing frame's header
+//     mentions one of this row's own base-attribute variables (so it's
+//     plausibly the base-value guard) but doesn't match the narrow
+//     `isSimplePresenceGuard` shape (a compound condition, an unusual
+//     operator, …) — deliberately refused rather than guessed past, per the
+//     same discipline `isSimplePresenceGuard`'s own docblock already states.
+// A frame that does NOT mention any of `allowedVarNames` at all is genuinely
+// UNRELATED nesting (e.g. an `is_admin()` wrapper) — that is the pre-existing,
+// legitimate no-op case (statement isn't nested in a base-value guard at all)
+// and is NOT a refusal.
+function computeHoistedInsertionPoint( php, stmtStart, stmtEnd, allowedVarNames ) {
+	const frames = scanBraceFrames( php, stmtStart );
+	let insertionPoint = stmtEnd;
+	for ( let i = frames.length - 1; i >= 0; i-- ) {
+		const frame = frames[ i ];
+		if ( ! isSimplePresenceGuard( frame.header, allowedVarNames ) ) {
+			const strippedHeader = stripLeadingPhpComments( frame.header );
+			const mentionsOurVar = !! ( allowedVarNames && allowedVarNames.length &&
+				allowedVarNames.some( ( v ) => new RegExp( '\\$' + v + '\\b' ).test( strippedHeader ) ) );
+			if ( mentionsOurVar ) {
+				return { insertionPoint, refused: true, reason: 'hoist-blocked-by-non-guard-frame' };
+			}
+			break;
+		}
+		const closePos = findMatchingBrace( php, frame.openPos );
+		if ( closePos === -1 || closePos < insertionPoint ) break;
+		// Finding 1 (round 2) + Finding 2 (final-branch review, comment-blind
+		// fix): refuse to land between this guard's `}` and a following
+		// `else`/`elseif`. Reuses `stripLeadingPhpComments` — the SAME
+		// function `isSimplePresenceGuard` already relies on — over the WHOLE
+		// remaining text (not a fixed-width slice) so a comment of any length
+		// sitting between the `}` and `else` doesn't silently defeat this
+		// detection the same way an unstripped comment used to defeat the
+		// `^if` anchor.
+		const afterClose = skipWhitespace( php, closePos + 1 );
+		const afterCloseText = stripLeadingPhpComments( php.slice( afterClose ) );
+		if ( /^(else|elseif)\b/.test( afterCloseText ) ) {
+			return { insertionPoint, refused: true, reason: 'hoist-blocked-by-else-branch' };
+		}
+		insertionPoint = closePos + 1;
+	}
+	return { insertionPoint, refused: false, reason: null };
+}
+
+function resolveTextGradientChainSelector( php, attr, varName ) {
+	const callRe = /\$([A-Za-z_][A-Za-z0-9_]*)\s*=\s*sgs_resolve_text_colour_or_gradient\s*\(([\s\S]*?)\)\s*;/g;
+	const attrNeedle = varName
+		? new RegExp( '\\$' + varName + '\\b' )
+		: new RegExp( '\\$attributes\\s*\\[\\s*([\'"])' + attr + '\\1\\s*\\]' );
+	let m;
+	// REFUSE RATHER THAN GUESS (Finding 3, cross-tier review 2026-09-04):
+	// resolveDirectSelector refuses whole with 'multiple-helper-call-sites-
+	// ambiguous' when a base attribute resolves at more than one selector —
+	// deliberate, because a block resolving the same attr at two selectors
+	// (e.g. a desktop/mobile split) needs a human to pick, not a guess. This
+	// sibling resolver used to `break` on the FIRST match at each of its three
+	// steps, silently picking one of possibly-multiple sites. Collect every
+	// candidate at each step instead and refuse on ambiguity, matching
+	// resolveDirectSelector's discipline.
+	const effectiveVarCandidates = [];
+	while ( ( m = callRe.exec( php ) ) ) {
+		if ( attrNeedle.test( m[ 2 ] ) ) {
+			effectiveVarCandidates.push( m[ 1 ] );
+		}
+	}
+	if ( effectiveVarCandidates.length === 0 ) return { ok: false, reason: 'no-sgs_resolve_text_colour_or_gradient-call-for-attr' };
+	if ( effectiveVarCandidates.length > 1 ) return { ok: false, reason: 'multiple-text-gradient-chain-sites-ambiguous' };
+	const effectiveVar = effectiveVarCandidates[ 0 ];
+
+	const declRe = new RegExp( '\\$([A-Za-z_][A-Za-z0-9_]*)\\s*=\\s*sgs_text_colour_decl\\s*\\(\\s*\\$' + effectiveVar + '\\b[^)]*\\)\\s*;', 'g' );
+	const declMatches = [];
+	let dm;
+	while ( ( dm = declRe.exec( php ) ) ) declMatches.push( dm );
+	if ( declMatches.length === 0 ) return { ok: false, reason: 'no-sgs_text_colour_decl-call-for-effective-var' };
+	if ( declMatches.length > 1 ) return { ok: false, reason: 'multiple-text-gradient-chain-sites-ambiguous' };
+	const declMatch = declMatches[ 0 ];
+	const declVar = declMatch[ 1 ];
+
+	// Scan every use of $declVar strictly AFTER its own declaration
+	// statement and take the first one that is genuinely being CONCATENATED
+	// or INTERPOLATED into a string — i.e. skip past guard-condition reads
+	// like `if ( '' !== $decl )`, which is always the FIRST use in this
+	// shape (team-member/nav-menu/product-card all guard before consuming)
+	// and is not itself a consumption site.
+	const useRe = new RegExp( '\\$' + declVar + '\\b', 'g' );
+	useRe.lastIndex = declMatch.index + declMatch[ 0 ].length;
+	let useMatch;
+	// Collect EVERY genuine consumption site rather than stopping at the
+	// first — refused below if more than one is found (Finding 3).
+	const consumptionCandidates = [];
+	while ( ( useMatch = useRe.exec( php ) ) ) {
+		const lineStart = php.lastIndexOf( '\n', useMatch.index ) + 1;
+		// The literal CSS text these statements build routinely contains its
+		// OWN semicolon (e.g. `. ';}'` / `;}"`) — a naive `indexOf(';', …)`
+		// stops there, short of the statement's REAL closing `;`. Scan
+		// string-boundary-aware instead, starting from the statement's own
+		// start (a fresh, unquoted position) so quote state is tracked
+		// correctly across the whole statement.
+		const candStmtEndIdx = findStatementEndRespectingStrings( php, lineStart );
+		if ( candStmtEndIdx === -1 || candStmtEndIdx < useMatch.index ) continue;
+		const candStmt = php.slice( lineStart, candStmtEndIdx + 1 );
+		const localUseIdx = useMatch.index - lineStart;
+		const prefix = candStmt.slice( 0, localUseIdx );
+
+		// Every consumption shape observed pushes into a sink at the very
+		// start of its own statement (`$sink[] = …` / `$sink .= …`) — strip
+		// that prefix off before parsing selector terms, or the sink var
+		// itself (`$css`, `$scoped_css`, …) gets mistaken for a selector term.
+		const pushMatch = /^\s*\$[A-Za-z_][A-Za-z0-9_]*\s*(?:\[\s*\]|\.\s*=)\s*/.exec( candStmt );
+		if ( ! pushMatch ) continue;
+		if ( localUseIdx < pushMatch[ 0 ].length ) continue; // $declVar used before the sink's own `=`/`.=` — not this shape
+		const afterPush = prefix.slice( pushMatch[ 0 ].length );
+
+		// `useRe`'s match starts at `$`, not at the `{` that opens PHP's
+		// `{$var}` string-interpolation syntax — so the opener itself is the
+		// LAST character of `afterPush`, not part of the match. Detect a bare
+		// trailing `{` here (real shape: `"{$name_colour_sel}{{$name_colour_decl}"`
+		// — sel's own `}` closes its interpolation, then a literal `{` opens
+		// the CSS rule, then ANOTHER `{` opens decl's interpolation).
+		const interpMatch = /\{$/.exec( afterPush );
+		if ( interpMatch ) {
+			// Double-quoted-string shape (e.g. team-member: `"{$name_colour_sel}{{$name_colour_decl};}"`).
+			// Everything from the string's own opening `"` up to the
+			// interpolation opener is already literal PHP string text (which
+			// may itself carry other `{$var}` interpolations) — safe to
+			// reuse verbatim.
+			const quoteIdx = afterPush.indexOf( '"' );
+			if ( quoteIdx === -1 ) continue;
+			const beforeInterp = afterPush.slice( quoteIdx + 1, interpMatch.index );
+			const braceIdx = firstRealBraceIndex( beforeInterp );
+			if ( braceIdx === -1 ) continue;
+			const tpl = beforeInterp.slice( 0, braceIdx ).trim();
+			if ( ! tpl ) continue;
+			consumptionCandidates.push( { selectorTemplate: tpl, stmt: candStmt, stmtEndIdx: candStmtEndIdx, stmtStart: lineStart } );
+			continue;
+		}
+
+		// Concatenation shape (e.g. nav-menu: `$uid_sel . ' .sgs-nav-menu__sublink{' . $submenu_colour_decl`;
+		// product-card: `$sgs_tag_text_colour_sel . '{' . $sgs_tag_text_colour_decl`). Walk the `.`-joined
+		// terms and rebuild each as embeddable text: a bare `$var` becomes
+		// `{$var}`, a quoted literal keeps its unescaped contents.
+		const concatMatch = /\.\s*$/.exec( afterPush );
+		if ( ! concatMatch ) continue; // not a concat/interp consumption (e.g. the `if ('' !== $decl)` guard) — skip
+		const beforeConcat = afterPush.slice( 0, concatMatch.index );
+		const termRe = /\$([A-Za-z_][A-Za-z0-9_]*)|(['"])((?:\\.|(?!\2)[^\\])*)\2/g;
+		let built = '';
+		let tm;
+		let sawTerm = false;
+		while ( ( tm = termRe.exec( beforeConcat ) ) ) {
+			sawTerm = true;
+			built += tm[ 1 ] ? `{$${ tm[ 1 ] }}` : tm[ 3 ];
+		}
+		if ( ! sawTerm ) continue;
+		const braceIdx = firstRealBraceIndex( built );
+		if ( braceIdx === -1 ) continue;
+		const tpl = built.slice( 0, braceIdx ).trim();
+		if ( ! tpl ) continue;
+		consumptionCandidates.push( { selectorTemplate: tpl, stmt: candStmt, stmtEndIdx: candStmtEndIdx, stmtStart: lineStart } );
+	}
+	if ( consumptionCandidates.length === 0 ) return { ok: false, reason: 'no-concat-or-interp-consumption-site-found-for-decl-var' };
+	if ( consumptionCandidates.length > 1 ) return { ok: false, reason: 'multiple-text-gradient-chain-sites-ambiguous' };
+	const { selectorTemplate, stmt, stmtEndIdx, stmtStart } = consumptionCandidates[ 0 ];
+
+	const pushMatch = stmt.match( /^\s*\$([A-Za-z_][A-Za-z0-9_]*)\s*(\[\s*\]|\.\s*=)/ );
+	if ( ! pushMatch ) return { ok: false, reason: 'consumption-statement-not-a-recognised-css-assembly-shape' };
+
+	return {
+		ok: true,
+		selectorTemplate,
+		sinkVar: pushMatch[ 1 ],
+		sinkIsAppend: pushMatch[ 2 ].trim().startsWith( '.' ),
+		stmtStart,
+		stmtEnd: stmtEndIdx + 1,
+		// Finding 2 (cross-tier review round 2, 2026-09-04): the ONLY variables
+		// legitimately derived from THIS row's own base attribute in this
+		// chain — used by computeHoistedInsertionPoint to refuse hoisting past
+		// an enclosing guard on some OTHER, unrelated variable.
+		guardVarNames: [ effectiveVar, declVar ],
 	};
 }
 
@@ -477,6 +1001,15 @@ function wireOnlyGradientCheck( db, slug, blockJson, php, baseAttr ) {
 // call site and verifies it is the value-half of a literal
 // `'background-color:' . sgs_colour_value( $varName )` fragment in a single
 // statement, returning the exact source span to replace.
+//
+// `background-color:` need not be an entirely standalone quoted-concatenation
+// segment (`'background-color:' .`) — it may instead be the TAIL of a larger
+// single string literal that also carries a selector/other-property prefix in
+// the SAME quotes (e.g. `' .sgs-nav-menu__burger{background-color:' .`, real
+// shape found live at sgs/nav-menu's burgerBg/indicatorColour). Both shapes
+// are matched by one regex; `prefix`/`quote` come back non-empty only for the
+// fused shape, telling the caller to re-close the literal at the split point
+// rather than deleting the whole thing (Bug A fix, 2026-09-04).
 function resolveFillGradientDirectSite( php, varName ) {
 	const callRe = new RegExp( 'sgs_colour_value\\s*\\(\\s*\\$' + varName + '\\b[^)]*\\)', 'g' );
 	const calls = [];
@@ -486,15 +1019,18 @@ function resolveFillGradientDirectSite( php, varName ) {
 	if ( calls.length > 1 ) return { ok: false, reason: 'multiple-sgs_colour_value-usages-for-var-ambiguous-gradient-target' };
 
 	const call = calls[ 0 ];
-	const fragRe = /(['"])background-color:\1\s*\.\s*/;
-	const before = php.slice( Math.max( 0, call.idx - 80 ), call.idx );
+	// `prefix` (group 2) must contain no quote characters of its own — this
+	// keeps the match anchored on the SAME literal's real opening quote
+	// rather than skipping back across an earlier, unrelated string.
+	const fragRe = /(['"])([^'"]*?)background-color:\1\s*\.\s*/;
+	const before = php.slice( Math.max( 0, call.idx - 200 ), call.idx );
 	const fm = fragRe.exec( before );
 	if ( ! fm || fm.index + fm[ 0 ].length !== before.length ) {
 		return { ok: false, reason: 'value-not-directly-embedded-in-a-background-color-declaration' };
 	}
 	const fragStart = call.idx - ( before.length - fm.index );
 	const fragEnd = call.idx + call.text.length;
-	return { ok: true, fragStart, fragEnd, callText: call.text };
+	return { ok: true, fragStart, fragEnd, prefix: fm[ 2 ], quote: fm[ 1 ], callText: call.text };
 }
 
 // Strategy (3) — BORDER-EXTEND. Finds an EXISTING `sgs_border_gradient_css(`
@@ -736,6 +1272,8 @@ function planRow( db, dir, slug, row, phpText, blockJsonPathOverride ) {
 					gradVarName,
 					fragStart: site.fragStart,
 					fragEnd: site.fragEnd,
+					prefix: site.prefix,
+					quote: site.quote,
 				};
 			} else {
 				const site = resolveBorderGradientExtendSite( phpText, varInfo.varName );
@@ -784,29 +1322,117 @@ function planRow( db, dir, slug, row, phpText, blockJsonPathOverride ) {
 	}
 
 	const varInfo = findVarAssignedFromAttr( phpText, row.attr );
-	if ( ! varInfo.ok ) return { fixable: false, reason: 'REFUSED:' + varInfo.reason };
+
+	// Finding 5 (cross-tier review, 2026-09-04): a failed findVarAssignedFromAttr
+	// used to be an early exit here. Strategy T's own fix (below, Bug B/C)
+	// needed ONE specific case to fall through instead — a text-mechanism row
+	// with NO intermediate PHP variable at all (e.g. sgs/nav-menu's
+	// submenuColour, which reads $attributes['submenuColour'] directly), so
+	// resolveTextGradientChainSelector can still be tried with varName=null.
+	// That widening was accidentally left general: for every OTHER mechanism
+	// a failed var lookup fell all the way through to Strategy H's hover-sink
+	// fallback too, which was never meant to catch this case and has nothing
+	// safe to act on without a resolved var. Gate the fall-through back to
+	// exactly the Strategy-T attempt path; every other mechanism keeps the
+	// original early exit.
+	if ( ! varInfo.ok && mechanism !== 'text' ) {
+		return { fixable: false, reason: 'REFUSED:' + varInfo.reason };
+	}
 
 	const newHoverAttr = hoverAttrName( row.attr );
 
-	const sel = resolveDirectSelector( phpText, varInfo.varName );
-	let renderPlan;
-	if ( sel.ok ) {
-		renderPlan = {
-			mode: 'direct-new-statement',
-			selectorTemplate: sel.selectorTemplate,
-			propText: sel.propText,
-			sinkVar: sel.sinkVar,
-			sinkIsAppend: sel.sinkIsAppend,
-			stmtEnd: sel.stmtEnd,
-		};
-	} else {
+	let renderPlan = null;
+	let primaryFailureReason = varInfo.ok ? null : varInfo.reason;
+
+	if ( varInfo.ok ) {
+		const sel = resolveDirectSelector( phpText, varInfo.varName );
+		if ( sel.ok ) {
+			renderPlan = {
+				mode: 'direct-new-statement',
+				selectorTemplate: sel.selectorTemplate,
+				propText: sel.propText,
+				sinkVar: sel.sinkVar,
+				sinkIsAppend: sel.sinkIsAppend,
+				stmtStart: sel.stmtStart,
+				stmtEnd: sel.stmtEnd,
+				// Finding 2: the only variable provably derived from THIS row's
+				// own base attribute at this call site — resolveDirectSelector
+				// matched a COLOUR_HELPERS call taking `$varInfo.varName`
+				// directly, so that's the sole variable safe to hoist past.
+				guardVarNames: [ varInfo.varName ],
+			};
+		} else {
+			primaryFailureReason = sel.reason;
+		}
+	}
+
+	// Strategy T fallback (Bug B/C, 2026-09-04) — a text-mechanism row routed
+	// through the gradient-aware sgs_resolve_text_colour_or_gradient() ->
+	// sgs_text_colour_decl() chain never has its base var as a direct
+	// COLOUR_HELPERS argument, so resolveDirectSelector (and, when there is
+	// no intermediate variable at all, findVarAssignedFromAttr) always miss
+	// it above. Tried whenever the direct strategies didn't already succeed
+	// — never overrides a working direct-pattern result.
+	if ( ! renderPlan && mechanism === 'text' ) {
+		const chain = resolveTextGradientChainSelector( phpText, row.attr, varInfo.ok ? varInfo.varName : null );
+		if ( chain.ok ) {
+			renderPlan = {
+				mode: 'direct-new-statement',
+				selectorTemplate: chain.selectorTemplate,
+				propText: 'color',
+				sinkVar: chain.sinkVar,
+				sinkIsAppend: chain.sinkIsAppend,
+				stmtStart: chain.stmtStart,
+				stmtEnd: chain.stmtEnd,
+				// Finding 2: the effective/decl variables THIS chain resolved
+				// FOR THIS ROW's own base attribute — the only ones safe to
+				// hoist past.
+				guardVarNames: chain.guardVarNames,
+			};
+		} else {
+			// Strategy T is the MOST SPECIFIC attempt for a text-mechanism row —
+			// its own refusal reason (e.g. Finding 3's
+			// 'multiple-text-gradient-chain-sites-ambiguous') must surface in
+			// the final message, not be silently shadowed by an earlier, less
+			// specific attempt's reason (varInfo/resolveDirectSelector), which
+			// is what the previous `else if ( ! primaryFailureReason )` guard
+			// did — primaryFailureReason is ALWAYS already non-null by this
+			// point for a text-mechanism row (varInfo.ok ? null : varInfo.reason
+			// on line ~1020, or sel.reason above), so that guard never actually
+			// let a chain-specific reason through. Found while adding Finding
+			// 3's own self-test coverage (fixture-l).
+			primaryFailureReason = chain.reason;
+		}
+	}
+
+	// Finding 2 (final whole-branch review, 2026-09-04): a resolved
+	// direct-new-statement renderPlan (Strategy direct OR Strategy T) may
+	// still be unsafe to hoist out of its enclosing base-value guard(s) —
+	// an `else`/`elseif` immediately follows the guard, or an enclosing
+	// frame ambiguously references the base var without matching the
+	// narrow presence-guard shape. `computeHoistedInsertionPoint` used to
+	// silently fall back to `stmtEnd` in both cases at APPLY time, landing
+	// the hover rule NESTED INSIDE the base guard with no signal at all —
+	// the row still reported `WOULD FIX` even though the emitted control
+	// would be silently dead whenever the client leaves the base colour
+	// unset (exactly the bug Task 3 was built to remove). Run the SAME
+	// hoist check here, at PLANNING time, and refuse the row outright
+	// rather than let an unsafe placement through.
+	if ( renderPlan && renderPlan.mode === 'direct-new-statement' && renderPlan.stmtStart != null ) {
+		const hoistCheck = computeHoistedInsertionPoint( phpText, renderPlan.stmtStart, renderPlan.stmtEnd, renderPlan.guardVarNames );
+		if ( hoistCheck.refused ) {
+			return { fixable: false, reason: 'REFUSED:' + hoistCheck.reason };
+		}
+	}
+
+	if ( ! renderPlan ) {
 		// Fallback: Strategy H — an existing hover-rule sink elsewhere in the
 		// same file, for a property name trusted from the DB (not scraped
 		// from the ambiguous/indirect normal-state statement).
 		const propText = safeCssPropertyToken( cssProperty );
-		if ( ! propText ) return { fixable: false, reason: 'REFUSED:' + sel.reason + ' (and no safe single css_property token for hover-sink fallback)' };
+		if ( ! propText ) return { fixable: false, reason: 'REFUSED:' + primaryFailureReason + ' (and no safe single css_property token for hover-sink fallback)' };
 		const sink = findHoverSink( phpText );
-		if ( ! sink.ok ) return { fixable: false, reason: 'REFUSED:' + sel.reason + ' (hover-sink fallback also failed: ' + sink.reason + ')' };
+		if ( ! sink.ok ) return { fixable: false, reason: 'REFUSED:' + primaryFailureReason + ' (hover-sink fallback also failed: ' + sink.reason + ')' };
 		renderPlan = {
 			mode: 'sink-array-push',
 			selectorTemplate: sink.sink.selectorTemplate,
@@ -1077,7 +1703,16 @@ function applyGradientRenderPhpFix( phpText, gp ) {
 	// own assignment always precedes its first use).
 	let replacement;
 	if ( gp.mode === 'fill-direct' ) {
-		replacement = `sgs_background_paint_decl( $${ gp.phpVarName }, $${ gp.gradVarName } )`;
+		const call = `sgs_background_paint_decl( $${ gp.phpVarName }, $${ gp.gradVarName } )`;
+		// A fused literal (Bug A) carries a non-empty `prefix` — the text that
+		// sat between the literal's opening quote and `background-color:`
+		// (e.g. a selector like ` .sgs-nav-menu__burger{`). That text is NOT
+		// part of what's being replaced (fragStart starts at the quote), so
+		// it must be re-emitted, re-closed with the SAME quote char, before
+		// concatenating the paint-decl call. An empty prefix (the original,
+		// standalone `'background-color:' .` shape) replaces cleanly with
+		// just the call, unchanged from before this fix.
+		replacement = gp.prefix ? `${ gp.quote }${ gp.prefix }${ gp.quote } . ${ call }` : call;
 	} else {
 		replacement = `'' !== $${ gp.gradVarName } ? $${ gp.gradVarName } : sgs_colour_value( $${ gp.phpVarName } )`;
 	}
@@ -1113,20 +1748,69 @@ function applyRenderPhpFix( phpText, plan ) {
 		return phpText.slice( 0, plan.insertBeforeLine ) + insertion + phpText.slice( plan.insertBeforeLine );
 	}
 
-	const indent = indentOfLine( phpText, phpText.lastIndexOf( '\n', plan.stmtEnd - 1 ) + 1 );
+	// The consumption statement (`plan.stmtEnd`) routinely sits nested inside
+	// one or two `if ( '' !== $var )` guards testing the BASE attribute's
+	// resolved value — splicing at the statement's own `;` would land the
+	// hover block INSIDE those guards, so it silently never renders when the
+	// base colour is unset. Hoist past every such enclosing guard (matching
+	// the already-shipped burgerBg/burgerHoverColour top-level shape,
+	// nav-menu:1166-1173) via `computeHoistedInsertionPoint` — a no-op
+	// (returns `plan.stmtEnd` unchanged) when the statement isn't nested in a
+	// base-value guard at all, or when `plan.stmtStart` is unavailable (an
+	// older/other caller that hasn't been updated to supply it).
+	//
+	// Finding 2 (final-branch review): `computeHoistedInsertionPoint` now
+	// returns `{ insertionPoint, refused, reason }`. A `refused` result should
+	// never reach this point — `planRow` runs the SAME check before marking a
+	// row fixable and refuses it there instead (see the "Finding 2" comment
+	// in `planRow`). Treat it as an internal-consistency failure rather than
+	// silently falling back to the broken in-guard placement, so a future
+	// caller that skips the planning-time gate fails loudly instead of
+	// reintroducing the exact bug this fix removes.
+	let insertAt = plan.stmtEnd;
+	if ( plan.stmtStart != null ) {
+		const hoist = computeHoistedInsertionPoint( phpText, plan.stmtStart, plan.stmtEnd, plan.guardVarNames );
+		if ( hoist.refused ) {
+			throw new Error(
+				'internal: applyRenderPhpFix reached a hoist-refused row (' + hoist.reason + ') — ' +
+				'planRow should have refused this row before it ever reached --apply'
+			);
+		}
+		insertAt = hoist.insertionPoint;
+	}
+	const indent = indentOfLine( phpText, phpText.lastIndexOf( '\n', insertAt - 1 ) + 1 );
 	let insertion;
+	// FINDING 1 (final-branch review): never hand-build a combined
+	// `:hover,:focus-visible{…}` selector literal — a combined selector list
+	// can never be wrapped in the touch-safe media/class guards, because the
+	// guard must apply to `:hover` ONLY, never to `:focus-visible` (keyboard
+	// users need focus styling on every device, including touchscreens). Call
+	// `sgs_hover_state_rules()` (`includes/helpers-hover-state.php`) instead —
+	// the ONE place a `:hover` rule is built (`plugins/sgs-blocks/CLAUDE.md`
+	// "Touch-safe HOVER helpers"). It splits the guarded `:hover` rule from
+	// the unguarded `:focus-visible` rule and is exactly what the codemod's
+	// own cited reference model (nav-menu:1172,
+	// `sgs_hover_state_rules( $uid_sel . ' .sgs-nav-menu__burger', 'background-color:' . sgs_colour_value( $burger_hover_slug ), ':focus-visible' )`)
+	// already does correctly. Double-quoted selectorTemplate, matching both
+	// branches below — NOT single-quoted — because a selectorTemplate can
+	// legitimately carry `{$var}` PHP-interpolation syntax (Strategy T,
+	// resolveTextGradientChainSelector, e.g. `{$uid_sel} .sgs-nav-menu__sublink`
+	// for sgs/nav-menu.submenuColour); PHP only expands `{$var}` inside double
+	// quotes.
+	const hoverCall =
+		`sgs_hover_state_rules( "${ plan.selectorTemplate }", "${ plan.propText }:" . sgs_colour_value( ${ hoverGuardVar } ), ':focus-visible' )`;
 	if ( plan.sinkIsAppend ) {
 		insertion =
 			`\n${ indent }if ( '' !== ( ${ hoverGuardVar } ?? '' ) ) {\n` +
-			`${ indent }\t$${ plan.sinkVar } .= '${ plan.selectorTemplate }:hover,${ plan.selectorTemplate }:focus-visible{' . '${ plan.propText }:' . sgs_colour_value( ${ hoverGuardVar } ) . '}';\n` +
+			`${ indent }\t$${ plan.sinkVar } .= ${ hoverCall };\n` +
 			`${ indent }}`;
 	} else {
 		insertion =
 			`\n${ indent }if ( '' !== ( ${ hoverGuardVar } ?? '' ) ) {\n` +
-			`${ indent }\t$${ plan.sinkVar }[] = "${ plan.selectorTemplate }:hover,${ plan.selectorTemplate }:focus-visible{${ plan.propText }:" . sgs_colour_value( ${ hoverGuardVar } ) . '}';\n` +
+			`${ indent }\t$${ plan.sinkVar }[] = ${ hoverCall };\n` +
 			`${ indent }}`;
 	}
-	const newSrc = phpText.slice( 0, plan.stmtEnd ) + insertion + phpText.slice( plan.stmtEnd );
+	const newSrc = phpText.slice( 0, insertAt ) + insertion + phpText.slice( insertAt );
 	return newSrc;
 }
 
@@ -1244,6 +1928,40 @@ function collectPlans( db, cache ) {
 					} );
 					continue;
 				}
+
+				// A fill/border (or unresolved) mechanism still needing only the
+				// GRADIENT dimension — same "hover already shipped" situation as
+				// the text branch above, just a different mechanism. Found live
+				// 2026-09-04 (sgs/process-steps.backgroundColour): this branch used
+				// to fall straight through to the generic row-shape-not-supported
+				// reason below, whose wording ("no SgsColourPanel row object to
+				// clone a hover state from") is written for a row that STILL NEEDS
+				// hover — it reads as if nothing has been done, when hover is
+				// already live in render.php and only the gradient dimension is
+				// out of scope. Named honestly instead of restating the generic
+				// deferred-mechanism reason.
+				refusals.push( {
+					dir,
+					slug,
+					rowKey: row.rowKey,
+					attr: row.attr,
+					reason:
+						// `mechanism` is null here ONLY when 2+ mechanisms resolved
+						// (ambiguous which one) -- a zero-mechanism row is already
+						// filtered out upstream by surveyVerdictForRow's own
+						// 'REFUSED:no-css_property' check (line ~1165), which every
+						// row in this loop has already passed via the
+						// AUTOFIXABLE:helper-at-existing-selector gate above. So the
+						// null branch is never "we don't know the mechanism" --
+						// naming it 'unresolved' would misrepresent an ambiguous-
+						// multi-mechanism row as an unresolved one. Name the real
+						// mechanism list instead.
+						'REFUSED:gradient-path-deferred (mechanism=' + ( mechanism || mech.mechanisms.join( '|' ) ) +
+						'; standalone DesignTokenPicker row shape — no SgsColourPanel row object to safely ' +
+						'rewrite the gradient wiring into, out of scope for this pass; hover state already ' +
+						'present, this row is blocked on gradient alone)',
+				} );
+				continue;
 			}
 
 			refusals.push( {
@@ -1548,6 +2266,29 @@ if ( $attrib_colour ) {
 		assert( r.reason === 'no-css-rule-brace-in-literal-prefix', 'wrong reason: ' + r.reason );
 	} );
 
+	// FINDING 3 (final whole-branch review, 2026-09-04): findStatementEndRespectingStrings
+	// used to be string-aware but NOT comment-aware. `resolveDirectSelector` —
+	// "the path most --apply insertions actually go through" per its own
+	// comment — depends on it, so an apostrophe/quote-like character inside a
+	// `/* ... */` comment sitting BEFORE the statement's real string literal
+	// could open a PHANTOM string and throw off every quote-state decision
+	// from that point on, e.g. `it's` inside a comment. Proves the fix
+	// resolves the statement correctly THROUGH such a comment rather than
+	// being confused by the apostrophe inside it.
+	check( 'FINDING 3: findStatementEndRespectingStrings (via resolveDirectSelector) is not confused by an apostrophe inside a comment on the statement it is scanning', () => {
+		const commentedPhp = `<?php
+$title_colour = $attributes['titleColour'] ?? '';
+$scoped_css_parts = array();
+if ( '' !== $title_colour ) {
+	$scoped_css_parts[] = /* it's fine, not a string */ ".{\$uid}.sgs-fixture__title{color:" . sgs_colour_value( $title_colour ) . ';}';
+}
+`;
+		const r = resolveDirectSelector( commentedPhp, 'title_colour' );
+		assert( r.ok, 'expected ok, got refusal: ' + r.reason );
+		assert( r.selectorTemplate === '.{$uid}.sgs-fixture__title', 'selector mismatch (comment likely threw off quote-state tracking): ' + r.selectorTemplate );
+		assert( r.propText === 'color', 'property mismatch: ' + r.propText );
+	} );
+
 	// --- end-to-end: dry-run then apply on a real fixture directory ---
 	const fx1 = makeFixture( tmpRoot, 'fixture-a', {
 		editJs: FIXTURE_EDIT_JS,
@@ -1612,7 +2353,11 @@ if ( $attrib_colour ) {
 		const count = countLiteralStatesElements( editSrc );
 		assert( count === 2, 'expected 2 literal states elements after fix, got ' + count );
 		const php = fs.readFileSync( path.join( fx1, 'render.php' ), 'utf8' );
-		assert( php.includes( ':hover' ), 'render.php missing :hover rule after fix' );
+		// FINDING 1 (final-branch review): the source no longer contains a
+		// literal `:hover` selector text at all — that string is now built
+		// INSIDE `sgs_hover_state_rules()` at runtime, not spliced into the
+		// PHP source. Assert the call itself is present instead.
+		assert( php.includes( 'sgs_hover_state_rules(' ), 'render.php missing sgs_hover_state_rules() call after fix' );
 		const bj = JSON.parse( fs.readFileSync( path.join( fx1, 'block.json' ), 'utf8' ) );
 		assert( !! bj.attributes.titleColourHover, 'block.json missing titleColourHover attribute' );
 	} );
@@ -1794,7 +2539,9 @@ if ( '' !== $label_colour ) {
 		babelParser.parse( finalEditSrc, BABEL_PARSE_OPTS ); // throws on any corruption — that IS the assertion.
 		assert( ( finalEditSrc.match( /key:\s*['"]hover['"]/g ) || [] ).length === 2, 'expected exactly 2 hover states after both fixes, got a corrupted or incomplete result' );
 		const finalPhp = fs.readFileSync( path.join( fx4, 'render.php' ), 'utf8' );
-		assert( ( finalPhp.match( /:hover/g ) || [] ).length === 2, 'expected exactly 2 :hover rules in render.php' );
+		// FINDING 1 (final-branch review): no literal `:hover` selector text in
+		// source any more — count the sgs_hover_state_rules() calls instead.
+		assert( ( finalPhp.match( /sgs_hover_state_rules\(/g ) || [] ).length === 2, 'expected exactly 2 sgs_hover_state_rules() calls in render.php' );
 	} );
 
 	// --- Unclonable-sibling-attribute control (CRITICAL DEFECT, cross-tier
@@ -2195,6 +2942,570 @@ if ( '' !== $number_background ) {
 		const bj = JSON.parse( fs.readFileSync( path.join( fx8, 'block.json' ), 'utf8' ) );
 		assert( !! bj.attributes.numberBackgroundHover, 'block.json missing numberBackgroundHover' );
 		assert( ! bj.attributes.numberBackgroundHoverGradient, 'block.json must NOT declare numberBackgroundHoverGradient — nothing writes to it any more' );
+	} );
+
+	// -------------------------------------------------------------------
+	// FINDING 2 (cross-tier review, 2026-09-04) — fix.js:344-461's new
+	// quote/statement-scanning logic (findStatementEndRespectingStrings,
+	// resolveTextGradientChainSelector) shipped with ZERO dedicated
+	// self-test coverage. Four fixtures below close that gap:
+	//   (i)   fixture-i  — a `;`-inside-a-string-literal statement, the exact
+	//         shape Finding 1's fix addresses (regression-guards Finding 1).
+	//   (ii)  fixture-j  — the `{$var}`-double-quote-interpolation
+	//         consumption shape (team-member's real pattern).
+	//   (iii) fixture-k  — the no-intermediate-PHP-variable, concatenation
+	//         consumption shape (nav-menu.submenuColour's real pattern) —
+	//         also regression-guards Finding 5 (this is the ONE case that
+	//         must still fall through when findVarAssignedFromAttr fails).
+	//   (iv)  fixture-l  — TWO consumption sites for one decl var: must be
+	//         REFUSED as ambiguous (Finding 3), never silently pick the
+	//         first, file byte-identical after.
+	// -------------------------------------------------------------------
+
+	// --- (i) semicolon-inside-string-literal statement (Finding 1 regression guard) ---
+	const FIXTURE_EDIT_JS_SEMI = FIXTURE_EDIT_JS.split( 'titleColour' ).join( 'bannerColour' );
+	const FIXTURE_RENDER_PHP_SEMI = `<?php
+$banner_colour = $attributes['bannerColour'] ?? '';
+$scoped_css_parts = array();
+if ( '' !== $banner_colour ) {
+	$scoped_css_parts[] = ".{\$uid}.sgs-fixture-i__banner{color:" . sgs_colour_value( $banner_colour ) . ';}';
+}
+`;
+	const fx9 = makeFixture( tmpRoot, 'fixture-i', {
+		editJs: FIXTURE_EDIT_JS_SEMI,
+		renderPhp: FIXTURE_RENDER_PHP_SEMI,
+		blockJson: {
+			apiVersion: 3,
+			name: 'sgs/fixture-i',
+			attributes: { bannerColour: { type: 'string', default: '' } },
+		},
+	} );
+	const db9 = { 'sgs/fixture-i': { bannerColour: { css_property: 'color' } } };
+
+	check( 'FINDING 1 regression guard: resolveDirectSelector captures the FULL statement when the literal carries its own `;` (nav-menu:1168 shape), not a truncated one', () => {
+		const cache = new SourceCache();
+		const rows = rowsInFile( cache, path.join( fx9, 'edit.js' ) );
+		assert( rows.length === 1, 'expected exactly one row in fixture-i' );
+		const phpText = fs.readFileSync( path.join( fx9, 'render.php' ), 'utf8' );
+		const plan = planRow( db9, 'fixture-i', 'sgs/fixture-i', rows[ 0 ], phpText, path.join( fx9, 'block.json' ) );
+		assert( plan.fixable, 'expected fixable, got refusal: ' + JSON.stringify( plan ) );
+		assert( plan.mode === 'direct-new-statement', 'expected the resolveDirectSelector path, got mode=' + plan.mode );
+
+		const result = applyPlan(
+			Object.assign( {}, plan, {
+				dir: 'fixture-i',
+				slug: 'sgs/fixture-i',
+				editFile: path.join( fx9, 'edit.js' ),
+				renderFile: path.join( fx9, 'render.php' ),
+				blockJsonPath: path.join( fx9, 'block.json' ),
+			} ),
+			true
+		);
+		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
+
+		const php = fs.readFileSync( path.join( fx9, 'render.php' ), 'utf8' );
+		// THIS is the assertion that catches the Finding 1 regression: the
+		// ORIGINAL statement, closing brace and all, must survive intact and
+		// UNSPLIT — a naive `indexOf(';', …)` would have truncated it right
+		// after the literal's OWN `;`, inserting the new hover statement mid-
+		// string and corrupting the file.
+		assert(
+			php.includes( "sgs_colour_value( $banner_colour ) . ';}';" ),
+			'FINDING 1 REGRESSION: the original semicolon-inside-string statement was truncated/split by the fix — got: ' + php
+		);
+		// FINDING 1 (final-branch review): no literal `:hover` selector text in
+		// source any more — assert the sgs_hover_state_rules() call instead.
+		assert( php.includes( 'sgs_hover_state_rules(' ), 'render.php missing sgs_hover_state_rules() call after fix' );
+		babelParser.parse( fs.readFileSync( path.join( fx9, 'edit.js' ), 'utf8' ), BABEL_PARSE_OPTS ); // throws on corruption.
+		const bj = JSON.parse( fs.readFileSync( path.join( fx9, 'block.json' ), 'utf8' ) );
+		assert( !! bj.attributes.bannerColourHover, 'block.json missing bannerColourHover' );
+	} );
+
+	// --- (ii) `{$var}` double-quote interpolation consumption shape (team-member's real pattern) ---
+	const FIXTURE_EDIT_JS_INTERP = `import { __ } from '@wordpress/i18n';
+import { SgsColourPanel } from '../../components/SgsColourPanel';
+
+export default function Edit( { attributes, setAttributes } ) {
+	const { nameColour } = attributes;
+	return (
+		<SgsColourPanel
+			rows={ [
+				{
+					key: 'name',
+					label: __( 'Name colour', 'sgs-blocks' ),
+					gradientCapable: true,
+					states: [
+						{
+							key: 'normal',
+							label: __( 'Normal', 'sgs-blocks' ),
+							value: nameColour,
+							onChange: ( val ) => setAttributes( { nameColour: val ?? '' } ),
+						},
+					],
+				},
+			] }
+		/>
+	);
+}
+`;
+	const FIXTURE_RENDER_PHP_INTERP = `<?php
+$name_colour = $attributes['nameColour'] ?? '';
+$name_colour_gradient = $attributes['nameColourGradient'] ?? '';
+$name_colour_sel = $root_sel . ' .sgs-fixture-j__name';
+$scoped_css = array();
+$name_colour_effective = sgs_resolve_text_colour_or_gradient( $name_colour, $name_colour_gradient );
+if ( '' !== $name_colour_effective ) {
+	$name_colour_decl = sgs_text_colour_decl( $name_colour_effective );
+	if ( '' !== $name_colour_decl ) {
+		$scoped_css[] = "{\$name_colour_sel}{{\$name_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $name_colour_sel, $name_colour_effective );
+}
+`;
+	const fx10 = makeFixture( tmpRoot, 'fixture-j', {
+		editJs: FIXTURE_EDIT_JS_INTERP,
+		renderPhp: FIXTURE_RENDER_PHP_INTERP,
+		blockJson: {
+			apiVersion: 3,
+			name: 'sgs/fixture-j',
+			attributes: {
+				nameColour: { type: 'string', default: '' },
+				nameColourGradient: { type: 'string', default: '' },
+			},
+		},
+	} );
+	const db10 = { 'sgs/fixture-j': { nameColour: { css_property: 'color' } } };
+
+	check( 'resolveTextGradientChainSelector resolves the `{$var}` double-quote-interpolation consumption shape (team-member pattern)', () => {
+		const cache = new SourceCache();
+		const rows = rowsInFile( cache, path.join( fx10, 'edit.js' ) );
+		assert( rows.length === 1, 'expected exactly one row in fixture-j' );
+		const phpText = fs.readFileSync( path.join( fx10, 'render.php' ), 'utf8' );
+		const plan = planRow( db10, 'fixture-j', 'sgs/fixture-j', rows[ 0 ], phpText, path.join( fx10, 'block.json' ) );
+		assert( plan.fixable, 'expected fixable via Strategy T, got refusal: ' + JSON.stringify( plan ) );
+		assert( plan.mode === 'direct-new-statement', 'expected the chain-resolved path, got mode=' + plan.mode );
+		assert( plan.selectorTemplate === '{$name_colour_sel}', 'wrong selector rebuilt from the interpolation shape: ' + plan.selectorTemplate );
+
+		const result = applyPlan(
+			Object.assign( {}, plan, {
+				dir: 'fixture-j',
+				slug: 'sgs/fixture-j',
+				editFile: path.join( fx10, 'edit.js' ),
+				renderFile: path.join( fx10, 'render.php' ),
+				blockJsonPath: path.join( fx10, 'block.json' ),
+			} ),
+			true
+		);
+		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
+		const php = fs.readFileSync( path.join( fx10, 'render.php' ), 'utf8' );
+		// FINDING 1 (final-branch review): no literal `:hover` selector text in
+		// source any more — the rebuilt selector is passed as the FIRST
+		// argument to sgs_hover_state_rules() instead of being concatenated
+		// directly onto `:hover` in the source.
+		assert( php.includes( 'sgs_hover_state_rules( "{$name_colour_sel}",' ), 'expected the rebuilt interpolation selector to appear as the sgs_hover_state_rules() call\'s first argument — got: ' + php );
+
+		// PLACEMENT LOCK (the task-2-review bug this task fixes): the fixture's
+		// consumption statement sits nested TWO `if` levels deep
+		// (`if ('' !== $name_colour_effective) { if ('' !== $name_colour_decl) { <consumption> } }`
+		// — the exact team-member:629/631 shape). A naive splice at the
+		// consumption statement's own `;` lands the new hover `if` INSIDE both
+		// guards, which is syntactically valid but semantically dead whenever
+		// the base colour is unset. Assert the hover block landed AFTER the
+		// OUTER guard's own closing brace, not merely that ':hover' appears
+		// somewhere in the file (that weaker assertion above would pass either
+		// way — it's exactly what let this bug through review the first time).
+		const outerGuardCloseMarker = "gradient_fallback_rule( $name_colour_sel, $name_colour_effective );\n}";
+		const outerGuardCloseIdx = php.indexOf( outerGuardCloseMarker );
+		assert( outerGuardCloseIdx !== -1, 'fixture render.php missing its expected outer-guard close shape — fixture drifted: ' + php );
+		const hoverIfIdx = php.indexOf( "if ( '' !== ( $attributes['nameColourHover']" );
+		assert( hoverIfIdx !== -1, 'hover if-guard not found in output: ' + php );
+		assert(
+			hoverIfIdx > outerGuardCloseIdx,
+			'PLACEMENT REGRESSION: the hover if-block landed INSIDE the base-value guard(s) instead of hoisted past them — got: ' + php
+		);
+		// The hoisted block must also be TOP-LEVEL (0 indent), matching the
+		// already-shipped burgerBg/burgerHoverColour shape (nav-menu:1166-1173)
+		// — not merely somewhere after the guard but still nested a level.
+		assert(
+			/^if \( '' !== \( \$attributes\['nameColourHover'\]/m.test( php ),
+			'hover if-block is not at top-level (0 indent) — expected the burgerBg/burgerHoverColour sibling shape: ' + php
+		);
+	} );
+
+	// --- (iii) no-intermediate-variable, concatenation consumption shape (nav-menu.submenuColour's real pattern) ---
+	const FIXTURE_EDIT_JS_NOVAR = `import { __ } from '@wordpress/i18n';
+import { SgsColourPanel } from '../../components/SgsColourPanel';
+
+export default function Edit( { attributes, setAttributes } ) {
+	const { sublinkColour } = attributes;
+	return (
+		<SgsColourPanel
+			rows={ [
+				{
+					key: 'sublink',
+					label: __( 'Sublink colour', 'sgs-blocks' ),
+					gradientCapable: true,
+					states: [
+						{
+							key: 'normal',
+							label: __( 'Normal', 'sgs-blocks' ),
+							value: sublinkColour,
+							onChange: ( val ) => setAttributes( { sublinkColour: val ?? '' } ),
+						},
+					],
+				},
+			] }
+		/>
+	);
+}
+`;
+	const FIXTURE_RENDER_PHP_NOVAR = `<?php
+$uid_sel = '.' . $uid;
+$css = '';
+$sublink_colour_effective = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['sublinkColour'] ?? '' ),
+	(string) ( $attributes['sublinkColourGradient'] ?? '' )
+);
+if ( '' !== $sublink_colour_effective ) {
+	$sublink_colour_decl = sgs_text_colour_decl( $sublink_colour_effective );
+	if ( '' !== $sublink_colour_decl ) {
+		$css .= $uid_sel . ' .sgs-fixture-k__sublink{' . $sublink_colour_decl . ';}';
+	}
+	$css .= sgs_text_colour_gradient_fallback_rule( $uid_sel . ' .sgs-fixture-k__sublink', $sublink_colour_effective );
+}
+`;
+	const fx11 = makeFixture( tmpRoot, 'fixture-k', {
+		editJs: FIXTURE_EDIT_JS_NOVAR,
+		renderPhp: FIXTURE_RENDER_PHP_NOVAR,
+		blockJson: {
+			apiVersion: 3,
+			name: 'sgs/fixture-k',
+			attributes: {
+				sublinkColour: { type: 'string', default: '' },
+				sublinkColourGradient: { type: 'string', default: '' },
+			},
+		},
+	} );
+	const db11 = { 'sgs/fixture-k': { sublinkColour: { css_property: 'color' } } };
+
+	check( 'resolveTextGradientChainSelector resolves the no-intermediate-variable, direct-call-argument consumption shape (nav-menu.submenuColour pattern) — also regression-guards Finding 5\'s narrowed fall-through', () => {
+		const cache = new SourceCache();
+		const rows = rowsInFile( cache, path.join( fx11, 'edit.js' ) );
+		assert( rows.length === 1, 'expected exactly one row in fixture-k' );
+		const phpText = fs.readFileSync( path.join( fx11, 'render.php' ), 'utf8' );
+		const plan = planRow( db11, 'fixture-k', 'sgs/fixture-k', rows[ 0 ], phpText, path.join( fx11, 'block.json' ) );
+		assert( plan.fixable, 'expected fixable via Strategy T with varName=null, got refusal: ' + JSON.stringify( plan ) );
+		assert( plan.mode === 'direct-new-statement', 'expected the chain-resolved path, got mode=' + plan.mode );
+		assert( plan.selectorTemplate === "{$uid_sel} .sgs-fixture-k__sublink", 'wrong selector rebuilt from the concat shape: ' + plan.selectorTemplate );
+
+		const result = applyPlan(
+			Object.assign( {}, plan, {
+				dir: 'fixture-k',
+				slug: 'sgs/fixture-k',
+				editFile: path.join( fx11, 'edit.js' ),
+				renderFile: path.join( fx11, 'render.php' ),
+				blockJsonPath: path.join( fx11, 'block.json' ),
+			} ),
+			true
+		);
+		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
+		const php = fs.readFileSync( path.join( fx11, 'render.php' ), 'utf8' );
+		// FINDING 1 (final-branch review): no literal `:hover` selector text in
+		// source any more — the rebuilt selector is passed as the FIRST
+		// argument to sgs_hover_state_rules() instead of being concatenated
+		// directly onto `:hover` in the source.
+		assert( php.includes( 'sgs_hover_state_rules( "{$uid_sel} .sgs-fixture-k__sublink",' ), 'expected the rebuilt concat selector to appear as the sgs_hover_state_rules() call\'s first argument — got: ' + php );
+
+		// PLACEMENT LOCK — same shape as fixture-j (nav-menu:864/866 for real):
+		// the consumption statement sits nested inside
+		// `if ('' !== $sublink_colour_effective) { ... }`. Assert the hover
+		// block landed AFTER that guard's own close, not merely that ':hover'
+		// appears somewhere — a nested-but-present hover rule passes the
+		// weaker assertion above and is the exact defect this task fixes.
+		const outerGuardCloseMarker = "gradient_fallback_rule( $uid_sel . ' .sgs-fixture-k__sublink', $sublink_colour_effective );\n}";
+		const outerGuardCloseIdx = php.indexOf( outerGuardCloseMarker );
+		assert( outerGuardCloseIdx !== -1, 'fixture render.php missing its expected outer-guard close shape — fixture drifted: ' + php );
+		const hoverIfIdx = php.indexOf( "if ( '' !== ( $attributes['sublinkColourHover']" );
+		assert( hoverIfIdx !== -1, 'hover if-guard not found in output: ' + php );
+		assert(
+			hoverIfIdx > outerGuardCloseIdx,
+			'PLACEMENT REGRESSION: the hover if-block landed INSIDE the base-value guard instead of hoisted past it — got: ' + php
+		);
+		assert(
+			/^if \( '' !== \( \$attributes\['sublinkColourHover'\]/m.test( php ),
+			'hover if-block is not at top-level (0 indent) — expected the burgerBg/burgerHoverColour sibling shape: ' + php
+		);
+	} );
+
+	// --- (iv) FINDING 3 — two consumption sites for the same decl var must be REFUSED as ambiguous, never silently pick the first ---
+	const FIXTURE_EDIT_JS_AMBIG_CHAIN = `import { __ } from '@wordpress/i18n';
+import { SgsColourPanel } from '../../components/SgsColourPanel';
+
+export default function Edit( { attributes, setAttributes } ) {
+	const { eyebrowColour } = attributes;
+	return (
+		<SgsColourPanel
+			rows={ [
+				{
+					key: 'eyebrow',
+					label: __( 'Eyebrow colour', 'sgs-blocks' ),
+					gradientCapable: true,
+					states: [
+						{
+							key: 'normal',
+							label: __( 'Normal', 'sgs-blocks' ),
+							value: eyebrowColour,
+							onChange: ( val ) => setAttributes( { eyebrowColour: val ?? '' } ),
+						},
+					],
+				},
+			] }
+		/>
+	);
+}
+`;
+	const FIXTURE_RENDER_PHP_AMBIG_CHAIN = `<?php
+$uid_sel = '.' . $uid;
+$scoped_css = array();
+$eyebrow_colour = $attributes['eyebrowColour'] ?? '';
+$eyebrow_colour_gradient = $attributes['eyebrowColourGradient'] ?? '';
+$eyebrow_colour_effective = sgs_resolve_text_colour_or_gradient( $eyebrow_colour, $eyebrow_colour_gradient );
+if ( '' !== $eyebrow_colour_effective ) {
+	$eyebrow_colour_decl = sgs_text_colour_decl( $eyebrow_colour_effective );
+	if ( '' !== $eyebrow_colour_decl ) {
+		$scoped_css[] = $uid_sel . ' .sgs-fixture-l__eyebrow-a{' . $eyebrow_colour_decl . ';}';
+		$scoped_css[] = $uid_sel . ' .sgs-fixture-l__eyebrow-b{' . $eyebrow_colour_decl . ';}';
+	}
+}
+`;
+	const fx12 = makeFixture( tmpRoot, 'fixture-l', {
+		editJs: FIXTURE_EDIT_JS_AMBIG_CHAIN,
+		renderPhp: FIXTURE_RENDER_PHP_AMBIG_CHAIN,
+		blockJson: {
+			apiVersion: 3,
+			name: 'sgs/fixture-l',
+			attributes: {
+				eyebrowColour: { type: 'string', default: '' },
+				eyebrowColourGradient: { type: 'string', default: '' },
+			},
+		},
+	} );
+	const db12 = { 'sgs/fixture-l': { eyebrowColour: { css_property: 'color' } } };
+
+	check( 'FINDING 3: resolveTextGradientChainSelector REFUSES (does not silently pick the first) when the decl var has TWO consumption sites, file byte-identical after', () => {
+		const before = {
+			editJs: fs.readFileSync( path.join( fx12, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fx12, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fx12, 'block.json' ), 'utf8' ),
+		};
+		const cache = new SourceCache();
+		const rows = rowsInFile( cache, path.join( fx12, 'edit.js' ) );
+		assert( rows.length === 1, 'expected exactly one row in fixture-l' );
+		const phpText = fs.readFileSync( path.join( fx12, 'render.php' ), 'utf8' );
+		const plan = planRow( db12, 'fixture-l', 'sgs/fixture-l', rows[ 0 ], phpText, path.join( fx12, 'block.json' ) );
+		assert( ! plan.fixable, 'expected a REFUSAL for an ambiguous two-site chain, got fixable: ' + JSON.stringify( plan ) );
+		assert(
+			/multiple-text-gradient-chain-sites-ambiguous/.test( plan.reason ),
+			'THIS ASSERTION IS THE CONTROL — expected the named ambiguity refusal reason, got: ' + plan.reason
+		);
+		const after = {
+			editJs: fs.readFileSync( path.join( fx12, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fx12, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fx12, 'block.json' ), 'utf8' ),
+		};
+		assert( before.editJs === after.editJs, 'ambiguity control: edit.js was mutated despite refusal' );
+		assert( before.renderPhp === after.renderPhp, 'ambiguity control: render.php was mutated despite refusal' );
+		assert( before.blockJson === after.blockJson, 'ambiguity control: block.json was mutated despite refusal' );
+	} );
+
+	// -------------------------------------------------------------------
+	// FINDING 1 + FINDING 3 (cross-tier review ROUND 2, 2026-09-04) —
+	// permanent end-to-end regression guards for the two silent-failure-mode
+	// bugs found in computeHoistedInsertionPoint/isSimplePresenceGuard.
+	// -------------------------------------------------------------------
+
+	// --- (v) fixture-m — the base-value guard is immediately followed by
+	// `else { … }` (a shape no currently-fixable row has today, but the
+	// codemod is generic and will meet one). Hoisting past the guard as
+	// fixture-i does would splice the new hover `if` BETWEEN the guard's
+	// `}` and `else`, a PHP parse error. The fix must stop hoisting at the
+	// guard's own OPEN boundary (stmtEnd, still nested) instead.
+	const FIXTURE_EDIT_JS_ELSE = FIXTURE_EDIT_JS.split( 'titleColour' ).join( 'panelColour' );
+	const FIXTURE_RENDER_PHP_ELSE = `<?php
+$panel_colour = $attributes['panelColour'] ?? '';
+$scoped_css_parts = array();
+if ( '' !== $panel_colour ) {
+	$scoped_css_parts[] = ".{\$uid}.sgs-fixture-m__panel{color:" . sgs_colour_value( $panel_colour ) . ';}';
+} else {
+	$scoped_css_parts[] = ".{\$uid}.sgs-fixture-m__panel{color:inherit;}";
+}
+`;
+	const fx13 = makeFixture( tmpRoot, 'fixture-m', {
+		editJs: FIXTURE_EDIT_JS_ELSE,
+		renderPhp: FIXTURE_RENDER_PHP_ELSE,
+		blockJson: {
+			apiVersion: 3,
+			name: 'sgs/fixture-m',
+			attributes: { panelColour: { type: 'string', default: '' } },
+		},
+	} );
+	const db13 = { 'sgs/fixture-m': { panelColour: { css_property: 'color' } } };
+
+	check( 'FINDING 2 (final-branch review): a base-value guard immediately followed by `else` is REFUSED, not silently hoisted-in-place — file byte-identical after', () => {
+		const before = {
+			editJs: fs.readFileSync( path.join( fx13, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fx13, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fx13, 'block.json' ), 'utf8' ),
+		};
+		const cache = new SourceCache();
+		const rows = rowsInFile( cache, path.join( fx13, 'edit.js' ) );
+		assert( rows.length === 1, 'expected exactly one row in fixture-m' );
+		const phpText = fs.readFileSync( path.join( fx13, 'render.php' ), 'utf8' );
+		const plan = planRow( db13, 'fixture-m', 'sgs/fixture-m', rows[ 0 ], phpText, path.join( fx13, 'block.json' ) );
+		// EXPECTATION CHANGED (final-branch review, Finding 2): this used to
+		// assert `plan.fixable` and go on to check that the hover block landed
+		// NESTED INSIDE the original guard — i.e. it locked in the exact
+		// silently-dead-control placement Task 3 was built to remove (the row
+		// still reported `WOULD FIX` while emitting a hover rule that would
+		// never render whenever the client left the base colour unset). The
+		// planning-time hoist-safety gate now refuses this row outright
+		// instead of emitting that placement — this is the correct, intended
+		// behaviour, not a regression.
+		assert( ! plan.fixable, 'expected a REFUSAL for an else-blocked base guard, got fixable: ' + JSON.stringify( plan ) );
+		assert(
+			/REFUSED:hoist-blocked-by-else-branch/.test( plan.reason ),
+			'THIS ASSERTION IS THE CONTROL — expected the named else-branch refusal reason, got: ' + plan.reason
+		);
+		const after = {
+			editJs: fs.readFileSync( path.join( fx13, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fx13, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fx13, 'block.json' ), 'utf8' ),
+		};
+		assert( before.editJs === after.editJs, 'refusal control: edit.js was mutated despite refusal' );
+		assert( before.renderPhp === after.renderPhp, 'refusal control: render.php was mutated despite refusal' );
+		assert( before.blockJson === after.blockJson, 'refusal control: block.json was mutated despite refusal' );
+	} );
+
+	// --- (v-b) fixture-m2 — the SAME else-blocked guard shape as fixture-m,
+	// but with a `/* comment */` sitting between the guard's `}` and `else`
+	// (Finding 2's "cheap, related" fix: the else/elseif lookahead itself used
+	// to be comment-blind, so `} /* comment */ else {` would have hoisted
+	// straight past the guard, undetected — a live PHP-fatal risk even after
+	// the refusal above starts working for the plain `} else {` case). Must
+	// ALSO be refused, for the same reason, not silently hoisted past the
+	// comment.
+	const FIXTURE_EDIT_JS_ELSE_COMMENT = FIXTURE_EDIT_JS.split( 'titleColour' ).join( 'drawerColour' );
+	const FIXTURE_RENDER_PHP_ELSE_COMMENT = `<?php
+$drawer_colour = $attributes['drawerColour'] ?? '';
+$scoped_css_parts = array();
+if ( '' !== $drawer_colour ) {
+	$scoped_css_parts[] = ".{\$uid}.sgs-fixture-m2__drawer{color:" . sgs_colour_value( $drawer_colour ) . ';}';
+} /* fallback to inherit */ else {
+	$scoped_css_parts[] = ".{\$uid}.sgs-fixture-m2__drawer{color:inherit;}";
+}
+`;
+	const fx13b = makeFixture( tmpRoot, 'fixture-m2', {
+		editJs: FIXTURE_EDIT_JS_ELSE_COMMENT,
+		renderPhp: FIXTURE_RENDER_PHP_ELSE_COMMENT,
+		blockJson: {
+			apiVersion: 3,
+			name: 'sgs/fixture-m2',
+			attributes: { drawerColour: { type: 'string', default: '' } },
+		},
+	} );
+	const db13b = { 'sgs/fixture-m2': { drawerColour: { css_property: 'color' } } };
+
+	check( 'FINDING 2: a comment between the guard\'s `}` and `else` does not silently defeat the else-branch refusal, file byte-identical after', () => {
+		const before = {
+			editJs: fs.readFileSync( path.join( fx13b, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fx13b, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fx13b, 'block.json' ), 'utf8' ),
+		};
+		const cache = new SourceCache();
+		const rows = rowsInFile( cache, path.join( fx13b, 'edit.js' ) );
+		assert( rows.length === 1, 'expected exactly one row in fixture-m2' );
+		const phpText = fs.readFileSync( path.join( fx13b, 'render.php' ), 'utf8' );
+		const plan = planRow( db13b, 'fixture-m2', 'sgs/fixture-m2', rows[ 0 ], phpText, path.join( fx13b, 'block.json' ) );
+		assert( ! plan.fixable, 'expected a REFUSAL for a comment-preceded else branch, got fixable: ' + JSON.stringify( plan ) );
+		assert(
+			/REFUSED:hoist-blocked-by-else-branch/.test( plan.reason ),
+			'THIS ASSERTION IS THE CONTROL — a comment between `}` and `else` must not silently defeat the else-branch detection, got: ' + plan.reason
+		);
+		const after = {
+			editJs: fs.readFileSync( path.join( fx13b, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fx13b, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fx13b, 'block.json' ), 'utf8' ),
+		};
+		assert( before.editJs === after.editJs, 'refusal control: edit.js was mutated despite refusal' );
+		assert( before.renderPhp === after.renderPhp, 'refusal control: render.php was mutated despite refusal' );
+		assert( before.blockJson === after.blockJson, 'refusal control: block.json was mutated despite refusal' );
+	} );
+
+	// --- (vi) fixture-n — a `//` comment line sits between the previous
+	// statement and the base-value guard's own `if`. Before the fix this
+	// silently disabled hoisting (the `^if` anchor failed against the
+	// comment-prefixed header) with NO refusal reason at all — the codemod
+	// fell back to the original un-hoisted (broken) placement, indistin-
+	// guishable from success. The fix must hoist THROUGH the comment.
+	const FIXTURE_EDIT_JS_COMMENT = FIXTURE_EDIT_JS.split( 'titleColour' ).join( 'strapColour' );
+	const FIXTURE_RENDER_PHP_COMMENT = `<?php
+$strap_colour = $attributes['strapColour'] ?? '';
+$scoped_css_parts = array();
+// base colour presence guard
+if ( '' !== $strap_colour ) {
+	$scoped_css_parts[] = ".{\$uid}.sgs-fixture-n__strap{color:" . sgs_colour_value( $strap_colour ) . ';}';
+}
+`;
+	const fx14 = makeFixture( tmpRoot, 'fixture-n', {
+		editJs: FIXTURE_EDIT_JS_COMMENT,
+		renderPhp: FIXTURE_RENDER_PHP_COMMENT,
+		blockJson: {
+			apiVersion: 3,
+			name: 'sgs/fixture-n',
+			attributes: { strapColour: { type: 'string', default: '' } },
+		},
+	} );
+	const db14 = { 'sgs/fixture-n': { strapColour: { css_property: 'color' } } };
+
+	check( 'FINDING 3: a `//` comment line immediately before the guard does not silently disable hoisting', () => {
+		const cache = new SourceCache();
+		const rows = rowsInFile( cache, path.join( fx14, 'edit.js' ) );
+		assert( rows.length === 1, 'expected exactly one row in fixture-n' );
+		const phpText = fs.readFileSync( path.join( fx14, 'render.php' ), 'utf8' );
+		const plan = planRow( db14, 'fixture-n', 'sgs/fixture-n', rows[ 0 ], phpText, path.join( fx14, 'block.json' ) );
+		assert( plan.fixable, 'expected fixable, got refusal: ' + JSON.stringify( plan ) );
+
+		const result = applyPlan(
+			Object.assign( {}, plan, {
+				dir: 'fixture-n',
+				slug: 'sgs/fixture-n',
+				editFile: path.join( fx14, 'edit.js' ),
+				renderFile: path.join( fx14, 'render.php' ),
+				blockJsonPath: path.join( fx14, 'block.json' ),
+			} ),
+			true
+		);
+		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
+
+		const php = fs.readFileSync( path.join( fx14, 'render.php' ), 'utf8' );
+		// THE REGRESSION GUARD: the hover if-block must have landed AFTER the
+		// (comment-preceded) guard's own closing `}` — TOP-LEVEL, matching the
+		// already-shipped burgerBg/burgerHoverColour sibling shape — not
+		// silently left nested inside it (the pre-fix behaviour, which gave
+		// no error at all and looked identical to success).
+		const guardCloseMarker = "sgs_colour_value( $strap_colour ) . ';}';\n}";
+		const guardCloseIdx = php.indexOf( guardCloseMarker );
+		assert( guardCloseIdx !== -1, 'fixture render.php missing its expected guard-close shape — fixture drifted: ' + php );
+		const hoverIfIdx = php.indexOf( "if ( '' !== ( $attributes['strapColourHover']" );
+		assert( hoverIfIdx !== -1, 'hover if-guard not found in output: ' + php );
+		assert(
+			hoverIfIdx > guardCloseIdx,
+			'FINDING 3 REGRESSION: the hover block stayed nested inside the comment-preceded guard instead of being hoisted past it (this bug is SILENT — no refusal reason at all) — got: ' + php
+		);
+		assert(
+			/^if \( '' !== \( \$attributes\['strapColourHover'\]/m.test( php ),
+			'hover if-block is not at top-level (0 indent) — expected the burgerBg/burgerHoverColour sibling shape: ' + php
+		);
 	} );
 
 	console.log( `\n${ failures === 0 ? 'ALL SELF-TESTS PASSED' : failures + ' SELF-TEST(S) FAILED' } (tmp dir: ${ tmpRoot })\n` );
