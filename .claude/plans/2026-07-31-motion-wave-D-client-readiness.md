@@ -74,18 +74,21 @@ Waves A–E are closed. This session closed **Step X** (the three-list drift gat
 > ⚠ One residual, not worth its own step: `nav-drawer/block.json:68`'s `_note` still documents
 > that close button's outline as "uncontrollable styling", which is no longer accurate.
 
-### Step 12 — the cloning lift: motion that survives a draft (FR-38-22) [OPEN]
-  **Model:** inline · **Time:** 3 h
-  ⚠ **MEASURED 2026-08-01 — the premise was tested and the answer is NO.** A probe against the REAL
-  `convert_section()` with authored drafts (`reports/2026-08-01-motion-clone-probe.md`): **every fx
-  attribute vanished — and not even into the skip-with-reason channel Rule 4 requires.** D436 seeded
-  the runtime PLAYBACK registry, a different layer entirely. **So this stays a full build.**
-  **Start here:** `lift_behavioural_attrs` (`db/db_lookup.py:5051`) is purpose-shaped for exactly
-  this, has ZERO callers, and carries a latent bug — it strips `data-sgs-` and keeps the hyphenated
-  remainder, so `data-sgs-fx-trigger` could never match `fxTrigger` even if wired.
-  ⚠ Collides with Track 1's live converter work — check `LEDGER.md` before dispatching.
-  **On-fail:** if it cannot land, AMEND Spec 38's success definition to say motion is applied by hand
-  after a clone. Do not leave the claim standing unbuilt.
+### Step 12 — the cloning lift: motion that survives a draft (FR-38-22) [OPEN — root cause fixed 2026-09-04, D949; live-canary re-verify still owed]
+  **Model:** inline · **Time:** 3 h (revised down — the actual gap was smaller than "full build")
+  ✅ **D949 (2026-09-04):** the real cause was never `lift_behavioural_attrs` needing wiring (it's
+  general FR-31-2 infrastructure with real callers now, not the motion-specific zero-caller function
+  this line used to describe). It was two separate, previously-undiagnosed bugs: (1) `fx*` attrs are
+  registered client-side via `fx.js`'s filter and never appear in block.json, so Stage 1 never
+  created a `block_attributes` row for them at all; (2) the reader's `data-sgs-<X>` matching used
+  exact string equality against a kebab-case remainder, which can never equal a camelCase attr name.
+  Both fixed: a new Stage 1 sub-step seeds the missing rows (908 across 32 blocks, from the same
+  `generated-fx-qualifying-blocks.json` eligibility source `fx.js` itself uses); the reader now also
+  tries the kebab→camelCase form. Verified with a synthetic draft node end to end. Full account +
+  verification detail: `decisions.md` D949. Commit `58629b246`.
+  ⚠ **Still owed before this step fully closes:** a real `/sgs-clone` pass against a live canary
+  draft, using the 2026-08-01 probe's method (`reports/2026-08-01-motion-clone-probe.md`), since the
+  synthetic-node test proves the lift logic but not the full pipeline end to end.
 
 > **Step 20 — CLOSED 2026-09-04.** All 5 sub-items resolved: (a)/(b)/(d) were already closed per
 > this register's own prior annotations; **(c)** got its D-numbered ruling at **D723** (2026-08-21,

@@ -1,3 +1,46 @@
+## D949 [ROUTINE] — Step 12 (FR-38-22 cloning lift): fx* attrs never had a `block_attributes` row, and the read path's kebab-name matching was silently broken — both fixed
+
+**2026-09-04.** The wave-D motion register's Step 12 ("motion survives a clone") had stood open
+since 2026-08-01, last diagnosed as "`lift_behavioural_attrs` has zero callers, needs wiring" —
+stale: that function is now general FR-31-2 walker infrastructure with real callers. Fresh
+investigation found the actual, previously-undiagnosed cause and fixed it with two small,
+universal changes rather than a bespoke motion mechanism.
+
+**Root cause.** `fx*` attrs (`fxTrigger`, `fxPath`, `fxShape`, …) are added to a block's schema
+entirely client-side via `fx.js`'s `registerBlockType` filter — they appear in NO block.json.
+Stage 1's block.json-driven attribute discovery therefore never created a `block_attributes` row
+for them (confirmed: `_apply_attr_classification_overrides`'s fx-namespace layer had been printing
+`MISSING ROW` for every one of these names since D432, and nothing ever created the row). Without
+a row, `block_attrs(slug)` can never see the attr, so `lift_behavioural_attrs` can never lift it
+from a draft — regardless of whether the draft carried the right markup.
+
+**Fix 1 — writer.** New Stage 1 sub-step `_seed_missing_fx_attr_rows` (`sgs-update-v2.py`) INSERTs
+a `block_attributes` row for every `FX_ATTR_CSS_PROPERTY` name on every fx-capable block, read from
+`generated-fx-qualifying-blocks.json` — the SAME artefact `fx.js` itself uses to decide eligibility
+(`shouldHaveFx()`), not a re-derived or hardcoded list. `css_property` is left NULL on insert; the
+pre-existing layer-2.5 classification step sets it in the same run, so there is still exactly one
+writer of that column (D432's own rule, unchanged).
+
+**Fix 2 — reader.** `lift_behavioural_attrs` section (a) matched a `data-sgs-<X>` HTML attribute
+against the block's attr names with exact string equality. A DOM data attribute is conventionally
+kebab-case (`data-sgs-fx-trigger`) while the block attr is camelCase (`fxTrigger`) — this never
+matched, for ANY kebab-named `data-sgs-*` attribute, not just fx's. Now tries both the literal
+remainder and its kebab→camelCase form.
+
+**Applied directly to `sgs-framework.db`:** 908 new rows across 32 fx-capable blocks (reconciled
+against the 20 already-existing block.json-declared rows — `dragMomentum`/`dragToScroll`/
+`loopCarousel` on 5 blocks + `image-sequence`'s native `fxStart`/`fxEnd`/`fxScrub`/`fxPin` +
+`before-after`'s `fxDraggable` — none of those touched). Verified end to end with a synthetic draft
+node: `data-sgs-fx-trigger="scroll"` now lifts to `fxTrigger: 'scroll'`. Converter conformance
+suite 13/13; wider converter+scripts suite 837/839 (2 pre-existing failures confirmed unrelated —
+neither touches `db_lookup.py` or `sgs-update-v2.py`, and reading the actual source files those
+tests scrape showed the mismatch predates this change).
+
+⚠ **Not yet run through a real `/sgs-clone` end-to-end pass on a live canary** — the synthetic-node
+test proves the walker's lift logic is correct; the 2026-08-01 clone-probe method
+(`reports/2026-08-01-motion-clone-probe.md`) should be re-run against a real authored draft before
+calling FR-38-22 fully closed. Commit: `58629b246`.
+
 ## D948 [ROUTINE] — hover-guard's 24 findings closed to zero; WCAG contrast guard built + rolled out; a dispatched agent's unscoped `git stash` wiped 16 already-committed-worth of fixes, recovered from memory
 
 **2026-09-04 (session 7).** Two tracks the session-6 LEDGER carried forward as "not started"/"never
