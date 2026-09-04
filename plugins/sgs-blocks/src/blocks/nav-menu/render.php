@@ -1041,7 +1041,7 @@ if ( 'pill' === $hover_style && '' !== $item_bg_hover_hex ) {
 	);
 
 	$css .= $link_sel . '{position:relative;}';
-	$css .= $link_sel . '::after{content:"";position:absolute;left:0;right:0;bottom:-' . esc_attr( (string) $u_offset ) . 'px;height:' . esc_attr( (string) $u_thickness ) . 'px;background-color:' . $u_colour . ';transform:scaleX(0);transform-origin:left center;transition:transform ' . $transition_fast . ',background-color ' . $transition_fast . ';pointer-events:none;}';
+	$css .= $link_sel . '::after{content:"";position:absolute;left:0;right:0;bottom:-' . esc_attr( (string) $u_offset ) . 'px;height:' . esc_attr( (string) $u_thickness ) . 'px;' . $u_paint_decl . ';transform:scaleX(0);transform-origin:left center;transition:transform ' . $transition_fast . ',background-color ' . $transition_fast . ';pointer-events:none;}';
 	$css .= sgs_hover_state_rules( $link_sel, 'transform:scaleX(1);background-color:' . $u_colour_h, ':focus-visible', '::after' );
 	if ( '' !== $item_fg_hover ) {
 		$css .= sgs_hover_state_rules( $link_sel, 'color:' . sgs_colour_value( $item_fg_hover ), ':focus-visible' );
