@@ -301,6 +301,188 @@ function resolveDirectSelector( php, varName ) {
 }
 
 /**
+ * Strategy T (text-gradient-chain) — a SECOND direct-pattern resolver,
+ * alongside resolveDirectSelector, for a text-mechanism row whose base
+ * attribute is routed through the canonical gradient-aware text-colour chain
+ * (`includes/helpers-tokens.php` — see plugins/sgs-blocks/CLAUDE.md "Real
+ * text gradient — the only path that supports it") rather than calling
+ * `sgs_text_colour_decl()` on the base var directly:
+ *
+ *   $effective = sgs_resolve_text_colour_or_gradient( <base value>, <gradient value> );
+ *   if ( '' !== $effective ) {
+ *       $decl = sgs_text_colour_decl( $effective );
+ *       if ( '' !== $decl ) { <a CSS-rule-assembly statement using $decl> }
+ *       ...gradient fallback...
+ *   }
+ *
+ * resolveDirectSelector never finds a candidate here — the base var (or, on
+ * some blocks, the raw `$attributes['attr']` read with NO intermediate var
+ * at all: sgs/nav-menu.submenuColour, sgs/product-card.tagTextColour) is
+ * never itself an argument to sgs_colour_value/sgs_text_colour_decl/
+ * sgs_background_paint_decl — it only reaches `sgs_text_colour_decl()`
+ * two hops later, via `$effective`. `sgs_resolve_text_colour_or_gradient()`
+ * being an unrecognised resolution path is exactly the Bug C gap; the base
+ * attribute sometimes having no intermediate variable at all is Bug B's
+ * "call inside ... a literal" shape. Fixed together because both blockers
+ * sit on the SAME three-statement chain and the second cannot be reached
+ * without the first.
+ *
+ * The consumption statement's selector text (a bare literal, a `$var`, or a
+ * `{$var}` double-quote interpolation — every shape observed live) is
+ * rebuilt as plain PHP source text safe to re-embed inside a NEW
+ * double-quoted string, exactly what `direct-new-statement` mode's inserted
+ * hover statement needs. No deep resolution of an outer selector variable
+ * (e.g. `$root_sel`) is attempted or needed — it is already in scope at the
+ * insertion point, so `{$name_colour_sel}` is valid PHP as-is.
+ */
+
+// The CSS these statements assemble routinely contains its OWN literal `;`
+// (`. ';}'`, `;}"`), so a naive `indexOf(';', …)` from mid-statement finds
+// that one first, short of the statement's real close. Scan quote-state
+// aware instead: `fromIdx` MUST be a position outside any string (a
+// statement's own start) for the initial `inString = null` to be correct.
+function findStatementEndRespectingStrings( php, fromIdx ) {
+	let inString = null;
+	for ( let i = fromIdx; i < php.length; i++ ) {
+		const ch = php[ i ];
+		if ( inString ) {
+			if ( '\\' === ch ) {
+				i++; // skip the escaped character, whatever it is
+				continue;
+			}
+			if ( ch === inString ) inString = null;
+			continue;
+		}
+		if ( '"' === ch || "'" === ch ) {
+			inString = ch;
+			continue;
+		}
+		if ( ';' === ch ) return i;
+	}
+	return -1;
+}
+
+function resolveTextGradientChainSelector( php, attr, varName ) {
+	const callRe = /\$([A-Za-z_][A-Za-z0-9_]*)\s*=\s*sgs_resolve_text_colour_or_gradient\s*\(([\s\S]*?)\)\s*;/g;
+	const attrNeedle = varName
+		? new RegExp( '\\$' + varName + '\\b' )
+		: new RegExp( '\\$attributes\\s*\\[\\s*([\'"])' + attr + '\\1\\s*\\]' );
+	let m;
+	let effectiveVar = null;
+	while ( ( m = callRe.exec( php ) ) ) {
+		if ( attrNeedle.test( m[ 2 ] ) ) {
+			effectiveVar = m[ 1 ];
+			break;
+		}
+	}
+	if ( ! effectiveVar ) return { ok: false, reason: 'no-sgs_resolve_text_colour_or_gradient-call-for-attr' };
+
+	const declRe = new RegExp( '\\$([A-Za-z_][A-Za-z0-9_]*)\\s*=\\s*sgs_text_colour_decl\\s*\\(\\s*\\$' + effectiveVar + '\\b[^)]*\\)\\s*;' );
+	const declMatch = declRe.exec( php );
+	if ( ! declMatch ) return { ok: false, reason: 'no-sgs_text_colour_decl-call-for-effective-var' };
+	const declVar = declMatch[ 1 ];
+
+	// Scan every use of $declVar strictly AFTER its own declaration
+	// statement and take the first one that is genuinely being CONCATENATED
+	// or INTERPOLATED into a string — i.e. skip past guard-condition reads
+	// like `if ( '' !== $decl )`, which is always the FIRST use in this
+	// shape (team-member/nav-menu/product-card all guard before consuming)
+	// and is not itself a consumption site.
+	const useRe = new RegExp( '\\$' + declVar + '\\b', 'g' );
+	useRe.lastIndex = declMatch.index + declMatch[ 0 ].length;
+	let useMatch;
+	let selectorTemplate = null;
+	let stmt = null;
+	let stmtEndIdx = -1;
+	while ( ( useMatch = useRe.exec( php ) ) ) {
+		const lineStart = php.lastIndexOf( '\n', useMatch.index ) + 1;
+		// The literal CSS text these statements build routinely contains its
+		// OWN semicolon (e.g. `. ';}'` / `;}"`) — a naive `indexOf(';', …)`
+		// stops there, short of the statement's REAL closing `;`. Scan
+		// string-boundary-aware instead, starting from the statement's own
+		// start (a fresh, unquoted position) so quote state is tracked
+		// correctly across the whole statement.
+		const candStmtEndIdx = findStatementEndRespectingStrings( php, lineStart );
+		if ( candStmtEndIdx === -1 || candStmtEndIdx < useMatch.index ) continue;
+		const candStmt = php.slice( lineStart, candStmtEndIdx + 1 );
+		const localUseIdx = useMatch.index - lineStart;
+		const prefix = candStmt.slice( 0, localUseIdx );
+
+		// Every consumption shape observed pushes into a sink at the very
+		// start of its own statement (`$sink[] = …` / `$sink .= …`) — strip
+		// that prefix off before parsing selector terms, or the sink var
+		// itself (`$css`, `$scoped_css`, …) gets mistaken for a selector term.
+		const pushMatch = /^\s*\$[A-Za-z_][A-Za-z0-9_]*\s*(?:\[\s*\]|\.\s*=)\s*/.exec( candStmt );
+		if ( ! pushMatch ) continue;
+		if ( localUseIdx < pushMatch[ 0 ].length ) continue; // $declVar used before the sink's own `=`/`.=` — not this shape
+		const afterPush = prefix.slice( pushMatch[ 0 ].length );
+
+		// `useRe`'s match starts at `$`, not at the `{` that opens PHP's
+		// `{$var}` string-interpolation syntax — so the opener itself is the
+		// LAST character of `afterPush`, not part of the match. Detect a bare
+		// trailing `{` here (real shape: `"{$name_colour_sel}{{$name_colour_decl}"`
+		// — sel's own `}` closes its interpolation, then a literal `{` opens
+		// the CSS rule, then ANOTHER `{` opens decl's interpolation).
+		const interpMatch = /\{$/.exec( afterPush );
+		if ( interpMatch ) {
+			// Double-quoted-string shape (e.g. team-member: `"{$name_colour_sel}{{$name_colour_decl};}"`).
+			// Everything from the string's own opening `"` up to the
+			// interpolation opener is already literal PHP string text (which
+			// may itself carry other `{$var}` interpolations) — safe to
+			// reuse verbatim.
+			const quoteIdx = afterPush.indexOf( '"' );
+			if ( quoteIdx === -1 ) continue;
+			const beforeInterp = afterPush.slice( quoteIdx + 1, interpMatch.index );
+			const braceIdx = firstRealBraceIndex( beforeInterp );
+			if ( braceIdx === -1 ) continue;
+			const tpl = beforeInterp.slice( 0, braceIdx ).trim();
+			if ( ! tpl ) continue;
+			selectorTemplate = tpl;
+			stmt = candStmt;
+			stmtEndIdx = candStmtEndIdx;
+			break;
+		}
+
+		// Concatenation shape (e.g. nav-menu: `$uid_sel . ' .sgs-nav-menu__sublink{' . $submenu_colour_decl`;
+		// product-card: `$sgs_tag_text_colour_sel . '{' . $sgs_tag_text_colour_decl`). Walk the `.`-joined
+		// terms and rebuild each as embeddable text: a bare `$var` becomes
+		// `{$var}`, a quoted literal keeps its unescaped contents.
+		const concatMatch = /\.\s*$/.exec( afterPush );
+		if ( ! concatMatch ) continue; // not a concat/interp consumption (e.g. the `if ('' !== $decl)` guard) — skip
+		const beforeConcat = afterPush.slice( 0, concatMatch.index );
+		const termRe = /\$([A-Za-z_][A-Za-z0-9_]*)|(['"])((?:\\.|(?!\2)[^\\])*)\2/g;
+		let built = '';
+		let tm;
+		let sawTerm = false;
+		while ( ( tm = termRe.exec( beforeConcat ) ) ) {
+			sawTerm = true;
+			built += tm[ 1 ] ? `{$${ tm[ 1 ] }}` : tm[ 3 ];
+		}
+		if ( ! sawTerm ) continue;
+		const braceIdx = firstRealBraceIndex( built );
+		if ( braceIdx === -1 ) continue;
+		const tpl = built.slice( 0, braceIdx ).trim();
+		if ( ! tpl ) continue;
+		selectorTemplate = tpl;
+		stmt = candStmt;
+		stmtEndIdx = candStmtEndIdx;
+		break;
+	}
+	if ( ! selectorTemplate ) return { ok: false, reason: 'no-concat-or-interp-consumption-site-found-for-decl-var' };
+
+	const pushMatch = stmt.match( /^\s*\$([A-Za-z_][A-Za-z0-9_]*)\s*(\[\s*\]|\.\s*=)/ );
+	if ( ! pushMatch ) return { ok: false, reason: 'consumption-statement-not-a-recognised-css-assembly-shape' };
+
+	return {
+		ok: true,
+		selectorTemplate,
+		sinkVar: pushMatch[ 1 ],
+		sinkIsAppend: pushMatch[ 2 ].trim().startsWith( '.' ),
+		stmtEnd: stmtEndIdx + 1,
+	};
+}
+
+/**
  * Strategy H (hover-sink) — a FALLBACK for when the base attribute's own
  * normal-state usage is indirect (pushed into an array assembled elsewhere,
  * as `quote`/`heading`/`mega-panel` etc. do for their box-model decls). Many
@@ -477,6 +659,15 @@ function wireOnlyGradientCheck( db, slug, blockJson, php, baseAttr ) {
 // call site and verifies it is the value-half of a literal
 // `'background-color:' . sgs_colour_value( $varName )` fragment in a single
 // statement, returning the exact source span to replace.
+//
+// `background-color:` need not be an entirely standalone quoted-concatenation
+// segment (`'background-color:' .`) — it may instead be the TAIL of a larger
+// single string literal that also carries a selector/other-property prefix in
+// the SAME quotes (e.g. `' .sgs-nav-menu__burger{background-color:' .`, real
+// shape found live at sgs/nav-menu's burgerBg/indicatorColour). Both shapes
+// are matched by one regex; `prefix`/`quote` come back non-empty only for the
+// fused shape, telling the caller to re-close the literal at the split point
+// rather than deleting the whole thing (Bug A fix, 2026-09-04).
 function resolveFillGradientDirectSite( php, varName ) {
 	const callRe = new RegExp( 'sgs_colour_value\\s*\\(\\s*\\$' + varName + '\\b[^)]*\\)', 'g' );
 	const calls = [];
@@ -486,15 +677,18 @@ function resolveFillGradientDirectSite( php, varName ) {
 	if ( calls.length > 1 ) return { ok: false, reason: 'multiple-sgs_colour_value-usages-for-var-ambiguous-gradient-target' };
 
 	const call = calls[ 0 ];
-	const fragRe = /(['"])background-color:\1\s*\.\s*/;
-	const before = php.slice( Math.max( 0, call.idx - 80 ), call.idx );
+	// `prefix` (group 2) must contain no quote characters of its own — this
+	// keeps the match anchored on the SAME literal's real opening quote
+	// rather than skipping back across an earlier, unrelated string.
+	const fragRe = /(['"])([^'"]*?)background-color:\1\s*\.\s*/;
+	const before = php.slice( Math.max( 0, call.idx - 200 ), call.idx );
 	const fm = fragRe.exec( before );
 	if ( ! fm || fm.index + fm[ 0 ].length !== before.length ) {
 		return { ok: false, reason: 'value-not-directly-embedded-in-a-background-color-declaration' };
 	}
 	const fragStart = call.idx - ( before.length - fm.index );
 	const fragEnd = call.idx + call.text.length;
-	return { ok: true, fragStart, fragEnd, callText: call.text };
+	return { ok: true, fragStart, fragEnd, prefix: fm[ 2 ], quote: fm[ 1 ], callText: call.text };
 }
 
 // Strategy (3) — BORDER-EXTEND. Finds an EXISTING `sgs_border_gradient_css(`
@@ -736,6 +930,8 @@ function planRow( db, dir, slug, row, phpText, blockJsonPathOverride ) {
 					gradVarName,
 					fragStart: site.fragStart,
 					fragEnd: site.fragEnd,
+					prefix: site.prefix,
+					quote: site.quote,
 				};
 			} else {
 				const site = resolveBorderGradientExtendSite( phpText, varInfo.varName );
@@ -784,29 +980,59 @@ function planRow( db, dir, slug, row, phpText, blockJsonPathOverride ) {
 	}
 
 	const varInfo = findVarAssignedFromAttr( phpText, row.attr );
-	if ( ! varInfo.ok ) return { fixable: false, reason: 'REFUSED:' + varInfo.reason };
 
 	const newHoverAttr = hoverAttrName( row.attr );
 
-	const sel = resolveDirectSelector( phpText, varInfo.varName );
-	let renderPlan;
-	if ( sel.ok ) {
-		renderPlan = {
-			mode: 'direct-new-statement',
-			selectorTemplate: sel.selectorTemplate,
-			propText: sel.propText,
-			sinkVar: sel.sinkVar,
-			sinkIsAppend: sel.sinkIsAppend,
-			stmtEnd: sel.stmtEnd,
-		};
-	} else {
+	let renderPlan = null;
+	let primaryFailureReason = varInfo.ok ? null : varInfo.reason;
+
+	if ( varInfo.ok ) {
+		const sel = resolveDirectSelector( phpText, varInfo.varName );
+		if ( sel.ok ) {
+			renderPlan = {
+				mode: 'direct-new-statement',
+				selectorTemplate: sel.selectorTemplate,
+				propText: sel.propText,
+				sinkVar: sel.sinkVar,
+				sinkIsAppend: sel.sinkIsAppend,
+				stmtEnd: sel.stmtEnd,
+			};
+		} else {
+			primaryFailureReason = sel.reason;
+		}
+	}
+
+	// Strategy T fallback (Bug B/C, 2026-09-04) — a text-mechanism row routed
+	// through the gradient-aware sgs_resolve_text_colour_or_gradient() ->
+	// sgs_text_colour_decl() chain never has its base var as a direct
+	// COLOUR_HELPERS argument, so resolveDirectSelector (and, when there is
+	// no intermediate variable at all, findVarAssignedFromAttr) always miss
+	// it above. Tried whenever the direct strategies didn't already succeed
+	// — never overrides a working direct-pattern result.
+	if ( ! renderPlan && mechanism === 'text' ) {
+		const chain = resolveTextGradientChainSelector( phpText, row.attr, varInfo.ok ? varInfo.varName : null );
+		if ( chain.ok ) {
+			renderPlan = {
+				mode: 'direct-new-statement',
+				selectorTemplate: chain.selectorTemplate,
+				propText: 'color',
+				sinkVar: chain.sinkVar,
+				sinkIsAppend: chain.sinkIsAppend,
+				stmtEnd: chain.stmtEnd,
+			};
+		} else if ( ! primaryFailureReason ) {
+			primaryFailureReason = chain.reason;
+		}
+	}
+
+	if ( ! renderPlan ) {
 		// Fallback: Strategy H — an existing hover-rule sink elsewhere in the
 		// same file, for a property name trusted from the DB (not scraped
 		// from the ambiguous/indirect normal-state statement).
 		const propText = safeCssPropertyToken( cssProperty );
-		if ( ! propText ) return { fixable: false, reason: 'REFUSED:' + sel.reason + ' (and no safe single css_property token for hover-sink fallback)' };
+		if ( ! propText ) return { fixable: false, reason: 'REFUSED:' + primaryFailureReason + ' (and no safe single css_property token for hover-sink fallback)' };
 		const sink = findHoverSink( phpText );
-		if ( ! sink.ok ) return { fixable: false, reason: 'REFUSED:' + sel.reason + ' (hover-sink fallback also failed: ' + sink.reason + ')' };
+		if ( ! sink.ok ) return { fixable: false, reason: 'REFUSED:' + primaryFailureReason + ' (hover-sink fallback also failed: ' + sink.reason + ')' };
 		renderPlan = {
 			mode: 'sink-array-push',
 			selectorTemplate: sink.sink.selectorTemplate,
@@ -1077,7 +1303,16 @@ function applyGradientRenderPhpFix( phpText, gp ) {
 	// own assignment always precedes its first use).
 	let replacement;
 	if ( gp.mode === 'fill-direct' ) {
-		replacement = `sgs_background_paint_decl( $${ gp.phpVarName }, $${ gp.gradVarName } )`;
+		const call = `sgs_background_paint_decl( $${ gp.phpVarName }, $${ gp.gradVarName } )`;
+		// A fused literal (Bug A) carries a non-empty `prefix` — the text that
+		// sat between the literal's opening quote and `background-color:`
+		// (e.g. a selector like ` .sgs-nav-menu__burger{`). That text is NOT
+		// part of what's being replaced (fragStart starts at the quote), so
+		// it must be re-emitted, re-closed with the SAME quote char, before
+		// concatenating the paint-decl call. An empty prefix (the original,
+		// standalone `'background-color:' .` shape) replaces cleanly with
+		// just the call, unchanged from before this fix.
+		replacement = gp.prefix ? `${ gp.quote }${ gp.prefix }${ gp.quote } . ${ call }` : call;
 	} else {
 		replacement = `'' !== $${ gp.gradVarName } ? $${ gp.gradVarName } : sgs_colour_value( $${ gp.phpVarName } )`;
 	}
@@ -1116,9 +1351,18 @@ function applyRenderPhpFix( phpText, plan ) {
 	const indent = indentOfLine( phpText, phpText.lastIndexOf( '\n', plan.stmtEnd - 1 ) + 1 );
 	let insertion;
 	if ( plan.sinkIsAppend ) {
+		// Double-quoted, matching the array-push branch below — NOT the
+		// single-quoted form this used to be. A selectorTemplate can now
+		// legitimately carry `{$var}` PHP-interpolation syntax (Strategy T,
+		// resolveTextGradientChainSelector, e.g. `{$uid_sel} .sgs-nav-menu__sublink`
+		// for sgs/nav-menu.submenuColour) — PHP only expands `{$var}` inside
+		// double quotes; inside single quotes it prints those seven
+		// characters literally. Plain literal text (the ONLY shape
+		// resolveDirectSelector itself ever produced) is unaffected by the
+		// quote-style change.
 		insertion =
 			`\n${ indent }if ( '' !== ( ${ hoverGuardVar } ?? '' ) ) {\n` +
-			`${ indent }\t$${ plan.sinkVar } .= '${ plan.selectorTemplate }:hover,${ plan.selectorTemplate }:focus-visible{' . '${ plan.propText }:' . sgs_colour_value( ${ hoverGuardVar } ) . '}';\n` +
+			`${ indent }\t$${ plan.sinkVar } .= "${ plan.selectorTemplate }:hover,${ plan.selectorTemplate }:focus-visible{" . "${ plan.propText }:" . sgs_colour_value( ${ hoverGuardVar } ) . '}';\n` +
 			`${ indent }}`;
 	} else {
 		insertion =
