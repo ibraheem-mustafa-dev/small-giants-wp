@@ -177,6 +177,41 @@ const FIXTURES = {
 		attr: 'textColour',
 		selector: '',
 	},
+	// Session 11 (2026-09-04) rows — the sgs_text_decls()->sgs_text_colour_decl()
+	// fix. Every block below renders its text-colour row on its OWN root
+	// selector, and each renders with zero extra attrs (info-box/notice-banner
+	// echo the wrapper + InnerBlocks content regardless of whether any child
+	// exists; team-member has no render guard at all; product-card's typed
+	// mode is the block's own default, matching the existing titleColour
+	// fixture above; icon-list's `items` attribute default already carries 3
+	// populated entries so `.sgs-icon-list__text` renders unconditionally).
+	'info-box': {
+		attr: 'textColour',
+		selector: '',
+	},
+	'icon-list': {
+		attr: 'textColour',
+		selector: '.sgs-icon-list__text',
+	},
+	'notice-banner': {
+		attr: 'textColour',
+		selector: '',
+	},
+	'product-card.textColour': {
+		attr: 'textColour',
+		selector: '',
+	},
+	'team-member': {
+		attr: 'textColour',
+		selector: '',
+	},
+	// testimonial's own root-render guard (`'' === trim( $inner_html )`) needs
+	// at least one populated field — `quote` is the simplest.
+	testimonial: {
+		attr: 'textColour',
+		selector: '',
+		extraAttrs: { quote: 'Probe quote text.' },
+	},
 };
 
 // Blocks wired this rollout but deliberately NOT probed here — named so the
@@ -190,6 +225,7 @@ const KNOWN_SKIPPED = {
 	separator: 'needs contentMode="text" plus content to render `.sgs-separator__content` — no minimal fixture built yet',
 	'nav-menu': 'burgerColour/submenuColour depend on a real assigned WP nav menu — no minimal fixture built yet',
 	'google-reviews.arrowColourText': 'the slider arrow renders only when `$reviews` (render.php:202) is non-empty AND variant="slider" — `$reviews` is sourced from the live Google Reviews sync data (settings-driven transient), not from block attributes, so a deterministic positive/negative pair cannot be authored on a bare instance.',
+	buybox: 'the whole render.php short-circuits to `do_blocks($buybox_core_fallback)` (a hardcoded WooCommerce-core markup string, not this block at all) unless `class_exists(\'WooCommerce\')` AND `usesContext[\'postId\']`/`get_queried_object_id()` resolves to a real, published, VARIABLE WooCommerce product — no combination of block attributes on a bare instance can satisfy this, so a deterministic positive/negative pair cannot be authored.',
 };
 
 /**
