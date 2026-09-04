@@ -108,6 +108,15 @@ const FIXTURES = {
 		selector: '.sgs-modal__trigger',
 		extraAttrs: { triggerText: 'Open probe modal' },
 	},
+	// Session 9 (2026-09-04) row — `.sgs-modal__close` renders unconditionally
+	// (render.php:145, no guard), and its background lives on its own
+	// `::after` layer (style.css:180 / block.json's own note), the same
+	// "background on a separate layer" shape as pricing-table.ctaColour below.
+	'modal.closeColourText': {
+		attr: 'closeColourText',
+		selector: '.sgs-modal__close',
+		extraAttrs: { triggerText: 'Open probe modal' },
+	},
 	'nav-drawer': {
 		attr: 'toggleCloseColour',
 		selector: '.sgs-nav-drawer__close',
@@ -131,6 +140,24 @@ const FIXTURES = {
 		// default variant ("floating") never renders it at all.
 		extraAttrs: { phoneNumber: '441234567890', variant: 'inline', label: 'probe label' },
 	},
+	// Session 9 row — typed mode is the block's own default (sourceMode
+	// unset), so the `.sgs-product-card__title` heading renders with no
+	// extra attrs. Verifies the "new rule wins by source order over the old
+	// custom-property mechanism" claim (render.php:222-225) live.
+	'product-card.titleColour': {
+		attr: 'titleColour',
+		selector: '.sgs-product-card__title',
+	},
+	// Session 9 row — `plans` is a repeater; one bare entry is enough for
+	// render.php's own per-plan defaults (`ctaText` defaults to "Get
+	// started") to render the CTA. Background moved to a `::after` layer
+	// (render.php ~L539, block.json's own note) specifically to free
+	// ctaColour for this gradient sibling.
+	'pricing-table.ctaColour': {
+		attr: 'ctaColour',
+		selector: '.sgs-pricing-table__cta',
+		extraAttrs: { plans: [ {} ] },
+	},
 };
 
 // Blocks wired this rollout but deliberately NOT probed here — named so the
@@ -146,20 +173,29 @@ const KNOWN_SKIPPED = {
 };
 
 /**
- * Classify one requested pair. `id` is "block-dir" or "block-dir.attrOverride"
- * (override unused today — every dir has exactly one fixture — but kept for
- * forward compat with a block that gains a second probeable pair).
+ * Classify one requested pair. `requested` is "block-dir" (looks up
+ * `FIXTURES[dir]`, the original single-fixture-per-dir shape) or
+ * "block-dir.attrOverride" (looks up `FIXTURES[requested]` FIRST, falling
+ * back to `FIXTURES[dir]` — lets a block that gains a SECOND probeable
+ * pair register it under a dotted key without disturbing its bare-dir
+ * entry). `KNOWN_SKIPPED` is checked the same way: a dotted key can name a
+ * per-attr skip reason distinct from the dir's blanket one.
  *
- * @param {string} dir Block directory name (e.g. "whatsapp-cta").
- * @return {Object} { id, ok, reason?, attr?, gradientAttr?, selector?, hover?, extraAttrs? }
+ * @param {string} requested "dir" or "dir.attr".
+ * @return {Object} { id, ok, reason?, dir?, attr?, gradientAttr?, selector?, hover?, extraAttrs? }
  */
-function classifyPair( dir ) {
-	const id = dir;
-	if ( KNOWN_SKIPPED[ dir ] ) {
-		return { id, ok: false, reason: KNOWN_SKIPPED[ dir ] };
+function classifyPair( requested ) {
+	const id = requested;
+	const dotIdx = requested.indexOf( '.' );
+	const dir = dotIdx === -1 ? requested : requested.slice( 0, dotIdx );
+	if ( KNOWN_SKIPPED[ requested ] ) {
+		return { id, ok: false, reason: KNOWN_SKIPPED[ requested ] };
 	}
-	const fixture = FIXTURES[ dir ];
+	const fixture = FIXTURES[ requested ] || FIXTURES[ dir ];
 	if ( ! fixture ) {
+		if ( KNOWN_SKIPPED[ dir ] ) {
+			return { id, ok: false, reason: KNOWN_SKIPPED[ dir ] };
+		}
 		return { id, ok: false, reason: 'no fixture registered for this block — not probed' };
 	}
 	const blockJson = readBlockJson( dir );
