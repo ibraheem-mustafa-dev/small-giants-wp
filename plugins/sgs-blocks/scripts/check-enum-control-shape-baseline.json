@@ -235,12 +235,6 @@
       "disposition": "accepted-debt"
     },
     {
-      "block": "timeline",
-      "attr": "datePosition",
-      "reason": "FALSE POSITIVE, not real debt: resolve_control()'s WINDOW=900-char mark-matching misattributes this finding's control -- the true datePosition SelectControl (labels 'In its own column'/'Next to the title', 17-18 chars, correctly rendered as SelectControl per D812) sits near the milestoneSize SelectControl (labels 'Compact'/'Full-height', longest=11) in source, and resolve_control() picks up milestoneSize's tag_start instead because a 'datePosition' text mark elsewhere in the file falls within WINDOW of BOTH controls. Verified directly: manually resolving the DATE_POSITION_OPTIONS const array (bypassing resolve_control's mark-window heuristic) gives longest=17/18, which recommends SelectControl -- matching what's already shipped. No code change needed on timeline/edit.js. The detector's window-based disambiguation needs a real fix (narrow WINDOW or a stronger nearest-mark tie-break) as a follow-up; this baseline entry unblocks deploys in the meantime.",
-      "disposition": "detector-limitation"
-    },
-    {
       "block": "trust-bar",
       "attr": "autoScrollSpeed",
       "disposition": "accepted-debt"
@@ -248,6 +242,24 @@
     {
       "block": "trust-bar",
       "attr": "badgeSize",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "hero",
+      "attr": "justifyItems",
+      "reason": "Surfaced 2026-09-04 after resolve_control()'s closest-mark-wins fix. Previously invisible: hero/edit.js mounts justifyItems's SelectControl right beside alignContent's SelectControl (grid-only panel), and the pre-fix last-tag-wins bug made this binding unstable/ambiguous rather than a clean single-control match. Verified: unambiguous single SelectControl (JUSTIFY_ITEMS_OPTIONS, longest label 'Stretch'=7 chars), count=4 -- genuine 2-5-option short-label violation per the D812 table, same class as the other accepted-debt entries in this file.",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "modal",
+      "attr": "triggerStyle",
+      "reason": "Surfaced 2026-09-04 after resolve_control()'s closest-mark-wins fix. Verified: unambiguous single SelectControl (TRIGGER_STYLE_OPTIONS), count=3, longest label 9 chars -- genuine 2-5-option short-label violation per the D812 table.",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "trustpilot-reviews",
+      "attr": "theme",
+      "reason": "Surfaced 2026-09-04 after resolve_control()'s closest-mark-wins fix. Previously invisible: trustpilot-reviews/edit.js mounts theme's SelectControl immediately followed by cardStyle's SelectControl a few lines later -- exactly the same-primitive-proximity shape the pre-fix bug mishandled. Verified: unambiguous single SelectControl (THEME_OPTIONS), count=2, longest label 5 chars -- genuine 2-5-option short-label violation per the D812 table.",
       "disposition": "accepted-debt"
     }
   ]

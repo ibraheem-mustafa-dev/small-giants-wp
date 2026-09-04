@@ -212,17 +212,38 @@ def find_marks(src: str, attr: str) -> list[int]:
 
 
 def resolve_control(src: str, attr: str) -> tuple[str, int | None]:
-    """Same heuristic as the census. Returns (verdict, tag_start_pos)."""
+    """Same heuristic as the census. Returns (verdict, tag_start_pos).
+
+    CLOSEST-MARK-WINS tie-break (added 2026-09-04, fixing the bug documented
+    in check-enum-control-shape-baseline.json's timeline.datePosition entry).
+    The original version did a bare `found[prim] = start` inside the loop --
+    a plain dict assignment with no tie-break -- so whenever an attribute's
+    marks fell within WINDOW of TWO same-primitive tag mounts in the same
+    file, the LAST one encountered by re.finditer (i.e. the last occurrence
+    in the file, not the nearest one) silently overwrote any earlier,
+    closer match. That is exactly what happened to
+    timeline.datePosition: its own destructure sits within WINDOW of both
+    its real <SelectControl> and the unrelated, later milestoneSize
+    <SelectControl>, and the function returned milestoneSize's position
+    purely because it came later in the file. Tracking the minimum
+    mark-to-tag distance per primitive makes the result deterministic and
+    correct regardless of file layout."""
     if not src:
         return "unresolved", None
     marks = find_marks(src, attr)
     if not marks:
         return "unresolved", None
     found: dict[str, int] = {}
+    best_dist: dict[str, int] = {}
     for prim in PRIMITIVES:
         for m in re.finditer(rf"<{prim}\b", src):
             start = m.start()
-            if any(start - WINDOW < mk < start + WINDOW for mk in marks):
+            in_window = [mk for mk in marks if start - WINDOW < mk < start + WINDOW]
+            if not in_window:
+                continue
+            dist = min(abs(start - mk) for mk in in_window)
+            if prim not in best_dist or dist < best_dist[prim]:
+                best_dist[prim] = dist
                 found[prim] = start
     if len(found) == 1:
         prim, pos = next(iter(found.items()))
@@ -581,13 +602,48 @@ def self_test() -> int:
     if len(live_rows) < MIN_ENUMS:
         failures.append("[9] live scan below the anti-vacuity floor")
 
+    # [11] REGRESSION: two <SelectControl> mounts in one file, both within
+    # WINDOW of the attribute's own marks, closer one NOT last in the file
+    # -- the exact shape that misattributed timeline.datePosition to
+    # milestoneSize's SelectControl (see check-enum-control-shape-baseline
+    # .json's entry + resolve_control's docstring). The CORRECT control
+    # (datePosition's own) is FIRST in the file and genuinely close to the
+    # marks; the WRONG control (milestoneSize's, an unrelated attribute)
+    # is LAST in the file, farther away but still inside WINDOW. Before the
+    # closest-mark-wins fix, resolve_control returned the last-iterated tag
+    # (milestoneSize) regardless of distance.
+    src11 = (
+        "const { datePosition } = attributes;\n"
+        "<SelectControl value={ datePosition } "
+        "options={ [ { label: __( 'In its own column', 'x' ), value: 'column' }, "
+        "{ label: __( 'Next to the title', 'x' ), value: 'inline' } ] } "
+        "onChange={ (v) => setAttributes({ datePosition: v }) } />\n"
+        + ("/* filler */ " * 40) +
+        "\n<SelectControl value={ milestoneSize } "
+        "options={ [ { label: __( 'Compact', 'x' ), value: 'compact' }, "
+        "{ label: __( 'Full-height', 'x' ), value: 'full' } ] } "
+        "onChange={ (v) => setAttributes({ milestoneSize: v }) } />"
+    )
+    verdict11, pos11 = resolve_control(strip_comments(src11), "datePosition")
+    correct_tag_pos = strip_comments(src11).find("<SelectControl value={ datePosition }")
+    if verdict11 != "SelectControl":
+        failures.append(f"[11] failed to resolve SelectControl, got {verdict11!r}")
+    elif pos11 != correct_tag_pos:
+        wrong_tag_pos = strip_comments(src11).find("<SelectControl value={ milestoneSize }")
+        got = "milestoneSize's control" if pos11 == wrong_tag_pos else f"position {pos11}"
+        failures.append(
+            f"[11] closest-mark-wins tie-break regressed: bound to {got} "
+            f"instead of the closer datePosition control at {correct_tag_pos}"
+        )
+
     for f in failures:
         print("  FAIL " + f)
     if failures:
         print(f"\n  self-test: {len(failures)} failure(s).")
         return 1
-    print(f"  self-test: 10 case(s) passed, including a watched-failing negative "
-          f"control. Corpus: {len(live_rows)} declared enums.")
+    print(f"  self-test: 11 case(s) passed, including a watched-failing negative "
+          f"control and a closest-mark-wins regression case. "
+          f"Corpus: {len(live_rows)} declared enums.")
     return 0
 
 
