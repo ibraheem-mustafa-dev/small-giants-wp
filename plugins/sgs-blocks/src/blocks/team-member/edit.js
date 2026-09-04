@@ -43,6 +43,7 @@ import {
 import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
+	DesignTokenPicker,
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -392,29 +393,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						setAttributes,
 					} ),
 					{
-						key: 'nameColour',
-						label: __( 'Name colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: nameColour,
-								onChange: ( val ) => setAttributes( { nameColour: val ?? '' } ),
-								linked: true,
-								gradientValue: nameColourGradient,
-								onGradientChange: ( val ) => setAttributes( { nameColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: nameColourHover,
-								onChange: ( val ) => setAttributes( { nameColourHover: val ?? '' } ),
-								linked: true,
-								},
-						],
-					},
-					{
 						key: 'roleColour',
 						label: __( 'Role colour', 'sgs-blocks' ),
 						gradientCapable: true,
@@ -506,6 +484,40 @@ export default function Edit( { attributes, setAttributes } ) {
 							) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					{ /* Moved in from the shared SgsColourPanel (D622 — an
+					     element-scoped colour belongs in its own element's
+					     TIER 1 panel; "name" is a declared element whose
+					     attrMap claims nameColour). */ }
+					<ToolsPanelItem
+						label={ __( 'Name colour', 'sgs-blocks' ) }
+						hasValue={ () => !! nameColour || !! nameColourHover }
+						onDeselect={ () =>
+							setAttributes( { nameColour: '', nameColourGradient: '', nameColourHover: '' } )
+						}
+						isShownByDefault
+					>
+						<DesignTokenPicker
+							label={ __( 'Name colour', 'sgs-blocks' ) }
+							states={ [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: nameColour,
+									onChange: ( val ) => setAttributes( { nameColour: val ?? '' } ),
+									linked: true,
+									gradientValue: nameColourGradient,
+									onGradientChange: ( val ) => setAttributes( { nameColourGradient: val ?? '' } ),
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: nameColourHover,
+									onChange: ( val ) => setAttributes( { nameColourHover: val ?? '' } ),
+									linked: true,
+								},
+							] }
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
