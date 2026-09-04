@@ -1262,7 +1262,17 @@ function collectPlans( db, cache ) {
 					rowKey: row.rowKey,
 					attr: row.attr,
 					reason:
-						'REFUSED:gradient-path-deferred (mechanism=' + ( mechanism || 'unresolved' ) +
+						// `mechanism` is null here ONLY when 2+ mechanisms resolved
+						// (ambiguous which one) -- a zero-mechanism row is already
+						// filtered out upstream by surveyVerdictForRow's own
+						// 'REFUSED:no-css_property' check (line ~1165), which every
+						// row in this loop has already passed via the
+						// AUTOFIXABLE:helper-at-existing-selector gate above. So the
+						// null branch is never "we don't know the mechanism" --
+						// naming it 'unresolved' would misrepresent an ambiguous-
+						// multi-mechanism row as an unresolved one. Name the real
+						// mechanism list instead.
+						'REFUSED:gradient-path-deferred (mechanism=' + ( mechanism || mech.mechanisms.join( '|' ) ) +
 						'; standalone DesignTokenPicker row shape — no SgsColourPanel row object to safely ' +
 						'rewrite the gradient wiring into, out of scope for this pass; hover state already ' +
 						'present, this row is blocked on gradient alone)',
