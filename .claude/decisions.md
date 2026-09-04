@@ -1,3 +1,50 @@
+## D959 [ROUTINE] — Golden-colour Phase 3: 19 rows wired live, one real bug caught by a new live probe
+
+**2026-09-04, session 8 (colour track — concurrent with, not part of, D957/D958's road-to-uniform
+session).** Continued `.claude/plans/2026-09-03-golden-colour-staged-rollout.md` Phase 3 (the
+text-colour gradient rollout). Full narrative and the codemod-vs-manual recommendation:
+`reports/colour-grant-progress.md`.
+
+**Shipped:** re-derived Phase 3's target list from a fresh `survey.js` run (the plan's own worked
+example was already stale), filtered 39 candidate rows to 22 genuinely safe ones via rule 31's
+`textSharesElementWithBackground()` precondition, wired 19 of them across 13 blocks
+(`976c9d961`, `e17bea203`, `a64f01b13`, `43c2c3d4b`, `22b4d21bb`), correctly refused 3 for real
+technical conflicts rather than forcing them.
+
+**A live probe caught a real bug every static gate missed.** New script
+`scripts/qa/check-colour-gradient-roundtrip.js` (modelled on `check-border-roundtrip.js`'s
+fail-closed/negative-control discipline, 15/15 self-test) found `whatsapp-cta`'s gradient CSS
+landing on the wrapper `<a>` instead of the child `.sgs-whatsapp-cta__label` span holding the
+visible text — `color` inherits parent-to-child, `background-image`/`background-clip` do not, so
+the label was genuinely invisible live despite `php -l`, `survey.js`, `check-dead-controls`, and
+`check-element-manifest-conformance` all passing clean. Fixed, re-verified live. Captured as
+`STOP-A-STATIC-GATES-GREEN-DOES-NOT-MEAN-THE-CASCADE-RESOLVED-CORRECTLY` (`STOP-CATALOGUE.md` §A).
+Final result: 5/5 pairs PASS on the real canary.
+
+**Deployed bundled with two other sessions' own verified work** on the same shared tree the same
+day (`small-giants-wp-05`'s `sgs_button_element_style_css()` text-gradient extension,
+`small-giants-wp-5e`'s `brand-strip`/`hero` tier-object migration) — all three tracks' motion
+probes + payload-verify passed together, `8d5b2807f`.
+
+**Classified the remaining 17 exempted rows by real per-block investigation, not estimate.**
+6 more closed by other sessions since classification, leaving 11 across 9 blocks: 2 EASY
+(`google-reviews` arrow/write-review — an already-built, unused `$bg_layer` helper parameter),
+5 MODERATE (right background shape, needs disentangling from a coupled style-engine call or a
+derived value), 4 HARD, each its own separate problem rather than a gradient task (`accordion`'s
+`headerColour` is a dead control with no render path at all; `post-grid`'s `categoryBadgeColour`
+is a self-documented custom-property architecture that structurally can't carry a gradient;
+`site-header` and `tabs` are genuine multi-part background systems). Full per-row detail:
+`.claude/prompts/2026-09-04-golden-colour-phase3-continuation-prompt.md` (supersedes and
+replaces the now-deleted original dispatch prompt).
+
+**Named, not built:** `sgs/quote`'s `attributionColourHover`/`attributionColourHoverGradient` —
+the flat/gradient pair on attribution already works; only the hover variant is missing. Root's
+own `textColourHover` targeting the root (not the InnerBlocks body) is correct by design, per
+Bean's direct correction this session — the gap is specifically that attribution never got its
+own hover control, not that the mechanism targets the wrong element.
+
+---
+
 ## D958 [ROUTINE] — D957 undercounted the road-to-uniform remainder as 2 items; it was 12
 
 **2026-09-04, same session as D957, caught by Bean directly asking "aren't there way more

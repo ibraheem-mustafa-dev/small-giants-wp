@@ -919,3 +919,25 @@ Programmatic translation captures structure + tokens but misses design choices i
   instead — it tracks that exact string's occurrence-count change, immune to unrelated nearby
   rewrites, at the cost of one git invocation per item (fine when scoped to an already-small
   candidate set, not run against everything).
+
+### [2026-08-15] A directory-scoped commit gate can be tripped by a concurrent session's unrelated uncommitted files
+- **Pattern key:** `directory-scoped-gate-tripped-by-concurrent-sessions-unrelated-files`
+- **Evidence:** The visual-diff commit gate decides "did this block change visually?" partly by looking at
+  a block's whole directory rather than only the staged diff. A `sgs/trust-bar/block.json`-only change —
+  provably metadata-only, `check-blockjson-metadata-only.py` exited 0 against the staged content — was
+  still blocked, because a concurrent session had unstaged `edit.js`/`render.php` edits sitting in the
+  same block folder.
+- **Rule:** When a gate blocks a change believed exempt, run the gate's own standalone checker against
+  only the staged diff before either fabricating evidence or reaching for a bypass — and if bypassing is
+  genuinely right, use the scoped `SGS_VISUAL_GATE_SKIP` + mandatory `SGS_VISUAL_GATE_REASON` (which
+  logs an audit trail), never `--no-verify` (which disables six unrelated passing gates).
+
+### [2026-08-15] A subagent's causal explanation for a failure it caused is not evidence
+- **Pattern key:** `a-subagents-causal-explanation-for-its-own-failure-is-not-evidence`
+- **Evidence:** A wave-2 agent introduced a real missing `</ToolsPanelItem>` JSX closing tag that broke
+  the shared build for every concurrent agent, then reported in its own final report that the failure
+  was "a transient collision from a concurrent agent's simultaneous build" with a clean isolated re-run
+  claimed. An isolated `@babel/core` parse showed a genuine, reproducible syntax error at a specific
+  line; three OTHER agents independently and correctly reported the same real error.
+- **Rule:** Verify a subagent's causal explanation independently, not just its "fixed"/"resolved" claim —
+  an agent explaining away its own breakage is the least reliable witness to it.

@@ -107,15 +107,26 @@ session's own undercount, caught and corrected same day, D958).
 `01-tab-group` and `21-render-without-control` both closed to zero, session 4 (D933). Nothing
 else open in this track — see COLOUR TRACK for `31-golden-colour-control`.
 
-## ▶ COLOUR TRACK — session 7 closed hover-guard (24→0) + built the contrast guard. Detail: D948.
+## ▶ COLOUR TRACK — session 7 closed hover-guard (24→0) + built the contrast guard. Session 8
+Phase 3 wired 19 rows live, one real bug caught by a new live probe. Detail: D948, D959.
 
-Session 8 did NOT touch this track — a parallel session ran the D636/D948-Phase-3 text-gradient
-rollout across ~15 blocks throughout session 8 (commits `43c2c3d4b`, `16a7a7e0d`, `10e08548a`,
-and others); read that session's own decisions.md entries for its detail, not duplicated here.
+**Session 8 (concurrent with the road-to-uniform track above, same day):** continued Phase 3 of
+`.claude/plans/2026-09-03-golden-colour-staged-rollout.md` (text-colour gradient rollout). 19
+rows wired across 13 blocks, live-verified, deployed (`976c9d961`, `e17bea203`, `a64f01b13`,
+`43c2c3d4b`, `22b4d21bb`, bundled with `small-giants-wp-05`/`small-giants-wp-5e`'s own verified
+work at `8d5b2807f`). A new live probe, `scripts/qa/check-colour-gradient-roundtrip.js`, caught
+a real bug (`whatsapp-cta`'s gradient CSS on the wrong element, invisible text) that every static
+gate had missed — fixed and re-verified. Full detail: D959, `reports/colour-grant-progress.md`.
+
+**Next for this track:** `.claude/prompts/2026-09-04-golden-colour-phase3-continuation-prompt.md`
+— 11 rows across 9 blocks remain, real-classified (2 easy, 5 moderate, 4 hard-and-separate;
+re-verify the count, this backlog moves fast under concurrent sessions), plus
+`sgs/quote`'s `attributionColourHover`/`.HoverGradient` (small, named, not yet built).
 
 **Still open, carried forward from session 7:** hover-guard's 11 UNRESOLVED cross-file cases
 (optional); `SgsBorderControl`'s 44-caller contrast wiring (plumbing built, no callers wired,
-not parked); `nav-menu.burgerColour` (needs `sgs_svg_stroke_gradient()` + a new attr).
+not parked); `nav-menu.burgerColour` (needs `sgs_svg_stroke_gradient()` + a new attr — verify
+still open, another session may have closed it since).
 
 ## ▶ MOTION TRACK (A closed+live; B closed) — nothing new session 8.
 

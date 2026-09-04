@@ -1104,6 +1104,20 @@ measurement was wrong rather than the measurement.
   line inside a JSX element PARSED CLEAN, because JSX reads `name: value` as a namespaced attribute.
   It is valid syntax and completely inert. Only the full webpack build would have caught it.
   **Parse-clean is not correct; for JSX edits the build is the check, not the parser.**
+- **STOP-A-STATIC-GATES-GREEN-DOES-NOT-MEAN-THE-CASCADE-RESOLVED-CORRECTLY** — NEW 2026-09-04
+  (D948 Phase 3, session 8 colour track). `whatsapp-cta`'s `labelColour`/`labelColourGradient`
+  wiring passed every static check available — `php -l`, `survey.js`'s verdict transition,
+  `check-dead-controls`, `check-element-manifest-conformance` — because all four ask "is this
+  code shape correct", never "does the browser actually render what this code produces". The
+  gradient CSS was emitted onto the wrapper `<a>` instead of the child `<span>` that held the
+  visible text; `color` inherits from parent to child in CSS, but `background-image`/
+  `background-clip` do not, so the label rendered genuinely invisible on the live canary
+  despite a fully green build. Only a live probe (`check-colour-gradient-roundtrip.js`,
+  modelled on `check-border-roundtrip.js`'s positive/negative-control discipline) caught it —
+  by reading `getComputedStyle()` on the real rendered element, not by inspecting source.
+  **Any change whose correctness depends on CSS inheritance, cascade, or a browser-computed
+  value (not just "does this code parse/typecheck") needs a live computed-style probe before
+  being called done — a green build proves the code shape, never the painted result.**
 
 ## B. Domain STOPs — carried VERBATIM from next-session-prompt.md (2026-07-16, D338–D342)
 
@@ -1603,7 +1617,8 @@ Carried from next-session-prompt.md. General form for any cloning-pipeline sessi
     STOP-A-SUBSTRING-MATCH-IS-NOT-A-WORD-MATCH,
     STOP-A-CASE-SENSITIVE-GREP-CAN-MANUFACTURE-A-FALSE-ALL-CLEAR,
     STOP-A-MEASUREMENT-CAN-BE-BLIND-BEHIND-AN-IFRAME-BOUNDARY,
-    STOP-A-BARE-SELECTOR-MATCHES-THE-FIRST-INSTANCE-IN-DOCUMENT-ORDER-NOT-YOUR-TEST-BLOCK.)
+    STOP-A-BARE-SELECTOR-MATCHES-THE-FIRST-INSTANCE-IN-DOCUMENT-ORDER-NOT-YOUR-TEST-BLOCK,
+    STOP-A-STATIC-GATES-GREEN-DOES-NOT-MEAN-THE-CASCADE-RESOLVED-CORRECTLY.)
 12. Before grouping two or more findings/fixes under one remedy because they share a SYMPTOM or a
     COUNT, have I traced the actual MECHANISM each one depends on — and before trusting a
     `--dry-run`/preview/IDE-diagnostics result, or writing a "measured"/"verified" figure into a
@@ -1635,6 +1650,20 @@ for real before claiming done?
     (STOP-A-DATA-FILE-SECTION-WITH-ZERO-READERS-IS-NOT-A-SOURCE-OF-TRUTH)
 
 ## D. D101 count-check receipt
+
+- **2026-09-04 (session 8, colour track — one STOP entry added to §A, one existing ritual
+  question extended, no new question):** measured with this file's own canonical command,
+  before and after: `grep -oE '^\s*-\s+\*\*STOP-[A-Z0-9]+(-[A-Z0-9]+)*' .claude/STOP-CATALOGUE.md
+  | grep -oE 'STOP-[A-Z0-9]+(-[A-Z0-9]+)*' | sort -u | wc -l` → **271** before (at `HEAD`) →
+  **272** after. This session ADDED **1** (`STOP-A-STATIC-GATES-GREEN-DOES-NOT-MEAN-THE-CASCADE-RESOLVED-CORRECTLY`)
+  and SUBTRACTED **none**. 272 >= 271. PASS. Ritual question 11 (§C) extended with a citation
+  to the new entry rather than a new question — the lesson (a code-shape check cannot see a
+  CSS-cascade/inheritance result) is a specific instance of question 11's existing "is my
+  verification method capable of seeing the thing I'm checking" class, not a new class.
+  Ritual questions: 15 → 15, unchanged. Earned by something that actually happened this
+  session: `whatsapp-cta`'s gradient CSS passed `php -l`, `survey.js`, `check-dead-controls`,
+  and `check-element-manifest-conformance` clean, and still rendered invisible text live —
+  found only by a computed-style probe on the real canary, not by any static check.
 
 - **2026-08-19 (session, sources-of-truth-that-nothing-reads: nine STOP entries + one ritual
   question added, §A15):** measured with this file's own canonical commands AFTER writing the new

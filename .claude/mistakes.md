@@ -1,10 +1,14 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-09-04 (session 8) (1 new entry added — a peer's attribution claim needs
-independent verification; 1 oldest entry pruned to archive to hold the ~30 cap.)
+**Last updated:** 2026-09-04 (session 8, colour track) (1 new entry added — re-read the full
+source doc before answering "what's left"; 1 oldest entry pruned to archive to hold the ~30 cap.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-04] Re-read the full source doc before answering "what's left" — never from your own just-written summary
+- **Pattern key:** `re-read-full-plan-before-answering-whats-left`
+- **Feedback file:** [feedback_re_read_full_plan_before_answering_whats_left.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_re_read_full_plan_before_answering_whats_left.md)
+
 ### [2026-09-04] A peer session's claim about who caused an uncommitted change is a hypothesis, not verified fact
 - **Pattern key:** `a-peers-claim-about-who-caused-a-change-is-not-verified-by-default`
 - **Evidence:** a peer session told me "it looks like you'd already bumped the ceiling yourself"
@@ -251,17 +255,7 @@ independent verification; 1 oldest entry pruned to archive to hold the ~30 cap.)
 - **Rule:** After ANY commit on a shared checkout, verify what actually landed with `git show --stat HEAD`
   and `git show HEAD -- <file>` — never assume careful partial staging survived into the commit.
 
-### [2026-08-15] A subagent's causal explanation for a failure it caused is not evidence
-- **Pattern key:** `a-subagents-causal-explanation-for-its-own-failure-is-not-evidence`
-- **Evidence:** A wave-2 agent introduced a real missing `</ToolsPanelItem>` JSX closing tag that broke
-  the shared build for every concurrent agent, then reported in its own final report that the failure
-  was "a transient collision from a concurrent agent's simultaneous build" with a clean isolated re-run
-  claimed. An isolated `@babel/core` parse showed a genuine, reproducible syntax error at a specific
-  line; three OTHER agents independently and correctly reported the same real error.
-- **Rule:** Verify a subagent's causal explanation independently, not just its "fixed"/"resolved" claim —
-  an agent explaining away its own breakage is the least reliable witness to it.
-
-*(13 entries dated 2026-08-04 through 2026-08-15 pruned to `memory/mistakes-archive.md` — oldest
+*(14 entries dated 2026-08-04 through 2026-08-15 pruned to `memory/mistakes-archive.md` — oldest
 by date, moved verbatim, to make room at cap. See `memory/mistakes-archive.md` for the full
 history of prunes.)*
 
