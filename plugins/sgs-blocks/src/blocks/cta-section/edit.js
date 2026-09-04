@@ -96,6 +96,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		backgroundImageDecorative,
 		gradientPreset,
 		stats,
+		backgroundColour,
 	} = attributes;
 
 	// WS-4: cta-section's own layout (centred/left/split) renamed to `contentLayout`
@@ -192,6 +193,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		} );
 	};
 
+	// Contrast check for border colour against the CTA section's own background.
+	// Note: cta-section has no backgroundColourGradient sibling (see block.json comment),
+	// so we check only the flat backgroundColour value.
+	const ctaSectionContrastAgainst = backgroundColour || '';
+
 	return (
 		<>
 			{ /* Settings tab — behaviour: content-authoring choices (content-column
@@ -277,6 +283,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ ctaSectionContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

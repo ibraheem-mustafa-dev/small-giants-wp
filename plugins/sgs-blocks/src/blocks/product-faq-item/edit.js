@@ -111,7 +111,7 @@ function buildWrapperStyle( attributes ) {
 }
 
 export default function Edit( { attributes, setAttributes, context } ) {
-	const { question, isOpen, textColour, textColourGradient } = attributes;
+	const { question, isOpen, textColour, textColourGradient, backgroundColour, backgroundColourGradient } = attributes;
 	// Editor-canvas desync fix (CHECK A, 2026-08-13): this used to hardcode
 	// useState( true ) with a comment justifying it as "always editable" —
 	// which meant the `isOpen` ("Open by default") toggle had ZERO visible
@@ -157,6 +157,15 @@ export default function Edit( { attributes, setAttributes, context } ) {
 			{ CHEVRON_SVG }
 		</span>
 	);
+
+	// Contrast check for border colour — warn if border fails WCAG AA contrast
+	// against the item's own background. When the background is a gradient,
+	// comparing against the flat colour would compare against a surface that
+	// isn't rendered — skip the check entirely in that case.
+	const faqItemContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
 
 	return (
 		<>
@@ -228,6 +237,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ faqItemContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

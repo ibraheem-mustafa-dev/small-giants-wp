@@ -33,6 +33,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		style,
 		marginTablet,
 		marginMobile,
+		backgroundColour,
+		backgroundColourGradient,
 	} = attributes;
 
 	const colourRows = [
@@ -61,6 +63,13 @@ export default function Edit( { attributes, setAttributes } ) {
 			setAttributes,
 		} ),
 	];
+
+	// Contrast check for border colour against the buybox's own background.
+	// When the background has a gradient sibling, skip the check (flat colour would be inaccurate).
+	const buyboxContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-buybox sgs-buybox--editor-placeholder',
@@ -366,6 +375,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ buyboxContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

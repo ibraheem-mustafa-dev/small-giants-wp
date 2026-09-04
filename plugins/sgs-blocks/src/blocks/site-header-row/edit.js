@@ -408,6 +408,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		setAttributes,
 	} );
 
+	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
+	// against the block's own background. When the background is a gradient,
+	// the flat backgroundColour is not rendered, so skip the check in that case.
+	const siteHeaderRowContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
 	return (
 		<>
 			<InspectorControls group="styles">
@@ -722,6 +730,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ siteHeaderRowContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

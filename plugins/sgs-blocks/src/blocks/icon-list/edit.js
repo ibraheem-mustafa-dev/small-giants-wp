@@ -149,6 +149,8 @@ export default function Edit({ attributes, setAttributes }) {
     items,
     icon: defaultIconName,
     defaultIconSource,
+    backgroundColour,
+    backgroundColourGradient,
     iconColour,
     iconColourHover,
     iconColourGradient,
@@ -174,6 +176,15 @@ export default function Edit({ attributes, setAttributes }) {
     menuRef,
     renderLandmark,
   } = attributes;
+
+  // Contrast check for border — warn if border fails WCAG contrast against
+  // the block's own background. When there's no background set or a gradient
+  // is active, skip the check entirely.
+  const iconListContrastAgainst =
+    attributes.backgroundColour && ! attributes.backgroundColourGradient
+      ? attributes.backgroundColour
+      : '';
+
 
   const resolvedSource = source || "typed";
 
@@ -656,6 +667,7 @@ export default function Edit({ attributes, setAttributes }) {
               setAttributes({ borderColourGradient: val ?? "" })
             }
             colourLinked={true}
+            contrastAgainst={ iconListContrastAgainst }
             radiusValues={{
               base: attributes.borderRadius ?? {},
               tablet: borderRadiusTablet ?? {},

@@ -41,9 +41,19 @@ export default function Edit( { attributes, setAttributes } ) {
 		selectedStyle,
 		columns,
 		backgroundColour,
+		backgroundColourGradient,
 		textColour,
 		textColourGradient,
 	} = attributes;
+
+	// Contrast check for border — warn if border fails WCAG contrast against
+	// the block's own background. When there's no background set or a gradient
+	// is active, skip the check entirely.
+	const formFieldTilesContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
 
 	// columns is a TIER OBJECT (Spec 35 pass 4) — this control only ever edits
 	// the desktop tier (there is no per-tier UI here); resolve it for both the
@@ -352,6 +362,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ formFieldTilesContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

@@ -791,6 +791,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		? cta2Style
 		: 'secondary';
 
+	// Contrast check for border colour — warn if border fails WCAG AA contrast
+	// against the card's own background. When the background is a gradient,
+	// comparing against the flat colour would compare against a surface that
+	// isn't rendered — skip the check entirely in that case. The backgroundColour
+	// is used by render.php in both typed and bound modes.
+	const productCardContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
+
 	// Typed-mode editor parity (R2c, B-3/B-8): card root colour/border are now
 	// block-private attrs (not the native style.color/__experimentalBorder
 	// path), so useBlockProps() does not apply them to the editor wrapper.
@@ -1476,6 +1486,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { borderColourGradient: val ?? '' } )
 						}
 						colourLinked={ true }
+						contrastAgainst={ productCardContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

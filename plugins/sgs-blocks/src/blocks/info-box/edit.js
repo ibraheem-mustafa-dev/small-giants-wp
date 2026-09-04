@@ -307,6 +307,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		grayscaleHover,
 		transitionDuration,
 		transitionEasing,
+		backgroundColour,
+		backgroundColourGradient,
 	} = attributes;
 
 	// (The resting border-gradient row's Solid/Gradient mode is owned by
@@ -408,6 +410,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// them automatically. buildPreviewStyle() mirrors render.php's scoped
 	// declarations here so the canvas stays a faithful WYSIWYG (editor-only —
 	// this block is dynamic, so nothing here persists to post_content).
+
+	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
+	// against the info-box's own background. When the background is a gradient,
+	// the flat backgroundColour is not rendered, so skip the check in that case.
+	const infoBoxContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
+
 	const blockProps = useBlockProps( { className, style: buildPreviewStyle( attributes ) } );
 
 	// FR-22-6: single InnerBlocks slot covers ALL card content.
@@ -520,6 +531,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ infoBoxContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

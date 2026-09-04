@@ -235,6 +235,21 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		textColourHoverGradient,
 	} = attributes;
 
+	// Contrast check for border — warn if border fails WCAG 3:1 contrast
+	// against the block's own background. When the block has no background
+	// set, there's no static background to compare against, so the check is
+	// skipped. Follows the text.js pattern.
+	//
+	// `contrastAgainst` only accepts a FLAT colour/token — it is not itself
+	// gradient-aware. When `backgroundColourGradient` is set, the gradient (not
+	// the flat `backgroundColour`) is what actually paints, so comparing against
+	// the flat colour would compare against a surface that isn't rendered — skip
+	// the check entirely in that case rather than feed the raw gradient string in.
+	const footerContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
 	// ⛔ Seed the three rows ONLY into a genuinely EMPTY container.
 	//
 	// WP core re-applies a block's template on EVERY mount when templateLock is
@@ -399,6 +414,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ footerContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

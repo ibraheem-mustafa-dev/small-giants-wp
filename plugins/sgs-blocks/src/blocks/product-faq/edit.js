@@ -141,12 +141,23 @@ export default function Edit( { attributes, setAttributes } ) {
 		maxWidth,
 		textColour,
 		textColourGradient,
+		backgroundColour,
+		backgroundColourGradient,
 	} = attributes;
 
 	const ALLOWED_HEADING_LEVELS = [ 'h2', 'h3', 'h4', 'p' ];
 	const HeadingTag = ALLOWED_HEADING_LEVELS.includes( headingLevel )
 		? headingLevel
 		: 'h2';
+
+	// Contrast check for border colour — warn if border fails WCAG AA contrast
+	// against the FAQ wrapper's own background. When the background is a gradient,
+	// comparing against the flat colour would compare against a surface that
+	// isn't rendered — skip the check entirely in that case.
+	const faqContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-product-faq',
@@ -308,6 +319,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ faqContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

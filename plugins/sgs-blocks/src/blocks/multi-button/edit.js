@@ -105,6 +105,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		childBtnBorderRadius,
 		childBtnFontSize,
 		childBtnFontWeight,
+		backgroundColour,
+		backgroundColourGradient,
 	} = attributes;
 
 	// Only the DESKTOP tier is read here (the editorStyle preview below). The
@@ -180,6 +182,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		marginTablet: attributes.marginTablet,
 		marginMobile: attributes.marginMobile,
 	}, previewTier );
+
+	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
+	// against the multi-button's own background. When the background is a gradient,
+	// the flat backgroundColour is not rendered, so skip the check in that case.
+	const multiButtonContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
 
 	// Preview the desktop layout in the editor.
 	// Gap comes from the block's own Layout panel Gap control (raw CSS string).
@@ -724,6 +734,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ multiButtonContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

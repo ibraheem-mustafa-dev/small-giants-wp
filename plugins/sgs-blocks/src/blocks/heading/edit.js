@@ -307,6 +307,15 @@ export default function Edit( { attributes, setAttributes } ) {
 		textWrap,
 	} = attributes;
 
+	// Contrast check for border — warn if border fails WCAG contrast against
+	// the block's own background. When there's no background set or a gradient
+	// is active, skip the check entirely.
+	const headingContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
+
 	const isSubheading = headingRole === 'subheading';
 
 	// Determine the tag to render in the editor canvas.
@@ -548,6 +557,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { borderColourGradient: val ?? '' } )
 						}
 						colourLinked={ true }
+						contrastAgainst={ headingContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

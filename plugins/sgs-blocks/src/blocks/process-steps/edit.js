@@ -153,6 +153,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		effectHover && effectHover !== 'none' ? `sgs-process-steps--hover-${ effectHover }` : '',
 	].filter( Boolean ).join( ' ' );
 
+	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
+	// against the process-steps wrapper's own background. When the background is a gradient,
+	// the flat backgroundColour is not rendered, so skip the check in that case.
+	const processStepsContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
+
 	// Box-object interface contract §5: editor-canvas preview of the base
 	// (desktop) box families, mirroring render.php's scoped output so the
 	// canvas matches the frontend. Tablet/mobile tiers are @media-scoped and
@@ -576,6 +584,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { borderColourHoverGradient: val ?? '' } ),
 							},
 						] }
+						contrastAgainst={ processStepsContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

@@ -737,28 +737,37 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				</PanelBody>
 
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
-					<SgsBorderControl
-						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
-						widthPresets={ [ '10', '20', '30' ] }
-						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
-						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
-						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
-						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
-						colourLinked={ true }
-						radiusValues={ {
-							base: attributes.borderRadius ?? {},
-							tablet: attributes.borderRadiusTablet ?? {},
-							mobile: attributes.borderRadiusMobile ?? {},
-						} }
-						onRadiusChange={ ( tier, next ) => {
-							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-							setAttributes( { [ radiusKey ]: next } );
-						} }
-					/>
+					{ (() => {
+						const trustBarContrastAgainst =
+							backgroundColour && ! backgroundColourGradient
+								? backgroundColour
+								: '';
+						return (
+							<SgsBorderControl
+								widthValues={ attributes.borderWidth ?? {} }
+								onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+								widthPresets={ [ '10', '20', '30' ] }
+								styleValue={ attributes.borderStyle }
+								onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+								colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+								colourValue={ attributes.borderColour }
+								onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+								colourGradientValue={ attributes.borderColourGradient }
+								onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+								colourLinked={ true }
+								contrastAgainst={ trustBarContrastAgainst }
+								radiusValues={ {
+									base: attributes.borderRadius ?? {},
+									tablet: attributes.borderRadiusTablet ?? {},
+									mobile: attributes.borderRadiusMobile ?? {},
+								} }
+								onRadiusChange={ ( tier, next ) => {
+									const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
+									setAttributes( { [ radiusKey ]: next } );
+								} }
+							/>
+						);
+					} )() }
 				</PanelBody>
 			</InspectorControls>
 

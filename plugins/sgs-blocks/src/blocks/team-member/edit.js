@@ -278,6 +278,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		nameColourGradient,
 		roleColour,
 		roleColourGradient,
+		backgroundColour,
+		backgroundColourGradient,
 		cardStyle,
 		photoShape,
 		photoDecorative,
@@ -301,6 +303,21 @@ export default function Edit( { attributes, setAttributes } ) {
 		nameColourHover,
 		roleColourHover,
 	} = attributes;
+
+	// Contrast check for border — warn if border fails WCAG 3:1 contrast
+	// against the block's own background. When the block has no background
+	// set, there's no static background to compare against, so the check is
+	// skipped. Follows the text.js pattern.
+	//
+	// `contrastAgainst` only accepts a FLAT colour/token — it is not itself
+	// gradient-aware. When `backgroundColourGradient` is set, the gradient (not
+	// the flat `backgroundColour`) is what actually paints, so comparing against
+	// the flat colour would compare against a surface that isn't rendered — skip
+	// the check entirely in that case rather than feed the raw gradient string in.
+	const teamMemberContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
 
 	const isCompact = 'compact' === displayMode;
 
@@ -822,6 +839,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ teamMemberContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

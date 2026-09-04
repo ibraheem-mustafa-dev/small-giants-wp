@@ -825,6 +825,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								linked: true,
 							},
 						] }
+						contrastAgainst={ textContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

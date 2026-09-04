@@ -36,7 +36,7 @@ const CHEVRON_SVG = (
 );
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
-	const { title, isOpen, backgroundColour, textColour, textColourGradient } = attributes;
+	const { title, isOpen, backgroundColour, backgroundColourGradient, textColour, textColourGradient } = attributes;
 
 	// Position of this item among its accordion siblings — mirrors sgs/tab's
 	// index derivation, needed to compare against the parent's `defaultOpen`
@@ -118,6 +118,13 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		</span>
 	);
 
+	// Contrast check for border colour against the accordion item's own background.
+	// When the background has a gradient sibling, skip the check (flat colour would be inaccurate).
+	const accordionItemContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
 	return (
 		<>
 			<SgsColourPanel
@@ -174,6 +181,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ accordionItemContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

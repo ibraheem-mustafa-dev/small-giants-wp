@@ -370,6 +370,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		.filter( Boolean )
 		.join( ' ' );
 
+	// Contrast check for border colour against the brand strip's own background.
+	// When the background has a gradient sibling, skip the check (flat colour would be inaccurate).
+	const brandStripContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
 	const blockProps = useBlockProps();
 
 	const trackStyle = {
@@ -709,6 +716,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ brandStripContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

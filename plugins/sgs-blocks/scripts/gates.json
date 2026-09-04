@@ -902,5 +902,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 96
+  },
+  {
+    "id": "wire-border-contrast",
+    "cmd": "node scripts/colour-codemod/wire-border-contrast.js --check",
+    "tier": "fast",
+    "added_D": "D963",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 97
   }
 ]

@@ -10,7 +10,22 @@ import { SgsColourPanel, fillRow,
 } from '../../components';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { label, textColour, textColourGradient } = attributes;
+	const { label, textColour, textColourGradient, backgroundColour, backgroundColourGradient } = attributes;
+
+	// Contrast check for border — warn if border fails WCAG 3:1 contrast
+	// against the block's own background. When the block has no background
+	// set, there's no static background to compare against, so the check is
+	// skipped. Follows the text.js pattern.
+	//
+	// `contrastAgainst` only accepts a FLAT colour/token — it is not itself
+	// gradient-aware. When `backgroundColourGradient` is set, the gradient (not
+	// the flat `backgroundColour`) is what actually paints, so comparing against
+	// the flat colour would compare against a surface that isn't rendered — skip
+	// the check entirely in that case rather than feed the raw gradient string in.
+	const tabContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
 
 	// Determine which tab index this block occupies in the parent.
 	const tabIndex = useSelect(
@@ -163,6 +178,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ tabContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

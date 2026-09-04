@@ -270,6 +270,15 @@ export default function Edit( { attributes, setAttributes } ) {
 		transitionEasing,
 	} = attributes;
 
+	// Contrast check for border colour — warn if border fails WCAG AA contrast
+	// against the quote's own background. When the background is a gradient,
+	// comparing against the flat colour would compare against a surface that
+	// isn't rendered — skip the check entirely in that case.
+	const quoteContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
+
 	// Contract §B3: NO wrapper <div> — the <blockquote> IS the block root
 	// (matches render.php). It carries the block class + the wrapper preview
 	// style, so the canvas mirrors the scoped frontend output.
@@ -873,6 +882,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									linked: true,
 								},
 							] }
+							contrastAgainst={ quoteContrastAgainst }
 							radiusValues={ {
 								base: attributes.borderRadius ?? {},
 								tablet: attributes.borderRadiusTablet ?? {},

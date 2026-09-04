@@ -13,7 +13,16 @@ import { SgsColourPanel, fillRow,
 } from '../../components';
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { label, backgroundColour, textColour, textColourGradient } = attributes;
+	const { label, backgroundColour, backgroundColourGradient, textColour, textColourGradient } = attributes;
+
+	// Contrast check for border — warn if border fails WCAG contrast against
+	// the block's own background. When there's no background set or a gradient
+	// is active, skip the check entirely.
+	const formStepContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-form-step',
@@ -97,6 +106,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ formStepContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

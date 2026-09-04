@@ -419,6 +419,13 @@ export default function Edit({ attributes, setAttributes, name }) {
     .filter( Boolean )
     .join( " " );
 
+  // Contrast check for border colour against the container's own background.
+  // When the background has a gradient sibling, skip the check (flat colour would be inaccurate).
+  const containerContrastAgainst =
+    backgroundColour && ! backgroundColourGradient
+      ? backgroundColour
+      : '';
+
   const blockProps = useBlockProps({ className: editorClassName, style });
   // The children belong to the BAND when one renders, and to the root when one does not.
   // useInnerBlocksProps is called exactly once either way — branching the ARGUMENT, never
@@ -729,6 +736,7 @@ export default function Edit({ attributes, setAttributes, name }) {
           			onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ),
           		},
           	] }
+          	contrastAgainst={ containerContrastAgainst }
           	radiusValues={ {
           		base: attributes.borderRadius ?? {},
           		tablet: attributes.borderRadiusTablet ?? {},

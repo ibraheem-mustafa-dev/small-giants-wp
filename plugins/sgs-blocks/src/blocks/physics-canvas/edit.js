@@ -69,7 +69,7 @@ const ALLOWED_BLOCKS = [
  */
 
 export default function Edit( { attributes, setAttributes, name } ) {
-	const { physicsGravity, physicsBounce, physicsEdgeResistance } = attributes;
+	const { physicsGravity, physicsBounce, physicsEdgeResistance, backgroundColour, backgroundColourGradient } = attributes;
 
 	// D717/background-preview: BackgroundPanel (mounted below) writes image/
 	// video/overlay/ken-burns/parallax attrs this block never previewed on
@@ -117,6 +117,14 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		marginTablet: attributes.marginTablet,
 		marginMobile: attributes.marginMobile,
 	}, previewTier );
+
+	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
+	// against the physics-canvas's own background. When the background is a gradient,
+	// the flat backgroundColour is not rendered, so skip the check in that case.
+	const physicsCanvasContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
 
 	const blockProps = useBlockProps( {
 		className: bgPreview.className,
@@ -178,6 +186,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ physicsCanvasContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},

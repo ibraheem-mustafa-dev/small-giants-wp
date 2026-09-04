@@ -127,9 +127,19 @@ export default function Edit( { attributes, setAttributes } ) {
 		alignItems,
 		justifyItems,
 		backgroundColour,
+		backgroundColourGradient,
 		textColour,
 		textColourGradient,
 	} = attributes;
+
+	// Contrast check for border — warn if border fails WCAG contrast against
+	// the block's own background. When there's no background set or a gradient
+	// is active, skip the check entirely.
+	const featureGridContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
 
 	const blockProps = useBlockProps( {
 		className: `sgs-feature-grid sgs-feature-grid--${ layoutMode }`,
@@ -335,6 +345,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ featureGridContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius ?? {},
 							tablet: attributes.borderRadiusTablet ?? {},
