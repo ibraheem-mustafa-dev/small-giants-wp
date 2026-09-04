@@ -381,38 +381,6 @@ Two overlapping Bean-reported visual-QC defect registers against the live page-8
 
 ## Framework: blocks, theme, specs
 
-### P-BORDER-CONTRAST-THRESHOLD — `SgsBorderControl.js` needs a UI-component (3:1) contrast mode before it can adopt the check
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-04
-
-The `GradientCapableColourControl.js`/`textRow.js`/`SgsColourPanel.js` WCAG contrast check (opt-in
-`contrastAgainst`/`contrastLabel`, advisory-only, built 2026-09-04 — see
-`memory/parking-archive.md`'s closed `P-GRADIENT-CONTRAST-ROLLOUT` entry for the full build +
-rollout record) is now wired into every TEXT-colour caller that has a determinable background
-(hero, text, card-grid, container's grid-item defaults, plus the site-header-row/site-footer-row
-pilot). `components/SgsBorderControl.js` was the one remaining caller and was deliberately NOT
-wired this session.
-
-**Why it's a real residual, not a same-recipe fill-in:** `SgsBorderControl.js` composes
-`GradientCapableColourControl` for BORDER colour, not text colour. WCAG contrast for a border is
-a UI-component check (1.4.11 Non-text Contrast, 3:1 minimum against the adjacent surface) — a
-genuinely different, lower threshold from the 4.5:1 TEXT threshold the current check is hardcoded
-to (`meetsWCAG_AA( ratio, false )` inside `GradientCapableColourControl.js`'s `StateContent`,
-`isLargeText` always `false`). Wiring `contrastAgainst` onto `SgsBorderControl` as-is would apply
-the wrong (too strict) threshold and produce false-positive warnings on plenty of legitimate,
-WCAG-compliant borders.
-
-**Recipe:** give `GradientCapableColourControl` a way to select the 3:1 threshold instead of
-4.5:1 for this call site — e.g. a `contrastMinRatio`/`contrastPurpose: 'border' | 'text'` prop
-threaded down to the `meetsWCAG_AA()` call (its existing `isLargeText` param already models a
-second, lower (3:1) threshold, so this may be as simple as exposing that axis to the caller rather
-than inventing a new one — check before adding a new parameter). Then wire `SgsBorderControl`
-against whichever background attribute its own caller passes in (it may need a new
-`contrastAgainst` pass-through prop on `SgsBorderControl` itself, mirroring the `borderStyle`/
-`onBorderStyleChange` pass-through pattern already there).
-
-**Trigger:** next WCAG/design-system session, or when a client complains about a low-contrast
-border being hard to see.
-
 ### P-MEDIA-ALIGNMENT-SHARED-CONTROL — `alignment` duplicated ad hoc across unrelated blocks
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-01
 

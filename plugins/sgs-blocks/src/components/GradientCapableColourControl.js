@@ -96,6 +96,7 @@ function StateContent( {
 	ariaLabel,
 	contrastAgainst,
 	contrastLabel,
+	contrastLargeText,
 } ) {
 	const [ localMode, setLocalMode ] = useState( null );
 	const gradientEnabled =
@@ -147,16 +148,18 @@ function StateContent( {
 					resolvedContrastAgainst,
 					contrastRefEl.current
 				);
-				if ( ! meetsWCAG_AA( ratio, false ) ) {
+				if ( ! meetsWCAG_AA( ratio, contrastLargeText ) ) {
+					const minRatio = contrastLargeText ? '3.0' : '4.5';
 					setContrastNotice(
 						contrastLabel ||
 							sprintf(
-								/* translators: %s: contrast ratio, e.g. "2.1:1" */
+								/* translators: 1: contrast ratio, e.g. "2.1:1". 2: the required minimum ratio, e.g. "4.5:1". */
 								__(
-									'Contrast ratio %s:1 is below the WCAG AA minimum of 4.5:1 for at least one gradient stop.',
+									'Contrast ratio %1$s:1 is below the WCAG AA minimum of %2$s:1 for at least one gradient stop.',
 									'sgs-blocks'
 								),
-								ratio > 0 ? ratio.toFixed( 1 ) : '?'
+								ratio > 0 ? ratio.toFixed( 1 ) : '?',
+								minRatio
 							)
 					);
 				} else {
@@ -185,16 +188,18 @@ function StateContent( {
 				contrastRefEl.current
 			);
 			const ratio = calculateContrastRatio( backgroundLuminance, colourLuminance );
-			if ( ! meetsWCAG_AA( ratio, false ) ) {
+			if ( ! meetsWCAG_AA( ratio, contrastLargeText ) ) {
+				const minRatio = contrastLargeText ? '3.0' : '4.5';
 				setContrastNotice(
 					contrastLabel ||
 						sprintf(
-							/* translators: %s: contrast ratio, e.g. "2.1:1" */
+							/* translators: 1: contrast ratio, e.g. "2.1:1". 2: the required minimum ratio, e.g. "4.5:1". */
 							__(
-								'Contrast ratio %s:1 is below the WCAG AA minimum of 4.5:1.',
+								'Contrast ratio %1$s:1 is below the WCAG AA minimum of %2$s:1.',
 								'sgs-blocks'
 							),
-							ratio > 0 ? ratio.toFixed( 1 ) : '?'
+							ratio > 0 ? ratio.toFixed( 1 ) : '?',
+							minRatio
 						)
 				);
 			} else {
@@ -212,6 +217,7 @@ function StateContent( {
 		colours,
 		resolvedContrastAgainst,
 		contrastLabel,
+		contrastLargeText,
 	] );
 
 	return (
@@ -306,6 +312,13 @@ function StateContent( {
  *                                             existing callers).
  * @param {string}   [props.contrastLabel]    Overrides the default "Contrast ratio X:1 is below…"
  *                                             warning text when the check fails.
+ * @param {boolean}  [props.contrastLargeText=false] Selects the WCAG AA threshold `contrastAgainst`
+ *                                             checks against: `false` (default) is the 4.5:1 TEXT
+ *                                             threshold; `true` is the lower 3.0:1 threshold shared by
+ *                                             large text (18px+/14px+bold) AND UI-component / non-text
+ *                                             contrast (WCAG 1.4.11 — borders, icons, focus rings).
+ *                                             Pass `true` when `contrastAgainst` is checking a BORDER
+ *                                             or other non-text colour, not body text.
  */
 export default function GradientCapableColourControl( {
 	label,
@@ -327,6 +340,7 @@ export default function GradientCapableColourControl( {
 	enableAlpha = true,
 	contrastAgainst,
 	contrastLabel,
+	contrastLargeText = false,
 } ) {
 	const [ colours ] = useSettings( 'color.palette' );
 	const instanceId = useInstanceId(
@@ -448,6 +462,7 @@ export default function GradientCapableColourControl( {
 												) }
 												contrastAgainst={ contrastAgainst }
 												contrastLabel={ contrastLabel }
+												contrastLargeText={ contrastLargeText }
 											/>
 										</div>
 									);
@@ -463,6 +478,7 @@ export default function GradientCapableColourControl( {
 									ariaLabel={ label }
 									contrastAgainst={ contrastAgainst }
 									contrastLabel={ contrastLabel }
+									contrastLargeText={ contrastLargeText }
 								/>
 							</div>
 						) }

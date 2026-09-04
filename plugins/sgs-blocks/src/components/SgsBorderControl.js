@@ -70,6 +70,21 @@ import GradientCapableColourControl from './GradientCapableColourControl';
  *                                               (carry `linked` on each state object there).
  * @param {boolean}  [props.clearable=true]      Forwarded to `GradientCapableColourControl`.
  * @param {boolean}  [props.enableAlpha=true]    Forwarded to `GradientCapableColourControl`.
+ * @param {string}   [props.contrastAgainst]     Opt-in WCAG contrast check, forwarded to
+ *                                               `GradientCapableColourControl` — a hex colour
+ *                                               or theme palette token naming the background
+ *                                               ACTUALLY rendered behind this border (the
+ *                                               caller works that out, same as any other
+ *                                               `contrastAgainst` use). Omit for no behaviour
+ *                                               change (the default).
+ * @param {string}   [props.contrastLabel]       Forwarded to `GradientCapableColourControl`.
+ * @param {boolean}  [props.contrastLargeText=true] Forwarded to `GradientCapableColourControl`.
+ *                                               Defaults to `true` HERE (unlike that
+ *                                               component's own default of `false`) because a
+ *                                               border is a UI-component / non-text contrast
+ *                                               case (WCAG 1.4.11, 3:1), never body text —
+ *                                               callers should not need to remember to flip
+ *                                               this for the one shape this control ever draws.
  * @return {JSX.Element} The composed one-row control.
  */
 export default function SgsBorderControl( {
@@ -92,6 +107,9 @@ export default function SgsBorderControl( {
 	colourLabel = __( 'Colour', 'sgs-blocks' ),
 	clearable = true,
 	enableAlpha = true,
+	contrastAgainst,
+	contrastLabel,
+	contrastLargeText = true,
 } ) {
 	// Width is a BOX object, base only. Per-device border widths were considered
 	// and dropped (Bean, 2026-08-29) -- there is no real use case for a border
@@ -127,6 +145,9 @@ export default function SgsBorderControl( {
 						onBorderStyleChange={ onStyleChange }
 						clearable={ clearable }
 						enableAlpha={ enableAlpha }
+						contrastAgainst={ contrastAgainst }
+						contrastLabel={ contrastLabel }
+						contrastLargeText={ contrastLargeText }
 					/>
 				</FlexItem>
 			</Flex>
