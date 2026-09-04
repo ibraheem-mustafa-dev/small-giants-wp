@@ -195,6 +195,72 @@ count without running `fix.js --fix` (dry run, writes nothing) to confirm it agr
 
 ---
 
+## Phase 3 progress log — 2026-09-04 (session 8)
+
+**19 of 22 pre-filtered-safe rows wired across 13 blocks, live-verified, deployed.**
+Commits `976c9d961`, `e17bea203`, `a64f01b13`, `43c2c3d4b`, `22b4d21bb`. Full detail and
+the codemod-vs-manual recommendation: `reports/colour-grant-progress.md`.
+
+The session first re-derived the target list from a fresh `survey.js` run (262 rows / 65
+blocks — the plan's own "91 rows / 20 blocks" example had already gone stale before this
+session started), then filtered 39 candidate rows down to 22 genuinely safe ones using
+rule 31's own `textSharesElementWithBackground()` precondition — a row whose element also
+paints a background on the same selector cannot safely take `background-clip:text` without
+the `::after`-layer treatment first. 3 of the 22 were then correctly refused for real
+technical conflicts (not silently dropped): `business-info.linkHoverTextColour` (lives
+only inside a no-gradient-support `@supports` fallback branch), `card-grid.textColourHover`
+(its CSS property is already claimed by a sibling gradient attribute on the same element),
+`filter-search.textColour` (targets a native `<input>`, where `background-clip:text`
+cannot work).
+
+**A live probe caught a real bug static gates missed.** `scripts/qa/check-colour-gradient-roundtrip.js`
+(new, modelled on `check-border-roundtrip.js`'s fail-closed/negative-control discipline,
+15/15 self-test) found `whatsapp-cta`'s gradient CSS landing on the wrapper `<a>` instead
+of the child `.sgs-whatsapp-cta__label` span that actually holds the text — `color`
+inherits from parent to child, `background-image`/`background-clip` do not, so the label
+was genuinely invisible on the live canary despite every static gate (`php -l`, `survey.js`,
+`check-dead-controls`, `check-element-manifest-conformance`) passing clean. Fixed and
+re-verified live. **Final result: 5/5 pairs PASS on the real canary** (modal, nav-drawer,
+business-info, form, whatsapp-cta) — resolved gradient, `clip:text`, transparent colour on
+the positive instance; no gradient, real painted colour on the negative control, every
+time.
+
+Deployed to sandybrown bundled with two sibling sessions' own verified work landing on the
+same shared tree the same day (`small-giants-wp-05`'s text-gradient extension to
+`sgs_button_element_style_css()`, `small-giants-wp-5e`'s `brand-strip`/`hero` tier-object
+migration) — all three tracks' motion probes + payload-verify passed together.
+
+**Classified the remaining 17 exempted rows by real per-block investigation** (not
+estimated) — see `.claude/prompts/2026-09-04-golden-colour-phase3-continuation-prompt.md`
+for the full per-row detail. Since that classification, 6 more rows across 3 sessions
+closed on the same day (`modal.closeColourText`, `nav-menu.itemColour`,
+`pricing-table.ctaColour`/`.popularBadgeColour`, `product-card.ctaColourText`,
+`nav-menu.navColour`), leaving **11 rows across 9 blocks**, split:
+
+- **2 EASY** (`google-reviews.arrowColourText`/`.writeReviewColourText`) — the shared
+  button-style helper already has an unused `$bg_layer` gradient mechanism built in.
+- **5 MODERATE** (`mega-panel.iconColour`, `multi-button.textColour`,
+  `process-steps.numberColour`/`.textColour`, `testimonial-slider.textColour`) — background
+  is the right single-flat/gradient shape but entangled with a derived value, a coupled
+  style-engine call, or an ancestor-triggered hover — needs care, not a blind copy.
+- **4 HARD** (`accordion.headerColour`, `post-grid.categoryBadgeColour`,
+  `site-header.textColour`, `tabs.tabTextColour`) — each its own separate small
+  investigation, not a gradient task: a dead control needing its render path rebuilt, a
+  custom-property architecture that structurally can't carry a gradient, and two genuine
+  multi-part background systems.
+
+**Re-run `survey.js` before trusting any of the above** — multiple sessions are actively
+working this same backlog concurrently; the counts above are already one generation behind
+by the time this log entry was written.
+
+**Named but not yet built:** `sgs/quote`'s `attributionColourHover`/
+`attributionColourHoverGradient` — the flat/gradient pair on attribution already works,
+only the hover variant is missing. Small, well-scoped, same pattern as everything else in
+this phase; not part of the 11-row list above since it's a new attribute pair, not an
+existing exempted row.
+
+---
+
 ## Phase 3 — Finish the text-colour rollout that was already started
 
 **The largest population in this backlog is the unfinished tail of a rollout that already has
