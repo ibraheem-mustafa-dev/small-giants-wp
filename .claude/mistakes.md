@@ -1,10 +1,21 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-09-04 (session 6) (2 new entries added — the CSS-lift-file gotcha and the
-D-ceiling recheck-before-every-write rule; 2 oldest entries pruned to archive to hold the ~30 cap.)
+**Last updated:** 2026-09-04 (session 8) (1 new entry added — a peer's attribution claim needs
+independent verification; 1 oldest entry pruned to archive to hold the ~30 cap.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-04] A peer session's claim about who caused an uncommitted change is a hypothesis, not verified fact
+- **Pattern key:** `a-peers-claim-about-who-caused-a-change-is-not-verified-by-default`
+- **Evidence:** a peer session told me "it looks like you'd already bumped the ceiling yourself"
+  about an uncommitted `check-editor-render-parity.js` change — plausible (the file was dirty on
+  my end too) and stated with confidence. `git diff` on that exact file showed a comment I had
+  never written and code I had never opened; a THIRD, unidentified session owned it.
+- **Rule:** when a peer states who made an uncommitted change on a shared tree, check `git diff`
+  on that specific file yourself before accepting or acting on the claim — dirty-tree evidence is
+  ambiguous by construction, and a peer's confident read of it is still an inference, not an
+  observation. Feedback file: [feedback_a_peers_claim_about_who_caused_a_change_is_not_verified_by_default.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_peers_claim_about_who_caused_a_change_is_not_verified_by_default.md)
+
 ### [2026-09-04] A live page rendering "no CSS" for a fixed block may just mean the CSS was lifted elsewhere
 - **Pattern key:** `check-the-lifted-css-file-before-concluding-emitted-css-is-missing`
 - **Evidence:** grepped the raw fetched HTML of a live verification page for six blocks' expected
@@ -250,19 +261,7 @@ D-ceiling recheck-before-every-write rule; 2 oldest entries pruned to archive to
 - **Rule:** Verify a subagent's causal explanation independently, not just its "fixed"/"resolved" claim —
   an agent explaining away its own breakage is the least reliable witness to it.
 
-### [2026-08-15] A directory-scoped commit gate can be tripped by a concurrent session's unrelated uncommitted files
-- **Pattern key:** `directory-scoped-gate-tripped-by-concurrent-sessions-unrelated-files`
-- **Evidence:** The visual-diff commit gate decides "did this block change visually?" partly by looking at
-  a block's whole directory rather than only the staged diff. A `sgs/trust-bar/block.json`-only change —
-  provably metadata-only, `check-blockjson-metadata-only.py` exited 0 against the staged content — was
-  still blocked, because a concurrent session had unstaged `edit.js`/`render.php` edits sitting in the
-  same block folder.
-- **Rule:** When a gate blocks a change believed exempt, run the gate's own standalone checker against
-  only the staged diff before either fabricating evidence or reaching for a bypass — and if bypassing is
-  genuinely right, use the scoped `SGS_VISUAL_GATE_SKIP` + mandatory `SGS_VISUAL_GATE_REASON` (which
-  logs an audit trail), never `--no-verify` (which disables six unrelated passing gates).
-
-*(12 entries dated 2026-08-04 through 2026-08-15 pruned to `memory/mistakes-archive.md` — oldest
+*(13 entries dated 2026-08-04 through 2026-08-15 pruned to `memory/mistakes-archive.md` — oldest
 by date, moved verbatim, to make room at cap. See `memory/mistakes-archive.md` for the full
 history of prunes.)*
 

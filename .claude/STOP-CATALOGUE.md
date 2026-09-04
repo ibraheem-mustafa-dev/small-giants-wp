@@ -2700,6 +2700,22 @@ does not fit this catalogue's scope (anti-patterns THIS project's structural def
   each independently), sharpened to the case where the agent reporting the mechanism is the same one
   that caused the effect.
 
+- **STOP-A-PEERS-CLAIM-ABOUT-WHO-CAUSED-A-CHANGE-IS-NOT-VERIFIED-BY-DEFAULT.** On 2026-09-04 a
+  peer session's `check-editor-render-parity.js` ceiling raise (211→213) was sitting dirty on the
+  shared tree. Another peer session told me directly "it looks like you'd already bumped the
+  ceiling yourself" — plausible (the file WAS dirty on my end too), stated with confidence, and
+  wrong. `git diff` on that exact file showed the raise cited a comment I had never written
+  ("D942/D956 shared-helper text-gradient gate") and touched code I had never opened. Corrected
+  before either of us acted on the false attribution. **Rule: when a peer states who made an
+  uncommitted change (to credit, blame, or hand off responsibility for it), check `git diff` on
+  that specific file yourself before accepting the claim — a peer's read of a shared, actively-
+  mutating tree is a hypothesis, not ground truth, even when it sounds confident and even when
+  the dirty state is consistent with it being true.** Sibling of
+  STOP-A-SUBAGENTS-CAUSAL-EXPLANATION-FOR-A-FAILURE-IT-CAUSED-IS-NOT-EVIDENCE (that one distrusts
+  an agent's account of its OWN failure; this one distrusts a peer's account of a THIRD party's
+  change) and STOP-VERIFY-SUBAGENT-FACTS-NOT-JUST-STRUCTURE (facts need checking regardless of how
+  structurally sound the surrounding report is).
+
 - **STOP-A-FILES-METADATA-NEVER-DECIDES-WHAT-IS-INSIDE-IT.** On 2026-08-17 I was asked whether a
   shared component had been decomposed. I answered from the file's **LINE COUNT** — it had grown from
   1,728 to 1,887 lines, so I concluded no split had happened, wrote that into two governing docs, and
@@ -2714,7 +2730,7 @@ does not fit this catalogue's scope (anti-patterns THIS project's structural def
   separate subagents counted comments saying a component *used to* live somewhere as live usage; and
   a case-sensitive grep for `isDecorative` missed the real attribute `imageIsDecorative`. The
   structural defence is the verification ladder in
-  `.claude/plans/2026-08-17-spec-verification-programme.md` — LIVE > SOURCE > TOOL > DOC, where DOC is
+  `.claude/plans/archive/2026-08-17-spec-verification-programme.md` — LIVE > SOURCE > TOOL > DOC, where DOC is
   explicitly not evidence and a tool whose own `--self-test` fails drops to DOC tier.
 
 - **STOP-A-DIRECTORY-SCOPED-GATE-CAN-BE-TRIPPED-BY-A-CONCURRENT-SESSIONS-UNRELATED-UNCOMMITTED-FILES.**

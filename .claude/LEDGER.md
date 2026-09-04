@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-09-04 (session 7)
+last_updated: 2026-09-04 (session 8)
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -10,37 +10,42 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 ## Human Summary
 
 Plain English, for Bean. The framework is a WordPress block system that clones any design draft
-into native blocks a non-technical client can then edit. Multiple sessions have shared one `main`
-concurrently, repeatedly — treat this as the norm, not the exception, every session.
+into native blocks a non-technical client can then edit. Multiple sessions share one `main`
+concurrently, every session — treat this as the norm, not the exception.
 
-Right now: the cloning pipeline and the motion system are both stable. Client controls, uniformity
-sweep (bar one detector), consolidation, and editor-errors are all closed — see their one-line
-entries below. **Session 7 (2026-09-04) closed both fronts session 6 left open**: the hover-guard's
-24 confirmed findings are ALL fixed (0 remaining, 11 unrelated pre-existing unresolved cases
-tracked separately), and the WCAG contrast guard was built from scratch and wired into all 7
-determinable text-colour callers, WARN-only per Bean's ruling. Along the way, a dispatched
-subagent's unscoped `git stash` wiped 16 files' worth of already-done work on this shared tree —
-caught and fully recovered, not silently lost (D948). Canary: sandybrown-nightingale-600381
-.hostingersite.com; no live client sites yet, so breakage there costs time, not money. **Nothing
-this session was deployed or live-verified** — build/lint verified only.
+**Session 8 (this one):** picked up a stale, 11-day-old "road-to-uniform" dispatch prompt
+claiming 222+ open findings. Two-thirds of that was already closed by other sessions before
+this one started — verified against live commands, not trusted from the doc. Real remaining
+work: fixed a genuine blind spot in the tier-migration detector (3 blocks were silently
+unmigrated because their base attribute used a non-standard name), migrated all 3, deployed
+and live-verified each on the real canary. Then scoped three more small items (C4/C5/C10) via
+parallel isolated-worktree agents — all three came back "don't build this blind," each with
+solid evidence, which is itself the correct outcome (no forced/hollow work shipped). Two items
+remain genuinely open (C6, C7) — a fresh next-session prompt is ready. A parallel session ran a
+large text-gradient colour rollout throughout this session too (not this session's work — see
+its own decisions.md entries). Canary: sandybrown-nightingale-600381.hostingersite.com; no
+live client sites yet. **Everything reported fixed this session was deployed to the canary and
+live-verified — nothing closed on a build check alone.**
+
+**Session 7 (prior):** closed the hover-guard's 24 findings to zero and built the WCAG contrast
+guard — see COLOUR TRACK below for detail (kept, not rewritten).
 
 ## State Snapshot
 
-- **Branch:** `main`. Concurrent occupancy is the norm on this project — a second session (the
-  generative-background/WebGL motion track) was active throughout this session too. Commit with
-  explicit paths (a hook enforces it), re-verify ownership before each commit, never `git stash` /
-  `git checkout --` a shared file — see D948 for why that's not theoretical.
-- **Canary:** WP 7.1. Deploy via `build-deploy.py --target sandybrown` — the only sanctioned path.
-  **Not deployed this session** — hover-guard/contrast-guard changes are build-verified
-  (`npx webpack`, `php -l`) but not exercised live.
-- **Verification:** `scripts/qa/assert-css-effect.js` runs a block's real render.php standalone and
-  asserts the CSS it emits — no deploy, seconds to run. `scripts/toolindex/query.py "<what you
-  need>"` finds a script by description when you do not know its filename.
-- **Build:** green on `main`, NOT deployed this session. `node scripts/hover-guard/check.js` now
-  reports **0 confirmed findings** (was 24) — 11 pre-existing UNRESOLVED cross-file cases remain,
-  ADVISORY in `postbuild` (search "D943"/"D948") until each is read by hand.
-- **Live fronts:** hover-guard's 11 UNRESOLVED cross-file cases (optional). `31-golden-colour-
-  control` (253 open, own plan) is the largest untouched backlog on the project.
+- **Branch:** `main`. 2-4 other sessions were committing concurrently throughout session 8 (a
+  colour-gradient rollout, D948 Phase 3 work) — this is the project's stated norm, not an
+  exception. Path-scope every commit; re-check `git status`/branch immediately before each
+  commit and deploy; never `git stash`/`git checkout --` a shared file (D948).
+- **Canary:** WP 7.1. Deploy via `build-deploy.py --target sandybrown --blocks-only --payload
+  <path>` — scope `--payload` to what you actually changed on a shared tree.
+- **Build:** green — `npm run build` 88/88 fast-tier gates; `gate:full` also green as of this
+  session's last deploy.
+- **Live fronts:** `31-golden-colour-control` (**241** open, re-verified this session — was 253
+  at D754; actively worked by a parallel session, not this one) remains the largest untouched
+  backlog. Hover-guard's 11 pre-existing UNRESOLVED cross-file cases (optional, from session 7).
+- **Session 8 commits (all on `main`):** `9f6f6ceb3`, `0e3ef60e0` (tier-migration + hero
+  dead-code), `8d5b2807f`, `1f4cd80dc` (plan reconciliation), `b9609f019` (C5 doc fix +
+  scoping report), `ed413997a` (C4/C5/C10 outcomes).
 - **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
   Closed-track narrative lives in `memory/session-2026-09-04-tracks-history-sweep.md`, not here.
 
@@ -48,110 +53,77 @@ this session was deployed or live-verified** — build/lint verified only.
 
 **Invoke `/autopilot` first.**
 
-Both fronts session 6 opened (contrast guard, hover-guard's 24 findings) are CLOSED this session —
-there is no dedicated next-session prompt file; read the COLOUR TRACK section below for what's
-genuinely still open (11 unresolved hover cases; `SgsBorderControl`'s 44-caller wiring, explicitly
-NOT parked, Bean's call to close it here). If picking up general framework work, start with
-`31-golden-colour-control` (253 open, its own ~5.4h build task, D754's plan) — the largest
-untouched backlog on the project — or deploy + live-verify this session's hover-guard/contrast-
-guard changes, which were never exercised against the real canary.
+Two genuinely open items remain from the road-to-uniform backlog — everything else in that
+11-day-old plan is now closed, descoped-with-evidence, or correctly still blocked. Full
+closed/blocked/open breakdown: `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`'s
+"Session 2026-09-04 summary" — read that, do not re-derive from the plan's older prose.
 
-⚠ **Concurrent occupancy on `main` is the norm on this project, not the exception** — path-scope
-every commit and re-check the decisions.md D-ceiling immediately before writing a new entry.
+Fresh dispatch prompt ready: `.claude/prompts/2026-09-04-road-to-uniform-c6-c7-prompt.md`.
+
+- **C6** — 10 blocks need `PanelBody` → `ToolsPanel` conversion (mechanical; build a shared
+  helper once, then batch-adopt, per Bean's steer this session).
+- **C7** — 4 blocks (`cta-section`, `decorative-image`, `nav-drawer`, `social-icons`) need a
+  decorative-image/ARIA control each. Real per-block design work — WCAG 2.1 AA is a project
+  non-negotiable, not optional polish. A shared control COMPONENT is still worth building once;
+  the per-block "is this decorative" decision is not something a codemod can make.
+
+Re-verify both counts before trusting them (`node plugins/sgs-blocks/scripts/inspector-scan/
+run.js --json`, rules `03-dense-panel-candidate` / `18-decorative-image-aria`, FLAGGED only) —
+they were 10 and 4 at session close, but the tree moves fast.
+
+If C6/C7 are already done or a different priority is more urgent, `31-golden-colour-control`
+(241 open) is the largest untouched backlog on the project generally.
+
+⚠ **Concurrent occupancy on `main` is the norm, not the exception** — path-scope every commit,
+re-check `git status`/branch and the decisions.md D-ceiling immediately before each write, and
+message the other active session (check `ListAgents`) rather than guessing or forcing
+`--allow-dirty`/`git stash` when a dirty-tree gate blocks you. See the new STOP entry
+(`STOP-A-PEERS-CLAIM-ABOUT-WHO-CAUSED-A-CHANGE-IS-NOT-VERIFIED-BY-DEFAULT`) before trusting a
+peer's account of who owns an uncommitted change — verify with `git diff` yourself.
+
+## ▶ ROAD-TO-UNIFORM RECONCILIATION — CLOSED bar C6/C7 (session 8). Full detail: D957.
+
+**Section A (tier-migration blind spot, D777's residual) — CLOSED.** `migrate-tier-object.py`'s
+detector couldn't see an attribute whose base declares as `<prop>Desktop` instead of bare
+`<prop>` — 3 families (`brand-strip.columns`, `hero.textAlign`, `whatsapp-cta.showOn`) were
+silently unmigrated. Detector widened, all 3 migrated end-to-end and live-verified on the real
+canary (a temporary probe page + Playwright computed-style read for brand-strip;
+`wp_update_post()` + Playwright + byte-identical restore for hero — not build-checked only).
+Also removed a genuinely dead code block in `hero/render.php`.
+
+**Spec 32 B1-B3/B5, Spec 35 C2/C3/C8/C9/C11 — CLOSED, each confirmed via its own live gate
+re-run**, not trusted from the stale plan. B4 (`mega-panel.borderRadius`) stays correctly
+BLOCKED on Track 2 (Spec 36 mega-menu), which isn't currently active.
+
+**C4/C5/C10 — all three DESCOPED with evidence, none built blind.** C4 (CO-2 gate) needs an AST
+walk + a judgement call on ~35% ambiguous attributes — its own planned build. C5
+(bespoke-vs-native-supports panel) isn't buildable as a general rule without reproducing a
+documented ~600-false-positive failure from this exact codebase; found and fixed a real doc
+contradiction (CO-15 vs Part L) along the way. C10 (brand-strip picker swap) is an
+architectural mismatch, not a like-for-like swap.
+
+**What's left:** C6, C7 (see NEXT SESSION START above).
 
 ## ▶ UNIFORMITY SWEEP TRACK — CLOSED bar one detector. Detail: D918/D919/D922/D924/D930/D933.
 
-`01-tab-group` (32→0) and `21-render-without-control` (54→0) both closed to zero, session 4
-(D933) — full recipe swept to `memory/session-2026-09-04-tracks-history-sweep.md`. Gap-candidates
-retirement DONE (PR #37, `61c2e813b`).
+`01-tab-group` and `21-render-without-control` both closed to zero, session 4 (D933). Nothing
+else open in this track — see COLOUR TRACK for `31-golden-colour-control`.
 
-**What's left:** `31-golden-colour-control` — 253 open, its own dedicated ~5.4h build task
-(D754's plan, `.claude/plans/2026-09-03-golden-colour-staged-rollout.md`, corrected this session —
-see COLOUR TRACK note below). Nothing else open in this track.
+## ▶ COLOUR TRACK — session 7 closed hover-guard (24→0) + built the contrast guard. Detail: D948.
 
-## ▶ COLOUR TRACK — session 7 (2026-09-04): hover-guard's 24 findings CLOSED (0 remaining); WCAG contrast guard BUILT + wired. Detail: D948. Session 6 history (D936-D945) swept to memory.
+Session 8 did NOT touch this track — a parallel session ran the D636/D948-Phase-3 text-gradient
+rollout across ~15 blocks throughout session 8 (commits `43c2c3d4b`, `16a7a7e0d`, `10e08548a`,
+and others); read that session's own decisions.md entries for its detail, not duplicated here.
 
-⭐ **Both fronts session 6 left open are closed.** What's left: hover-guard's 11 pre-existing
-UNRESOLVED cross-file cases (optional, never part of the confirmed 24), and `SgsBorderControl`'s
-44-caller contrast wiring — explicitly NOT pursued or parked this session (Bean's call).
+**Still open, carried forward from session 7:** hover-guard's 11 UNRESOLVED cross-file cases
+(optional); `SgsBorderControl`'s 44-caller contrast wiring (plumbing built, no callers wired,
+not parked); `nav-menu.burgerColour` (needs `sgs_svg_stroke_gradient()` + a new attr).
 
-**Shipped this session — full account in D948, not duplicated here:**
-- **Hover-guard: 24 → 0 confirmed findings**, all routed through `sgs_hover_state_rules()`/
-  `sgs_hover_guarded_rule()`. 11 pre-existing UNRESOLVED cross-file cases remain (never part of
-  the confirmed 24), tracked via the `postbuild` advisory wrapper (search "D943"/"D948").
-- **Contrast guard built end-to-end, WARN-only**: shared `src/utils/wcag-contrast.js`;
-  `GradientCapableColourControl.js` gained opt-in `contrastAgainst`/`contrastLabel`/
-  `contrastLargeText` (3.0:1 UI-component vs 4.5:1 text threshold); wired into all 7 text-colour
-  callers with a determinable background; `SgsBorderControl.js` got the pass-through props but no
-  callers wired (its 44 mounts, explicitly not pursued).
-- **A caught-before-commit bug, reintroduced twice independently**: `contrastAgainst` only
-  accepts a FLAT colour — three sites (two dispatched agents, one inline) each passed "flat OR
-  gradient string", producing an always-false-positive warning. Fixed uniformly.
-- **A dispatched subagent's `git stash`/`git stash pop` wiped 16 files of a sibling task's
-  already-done work** (worktree isolation broken repo-wide — `core.worktree` redirect). Caught by
-  a hover-guard re-check, not the agent's report; recovered, redone, committed in small
-  path-scoped batches. Standing dispatch rule it produced: controller runs all git ops, subagents
-  only edit. Full incident: D948.
-- **Doc reconciliation**: `package.json` postbuild message, the golden-colour plan's stale
-  "no contrast guard" note, and the completed cleanup prompt file — all corrected/removed.
+## ▶ MOTION TRACK (A closed+live; B closed) — nothing new session 8.
 
-⛔ **ELIGIBILITY IS NOT "the colour is painted directly"** — still governing
-(`background-clip:text` clips the WHOLE background paint area).
-
-**Open, carried forward:**
-- **Hover-guard's 11 UNRESOLVED cross-file cases** — optional, scanner can't prove either way.
-- **`SgsBorderControl`'s 44-caller wiring** — plumbing built (D948), no callers wired, not parked.
-- **`nav-menu.burgerColour`** — needs `sgs_svg_stroke_gradient()` + a new attr (session 6, D945).
-- Text-gradient attrMap split (24 `css:background-image` vs 14 `css:color-gradient` attrs) and
-  `fix.js` (0 fixable) — both unchanged since session 5.
-
-### Guardrails carried from this session
-
-- **Never let a dispatched agent run git commands on a non-worktree-isolated shared tree** — the
-  controller runs all git operations; subagents only edit + report back (D948's stash incident).
-- **A dispatched agent's own report is a claim, not proof** — 2 of 5 parallel branches shipped the
-  identical bug independently; read every diff before committing.
-- **Re-check the D-ceiling immediately before every write, not once per session.**
-
-## ▶ MOTION TRACK (A closed+live; B Phase 3 — CLOSED, Bean's visual sign-off given 2026-09-04)
-
-⛔ **TWO SEPARATE TRACKS. Never re-merge them.** No phase number is shared.
-
-**Wave-D register CLOSED 2026-09-04, session 7 (part of Track A).** The last four open items
-(Step 12/FR-38-22 cloning lift, Step 20, Step R-residual, Step 21) all closed same session —
-decisions.md D949-D955. Plan archived: `plans/archive/2026-07-31-motion-wave-D-client-readiness.md`.
-Headline: the cloning pipeline genuinely drops no motion attributes now (verified against the real
-`convert_section()`, not a unit test), a second-round adversarial council caught and fixed a bug
-that would have self-reverted the whole fix on the next `/sgs-update`, and a pre-existing stored-XSS
-defect in the converter's block-comment serialiser was found and fixed along the way (D953).
-⚠ Still owed: a live-canary Playwright/DOM check (R-31-13) — everything closed tonight is
-pipeline-level proof, not yet confirmed live.
-
-**B (Generative Background Engine):** fidelity, speed and colour vibrancy all measured
-fixed/passing (3/3 phases, ceiling 5%) — full build history (D886-D944) swept to
-`memory/session-2026-09-04-tracks-history-sweep.md`. Session 7 added two INCIDENT entries from a
-concurrent session — **D946** (a blob-density regression shipped without checking its own
-measurement first — process gate added) and **D947** (a subagent's report claimed shader fixes
-that were never actually committed — caught by `git show` + a runtime test, not the report). Plan:
-`.claude/plans/2026-08-27-generative-background-engine.md`. Read D886-D888, D939-D948 first.
-
-⛔ Two withdrawn claims, do not resurrect (D888): an 89.3% silhouette IoU (no script/inputs), and
-"a systematic colour cast" (over-read `bias_over_abs`). ⛔ D880 authorised porting the reference's
-VERTEX SHADER only — palette PNG stays off-limits as a shipped asset; Three.js can never ship.
-⭐ Gate E stays held — `.claude/scratch/stripe-hero-poc/` is in ZERO git files; `fidelity-
-baseline.json` + `reference-matrices.json` are what survive a `git clean -xdf`.
-
-**CLOSED 2026-09-04.** An `/adversarial-council` review surfaced six real gaps in the colour
-engine (dark-ground opaque-alpha bug, light-theme-only grading applied unconditionally under dark
-ground, a striation-killing midline blackout, no regression fixture, no narrow-hue-palette
-warning, a stale help string) — all six fixed and verified. Two process incidents along the way,
-both recorded: **D947** (an implementer subagent's report claimed three fixes that were never
-actually committed — caught by `git show` + a real runtime test, not by trusting the report) and
-**D948-adjacent** (a literal `(D948)` inside an unquoted `postbuild` echo string, from an unrelated
-concurrent commit, broke every Windows build — fixed, since it blocked everyone not just this
-track). Bean viewed the live canary after all fixes shipped and confirmed: **"Looks good."** Full
-account: D939-D948 (read together). Canary fixtures `[GATE — DO NOT DELETE]`: 3135, 3141, 3079,
-3072. Timeline sub-feature: nothing outstanding (full defect/addenda history swept to memory).
+⛔ **TWO SEPARATE TRACKS. Never re-merge them.** Full account: `memory/session-2026-09-04-
+tracks-history-sweep.md`. Session 7 closed both (Wave-D register, D949-D955; Generative
+Background Engine, D939-D948). Nothing changed this session.
 
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (D725/D726, D731-D733)
 
@@ -162,45 +134,20 @@ may already have solved it.
 ## ▶ CLIENT-CONTROLS TRACK — CLOSED 2026-09-02, deployed + live-verified (D904-D913, D915/D916, PR #36)
 
 All 16 media atoms adopted by all six in-scope blocks. Narrative:
-`memory/session-2026-09-02-client-controls-track.md`. Deferred + named there: `hero`'s motion
-CSS-emission, `container`'s Image tab, `product-card`'s `box-shape` adoption. `trust-bar`/
-`brand-strip` nested media — DONE 2026-09-04, see the SPEC-35 CAPABILITY-ROUTING TRACK below.
+`memory/session-2026-09-02-client-controls-track.md`. `trust-bar`/`brand-strip` nested media —
+DONE, see SPEC-35 CAPABILITY-ROUTING TRACK below.
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
 Narrative: `memory/session-2026-08-22-editor-errors-track.md`. Nothing pending.
 
-## ▶ SPEC-35 CAPABILITY-ROUTING TRACK — CLOSED 2026-09-04, all four items, deployed + live-verified
+## ▶ SPEC-35 CAPABILITY-ROUTING TRACK — CLOSED 2026-09-04 (prior session), all four items, deployed + live-verified
 
 Plan archived: `.claude/plans/archive/spec-35-capability-routing-doctrine.md` (its own status
-line carries the full closure record — read that, not a summary here). All four items the doc
-called open are closed, three needed no build at all:
-- **Part 6 gate** — already a real hard gate since the 2026-08-24 `gates.json` refactor; the
-  doc's own `||`-advisory description was stale. Verified live, 0 violations.
-- **`testimonial`/`image-sequence` crop decision** — both already resolved before this session
-  (`image-sequence`'s dead declaration self-documents its own removal; `testimonial`'s three
-  media slots were already correctly handled, `orgLogo` deliberately fixed/non-overridable).
-- **Part 7 native-supports census** — script existed, never run; ran + committed
-  `reports/migrations/native-supports-census-2026-09-04.json`, 0 findings.
-- **Part 4 multi-image item-schema extension — the only real build.** `gallery`/`card-grid`/
-  `trust-bar`/`brand-strip` each gained a stable per-item `_key`
-  (`src/utils/generateItemKey.js`) and a per-item crop control, deployed and live-verified via
-  the generated collected-CSS stylesheet on each of 4 probe pages (created + verified + deleted).
-  `card-grid`/`gallery` get full object-fit + focal-point; `trust-bar` (image-badge variant
-  only)/`brand-strip` get object-fit only, matching the established logo-content convention (no
-  crosshair on non-photographic media). Two parallel Sonnet subagents built `trust-bar`/
-  `brand-strip` from the `card-grid` reference commit — one real regression surfaced and fixed
-  (`badgeImageObjectFit` lost its only in-file reference when the canvas preview switched to
-  per-item values; fixed by falling back to the block-wide default instead of a literal).
-  Commits: `a314fdc47`/`335a0885a` (card-grid+gallery), `ef051e39c` (unrelated `icon-list` gate
-  fix that was blocking the whole project's build), `0fbfb51d2`/`94485dad5` (trust-bar/
-  brand-strip). Reports: `reports/visual-diff/{card-grid,gallery,trust-bar,brand-strip}-
-  2026-09-04.md`.
-
-⚠ **Two shared-resource incidents this session, both resolved, neither mine to have caused:**
-a `check-box-family-guard` finding on `converter/resolvers/content_band.py` (a concurrent
-session's file, fixed by them) and a `db-consistency` gate finding on `sgs/nav-drawer`/
-`notice-banner`/`post-grid` (also fixed by a concurrent session before I re-attempted the
-commit) both briefly blocked this track's commits. Neither was baselined blind — both were
-confirmed unrelated to this track's payload before waiting on the other session, per this
-project's own "don't touch a shared/high-blast-radius file without coordination" rule.
+line carries the full closure record). All four items closed: Part 6 gate (already a real
+hard gate, doc was stale), `testimonial`/`image-sequence` crop decision (already resolved),
+Part 7 native-supports census (ran, 0 findings), Part 4 multi-image item-schema extension
+(the only real build — `gallery`/`card-grid`/`trust-bar`/`brand-strip` each gained a stable
+per-item `_key` + per-item crop control, deployed and live-verified). Commits: `a314fdc47`/
+`335a0885a`/`ef051e39c`/`0fbfb51d2`/`94485dad5`. Reports: `reports/visual-diff/{card-grid,
+gallery,trust-bar,brand-strip}-2026-09-04.md`.

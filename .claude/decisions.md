@@ -1,3 +1,62 @@
+## D957 [ROUTINE] — road-to-uniform reconciled and closed to 2 real items: a stale 11-day plan mostly resolved itself, three parallel scoping tasks all came back "don't build blind"
+
+**2026-09-04.** Handed a dispatch prompt claiming 222 open inspector-scan findings and 24
+open Spec 32/35 items. Verified against live commands before doing anything — two-thirds of
+the claimed backlog was already closed by other sessions since 2026-08-25. Real work found
+and closed:
+
+**Section A (tier-migration blind spot, D777's residual).** `migrate-tier-object.py`'s
+`reads_attr_directly`/`edit_refs`/`render_state`/`edit_state` only matched a bare `<prop>`
+base name, so `brand-strip.columns`, `hero.textAlign`, `whatsapp-cta.showOn` (base declared
+as `<prop>Desktop`) silently misclassified as DELEGATED/UNCLEAR instead of RAW/LEGACY.
+Widened all four to resolve the actual declared key via `_base_attr_key()`. All 3 families
+migrated end-to-end (block.json + edit.js + render.php), `--check` green, deployed and
+live-verified against the real canary (not just build-checked — a temporary probe page for
+brand-strip, `wp_update_post()` + Playwright computed-style read + byte-identical restore for
+hero). `whatsapp-cta.showOn` landed inside a concurrent session's commit (`e17bea203`) since
+both sessions had the file open uncommitted at once — verified intact there, not re-committed.
+Also removed a genuinely dead code block in `hero/render.php` (unreachable both before and
+after the migration, for different reasons — confirmed via git history it was never wired to
+an editor control). Commits `9f6f6ceb3`, `0e3ef60e0`.
+
+**Spec 32 B1-B3, B5 and Spec 35 C2/C3/C8/C9/C11 — confirmed closed, not re-derived from
+memory.** Each verified via its own live gate re-run (`audit-inline-styling.js`,
+`check-box-family-guard.py`, `check-no-core-blocks.py`, a fresh `inspector-scan/run.js`
+pass). B4 (`mega-panel.borderRadius`) stays correctly BLOCKED — Track 2 (Spec 36 mega-menu)
+scope, and Track 2 isn't currently active.
+
+**C4/C5/C10 investigated in parallel (isolated worktrees), all three descoped rather than
+built blind — the actual finding, not a failure to ship.** C4 (CO-2 element-grouping gate):
+genuinely distinct from the already-gated placement rule, but needs an AST walk of every
+`edit.js` plus a judgement call on the ~32-42% of attributes `placement-reach.py` itself
+already reports as unresolved — its own `/phase-planner`-sized item, not mechanical backlog.
+C5 (bespoke-panel-duplicates-native-supports): read `check-duplicate-controls.js` in full —
+it targets a different bug class entirely; a general detector for this rule can't
+distinguish a real gap from a deliberate KEEP-SGS choice (most apparent duplicates — shadow,
+minHeight, sticky, lightbox — are deliberate per Part G's D402 table) without reproducing the
+~600-false-positive failure that got `scripts/scattered-element-controls.js` deleted. Found
+and fixed a live doc self-contradiction along the way: CO-15 claimed this rule WAS gated by
+`check-duplicate-controls.js`; Part L's own 2026-08-17 audit already said it wasn't — Part L
+was right, CO-15 corrected. C10 (brand-strip `MediaPicker`→`MediaGalleryPicker`): architectural
+mismatch, not a like-for-like swap — `MediaGalleryPicker` is a bulk multi-select-into-one-array
+component (gallery mounts it once for the whole array); brand-strip needs N independent
+single-image slots (one `MediaPicker` per logo row). Forcing it means an untested hack or a
+real `LogoEditor` redesign — a design decision, not a mechanical fix. Commits `b9609f019`
+(C5 doc fix), `ed413997a` (scoping record).
+
+**Working norm, not an incident:** `main` had 2-4 other sessions committing concurrently
+throughout (a colour-gradient rollout, D948 Phase 3) — every deploy and commit needed
+dirty-tree coordination via cross-session `SendMessage`. Confirmed this is the project's
+stated norm (LEDGER.md says so directly), not a one-off. One coordination near-miss:
+another session initially misattributed an unrelated ceiling-raise in
+`check-editor-render-parity.js` to this session; corrected by checking `git diff` directly
+rather than accepting the claim.
+
+Plan doc fully reconciled in place: `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`
+(commits `8d5b2807f`, `1f4cd80dc`). Stale dispatch prompt deleted. Fresh next-session prompt
+written for the two genuinely remaining items (C6: 10 blocks need `PanelBody`→`ToolsPanel`;
+C7: 4 blocks need a decorative-image/ARIA control each — real per-block design work).
+
 ## D956 [ROUTINE] — Defect 3 CLOSED (contentBandMargin DB-seeded); 3 unrelated routing-determinism ambiguities fixed en route
 
 **2026-09-04, same session as D950/D954.** Closes out Phase 5 in full — all 5 of the qc-council-
