@@ -830,12 +830,16 @@ triad mechanism and the same enforcement stack.
 - [~] **keyboard + contrast + `aria-describedby` a11y pass** — a ONE-TIME manual live pass
       (2026-09-04, `.claude/reports/2026-09-04-c12-c13-live-pass.md`) spot-checked 15 blocks:
       0 keyboard-trap patterns, 0 contrast failures, 1 real `aria-describedby` finding
-      (attributed to a WP-core `UnitControl` internal element, not an SGS defect). **This is
-      NOT a standing gate** — a follow-up investigation (2026-09-04) found the real remaining
-      surface for a standing `aria-describedby` detector is small (~8 files where a custom
-      component wraps WP's `BaseControl` without its native self-wiring) and BUILDABLE; not
-      yet built. Keyboard/contrast still have no static detector and need a repeat live pass,
-      not a one-off.
+      (attributed to a WP-core `UnitControl` internal element, not an SGS defect). **The
+      `aria-describedby` slice now HAS a standing gate** (rule `44-help-text-not-described`,
+      built 2026-09-04, advisory mode — see PART F below): a raw `<BaseControl help={...}>`
+      mount wrapping a non-self-wiring child with no `aria-describedby` anywhere in its
+      subtree. Precondition verified live first (WordPress DOES self-wire it for its own
+      native `useBaseControlProps` controls — TextControl/ToggleControl/etc. — so the gate is
+      correctly scoped to what self-wiring cannot reach). 3 live findings:
+      `LinkPopoverControl.js:267`, `DesignTokenPicker.js:583`, `DateTimePickerField.js:101`.
+      Keyboard + contrast still have no static detector and need a repeat live pass, not a
+      one-off.
 
 **PARTIAL — measured (5):**
 
@@ -849,6 +853,28 @@ triad mechanism and the same enforcement stack.
       `__experimentalBorder`, not the 48 this line originally measured
 - [~] images have size + aspect-ratio + object-fit + focal point — **6/11** upload blocks; 22 opt into
       the shared `imageControls` extension
+- [~] **no no-op reset controls (Part F)** — rule `42-no-op-reset-controls` (built 2026-09-04,
+      advisory mode, AST walk over each block's own edit.js): a `ToolsPanelItem`'s `hasValue`
+      arrow whose body references zero identifiers, or `onDeselect` arrow whose body calls
+      zero functions. 0 live findings (`node run.js --json`), independently corroborated by a
+      plain-text grep for the two most obvious no-op shapes (also 0 hits) — a genuine clean
+      result, not a claim the anti-pattern can never occur (self-test fixtures prove the rule
+      CAN flag real code).
+- [~] **no colour-only persisted state indicators (Part F / WCAG 1.4.1)** — rule
+      `43-colour-only-state-indicator` (built 2026-09-04, advisory mode): a persisted UI state
+      selector (aria-current/aria-selected/aria-checked/aria-expanded=true, `.is-active`,
+      `.is-selected`, `.is-current`, `[open]`, a BEM `--active`/`--current`/`--selected`
+      modifier — never a bare `:hover`) whose unioned declared properties are colour-only.
+      **22 live findings** across 12 blocks, including all 3 candidates named to verify
+      against: `sgs/post-grid`'s pagination current-page indicator, `sgs/product-card`'s
+      active thumbnail, `sgs/buybox`'s current value-ladder row.
+- [~] **help text linked via `aria-describedby` (Part F)** — rule `44-help-text-not-described`
+      (built 2026-09-04, advisory mode, whole-tree scope — both real candidates are shared
+      `src/components/*.js` files, not any one block's edit.js). Precondition verified live
+      first: WordPress self-wires `aria-describedby` for its own native `useBaseControlProps`
+      controls, so the gate is scoped to a raw `<BaseControl help={...}>` mount wrapping a
+      non-self-wiring child with no `aria-describedby` in its subtree. **3 live findings**:
+      `LinkPopoverControl.js:267`, `DesignTokenPicker.js:583`, `DateTimePickerField.js:101`.
 
 **UNVERIFIED — investigated 2026-09-04, confirmed genuinely not buildable (1):**
 
@@ -888,7 +914,10 @@ not neglect — do not re-investigate without new information.
       outright — essential-control-in-sidebar (even the narrow slice still needs a human call
       on every hit) and sidebar-as-home-for-every-option (can't separate correct-by-design
       zeros from real gaps, not worth building even as a survey).** Build shapes:
-      `.claude/prompts/2026-09-04-spec32-35-closure-prompt.md`.
+      `.claude/prompts/2026-09-04-spec32-35-closure-prompt.md`. **All 3 approved build tasks now
+      SHIPPED (2026-09-04, advisory mode, see PART L's new entries below and rules.json):
+      `42-no-op-reset-controls` (0 live findings), `43-colour-only-state-indicator`
+      (22 live findings), `44-help-text-not-described` (3 live findings).**
 
 **NO LONGER UNVERIFIABLE (1) — a rule now exists:**
 

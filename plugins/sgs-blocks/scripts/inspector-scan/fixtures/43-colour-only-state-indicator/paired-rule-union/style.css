@@ -1,0 +1,7 @@
+.sgs-accordion-item[open] {
+	color: var( --wp--preset--color--primary );
+}
+
+.sgs-accordion-item[open] {
+	border-width: 2px;
+}
