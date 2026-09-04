@@ -689,14 +689,26 @@ session:
   matching the original hard bucket:** `tabs.tabBgColour`/`.panelBgColour`
   (`--sgs-tab-bg`/`--sgs-panel-bg`), `social-icons.iconBackground`/`.iconBackgroundHover`
   (`--sgs-social-bg`).
-- **Confirmed genuinely trivial, same proven shape as the 3 rows already applied this
-  session** (a live sibling gradient attribute already exists in the SAME file, proving the
-  pattern works): `pricing-table.ctaBackground` + `.popularBadgeBackground` (both already paint
-  via `sgs_block_background_layer_css()`/an equivalent hand-rolled `::after` layer, sibling
-  `ctaColourGradient` already live in this file) and `nav-menu.underlineColour` (a decorative
-  bar, no competing text on its selector). **Dispatched to 2 parallel agents this session — see
-  the session's own commit log for `src/blocks/pricing-table/` and `src/blocks/nav-menu/`
-  after this write-up's timestamp to check whether they landed.**
+- **Confirmed genuinely trivial, applied, deployed, LIVE-VERIFIED.**
+  `pricing-table.ctaBackground` + `.popularBadgeBackground` (commit `73c0a74ca`) and
+  `nav-menu.underlineColour` (commits `e1ca47c01` + `56afb54de`). `survey.js` CONFORMANT
+  110→111.
+
+  ⭐ **A real bug shipped from the parallel dispatch, caught ONLY by the live probe.** The
+  `nav-menu` agent's own report claimed success — `survey.js`, `npm run build`, and
+  `check-element-manifest-conformance.js` all genuinely passed — but it had computed the
+  gradient-aware `$u_paint_decl` and never wired it into the actual `::after` CSS emission,
+  which still hardcoded the old flat `'background-color:' . $u_colour` construction. None of
+  the automated checks read the emitted CSS string, so all three passed on dead code. A real
+  Playwright probe (`getComputedStyle(el, '::after').backgroundImage`) found `background-image`
+  stuck at `none` with the gradient attribute set. Fixed by the controller, redeployed,
+  re-verified live. **Same class of bug as `whatsapp-cta`'s wrong-element gradient (session 8)
+  and `info-box`'s wrong-helper gradient (this session)** — a computed value that never reaches
+  the page, invisible to every check except the live probe. This is now the THIRD instance of
+  this exact failure shape on this track. If a fourth one turns up, it may be worth building a
+  static check that flags a computed-but-unused local variable feeding a colour/gradient
+  declaration specifically (a narrower version of a general unused-variable lint, scoped to
+  this defect class) rather than relying on the live probe catching every instance forever.
 
 ### A real, pre-existing bug found in ALREADY-SHIPPED code — NOT fixed this session, flagged for whoever owns it
 

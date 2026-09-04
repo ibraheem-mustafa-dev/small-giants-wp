@@ -279,14 +279,21 @@ directions:**
   `.iconBackgroundHover` independently confirmed as genuinely custom-property-fed** (`--sgs-tab-bg`,
   `--sgs-panel-bg`, `--sgs-social-bg`) — consistent with the ORIGINAL "genuinely hard" bucket,
   not new information, but worth stating as confirmed rather than assumed.
-- **Genuinely trivial and CONFIRMED SAFE** (same shape as the 3 rows already applied this
-  session): `pricing-table.ctaBackground` + `.popularBadgeBackground` (both already paint via
-  `sgs_block_background_layer_css()`/a hand-rolled `::after` layer with a LIVE sibling
-  `ctaColourGradient` proving the pattern works in this exact file) and `nav-menu.underlineColour`
-  (a decorative `::after` bar, no competing text). **Dispatched to 2 parallel agents this
-  session — IN PROGRESS, not yet landed as of this write-up.** Check `git log` for
-  `pricing-table`/`nav-menu` commits after this LEDGER's own last-updated date before trusting
-  either as done.
+- **Genuinely trivial, applied, deployed, LIVE-VERIFIED.** `pricing-table.ctaBackground` +
+  `.popularBadgeBackground` (commit `73c0a74ca`) and `nav-menu.underlineColour` (commits
+  `e1ca47c01` + `56afb54de`). `survey.js` CONFORMANT 110→111.
+  ⭐ **One of the two parallel agents shipped a real bug its OWN verification missed — caught
+  ONLY by the live browser probe, not by any static check.** The `nav-menu` agent computed
+  the gradient-aware `$u_paint_decl` correctly but never wired it into the actual CSS
+  emission — the old hardcoded `'background-color:' . $u_colour` stayed in the `::after` rule.
+  `survey.js`, `npm run build`, and `check-element-manifest-conformance.js` all reported
+  clean, because none of them read the emitted CSS string. **Only a real Playwright probe
+  measuring `getComputedStyle(el, '::after').backgroundImage` caught it** — stayed `none`
+  with the gradient set. Fixed (`56afb54de`), redeployed, re-verified live (resolves the real
+  gradient now). **This is the SAME "all static gates green, only the live probe finds the
+  real bug" pattern this track keeps re-discovering** (session 8's `whatsapp-cta`, this
+  session's `info-box`/`product-card.tagTextColour`) — never skip the live-probe step,
+  regardless of how clean the automated checks look.
 
 **Still open, carried forward:** hover-guard's 11 pre-existing UNRESOLVED cross-file cases
 (optional, session 7); `SgsBorderControl`'s 44-caller contrast wiring (plumbing built, no
