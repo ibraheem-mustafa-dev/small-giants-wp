@@ -127,15 +127,28 @@ function sgs_fill_states_css( string $selector, array $attributes, array $map ):
  * `background-clip:text`, a different CSS mechanism from painting a background, so this
  * cannot delegate to sgs_background_paint_decl(). It uses
  * sgs_resolve_text_colour_or_gradient(), which returns the GRADIENT when one is set and
- * valid and the flat colour otherwise.
+ * valid and the flat colour otherwise, and sgs_text_colour_decl() to turn that resolved
+ * value into the correct declaration set for either case (a bare `color:` for a flat
+ * value, or the full background-image/background-clip/color:transparent set for a
+ * gradient) — FIXED 2026-09-04: this used to hand-build `'color:' . sgs_colour_value(...)`
+ * directly, which is only correct for a flat value; fed a resolved gradient string it
+ * produced invalid CSS (`color:linear-gradient(...)`) that the browser silently drops.
+ * Confirmed live-broken on 7 blocks before this fix (see the session 11 write-up in
+ * `.claude/plans/2026-09-03-golden-colour-staged-rollout.md`) — all 7 had already added
+ * the MANDATORY companion rule below and still shipped broken, because the companion
+ * alone cannot fix a wrong primary declaration. Byte-identical output for every existing
+ * flat-colour caller (`sgs_text_colour_decl()`'s flat branch is the same
+ * `'color:' . sgs_colour_value(...)` this function used to build inline).
  *
- * ⚠ THE GRADIENT CASE NEEDS A COMPANION RULE THE CALLER MUST EMIT. A resolved gradient
- * is not a `color:` value — painting it requires the background-clip:text rule that
- * sgs_text_colour_gradient_fallback_rule( $selector, $value ) produces. This function
- * deliberately returns only the declarations it can honestly own; a caller that supports
- * text gradients must also emit that rule. Silently returning a `color:linear-gradient(…)`
- * declaration would be invalid CSS the browser drops — the exact silent-no-op class this
- * family exists to remove.
+ * ⚠ THE GRADIENT CASE STILL NEEDS A COMPANION RULE THE CALLER MUST EMIT — this is a
+ * structural limitation of the return shape (per-state declaration ARRAYS for one
+ * `{sel}{…}` rule), not something the fix above can close: a resolved gradient's
+ * `@supports not (background-clip:text)` fallback is a SEPARATE standalone rule, which
+ * cannot live inside a declaration array. A caller that supports text gradients must
+ * also call sgs_text_colour_gradient_fallback_rule( $selector, $value ) — or, for the
+ * common case of a block that owns its own standalone rule for this row, prefer
+ * sgs_text_states_css() below instead, which handles the whole sequence (both states,
+ * both fallback rules) for you.
  *
  * @param array $attributes The block's attributes.
  * @param array $map        The block's OWN attribute names:
@@ -161,23 +174,80 @@ function sgs_text_decls( array $attributes, array $map ): array {
 		return isset( $attributes[ $key ] ) ? (string) $attributes[ $key ] : '';
 	};
 
-	$normal = sgs_resolve_text_colour_or_gradient(
+	$normal      = sgs_resolve_text_colour_or_gradient(
 		$read( $map['base'] ),
 		$read( $map['gradient'] ?? null )
 	);
-	if ( '' !== $normal ) {
-		$out['normal'][] = 'color:' . sgs_colour_value( $normal );
+	$normal_decl = sgs_text_colour_decl( $normal );
+	if ( '' !== $normal_decl ) {
+		$out['normal'][] = $normal_decl;
 	}
 
-	$hover = sgs_resolve_text_colour_or_gradient(
+	$hover      = sgs_resolve_text_colour_or_gradient(
 		$read( $map['hover'] ?? null ),
 		$read( $map['hover_gradient'] ?? null )
 	);
-	if ( '' !== $hover ) {
-		$out['hover'][] = 'color:' . sgs_colour_value( $hover );
+	$hover_decl = sgs_text_colour_decl( $hover );
+	if ( '' !== $hover_decl ) {
+		$out['hover'][] = $hover_decl;
 	}
 
 	return $out;
+}
+
+/**
+ * Convenience wrapper for a block that DOES own its own rule for this text-colour row
+ * alone — the sgs_fill_states_css() sibling for text. Resolves both states, emits the
+ * `{sel}{…}` / touch-guarded `:hover`,`:focus-visible` pair via sgs_emit_state_colour_css(),
+ * AND emits both mandatory gradient fallback rules — the step every hand-rolled caller of
+ * sgs_text_decls() had to remember separately, and the step 7 blocks got wrong before the
+ * 2026-09-04 fix (see sgs_text_decls()'s own docblock above). Prefer this over hand-rolling
+ * the sequence for a new adoption; sgs_text_decls() + sgs_text_colour_gradient_fallback_rule()
+ * stay available directly only for a block that must compose text declarations into a
+ * shared rule with fill/border (the same reason sgs_fill_decls() returns declarations, not
+ * finished CSS — see that function's own docblock).
+ *
+ * @param string $selector   The block's OWN scoped selector.
+ * @param array  $attributes The block's attributes.
+ * @param array  $map        The block's own attribute names (see sgs_text_decls).
+ * @return string CSS, or '' when nothing is set.
+ */
+function sgs_text_states_css( string $selector, array $attributes, array $map ): string {
+	if ( '' === $selector || empty( $map['base'] ) ) {
+		return '';
+	}
+
+	$read = static function ( ?string $key ) use ( $attributes ): string {
+		if ( ! $key ) {
+			return '';
+		}
+		return isset( $attributes[ $key ] ) ? (string) $attributes[ $key ] : '';
+	};
+
+	$normal_resolved = sgs_resolve_text_colour_or_gradient(
+		$read( $map['base'] ),
+		$read( $map['gradient'] ?? null )
+	);
+	$hover_resolved  = sgs_resolve_text_colour_or_gradient(
+		$read( $map['hover'] ?? null ),
+		$read( $map['hover_gradient'] ?? null )
+	);
+
+	$decls = sgs_text_decls( $attributes, $map );
+
+	$css = '';
+	if ( $decls['normal'] || $decls['hover'] ) {
+		$css .= sgs_emit_state_colour_css( $selector, $decls['normal'], $decls['hover'] );
+	}
+
+	$css .= sgs_text_colour_gradient_fallback_rule( $selector, $normal_resolved );
+	if ( '' !== $hover_resolved && $hover_resolved !== $normal_resolved ) {
+		$css .= sgs_hover_media_wrap(
+			sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $selector . ':hover', $hover_resolved )
+		) . sgs_text_colour_gradient_fallback_rule( $selector . ':focus-visible', $hover_resolved );
+	}
+
+	return $css;
 }
 
 /**
