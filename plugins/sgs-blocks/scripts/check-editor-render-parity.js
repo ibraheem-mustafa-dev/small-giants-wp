@@ -2218,13 +2218,37 @@ function hasServerSideRenderWithAttributes( ast ) {
 			if ( ! attrsNode ) {
 				return;
 			}
-			// Check if the attributes prop is a JSXExpressionContainer with an Identifier 'attributes'
-			if (
-				attrsNode.type === 'JSXExpressionContainer' &&
-				attrsNode.expression &&
-				attrsNode.expression.type === 'Identifier' &&
-				attrsNode.expression.name === 'attributes'
-			) {
+			// Accept either the bare identifier (`attributes={ attributes }`) or a
+			// single-argument PASS-THROUGH WRAPPER whose only argument is that same
+			// identifier (`attributes={ omitNullAttributes( attributes ) }`).
+			//
+			// Why the wrapper form counts (2026-09-05): `sgs/before-after` hands the
+			// whole attributes object through `omitNullAttributes()` — a transport-layer
+			// helper that strips null-valued keys so the /wp/v2/block-renderer REST call
+			// doesn't 400 on `["boolean","null"]` attrs (see that file's own header). The
+			// canvas still shows real render.php output for EVERY attribute, so the
+			// exemption's premise holds exactly as it does for the bare form — but the
+			// Identifier-only test missed it and flagged all 14 of that block's
+			// attributes as editor-canvas desyncs. Confirmed false positives.
+			//
+			// Deliberately NARROW: the call must take EXACTLY ONE argument and it must be
+			// the bare `attributes` identifier. A multi-arg or subset-picking call
+			// (`pickSome( attributes, [ 'a', 'b' ] )`) does NOT exempt, because such a
+			// helper CAN drop attributes from the preview — which is a real desync this
+			// gate must keep catching. Widening past single-arg pass-through would make
+			// the exemption unfalsifiable.
+			if ( attrsNode.type !== 'JSXExpressionContainer' || ! attrsNode.expression ) {
+				return;
+			}
+			const expr = attrsNode.expression;
+			const isBareAttributes =
+				expr.type === 'Identifier' && expr.name === 'attributes';
+			const isPassThroughWrapper =
+				expr.type === 'CallExpression' &&
+				expr.arguments.length === 1 &&
+				expr.arguments[ 0 ].type === 'Identifier' &&
+				expr.arguments[ 0 ].name === 'attributes';
+			if ( isBareAttributes || isPassThroughWrapper ) {
 				found = true;
 				nodePath.stop();
 			}
@@ -3384,6 +3408,119 @@ function runSelfTest() {
 		failuresA
 	);
 
+	// Positive control for the PASS-THROUGH WRAPPER form (2026-09-05) — the
+	// real shape in `sgs/before-after`: `attributes={ omitNullAttributes(
+	// attributes ) }`. Before this control existed the exemption only matched a
+	// bare Identifier, so all 14 of that block's attributes were reported as
+	// editor-canvas desyncs while the canvas was in fact showing real
+	// render.php output for every one of them.
+	const ssrWrapDir = writeBlock( 'check-a-ssr-wrapper-positive', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-ssr-wrapper',
+			attributes: {
+				splitContentOrder: { type: 'string' },
+				otherAttr: { type: 'string' },
+			},
+		} ),
+		'edit.js': [
+			"import { ServerSideRender } from '@wordpress/server-side-render';",
+			"import { InspectorControls } from '@wordpress/block-editor';",
+			"import { PanelBody, RangeControl, SelectControl } from '@wordpress/components';",
+			'function omitNullAttributes( attrs ) {',
+			'\tconst out = {};',
+			'\tfor ( const key in attrs ) {',
+			'\t\tif ( null !== attrs[ key ] ) { out[ key ] = attrs[ key ]; }',
+			'\t}',
+			'\treturn out;',
+			'}',
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { splitContentOrder, otherAttr } = attributes;',
+			'\treturn (',
+			'\t\t<div>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<RangeControl value={ splitContentOrder } onChange={ ( v ) => setAttributes( { splitContentOrder: v } ) } />',
+			'\t\t\t\t\t<SelectControl value={ otherAttr } onChange={ ( v ) => setAttributes( { otherAttr: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<ServerSideRender',
+			'\t\t\t\tblock="sgs/fixture-a-ssr-wrapper"',
+			'\t\t\t\tattributes={ omitNullAttributes( attributes ) }',
+			'\t\t\t/>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const ssrWrapMeta = readDeclaredAttrs( ssrWrapDir );
+	const ssrWrapFindings = checkEditorCanvasDesync(
+		ssrWrapMeta.name,
+		ssrWrapDir,
+		ssrWrapMeta.attrs
+	);
+	assertTrue(
+		ssrWrapFindings.length === 0,
+		'SSR pass-through-wrapper positive fixture: attributes={ omitNullAttributes( attributes ) } ' +
+			'should exempt ALL attributes, but got ' + ssrWrapFindings.length + ' finding(s): ' +
+			ssrWrapFindings.map( ( f ) => f.attr ).join( ', ' ),
+		failuresA
+	);
+
+	// NEGATIVE control for that same widening (2026-09-05) — proves the
+	// exemption did not become a blanket "any CallExpression exempts
+	// everything". A SUBSET-PICKING call can genuinely drop an attribute from
+	// the previewed payload, which is a real desync the gate must still catch.
+	// If this assertion ever starts failing, the wrapper widening has
+	// over-matched and the SSR exemption has become unfalsifiable.
+	const ssrSubsetDir = writeBlock( 'check-a-ssr-subset-negative', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-ssr-subset',
+			attributes: {
+				splitContentOrder: { type: 'string' },
+				otherAttr: { type: 'string' },
+			},
+		} ),
+		'edit.js': [
+			"import { ServerSideRender } from '@wordpress/server-side-render';",
+			"import { InspectorControls } from '@wordpress/block-editor';",
+			"import { PanelBody, RangeControl, SelectControl } from '@wordpress/components';",
+			'function pickSome( attrs, keys ) {',
+			'\tconst out = {};',
+			'\tkeys.forEach( ( k ) => { out[ k ] = attrs[ k ]; } );',
+			'\treturn out;',
+			'}',
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { splitContentOrder, otherAttr } = attributes;',
+			'\treturn (',
+			'\t\t<div>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<RangeControl value={ splitContentOrder } onChange={ ( v ) => setAttributes( { splitContentOrder: v } ) } />',
+			'\t\t\t\t\t<SelectControl value={ otherAttr } onChange={ ( v ) => setAttributes( { otherAttr: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<ServerSideRender',
+			'\t\t\t\tblock="sgs/fixture-a-ssr-subset"',
+			"\t\t\t\tattributes={ pickSome( attributes, [ 'splitContentOrder' ] ) }",
+			'\t\t\t/>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const ssrSubsetMeta = readDeclaredAttrs( ssrSubsetDir );
+	const ssrSubsetFindings = checkEditorCanvasDesync(
+		ssrSubsetMeta.name,
+		ssrSubsetDir,
+		ssrSubsetMeta.attrs
+	);
+	assertTrue(
+		ssrSubsetFindings.length > 0,
+		'SSR subset-picking negative control: a multi-arg subset call must NOT exempt attributes ' +
+			'(the wrapper widening would be unfalsifiable if it did), but got 0 findings',
+		failuresA
+	);
+
 	// Documented-exemption negative control (2026-08-27) — proves
 	// EDITOR_INVISIBLE_BY_DESIGN actually suppresses a finding that would
 	// otherwise fire. Same shape as the posADir positive control above
@@ -4424,7 +4561,17 @@ function main() {
 	// ever satisfy this check, new or old. Not a new class of debt.
 	// (sgs/product-card's 4 new gradient attrs and sgs/nav-menu.itemBgGradient
 	// did NOT need a raise — those elements ARE canvas-previewed already.)
-	const CHECK_A_OPEN_BACKLOG = 216;
+	// LOWERED 216 -> 196 (2026-09-05, SSR pass-through-wrapper exemption fix):
+	// widening hasServerSideRenderWithAttributes() to accept a single-argument
+	// pass-through wrapper (`attributes={ omitNullAttributes( attributes ) }`,
+	// the real shape in sgs/before-after) removed all 14 of that block's
+	// findings — they were FALSE POSITIVES: its canvas has always shown real
+	// render.php output via REST for every attribute. Measured 210 -> 196
+	// net-new, and the 14 removed were all and only sgs/before-after's. The
+	// ceiling is ratcheted to the new true count rather than left at 216, so
+	// the correction does not silently bank 20 findings' worth of slack for a
+	// future regression to hide in.
+	const CHECK_A_OPEN_BACKLOG = 196;
 	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
 
 	if ( isJson ) {
