@@ -355,10 +355,34 @@ function resolveDirectSelector( php, varName ) {
 // that one first, short of the statement's real close. Scan quote-state
 // aware instead: `fromIdx` MUST be a position outside any string (a
 // statement's own start) for the initial `inString = null` to be correct.
+//
+// FINDING 3 (final whole-branch review, 2026-09-04): this used to be
+// string-aware but NOT comment-aware — a live gap, since `resolveDirectSelector`
+// ("the path most `--apply` insertions actually go through") depends on this
+// function and could be fed a statement carrying a comment before the real
+// close, e.g. `$arr[] = /* it's */ "sel{color:" . helper($v);` — the
+// apostrophe inside that comment would open a PHANTOM string, throwing off
+// every quote-state decision from that point on. Fixed by reusing the SAME
+// character-by-character comment-detection this file's other two lexers
+// (`scanBraceFrames`, `findMatchingBrace`) already use, rather than writing a
+// fourth independent implementation.
 function findStatementEndRespectingStrings( php, fromIdx ) {
 	let inString = null;
+	let inLineComment = false;
+	let inBlockComment = false;
 	for ( let i = fromIdx; i < php.length; i++ ) {
 		const ch = php[ i ];
+		if ( inLineComment ) {
+			if ( ch === '\n' ) inLineComment = false;
+			continue;
+		}
+		if ( inBlockComment ) {
+			if ( ch === '*' && php[ i + 1 ] === '/' ) {
+				inBlockComment = false;
+				i++;
+			}
+			continue;
+		}
 		if ( inString ) {
 			if ( '\\' === ch ) {
 				i++; // skip the escaped character, whatever it is
@@ -369,6 +393,20 @@ function findStatementEndRespectingStrings( php, fromIdx ) {
 		}
 		if ( '"' === ch || "'" === ch ) {
 			inString = ch;
+			continue;
+		}
+		if ( ch === '/' && php[ i + 1 ] === '/' ) {
+			inLineComment = true;
+			i++;
+			continue;
+		}
+		if ( ch === '#' ) {
+			inLineComment = true;
+			continue;
+		}
+		if ( ch === '/' && php[ i + 1 ] === '*' ) {
+			inBlockComment = true;
+			i++;
 			continue;
 		}
 		if ( ';' === ch ) return i;
@@ -591,26 +629,62 @@ function skipWhitespace( php, idx ) {
 // Finding 1 (cross-tier review round 2, 2026-09-04): a guard immediately
 // followed by `else`/`elseif` cannot be hoisted past — splicing the new
 // hover block between the guard's closing `}` and the following `else`/
-// `elseif` keyword is a PHP parse error. REFUSE to hoist past that
-// particular guard (stop one level earlier) rather than guess at some other
-// "safe" spot; the caller sees this as the ordinary "stop here" case
-// because the loop simply breaks without updating insertionPoint.
+// `elseif` keyword is a PHP parse error.
+//
+// Finding 2 (final whole-branch review, 2026-09-04): the above used to REFUSE
+// to hoist past that guard by simply `break`ing with NO signal — the caller
+// then silently fell back to `plan.stmtEnd`, landing the hover rule NESTED
+// INSIDE the base-value guard (the exact dead-control bug Task 3 exists to
+// fix: it never renders when the client leaves the base colour unset). This
+// now returns `{ insertionPoint, refused, reason }` instead of a bare number
+// so the caller can REFUSE the whole row rather than silently emit that
+// known-broken placement. Two distinct refusal reasons, matching the two ways
+// hoisting can be structurally unsafe:
+//   - 'hoist-blocked-by-else-branch' — the guard is a real, matched presence
+//     guard on this row's own base var, but an `else`/`elseif` immediately
+//     follows its `}`, so hoisting past it would be a PHP parse error.
+//   - 'hoist-blocked-by-non-guard-frame' — the enclosing frame's header
+//     mentions one of this row's own base-attribute variables (so it's
+//     plausibly the base-value guard) but doesn't match the narrow
+//     `isSimplePresenceGuard` shape (a compound condition, an unusual
+//     operator, …) — deliberately refused rather than guessed past, per the
+//     same discipline `isSimplePresenceGuard`'s own docblock already states.
+// A frame that does NOT mention any of `allowedVarNames` at all is genuinely
+// UNRELATED nesting (e.g. an `is_admin()` wrapper) — that is the pre-existing,
+// legitimate no-op case (statement isn't nested in a base-value guard at all)
+// and is NOT a refusal.
 function computeHoistedInsertionPoint( php, stmtStart, stmtEnd, allowedVarNames ) {
 	const frames = scanBraceFrames( php, stmtStart );
 	let insertionPoint = stmtEnd;
 	for ( let i = frames.length - 1; i >= 0; i-- ) {
 		const frame = frames[ i ];
-		if ( ! isSimplePresenceGuard( frame.header, allowedVarNames ) ) break;
+		if ( ! isSimplePresenceGuard( frame.header, allowedVarNames ) ) {
+			const strippedHeader = stripLeadingPhpComments( frame.header );
+			const mentionsOurVar = !! ( allowedVarNames && allowedVarNames.length &&
+				allowedVarNames.some( ( v ) => new RegExp( '\\$' + v + '\\b' ).test( strippedHeader ) ) );
+			if ( mentionsOurVar ) {
+				return { insertionPoint, refused: true, reason: 'hoist-blocked-by-non-guard-frame' };
+			}
+			break;
+		}
 		const closePos = findMatchingBrace( php, frame.openPos );
 		if ( closePos === -1 || closePos < insertionPoint ) break;
-		// Finding 1: refuse to land between this guard's `}` and a following
-		// `else`/`elseif` — stop hoisting at the boundary reached so far
-		// instead (never past THIS guard).
+		// Finding 1 (round 2) + Finding 2 (final-branch review, comment-blind
+		// fix): refuse to land between this guard's `}` and a following
+		// `else`/`elseif`. Reuses `stripLeadingPhpComments` — the SAME
+		// function `isSimplePresenceGuard` already relies on — over the WHOLE
+		// remaining text (not a fixed-width slice) so a comment of any length
+		// sitting between the `}` and `else` doesn't silently defeat this
+		// detection the same way an unstripped comment used to defeat the
+		// `^if` anchor.
 		const afterClose = skipWhitespace( php, closePos + 1 );
-		if ( /^(else|elseif)\b/.test( php.slice( afterClose, afterClose + 8 ) ) ) break;
+		const afterCloseText = stripLeadingPhpComments( php.slice( afterClose ) );
+		if ( /^(else|elseif)\b/.test( afterCloseText ) ) {
+			return { insertionPoint, refused: true, reason: 'hoist-blocked-by-else-branch' };
+		}
 		insertionPoint = closePos + 1;
 	}
-	return insertionPoint;
+	return { insertionPoint, refused: false, reason: null };
 }
 
 function resolveTextGradientChainSelector( php, attr, varName ) {
@@ -1331,6 +1405,26 @@ function planRow( db, dir, slug, row, phpText, blockJsonPathOverride ) {
 		}
 	}
 
+	// Finding 2 (final whole-branch review, 2026-09-04): a resolved
+	// direct-new-statement renderPlan (Strategy direct OR Strategy T) may
+	// still be unsafe to hoist out of its enclosing base-value guard(s) —
+	// an `else`/`elseif` immediately follows the guard, or an enclosing
+	// frame ambiguously references the base var without matching the
+	// narrow presence-guard shape. `computeHoistedInsertionPoint` used to
+	// silently fall back to `stmtEnd` in both cases at APPLY time, landing
+	// the hover rule NESTED INSIDE the base guard with no signal at all —
+	// the row still reported `WOULD FIX` even though the emitted control
+	// would be silently dead whenever the client leaves the base colour
+	// unset (exactly the bug Task 3 was built to remove). Run the SAME
+	// hoist check here, at PLANNING time, and refuse the row outright
+	// rather than let an unsafe placement through.
+	if ( renderPlan && renderPlan.mode === 'direct-new-statement' && renderPlan.stmtStart != null ) {
+		const hoistCheck = computeHoistedInsertionPoint( phpText, renderPlan.stmtStart, renderPlan.stmtEnd, renderPlan.guardVarNames );
+		if ( hoistCheck.refused ) {
+			return { fixable: false, reason: 'REFUSED:' + hoistCheck.reason };
+		}
+	}
+
 	if ( ! renderPlan ) {
 		// Fallback: Strategy H — an existing hover-rule sink elsewhere in the
 		// same file, for a property name trusted from the DB (not scraped
@@ -1664,29 +1758,56 @@ function applyRenderPhpFix( phpText, plan ) {
 	// (returns `plan.stmtEnd` unchanged) when the statement isn't nested in a
 	// base-value guard at all, or when `plan.stmtStart` is unavailable (an
 	// older/other caller that hasn't been updated to supply it).
-	const insertAt = plan.stmtStart != null
-		? computeHoistedInsertionPoint( phpText, plan.stmtStart, plan.stmtEnd, plan.guardVarNames )
-		: plan.stmtEnd;
+	//
+	// Finding 2 (final-branch review): `computeHoistedInsertionPoint` now
+	// returns `{ insertionPoint, refused, reason }`. A `refused` result should
+	// never reach this point — `planRow` runs the SAME check before marking a
+	// row fixable and refuses it there instead (see the "Finding 2" comment
+	// in `planRow`). Treat it as an internal-consistency failure rather than
+	// silently falling back to the broken in-guard placement, so a future
+	// caller that skips the planning-time gate fails loudly instead of
+	// reintroducing the exact bug this fix removes.
+	let insertAt = plan.stmtEnd;
+	if ( plan.stmtStart != null ) {
+		const hoist = computeHoistedInsertionPoint( phpText, plan.stmtStart, plan.stmtEnd, plan.guardVarNames );
+		if ( hoist.refused ) {
+			throw new Error(
+				'internal: applyRenderPhpFix reached a hoist-refused row (' + hoist.reason + ') — ' +
+				'planRow should have refused this row before it ever reached --apply'
+			);
+		}
+		insertAt = hoist.insertionPoint;
+	}
 	const indent = indentOfLine( phpText, phpText.lastIndexOf( '\n', insertAt - 1 ) + 1 );
 	let insertion;
+	// FINDING 1 (final-branch review): never hand-build a combined
+	// `:hover,:focus-visible{…}` selector literal — a combined selector list
+	// can never be wrapped in the touch-safe media/class guards, because the
+	// guard must apply to `:hover` ONLY, never to `:focus-visible` (keyboard
+	// users need focus styling on every device, including touchscreens). Call
+	// `sgs_hover_state_rules()` (`includes/helpers-hover-state.php`) instead —
+	// the ONE place a `:hover` rule is built (`plugins/sgs-blocks/CLAUDE.md`
+	// "Touch-safe HOVER helpers"). It splits the guarded `:hover` rule from
+	// the unguarded `:focus-visible` rule and is exactly what the codemod's
+	// own cited reference model (nav-menu:1172,
+	// `sgs_hover_state_rules( $uid_sel . ' .sgs-nav-menu__burger', 'background-color:' . sgs_colour_value( $burger_hover_slug ), ':focus-visible' )`)
+	// already does correctly. Double-quoted selectorTemplate, matching both
+	// branches below — NOT single-quoted — because a selectorTemplate can
+	// legitimately carry `{$var}` PHP-interpolation syntax (Strategy T,
+	// resolveTextGradientChainSelector, e.g. `{$uid_sel} .sgs-nav-menu__sublink`
+	// for sgs/nav-menu.submenuColour); PHP only expands `{$var}` inside double
+	// quotes.
+	const hoverCall =
+		`sgs_hover_state_rules( "${ plan.selectorTemplate }", "${ plan.propText }:" . sgs_colour_value( ${ hoverGuardVar } ), ':focus-visible' )`;
 	if ( plan.sinkIsAppend ) {
-		// Double-quoted, matching the array-push branch below — NOT the
-		// single-quoted form this used to be. A selectorTemplate can now
-		// legitimately carry `{$var}` PHP-interpolation syntax (Strategy T,
-		// resolveTextGradientChainSelector, e.g. `{$uid_sel} .sgs-nav-menu__sublink`
-		// for sgs/nav-menu.submenuColour) — PHP only expands `{$var}` inside
-		// double quotes; inside single quotes it prints those seven
-		// characters literally. Plain literal text (the ONLY shape
-		// resolveDirectSelector itself ever produced) is unaffected by the
-		// quote-style change.
 		insertion =
 			`\n${ indent }if ( '' !== ( ${ hoverGuardVar } ?? '' ) ) {\n` +
-			`${ indent }\t$${ plan.sinkVar } .= "${ plan.selectorTemplate }:hover,${ plan.selectorTemplate }:focus-visible{" . "${ plan.propText }:" . sgs_colour_value( ${ hoverGuardVar } ) . '}';\n` +
+			`${ indent }\t$${ plan.sinkVar } .= ${ hoverCall };\n` +
 			`${ indent }}`;
 	} else {
 		insertion =
 			`\n${ indent }if ( '' !== ( ${ hoverGuardVar } ?? '' ) ) {\n` +
-			`${ indent }\t$${ plan.sinkVar }[] = "${ plan.selectorTemplate }:hover,${ plan.selectorTemplate }:focus-visible{${ plan.propText }:" . sgs_colour_value( ${ hoverGuardVar } ) . '}';\n` +
+			`${ indent }\t$${ plan.sinkVar }[] = ${ hoverCall };\n` +
 			`${ indent }}`;
 	}
 	const newSrc = phpText.slice( 0, insertAt ) + insertion + phpText.slice( insertAt );
@@ -2145,6 +2266,29 @@ if ( $attrib_colour ) {
 		assert( r.reason === 'no-css-rule-brace-in-literal-prefix', 'wrong reason: ' + r.reason );
 	} );
 
+	// FINDING 3 (final whole-branch review, 2026-09-04): findStatementEndRespectingStrings
+	// used to be string-aware but NOT comment-aware. `resolveDirectSelector` —
+	// "the path most --apply insertions actually go through" per its own
+	// comment — depends on it, so an apostrophe/quote-like character inside a
+	// `/* ... */` comment sitting BEFORE the statement's real string literal
+	// could open a PHANTOM string and throw off every quote-state decision
+	// from that point on, e.g. `it's` inside a comment. Proves the fix
+	// resolves the statement correctly THROUGH such a comment rather than
+	// being confused by the apostrophe inside it.
+	check( 'FINDING 3: findStatementEndRespectingStrings (via resolveDirectSelector) is not confused by an apostrophe inside a comment on the statement it is scanning', () => {
+		const commentedPhp = `<?php
+$title_colour = $attributes['titleColour'] ?? '';
+$scoped_css_parts = array();
+if ( '' !== $title_colour ) {
+	$scoped_css_parts[] = /* it's fine, not a string */ ".{\$uid}.sgs-fixture__title{color:" . sgs_colour_value( $title_colour ) . ';}';
+}
+`;
+		const r = resolveDirectSelector( commentedPhp, 'title_colour' );
+		assert( r.ok, 'expected ok, got refusal: ' + r.reason );
+		assert( r.selectorTemplate === '.{$uid}.sgs-fixture__title', 'selector mismatch (comment likely threw off quote-state tracking): ' + r.selectorTemplate );
+		assert( r.propText === 'color', 'property mismatch: ' + r.propText );
+	} );
+
 	// --- end-to-end: dry-run then apply on a real fixture directory ---
 	const fx1 = makeFixture( tmpRoot, 'fixture-a', {
 		editJs: FIXTURE_EDIT_JS,
@@ -2209,7 +2353,11 @@ if ( $attrib_colour ) {
 		const count = countLiteralStatesElements( editSrc );
 		assert( count === 2, 'expected 2 literal states elements after fix, got ' + count );
 		const php = fs.readFileSync( path.join( fx1, 'render.php' ), 'utf8' );
-		assert( php.includes( ':hover' ), 'render.php missing :hover rule after fix' );
+		// FINDING 1 (final-branch review): the source no longer contains a
+		// literal `:hover` selector text at all — that string is now built
+		// INSIDE `sgs_hover_state_rules()` at runtime, not spliced into the
+		// PHP source. Assert the call itself is present instead.
+		assert( php.includes( 'sgs_hover_state_rules(' ), 'render.php missing sgs_hover_state_rules() call after fix' );
 		const bj = JSON.parse( fs.readFileSync( path.join( fx1, 'block.json' ), 'utf8' ) );
 		assert( !! bj.attributes.titleColourHover, 'block.json missing titleColourHover attribute' );
 	} );
@@ -2391,7 +2539,9 @@ if ( '' !== $label_colour ) {
 		babelParser.parse( finalEditSrc, BABEL_PARSE_OPTS ); // throws on any corruption — that IS the assertion.
 		assert( ( finalEditSrc.match( /key:\s*['"]hover['"]/g ) || [] ).length === 2, 'expected exactly 2 hover states after both fixes, got a corrupted or incomplete result' );
 		const finalPhp = fs.readFileSync( path.join( fx4, 'render.php' ), 'utf8' );
-		assert( ( finalPhp.match( /:hover/g ) || [] ).length === 2, 'expected exactly 2 :hover rules in render.php' );
+		// FINDING 1 (final-branch review): no literal `:hover` selector text in
+		// source any more — count the sgs_hover_state_rules() calls instead.
+		assert( ( finalPhp.match( /sgs_hover_state_rules\(/g ) || [] ).length === 2, 'expected exactly 2 sgs_hover_state_rules() calls in render.php' );
 	} );
 
 	// --- Unclonable-sibling-attribute control (CRITICAL DEFECT, cross-tier
@@ -2863,7 +3013,9 @@ if ( '' !== $banner_colour ) {
 			php.includes( "sgs_colour_value( $banner_colour ) . ';}';" ),
 			'FINDING 1 REGRESSION: the original semicolon-inside-string statement was truncated/split by the fix — got: ' + php
 		);
-		assert( php.includes( ':hover' ), 'render.php missing :hover rule after fix' );
+		// FINDING 1 (final-branch review): no literal `:hover` selector text in
+		// source any more — assert the sgs_hover_state_rules() call instead.
+		assert( php.includes( 'sgs_hover_state_rules(' ), 'render.php missing sgs_hover_state_rules() call after fix' );
 		babelParser.parse( fs.readFileSync( path.join( fx9, 'edit.js' ), 'utf8' ), BABEL_PARSE_OPTS ); // throws on corruption.
 		const bj = JSON.parse( fs.readFileSync( path.join( fx9, 'block.json' ), 'utf8' ) );
 		assert( !! bj.attributes.bannerColourHover, 'block.json missing bannerColourHover' );
@@ -2946,7 +3098,11 @@ if ( '' !== $name_colour_effective ) {
 		);
 		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
 		const php = fs.readFileSync( path.join( fx10, 'render.php' ), 'utf8' );
-		assert( php.includes( '{$name_colour_sel}:hover' ), 'expected the rebuilt interpolation selector to appear in the new :hover rule — got: ' + php );
+		// FINDING 1 (final-branch review): no literal `:hover` selector text in
+		// source any more — the rebuilt selector is passed as the FIRST
+		// argument to sgs_hover_state_rules() instead of being concatenated
+		// directly onto `:hover` in the source.
+		assert( php.includes( 'sgs_hover_state_rules( "{$name_colour_sel}",' ), 'expected the rebuilt interpolation selector to appear as the sgs_hover_state_rules() call\'s first argument — got: ' + php );
 
 		// PLACEMENT LOCK (the task-2-review bug this task fixes): the fixture's
 		// consumption statement sits nested TWO `if` levels deep
@@ -3054,7 +3210,11 @@ if ( '' !== $sublink_colour_effective ) {
 		);
 		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
 		const php = fs.readFileSync( path.join( fx11, 'render.php' ), 'utf8' );
-		assert( php.includes( '{$uid_sel} .sgs-fixture-k__sublink:hover' ), 'expected the rebuilt concat selector to appear in the new :hover rule — got: ' + php );
+		// FINDING 1 (final-branch review): no literal `:hover` selector text in
+		// source any more — the rebuilt selector is passed as the FIRST
+		// argument to sgs_hover_state_rules() instead of being concatenated
+		// directly onto `:hover` in the source.
+		assert( php.includes( 'sgs_hover_state_rules( "{$uid_sel} .sgs-fixture-k__sublink",' ), 'expected the rebuilt concat selector to appear as the sgs_hover_state_rules() call\'s first argument — got: ' + php );
 
 		// PLACEMENT LOCK — same shape as fixture-j (nav-menu:864/866 for real):
 		// the consumption statement sits nested inside
@@ -3191,51 +3351,94 @@ if ( '' !== $panel_colour ) {
 	} );
 	const db13 = { 'sgs/fixture-m': { panelColour: { css_property: 'color' } } };
 
-	check( 'FINDING 1: a base-value guard immediately followed by `else` is never hoisted past — no `}` <hover-block> `else` splice (would fatal)', () => {
+	check( 'FINDING 2 (final-branch review): a base-value guard immediately followed by `else` is REFUSED, not silently hoisted-in-place — file byte-identical after', () => {
+		const before = {
+			editJs: fs.readFileSync( path.join( fx13, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fx13, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fx13, 'block.json' ), 'utf8' ),
+		};
 		const cache = new SourceCache();
 		const rows = rowsInFile( cache, path.join( fx13, 'edit.js' ) );
 		assert( rows.length === 1, 'expected exactly one row in fixture-m' );
 		const phpText = fs.readFileSync( path.join( fx13, 'render.php' ), 'utf8' );
 		const plan = planRow( db13, 'fixture-m', 'sgs/fixture-m', rows[ 0 ], phpText, path.join( fx13, 'block.json' ) );
-		assert( plan.fixable, 'expected fixable, got refusal: ' + JSON.stringify( plan ) );
+		// EXPECTATION CHANGED (final-branch review, Finding 2): this used to
+		// assert `plan.fixable` and go on to check that the hover block landed
+		// NESTED INSIDE the original guard — i.e. it locked in the exact
+		// silently-dead-control placement Task 3 was built to remove (the row
+		// still reported `WOULD FIX` while emitting a hover rule that would
+		// never render whenever the client left the base colour unset). The
+		// planning-time hoist-safety gate now refuses this row outright
+		// instead of emitting that placement — this is the correct, intended
+		// behaviour, not a regression.
+		assert( ! plan.fixable, 'expected a REFUSAL for an else-blocked base guard, got fixable: ' + JSON.stringify( plan ) );
+		assert(
+			/REFUSED:hoist-blocked-by-else-branch/.test( plan.reason ),
+			'THIS ASSERTION IS THE CONTROL — expected the named else-branch refusal reason, got: ' + plan.reason
+		);
+		const after = {
+			editJs: fs.readFileSync( path.join( fx13, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fx13, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fx13, 'block.json' ), 'utf8' ),
+		};
+		assert( before.editJs === after.editJs, 'refusal control: edit.js was mutated despite refusal' );
+		assert( before.renderPhp === after.renderPhp, 'refusal control: render.php was mutated despite refusal' );
+		assert( before.blockJson === after.blockJson, 'refusal control: block.json was mutated despite refusal' );
+	} );
 
-		const result = applyPlan(
-			Object.assign( {}, plan, {
-				dir: 'fixture-m',
-				slug: 'sgs/fixture-m',
-				editFile: path.join( fx13, 'edit.js' ),
-				renderFile: path.join( fx13, 'render.php' ),
-				blockJsonPath: path.join( fx13, 'block.json' ),
-			} ),
-			true
-		);
-		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
+	// --- (v-b) fixture-m2 — the SAME else-blocked guard shape as fixture-m,
+	// but with a `/* comment */` sitting between the guard's `}` and `else`
+	// (Finding 2's "cheap, related" fix: the else/elseif lookahead itself used
+	// to be comment-blind, so `} /* comment */ else {` would have hoisted
+	// straight past the guard, undetected — a live PHP-fatal risk even after
+	// the refusal above starts working for the plain `} else {` case). Must
+	// ALSO be refused, for the same reason, not silently hoisted past the
+	// comment.
+	const FIXTURE_EDIT_JS_ELSE_COMMENT = FIXTURE_EDIT_JS.split( 'titleColour' ).join( 'drawerColour' );
+	const FIXTURE_RENDER_PHP_ELSE_COMMENT = `<?php
+$drawer_colour = $attributes['drawerColour'] ?? '';
+$scoped_css_parts = array();
+if ( '' !== $drawer_colour ) {
+	$scoped_css_parts[] = ".{\$uid}.sgs-fixture-m2__drawer{color:" . sgs_colour_value( $drawer_colour ) . ';}';
+} /* fallback to inherit */ else {
+	$scoped_css_parts[] = ".{\$uid}.sgs-fixture-m2__drawer{color:inherit;}";
+}
+`;
+	const fx13b = makeFixture( tmpRoot, 'fixture-m2', {
+		editJs: FIXTURE_EDIT_JS_ELSE_COMMENT,
+		renderPhp: FIXTURE_RENDER_PHP_ELSE_COMMENT,
+		blockJson: {
+			apiVersion: 3,
+			name: 'sgs/fixture-m2',
+			attributes: { drawerColour: { type: 'string', default: '' } },
+		},
+	} );
+	const db13b = { 'sgs/fixture-m2': { drawerColour: { css_property: 'color' } } };
 
-		const php = fs.readFileSync( path.join( fx13, 'render.php' ), 'utf8' );
-		// THE REGRESSION GUARD: the guard's own closing `}` must be followed
-		// (ignoring whitespace) directly by `else`, exactly as authored — the
-		// hover block must NOT have been spliced in between.
+	check( 'FINDING 2: a comment between the guard\'s `}` and `else` does not silently defeat the else-branch refusal, file byte-identical after', () => {
+		const before = {
+			editJs: fs.readFileSync( path.join( fx13b, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fx13b, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fx13b, 'block.json' ), 'utf8' ),
+		};
+		const cache = new SourceCache();
+		const rows = rowsInFile( cache, path.join( fx13b, 'edit.js' ) );
+		assert( rows.length === 1, 'expected exactly one row in fixture-m2' );
+		const phpText = fs.readFileSync( path.join( fx13b, 'render.php' ), 'utf8' );
+		const plan = planRow( db13b, 'fixture-m2', 'sgs/fixture-m2', rows[ 0 ], phpText, path.join( fx13b, 'block.json' ) );
+		assert( ! plan.fixable, 'expected a REFUSAL for a comment-preceded else branch, got fixable: ' + JSON.stringify( plan ) );
 		assert(
-			/\}\s*else\s*\{/.test( php ),
-			'FINDING 1 REGRESSION: the guard\'s `}` is no longer immediately followed by `else {` — the hover block was likely spliced between them (a PHP parse error): ' + php
+			/REFUSED:hoist-blocked-by-else-branch/.test( plan.reason ),
+			'THIS ASSERTION IS THE CONTROL — a comment between `}` and `else` must not silently defeat the else-branch detection, got: ' + plan.reason
 		);
-		assert(
-			! /\}\s*if\s*\(\s*''\s*!==\s*\(\s*\$attributes\[\s*'panelColourHover'[\s\S]*?\}\s*else/.test( php ),
-			'FINDING 1 REGRESSION: the hover if-block was inserted between the guard\'s `}` and its `else` — got: ' + php
-		);
-		// The hover block must instead have landed INSIDE the original guard
-		// (nested, before its own closing `}`) — a no-op stop-one-level-
-		// earlier, not a crash.
-		const guardOpenIdx = php.indexOf( "if ( '' !== $panel_colour ) {" );
-		const hoverIfIdx = php.indexOf( "if ( '' !== ( $attributes['panelColourHover']" );
-		assert( hoverIfIdx !== -1, 'hover if-guard not found in output: ' + php );
-		const elseIdx = php.indexOf( '} else {' );
-		assert( guardOpenIdx !== -1 && elseIdx !== -1, 'fixture render.php missing its expected guard/else shape — fixture drifted: ' + php );
-		assert(
-			hoverIfIdx > guardOpenIdx && hoverIfIdx < elseIdx,
-			'FINDING 1: expected the hover block nested INSIDE the original guard (before its own `}`), not hoisted past it — got: ' + php
-		);
-		babelParser.parse( fs.readFileSync( path.join( fx13, 'edit.js' ), 'utf8' ), BABEL_PARSE_OPTS ); // throws on corruption.
+		const after = {
+			editJs: fs.readFileSync( path.join( fx13b, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fx13b, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fx13b, 'block.json' ), 'utf8' ),
+		};
+		assert( before.editJs === after.editJs, 'refusal control: edit.js was mutated despite refusal' );
+		assert( before.renderPhp === after.renderPhp, 'refusal control: render.php was mutated despite refusal' );
+		assert( before.blockJson === after.blockJson, 'refusal control: block.json was mutated despite refusal' );
 	} );
 
 	// --- (vi) fixture-n — a `//` comment line sits between the previous
