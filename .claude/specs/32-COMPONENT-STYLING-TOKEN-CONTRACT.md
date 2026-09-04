@@ -1,14 +1,19 @@
 ---
 doc_type: spec
 spec_id: 32
-spec_version: "1.7"
+spec_version: "1.8"
 title: Component Styling Token Contract (framework-wide)
 project: small-giants-wp
 status: active
 authors: Claude + Bean
 session_date: 2026-07-07
-last_verified: 2026-08-22
+last_verified: 2026-09-04
 status_history:
+  - 2026-09-04: v1.8 — `/qc-council` audit (5-persona). `mega-panel.borderRadius` CLOSED (root
+    border on `SgsBorderControl`). §5 Security NFR (CSS-injection sanitisation gate)
+    RE-CONFIRMED OPEN — a same-day plan-doc claim that it closed was wrong (wrong evidence
+    cited) and has been corrected there. Build shape + dispatch prompt:
+    `.claude/prompts/2026-09-04-spec32-35-closure-prompt.md` Task 1.
   - 2026-08-22: v1.7 — §6.1(a2) migration marked DONE (D734): all 204 LENGTH-valued
     `sgs_css_length_sanitise()` call sites migrated to `sgs_css_length_value()` across 56 files,
     live-proven pre/post deploy. Corrected the comparison table's `var:preset|spacing|40` cell —
@@ -89,10 +94,13 @@ product-card CTA / option-picker pills), Phase 3 (framework-wide sweep + build g
 provable statically. Every row was exercised on the canary this session; see §8 for the per-row
 evidence. Nothing in §8 is inferred.
 
-**Open, genuinely — as of 2026-08-18:** the `mega-panel.borderRadius` flat scalar remains untriaged
-(it postdates both the MERGE and KEEP-SCALAR tables). That is the only item in this doc still owed
-work. FR-32-5, FR-32-9 and the 74-block roster all closed this session; `text-secondary` was
-resolved by deletion (§12.2).
+**Open, genuinely — updated 2026-09-04 (`/qc-council` audit):** `mega-panel.borderRadius` is
+CLOSED (2026-09-04, root border migrated to `SgsBorderControl`; radius deliberately kept
+scalar — a stored-shape migration risk against live content, not a gap). **The §5 Security NFR
+(CSS-injection sanitisation gate) is the one item still genuinely owed** — see the box above;
+it was briefly, incorrectly marked closed the same day and has been corrected. FR-32-5, FR-32-9
+and the 74-block roster all closed 2026-08-18; `text-secondary` was resolved by deletion
+(§12.2).
 
 ## 0. Problem statement
 
@@ -192,7 +200,11 @@ The correct design already existed pre-D283 (Spec 11 Decision 24, 2026-05-22): a
   2. **The assembled `<style>` blob** MUST pass `wp_strip_all_tags()` before echoing, so no attribute
      value can close the `<style>` element and open a `<script>`.
   *Done when:* every block emitting a scoped rule from a free-text attr applies (1), and every
-  `<style>` emit site applies (2). ⚠ No gate enforces this yet — it is a code-review rule today.
+  `<style>` emit site applies (2). ⚠ **STILL NO GATE (re-confirmed 2026-09-04 via `/qc-council`
+  audit).** A road-to-uniform plan doc briefly claimed this closed on 2026-09-04, citing
+  `audit-inline-styling.js` (FR-32-1, a different requirement) as evidence — that claim was
+  wrong and has been corrected in that doc. This item is genuinely open; build shape +
+  dispatch: `.claude/prompts/2026-09-04-spec32-35-closure-prompt.md` Task 1.
 - **Accessibility:** every hover rule MUST have a keyboard-reachable counterpart. Which pseudo-class is not a free choice — it follows the element: the hover target is itself focusable (link/button/tabindex) → `:focus-visible`; the hover target is a CONTAINER whose focusable content sits inside it (card, list item, section) → `:focus-within`. A `:focus-visible` rule on a non-focusable container can never match — it reads as compliant in source while delivering nothing to a keyboard user. Contrast remains a snapshot-data concern, kept correctable because
   overrides are low-specificity var values, not an ID/`!important` ceiling.
 
@@ -234,9 +246,11 @@ Key decisions:
 > true today because it was earned, not because the masking bug still hides it.
 >
 > Family roster below is re-derived over the current **83**-block count (was 74 at original scan).
-> Live count: 83 (`ls plugins/sgs-blocks/src/blocks/*/block.json | wc -l`). **Still owed:**
-> `mega-panel.borderRadius`, a flat `{"type":"string","default":"20px"}` scalar appearing in neither
-> the MERGE nor the KEEP-SCALAR table — it postdates both and remains untriaged.
+> Live count: 83 (`ls plugins/sgs-blocks/src/blocks/*/block.json | wc -l`). **CLOSED 2026-09-04:**
+> `mega-panel.borderRadius` — root border (colour+gradient+radius) migrated to `SgsBorderControl`
+> (width+colour+style); radius deliberately kept as its own scalar attribute rather than folded
+> into the control's corner-object radius param, since that would be a stored-shape migration
+> against live content, not a control-shape swap. Commits `20bcb52b8`, `b0670ac4a`.
 
 **Rollout status (D293–D296, 2026-07-09):** the mechanism is LANDED on `sgs/container` + `sgs/button` (D292/D293), `sgs/heading` + `sgs/text` (D293), `sgs/quote` + `sgs/media` (D294), and `sgs/hero` (D295 — its 5 per-area families `contentPadding`/`mediaPadding`/`imagePadding`/`imageBorderWidth`/`imageBorderRadius` + `contentBandPadding` are now migrated objects). The shared `SGS_Container_Wrapper` is itself fully no-inline (base spacing D292, max-width/contentWidth/band D294, grid/flex D296 all scoped). **Pattern selector (D294):** content-KIND composites that use only box+width go BLOCK-PRIVATE (like quote); section/layout composites keep the wrapper (like hero) — see Spec 31 FR-31-21.1. **ROLLOUT COMPLETE (D346, 2026-07-18).** The framework-wide inline-zero drive is DONE. Evidence base: only sandybrown (`palestine-lives.org` no longer exists, removed from `TARGETS` 2026-08-10 — do not re-quote it as evidence). Re-verified live this session: `audit-inline-styling.js --check` → **0 violations across 83 blocks**, and a live DOM sweep of `/s1-probe-spec32/` found **0 inline `style` attributes across 150 `sgs-` elements** (page-wide `style="--"`=0, empty `style=""`=0). The remaining surface was cleared by (a) the two-facet shared-`SGS_Container_Wrapper` change (Facet A: emit the `style` key only when non-empty → kills empty `style=""` on every content-KIND composite + header/footer; Facet B: route `$styles` `--var` VALUES to a scoped `.$uid{…}` rule) and (b) block-private conversions of the residual blocks (info-box/icon/testimonial/button/cart/option-picker/audio/collapsible-text/responsive-logo/mega-menu). Every affected `[style*="--sgs-*"]` presence-selector was rewritten to `var(--x,<resting>)` inert fallbacks (GOTCHA F). See D346 + `reports/visual-diff/*-2026-07-18.md`. Only remaining follow-up: a structural anti-regression prebuild gate (deferred to a new session). `P-NOINLINE-ROSTER-RECOUNT` resolved.
 

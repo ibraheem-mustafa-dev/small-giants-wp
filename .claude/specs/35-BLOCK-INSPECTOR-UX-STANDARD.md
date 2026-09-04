@@ -7,16 +7,36 @@ but whether the TARGET SHAPE was settled first. See THE-MIGRATION-METHOD.md Step
 ```
 doc_type: spec
 spec_id: 35
-spec_version: 2.0
+spec_version: 2.1
 status: ACTIVE (v1 2026-07-18; v2 same day — expanded with a 6-stream research sweep:
         WP component capabilities, competitor parity, inspector UX/a11y, uncovered
-        components, newer WP platform capabilities, interaction/effects/content)
+        components, newer WP platform capabilities, interaction/effects/content;
+        v2.1 2026-09-04 — /qc-council audit + 5-anti-pattern buildability investigation,
+        PART L corrections, see the update box below the header)
 owner: framework
 companions: Spec 32 (component styling/token contract — governs RENDERED output),
             Spec 00 (naming). This spec governs the EDITOR-FACING control surface.
 ```
 
 > **Sibling spec (Bean decision, 2026-07-28): Spec 35 and Spec 32 stay SEPARATE, not merged.** Spec 35 (this doc) owns the block INSPECTOR-UX standard (editor-facing controls). Spec 32 owns the styling/token EMISSION contract (no-inline, scoped CSS, box-object attrs). Both gate every block build — read them together.
+
+> **2026-09-04 update (`/qc-council` audit + 5-parallel-investigation pass).** This spec is
+> **substantially but not completely implemented**. Confirmed CLOSED this session: rule
+> `03-dense-panel-candidate` (C6, 10 blocks → `ToolsPanel`), rule `18-decorative-image-aria`
+> (C7, 4 blocks), block-bindings widened 3→37 blocks (C15-5). **Newly built, advisory:** rule
+> `41-co2-element-grouping-order.js` — found **61 live violations** the moment it ran (PART A4
+> / CO-2 element grouping); PART L's "element-first panels — UNVERIFIABLE STATICALLY" line
+> (below) is now FALSE, this rule is exactly that static check. **Genuinely still open:** rule
+> `31-golden-colour-control`'s colour-completeness backlog (**195 live findings** at audit
+> time — actively worked by `.claude/plans/phase-colour-conformance.md` +
+> `.claude/plans/2026-09-03-golden-colour-staged-rollout.md`, re-run the survey for the
+> current count, do not trust this number); the 61 element-grouping findings above; and,
+> per a 5-agent investigation into PART F's ungated anti-patterns, **4 of 5 are genuinely
+> buildable** ("essential control only in sidebar" narrow slice, "no reset", "colour-only
+> focus/selected", "help text not `aria-describedby`-linked" — none of these hit the
+> false-positive wall that killed `scattered-element-controls.js`), and one ("sidebar as home
+> for every option") is buildable only as a human-reviewed survey, never a pass/fail gate.
+> Build shapes + dispatch: `.claude/prompts/2026-09-04-spec32-35-closure-prompt.md`.
 
 ## Why this exists
 
@@ -786,21 +806,31 @@ triad mechanism and the same enforcement stack.
       only `*/edit.js`; `colour-picker/color-palette/index.js` defaults `enableAlpha = false` and its
       callers were never audited. Close that, then tick
 
-**NOT DONE — verified (4):**
+**NOT DONE — verified (4, stale — see corrections):**
 
-- [ ] **control-dense panels use ToolsPanel** — **0 of 15** flagged dense `PanelBody` elements convert.
-      (Not contradicted by "23 files use ToolsPanel somewhere" — different populations)
+- [x] **CLOSED 2026-09-04 (C6).** control-dense panels use ToolsPanel — rule
+      `03-dense-panel-candidate` re-run live: **0 flagged.** All 10 named blocks converted
+      (`form-field-checkbox/-date/-file/-number/-radio/-select`, `gallery`, `info-box`,
+      `multi-button`, `text`). Commit `497261de0`.
 - [x] **State capability is DONE via `SgsColourPanel`'s D609 tab-toggle mechanism, not
       `StateToggleControl`** — 60 blocks pass `states:` to the colour control (`DesignTokenPicker.js:27-34`).
       `StateToggleControl` is an orphan of the pre-D609 design, exported from `components/index.js:45` with
       0 mounts. Actions: (a) reword this checklist item to name the D609 mechanism; (b) delete the orphan
       component. Neither is a capability gap.
-- [ ] **decorative-image + ARIA-label where needed** — **1 of 14** image-rendering blocks
-      (`sgs/media`'s `imageIsDecorative`). `sgs/decorative-image` needs none — it hardcodes
-      `aria-hidden` by construction
-- [ ] **keyboard + contrast + `aria-describedby` a11y pass** — `aria-describedby` appears in 4 files
-      against a far larger `help=` population. Keyboard + contrast need a live axe pass; no static
-      detector covers either
+- [x] **CLOSED 2026-09-04 (C7).** decorative-image + ARIA-label where needed — rule
+      `18-decorative-image-aria` re-run live: **0 flagged.** `sgs/cta-section`, `sgs/nav-drawer`,
+      `sgs/social-icons` gained real toggles + ARIA wiring; `sgs/media`'s `imageIsDecorative`
+      and `sgs/decorative-image`'s hardcoded `aria-hidden` unchanged (already correct).
+      Commit `47fd0079c`.
+- [~] **keyboard + contrast + `aria-describedby` a11y pass** — a ONE-TIME manual live pass
+      (2026-09-04, `.claude/reports/2026-09-04-c12-c13-live-pass.md`) spot-checked 15 blocks:
+      0 keyboard-trap patterns, 0 contrast failures, 1 real `aria-describedby` finding
+      (attributed to a WP-core `UnitControl` internal element, not an SGS defect). **This is
+      NOT a standing gate** — a follow-up investigation (2026-09-04) found the real remaining
+      surface for a standing `aria-describedby` detector is small (~8 files where a custom
+      component wraps WP's `BaseControl` without its native self-wiring) and BUILDABLE; not
+      yet built. Keyboard/contrast still have no static detector and need a repeat live pass,
+      not a one-off.
 
 **PARTIAL — measured (5):**
 
@@ -815,13 +845,15 @@ triad mechanism and the same enforcement stack.
 - [~] images have size + aspect-ratio + object-fit + focal point — **6/11** upload blocks; 22 opt into
       the shared `imageControls` extension
 
-**UNVERIFIED — no enforcing rule exists (1):**
+**UNVERIFIED — investigated 2026-09-04, confirmed genuinely not buildable (1):**
 
-- [ ] **no native-supports panel duplicated** — **no gate exists.** None of the 16
-`inspector-scan` rules targets Part F's "bespoke panel duplicating a native `supports` panel";
-`check-shared-panel-schema.js`, `check-dead-controls.js` and `check-duplicate-controls.js` all target
-different bug classes. A manual check found no duplicated *colour* panel, which is one shape of the
-anti-pattern, not proof of the item. Needs a rule before it can be ticked.
+- [ ] **no native-supports panel duplicated** — **still no gate, and now confirmed it can't be
+one without reproducing a known failure.** A dedicated investigation (C5, 2026-09-04,
+`.claude/plans/archive/2026-08-25-road-to-uniform-then-spec-39.md`) found this isn't buildable
+as a general rule without reproducing the ~600-false-positive class that got
+`scattered-element-controls.js` deleted (2026-09-02) — it can't distinguish a real duplicate
+from a deliberate KEEP-SGS choice (Part G's D402 table). This is a genuine, checked exception,
+not neglect — do not re-investigate without new information.
 
 **NOT ACHIEVABLE AS WORDED — this checklist contradicts Part G (2):**
 
@@ -834,17 +866,29 @@ anti-pattern, not proof of the item. Needs a rule before it can be ticked.
       never framework patterns**, and Part M already re-labels it "not a framework rollout — deliberate,
       not a gap". 0/46 framework patterns is therefore correct-by-design. **Reword or drop**
 
-**PARTIAL, aggregate (1):**
+**PARTIAL, aggregate (1) — corrected 2026-09-04, this line was stale:**
 
-- [~] **no Part-F anti-patterns** — every *gated* anti-pattern is clean (7/7 gate rules, 0 findings);
-      4 advisory categories remain open (tab-group 58, dense panels 15, decorative-image 13,
-      responsive-duplicate 2)
+- [~] **no Part-F anti-patterns** — 15 rules now gate (up from 7; D4, 2026-09-04 promoted 8
+      more that cleared the project's own advisory-before-fail-closed bar), 0 gating findings.
+      tab-group/dense-panels/decorative-image/responsive-duplicate are all now at 0 (closed or
+      promoted to gate this session). **Still genuinely open**: rule `31-golden-colour-control`
+      (colour-completeness, actively worked, re-run `survey.js` for the current count) and rule
+      `41-co2-element-grouping-order` (built 2026-09-04, 61 live findings on introduction —
+      see below). 5 named-but-ungated Part F anti-patterns investigated 2026-09-04: 4 confirmed
+      buildable (essential-control-in-sidebar narrow slice, no-reset, colour-only
+      focus/selected, help-not-aria-describedby-linked), 1 buildable only as a survey
+      (sidebar-as-home-for-every-option), 1 confirmed genuinely not buildable (native-supports
+      duplication, see above). Build shapes: `.claude/prompts/2026-09-04-spec32-35-closure-prompt.md`.
 
-**UNVERIFIABLE STATICALLY (1):**
+**NO LONGER UNVERIFIABLE (1) — a rule now exists:**
 
-- [ ] **element-first panels** — 83/84 blocks declare a `supports.sgs.elements` manifest, but only
-      container-family blocks route through a shared element-grouping renderer. Whether panels are
-      *ordered by element* for direct-panel blocks needs a live editor pass
+- [x] **element-first panels — a static rule now checks this** (`41-co2-element-grouping-order.js`,
+      built 2026-09-04, advisory mode). It found **61 live violations** on its first run,
+      spanning TIER-1 element grouping, DOM-order-vs-declared-order, and root
+      Colour-before-Typography sequencing — the "unverifiable statically" framing this line
+      previously carried is now FALSE. It does NOT check CO-28's still-open cross-block
+      canonical panel order (that stays a separate, larger, not-yet-started question — Bean
+      hasn't picked the canonical order yet). Triage the 61 findings: still open.
 
 **Multi-item data is array-shaped** (24 blocks, no counter-example found across spot-checked
 repeater blocks) and **`hideExtensions`** (26 blocks, mechanism live) are treated as met; neither has
