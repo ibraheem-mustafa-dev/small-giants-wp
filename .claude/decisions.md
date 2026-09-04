@@ -1,3 +1,58 @@
+## D951 [ROUTINE] — Step 12 (FR-38-22) actually closed: `lift_behavioural_attrs` wired into the live walker; D949's "already has real callers" claim was wrong
+
+**2026-09-04.** Direct continuation of D949, same session. D949 fixed two real bugs (missing
+`block_attributes` rows for `fx*` attrs; a kebab-case/camelCase matching bug in
+`lift_behavioural_attrs`) and closed on the strength of a synthetic unit test calling
+`lift_behavioural_attrs` directly. Re-running the 2026-08-01 clone-probe method against the REAL
+`convert_section()` (not a unit test) showed the fx attrs still didn't survive — proving D949 was
+necessary but not sufficient.
+
+**The corrected diagnosis.** D949's commit message asserted `lift_behavioural_attrs` "is now
+general FR-31-2 walker infrastructure with real callers" — sourced from a docstring comment on an
+adjacent function (`_slot_extracted`) that DESCRIBES the intended architecture, not a verified
+grep. A plain `grep -rn "lift_behavioural_attrs(" converter/` shows exactly one match: the `def`
+line itself. **It was still dead code, exactly as the original 2026-08-01 probe found**, and
+D949's claim to the contrary was wrong — recorded here as a correction, not quietly fixed.
+
+**The fix.** One additive call wired into `build_block_markup`
+(`converter/services/assembly.py`, new step 3a1, immediately before the existing step 3a2
+tag-identity write it mirrors in shape): `attrs.setdefault(attr, value)` for every
+`(attr, value)` `lift_behavioural_attrs(section_root, rec.slug)` returns — an explicit
+variant/CSS/content value still wins on collision (same precedent as the adjacent steps), a
+behavioural marker only fills a gap. `rec.slug`/`section_root` match the function's own
+`(node, slug)` signature exactly — no new plumbing needed.
+
+**Collision handling.** `assembly.py` had uncommitted concurrent edits when this session started
+(a converter-cleanup track's `orchestrator.py` → `dispatch_spine.py` rename, touching
+`assembly.py`/`walk.py`/`css_pass.py`/`grid.py`/`outer_box.py`/`root_supports.py`/
+`fold_helpers.py` + tests + `gates.json`). Per Bean's direction, checked with both other live
+local sessions before touching anything — one confirmed ownership and that the rename was already
+fully committed (4 commits, tree clean, `build_block_markup` untouched by their work); the other
+confirmed it wasn't theirs either. Proceeded only after both replies. `git pull --ff-only` first
+to be certain of a clean base.
+
+**Verified against the real pipeline, not a synthetic call.** Re-ran the exact 2026-08-01 probe
+drafts through `convert_section()`:
+```
+<!-- wp:sgs/cta-section {"align":"full","fx":"split-reveal","fxDuration":"0.6",
+  "fxEase":"power2.out","fxTrigger":"scroll","className":"sgs-probe2-cta-section"} -->
+```
+All four fx attrs present (zero present before this fix); content (`heading`/`text`) still clones
+correctly, `content_gaps: []`. A second draft confirmed the lift is universal — it fired correctly
+even when BEM recognition resolved a different root block than the draft's own class implied.
+Full account + both drafts' before/after: `reports/2026-09-04-motion-clone-probe-verified.md`.
+
+Gate A 13/13; wider converter+scripts suite 837/839 (same 2 pre-existing unrelated failures as
+D949, confirmed by reading the actual source files those tests scrape — neither touches
+`assembly.py`). No new gate findings. Commit `0c75d85c6`.
+
+⚠ **Still open, named honestly, not silently dropped:** Rule 4's skip-with-reason reporting for a
+`data-sgs-fx-*` attribute with no destination on the resolved block is not built (a value like
+that is silently absent, not reported as skipped) — out of scope for this fix, named in the
+original 2026-08-01 probe's verdict item (c). And this is pipeline-level proof, not a live-canary
+Playwright/DOM check — per R-31-13 that still wants Bean's eye before the spec's success claim is
+finalised.
+
 ## D950 [ROUTINE] — DB-derivation/converter-cleanup Phase 4 closed; Phase 5 diagnosed (fixes still open)
 
 **2026-09-04.** `.claude/plans/2026-08-01-db-derivation-and-converter-cleanup.md` had sat orphaned

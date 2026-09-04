@@ -8,11 +8,13 @@ Invoke /autopilot before doing anything else.
 
 > **PRUNED 2026-08-02: every COMPLETED step was DELETED from this file.** Closed work lives in
 > `decisions.md` (D-numbered) and `git log`, not here. **If a step has a `### Step` heading below,
-> it is OPEN. There are no closed steps in this file.** 2 remain (verify, don't trust this number:
-`grep -c '^### Step' <this file>`). **Swept 2026-09-04:** Step 20 and Step R-residual, both closed
-before this sweep by decisions the register hadn't caught up to (D723, D839/FR-38-33, and a
-straightforward deletion) — see the struck-through summaries just above Step O below. Step 12 and
-Step 21 are the only genuinely open work.
+> it is OPEN.** (Step O/Step U below are pre-existing exceptions to that convention, out of
+> today's scope — Step O is a completed step whose heading was never pruned; Step U is deliberately
+> reframed ongoing debt-tracking, not a blocking gate.) 3 remain by heading count
+> (`grep -c '^### Step' <this file>`) — but only **Step 21 is genuinely open work now.** Step 20 and
+> Step R-residual closed 2026-09-04 by decisions the register hadn't caught up to (D723,
+> D839/FR-38-33, a straightforward deletion). **Step 12 closed 2026-09-04, same session, in full**
+> (D949 + D951) — see the struck-through summary just above Step O below.
 
 > **Closed since the prune:** Step 8 (FR-38-27, 2026-08-02) · Step Y (both loop arms measured, `216508ce`) · Step W/X/Z earlier · and
 > M3 (indus-foods snapshot push — DELETED by Bean, not parked; see `LEDGER.md`).
@@ -74,21 +76,18 @@ Waves A–E are closed. This session closed **Step X** (the three-list drift gat
 > ⚠ One residual, not worth its own step: `nav-drawer/block.json:68`'s `_note` still documents
 > that close button's outline as "uncontrollable styling", which is no longer accurate.
 
-### Step 12 — the cloning lift: motion that survives a draft (FR-38-22) [OPEN — root cause fixed 2026-09-04, D949; live-canary re-verify still owed]
-  **Model:** inline · **Time:** 3 h (revised down — the actual gap was smaller than "full build")
-  ✅ **D949 (2026-09-04):** the real cause was never `lift_behavioural_attrs` needing wiring (it's
-  general FR-31-2 infrastructure with real callers now, not the motion-specific zero-caller function
-  this line used to describe). It was two separate, previously-undiagnosed bugs: (1) `fx*` attrs are
-  registered client-side via `fx.js`'s filter and never appear in block.json, so Stage 1 never
-  created a `block_attributes` row for them at all; (2) the reader's `data-sgs-<X>` matching used
-  exact string equality against a kebab-case remainder, which can never equal a camelCase attr name.
-  Both fixed: a new Stage 1 sub-step seeds the missing rows (908 across 32 blocks, from the same
-  `generated-fx-qualifying-blocks.json` eligibility source `fx.js` itself uses); the reader now also
-  tries the kebab→camelCase form. Verified with a synthetic draft node end to end. Full account +
-  verification detail: `decisions.md` D949. Commit `58629b246`.
-  ⚠ **Still owed before this step fully closes:** a real `/sgs-clone` pass against a live canary
-  draft, using the 2026-08-01 probe's method (`reports/2026-08-01-motion-clone-probe.md`), since the
-  synthetic-node test proves the lift logic but not the full pipeline end to end.
+> **Step 12 — CLOSED 2026-09-04** (D949 + D951, `reports/2026-09-04-motion-clone-probe-verified.md`).
+> D949 fixed two real bugs (missing `block_attributes` rows for `fx*` attrs; a kebab-case/camelCase
+> matching bug in `lift_behavioural_attrs`) but closed on a synthetic unit test — D951 caught that
+> `lift_behavioural_attrs` was STILL never called anywhere in the live walker (D949's "has real
+> callers now" claim was wrong, sourced from an unverified docstring comment) and wired one
+> additive call into `build_block_markup`. Re-ran the 2026-08-01 probe's exact drafts against the
+> REAL `convert_section()`: fx attrs that vanished with zero trace on 2026-08-01 now appear
+> correctly in the emitted markup, content still clones fine, Gate A + the wider test suite both
+> pass clean. ⚠ **Two items named honestly, not silently dropped:** Rule 4's skip-with-reason
+> reporting for an `fx*` attr with no destination on the resolved block is still unbuilt; and this
+> is pipeline-level proof, not a live-canary Playwright/DOM check — R-31-13 still wants Bean's eye
+> before the spec's success claim is finalised.
 
 > **Step 20 — CLOSED 2026-09-04.** All 5 sub-items resolved: (a)/(b)/(d) were already closed per
 > this register's own prior annotations; **(c)** got its D-numbered ruling at **D723** (2026-08-21,
