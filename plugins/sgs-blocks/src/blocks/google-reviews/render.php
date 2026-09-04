@@ -277,8 +277,16 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 // classes in style.css so this replaces (not duplicates) the hardcoded
 // hover rules removed there.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-style.php';
-$gr_responsive_css .= sgs_button_element_style_css( $attributes, 'writeReview', $gr_root_sel . ' .sgs-google-reviews__write-review' );
-$gr_responsive_css .= sgs_button_element_style_css( $attributes, 'arrow', $gr_root_sel . ' .sgs-google-reviews__arrow' );
+// bg_layer=true (D942/D956 recipe, same as sgs/modal's close button): moves
+// each element's background paint onto a `::after` layer, freeing
+// writeReviewColourText/arrowColourText for a gradient sibling.
+// `.sgs-google-reviews__write-review` has no `position` of its own in
+// style.css (static) — bg_layer_positioned=false lets the helper add its
+// own `position:relative`. `.sgs-google-reviews__arrow` already carries
+// `position:absolute` (style.css:490) — bg_layer_positioned=true skips the
+// helper's own position write so it doesn't clobber that.
+$gr_responsive_css .= sgs_button_element_style_css( $attributes, 'writeReview', $gr_root_sel . ' .sgs-google-reviews__write-review', true, false );
+$gr_responsive_css .= sgs_button_element_style_css( $attributes, 'arrow', $gr_root_sel . ' .sgs-google-reviews__arrow', true, true );
 
 // Review-dot indicator — not button-shaped (background-colour/fill only),
 // uses the lighter state-colour emitter instead of the button helper.

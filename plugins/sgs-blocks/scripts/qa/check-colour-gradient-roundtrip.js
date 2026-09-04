@@ -158,6 +158,15 @@ const FIXTURES = {
 		selector: '.sgs-pricing-table__cta',
 		extraAttrs: { plans: [ {} ] },
 	},
+	// Session 9 "2 easy" row — the CTA only needs `reviewRequestUrl` set
+	// (render.php ~L696's `if ( ! empty( $review_request_url ) )` guard);
+	// background moved to bg_layer=true's `::after` layer (2026-09-04, this
+	// session) to free the text selector for a gradient.
+	'google-reviews.writeReviewColourText': {
+		attr: 'writeReviewColourText',
+		selector: '.sgs-google-reviews__write-review',
+		extraAttrs: { reviewRequestUrl: 'https://example.com/review' },
+	},
 };
 
 // Blocks wired this rollout but deliberately NOT probed here — named so the
@@ -170,6 +179,7 @@ const KNOWN_SKIPPED = {
 	'trust-bar': 'needs a populated `items` repeater (badgeStyle text-only/image-badge) to render title/label text — no minimal fixture built yet',
 	separator: 'needs contentMode="text" plus content to render `.sgs-separator__content` — no minimal fixture built yet',
 	'nav-menu': 'burgerColour/submenuColour depend on a real assigned WP nav menu — no minimal fixture built yet',
+	'google-reviews.arrowColourText': 'the slider arrow renders only when `$reviews` (render.php:202) is non-empty AND variant="slider" — `$reviews` is sourced from the live Google Reviews sync data (settings-driven transient), not from block attributes, so a deterministic positive/negative pair cannot be authored on a bare instance.',
 };
 
 /**

@@ -60,12 +60,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		writeReviewColourBackgroundHoverGradient,
 		writeReviewColourText,
 		writeReviewColourTextHover,
+		writeReviewColourTextGradient,
+		writeReviewColourTextHoverGradient,
 		arrowColourBackground,
 		arrowColourBackgroundHover,
 		arrowColourBackgroundGradient,
 		arrowColourBackgroundHoverGradient,
 		arrowColourText,
 		arrowColourTextHover,
+		arrowColourTextGradient,
+		arrowColourTextHoverGradient,
 		arrowColourBorder,
 		arrowColourBorderHover,
 		arrowColourBorderGradient,
@@ -150,12 +154,17 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: arrowColourText,
 								onChange: ( val ) => setAttributes( { arrowColourText: val ?? '' } ),
+								gradientValue: arrowColourTextGradient,
+								onGradientChange: ( val ) => setAttributes( { arrowColourTextGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: arrowColourTextHover,
 								onChange: ( val ) => setAttributes( { arrowColourTextHover: val ?? '' } ),
+								gradientValue: arrowColourTextHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { arrowColourTextHoverGradient: val ?? '' } ),
 							},
 						] }
 					/>
@@ -218,12 +227,18 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: writeReviewColourText,
 								onChange: ( val ) => setAttributes( { writeReviewColourText: val ?? '' } ),
+								gradientValue: writeReviewColourTextGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { writeReviewColourTextGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: writeReviewColourTextHover,
 								onChange: ( val ) => setAttributes( { writeReviewColourTextHover: val ?? '' } ),
+								gradientValue: writeReviewColourTextHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { writeReviewColourTextHoverGradient: val ?? '' } ),
 							},
 						] }
 					/>

@@ -121,6 +121,7 @@
 						"css:background-color": "arrowColourBackground",
 						"css:background-image": "arrowColourBackgroundGradient",
 						"css:color": "arrowColourText",
+						"css:color-gradient": "arrowColourTextGradient",
 						"css:border-color": "arrowColourBorder",
 						"css:border-color-gradient": "arrowColourBorderGradient"
 					},
@@ -130,12 +131,13 @@
 								"css:background-color": "arrowColourBackgroundHover",
 								"css:background-image": "arrowColourBackgroundHoverGradient",
 								"css:color": "arrowColourTextHover",
+								"css:color-gradient": "arrowColourTextHoverGradient",
 								"css:border-color": "arrowColourBorderHover",
 								"css:border-color-gradient": "arrowColourBorderHoverGradient"
 							}
 						}
 					},
-					"_note": "The prev/next slider-arrow button (.sgs-google-reviews__arrow). Added 2026-09-03 alongside the hover-colour + gradient migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'arrow', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation."
+					"_note": "The prev/next slider-arrow button (.sgs-google-reviews__arrow). Added 2026-09-03 alongside the hover-colour + gradient migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'arrow', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation. arrowColourTextGradient/arrowColourTextHoverGradient added 2026-09-04 (helpers-button-style.php D942/D956 gate) -- keyed css:color-gradient, distinct from the fill's css:background-image, since render.php now passes bg_layer=true (with bg_layer_positioned=true, as .sgs-google-reviews__arrow already carries its own position:absolute in style.css) so this element's background paints on a separate ::after layer instead of this selector, freeing the text for a gradient sibling."
 				},
 				"write-review": {
 					"label": "Write-review button",
@@ -149,18 +151,20 @@
 					"attrMap": {
 						"css:background-color": "writeReviewColourBackground",
 						"css:background-image": "writeReviewColourBackgroundGradient",
-						"css:color": "writeReviewColourText"
+						"css:color": "writeReviewColourText",
+						"css:color-gradient": "writeReviewColourTextGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:background-color": "writeReviewColourBackgroundHover",
 								"css:background-image": "writeReviewColourBackgroundHoverGradient",
-								"css:color": "writeReviewColourTextHover"
+								"css:color": "writeReviewColourTextHover",
+								"css:color-gradient": "writeReviewColourTextHoverGradient"
 							}
 						}
 					},
-					"_note": "The 'Write a review' CTA button (.sgs-google-reviews__write-review). Added 2026-09-03 alongside the hover-colour + gradient migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'writeReview', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation."
+					"_note": "The 'Write a review' CTA button (.sgs-google-reviews__write-review). Added 2026-09-03 alongside the hover-colour + gradient migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'writeReview', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation. writeReviewColourTextGradient/writeReviewColourTextHoverGradient added 2026-09-04 (helpers-button-style.php D942/D956 gate) -- keyed css:color-gradient, distinct from the fill's css:background-image, since render.php now passes bg_layer=true so this element's background paints on a separate ::after layer instead of this selector, freeing the text for a gradient sibling (same recipe as sgs/modal's closeColourTextGradient)."
 				}
 			},
 			"fx": {
@@ -458,6 +462,16 @@
 			"type": "string",
 			"default": ""
 		},
+		"writeReviewColourTextGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the 'Write a review' button's text with a background-clip:text mechanism instead of a flat colour (D942/D956 mechanism, sgs_button_element_style_css() bg_layer=true moves the background paint onto a ::after layer to free this selector for the gradient). Non-empty wins over writeReviewColourText."
+		},
+		"writeReviewColourTextHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of writeReviewColourTextGradient."
+		},
 		"arrowColourBackground": {
 			"type": "string",
 			"default": ""
@@ -483,6 +497,16 @@
 		"arrowColourTextHover": {
 			"type": "string",
 			"default": ""
+		},
+		"arrowColourTextGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the slider arrow's text with a background-clip:text mechanism instead of a flat colour (D942/D956 mechanism, sgs_button_element_style_css() bg_layer=true moves the background paint onto a ::after layer to free this selector for the gradient). Non-empty wins over arrowColourText."
+		},
+		"arrowColourTextHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of arrowColourTextGradient."
 		},
 		"arrowColourBorder": {
 			"type": "string",
