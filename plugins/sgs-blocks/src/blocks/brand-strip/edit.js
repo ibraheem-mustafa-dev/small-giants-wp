@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import ServerSideRender from '@wordpress/server-side-render';
+import { useEffect, useMemo } from '@wordpress/element';
 import {
 	useBlockProps,
 	InspectorControls,
@@ -24,8 +25,13 @@ import {
 	resolveColourToken,
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar } from '../../utils';
+import { colourVar, generateItemKey, withStableItemKeys } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+
+const LOGO_OBJECT_FIT_OPTIONS = [
+	{ label: __( 'Cover (crop to fill)', 'sgs-blocks' ), value: 'cover' },
+	{ label: __( 'Contain (fit within, no crop)', 'sgs-blocks' ), value: 'contain' },
+];
 
 const CAPTION_ALIGN_OPTIONS = [
 	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
@@ -102,6 +108,27 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 					'sgs-blocks'
 				) }
 			/>
+
+			{ /* Per-item override of the block-wide `logoFit` default (Spec 35
+			   Part 4). Gated on media existing, mirroring the avatar/work
+			   disclosure pattern on sgs/testimonial. Object-fit only — no
+			   focal-point/crosshair control: logos are not photographs
+			   (Bean-locked convention, see sgs/testimonial's orgLogo field
+			   and this block's own pre-existing logoFit control). */ }
+			{ !! logo.media?.url && (
+				<SelectControl
+					label={ __( 'Image fit', 'sgs-blocks' ) }
+					help={ __(
+						'Overrides the block-wide "Logo fit" setting for this logo only.',
+						'sgs-blocks'
+					) }
+					value={ logo.objectFit || 'cover' }
+					options={ LOGO_OBJECT_FIT_OPTIONS }
+					onChange={ ( val ) => update( 'objectFit', val ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) }
 
 			<TextControl
 				label={ __( 'Alt text', 'sgs-blocks' ) }
@@ -239,7 +266,7 @@ function buildWrapperStyle( attributes ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		logos,
+		logos: rawLogos,
 		style,
 		scrolling,
 		scrollSpeed,
@@ -290,6 +317,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderRadiusMobile,
 	} = attributes;
 
+	// Stable per-item `_key` for CSS scoping (Spec 35 Part 4) — backfilled
+	// silently for items authored before this field existed. useMemo keeps
+	// the generated keys stable within a render even before the effect
+	// below persists them; the effect fires at most once per real backfill
+	// (withStableItemKeys returns the SAME reference when nothing changed).
+	const logos = useMemo( () => withStableItemKeys( rawLogos ), [ rawLogos ] );
+	useEffect( () => {
+		if ( logos !== rawLogos ) {
+			setAttributes( { logos } );
+		}
+	}, [ logos, rawLogos, setAttributes ] );
+
 	const updateLogo = ( index, updated ) => {
 		const next = [ ...logos ];
 		next[ index ] = updated;
@@ -306,7 +345,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( {
 			logos: [
 				...logos,
-				{ media: null, alt: '', name: '', linkUrl: '', linkTarget: '_self', linkRel: '' },
+				{
+					media: null,
+					alt: '',
+					name: '',
+					linkUrl: '',
+					linkTarget: '_self',
+					linkRel: '',
+					_key: generateItemKey(),
+					objectFit: 'cover',
+				},
 			],
 		} );
 	};
@@ -490,7 +538,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody title={ __( 'Logos', 'sgs-blocks' ) } initialOpen={ true }>
 					{ logos.map( ( logo, index ) => (
 						<LogoEditor
-							key={ index }
+							key={ logo._key || index }
 							logo={ logo }
 							index={ index }
 							onChange={ ( updated ) =>

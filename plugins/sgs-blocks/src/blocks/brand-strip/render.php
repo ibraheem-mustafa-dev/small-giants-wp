@@ -537,7 +537,30 @@ $wrapper_attributes = get_block_wrapper_attributes(
 $logos_html = '';
 if ( ! empty( $logos ) ) {
 	$logo_index = 0;
-	foreach ( $logos as $logo ) {
+	foreach ( $logos as $bs_index => $logo ) {
+		// Spec 35 Part 4 — per-item object-fit override, keyed by the item's
+		// OWN stable `_key` (src/utils/generateItemKey.js), never by array
+		// index/`:nth-child` (both break the moment an operator reorders/
+		// adds/removes a logo). Object-fit only, no focal-point — logos are
+		// not photographs (Bean-locked convention; this block's own
+		// pre-existing `logoFit` attribute is already object-fit-only). Falls
+		// back to the block-wide `logoFit` default (emitted separately above
+		// via the SGS_Media_Element atom) whenever an item has no override.
+		$bs_item_key = ! empty( $logo['_key'] ) ? (string) $logo['_key'] : 'idx-' . absint( $bs_index );
+		if ( ! empty( $logo['objectFit'] ) ) {
+			$bs_item_css = sgs_media_position_css(
+				array(
+					'objectPosition' => null,
+					'objectFit'      => $logo['objectFit'],
+				),
+				'',
+				$root_sel . ' [data-logo-key="' . esc_attr( $bs_item_key ) . '"] img'
+			);
+			if ( '' !== $bs_item_css ) {
+				$scoped_css[] = $bs_item_css;
+			}
+		}
+
 		$media = isset( $logo['media'] ) && is_array( $logo['media'] ) ? $logo['media'] : null;
 
 		// Backward-compat: lift legacy { image: {...} } shape to media.
@@ -625,11 +648,11 @@ if ( ! empty( $logos ) ) {
 
 		if ( $has_caption ) {
 			$logos_html .= '<div class="sgs-brand-strip__tile">';
-			$logos_html .= '<div class="sgs-brand-strip__item">' . $logo_html . '</div>';
+			$logos_html .= '<div class="sgs-brand-strip__item" data-logo-key="' . esc_attr( $bs_item_key ) . '">' . $logo_html . '</div>';
 			$logos_html .= '<span id="' . esc_attr( $name_id ) . '" class="sgs-brand-strip__name">' . esc_html( $logo_name ) . '</span>';
 			$logos_html .= '</div>';
 		} else {
-			$logos_html .= '<div class="sgs-brand-strip__item">';
+			$logos_html .= '<div class="sgs-brand-strip__item" data-logo-key="' . esc_attr( $bs_item_key ) . '">';
 			$logos_html .= $logo_html;
 			$logos_html .= '</div>';
 		}

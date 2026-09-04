@@ -204,6 +204,16 @@
 					},
 					"name": {
 						"type": "string"
+					},
+					"_key": {
+						"type": "string",
+						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit CSS so a fit value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed."
+					},
+					"objectFit": {
+						"type": "string",
+						"enum": [ "cover", "contain" ],
+						"default": "cover",
+						"description": "Per-item object-fit override. Logos are not photographs — object-fit only, no focal-point/crosshair (Bean-locked convention: see sgs/testimonial orgLogo + this block's own block-wide logoFit). Falls back to the block-wide logoFit default when unset."
 					}
 				}
 			}
