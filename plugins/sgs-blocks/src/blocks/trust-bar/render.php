@@ -168,7 +168,7 @@ $tb_extra_scoped_css = '';
 if ( 'icon-circle' === $badge_style && '' !== $icon_circle_shadow_colour_hover ) {
 	$safe_icon_circle_shadow_hover = sgs_shadow_value_composed( $icon_circle_shadow, $icon_circle_shadow_colour_hover );
 	if ( '' !== $safe_icon_circle_shadow_hover ) {
-		$tb_extra_scoped_css .= $uid_scope . ' .sgs-trust-bar__circle:hover,' . $uid_scope . ' .sgs-trust-bar__circle:focus-within{box-shadow:' . $safe_icon_circle_shadow_hover . '}';
+		$tb_extra_scoped_css .= sgs_hover_state_rules( $uid_scope . ' .sgs-trust-bar__circle', 'box-shadow:' . $safe_icon_circle_shadow_hover, ':focus-within' );
 	}
 }
 
@@ -227,7 +227,10 @@ if ( '' !== ( $attributes['iconColourHover'] ?? '' ) ) {
 // `@supports not (background-clip: text)` fallback rules — no-op ('') for a
 // flat colour, only emit real CSS when the effective value was a gradient.
 $tb_extra_scoped_css .= sgs_text_colour_gradient_fallback_rule( $root_sel, $tb_text_colour_effective );
-$tb_extra_scoped_css .= sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover,' . $root_sel . ':focus-visible', $tb_text_colour_hover_effective );
+$tb_extra_scoped_css .= sgs_hover_media_wrap(
+	sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover', $tb_text_colour_hover_effective )
+);
+$tb_extra_scoped_css .= sgs_text_colour_gradient_fallback_rule( $root_sel . ':focus-visible', $tb_text_colour_hover_effective );
 
 $tb_extra_attrs = array(
 	'aria-label' => __( 'Trust signals', 'sgs-blocks' ),
@@ -430,7 +433,7 @@ if ( 'image-badge' === $badge_style ) {
 	if ( '' !== $badge_image_shadow_colour_hover ) {
 		$safe_badge_image_shadow_hover = sgs_shadow_value_composed( $badge_image_shadow, $badge_image_shadow_colour_hover );
 		if ( '' !== $safe_badge_image_shadow_hover ) {
-			$tb_extra_scoped_css .= $img_sel . ':hover,' . $img_sel . ':focus-within{box-shadow:' . $safe_badge_image_shadow_hover . '}';
+			$tb_extra_scoped_css .= sgs_hover_state_rules( $img_sel, 'box-shadow:' . $safe_badge_image_shadow_hover, ':focus-within' );
 		}
 	}
 }

@@ -250,10 +250,19 @@ if ( $has_image_bg ) {
 // selector list here would attach the generated ::before to only the LAST
 // listed state (a known gotcha), so :is() keeps it one compound selector. ---
 if ( '' !== $hover_border_gradient ) {
-	$responsive_css .= sgs_border_gradient_css(
-		$root_sel . ':is(:hover,:focus-within)',
-		$hover_border_gradient
+	// Touch-safe: sgs_border_gradient_css() has no hover-only mode (it bails
+	// when $normal_paint is empty), so the hover state is baked in as this
+	// call's own "normal_paint" — this must therefore carry its own guard
+	// rather than relying on the helper's $hover_paint branch. Split into two
+	// single-pseudo-class calls (rather than the previous
+	// :is(:hover,:focus-within) compound) so layer-1/layer-2 guards can wrap
+	// the :hover call alone while :focus-within stays unguarded — each call
+	// still uses a single selector, so the ::before-attaches-to-only-the-last
+	// -listed-state gotcha noted above does not recur.
+	$responsive_css .= sgs_hover_media_wrap(
+		sgs_border_gradient_css( SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover', $hover_border_gradient )
 	);
+	$responsive_css .= sgs_border_gradient_css( $root_sel . ':focus-within', $hover_border_gradient );
 }
 
 // Hover colour shifts (background/text/border) — per-instance scoped rule,
@@ -290,7 +299,7 @@ if ( $shadow_value ) {
 // with the hover colour composed in. Only emitted when a hover colour is set,
 // so no shadow attr set at all still emits no CSS.
 if ( $shadow_value && $shadow_value_hover && ( $attributes['shadowColourHover'] ?? '' ) ) {
-	$responsive_css .= $root_sel . ':hover,' . $root_sel . ':focus-within{box-shadow:' . $shadow_value_hover . '}';
+	$responsive_css .= sgs_hover_state_rules( $root_sel, 'box-shadow:' . $shadow_value_hover, ':focus-within' );
 }
 
 // Build wrapper classes.

@@ -180,7 +180,7 @@ if ( $box_shadow ) {
 if ( $box_shadow && $box_shadow_colour_hover ) {
 	$box_shadow_hover_value = sgs_shadow_value_composed( $box_shadow, $box_shadow_colour_hover );
 	if ( '' !== $box_shadow_hover_value ) {
-		$scoped_css[] = "{$root_sel}:hover,{$root_sel}:focus-within{box-shadow:{$box_shadow_hover_value};}";
+		$scoped_css[] = sgs_hover_state_rules( $root_sel, "box-shadow:{$box_shadow_hover_value}", ':focus-within' );
 	}
 }
 if ( $max_width ) {

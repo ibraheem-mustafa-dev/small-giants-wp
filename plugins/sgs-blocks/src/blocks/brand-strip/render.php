@@ -362,8 +362,10 @@ if ( '' !== $root_text_hover_decl ) {
 	$root_hover_decls[] = $root_text_hover_decl;
 }
 if ( $root_hover_decls ) {
-	$root_hover_sel = "{$root_sel}:hover,{$root_sel}:focus-within";
-	$scoped_css[]    = "{$root_hover_sel}{" . implode( ';', $root_hover_decls ) . ';}';
+	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $root_hover_decls ), ':focus-within' );
+	// Focus fallback selector matches the guarded-hover-rule shape so the
+	// `@supports not (background-clip:text)` fallback still targets both states.
+	$root_hover_sel                = "{$root_sel}:hover,{$root_sel}:focus-within";
 	$root_text_hover_fallback_rule = sgs_text_colour_gradient_fallback_rule( $root_hover_sel, $root_text_hover_effective );
 	if ( '' !== $root_text_hover_fallback_rule ) {
 		$scoped_css[] = $root_text_hover_fallback_rule;
@@ -419,7 +421,7 @@ if ( '' !== $tile_shadow ) {
 if ( '' !== $tile_shadow && '' !== $tile_shadow_colour_hover ) {
 	$safe_tile_shadow_hover_value = sgs_shadow_value_composed( $tile_shadow, $tile_shadow_colour_hover );
 	if ( '' !== $safe_tile_shadow_hover_value ) {
-		$scoped_css[] = "{$root_sel} .sgs-brand-strip__item:hover,{$root_sel} .sgs-brand-strip__item:focus-within{box-shadow:{$safe_tile_shadow_hover_value};}";
+		$scoped_css[] = sgs_hover_state_rules( "{$root_sel} .sgs-brand-strip__item", "box-shadow:{$safe_tile_shadow_hover_value}", ':focus-within' );
 	}
 }
 
