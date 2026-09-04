@@ -12,7 +12,7 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { resolveColourToken, SgsColourPanel, DesignTokenPicker } from '../../components';
+import { resolveColourToken, DesignTokenPicker } from '../../components';
 import { resolveTextColourPreviewStyle } from '../../utils';
 
 const TRIGGER_STYLE_OPTIONS = [
@@ -130,105 +130,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			   DesignTokenPickers below passed `linked`, so this migration
 			   also fixes a pre-existing gap (a converter-written slug would
 			   previously have shown as "unset"). */ }
-			<SgsColourPanel
-				rows={ [
-					{
-						key: 'triggerText',
-						label: __( 'Button text colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: triggerColour,
-								onChange: ( val ) => setAttributes( { triggerColour: val ?? '' } ),
-								gradientValue: triggerColourGradient,
-								onGradientChange: ( val ) => setAttributes( { triggerColourGradient: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'triggerBackground',
-						label: __( 'Button background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: triggerBackground,
-								onChange: ( val ) => setAttributes( { triggerBackground: val ?? '' } ),
-								gradientValue: attributes.triggerBackgroundGradient,
-								onGradientChange: ( val ) => setAttributes( { triggerBackgroundGradient: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'modalBackground',
-						label: __( 'Modal background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: modalBackground,
-								onChange: ( val ) => setAttributes( { modalBackground: val ?? '' } ),
-								gradientValue: attributes.modalBackgroundGradient,
-								onGradientChange: ( val ) => setAttributes( { modalBackgroundGradient: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'closeText',
-						label: __( 'Close button icon colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: closeColourText,
-								onChange: ( val ) => setAttributes( { closeColourText: val ?? '' } ),
-								linked: true,
-								gradientValue: closeColourTextGradient,
-								onGradientChange: ( val ) => setAttributes( { closeColourTextGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: closeColourTextHover,
-								onChange: ( val ) => setAttributes( { closeColourTextHover: val ?? '' } ),
-								linked: true,
-								gradientValue: closeColourTextHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { closeColourTextHoverGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
-						key: 'closeBackground',
-						label: __( 'Close button background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: closeColourBackground,
-								onChange: ( val ) => setAttributes( { closeColourBackground: val ?? '' } ),
-								gradientValue: closeColourBackgroundGradient,
-								onGradientChange: ( val ) => setAttributes( { closeColourBackgroundGradient: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: closeColourBackgroundHover,
-								onChange: ( val ) => setAttributes( { closeColourBackgroundHover: val ?? '' } ),
-								gradientValue: closeColourBackgroundHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { closeColourBackgroundHoverGradient: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-				] }
-			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Modal Settings', 'sgs-blocks' ) }>
 					<TextControl
@@ -250,6 +151,38 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ /* Moved in from the shared SgsColourPanel (D622 — an
+					     element-scoped colour belongs in its own element's
+					     TIER 1 panel; "trigger button" is a declared element
+					     whose attrMap claims triggerColour/triggerBackground). */ }
+					<DesignTokenPicker
+						label={ __( 'Button text colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: triggerColour,
+								onChange: ( val ) => setAttributes( { triggerColour: val ?? '' } ),
+								gradientValue: triggerColourGradient,
+								onGradientChange: ( val ) => setAttributes( { triggerColourGradient: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Button background colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: triggerBackground,
+								onChange: ( val ) => setAttributes( { triggerBackground: val ?? '' } ),
+								gradientValue: attributes.triggerBackgroundGradient,
+								onGradientChange: ( val ) => setAttributes( { triggerBackgroundGradient: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
 					<SelectControl
 						label={ __( 'Max width', 'sgs-blocks' ) }
 						value={ maxWidth }
@@ -259,6 +192,23 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+					{ /* Moved in from the shared SgsColourPanel (D622); "dialog"
+					     is a declared element whose attrMap claims
+					     modalBackground. */ }
+					<DesignTokenPicker
+						label={ __( 'Modal background colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: modalBackground,
+								onChange: ( val ) => setAttributes( { modalBackground: val ?? '' } ),
+								gradientValue: attributes.modalBackgroundGradient,
+								onGradientChange: ( val ) => setAttributes( { modalBackgroundGradient: val ?? '' } ),
+								linked: true,
+							},
+						] }
 					/>
 					<ToggleControl
 						label={ __(
@@ -274,6 +224,55 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { closeOnOverlay: val } )
 						}
 						__nextHasNoMarginBottom
+					/>
+					{ /* Moved in from the shared SgsColourPanel (D622); "close
+					     button" is a declared element whose attrMap claims
+					     closeColourText/closeColourBackground. */ }
+					<DesignTokenPicker
+						label={ __( 'Close button icon colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: closeColourText,
+								onChange: ( val ) => setAttributes( { closeColourText: val ?? '' } ),
+								linked: true,
+								gradientValue: closeColourTextGradient,
+								onGradientChange: ( val ) => setAttributes( { closeColourTextGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: closeColourTextHover,
+								onChange: ( val ) => setAttributes( { closeColourTextHover: val ?? '' } ),
+								linked: true,
+								gradientValue: closeColourTextHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { closeColourTextHoverGradient: val ?? '' } ),
+							},
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Close button background colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: closeColourBackground,
+								onChange: ( val ) => setAttributes( { closeColourBackground: val ?? '' } ),
+								gradientValue: closeColourBackgroundGradient,
+								onGradientChange: ( val ) => setAttributes( { closeColourBackgroundGradient: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: closeColourBackgroundHover,
+								onChange: ( val ) => setAttributes( { closeColourBackgroundHover: val ?? '' } ),
+								gradientValue: closeColourBackgroundHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { closeColourBackgroundHoverGradient: val ?? '' } ),
+								linked: true,
+							},
+						] }
 					/>
 				</PanelBody>
 			</InspectorControls>
