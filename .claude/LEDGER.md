@@ -87,8 +87,7 @@ C15-2/C15-3 (block-bindings client editor UI — `src/bindings/index.js`, wired 
 8. **D4** — 0 of 23 advisory inspector-scan rules have a promotion decision recorded.
 9. **B4** — `mega-panel.borderRadius`, confirmed still blocked (Track 2 inactive).
 
-Dispatch prompt (C6/C7 only, still a valid start, not the whole list):
-`.claude/prompts/2026-09-04-road-to-uniform-c6-c7-prompt.md`.
+Dispatch prompt, rewritten to cover all 9 items: `.claude/prompts/2026-09-04-road-to-uniform-c6-c7-prompt.md`.
 
 **Structural fix proposed, not yet built:** a `verify-plan-claims.py` script (inline
 `<!-- verify: <command> -->` stamps on doc claims, checked before any "correction" commit) —
