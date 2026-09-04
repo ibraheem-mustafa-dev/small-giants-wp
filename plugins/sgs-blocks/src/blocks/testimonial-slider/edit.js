@@ -19,7 +19,7 @@ import {
 	ToggleControl,
 	TextControl,
 } from '@wordpress/components';
-import { SgsColourPanel, fillRow,
+import { SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
@@ -73,8 +73,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		showArrows,
 		slidesVisible,
 		cardStyle,
-		textColour,
-		textColourHover,
 		borderColourHover,
 		borderColourHoverGradient,
 		effectHover,
@@ -141,28 +139,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						attributes,
 						setAttributes,
 					} ),
-					{
+					textRow( {
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: textColour,
-								onChange: ( val ) =>
-									setAttributes( { textColour: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: textColourHover,
-								onChange: ( val ) =>
-									setAttributes( { textColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'textColour',
+							hover: 'textColourHover',
+							gradient: 'textColourGradient',
+							hoverGradient: 'textColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'border',
 						label: __( 'Border colour', 'sgs-blocks' ),

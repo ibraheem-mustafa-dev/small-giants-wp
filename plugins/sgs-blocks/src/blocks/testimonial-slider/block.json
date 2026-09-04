@@ -43,6 +43,7 @@
 						"css:border-radius": "borderRadius",
 						"css:background-color": "backgroundColour",
 						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
 						"css:font-size": "native:typography.fontSize",
 						"css:line-height": "native:typography.lineHeight",
 						"css:letter-spacing": "native:typography.letterSpacing",
@@ -67,11 +68,12 @@
 							"attrMap": {
 								"css:background-color": "backgroundColourHover",
 								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient",
 								"css:border-color": "borderColourHover"
 							}
 						}
 					},
-					"_note": "css:align-items is an honest gap (no alignItems attr declared — only alignContent/justifyItems). `nameFontSize` was removed 2026-08-06 — no editor control, no consumer anywhere in the repo (D338-cleared)."
+					"_note": "css:align-items is an honest gap (no alignItems attr declared — only alignContent/justifyItems). `nameFontSize` was removed 2026-08-06 — no editor control, no consumer anywhere in the repo (D338-cleared). textColourGradient/textColourHoverGradient added 2026-09-04 (D744-pattern text-colour gradient rollout) -- background moved off this same root selector onto a ::after layer (sgs_block_background_layer_css()) so background-clip:text on the text colour cannot clip the background paint, mirroring sgs/info-box's identical text-and-background-on-one-element migration."
 				},
 				"arrow": {
 					"label": "Prev/next arrow",
@@ -177,6 +179,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the slider's text with a background-clip:text mechanism instead of a flat colour (D744-pattern rollout). Non-empty wins over textColour."
+		},
 		"backgroundColourHover": {
 			"type": "string",
 			"default": ""
@@ -188,6 +195,11 @@
 		"textColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of textColourGradient."
 		},
 		"borderColourHover": {
 			"type": "string",

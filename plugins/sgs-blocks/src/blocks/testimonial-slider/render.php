@@ -54,7 +54,10 @@ $slides_visible = $attributes['slidesVisible'] ?? 1;
 // (Bean-locked card-in-a-card de-style). It flows to child sgs/testimonial blocks
 // as `sgs/testimonialVariant` via block.json `providesContext`, resolved in
 // sgs/testimonial's own render.php ($block->context), not by this parent.
-$hover_bg_colour     = $attributes['backgroundColourHover'] ?? '';
+// backgroundColourHover is read by sgs_fill_decls() directly (below) — no
+// local variable needed. textColourHover is still read here: it feeds the
+// gradient-resolve calc below, not the combined hover-decls array (D744
+// pattern moved it out of that array — see the comment further down).
 $hover_text_colour   = $attributes['textColourHover'] ?? '';
 $hover_border_colour = $attributes['borderColourHover'] ?? '';
 // D636 border-colour gradient rollout — non-empty wins over the flat
@@ -116,29 +119,56 @@ $classes[] = $uid;
 // internally — not duplicated here.
 $slider_scoped_css = '';
 
-$slider_style_engine_args = array();
+// Text colour (flat-or-gradient, base + hover) — block-private, on the SAME
+// root selector as the background paint below.
+//
+// ⛔ NOT sgs_text_decls()/sgs_emit_state_colour_css() — that pair is
+// text-decls-NAIVE: sgs_text_decls() resolves flat-vs-gradient via
+// sgs_resolve_text_colour_or_gradient() but then feeds the result through
+// sgs_colour_value() unconditionally, which expects a slug/hex, not a full
+// gradient() function string. Verified live (2026-09-04): with a gradient
+// set it emitted `color:var(--wp--preset--color--linear-gradient90degff...)`
+// — garbage, not a working gradient. sgs/info-box's own D744 rollout has
+// this exact same defect (verified live via the same probe method), so this
+// is a real pre-existing bug in that pairing, not something specific to
+// this block — the CORRECT pattern (proven live on sgs/pricing-table's
+// ctaColour, sgs/modal's closeColourText, sgs/google-reviews) is
+// sgs_resolve_text_colour_or_gradient() -> sgs_text_colour_decl() ->
+// sgs_text_colour_gradient_fallback_rule(), used below instead.
+$slider_text_normal_resolved = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColour'] ?? '' ),
+	(string) ( $attributes['textColourGradient'] ?? '' )
+);
+if ( '' !== $slider_text_normal_resolved ) {
+	$slider_text_normal_decl = sgs_text_colour_decl( $slider_text_normal_resolved );
+	if ( '' !== $slider_text_normal_decl ) {
+		$slider_scoped_css .= $root_sel . '{' . $slider_text_normal_decl . '}';
+	}
+	$slider_scoped_css .= sgs_text_colour_gradient_fallback_rule( $root_sel, $slider_text_normal_resolved );
+}
 
-$slider_color_args = array();
-// ⚠ EVERY value goes through sgs_colour_value() before the style engine
-// (D684). DesignTokenPicker stores a token SLUG ('primary') when a palette
-// swatch is picked with linked:true. wp_style_engine_get_styles() neither
-// resolves nor rejects a bare slug — it emits the literal `color:primary;`,
-// invalid CSS the browser drops, so the client's chosen text colour silently
-// does nothing (proven live on the canary). sgs_colour_value() maps a slug to
-// var(--wp--preset--color--…), passes a raw hex through unchanged, and
-// rejects a declaration breakout. Mirrors sgs/site-header-row.
-if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-	$slider_text_value = sgs_colour_value( (string) $attributes['textColour'] );
-	if ( '' !== $slider_text_value ) {
-		$slider_color_args['text'] = $slider_text_value;
+$slider_text_hover_resolved = sgs_resolve_text_colour_or_gradient(
+	$hover_text_colour,
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+if ( '' !== $slider_text_hover_resolved ) {
+	$slider_text_hover_decl = sgs_text_colour_decl( $slider_text_hover_resolved );
+	if ( '' !== $slider_text_hover_decl ) {
+		$slider_scoped_css .= sgs_hover_state_rules( $root_sel, $slider_text_hover_decl, ':focus-visible' );
+	}
+	if ( $slider_text_hover_resolved !== $slider_text_normal_resolved ) {
+		$slider_scoped_css .= sgs_hover_media_wrap(
+			sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover', $slider_text_hover_resolved )
+		) . sgs_text_colour_gradient_fallback_rule( $root_sel . ':focus-visible', $slider_text_hover_resolved );
 	}
 }
-if ( ! empty( $slider_color_args ) ) {
-	$slider_style_engine_args['color'] = $slider_color_args;
-}
 
-// Background (colour + gradient, resting + hover) is owned by the shared fill
-// emitter, NOT by the style engine and NOT by supports.color.gradients.
+// Background (colour + gradient, resting + hover) — painted on a `::after`
+// layer, never the root itself, so the text colour/gradient above
+// (background-clip:text on the SAME $root_sel) cannot clip or overwrite it
+// (both use background-image). Mirrors sgs/info-box (D744). The border
+// gradient's masked ring (below) owns `::before` on this same root, so
+// `::after` is free.
 //
 // supports.color.gradients was `true` here, so CORE rendered its own gradient
 // panel in the Styles tab, competing with the SGS colour panel — the client saw
@@ -146,12 +176,8 @@ if ( ! empty( $slider_color_args ) ) {
 // REMOVED the only gradient control this block had, because the sole gradient
 // read was $attributes['style']['color']['gradient'] (core's own storage). The
 // flag flip is therefore PAIRED with a block-private backgroundColourGradient
-// exposed through fillRow(), so capability is moved rather than lost. The
-// existing $hover_bg_colour hover-colour rule further below stays as-is for
-// TEXT/BORDER hover, but background hover now routes through this emitter
-// too so gradient hover is honoured — see the $slider_hover_decls guard below.
-$slider_fill_css = sgs_fill_states_css(
-	$root_sel,
+// exposed through fillRow(), so capability is moved rather than lost.
+$slider_bg_decls = sgs_fill_decls(
 	$attributes,
 	array(
 		'base'           => 'backgroundColour',
@@ -160,22 +186,14 @@ $slider_fill_css = sgs_fill_states_css(
 		'hover_gradient' => 'backgroundColourHoverGradient',
 	)
 );
-if ( '' !== $slider_fill_css ) {
-	$slider_scoped_css .= $slider_fill_css;
-}
+$slider_scoped_css .= sgs_block_background_layer_css(
+	$root_sel,
+	$slider_bg_decls['normal'][0] ?? '',
+	$slider_bg_decls['hover'][0] ?? ''
+);
 
 // (native border_args removed by the Shape-B migration -- width/style/colour
 //  are block-private attrs now, emitted below)
-
-if ( ! empty( $slider_style_engine_args ) ) {
-	$slider_scoped_styles = wp_style_engine_get_styles(
-		$slider_style_engine_args,
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $slider_scoped_styles['css'] ) ) {
-		$slider_scoped_css .= $slider_scoped_styles['css'];
-	}
-}
 
 // Typography — the block itself renders no direct text node (the quote
 // text belongs to the child sgs/testimonial InnerBlocks), so this scopes
@@ -329,13 +347,13 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 // amended 2026-07-18 / D345; footprint GOTCHA F). A per-instance `:hover` rule
 // beats the base rule and applies only when the operator set a hover colour —
 // variant-safe, so no resting-value fallback is needed (mirrors sgs/info-box).
+//
+// D744-pattern rollout (2026-09-04): background/text hover colours moved OUT
+// of this array — they are now emitted above by
+// sgs_block_background_layer_css()/sgs_emit_state_colour_css() (background on
+// its own `::after` layer; text alongside its base state), so building them
+// here too would duplicate the same declarations on the same selector.
 $slider_hover_decls = array();
-if ( $hover_bg_colour ) {
-	$slider_hover_decls[] = 'background-color:' . sgs_colour_value( $hover_bg_colour );
-}
-if ( $hover_text_colour ) {
-	$slider_hover_decls[] = 'color:' . sgs_colour_value( $hover_text_colour );
-}
 if ( $hover_border_colour ) {
 	$slider_hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
 }

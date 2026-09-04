@@ -167,6 +167,16 @@ const FIXTURES = {
 		selector: '.sgs-google-reviews__write-review',
 		extraAttrs: { reviewRequestUrl: 'https://example.com/review' },
 	},
+	// Session 9 "moderate" row (D744-pattern migration, 2026-09-04) — the
+	// block root always renders regardless of InnerBlocks slide count
+	// (render.php has no total_testimonials>0 guard on the wrapper itself,
+	// only on the arrows/dots/track content), so a bare instance is enough.
+	// Background moved off this same root onto a ::after layer
+	// (sgs_block_background_layer_css()) to free it for the text gradient.
+	'testimonial-slider.textColour': {
+		attr: 'textColour',
+		selector: '',
+	},
 };
 
 // Blocks wired this rollout but deliberately NOT probed here — named so the
