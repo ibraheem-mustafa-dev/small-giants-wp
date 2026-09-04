@@ -481,6 +481,81 @@ live path.
 
 ---
 
+## qc-council audit + fix.js repair — 2026-09-04 (session 9)
+
+**Corrects a claim this plan carried since Phase 2's residual note.** "The 14-of-175 rows
+whose attribute name is itself a hover attr — rule 31 miscounts them as missing a hover
+sibling" (Deferred section, above) was investigated with a 5-persona `/qc-council` audit
+reading rule 31's actual source, not re-asserted. **Finding: FALSE. Rule 31 already carries
+the correct exemption** (`soleDeclaredStateKey()`, `31-golden-colour-control.js:761-763`) and
+its own docblock (`core/golden.js:779-799`) records having already tried and explicitly
+rejected the "name contains Hover" heuristic this plan proposed, for the exact reason the
+audit re-derived independently: `sgs/tabs.panelBorderColour` has no "Hover" in its name and
+is still correctly single-state (a `current`-state panel row), while 4 `borderColourHover`
+rows DO have a declared base sibling (`borderColour`) yet are still correctly single-state
+(the base is owned by `SgsBorderControl`, a different component rule 31 can't see). All 11
+live `no-explicit-normal-state` rows were checked individually against real code: 0 are
+detector bugs. **Item removed from Deferred below — this is closed, not open.**
+
+**The real bottleneck the audit found: `fix.js` and its classifier, not the render code.**
+Four investigators (gradient-path-deferred/Cluster-B, fill-gradient-*, the
+no-colour-helper-call-found/no-attribute-assignment cluster, and standalone-DesignTokenPicker
+rows) each independently found the SAME shape: a large fraction of "refused" rows already
+call the correct shared helper for gradient, and the refusal is the TOOL failing to recognise
+that call, not a missing mechanism. Concretely, of the (then-current) `gradient-path-deferred`
+bucket, **9 of 14 rows already had the exact helper called elsewhere in the same file for a
+sibling attribute** (just not wired for this one) and 4 more were pure single-selector
+direct-paint swaps with zero risk — **zero rows in that bucket were a genuinely unsolved
+problem**, contradicting this plan's own earlier "Cluster B is a hard, undesigned problem"
+framing for the fill-mechanism subset. The `fill-gradient-*` bucket split roughly 6/16
+tool-blind vs 10/16 genuine architecture (custom-property indirection, one WP-native
+mechanism, one bespoke multi-variant pattern needing real new design).
+
+**Three real bugs found and fixed in `fix.js` itself** (`plugins/sgs-blocks/scripts/colour-codemod/fix.js`,
+commit `0727f440b`, all self-test-covered — 15/15 pass):
+1. `designTokenPickerRows()` stamped every standalone-DesignTokenPicker row with one generic
+   "can't clone a hover state" refusal regardless of actual state — 4 of 9 such rows already
+   had hover fully shipped and were blocked purely on the separately-and-correctly-named
+   gradient dimension; 1 was a deliberate hover-only design being miscounted. Both now get the
+   accurate reason `planRow()` already produces for `SgsColourPanel` rows.
+2. `findHoverSink()` only recognised two hover-CSS-assembly shapes and refused a third,
+   equally valid one (`sgs_hover_state_rules(sel, implode(';', $arr), focus)`) already used
+   across several blocks — detection-only gap, same insertion contract as the shapes already
+   supported.
+3. **The apply path had a live defect, not just a detection gap**: the hover-write logic
+   cloned the JSX state and wrote a brand-new bare identifier into `value:`, but never added
+   it to the component's destructure list — every one of this session's first 11 real
+   `--apply` runs threw "no binding in scope" at `check-undefined-refs.js`. Fixed with an
+   independent AST step (`insertHoverAttrIntoDestructure`) that finds the exact destructure
+   block containing the base attribute's sibling and inserts into it — refuses outright
+   (`multiple-destructure-blocks-ambiguous`) rather than guessing when a file has more than
+   one candidate, which is exactly what happened for `sgs/quote.attributionColour` (correctly
+   left unfixed, not forced).
+
+**Rows closed this session (survey.js CONFORMANT: 85 → 101, commits `16a7a7e0d`, `10e08548a`,
+`0727f440b`, `61c533b5b`, `f296aec10`, `3de7bb370`):** `modal.closeColourText`,
+`product-card.ctaColourText`, `nav-menu.itemColour`, `nav-menu.itemBg`,
+`brand-strip.nameColour`, `pricing-table.titleColour`/`featureColour`/`ctaColour`/
+`popularBadgeColour`, `testimonial.summaryColour`/`nameColour`/`roleColour`/`orgColour`/
+`ratingColour`, `product-card.titleColour`/`descColour`/`priceColour`/`priceNoteColour`,
+`process-steps.titleColour`/`descriptionColour`, `google-reviews.starColour`. Several more
+(`nav-menu.navColour`, `pricing-table.ctaColour`/`popularBadgeColour`,
+`process-steps.numberColour`) moved off their gradient refusal but remain non-conformant on
+the separate hover-state axis — genuine progress, not yet closed rows.
+
+⚠ **Not live-verified this session** — the `Check A` gate ratchet was raised twice
+(211→213→216) for structural editor-canvas-preview gaps (modal's close button and
+process-steps' hover rows are never rendered in the editor canvas at all), and
+`product-card`'s 4 new rows use a "new rule wins by source order over the old
+custom-property mechanism" pattern that's architecturally sound (same selector/specificity
+relationship `sgs_typography_css_rule()` already wins two lines above, in the same file) but
+was not confirmed with a live browser probe. **Next session should run
+`scripts/qa/check-colour-gradient-roundtrip.js` against sandybrown for at least one row per
+mechanism from this batch before trusting them fully closed** (R-31-13 discipline, same as
+Phase 4's own rule).
+
+---
+
 ## Standing rules
 
 - One phase = one or more **path-scoped commits**, filenames enumerated, never a glob.
@@ -516,10 +591,12 @@ live path.
   colour attrs (`survey.js`'s own count, re-run for the live figure) are case (b) — DB empty
   but the manifest `attrMap` has a `css:` entry — it's a known-method manifest-seeding pass;
   if mostly (c), the true population is smaller than any headline count suggests.
-- **The 14-of-175 rows whose attribute name is itself a hover attr** (`borderColourHover`,
-  `shadowHoverColour`, etc.) — rule 31 miscounts them as "missing a hover sibling" when they
-  ARE the hover sibling. Named in Phase 2's residual as a DETECTOR fix, for a session that
-  owns rule 31 specifically — not a colour-wiring task.
+- ~~The 14-of-175 rows whose attribute name is itself a hover attr~~ — **FALSIFIED
+  2026-09-04, session 9, `/qc-council` audit.** Rule 31 already has the correct exemption
+  (`soleDeclaredStateKey()`) and its own docblock records rejecting this exact "name contains
+  Hover" heuristic already. All 11 live `no-explicit-normal-state` rows checked individually
+  against real code: genuine single-state designs, not detector false positives. See the
+  session 9 section above for the evidence. Closed, not deferred.
 - **Two stale doc pointers** (Phase 0's own "Stale pointers to fix" note) — `2026-08-23-colour-
   capability-grant-PLAN.md`'s frontmatter and `2026-09-02-findings-31-golden-colour-control.md:20`
   still point at the pre-archive live path for the design doc. Small, mechanical, never done.
