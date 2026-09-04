@@ -147,16 +147,9 @@ const JUSTIFY_CONTENT_OPTIONS = [
 	{ label: __( 'Space around', 'sgs-blocks' ), value: 'space-around' },
 ];
 
-// Grid-only: justify-items / align-content. block.json enums both include
-// 'stretch' as their default member — 'stretch' IS the reset value (mirrors
-// sgs/site-footer-row's identically-shaped constants).
-const JUSTIFY_ITEMS_OPTIONS = [
-	{ label: __( 'Stretch', 'sgs-blocks' ), value: 'stretch' },
-	{ label: __( 'Start', 'sgs-blocks' ), value: 'start' },
-	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-	{ label: __( 'End', 'sgs-blocks' ), value: 'end' },
-];
-
+// Grid-only: align-content. block.json's enum includes 'stretch' as its
+// default member — 'stretch' IS the reset value (mirrors sgs/site-footer-row's
+// identically-shaped constant).
 const ALIGN_CONTENT_OPTIONS = [
 	{ label: __( 'Stretch', 'sgs-blocks' ), value: 'stretch' },
 	{ label: __( 'Start', 'sgs-blocks' ), value: 'start' },
@@ -1347,20 +1340,25 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									onDeselect={ () => setAttributes( { justifyItems: 'stretch' } ) }
 									isShownByDefault
 								>
-									<SelectControl
+									<ToggleGroupControl
 										label={ __( 'Justify items', 'sgs-blocks' ) }
-										value={ justifyItems || 'stretch' }
-										options={ JUSTIFY_ITEMS_OPTIONS }
-										onChange={ ( val ) =>
-											setAttributes( { justifyItems: val } )
-										}
 										help={ __(
 											'How each grid item sits inside its own column when narrower than the column.',
 											'sgs-blocks'
 										) }
+										value={ justifyItems || 'stretch' }
+										onChange={ ( val ) =>
+											setAttributes( { justifyItems: val || 'stretch' } )
+										}
+										isBlock
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
-									/>
+									>
+										<ToggleGroupControlOption value="stretch" label={ __( 'Stretch', 'sgs-blocks' ) } />
+										<ToggleGroupControlOption value="start" label={ __( 'Start', 'sgs-blocks' ) } />
+										<ToggleGroupControlOption value="center" label={ __( 'Centre', 'sgs-blocks' ) } />
+										<ToggleGroupControlOption value="end" label={ __( 'End', 'sgs-blocks' ) } />
+									</ToggleGroupControl>
 								</ToolsPanelItem>
 								<ToolsPanelItem
 									label={ __( 'Align content', 'sgs-blocks' ) }
