@@ -842,6 +842,10 @@
 /* Active / selected thumb gets the primary ring. */
 .product-card--live .product-card__thumb[aria-current="true"] {
 	border-color: var( --wp--preset--color--primary, #1F7A7A );
+	/* Rule 43 (WCAG 1.4.1): active-thumb state must not rely on colour alone —
+	 * the resting border is already 2px, so bump to 3px as the non-colour
+	 * signal. */
+	border-width: 3px;
 }
 
 /* Thumb image fills the button box. object-fit now governed by the

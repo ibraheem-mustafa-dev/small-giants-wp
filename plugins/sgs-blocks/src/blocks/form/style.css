@@ -357,6 +357,10 @@ select.sgs-form-field__input {
 	   accent gives 1.93:1 contrast on accent-light bg; accent-text gives 6.37:1. */
 	border-color: var(--wp--preset--color--accent-text, #7a6b00);
 	background-color: var(--wp--preset--color--accent-light, #fee8d4);
+	/* Rule 43 (WCAG 1.4.1): selected state must not rely on colour alone — the
+	 * resting border is already 2px solid, so bump to 3px as the non-colour
+	 * signal. */
+	border-width: 3px;
 }
 
 .sgs-form-tile__input {
@@ -578,6 +582,10 @@ select.sgs-form-field__input {
 	border-color: var(--sgs-progress-colour, var(--wp--preset--color--primary, #0f7e80));
 	background-color: var(--sgs-progress-colour, var(--wp--preset--color--primary, #0f7e80));
 	color: var(--wp--preset--color--text-inverse, #fff);
+	/* Rule 43 (WCAG 1.4.1): active/completed state must not rely on colour
+	 * alone — the resting border is already 2px solid, so bump to 3px as the
+	 * non-colour signal. */
+	border-width: 3px;
 }
 
 .sgs-form__progress-step-label {

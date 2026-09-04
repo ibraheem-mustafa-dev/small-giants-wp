@@ -537,6 +537,10 @@
 .sgs-post-grid__filter[aria-pressed="true"] {
 	background-color: var( --wp--preset--color--primary, #1a3a5c );
 	color: var( --wp--preset--color--text-inverse, #fff );
+	/* Rule 43 (WCAG 1.4.1): active-filter state must not rely on colour alone —
+	 * the resting border is already 2px solid primary, so bump to 3px as the
+	 * non-colour signal. */
+	border-width: 3px;
 }
 
 .sgs-post-grid__filter:disabled {
@@ -583,6 +587,10 @@
 .sgs-post-grid__page-btn[aria-current="page"] {
 	background-color: var( --wp--preset--color--primary, #1a3a5c );
 	color: var( --wp--preset--color--text-inverse, #fff );
+	/* Rule 43 (WCAG 1.4.1): current-page state must not rely on colour alone —
+	 * the resting border is already 2px solid primary, so bump to 3px as the
+	 * non-colour signal. */
+	border-width: 3px;
 }
 
 .sgs-post-grid__page-btn:disabled {
