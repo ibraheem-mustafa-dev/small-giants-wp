@@ -48,9 +48,9 @@ companions: Spec 32 (component styling/token contract — governs RENDERED outpu
 > (22 findings/12 blocks on introduction; **12 remaining after same-day fixes**, see PART L),
 > `44-help-text-not-described` (3 findings, since **CLOSED — 0 live
 > findings**, see below), all advisory mode with self-tests, PART L entries added below. The
-> rule-41 backlog moved **61 → 55** (8 blocks fixed, 6 net findings closed — see PART L for the
-> full breakdown; colour-completeness (rule 31) was explicitly left to the concurrent
-> colour-track session, not touched here).
+> rule-41 backlog moved **61 → 55 → 42** (15 blocks fixed across two same-day batches, 19 net
+> findings closed — see PART L for the full breakdown; colour-completeness (rule 31) was
+> explicitly left to the concurrent colour-track session, not touched here).
 >
 > **`44-help-text-not-described` CLOSED same day (2026-09-04, follow-up dispatch):** all 3 live
 > findings fixed — `LinkPopoverControl.js:267` and `DateTimePickerField.js:101` (single trigger
@@ -977,23 +977,37 @@ not neglect — do not re-investigate without new information.
       Colour-before-Typography sequencing — the "unverifiable statically" framing this line
       previously carried is now FALSE. It does NOT check CO-28's still-open cross-block
       canonical panel order (that stays a separate, larger, not-yet-started question — Bean
-      hasn't picked the canonical order yet). **Triage started same day: 61 → 55** (43
-      `co2-scattered-element` + 12 `dom-order-vs-declared-order`; the dom-order count rose from
-      10 to 12 as a documented, accepted side-effect — 3 blocks whose fixed element's panel
-      sits in a different InspectorControls tab-group converted from scattered to dom-order
-      findings, since cross-group source order doesn't map to visual order; net still a real
-      reduction). 8 blocks fixed this session (accordion, before-after, star-rating, timeline,
-      business-info, nav-drawer, text); ~22 blocks remain open (brand-strip, button, card-grid,
-      form, gallery, mega-panel, modal, option-picker, post-grid, process-steps, quote,
-      separator, tabs, hero, trustpilot-reviews, plus icon-list/notice-banner/pricing-table/
-      product-card/team-member/testimonial, deliberately skipped this session — a concurrent
-      colour-track session had already modified their render.php/block.json/edit.js). One real
-      manifest bug found + fixed en route: `sgs/business-info`'s `text` element had no explicit
-      `attrMap` entry for `textColour`, so DB cluster-fallback misrouted it once Icon got its
-      own panel — added `"css:color": "textColour"` to the `text` element's `attrMap`. Static
-      gates verified clean (parser + dead-controls) after each batch; **live Playwright/canary
-      verification of the 8 fixed blocks was NOT reached this session — do that before trusting
-      this beyond the static gate.** Re-run `run.js --json` for the current count.
+      hasn't picked the canonical order yet). **Triage: 61 → 55 (first batch, 8 blocks:
+      accordion, before-after, star-rating, timeline, business-info, nav-drawer, text) → 42
+      (second batch, same day: testimonial, post-grid, modal, pricing-table, process-steps,
+      card-grid, gallery, team-member — 15 blocks fixed total, 13 further findings closed).**
+      Confirmed live-derived (not cached) at 42 findings / 27 blocks remaining as of the second
+      batch's close: brand-strip(2), business-info(1), button(1), card-grid(2), form(2),
+      gallery(1), hero(1), icon-list(1), mega-panel(1), modal(1), nav-drawer(1), nav-menu(3),
+      notice-banner(1), option-picker(2), post-grid(5), pricing-table(1), process-steps(1),
+      product-card(3), quote(1), separator(1), social-icons(1), tabs(1), team-member(1),
+      testimonial(3), text(1), trust-bar(2), trustpilot-reviews(1). None of the second batch's
+      8 blocks reached zero — each was a partial reduction (e.g. modal 4→1, pricing-table 3→1,
+      process-steps 3→1, gallery 3→1, team-member 2→1, testimonial 5→3, post-grid 5→5 net-zero
+      after a genuine partial fix generated offsetting dom-order findings, card-grid 3→2).
+      `sgs/product-card` and `sgs/quote` were skipped this batch too — actively edited
+      uncommitted by a concurrent colour/text-gradient session in the same tree. Two real bugs
+      found + fixed en route: (1) a duplicate-control bug on `sgs/post-grid` — `shadowColour`/
+      `shadowHoverColour` were wired BOTH as a dedicated `SgsColourPanel` row AND via
+      `ShadowControl`'s own auto-bound `attrNames.colour`/`attrNames.hoverColour` (D621/D622's
+      documented pattern — `ShadowControl` renders its own colour picker when given
+      `attributes`+`setAttributes`+`attrNames`), so the SgsColourPanel row was dead weight,
+      removed; (2) same class on `sgs/card-grid`'s `cardShadowColour` (a `DesignTokenPicker` row
+      alongside `ShadowControl`'s own auto-bound colour — left in place, not part of this
+      session's scope, flagged for a future duplicate-controls pass). One documented,
+      DELIBERATE non-fix: `sgs/card-grid`'s "Card title" scatter (headingLevel in a Settings-tab
+      panel, titleColour in a same-named Styles-tab panel) carries an explicit in-file comment
+      citing it as "the interim state ahead of SGS's own 3-tab bar" (Spec 35 PART O) — left
+      untouched rather than merged against a stated architectural decision. Static gates
+      verified clean (parser + `check-dead-controls.js`, 0 net-new) after every batch; **live
+      Playwright/canary verification of the second batch's 8 blocks was NOT reached this
+      session either — do that before trusting this beyond the static gate.** Re-run
+      `run.js --json` for the current count.
 
 **Multi-item data is array-shaped** (24 blocks, no counter-example found across spot-checked
 repeater blocks) and **`hideExtensions`** (26 blocks, mechanism live) are treated as met; neither has
