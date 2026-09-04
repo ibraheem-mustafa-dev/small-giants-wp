@@ -2789,10 +2789,24 @@ the part that makes it anyone's job. **Enforced by** UNENFORCED.
 
 #### CO-15. No duplicated native-supports panel *(was condition 15 — RESTORED 2026-08-08)*
 No bespoke panel re-implements a control a native `supports` panel already provides. This is the
-inspector-UX form of **R-31-9**. **Enforced by** `check-duplicate-controls.js` — ✅ **corrected
-2026-08-19: this IS wired into `prebuild`.** Verified: `grep check-duplicate-controls
-plugins/sgs-blocks/package.json` matches it inside the `prebuild` script chain
-(`node scripts/check-duplicate-controls.js --check`). The "wired to nothing" claim is stale.
+inspector-UX form of **R-31-9**.
+
+⛔ **CORRECTED 2026-09-04 (item C5 reconciliation) — the "Enforced by `check-duplicate-controls.js`"
+claim two paragraphs below is WRONG, and this box previously said otherwise.** `check-duplicate-
+controls.js` is wired into `prebuild` (that part is true), but it targets a completely different
+bug class: (1) universal `sgsHover*` panel vs a block's own private `*Hover` attrs, (2) two JSX
+controls in one `edit.js` writing the same attr, (3) a composite's own control duplicating a child
+InnerBlocks control. Read its own docblock — nowhere does it compare an SGS bespoke panel against
+a native WordPress `supports` panel (colour/typography/spacing/border/etc). **Part L's own verified
+audit (2026-08-17, below in this same file) already found this: "no gate exists… `check-duplicate-
+controls.js`… target[s] a different bug class."** This box and Part L directly contradicted each
+other from 2026-08-19 to 2026-09-04; Part L was right. **Enforced by: nothing, for the general
+rule.** See Part L's own entry for what to do about it (the general rule is not gateable — Part G's
+D402 verdict table shows most "duplicates" are the deliberate, correct choice; only the two named
+ADOPT cases — `aspectRatio`, `duotone` — are a well-specified subset, and even that is a
+migration-completion problem for 7 already-enumerated blocks, not a lint-gate problem — see
+`.claude/reports/2026-09-04-c5-native-supports-duplicate-panel-scoping.md`).
+
 Restored 2026-08-08 (QC-council audit): this document's ABSORPTION MAP had wrongly claimed
 this rule was absorbed into Cross-cutting B (a different question — universal-extension opt-out fit).
 The rule appeared nowhere in this file until restored here.
