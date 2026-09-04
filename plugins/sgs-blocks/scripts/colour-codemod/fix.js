@@ -1244,6 +1244,30 @@ function collectPlans( db, cache ) {
 					} );
 					continue;
 				}
+
+				// A fill/border (or unresolved) mechanism still needing only the
+				// GRADIENT dimension — same "hover already shipped" situation as
+				// the text branch above, just a different mechanism. Found live
+				// 2026-09-04 (sgs/process-steps.backgroundColour): this branch used
+				// to fall straight through to the generic row-shape-not-supported
+				// reason below, whose wording ("no SgsColourPanel row object to
+				// clone a hover state from") is written for a row that STILL NEEDS
+				// hover — it reads as if nothing has been done, when hover is
+				// already live in render.php and only the gradient dimension is
+				// out of scope. Named honestly instead of restating the generic
+				// deferred-mechanism reason.
+				refusals.push( {
+					dir,
+					slug,
+					rowKey: row.rowKey,
+					attr: row.attr,
+					reason:
+						'REFUSED:gradient-path-deferred (mechanism=' + ( mechanism || 'unresolved' ) +
+						'; standalone DesignTokenPicker row shape — no SgsColourPanel row object to safely ' +
+						'rewrite the gradient wiring into, out of scope for this pass; hover state already ' +
+						'present, this row is blocked on gradient alone)',
+				} );
+				continue;
 			}
 
 			refusals.push( {
