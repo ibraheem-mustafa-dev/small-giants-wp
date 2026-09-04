@@ -22,6 +22,7 @@ import re
 
 from bs4 import Tag
 
+from converter.block_serialization import serialize_block_attributes
 from converter.db import db_lookup as db
 
 # THE one permitted constant (R-31-1: 3 bounded HTML chrome tags — same value as
@@ -131,12 +132,16 @@ def ensure_root_section_class(block_markup: str, section_id: str) -> str:
             if section_class in existing_class.split():
                 return block_markup
             attrs_dict["className"] = (section_class + " " + existing_class).strip()
-            new_attrs_str = json.dumps(attrs_dict, separators=(",", ":"), ensure_ascii=False)
+            # SECURITY: re-serialise through the WP-core-faithful escaper. json.loads
+            # above DECODES the -- escapes back to literal "--", so a plain
+            # json.dumps here would silently strip the emitters' escaping off the
+            # FIRST block line of every section and reopen the comment-breakout hole.
+            new_attrs_str = serialize_block_attributes(attrs_dict)
             new_first_line = f"{tag_part} {new_attrs_str} {closing}"
         except (ValueError, AttributeError):
             return block_markup
     else:
-        new_attrs_str = json.dumps({"className": section_class}, separators=(",", ":"), ensure_ascii=False)
+        new_attrs_str = serialize_block_attributes({"className": section_class})
         new_first_line = f"{tag_part} {new_attrs_str} {closing}"
     lines[first_block_line_idx] = new_first_line
     return "\n".join(lines)

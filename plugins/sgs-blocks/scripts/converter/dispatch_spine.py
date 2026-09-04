@@ -32,6 +32,7 @@ import json
 from dataclasses import dataclass, field
 from typing import Any
 
+from converter.block_serialization import serialize_block_attributes
 from converter.db import db_lookup
 from converter.dispatch_table import resolver_id
 from converter.models import GAP, GapOrigin, Write
@@ -381,7 +382,16 @@ def emit_block_markup(
         -> '<!-- wp:sgs/container {"maxWidth":"1200px"} --><div ...></div><!-- /wp:sgs/container -->'
     The dynamic block renders server-side from the attrs; inner is optional content.
     """
-    attr_json = json.dumps(attrs, separators=(",", ":"), sort_keys=True)
+    # SECURITY: never plain json.dumps here. json.dumps escapes only JSON-structural
+    # characters, so an attribute VALUE containing "-->" terminates this HTML comment
+    # early and everything after it lands in post_content as raw, unparsed HTML
+    # (stored-XSS class). serialize_block_attributes() ports WP core's own
+    # serialize_block_attributes() escaping so no value can breach the comment
+    # boundary, while staying decodable by WP_Block_Parser.
+    # ensure_ascii=True preserves this emitter's long-standing \uXXXX form for
+    # non-ASCII (goldens pin it); it is orthogonal to the escaping above and
+    # carries no security weight either way.
+    attr_json = serialize_block_attributes(attrs, sort_keys=True, ensure_ascii=True)
     name = block_slug  # already 'sgs/<x>'
     open_comment = f"<!-- wp:{name} {attr_json} -->" if attrs else f"<!-- wp:{name} -->"
     # Newline-separate the inner content — WP's canonical block serialisation puts

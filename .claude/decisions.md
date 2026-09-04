@@ -1,3 +1,73 @@
+## D953 [INCIDENT] — SECURITY: the converter's block-comment emitters escaped nothing, so an attribute value could break out of `<!-- wp:… -->` into raw stored HTML (stored-XSS class)
+
+**2026-09-04, same session.** Found by the **abuse-red-team persona of the same
+`/adversarial-council` run that produced D952** — the persona that graded F. Not cosmetic: this
+is a stored-XSS-class defect in the code path that writes every cloned page's `post_content`.
+
+**The bug.** All three places the converter builds a WP block comment serialised their attrs with
+plain `json.dumps`, which escapes only JSON-structural characters (`"`, `\`). It does NOT escape
+`--`, `<`, `>` or `&`. An attribute VALUE containing `-->` therefore **closed the HTML comment
+early**, and everything after it landed in `post_content` as raw, unparsed HTML — outside the
+JSON/attribute system entirely. A crafted draft value (any lifted/CSS-derived attribute, e.g. a
+`data-sgs-fx-*` path) could inject arbitrary `<script>` executing in wp-admin (session/cookie
+theft, admin takeover) and on the public frontend. Concretely, `{"className": "--> <script>…"}`
+emitted `<!-- wp:sgs/container {"className":"--> <script>…"} /-->` — a comment that ends at
+character 40, followed by live markup.
+
+WordPress core has `serialize_block_attributes()` (`wp-includes/blocks.php`) precisely to prevent
+this. The converter reimplemented block serialisation from scratch and omitted it.
+
+**The fix.** New `converter/block_serialization.py` — a byte-faithful port of core's *current*
+`strtr` implementation, verified against `WordPress/wordpress-develop` trunk, not from memory:
+a backslash becomes `u005c`, `--` becomes `u002du002d`, and `<` / `>` / `&` / an escaped quote
+become `u003c` / `u003e` / `u0026` / `u0022` (each prefixed by a backslash), in
+core's order (ordering is load-bearing — the backslash rule must be consumed before the
+escaped-quote rule). Deliberately NOT a
+bespoke scheme: this converter's output is re-parsed by `WP_Block_Parser`, which expects exactly
+core's convention, and the escaping leaves the JSON *structure* untouched so values decode back
+verbatim. Wired into all three sites:
+
+1. `dispatch_spine.emit_block_markup` — the main emitter.
+2. `db/db_lookup._emit_wp_block_markup` — the structurally-identical second emitter behind
+   `emit_sgs_container_wrapping`, flagged by the same persona. Same bug class, different call site.
+3. `services/section_passes.ensure_root_section_class` — **the one that would have silently
+   defeated the fix.** It `json.loads` the attrs region off the first block line and re-`dumps`
+   it; `json.loads` DECODES the escaped form back to a literal `--`, so a plain re-dump strips the
+   escaping off the FIRST block line of **every** section. Fixing only the emitters would have
+   left the hole open exactly where it is most reachable. Found by tracing re-parse consumers
+   rather than trusting the emit sites alone.
+
+**Verification.** New `converter/tests/test_block_attribute_escaping.py` (17 tests). Every
+escaping assertion is paired with a **negative control** proving the payload is genuinely
+dangerous unescaped (`json.dumps` really does put `<script>` past the first `-->`) — without
+them the assertions could pass against a harmless payload. Covers round-trip losslessness,
+byte-for-byte agreement with core's escape map, nested/list values, both emitters in both
+self-closing and open+close forms, and the section-class re-emit path.
+
+Regression proof did NOT rely on the shared tree, which had two other sessions' uncommitted edits
+in the same directories. Ran the suite at clean `HEAD` in an isolated worktree (**2** pre-existing
+failures: `test_allowed_blocks_scrape`, `test_spec_15_phase_1`), then applied ONLY these files and
+re-ran: same **2** failures, `837 → 854` passed. Gate A `13 passed, 37 xfailed`, unchanged.
+
+**One deliberate non-fix.** Matching core exactly also means `JSON_UNESCAPED_UNICODE`, which
+would have flipped `emit_block_markup`'s long-standing `\uXXXX` form for non-ASCII and broken two
+`test_foreign_identity_lift` goldens. That difference is **cosmetic, not security** — both forms
+are valid JSON that WP decodes identically, and neither can breach the comment. Rather than churn
+goldens under a security fix, `ensure_ascii` is a documented parameter: default `False` (core), and
+`True` at the `dispatch_spine` site to preserve existing bytes. The two goldens were NOT the
+"fixture was pinning the vulnerable form" case, so they were not regenerated. Worth revisiting
+separately — the three emitters disagree on unicode mode, and MEMORY's
+`wp_update_post`-strips-backslashes incident argues for core's literal form.
+
+**Shared-tree incident, recorded not swept.** The `db_lookup.py` hunk of this fix was picked up by
+a concurrent session's commit `3774107e2` (D952) before it could be committed here — that commit
+carried the edit but NOT the new `block_serialization.py`, which was still untracked, leaving
+`main` briefly holding a dangling import behind a function-local import. Fixed by landing this
+commit immediately. This is the fourth instance of the known "a subagent/session commits another
+track's uncommitted work" pattern; the defence that would have caught it is committing by exact
+path *and* checking `git status` on the target files **before** starting the edits, not only before
+the commit.
+
 ## D952 [INCIDENT] — second-round /adversarial-council on D949/D951 found the "genuinely closed" claim didn't hold; four real defects fixed
 
 **2026-09-04, same session.** Ran Step 21 (the wave-D register's deliberately-last adversarial-
