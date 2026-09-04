@@ -42,6 +42,13 @@ companions: Spec 32 (component styling/token contract — governs RENDERED outpu
 > its narrowest, and the sidebar-as-home survey can't separate correct-by-design zeros from
 > real gaps. Neither is worth the standing cost. Build shapes + dispatch:
 > `.claude/prompts/2026-09-04-spec32-35-closure-prompt.md`.
+>
+> **Same-day follow-up (2026-09-04, closing this prompt's dispatch):** all 3 approved rules
+> SHIPPED — `42-no-op-reset-controls` (0 live findings), `43-colour-only-state-indicator`
+> (22 findings/12 blocks), `44-help-text-not-described` (3 findings), all advisory mode with
+> self-tests, PART L entries added below. The rule-41 backlog moved **61 → 55** (8 blocks
+> fixed, 6 net findings closed — see PART L for the full breakdown; colour-completeness
+> (rule 31) was explicitly left to the concurrent colour-track session, not touched here).
 
 ## Why this exists
 
@@ -904,8 +911,10 @@ not neglect — do not re-investigate without new information.
       tab-group/dense-panels/decorative-image/responsive-duplicate are all now at 0 (closed or
       promoted to gate this session). **Still genuinely open**: rule `31-golden-colour-control`
       (colour-completeness, actively worked, re-run `survey.js` for the current count) and rule
-      `41-co2-element-grouping-order` (built 2026-09-04, 61 live findings on introduction —
-      see below). 5 named-but-ungated Part F anti-patterns investigated 2026-09-04: 4 confirmed
+      `41-co2-element-grouping-order` (built 2026-09-04, 61 live findings on introduction,
+      **55 as of the same day's follow-up batch — 6 closed across 8 blocks** (accordion,
+      before-after, star-rating, timeline, business-info, nav-drawer, text) — see below;
+      re-run `run.js --json` for the current count). 5 named-but-ungated Part F anti-patterns investigated 2026-09-04: 4 confirmed
       buildable (essential-control-in-sidebar narrow slice, no-reset, colour-only
       focus/selected, help-not-aria-describedby-linked), 1 buildable only as a survey
       (sidebar-as-home-for-every-option), 1 confirmed genuinely not buildable (native-supports
@@ -927,7 +936,23 @@ not neglect — do not re-investigate without new information.
       Colour-before-Typography sequencing — the "unverifiable statically" framing this line
       previously carried is now FALSE. It does NOT check CO-28's still-open cross-block
       canonical panel order (that stays a separate, larger, not-yet-started question — Bean
-      hasn't picked the canonical order yet). Triage the 61 findings: still open.
+      hasn't picked the canonical order yet). **Triage started same day: 61 → 55** (43
+      `co2-scattered-element` + 12 `dom-order-vs-declared-order`; the dom-order count rose from
+      10 to 12 as a documented, accepted side-effect — 3 blocks whose fixed element's panel
+      sits in a different InspectorControls tab-group converted from scattered to dom-order
+      findings, since cross-group source order doesn't map to visual order; net still a real
+      reduction). 8 blocks fixed this session (accordion, before-after, star-rating, timeline,
+      business-info, nav-drawer, text); ~22 blocks remain open (brand-strip, button, card-grid,
+      form, gallery, mega-panel, modal, option-picker, post-grid, process-steps, quote,
+      separator, tabs, hero, trustpilot-reviews, plus icon-list/notice-banner/pricing-table/
+      product-card/team-member/testimonial, deliberately skipped this session — a concurrent
+      colour-track session had already modified their render.php/block.json/edit.js). One real
+      manifest bug found + fixed en route: `sgs/business-info`'s `text` element had no explicit
+      `attrMap` entry for `textColour`, so DB cluster-fallback misrouted it once Icon got its
+      own panel — added `"css:color": "textColour"` to the `text` element's `attrMap`. Static
+      gates verified clean (parser + dead-controls) after each batch; **live Playwright/canary
+      verification of the 8 fixed blocks was NOT reached this session — do that before trusting
+      this beyond the static gate.** Re-run `run.js --json` for the current count.
 
 **Multi-item data is array-shaped** (24 blocks, no counter-example found across spot-checked
 repeater blocks) and **`hideExtensions`** (26 blocks, mechanism live) are treated as met; neither has
