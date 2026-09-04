@@ -97,10 +97,16 @@ Of the 37: the census (`reports/migrations/tier-object-all-properties-census.jso
 
 ### B. Spec 32 — Component Styling & Token Contract (5 open)
 
-✅ **B1/B2/B3 CLOSED — verified live 2026-09-04, do not re-open.** `audit-inline-styling.js
+✅ **B1/B2/B3/B5 CLOSED — verified live 2026-09-04, do not re-open.** `audit-inline-styling.js
 --check` → 0 violations, exit 0 (B1). D734 (2026-08-22): length-sanitiser migration DONE (B2).
-`check-box-family-guard.py --check` → 0 violations (B3). Only B4 (`mega-panel.borderRadius`,
-blocked on Track 2) and B5 (4 theme patterns using core blocks) remain genuinely unverified.
+`check-box-family-guard.py --check` → 0 violations (B3). `check-no-core-blocks.py` → 0 banned
+core blocks across 61 theme files (B5).
+
+⛔ **B4 (`mega-panel.borderRadius`) genuinely STILL BLOCKED — confirmed, not just carried
+forward.** It's a bespoke `UnitControl` scalar, no `SgsBorderControl` adoption (0 mounts,
+verified via grep), and it's part of Spec 36 mega-menu (Track 2), which is NOT currently
+active per `.claude/LEDGER.md`'s tracked-tracks list. Do not migrate it unilaterally — it
+needs Track 2's own design decision about mega-menu's border treatment (Rule 7 design gate).
 
 | # | Item | Kind |
 |---|---|---|
@@ -118,6 +124,29 @@ across 83 blocks, exit 0**. The D294 pattern selector spot-checked clean on 5 bl
 visible because someone ran it by hand.
 
 ### C. Spec 35 — Block Inspector UX Standard (19 open)
+
+✅ **C2, C3, C8, C9, C11 CLOSED — verified live 2026-09-04, do not re-open.** C2: rule-31's
+detector already has a shared-mechanism shadow-gradient exemption
+(`31-golden-colour-control.js:493-494,811-813`). C3: all 6 `gridItem*` props fully wired
+into the tier-prefix map on `sgs/container` — none of the named 7 still lack plumbing. C8:
+properly measured and gated now (44 blocks via `SgsBorderControl`, ratcheted
+`PRIVATE_NEEDS_SWAP` ceiling = 0). C9: `check-image-controls-support.py --survey` — 0
+DECLARED-BUT-DEAD, the "2 of 15 working" figure was stale. C11: E11 selector-aware
+governance (D283) fixed the detector attribution gap outright, not just disclosed it.
+
+⛔ **C4, C5, C10 confirmed genuinely OPEN.** C4: CO-2's own spec text says verbatim
+"UNENFORCED... do not cite CO-2 as gated" — `gates.json` has zero CO-2 references. C5: no
+rule exists for "bespoke panel duplicates a native supports panel" — only a `HIGH` priority
+note in `setting-registry.json`. C10: `brand-strip/edit.js` still imports `MediaPicker`, not
+`MediaGalleryPicker` — the swap described as "already done in gallery/edit.js" never
+happened on brand-strip.
+
+⚠ **C6 and C7 PARTIALLY CLOSED, real residual work remains.** C6 (rule
+`03-dense-panel-candidate`): **10 panels remaining** (form-field-checkbox/date/file/number/
+radio/select, gallery, info-box, multi-button, text) — not 15, but not 0. C7 (rule
+`18-decorative-image-aria`): **4 blocks remaining** (`cta-section`, `decorative-image`,
+`nav-drawer`, `social-icons`), down from 13 — each needs an `isDecorative`/`ariaLabel`
+control designed for that block, not a batch codemod.
 
 **11 mechanical** — do these behind detectors, in batches:
 
