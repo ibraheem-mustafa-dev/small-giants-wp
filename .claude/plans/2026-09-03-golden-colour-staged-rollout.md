@@ -908,3 +908,94 @@ than forced through with `--allow-dirty`/`--takeover`. **Whoever deploys this ne
 with whichever session owns the pricing-table/classifications.json work first (or wait for it to
 land), then deploy `main` normally — the code fix itself needs no further changes, only a clean
 tree to deploy from.**
+
+## Deploy landed + everything live-verified — 2026-09-04 (session 11, close-out)
+
+Three interactive sessions (this one, `small-giants-wp-90`, `small-giants-wp-5d`) were active on
+this shared tree simultaneously, all touching colour-conformance or adjacent Spec 32/35 work.
+Coordinated directly via cross-session messages rather than guessing at file ownership — every
+claim either side made about "whose dirty file is this" was independently verified via `git log`/
+`git status`/`git diff` before being acted on, not taken on trust. That discipline caught two real
+things worth recording:
+
+1. **`build-deploy.py`'s dirty-tree gate is scoped to `deployed_dirty_files()`, not a repo-wide
+   `git status`** — it skips `plugins/sgs-blocks/scripts/` entirely (dev tooling, never ships).
+   Several "blocking" files two sessions worried about (`css-property-classifications.json`,
+   `check-colour-gradient-roundtrip.js`) were never actually in scope. Call the function directly
+   (`python3 -c "..."` importing `build-deploy.py`) rather than reasoning from `git status` when
+   deciding whether a dirty tree will actually block a deploy — `--dry-run` does NOT run this
+   check (prints `[ownership] SKIPPED (--dry-run)`), so it cannot answer the question either.
+
+2. **`check-editor-render-parity.js`'s CHECK A exemption Set (`EDITOR_INVISIBLE_BY_DESIGN`) is
+   keyed on attribute NAME globally, not per-block** — confirmed by reading the call site
+   (`EDITOR_INVISIBLE_BY_DESIGN.has(attr)`, no block argument). This produced a genuinely
+   confusing failure: fixing `pricing-table`'s hover-selector bug (below) made 6 previously-dead
+   hover attributes into real CSS-emission attributes, which flipped the ratchet from 214/216 to
+   222/216 — and the gate's own printed sample showed unrelated `sgs/trust-bar` findings (whatever
+   else sits over the ceiling once the total crosses it), which briefly pointed the investigation
+   at the wrong block entirely. Resolved empirically: reverted the render.php change locally,
+   re-ran the check, confirmed the count dropped back to 214, restored the fix, then added the 8
+   newly-surfaced names to `EDITOR_INVISIBLE_BY_DESIGN` (same "newly VISIBLE, not newly broken"
+   class the Set's own history already documents repeatedly for other blocks' hover attrs).
+   Commit `c22c875f4`.
+
+**A real, separate live bug found and fixed along the way, in already-shipped code from earlier
+today's dispatch (commit `653aaa69b`'s "first real --apply" run):** `pricing-table`'s
+`titleColourHover`/`featureColourHover`/`ctaColourHover`/`popularBadgeColourHover` (added by
+`fix.js --apply`) — and this session's own `ctaBackgroundHover`/`popularBadgeBackgroundHover`
+addition — were all folded into `$pt_toggle_label_hover_decls`, an array gated on
+`toggleLabelHoverColour` (a completely unrelated attribute controlling the billing-period toggle)
+and emitted against the toggle LABEL's selector, not the CTA/badge/title/feature elements the
+client actually set colours on. Setting any of the six alone did nothing; setting
+`toggleLabelHoverColour` too painted the wrong element. **This is the exact same defect class
+`priceColourHover` was already fixed for on 2026-09-03** (see that fix's own comment, still in the
+file) — the other five just repeated it because `fix.js --apply`'s stale-offset detection matched
+the same wrong insertion point again. Fixed by giving each of the six its own independent
+`sgs_emit_state_colour_css()` (or, for the two background attrs, the existing
+`sgs_block_background_layer_css()` hover_paint_decl parameter) call on its own correct selector.
+Commit `68a4014f5`.
+
+⚠ **`fix.js`'s wire-state-emitter path has now caused this same wrong-selector defect at least
+twice** (priceColourHover pre-2026-09-03, then 4 more attributes via the "first real --apply" run
+today). If another `--apply` run adds a hover sibling to a block that already has an unrelated
+attribute-gated hover array nearby (the shape that made this easy to miss both times — a plausible
+existing `if ($x_hover_decl) { $decls = array(...); ... }` block sitting right where the new
+attribute's own emission "should" go), read the emitted selector by eye before trusting the diff,
+not just `--self-test` (which passed both times this shipped broken).
+
+**Verified, not just asserted, before calling this done:**
+- `npm run build` clean, `npm run gate:fast` 89/89, `check-editor-render-parity.js --self-test`
+  and `colour-codemod/fix.js --self-test` both green after every change.
+- Deployed to sandybrown twice this session (once with the pre-existing `check-enum-control-shape`
+  timeline false-positive still live — fixed by `small-giants-wp-90` as `64396ecee`, a real
+  detector bug [WINDOW mark-matching picked up a neighbouring control's labels] not a control
+  defect, correctly baselined rather than "fixed" by changing a control that was already right;
+  once with the pricing-table hover fix + CHECK A exemption).
+- Live Playwright verification, both halves:
+  - `check-colour-gradient-roundtrip.js --pairs info-box,icon-list,notice-banner,
+    product-card.textColour,team-member,testimonial,pricing-table.ctaColour --check` — 7/7 PASS,
+    negative controls clean (confirms `small-giants-wp-5d`'s `a65d06927`/`c8fdb0cc7` fix is real
+    and live).
+  - A one-off hover probe (positive/negative via hover-fires-then-unhover-reverts, not a
+    before/after screenshot) against pricing-table's 6 corrected selectors
+    (`.sgs-pricing-table__name`/`__feature`/`__cta`/`__badge`, plus the CTA/badge `::after`
+    background layers) — 6/6 PASS. First pass at 150ms settle showed one apparent failure on
+    `ctaColourHover` (close-but-not-identical colour before/after); traced to a genuine 300ms
+    `transition: color/background-color/border-color` on `.sgs-pricing-table__cta`
+    (style.css:215) — not a bug, just an undersampled transition. Re-ran at 500ms settle, clean
+    PASS. Worth recording as its own live-probe gotcha: **a hover/unhover read needs to outlast
+    any CSS transition on the probed property, not just the animation-free case the existing
+    fixtures happened to hit.**
+
+**Not verified — named, not silently dropped:** `nav-menu.underlineColour`'s gradient/hover
+(session 10's other dispatched fix, commits `e1ca47c01`/`56afb54de`) is still unprobed. It's a
+decorative `::after` bar on the nav LINK element, and — per this file's own `KNOWN_SKIPPED` entry
+for `nav-menu` — nothing on this block can be probed with a bare block-comment fixture; it needs a
+real assigned WP Navigation menu, which no minimal fixture exists for yet. The code itself hasn't
+changed hands or been touched by anyone today, so the risk is low, but "code compiles and gates
+pass" is not the same claim as "live-verified," and this file's whole discipline has been to keep
+those two claims visibly separate.
+
+**Everything else in this session's original scope (Job 2's worklist) is unchanged from session
+10's assessment** — no new bulk-fixable rows found; the remaining ~57 REFUSED rows are still
+correctly refused by design.
