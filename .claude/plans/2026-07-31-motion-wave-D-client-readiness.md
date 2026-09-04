@@ -8,8 +8,11 @@ Invoke /autopilot before doing anything else.
 
 > **PRUNED 2026-08-02: every COMPLETED step was DELETED from this file.** Closed work lives in
 > `decisions.md` (D-numbered) and `git log`, not here. **If a step has a `### Step` heading below,
-> it is OPEN. There are no closed steps in this file.** 6 remain (verify, don't trust this number:
-`grep -c '^### Step' <this file>`).
+> it is OPEN. There are no closed steps in this file.** 2 remain (verify, don't trust this number:
+`grep -c '^### Step' <this file>`). **Swept 2026-09-04:** Step 20 and Step R-residual, both closed
+before this sweep by decisions the register hadn't caught up to (D723, D839/FR-38-33, and a
+straightforward deletion) — see the struck-through summaries just above Step O below. Step 12 and
+Step 21 are the only genuinely open work.
 
 > **Closed since the prune:** Step 8 (FR-38-27, 2026-08-02) · Step Y (both loop arms measured, `216508ce`) · Step W/X/Z earlier · and
 > M3 (indus-foods snapshot push — DELETED by Bean, not parked; see `LEDGER.md`).
@@ -84,42 +87,22 @@ Waves A–E are closed. This session closed **Step X** (the three-list drift gat
   **On-fail:** if it cannot land, AMEND Spec 38's success definition to say motion is applied by hand
   after a clone. Do not leave the claim standing unbuilt.
 
-### Step 20 — spec ↔ code reconciliation [OPEN — 1 of 5 remain]
-  **Model:** sonnet · **Time:** 30 min
-  ✅ **(a) CLOSED** — `data-sgs-fx-momentum` IS in §11.2's grammar (`38-SGS-MOTION-SYSTEM.md:1310`).
-  ✅ **(d) CLOSED** — `generate-fx-qualifying-blocks.py:390-394` now states `sgs/image-sequence`
-  EXISTS as an agency-only block; the stale comment was corrected 2026-08-02 and says so.
-  ✅ **(b) CLOSED 2026-08-22** — this register was stale on its own item. §11.3's mapping list
-  (`38-SGS-MOTION-SYSTEM.md:1447-1448`) was fixed 2026-08-21: `fxShape`/`fxPath` are now listed in
-  the 1:1 attr mapping, with a pointer note (`:1451-1454`) to the D427 amendment at §11.2 rather than
-  a duplicate of the status text. Verified live in the spec — nothing further to do.
-  ⛔ **(c) IS A RULING, NOT A DELETE — this register was wrong to call the row "dead".**
-  `seed-motion-fx-registry.py:575-604` documents the `scroll-smoother` `fx_effects` row as
-  DELIBERATE: its `scope='site'` proves BY CONSTRUCTION that ScrollSmoother is structurally
-  excluded from every block panel — that is the row's own acceptance test. Deleting it removes a
-  load-bearing negative proof. Recommend KEEP + annotate. Needs a D-number either way.
-  ○ **(e) OPEN** — `sgs_get_fx_qualifying_blocks()` still has zero callers, and
-  `generated-fx-qualifying-blocks.php` is never `require`d by any PHP, so the function does not
-  exist at runtime at all. Spec 38 (`:1120-1130`) already records this and recommends DELETE.
-  **Done when:** (e) is resolved and (c) has a D-numbered ruling.
+> **Step 20 — CLOSED 2026-09-04.** All 5 sub-items resolved: (a)/(b)/(d) were already closed per
+> this register's own prior annotations; **(c)** got its D-numbered ruling at **D723** (2026-08-21,
+> KEEP the `scroll-smoother` row as a deliberate negative proof — this register just hadn't been
+> swept to reflect it); **(e)** is closed by deletion — `sgs_get_fx_qualifying_blocks()` and
+> `generated-fx-qualifying-blocks.php` no longer exist (`generate-fx-qualifying-blocks.py:300` and
+> `check_fx_qualifying_blocks_stale.py:19` both reference the removal in the past tense; zero live
+> definitions grepped tree-wide).
 
-### Step R-residual — the cursor field's stated limits [OPEN, low priority]
-  **Model:** sonnet · **Time:** 1 h
-  Three things FR-38-25 states plainly rather than hides. None is a defect; each may want revisiting:
-  1. **`floating-objects` is spec'd, not built** — Bean's third example. It is the first field type
-     needing per-object JS, so it needs a Tier assignment under §1.3 (not assumed V) and its own §10
-     reduced-motion answer, since autonomous object motion is not the static-field SIMPLIFY case.
-  2. **A participant with its OWN `background-image` is deliberately not marked**, because our layer
-     would replace it; that child keeps a visible seam. Clobbering a client's image is worse. A
-     `::before` fallback is possible if the seam is ever reported.
-  3. ~~**The participant walk runs at init only.**~~ ✅ **CLOSED — this register was stale on its
-     own item.** Spec 38 §3.3 residual 4 records the fix landing **2026-08-02**: `cursor-field.js`
-     gained a bounded `MutationObserver` on the emitter (`childList` + `subtree` +
-     `attributeFilter: ['style','class']`), rAF-coalesced so a mutation burst costs one
-     computed-style pass per frame, created and disconnected inside the same `init`/`cleanup`
-     pair. Verified present in `src/shared/effects/cursor-field.js` (its docblock describes the
-     observer). Struck 2026-08-21 — a register that still lists a fixed item as open is the trap
-     its own sibling gap-register warns about.
+> **Step R-residual — CLOSED 2026-09-04.** Item 1 (`floating-objects`) was reclassified by **D839**
+> (2026-08-27, INCIDENT): the spec had recorded the wrong effect for seven weeks — the owner's real
+> ask is a canvas grid-dot field, now **FR-38-33**, **BUILT 2026-08-28** (Spec 38 §3.3:1407). A
+> sibling item, FR-38-34 (repulsion particle field), was recorded at the same time and is NOT
+> BUILT, but that's newly-scoped work this register never named, not the task described here. Item
+> 2 (a participant's own `background-image` seam) stays a legitimate low-priority design note —
+> explicitly not to build speculatively — but doesn't warrant its own step. Item 3 was already
+> closed in this register's own prior text.
 
 ### Step O — the drag text-selection symptom [CLOSED 2026-08-22 — Bean confirmed by hand]
   ⛔ **RULED 2026-08-01 (D449) — do NOT dispatch an agent at this.** The cause-agnostic `user-select`
