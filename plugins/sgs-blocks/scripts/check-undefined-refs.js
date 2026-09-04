@@ -110,6 +110,10 @@ const GLOBALS = new Set( [
 	// Canvas 2D pixel-buffer constructor — used by fx-generative-background.js
 	// to build a putImageData()-ready OKLCH gradient. Genuine browser global.
 	'ImageData',
+	// Web Crypto API — used by generateItemKey.js for a stable per-repeater-
+	// item identity (crypto.randomUUID()). Genuine browser global, available
+	// in the WP editor's secure-context iframe.
+	'crypto',
 ] );
 
 /**

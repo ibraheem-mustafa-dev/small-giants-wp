@@ -159,6 +159,19 @@
 					"decorative": {
 						"type": "boolean",
 						"default": false
+					},
+					"_key": {
+						"type": "string",
+						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field. Scopes this item's own object-fit/focal-point CSS so a crop value survives reorder/add/remove instead of following array index or the WP attachment id (which collides the moment the same image is used twice). Spec 35 Part 4."
+					},
+					"objectFit": {
+						"type": "string",
+						"enum": [ "cover", "contain" ],
+						"default": "cover"
+					},
+					"focalPoint": {
+						"type": "object",
+						"default": { "x": 0.5, "y": 0.5 }
 					}
 				}
 			}

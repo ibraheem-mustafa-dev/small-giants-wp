@@ -826,9 +826,31 @@ if ( $stagger_delay ) {
 // unconditionally).
 $card_grid_stagger_css = '';
 
+// Spec 35 Part 4 — per-item crop, keyed by the item's OWN stable `_key`
+// (src/utils/generateItemKey.js), never by array index/`:nth-child` (both
+// break the moment an operator reorders/adds/removes a card — the exact
+// anti-pattern the doctrine names and rejects). `sgs_media_position_css()`
+// already accepts an arbitrary attributes array + prefix; passed a per-item
+// shim here rather than the block's own $attributes. A pre-existing item
+// authored before this field existed has no `_key` yet (client-side
+// backfill lands on next editor save) and also has no non-default
+// objectFit/focalPoint to emit, so the index fallback below is never
+// load-bearing in practice — it only prevents an empty selector.
+$card_grid_per_item_css = '';
+
 // Build the interior HTML (card items).
 ob_start();
 foreach ( $items as $index => $item ) :
+	$card_grid_item_key = ! empty( $item['_key'] ) ? (string) $item['_key'] : 'idx-' . absint( $index );
+	$card_grid_per_item_css .= sgs_media_position_css(
+		array(
+			'objectPosition' => $item['focalPoint'] ?? null,
+			'objectFit'      => $item['objectFit'] ?? '',
+		),
+		'',
+		$root_sel . ' [data-card-key="' . esc_attr( $card_grid_item_key ) . '"] img, '
+			. $root_sel . ' [data-card-key="' . esc_attr( $card_grid_item_key ) . '"] video'
+	);
 	// Task 2.1) resolved via sgs_link_attributes() — link/linkTarget/linkRel
 	// are the existing per-item storage keys, mapped to the shared
 	// SgsLinkControl object shape { url, opensInNewTab, rel } at render time.
@@ -896,7 +918,7 @@ foreach ( $items as $index => $item ) :
 		);
 	}
 	?>
-	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item"<?php echo $link_attr; ?>>
+	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item" data-card-key="<?php echo esc_attr( $card_grid_item_key ); ?>"<?php echo $link_attr; ?>>
 		<div class="sgs-card-grid__image-wrap"<?php echo $item_decorative ? ' aria-hidden="true"' : ''; ?>>
 			<?php if ( '' !== $media_html ) : ?>
 				<?php echo $media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_render_media(). ?>
@@ -930,7 +952,8 @@ foreach ( $items as $index => $item ) :
 	</<?php echo esc_attr( $item_tag ); ?>>
 	<?php
 endforeach;
-$card_grid_stagger_tag = $card_grid_stagger_css ? '<style>' . wp_strip_all_tags( $card_grid_stagger_css ) . '</style>' : '';
+$card_grid_stagger_tag  = $card_grid_stagger_css ? '<style>' . wp_strip_all_tags( $card_grid_stagger_css ) . '</style>' : '';
+$card_grid_per_item_tag = $card_grid_per_item_css ? '<style>' . wp_strip_all_tags( $card_grid_per_item_css ) . '</style>' : '';
 
 // FR-32-4a (no-inline contract): the per-item stagger rule addresses items by
 // `:nth-child(N)`, and `:nth-child` counts EVERY element sibling — including a
@@ -943,7 +966,7 @@ $card_grid_stagger_tag = $card_grid_stagger_css ? '<style>' . wp_strip_all_tags(
 // item N really is nth-child(N+1). Relative order of the three tags is
 // preserved, and each is a `.{uid}`-scoped rule, so moving them earlier in the
 // document cannot change which rule wins.
-$card_grid_style_tags = $card_grid_native_style_tag . $sgs_grid_typo_tag . $card_grid_stagger_tag;
+$card_grid_style_tags = $card_grid_native_style_tag . $sgs_grid_typo_tag . $card_grid_stagger_tag . $card_grid_per_item_tag;
 $inner_html           = ob_get_clean();
 
 echo $card_grid_style_tags . SGS_Container_Wrapper::render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $card_grid_style_tags is CSS passed through wp_strip_all_tags(); SGS_Container_Wrapper::render() escapes internally.

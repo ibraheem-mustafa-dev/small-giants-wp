@@ -3,6 +3,7 @@ import {
 	useBlockProps,
 	InspectorControls,
 } from '@wordpress/block-editor';
+import { useEffect, useMemo } from '@wordpress/element';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import {
 	PanelBody,
@@ -12,6 +13,7 @@ import {
 	TextControl,
 	ToggleControl,
 	Spinner,
+	FocalPointPicker,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
@@ -27,7 +29,7 @@ import { ShadowControl, TypographyControls, ResponsiveBoxControl, LinkPopoverFie
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import MediaPicker from '../../components/MediaPicker';
 import CollectionPanel from './components/collection-panel';
-import { colourVar, spacingVar, resolveResponsiveTier, resolveTextColourPreviewStyle } from '../../utils';
+import { colourVar, spacingVar, resolveResponsiveTier, resolveTextColourPreviewStyle, generateItemKey, withStableItemKeys, focalPointToObjectPosition } from '../../utils';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
@@ -170,6 +172,34 @@ function ItemEditor( { item, index, onChange, onRemove } ) {
 					) }
 				/>
 			</div>
+			{ /* Gated on media existing — an unavailable image shows no crop
+			     control, matching the avatar/work disclosure pattern on
+			     sgs/testimonial. Spec 35 Part 4: per-item, keyed by item._key
+			     in render.php, never by array index. */ }
+			{ !! item.media?.url && (
+				<>
+					<SelectControl
+						label={ __( 'Image fit', 'sgs-blocks' ) }
+						value={ item.objectFit || 'cover' }
+						options={ [
+							{ label: __( 'Cover (crop to fill)', 'sgs-blocks' ), value: 'cover' },
+							{ label: __( 'Contain (fit within, no crop)', 'sgs-blocks' ), value: 'contain' },
+							{ label: __( 'Fill (stretch)', 'sgs-blocks' ), value: 'fill' },
+						] }
+						onChange={ ( val ) => update( 'objectFit', val ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ 'cover' === ( item.objectFit || 'cover' ) && (
+						<FocalPointPicker
+							label={ __( 'Focal point', 'sgs-blocks' ) }
+							url={ item.media.url }
+							value={ item.focalPoint || { x: 0.5, y: 0.5 } }
+							onChange={ ( val ) => update( 'focalPoint', val ) }
+						/>
+					) }
+				</>
+			) }
 			<ToggleControl
 				label={ __( 'Decorative — hide from screen readers', 'sgs-blocks' ) }
 				checked={ !! item.decorative }
@@ -254,7 +284,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		variant,
 		headingLevel,
-		items,
+		items: rawItems,
 		columns,
 		gap,
 		aspectRatio,
@@ -302,6 +332,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		productShowLadder,
 		productEmptyMessage,
 	} = attributes;
+
+	// Stable per-item `_key` for CSS scoping (Spec 35 Part 4) — backfilled
+	// silently for items authored before this field existed. useMemo keeps
+	// the generated keys stable within a render even before the effect
+	// below persists them; the effect fires at most once per real backfill
+	// (withStableItemKeys returns the SAME reference when nothing changed).
+	const items = useMemo( () => withStableItemKeys( rawItems ), [ rawItems ] );
+	useEffect( () => {
+		if ( items !== rawItems ) {
+			setAttributes( { items } );
+		}
+	}, [ items, rawItems, setAttributes ] );
 
 	const isQueryMode = source === 'query';
 	const isWcProductMode = source === 'wc-product';
@@ -387,6 +429,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					badgeVariant: '',
 					link: '',
 					decorative: false,
+					_key: generateItemKey(),
+					objectFit: 'cover',
+					focalPoint: { x: 0.5, y: 0.5 },
 				},
 			],
 		} );
@@ -1181,8 +1226,16 @@ export default function Edit( { attributes, setAttributes } ) {
 							) }
 						</p>
 					) }
-					{ items.map( ( item, index ) => (
-						<div key={ index } className="sgs-card-grid__item">
+					{ items.map( ( item ) => {
+						const itemMediaStyle = {
+							objectFit: item.objectFit || 'cover',
+							objectPosition:
+								'cover' === ( item.objectFit || 'cover' )
+									? focalPointToObjectPosition( item.focalPoint || { x: 0.5, y: 0.5 } )
+									: undefined,
+						};
+						return (
+						<div key={ item._key } className="sgs-card-grid__item">
 							<div className="sgs-card-grid__image-wrap">
 								{ item.media?.url ? (
 									item.media.type === 'video' ? (
@@ -1190,6 +1243,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										<video
 											src={ item.media.url }
 											className="sgs-card-grid__image"
+											style={ itemMediaStyle }
 											muted
 											loop
 											playsInline
@@ -1199,6 +1253,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											src={ item.media.url }
 											alt={ item.media.alt || '' }
 											className="sgs-card-grid__image"
+											style={ itemMediaStyle }
 										/>
 									)
 								) : (
@@ -1253,7 +1308,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								</div>
 							) }
 						</div>
-					) ) }
+					);
+				} ) }
 				</div>
 			) }
 		</>

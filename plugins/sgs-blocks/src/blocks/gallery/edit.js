@@ -42,12 +42,13 @@ import {
 	Spinner,
 	ToolsPanel,
 	ToolsPanelItem,
+	FocalPointPicker,
 } from '@wordpress/components';
-import { useRef } from '@wordpress/element';
+import { useRef, useEffect, useMemo } from '@wordpress/element';
 import SgsColourPanel from '../../components/SgsColourPanel';
 import MediaGalleryPicker from '../../components/MediaGalleryPicker';
 import ResponsiveOverride from '../../components/ResponsiveOverride';
-import { colourVar, resolveResponsiveTier } from '../../utils';
+import { colourVar, resolveResponsiveTier, generateItemKey, withStableItemKeys, focalPointToObjectPosition } from '../../utils';
 
 // -------------------------------------------------------------------------
 // Static option arrays (defined outside component to avoid re-creation)
@@ -115,7 +116,9 @@ function GalleryThumbnail( {
 	onDragOver,
 	onDrop,
 	onToggleDecorative,
+	onUpdateCrop,
 } ) {
+	const fit = image.objectFit || 'cover';
 	return (
 		<div
 			className="sgs-gallery-editor__thumb"
@@ -132,6 +135,13 @@ function GalleryThumbnail( {
 				src={ image.url }
 				alt={ image.alt || '' }
 				className="sgs-gallery-editor__thumb-img"
+				style={ {
+					objectFit: fit,
+					objectPosition:
+						'cover' === fit
+							? focalPointToObjectPosition( image.focalPoint || { x: 0.5, y: 0.5 } )
+							: undefined,
+				} }
 			/>
 			<button
 				type="button"
@@ -156,6 +166,35 @@ function GalleryThumbnail( {
 				onChange={ ( value ) => onToggleDecorative( index, value ) }
 				__nextHasNoMarginBottom
 			/>
+			{ /* Spec 35 Part 4 — per-item crop, same shape as sgs/card-grid's
+			     repeater panel. 'image' type only: object-fit on a <video>
+			     thumbnail here shows a static poster frame, not a meaningful
+			     crop preview, and this block's video items are rare enough
+			     that a bespoke second control isn't worth the panel clutter. */ }
+			{ 'image' === image.type && (
+				<>
+					<SelectControl
+						className="sgs-gallery-editor__thumb-fit"
+						label={ __( 'Image fit', 'sgs-blocks' ) }
+						value={ fit }
+						options={ [
+							{ label: __( 'Cover (crop to fill)', 'sgs-blocks' ), value: 'cover' },
+							{ label: __( 'Contain (fit within, no crop)', 'sgs-blocks' ), value: 'contain' },
+						] }
+						onChange={ ( val ) => onUpdateCrop( index, { objectFit: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ 'cover' === fit && (
+						<FocalPointPicker
+							label={ __( 'Focal point', 'sgs-blocks' ) }
+							url={ image.url }
+							value={ image.focalPoint || { x: 0.5, y: 0.5 } }
+							onChange={ ( val ) => onUpdateCrop( index, { focalPoint: val } ) }
+						/>
+					) }
+				</>
+			) }
 		</div>
 	);
 }
@@ -195,6 +234,12 @@ function resolveGalleryMedia( media, preferSize ) {
 		fullUrl: media.sizes?.full?.url || media.url,
 		width: media.width || 0,
 		height: media.height || 0,
+		// Spec 35 Part 4 — stable identity for per-item crop CSS scoping,
+		// never array index or the WP attachment id (the id collides the
+		// moment the same image is used twice in one gallery).
+		_key: generateItemKey(),
+		objectFit: 'cover',
+		focalPoint: { x: 0.5, y: 0.5 },
 	};
 }
 
@@ -230,7 +275,22 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const set = ( key ) => ( value ) => setAttributes( { [ key ]: value } );
 
-	const items = mediaItems || [];
+	// Stable per-item `_key` for CSS scoping (Spec 35 Part 4) — backfilled
+	// silently for items authored before this field existed. Same shape as
+	// sgs/card-grid's identical mechanism. `rawMediaItems` is compared by
+	// reference below, so it must NOT be a freshly-created `|| []` literal —
+	// that would never equal the memoised `items` and loop `setAttributes`
+	// forever.
+	const rawMediaItems = mediaItems;
+	const items = useMemo(
+		() => withStableItemKeys( rawMediaItems || [] ),
+		[ rawMediaItems ]
+	);
+	useEffect( () => {
+		if ( items !== rawMediaItems ) {
+			setAttributes( { mediaItems: items } );
+		}
+	}, [ items, rawMediaItems, setAttributes ] );
 
 	// Drag-to-reorder state.
 	const dragSourceIndex = useRef( null );
@@ -282,6 +342,19 @@ export default function Edit( { attributes, setAttributes } ) {
 	const toggleItemDecorative = ( index, decorative ) => {
 		const next = items.map( ( item, i ) =>
 			i === index ? { ...item, decorative } : item
+		);
+		setAttributes( { mediaItems: next } );
+	};
+
+	/**
+	 * Patch a single item's crop fields (Spec 35 Part 4).
+	 *
+	 * @param {number} index Index of the item to update.
+	 * @param {Object} patch Partial item patch — { objectFit } and/or { focalPoint }.
+	 */
+	const updateItemCrop = ( index, patch ) => {
+		const next = items.map( ( item, i ) =>
+			i === index ? { ...item, ...patch } : item
 		);
 		setAttributes( { mediaItems: next } );
 	};
@@ -503,7 +576,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						>
 							{ items.map( ( image, index ) => (
 								<GalleryThumbnail
-									key={ image.id || index }
+									key={ image._key || image.id || index }
 									image={ image }
 									index={ index }
 									onRemove={ removeImage }
@@ -511,6 +584,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									onDragOver={ () => {} }
 									onDrop={ handleDrop }
 									onToggleDecorative={ toggleItemDecorative }
+									onUpdateCrop={ updateItemCrop }
 								/>
 							) ) }
 						</div>
@@ -928,17 +1002,20 @@ export default function Edit( { attributes, setAttributes } ) {
 								item.type === 'video' ||
 								( item.mime &&
 									item.mime.startsWith( 'video/' ) );
-							const wrapStyle = aspectRatio
-								? {
-										aspectRatio,
-										objectFit: 'cover',
-										width: '100%',
-										display: 'block',
-								  }
-								: { width: '100%', display: 'block' };
+							const itemFit = item.objectFit || 'cover';
+							const wrapStyle = {
+								...( aspectRatio ? { aspectRatio } : {} ),
+								objectFit: itemFit,
+								objectPosition:
+									'cover' === itemFit
+										? focalPointToObjectPosition( item.focalPoint || { x: 0.5, y: 0.5 } )
+										: undefined,
+								width: '100%',
+								display: 'block',
+							};
 							return (
 								<figure
-									key={ item.id || index }
+									key={ item._key || item.id || index }
 									className="sgs-gallery__item"
 									style={
 										aspectRatio

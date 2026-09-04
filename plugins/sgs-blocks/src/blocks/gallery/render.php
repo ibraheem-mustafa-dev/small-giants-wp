@@ -460,6 +460,25 @@ ob_start();
 					$gallery_responsive_css .= $root_sel . ' .sgs-gallery__item:nth-child(' . ( absint( $index ) + 1 ) . '){' . implode( ';', $item_style_decls ) . ';}';
 				}
 
+				// Spec 35 Part 4 — per-item crop, keyed by the item's OWN
+				// stable `_key`, never `:nth-child`/array index (unlike the
+				// aspect-ratio/stagger rule just above, which is genuinely
+				// POSITION-bound and safe with nth-child — crop is IDENTITY-
+				// bound: reordering must keep each photo's own crop, not the
+				// crop that happened to sit at that grid position). Additive
+				// override of the block-wide sgs_media_position_css() call
+				// below; only emits when this item sets a non-default value.
+				$gallery_item_key        = ! empty( $img['_key'] ) ? (string) $img['_key'] : 'idx-' . absint( $index );
+				$gallery_responsive_css .= sgs_media_position_css(
+					array(
+						'objectPosition' => $img['focalPoint'] ?? null,
+						'objectFit'      => $img['objectFit'] ?? '',
+					),
+					'',
+					$root_sel . ' [data-gallery-item-key="' . esc_attr( $gallery_item_key ) . '"] img, '
+						. $root_sel . ' [data-gallery-item-key="' . esc_attr( $gallery_item_key ) . '"] video'
+				);
+
 				// Determine full-size URL for lightbox data attribute.
 				$full_url = '';
 				if ( $img_id ) {
@@ -475,6 +494,7 @@ ob_start();
 					?>
 					<figure
 						class="sgs-gallery__item"
+						data-gallery-item-key="<?php echo esc_attr( $gallery_item_key ); ?>"
 					>
 						<button
 							type="button"
@@ -536,6 +556,7 @@ ob_start();
 					?>
 					<figure
 						class="sgs-gallery__item"
+						data-gallery-item-key="<?php echo esc_attr( $gallery_item_key ); ?>"
 					>
 						<div class="sgs-gallery__img-wrap">
 							<?php
