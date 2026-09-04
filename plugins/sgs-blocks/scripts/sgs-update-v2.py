@@ -2390,6 +2390,38 @@ def _load_fx_qualifying_block_slugs(path: Path = _FX_QUALIFYING_BLOCKS_JSON) -> 
         return set()
 
 
+_DB_LOOKUP_PY = Path(__file__).resolve().parent / "converter" / "db" / "db_lookup.py"
+
+
+def _load_fx_attr_roster(path: Path = _DB_LOOKUP_PY) -> dict[str, dict[str, str]]:
+    """Import `fx_attr_roster()` from `converter/db/db_lookup.py` (same
+    importlib pattern as `_load_fx_attr_css_property_map` above, targeting a
+    different sibling module) — the FULL fx* attribute roster (name -> real
+    JS type + data-attribute name), sourced from `includes/fx-attributes.php`
+    FX_ATTR_MAP + `includes/extension-attributes.generated.php`. Replaces
+    the narrower `FX_ATTR_CSS_PROPERTY` map (29 of ~79 names) as THIS
+    function's eligibility source — that map still exists and is still used
+    unchanged for its own purpose (the fx: css_property classification
+    layer, `_collect_fx_attr_namespace_overrides`).
+
+    Soft-optional: a missing/unreadable module degrades to an empty roster
+    rather than hard-failing an unrelated /sgs-update run.
+    """
+    if not path.exists():
+        return {}
+    try:
+        import importlib.util as _ilu
+
+        spec = _ilu.spec_from_file_location("sgs_converter_db_lookup", str(path))
+        mod = _ilu.module_from_spec(spec)  # type: ignore[arg-type]
+        spec.loader.exec_module(mod)  # type: ignore[union-attr]
+        roster_fn = getattr(mod, "fx_attr_roster", None)
+        return roster_fn() if callable(roster_fn) else {}
+    except Exception as exc:  # noqa: BLE001
+        print(f"Stage 1 (fx-attr-rows): WARN failed to import fx_attr_roster: {exc}")
+        return {}
+
+
 def _seed_missing_fx_attr_rows(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
     """Stage 1 sub-step B2.6 — INSERT missing `block_attributes` rows for the
     `fx*` attribute set on every fx-capable block (FR-38-22 cloning-lift
@@ -2415,22 +2447,50 @@ def _seed_missing_fx_attr_rows(conn: sqlite3.Connection, dry_run: bool = False) 
     (`_collect_fx_attr_namespace_overrides`, called right after this from
     `_apply_attr_classification_overrides`) then classifies it in the SAME
     run, so there is still exactly one writer of `css_property` — this step
-    only ever creates the row, never sets that column itself. `attr_type` is
-    seeded as `'string'` uniformly: the sole consumer of this column in the
-    read path (`lift_behavioural_attrs`) only tests `!= 'array'`, so the
-    exact JS-side type (some `fx*` attrs are numeric) does not affect
-    correctness here; getting it more precise needs parsing `fx.js`, which
-    is out of scope for this additive fix.
+    only ever creates the row, never sets that column itself.
+
+    ⛔ CORRECTED 2026-09-04 (adversarial-council, same day as the original
+    build): this function originally iterated `FX_ATTR_CSS_PROPERTY` (29
+    names — the css_property classification map, never the attribute
+    roster) and hardcoded `attr_type='string'` for every row. Both were
+    wrong: `fx.js` registers ~79 `fx*` attributes, not 29 — every attr
+    outside that 29-name map (the whole magnet/particle/generative-
+    background/grid-dot/wave family) had the EXACT bug this function exists
+    to fix, unfixed; and `'string'` for every row meant a real
+    `type:'boolean'`/`type:'number'` attr (e.g. `fxDisableTablet`,
+    `fxScrub`) round-trips as the literal string `"true"`/`"0.6"`, which a
+    strict PHP `true === $value` check (as `includes/fx-attributes.php`
+    genuinely uses) never matches — a client's "don't run this on mobile"
+    setting would silently not apply. Now sources both the full name list
+    AND each attr's real type from `db_lookup.fx_attr_roster()` (see that
+    function's docstring) — two already-maintained, build-generated
+    artefacts, not hand-derived here.
+
+    ⛔ `source='sgs-fx'`, DELIBERATELY NOT `'sgs'` (D951-adversarial-council
+    fix, 2026-09-04). These rows have no block.json to be validated against —
+    that is the whole point of this function existing. Stage 9's ghost-row
+    prune (`_prune_orphans_on_conn`, category (c)) deletes any
+    `block_attributes` row with `source='sgs'` whose `attr_name` is absent
+    from its block's live block.json `attributes` — unconditionally, no
+    dry-run/conservative escape for this category. Seeding with `source='sgs'`
+    was caught (adversarial-council, before this line existed) as a
+    same-session self-destruct: every row this function inserts would be
+    deleted again the very next full `/sgs-update` run, silently reverting
+    FR-38-22. `source='sgs-fx'` is invisible to that query's `WHERE
+    ba.source = 'sgs'` filter by construction. No other block_attributes
+    query anywhere in this file or in db_lookup.py filters on `source` (only
+    the `blocks` table's own rows use `source='sgs'` as a filter elsewhere) —
+    verified by grep before choosing this fix, not assumed.
 
     Returns {"fx_attr_rows_inserted": int, "fx_attr_rows_blocks": int}.
     """
     c = conn.cursor()
-    fx_map = _load_fx_attr_css_property_map()
+    roster = _load_fx_attr_roster()
     slugs = _load_fx_qualifying_block_slugs()
     inserted = 0
     touched_blocks: set[str] = set()
     for slug in sorted(slugs):
-        for attr_name in fx_map:
+        for attr_name, attr_info in roster.items():
             exists = c.execute(
                 "SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
                 (slug, attr_name),
@@ -2440,11 +2500,13 @@ def _seed_missing_fx_attr_rows(conn: sqlite3.Connection, dry_run: bool = False) 
             inserted += 1
             touched_blocks.add(slug)
             if not dry_run:
+                # attr_type from the real JS declaration (string/number/
+                # boolean/array), not hardcoded — see docstring correction.
                 c.execute(
                     "INSERT INTO block_attributes "
                     "(block_slug, attr_name, attr_type, role, source) "
-                    "VALUES (?, ?, 'string', 'behaviour', 'sgs')",
-                    (slug, attr_name),
+                    "VALUES (?, ?, ?, 'behaviour', 'sgs-fx')",
+                    (slug, attr_name, attr_info.get("type", "string")),
                 )
     return {
         "fx_attr_rows_inserted": inserted,
