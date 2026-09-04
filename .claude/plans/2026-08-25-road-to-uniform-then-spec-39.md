@@ -2,14 +2,14 @@
 doc_type: plan
 title: The road to uniform — clear Spec 32 + Spec 35 + the tier migration, then Spec 39
 date: 2026-08-25
-status: NEARLY CLOSED — Section A closed, Spec 32 fully closed (B4 unblocked + shipped
-  2026-09-04, see below), Spec 35's mechanical verification pass closed. Of the 9 items found
-  genuinely open earlier this session (see ROUND 2 CORRECTED note under "Session 2026-09-04
-  summary"), 8 closed same session: C7, C6, C16 (found already done), C19 item 3, C15-5,
-  C14/C4, D4, B4. Only C12/C13 remains open, blocked on shared browser resource contention
-  (not a design/dependency block — retry once free). Every claim in this file was
-  independently re-verified against live code before this status was written.
-  C1/D3 (golden-colour) tracked elsewhere.
+status: CLOSED 2026-09-04 — Section A closed, Spec 32 fully closed (B4 unblocked + shipped),
+  Spec 35's mechanical verification pass closed, C12/C13 closed via an independent Chrome
+  instance after the shared-browser lock cleared. All 9 items found genuinely open earlier
+  this session (see ROUND 2 CORRECTED note under "Session 2026-09-04 summary") are now
+  closed: C7, C6, C16 (found already done), C19 item 3, C15-5, C14/C4, D4, B4, C12/C13. Every
+  claim in this file was independently re-verified against live code before this status was
+  written. C1/D3 (golden-colour) tracked elsewhere. Spec 39 gate (D552) unaffected by this
+  closure — see "Order of work" below.
 owner: colour-golden / tooling track
 ordering_rule: D552 — "standard leads, pipeline follows"
 ---
@@ -151,15 +151,21 @@ delete once superseded):**
   concern, not a border-control one. Survey: `ANOMALY 7→6`, `PRIVATE_DONE 48→49`. Live
   frontend roundtrip PASS post-deploy. Commits `20bcb52b8`, `b0670ac4a`.
 
-**One item still genuinely open:**
+**All items closed 2026-09-04.**
 
-1. ⚠ **C12/C13 — ATTEMPTED 2026-09-04, BLOCKED by shared browser resource contention, not
-   completed.** Both dispatches hit the same Playwright MCP browser lock (another concurrent
-   session holding `mcp-chrome-91e235c`) on every retry; neither forced past it (killing a
-   shared browser risks destroying another session's in-progress work). C13's expected
-   element-order ground truth (read from each candidate's `block.json`) was captured and
-   doesn't need re-deriving. Full account: `.claude/reports/2026-09-04-c12-c13-live-pass.md`.
-   Re-dispatch once the shared browser is confirmed free.
+- ✅ **C12/C13 — CLOSED.** The Playwright-based attempts were genuinely blocked by another
+  session holding the shared browser profile; re-run with a second, independent Chrome
+  instance (the `superpowers-chrome` browsing skill — separate profile/port, no contention)
+  against a scratch draft page, deleted after the pass. C12: 0 keyboard-trap patterns, 0
+  contrast failures across all 15 target blocks (live-verified with real CDP `Tab` presses,
+  not just static attribute checks), 1 real `aria-describedby` finding correctly attributed
+  to a WP-core `UnitControl` internal element (not an SGS defect). C13: the one currently-
+  ENFORCED ordering rule (Advanced last, Visibility conditions second-from-last) holds live
+  on 12/12 sampled direct-panel blocks; the unconverted per-element panel breakdown is the
+  documented, known backlog (CO-28, 58/83 blocks), not a regression this pass found. Full
+  account: `.claude/reports/2026-09-04-c12-c13-live-pass.md`.
+
+**Road-to-uniform backlog: 9/9 items closed.**
 
 **Root cause of round 1's error** (full account: D960): the original 2026-08-25/26 "unbuilt"
 claims were honest when written — grep genuinely found nothing, and the features shipped 1-2
