@@ -274,6 +274,19 @@ export const MEDIA_ATOMS = {
 			'sgs/hero': {
 				splitMediaWidth: 'NUMBER paired with splitMediaWidthUnit, not a tier object',
 				splitMediaObjectFit: "'custom' arrives here as sizing mode = explicit",
+				// Legacy per-tier scalars from hero's pre-atom bespoke width UI
+				// (deleted in the C19 box-shape migration, 2026-09-04). Kept
+				// editor-inert and read-only by render.php's back-compat CSS
+				// emission — nothing writes to them any more, so they never
+				// collide with the atom's own tier-object Width in practice,
+				// but the STATIC declared type (NUMBER, matching the base
+				// splitMediaWidth above) genuinely differs from the atom's
+				// generic tiered-Width expectation (OBJECT). Renaming them
+				// would silently drop any pre-existing stored value on a live
+				// hero instance, which is a worse outcome than a documented
+				// static exception.
+				splitMediaWidthTablet: 'NUMBER, same legacy shape as splitMediaWidth — editor-inert, render.php-only',
+				splitMediaWidthMobile: 'NUMBER, same legacy shape as splitMediaWidth — editor-inert, render.php-only',
 			},
 			'sgs/decorative-image': {
 				maxWidthPercent: 'a bare percentage number, not a length+unit pair',

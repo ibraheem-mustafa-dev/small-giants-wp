@@ -722,6 +722,80 @@ if ( null !== $image_height_mobile ) {
 	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-media{height:' . absint( $image_height_mobile ) . esc_attr( $image_height_unit ) . '}}';
 }
 
+// ── C19 item 3 (2026-09-04): box-shape atom's remaining bases — sizing MODE,
+// named SHAPE, aspect ratio, min-height, max-width/height/percent. Reuses the
+// atom's own PHP twin helper functions (includes/media/atoms/box-shape.php,
+// already required via render-helpers.php) rather than reimplementing them by
+// hand. Deliberately does NOT gate the pre-existing width/height emission
+// above by sizing mode — those stay UNGATED for back-compat (see the comment
+// on the height block above: gating by mode would silently drop height for
+// any pre-existing hero that set it while objectFit stayed 'cover', which
+// resolves to mode 'auto'). Mode instead governs the EDITOR disclosure only
+// (which control is greyed) plus these NEW, additive properties, which are
+// inert on every pre-existing hero (their attrs default empty/'none').
+$image_media_sizing = sgs_media_atom_box_shape_resolve_sizing_mode( $attributes['splitMediaMediaSizing'] ?? null, $image_object_fit );
+$image_shape        = sgs_media_atom_box_shape_validate_shape( $attributes['splitMediaShape'] ?? null );
+$image_aspect_ratio = sgs_media_atom_box_shape_normalise_ratio( $attributes['splitMediaAspectRatio'] ?? null );
+
+if ( 'ratio' === $image_media_sizing && '' !== $image_aspect_ratio ) {
+	$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{aspect-ratio:' . esc_attr( $image_aspect_ratio ) . '}';
+}
+
+if ( 'none' !== $image_shape ) {
+	$image_clip_paths = sgs_media_atom_box_shape_clip_paths();
+	if ( isset( $image_clip_paths[ $image_shape ] ) ) {
+		$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{clip-path:' . esc_attr( $image_clip_paths[ $image_shape ] ) . '}';
+	}
+}
+
+// splitMediaMinHeight — a SINGLE tier-object attr {desktop,tablet,mobile},
+// matching the atom's own control shape (box-shape.control.js only ever
+// writes the .desktop key — no separate Tablet/Mobile sibling attrs, unlike
+// every other tier family in this file).
+$image_min_height_obj = sgs_media_atom_box_shape_resolve_tier_object( $attributes['splitMediaMinHeight'] ?? null );
+$image_min_height_bp  = array(
+	'desktop' => '',
+	'tablet'  => '1023px',
+	'mobile'  => '767px',
+);
+foreach ( $image_min_height_bp as $sgs_hero_min_height_tier => $sgs_hero_min_height_bp ) {
+	$sgs_hero_min_height_val = $image_min_height_obj[ $sgs_hero_min_height_tier ] ?? null;
+	$sgs_hero_min_height_css = sgs_media_atom_box_shape_format_length(
+		$sgs_hero_min_height_val,
+		'px',
+		! empty( $image_min_height_obj['__unitEmbedded'] )
+	);
+	if ( '' === $sgs_hero_min_height_css ) {
+		continue;
+	}
+	$sgs_hero_min_height_decl = '.' . $uid . ' .sgs-hero__split-media{min-height:' . esc_attr( $sgs_hero_min_height_css ) . '}';
+	$responsive_css          .= '' === $sgs_hero_min_height_bp
+		? $sgs_hero_min_height_decl
+		: '@media (max-width:' . $sgs_hero_min_height_bp . '){' . $sgs_hero_min_height_decl . '}';
+}
+
+// splitMediaMaxWidth / splitMediaMaxHeight — DESKTOP tier only, matching the
+// atom's own css() (no tablet/mobile reach for max-width/max-height).
+$image_max_width_obj  = is_array( $attributes['splitMediaMaxWidth'] ?? null ) ? $attributes['splitMediaMaxWidth'] : array();
+$image_max_width_unit = sgs_css_length_value( $attributes['splitMediaMaxWidthUnit'] ?? 'px' );
+if ( isset( $image_max_width_obj['desktop'] ) && '' !== $image_max_width_obj['desktop'] && is_numeric( $image_max_width_obj['desktop'] ) ) {
+	$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{max-width:' . absint( $image_max_width_obj['desktop'] ) . esc_attr( $image_max_width_unit ) . '}';
+}
+
+$image_max_height_obj  = is_array( $attributes['splitMediaMaxHeight'] ?? null ) ? $attributes['splitMediaMaxHeight'] : array();
+$image_max_height_unit = sgs_css_length_value( $attributes['splitMediaMaxHeightUnit'] ?? 'px' );
+if ( isset( $image_max_height_obj['desktop'] ) && '' !== $image_max_height_obj['desktop'] && is_numeric( $image_max_height_obj['desktop'] ) ) {
+	$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{max-height:' . absint( $image_max_height_obj['desktop'] ) . esc_attr( $image_max_height_unit ) . '}';
+}
+
+// splitMediaMaxWidthPercent — a bare percentage, same concept sgs/decorative-image
+// uses (decorMedia's maxWidthPercent). Emitted AFTER the max-width object
+// block above so it wins the cascade when an operator sets both.
+$image_max_width_percent = $attributes['splitMediaMaxWidthPercent'] ?? null;
+if ( is_numeric( $image_max_width_percent ) ) {
+	$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{max-width:' . esc_attr( (string) $image_max_width_percent ) . '%}';
+}
+
 // ── mediaPadding: box-object family — base + tablet + mobile (on .sgs-hero__media).
 $media_pad_base = sgs_box_object_shorthand( $media_padding_obj );
 if ( null !== $media_pad_base ) {

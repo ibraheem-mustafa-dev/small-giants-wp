@@ -25,7 +25,6 @@ import {
 	BOX_UNITS,
 	normaliseResponsiveBox,
 	SgsColourPanel,
-	SgsLengthControl,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
@@ -33,6 +32,7 @@ import {
 	HeroSplitMediaSourceSection,
 	HeroSplitMediaStylingSection,
 } from '../../components/media/HeroSplitMediaPanelLayout.js';
+import MediaElementPanel from '../../components/MediaElementPanel.js';
 import {
 	elementScopeClass,
 	elementCustomProperties,
@@ -168,33 +168,6 @@ const ALIGN_CONTENT_OPTIONS = [
 ];
 
 /**
- * Responsive RangeControl helper.
- * Renders a RangeControl wrapped in ResponsiveControl, mapping
- * attrDesktop/Tablet/Mobile attribute names automatically.
- */
-function RRangeControl( { label, attrDesktop, attrTablet, attrMobile, attributes, setAttributes, min = 0, max = 200, step = 1, nullOnZero = true } ) {
-	return (
-		<ResponsiveControl label={ label }>
-			{ ( bp ) => {
-				const key = { desktop: attrDesktop, tablet: attrTablet, mobile: attrMobile }[ bp ];
-				const val = attributes[ key ] || 0;
-				return (
-					<RangeControl
-						value={ val }
-						onChange={ ( v ) => setAttributes( { [ key ]: nullOnZero ? ( v || null ) : v } ) }
-						min={ min }
-						max={ max }
-						step={ step }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				);
-			} }
-		</ResponsiveControl>
-	);
-}
-
-/**
  * FR-22-6: full content column template.
  * Produces: eyebrow label → headline (h1) → sub-headline paragraph → CTA buttons.
  * Converter supplies sgs/label + sgs/heading + sgs/text + sgs/multi-button.
@@ -320,6 +293,18 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		splitMediaPadding,
 		splitMediaPaddingTablet,
 		splitMediaPaddingMobile,
+		// C19 item 3 (2026-09-04) — box-shape atom's remaining bases, only used
+		// for this ToolsPanelItem's hasValue()/onDeselect() below; the control
+		// UI itself reads/writes via MediaElementPanel's own atom composition.
+		splitMediaMediaSizing,
+		splitMediaShape,
+		splitMediaAspectRatio,
+		splitMediaMinHeight,
+		splitMediaMaxWidth,
+		splitMediaMaxWidthUnit,
+		splitMediaMaxHeight,
+		splitMediaMaxHeightUnit,
+		splitMediaMaxWidthPercent,
 		contentBackground,
 		contentBackgroundGradient,
 		// contentPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (Spec 35
@@ -1483,6 +1468,15 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								splitMediaWidthUnit: '%',
 								splitMediaHeight: {},
 								splitMediaHeightUnit: 'px',
+								splitMediaMediaSizing: undefined,
+								splitMediaShape: 'none',
+								splitMediaAspectRatio: '',
+								splitMediaMinHeight: {},
+								splitMediaMaxWidth: {},
+								splitMediaMaxWidthUnit: 'px',
+								splitMediaMaxHeight: {},
+								splitMediaMaxHeightUnit: 'px',
+								splitMediaMaxWidthPercent: undefined,
 								splitMediaBorderRadius: {},
 								splitMediaBorderRadiusTablet: {},
 								splitMediaBorderRadiusMobile: {},
@@ -1554,79 +1548,73 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 							/>
-							{ splitMediaObjectFit === 'custom' && (
-								<>
-									<p style={ { fontWeight: 600, margin: '12px 0 4px' } }>{ __( 'Custom dimensions', 'sgs-blocks' ) }</p>
-									<RRangeControl label={ __( 'Width', 'sgs-blocks' ) } attrDesktop="splitMediaWidth" attrTablet="splitMediaWidthTablet" attrMobile="splitMediaWidthMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 1200 } step={ 1 } />
-									<SgsLengthControl
-										label={ __( 'Width unit', 'sgs-blocks' ) }
-										value={ `${ splitMediaWidth || 0 }${ splitMediaWidthUnit || 'px' }` }
-										units={ [
-											{ value: 'px', label: 'px', default: 0 },
-											{ value: '%',  label: '%',  default: 0 },
-										] }
-										onChange={ ( val ) => {
-											const unit = val?.replace( /[\d.]+/, '' ) || 'px';
-											setAttributes( { splitMediaWidthUnit: unit } );
-										} }
-										presets={ false }
-									/>
-									{ /* splitMediaHeight is the OBJECT model (Spec 35 / FR-37-16): one attr
-									     holding all three tiers, so this uses ResponsiveOverride rather
-									     than the flat attrDesktop/attrTablet/attrMobile trio the Width
-									     control above still uses. A blank tier INHERITS the tier above.
-									     This control also absorbed the removed "Split image height"
-									     control — both wrote `height` to `.sgs-hero__split-image`. */ }
-									<ResponsiveOverride
-										label={ __( 'Height', 'sgs-blocks' ) }
-										value={ splitMediaHeight }
-										onChange={ ( obj ) => setAttributes( { splitMediaHeight: obj } ) }
-									>
-										{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-											<RangeControl
-												help={ inherited
-													? __( 'Inherited. Set a value to override at this device.', 'sgs-blocks' )
-													: __( 'Fixed height for the split image. 0 = auto (fits content).', 'sgs-blocks' ) }
-												value={ Number( ownValue ?? effectiveValue ) || 0 }
-												onChange={ ( val ) => setOwnValue( val || null ) }
-												min={ 0 }
-												max={ 1200 }
-												step={ 1 }
-												__nextHasNoMarginBottom
-												__next40pxDefaultSize
-											/>
-										) }
-									</ResponsiveOverride>
-									<SgsLengthControl
-										label={ __( 'Height unit', 'sgs-blocks' ) }
-										value={ `${ splitMediaHeight?.desktop || 0 }${ splitMediaHeightUnit || 'px' }` }
-										units={ [
-											{ value: 'px', label: 'px', default: 0 },
-											{ value: '%',  label: '%',  default: 0 },
-										] }
-										onChange={ ( val ) => {
-											const unit = val?.replace( /[\d.]+/, '' ) || 'px';
-											setAttributes( { splitMediaHeightUnit: unit } );
-										} }
-										presets={ false }
-									/>
-								</>
-							) }
 						</ToolsPanelItem>
 
+						{ /* C19 item 3 (2026-09-04) — replaces the old bespoke "Custom
+						     dimensions" width/height sub-section above plus the separate
+						     "Border" and "Inner padding" ToolsPanelItems below with ONE
+						     mount of the shared box-shape + media-padding atoms, giving
+						     hero the same shape -> fit -> position chain as sgs/media
+						     (MediaBoxShapeControls: sizing mode / named shape / height /
+						     ratio / min-height / width / max-width / max-height /
+						     max-width-percent / border, plus a padding row). Prefix
+						     'splitMedia' resolves to hero's EXISTING splitMediaWidth/
+						     Height/BorderRadius/BorderWidth/BorderStyle/BorderColour/
+						     Padding attrs (mediaStoredAttrName has no STORED_AS entry for
+						     sgs/hero, so the canonical splitMedia+Base naming already
+						     matches — zero renames) plus the NEW splitMediaMediaSizing/
+						     Shape/AspectRatio/MinHeight/MaxWidth/MaxHeight/
+						     MaxWidthPercent attrs hand-declared in block.json. The
+						     'custom' sizing-mode sentinel written by the "Custom sizing"
+						     toggle above (HeroSplitMediaStylingSection) still works
+						     unchanged: box-shape's own resolveSizingMode() resolves an
+						     unset MediaSizing + objectFit==='custom' to mode 'height'. */ }
 						<ToolsPanelItem
-							label={ __( 'Border', 'sgs-blocks' ) }
+							label={ __( 'Split media box & border', 'sgs-blocks' ) }
 							hasValue={ () =>
+								!! splitMediaMediaSizing ||
+								splitMediaShape !== 'none' ||
+								!! splitMediaAspectRatio ||
+								!! splitMediaWidth ||
+								!! splitMediaWidthTablet ||
+								!! splitMediaWidthMobile ||
+								splitMediaWidthUnit !== '%' ||
+								Object.keys( splitMediaHeight ?? {} ).length > 0 ||
+								splitMediaHeightUnit !== 'px' ||
+								Object.keys( splitMediaMinHeight ?? {} ).length > 0 ||
+								Object.keys( splitMediaMaxWidth ?? {} ).length > 0 ||
+								splitMediaMaxWidthUnit !== 'px' ||
+								Object.keys( splitMediaMaxHeight ?? {} ).length > 0 ||
+								splitMediaMaxHeightUnit !== 'px' ||
+								!! splitMediaMaxWidthPercent ||
 								Object.keys( splitMediaBorderWidth ?? {} ).length > 0 ||
 								splitMediaBorderStyle !== 'none' ||
 								splitMediaBorderColour !== '' ||
 								splitMediaBorderColourGradient !== '' ||
 								Object.keys( splitMediaBorderRadius ?? {} ).length > 0 ||
 								Object.keys( splitMediaBorderRadiusTablet ?? {} ).length > 0 ||
-								Object.keys( splitMediaBorderRadiusMobile ?? {} ).length > 0
+								Object.keys( splitMediaBorderRadiusMobile ?? {} ).length > 0 ||
+								Object.keys( splitMediaPadding ?? {} ).length > 0 ||
+								Object.keys( splitMediaPaddingTablet ?? {} ).length > 0 ||
+								Object.keys( splitMediaPaddingMobile ?? {} ).length > 0
 							}
 							onDeselect={ () =>
 								setAttributes( {
+									splitMediaMediaSizing: undefined,
+									splitMediaShape: 'none',
+									splitMediaAspectRatio: '',
+									splitMediaWidth: undefined,
+									splitMediaWidthTablet: undefined,
+									splitMediaWidthMobile: undefined,
+									splitMediaWidthUnit: '%',
+									splitMediaHeight: {},
+									splitMediaHeightUnit: 'px',
+									splitMediaMinHeight: {},
+									splitMediaMaxWidth: {},
+									splitMediaMaxWidthUnit: 'px',
+									splitMediaMaxHeight: {},
+									splitMediaMaxHeightUnit: 'px',
+									splitMediaMaxWidthPercent: undefined,
 									splitMediaBorderRadius: {},
 									splitMediaBorderRadiusTablet: {},
 									splitMediaBorderRadiusMobile: {},
@@ -1634,66 +1622,20 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									splitMediaBorderWidth: {},
 									splitMediaBorderColour: '',
 									splitMediaBorderColourGradient: '',
-								} )
-							}
-						>
-							<SgsBorderControl
-								widthValues={ attributes.splitMediaBorderWidth ?? {} }
-								onWidthChange={ ( next ) => setAttributes( { splitMediaBorderWidth: next } ) }
-								widthPresets={ [ '10', '20', '30' ] }
-								styleValue={ attributes.splitMediaBorderStyle }
-								onStyleChange={ ( val ) => setAttributes( { splitMediaBorderStyle: val } ) }
-								colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
-								colourValue={ attributes.splitMediaBorderColour }
-								onColourChange={ ( val ) => setAttributes( { splitMediaBorderColour: val ?? '' } ) }
-								colourGradientValue={ attributes.splitMediaBorderColourGradient }
-								onColourGradientChange={ ( val ) => setAttributes( { splitMediaBorderColourGradient: val ?? '' } ) }
-								colourLinked={ true }
-								radiusValues={ {
-									base: attributes.splitMediaBorderRadius ?? {},
-									tablet: attributes.splitMediaBorderRadiusTablet ?? {},
-									mobile: attributes.splitMediaBorderRadiusMobile ?? {},
-								} }
-								onRadiusChange={ ( tier, next ) => {
-									const radiusKey = tier === 'base' ? 'splitMediaBorderRadius' : tier === 'tablet' ? 'splitMediaBorderRadiusTablet' : 'splitMediaBorderRadiusMobile';
-									setAttributes( { [ radiusKey ]: next } );
-								} }
-							/>
-						</ToolsPanelItem>
-
-						<ToolsPanelItem
-							label={ __( 'Inner padding', 'sgs-blocks' ) }
-							hasValue={ () =>
-								Object.keys( splitMediaPadding ?? {} ).length > 0 ||
-								Object.keys( splitMediaPaddingTablet ?? {} ).length > 0 ||
-								Object.keys( splitMediaPaddingMobile ?? {} ).length > 0
-							}
-							onDeselect={ () =>
-								setAttributes( {
 									splitMediaPadding: {},
 									splitMediaPaddingTablet: {},
 									splitMediaPaddingMobile: {},
 								} )
 							}
+							isShownByDefault
 						>
-							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Inner padding (around the image element itself)', 'sgs-blocks' ) }</p>
-							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Affects the gap between the image and the wrapper border.', 'sgs-blocks' ) }</p>
-							<ResponsiveBoxControl
-								label={ __( 'Image padding', 'sgs-blocks' ) }
-								presets
-								values={ {
-									base: splitMediaPadding ?? {},
-									tablet: splitMediaPaddingTablet ?? {},
-									mobile: splitMediaPaddingMobile ?? {},
-								} }
-								onChange={ ( tier, next ) => {
-									const attrMap = {
-										base: 'splitMediaPadding',
-										tablet: 'splitMediaPaddingTablet',
-										mobile: 'splitMediaPaddingMobile',
-									};
-									setAttributes( { [ attrMap[ tier ] ]: next } );
-								} }
+							<MediaElementPanel
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix="splitMedia"
+								blockSlug="sgs/hero"
+								insertion="element"
+								atoms={ [ 'box-shape', 'media-padding' ] }
 							/>
 						</ToolsPanelItem>
 
