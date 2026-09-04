@@ -502,8 +502,26 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					<ToolsPanelItem
 						label={ __( 'Font', 'sgs-blocks' ) }
-						hasValue={ () => true }
-						onDeselect={ () => {} }
+						hasValue={ () =>
+							( fontSize && 'object' === typeof fontSize && Object.keys( fontSize ).length > 0 ) ||
+							'px' !== ( fontSizeUnit || 'px' ) ||
+							!! fontWeight ||
+							!! fontStyle ||
+							( lineHeight && 'object' === typeof lineHeight && Object.keys( lineHeight ).length > 0 ) ||
+							'em' !== ( lineHeightUnit || 'em' ) ||
+							( letterSpacing && 'object' === typeof letterSpacing && Object.keys( letterSpacing ).length > 0 )
+						}
+						onDeselect={ () =>
+							setAttributes( {
+								fontSize: {},
+								fontSizeUnit: 'px',
+								fontWeight: '',
+								fontStyle: '',
+								lineHeight: {},
+								lineHeightUnit: 'em',
+								letterSpacing: {},
+							} )
+						}
 						isShownByDefault
 					>
 					{ /*
