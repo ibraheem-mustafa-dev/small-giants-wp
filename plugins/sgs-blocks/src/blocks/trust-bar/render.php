@@ -441,6 +441,20 @@ if ( 'image-badge' === $badge_style ) {
 // --- Build badge items HTML ---------------------------------------------------
 $items_html = '';
 
+// Spec 35 Part 4 — per-item object-fit override, image-badge variant only.
+// Keyed by the item's OWN stable `_key` (src/utils/generateItemKey.js), never
+// by array index/`:nth-child` (both break the moment an operator reorders/
+// adds/removes a badge). `sgs_media_position_css()` already accepts an
+// arbitrary attributes array + prefix; passed a per-item shim here rather
+// than the block's own $attributes, with focalPoint always null (badges are
+// logos/certification marks, not photographs — no crop control by design,
+// mirroring sgs/testimonial's orgLogo + sgs/brand-strip's logoFit). A
+// pre-existing item authored before this field existed has no `_key` yet
+// (client-side backfill lands on next editor save), so the index fallback
+// below is never load-bearing in practice — it only prevents an empty
+// selector.
+$tb_per_item_css = '';
+
 // Sibling offset for the per-badge `:nth-child(N)` scoped rules below.
 //
 // `:nth-child` counts EVERY element sibling, so N is only the badge's own
@@ -567,6 +581,19 @@ foreach ( $items as $tb_item_index => $item ) {
 			$media_alt = isset( $item['label'] ) ? (string) $item['label'] : '';
 		}
 
+		// Per-item object-fit override (Spec 35 Part 4) — see the
+		// $tb_per_item_css declaration above the loop for the full rationale.
+		$tb_item_key       = ! empty( $item['_key'] ) ? (string) $item['_key'] : 'idx-' . absint( $tb_item_index );
+		$tb_item_key_attr  = ' data-badge-key="' . esc_attr( $tb_item_key ) . '"';
+		$tb_per_item_css  .= sgs_media_position_css(
+			array(
+				'objectPosition' => null,
+				'objectFit'      => $item['objectFit'] ?? '',
+			),
+			'',
+			$uid_scope . ' [data-badge-key="' . esc_attr( $tb_item_key ) . '"] img'
+		);
+
 		// Decorative badge image (WCAG 2.1 AA 1.1.1) — an explicit per-badge
 		// editorial choice that this image carries no information (e.g. a
 		// repeating brand-mark pattern where the names already appear as
@@ -577,6 +604,7 @@ foreach ( $items as $tb_item_index => $item ) {
 			$media_alt = '';
 		}
 
+		$item_attrs   .= $tb_item_key_attr;
 		$badge_content = '';
 		if ( $media_url ) {
 			$badge_content .= sprintf(
@@ -623,8 +651,9 @@ $title_sel = $uid_scope . ' .sgs-trust-bar__title';
 $typo_css  = sgs_typography_css_rule( $attributes, 'label', $label_sel );
 $typo_css .= sgs_typography_css_rule( $attributes, 'title', $title_sel );
 // No-inline contract: combine the color/border scoped rules ($tb_extra_scoped_css,
-// built above — includes title/label colour) with typography into ONE <style> tag.
-$all_scoped_css = $tb_extra_scoped_css . $typo_css;
+// built above — includes title/label colour), typography, and the per-item
+// image-badge object-fit overrides ($tb_per_item_css) into ONE <style> tag.
+$all_scoped_css = $tb_extra_scoped_css . $typo_css . $tb_per_item_css;
 $style_block    = $all_scoped_css ? '<style>' . wp_strip_all_tags( $all_scoped_css ) . '</style>' : '';
 
 // WS-4: outer wrapper via the shared helper; trust-bar keeps its interior.

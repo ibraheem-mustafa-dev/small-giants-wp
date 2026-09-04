@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, RichText, useSettings } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
+import { useEffect, useMemo } from '@wordpress/element';
 import {
 	PanelBody,
 	SelectControl,
@@ -16,7 +17,7 @@ import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, Respons
 	resolveColourToken,
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview, spacingPreview } from '../../utils';
+import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview, spacingPreview, generateItemKey, withStableItemKeys } from '../../utils';
 // trust-bar does not use the default <ContainerWrapperControls> aggregator —
 // its "Content band" / "Responsive spacing" panels write to flat attrs
 // (contentBandPaddingTop, paddingTopTablet, …) this block does not declare;
@@ -234,6 +235,24 @@ function GenericBadgeItemEditor( { item, index, badgeStyle, onChange, onRemove }
 						onChange={ ( val ) => update( 'decorative', val ) }
 						__nextHasNoMarginBottom
 					/>
+					{ /* Spec 35 Part 4 — per-item object-fit only (no focal-point/
+					   crosshair control: badges are logos/certification marks,
+					   not photographs — same convention as sgs/testimonial's
+					   orgLogo and sgs/brand-strip's logoFit). Gated on media
+					   existing, mirroring the disclosure pattern above. */ }
+					{ !! item.media?.url && (
+						<SelectControl
+							label={ __( 'Image fit', 'sgs-blocks' ) }
+							value={ item.objectFit || 'cover' }
+							options={ [
+								{ label: __( 'Cover (crop to fill)', 'sgs-blocks' ), value: 'cover' },
+								{ label: __( 'Contain (fit within, no crop)', 'sgs-blocks' ), value: 'contain' },
+							] }
+							onChange={ ( val ) => update( 'objectFit', val ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
 				</>
 			) }
 
@@ -279,7 +298,7 @@ function GenericBadgeItemEditor( { item, index, badgeStyle, onChange, onRemove }
 export default function Edit( { attributes, setAttributes, name } ) {
 	const {
 		badgeStyle,
-		items,
+		items: rawItems,
 		title,
 		titleColour,
 		labelColour,
@@ -314,6 +333,18 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		autoScrollPauseOnHover,
 		shadow,
 	} = attributes;
+
+	// Stable per-item `_key` for CSS scoping (Spec 35 Part 4) — backfilled
+	// silently for items authored before this field existed. useMemo keeps
+	// the generated keys stable within a render even before the effect
+	// below persists them; the effect fires at most once per real backfill
+	// (withStableItemKeys returns the SAME reference when nothing changed).
+	const items = useMemo( () => withStableItemKeys( rawItems ), [ rawItems ] );
+	useEffect( () => {
+		if ( items !== rawItems ) {
+			setAttributes( { items } );
+		}
+	}, [ items, rawItems, setAttributes ] );
 
 	const circleBgValue  = colourVar( iconCircleBackground ) || '#ffffff';
 	const iconColourValue = colourVar( iconColour ) || 'currentColor';
@@ -429,8 +460,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 	const addItem = () => {
 		const newItem = badgeStyle === 'icon-circle'
-			? { icon: 'check', label: '' }
-			: { label: '', url: '' };
+			? { icon: 'check', label: '', _key: generateItemKey() }
+			: badgeStyle === 'image-badge'
+				? { label: '', url: '', _key: generateItemKey(), objectFit: 'cover' }
+				: { label: '', url: '', _key: generateItemKey() };
 		setAttributes( { items: [ ...items, newItem ] } );
 	};
 
@@ -672,14 +705,14 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					{ items.map( ( item, index ) => (
 						badgeStyle === 'icon-circle' ? (
 							<IconCircleItemEditor
-								key={ index }
+								key={ item._key || index }
 								item={ item }
 								onChange={ ( updated ) => updateItem( index, updated ) }
 								onRemove={ () => removeItem( index ) }
 							/>
 						) : (
 							<GenericBadgeItemEditor
-								key={ index }
+								key={ item._key || index }
 								item={ item }
 								index={ index }
 								badgeStyle={ badgeStyle }
@@ -1111,7 +1144,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							if ( badgeStyle === 'icon-circle' ) {
 								return (
 									<div
-										key={ index }
+										key={ item._key || index }
 										className="sgs-trust-bar__badge"
 									>
 										<EditorIconCircle
@@ -1133,7 +1166,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 							if ( badgeStyle === 'text-only' ) {
 								return (
-									<div key={ index } className="sgs-trust-bar__badge">
+									<div key={ item._key || index } className="sgs-trust-bar__badge">
 										<span
 											className="sgs-trust-bar__badge-label"
 											style={ {
@@ -1150,7 +1183,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							const mediaUrl = item.media?.url || item.image?.url || '';
 							const mediaAlt = item.media?.alt || item.label || '';
 							return (
-								<div key={ index } className="sgs-trust-bar__badge">
+								<div key={ item._key || index } className="sgs-trust-bar__badge">
 									{ mediaUrl && (
 										<img
 											src={ mediaUrl }
@@ -1159,7 +1192,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 											style={ {
 												width: `${ badgeImageSize }px`,
 												height: `${ badgeImageSize }px`,
-												objectFit: badgeImageObjectFit === 'cover' ? 'cover' : 'contain',
+												objectFit: item.objectFit || badgeImageObjectFit,
 												borderRadius: badgeImageBorderRadius || undefined,
 												boxShadow: resolveShadowPreviewComposed( badgeImageShadow, badgeImageShadowColour ),
 											} }

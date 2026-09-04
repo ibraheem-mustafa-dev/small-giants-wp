@@ -287,6 +287,16 @@
 						"type": "boolean",
 						"default": false,
 						"description": "image-badge variant only. Explicit editorial choice (WCAG 2.1 AA 1.1.1) that this badge's image carries no information — render.php blanks its alt text and adds aria-hidden so assistive tech skips it entirely."
+					},
+					"_key": {
+						"type": "string",
+						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit CSS (image-badge variant only) so a fit value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed."
+					},
+					"objectFit": {
+						"type": "string",
+						"enum": [ "cover", "contain" ],
+						"default": "cover",
+						"description": "image-badge variant only. Per-item object-fit override — badges are logos/certification marks, so no focal-point/crop field exists here by design (see sgs/testimonial orgLogo, sgs/brand-strip logoFit)."
 					}
 				}
 			},
