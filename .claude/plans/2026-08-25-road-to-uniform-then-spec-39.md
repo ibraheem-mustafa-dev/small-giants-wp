@@ -125,8 +125,16 @@ delete once superseded):**
    double-counted as separate work from C4.
 4. **C12/C13** — live-pass items. Confirmed zero evidence either was ever run — no recent
    a11y report, no panel-ordering artefact in `.claude/reports/`.
-5. **D4** — confirmed still unactioned: 23 rules sit `mode: "advisory"` in
-   `inspector-scan/rules.json`, 0 carry a `promotionCondition` field.
+5. ✅ **D4 CLOSED 2026-09-04** — decided per-rule, not blanket. 8 promoted to `gate`
+   (01-tab-group, 20-pattern-template-lock, 07-preset-only-shadow, 22-placement-rule-surfaces,
+   26-responsive-duplicate, 30-raw-box-control, 29-duplicate-visible-label,
+   36-box-control-presets-missing — all cleared the project's own advisory-before-fail-closed
+   bar, E6 point 9). 15 held advisory with a named, evidenced reason each (real backlog:
+   31/34; pending the in-flight C14/C4 build: 35; too new to have cleared a cycle: 37/38/39/40/
+   roster-drift/parse-error; the rule's own evidence argues caution: 23/33/28; closed THIS
+   session so not yet cycle-tested: 18/03/21). Full reasoning:
+   `.claude/reports/2026-09-04-d4-advisory-rule-promotion-decisions.md`. Re-verified after the
+   flip: `inspector-scan --check` exit 0, gate rules 7→15, gating findings 0.
 6. **B4** — `mega-panel.borderRadius`, confirmed still bespoke (`grep -c SgsBorderControl
    mega-panel/edit.js` → 0), correctly BLOCKED on Track 2 (inactive).
 
