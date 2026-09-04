@@ -45,7 +45,8 @@ companions: Spec 32 (component styling/token contract — governs RENDERED outpu
 >
 > **Same-day follow-up (2026-09-04, closing this prompt's dispatch):** all 3 approved rules
 > SHIPPED — `42-no-op-reset-controls` (0 live findings), `43-colour-only-state-indicator`
-> (22 findings/12 blocks), `44-help-text-not-described` (3 findings, since **CLOSED — 0 live
+> (22 findings/12 blocks on introduction; **12 remaining after same-day fixes**, see PART L),
+> `44-help-text-not-described` (3 findings, since **CLOSED — 0 live
 > findings**, see below), all advisory mode with self-tests, PART L entries added below. The
 > rule-41 backlog moved **61 → 55** (8 blocks fixed, 6 net findings closed — see PART L for the
 > full breakdown; colour-completeness (rule 31) was explicitly left to the concurrent
@@ -883,9 +884,29 @@ triad mechanism and the same enforcement stack.
       selector (aria-current/aria-selected/aria-checked/aria-expanded=true, `.is-active`,
       `.is-selected`, `.is-current`, `[open]`, a BEM `--active`/`--current`/`--selected`
       modifier — never a bare `:hover`) whose unioned declared properties are colour-only.
-      **22 live findings** across 12 blocks, including all 3 candidates named to verify
-      against: `sgs/post-grid`'s pagination current-page indicator, `sgs/product-card`'s
-      active thumbnail, `sgs/buybox`'s current value-ladder row.
+      **22 live findings on introduction, 12 remaining (2026-09-04 same-day follow-up).** 10
+      real CSS fixes landed across 9 blocks: `sgs/accordion`+`sgs/product-faq` (font-weight
+      600->700 on open/hover), `sgs/card-grid`+`sgs/post-grid`+`sgs/form`+`sgs/product-card`
+      (border-width bump on the active/current/selected state — 2px->3px), `sgs/table-of-
+      contents` (text-decoration:underline) + `sgs/tabs`'s mobile button-style tab (border
+      1px->2px), and 2 of the AMBIGUOUS-property findings verified by eye to be genuine flat
+      colour swaps: `sgs/gallery`'s active carousel dot (10px->14px) and `sgs/product-search`'s
+      hovered/active result row (new border-left accent bar, matching the pre-existing
+      `sgs/buybox`/`sgs/product-card` value-ladder-row convention). **The remaining 12 are all
+      real or structural false positives, not un-triaged debt:** 6 AMBIGUOUS findings verified
+      by eye as genuine shape/texture changes already present at the flagged selector —
+      `sgs/buybox`+`sgs/product-card`'s value-ladder rows (border-left goes from `3px solid
+      transparent` at rest to a real visible bar, invisible->visible is structural even though
+      the property name is colour-family), `sgs/modal`'s dialog backdrop (presence/absence of
+      an overlay via opacity, not a sibling-state comparison), and `sgs/tabs`'s 4 underline-
+      style findings (box-shadow goes from `inset … transparent` at rest to a real 2px bar,
+      same invisible->visible reasoning). The other 4 are CONFIRMED colour-only findings left
+      unfixed because a SIBLING rule for the same state already provides a real non-colour
+      signal that the per-selector detector can't see: `sgs/accordion`'s icon-open/icon-close
+      colour rule (the icons are already display-swapped between states) and chevron colour
+      rule (already rotates 180deg), `sgs/product-faq`'s matching chevron colour rule (same
+      rotation), and `sgs/table-of-contents`' `:where(.sgs-toc__link--active)` colour rule
+      (the non-`:where()` sibling rule already sets font-weight:600 for the same state).
 - [x] **CLOSED 2026-09-04 (same-day follow-up).** help text linked via `aria-describedby`
       (Part F) — rule `44-help-text-not-described` (built 2026-09-04, advisory mode,
       whole-tree scope — both real candidates are shared `src/components/*.js` files, not any
