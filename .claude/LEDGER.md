@@ -84,7 +84,7 @@ can't we just do B4 anyway"), C16 (found already done, 93/93), C12/C13 (a11y + p
 live pass, done via a second independent Chrome instance after the shared Playwright browser
 stayed locked). Commits: `47fd0079c` `497261de0` `7d0954776` `7b8254ec6` `20bcb52b8`
 `b0670ac4a` `c8b2fa084` `539c11eeb`. Full detail + a 5-persona `/qc-council` audit (re-verified
-every claim independently, live, not from this doc): `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`.
+every claim independently, live, not from this doc): `.claude/plans/archive/2026-08-25-road-to-uniform-then-spec-39.md` (archived — all 9 items closed).
 
 **The qc-council audit also found 2 real, separate residual gaps — NOT part of the road-to-uniform
 9, don't re-close them as if they were:**

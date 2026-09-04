@@ -302,7 +302,9 @@ judge whether e.g. `MaxWidth` genuinely makes sense alongside `MediaSizing:ratio
 implementing agent rather than guessed at. `box-shape.control.js` / `MediaBoxShapeControls.js`.
 
 **Trigger:** whoever wires `box-shape` into a real block (Wave 5-7) and can judge the combination
-against a live control.
+against a live control. ⚠ **NOW ACTIONABLE (2026-09-04)** — `sgs/hero` adopted the atom this
+session (C19 item 3, commit `7d0954776`) but the wiring pass didn't add width-gating rules; the
+judgment call this entry asks for is still unmade. Hero is a live control to judge it against.
 
 ### P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE — draft global-styles extractor: Phase 5-6 continuation
 **Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-11
