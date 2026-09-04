@@ -275,9 +275,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		fadeWidth,
 		imageEffect,
 		maxHeight,
-		columnsDesktop,
-		columnsTablet,
-		columnsMobile,
+		columns,
 		showNames,
 		pauseOnHover,
 		nameColour,
@@ -373,9 +371,9 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const trackStyle = {
 		'--sgs-logo-max-height': `${ maxHeight }px`,
-		'--sgs-columns-desktop': columnsDesktop ?? 8,
-		'--sgs-columns-tablet': columnsTablet ?? 4,
-		'--sgs-columns-mobile': columnsMobile ?? 2,
+		'--sgs-columns-desktop': columns?.desktop ?? 8,
+		'--sgs-columns-tablet': columns?.tablet ?? 4,
+		'--sgs-columns-mobile': columns?.mobile ?? 2,
 		'--sgs-scroll-speed': scrolling ? SPEED_MAP[ scrollSpeed ] : undefined,
 	};
 
@@ -556,12 +554,20 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Layout', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
+					{ /* columns is a TIER OBJECT {desktop,tablet,mobile} (D777/S2 fix,
+					   2026-09-04) — was 3 flat scalar attrs. Kept on the existing
+					   <ResponsiveControl> (global-tier switcher, not
+					   <ResponsiveOverride>'s inherit model) because each tier
+					   always carries its own concrete baked-in default (8/4/6)
+					   and a DIFFERENT max per tier — the shape here never had
+					   inheritance semantics, so introducing them would be new
+					   behaviour, not a faithful migration. */ }
 					<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>
 						{ ( bp ) => {
 							const cols = {
-								desktop: { attr: 'columnsDesktop', value: columnsDesktop ?? 8, max: 12 },
-								tablet: { attr: 'columnsTablet', value: columnsTablet ?? 4, max: 10 },
-								mobile: { attr: 'columnsMobile', value: columnsMobile ?? 2, max: 6 },
+								desktop: { tier: 'desktop', value: columns?.desktop ?? 8, max: 12 },
+								tablet: { tier: 'tablet', value: columns?.tablet ?? 4, max: 10 },
+								mobile: { tier: 'mobile', value: columns?.mobile ?? 2, max: 6 },
 							}[ bp ];
 							return (
 								<RangeControl
@@ -569,7 +575,9 @@ export default function Edit( { attributes, setAttributes } ) {
 									hideLabelFromVision
 									help={ __( 'How many logos fill the width on this device. Tiles resize to fit exactly this many.', 'sgs-blocks' ) }
 									value={ cols.value }
-									onChange={ ( val ) => setAttributes( { [ cols.attr ]: val } ) }
+									onChange={ ( val ) =>
+										setAttributes( { columns: { ...columns, [ cols.tier ]: val } } )
+									}
 									min={ 1 }
 									max={ cols.max }
 									__nextHasNoMarginBottom

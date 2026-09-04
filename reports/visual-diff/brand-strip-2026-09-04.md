@@ -2,9 +2,30 @@
 
 verdict: PASS
 intent_capture_passed: true
-source_sha: 89088c12f67811b7
+source_sha: 6660324c3c70a1d2
 
-## What changed
+## Update — second change, same day, same block (D777 tier-migration residual)
+
+`columns` (`columnsDesktop`/`columnsTablet`/`columnsMobile`, 3 flat scalars) migrated to one
+tier object `columns: {desktop,tablet,mobile}` — the last of the 3-family blind spot
+`migrate-tier-object.py`'s detector couldn't see before today (base declared as
+`columnsDesktop`, not bare `columns`). S1 (block.json) + S2 (edit.js — kept the existing
+`<ResponsiveControl>` wrapper, not `<ResponsiveOverride>`, since each tier always carries its
+own concrete default and a different `RangeControl` max, never inheritance semantics) + S3
+(render.php, raw bracket reads → `sgs_responsive_normalise_object()`). `--check` green.
+
+**Live verification (real canary, deployed):** created a temporary probe page (ID 3250,
+`sgs/brand-strip` with `columns:{desktop:6,tablet:3,mobile:1}`), loaded it, read the
+`--sgs-columns-{desktop,tablet,mobile}` custom properties via `getComputedStyle` —
+**`6/3/1`, exact match** — then deleted the probe page. Pre-deploy, the same check against
+the not-yet-deployed code correctly showed the OLD defaults (`8/4/2`), confirming the test
+was actually exercising the new code path once deployed, not a stale cache.
+
+This section's `source_sha` covers BOTH changes on this block today (the per-item
+`objectFit` control below, and this migration) — the file describes today's cumulative
+staged state, per the one-report-per-block-per-day convention.
+
+## Original report — per-item objectFit control (first change today)
 
 Spec 35 Part 4, fourth and final target block. `logos` gains a per-item `objectFit` control
 (Cover/Contain) — no focal-point/crosshair, matching the block's OWN pre-existing `logoFit`

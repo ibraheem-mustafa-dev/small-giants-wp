@@ -902,10 +902,6 @@ if ( ! empty( $typography_args ) ) {
 		$responsive_css .= $typography_scoped['css'];
 	}
 }
-if ( isset( $attributes['textAlign'] ) && in_array( $attributes['textAlign'], array( 'left', 'center', 'right' ), true ) ) {
-	$responsive_css .= $root_sel . ' .sgs-hero__headline{text-align:' . $attributes['textAlign'] . '}';
-}
-
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color class onto the wrapper — re-add it manually (mirrors sgs/quote)
