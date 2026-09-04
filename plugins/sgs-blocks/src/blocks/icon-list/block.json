@@ -101,7 +101,14 @@
 					"attrMap": {
 						"css:stroke": "iconColourGradient"
 					},
-					"_note": "Per-item icon span (render.php:457, `.sgs-icon-list__icon`). `css:color` resolves via default convention `icon`+`Colour`=`iconColour` (render.php:221-223) — font-size/weight/line-height/etc are honest gaps, an icon glyph has no typography surface. iconSize/defaultIconSource are bespoke icon-source controls with no cluster member and surface as orphans, not gaps. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to `iconColourGradient`, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
+					"_note": "Per-item icon span (render.php:457, `.sgs-icon-list__icon`). `css:color` resolves via default convention `icon`+`Colour`=`iconColour` (render.php:221-223) — font-size/weight/line-height/etc are honest gaps, an icon glyph has no typography surface. iconSize/defaultIconSource are bespoke icon-source controls with no cluster member and surface as orphans, not gaps. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to `iconColourGradient`, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "iconColourHover"
+							}
+						}
+					}
 				},
 				"item": {
 					"label": "Item row",
