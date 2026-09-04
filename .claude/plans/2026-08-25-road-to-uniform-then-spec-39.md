@@ -69,20 +69,46 @@ and produce a ready-to-build plan for whatever's genuinely still open) found:
 B1/B2/B3/B5, C2/C3/C8/C9/C11) — the doc was only wrong in the false-negative direction
 (claiming unbuilt work that shipped), never the other way.
 
-**Genuinely open, 9 items, priority order — each independently verified this round, with
-2 found smaller than previously described:**
+**CLOSED 2026-09-04, same session — C7 and C6 (dispatched to `wp-sgs-developer` after Bean
+picked this scope via menu; see `.claude/prompts/2026-09-04-road-to-uniform-c6-c7-prompt.md`,
+delete once superseded):**
 
-1. **C7** — 4 blocks need decorative-image/ARIA (`cta-section`, `decorative-image`,
-   `nav-drawer`, `social-icons` — exact list confirmed via a fresh live scan).
-2. **C6** — 10 blocks need `PanelBody` → `ToolsPanel` (unchanged).
-3. **C16 — smaller than round 1 said.** The presets + unit-switch MECHANISM is fully built
-   (`SgsBoxControl.js`, 2026-08-27) — literal-var storage, "Custom…" seeding from the
-   resolved size, anchored regex detection, all real and working. Only 4 blocks have opted
-   in (container, card-grid, mega-aside, product-card); ~25+ more still pass
-   `presets={false}`. **This is now a rollout task, not a build** — flip the prop per block,
-   Bean's eye per batch, per his own "build one, Bean's eye, then roll out" instruction
-   (container is that one instance already).
-4. **C19 item 3 — smaller than round 1 said.** The exact shape→fit→position chain with
+- ✅ **C7 — decorative-image/ARIA, 4 blocks.** `sgs/decorative-image` (`imageDecorative` +
+  Accessibility panel), `sgs/cta-section` (`backgroundImageDecorative`, role="img"/aria-label
+  when non-decorative + alt, gated against landmark aria-label collision),
+  `sgs/nav-drawer` (`backgroundImageDecorative`, aria-describedby note), `sgs/social-icons`
+  (`iconDecorative` per repeater item). Rule `18-decorative-image-aria` re-verified live
+  2026-09-04: 4 → 0. `npm run build` green. Commit `47fd0079c`. **Deployed and live-verified**
+  (payload checksum match, 3 motion-QA probes green) — interactive Playwright editor
+  screenshot could NOT be captured (shared MCP browser locked by a concurrent session for the
+  whole dispatch); server-side evidence stands, editor-visual check is the one gap, named not
+  hidden.
+- ✅ **C6 — `PanelBody` → `ToolsPanel`, 10 blocks.** All 10 converted to the canonical
+  `ToolsPanel`/`ToolsPanelItem` shape (reference: `sgs/quote`'s Attribution panel); repeater
+  option-lists (checkbox/radio/select) correctly kept as their own `PanelBody`, not forced
+  into `ToolsPanelItem`. One real bug caught pre-commit by the build's own gate (`gallery`'s
+  `hasValue` referenced an undestructured `shadowHover`). Rule `03-dense-panel-candidate`
+  re-verified live 2026-09-04: 10 → 0. `npm run build` green. Commit `497261de0`.
+  ⚠ **NOT YET DEPLOYED** — `build-deploy.py` correctly refused: another session has active
+  uncommitted work on `sgs/testimonial-slider` in the same blocks-only scope (D336-safe
+  refusal, not a bug). Deploy once that clears; do not force with `--allow-dirty`.
+
+**FOUND CLOSED, not stale as this doc previously claimed — corrected 2026-09-04:**
+
+- ✅ **C16 — spacing-presets rollout. Re-scoped premise was itself wrong; there is no rollout
+  left to do.** The dispatch re-checked the real `ResponsiveBoxControl` mount surface (the
+  actual C16 subject) rather than trusting this doc's "4 of ~29 opted in" figure: **93 of 93
+  `<ResponsiveBoxControl>` mounts tree-wide already carry `presets`.** The alarming-looking
+  `presets={ false }` grep hits (23 files) are ALL `SgsLengthControl` — a different, older,
+  already-fully-adopted single-length preset mechanism, not this rollout's subject. Zero
+  genuine opt-outs remain. **This doc's C16 entry (both the ROUND 2 "4 blocks opted in, 25+
+  remain" line and the older "Session 2026-08-25 summary" version below) was stale by ~90
+  blocks' worth of already-completed rollout — corrected here rather than left to mislead a
+  future session.**
+
+**Genuinely open, 7 items remain, priority order — each independently verified this round:**
+
+1. **C19 item 3 — smaller than round 1 said.** The exact shape→fit→position chain with
    inert-state greying is fully built as the `box-shape` media atom
    (`components/media/atoms/box-shape.js` + `registry.js`), already used by `sgs/media`.
    Hero just doesn't declare the atom. Concrete plan: add `"box-shape"` + `"media-padding"`
@@ -90,18 +116,18 @@ B1/B2/B3/B5, C2/C3/C8/C9/C11) — the doc was only wrong in the false-negative d
    `edit.js` (~1572-1611) for the shared `box-shape.control.js` composition, delete
    `splitImageBleed` in the same pass. image-sequence's raw `aspectRatio` attr may not even
    be in scope — the real collision is entirely on hero once the atom is added there.
-5. **C15-5** — widen block bindings past the 3 allowlisted blocks
+2. **C15-5** — widen block bindings past the 3 allowlisted blocks
    (`includes/class-sgs-block-bindings-support.php`'s `SUPPORTED_ATTRIBUTES` const still
    lists exactly `sgs/text`/`sgs/heading`/`sgs/button`).
-6. **C14's enforcing gate** — same underlying build as **C4** (CO-2): confirmed absent
+3. **C14's enforcing gate** — same underlying build as **C4** (CO-2): confirmed absent
    (`grep` on `gates.json` for "CO-2"/"consistency-scanner"/"element-panel-conformance"
    returns nothing). Needs an AST walk of every `edit.js`, its own build — not
    double-counted as separate work from C4.
-7. **C12/C13** — live-pass items. Confirmed zero evidence either was ever run — no recent
+4. **C12/C13** — live-pass items. Confirmed zero evidence either was ever run — no recent
    a11y report, no panel-ordering artefact in `.claude/reports/`.
-8. **D4** — confirmed still unactioned: 23 rules sit `mode: "advisory"` in
+5. **D4** — confirmed still unactioned: 23 rules sit `mode: "advisory"` in
    `inspector-scan/rules.json`, 0 carry a `promotionCondition` field.
-9. **B4** — `mega-panel.borderRadius`, confirmed still bespoke (`grep -c SgsBorderControl
+6. **B4** — `mega-panel.borderRadius`, confirmed still bespoke (`grep -c SgsBorderControl
    mega-panel/edit.js` → 0), correctly BLOCKED on Track 2 (inactive).
 
 **Root cause of round 1's error** (full account: D960): the original 2026-08-25/26 "unbuilt"
