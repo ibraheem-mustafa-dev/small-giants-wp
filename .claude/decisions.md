@@ -1,3 +1,86 @@
+## D952 [INCIDENT] — second-round /adversarial-council on D949/D951 found the "genuinely closed" claim didn't hold; four real defects fixed
+
+**2026-09-04, same session.** Ran Step 21 (the wave-D register's deliberately-last adversarial-
+council re-run) against the D949/D951 fix. Six personas (Cynic, Spec-Lawyer, Ship-PM,
+Verification-Skeptic — a custom persona added given this exact session's own prior
+self-correction, Support-Realist, Abuse Red-Teamer), each independently, blind to each other.
+Grades: **D / C+ / C / C+ / D / F** — markedly below the wave's 2026-07-31 baseline
+(B−/B−/C+/C+/C−/D+). Every persona converged on some form of: "FR-38-22 genuinely closed"
+overreached the evidence.
+
+**Four real, independently-converged defects, all fixed same session (not deferred):**
+
+1. **Ghost-row self-destruct (Cynic).** The 908 rows D949 seeded used `source='sgs'`; Stage 9's
+   `_prune_orphans_on_conn` unconditionally deletes any `block_attributes` row with that source
+   whose `attr_name` is absent from its block's live block.json — true of every fx row by
+   definition, no dry-run/conservative escape for this category. **The very next full
+   `/sgs-update` would have silently deleted the entire D949 fix.** Verified independently before
+   acting (read the exact query, confirmed the WHERE clause). Fixed: `source='sgs-fx'`, invisible
+   to that query by construction; migrated the live DB. Caught and fixed my own mistake made
+   during that migration — the first UPDATE pass mis-touched the 20 legitimate, pre-existing
+   block.json-declared fx rows too; restored them to `source='sgs'` in a second pass, verified
+   against the exact 20-row list reconciled earlier in the session.
+2. **Incomplete roster (Cynic + Spec-Lawyer, independently — both named the same missing
+   families: magnet/particle/generative-background/grid-dot/wave).** The seeder only knew 29 of
+   `fx.js`'s ~78 registered `fx*` attributes, via `FX_ATTR_CSS_PROPERTY` — a map that was never
+   the attribute roster; it exists for the fx: css_property classification layer. New
+   `db_lookup.fx_attr_roster()` sources the FULL list from two already-maintained, build-generated
+   artefacts (`includes/fx-attributes.php` `FX_ATTR_MAP` + `includes/
+   extension-attributes.generated.php`) — not hand-derived. 1760 more rows seeded across 32
+   blocks (2668 `source='sgs-fx'` rows total now).
+3. **Wrong types (Ship-PM cited the exact break; Verification-Skeptic independently confirmed
+   the same fx.js type declarations).** Every seeded row was hardcoded `attr_type='string'`, so a
+   real boolean/number attr round-tripped as the JSON string `"true"`/`"0.6"` — and
+   `includes/fx-attributes.php`'s render code does a STRICT `true === $attrs['fxDisableTablet']`
+   check a string never satisfies. **A client's "don't run this effect on mobile" setting would
+   silently not apply.** Fixed: real type sourced from the roster; 319 already-existing rows
+   corrected in the live DB.
+4. **No value coercion (same root cause as #3, one layer up — found while fixing #3, not by any
+   persona directly).** Even with the DB's `attr_type` column correct, `lift_behavioural_attrs`
+   was still copying the raw HTML attribute STRING verbatim into the emitted block's attrs — the
+   column was metadata nobody read to actually convert the value. New `_coerce_lifted_value()`
+   converts a boolean/number-typed lift to a real Python `bool`/`int`/`float` before writing it,
+   so the final block-comment JSON emits `true`/`0.6` (unquoted), not `"true"`/`"0.6"`.
+
+**Folded in during the same pass:** `fx_attr_roster()`'s reverse lookup fixes several irregular
+data-attr-name mismatches the D949 kebab-to-camel guess couldn't handle (`fxPathRotate` maps to
+`data-sgs-fx-motion-path-rotate`, not a mechanical kebab of the attr name; `fxFieldType` maps to
+`data-sgs-fx-field`) — checked first, before the generic kebab fallback, which stays for
+genuinely non-fx `data-sgs-*` attributes (R-31-9 — the helper isn't fx-only).
+
+**Verified end to end against the real `convert_section()`, not synthetic calls:** a draft with
+`data-sgs-fx-duration="0.6" data-sgs-fx-scrub="1.5" data-sgs-fx-disable-mobile="1"
+data-sgs-fx-magnet-axis="both"` now emits `{"fxDuration":0.6,"fxScrub":1.5,
+"fxDisableMobile":true,"fxMagnetAxis":"both"}` — real JSON types, the previously-missing magnet
+family present. Gate A 13/13. Full converter+scripts suite 858/862 — 4 failures, all confirmed
+NOT from this change: the 2 pre-existing ones already known before this session
+(`test_multi_button_has_button`, `test_hero_headline_has_wp_kses_post_on_h1`) plus 2 in
+`test_foreign_identity_lift.py` that a concurrent session (working `content_band.py`/
+`array_content.py`/`extraction.py` in the same window) independently confirmed are pre-existing
+on their end too, unrelated to fx.
+
+**A shared-worktree collision handled correctly, not around.** A separate concurrent session's
+uncommitted `content_band.py` edit tripped an unrelated cheat-gate finding that blocked this
+commit; rather than `--no-verify` or baselining someone else's finding, messaged the owning
+session directly — they fixed it properly (a real DB-query refactor, not a baseline) and
+confirmed clear before this commit landed.
+
+⚠ **Still open, named honestly, not claimed fixed here:**
+- **Zero regression-test coverage for the fx lift path itself** (Verification-Skeptic) — nothing
+  asserts `build_block_markup` step 3a1 stays wired; deleting it would pass every existing gate.
+- **A separate, pre-existing stored-XSS-class defect** in the converter's block-comment
+  serialiser (`emit_block_markup`/`dispatch_spine.py`) — found by the Abuse Red-Teamer persona,
+  NOT introduced by D949/D951/D952 (it predates this session; this session's fix just added ~30
+  more named entry points into the same pre-existing hole). Dispatched to a parallel agent this
+  same session; tracked separately, not folded into this entry.
+- Rule 4's skip-with-reason reporting for an fx attr with no destination on the resolved block —
+  still unbuilt (named in D951 too; the Ship-PM council persona judged this genuinely deferrable,
+  not load-bearing for a client build, unlike items 1-4 above).
+
+Commit: `3774107e2`. Full council transcripts not preserved verbatim (synthesised into this
+entry) — the six dispatch prompts + personas are reproducible from Step 21's own definition in
+`.claude/plans/2026-07-31-motion-wave-D-client-readiness.md`.
+
 ## D951 [ROUTINE] — Step 12 (FR-38-22) actually closed: `lift_behavioural_attrs` wired into the live walker; D949's "already has real callers" claim was wrong
 
 **2026-09-04.** Direct continuation of D949, same session. D949 fixed two real bugs (missing
