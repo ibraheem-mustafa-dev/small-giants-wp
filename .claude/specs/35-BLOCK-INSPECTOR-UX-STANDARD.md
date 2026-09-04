@@ -31,12 +31,17 @@ companions: Spec 32 (component styling/token contract — governs RENDERED outpu
 > time — actively worked by `.claude/plans/phase-colour-conformance.md` +
 > `.claude/plans/2026-09-03-golden-colour-staged-rollout.md`, re-run the survey for the
 > current count, do not trust this number); the 61 element-grouping findings above; and,
-> per a 5-agent investigation into PART F's ungated anti-patterns, **4 of 5 are genuinely
-> buildable** ("essential control only in sidebar" narrow slice, "no reset", "colour-only
-> focus/selected", "help text not `aria-describedby`-linked" — none of these hit the
-> false-positive wall that killed `scattered-element-controls.js`), and one ("sidebar as home
-> for every option") is buildable only as a human-reviewed survey, never a pass/fail gate.
-> Build shapes + dispatch: `.claude/prompts/2026-09-04-spec32-35-closure-prompt.md`.
+> per a 5-agent investigation into PART F's ungated anti-patterns, **4 of 5 turned out
+> genuinely buildable** ("no reset", "colour-only focus/selected", "help text not
+> `aria-describedby`-linked" — none of these hit the false-positive wall that killed
+> `scattered-element-controls.js` — plus "essential control only in sidebar" as a narrow
+> candidate-list slice), and one ("sidebar as home for every option") only as a
+> human-reviewed survey, never a pass/fail gate. **Bean then ruled on cost vs value (2026-09-04):
+> build 3 as gates (no-reset, colour-only-state, aria-describedby); skip the other two
+> outright** — the sidebar-only-control slice still needs a human call on every hit even at
+> its narrowest, and the sidebar-as-home survey can't separate correct-by-design zeros from
+> real gaps. Neither is worth the standing cost. Build shapes + dispatch:
+> `.claude/prompts/2026-09-04-spec32-35-closure-prompt.md`.
 
 ## Why this exists
 
@@ -878,7 +883,12 @@ not neglect — do not re-investigate without new information.
       buildable (essential-control-in-sidebar narrow slice, no-reset, colour-only
       focus/selected, help-not-aria-describedby-linked), 1 buildable only as a survey
       (sidebar-as-home-for-every-option), 1 confirmed genuinely not buildable (native-supports
-      duplication, see above). Build shapes: `.claude/prompts/2026-09-04-spec32-35-closure-prompt.md`.
+      duplication, see above). **Bean then ruled on cost vs value: 3 approved as build tasks
+      (no-reset, colour-only focus/selected, help-not-aria-describedby-linked); 2 rejected
+      outright — essential-control-in-sidebar (even the narrow slice still needs a human call
+      on every hit) and sidebar-as-home-for-every-option (can't separate correct-by-design
+      zeros from real gaps, not worth building even as a survey).** Build shapes:
+      `.claude/prompts/2026-09-04-spec32-35-closure-prompt.md`.
 
 **NO LONGER UNVERIFIABLE (1) — a rule now exists:**
 

@@ -18,8 +18,10 @@ older prose sections describe.
 A `/qc-council` audit on 2026-09-04 confirmed the road-to-uniform backlog fully closed, then
 checked whether Spec 32 and Spec 35 were complete framework-wide. They aren't. Five parallel
 investigations (matching the shape of this session's own C5 investigation) then checked
-whether five ungated Spec 35 anti-patterns could get a detector at all. Four can. This prompt
-is the build session for everything the audit and the investigations found.
+whether five ungated Spec 35 anti-patterns could get a detector at all: four turned out
+buildable, one only as a survey. Bean then weighed cost against value on all five and ruled:
+build three as gates, skip the other two outright (not deferred — genuinely not worth it, see
+Task 2). This prompt is the build session for everything that's left standing.
 
 ## Task 1 — Spec 32: build the CSS-injection sanitisation gate (§5 NFR)
 
@@ -36,12 +38,20 @@ Start from the 9 `render.php` files Spec 32's own §5 names as unaudited (grep t
 "borderStyle" to find the list). `sgs/form/render.php` already does this correctly — read it
 first as the reference shape.
 
-## Task 2 — Spec 35: build 4 of the 5 investigated anti-pattern gates
+## Task 2 — Spec 35: build 3 of the 5 investigated anti-pattern gates
 
-Full investigation reports are in this session's transcript (not written to disk — re-derive
-each verdict's evidence yourself with the commands each investigation names, don't take the
-summary on faith). All four are advisory-mode on introduction, per this project's own rule:
-never promote a rule to gate on the run that introduces it.
+Five anti-patterns were investigated on 2026-09-04; four turned out buildable and one
+survey-only. Bean then weighed cost against value and made the call: **build three, skip
+two.** Full investigation reports are in that session's transcript (not written to disk —
+re-derive each verdict's evidence yourself with the commands each investigation names, don't
+take the summary on faith). All three ship advisory-mode on introduction, per this project's
+own rule: never promote a rule to gate on the run that introduces it.
+
+**Why these three and not the other two (Bean's ruling, 2026-09-04):** a gate earns its keep
+only when it produces a clean pass/fail. The three below do. The two skipped ones don't — every
+hit needs a human judgment call, which trades build time for a standing triage chore rather
+than removing one. Don't re-open that call without new information; if a future session finds
+a way to make either skipped item produce a clean signal, that's new information.
 
 **2a — No-reset detector.** The cleanest of the four: zero false positives measured against
 all 333 `ToolsPanelItem` mounts tree-wide. Flag a `hasValue` arrow function with zero
@@ -73,20 +83,21 @@ literal `aria-describedby` anywhere in that subtree. `LinkPopoverControl.js` is 
 candidate; check `DesignTokenPicker.js` too. `GradientCapableColourControl.js` is the reference
 for what correctly-wired looks like.
 
-**2d — Essential control only in sidebar (narrow slice).** Build only the mechanically sound
-sub-case: a `role='text-content'` attribute with a `TextControl`/`TextareaControl` in the
-sidebar, interpolated as plain text on canvas (`{ attrName }`) outside any `RichText` element.
-Ship as a candidate list, not a hard gate — every hit still needs a human call on whether it's
-actually essential. Do not attempt the broader claim (image/link/media controls, "no on-canvas
-signal at all" heuristics) — the investigation measured that as the same false-positive shape
-that got `scattered-element-controls.js` deleted.
+**SKIPPED — do not build, either of these two (Bean's ruling, 2026-09-04):**
 
-**Skip — do not build:** "sidebar as home for every option." The investigation confirmed the
-measurement is trustworthy but roughly half its zero-affordance results are *correct by
-design* (blocks with no user-authored content at all), and nothing in the codebase can
-mechanically separate those from the real candidates. Build the survey only if asked — never a
-pass/fail gate — and seed it as a human-reviewed baseline from day one, the same shape as
-`dead-controls-baseline.json`.
+- **"Essential control only in sidebar."** Buildable only as a narrow candidate list (a
+  `role='text-content'` attribute with a sidebar `TextControl`/`TextareaControl`, interpolated
+  as plain text on canvas outside any `RichText` element) — but even that narrow slice still
+  needs a human call on every hit ("is this actually essential?"). Not worth a standing gate
+  for that return. If Bean ever wants visibility here, this is a one-off manual scan, not a
+  build task.
+- **"Sidebar as home for every option."** The investigation confirmed the measurement is
+  trustworthy, but roughly half its zero-affordance results are *correct by design* (blocks
+  with no user-authored content at all), and nothing in the codebase can mechanically separate
+  those from the real candidates. Not worth building even as a survey unless a future session
+  finds a way to narrow the population first.
+
+Neither is a build task for this session. Don't re-open this call without new information.
 
 ## Task 3 — Spec 35: continue the element-grouping backlog (rule 41)
 
