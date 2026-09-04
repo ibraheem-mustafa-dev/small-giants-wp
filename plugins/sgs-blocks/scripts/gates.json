@@ -893,5 +893,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 95
+  },
+  {
+    "id": "audit-bindable-attrs",
+    "cmd": "python scripts/audit-bindable-attrs.py --check",
+    "tier": "fast",
+    "added_D": "D962",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 96
   }
 ]
