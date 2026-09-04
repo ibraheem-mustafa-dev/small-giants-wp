@@ -131,9 +131,16 @@
 						"text"
 					],
 					"prefix": "title",
-					"_note": "css:color resolves via the default convention (titleColour). No font-size/weight attrs exist — honest GAPs.",
+					"_note": "css:color resolves via the default convention (titleColour). No font-size/weight attrs exist — honest GAPs. states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below for the one-attr/four-elements ancestor-hover shape this closes.",
 					"attrMap": {
 						"css:color": "titleColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover"
+							}
+						}
 					}
 				},
 				"excerpt": {
@@ -143,9 +150,16 @@
 						"text"
 					],
 					"prefix": "excerpt",
-					"_note": "css:color resolves via the default convention (excerptColour). excerptLength is a content-length control, not a style member.",
+					"_note": "css:color resolves via the default convention (excerptColour). excerptLength is a content-length control, not a style member. states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below.",
 					"attrMap": {
 						"css:color": "excerptColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover"
+							}
+						}
 					}
 				},
 				"meta": {
@@ -155,9 +169,16 @@
 						"text"
 					],
 					"prefix": "meta",
-					"_note": "css:color resolves via the default convention (metaColour).",
+					"_note": "css:color resolves via the default convention (metaColour). states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below.",
 					"attrMap": {
 						"css:color": "metaColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover"
+							}
+						}
 					}
 				},
 				"category-badge": {
@@ -181,9 +202,16 @@
 						"text"
 					],
 					"prefix": "readMore",
-					"_note": "css:color resolves via the default convention (readMoreColour). readMoreText is content, not style.",
+					"_note": "css:color resolves via the default convention (readMoreColour). readMoreText is content, not style. states.hover.attrMap added 2026-09-04 (D956): textColourHover is ONE attribute that paints FOUR descendant elements (title link/excerpt/meta/read-more) simultaneously on the CARD's hover -- render.php's own comment calls this an 'ancestor-hover shape' (the card receives :hover/:focus-within; each descendant already carries its own resting colour, so the rule targets them individually via sgs_hover_state_rules()'s $suffix param). It previously resolved css_element=NULL/derived_selector=NULL (an undeclared sub-element paint, F6 Check #8) because the manifest's attrMap model has no established one-attr-many-elements shape -- declared here on all 4 real target elements' states.hover, since that is what genuinely happens, not a workaround. No other block in this codebase currently needs this shape (checked); if a second one appears, consider whether the manifest schema itself should grow a first-class 'targets multiple elements' declaration rather than repeating this pattern by hand a third time.",
 					"attrMap": {
 						"css:color": "readMoreColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover"
+							}
+						}
 					}
 				},
 				"inner": {

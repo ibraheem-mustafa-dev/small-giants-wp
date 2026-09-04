@@ -128,7 +128,17 @@
 						"text"
 					],
 					"prefix": "toggleClose",
-					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). toggleCloseColour resolves css:color via the default {prefix}{suffix} convention (toggleClose + Colour). The button's :hover opacity fade and its :focus-visible outline have NO per-block attribute behind them — an uncontrollable-styling finding, not a manifest gap (no state is declared for this element for that reason). The outline is NOT hardcoded, though: since D467 it resolves var(--sgs-focus-color, currentColor), so it follows the site-wide focus token. Line numbers deliberately omitted — the earlier ones had drifted."
+					"attrMap": {
+						"css:color": "toggleCloseColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "toggleCloseColourHover"
+							}
+						}
+					},
+					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). CORRECTED 2026-09-04 (D956): the previous note here claimed toggleCloseColourHover had no per-block attribute behind :hover -- that was stale/wrong. render.php:344 genuinely wires it via sgs_hover_state_rules(), which emits BOTH a touch-guarded :hover rule AND an unguarded :focus-visible colour rule from the same value -- so toggleCloseColourHover controls both states' TEXT colour. Declared here explicitly (base attrMap + states.hover.attrMap) rather than relying on the default {prefix}{suffix} convention, which routed both attrs to the SAME (css:color, element=close, state=NULL) slot with no way to tell them apart -- a real routing-determinism ambiguity (F6 Check #1/#8), not a manifest gap. The button's :focus-visible OUTLINE (border, not colour) remains genuinely uncontrolled by any per-block attribute -- it resolves var(--sgs-focus-color, currentColor) since D467, following the site-wide focus token, which is correct behaviour, just not this element's colour attrs."
 				},
 				"decorative": {
 					"label": "Decorative background",

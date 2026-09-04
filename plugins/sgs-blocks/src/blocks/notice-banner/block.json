@@ -111,9 +111,17 @@
 					],
 					"prefix": "icon",
 					"attrMap": {
+						"css:color": "iconColour",
 						"css:stroke": "iconColourGradient"
 					},
-					"_note": "iconColour resolves via the default {prefix}{suffix} convention (Colour suffix). Emitted as a scoped rule `.{uid} .sgs-notice-banner__icon{color:...}` (render.php:203-207), not inline. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "iconColourHover"
+							}
+						}
+					},
+					"_note": "iconColour/iconColourHover explicitly mapped (base + states.hover) since 2026-09-04 (D956) -- both used to resolve via the default {prefix}{suffix} convention, which routed them to the SAME (css:color, element=icon, state=NULL) slot with no way to tell them apart, a real routing-determinism ambiguity (F6 Check #1/#8). Emitted as scoped rules (`.{uid} .sgs-notice-banner__icon{color:...}` base, a touch-guarded :hover + unguarded :focus-visible pair for the Hover attr via sgs_hover_state_rules()), not inline -- gated on iconColour being set. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
 				}
 			}
 		}
