@@ -1,3 +1,77 @@
+## D950 [ROUTINE] — DB-derivation/converter-cleanup Phase 4 closed; Phase 5 diagnosed (fixes still open)
+
+**2026-09-04.** `.claude/plans/2026-08-01-db-derivation-and-converter-cleanup.md` had sat orphaned
+for a month — untracked in `LEDGER.md`, unmentioned by any of the 5 tracks that shipped to `main`
+in between. Picked back up on a dispatch prompt; verified fresh (not trusted from the doc) before
+planning anything, per this project's prove-the-cause-before-fix rule.
+
+**Phase 4 — purge — now COMPLETE.** Four residue items, dispatched as disjoint parallel tracks:
+- `check_preset_absence_no_slug_literal.py` wired into `gates.json`/`package.json` (Bean's call:
+  wire, not delete) — was real and working, just unreachable; its docstring's false "both run in
+  CI" claim also corrected (this repo has no CI).
+- `orchestrator.py` → `dispatch_spine.py` renamed via a proper migration script
+  (`migrate-orchestrator-rename.py`, the `migrate-length-sanitiser.py` line-classifier shape) —
+  19 dotted `converter.orchestrator` references + 2 quoted-filename literals across 15 files,
+  including `test_destination_contract.py`'s `import converter.orchestrator as _mod`, which a
+  narrower first-pass grep missed (only caught by the wide `crosscheck()` sweep — exactly the
+  drift class the migration method's Step 4 warns about). The script is now itself a permanent
+  `--check` gate. Confirmed during the sweep: there are actually **4** things colloquially called
+  "orchestrator" in this repo, not the 3 the original plan named —
+  `plugins/sgs-blocks/scripts/orchestrator/` is a whole separate pipeline-stage-machinery
+  directory, self-documented as "not the converter." No code overlap with the renamed file;
+  untouched.
+- `walk.py:20-26`'s false "Step 6 replaces `delegates_content`" claim corrected at 3 sites — the
+  two mechanisms coexist by design (D-3 in the governing plan): `emit_shape` for named-attr
+  routing, `delegates_content` as the narrow "accepts arbitrary children" gate for 5 open-container
+  blocks (`accordion-item`, `mega-group`, `modal`, `product-faq-item`, `quote`).
+- "Bean's call" file list resolved: `audit-attr-vocabulary-v2.py`, `draft-vocab-lint.py`,
+  `reclassify.py` deleted after fresh zero-reference verification (not trusted from the month-old
+  finding). The `gap-detection/*.py` appliers were already gone from an earlier, undocumented
+  cleanup pass — nothing to do. No concrete "migrations/ retention policy" artefact exists anywhere
+  in the repo to delete; the `migrations/` directory itself is live and actively growing (newest
+  dated 2026-08-27/28) — not stale, no action taken.
+
+Full converter suite (743 tests) stayed green throughout; both new/updated gates confirmed exit 0.
+
+**Phase 5 — loop defects — diagnosed, fixes still OPEN.** Root-cause investigation ran fresh against
+current code, not the 2026-08-01 snapshot (the converter has been substantially rewritten since —
+`walk.py` is now a `NodeSignature`-keyed additive handler registry, not an if-chain; no stored
+pipeline-state run newer than 2026-06-05 exists, so diagnosis used source reading, not a live
+artefact, for the two unconfirmed items below).
+
+- **Defect 2 (shorthand `padding` → dead `gridItemPadding`) — CONFIRMED.** `content_band.py`'s
+  `_content_band_box_write` guards on `prop.startswith("padding-")`, so bare shorthand `padding`
+  falls through to the generic flat-attr chain and lands on `gridItemPadding`, which only paints
+  when a container's own children are themselves container-wrapped (per the 2026-08-30
+  grid-item-defaults scope correction) — a no-op on an ordinary content band.
+- **Defect 5 (false array-lift drop gaps on hero CTAs) — CONFIRMED.** `array_content`'s
+  `_warn_items_below_threshold` and `universal_walk`'s per-attr leg both fire unconditionally with
+  no shared bookkeeping; two distinctly-named CTA buttons form a size-1 candidate group under the
+  array scan (below its ≥2 threshold) even though the universal walk already lifted them correctly
+  moments earlier.
+- **Defect 4 — real duplicate-mechanism gap found.** `_route_generic_child` (generic path) was made
+  fully recursive for nested transparent-wrapper dissolution on 2026-07-25; the composite-interior
+  "Branch C" fold implements the *same* concept independently and was never given the same fix — a
+  doubly-nested wrapper inside a class-section composite still drops one level deeper than the
+  generic path handles. Exactly the kind of divergence R-31-9 exists to prevent.
+- **Defect 1 (section annihilation, CRITICAL) — mechanism confirmed, live-repro UNCONFIRMED.**
+  `entry.py`'s `_convert_section_body` still wraps the whole recursive build in one broad
+  `try/except`, nulling `block_markup` for the entire section on any exception — but the specific
+  hard-raise path from the original D-4 repro (`class="icon-wrap"`) could not be located in current
+  code; it may have been incidentally fixed by the extraction code's move toward "never raise,
+  always ContentGap" since 2026-08-01. Needs a live repro before either claiming fixed or designing
+  a targeted fix.
+- **Defect 3 (band margin dropped without a sibling) — half-confirmed.** Margin genuinely has no
+  CONTENT-layer destination in `_layer_priorities`, but the specific "sibling" conditional the
+  original plan described could not be located — likely lives wherever a wrapper is folded vs kept
+  as its own node, which was out of budget to trace. Needs a live repro (sole-child vs has-sibling
+  fixture) before design, not a guess.
+
+**No Phase-5 fixes were built this session.** The walker is Rule-7/migration-method-hand-back-#9
+territory — any actual fix needs a `/qc-council` validation pass on the proposed fix-shapes plus
+Bean's sign-off before code changes, which is a separate follow-up decision point, not folded into
+this session.
+
 ## D949 [ROUTINE] — Step 12 (FR-38-22 cloning lift): fx* attrs never had a `block_attributes` row, and the read path's kebab-name matching was silently broken — both fixed
 
 **2026-09-04.** The wave-D motion register's Step 12 ("motion survives a clone") had stood open
