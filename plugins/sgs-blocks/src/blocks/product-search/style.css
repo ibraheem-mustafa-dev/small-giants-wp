@@ -102,13 +102,19 @@
 	padding: 0.5rem 0.75rem;
 	color: inherit;
 	cursor: pointer;
+	border-left: 3px solid transparent;
 	animation: sgs-ps-result-fade-in 180ms ease-out backwards;
 	animation-delay: calc( var( --sgs-ps-stagger-index, 0 ) * 30ms );
 }
 
+/* Rule 43 (WCAG 1.4.1): hover/active state must not rely on colour alone —
+ * verified by eye this was a flat background swap with no shape difference,
+ * so a left accent bar (same convention as the buybox/product-card value
+ * ladder rows) is the non-colour signal. */
 .sgs-product-search__results [role="option"]:hover,
 .sgs-product-search__results [role="option"].is-active {
 	background: var( --sgs-ps-result-hover-bg, var( --wp--preset--color--surface-alt, #f5f7f7 ) );
+	border-left-color: var( --wp--preset--color--primary, #0F7E80 );
 }
 
 @keyframes sgs-ps-result-fade-in {

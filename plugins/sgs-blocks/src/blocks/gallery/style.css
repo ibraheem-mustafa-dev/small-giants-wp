@@ -173,6 +173,13 @@
 
 .sgs-gallery__dot--active {
 	background: var( --wp--preset--color--primary, #0F7E80 );
+	/* Rule 43 (WCAG 1.4.1): active dot must not rely on colour alone — resting
+	 * dots paint at 10x10px, so the active dot grows to 14x14px as the
+	 * non-colour signal (genuine flat colour swap otherwise: 43-colour-only-
+	 * state-indicator flagged this as ambiguous "background", verified by eye
+	 * to be a flat swap with no shape difference). */
+	width: 14px;
+	height: 14px;
 }
 
 /* ==========================================================================
