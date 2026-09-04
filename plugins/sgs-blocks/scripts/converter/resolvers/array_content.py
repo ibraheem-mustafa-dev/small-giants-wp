@@ -354,6 +354,50 @@ def _lift_item(
     return item
 
 
+def _candidate_relevant_to_schema(
+    candidate: Tag,
+    schema: list[tuple[str, str | None, str | None]],
+) -> bool:
+    """Does this lone BEM-classed child belong to THIS array attr's OWN item
+    schema (approved smaller fix, 2026-09-04 /qc-council, replacing the
+    originally-proposed ``consumed_ids`` thread through ``walk.py`` — that
+    variable lives in a different function's stack frame and would have made
+    the deliberately flat/additive/stateless handler dispatch stateful for no
+    reason)?
+
+    Scopes the below-threshold report so an element a DIFFERENT leg already
+    lifted correctly (product-card's ``__cta``, lifted by ``ctaText`` as a
+    scalar) never appears in an unrelated array attr's drop diagnostic —
+    measured live: a ``packSizes`` report on a product-card with a media +
+    heading + cta listed ALL THREE as ``candidate_elements``, none of which
+    ``packSizes`` has any field for.
+
+    Matches by SHAPE ONLY — the same L1 (canonical-slot identity) and L3
+    (tag-shape identity) tiers ``_match_child`` uses to bind a real item's
+    field, plus L1b (BEM-token ownership). Deliberately EXCLUDES the L2
+    role-fallback tier: a bare content-role match (e.g. ``text-content``) is
+    too permissive for a single isolated candidate with no sibling fields to
+    disambiguate against — role-only matching is exactly what the trust-bar
+    docstring above already documents as unreliable (a lone ``__badge``, its
+    ``__inner`` wrapper AND its ``__label`` child all satisfy ``text-content``
+    under the item schema). Requiring a token/slot/identity match instead of a
+    role match is what keeps an irrelevant text node (the CTA's own label)
+    from masquerading as a lost item of an unrelated array.
+    """
+    ctoken = _bem_token(candidate)
+    cslot = bem_element_to_canonical_slot(candidate)
+    cident = _tag_identity(candidate)
+    for field_key, fslot, _frole in schema:
+        if fslot is not None and cslot == fslot:
+            return True
+        if ctoken and _field_owns_token(field_key, ctoken):
+            return True
+        fident = _field_identity(fslot)
+        if fident is not None and cident == fident:
+            return True
+    return False
+
+
 def _warn_items_below_threshold(
     slug: str,
     attr_name: str,
@@ -450,8 +494,12 @@ def lift_array_content(
             # the warning becomes something operators learn to ignore. The lift is
             # a dry run — its result is DISCARDED, so no item is invented and the
             # emitted attrs are byte-identical to before this block existed.
-            if below_threshold:
-                _warn_items_below_threshold(slug, attr_name, below_threshold)
+            relevant_candidates = [
+                c for c in below_threshold
+                if _candidate_relevant_to_schema(c, schema)
+            ]
+            if relevant_candidates:
+                _warn_items_below_threshold(slug, attr_name, relevant_candidates)
             continue
 
         filled: list[dict] = []
