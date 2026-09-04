@@ -76,43 +76,31 @@ guard — see COLOUR TRACK below for detail (kept, not rewritten).
 
 **Invoke `/autopilot` first.**
 
-**road-to-uniform: 9 real items remain, each independently re-verified against live code —
-not read off any doc, including this one two revisions ago.** Two rounds of correction
-happened same-session (D958, D960) — the second one caught the FIRST correction re-asserting
-claims that had already shipped 8-9 days earlier without re-checking them. Full detail + how
-each item was verified: D960, and `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`'s
-final "RE-VERIFIED" note.
+**road-to-uniform: ALL 9 items CLOSED same day (a later session than the one that found them).**
+C7, C6, C19 item 3, C15-5, C14/C4 (built, advisory), D4 (8 rules promoted to gate), B4
+(unblocked — the "Track 2 inactive" reasoning was a mix-up between paused mega-menu VISUAL
+design and this purely mechanical border-control question, corrected after Bean asked "why
+can't we just do B4 anyway"), C16 (found already done, 93/93), C12/C13 (a11y + panel-order
+live pass, done via a second independent Chrome instance after the shared Playwright browser
+stayed locked). Commits: `47fd0079c` `497261de0` `7d0954776` `7b8254ec6` `20bcb52b8`
+`b0670ac4a` `c8b2fa084` `539c11eeb`. Full detail + a 5-persona `/qc-council` audit (re-verified
+every claim independently, live, not from this doc): `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`.
 
-**Already done, do NOT rebuild (this session's correction found these):** C18 (column-shape
-picker — `ColumnShapePicker.js`, adopted in 4 blocks), C15-1 (version floor, already `6.9`),
-C15-2/C15-3 (block-bindings client editor UI — `src/bindings/index.js`, wired into
-`webpack.config.js`, compiles and ships).
-
-**Genuinely open, priority order:**
-1. **C7** — 4 blocks need decorative-image/ARIA (`cta-section`, `decorative-image`,
-   `nav-drawer`, `social-icons`) — confirmed via a fresh live scan, exact list.
-2. **C6** — 10 blocks need `PanelBody`→`ToolsPanel` (unchanged).
-3. **C16 — much smaller than previously stated.** The presets + unit-switch MECHANISM is
-   fully built (`SgsBoxControl.js`) — this is a ROLLOUT task now, not a build: flip
-   `presets={false}`→`presets={true}` (or a restricted slug array) on ~25+ remaining blocks'
-   padding/margin controls, one at a time, Bean's eye per batch (his own instruction).
-4. **C19 item 3 — also much smaller than stated.** The exact shape→fit→position chain with
-   inert-state greying is fully built (`box-shape` media atom, already used by `sgs/media`) —
-   hero just doesn't declare it. Add `box-shape`+`media-padding` to hero's `splitMedia` atom
-   list, swap hero's bespoke width/height UI for the shared atom control. Concrete file list
-   in D960.
-5. **C15-5** — widen block-bindings past the 3 allowlisted blocks (`sgs/text`/`heading`/`button`).
-6. **C4/C14's gate** (CO-2 element grouping) — confirmed still absent, its own AST-walk build.
-7. **C12/C13** — live passes (a11y-audit, panel-ordering walkthrough) — confirmed zero evidence
-   either was ever run.
-8. **D4** — 0 of 23 advisory inspector-scan rules have a promotion decision recorded.
-9. **B4** — `mega-panel.borderRadius`, confirmed still blocked (Track 2 inactive).
-
-Dispatch prompt, rewritten to cover all 9 items: `.claude/prompts/2026-09-04-road-to-uniform-c6-c7-prompt.md`.
+**The qc-council audit also found 2 real, separate residual gaps — NOT part of the road-to-uniform
+9, don't re-close them as if they were:**
+1. **Spec 32 §5 CSS-injection sanitisation still has NO GATE.** A prior session's "B1 CLOSED"
+   claim in the plan doc was a category error — it cited `audit-inline-styling.js` (FR-32-1,
+   a different requirement) as evidence for a gate that doesn't exist. Free-text keyword attrs
+   (`borderStyle`/`textTransform`) need `[^a-zA-Z-]` filtering before CSS concatenation; no
+   script checks this framework-wide. 9 `render.php` files were named unaudited in the
+   original B1 scope and remain so.
+2. **`text/edit.js`'s "Font" `ToolsPanelItem` (from the C6 migration) has a no-op individual
+   reset** — `hasValue={() => true}` + `onDeselect={() => {}}`. Small, contained, one block.
 
 **Structural fix proposed, not yet built:** a `verify-plan-claims.py` script (inline
 `<!-- verify: <command> -->` stamps on doc claims, checked before any "correction" commit) —
-see D960. Worth 30-60 min if this class of error recurs a third time.
+see D960. Worth 30-60 min if this class of error recurs a third time — it just did (see gap 1
+above), on a DIFFERENT claim than the one D960 caught.
 
 C1/D3 (`31-golden-colour-control`) is tracked separately — has its own active plan and a
 parallel session working it. Don't duplicate.
@@ -124,7 +112,7 @@ message the other active session (check `ListAgents`) rather than guessing or fo
 (`STOP-A-PEERS-CLAIM-ABOUT-WHO-CAUSED-A-CHANGE-IS-NOT-VERIFIED-BY-DEFAULT`) before trusting a
 peer's account of who owns an uncommitted change — verify with `git diff` yourself.
 
-## ▶ ROAD-TO-UNIFORM RECONCILIATION — CLOSED bar 9 real items, twice corrected. Detail: D957-D960.
+## ▶ ROAD-TO-UNIFORM RECONCILIATION — FULLY CLOSED, all 9 items, qc-council-audited. Detail: D957-D960.
 
 **Section A (tier-migration blind spot, D777's residual) — CLOSED.** `migrate-tier-object.py`'s
 detector couldn't see an attribute whose base declares as `<prop>Desktop` instead of bare
@@ -134,9 +122,12 @@ canary (a temporary probe page + Playwright computed-style read for brand-strip;
 `wp_update_post()` + Playwright + byte-identical restore for hero — not build-checked only).
 Also removed a genuinely dead code block in `hero/render.php`.
 
-**Spec 32 B1-B3/B5, Spec 35 C2/C3/C8/C9/C11 — CLOSED, each confirmed via its own live gate
-re-run**, not trusted from the stale plan. B4 (`mega-panel.borderRadius`) stays correctly
-BLOCKED on Track 2 (Spec 36 mega-menu), which isn't currently active.
+**Spec 32 B2/B3/B5, Spec 35 C2/C3/C8/C9/C11 — CLOSED, each confirmed via its own live gate
+re-run**, not trusted from the stale plan. ⚠ **B1 (CSS-injection sanitisation gate) is NOT
+closed** — a prior "CLOSED" mark here cited the wrong evidence (FR-32-1, not the §5 NFR); see
+the residual-gaps note above. B4 (`mega-panel.borderRadius` → `SgsBorderControl`, radius kept
+scalar) is now CLOSED too — the "Track 2 inactive" block was a mix-up (paused mega-menu visual
+design vs this mechanical control-shape question), corrected and shipped.
 
 **C4/C5/C10 — all three DESCOPED with evidence, none built blind.** C4 (CO-2 gate) needs an AST
 walk + a judgement call on ~35% ambiguous attributes — its own planned build. C5
@@ -145,65 +136,162 @@ documented ~600-false-positive failure from this exact codebase; found and fixed
 contradiction (CO-15 vs Part L) along the way. C10 (brand-strip picker swap) is an
 architectural mismatch, not a like-for-like swap.
 
-**What's left: 9 real items, see NEXT SESSION START above.** History: first summary said 2
-(C6/C7 only — an undercount); the "fix" for that (D958) itself re-asserted 3 stale claims
-(C18/C15-1/C15-2/C15-3) without re-checking them against code that had shipped 8-9 days
-earlier; a full parallel re-verification (D960) corrected both errors and found 2 of the
-remaining items (C16, C19) are smaller than described — their mechanisms are already built.
+**All 9 remaining items closed same day, see NEXT SESSION START above for the full list +
+commits + the 2 separate residual gaps a `/qc-council` audit found afterward.** History: first
+summary said 2 (C6/C7 only — an undercount); the "fix" for that (D958) itself re-asserted 3
+stale claims (C18/C15-1/C15-2/C15-3) without re-checking them against code that had shipped
+8-9 days earlier; a full parallel re-verification (D960) corrected both errors and found 2 of
+the remaining items (C16, C19) smaller than described. Every closure (including B4, unblocked
+after being wrongly logged as blocked across 3+ write-ups) was independently re-verified by a
+5-persona qc-council — see NEXT SESSION START above.
 
 ## ▶ UNIFORMITY SWEEP TRACK — CLOSED bar one detector. Detail: D918/D919/D922/D924/D930/D933.
 
 `01-tab-group` and `21-render-without-control` both closed to zero, session 4 (D933). Nothing
 else open in this track — see COLOUR TRACK for `31-golden-colour-control`.
 
-## ▶ COLOUR TRACK — session 9: qc-council audit + fix.js repair, 15 rows closed, NOT deployed.
+## ▶ COLOUR TRACK — session 10: fix.js hardened + first real --apply, live-verified. Detail: this section + `.claude/plans/2026-09-03-golden-colour-staged-rollout.md`.
+
 session 7 closed hover-guard (24→0) + built the contrast guard. Session 8 Phase 3 wired 19
-rows live, one real bug caught by a new live probe. Detail: D948, D959.
+rows live, one real bug caught by a new live probe. Session 9 ran `/qc-council` on `fix.js`
+(5 investigators), fixed 3 real bugs (commit `0727f440b`), closed 15 more rows — **none of it
+was ever deployed or live-verified** (flagged explicitly at session-close, correctly).
 
-**Session 9 (this session — see plan doc's own "qc-council audit + fix.js repair" section for
-full evidence, not repeated here):** ran `/qc-council` (5 parallel investigators) against
-every live refusal-reason cluster in `fix.js`, reading the tool's actual source rather than
-trusting its labels. Found the tool itself was the blocker for a large slice of the backlog
-(rows already calling the correct shared helper, refused only because the matcher didn't
-recognise the call shape) and falsified a claim this plan had carried as open since Phase 2
-("rule 31 miscounts hover-named attributes as a detector bug" — checked against rule 31's
-real source: FALSE, it already has the correct exemption). Fixed 3 real bugs in `fix.js`
-(commit `0727f440b`): a stale-refusal classification bug, a hover-sink detection gap, and a
-genuine apply-time defect (new hover attrs never got destructured — every one of the first 11
-real `--apply` runs threw `ReferenceError`, self-test didn't cover it, now does — 15/15
-assertions). Applying the fixed tool + 3 parallel subagents for well-evidenced trivial rows
-closed 15 more rows (`survey.js` CONFORMANT 85→101). `post-grid.borderColourHover` was
-investigated and correctly left unfixed — genuinely hover-only by design, no gradient path.
+**Session 10 (this session) — the big finding: `fix.js` itself needed real hardening before
+ANY of its output could be trusted, and manual per-row fixes were quietly overscoped.**
 
-⚠ **NOTHING FROM THIS SESSION IS DEPLOYED OR LIVE-VERIFIED.** The `Check A` editor-canvas
-gate was raised twice (211→213→216) for structural preview gaps, and `product-card`'s new
-rows rely on a "wins by source order over the old custom-property mechanism" claim that's
-architecturally sound but unconfirmed in a real browser. **Next session's first job:** deploy
-and run `scripts/qa/check-colour-gradient-roundtrip.js` against sandybrown for at least one
-row per mechanism from this batch before trusting any of it closed (R-31-13). Full detail +
-the genuinely-hard remaining rows (custom-property architecture, one WP-native mechanism, one
-bespoke pattern, loop/dynamic-key shapes fix.js correctly declines to chase):
-`.claude/prompts/2026-09-04-colour-conformance-qc-council-continuation-prompt.md`.
+⭐ **CORRECTED ASSUMPTION, mid-session, prompted by Bean:** the initial framing (from the
+session-9 handoff) was "the tool has 3-4 narrow bugs, fix them, done." Actual shape, found by
+running `/subagent-driven-development` (isolated worktree, 3 tasks, 5 review rounds, cross-model
+review at every step): **`fix.js` had a live PHP-corruption risk and a doctrine violation, not
+just narrow classification bugs.**
 
-**Session 8 (concurrent with the road-to-uniform track above, same day):** continued Phase 3 of
-`.claude/plans/2026-09-03-golden-colour-staged-rollout.md` (text-colour gradient rollout). 19
-rows wired across 13 blocks, live-verified, deployed (`976c9d961`, `e17bea203`, `a64f01b13`,
-`43c2c3d4b`, `22b4d21bb`, bundled with `small-giants-wp-05`/`small-giants-wp-5e`'s own verified
-work at `8d5b2807f`). A new live probe, `scripts/qa/check-colour-gradient-roundtrip.js`, caught
-a real bug (`whatsapp-cta`'s gradient CSS on the wrong element, invisible text) that every static
-gate had missed — fixed and re-verified. Full detail: D959, `reports/colour-grant-progress.md`.
+1. **Task 1 (classifier mislabelling)** — `sgs/process-steps.backgroundColour` reported a
+   generic "nothing built" refusal when hover was already shipped. 1 fix round (a reviewer-found
+   mechanism-mislabel bug: `'unresolved'` printed for a genuinely-ambiguous multi-mechanism case).
+2. **Task 2 (pattern-matching gaps)** — 3 named bugs (fused background-color literal, helper-call
+   shape matcher, missing `sgs_resolve_text_colour_or_gradient()` resolution path) turned out to
+   share ONE root cause, fixed via a new `resolveTextGradientChainSelector()` strategy. **Its own
+   verification found a NEW bug**: the generated hover-guard PHP landed nested INSIDE the base
+   colour's own presence guard — dead control whenever the client leaves the base colour unset.
+   That became Task 3.
+3. **Task 3 (hoist-past-guard)** — built `computeHoistedInsertionPoint()` to hoist insertions past
+   matching guards. 2 review rounds found: else/elseif-adjacency risk (would emit a PHP parse
+   error on `--apply`), an unrelated-guard-variable over-hoist risk, and a comment-blind lookahead
+   silently reproducing the original bug. All fixed. Reviewer's own words: **"safe to hand to a
+   parallel-agent `--apply` dispatch phase."**
+4. **Final whole-branch review (the review no per-task round could do) found MORE, and disagreed
+   with the "safe to apply" call**: the codemod hand-built an **unguarded, un-touch-safe combined
+   `:hover,:focus-visible` selector rule** — directly violating `plugins/sgs-blocks/CLAUDE.md`'s
+   "Touch-safe HOVER helpers" doctrine (landed ONE DAY before this branch started; a bare
+   `{sel}:hover{…}` must never be hand-written, `sgs_hover_state_rules()` exists for exactly
+   this). Verified this shape would have FAILED the framework's own `php-hover-scan.php` gate on
+   `team-member` (zero existing guard calls there to hide behind). Also: the "can't safely hoist"
+   fallback silently emitted the KNOWN-BROKEN nested placement instead of refusing, with a
+   self-test fixture literally asserting the bug as "expected" — fixed to refuse with named
+   reasons instead. Both closed, re-reviewed, re-approved. **7 commits total** (`b1eb92520`
+   `d6b031061` `bcc75910d` `ff1f024e6` `daf6178ec` `0f38a4f01` `5ce3c8331`), merged `949c4d701`.
+   self-test 15→23.
 
-**Next for this track:** `.claude/prompts/2026-09-04-colour-conformance-qc-council-continuation-prompt.md`
-(supersedes the `golden-colour-phase3-continuation-prompt.md` reference this line used to
-carry — that row-classification is superseded by session 9's tool-level fix, re-derive fresh
-rather than reading either prompt's cached numbers). `sgs/quote`'s `attributionColourHover`
-is now BUILT-BUT-SELF-REFUSED (session 9: `fix.js` correctly declined — `quote.js` has
-multiple ambiguous destructure blocks — needs a human pick, not a blind retry).
+⭐ **THEN — the tool's first-ever real `--apply` run surfaced ANOTHER gap no review round
+covered:** `fix.js --apply` writes the new `{attr}Gradient`/`{attr}Hover` attribute
+declarations correctly but does **NOT** wire the corresponding `attrMap` entry into the
+block's `supports.sgs.elements` manifest — `check-element-manifest-conformance.js` failed
+with `orphan_unclassified=2` on `nav-menu`'s new `burgerBgGradient`/`indicatorColourGradient`.
+Fixed by hand (2 `css:background-image` attrMap entries), verified against the actually-emitted
+PHP first (never assumed the property). **This gap is NOT yet fixed IN THE TOOL** — every future
+`--apply` run needs the same manual follow-up until someone teaches `fix.js` to write the
+attrMap entry itself. Named, not silently worked around.
 
-**Still open, carried forward from session 7:** hover-guard's 11 UNRESOLVED cross-file cases
-(optional); `SgsBorderControl`'s 44-caller contrast wiring (plumbing built, no callers wired,
-not parked); `nav-menu.burgerColour` (needs `sgs_svg_stroke_gradient()` + a new attr — verify
-still open, another session may have closed it since).
+**Applied for real, deployed, live-verified (commit `653aaa69b`):** `nav-menu.navColour`/
+`.burgerColour`/`.submenuColour`/`.burgerBg`/`.indicatorColour` + `team-member.nameColour`/
+`.roleColour` gain hover colours. `survey.js` CONFORMANT 104→110. Verified via **real Playwright
+hover probes on the live canary** — see "hard-won live-probe gotchas" below, both false negatives
+were caught and re-verified correctly before trusting a PASS.
+
+⭐ **Real bug found in ALREADY-SHIPPED code, NOT fixed (flagged for whoever owns it next):**
+`sgs/info-box`'s existing D744 text-gradient rollout (shipped before this session) has the
+SAME defect Task 1/2 fixed in `fix.js`: it calls `sgs_text_decls()` + `sgs_emit_state_colour_css()`
+for a gradient-capable row, but `sgs_text_decls()` resolves flat-vs-gradient and then feeds the
+result through `sgs_colour_value()` — which expects a slug/hex, NOT a `linear-gradient(...)`
+string. Live-verified: with a gradient set, info-box emits
+`color:var(--wp--preset--color--linear-gradient90degff...)` — garbage. **info-box's gradient
+text has probably never actually painted in production.** The correct pattern (proven live
+repeatedly this session) is `sgs_resolve_text_colour_or_gradient()` → `sgs_text_colour_decl()`
+→ `sgs_text_colour_gradient_fallback_rule()`, NOT the `sgs_text_decls()` pairing.
+
+### Hard-won live-probe gotchas — READ BEFORE TRUSTING A "PASS" ON A HOVER/GRADIENT PROBE
+
+Two false readings this session, both caught before being reported as fact:
+
+1. **A page-scoped selector can grab the WRONG instance.** `sgs/nav-menu` renders on nearly
+   every page via the theme's own header/footer template parts — a probe page had **3**
+   `.wp-block-sgs-nav-menu` instances on it, and a bare `document.querySelector()` silently
+   grabbed the theme's chrome instance, not the probe's. Fix: always wrap the probe markup in
+   `<!-- wp:group {"anchor":"probe-id"} -->` and scope every selector to `#probe-id …` — this is
+   already `check-colour-gradient-roundtrip.js`'s own convention (`ROOT_ID`); a hand-rolled
+   ad-hoc probe that skips it will silently measure the wrong element and report a false FAIL.
+2. **A hover-vs-base colour test needs DIFFERENTIATED values, or a coincidental match reads as a
+   FALSE FAIL.** A probe set `nameColourHover:"primary"` with no explicit base `nameColour` —
+   the block's own default for the base colour happened to ALSO resolve to "primary", so
+   before/after computed colour was identical regardless of whether hover fired at all. Always
+   set the base attribute to a DIFFERENT token than the hover attribute in a probe, and always
+   pair a hover-fires check with an unhover-reverts check (move the mouse elsewhere, confirm the
+   colour reverts) — a "changed and stayed changed" result cannot tell a real hover rule from an
+   accidentally-sticky one.
+
+### Reclassification: the "15 pure tool bugs" and "21 trivial" buckets from session 9's synthesis were WRONG in both directions
+
+Session 9's handoff (pasted back into this session by Bean, since it wasn't written to a doc)
+claimed 76 refused rows split into 15 tool-bugs / 21 trivial / 12 correctly-refused / ~25-28
+genuinely-hard. Verified piece by piece this session — **both buckets moved, in opposite
+directions:**
+
+- **3 rows moved OUT of "15 tool bugs" into "correctly refused, not a bug at all":**
+  `form.submitBackground`, `modal.triggerBackground`, `modal.modalBackground` — Task 2's own
+  investigation found these push into a plain array with **no selector in the statement to
+  recover**. `resolveDirectSelector`'s own "never invent a selector" principle means these are
+  refused BY DESIGN, not a matcher gap. The original synthesis miscategorised them.
+- **`product-card.titleColour`/`.descColour`/`.priceColour`/`.priceNoteColour` moved OUT of
+  "21 trivial, single-selector direct-paint swaps" into "genuinely hard, custom-property
+  architecture"** — same bucket as `mega-panel`. Verified: these feed a CSS custom property
+  (`--sgs-card-title-colour` etc.) consumed by ONE `color:` declaration in `style.css` — a
+  gradient needs 3 properties (`background-image`+`clip`+`color:transparent`), which cannot
+  substitute into one custom-property value. The "pure single-selector swap" description in the
+  original synthesis was wrong; this needs the same real design work mega-panel needs (a second
+  custom property + a conditional property switch, or moving off custom-property indirection
+  entirely).
+- **`tabs.tabBgColour`/`.panelBgColour` and `social-icons.iconBackground`/
+  `.iconBackgroundHover` independently confirmed as genuinely custom-property-fed** (`--sgs-tab-bg`,
+  `--sgs-panel-bg`, `--sgs-social-bg`) — consistent with the ORIGINAL "genuinely hard" bucket,
+  not new information, but worth stating as confirmed rather than assumed.
+- **Genuinely trivial and CONFIRMED SAFE** (same shape as the 3 rows already applied this
+  session): `pricing-table.ctaBackground` + `.popularBadgeBackground` (both already paint via
+  `sgs_block_background_layer_css()`/a hand-rolled `::after` layer with a LIVE sibling
+  `ctaColourGradient` proving the pattern works in this exact file) and `nav-menu.underlineColour`
+  (a decorative `::after` bar, no competing text). **Dispatched to 2 parallel agents this
+  session — IN PROGRESS, not yet landed as of this write-up.** Check `git log` for
+  `pricing-table`/`nav-menu` commits after this LEDGER's own last-updated date before trusting
+  either as done.
+
+**Still open, carried forward:** hover-guard's 11 pre-existing UNRESOLVED cross-file cases
+(optional, session 7); `SgsBorderControl`'s 44-caller contrast wiring (plumbing built, no
+callers wired); `sgs/quote.attributionColourHover` (BUILT-BUT-SELF-REFUSED — `fix.js` correctly
+declines, `quote.js` has multiple ambiguous destructure blocks, needs a human pick);
+`product-card.tagTextColour` (a DIFFERENT, more specific refusal — `normal-state-value-not-a-plain-identifier`
+— surfaced after this session's `fix.js` fix removed the original bug masking it); the ~25-28
+genuinely-hard custom-property-architecture rows (`mega-panel`, `brand-strip.tileBackgroundColour`,
+`social-icons`, `form.progressBarColour`, `post-grid.cardBgColour`, `product-card`'s 4 title/desc/
+price rows, `tabs`' 2 rows — none attempted this session, all need real design, not pattern-copy);
+`option-picker`'s bespoke `--sgs-op-*` multi-variant pattern (documented not-gradient-capable
+without new design); `cta-section.backgroundColour` (WP-native mechanism, not SGS helpers);
+`post-grid`'s loop/dynamic-key rows (`.titleColour`/`.excerptColour`/`.metaColour`/
+`.readMoreColour` — `fix.js`'s own docblock disclaims this shape, don't extend the matcher to
+guess); the `sgs/info-box` gradient bug named above, unfixed.
+
+**Prompt for next session:** `.claude/prompts/2026-09-04-colour-conformance-session-11-continuation.md`
+(supersedes and replaces the session-9 continuation prompt, which is now stale on every number
+it carried — delete it once this one is confirmed working, per project convention).
 
 ## ▶ MOTION TRACK (A closed+live; B closed) — nothing new session 8.
 
