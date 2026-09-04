@@ -432,46 +432,6 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			{ /* Colour panel FIRST (D618/D619, sgs/button pattern) — now holding
-			   ONLY the first-letter drop-cap colour. `text`'s own colour and
-			   `background`'s colour used to share this one panel between TWO
-			   different declared elements (Spec 35 THE PLACEMENT RULE
-			   violation) — text's colour has moved into the Typography panel
-			   below (text's TIER-2 Text-family panel) and background's colour
-			   into its own new TIER-1 Background panel, each rendered via the
-			   same raw row components (`DesignTokenPicker` /
-			   `GradientCapableColourControl`) SgsColourPanel itself uses, so
-			   the control shape is unchanged for the client. first-letter is
-			   the Drop cap element's own colour and stays here — its "Drop
-			   cap" PanelBody below is already a TIER-1 element panel and is
-			   left untouched. */ }
-			<SgsColourPanel
-				rows={ [
-					{
-						key: 'firstLetterColour',
-						label: __( 'First-letter colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: firstLetterColour,
-								onChange: ( val ) => setAttributes( { firstLetterColour: val ?? '' } ),
-								linked: true,
-								gradientValue: firstLetterColourGradient,
-								onGradientChange: ( val ) => setAttributes( { firstLetterColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: firstLetterColourHover,
-								onChange: ( val ) => setAttributes( { firstLetterColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-				] }
-			/>
 			{ /* ── Styles tab (Spec 35 THE PLACEMENT RULE, D537) ────────────────
 			   `text` is this block's isWrapper:true element with clusters
 			   [text, fill, layout, motion] — its controls split into
@@ -1004,6 +964,27 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
+							/>
+							<GradientCapableColourControl
+								label={ __( 'First-letter colour', 'sgs-blocks' ) }
+								states={ [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: firstLetterColour,
+										onChange: ( val ) => setAttributes( { firstLetterColour: val ?? '' } ),
+										linked: true,
+										gradientValue: firstLetterColourGradient,
+										onGradientChange: ( val ) => setAttributes( { firstLetterColourGradient: val ?? '' } ),
+									},
+									{
+										key: 'hover',
+										label: __( 'Hover', 'sgs-blocks' ),
+										value: firstLetterColourHover,
+										onChange: ( val ) => setAttributes( { firstLetterColourHover: val ?? '' } ),
+										linked: true,
+									},
+								] }
 							/>
 						</>
 					) }

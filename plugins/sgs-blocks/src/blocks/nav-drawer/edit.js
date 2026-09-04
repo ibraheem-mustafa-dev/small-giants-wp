@@ -72,7 +72,7 @@ const BG_ATTACHMENT_OPTIONS = [
 ];
 import { close } from '@wordpress/icons';
 import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsLengthControl,
-	SgsBorderControl,
+	SgsBorderControl, GradientCapableColourControl,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTextColourPreviewStyle } from '../../utils';
@@ -138,6 +138,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		closeStyle,
 		animateFrom,
 		drawerBg,
+		drawerTextColour,
+		drawerTextColourGradient,
 		toggleCloseColour,
 		toggleCloseColourGradient,
 		drawerAlign,
@@ -249,16 +251,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						attrs: {
 							base: 'drawerBg',
 							gradient: 'drawerBgGradient',
-						},
-						attributes,
-						setAttributes,
-					} ),
-					textRow( {
-						key: 'drawerTextColour',
-						label: __( 'Drawer text colour', 'sgs-blocks' ),
-						attrs: {
-							base: 'drawerTextColour',
-							gradient: 'drawerTextColourGradient',
 						},
 						attributes,
 						setAttributes,
@@ -509,6 +501,20 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ /* ── Styles tab ──────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
 				<PanelBody title={ __( 'Drawer container', 'sgs-blocks' ) }>
+					<GradientCapableColourControl
+						label={ __( 'Drawer text colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: drawerTextColour,
+								onChange: ( val ) => setAttributes( { drawerTextColour: val ?? '' } ),
+								gradientValue: drawerTextColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { drawerTextColourGradient: val ?? '' } ),
+							},
+						] }
+					/>
 					{ /* Background moved to the top-level SgsColourPanel (D618/D621).
 					   NOTE: that shared control does not expose an alpha/clearable
 					   override per row (SgsColourPanel forwards no such props),
