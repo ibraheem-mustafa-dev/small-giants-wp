@@ -647,6 +647,37 @@ export default function Edit( { attributes, setAttributes } ) {
 							colour: 'shadowHoverColour',
 						} }
 					/>
+					{ /* Moved in from the Settings-tab "Card Styling (resting
+					     state)" panel (D622 — an element-scoped control
+					     belongs in its own element's TIER 1 panel;
+					     cardBorderWidth/cardRadius are owned by "Card"). */ }
+					<ResponsiveBoxControl
+						label={ __( 'Border width', 'sgs-blocks' ) }
+						showResponsive={ false }
+						presets={ [ '10', '20', '30' ] }
+						values={ { base: cardBorderWidth || {} } }
+						onChange={ ( _tier, next ) =>
+							setAttributes( { cardBorderWidth: next } )
+						}
+					/>
+					<SgsLengthControl
+						label={ __( 'Corner radius', 'sgs-blocks' ) }
+						value={ cardRadius || '' }
+						onChange={ ( val ) =>
+							setAttributes( { cardRadius: val || '' } )
+						}
+						units={ [
+							{ value: 'px', label: 'px', default: 8 },
+							{ value: '%', label: '%', default: 50 },
+							{ value: 'rem', label: 'rem', default: 0.5 },
+							{ value: 'em', label: 'em', default: 0.5 },
+						] }
+						help={ __(
+							'Leave empty to use the theme default.',
+							'sgs-blocks'
+						) }
+						presets={ false }
+					/>
 				</PanelBody>
 			</InspectorControls>
 
@@ -1126,39 +1157,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<ResponsiveBoxControl
-						label={ __( 'Border width', 'sgs-blocks' ) }
-						showResponsive={ false }
-						presets={ [ '10', '20', '30' ] }
-						values={ { base: cardBorderWidth || {} } }
-						onChange={ ( _tier, next ) =>
-							setAttributes( { cardBorderWidth: next } )
-						}
-					/>
-					{ /* Contract §14.3 forbids a raw TextControl taking free CSS here —
-					     it accepted invalid values and offered no unit affordance.
-					     SgsLengthControl per §14.1/§14.2 with an explicit units array
-					     (D561). The attribute stays `type: string` and render.php:72
-					     still reads a plain string, so the value domain is unchanged;
-					     the canary carried 0 stored values at migration. */ }
-					<SgsLengthControl
-						label={ __( 'Corner radius', 'sgs-blocks' ) }
-						value={ cardRadius || '' }
-						onChange={ ( val ) =>
-							setAttributes( { cardRadius: val || '' } )
-						}
-						units={ [
-							{ value: 'px', label: 'px', default: 8 },
-							{ value: '%', label: '%', default: 50 },
-							{ value: 'rem', label: 'rem', default: 0.5 },
-							{ value: 'em', label: 'em', default: 0.5 },
-						] }
-						help={ __(
-							'Leave empty to use the theme default.',
-							'sgs-blocks'
-						) }
-						presets={ false }
-					/>
+					{ /* Border width + corner radius moved to the "Card" (item
+					     element) colour panel above, Styles tab — D622. */ }
 					{ /* cardShadow/shadowHover moved to the "Card" (item element)
 					   colour panel above, Styles tab — Spec 35 THE PLACEMENT RULE
 					   groups the shadow builder (shape + colour) with the rest of
