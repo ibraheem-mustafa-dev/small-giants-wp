@@ -999,3 +999,85 @@ those two claims visibly separate.
 **Everything else in this session's original scope (Job 2's worklist) is unchanged from session
 10's assessment** — no new bulk-fixable rows found; the remaining ~57 REFUSED rows are still
 correctly refused by design.
+
+## Session 11 close-out — the 12 `gradient-path-deferred` rows, 4 closed, 8 handed off — 2026-09-04
+
+After the close-out above, Bean directed this session to also chase the 12 rows `fix.js --fix`
+flags `gradient-path-deferred` — text/fill-mechanism rows the tool refuses to touch, distinct
+from the 9 blocks already fixed this session. Ran a `/qc-council` pass (two adversarial raters)
+on two proposed architectural fix-shapes before dispatching anything, per this project's own
+`council-fix-shapes-are-hypotheses-not-specs` rule — both proposals turned out wrong as stated,
+but each surfaced a real, smaller, better-evidenced fix underneath.
+
+**Proposal A (one shared PHP helper for 6 custom-property-fed blocks) — NO-GO.** Adversarial
+read of all 6 found real divergences a shared helper couldn't absorb: `nav-menu.featuredColour`
+wasn't even the same shape (already sits next to a working gradient mechanism, unused);
+`tabs`/`brand-strip` aren't normal+hover pairs at all; `mega-panel` duplicates the same
+declaration across 2 files/6 call-sites; `button`/`option-picker` have preset-style-class CSS
+also setting the same custom property, a precedence problem the proposal never accounted for.
+
+**Proposal B (native-colour retirement for `process-steps`/`button`) — GO, but the premise was
+wrong.** Neither block had native colour support *enabled* — both already showed
+`supports.color: {background:false,text:false,gradients:false}` in `block.json`. Nothing to
+retire; the real gap was just a missing `Gradient` sibling attr + the correct helper, the exact
+shape already proven this session. Also corrected: "D744" (cited as the retirement precedent)
+is actually an INCIDENT record about *failed* plans — the real precedent is **D751**, which
+found each block's shape too different for one script, validating hand-per-block work rather
+than a process gap.
+
+**4 rows closed as a direct result, all path-scoped, gated, committed on `main`:**
+- `nav-menu.featuredColour` — `fb06b593d`. One of two emission branches fixed (the direct
+  `color:` LABEL-form path, mirroring `burgerColour` in the same file); the other branch
+  (`--sgs-nm-featured-colour`, feeds the submenu's inherited row) stays flat-only, documented
+  inline — its consumer shares a selector with a background paint, the same precondition
+  `submenuColourGradient` already names on this file.
+- `process-steps.backgroundColour` + `.textColour` — `a3e6a8a7f`. Removed the wholesale
+  native-style-engine `color` sub-key pass; text now emits via
+  `sgs_resolve_text_colour_or_gradient()`→`sgs_text_colour_decl()`+fallback rule; background
+  moves onto a `::after` layer via `sgs_block_background_layer_css()` so the same-selector text
+  gradient can't clip it (mirrors `info-box`/`product-card`).
+- `button.colourText` — `0376109be`. Confirmed the real precondition (text and background paint
+  the same selector, `style.css:71-73`) and solved it by hand-mirroring the block's own existing
+  `--sgs-btn-bg*` var chain onto a gated `::after` layer, rather than reusing
+  `sgs_block_background_layer_css()` (which needs an already-resolved paint value button's flow
+  didn't have at that point).
+
+⚠ **Process note:** `nav-menu` and `process-steps` were reverted mid-flight — twice, for
+`process-steps` — to unblock two unrelated live-incident deploys from `small-giants-wp-90` on
+this actively shared tree (a genuine production fatal error the first time, a lower-priority
+bugfix the second). Both dispatched agents redid their work cleanly from a fresh `HEAD` each
+time; no work was lost, but it cost real wall-clock. Standing lesson, not new: revert fast for a
+live incident, never force a commit through under time pressure to avoid the revert.
+
+**8 rows handed off, not attempted this session** — each independently investigated by a
+read-only precedent-search agent (not guessed at), full detail + exact fix-shapes in
+`.claude/prompts/2026-09-04-colour-conformance-remaining-8-hard-rows.md` (supersedes and
+deletes the session-11 continuation prompt, consumed):
+
+- **SVG fill gradient** (`google-reviews.starColour`, plus an opportunistically-found sibling gap
+  on `star-rating`) — precedent FOUND: `sgs_svg_stroke_gradient()` already builds the needed
+  `<linearGradient>`/`<radialGradient>` machinery, hardcoded to `stroke:` only; a one-parameter
+  extension makes it `fill:`-capable too.
+- **Ancestor-hover gradient** (`process-steps.numberColourHover`) — precedent FOUND:
+  `post-grid.textColourHover` already combines ancestor-hover with gradient, a straight lift.
+- **Dynamic loop / per-card colour** (`post-grid.cardBgColour`, `.categoryBadgeColour`) — no
+  gradient precedent, but the surrounding mechanism is proven: `cardBgColour` can move onto the
+  already-existing `sgs_fill_states_css()`; `categoryBadgeColour` can extend
+  `pricing-table.ribbonColour`'s proven per-item `:nth-child(N)` mechanism with the gradient
+  branch it never needed.
+- **Bespoke multi-variant custom-property colour** (`tabs.tabTextColour`,
+  `brand-strip.itemTextColourHover`, `mega-panel.iconColour`, `option-picker.pillTextColour`) —
+  CONFIRMED no precedent exists anywhere in the tree (checked exhaustively, including each
+  block's own other colour rows). Genuine new-architecture work; the new prompt names a smallest
+  candidate mechanism (a second gradient-carrying custom property + cascade-fallback defaults)
+  explicitly as an unverified proposal, and flags this group as needing its own design gate
+  (`/qc-council` or `/brainstorming`) before any subagent touches it — unlike the other 3 groups,
+  this one is not proven-pattern reuse.
+
+**Also shipped this session, upstream of the 4 rows above:** `sgs_text_decls()` itself hardened
+in place (now delegates to `sgs_text_colour_decl()`, byte-identical for every flat-colour caller,
+structurally closes this defect class for every future caller too) + a new
+`sgs_text_states_css()` convenience wrapper added alongside `sgs_fill_states_css()` — commit
+`da2b54583`. Not yet adopted by any of the 9 already-fixed blocks (kept as a pure zero-risk
+addition, migration is its own follow-up, not bundled here per "phases never ship as single
+commits").
