@@ -55,21 +55,47 @@ guard — see COLOUR TRACK below for detail (kept, not rewritten).
 
 **Invoke `/autopilot` first.**
 
-**12 real items remain from the road-to-uniform backlog — NOT 2.** An earlier version of this
-section said only C6/C7 were left; Bean caught the undercount same-session. Full prioritised
-list (C7, C6, C15-2/C15-3 [the headline item — client-facing block-bindings editor UI, Size M],
-C15-5, C16, C19 item 3, C18 residual, C15-1, C14's gate [= C4, already scoped as its own build],
-C12/C13, D4, B4-blocked) lives in
-`.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`'s "CORRECTED" note under "Session
-2026-09-04 summary" — read that in full, do not work from a shorter list anywhere else,
-including the dispatch prompt below (it was written before the correction and covers C6/C7
-only — still a valid starting point, just not the whole picture).
+**road-to-uniform: 9 real items remain, each independently re-verified against live code —
+not read off any doc, including this one two revisions ago.** Two rounds of correction
+happened same-session (D958, D960) — the second one caught the FIRST correction re-asserting
+claims that had already shipped 8-9 days earlier without re-checking them. Full detail + how
+each item was verified: D960, and `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`'s
+final "RE-VERIFIED" note.
 
-Dispatch prompt (partial scope, C6/C7 only):
+**Already done, do NOT rebuild (this session's correction found these):** C18 (column-shape
+picker — `ColumnShapePicker.js`, adopted in 4 blocks), C15-1 (version floor, already `6.9`),
+C15-2/C15-3 (block-bindings client editor UI — `src/bindings/index.js`, wired into
+`webpack.config.js`, compiles and ships).
+
+**Genuinely open, priority order:**
+1. **C7** — 4 blocks need decorative-image/ARIA (`cta-section`, `decorative-image`,
+   `nav-drawer`, `social-icons`) — confirmed via a fresh live scan, exact list.
+2. **C6** — 10 blocks need `PanelBody`→`ToolsPanel` (unchanged).
+3. **C16 — much smaller than previously stated.** The presets + unit-switch MECHANISM is
+   fully built (`SgsBoxControl.js`) — this is a ROLLOUT task now, not a build: flip
+   `presets={false}`→`presets={true}` (or a restricted slug array) on ~25+ remaining blocks'
+   padding/margin controls, one at a time, Bean's eye per batch (his own instruction).
+4. **C19 item 3 — also much smaller than stated.** The exact shape→fit→position chain with
+   inert-state greying is fully built (`box-shape` media atom, already used by `sgs/media`) —
+   hero just doesn't declare it. Add `box-shape`+`media-padding` to hero's `splitMedia` atom
+   list, swap hero's bespoke width/height UI for the shared atom control. Concrete file list
+   in D960.
+5. **C15-5** — widen block-bindings past the 3 allowlisted blocks (`sgs/text`/`heading`/`button`).
+6. **C4/C14's gate** (CO-2 element grouping) — confirmed still absent, its own AST-walk build.
+7. **C12/C13** — live passes (a11y-audit, panel-ordering walkthrough) — confirmed zero evidence
+   either was ever run.
+8. **D4** — 0 of 23 advisory inspector-scan rules have a promotion decision recorded.
+9. **B4** — `mega-panel.borderRadius`, confirmed still blocked (Track 2 inactive).
+
+Dispatch prompt (C6/C7 only, still a valid start, not the whole list):
 `.claude/prompts/2026-09-04-road-to-uniform-c6-c7-prompt.md`.
 
-C1/D3 (`31-golden-colour-control`, 241 open) is tracked separately — has its own active plan
-and a parallel session working it. Don't duplicate.
+**Structural fix proposed, not yet built:** a `verify-plan-claims.py` script (inline
+`<!-- verify: <command> -->` stamps on doc claims, checked before any "correction" commit) —
+see D960. Worth 30-60 min if this class of error recurs a third time.
+
+C1/D3 (`31-golden-colour-control`) is tracked separately — has its own active plan and a
+parallel session working it. Don't duplicate.
 
 ⚠ **Concurrent occupancy on `main` is the norm, not the exception** — path-scope every commit,
 re-check `git status`/branch and the decisions.md D-ceiling immediately before each write, and
@@ -78,7 +104,7 @@ message the other active session (check `ListAgents`) rather than guessing or fo
 (`STOP-A-PEERS-CLAIM-ABOUT-WHO-CAUSED-A-CHANGE-IS-NOT-VERIFIED-BY-DEFAULT`) before trusting a
 peer's account of who owns an uncommitted change — verify with `git diff` yourself.
 
-## ▶ ROAD-TO-UNIFORM RECONCILIATION — CLOSED bar 12 real items (session 8). Full detail: D957/D958.
+## ▶ ROAD-TO-UNIFORM RECONCILIATION — CLOSED bar 9 real items, twice corrected. Detail: D957-D960.
 
 **Section A (tier-migration blind spot, D777's residual) — CLOSED.** `migrate-tier-object.py`'s
 detector couldn't see an attribute whose base declares as `<prop>Desktop` instead of bare
@@ -99,8 +125,11 @@ documented ~600-false-positive failure from this exact codebase; found and fixed
 contradiction (CO-15 vs Part L) along the way. C10 (brand-strip picker swap) is an
 architectural mismatch, not a like-for-like swap.
 
-**What's left: 12 real items, see NEXT SESSION START above** (not just C6/C7 — that was this
-session's own undercount, caught and corrected same day, D958).
+**What's left: 9 real items, see NEXT SESSION START above.** History: first summary said 2
+(C6/C7 only — an undercount); the "fix" for that (D958) itself re-asserted 3 stale claims
+(C18/C15-1/C15-2/C15-3) without re-checking them against code that had shipped 8-9 days
+earlier; a full parallel re-verification (D960) corrected both errors and found 2 of the
+remaining items (C16, C19) are smaller than described — their mechanisms are already built.
 
 ## ▶ UNIFORMITY SWEEP TRACK — CLOSED bar one detector. Detail: D918/D919/D922/D924/D930/D933.
 

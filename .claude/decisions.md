@@ -1,3 +1,74 @@
+## D960 [ROUTINE] — D958's own "correction" re-asserted 3 stale claims without re-checking them; a 4-agent parallel re-verification found the real count is 9, not 12, and 2 more are smaller than described
+
+**2026-09-04, same session as D957/D958.** Bean pushed a second time, immediately after D958
+landed: "I'm sure several of these are already completed like C18. We already have a visual
+column shape picker." He was right, and it wasn't just C18.
+
+**What happened.** D958 corrected D957's undercount (2 items → 12) by copying forward the
+"unbuilt" language from the original 2026-08-25/26 plan text for C18, C15-1, and C15-2/C15-3.
+That language was HONEST when originally written — a grep genuinely found nothing at the
+time. But D958 was written 2026-09-04, 8-9 days after those exact features had shipped, and
+never re-ran the check before repeating the claim as current fact. This is a distinct,
+sharper failure than the plain staleness D957 already corrected once: D958 was itself titled
+a correction, was actively re-deriving "what's left" from the same source doc, and still
+didn't verify before asserting.
+
+**Response: dispatched 4 parallel agents (`/dispatching-parallel-agents`, Bean's explicit
+ask), each an independent question, so no single agent's blind spot could repeat the error:**
+1. Re-verify the 9 items D958 called open, from scratch, against live code/git — no trusting
+   the doc.
+2. Spot-check the items D957/D958 called CLOSED, since the doc had now proven unreliable in
+   one direction — check it wasn't ALSO wrong in the other.
+3. Root-cause WHY the false claims happened (git-blame the doc's own edit history against
+   the shipped commits' dates) and propose a structural fix.
+4. For the two items expected to still be open (C16, C19), produce a concrete build plan
+   grounded in the actual current code, so a future session doesn't re-derive the shape.
+
+**Findings.**
+
+*Already built, D958 wrongly called open:*
+- **C18** — `ColumnShapePicker.js` (341 lines), adopted in 4 blocks, shipped `2e46fc3f2`
+  (2026-08-26).
+- **C15-1** — `sgs-blocks.php:11` already `Requires at least: 6.9`, shipped `1991830ec`
+  (2026-08-27 14:40).
+- **C15-2/C15-3** — `src/bindings/index.js`, a complete `getFieldsList()` implementation,
+  same commit as C15-1, AND genuinely wired into `webpack.config.js` as its own entry point
+  (confirmed compiled output on disk, not dead code).
+
+*All 10 "closed" claims re-checked, all held up* (Section A; Spec 32 B1/B2/B3/B5; Spec 35
+C2/C3/C8/C9/C11) — the doc's unreliability ran only false-negative (claiming unbuilt work
+that shipped), never false-positive.
+
+*Genuinely open, 9 items — 2 found smaller than D958 described:*
+- **C16** — the presets + unit-switch MECHANISM is fully built (`SgsBoxControl.js`,
+  2026-08-27); only 4 of ~30 eligible blocks have opted in. Rollout task, not a build.
+- **C19 item 3** — the shape→fit→position chain with inert-state greying is fully built as
+  the `box-shape` media atom, already used by `sgs/media`; hero just doesn't declare it.
+  Concrete file list + steps recorded in the plan doc.
+- C7, C6, C15-5, C14/C4's gate, C12/C13, D4, B4 — all confirmed genuinely open, unchanged
+  from D958's list, each with fresh evidence (exact block lists, live scan counts, grep
+  results) rather than carried-forward numbers.
+
+**Root cause, precisely.** Two different failure classes, not one: the ORIGINAL 2026-08-25/26
+plan claims were legitimate staleness (true when written, falsified by later work — normal
+and expected for any point-in-time doc). D958's error was a FRESH mistake — an agent, in the
+act of writing a correction, treating "re-read the source doc" as sufficient without also
+re-running the checks that doc's claims depend on. The first is unavoidable without
+continuous re-verification; the second is a process gap.
+
+**Structural fix proposed (not built this session — flagged for whoever hits this a third
+time):** a `verify-plan-claims.py` script. Convention: any "unbuilt"/"open" line in a plan
+doc that names a specific file/function/pattern carries an inline
+`<!-- verify: <grep/git-log command> -->` stamp. The script scans a doc for these stamps,
+runs each command, and flags any claim whose "should be empty" command instead returns a
+hit. Reuses `gates.json`'s existing declarative `{cmd, id}` shape rather than inventing a new
+one. Trigger point: before any commit that "corrects" a plan doc's build-status claims —
+same class of gate `handoff-preflight.py` already runs for other doc-drift (D101 STOP
+carry-forward, parking archive-on-resolve). Estimated 30-60 min to build.
+
+`.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md` and `.claude/LEDGER.md` both
+corrected in place, same commit as this entry.
+
 ## D959 [ROUTINE] — Golden-colour Phase 3: 19 rows wired live, one real bug caught by a new live probe
 
 **2026-09-04, session 8 (colour track — concurrent with, not part of, D957/D958's road-to-uniform
@@ -42,8 +113,6 @@ the flat/gradient pair on attribution already works; only the hover variant is m
 own `textColourHover` targeting the root (not the InnerBlocks body) is correct by design, per
 Bean's direct correction this session — the gap is specifically that attribution never got its
 own hover control, not that the mechanism targets the wrong element.
-
----
 
 ## D958 [ROUTINE] — D957 undercounted the road-to-uniform remainder as 2 items; it was 12
 

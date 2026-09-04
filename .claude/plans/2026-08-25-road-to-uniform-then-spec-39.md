@@ -2,10 +2,12 @@
 doc_type: plan
 title: The road to uniform — clear Spec 32 + Spec 35 + the tier migration, then Spec 39
 date: 2026-08-25
-status: OPEN — Section A closed, Spec 32 closed bar B4 (blocked). Spec 35's mechanical
-  verification pass (C2/C3/C8/C9/C11, D1/D2) is closed and C4/C5/C10 are properly scoped
-  (not built), but that left 12 genuinely unbuilt items untouched — see the CORRECTED note
-  under "Session 2026-09-04 summary" below. C1/D3 (golden-colour) tracked elsewhere.
+status: OPEN — Section A closed, Spec 32 closed bar B4 (blocked), Spec 35's mechanical
+  verification pass closed (C2/C3/C8/C9/C11, C4/C5/C10 scoped, D1/D2). 9 items genuinely
+  remain (see ROUND 2 CORRECTED note under "Session 2026-09-04 summary") — twice corrected
+  same session (12 -> found 3 already done + 2 smaller than described -> 9). Every claim in
+  this file was independently re-verified against live code before this status was written.
+  C1/D3 (golden-colour) tracked elsewhere.
 owner: colour-golden / tooling track
 ordering_rule: D552 — "standard leads, pipeline follows"
 ---
@@ -37,48 +39,87 @@ each item's own note for the command and evidence.
 - **Also fixed along the way:** a genuinely dead code block in `hero/render.php`
   (unreachable both before and after the textAlign migration, for different reasons).
 
-**CORRECTED 2026-09-04, same day — the line above undercounted.** Bean caught it: "aren't
-there way more remaining items than those 2?" Yes. Closing C4/C5/C10 by scoping (not
-building) and closing C2/C3/C8/C9/C11 by verification left the REAL backlog exactly where
-it was — Bean's own 2026-08-27 decisions (C14-C19) settled the DESIGN of six items but none
-of the code was ever written. Full, honest remaining list, in rough priority order:
+**CORRECTED 2026-09-04, same day, ROUND 1 — the line above undercounted.** Bean caught it:
+"aren't there way more remaining items than those 2?" Yes — Bean's own 2026-08-27 decisions
+(C14-C19) settled the DESIGN of six items that were never built, and this section originally
+missed all of them. That round listed 12 items. **It was itself wrong on 3 of them —
+see ROUND 2 below.**
 
-1. **C7** — 4 blocks need a decorative-image/ARIA control (WCAG, real per-block design).
-2. **C6** — 10 blocks need `PanelBody` → `ToolsPanel` (mechanical, shared helper once).
-3. **C15-2/C15-3** — the client-facing block-bindings editor UI (register the source in
-   JS + `getFieldsList()`). Bean's own words: "THE headline item... everything else is
-   secondary." Size M. **This is the single biggest piece of unbuilt scope in the whole
-   backlog and was completely missing from the earlier summary.**
-4. **C15-5** — widen block bindings past the 3 blocks that currently support them
-   (image/card/hero/shop can't carry a binding at all). Needs the coverage detector
-   `THE-MIGRATION-METHOD.md`'s commit gate will demand at the 4th file edited.
-5. **C16** — spacing-preset build (design settled; the preset→unit-switch logic is the
-   part Bean flagged as easy to get wrong).
-6. **C19 item 3** — hero's box-shape control chain (`aspectRatio` vs `imageHeight`
-   competing, `object-fit`→`object-position`→`imagePadding` ordering + inert-state
-   greying). Items 1-2 of C19 are done in spec, item 3 is the unbuilt remainder.
-7. **C18 residual** — the visual column-shape picker Bean approved 2026-07-28 (Spec 37
-   §3.3) — grep finds no implementation.
-8. **C15-1** — version-floor guard, `Requires at least: 6.7` → `6.9` for the block-bindings
-   filter. Re-graded P3 (Bean's call) — trivial, take it in passing whenever C15 work starts.
-9. **C14's enforcing gate** — same underlying build as **C4** (CO-2), already correctly
-   scoped this session as its own AST-walk-sized build, not mechanical. Not double-counted
-   as separate work — cross-referenced here so it isn't lost.
-10. **C12/C13** — live-pass items (a11y-audit keyboard/contrast/`aria-describedby`; an
-    element-first panel-ordering walkthrough). No code — just needs doing.
-11. **D4** — decide, per advisory inspector-scan rule, whether to promote to gating or
-    record why it stays advisory forever. Never actioned.
-12. **B4** — `mega-panel.borderRadius`, correctly still BLOCKED on Track 2 (not
-    actionable until that track resumes — not "open" in the sense of "pick this up
-    next", but not resolved either).
+**CORRECTED 2026-09-04, same day, ROUND 2 — round 1 re-asserted 3 stale claims without
+re-checking them.** Bean pushed again: "I'm sure several of these are already completed."
+Right again. Round 1 copied forward "unbuilt" language for C18/C15-1/C15-2/C15-3 from the
+original 2026-08-25/26 plan text — genuinely true THEN (grep found nothing at the time) —
+without re-running the check against CURRENT code, 8-9 days after the features had actually
+shipped. A full parallel re-verification (4 agents, one per independent question: re-check
+the "open" claims, spot-check the "closed" claims too, root-cause why round 1 got it wrong,
+and produce a ready-to-build plan for whatever's genuinely still open) found:
+
+**Actually already CLOSED (round 1 called these open — they weren't):**
+- **C18** — `plugins/sgs-blocks/src/components/ColumnShapePicker.js` (341 lines), adopted in
+  4 blocks (container, site-footer-row, site-header-row), shipped `2e46fc3f2` (2026-08-26)
+  + a follow-up polish commit.
+- **C15-1** — `sgs-blocks.php:11` already says `Requires at least: 6.9`, shipped `1991830ec`
+  (2026-08-27).
+- **C15-2/C15-3** — `plugins/sgs-blocks/src/bindings/index.js` has a complete
+  `registerBlockBindingsSource`/`getFieldsList()` implementation, same commit as C15-1, AND
+  is genuinely wired into `webpack.config.js` as its own entry point (confirmed
+  `build/bindings/index.js` compiles and ships) — not dead code sitting unused.
+
+**All 10 "closed" claims from ROUND 1 independently re-checked and held up** (Section A,
+B1/B2/B3/B5, C2/C3/C8/C9/C11) — the doc was only wrong in the false-negative direction
+(claiming unbuilt work that shipped), never the other way.
+
+**Genuinely open, 9 items, priority order — each independently verified this round, with
+2 found smaller than previously described:**
+
+1. **C7** — 4 blocks need decorative-image/ARIA (`cta-section`, `decorative-image`,
+   `nav-drawer`, `social-icons` — exact list confirmed via a fresh live scan).
+2. **C6** — 10 blocks need `PanelBody` → `ToolsPanel` (unchanged).
+3. **C16 — smaller than round 1 said.** The presets + unit-switch MECHANISM is fully built
+   (`SgsBoxControl.js`, 2026-08-27) — literal-var storage, "Custom…" seeding from the
+   resolved size, anchored regex detection, all real and working. Only 4 blocks have opted
+   in (container, card-grid, mega-aside, product-card); ~25+ more still pass
+   `presets={false}`. **This is now a rollout task, not a build** — flip the prop per block,
+   Bean's eye per batch, per his own "build one, Bean's eye, then roll out" instruction
+   (container is that one instance already).
+4. **C19 item 3 — smaller than round 1 said.** The exact shape→fit→position chain with
+   inert-state greying is fully built as the `box-shape` media atom
+   (`components/media/atoms/box-shape.js` + `registry.js`), already used by `sgs/media`.
+   Hero just doesn't declare the atom. Concrete plan: add `"box-shape"` + `"media-padding"`
+   to hero's `splitMedia` atom list in `block.json`, swap hero's bespoke width/height UI in
+   `edit.js` (~1572-1611) for the shared `box-shape.control.js` composition, delete
+   `splitImageBleed` in the same pass. image-sequence's raw `aspectRatio` attr may not even
+   be in scope — the real collision is entirely on hero once the atom is added there.
+5. **C15-5** — widen block bindings past the 3 allowlisted blocks
+   (`includes/class-sgs-block-bindings-support.php`'s `SUPPORTED_ATTRIBUTES` const still
+   lists exactly `sgs/text`/`sgs/heading`/`sgs/button`).
+6. **C14's enforcing gate** — same underlying build as **C4** (CO-2): confirmed absent
+   (`grep` on `gates.json` for "CO-2"/"consistency-scanner"/"element-panel-conformance"
+   returns nothing). Needs an AST walk of every `edit.js`, its own build — not
+   double-counted as separate work from C4.
+7. **C12/C13** — live-pass items. Confirmed zero evidence either was ever run — no recent
+   a11y report, no panel-ordering artefact in `.claude/reports/`.
+8. **D4** — confirmed still unactioned: 23 rules sit `mode: "advisory"` in
+   `inspector-scan/rules.json`, 0 carry a `promotionCondition` field.
+9. **B4** — `mega-panel.borderRadius`, confirmed still bespoke (`grep -c SgsBorderControl
+   mega-panel/edit.js` → 0), correctly BLOCKED on Track 2 (inactive).
+
+**Root cause of round 1's error** (full account: D960): the original 2026-08-25/26 "unbuilt"
+claims were honest when written — grep genuinely found nothing, and the features shipped 1-2
+days later. Round 1's mistake was different and worse: it was written 8-9 days after those
+features shipped, and copied the stale language forward into a "correction" without
+re-running a single check. **Proposed structural fix, not yet built:** a
+`verify-plan-claims.py` script — inline `<!-- verify: <command> -->` stamps on doc claims of
+this shape, checked before any correction commit lands, reusing `gates.json`'s existing
+declarative `{cmd, id}` pattern. ~30-60 min to build; worth it if this recurs a third time.
 
 **Not this backlog, tracked separately, do not duplicate:** C1 / D3 (both = the
 `31-golden-colour-control` rollout, 241 open) — has its own active plan and a parallel
 session working it throughout this session.
 
 Spec 39 itself stays correctly gated behind ALL of the above per D552 (standard leads,
-pipeline follows) — that gate has not moved, and closing 2 of 14 real items does not
-change it.
+pipeline follows) — that gate has not moved, and closing 5 of 14 originally-counted items
+(3 were already done, 2 turned out much smaller once re-scoped) does not change it.
 
 **Working norm this session, worth carrying forward:** `main` had 2-4 other sessions
 committing concurrently throughout (colour-gradient rollout, D948 Phase 3). Every deploy
