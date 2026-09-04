@@ -2,12 +2,55 @@
 doc_type: plan
 title: The road to uniform — clear Spec 32 + Spec 35 + the tier migration, then Spec 39
 date: 2026-08-25
-status: OPEN — scoped, not started
+status: OPEN — Section A closed, Spec 32 closed bar B4 (blocked), Spec 35 mechanical batch
+  mostly closed or descoped; C6/C7 are the two genuinely open items left
 owner: colour-golden / tooling track
 ordering_rule: D552 — "standard leads, pipeline follows"
 ---
 
 # The road to uniform, then Spec 39
+
+## Session 2026-09-04 summary — read this before the scope table below
+
+This plan was 11 days stale at session start. Two-thirds of its claimed-open items were
+already closed by other sessions between 2026-08-25 and today. Every item below was
+re-verified against a live command this session, not read off the plan's own prose — see
+each item's own note for the command and evidence.
+
+**Closed today:**
+- **Section A (tier migration)** — all 3 blind-spot families done: `hero.textAlign`,
+  `whatsapp-cta.showOn`, `brand-strip.columns`. Detector widened (`migrate-tier-object.py`),
+  each migrated end-to-end (block.json + edit.js + render.php), deployed and live-verified
+  against the real canary (not just build-checked). Commits `9f6f6ceb3`, `0e3ef60e0`.
+- **Spec 32 B1/B2/B3/B5** — all confirmed closed by live gate re-runs. B4
+  (`mega-panel.borderRadius`) stays correctly BLOCKED — it's Track 2 (Spec 36 mega-menu)
+  scope, and Track 2 isn't currently active.
+- **Spec 35 C2/C3/C8/C9/C11** — confirmed closed by live gate re-runs.
+- **Spec 35 C4/C5/C10** — investigated in parallel (isolated worktrees), all three
+  descoped rather than built blind: C4 needs its own AST-walk build (too big for this
+  batch), C5 isn't buildable as a general rule without reproducing a documented
+  ~600-false-positive failure (fixed a real doc contradiction — CO-15 vs Part L — found
+  along the way), C10 is an architectural mismatch, not a like-for-like swap. Commits
+  `b9609f019`, `ed413997a`.
+- **Also fixed along the way:** a genuinely dead code block in `hero/render.php`
+  (unreachable both before and after the textAlign migration, for different reasons).
+
+**Genuinely still open — only two items left in the whole mechanical batch:**
+- **C6** — 10 blocks need `PanelBody` → `ToolsPanel` conversion (mechanical; a shared
+  helper built once should cover most/all of them, per Bean's steer this session).
+- **C7** — 4 blocks (`cta-section`, `decorative-image`, `nav-drawer`, `social-icons`)
+  need a decorative-image/ARIA control each — real per-block design work, not a batch
+  codemod, though a shared control COMPONENT is still worth building once.
+
+**Not touched this session, still pending:** the C12/C13 live-pass items, C14-C19's
+actual build work (Bean's 2026-08-27 decisions — settled, not yet implemented), and
+Spec 39 itself (correctly still gated behind the above per D552).
+
+**Working norm this session, worth carrying forward:** `main` had 2-4 other sessions
+committing concurrently throughout (colour-gradient rollout, D948 Phase 3). Every deploy
+and commit needed dirty-tree coordination via cross-session messages — this is the
+project's stated norm (LEDGER.md: "concurrent occupancy is the norm, not the exception"),
+not a one-off. Budget for it.
 
 ## Why this exists, in Bean's words
 
