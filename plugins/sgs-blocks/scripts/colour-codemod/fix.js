@@ -1201,6 +1201,55 @@ function removePropsFromClone( text, editSrc, normalState, propsToRemove ) {
 }
 
 // ---------------------------------------------------------------------------
+// Locate WHERE a gradient sibling's own attrMap entry belongs, and confirm
+// it is safe to write there.
+//
+// A gradient sibling introduces a genuinely different CSS property from its
+// base attribute (background-image, not background-color; border-color-
+// gradient, not border-color) — check-element-manifest-conformance.js's own
+// RESPONSIVE_AND_STATE_SUFFIXES treats Hover as a state of the base attr
+// (no separate attrMap entry needed), but Gradient gets no such treatment,
+// which is exactly the gap `fix.js --apply` shipped twice without closing
+// (nav-menu.burgerBgGradient/indicatorColourGradient, D948 session 10 —
+// fixed by hand both times, never taught to the tool until now).
+//
+// Refuse rather than guess, matching this file's whole discipline: an
+// element declaring `clusters: []` is never visited by the manifest's own
+// forward-resolution pass AT ALL, so writing the key there would be
+// silently inert — indistinguishable from working until someone runs
+// check-element-manifest-conformance.js and finds an orphan. Caught live
+// exactly this way on nav-menu.indicatorColour (D948) before this function
+// existed; the first version of that hand-fix used `clusters: []` and had
+// to be corrected. Only 'fill' and 'border' mechanisms ever reach this
+// function — planRow refuses 'text' mechanism gradients outright before
+// this point (line ~1233), so there is no 'css:color-gradient' case here.
+//
+// @param {Object} blockJson The full parsed block.json.
+// @param {string}  mechanism 'fill' or 'border'.
+// @param {string}  baseAttr The row's base attribute name.
+// @param {string}  gradAttr The gradient sibling's attribute name.
+// @return {{ok:true, alreadyPresent:boolean, elementIndex?:number, gradKey?:string}|{ok:false, reason:string}}
+function resolveManifestGradientSite( blockJson, mechanism, baseAttr, gradAttr ) {
+	const baseKey = mechanism === 'fill' ? 'css:background-color' : 'css:border-color';
+	const gradKey = mechanism === 'fill' ? 'css:background-image' : 'css:border-color-gradient';
+	const elements = ( blockJson.supports && blockJson.supports.sgs && blockJson.supports.sgs.elements ) || [];
+	for ( let i = 0; i < elements.length; i++ ) {
+		const attrMap = elements[ i ].attrMap || {};
+		if ( attrMap[ baseKey ] !== baseAttr ) continue;
+		if ( attrMap[ gradKey ] === gradAttr ) return { ok: true, alreadyPresent: true };
+		if ( attrMap[ gradKey ] ) {
+			return { ok: false, reason: 'manifest-gradient-key-collision-' + attrMap[ gradKey ] };
+		}
+		const clusters = elements[ i ].clusters || [];
+		if ( ! clusters.includes( mechanism ) ) {
+			return { ok: false, reason: 'manifest-cluster-missing-' + mechanism };
+		}
+		return { ok: true, alreadyPresent: false, elementIndex: i, gradKey };
+	}
+	return { ok: false, reason: 'manifest-base-attrmap-entry-not-found' };
+}
+
+// ---------------------------------------------------------------------------
 // Plan one row. Returns either { fixable:true, ... edit descriptors } or
 // { fixable:false, reason }.
 // ---------------------------------------------------------------------------
@@ -1305,6 +1354,10 @@ function planRow( db, dir, slug, row, phpText, blockJsonPathOverride ) {
 		gradientPlan.targetIdent = targetIdent;
 		gradientPlan.statesNode = row.statesNode;
 		gradientPlan.blockJsonPath = blockJsonPath;
+
+		const manifestSite = resolveManifestGradientSite( blockJson, mechanism, row.attr, gradientPlan.gradAttr );
+		if ( ! manifestSite.ok ) return { fixable: false, reason: 'REFUSED:gradient-' + manifestSite.reason };
+		gradientPlan.manifestSite = manifestSite;
 
 		return { fixable: true, mechanism, baseAttr: row.attr, kind: 'gradient', gradientPlan, blockJsonPath };
 	}
@@ -1664,12 +1717,23 @@ function applyEditJsFix( editSrc, plan ) {
 function applyBlockJsonFix( blockJson, plan ) {
 	if ( plan.kind === 'gradient' ) {
 		const gp = plan.gradientPlan;
-		if ( gp.mode === 'wire-only' ) return { changed: false, json: blockJson }; // already declared.
-		const already = !! ( blockJson.attributes && blockJson.attributes[ gp.gradAttr ] );
-		if ( already ) return { changed: false, json: blockJson };
+		const needsAttrDecl = gp.mode !== 'wire-only' && ! ( blockJson.attributes && blockJson.attributes[ gp.gradAttr ] );
+		const needsManifestKey = !! ( gp.manifestSite && ! gp.manifestSite.alreadyPresent );
+		if ( ! needsAttrDecl && ! needsManifestKey ) return { changed: false, json: blockJson };
+
 		const next = JSON.parse( JSON.stringify( blockJson ) );
-		next.attributes = next.attributes || {};
-		next.attributes[ gp.gradAttr ] = { type: 'string', default: '' };
+		if ( needsAttrDecl ) {
+			next.attributes = next.attributes || {};
+			next.attributes[ gp.gradAttr ] = { type: 'string', default: '' };
+		}
+		if ( needsManifestKey ) {
+			// planRow's resolveManifestGradientSite() already proved this element
+			// exists, its attrMap resolves the base attr, and its clusters[]
+			// includes the mechanism — this write can't silently land inert.
+			const el = next.supports.sgs.elements[ gp.manifestSite.elementIndex ];
+			el.attrMap = el.attrMap || {};
+			el.attrMap[ gp.manifestSite.gradKey ] = gp.gradAttr;
+		}
 		return { changed: true, json: next };
 	}
 	if ( plan.hoverAlreadyDeclared ) return { changed: false, json: blockJson };
@@ -2695,6 +2759,13 @@ if ( '' !== $panel_bg ) {
 			apiVersion: 3,
 			name: 'sgs/fixture-f',
 			attributes: { panelBg: { type: 'string', default: '' } },
+			supports: {
+				sgs: {
+					elements: [
+						{ element: 'panel', clusters: [ 'fill' ], attrMap: { 'css:background-color': 'panelBg' } },
+					],
+				},
+			},
 		},
 	} );
 	const db6 = { 'sgs/fixture-f': { panelBg: { css_property: 'background-color' } } };
@@ -2726,6 +2797,10 @@ if ( '' !== $panel_bg ) {
 
 		const bj = JSON.parse( fs.readFileSync( path.join( fx6, 'block.json' ), 'utf8' ) );
 		assert( !! bj.attributes.panelBgGradient, 'block.json missing panelBgGradient declaration' );
+		assert(
+			bj.supports.sgs.elements[ 0 ].attrMap[ 'css:background-image' ] === 'panelBgGradient',
+			'block.json missing the manifest attrMap entry for panelBgGradient — the D948 gap this fix closes'
+		);
 
 		let phpAfter = fs.readFileSync( path.join( fx6, 'render.php' ), 'utf8' );
 		assert( phpAfter.includes( 'sgs_background_paint_decl( $panel_bg, $panel_bg_gradient )' ), 'render.php did not switch to sgs_background_paint_decl' );
@@ -2759,6 +2834,97 @@ if ( '' !== $panel_bg ) {
 
 		// --- Restore and re-assert the check passes again.
 		assert( paintsGradient( phpAfter ), 'round-trip check failed AFTER restoring the render leg — should be back to ok' );
+	} );
+
+	// -------------------------------------------------------------------
+	// resolveManifestGradientSite() — the D948 attrMap-gap fix, session 12.
+	// Three controls: refuses on a missing/empty clusters[] (the exact live
+	// incident this function exists to prevent, nav-menu.indicatorColour),
+	// refuses when no element's attrMap resolves the base attribute at all,
+	// and is idempotent when the gradient key is already present.
+	// -------------------------------------------------------------------
+	check( 'manifest attrMap fix REFUSES when the element declares clusters:[] (D948 live incident shape), file byte-identical', () => {
+		const fx6b = makeFixture( tmpRoot, 'fixture-f-no-cluster', {
+			editJs: FIXTURE_EDIT_JS_FILL.replace( /panelBg/g, 'panelBg2' ),
+			renderPhp: FIXTURE_RENDER_PHP_FILL.replace( /panel_bg/g, 'panel_bg2' ).replace( /panelBg/g, 'panelBg2' ),
+			blockJson: {
+				apiVersion: 3,
+				name: 'sgs/fixture-f-no-cluster',
+				attributes: { panelBg2: { type: 'string', default: '' } },
+				supports: {
+					sgs: {
+						// clusters:[] — an element in this shape is never visited by
+						// the manifest's own forward-resolution pass, so writing the
+						// gradient key here would be silently inert.
+						elements: [
+							{ element: 'panel', clusters: [], attrMap: { 'css:background-color': 'panelBg2' } },
+						],
+					},
+				},
+			},
+		} );
+		const dbFixture = { 'sgs/fixture-f-no-cluster': { panelBg2: { css_property: 'background-color' } } };
+		const cache = new SourceCache();
+		const rows = rowsInFile( cache, path.join( fx6b, 'edit.js' ) );
+		const phpText = fs.readFileSync( path.join( fx6b, 'render.php' ), 'utf8' );
+		const bjBefore = fs.readFileSync( path.join( fx6b, 'block.json' ), 'utf8' );
+		const plan = planRow( dbFixture, 'fixture-f-no-cluster', 'sgs/fixture-f-no-cluster', rows[ 0 ], phpText, path.join( fx6b, 'block.json' ) );
+		assert( ! plan.fixable, 'expected refusal for clusters:[], got: ' + JSON.stringify( plan ) );
+		assert( /manifest-cluster-missing-fill/.test( plan.reason ), 'wrong refusal reason: ' + plan.reason );
+		assert( fs.readFileSync( path.join( fx6b, 'block.json' ), 'utf8' ) === bjBefore, 'block.json changed despite refusal' );
+	} );
+
+	check( 'manifest attrMap fix REFUSES when no element attrMap resolves the base attribute at all, file byte-identical', () => {
+		const fx6c = makeFixture( tmpRoot, 'fixture-f-no-attrmap', {
+			editJs: FIXTURE_EDIT_JS_FILL.replace( /panelBg/g, 'panelBg3' ),
+			renderPhp: FIXTURE_RENDER_PHP_FILL.replace( /panel_bg/g, 'panel_bg3' ).replace( /panelBg/g, 'panelBg3' ),
+			blockJson: {
+				apiVersion: 3,
+				name: 'sgs/fixture-f-no-attrmap',
+				attributes: { panelBg3: { type: 'string', default: '' } },
+				// No supports.sgs.elements at all — the base attribute resolved via
+				// the DEFAULT-CONVENTION naming path, not an explicit attrMap entry.
+			},
+		} );
+		const dbFixture = { 'sgs/fixture-f-no-attrmap': { panelBg3: { css_property: 'background-color' } } };
+		const cache = new SourceCache();
+		const rows = rowsInFile( cache, path.join( fx6c, 'edit.js' ) );
+		const phpText = fs.readFileSync( path.join( fx6c, 'render.php' ), 'utf8' );
+		const bjBefore = fs.readFileSync( path.join( fx6c, 'block.json' ), 'utf8' );
+		const plan = planRow( dbFixture, 'fixture-f-no-attrmap', 'sgs/fixture-f-no-attrmap', rows[ 0 ], phpText, path.join( fx6c, 'block.json' ) );
+		assert( ! plan.fixable, 'expected refusal with no manifest at all, got: ' + JSON.stringify( plan ) );
+		assert( /manifest-base-attrmap-entry-not-found/.test( plan.reason ), 'wrong refusal reason: ' + plan.reason );
+		assert( fs.readFileSync( path.join( fx6c, 'block.json' ), 'utf8' ) === bjBefore, 'block.json changed despite refusal' );
+	} );
+
+	check( 'manifest attrMap fix is idempotent: already-present gradient key is a no-op, not a duplicate/collision', () => {
+		const alreadyWiredBlockJson = {
+			apiVersion: 3,
+			name: 'sgs/fixture-f-already-wired',
+			attributes: {
+				panelBg4: { type: 'string', default: '' },
+				panelBg4Gradient: { type: 'string', default: '' },
+			},
+			supports: {
+				sgs: {
+					elements: [
+						{
+							element: 'panel',
+							clusters: [ 'fill' ],
+							attrMap: { 'css:background-color': 'panelBg4', 'css:background-image': 'panelBg4Gradient' },
+						},
+					],
+				},
+			},
+		};
+		const site = resolveManifestGradientSite( alreadyWiredBlockJson, 'fill', 'panelBg4', 'panelBg4Gradient' );
+		assert( site.ok && site.alreadyPresent === true, 'expected alreadyPresent:true, got: ' + JSON.stringify( site ) );
+
+		const collisionBlockJson = JSON.parse( JSON.stringify( alreadyWiredBlockJson ) );
+		collisionBlockJson.supports.sgs.elements[ 0 ].attrMap[ 'css:background-image' ] = 'someOtherAttr';
+		const collision = resolveManifestGradientSite( collisionBlockJson, 'fill', 'panelBg4', 'panelBg4Gradient' );
+		assert( ! collision.ok, 'expected refusal when the gradient key already points at a DIFFERENT attribute, got: ' + JSON.stringify( collision ) );
+		assert( /manifest-gradient-key-collision-someOtherAttr/.test( collision.reason ), 'wrong refusal reason: ' + collision.reason );
 	} );
 
 	// -------------------------------------------------------------------
