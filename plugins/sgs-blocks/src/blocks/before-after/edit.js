@@ -35,6 +35,7 @@ import {
 import ServerSideRender from '@wordpress/server-side-render';
 import {
 	SgsColourPanel,
+	DesignTokenPicker,
 	ShadowControl,
 	TypographyControls,
 	ResponsiveControl,
@@ -516,42 +517,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						],
 					},
 					{
-						key: 'divider',
-						label: __( 'Divider colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: dividerColour,
-								onChange: ( val ) => setAttributes( { dividerColour: val } ),
-							},
-						],
-					},
-					{
-						key: 'handle',
-						label: __( 'Handle colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: handleColour,
-								onChange: ( val ) => setAttributes( { handleColour: val } ),
-							},
-						],
-					},
-					{
-						key: 'handleIcon',
-						label: __( 'Handle icon colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: handleIconColour,
-								onChange: ( val ) => setAttributes( { handleIconColour: val } ),
-							},
-						],
-					},
-					{
 						key: 'boxShadow',
 						label: __( 'Frame shadow colour', 'sgs-blocks' ),
 						states: [
@@ -704,6 +669,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
+					<DesignTokenPicker
+						label={ __( 'Divider colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: dividerColour,
+								onChange: ( val ) => setAttributes( { dividerColour: val } ),
+							},
+						] }
+					/>
 					<RangeControl
 						label={ __( 'Divider thickness (px)', 'sgs-blocks' ) }
 						value={ dividerWidth }
@@ -715,6 +691,34 @@ export default function Edit( { attributes, setAttributes } ) {
 						step={ 1 }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Handle', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<DesignTokenPicker
+						label={ __( 'Handle colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: handleColour,
+								onChange: ( val ) => setAttributes( { handleColour: val } ),
+							},
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Handle icon colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: handleIconColour,
+								onChange: ( val ) => setAttributes( { handleIconColour: val } ),
+							},
+						] }
 					/>
 				</PanelBody>
 

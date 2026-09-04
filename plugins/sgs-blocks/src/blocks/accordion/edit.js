@@ -13,6 +13,7 @@ import {
 } from "@wordpress/components";
 import {
   SgsColourPanel,
+  DesignTokenPicker,
   IconPicker,
   ResponsiveBoxControl,
   SgsBorderControl,
@@ -139,21 +140,6 @@ export default function Edit({ attributes, setAttributes }) {
               },
             ],
           },
-          {
-            key: "icon",
-            label: __("Icon colour", "sgs-blocks"),
-            states: [
-              {
-                key: "normal",
-                label: __("Normal", "sgs-blocks"),
-                value: iconColour,
-                onChange: (val) => setAttributes({ iconColour: val }),
-                gradientValue: iconColourGradient,
-                onGradientChange: (val) =>
-                  setAttributes({ iconColourGradient: val ?? "" }),
-              },
-            ],
-          },
         ] }
       />
       <InspectorControls>
@@ -178,6 +164,20 @@ export default function Edit({ attributes, setAttributes }) {
             onChange={(val) => setAttributes({ iconPosition: val })}
             __nextHasNoMarginBottom
           	__next40pxDefaultSize
+          />
+          <DesignTokenPicker
+            label={__("Icon colour", "sgs-blocks")}
+            states={[
+              {
+                key: "normal",
+                label: __("Normal", "sgs-blocks"),
+                value: iconColour,
+                onChange: (val) => setAttributes({ iconColour: val }),
+                gradientValue: iconColourGradient,
+                onGradientChange: (val) =>
+                  setAttributes({ iconColourGradient: val ?? "" }),
+              },
+            ]}
           />
           <IconPicker
             label={__("Open icon", "sgs-blocks")}
