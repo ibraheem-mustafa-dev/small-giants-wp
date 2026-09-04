@@ -75,6 +75,7 @@ import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourP
 	SgsBorderControl,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { resolveTextColourPreviewStyle } from '../../utils';
 
 /**
  * Content template: menu + (optional) logo + (optional) CTA. templateLock:false.
@@ -138,6 +139,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		animateFrom,
 		drawerBg,
 		toggleCloseColour,
+		toggleCloseColourGradient,
 		drawerAlign,
 		drawerGap,
 		drawerPadding,
@@ -257,6 +259,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						attrs: {
 							base: 'toggleCloseColour',
 							hover: 'toggleCloseColourHover',
+							gradient: 'toggleCloseColourGradient',
 						},
 						attributes,
 						setAttributes,
@@ -680,7 +683,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<span
 					className="sgs-nav-drawer__close-preview sgs-nav-drawer__close"
 					aria-hidden="true"
-					style={ { color: toggleCloseColour ? resolveColourToken( toggleCloseColour, palette ) : undefined } }
+					style={ resolveTextColourPreviewStyle( toggleCloseColour, toggleCloseColourGradient, ( v ) => resolveColourToken( v, palette ) ) }
 				>
 					{ closeStyle === 'text-swap' && (
 						<span className="sgs-nav-drawer__close-text">

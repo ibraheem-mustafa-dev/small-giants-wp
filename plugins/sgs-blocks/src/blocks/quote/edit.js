@@ -256,6 +256,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		boxShadowHoverColour,
 		scaleHover,
 		textColourHover,
+		textColourHoverGradient,
 		backgroundColourHover,
 		backgroundColourGradient,
 		backgroundColourHoverGradient,
@@ -382,6 +383,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'textColourHover',
 						label: __( 'Text colour (hover)', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'hover',
@@ -389,6 +391,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: textColourHover,
 								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

@@ -46,6 +46,8 @@
 					"_note": "Contract §B3 single-semantic-element block — the <a> IS the block root (no wrapper div); it plays both the wrapper and the button/label element. labelColour/labelFontSize/labelFontWeight/labelFontStyle resolve via the default {prefix}{suffix} convention (prefix: 'label').",
 					"attrMap": {
 						"css:background-color": "backgroundColour",
+						"css:color": "labelColour",
+						"css:background-image": "labelColourGradient",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:border-radius": "native:__experimentalBorder.radius"
@@ -92,17 +94,17 @@
 			"default": "",
 			"role": "content"
 		},
-		"showOnMobile": {
-			"type": "boolean",
-			"default": true
-		},
-		"showOnDesktop": {
-			"type": "boolean",
-			"default": true
+		"showOn": {
+			"type": "object",
+			"default": {"desktop": true, "mobile": true}
 		},
 		"labelColour": {
 			"type": "string",
 			"default": "text"
+		},
+		"labelColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"labelFontSize": {
 			"type": "object",

@@ -33,7 +33,7 @@ import {
 	SgsGradientPicker,
 	SgsLengthControl,
 } from '../../components';
-import { colourVar } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // ---------------------------------------------------------------------------
@@ -161,6 +161,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		contentMode,
 		contentIconSize,
 		contentColour,
+		contentColourGradient,
 		contentText,
 	} = attributes;
 
@@ -291,6 +292,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'contentColour',
 						label: __( 'Content colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -298,6 +300,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: contentColour,
 								onChange: ( val ) => setAttributes( { contentColour: val ?? '' } ),
 								linked: true,
+								gradientValue: contentColourGradient,
+								onGradientChange: ( val ) => setAttributes( { contentColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -658,11 +662,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						{ 'text' === contentMode && (
 							<span
-								style={ {
-									color: contentColour
-										? colourVar( contentColour )
-										: undefined,
-								} }
+								style={ resolveTextColourPreviewStyle(
+									contentColour,
+									contentColourGradient,
+									colourVar
+								) }
 							>
 								{ contentText || __( 'Label…', 'sgs-blocks' ) }
 							</span>

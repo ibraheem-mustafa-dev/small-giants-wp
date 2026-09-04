@@ -178,6 +178,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		featuredFontWeight,
 		featuredFontWeightHover,
 		burgerColour,
+		burgerColourGradient,
 		burgerBg,
 		burgerHoverColour,
 		burgerSize,
@@ -189,6 +190,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		submenuCloseGrace,
 		submenuBg,
 		submenuColour,
+		submenuColourGradient,
 		submenuMinWidth,
 		submenuRadius,
 		submenuPadding,
@@ -624,12 +626,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{
 			key: 'burger-icon',
 			label: __( 'Burger icon colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: burgerColour,
 					onChange: ( val ) => setAttributes( { burgerColour: val ?? '' } ),
+					gradientValue: burgerColourGradient,
+					onGradientChange: ( val ) => setAttributes( { burgerColourGradient: val ?? '' } ),
 					linked: true,
 				},
 			],
@@ -683,12 +688,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{
 			key: 'submenu-text',
 			label: __( 'Dropdown link colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: submenuColour,
 					onChange: ( val ) => setAttributes( { submenuColour: val ?? '' } ),
+					gradientValue: submenuColourGradient,
+					onGradientChange: ( val ) => setAttributes( { submenuColourGradient: val ?? '' } ),
 					linked: true,
 				},
 			],

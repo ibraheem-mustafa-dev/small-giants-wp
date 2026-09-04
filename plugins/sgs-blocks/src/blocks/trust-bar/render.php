@@ -37,8 +37,10 @@ $uid = wp_unique_id( 'sgs-tb-' );
 $badge_style  = sanitize_html_class( $attributes['badgeStyle'] ?? 'icon-circle' );
 $badge_size   = sanitize_html_class( $attributes['badgeSize'] ?? 'medium' );
 $block_title  = $attributes['title'] ?? '';
-$title_colour = $attributes['titleColour'] ?? 'text-muted';
-$label_colour = $attributes['labelColour'] ?? 'text';
+$title_colour          = $attributes['titleColour'] ?? 'text-muted';
+$title_colour_gradient = $attributes['titleColourGradient'] ?? '';
+$label_colour          = $attributes['labelColour'] ?? 'text';
+$label_colour_gradient = $attributes['labelColourGradient'] ?? '';
 
 // --- icon-circle attributes ---------------------------------------------------
 $icon_circle_size = absint( $attributes['iconCircleSize'] ?? 44 );
@@ -94,8 +96,10 @@ $badge_image_size = max( 24, min( 160, $badge_image_size ) );
 $circle_bg_value   = sgs_colour_value( $icon_circle_bg );
 $icon_colour_value = sgs_colour_value( $icon_colour );
 $text_colour_value = sgs_colour_value( $text_colour );
-$title_colour_val  = sgs_colour_value( $title_colour );
-$label_colour_val  = sgs_colour_value( $label_colour );
+// D636 — sibling gradient attribute wins when set+valid (mirrors sgs/counter's
+// numberColour/labelColour wiring, helpers-tokens.php:1086,1124,1166).
+$title_colour_effective = sgs_resolve_text_colour_or_gradient( $title_colour, $title_colour_gradient );
+$label_colour_effective = sgs_resolve_text_colour_or_gradient( $label_colour, $label_colour_gradient );
 
 // --- Wrapper CSS custom properties --------------------------------------------
 // Gap is handled by the shared wrapper helper (WS-4 mirror), which reads the
@@ -349,8 +353,13 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 // Colour is emitted into $tb_extra_scoped_css below (keyed on $uid_scope); the
 // element itself carries only its class — font-size/weight/style land via the
 // existing sgs_typography_css_rule() helper further down.
-if ( $title_colour_val ) {
-	$tb_extra_scoped_css .= $uid_scope . ' .sgs-trust-bar__title{color:' . esc_attr( $title_colour_val ) . '}';
+$tb_title_sel = $uid_scope . ' .sgs-trust-bar__title';
+if ( '' !== $title_colour_effective ) {
+	$tb_title_colour_decl = sgs_text_colour_decl( $title_colour_effective );
+	if ( '' !== $tb_title_colour_decl ) {
+		$tb_extra_scoped_css .= "{$tb_title_sel}{{$tb_title_colour_decl};}";
+	}
+	$tb_extra_scoped_css .= sgs_text_colour_gradient_fallback_rule( $tb_title_sel, $title_colour_effective );
 }
 
 // D636/D644 icon/SVG gradient — one rule paints every outline (default,
@@ -382,8 +391,13 @@ $items = $attributes['items'] ?? array();
 // variant's label colour is a separate mechanism (--sgs-trust-badge-text-colour
 // CSS var, emitted above). Colour lands in $tb_extra_scoped_css below (keyed on
 // $uid_scope); font-size/weight/style via sgs_typography_css_rule() further down.
-if ( $label_colour_val ) {
-	$tb_extra_scoped_css .= $uid_scope . ' .sgs-trust-bar__badge-label{color:' . esc_attr( $label_colour_val ) . '}';
+$tb_badge_label_sel = $uid_scope . ' .sgs-trust-bar__badge-label';
+if ( '' !== $label_colour_effective ) {
+	$tb_label_colour_decl = sgs_text_colour_decl( $label_colour_effective );
+	if ( '' !== $tb_label_colour_decl ) {
+		$tb_extra_scoped_css .= "{$tb_badge_label_sel}{{$tb_label_colour_decl};}";
+	}
+	$tb_extra_scoped_css .= sgs_text_colour_gradient_fallback_rule( $tb_badge_label_sel, $label_colour_effective );
 }
 
 // --- image-badge appearance (no-inline contract: scoped rule, not inline style=) -----

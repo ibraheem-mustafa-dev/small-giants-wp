@@ -30,7 +30,7 @@ import ShadowControl from '../../components/ShadowControl';
 import SgsBooleanField from '../../components/SgsBooleanField';
 import SgsMultiSelectField from '../../components/SgsMultiSelectField';
 import ResponsiveOverride from '../../components/ResponsiveOverride';
-import { colourVar, resolveResponsiveTier } from '../../utils';
+import { colourVar, resolveResponsiveTier, resolveTextColourPreviewStyle } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { MEDIA_SIZING_RATIO_OPTIONS,
 	SgsBorderControl,
@@ -153,9 +153,13 @@ function PreviewCard( { post, attributes } ) {
 		readMoreText,
 		aspectRatio,
 		titleColour,
+		titleColourGradient,
 		excerptColour,
+		excerptColourGradient,
 		metaColour,
+		metaColourGradient,
 		readMoreColour,
+		readMoreColourGradient,
 		cardBgColour,
 		imageDecorative,
 	} = attributes;
@@ -166,10 +170,10 @@ function PreviewCard( { post, attributes } ) {
 	const firstCat      = categories[ 0 ];
 
 	const cardBg     = cardBgColour ? colourVar( cardBgColour ) : undefined;
-	const titleStyle = titleColour  ? { color: colourVar( titleColour )   } : {};
-	const excStyle   = excerptColour ? { color: colourVar( excerptColour ) } : {};
-	const metaStyle  = metaColour   ? { color: colourVar( metaColour )    } : {};
-	const rmStyle    = readMoreColour ? { color: colourVar( readMoreColour ) } : {};
+	const titleStyle = resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar );
+	const excStyle   = resolveTextColourPreviewStyle( excerptColour, excerptColourGradient, colourVar );
+	const metaStyle  = resolveTextColourPreviewStyle( metaColour, metaColourGradient, colourVar );
+	const rmStyle    = resolveTextColourPreviewStyle( readMoreColour, readMoreColourGradient, colourVar );
 
 	const isOverlay = cardStyle === 'overlay';
 
@@ -281,11 +285,15 @@ export default function Edit( { attributes, setAttributes } ) {
 		showFilters,
 		filterTaxonomy,
 		titleColour,
+		titleColourGradient,
 		excerptColour,
+		excerptColourGradient,
 		metaColour,
+		metaColourGradient,
 		categoryBadgeColour,
 		categoryBadgeBgColour,
 		readMoreColour,
+		readMoreColourGradient,
 		cardBgColour,
 		backgroundColourHover,
 		textColourHover,
@@ -486,12 +494,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'title',
 						label: __( 'Title colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: titleColour,
 								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
+								gradientValue: titleColourGradient,
+								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -499,12 +510,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'excerpt',
 						label: __( 'Excerpt colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: excerptColour,
 								onChange: ( val ) => setAttributes( { excerptColour: val ?? '' } ),
+								gradientValue: excerptColourGradient,
+								onGradientChange: ( val ) => setAttributes( { excerptColourGradient: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -512,12 +526,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'meta',
 						label: __( 'Meta colour (date / author)', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: metaColour,
 								onChange: ( val ) => setAttributes( { metaColour: val ?? '' } ),
+								gradientValue: metaColourGradient,
+								onGradientChange: ( val ) => setAttributes( { metaColourGradient: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -551,12 +568,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'read-more',
 						label: __( 'Read more colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: readMoreColour,
 								onChange: ( val ) => setAttributes( { readMoreColour: val ?? '' } ),
+								gradientValue: readMoreColourGradient,
+								onGradientChange: ( val ) => setAttributes( { readMoreColourGradient: val ?? '' } ),
 								linked: true,
 							},
 						],

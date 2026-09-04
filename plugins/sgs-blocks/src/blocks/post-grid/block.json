@@ -131,9 +131,10 @@
 						"text"
 					],
 					"prefix": "title",
-					"_note": "css:color resolves via the default convention (titleColour). No font-size/weight attrs exist — honest GAPs. states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below for the one-attr/four-elements ancestor-hover shape this closes.",
+					"_note": "css:color resolves via the default convention (titleColour). No font-size/weight attrs exist — honest GAPs. states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below for the one-attr/four-elements ancestor-hover shape this closes. titleColourGradient (778879732 rollout, Phase 3) is the text-colour gradient sibling, emitted as a direct decl in render.php rather than via the block's --sgs-pg-* custom-property chain (which cannot carry a gradient).",
 					"attrMap": {
-						"css:color": "titleColour"
+						"css:color": "titleColour",
+						"css:color-gradient": "titleColourGradient"
 					},
 					"states": {
 						"hover": {
@@ -150,9 +151,10 @@
 						"text"
 					],
 					"prefix": "excerpt",
-					"_note": "css:color resolves via the default convention (excerptColour). excerptLength is a content-length control, not a style member. states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below.",
+					"_note": "css:color resolves via the default convention (excerptColour). excerptLength is a content-length control, not a style member. states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below. excerptColourGradient (778879732 rollout, Phase 3) is the text-colour gradient sibling, emitted as a direct decl in render.php.",
 					"attrMap": {
-						"css:color": "excerptColour"
+						"css:color": "excerptColour",
+						"css:color-gradient": "excerptColourGradient"
 					},
 					"states": {
 						"hover": {
@@ -169,9 +171,10 @@
 						"text"
 					],
 					"prefix": "meta",
-					"_note": "css:color resolves via the default convention (metaColour). states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below.",
+					"_note": "css:color resolves via the default convention (metaColour). states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below. metaColourGradient (778879732 rollout, Phase 3) is the text-colour gradient sibling, emitted as a direct decl in render.php.",
 					"attrMap": {
-						"css:color": "metaColour"
+						"css:color": "metaColour",
+						"css:color-gradient": "metaColourGradient"
 					},
 					"states": {
 						"hover": {
@@ -202,9 +205,10 @@
 						"text"
 					],
 					"prefix": "readMore",
-					"_note": "css:color resolves via the default convention (readMoreColour). readMoreText is content, not style. states.hover.attrMap added 2026-09-04 (D956): textColourHover is ONE attribute that paints FOUR descendant elements (title link/excerpt/meta/read-more) simultaneously on the CARD's hover -- render.php's own comment calls this an 'ancestor-hover shape' (the card receives :hover/:focus-within; each descendant already carries its own resting colour, so the rule targets them individually via sgs_hover_state_rules()'s $suffix param). It previously resolved css_element=NULL/derived_selector=NULL (an undeclared sub-element paint, F6 Check #8) because the manifest's attrMap model has no established one-attr-many-elements shape -- declared here on all 4 real target elements' states.hover, since that is what genuinely happens, not a workaround. No other block in this codebase currently needs this shape (checked); if a second one appears, consider whether the manifest schema itself should grow a first-class 'targets multiple elements' declaration rather than repeating this pattern by hand a third time.",
+					"_note": "css:color resolves via the default convention (readMoreColour). readMoreText is content, not style. states.hover.attrMap added 2026-09-04 (D956): textColourHover is ONE attribute that paints FOUR descendant elements (title link/excerpt/meta/read-more) simultaneously on the CARD's hover -- render.php's own comment calls this an 'ancestor-hover shape' (the card receives :hover/:focus-within; each descendant already carries its own resting colour, so the rule targets them individually via sgs_hover_state_rules()'s $suffix param). It previously resolved css_element=NULL/derived_selector=NULL (an undeclared sub-element paint, F6 Check #8) because the manifest's attrMap model has no established one-attr-many-elements shape -- declared here on all 4 real target elements' states.hover, since that is what genuinely happens, not a workaround. No other block in this codebase currently needs this shape (checked); if a second one appears, consider whether the manifest schema itself should grow a first-class 'targets multiple elements' declaration rather than repeating this pattern by hand a third time. readMoreColourGradient (778879732 rollout, Phase 3) is the text-colour gradient sibling, emitted as a direct decl in render.php.",
 					"attrMap": {
-						"css:color": "readMoreColour"
+						"css:color": "readMoreColour",
+						"css:color-gradient": "readMoreColourGradient"
 					},
 					"states": {
 						"hover": {
@@ -387,13 +391,25 @@
 			"type": "string",
 			"default": "primary"
 		},
+		"titleColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"excerptColour": {
 			"type": "string",
 			"default": "text"
 		},
+		"excerptColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"metaColour": {
 			"type": "string",
 			"default": "text-muted"
+		},
+		"metaColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"categoryBadgeColour": {
 			"type": "string",
@@ -406,6 +422,10 @@
 		"readMoreColour": {
 			"type": "string",
 			"default": "primary"
+		},
+		"readMoreColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"cardBgColour": {
 			"type": "string",

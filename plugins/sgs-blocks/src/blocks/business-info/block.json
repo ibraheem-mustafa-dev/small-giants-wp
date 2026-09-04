@@ -64,9 +64,19 @@
 			"type": "string",
 			"default": ""
 		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the value text instead of a flat colour (background-clip:text). Non-empty wins over textColour at render time (D636 text-colour gradient rollout, 778879732 finish)."
+		},
 		"labelColour": {
 			"type": "string",
 			"default": ""
+		},
+		"labelColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the label text (currently only visible on .sgs-business-hours__day) instead of a flat colour. Non-empty wins over labelColour at render time (D636 text-colour gradient rollout, 778879732 finish)."
 		},
 		"linkHoverBackgroundImage": {
 			"type": "string",
@@ -235,14 +245,20 @@
 					"prefix": "text",
 					"attrMap": {
 						"css:font-size": "native:typography.fontSize",
-						"css:font-family": "native:typography.fontFamily"
-					}
+						"css:font-family": "native:typography.fontFamily",
+						"css:background-image": "textColourGradient"
+					},
+					"_note_gradient": "textColourGradient (2026-09-04) is the text-colour gradient sibling to textColour, same background-clip:text mechanism as sgs/counter's numberColourGradient. Finishes the text-colour gradient rollout 778879732 started and explicitly left open."
 				},
 				"label": {
 					"label": "Label",
 					"order": 3,
 					"clusters": [ "text" ],
-					"prefix": "label"
+					"prefix": "label",
+					"attrMap": {
+						"css:background-image": "labelColourGradient"
+					},
+					"_note_gradient": "labelColourGradient (2026-09-04) is the text-colour gradient sibling to labelColour, same background-clip:text mechanism. labelColour currently only paints .sgs-business-hours__day (the 'hours' displayType) — the gradient sibling follows the same real paint target."
 				},
 				"icon": {
 					"label": "Icon",

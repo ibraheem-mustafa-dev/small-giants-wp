@@ -51,6 +51,9 @@ $success_redirect  = $success_redirect ? wp_validate_redirect( $success_redirect
 $honeypot          = $attributes['honeypot'] ?? true;
 $store_submissions = $attributes['storeSubmissions'] ?? true;
 $submit_colour     = $attributes['submitColour'] ?? '';
+// D636 text-colour gradient sibling (778879732 rollout finish, 2026-09-04) —
+// non-empty wins over submitColour at render time.
+$submit_colour_gradient = $attributes['submitColourGradient'] ?? '';
 $submit_background = $attributes['submitBackground'] ?? '';
 $submit_background_gradient = sgs_css_gradient_value( $attributes['submitBackgroundGradient'] ?? '' );
 $progress_colour   = $attributes['progressBarColour'] ?? 'primary';
@@ -212,7 +215,11 @@ if ( '' !== $sgs_form_preset_bg ) {
 // scoped rule on `.uid .sgs-form__button--submit`. Uses the SAME uid as the
 // color/border/typography supports above (generated eagerly here when none
 // of those already needed one) so everything lands in ONE scoped <style>.
-if ( $submit_colour || $submit_background || $submit_background_gradient ) {
+// D636 text-colour gradient sibling — resolved once, used for both the decl
+// below and the mandatory @supports fallback further down. A gradient wins
+// over the flat submitColour when set+valid.
+$submit_colour_effective = sgs_resolve_text_colour_or_gradient( $submit_colour, $submit_colour_gradient );
+if ( '' !== $submit_colour_effective || $submit_background || $submit_background_gradient ) {
 	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
 		// The uid is hoisted above; this now registers the CLASS exactly once. It
 		// used to key on empty($sgs_form_uid), which the hoist made permanently
@@ -220,19 +227,35 @@ if ( $submit_colour || $submit_background || $submit_background_gradient ) {
 		$sgs_form_supports_classes[] = $sgs_form_uid;
 	}
 	$sgs_form_submit_decls = array();
-	if ( $submit_colour ) {
-		$sgs_form_submit_decls[] = 'color:' . sgs_colour_value( $submit_colour );
+	if ( '' !== $submit_colour_effective ) {
+		// sgs_text_colour_decl() returns either 'color:X' (flat) or the full
+		// 'background-image:...;-webkit-background-clip:text;background-clip:text;
+		// color:transparent' form (gradient) — same helper + shape as
+		// sgs/counter's numberColour/labelColour.
+		$submit_colour_decl = sgs_text_colour_decl( $submit_colour_effective );
+		if ( '' !== $submit_colour_decl ) {
+			$sgs_form_submit_decls[] = $submit_colour_decl;
+		}
 		if ( ! $submit_background && ! $submit_background_gradient ) {
 			// D942 recipe item 2: the style-variant class default
 			// (`:where(.sgs-form__button--primary)`, form/style.css) paints a
 			// `background-color` on this same selector. This scoped rule
 			// already out-specifies that class default today, so cancel it
 			// here via pure cascade rather than duplicating the class's
-			// actual colour value — frees `submitColour` for a future
+			// actual colour value — frees `submitColour` for its
 			// `submitColourGradient` sibling (`background-clip:text` would
-			// otherwise be clipped by the class's inherited fill). Only when
-			// the operator hasn't set an explicit `submitBackground` — that
-			// already wins this same rule below and must not be cancelled.
+			// otherwise be clipped by the class's inherited fill, and would
+			// otherwise collide with a genuine operator-set submitBackground).
+			// Only when the operator hasn't set an explicit `submitBackground`
+			// — that already wins this same rule below and must not be
+			// cancelled. NOTE: if an operator sets BOTH submitColourGradient
+			// AND submitBackground/submitBackgroundGradient, both write to
+			// `background-image` on this one rule below — the later decl in
+			// $sgs_form_submit_decls wins (submitColour is pushed first, so
+			// the background paint wins that combination; the gradient text
+			// clip is then visually inert). Documented trade-off, not a bug:
+			// no CSS mechanism lets one element's background paint two
+			// different gradients on the same property.
 			$sgs_form_submit_decls[] = 'background-color:transparent';
 		}
 	}
@@ -243,6 +266,13 @@ if ( $submit_colour || $submit_background || $submit_background_gradient ) {
 		$sgs_form_submit_decls[] = sgs_background_paint_decl( $submit_background, $submit_background_gradient );
 	}
 	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__button--submit{' . implode( ';', $sgs_form_submit_decls ) . '}';
+	// Mandatory companion (self-no-ops on a flat colour): a browser lacking
+	// background-clip:text support would otherwise get a bare `color:` value
+	// holding a gradient string, dropped silently.
+	$sgs_form_supports_css .= sgs_text_colour_gradient_fallback_rule(
+		'.' . $sgs_form_uid . ' .sgs-form__button--submit',
+		$submit_colour_effective
+	);
 }
 
 // Progress-bar colour custom-property VALUE (FR-32-4, D345) — scoped rule on

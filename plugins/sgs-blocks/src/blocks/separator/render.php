@@ -323,8 +323,9 @@ if ( 'icon' === $content_mode ) {
 		$content_html = '<span class="sgs-separator__icon" aria-hidden="true">' . sgs_get_lucide_icon( $icon_name ) . '</span>';
 	}
 } elseif ( 'text' === $content_mode ) {
-	$content_text   = $attributes['contentText'] ?? '';
-	$content_colour = $attributes['contentColour'] ?? '';
+	$content_text            = $attributes['contentText'] ?? '';
+	$content_colour          = $attributes['contentColour'] ?? '';
+	$content_colour_gradient = $attributes['contentColourGradient'] ?? '';
 
 	if ( function_exists( 'sgs_typography_css_rule' ) ) {
 		$content_typography_css = sgs_typography_css_rule( $attributes, 'content', "{$root_sel} .sgs-separator__content" );
@@ -332,8 +333,18 @@ if ( 'icon' === $content_mode ) {
 			$scoped_css[] = $content_typography_css;
 		}
 	}
-	if ( '' !== $content_colour ) {
-		$scoped_css[] = "{$root_sel} .sgs-separator__content{color:" . sgs_colour_value( $content_colour ) . ';}';
+	// D636 — sibling gradient attribute wins when set+valid. Only wired for
+	// 'text' mode (a real text-clip target); 'icon' mode below stays flat-only
+	// — background-clip:text clips to real glyph outlines and would blank a
+	// lucide/wp-icon inline-SVG glyph.
+	$content_colour_sel       = "{$root_sel} .sgs-separator__content";
+	$content_colour_effective = sgs_resolve_text_colour_or_gradient( $content_colour, $content_colour_gradient );
+	if ( '' !== $content_colour_effective ) {
+		$content_colour_decl = sgs_text_colour_decl( $content_colour_effective );
+		if ( '' !== $content_colour_decl ) {
+			$scoped_css[] = "{$content_colour_sel}{{$content_colour_decl};}";
+		}
+		$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $content_colour_sel, $content_colour_effective );
 	}
 
 	$content_html = '<span class="sgs-separator__content">' . esc_html( $content_text ) . '</span>';

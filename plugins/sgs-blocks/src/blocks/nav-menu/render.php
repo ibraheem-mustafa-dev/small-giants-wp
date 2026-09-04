@@ -1120,9 +1120,17 @@ if ( $featured_weight_hover !== $featured_weight ) {
 $css .= $featured_sel . '::after{content:none;}';
 
 // 4e. Burger colour / resting background / hover / size.
-$burger_colour = isset( $attributes['burgerColour'] ) ? (string) $attributes['burgerColour'] : '';
-if ( '' !== $burger_colour ) {
-	$css .= $uid_sel . ' .sgs-nav-menu__burger{color:' . sgs_colour_value( $burger_colour ) . ';}';
+// D956 — burgerColourGradient is the gradient sibling (778879732 rollout,
+// Phase 3); gradient wins when set+valid.
+$burger_colour           = isset( $attributes['burgerColour'] ) ? (string) $attributes['burgerColour'] : '';
+$burger_colour_gradient  = isset( $attributes['burgerColourGradient'] ) ? (string) $attributes['burgerColourGradient'] : '';
+$burger_colour_effective = sgs_resolve_text_colour_or_gradient( $burger_colour, $burger_colour_gradient );
+if ( '' !== $burger_colour_effective ) {
+	$burger_colour_decl = sgs_text_colour_decl( $burger_colour_effective );
+	if ( '' !== $burger_colour_decl ) {
+		$css .= $uid_sel . ' .sgs-nav-menu__burger{' . $burger_colour_decl . ';}';
+	}
+	$css .= sgs_text_colour_gradient_fallback_rule( $uid_sel . ' .sgs-nav-menu__burger', $burger_colour_effective );
 }
 
 /*
@@ -1232,9 +1240,6 @@ foreach (
 	array(
 		'--sgs-nm-submenu-bg'        => '' !== (string) ( $attributes['submenuBg'] ?? '' )
 			? sgs_colour_value( (string) $attributes['submenuBg'] )
-			: '',
-		'--sgs-nm-submenu-colour'    => '' !== (string) ( $attributes['submenuColour'] ?? '' )
-			? sgs_colour_value( (string) $attributes['submenuColour'] )
 			: '',
 		'--sgs-nm-submenu-min-width' => sgs_css_length_value( $attributes['submenuMinWidth'] ?? '' ),
 		'--sgs-nm-submenu-radius'    => sgs_css_length_value( $attributes['submenuRadius'] ?? '' ),
@@ -1366,8 +1371,20 @@ $css .= $uid_sel . ' .sgs-nav-menu__subitem{margin:0;}';
 $css .= $uid_sel . ' .sgs-nav-menu__sublink{display:flex;align-items:center;min-height:44px;padding:0 16px;'
 	. 'text-decoration:none;white-space:nowrap;'
 	. 'color:var(--wp--preset--color--primary, currentColor);}';
-if ( '' !== (string) ( $attributes['submenuColour'] ?? '' ) ) {
-	$css .= $uid_sel . ' .sgs-nav-menu__sublink{color:var(--sgs-nm-submenu-colour);}';
+// D956 — submenuColourGradient is the gradient sibling (778879732 rollout,
+// Phase 3); routed as a direct decl (not the custom-property chain above)
+// because a `var(--x, …)` fed into a fixed `color:` declaration cannot
+// switch to `background-image` for a gradient.
+$submenu_colour_effective = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['submenuColour'] ?? '' ),
+	(string) ( $attributes['submenuColourGradient'] ?? '' )
+);
+if ( '' !== $submenu_colour_effective ) {
+	$submenu_colour_decl = sgs_text_colour_decl( $submenu_colour_effective );
+	if ( '' !== $submenu_colour_decl ) {
+		$css .= $uid_sel . ' .sgs-nav-menu__sublink{' . $submenu_colour_decl . ';}';
+	}
+	$css .= sgs_text_colour_gradient_fallback_rule( $uid_sel . ' .sgs-nav-menu__sublink', $submenu_colour_effective );
 }
 
 /*

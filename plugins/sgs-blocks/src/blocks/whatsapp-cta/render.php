@@ -34,10 +34,15 @@ $phone_number    = $attributes['phoneNumber'] ?? '';
 $message         = $attributes['message'] ?? '';
 $variant         = $attributes['variant'] ?? 'floating';
 $label           = $attributes['label'] ?? '';
-$show_on_mobile  = $attributes['showOnMobile'] ?? true;
-$show_on_desktop = $attributes['showOnDesktop'] ?? true;
-$label_colour    = sgs_colour_value( $attributes['labelColour'] ?? '' );
-$bg_colour       = sgs_colour_value( $attributes['backgroundColour'] ?? 'whatsapp' );
+$show_on_obj     = sgs_responsive_normalise_object( $attributes['showOn'] ?? null );
+$show_on_mobile  = $show_on_obj['mobile'] ?? true;
+$show_on_desktop = $show_on_obj['desktop'] ?? true;
+$label_colour_raw      = (string) ( $attributes['labelColour'] ?? '' );
+$label_colour_gradient = $attributes['labelColourGradient'] ?? '';
+// D636 — sibling gradient attribute wins when set+valid (mirrors sgs/counter's
+// numberColour/labelColour wiring, helpers-tokens.php:1086,1124,1166).
+$label_colour_effective = sgs_resolve_text_colour_or_gradient( $label_colour_raw, $label_colour_gradient );
+$bg_colour             = sgs_colour_value( $attributes['backgroundColour'] ?? 'whatsapp' );
 $anchor          = isset( $attributes['anchor'] ) ? sanitize_html_class( $attributes['anchor'] ) : '';
 
 // Do not render if no phone number is set.
@@ -134,14 +139,20 @@ $scoped_css = array();
 
 // --- Button colour/background (scoped). ---
 $btn_decls = array();
-if ( $label_colour ) {
-	$btn_decls[] = 'color:' . $label_colour;
-}
 if ( $bg_colour ) {
 	$btn_decls[] = 'background-color:' . $bg_colour;
 }
 if ( $btn_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $btn_decls ) . ';}';
+}
+
+// --- Label (text) colour — separate rule, D636 gradient-capable. ---
+if ( '' !== $label_colour_effective ) {
+	$label_colour_decl = sgs_text_colour_decl( $label_colour_effective );
+	if ( '' !== $label_colour_decl ) {
+		$scoped_css[] = "{$root_sel}{{$label_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $label_colour_effective );
 }
 
 // --- Base spacing + border-radius via the stable core style engine (skip-

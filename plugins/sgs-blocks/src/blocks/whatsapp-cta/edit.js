@@ -17,7 +17,7 @@ import {
 	ResponsiveBorderRadiusControl,
 	SgsColourPanel,
 } from '../../components';
-import { colourVar } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Inline button', 'sgs-blocks' ), value: 'inline' },
@@ -43,9 +43,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		message,
 		variant,
 		label,
-		showOnMobile,
-		showOnDesktop,
+		showOn,
 		labelColour,
+		labelColourGradient,
 		backgroundColour,
 		paddingTablet,
 		paddingMobile,
@@ -55,11 +55,19 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderRadiusMobile,
 	} = attributes;
 
+	// Visibility — tier object attr (D777/S2 fix). Only desktop/mobile ever
+	// existed here (no tablet toggle in this UI, no tablet @media rule in
+	// style.css) — preserved exactly, not widened to a third tier.
+	const showOnMobile = showOn?.mobile ?? true;
+	const showOnDesktop = showOn?.desktop ?? true;
+
 	// Root-element preview style (contract §B3: the button element IS the
 	// block root — no wrapper div). Colour/background mirror the scoped
 	// button rule; padding/margin/border-radius mirror the scoped box rule.
+	// D636 — sibling gradient attribute preview (mirrors sgs/counter's
+	// numberStyle/labelStyle wiring).
 	const rootStyle = {
-		color: colourVar( labelColour ) || undefined,
+		...resolveTextColourPreviewStyle( labelColour, labelColourGradient, colourVar ),
 		backgroundColor: colourVar( backgroundColour ) || undefined,
 	};
 	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
@@ -99,6 +107,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'label',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -106,6 +115,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: labelColour,
 								onChange: ( val ) => setAttributes( { labelColour: val ?? '' } ),
 								linked: true,
+								gradientValue: labelColourGradient,
+								onGradientChange: ( val ) => setAttributes( { labelColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -172,7 +183,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Show on mobile', 'sgs-blocks' ) }
 						checked={ showOnMobile }
 						onChange={ ( val ) =>
-							setAttributes( { showOnMobile: val } )
+							setAttributes( { showOn: { ...showOn, mobile: val } } )
 						}
 						__nextHasNoMarginBottom
 					/>
@@ -180,7 +191,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Show on desktop', 'sgs-blocks' ) }
 						checked={ showOnDesktop }
 						onChange={ ( val ) =>
-							setAttributes( { showOnDesktop: val } )
+							setAttributes( { showOn: { ...showOn, desktop: val } } )
 						}
 						__nextHasNoMarginBottom
 					/>

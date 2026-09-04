@@ -56,7 +56,11 @@ $icon_colour  = (string) ( $attributes['iconColour'] ?? '' );
 // D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above.
 $icon_colour_gradient = (string) ( $attributes['iconColourGradient'] ?? '' );
 $text_colour  = (string) ( $attributes['textColour'] ?? '' );
+// D636 text-colour gradient sibling (778879732 rollout finish, 2026-09-04) —
+// non-empty wins over textColour/labelColour at render time.
+$text_colour_gradient  = (string) ( $attributes['textColourGradient'] ?? '' );
 $label_colour = (string) ( $attributes['labelColour'] ?? '' );
+$label_colour_gradient = (string) ( $attributes['labelColourGradient'] ?? '' );
 // Link hover — unset means "no override", so style.css's #e7d768 default applies.
 // Split 2026-08-16 (D643): the resolved colour used to feed BOTH the gradient
 // colour-stop (background-image) AND the @supports-fallback `color:` from one
@@ -428,13 +432,38 @@ $sgs_bi_icon_colour_css = sgs_colour_value( $icon_colour );
 if ( '' !== $sgs_bi_icon_colour_css ) {
 	$sgs_bi_colour_decls[] = '--sgs-bi-icon-colour:' . $sgs_bi_icon_colour_css;
 }
-$sgs_bi_text_colour_css = sgs_colour_value( $text_colour );
-if ( '' !== $sgs_bi_text_colour_css ) {
-	$sgs_bi_colour_decls[] = '--sgs-bi-text-colour:' . $sgs_bi_text_colour_css;
+// textColour/labelColour moved OFF the custom-property bridge (2026-09-04,
+// D636 gradient rollout finish) — a custom property can never legally hold a
+// CSS gradient string the way --sgs-bi-icon-colour above still can for a flat
+// value, so these two now emit direct scoped declarations via the shared
+// sgs_resolve_text_colour_or_gradient()/sgs_text_colour_decl() helpers,
+// exactly mirroring sgs/counter's numberColour/labelColour. The "unset means
+// no override, inherit currentColor" contract is UNCHANGED: when neither the
+// flat nor the gradient attr is set, sgs_resolve_text_colour_or_gradient()
+// returns '', nothing is emitted, and style.css's
+// `var(--sgs-bi-text-colour, currentColor)` / `var(--sgs-bi-label-colour, currentColor)`
+// rules simply resolve their fallback (no --sgs-bi-text-colour/-label-colour
+// custom property is ever declared, by either mechanism).
+$text_colour_effective = sgs_resolve_text_colour_or_gradient( $text_colour, $text_colour_gradient );
+if ( '' !== $text_colour_effective ) {
+	$text_colour_decl = sgs_text_colour_decl( $text_colour_effective );
+	if ( '' !== $text_colour_decl ) {
+		$scoped_css[] = "{$root_sel}{{$text_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_effective );
 }
-$sgs_bi_label_colour_css = sgs_colour_value( $label_colour );
-if ( '' !== $sgs_bi_label_colour_css ) {
-	$sgs_bi_colour_decls[] = '--sgs-bi-label-colour:' . $sgs_bi_label_colour_css;
+// labelColour's only real paint target today is .sgs-business-hours__day
+// (style.css:167 `color: var(--sgs-bi-label-colour, currentColor)`) — the
+// generic .sgs-business-info__label span carries no colour rule of its own,
+// it inherits. The gradient sibling follows the SAME real selector.
+$label_sel = "{$root_sel} .sgs-business-hours__day";
+$label_colour_effective = sgs_resolve_text_colour_or_gradient( $label_colour, $label_colour_gradient );
+if ( '' !== $label_colour_effective ) {
+	$label_colour_decl = sgs_text_colour_decl( $label_colour_effective );
+	if ( '' !== $label_colour_decl ) {
+		$scoped_css[] = "{$label_sel}{{$label_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_sel, $label_colour_effective );
 }
 // Link hover — same omit-when-unset contract as the three above. Unset falls back
 // to style.css's `var(--sgs-bi-link-hover-bg, #e7d768)` / `var(--sgs-bi-link-hover-text, #e7d768)`,

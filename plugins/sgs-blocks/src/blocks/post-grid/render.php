@@ -24,10 +24,10 @@ defined( 'ABSPATH' ) || exit;
 use SGS\Blocks\Post_Grid_REST;
 use SGS\Blocks\Grid_Pagination;
 
-require_once dirname( __FILE__, 4 ) . '/includes/class-post-grid-rest.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-post-grid-rest.php';
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
-require_once dirname( __FILE__, 4 ) . '/includes/render-helpers.php';
-require_once dirname( __FILE__, 4 ) . '/includes/class-sgs-container-wrapper.php';
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 // dirname( __DIR__, 3 ) is the same directory as the dirname( __FILE__, 4 )
 // calls above (__DIR__ === dirname( __FILE__ )); it matches the form used by
 // the sibling grid blocks and keeps this new line phpcs-clean.
@@ -94,8 +94,8 @@ $exclude        = (bool) ( $attributes['excludeCurrent'] ?? true );
 $categories = array_map( 'absint', (array) ( $attributes['categories'] ?? array() ) );
 $tags       = array_map( 'absint', (array) ( $attributes['tags'] ?? array() ) );
 
-$layout         = sanitize_key( $attributes['layout'] ?? 'grid' );
-$card_style     = sanitize_key( $attributes['cardStyle'] ?? 'card' );
+$layout     = sanitize_key( $attributes['layout'] ?? 'grid' );
+$card_style = sanitize_key( $attributes['cardStyle'] ?? 'card' );
 
 // Whitelist — mirrors image-sequence/render.php's six-value ratio list (the
 // shared source of truth is MediaSizingPanel.js's RATIO_OPTIONS, JS-side;
@@ -431,7 +431,7 @@ if ( $query->have_posts() ) {
 			$card_html = sgs_post_grid_make_card_image_decorative( $card_html );
 		}
 		echo $card_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — render_card() escapes all output internally; sgs_post_grid_make_card_image_decorative() only rewrites an already-escaped alt attribute to an empty string and adds a literal aria-hidden attribute.
-		$card_index++;
+		++$card_index;
 	}
 	wp_reset_postdata();
 } else {
@@ -518,7 +518,7 @@ if ( ! empty( $color_args ) ) {
 }
 
 // (native border_args removed by the Shape-B migration -- width/style/colour
-//  are block-private attrs now, emitted below)
+// are block-private attrs now, emitted below)
 
 if ( ! empty( $post_grid_style_engine_args ) ) {
 	$post_grid_scoped_styles = wp_style_engine_get_styles(
@@ -590,6 +590,32 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 // after the stylesheet was parsed. Built by the same helper the card renderer
 // documents, so the two cannot drift apart.
 $responsive_css .= $root_sel . ' .sgs-post-grid__card{' . Post_Grid_REST::card_vars_decls( $card_params ) . '}';
+
+// D956 (778879732 rollout, Phase 3) — titleColour/excerptColour/metaColour/
+// readMoreColour gradient siblings. Emitted as DIRECT declarations at the real
+// card element selectors (not the --sgs-pg-* custom-property chain above,
+// which cannot carry a gradient), scoped under $root_sel so the same
+// descendant-selector rule also styles cards injected later by view.js AJAX
+// pagination. Mirrors sgs/counter's numberColour/labelColour pattern.
+$post_grid_text_rows = array(
+	'titleColour'    => $root_sel . ' .sgs-post-grid__title a',
+	'excerptColour'  => $root_sel . ' .sgs-post-grid__excerpt',
+	'metaColour'     => $root_sel . ' .sgs-post-grid__meta',
+	'readMoreColour' => $root_sel . ' .sgs-post-grid__readmore',
+);
+foreach ( $post_grid_text_rows as $post_grid_attr => $post_grid_sel ) {
+	$post_grid_flat      = $card_params[ $post_grid_attr ] ?? '';
+	$post_grid_gradient  = $attributes[ $post_grid_attr . 'Gradient' ] ?? '';
+	$post_grid_effective = sgs_resolve_text_colour_or_gradient( $post_grid_flat, $post_grid_gradient );
+	if ( '' === $post_grid_effective ) {
+		continue;
+	}
+	$post_grid_decl = sgs_text_colour_decl( $post_grid_effective );
+	if ( '' !== $post_grid_decl ) {
+		$responsive_css .= $post_grid_sel . '{' . $post_grid_decl . ';}';
+	}
+	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $post_grid_sel, $post_grid_effective );
+}
 
 // Hover colour shifts (background/text/border) — per-instance scoped rules via
 // sgs_emit_state_colour_css(), same as sgs/info-box and sgs/cta-section.
@@ -686,10 +712,10 @@ if ( 'none' !== $border_style ) {
 	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
 	// through to the browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt             = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr             = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb             = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl             = '' !== $border_width_left ? $border_width_left : '0';
 		$responsive_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
 	}
 

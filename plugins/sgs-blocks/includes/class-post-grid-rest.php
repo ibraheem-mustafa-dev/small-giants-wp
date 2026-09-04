@@ -292,11 +292,15 @@ class Post_Grid_REST {
 	 * @return string Declarations without braces, or '' if none apply.
 	 */
 	public static function card_vars_decls( array $params ): string {
+		// D956 (778879732 rollout, Phase 3): titleColour/excerptColour/metaColour/
+		// readMoreColour moved OFF this custom-property map to a direct
+		// sgs_text_colour_decl()/sgs_resolve_text_colour_or_gradient() emission
+		// in render.php (survey.js's `paints-via-colour-valued-custom-property`
+		// refusal reason -- a `var(--x, ...)` fed into a fixed `color:`
+		// declaration cannot switch to `background-image` for a gradient).
+		// categoryBadgeColour/categoryBadgeBgColour are UNAFFECTED (not part of
+		// this rollout) and keep the custom-property route.
 		$map = [
-			'titleColour'           => '--sgs-pg-title-colour',
-			'excerptColour'         => '--sgs-pg-excerpt-colour',
-			'metaColour'            => '--sgs-pg-meta-colour',
-			'readMoreColour'        => '--sgs-pg-readmore-colour',
 			'categoryBadgeColour'   => '--sgs-pg-badge-colour',
 			'categoryBadgeBgColour' => '--sgs-pg-badge-bg',
 		];

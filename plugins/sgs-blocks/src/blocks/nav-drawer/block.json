@@ -129,6 +129,7 @@
 					],
 					"prefix": "toggleClose",
 					"attrMap": {
+						"css:color-gradient": "toggleCloseColourGradient",
 						"css:color": "toggleCloseColour"
 					},
 					"states": {
@@ -262,6 +263,10 @@
 			"default": ""
 		},
 		"toggleCloseColour": {
+			"type": "string",
+			"default": ""
+		},
+		"toggleCloseColourGradient": {
 			"type": "string",
 			"default": ""
 		},

@@ -48,7 +48,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconColour,
 		iconColourGradient,
 		textColour,
+		textColourGradient,
 		labelColour,
+		labelColourGradient,
 		linkHoverBackgroundImage,
 		linkHoverTextColour,
 	} = attributes;
@@ -89,24 +91,32 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: textColour,
 								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'label',
 						label: __( 'Label colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: labelColour,
 								onChange: ( val ) => setAttributes( { labelColour: val ?? '' } ),
+								gradientValue: labelColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { labelColourGradient: val ?? '' } ),
 							},
 						],
 					},

@@ -179,7 +179,10 @@ $drawer_text_effective = sgs_resolve_text_colour_or_gradient(
 
 // ── Close-icon colour (toggleCloseColour, slug). Empty = inherit the drawer's
 // computed foreground (style.css sets the × to color:inherit).
+// D956 — toggleCloseColourGradient is the gradient sibling (778879732 rollout,
+// Phase 3); gradient wins when set+valid, mirrors drawerTextColourGradient above.
 $close_colour_slug       = isset( $attributes['toggleCloseColour'] ) ? sanitize_html_class( $attributes['toggleCloseColour'] ) : '';
+$close_colour_gradient   = $attributes['toggleCloseColourGradient'] ?? '';
 $close_colour_hover_slug = isset( $attributes['toggleCloseColourHover'] ) ? sanitize_html_class( $attributes['toggleCloseColourHover'] ) : '';
 
 // ── Submenu model — LIVE (FR-36-6). Published to the drawer's descendants via
@@ -333,8 +336,15 @@ if ( function_exists( 'sgs_emit_responsive_css' ) && is_array( $attributes['draw
 }
 
 // Close-icon colour override (else inherits the computed foreground).
-if ( '' !== $close_colour_slug ) {
-	$css .= $close_sel . '{color:' . sgs_colour_value( $close_colour_slug ) . ';}';
+// D956 — sibling gradient wins when set+valid, same resolve/decl/fallback
+// shape as the drawer text colour above.
+$close_colour_effective = sgs_resolve_text_colour_or_gradient( $close_colour_slug, $close_colour_gradient );
+if ( '' !== $close_colour_effective ) {
+	$close_colour_decl = sgs_text_colour_decl( $close_colour_effective );
+	if ( '' !== $close_colour_decl ) {
+		$css .= $close_sel . '{' . $close_colour_decl . ';}';
+	}
+	$css .= sgs_text_colour_gradient_fallback_rule( $close_sel, $close_colour_effective );
 }
 
 // The close button IS an interactive target, so it carries a real hover state —

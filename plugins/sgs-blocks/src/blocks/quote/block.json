@@ -50,7 +50,8 @@
 								"css:box-shadow": "boxShadowHover",
 								"css:box-shadow-color": "boxShadowHoverColour",
 								"css:border-color": "borderColourHover",
-								"css:color": "textColourHover"
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
 							}
 						}
 					}
@@ -274,6 +275,11 @@
 		"textColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the quote box's hover-state text with a background-clip:text mechanism instead of a flat colour (D636 text-colour gradient rollout). Non-empty wins over textColourHover. Safe on this selector because the root's background paint is routed onto a `::after` layer (D936)."
 		},
 		"backgroundColourHover": {
 			"type": "string",

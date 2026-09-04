@@ -19,6 +19,7 @@ import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPa
 } from '../../components';
 import { NumberControl } from '../../components/primitives';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+import { resolveTextColourPreviewStyle } from '../../utils';
 
 const SUBMIT_STYLE_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
@@ -78,8 +79,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// the correct resolver. Mirrors render.php's scoped `.sgs-form__button
 	// --submit`/`.sgs-form__progress` rules (render.php:211-241).
 	const [ palette ] = useSettings( 'color.palette' );
+	// submitColourGradient (D636 gradient rollout finish, 2026-09-04) — the
+	// gradient sibling wins over the flat submitColour when set+valid, same
+	// precedence as render.php's sgs_resolve_text_colour_or_gradient().
+	const submitTextPreviewStyle = resolveTextColourPreviewStyle(
+		submitColour,
+		attributes.submitColourGradient,
+		( val ) => resolveColourToken( val, palette ) || undefined
+	);
 	const submitButtonStyle = {
-		color: resolveColourToken( submitColour, palette ) || undefined,
+		...submitTextPreviewStyle,
 		backgroundColor: resolveColourToken( submitBackground, palette ) || undefined,
 	};
 	const progressBarStyle = {
@@ -139,6 +148,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{
 						key: 'submit-text',
 						label: __( 'Submit button text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -146,6 +156,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: submitColour,
 								onChange: ( val ) => setAttributes( { submitColour: val ?? '' } ),
 								linked: true,
+								gradientValue: attributes.submitColourGradient,
+								onGradientChange: ( val ) => setAttributes( { submitColourGradient: val ?? '' } ),
 							},
 						],
 					},

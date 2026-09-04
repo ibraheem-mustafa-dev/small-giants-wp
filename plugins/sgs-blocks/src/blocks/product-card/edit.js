@@ -1170,6 +1170,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		colourRows.push( {
 			key: 'tagText',
 			label: __( 'Tag text colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -1177,6 +1178,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: attributes.tagTextColour,
 					onChange: ( val ) => setAttributes( { tagTextColour: val ?? '' } ),
 					linked: true,
+					gradientValue: attributes.tagTextColourGradient,
+					onGradientChange: ( val ) => setAttributes( { tagTextColourGradient: val ?? '' } ),
 				},
 			],
 		} );
@@ -2524,9 +2527,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<span
 								className="sgs-product-card__tag sgs-product-card__tag--trial"
 								style={ {
-									color: resolvePcColour( attributes.tagTextColour ),
 									backgroundColor: resolvePcColour(
 										attributes.tagBackgroundColour
+									),
+									...resolveTextColourPreviewStyle(
+										attributes.tagTextColour,
+										attributes.tagTextColourGradient,
+										resolvePcColour
 									),
 								} }
 							>

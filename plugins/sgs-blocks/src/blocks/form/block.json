@@ -207,6 +207,11 @@
 			"type": "string",
 			"default": "text-inverse"
 		},
+		"submitColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the submit button's text (background-clip:text) instead of a flat colour. Non-empty wins over submitColour at render time (D636/778879732 gradient rollout finish, 2026-09-04). Not mapped in submit-button's attrMap: css:background-image is already claimed by submitBackgroundGradient on this same element (JSON keys are unique) — render.php resolves the runtime collision via the D942 background-color:transparent cancellation, but if an operator sets BOTH this AND submitBackground/submitBackgroundGradient simultaneously, the background paint wins (documented trade-off, see render.php comment)."
+		},
 		"submitBackground": {
 			"type": "string",
 			"default": "primary"

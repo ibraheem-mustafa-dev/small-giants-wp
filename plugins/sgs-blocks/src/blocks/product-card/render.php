@@ -547,9 +547,19 @@ if ( 'typed' === $source_mode ) {
 	);
 	// Text colour — the box helper handles background but not colour (mirrors the
 	// label split: colour is a $root_decls concern), so emit it on the same rule.
-	$sgs_tag_text_colour = sgs_colour_value( (string) ( $attributes['tagTextColour'] ?? '' ) );
-	if ( '' !== $sgs_tag_text_colour ) {
-		$sgs_tag_box_css .= '.' . $sgs_card_uid . '.sgs-product-card__tag--trial{color:' . $sgs_tag_text_colour . ';}';
+	// D636 — sibling gradient attribute wins when set+valid (text-colour gradient
+	// rollout, mirrors sgs/counter's numberColour/labelColour pattern).
+	$sgs_tag_text_colour_sel       = '.' . $sgs_card_uid . '.sgs-product-card__tag--trial';
+	$sgs_tag_text_colour_effective = sgs_resolve_text_colour_or_gradient(
+		(string) ( $attributes['tagTextColour'] ?? '' ),
+		(string) ( $attributes['tagTextColourGradient'] ?? '' )
+	);
+	if ( '' !== $sgs_tag_text_colour_effective ) {
+		$sgs_tag_text_colour_decl = sgs_text_colour_decl( $sgs_tag_text_colour_effective );
+		if ( '' !== $sgs_tag_text_colour_decl ) {
+			$sgs_tag_box_css .= $sgs_tag_text_colour_sel . '{' . $sgs_tag_text_colour_decl . ';}';
+		}
+		$sgs_tag_box_css .= sgs_text_colour_gradient_fallback_rule( $sgs_tag_text_colour_sel, $sgs_tag_text_colour_effective );
 	}
 	$sgs_card_typo_css .= $sgs_tag_box_css;
 

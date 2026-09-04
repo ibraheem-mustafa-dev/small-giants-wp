@@ -17,7 +17,7 @@ import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, Respons
 	resolveColourToken,
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview, spacingPreview, generateItemKey, withStableItemKeys } from '../../utils';
+import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview, spacingPreview, generateItemKey, withStableItemKeys, resolveTextColourPreviewStyle } from '../../utils';
 // trust-bar does not use the default <ContainerWrapperControls> aggregator —
 // its "Content band" / "Responsive spacing" panels write to flat attrs
 // (contentBandPaddingTop, paddingTopTablet, …) this block does not declare;
@@ -301,7 +301,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		items: rawItems,
 		title,
 		titleColour,
+		titleColourGradient,
 		labelColour,
+		labelColourGradient,
 		badgeSize,
 		iconCircleSize,
 		iconCircleBackground,
@@ -349,6 +351,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	const circleBgValue  = colourVar( iconCircleBackground ) || '#ffffff';
 	const iconColourValue = colourVar( iconColour ) || 'currentColor';
 	const textColourValue = colourVar( textColour ) || undefined;
+	// D636 — sibling gradient attribute preview (mirrors sgs/counter's
+	// numberStyle/labelStyle wiring).
+	const titleStyle = resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar );
+	const labelStyle = resolveTextColourPreviewStyle( labelColour, labelColourGradient, colourVar );
 
 	// D717/background-preview: BackgroundPanel (mounted below) writes image/
 	// video/overlay/ken-burns/parallax attrs this block never previewed on
@@ -628,7 +634,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && textRow( {
 						key: 'title-colour',
 						label: __( 'Title colour', 'sgs-blocks' ),
-						attrs: { base: 'titleColour' },
+						attrs: { base: 'titleColour', gradient: 'titleColourGradient' },
 						attributes,
 						setAttributes,
 					} ),
@@ -641,7 +647,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && textRow( {
 						key: 'label-colour',
 						label: __( 'Label colour', 'sgs-blocks' ),
-						attrs: { base: 'labelColour' },
+						attrs: { base: 'labelColour', gradient: 'labelColourGradient' },
 						attributes,
 						setAttributes,
 					} ),
@@ -1128,9 +1134,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						value={ title }
 						onChange={ ( val ) => setAttributes( { title: val } ) }
 						placeholder={ __( 'Trusted certifications & memberships', 'sgs-blocks' ) }
-						style={ {
-							color: colourVar( titleColour ) || undefined,
-						} }
+						style={ titleStyle }
 					/>
 				) }
 
@@ -1169,9 +1173,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									<div key={ item._key || index } className="sgs-trust-bar__badge">
 										<span
 											className="sgs-trust-bar__badge-label"
-											style={ {
-												color: colourVar( labelColour ) || undefined,
-											} }
+											style={ labelStyle }
 										>
 											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
 										</span>
@@ -1201,9 +1203,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									{ item.label && (
 										<span
 											className="sgs-trust-bar__badge-label"
-											style={ {
-												color: colourVar( labelColour ) || undefined,
-											} }
+											style={ labelStyle }
 										>
 											{ item.label }
 										</span>

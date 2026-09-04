@@ -29,7 +29,7 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 ];
 import { IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker } from '../../components';
-import { colourVar } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 
 const CONNECTOR_OPTIONS = [
 	{ label: __( 'Line', 'sgs-blocks' ), value: 'line' },
@@ -117,7 +117,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		numberColour,
 		numberBackground,
 		titleColour,
+		titleColourGradient,
 		descriptionColour,
+		descriptionColourGradient,
 		backgroundColour,
 		textColour,
 		backgroundColourHover,
@@ -192,13 +194,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundColor: colourVar( numberBackground ) || undefined,
 	};
 
-	const titleStyle = {
-		color: colourVar( titleColour ) || undefined,
-	};
+	const titleStyle = resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar );
 
-	const descStyle = {
-		color: colourVar( descriptionColour ) || undefined,
-	};
+	const descStyle = resolveTextColourPreviewStyle( descriptionColour, descriptionColourGradient, colourVar );
 
 	// D649 — heading level is an identity control (document-outline
 	// placement), not a style control; mirrors render.php's own fallback.
@@ -316,6 +314,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: titleColour,
 								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
 								linked: true,
+								gradientValue: titleColourGradient,
+								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
 							},
 						] }
 					/>
@@ -333,6 +333,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: descriptionColour,
 								onChange: ( val ) => setAttributes( { descriptionColour: val ?? '' } ),
 								linked: true,
+								gradientValue: descriptionColourGradient,
+								onGradientChange: ( val ) => setAttributes( { descriptionColourGradient: val ?? '' } ),
 							},
 						] }
 					/>

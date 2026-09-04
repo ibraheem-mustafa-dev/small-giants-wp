@@ -69,7 +69,9 @@ $number_colour           = $attributes['numberColour'] ?? '';
 $number_background       = $attributes['numberBackground'] ?? '';
 $number_background_gradient = sgs_css_gradient_value( $attributes['numberBackgroundGradient'] ?? '' );
 $title_colour            = $attributes['titleColour'] ?? '';
+$title_colour_gradient   = $attributes['titleColourGradient'] ?? '';
 $description_colour      = $attributes['descriptionColour'] ?? '';
+$description_colour_gradient = $attributes['descriptionColourGradient'] ?? '';
 $hover_background_colour = $attributes['backgroundColourHover'] ?? '';
 $hover_text_colour       = $attributes['textColourHover'] ?? '';
 $hover_border_colour     = $attributes['borderColourHover'] ?? '';
@@ -400,12 +402,24 @@ if ( '' !== $number_background_hover ) {
 	$scoped_css[] = sgs_hover_state_rules( $step_sel, 'background-color:' . sgs_colour_value( $number_background_hover ), ':focus-within', $num_el );
 }
 
-if ( $title_colour ) {
-	$scoped_css[] = "{$title_scope}{color:" . sgs_colour_value( $title_colour ) . ';}';
+// D636 — sibling gradient attribute wins when set+valid (text-colour gradient
+// rollout, mirrors sgs/counter's numberColour/labelColour pattern).
+$title_colour_effective = sgs_resolve_text_colour_or_gradient( $title_colour, $title_colour_gradient );
+if ( '' !== $title_colour_effective ) {
+	$title_colour_decl = sgs_text_colour_decl( $title_colour_effective );
+	if ( '' !== $title_colour_decl ) {
+		$scoped_css[] = "{$title_scope}{{$title_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $title_scope, $title_colour_effective );
 }
 
-if ( $description_colour ) {
-	$scoped_css[] = "{$desc_scope}{color:" . sgs_colour_value( $description_colour ) . ';}';
+$description_colour_effective = sgs_resolve_text_colour_or_gradient( $description_colour, $description_colour_gradient );
+if ( '' !== $description_colour_effective ) {
+	$description_colour_decl = sgs_text_colour_decl( $description_colour_effective );
+	if ( '' !== $description_colour_decl ) {
+		$scoped_css[] = "{$desc_scope}{{$description_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $desc_scope, $description_colour_effective );
 }
 
 // ---------------------------------------------------------------------------

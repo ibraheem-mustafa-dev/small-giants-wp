@@ -165,7 +165,8 @@
 					],
 					"prefix": "",
 					"attrMap": {
-						"css:color": "labelColour"
+						"css:color": "labelColour",
+						"css:background-image": "labelColourGradient"
 					},
 					"_note": "Same conceptual node as `label` above, but a DIFFERENT class name (.sgs-trust-bar__badge-label, render.php:281) rendered only by the text-only/image-badge variants — split into its own element because the DB's css_element column holds one name per attribute and the two variants genuinely use two different class names."
 				},
@@ -175,7 +176,11 @@
 					"clusters": [
 						"text"
 					],
-					"prefix": "title"
+					"prefix": "title",
+					"attrMap": {
+						"css:color": "titleColour",
+						"css:background-image": "titleColourGradient"
+					}
 				},
 				"badge-item": {
 					"label": "Badge item",
@@ -328,6 +333,10 @@
 			"type": "string",
 			"default": "text-muted"
 		},
+		"titleColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"titleFontSize": {
 			"type": "object",
 			"default": {}
@@ -354,6 +363,10 @@
 		"labelColour": {
 			"type": "string",
 			"default": "text"
+		},
+		"labelColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"labelFontSize": {
 			"type": "object",

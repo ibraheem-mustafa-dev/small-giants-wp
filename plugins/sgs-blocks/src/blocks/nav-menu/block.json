@@ -171,7 +171,8 @@
 					"prefix": "burger",
 					"attrMap": {
 						"css:width": "burgerSize",
-						"css:height": "burgerSize"
+						"css:height": "burgerSize",
+						"css:color-gradient": "burgerColourGradient"
 					},
 					"states": {
 						"hover": {
@@ -188,9 +189,10 @@
 					"clusters": [ "text" ],
 					"prefix": "",
 					"attrMap": {
-						"css:color": "submenuColour"
+						"css:color": "submenuColour",
+						"css:color-gradient": "submenuColourGradient"
 					},
-					"_note": "The submenu LINK — <a class=\"sgs-nav-menu__sublink\"> (render.php:410), painted at render.php:1354 `.sgs-nav-menu__sublink{color:var(--sgs-nm-submenu-colour);}`. Declared explicitly because the emission classifier cannot reach it: render.php:1220 feeds submenuColour into --sgs-nm-submenu-colour, but that variable is CONSUMED in a PHP-BUILT CSS string (:1354), not in style.css — and the classifier's consumer scan reads style.css only. Its sibling submenuBg resolves automatically precisely because ITS consumer does sit in style.css (:303). Same attribute shape, opposite outcome, and the difference is which FILE the consumer lives in. prefix \"\" is the documented explicit opt-out from orphan-scanning: the sublink shares no name prefix with submenuColour, and a \"submenu\" prefix would wrongly try to claim submenuAlign/Caret/CloseGrace/MinWidth/Radius/Padding, which belong to the submenu PANEL rather than to this anchor."
+					"_note": "The submenu LINK — <a class=\"sgs-nav-menu__sublink\"> (render.php:410), painted at render.php's own scoped `.sgs-nav-menu__sublink{...}` rule. Declared explicitly because the emission classifier cannot reach it: prefix \"\" is the documented explicit opt-out from orphan-scanning: the sublink shares no name prefix with submenuColour, and a \"submenu\" prefix would wrongly try to claim submenuAlign/Caret/CloseGrace/MinWidth/Radius/Padding, which belong to the submenu PANEL rather than to this anchor. D956 (778879732 rollout, Phase 3): submenuColourGradient added as the text-colour gradient sibling — routed as a DIRECT decl (sgs_text_colour_decl/sgs_resolve_text_colour_or_gradient), replacing the previous --sgs-nm-submenu-colour custom-property indirection for this attribute, because a `var(--x, …)` chain feeding a fixed `color:` declaration cannot switch to `background-image` for a gradient (survey.js's `paints-via-colour-valued-custom-property` refusal reason)."
 				}
 			},
 			"boxFamilies": {
@@ -362,6 +364,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"burgerColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"burgerBg": {
 			"type": "string",
 			"default": ""
@@ -412,6 +418,10 @@
 			"default": ""
 		},
 		"submenuColour": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuColourGradient": {
 			"type": "string",
 			"default": ""
 		},

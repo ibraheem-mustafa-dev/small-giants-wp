@@ -122,6 +122,7 @@ $box_shadow_colour       = $attributes['boxShadowColour'] ?? '';
 $box_shadow_hover_colour = $attributes['boxShadowHoverColour'] ?? '';
 $hover_scale             = isset( $attributes['scaleHover'] ) && null !== $attributes['scaleHover'] ? (float) $attributes['scaleHover'] : null;
 $hover_colour            = $attributes['textColourHover'] ?? '';
+$hover_colour_gradient   = $attributes['textColourHoverGradient'] ?? '';
 $hover_bg                = $attributes['backgroundColourHover'] ?? '';
 $hover_bg_gradient       = $attributes['backgroundColourHoverGradient'] ?? '';
 
@@ -303,8 +304,17 @@ if ( $box_bg_decl || $box_bg_hover_decl ) {
 
 // --- Hover states ---
 $hover_rules = array();
-if ( $hover_colour ) {
-	$hover_rules[] = 'color:' . sgs_colour_value( $hover_colour );
+// D636 — sibling gradient attribute wins when set+valid (text-colour gradient
+// rollout, mirrors sgs/heading's hover_colour_effective pattern). Safe on this
+// selector because the root's background paint was already moved onto a
+// `::after` layer above (D936) — the root's own `color`/hover `color` stays
+// free of a same-selector background.
+$hover_colour_effective = sgs_resolve_text_colour_or_gradient( $hover_colour, $hover_colour_gradient );
+if ( '' !== $hover_colour_effective ) {
+	$hover_colour_decl = sgs_text_colour_decl( $hover_colour_effective );
+	if ( '' !== $hover_colour_decl ) {
+		$hover_rules[] = $hover_colour_decl;
+	}
 }
 if ( $box_shadow_hover ) {
 	$hover_rules[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow_hover, $box_shadow_hover_colour );
@@ -321,7 +331,13 @@ if ( $hover_rules || $has_scale ) {
 	$scoped_css[] = "{$root_sel}{transition:transform {$transition_duration}ms {$transition_easing},box-shadow {$transition_duration}ms {$transition_easing},background-color {$transition_duration}ms {$transition_easing},color {$transition_duration}ms {$transition_easing};}";
 	$scoped_css[] = "@media(prefers-reduced-motion:reduce){{$root_sel}{transition:none !important;transform:none !important;}}";
 	if ( $hover_rules ) {
-		$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $hover_rules ), ':focus-within' );
+		$scoped_css[]        = sgs_hover_state_rules( $root_sel, implode( ';', $hover_rules ), ':focus-within' );
+		$hover_fallback_rule = sgs_hover_media_wrap(
+			sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover', $hover_colour_effective )
+		) . sgs_text_colour_gradient_fallback_rule( $root_sel . ':focus-within', $hover_colour_effective );
+		if ( '' !== $hover_fallback_rule ) {
+			$scoped_css[] = $hover_fallback_rule;
+		}
 	}
 }
 

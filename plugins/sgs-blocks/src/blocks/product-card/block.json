@@ -166,7 +166,8 @@
 					"prefix": "tag",
 					"attrMap": {
 						"css:background-color": "tagBackgroundColour",
-						"css:width": "tagFullWidth"
+						"css:width": "tagFullWidth",
+						"css:background-image": "tagTextColourGradient"
 					}
 				},
 				"pill": {
@@ -792,6 +793,11 @@
 			"type": "string",
 			"default": "text",
 			"description": "Text colour for the in-body trial tag. Theme token slug or raw CSS colour. Matches the retired style.css class default so an untouched card renders unchanged. Cloning converter lifts the draft trial-tag color here."
+		},
+		"tagTextColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the in-body trial tag's text with a background-clip:text mechanism instead of a flat colour (D636 text-colour gradient rollout). Non-empty wins over tagTextColour."
 		},
 		"tagBorderRadius": {
 			"type": [ "string", "number" ],
