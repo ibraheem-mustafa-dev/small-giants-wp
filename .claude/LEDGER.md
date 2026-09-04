@@ -105,6 +105,20 @@ above), on a DIFFERENT claim than the one D960 caught.
 C1/D3 (`31-golden-colour-control`) is tracked separately — has its own active plan and a
 parallel session working it. Don't duplicate.
 
+⚠ **`git stash@{0}` (26 files, base `7a2c68b05`, "session 6 handoff") is STILL UNRESOLVED —
+re-confirmed intact 2026-09-04 session 10, now 12+ hours old.** Flagged at session-9 AND
+session-10's own SessionStart hooks; neither session's scope covered reconciling it, and it
+survived a session-10 subagent's own diagnostic `git stash`/`pop` cycle (which hit a real,
+separate index-write conflict but did NOT drop the entry — verified independently, not just
+taken on the subagent's word). Contains real uncommitted work across `hero`/`button`/
+`before-after`/`brand-strip`/`buybox`/`cta-section`/`heading`/`icon-list`/`icon`/`info-box`/
+`mega-panel`/`nav-drawer`/`quote`/`site-footer(-row)`/`site-header(-row)`/`testimonial(-slider)`/
+`trust-bar`/`GradientCapableColourControl.js`/the generative-background shader files/`utils/index.js`/
+`parking.md`. **Whoever owns "session 6" should reconcile this** (`git stash show -p stash@{0} >
+backup.patch` first, then apply file-by-file, checking each against what's since landed on
+`main` — several of these blocks have been touched by OTHER sessions since). Do NOT
+`git stash drop`/`clear` until reconciled — it is the only copy of that work.
+
 ⚠ **Concurrent occupancy on `main` is the norm, not the exception** — path-scope every commit,
 re-check `git status`/branch and the decisions.md D-ceiling immediately before each write, and
 message the other active session (check `ListAgents`) rather than guessing or forcing

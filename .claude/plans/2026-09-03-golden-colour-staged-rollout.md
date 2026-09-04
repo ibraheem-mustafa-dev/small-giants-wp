@@ -556,6 +556,168 @@ Phase 4's own rule).
 
 ---
 
+## fix.js hardening + first real --apply — 2026-09-04 (session 10)
+
+**Session 9's handoff framed this as "3-4 narrow classification bugs, fix and move on." That
+framing was wrong in a way that mattered — `fix.js` had a live PHP-corruption risk and a
+production doctrine violation buried under the classification bugs, and neither would have
+surfaced from a quick patch.** Found via running the full `/subagent-driven-development`
+protocol (isolated git worktree, 3 tasks, cross-model review at every step, never skipping a
+Critical/Important finding) instead of hand-patching inline.
+
+**Task 1 — classifier mislabelling.** `sgs/process-steps.backgroundColour` reported the generic
+"nothing built yet" refusal even when hover was already shipped, because the hover-aware
+exemption session 9 built only covered `mechanism === 'text'`. Extended to fill/border/
+unresolved. 1 review round: a reviewer traced the control flow and found the new branch's
+`( mechanism || 'unresolved' )` fallback prints `unresolved` for a case that is PROVABLY never
+genuinely unresolved (by the time this code runs, `mechanism === null` can only mean "2+
+resolved mechanisms, ambiguous" — the true zero-mechanism case is filtered out earlier with a
+different verdict). Fixed to `( mechanism || mech.mechanisms.join('|') )`. Commits `b1eb92520`,
+`d6b031061`.
+
+**Task 2 — pattern-matching gaps, one root cause.** 3 named bugs (a background-color regex
+missing a fused string literal, a helper-call matcher recognising too few legal PHP call
+shapes, `resolveDirectSelector` missing `sgs_resolve_text_colour_or_gradient()` as a valid
+path) turned out to share one cause and were fixed via a new `resolveTextGradientChainSelector()`
+strategy. Its OWN verification (not a later review — the implementer's own dry-run check) found
+a brand-new bug: the generated hover block landed nested inside the base colour's own presence
+guard — a dead control whenever the client leaves the base colour unset. That became Task 3.
+Review round (1): naive statement-end scan not applied to `resolveDirectSelector` (the busiest
+insertion path), missing self-test coverage on ~264 new lines, missing ambiguity-refusal
+discipline in the new resolver, 2 undocumented newly-fixable rows, an over-broad fallthrough —
+all fixed, self-test 15→19. Commits `bcc75910d`, `ff1f024e6`.
+
+**Task 3 — hoist insertion past base-value guards.** Built `computeHoistedInsertionPoint()` +
+a brace-walking scanner to correctly hoist a hover-guard insertion out past matching presence
+guards, matching the existing `burgerBg`/`burgerHoverColour` shape in `nav-menu/render.php` as
+the reference pattern. 2 review rounds: round 1 found else/elseif-adjacency risk (would emit
+an unparseable PHP splice on `--apply`), an unrelated-guard-variable over-hoist risk (could
+hoist past a guard on a DIFFERENT variable entirely), and a comment-before-guard silent
+fallback that reproduced the ORIGINAL dead-control bug with zero signal — all fixed, self-test
+19→21. The reviewer's own explicit call after round 2: **"safe to hand to the parallel-agent
+dispatch phase for `--fix --apply`."** Commits `daf6178ec`, `0f38a4f01`.
+
+⭐ **The FINAL whole-branch review — looking at all 6 commits together, which no per-task round
+could do — disagreed with that "safe" call and found 1 Critical + 2 Important cross-task
+issues:**
+
+1. **CRITICAL — the codemod hand-built an unguarded, un-touch-safe combined
+   `:hover,:focus-visible` selector rule**, directly violating `plugins/sgs-blocks/CLAUDE.md`'s
+   "Touch-safe HOVER helpers" section — a hardened rule that landed **one day before this
+   branch started**. `sgs_hover_state_rules()` exists for exactly this ("the ONE place a
+   `:hover` rule is built... callers split the hover selector from the focus selector rather
+   than emitting one combined rule"), and the codemod's own cited reference model
+   (`nav-menu/render.php`'s pre-existing `burgerBg`/`burgerHoverColour` code) already called it
+   correctly — the codemod copied the placement but not the construction. Verified live: the
+   old hand-built shape FAILS the framework's own `php-hover-scan.php` gate on `team-member`
+   (zero existing guard calls there to hide behind — `nav-menu` would have silently passed
+   since it already has 10 guarded calls elsewhere in the same file, masking the defect there).
+   Fixed by swapping both insertion branches to call `sgs_hover_state_rules()`.
+2. **IMPORTANT — the "can't safely hoist" fallback silently emitted the exact broken
+   nested-in-guard placement Task 3 was built to eliminate**, with a self-test fixture literally
+   asserting the bug's output as "expected." Fixed: `computeHoistedInsertionPoint` now returns
+   a refusal sentinel instead, `planRow` refuses the row with named reasons
+   (`hoist-blocked-by-else-branch`, `hoist-blocked-by-non-guard-frame`) rather than proceeding.
+   The fixture's assertion was inverted to check for the refusal, not the bug.
+3. **IMPORTANT — 3 near-duplicate hand-rolled PHP lexers**, one (`findStatementEndRespectingStrings`,
+   feeding the MOST-USED insertion path) comment-blind while the other two weren't. Made
+   comment-aware (character-by-character logic copied from the other two, not genuinely shared
+   — a named, accepted Minor debt item, not re-litigated).
+
+All 3 fixed in one commit (`5ce3c8331`), re-reviewed and approved: self-test 21→23, `--fix`
+dry-run base-vs-head refusal set proven **byte-identical** (0 new refusals among real rows),
+full-apply test against the real `nav-menu`/`team-member` files verified `php -l` clean +
+the framework's own hover-guard gate passing with zero new findings. **7 commits total,
+merged to main via `finishing-a-development-branch` (merge commit `949c4d701`).**
+
+**Then — the tool's first-ever real `--apply` run (not a dry run) found ANOTHER gap no review
+round touched, because none of them checked WordPress-editor manifest completeness, only PHP
+correctness:** `--apply` writes the new `{attr}Gradient` attribute declaration into `block.json`
+correctly, but does **NOT** wire the corresponding `attrMap` entry into `supports.sgs.elements`
+— `check-element-manifest-conformance.js` failed with `orphan_unclassified=2` on `nav-menu`'s
+new `burgerBgGradient`/`indicatorColourGradient`. Fixed by hand (2 `css:background-image`
+attrMap entries), verified against the actually-emitted PHP property (never assumed). **This
+gap is NOT fixed IN THE TOOL** — every future `--apply` run on a NEW attribute needs this same
+manual follow-up (check `check-element-manifest-conformance.js --check` after every apply,
+before committing) until someone teaches `fix.js` to write the attrMap entry itself. A real,
+named, unclosed gap in the codemod, separate from everything the review rounds covered.
+
+**Applied for real, deployed, live-verified (commit `653aaa69b`):** `nav-menu.navColour`/
+`.burgerColour`/`.submenuColour`/`.burgerBg`/`.indicatorColour` + `team-member.nameColour`/
+`.roleColour`. `survey.js` CONFORMANT 104→110. Live-verified via real Playwright hover probes
+against sandybrown — hover fires, reverts cleanly on unhover, not sticky. Two probe mistakes
+made and CAUGHT before being trusted as fact (see "Hard-won live-probe gotchas" below) — read
+that section before writing another ad-hoc hover/gradient probe.
+
+### Hard-won live-probe gotchas — read before trusting a hand-rolled hover/gradient probe
+
+1. **A page-scoped selector can silently grab the WRONG instance of a widely-used block.**
+   `sgs/nav-menu` renders via the theme's own header/footer template on almost every page — a
+   probe page had 3 `.wp-block-sgs-nav-menu` instances, and `document.querySelector()` grabbed
+   the theme's chrome instance, not the probe's, producing a false FAIL. Always wrap probe
+   markup in `<!-- wp:group {"anchor":"probe-id"} --><div id="probe-id">…` and scope every
+   selector to `#probe-id …` — `check-colour-gradient-roundtrip.js`'s own `ROOT_ID` convention
+   already does this; a hand-rolled probe that skips it is measuring the wrong element.
+2. **A hover-vs-base colour test needs DIFFERENTIATED token values, or a coincidental match
+   reads as a false PASS or false FAIL depending on direction.** Setting only `nameColourHover`
+   with no explicit base `nameColour` let the block's own DEFAULT resolve to the same token the
+   hover was set to — before/after computed colour was identical whether or not hover actually
+   fired. Always give the base and hover attributes DIFFERENT tokens in a probe, and always
+   pair "hover fires" with "unhover reverts" (move the mouse elsewhere, confirm the colour goes
+   back) — "changed and stayed changed" cannot distinguish a real hover rule from a sticky one.
+
+### Reclassification — session 9's "15 tool bugs" and "21 trivial" buckets moved, in BOTH directions
+
+Session 9's own handoff (pasted back into this session, since it was never written to a doc —
+now IS written here, so this doesn't happen again) claimed 76 refused rows split 15 tool-bugs /
+21 trivial / 12 correctly-refused / ~25-28 genuinely-hard. Verified piece by piece this
+session:
+
+- **OUT of "15 tool bugs", INTO "correctly refused by design, not a bug":** `form.submitBackground`,
+  `modal.triggerBackground`, `modal.modalBackground`. Task 2's own investigation found these
+  push into a plain array with no selector in the statement to recover —
+  `resolveDirectSelector`'s "never invent a selector" principle means refusing here is correct,
+  permanent behaviour, not a gap to close.
+- **OUT of "21 trivial, single-selector direct-paint swaps", INTO "genuinely hard,
+  custom-property architecture":** `product-card.titleColour`/`.descColour`/`.priceColour`/
+  `.priceNoteColour`. Verified: these feed a CSS custom property (`--sgs-card-title-colour`
+  etc.) consumed by ONE `color:` declaration — a gradient needs 3 properties, which cannot fit
+  through one custom-property substitution. Same real-design-needed shape as `mega-panel`, not
+  a copy-paste job. **Correct this in any future row-classification doc or dispatch prompt —
+  the "pure swap" description was simply wrong.**
+- **Independently confirmed (not new, but now VERIFIED not assumed) as custom-property-fed,
+  matching the original hard bucket:** `tabs.tabBgColour`/`.panelBgColour`
+  (`--sgs-tab-bg`/`--sgs-panel-bg`), `social-icons.iconBackground`/`.iconBackgroundHover`
+  (`--sgs-social-bg`).
+- **Confirmed genuinely trivial, same proven shape as the 3 rows already applied this
+  session** (a live sibling gradient attribute already exists in the SAME file, proving the
+  pattern works): `pricing-table.ctaBackground` + `.popularBadgeBackground` (both already paint
+  via `sgs_block_background_layer_css()`/an equivalent hand-rolled `::after` layer, sibling
+  `ctaColourGradient` already live in this file) and `nav-menu.underlineColour` (a decorative
+  bar, no competing text on its selector). **Dispatched to 2 parallel agents this session — see
+  the session's own commit log for `src/blocks/pricing-table/` and `src/blocks/nav-menu/`
+  after this write-up's timestamp to check whether they landed.**
+
+### A real, pre-existing bug found in ALREADY-SHIPPED code — NOT fixed this session, flagged for whoever owns it
+
+`sgs/info-box`'s existing D744 text-gradient rollout (shipped before this session started) has
+the SAME defect Task 1/2 fixed in `fix.js`: it calls `sgs_text_decls()` +
+`sgs_emit_state_colour_css()` for a gradient-capable row, but `sgs_text_decls()` resolves
+flat-vs-gradient and then feeds the result through `sgs_colour_value()` — which expects a
+slug/hex, not a `linear-gradient(...)` string. Live-verified via REST + `content.rendered`
+inspection: with a gradient set, info-box emits
+`color:var(--wp--preset--color--linear-gradient90degff...)` — garbage, silently dropped by the
+browser. **info-box's gradient text has almost certainly never actually painted in
+production.** The correct pattern (proven live repeatedly this session, e.g. `pricing-table`,
+`modal`, `google-reviews`) is `sgs_resolve_text_colour_or_gradient()` →
+`sgs_text_colour_decl()` → `sgs_text_colour_gradient_fallback_rule()` — NOT the
+`sgs_text_decls()`/`sgs_emit_state_colour_css()` pairing, which is safe ONLY for a flat colour,
+never a gradient-capable row. **Any OTHER block using that same pairing for a gradient-capable
+row has this exact defect — worth a quick grep before trusting any block's shipped gradient
+text as working.**
+
+---
+
 ## Standing rules
 
 - One phase = one or more **path-scoped commits**, filenames enumerated, never a glob.
@@ -614,3 +776,27 @@ media-atom colours.
 build it, see `reports/colour-grant-progress.md`. The contrast guard — built, session 7 (see
 the correction above); only `SgsBorderControl`'s 44-caller wiring remains, deliberately not
 parked (Bean's call).
+
+**Added 2026-09-04, session 10 — real, named gaps, not silently dropped:**
+- **`fix.js --apply` does not write the elements-manifest `attrMap` entry for a new
+  `{attr}Gradient`/`{attr}Hover` attribute.** Discovered on the tool's first-ever real
+  `--apply` run (`nav-menu`'s `burgerBgGradient`/`indicatorColourGradient`), fixed by hand each
+  time so far. Worth teaching the tool to do this itself once a second/third instance confirms
+  the pattern (which `attrMap` key — `css:background-image` vs `css:color-gradient` vs
+  `css:background-color` — depends on the row's own mechanism, already knowable from the same
+  survey data `fix.js` already reads).
+- **`sgs/info-box`'s shipped text-gradient rollout is broken** (see the session 10 section
+  above for full evidence) — emits garbage CSS for any gradient value, silently dropped by the
+  browser. Needs the same `sgs_resolve_text_colour_or_gradient()`/`sgs_text_colour_decl()`
+  rewrite already proven on `pricing-table`/`modal`/`google-reviews` this session. Not fixed —
+  named for whoever owns `info-box` next. **Check any OTHER block using the
+  `sgs_text_decls()`+`sgs_emit_state_colour_css()` pairing for a gradient-capable row — same
+  defect class, unknown how many other instances exist, never surveyed.**
+- **`product-card.tagTextColour` has a NEW, different, more specific refusal** —
+  `normal-state-value-not-a-plain-identifier` — that only became visible after session 10's
+  `fix.js` fix removed the bug that was previously masking it. Small, likely tractable, not
+  investigated this session.
+- **`product-card.titleColour`/`.descColour`/`.priceColour`/`.priceNoteColour` reclassified
+  from "trivial" to "genuinely hard, custom-property architecture"** — see the session 10
+  reclassification note above. Correct any stale "trivial" characterisation of these 4 rows in
+  a future dispatch.
