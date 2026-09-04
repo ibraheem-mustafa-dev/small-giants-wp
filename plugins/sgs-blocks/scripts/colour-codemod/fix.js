@@ -261,7 +261,13 @@ function resolveDirectSelector( php, varName ) {
 	// the SAME string literal, not a real statement boundary.
 	let start = php.lastIndexOf( '\n', idx );
 	start = start === -1 ? 0 : start + 1;
-	const semiIdx = php.indexOf( ';', idx );
+	// A naive `indexOf(';', idx)` truncates mid-string whenever the assembled
+	// CSS literal carries its OWN semicolon (e.g. `. ';}'` / `;}"`), exactly
+	// the shape `resolveTextGradientChainSelector`'s
+	// `findStatementEndRespectingStrings` was built to handle — reused here so
+	// this, the path most --apply insertions actually go through, gets the
+	// same protection (Finding 1, cross-tier review 2026-09-04).
+	const semiIdx = findStatementEndRespectingStrings( php, start );
 	if ( semiIdx === -1 ) return { ok: false, reason: 'unterminated-statement' };
 	const end = semiIdx + 1;
 	const stmt = php.slice( start, end );
@@ -368,18 +374,32 @@ function resolveTextGradientChainSelector( php, attr, varName ) {
 		? new RegExp( '\\$' + varName + '\\b' )
 		: new RegExp( '\\$attributes\\s*\\[\\s*([\'"])' + attr + '\\1\\s*\\]' );
 	let m;
-	let effectiveVar = null;
+	// REFUSE RATHER THAN GUESS (Finding 3, cross-tier review 2026-09-04):
+	// resolveDirectSelector refuses whole with 'multiple-helper-call-sites-
+	// ambiguous' when a base attribute resolves at more than one selector —
+	// deliberate, because a block resolving the same attr at two selectors
+	// (e.g. a desktop/mobile split) needs a human to pick, not a guess. This
+	// sibling resolver used to `break` on the FIRST match at each of its three
+	// steps, silently picking one of possibly-multiple sites. Collect every
+	// candidate at each step instead and refuse on ambiguity, matching
+	// resolveDirectSelector's discipline.
+	const effectiveVarCandidates = [];
 	while ( ( m = callRe.exec( php ) ) ) {
 		if ( attrNeedle.test( m[ 2 ] ) ) {
-			effectiveVar = m[ 1 ];
-			break;
+			effectiveVarCandidates.push( m[ 1 ] );
 		}
 	}
-	if ( ! effectiveVar ) return { ok: false, reason: 'no-sgs_resolve_text_colour_or_gradient-call-for-attr' };
+	if ( effectiveVarCandidates.length === 0 ) return { ok: false, reason: 'no-sgs_resolve_text_colour_or_gradient-call-for-attr' };
+	if ( effectiveVarCandidates.length > 1 ) return { ok: false, reason: 'multiple-text-gradient-chain-sites-ambiguous' };
+	const effectiveVar = effectiveVarCandidates[ 0 ];
 
-	const declRe = new RegExp( '\\$([A-Za-z_][A-Za-z0-9_]*)\\s*=\\s*sgs_text_colour_decl\\s*\\(\\s*\\$' + effectiveVar + '\\b[^)]*\\)\\s*;' );
-	const declMatch = declRe.exec( php );
-	if ( ! declMatch ) return { ok: false, reason: 'no-sgs_text_colour_decl-call-for-effective-var' };
+	const declRe = new RegExp( '\\$([A-Za-z_][A-Za-z0-9_]*)\\s*=\\s*sgs_text_colour_decl\\s*\\(\\s*\\$' + effectiveVar + '\\b[^)]*\\)\\s*;', 'g' );
+	const declMatches = [];
+	let dm;
+	while ( ( dm = declRe.exec( php ) ) ) declMatches.push( dm );
+	if ( declMatches.length === 0 ) return { ok: false, reason: 'no-sgs_text_colour_decl-call-for-effective-var' };
+	if ( declMatches.length > 1 ) return { ok: false, reason: 'multiple-text-gradient-chain-sites-ambiguous' };
+	const declMatch = declMatches[ 0 ];
 	const declVar = declMatch[ 1 ];
 
 	// Scan every use of $declVar strictly AFTER its own declaration
@@ -391,9 +411,9 @@ function resolveTextGradientChainSelector( php, attr, varName ) {
 	const useRe = new RegExp( '\\$' + declVar + '\\b', 'g' );
 	useRe.lastIndex = declMatch.index + declMatch[ 0 ].length;
 	let useMatch;
-	let selectorTemplate = null;
-	let stmt = null;
-	let stmtEndIdx = -1;
+	// Collect EVERY genuine consumption site rather than stopping at the
+	// first — refused below if more than one is found (Finding 3).
+	const consumptionCandidates = [];
 	while ( ( useMatch = useRe.exec( php ) ) ) {
 		const lineStart = php.lastIndexOf( '\n', useMatch.index ) + 1;
 		// The literal CSS text these statements build routinely contains its
@@ -437,10 +457,8 @@ function resolveTextGradientChainSelector( php, attr, varName ) {
 			if ( braceIdx === -1 ) continue;
 			const tpl = beforeInterp.slice( 0, braceIdx ).trim();
 			if ( ! tpl ) continue;
-			selectorTemplate = tpl;
-			stmt = candStmt;
-			stmtEndIdx = candStmtEndIdx;
-			break;
+			consumptionCandidates.push( { selectorTemplate: tpl, stmt: candStmt, stmtEndIdx: candStmtEndIdx } );
+			continue;
 		}
 
 		// Concatenation shape (e.g. nav-menu: `$uid_sel . ' .sgs-nav-menu__sublink{' . $submenu_colour_decl`;
@@ -463,12 +481,11 @@ function resolveTextGradientChainSelector( php, attr, varName ) {
 		if ( braceIdx === -1 ) continue;
 		const tpl = built.slice( 0, braceIdx ).trim();
 		if ( ! tpl ) continue;
-		selectorTemplate = tpl;
-		stmt = candStmt;
-		stmtEndIdx = candStmtEndIdx;
-		break;
+		consumptionCandidates.push( { selectorTemplate: tpl, stmt: candStmt, stmtEndIdx: candStmtEndIdx } );
 	}
-	if ( ! selectorTemplate ) return { ok: false, reason: 'no-concat-or-interp-consumption-site-found-for-decl-var' };
+	if ( consumptionCandidates.length === 0 ) return { ok: false, reason: 'no-concat-or-interp-consumption-site-found-for-decl-var' };
+	if ( consumptionCandidates.length > 1 ) return { ok: false, reason: 'multiple-text-gradient-chain-sites-ambiguous' };
+	const { selectorTemplate, stmt, stmtEndIdx } = consumptionCandidates[ 0 ];
 
 	const pushMatch = stmt.match( /^\s*\$([A-Za-z_][A-Za-z0-9_]*)\s*(\[\s*\]|\.\s*=)/ );
 	if ( ! pushMatch ) return { ok: false, reason: 'consumption-statement-not-a-recognised-css-assembly-shape' };
@@ -981,6 +998,22 @@ function planRow( db, dir, slug, row, phpText, blockJsonPathOverride ) {
 
 	const varInfo = findVarAssignedFromAttr( phpText, row.attr );
 
+	// Finding 5 (cross-tier review, 2026-09-04): a failed findVarAssignedFromAttr
+	// used to be an early exit here. Strategy T's own fix (below, Bug B/C)
+	// needed ONE specific case to fall through instead — a text-mechanism row
+	// with NO intermediate PHP variable at all (e.g. sgs/nav-menu's
+	// submenuColour, which reads $attributes['submenuColour'] directly), so
+	// resolveTextGradientChainSelector can still be tried with varName=null.
+	// That widening was accidentally left general: for every OTHER mechanism
+	// a failed var lookup fell all the way through to Strategy H's hover-sink
+	// fallback too, which was never meant to catch this case and has nothing
+	// safe to act on without a resolved var. Gate the fall-through back to
+	// exactly the Strategy-T attempt path; every other mechanism keeps the
+	// original early exit.
+	if ( ! varInfo.ok && mechanism !== 'text' ) {
+		return { fixable: false, reason: 'REFUSED:' + varInfo.reason };
+	}
+
 	const newHoverAttr = hoverAttrName( row.attr );
 
 	let renderPlan = null;
@@ -1020,7 +1053,18 @@ function planRow( db, dir, slug, row, phpText, blockJsonPathOverride ) {
 				sinkIsAppend: chain.sinkIsAppend,
 				stmtEnd: chain.stmtEnd,
 			};
-		} else if ( ! primaryFailureReason ) {
+		} else {
+			// Strategy T is the MOST SPECIFIC attempt for a text-mechanism row —
+			// its own refusal reason (e.g. Finding 3's
+			// 'multiple-text-gradient-chain-sites-ambiguous') must surface in
+			// the final message, not be silently shadowed by an earlier, less
+			// specific attempt's reason (varInfo/resolveDirectSelector), which
+			// is what the previous `else if ( ! primaryFailureReason )` guard
+			// did — primaryFailureReason is ALWAYS already non-null by this
+			// point for a text-mechanism row (varInfo.ok ? null : varInfo.reason
+			// on line ~1020, or sel.reason above), so that guard never actually
+			// let a chain-specific reason through. Found while adding Finding
+			// 3's own self-test coverage (fixture-l).
 			primaryFailureReason = chain.reason;
 		}
 	}
@@ -2473,6 +2517,323 @@ if ( '' !== $number_background ) {
 		const bj = JSON.parse( fs.readFileSync( path.join( fx8, 'block.json' ), 'utf8' ) );
 		assert( !! bj.attributes.numberBackgroundHover, 'block.json missing numberBackgroundHover' );
 		assert( ! bj.attributes.numberBackgroundHoverGradient, 'block.json must NOT declare numberBackgroundHoverGradient — nothing writes to it any more' );
+	} );
+
+	// -------------------------------------------------------------------
+	// FINDING 2 (cross-tier review, 2026-09-04) — fix.js:344-461's new
+	// quote/statement-scanning logic (findStatementEndRespectingStrings,
+	// resolveTextGradientChainSelector) shipped with ZERO dedicated
+	// self-test coverage. Four fixtures below close that gap:
+	//   (i)   fixture-i  — a `;`-inside-a-string-literal statement, the exact
+	//         shape Finding 1's fix addresses (regression-guards Finding 1).
+	//   (ii)  fixture-j  — the `{$var}`-double-quote-interpolation
+	//         consumption shape (team-member's real pattern).
+	//   (iii) fixture-k  — the no-intermediate-PHP-variable, concatenation
+	//         consumption shape (nav-menu.submenuColour's real pattern) —
+	//         also regression-guards Finding 5 (this is the ONE case that
+	//         must still fall through when findVarAssignedFromAttr fails).
+	//   (iv)  fixture-l  — TWO consumption sites for one decl var: must be
+	//         REFUSED as ambiguous (Finding 3), never silently pick the
+	//         first, file byte-identical after.
+	// -------------------------------------------------------------------
+
+	// --- (i) semicolon-inside-string-literal statement (Finding 1 regression guard) ---
+	const FIXTURE_EDIT_JS_SEMI = FIXTURE_EDIT_JS.split( 'titleColour' ).join( 'bannerColour' );
+	const FIXTURE_RENDER_PHP_SEMI = `<?php
+$banner_colour = $attributes['bannerColour'] ?? '';
+$scoped_css_parts = array();
+if ( '' !== $banner_colour ) {
+	$scoped_css_parts[] = ".{\$uid}.sgs-fixture-i__banner{color:" . sgs_colour_value( $banner_colour ) . ';}';
+}
+`;
+	const fx9 = makeFixture( tmpRoot, 'fixture-i', {
+		editJs: FIXTURE_EDIT_JS_SEMI,
+		renderPhp: FIXTURE_RENDER_PHP_SEMI,
+		blockJson: {
+			apiVersion: 3,
+			name: 'sgs/fixture-i',
+			attributes: { bannerColour: { type: 'string', default: '' } },
+		},
+	} );
+	const db9 = { 'sgs/fixture-i': { bannerColour: { css_property: 'color' } } };
+
+	check( 'FINDING 1 regression guard: resolveDirectSelector captures the FULL statement when the literal carries its own `;` (nav-menu:1168 shape), not a truncated one', () => {
+		const cache = new SourceCache();
+		const rows = rowsInFile( cache, path.join( fx9, 'edit.js' ) );
+		assert( rows.length === 1, 'expected exactly one row in fixture-i' );
+		const phpText = fs.readFileSync( path.join( fx9, 'render.php' ), 'utf8' );
+		const plan = planRow( db9, 'fixture-i', 'sgs/fixture-i', rows[ 0 ], phpText, path.join( fx9, 'block.json' ) );
+		assert( plan.fixable, 'expected fixable, got refusal: ' + JSON.stringify( plan ) );
+		assert( plan.mode === 'direct-new-statement', 'expected the resolveDirectSelector path, got mode=' + plan.mode );
+
+		const result = applyPlan(
+			Object.assign( {}, plan, {
+				dir: 'fixture-i',
+				slug: 'sgs/fixture-i',
+				editFile: path.join( fx9, 'edit.js' ),
+				renderFile: path.join( fx9, 'render.php' ),
+				blockJsonPath: path.join( fx9, 'block.json' ),
+			} ),
+			true
+		);
+		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
+
+		const php = fs.readFileSync( path.join( fx9, 'render.php' ), 'utf8' );
+		// THIS is the assertion that catches the Finding 1 regression: the
+		// ORIGINAL statement, closing brace and all, must survive intact and
+		// UNSPLIT — a naive `indexOf(';', …)` would have truncated it right
+		// after the literal's OWN `;`, inserting the new hover statement mid-
+		// string and corrupting the file.
+		assert(
+			php.includes( "sgs_colour_value( $banner_colour ) . ';}';" ),
+			'FINDING 1 REGRESSION: the original semicolon-inside-string statement was truncated/split by the fix — got: ' + php
+		);
+		assert( php.includes( ':hover' ), 'render.php missing :hover rule after fix' );
+		babelParser.parse( fs.readFileSync( path.join( fx9, 'edit.js' ), 'utf8' ), BABEL_PARSE_OPTS ); // throws on corruption.
+		const bj = JSON.parse( fs.readFileSync( path.join( fx9, 'block.json' ), 'utf8' ) );
+		assert( !! bj.attributes.bannerColourHover, 'block.json missing bannerColourHover' );
+	} );
+
+	// --- (ii) `{$var}` double-quote interpolation consumption shape (team-member's real pattern) ---
+	const FIXTURE_EDIT_JS_INTERP = `import { __ } from '@wordpress/i18n';
+import { SgsColourPanel } from '../../components/SgsColourPanel';
+
+export default function Edit( { attributes, setAttributes } ) {
+	const { nameColour } = attributes;
+	return (
+		<SgsColourPanel
+			rows={ [
+				{
+					key: 'name',
+					label: __( 'Name colour', 'sgs-blocks' ),
+					gradientCapable: true,
+					states: [
+						{
+							key: 'normal',
+							label: __( 'Normal', 'sgs-blocks' ),
+							value: nameColour,
+							onChange: ( val ) => setAttributes( { nameColour: val ?? '' } ),
+						},
+					],
+				},
+			] }
+		/>
+	);
+}
+`;
+	const FIXTURE_RENDER_PHP_INTERP = `<?php
+$name_colour = $attributes['nameColour'] ?? '';
+$name_colour_gradient = $attributes['nameColourGradient'] ?? '';
+$name_colour_sel = $root_sel . ' .sgs-fixture-j__name';
+$scoped_css = array();
+$name_colour_effective = sgs_resolve_text_colour_or_gradient( $name_colour, $name_colour_gradient );
+if ( '' !== $name_colour_effective ) {
+	$name_colour_decl = sgs_text_colour_decl( $name_colour_effective );
+	if ( '' !== $name_colour_decl ) {
+		$scoped_css[] = "{\$name_colour_sel}{{\$name_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $name_colour_sel, $name_colour_effective );
+}
+`;
+	const fx10 = makeFixture( tmpRoot, 'fixture-j', {
+		editJs: FIXTURE_EDIT_JS_INTERP,
+		renderPhp: FIXTURE_RENDER_PHP_INTERP,
+		blockJson: {
+			apiVersion: 3,
+			name: 'sgs/fixture-j',
+			attributes: {
+				nameColour: { type: 'string', default: '' },
+				nameColourGradient: { type: 'string', default: '' },
+			},
+		},
+	} );
+	const db10 = { 'sgs/fixture-j': { nameColour: { css_property: 'color' } } };
+
+	check( 'resolveTextGradientChainSelector resolves the `{$var}` double-quote-interpolation consumption shape (team-member pattern)', () => {
+		const cache = new SourceCache();
+		const rows = rowsInFile( cache, path.join( fx10, 'edit.js' ) );
+		assert( rows.length === 1, 'expected exactly one row in fixture-j' );
+		const phpText = fs.readFileSync( path.join( fx10, 'render.php' ), 'utf8' );
+		const plan = planRow( db10, 'fixture-j', 'sgs/fixture-j', rows[ 0 ], phpText, path.join( fx10, 'block.json' ) );
+		assert( plan.fixable, 'expected fixable via Strategy T, got refusal: ' + JSON.stringify( plan ) );
+		assert( plan.mode === 'direct-new-statement', 'expected the chain-resolved path, got mode=' + plan.mode );
+		assert( plan.selectorTemplate === '{$name_colour_sel}', 'wrong selector rebuilt from the interpolation shape: ' + plan.selectorTemplate );
+
+		const result = applyPlan(
+			Object.assign( {}, plan, {
+				dir: 'fixture-j',
+				slug: 'sgs/fixture-j',
+				editFile: path.join( fx10, 'edit.js' ),
+				renderFile: path.join( fx10, 'render.php' ),
+				blockJsonPath: path.join( fx10, 'block.json' ),
+			} ),
+			true
+		);
+		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
+		const php = fs.readFileSync( path.join( fx10, 'render.php' ), 'utf8' );
+		assert( php.includes( '{$name_colour_sel}:hover' ), 'expected the rebuilt interpolation selector to appear in the new :hover rule — got: ' + php );
+	} );
+
+	// --- (iii) no-intermediate-variable, concatenation consumption shape (nav-menu.submenuColour's real pattern) ---
+	const FIXTURE_EDIT_JS_NOVAR = `import { __ } from '@wordpress/i18n';
+import { SgsColourPanel } from '../../components/SgsColourPanel';
+
+export default function Edit( { attributes, setAttributes } ) {
+	const { sublinkColour } = attributes;
+	return (
+		<SgsColourPanel
+			rows={ [
+				{
+					key: 'sublink',
+					label: __( 'Sublink colour', 'sgs-blocks' ),
+					gradientCapable: true,
+					states: [
+						{
+							key: 'normal',
+							label: __( 'Normal', 'sgs-blocks' ),
+							value: sublinkColour,
+							onChange: ( val ) => setAttributes( { sublinkColour: val ?? '' } ),
+						},
+					],
+				},
+			] }
+		/>
+	);
+}
+`;
+	const FIXTURE_RENDER_PHP_NOVAR = `<?php
+$uid_sel = '.' . $uid;
+$css = '';
+$sublink_colour_effective = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['sublinkColour'] ?? '' ),
+	(string) ( $attributes['sublinkColourGradient'] ?? '' )
+);
+if ( '' !== $sublink_colour_effective ) {
+	$sublink_colour_decl = sgs_text_colour_decl( $sublink_colour_effective );
+	if ( '' !== $sublink_colour_decl ) {
+		$css .= $uid_sel . ' .sgs-fixture-k__sublink{' . $sublink_colour_decl . ';}';
+	}
+	$css .= sgs_text_colour_gradient_fallback_rule( $uid_sel . ' .sgs-fixture-k__sublink', $sublink_colour_effective );
+}
+`;
+	const fx11 = makeFixture( tmpRoot, 'fixture-k', {
+		editJs: FIXTURE_EDIT_JS_NOVAR,
+		renderPhp: FIXTURE_RENDER_PHP_NOVAR,
+		blockJson: {
+			apiVersion: 3,
+			name: 'sgs/fixture-k',
+			attributes: {
+				sublinkColour: { type: 'string', default: '' },
+				sublinkColourGradient: { type: 'string', default: '' },
+			},
+		},
+	} );
+	const db11 = { 'sgs/fixture-k': { sublinkColour: { css_property: 'color' } } };
+
+	check( 'resolveTextGradientChainSelector resolves the no-intermediate-variable, direct-call-argument consumption shape (nav-menu.submenuColour pattern) — also regression-guards Finding 5\'s narrowed fall-through', () => {
+		const cache = new SourceCache();
+		const rows = rowsInFile( cache, path.join( fx11, 'edit.js' ) );
+		assert( rows.length === 1, 'expected exactly one row in fixture-k' );
+		const phpText = fs.readFileSync( path.join( fx11, 'render.php' ), 'utf8' );
+		const plan = planRow( db11, 'fixture-k', 'sgs/fixture-k', rows[ 0 ], phpText, path.join( fx11, 'block.json' ) );
+		assert( plan.fixable, 'expected fixable via Strategy T with varName=null, got refusal: ' + JSON.stringify( plan ) );
+		assert( plan.mode === 'direct-new-statement', 'expected the chain-resolved path, got mode=' + plan.mode );
+		assert( plan.selectorTemplate === "{$uid_sel} .sgs-fixture-k__sublink", 'wrong selector rebuilt from the concat shape: ' + plan.selectorTemplate );
+
+		const result = applyPlan(
+			Object.assign( {}, plan, {
+				dir: 'fixture-k',
+				slug: 'sgs/fixture-k',
+				editFile: path.join( fx11, 'edit.js' ),
+				renderFile: path.join( fx11, 'render.php' ),
+				blockJsonPath: path.join( fx11, 'block.json' ),
+			} ),
+			true
+		);
+		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
+		const php = fs.readFileSync( path.join( fx11, 'render.php' ), 'utf8' );
+		assert( php.includes( '{$uid_sel} .sgs-fixture-k__sublink:hover' ), 'expected the rebuilt concat selector to appear in the new :hover rule — got: ' + php );
+	} );
+
+	// --- (iv) FINDING 3 — two consumption sites for the same decl var must be REFUSED as ambiguous, never silently pick the first ---
+	const FIXTURE_EDIT_JS_AMBIG_CHAIN = `import { __ } from '@wordpress/i18n';
+import { SgsColourPanel } from '../../components/SgsColourPanel';
+
+export default function Edit( { attributes, setAttributes } ) {
+	const { eyebrowColour } = attributes;
+	return (
+		<SgsColourPanel
+			rows={ [
+				{
+					key: 'eyebrow',
+					label: __( 'Eyebrow colour', 'sgs-blocks' ),
+					gradientCapable: true,
+					states: [
+						{
+							key: 'normal',
+							label: __( 'Normal', 'sgs-blocks' ),
+							value: eyebrowColour,
+							onChange: ( val ) => setAttributes( { eyebrowColour: val ?? '' } ),
+						},
+					],
+				},
+			] }
+		/>
+	);
+}
+`;
+	const FIXTURE_RENDER_PHP_AMBIG_CHAIN = `<?php
+$uid_sel = '.' . $uid;
+$scoped_css = array();
+$eyebrow_colour = $attributes['eyebrowColour'] ?? '';
+$eyebrow_colour_gradient = $attributes['eyebrowColourGradient'] ?? '';
+$eyebrow_colour_effective = sgs_resolve_text_colour_or_gradient( $eyebrow_colour, $eyebrow_colour_gradient );
+if ( '' !== $eyebrow_colour_effective ) {
+	$eyebrow_colour_decl = sgs_text_colour_decl( $eyebrow_colour_effective );
+	if ( '' !== $eyebrow_colour_decl ) {
+		$scoped_css[] = $uid_sel . ' .sgs-fixture-l__eyebrow-a{' . $eyebrow_colour_decl . ';}';
+		$scoped_css[] = $uid_sel . ' .sgs-fixture-l__eyebrow-b{' . $eyebrow_colour_decl . ';}';
+	}
+}
+`;
+	const fx12 = makeFixture( tmpRoot, 'fixture-l', {
+		editJs: FIXTURE_EDIT_JS_AMBIG_CHAIN,
+		renderPhp: FIXTURE_RENDER_PHP_AMBIG_CHAIN,
+		blockJson: {
+			apiVersion: 3,
+			name: 'sgs/fixture-l',
+			attributes: {
+				eyebrowColour: { type: 'string', default: '' },
+				eyebrowColourGradient: { type: 'string', default: '' },
+			},
+		},
+	} );
+	const db12 = { 'sgs/fixture-l': { eyebrowColour: { css_property: 'color' } } };
+
+	check( 'FINDING 3: resolveTextGradientChainSelector REFUSES (does not silently pick the first) when the decl var has TWO consumption sites, file byte-identical after', () => {
+		const before = {
+			editJs: fs.readFileSync( path.join( fx12, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fx12, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fx12, 'block.json' ), 'utf8' ),
+		};
+		const cache = new SourceCache();
+		const rows = rowsInFile( cache, path.join( fx12, 'edit.js' ) );
+		assert( rows.length === 1, 'expected exactly one row in fixture-l' );
+		const phpText = fs.readFileSync( path.join( fx12, 'render.php' ), 'utf8' );
+		const plan = planRow( db12, 'fixture-l', 'sgs/fixture-l', rows[ 0 ], phpText, path.join( fx12, 'block.json' ) );
+		assert( ! plan.fixable, 'expected a REFUSAL for an ambiguous two-site chain, got fixable: ' + JSON.stringify( plan ) );
+		assert(
+			/multiple-text-gradient-chain-sites-ambiguous/.test( plan.reason ),
+			'THIS ASSERTION IS THE CONTROL — expected the named ambiguity refusal reason, got: ' + plan.reason
+		);
+		const after = {
+			editJs: fs.readFileSync( path.join( fx12, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fx12, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fx12, 'block.json' ), 'utf8' ),
+		};
+		assert( before.editJs === after.editJs, 'ambiguity control: edit.js was mutated despite refusal' );
+		assert( before.renderPhp === after.renderPhp, 'ambiguity control: render.php was mutated despite refusal' );
+		assert( before.blockJson === after.blockJson, 'ambiguity control: block.json was mutated despite refusal' );
 	} );
 
 	console.log( `\n${ failures === 0 ? 'ALL SELF-TESTS PASSED' : failures + ' SELF-TEST(S) FAILED' } (tmp dir: ${ tmpRoot })\n` );
