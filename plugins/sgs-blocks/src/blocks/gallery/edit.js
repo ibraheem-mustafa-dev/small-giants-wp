@@ -32,6 +32,7 @@ import { ResponsiveBoxControls, MEDIA_SIZING_RATIO_OPTIONS,
 	SgsBorderControl,
 	resolveColourToken,
 	ShadowControl,
+	DesignTokenPicker,
 } from '../../components';
 import {
 	PanelBody,
@@ -442,32 +443,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			<SgsColourPanel
 				rows={ [
 					{
-						key: 'caption-text',
-						label: __( 'Caption text colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: captionColour,
-								onChange: ( val ) => setAttributes( { captionColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'caption-background',
-						label: __( 'Caption background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: captionBgColour,
-								onChange: ( val ) => setAttributes( { captionBgColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
 						key: 'overlay',
 						label: __( 'Hover overlay colour', 'sgs-blocks' ),
 						states: [
@@ -714,14 +689,38 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 						/>
 					) }
-					<SelectControl
-						label={ __( 'Image size', 'sgs-blocks' ) }
-						value={ imageSize }
-						options={ IMAGE_SIZE_OPTIONS }
-						onChange={ set( 'imageSize' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
+					{ /* Moved in from the shared SgsColourPanel (D622 — an
+					     element-scoped colour belongs in its own element's
+					     TIER 1 panel; "caption" is a declared element whose
+					     attrMap claims captionColour/captionBgColour). */ }
+					{ showCaptions && (
+						<>
+							<DesignTokenPicker
+								label={ __( 'Caption text colour', 'sgs-blocks' ) }
+								states={ [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: captionColour,
+										onChange: ( val ) => setAttributes( { captionColour: val ?? '' } ),
+										linked: true,
+									},
+								] }
+							/>
+							<DesignTokenPicker
+								label={ __( 'Caption background colour', 'sgs-blocks' ) }
+								states={ [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: captionBgColour,
+										onChange: ( val ) => setAttributes( { captionBgColour: val ?? '' } ),
+										linked: true,
+									},
+								] }
+							/>
+						</>
+					) }
 				</PanelBody>
 
 				{ /* Panel 4: Hover Effects */ }
@@ -740,6 +739,26 @@ export default function Edit( { attributes, setAttributes } ) {
 						} )
 					}
 				>
+					{ /* Moved in from the "Content" panel (D622 — an
+					     element-scoped control belongs in its own element's
+					     TIER 1 panel; "image" is a declared element whose
+					     attrMap claims imageSize alongside imageZoomHover/
+					     grayscaleHover below). */ }
+					<ToolsPanelItem
+						label={ __( 'Image size', 'sgs-blocks' ) }
+						hasValue={ () => !! imageSize && imageSize !== 'large' }
+						onDeselect={ () => setAttributes( { imageSize: 'large' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Image size', 'sgs-blocks' ) }
+							value={ imageSize }
+							options={ IMAGE_SIZE_OPTIONS }
+							onChange={ set( 'imageSize' ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Hover effect', 'sgs-blocks' ) }
 						hasValue={ () => effectHover !== 'zoom' }
