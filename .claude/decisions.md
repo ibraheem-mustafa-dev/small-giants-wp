@@ -1,3 +1,27 @@
+## D955 [ROUTINE] — Rule 4 skip-with-reason reporting for unrouted fx attributes
+
+**2026-09-04.** Closes the last named-but-deferred gap from D952's adversarial-council review.
+CLAUDE.md's Rule 4 (NO SKIPPING) requires every draft class's content to transfer, or be reported
+as skipped-with-reason. An `fx*` attribute the grammar recognises (present in
+`fx_attr_roster()`) but with no destination on the resolved block was a live instance of that
+violation: silently absent, never reported.
+
+**Fix.** `lift_behavioural_attrs` now returns `(attrs, skipped)`, not just `attrs`. `skipped` is a
+list of `(data-attribute, reason)` pairs for a `data-sgs-fx-*` marker the roster recognises but
+the block has no `block_attributes` row for. Deliberately narrow: a non-fx `data-sgs-*` attribute
+is never flagged — it may be an author's unrelated marker, not a known gap. Wired into the sole
+real caller (`assembly.py` step 3a1) through the same `ContentGap`/`content_gap_collector` channel
+the content pass already uses.
+
+**Verification.** 8 tests (was 6): one asserts the skip fires with the correct shape; one negative
+control proves an unrelated attribute is never falsely flagged. Full converter+scripts suite
+869/871 — the same 2 pre-existing, unrelated failures as every commit tonight. Commit `518de6d6f`.
+
+⚠ **Commit message says "D954" — that was a numbering slip, not a second D954.** I re-checked the
+ceiling before committing and read it as "954 available" when it meant "954 already taken" (by
+the entry below, written concurrently by another session). The commit's content is correct; only
+its label is wrong. This entry is the real D955.
+
 ## D954 [ROUTINE] — Phase 5 loop defects: 4 of 5 fixed + shipped (qc-council validated), Defect 3's margin routing built but pending a DB reseed
 
 **2026-09-04, same session as D950.** Following D950's diagnosis, ran `/qc-council` to validate
