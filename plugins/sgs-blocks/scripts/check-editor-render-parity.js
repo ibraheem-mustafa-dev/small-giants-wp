@@ -505,6 +505,28 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'shadowHoverColour',
 	'textColourHover',
 	'textDecorationHover',
+	// sgs/pricing-table hover-colour rows (2026-09-04) — same client-set
+	// hover-value class as above, newly VISIBLE not newly broken: these six
+	// were previously wired into the wrong element's hover CSS (gated behind
+	// an unrelated attribute, painting the billing-toggle label instead of
+	// their own element) and so were effectively dead code the checker could
+	// not classify as a genuine CSS-emission usage. Fixing the render.php
+	// wiring (each now has its own real sgs_emit_state_colour_css() call)
+	// made them recognisably real — and, like every other hover value here,
+	// genuinely un-previewable in the editor canvas, which never simulates
+	// :hover. toggleLabelHoverColour/toggleLabelHoverColourGradient are the
+	// same pre-existing pair this block's own billing-toggle hover control
+	// already used, surfaced for the same reason. Measured: 214 net-new
+	// before this fix, 222 after adding these 8 without an exemption; 214
+	// again with it.
+	'titleColourHover',
+	'featureColourHover',
+	'ctaColourHover',
+	'popularBadgeColourHover',
+	'ctaBackgroundHover',
+	'popularBadgeBackgroundHover',
+	'toggleLabelHoverColour',
+	'toggleLabelHoverColourGradient',
 ] );
 
 // WP-native block-supports attribute names, consumed automatically by
