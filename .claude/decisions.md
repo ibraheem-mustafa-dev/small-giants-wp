@@ -1,3 +1,50 @@
+## D963 [ROUTINE] — Border-contrast wiring closed (31 blocks) via a detector built mid-session after the hand-wiring hit D542's gate; a real brand-strip hover bug fixed and live-verified
+
+**2026-09-05, colour-conformance track (continuation of a session that hit its token limit before
+verifying or documenting).** A prior session had hand-wired D948's `contrastAgainst` WCAG
+border-contrast prop into 27 blocks' `SgsBorderControl` mounts plus fixed a real bug in
+`brand-strip`, then ran out of context before running any gate, deploying, or updating docs.
+Nothing was committed. Reconstructed entirely from `git diff`/`git status`/file mtimes (episodic-
+memory search for the original transcript came back empty — tool version mismatch) rather than
+trusting a remembered narrative.
+
+**The 27-block commit was blocked by `THE-MIGRATION-METHOD.md`'s detector-first gate (D542)** —
+correctly: 21 more blocks mount `SgsBorderControl` and hadn't been touched. Given the choice
+between a lightweight check-only stub and the full `--survey/--fix/--apply/--check/--self-test`
+codemod, Bean chose full compliance. Built `scripts/colour-codemod/wire-border-contrast.js`
+(AST-based, `@babel/parser`), registered as gate 90.
+
+**The codemod's own survey corrected two wrong assumptions carried into its brief:** of 48 blocks
+mounting `SgsBorderControl` (49 JSX mounts), 17 have no comparable `backgroundColour` attribute at
+all — exempt by manifest, not the "21 targets" the brief assumed — and `hero`'s mount had NOT
+actually been wired despite being asserted as already-done (its one `contrastAgainst` call sits on
+an unrelated `SgsColourPanel` text-colour row, a different mechanism entirely). Fixed by hand using
+the same settled shape once the codemod surfaced it, then the codemod's own `--fix --apply` closed
+the last 3 real targets (`site-footer-row`, `site-header-row`, `text`) mechanically. Final split:
+31 wired, 17 exempt (named), 1 excluded with a written reason (`multi-button`'s group-defaults
+mount — no single real background to compare against), 0 outstanding targets. Editor-only
+(a WARN-only inspector `Notice`) — no render.php/block.json touched, no rendered-output change.
+
+**`brand-strip`'s bug: `.sgs-brand-strip__item:hover` shared one selector between two independent
+features.** `itemBackgroundColourHover` (a pre-existing 3-level custom-property fallback chain —
+`--sgs-tile-hover-bg` → `--sgs-tile-bg` → theme `surface-alt`) and `itemTextColourHover`'s
+gradient-sibling rule (`background-clip:text`). A gradient text colour was silently clipping the
+hover background too — the original dispatch wrongly assumed "the tile has no background of its
+own" (`style.css:407-409` disproves it). Fixed: only when the resolved text value is actually a
+gradient, neutralise the static background-colour and repaint the same resolved value on a scoped
+`::after` layer; the flat-colour case (the common one) is byte-identical to before.
+
+**Verification, in order:** `scripts/qa/assert-css-effect.js` (real PHP execution harness) proved
+both branches before the fix could even commit (blocked by the visual-diff gate otherwise) — see
+`reports/visual-diff/brand-strip-2026-09-05.md`. After both commits landed, a real `--blocks-only`
+deploy to sandybrown + a genuine browser hover (chrome-devtools-mcp `Input`-level hover, not a
+JS-simulated event) confirmed every predicted computed-style value on both the gradient instance
+and a flat-colour negative control, live. Report updated same day with the live results.
+
+**Commits:** `c785a3b7a` (brand-strip fix + harness verification), `cedf7aadc` (31-block wiring +
+the new detector), `cc5e0ff0d` (unrelated regenerated-artefact housekeeping swept up in the same
+tree state), `397ccba54` (live-verification addendum to the visual-diff report).
+
 ## D962 [ROUTINE] — Spec 32/35 gates closure: keyword-filter side already covered gate-wide, blob-strip was the real gap; a detector bug unmasked 3 real D812 findings
 
 **2026-09-04, Spec 32/35 gates track (run concurrently with the colour-conformance track's

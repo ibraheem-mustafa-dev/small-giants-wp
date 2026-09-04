@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-09-04 (colour-conformance session 11 + concurrent Spec 32/35 gates session)
+last_updated: 2026-09-05 (colour-conformance: border-contrast wiring closed, D963)
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -14,6 +14,15 @@ into native blocks a non-technical client can then edit. Multiple sessions share
 concurrently, every session — treat this as the norm, not the exception; session 11 alone
 coordinated live with 3 peer sessions mid-flight, including twice reverting its own in-progress
 work to unblock two live-incident deploys from a peer.
+
+**2026-09-05 — closed out a session that hit its token limit mid-work (D963).** Verified +
+committed a prior session's uncommitted hand-wiring of `SgsBorderControl`'s WCAG border-contrast
+prop across 27 blocks, which had been blocked by the detector-first gate (D542) since it touched
+>3 files with no detector. Built the required detector (`wire-border-contrast.js`) rather than
+take a lighter path (Bean's call); its own survey found the hand-wiring's brief had 2 wrong
+assumptions (17 "targets" were actually exempt; `hero` was wrongly assumed already-wired) and
+mechanically closed the real remaining 3. Also fixed + live-verified a real `brand-strip` bug
+found along the way. Full detail: D963.
 
 **Sessions 8-10 (prior, compressed — full narrative in `memory/session-2026-09-04*.md`):**
 road-to-uniform's 9 items fully closed; the colour-conformance track ran a `/qc-council` audit
@@ -272,9 +281,16 @@ Sessions 7-10 closed the hover-guard, built the contrast guard, hardened `fix.js
 first real `--apply` run. Session 11 (this one) is fully recorded in the Human Summary above and
 the plan doc's own session-11 close-out section — do not duplicate that narrative here.
 
+**`SgsBorderControl`'s contrast wiring CLOSED 2026-09-05 (D963)** — 31 of 48 mounts wired, 17
+exempt by manifest (no comparable `backgroundColour` attr), 1 excluded with a written reason
+(`multi-button`'s group-defaults mount), 0 targets remain. Built
+`scripts/colour-codemod/wire-border-contrast.js` (full survey/fix/check/self-test, gate 90) after
+the hand-wiring pass hit the detector-first gate (D542). Also fixed + live-verified a real
+`brand-strip` hover-selector bug found along the way (`.sgs-brand-strip__item:hover` shared
+between the fill and text-gradient mechanisms — see D963).
+
 **Still open, carried forward:** hover-guard's 11 pre-existing UNRESOLVED cross-file cases
-(optional, session 7); `SgsBorderControl`'s 44-caller contrast wiring (plumbing built, no
-callers wired); `sgs/quote.attributionColourHover` (BUILT-BUT-SELF-REFUSED — `fix.js` correctly
+(optional, session 7); `sgs/quote.attributionColourHover` (BUILT-BUT-SELF-REFUSED — `fix.js` correctly
 declines, `quote.js` has multiple ambiguous destructure blocks, needs a human pick — NOT
 attempted this session, a different agent's task got reverted for a live incident and was never
 redispatched); `product-card.tagTextColour` (a DIFFERENT, more specific refusal —
