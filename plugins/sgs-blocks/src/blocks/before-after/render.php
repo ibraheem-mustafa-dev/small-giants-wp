@@ -258,9 +258,23 @@ $root_var_decls[] = '--sgs-before-after-divider-width:' . round( $divider_width,
 if ( $divider_colour ) {
 	$root_var_decls[] = '--sgs-before-after-divider-colour:' . sgs_colour_value( $divider_colour );
 }
-if ( $handle_colour ) {
-	$root_var_decls[] = '--sgs-before-after-handle-colour:' . sgs_colour_value( $handle_colour );
-}
+// Gradient sibling (2026-09-04): --sgs-before-after-handle-colour has no
+// stable selector of its own (a draggable handle, styled purely via the
+// custom property style.css already reads), so sgs_block_background_layer_css()/
+// sgs_fill_states_css() don't apply. sgs_custom_property_gradient_decls()
+// adds a sibling --sgs-before-after-handle-colour-gradient var; style.css's
+// existing background-color:var(--sgs-before-after-handle-colour,#fff) rule
+// gains ONE new sibling line, background-image:var(--...-gradient,none),
+// which composites over it — an unset gradient is fully invisible, so the
+// flat colour is byte-identical to before this change.
+$root_var_decls = array_merge(
+	$root_var_decls,
+	sgs_custom_property_gradient_decls(
+		'sgs-before-after-handle-colour',
+		(string) $handle_colour,
+		(string) ( $attributes['handleColourGradient'] ?? '' )
+	)
+);
 if ( $handle_icon_col ) {
 	$root_var_decls[] = '--sgs-before-after-handle-icon-colour:' . sgs_colour_value( $handle_icon_col );
 }

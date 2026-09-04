@@ -902,6 +902,67 @@ function sgs_block_background_layer_css( string $selector, string $paint_decl, s
 }
 
 /**
+ * Gradient sibling for a colour-valued custom property that has NO stable
+ * CSS selector of its own to hang a direct scoped rule on (the shape
+ * `sgs_fill_states_css()`/`sgs_block_background_layer_css()` both assume).
+ * `survey.js`'s `paints-via-colour-valued-custom-property` refusal covers a
+ * genuinely mixed population — 21 of the 29 rows measured 2026-09-04 DO have
+ * a real selector and should migrate onto the direct helpers above instead
+ * (this function is the wrong tool for those); this one is scoped to the
+ * remainder.
+ *
+ * The trick: two SIBLING custom properties, not a conditional PHP branch.
+ * `background-image` composites OVER `background-color` in CSS, so the
+ * caller's EXISTING static style.css rule needs exactly ONE new line, added
+ * ONCE, ever — `background-image: var(--{name}-gradient, none);` next to
+ * its existing `background-color: var(--{name}, default)` — and an unset
+ * gradient var falls back to `none`, leaving the flat colour to show through
+ * completely unchanged. No `sgs_text_colour_decl()`-style branching is
+ * needed because `background-color` (unlike `color`) never needs its value
+ * blanked to `transparent` for the image layer to show — the two properties
+ * are independent from the start.
+ *
+ * ⛔ Verify the ACTUAL style.css consumption before using this for a new
+ * row — do not trust `survey.js`'s mechanism classification alone. Checked
+ * live 2026-09-04: `sgs/icon.backgroundColour` looks identical from the
+ * survey's own output but is actually TWO mechanisms depending on variant
+ * (a direct `background-color:` declaration for the filled variant, this
+ * custom-property shape only for the outline variant); `sgs/timeline.
+ * connectorColour`'s var is ALSO reused as colour stops inside an unrelated
+ * `repeating-linear-gradient()` elsewhere in the same stylesheet (the dashed-
+ * line effect), so introducing a gradient sibling here would need to reason
+ * about interaction with that existing usage first. Both were excluded from
+ * this function's first two real callers for exactly this reason — read the
+ * block's actual `style.css`/`style.scss`, every consumption site, before
+ * applying this to a new row.
+ *
+ * A NO-OP (returns `[]`) when both inputs are empty, matching this file's
+ * other paint helpers.
+ *
+ * @param string $var_name Custom-property name, WITHOUT the leading `--` and
+ *                          WITHOUT a `-gradient` suffix (e.g. `sgs-tile-bg`).
+ * @param string $flat     The resolved flat colour attribute value.
+ * @param string $gradient The resolved gradient attribute value (raw —
+ *                          validated internally via `sgs_css_gradient_value()`).
+ * @return string[] Declarations (`--name:value`, no trailing `;`) to merge
+ *                   into the caller's own custom-property array — the exact
+ *                   same array the flat value already feeds
+ *                   (`$css_vars[]`/`$root_var_decls[]`/`$wrapper_style_parts[]`
+ *                   depending on the block).
+ */
+function sgs_custom_property_gradient_decls( string $var_name, string $flat, string $gradient ): array {
+	$decls = array();
+	if ( '' !== $flat ) {
+		$decls[] = '--' . $var_name . ':' . sgs_colour_value( $flat );
+	}
+	$resolved_gradient = sgs_css_gradient_value( $gradient );
+	if ( '' !== $resolved_gradient ) {
+		$decls[] = '--' . $var_name . '-gradient:' . $resolved_gradient;
+	}
+	return $decls;
+}
+
+/**
  * Derive ONE of a gradient-overlay family's attribute names from its base.
  *
  * PHP twin of `gradientOverlayAttrName()` in

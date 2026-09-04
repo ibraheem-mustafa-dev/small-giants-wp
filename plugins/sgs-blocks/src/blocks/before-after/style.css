@@ -242,6 +242,10 @@
 	/* Fallback is the CSS default look; render.php only sets this custom
 	 * property's VALUE when handleColour is actually configured. */
 	background-color: var( --sgs-before-after-handle-colour, #fff );
+	/* Gradient sibling (2026-09-04) — composites OVER background-color above;
+	 * an unset --...-gradient var falls back to "none" and this line paints
+	 * nothing, leaving the flat colour untouched. */
+	background-image: var( --sgs-before-after-handle-colour-gradient, none );
 	display: flex;
 	align-items: center;
 	justify-content: center;

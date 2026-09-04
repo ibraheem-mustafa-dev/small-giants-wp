@@ -239,9 +239,21 @@ if ( $hover_border_colour ) {
 }
 // Resting tile background (client tileBackgroundColour control) feeds the
 // --sgs-tile-bg hook already consumed by style.css .sgs-brand-strip__item.
-if ( $tile_bg_colour ) {
-	$css_vars[] = '--sgs-tile-bg:' . sgs_colour_value( $tile_bg_colour );
-}
+// Gradient sibling (2026-09-04): no stable selector of its own to hang a
+// direct rule on (--sgs-tile-bg is reused inside the hover fallback chain
+// too), so sgs_custom_property_gradient_decls() adds a sibling
+// --sgs-tile-bg-gradient var instead; style.css's existing
+// background-color:var(--sgs-tile-bg,...) rule gains ONE new sibling line,
+// background-image:var(--sgs-tile-bg-gradient,none) — unset composites to
+// nothing, so every existing flat-colour instance is byte-identical.
+$css_vars = array_merge(
+	$css_vars,
+	sgs_custom_property_gradient_decls(
+		'sgs-tile-bg',
+		(string) $tile_bg_colour,
+		(string) ( $attributes['tileBackgroundColourGradient'] ?? '' )
+	)
+);
 // Emit ALWAYS (not only when > 0) so an explicit 0 is honoured — otherwise a 0
 // value falls through to the CSS `var(--sgs-logo-gap, spacing|50)` default and
 // the gap can never be closed (a reference strip with adjacent, border-separated

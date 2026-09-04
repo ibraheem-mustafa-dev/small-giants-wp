@@ -92,7 +92,8 @@
 					],
 					"prefix": "",
 					"attrMap": {
-						"css:background-color": "handleColour"
+						"css:background-color": "handleColour",
+						"css:background-image": "handleColourGradient"
 					},
 					"_note": "The draggable divider handle/grip (`.wp-block-sgs-before-after__handle`, render.php line 559). handleColour paints its background. handleIconColour styles the icon's SVG stroke — a property with no cluster-member analogue anywhere in cluster-member-sets.json (no css:stroke member exists in the current taxonomy), so it is deliberately left unclustered rather than force-fit into background-color. `prefix: \"\"` opts this element out of orphan-candidate scanning so handleIconColour is reported honestly as an accepted gap (adding a css:stroke member is a framework-level taxonomy change, out of scope for a single block's manifest). Found live 2026-08-15: DB tagged 2 attrs css_element='handle', undeclared until now."
 				}
@@ -368,6 +369,10 @@
 			"default": 3
 		},
 		"handleColour": {
+			"type": "string",
+			"default": ""
+		},
+		"handleColourGradient": {
 			"type": "string",
 			"default": ""
 		},

@@ -471,6 +471,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		dividerColour,
 		dividerWidth,
 		handleColour,
+		handleColourGradient,
 		handleIconColour,
 		heightUnit,
 		boxShadow,
@@ -706,6 +707,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: handleColour,
 								onChange: ( val ) => setAttributes( { handleColour: val } ),
+								gradientValue: handleColourGradient,
+								onGradientChange: ( val ) => setAttributes( { handleColourGradient: val ?? '' } ),
 							},
 						] }
 					/>

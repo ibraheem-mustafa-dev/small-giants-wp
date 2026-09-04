@@ -150,6 +150,10 @@
 	height: var(--sgs-tile-size);
 	padding: var(--sgs-tile-padding, 10px);
 	background-color: var(--sgs-tile-bg, var(--wp--preset--color--surface-alt, #fff));
+	/* Gradient sibling (2026-09-04) — composites OVER background-color above;
+	 * unset falls back to "none" and paints nothing, leaving the flat colour
+	 * untouched. */
+	background-image: var(--sgs-tile-bg-gradient, none);
 	/* Clip the white fill to the PADDING box so the border sits AROUND the card,
 	 * not painted over it: the 10px border shows the band behind it (transparent
 	 * at rest) and turns gold on hover, framing the white tile rather than

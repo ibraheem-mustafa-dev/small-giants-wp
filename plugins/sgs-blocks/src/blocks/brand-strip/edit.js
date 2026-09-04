@@ -287,6 +287,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		tileShape,
 		logoFit,
 		tileBackgroundColour,
+		tileBackgroundColourGradient,
 		tileBorderWidth,
 		tileBorderColour,
 		tileBorderColourGradient,
@@ -443,12 +444,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'tileBackground',
 						label: __( 'Tile background colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: tileBackgroundColour,
 								onChange: ( val ) => setAttributes( { tileBackgroundColour: val } ),
+								gradientValue: tileBackgroundColourGradient,
+								onGradientChange: ( val ) => setAttributes( { tileBackgroundColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
