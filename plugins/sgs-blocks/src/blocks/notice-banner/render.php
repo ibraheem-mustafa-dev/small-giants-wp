@@ -200,7 +200,7 @@ $scoped_css = array();
 if ( $icon_colour ) {
 	$scoped_css[] = $root_sel . ' .sgs-notice-banner__icon{color:' . sgs_colour_value( $icon_colour ) . ';}';
 	if ( '' !== ( $attributes['iconColourHover'] ?? '' ) ) {
-		$scoped_css[] = $root_sel . " .sgs-notice-banner__icon:hover,{$root_sel} .sgs-notice-banner__icon:focus-visible{color:" . sgs_colour_value( $attributes['iconColourHover'] ) . '}';
+		$scoped_css[] = sgs_hover_state_rules( $root_sel . ' .sgs-notice-banner__icon', 'color:' . sgs_colour_value( $attributes['iconColourHover'] ), ':focus-visible' );
 	}
 }
 // D636/D644 icon/SVG gradient — non-empty wins over iconColour's flat
@@ -245,7 +245,9 @@ $sgs_nb_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
 
 $scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $sgs_nb_text_normal_resolved );
 if ( '' !== $sgs_nb_text_hover_resolved && $sgs_nb_text_hover_resolved !== $sgs_nb_text_normal_resolved ) {
-	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover,' . $root_sel . ':focus-visible', $sgs_nb_text_hover_resolved );
+	$scoped_css[] = sgs_hover_media_wrap(
+		sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover', $sgs_nb_text_hover_resolved )
+	) . sgs_text_colour_gradient_fallback_rule( $root_sel . ':focus-visible', $sgs_nb_text_hover_resolved );
 }
 
 // --- Background (flat-or-gradient, base + hover) — painted on a `::after`

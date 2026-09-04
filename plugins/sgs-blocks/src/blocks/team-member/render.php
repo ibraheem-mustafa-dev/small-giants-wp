@@ -575,7 +575,9 @@ if ( '' !== $sgs_tm_text_fallback_css ) {
 	$scoped_css[] = $sgs_tm_text_fallback_css;
 }
 if ( '' !== $sgs_tm_text_hover_resolved && $sgs_tm_text_hover_resolved !== $sgs_tm_text_normal_resolved ) {
-	$sgs_tm_text_hover_fallback_css = sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover,' . $root_sel . ':focus-visible', $sgs_tm_text_hover_resolved );
+	$sgs_tm_text_hover_fallback_css = sgs_hover_media_wrap(
+		sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover', $sgs_tm_text_hover_resolved )
+	) . sgs_text_colour_gradient_fallback_rule( $root_sel . ':focus-visible', $sgs_tm_text_hover_resolved );
 	if ( '' !== $sgs_tm_text_hover_fallback_css ) {
 		$scoped_css[] = $sgs_tm_text_hover_fallback_css;
 	}

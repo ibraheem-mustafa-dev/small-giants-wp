@@ -155,8 +155,9 @@ if ( $sf_resting_decls || $sf_hover_decls ) {
 		$css .= $sf_text_fallback;
 	}
 	if ( $sf_hover_decls ) {
-		$sf_hover_sel           = "{$root_sel}:hover,{$root_sel}:focus-visible";
-		$sf_text_hover_fallback = sgs_text_colour_gradient_fallback_rule( $sf_hover_sel, $sf_text_hover_effective );
+		$sf_text_hover_fallback = sgs_hover_media_wrap(
+			sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . " {$root_sel}:hover", $sf_text_hover_effective )
+		) . sgs_text_colour_gradient_fallback_rule( "{$root_sel}:focus-visible", $sf_text_hover_effective );
 		if ( '' !== $sf_text_hover_fallback ) {
 			$css .= $sf_text_hover_fallback;
 		}

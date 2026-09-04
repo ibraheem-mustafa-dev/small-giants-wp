@@ -252,7 +252,9 @@ if ( 'none' !== $border_style ) {
 		// Resting border stays flat (or unset); only the hover state gains a
 		// gradient ring — mirrors mega-panel's accentBorderColourGradient
 		// hover-only pattern.
-		$scoped_css[] = sgs_border_gradient_css( "{$root_sel}:hover", $hover_border_gradient, null, $border_gradient_width );
+		$scoped_css[] = sgs_hover_media_wrap(
+			sgs_border_gradient_css( SGS_HOVER_NOT_TOUCH . " {$root_sel}:hover", $hover_border_gradient, null, $border_gradient_width )
+		);
 	}
 } else {
 	// G5 corollary: "none" must be an explicit override too, not a
@@ -395,9 +397,7 @@ $number_background_hover = (string) ( $attributes['numberBackgroundHover'] ?? ''
 if ( '' !== $number_background_hover ) {
 	$step_sel     = $root_sel . ' .sgs-process-steps__step';
 	$num_el       = ' .sgs-process-steps__number';
-	$scoped_css[] = $step_sel . ':hover' . $num_el . ','
-		. $step_sel . ':focus-within' . $num_el
-		. '{background-color:' . sgs_colour_value( $number_background_hover ) . ';}';
+	$scoped_css[] = sgs_hover_state_rules( $step_sel, 'background-color:' . sgs_colour_value( $number_background_hover ), ':focus-within', $num_el );
 }
 
 if ( $title_colour ) {

@@ -1000,9 +1000,9 @@ if ( 'pill' === $hover_style && '' !== $item_bg_hover_hex ) {
 
 	$css .= $link_sel . '{position:relative;}';
 	$css .= $link_sel . '::after{content:"";position:absolute;left:0;right:0;bottom:-' . esc_attr( (string) $u_offset ) . 'px;height:' . esc_attr( (string) $u_thickness ) . 'px;background-color:' . $u_colour . ';transform:scaleX(0);transform-origin:left center;transition:transform ' . $transition_fast . ',background-color ' . $transition_fast . ';pointer-events:none;}';
-	$css .= $hover_after_sel . '{transform:scaleX(1);background-color:' . $u_colour_h . ';}';
+	$css .= sgs_hover_state_rules( $link_sel, 'transform:scaleX(1);background-color:' . $u_colour_h, ':focus-visible', '::after' );
 	if ( '' !== $item_fg_hover ) {
-		$css .= $hover_sel . '{color:' . sgs_colour_value( $item_fg_hover ) . ';}';
+		$css .= sgs_hover_state_rules( $link_sel, 'color:' . sgs_colour_value( $item_fg_hover ), ':focus-visible' );
 	}
 	// Motion is decoration here — the bar's presence carries the meaning.
 	$css .= '@media (prefers-reduced-motion:reduce){' . $link_sel . '::after{transition:none;}}';
@@ -1101,18 +1101,18 @@ if ( '' !== $featured_bg_hover_hex ) {
 	$featured_fg_h   = '' !== $preferred_hover
 		? sgs_wcag_preferred_text_colour_for_bg( $featured_bg_hover_hex, $preferred_hover )
 		: sgs_wcag_text_colour_for_bg( $featured_bg_hover_hex );
-	$css            .= $featured_hover_sel . '{background-color:' . esc_attr( $featured_bg_hover_hex ) . ';color:' . esc_attr( $featured_fg_h ) . ';transition:background-color ' . $transition_fast . ',color ' . $transition_fast . ';}';
+	$css            .= sgs_hover_state_rules( $featured_sel, 'background-color:' . esc_attr( $featured_bg_hover_hex ) . ';color:' . esc_attr( $featured_fg_h ) . ';transition:background-color ' . $transition_fast . ',color ' . $transition_fast, ':focus-visible' );
 } elseif ( '' !== $featured_fg_hover ) {
-	$css .= $featured_hover_sel . '{color:' . sgs_colour_value( $featured_fg_hover ) . ';transition:color ' . $transition_fast . ';}';
+	$css .= sgs_hover_state_rules( $featured_sel, 'color:' . sgs_colour_value( $featured_fg_hover ) . ';transition:color ' . $transition_fast, ':focus-visible' );
 }
 
 // Featured pill SHAPE on hover — emitted only when it differs from the resting
 // shape, so an unset hover control adds no rule at all rather than a no-op one.
 if ( $featured_radius_hover !== $featured_radius ) {
-	$css .= $featured_hover_sel . '{border-radius:' . esc_attr( (string) $featured_radius_hover ) . 'px;transition:border-radius ' . $transition_fast . ';}';
+	$css .= sgs_hover_state_rules( $featured_sel, 'border-radius:' . esc_attr( (string) $featured_radius_hover ) . 'px;transition:border-radius ' . $transition_fast, ':focus-visible' );
 }
 if ( $featured_weight_hover !== $featured_weight ) {
-	$css .= $featured_hover_sel . '{font-weight:' . esc_attr( (string) $featured_weight_hover ) . ';}';
+	$css .= sgs_hover_state_rules( $featured_sel, 'font-weight:' . esc_attr( (string) $featured_weight_hover ), ':focus-visible' );
 }
 
 // The featured item owns its own treatment — suppress the generic item
@@ -1138,7 +1138,7 @@ if ( '' !== $burger_bg ) {
 }
 $burger_hover_slug = isset( $attributes['burgerHoverColour'] ) ? (string) $attributes['burgerHoverColour'] : '';
 if ( '' !== $burger_hover_slug ) {
-	$css .= $uid_sel . ' .sgs-nav-menu__burger:hover,' . $uid_sel . ' .sgs-nav-menu__burger:focus-visible{background-color:' . sgs_colour_value( $burger_hover_slug ) . ';}';
+	$css .= sgs_hover_state_rules( $uid_sel . ' .sgs-nav-menu__burger', 'background-color:' . sgs_colour_value( $burger_hover_slug ), ':focus-visible' );
 }
 $burger_size = sgs_css_length_value( $attributes['burgerSize'] ?? '44px' );
 if ( '' !== $burger_size ) {
@@ -1375,7 +1375,7 @@ if ( '' !== (string) ( $attributes['submenuColour'] ?? '' ) ) {
  * brand-coloured ring. `currentColor` was wrong here — it resolves to the near
  * black of body text, which is what Bean saw as a "black underline".
  */
-$css .= $uid_sel . ' .sgs-nav-menu__sublink:hover{background:var(--wp--preset--color--surface, rgba(0,0,0,.04));}';
+$css .= sgs_hover_guarded_rule( $uid_sel . ' .sgs-nav-menu__sublink:hover', 'background:var(--wp--preset--color--surface, rgba(0,0,0,.04))' );
 
 /*
  * CURRENT-PAGE and FEATURED states for submenu items (Bean, 2026-07-31).
@@ -1402,9 +1402,11 @@ $css .= $uid_sel . ' .sgs-nav-menu__subitem--featured .sgs-nav-menu__sublink{'
 	. 'font-weight:var(--sgs-nm-featured-weight, 600);'
 	. 'border-radius:var(--sgs-nm-featured-radius, 4px);'
 	. 'margin:4px 8px;}';
-$css .= $uid_sel . ' .sgs-nav-menu__subitem--featured .sgs-nav-menu__sublink:hover{'
-	. 'color:var(--sgs-nm-featured-colour-hover, var(--sgs-nm-featured-colour, var(--wp--preset--color--text-inverse, currentColor)));'
-	. 'background:var(--sgs-nm-featured-bg-hover, var(--wp--preset--color--primary-dark, transparent));}';
+$css .= sgs_hover_guarded_rule(
+	$uid_sel . ' .sgs-nav-menu__subitem--featured .sgs-nav-menu__sublink:hover',
+	'color:var(--sgs-nm-featured-colour-hover, var(--sgs-nm-featured-colour, var(--wp--preset--color--text-inverse, currentColor)));'
+	. 'background:var(--sgs-nm-featured-bg-hover, var(--wp--preset--color--primary-dark, transparent))'
+);
 $css .= $uid_sel . ' .sgs-nav-menu__sublink:focus-visible{outline:2px solid var(--wp--preset--color--primary, currentColor);outline-offset:-2px;}';
 
 /*
@@ -1450,9 +1452,10 @@ $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__subtoggle{color:inherit
 $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__item + .sgs-nav-menu__item,'
 	. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__subitem'
 	. '{border-top:1px solid color-mix(in srgb, currentColor 15%, transparent);}';
-$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__link:hover,'
-	. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink:hover'
-	. '{background:color-mix(in srgb, currentColor 12%, transparent);}';
+$css .= sgs_hover_guarded_rule(
+	'.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__link:hover,.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink:hover',
+	'background:color-mix(in srgb, currentColor 12%, transparent)'
+);
 
 /*
  * CURRENT-PAGE gets its OWN persistent treatment, distinct from hover — see the

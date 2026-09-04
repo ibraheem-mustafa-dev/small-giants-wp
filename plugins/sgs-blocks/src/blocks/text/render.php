@@ -561,8 +561,10 @@ if ( $has_hover ) {
 		// Operator-supplied duration + easing replace the hardcoded 200ms/ease.
 		$css_hover = $scope . '{transition:color ' . $transition_duration . 'ms ' . $transition_easing . ',background-color ' . $transition_duration . 'ms ' . $transition_easing . ',transform ' . $transition_duration . 'ms ' . $transition_easing . ',box-shadow ' . $transition_duration . 'ms ' . $transition_easing . ';}';
 		if ( $hover_decls ) {
-			$css_hover .= $scope . ':hover,' . $scope . ':focus-visible{' . implode( ';', $hover_decls ) . '}';
-			$css_hover .= sgs_text_colour_gradient_fallback_rule( $scope . ':hover,' . $scope . ':focus-visible', $hover_colour_effective );
+			$css_hover .= sgs_hover_state_rules( $scope, implode( ';', $hover_decls ), ':focus-visible' );
+			$css_hover .= sgs_hover_media_wrap(
+				sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $scope . ':hover', $hover_colour_effective )
+			) . sgs_text_colour_gradient_fallback_rule( $scope . ':focus-visible', $hover_colour_effective );
 		}
 
 		// The drop cap's hover colour paints ::first-letter, matching where the RESTING
@@ -571,7 +573,7 @@ if ( $has_hover ) {
 		// Both selectors are written out in full: a pseudo-element appended to an imploded
 		// selector list attaches to the LAST selector only.
 		if ( '' !== $first_letter_colour_hover ) {
-			$css_hover .= $scope . ':hover::first-letter,' . $scope . ':focus-visible::first-letter{color:' . sgs_colour_value( $first_letter_colour_hover ) . ';}';
+			$css_hover .= sgs_hover_state_rules( $scope, 'color:' . sgs_colour_value( $first_letter_colour_hover ), ':focus-visible', '::first-letter' );
 		}
 
 		// Respect reduced-motion preference.

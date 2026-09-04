@@ -292,7 +292,7 @@ if ( '' !== $sgs_social_stroke_grad['css'] ) {
 	$scoped_css[] = "{$root_sel} .sgs-social-icons__item svg{" . $sgs_social_stroke_grad['css'] . ';}';
 }
 if ( '' !== $sgs_social_stroke_grad_hover['css'] ) {
-	$scoped_css[] = "{$root_sel} .sgs-social-icons__item:hover svg{" . $sgs_social_stroke_grad_hover['css'] . ';}';
+	$scoped_css[] = sgs_hover_guarded_rule( "{$root_sel} .sgs-social-icons__item:hover svg", $sgs_social_stroke_grad_hover['css'] );
 }
 $sgs_social_defs_injected = false;
 

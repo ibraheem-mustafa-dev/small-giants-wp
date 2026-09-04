@@ -317,7 +317,9 @@ $sgs_pc_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
 );
 $sgs_card_typo_css          .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_root_sel, $sgs_pc_text_normal_resolved );
 if ( '' !== $sgs_pc_text_hover_resolved && $sgs_pc_text_hover_resolved !== $sgs_pc_text_normal_resolved ) {
-	$sgs_card_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_root_sel . ':hover,' . $sgs_pc_root_sel . ':focus-visible', $sgs_pc_text_hover_resolved );
+	$sgs_card_typo_css .= sgs_hover_media_wrap(
+		sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $sgs_pc_root_sel . ':hover', $sgs_pc_text_hover_resolved )
+	) . sgs_text_colour_gradient_fallback_rule( $sgs_pc_root_sel . ':focus-visible', $sgs_pc_text_hover_resolved );
 }
 
 // --- Background (flat-or-gradient, base + hover) — painted on a `::after`
