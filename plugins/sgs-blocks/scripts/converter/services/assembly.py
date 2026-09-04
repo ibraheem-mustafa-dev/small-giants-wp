@@ -172,6 +172,20 @@ def build_block_markup(
             # docstring for the proven-evidence trail.
             _gap_collector.record_content_gap(r, block_slug=rec.slug or "")
 
+    # step 3a1: FR-31-2 behavioural scalar-attr lift (D949/Step-12 fix,
+    # 2026-09-04). `lift_behavioural_attrs` was written for exactly this
+    # (explicit `data-sgs-<attrName>` markers on a node, e.g. a draft's
+    # `data-sgs-fx-trigger="scroll"`) but was never actually called from the
+    # live walker — proven by grep before this fix (the only match for
+    # `lift_behavioural_attrs(` in converter/ was its own `def` line), and
+    # confirmed by a real convert_section() run emitting no fx* attrs despite
+    # the data-sgs-fx-* markup being present. setdefault, matching step 3a2/
+    # 3a3's precedent immediately below: an explicit value from variant/CSS/
+    # content wins over an inferred behavioural marker, never the reverse.
+    if rec.slug is not None:
+        for _beh_attr, _beh_value in db_lookup.lift_behavioural_attrs(section_root, rec.slug).items():
+            attrs.setdefault(_beh_attr, _beh_value)
+
     # step 3a2: R-31-2 TAG-IDENTITY write (CG-2 fix, 2026-07-05 — the zero-h1
     # defect; shape-normalisation fix, 2026-08-17 — the h3-vs-numeric-enum
     # defect). Recognition uses the tag to pick the block then DISCARDED it on
