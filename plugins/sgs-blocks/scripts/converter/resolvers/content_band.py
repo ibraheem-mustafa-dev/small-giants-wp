@@ -202,6 +202,23 @@ def _content_band_box_write(decl: Any, ctx: Any) -> Write | list[Write] | GAP | 
             f"{prop} value {decl.value!r} is not a parseable 1-4-value CSS "
             f"box shorthand for merged CONTENT-band object attr {object_attr!r}",
         )
+    # Horizontal auto-centring idiom (`margin: 0 auto`) is EXCLUDED, not
+    # lifted -- same rule as the OUTER self-merge branch below (search
+    # "Horizontal auto-centring idiom" for the full rationale): the
+    # band-rule emitter already reproduces this centring via
+    # `margin-inline:auto`, so lifting it here too would be the wrong layer
+    # and a duplicate. This CONTENT-band path runs BEFORE that OUTER branch
+    # ever sees the declaration (line ~251 short-circuits it), so the check
+    # must be duplicated here rather than assumed to fire downstream.
+    if base_prop == "margin" and sides["left"] == sides["right"] == "auto":
+        return gap_writer(
+            ctx, decl, GapOrigin.EXCLUDED,
+            f"{prop} left/right are both 'auto' — horizontal centring is "
+            f"already reproduced by the band's contentWidth rule "
+            f"(class-sgs-container-wrapper.php margin-inline:auto), so "
+            f"lifting it onto the CONTENT-band {object_attr!r} attr would be "
+            f"the wrong layer and a duplicate.",
+        )
     value = {
         s: token_snap(prop, value_serialise("string", None, _resolve_co_declared_var(v, {})), ctx.conn)
         for s, v in sides.items()

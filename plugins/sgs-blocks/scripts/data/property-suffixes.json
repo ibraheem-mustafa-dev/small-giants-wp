@@ -1356,6 +1356,42 @@
       null
     ],
     [
+      "BandMarginTop",
+      "layout",
+      "margin-top",
+      0,
+      null,
+      "CSS margin-top -> CONTENT-layer 'contentBandMarginTop' (sgs/container's actual band-margin attr name, distinct from the generic contentMarginTop candidate that the pre-existing 'MarginTop' suffix derives); Defect 3, qc-council-validated 2026-09-04",
+      null
+    ],
+    [
+      "BandMarginRight",
+      "layout",
+      "margin-right",
+      0,
+      null,
+      "CSS margin-right -> CONTENT-layer 'contentBandMarginRight'; Defect 3, qc-council-validated 2026-09-04",
+      null
+    ],
+    [
+      "BandMarginBottom",
+      "layout",
+      "margin-bottom",
+      0,
+      null,
+      "CSS margin-bottom -> CONTENT-layer 'contentBandMarginBottom'; Defect 3, qc-council-validated 2026-09-04",
+      null
+    ],
+    [
+      "BandMarginLeft",
+      "layout",
+      "margin-left",
+      0,
+      null,
+      "CSS margin-left -> CONTENT-layer 'contentBandMarginLeft'; Defect 3, qc-council-validated 2026-09-04",
+      null
+    ],
+    [
       "BgColour",
       "color",
       "background-color",

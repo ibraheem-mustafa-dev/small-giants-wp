@@ -169,25 +169,28 @@ def test_content_band_margin_sole_child_case_once_box_family_seeded(conn, monkey
     assert out2.value == {"top": "15px", "right": "15px", "bottom": "15px", "left": "15px"}
 
 
-def test_content_band_margin_sole_child_case_gaps_honestly_before_seed(conn):
-    """Negative control / current-state regression lock: BEFORE `/sgs-update`
-    seeds the `contentBandMargin` box family into the live DB, a longhand
-    margin declaration on a sole-passthrough band still gaps honestly (never
-    silently misroutes) and a shorthand margin still self-merges onto the
-    OUTER `margin` attr (the pre-existing, unrelated-to-this-fix OUTER
-    self-merge branch) — exactly the rater's own measured baseline. This test
-    exists so the moment `/sgs-update` IS run for sgs/container, this
-    assertion breaks LOUDLY (not silently) and must be updated alongside it —
-    it is a live marker of "the DB seed step is still outstanding", not a
-    permanent contract.
+def test_content_band_margin_sole_child_case_now_live_after_seed(conn):
+    """Defect 3 CLOSED (2026-09-04): `/sgs-update` has now run and seeded
+    `BandMarginTop`/`Right`/`Bottom`/`Left` into `property_suffixes` plus
+    `contentBandMargin`'s `box_family` into `block_attributes` for
+    sgs/container — this test asserts the REAL, non-monkeypatched resolver
+    output against the live DB, matching exactly what
+    `test_content_band_margin_sole_child_case_once_box_family_seeded`'s
+    simulation predicted. This test used to be
+    `test_content_band_margin_sole_child_case_gaps_honestly_before_seed`
+    (a negative control asserting the pre-seed GAP/OUTER-misroute state) —
+    per that test's own docstring, it broke LOUDLY the moment `/sgs-update`
+    ran, which is exactly the point: it was a marker of an outstanding
+    step, not a permanent contract, and is now updated alongside the seed.
     """
     out = content_band.resolve(Decl("margin-top", "15px", "Base"), _ctx(conn))
-    assert isinstance(out, GAP)
-    assert out.origin == GapOrigin.NO_DESTINATION
+    assert isinstance(out, Write)
+    assert (out.attr, out.value) == ("contentBandMargin", {"top": "15px"})
 
     out2 = content_band.resolve(Decl("margin", "15px", "Base"), _ctx(conn))
     assert isinstance(out2, Write)
-    assert out2.attr == "margin"
+    assert out2.attr == "contentBandMargin"
+    assert out2.value == {"top": "15px", "right": "15px", "bottom": "15px", "left": "15px"}
 
 
 def test_content_band_metamorphic_value_scale(conn):
