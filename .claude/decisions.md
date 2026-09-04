@@ -1,3 +1,59 @@
+## D961 [ROUTINE] — qc-council audit found fix.js itself, not the render code, was blocking a large slice of the colour-gradient backlog; 3 real tool bugs fixed, one plan claim falsified
+
+**2026-09-04, colour-conformance track (separate from D957-D960's road-to-uniform track,
+same day).** Bean pushed back on a proposed migration-tool design: "several of these shapes
+are caused by us not utilising the full variety of colour helper variations... maybe the
+scanner doesn't know that yet." Directed a `/qc-council` investigation of the refusal-reason
+clusters against the real helper files and `fix.js`'s own source, rather than another round
+of hand-fixing rows or building new tooling from an unverified premise.
+
+**Method:** 5 parallel investigators, each owning one refusal-reason cluster (all 76 then-live
+refused rows), each required to cite `file:line` evidence and cross-check against blocks that
+already solved the same problem, per this project's own `/qc-council` discipline (never trust
+a triangulated fix-shape without empirical validation).
+
+**Findings, each independently corroborated:**
+1. Of the `gradient-path-deferred` bucket, 9 of 14 rows already called the exact shared
+   helper elsewhere in the same file for a sibling attribute — the code was right, `fix.js`'s
+   pattern-matcher just didn't recognise the call shape. Zero rows in that bucket were a
+   genuinely unsolved problem, contradicting this plan's own earlier "Cluster B is hard,
+   undesigned work" framing for the fill-mechanism subset.
+2. **A plan claim this project had carried as open since Phase 2 was FALSE.** "14 rows whose
+   attribute name is itself a hover attr — rule 31 miscounts them" was checked against rule
+   31's actual source (`31-golden-colour-control.js:761-763`, `core/golden.js:779-799`): the
+   exemption already exists, and its own docblock records already having tried and rejected
+   the exact "name contains Hover" heuristic this investigation was sent to test, for the
+   same reason the audit re-derived independently (`sgs/tabs.panelBorderColour` has no
+   "Hover" in its name and is still correctly single-state; 4 `borderColourHover` rows DO
+   have a declared base sibling yet are still correctly single-state, because the base is
+   owned by `SgsBorderControl`, a different component rule 31 can't see).
+3. `fix.js` had 3 real bugs, not the render code: a stale-refusal classifier that never
+   checked current state before stamping a generic reason (4 of 9 `standalone-DesignTokenPicker`
+   refusals were already resolved), a hover-sink detector missing a third valid shape
+   (`sgs_hover_state_rules()`), and a genuine apply-time defect — the hover-write path wrote a
+   brand-new bare identifier into cloned JSX but never added it to the component's destructure
+   list, so every one of the first 11 real `--apply` runs threw `ReferenceError` at
+   `check-undefined-refs.js`. Self-test had 15 assertions and missed this class entirely.
+
+**Fixed in `fix.js` (commit `0727f440b`), all 3, self-test extended to catch the third one
+specifically.** Applying the repaired tool mechanically closed 10 rows in one `--fix --apply`
+run (zero hand-editing); 3 parallel subagents then closed 9 more well-evidenced trivial rows
+using the same evidence trail. `survey.js` CONFORMANT: 85 → 101 across the session.
+
+**What this validates structurally:** the refuse-rather-than-guess discipline caught its own
+edge case live — `sgs/quote.attributionColour` correctly self-refused
+(`multiple-destructure-blocks-ambiguous`) rather than risk a wrong insert when a file had more
+than one candidate destructure block, and `sgs/post-grid.borderColourHover` was investigated
+and correctly left unfixed (genuinely hover-only by design, confirmed independently by both
+manual code reading and `survey.js`'s own verdict).
+
+**Not yet closed:** nothing from this session is deployed or live-verified. Full detail:
+`.claude/plans/2026-09-03-golden-colour-staged-rollout.md`'s "qc-council audit + fix.js
+repair" section; continuation prompt:
+`.claude/prompts/2026-09-04-colour-conformance-qc-council-continuation-prompt.md`.
+
+---
+
 ## D960 [ROUTINE] — D958's own "correction" re-asserted 3 stale claims without re-checking them; a 4-agent parallel re-verification found the real count is 9, not 12, and 2 more are smaller than described
 
 **2026-09-04, same session as D957/D958.** Bean pushed a second time, immediately after D958

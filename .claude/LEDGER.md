@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-09-04 (session 8)
+last_updated: 2026-09-04 (session 9)
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -29,6 +29,22 @@ its own decisions.md entries). Canary: sandybrown-nightingale-600381.hostingersi
 live client sites yet. **Everything reported fixed this session was deployed to the canary and
 live-verified — nothing closed on a build check alone.**
 
+**Session 9 (this one, colour track only — the road-to-uniform paragraph above is a prior
+session's, unrelated):** was dispatched against a stale R2-R6 prompt for a DIFFERENT, older
+colour-conformance plan; verified against live tool re-runs it was superseded by the
+`2026-09-03-golden-colour-staged-rollout.md` plan (already being advanced by concurrent
+sessions the same day) and switched to that instead. Closed 6 rows by hand (shared-helper
+text-gradient support + nav-menu/pricing-table wiring), then ran a 5-persona `/qc-council`
+audit of every remaining refusal reason against `fix.js`'s own source — found the TOOL, not
+the render code, was the real blocker for a large slice of the backlog, including one
+detector claim this plan itself had carried as open ("rule 31 miscounts hover-named
+attributes") that turned out to be FALSE on inspection. Fixed 3 real bugs in `fix.js`
+(commit `0727f440b`, self-test-covered), which mechanically closed 10 more rows in one
+`--fix --apply` run, then dispatched 3 parallel subagents for 9 further well-evidenced
+trivial rows (product-card ×4, process-steps+google-reviews ×4, nav-menu.itemBg — post-grid
+correctly self-refused, a genuine hover-only design with no gradient path). `survey.js`
+CONFORMANT: 85 → 101 across the session. **Not live-verified** — see COLOUR TRACK below.
+
 **Session 7 (prior):** closed the hover-guard's 24 findings to zero and built the WCAG contrast
 guard — see COLOUR TRACK below for detail (kept, not rewritten).
 
@@ -48,6 +64,11 @@ guard — see COLOUR TRACK below for detail (kept, not rewritten).
 - **Session 8 commits (all on `main`):** `9f6f6ceb3`, `0e3ef60e0` (tier-migration + hero
   dead-code), `8d5b2807f`, `1f4cd80dc` (plan reconciliation), `b9609f019` (C5 doc fix +
   scoping report), `ed413997a` (C4/C5/C10 outcomes).
+- **Session 9 commits (colour track, all on `main`):** `16a7a7e0d` (shared-helper text-gradient
+  triad), `10e08548a` (nav-menu/pricing-table), `0727f440b` (fix.js's 3 bugs + 10 rows),
+  `61c533b5b` (product-card), `f296aec10` (process-steps/google-reviews), `3de7bb370`
+  (nav-menu.itemBg), `fba2b1390` (plan doc + prompt swap). None deployed or live-verified yet
+  — see COLOUR TRACK.
 - **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
   Closed-track narrative lives in `memory/session-2026-09-04-tracks-history-sweep.md`, not here.
 
@@ -135,8 +156,34 @@ remaining items (C16, C19) are smaller than described — their mechanisms are a
 `01-tab-group` and `21-render-without-control` both closed to zero, session 4 (D933). Nothing
 else open in this track — see COLOUR TRACK for `31-golden-colour-control`.
 
-## ▶ COLOUR TRACK — session 7 closed hover-guard (24→0) + built the contrast guard. Session 8
-Phase 3 wired 19 rows live, one real bug caught by a new live probe. Detail: D948, D959.
+## ▶ COLOUR TRACK — session 9: qc-council audit + fix.js repair, 15 rows closed, NOT deployed.
+session 7 closed hover-guard (24→0) + built the contrast guard. Session 8 Phase 3 wired 19
+rows live, one real bug caught by a new live probe. Detail: D948, D959.
+
+**Session 9 (this session — see plan doc's own "qc-council audit + fix.js repair" section for
+full evidence, not repeated here):** ran `/qc-council` (5 parallel investigators) against
+every live refusal-reason cluster in `fix.js`, reading the tool's actual source rather than
+trusting its labels. Found the tool itself was the blocker for a large slice of the backlog
+(rows already calling the correct shared helper, refused only because the matcher didn't
+recognise the call shape) and falsified a claim this plan had carried as open since Phase 2
+("rule 31 miscounts hover-named attributes as a detector bug" — checked against rule 31's
+real source: FALSE, it already has the correct exemption). Fixed 3 real bugs in `fix.js`
+(commit `0727f440b`): a stale-refusal classification bug, a hover-sink detection gap, and a
+genuine apply-time defect (new hover attrs never got destructured — every one of the first 11
+real `--apply` runs threw `ReferenceError`, self-test didn't cover it, now does — 15/15
+assertions). Applying the fixed tool + 3 parallel subagents for well-evidenced trivial rows
+closed 15 more rows (`survey.js` CONFORMANT 85→101). `post-grid.borderColourHover` was
+investigated and correctly left unfixed — genuinely hover-only by design, no gradient path.
+
+⚠ **NOTHING FROM THIS SESSION IS DEPLOYED OR LIVE-VERIFIED.** The `Check A` editor-canvas
+gate was raised twice (211→213→216) for structural preview gaps, and `product-card`'s new
+rows rely on a "wins by source order over the old custom-property mechanism" claim that's
+architecturally sound but unconfirmed in a real browser. **Next session's first job:** deploy
+and run `scripts/qa/check-colour-gradient-roundtrip.js` against sandybrown for at least one
+row per mechanism from this batch before trusting any of it closed (R-31-13). Full detail +
+the genuinely-hard remaining rows (custom-property architecture, one WP-native mechanism, one
+bespoke pattern, loop/dynamic-key shapes fix.js correctly declines to chase):
+`.claude/prompts/2026-09-04-colour-conformance-qc-council-continuation-prompt.md`.
 
 **Session 8 (concurrent with the road-to-uniform track above, same day):** continued Phase 3 of
 `.claude/plans/2026-09-03-golden-colour-staged-rollout.md` (text-colour gradient rollout). 19
@@ -146,10 +193,12 @@ work at `8d5b2807f`). A new live probe, `scripts/qa/check-colour-gradient-roundt
 a real bug (`whatsapp-cta`'s gradient CSS on the wrong element, invisible text) that every static
 gate had missed — fixed and re-verified. Full detail: D959, `reports/colour-grant-progress.md`.
 
-**Next for this track:** `.claude/prompts/2026-09-04-golden-colour-phase3-continuation-prompt.md`
-— 11 rows across 9 blocks remain, real-classified (2 easy, 5 moderate, 4 hard-and-separate;
-re-verify the count, this backlog moves fast under concurrent sessions), plus
-`sgs/quote`'s `attributionColourHover`/`.HoverGradient` (small, named, not yet built).
+**Next for this track:** `.claude/prompts/2026-09-04-colour-conformance-qc-council-continuation-prompt.md`
+(supersedes the `golden-colour-phase3-continuation-prompt.md` reference this line used to
+carry — that row-classification is superseded by session 9's tool-level fix, re-derive fresh
+rather than reading either prompt's cached numbers). `sgs/quote`'s `attributionColourHover`
+is now BUILT-BUT-SELF-REFUSED (session 9: `fix.js` correctly declined — `quote.js` has
+multiple ambiguous destructure blocks — needs a human pick, not a blind retry).
 
 **Still open, carried forward from session 7:** hover-guard's 11 UNRESOLVED cross-file cases
 (optional); `SgsBorderControl`'s 44-caller contrast wiring (plumbing built, no callers wired,
