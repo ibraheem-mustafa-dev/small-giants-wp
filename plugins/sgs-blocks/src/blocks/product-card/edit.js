@@ -696,9 +696,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		pickerPillSelectedBorderColour,
 		pickerPillSelectedBorderRadius,
 		titleColour,
+		titleColourGradient,
 		priceColour,
+		priceColourGradient,
 		descColour,
+		descColourGradient,
 		priceNoteColour,
+		priceNoteColourGradient,
 		// Built-in CTA styling (typed + bound share the same cta* attrs).
 		ctaColourBackground,
 		ctaColourText,
@@ -1105,6 +1109,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		colourRows.push( {
 			key: 'title',
 			label: __( 'Title colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -1112,12 +1117,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: titleColour,
 					onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
 					linked: true,
+					gradientValue: titleColourGradient,
+					onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
 				},
 			],
 		} );
 		colourRows.push( {
 			key: 'description',
 			label: __( 'Description colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -1125,12 +1133,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: descColour,
 					onChange: ( val ) => setAttributes( { descColour: val ?? '' } ),
 					linked: true,
+					gradientValue: descColourGradient,
+					onGradientChange: ( val ) => setAttributes( { descColourGradient: val ?? '' } ),
 				},
 			],
 		} );
 		colourRows.push( {
 			key: 'price',
 			label: __( 'Price colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -1138,12 +1149,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: priceColour,
 					onChange: ( val ) => setAttributes( { priceColour: val ?? '' } ),
 					linked: true,
+					gradientValue: priceColourGradient,
+					onGradientChange: ( val ) => setAttributes( { priceColourGradient: val ?? '' } ),
 				},
 			],
 		} );
 		colourRows.push( {
 			key: 'priceNote',
 			label: __( 'Price note colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -1151,6 +1165,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: priceNoteColour,
 					onChange: ( val ) => setAttributes( { priceNoteColour: val ?? '' } ),
 					linked: true,
+					gradientValue: priceNoteColourGradient,
+					onGradientChange: ( val ) => setAttributes( { priceNoteColourGradient: val ?? '' } ),
 				},
 			],
 		} );

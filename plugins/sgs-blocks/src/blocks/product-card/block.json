@@ -702,6 +702,11 @@
 			"default": "",
 			"description": "Colour for the product title heading. Theme token slug or raw hex. Empty = theme default."
 		},
+		"titleColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the product title heading's text with a background-clip:text mechanism instead of a flat colour (mirrors the tagTextColour/tagTextColourGradient D636 rollout). Non-empty wins over titleColour."
+		},
 		"priceFontSize": {
 			"type": "object",
 			"default": {}
@@ -718,6 +723,11 @@
 			"type": "string",
 			"default": "",
 			"description": "Colour for the price element. Theme token slug or raw hex. Empty = theme default."
+		},
+		"priceColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the price element's text with a background-clip:text mechanism instead of a flat colour (mirrors the tagTextColour/tagTextColourGradient D636 rollout). Non-empty wins over priceColour."
 		},
 		"priceFontFamily": {
 			"type": "string",
@@ -744,6 +754,11 @@
 			"default": "",
 			"description": "Colour for the product description text. Theme token slug or raw hex. Empty = theme default."
 		},
+		"descColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the product description text with a background-clip:text mechanism instead of a flat colour (mirrors the tagTextColour/tagTextColourGradient D636 rollout). Non-empty wins over descColour."
+		},
 		"descFontFamily": {
 			"type": "string",
 			"default": "",
@@ -769,6 +784,11 @@
 			"type": "string",
 			"default": "",
 			"description": "Colour for the price-note text. Theme token slug or raw hex. Empty = theme default (muted)."
+		},
+		"priceNoteColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the price-note text with a background-clip:text mechanism instead of a flat colour (mirrors the tagTextColour/tagTextColourGradient D636 rollout). Non-empty wins over priceNoteColour."
 		},
 		"priceNoteFontFamily": {
 			"type": "string",

@@ -202,6 +202,75 @@ $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceNote', '.' . $
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceFromLabel', '.' . $sgs_card_uid . ' .price-from-label' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_card_uid . ' .sgs-product-card__tag' );
 
+// ── Text-colour gradient siblings: title / desc / price / priceNote ──────
+// Mirrors the tagTextColour/tagTextColourGradient triad below (D636 rollout)
+// — sgs_resolve_text_colour_or_gradient() + sgs_text_colour_decl() +
+// sgs_text_colour_gradient_fallback_rule(). Each of these 4 attrs previously
+// painted ONLY via a colour-valued CSS custom property (--sgs-card-title-
+// colour etc., set above near $inline_styles) which cannot carry a gradient
+// (a gradient is `background-image`, a different CSS property from the
+// custom property's `color` value) — confirmed by a separate audit this
+// session as TEXT-only with no background painted on the same selector, so
+// each gets an unconditional gradient sibling, no gating needed. Selectors
+// mirror the ones this same element already uses two lines above for
+// typography, so the emitted rule wins the identical cascade specificity /
+// source-order battle those typography rules already win against style.css's
+// base `.product-card` selectors. The flat-colour branch below re-emits the
+// SAME `color:` value the pre-existing custom-property mechanism already
+// sets (harmless duplication, kept for backward compatibility) — the
+// gradient branch is the new behaviour.
+$sgs_pc_title_colour_sel       = '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3';
+$sgs_pc_title_colour_effective = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['titleColour'] ?? '' ),
+	(string) ( $attributes['titleColourGradient'] ?? '' )
+);
+if ( '' !== $sgs_pc_title_colour_effective ) {
+	$sgs_pc_title_colour_decl = sgs_text_colour_decl( $sgs_pc_title_colour_effective );
+	if ( '' !== $sgs_pc_title_colour_decl ) {
+		$sgs_card_typo_css .= $sgs_pc_title_colour_sel . '{' . $sgs_pc_title_colour_decl . ';}';
+	}
+	$sgs_card_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_title_colour_sel, $sgs_pc_title_colour_effective );
+}
+
+$sgs_pc_desc_colour_sel       = '.' . $sgs_card_uid . ' .sgs-product-card__description, .' . $sgs_card_uid . ' .product-desc';
+$sgs_pc_desc_colour_effective = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['descColour'] ?? '' ),
+	(string) ( $attributes['descColourGradient'] ?? '' )
+);
+if ( '' !== $sgs_pc_desc_colour_effective ) {
+	$sgs_pc_desc_colour_decl = sgs_text_colour_decl( $sgs_pc_desc_colour_effective );
+	if ( '' !== $sgs_pc_desc_colour_decl ) {
+		$sgs_card_typo_css .= $sgs_pc_desc_colour_sel . '{' . $sgs_pc_desc_colour_decl . ';}';
+	}
+	$sgs_card_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_desc_colour_sel, $sgs_pc_desc_colour_effective );
+}
+
+$sgs_pc_price_colour_sel       = '.' . $sgs_card_uid . ' .sgs-product-card__price, .' . $sgs_card_uid . ' .price, .' . $sgs_card_uid . ' .price-from-amount';
+$sgs_pc_price_colour_effective = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['priceColour'] ?? '' ),
+	(string) ( $attributes['priceColourGradient'] ?? '' )
+);
+if ( '' !== $sgs_pc_price_colour_effective ) {
+	$sgs_pc_price_colour_decl = sgs_text_colour_decl( $sgs_pc_price_colour_effective );
+	if ( '' !== $sgs_pc_price_colour_decl ) {
+		$sgs_card_typo_css .= $sgs_pc_price_colour_sel . '{' . $sgs_pc_price_colour_decl . ';}';
+	}
+	$sgs_card_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_price_colour_sel, $sgs_pc_price_colour_effective );
+}
+
+$sgs_pc_price_note_colour_sel       = '.' . $sgs_card_uid . ' .sgs-product-card__price-note, .' . $sgs_card_uid . ' .price-note';
+$sgs_pc_price_note_colour_effective = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['priceNoteColour'] ?? '' ),
+	(string) ( $attributes['priceNoteColourGradient'] ?? '' )
+);
+if ( '' !== $sgs_pc_price_note_colour_effective ) {
+	$sgs_pc_price_note_colour_decl = sgs_text_colour_decl( $sgs_pc_price_note_colour_effective );
+	if ( '' !== $sgs_pc_price_note_colour_decl ) {
+		$sgs_card_typo_css .= $sgs_pc_price_note_colour_sel . '{' . $sgs_pc_price_note_colour_decl . ';}';
+	}
+	$sgs_card_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_price_note_colour_sel, $sgs_pc_price_note_colour_effective );
+}
+
 // Card ROOT padding (FR-31-22). cardPadding is a {top,right,bottom,left}
 // box-object attr (mirrors ctaPadding/tagPadding), shorthanded via the shared
 // sgs_box_object_shorthand() helper (helpers-box.php, auto-loaded via
