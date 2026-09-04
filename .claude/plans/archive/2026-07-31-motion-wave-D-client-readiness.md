@@ -84,10 +84,10 @@ Waves A–E are closed. This session closed **Step X** (the three-list drift gat
 > additive call into `build_block_markup`. Re-ran the 2026-08-01 probe's exact drafts against the
 > REAL `convert_section()`: fx attrs that vanished with zero trace on 2026-08-01 now appear
 > correctly in the emitted markup, content still clones fine, Gate A + the wider test suite both
-> pass clean. ⚠ **Two items named honestly, not silently dropped:** Rule 4's skip-with-reason
-> reporting for an `fx*` attr with no destination on the resolved block is still unbuilt; and this
-> is pipeline-level proof, not a live-canary Playwright/DOM check — R-31-13 still wants Bean's eye
-> before the spec's success claim is finalised.
+> pass clean. Rule 4's skip-with-reason reporting for an `fx*` attr with no destination on the
+> resolved block — flagged as unbuilt here, then actually built same session, D955. ⚠ **One item
+> still genuinely open:** this is pipeline-level proof, not a live-canary Playwright/DOM check —
+> R-31-13 still wants Bean's eye before the spec's success claim is finalised.
 
 > **Step 20 — CLOSED 2026-09-04.** All 5 sub-items resolved: (a)/(b)/(d) were already closed per
 > this register's own prior annotations; **(c)** got its D-numbered ruling at **D723** (2026-08-21,

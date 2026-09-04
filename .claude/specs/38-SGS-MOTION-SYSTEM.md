@@ -661,8 +661,11 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   participants are detected at RUNTIME from computed background — the fact that actually decides
   occlusion — never from a declared capability.
 
- **KNOWN RESIDUALS (recorded, not assumed away).** Tracked as Step R-residual of
-  `.claude/plans/2026-07-31-motion-wave-D-client-readiness.md`.
+ **KNOWN RESIDUALS (recorded, not assumed away).** Wave-D's Step R-residual, which tracked these,
+  CLOSED 2026-09-04 (decisions.md D839/FR-38-33; the plan is archived —
+  `.claude/plans/archive/2026-07-31-motion-wave-D-client-readiness.md`). Items 1, 2 and 4 below are
+  already closed in their own text; item 3 remains a genuine open design note, tracked here now
+  that the plan no longer is.
 
   1. **THE MULTI-LIST DRIFT** — GATED 2026-08-02 by `check-fx-list-drift.py` (wired into
      `prebuild`). An fx effect must join THREE hand-maintained lists (`SHIPPED_EFFECTS`,

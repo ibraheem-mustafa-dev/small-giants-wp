@@ -118,7 +118,8 @@ CURRENT paint has not been re-observed since 2026-07-31.
 
 *(Two motion-track entries — the canary-fixtures-invalid-in-editor one and the fx-panel-unguarded-by-
 every-control-gate one — were REMOVED from parking on 2026-08-01 and moved into
-`plans/2026-07-31-motion-wave-D-client-readiness.md` as Steps K and L. Neither step's text survives
+`plans/2026-07-31-motion-wave-D-client-readiness.md` (CLOSED 2026-09-04, now `plans/archive/`) as
+Steps K and L. Neither step's text survives
 there any more: Step K was marked CLOSED and pruned in commit `ea12f5e7`; Step L was deleted in
 commit `0cb69514`, whose message states only closed bodies were deleted. Step L appears resolved —
 Spec 38 §7 names `plugins/sgs-blocks/scripts/inspector-scan/rules/17-reduced-motion-gate.js`

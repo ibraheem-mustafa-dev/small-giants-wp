@@ -117,6 +117,16 @@ UNRESOLVED cross-file cases (optional, never part of the confirmed 24), and `Sgs
 
 ⛔ **TWO SEPARATE TRACKS. Never re-merge them.** No phase number is shared.
 
+**Wave-D register CLOSED 2026-09-04, session 7 (part of Track A).** The last four open items
+(Step 12/FR-38-22 cloning lift, Step 20, Step R-residual, Step 21) all closed same session —
+decisions.md D949-D955. Plan archived: `plans/archive/2026-07-31-motion-wave-D-client-readiness.md`.
+Headline: the cloning pipeline genuinely drops no motion attributes now (verified against the real
+`convert_section()`, not a unit test), a second-round adversarial council caught and fixed a bug
+that would have self-reverted the whole fix on the next `/sgs-update`, and a pre-existing stored-XSS
+defect in the converter's block-comment serialiser was found and fixed along the way (D953).
+⚠ Still owed: a live-canary Playwright/DOM check (R-31-13) — everything closed tonight is
+pipeline-level proof, not yet confirmed live.
+
 **B (Generative Background Engine):** fidelity, speed and colour vibrancy all measured
 fixed/passing (3/3 phases, ceiling 5%) — full build history (D886-D944) swept to
 `memory/session-2026-09-04-tracks-history-sweep.md`. Session 7 added two INCIDENT entries from a
