@@ -182,9 +182,21 @@ def build_block_markup(
     # the data-sgs-fx-* markup being present. setdefault, matching step 3a2/
     # 3a3's precedent immediately below: an explicit value from variant/CSS/
     # content wins over an inferred behavioural marker, never the reverse.
+    #
+    # Rule 4 (D952-adversarial-council fix, 2026-09-04): `lift_behavioural_
+    # attrs` also returns `skipped` — fx grammar attributes it recognised
+    # but couldn't route to this block (no destination row). Recorded via
+    # the SAME ContentGap/collector channel step 3's loop already uses
+    # below, rather than a second, parallel reporting mechanism.
     if rec.slug is not None:
-        for _beh_attr, _beh_value in db_lookup.lift_behavioural_attrs(section_root, rec.slug).items():
+        _beh_attrs, _beh_skipped = db_lookup.lift_behavioural_attrs(section_root, rec.slug)
+        for _beh_attr, _beh_value in _beh_attrs.items():
             attrs.setdefault(_beh_attr, _beh_value)
+        for _skip_where, _skip_detail in _beh_skipped:
+            _gap_collector.record_content_gap(
+                ContentGap(where=_skip_where, detail=_skip_detail),
+                block_slug=rec.slug,
+            )
 
     # step 3a2: R-31-2 TAG-IDENTITY write (CG-2 fix, 2026-07-05 — the zero-h1
     # defect; shape-normalisation fix, 2026-08-17 — the h3-vs-numeric-enum

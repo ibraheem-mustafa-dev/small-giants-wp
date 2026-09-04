@@ -137,7 +137,8 @@ def test_non_fx_data_attr_still_lifts_via_generic_kebab_fallback():
     from bs4 import BeautifulSoup
 
     node = BeautifulSoup(node_html, "html.parser").find("div")
-    lifted = db_lookup.lift_behavioural_attrs(node, "sgs/gallery")
+    lifted, skipped = db_lookup.lift_behavioural_attrs(node, "sgs/gallery")
+    assert skipped == []
     # dragMomentum resolves via the generic kebab-to-camel path (it is not
     # in the fx roster's reverse lookup at all) — proving fix #4 didn't
     # narrow this helper to fx-only. It genuinely IS boolean-typed in the
@@ -145,3 +146,37 @@ def test_non_fx_data_attr_still_lifts_via_generic_kebab_fallback():
     # correctly converts it to a real bool too — a bonus proof the
     # coercion is universal, not fx-specific, not a test bug.
     assert lifted.get("dragMomentum") is True
+
+
+def test_recognised_fx_attr_with_no_destination_is_reported_not_silently_dropped():
+    """Guard 6 — Rule 4 (CLAUDE.md NO-SKIPPING). A `data-sgs-fx-*` marker the
+    grammar genuinely recognises (in fx_attr_roster()), authored on a block
+    that isn't fx-capable at all (sgs/table-of-contents — not in the
+    32-block qualifying set, zero fx* rows), must be reported via `skipped`
+    rather than vanish with no trace. Before this fix (D949-D953), this was
+    a live instance of the exact violation Rule 4 exists to catch."""
+    from bs4 import BeautifulSoup
+
+    node_html = '<div class="sgs-table-of-contents" data-sgs-fx-magnet-axis="both"></div>'
+    node = BeautifulSoup(node_html, "html.parser").find("div")
+    lifted, skipped = db_lookup.lift_behavioural_attrs(node, "sgs/table-of-contents")
+    assert "fxMagnetAxis" not in lifted, "should not have lifted -- this block has no such row"
+    assert len(skipped) == 1, skipped
+    where, detail = skipped[0]
+    assert where == "data-sgs-fx-magnet-axis"
+    assert "fxMagnetAxis" in detail
+    assert "sgs/table-of-contents" in detail
+
+
+def test_unrecognised_non_fx_data_attr_is_not_falsely_flagged_as_skipped():
+    """Guard 6b — the negative control for guard 6. A `data-sgs-*` attribute
+    that is genuinely NOT part of the fx grammar (and doesn't resolve on
+    this block either) must NOT be reported as a Rule-4 skip — it may be an
+    author's unrelated custom marker, not a known grammar gap. Only a
+    RECOGNISED-but-unrouted fx attribute is a genuine skip (guard 6)."""
+    from bs4 import BeautifulSoup
+
+    node_html = '<div class="sgs-table-of-contents" data-sgs-some-unrelated-marker="x"></div>'
+    node = BeautifulSoup(node_html, "html.parser").find("div")
+    lifted, skipped = db_lookup.lift_behavioural_attrs(node, "sgs/table-of-contents")
+    assert skipped == [], skipped

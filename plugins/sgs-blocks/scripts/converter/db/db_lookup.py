@@ -5535,8 +5535,9 @@ def _kebab_to_camel(name: str) -> str:
     return parts[0] + "".join(p[:1].upper() + p[1:] for p in parts[1:] if p)
 
 
-def lift_behavioural_attrs(node: object, slug: str) -> dict:
-    """Return a dict of scalar block attrs inferred from node's DOM attributes and classes.
+def lift_behavioural_attrs(node: object, slug: str) -> "tuple[dict, list[tuple[str, str]]]":
+    """Return (attrs, skipped) — scalar block attrs inferred from node's DOM
+    attributes and classes, plus a Rule-4 skip-with-reason list.
 
     # TODO: FR-31-2 scalar lift — refine in Pass 2 as walker discovers attrs that
     # need lifting beyond the simple cases handled here. Current implementation
@@ -5545,16 +5546,37 @@ def lift_behavioural_attrs(node: object, slug: str) -> dict:
     # Array attrs (FR-31-2.5) and equivalent_block-routed attrs (FR-31-2.1) are
     # walker concerns — this helper does NOT lift those.
 
+    ⛔ Rule 4 (CLAUDE.md's 7 non-negotiable rules — NO SKIPPING): "every draft
+    class's content + CSS transfers to the clone, OR is reported as
+    skipped-with-reason". Before this (D949-D953), a `data-sgs-fx-*` marker
+    the fx grammar genuinely recognises (present in `fx_attr_roster()`) but
+    with no destination on THIS resolved block (e.g. an effect param the
+    block doesn't support) was silently absent — a live instance of the
+    exact violation Rule 4 exists to catch. Added 2026-09-04: when the fx
+    reverse lookup recognises the data-attribute name but the target attr
+    isn't in `attrs` for this slug, it is recorded in `skipped` instead of
+    silently dropped. A non-fx `data-sgs-*` attribute that doesn't resolve
+    via the generic kebab guess is NOT flagged here — it may legitimately be
+    an author's unrelated custom marker, not a known grammar gap; only a
+    RECOGNISED-but-unrouted fx attribute is a genuine skip.
+
     Args:
         node: BeautifulSoup Tag (or any object with .get() and .get('class') interface)
         slug: Resolved SGS block slug (e.g. 'sgs/hero')
 
     Returns:
-        dict of attr_name → value for scalar behavioural attrs that can be
-        inferred from the node without requiring content extraction.
-        Empty dict when no scalar attrs are found.
+        (attrs, skipped) — `attrs` is attr_name → value for scalar behavioural
+        attrs inferred from the node without requiring content extraction
+        (empty dict when none found). `skipped` is a list of (where, detail)
+        pairs, each a `data-sgs-fx-*` marker the grammar recognises but this
+        block has no destination for (empty list when none found) — the
+        caller is responsible for routing these through `ContentGap`/
+        `content_gap_collector` (kept out of this module: its own docstring
+        describes it as pure "DB-backed canonical lookups", and
+        `content_gap_collector` lives in the services layer, one layer up).
     """
     result: dict = {}
+    skipped: list[tuple[str, str]] = []
 
     # ---- (a) Explicit data-sgs-X="Y" attributes ----
     # Mockup authors (or the pipeline's Stage 4 Playwright pass) may annotate
@@ -5612,6 +5634,20 @@ def lift_behavioural_attrs(node: object, slug: str) -> dict:
                     result[attr_name] = lifted_val
                     _trace("scalar_lift", slug=slug, attr=attr_name,
                            source="data-sgs-attr", value=lifted_val)
+            elif html_attr in _fx_reverse:
+                # Rule 4 (CLAUDE.md NO-SKIPPING): the fx grammar genuinely
+                # recognises this data-attribute (it's in FX_ATTR_MAP), but
+                # no candidate resolved to a real attr on THIS block — either
+                # `attr_name` stayed None (block doesn't declare this fx
+                # attr) or it resolved but is array-typed (shouldn't happen
+                # for fx — defensive). Report, don't silently drop.
+                fx_name = _fx_reverse[html_attr]
+                skipped.append((
+                    html_attr,
+                    f"fx grammar attribute '{fx_name}' recognised but "
+                    f"'{slug}' has no matching block_attributes row for it "
+                    "— not fx-capable for this effect, or not yet seeded.",
+                ))
 
     # ---- (b) sgs-block--modifier class patterns ----
     # A modifier class like `sgs-cta-section--large` carries potential attr info.
@@ -5658,7 +5694,7 @@ def lift_behavioural_attrs(node: object, slug: str) -> dict:
                            source="modifier-class", value=modifier)
                     break
 
-    return result
+    return result, skipped
 
 
 # ----------------------------------------------------------------------------
