@@ -19,7 +19,7 @@ import { DesignTokenPicker, IconPicker, LinkPopoverField, SgsColourPanel, resolv
 	SgsBorderControl,
 	fillRow,
 } from '../../components';
-import { colourVar, resolveResponsiveTier, resolveTextColourPreviewStyle } from '../../utils';
+import { colourVar, resolveResponsiveTier, resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 // ⛔ `templateMode` (the container-family allowed-children preset) was
@@ -132,10 +132,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		ctaColour,
 		ctaColourGradient,
 		ctaBackground,
+		ctaBackgroundGradient,
 		popularBadgeText,
 		popularBadgeColour,
 		popularBadgeColourGradient,
 		popularBadgeBackground,
+		popularBadgeBackgroundGradient,
 		toggleLabelHoverColour,
 		toggleLabelHoverColourGradient,
 		titleColourHover,
@@ -359,6 +361,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'cta-background',
 						label: __( 'CTA background colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -366,6 +369,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: ctaBackground,
 								onChange: ( val ) => setAttributes( { ctaBackground: val ?? '' } ),
 								linked: true,
+								gradientValue: ctaBackgroundGradient,
+								onGradientChange: ( val ) => setAttributes( { ctaBackgroundGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -395,6 +400,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'badge-background',
 						label: __( 'Popular badge background colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -402,6 +408,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: popularBadgeBackground,
 								onChange: ( val ) => setAttributes( { popularBadgeBackground: val ?? '' } ),
 								linked: true,
+								gradientValue: popularBadgeBackgroundGradient,
+								onGradientChange: ( val ) => setAttributes( { popularBadgeBackgroundGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -613,8 +621,9 @@ export default function Edit( { attributes, setAttributes } ) {
 												popularBadgeColourGradient,
 												colourVar
 											),
-											backgroundColor: colourVar(
-												popularBadgeBackground
+											...resolveBackgroundPaintPreviewStyle(
+												popularBadgeBackground,
+												popularBadgeBackgroundGradient
 											),
 										} }
 									>
@@ -925,13 +934,17 @@ export default function Edit( { attributes, setAttributes } ) {
 								     an unset ctaText defaults to "Get started" via `??`,
 								     but an explicitly-emptied one stays hidden). Mirror
 								     that gate rather than always rendering a placeholder.
-								     ctaColour/ctaBackground's DesignTokenPickers have no
-								     `linked` prop, so they always store a raw CSS value,
-								     never a slug -- resolveColourToken() (not colourVar(),
-								     which is slug-only) is the correct resolver.
+								     ctaColour previews via resolveColourToken() (palette
+								     lookup, not slug-only colourVar()) since its picker
+								     can store a raw CSS value.
 								     ctaColourGradient (D956) previews via the shared
 								     resolveTextColourPreviewStyle() -- byte-identical to
-								     the old flat-only style for an unset gradient. */ }
+								     the old flat-only style for an unset gradient.
+								     ctaBackground/ctaBackgroundGradient preview via the
+								     shared resolveBackgroundPaintPreviewStyle() (colourVar-
+								     based, matching the popular-badge background preview
+								     above) -- gradient wins when set+valid, same precedence
+								     as render.php's sgs_background_paint_decl(). */ }
 								{ '' !== ( plan.ctaText ?? __( 'Get started', 'sgs-blocks' ) ) && (
 								<div
 									className={ `sgs-pricing-table__cta sgs-pricing-table__cta--${ ctaStyle }` }
@@ -941,8 +954,10 @@ export default function Edit( { attributes, setAttributes } ) {
 											ctaColourGradient,
 											( v ) => resolveColourToken( v, palette )
 										),
-										backgroundColor:
-											resolveColourToken( ctaBackground, palette ) || undefined,
+										...resolveBackgroundPaintPreviewStyle(
+											ctaBackground,
+											ctaBackgroundGradient
+										),
 									} }
 								>
 									{ plan.ctaText ||

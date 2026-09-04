@@ -168,9 +168,10 @@
 					"attrMap": {
 						"css:color": "ctaColour",
 						"css:color-gradient": "ctaColourGradient",
-						"css:background-color": "ctaBackground"
+						"css:background-color": "ctaBackground",
+						"css:background-image": "ctaBackgroundGradient"
 					},
-					"_note": "`ctaStyle` (accent/outline/etc. preset) is a variant/behaviour field, not an independent style control, so it is not mapped. No independent CTA font-size/border/padding attrs exist — honest gaps. ctaColourGradient (2026-09-04, D956) is the text-colour gradient sibling to ctaColour, safe unconditionally since ctaBackground already paints on a separate ::after layer (render.php sgs_block_background_layer_css())."
+					"_note": "`ctaStyle` (accent/outline/etc. preset) is a variant/behaviour field, not an independent style control, so it is not mapped. No independent CTA font-size/border/padding attrs exist — honest gaps. ctaColourGradient (2026-09-04, D956) is the text-colour gradient sibling to ctaColour, safe unconditionally since ctaBackground already paints on a separate ::after layer (render.php sgs_block_background_layer_css()). ctaBackgroundGradient (2026-09-04) is the fill-colour gradient sibling to ctaBackground -- non-empty wins, resolved via sgs_background_paint_decl() on that same ::after layer."
 				},
 				"badge": {
 					"label": "Popular badge",
@@ -183,9 +184,10 @@
 					"attrMap": {
 						"css:color": "popularBadgeColour",
 						"css:color-gradient": "popularBadgeColourGradient",
-						"css:background-color": "popularBadgeBackground"
+						"css:background-color": "popularBadgeBackground",
+						"css:background-image": "popularBadgeBackgroundGradient"
 					},
-					"_note": "`popularBadgeText` (the badge copy) is a content field, not a style control — it correctly surfaces as an ORPHAN under this element's `popularBadge` prefix, matching the FR-35-4 pattern (wired to a real attribute, invisible to cluster-coherence, no separate note needed to suppress it). popularBadgeColourGradient (2026-09-04, D936/D937) is the text-colour gradient sibling, safe unconditionally since popularBadgeBackground paints on the badge's own `::after` layer (render.php), not this selector."
+					"_note": "`popularBadgeText` (the badge copy) is a content field, not a style control — it correctly surfaces as an ORPHAN under this element's `popularBadge` prefix, matching the FR-35-4 pattern (wired to a real attribute, invisible to cluster-coherence, no separate note needed to suppress it). popularBadgeColourGradient (2026-09-04, D936/D937) is the text-colour gradient sibling, safe unconditionally since popularBadgeBackground paints on the badge's own `::after` layer (render.php), not this selector. popularBadgeBackgroundGradient (2026-09-04) is the fill-colour gradient sibling to popularBadgeBackground -- non-empty wins, resolved via sgs_background_paint_decl() on that same ::after layer."
 				},
 				"ribbon": {
 					"label": "Per-plan ribbon",
@@ -491,6 +493,11 @@
 		"ctaBackground": {
 			"type": "string"
 		},
+		"ctaBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the CTA's background-fill instead of a flat colour, on the same `::after` layer as ctaBackground (D956-shape rollout). Non-empty wins over ctaBackground. Safe unconditionally -- the layer already sits behind ctaColour/ctaColourGradient's text paint, never on the same selector."
+		},
 		"popularBadgeText": {
 			"type": "string",
 			"default": "Popular"
@@ -507,6 +514,11 @@
 		"popularBadgeBackground": {
 			"type": "string",
 			"default": "accent"
+		},
+		"popularBadgeBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the popular badge's background-fill instead of a flat colour, on the badge's own `::after` layer (D956-shape rollout). Non-empty wins over popularBadgeBackground. Safe unconditionally -- the layer already sits behind popularBadgeColour/popularBadgeColourGradient's text paint, never on the same selector."
 		},
 		"toggleLabelHoverColour": {
 			"type": "string",

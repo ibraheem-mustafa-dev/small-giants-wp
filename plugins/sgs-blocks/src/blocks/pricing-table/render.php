@@ -62,9 +62,11 @@ $feature_colour_gradient = $attributes['featureColourGradient'] ?? '';
 $cta_style               = sanitize_key( $attributes['ctaStyle'] ?? 'accent' );
 $cta_colour              = $attributes['ctaColour'] ?? '';
 $cta_background          = $attributes['ctaBackground'] ?? '';
+$cta_background_gradient = (string) ( $attributes['ctaBackgroundGradient'] ?? '' );
 $badge_text              = sanitize_text_field( $attributes['popularBadgeText'] ?? __( 'Popular', 'sgs-blocks' ) );
 $badge_colour            = $attributes['popularBadgeColour'] ?? 'white';
 $badge_bg                = $attributes['popularBadgeBackground'] ?? 'accent';
+$badge_bg_gradient       = (string) ( $attributes['popularBadgeBackgroundGradient'] ?? '' );
 
 $toggle_label_hover_colour          = $attributes['toggleLabelHoverColour'] ?? '';
 $toggle_label_hover_colour_gradient = $attributes['toggleLabelHoverColourGradient'] ?? '';
@@ -480,7 +482,7 @@ if ( '' !== $badge_colour_effective ) {
 	}
 	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $pt_badge_sel, $badge_colour_effective );
 }
-if ( $badge_bg ) {
+if ( $badge_bg || $badge_bg_gradient ) {
 	// Background painted on its OWN `::after` layer, not the badge element's own
 	// selector — `.sgs-pricing-table__badge` is already `position:absolute`
 	// (style.css), so this skips `sgs_block_background_layer_css()`'s hardcoded
@@ -489,8 +491,10 @@ if ( $badge_bg ) {
 	// qualifies as a positioned ancestor for an absolutely-positioned `::after`;
 	// style.css carries the matching `isolation:isolate` to contain the
 	// `z-index:-1` layer. Leaves `color` free of a same-selector background for
-	// a future `popularBadgeColourGradient` sibling (D936/D937 recipe).
-	$responsive_css .= $pt_badge_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background-color:' . $colour_val( $badge_bg ) . ';}';
+	// the `popularBadgeColourGradient` sibling above (D936/D937 recipe).
+	// popularBadgeBackgroundGradient sibling wins over popularBadgeBackground
+	// when set+valid, via sgs_background_paint_decl() (D956-shape rollout).
+	$responsive_css .= $pt_badge_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . sgs_background_paint_decl( $badge_bg, $badge_bg_gradient ) . ';}';
 }
 // D636 Task 1b — sibling gradient attribute wins when set+valid. The
 // block-local $colour_val() closure only ever emits a preset-slug var(), so
@@ -531,13 +535,14 @@ if ( '' !== $feature_colour_effective ) {
 	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $feature_sel, $feature_colour_effective );
 }
 // bg_layer equivalent (D940 batch): background moves onto a `::after` layer
-// so `ctaColour` is free of a same-selector background for a future
-// ctaColourGradient sibling (none exists yet — this just unblocks it).
-// `.sgs-pricing-table__cta` is not positioned in style.css, so the full
-// helper (position:relative + isolation:isolate) is safe here.
+// so `ctaColour` is free of a same-selector background for the
+// ctaColourGradient sibling below. `.sgs-pricing-table__cta` is not
+// positioned in style.css, so the full helper (position:relative +
+// isolation:isolate) is safe here. ctaBackgroundGradient sibling wins over
+// ctaBackground when set+valid, via sgs_background_paint_decl().
 $pt_cta_sel = $root_sel . ' .sgs-pricing-table__cta';
-if ( $cta_background ) {
-	$responsive_css .= sgs_block_background_layer_css( $pt_cta_sel, 'background-color:' . $colour_val( $cta_background ) );
+if ( $cta_background || $cta_background_gradient ) {
+	$responsive_css .= sgs_block_background_layer_css( $pt_cta_sel, sgs_background_paint_decl( $cta_background, $cta_background_gradient ) );
 }
 // D956 -- sibling gradient wins when set+valid. Safe unconditionally now
 // that ctaBackground (above) paints on its own `::after` layer.
