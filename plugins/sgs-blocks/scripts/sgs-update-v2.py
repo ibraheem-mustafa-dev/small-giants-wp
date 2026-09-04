@@ -2361,6 +2361,97 @@ def _load_css_property_classifications(path: Path = _CSS_PROPERTY_CLASSIFICATION
     return out
 
 
+_FX_QUALIFYING_BLOCKS_JSON = (
+    Path(__file__).resolve().parent.parent
+    / "src" / "blocks" / "extensions" / "generated-fx-qualifying-blocks.json"
+)
+
+
+def _load_fx_qualifying_block_slugs(path: Path = _FX_QUALIFYING_BLOCKS_JSON) -> set[str]:
+    """Return the set of block slugs `fx.js`'s own `shouldHaveFx()` treats as
+    fx-capable — i.e. every key of `generated-fx-qualifying-blocks.json` that
+    maps to at least one effect (D432/FR-38-22 investigation, 2026-09-04).
+
+    This is the SAME artefact `fx.js` imports (`qualifyingBlocks`) to decide
+    which blocks get the `fx*` attributes added via its `registerBlockType`
+    filter — reusing it here (rather than re-deriving eligibility from
+    `supports.sgs.enabledExtensions`, which fx capability does not use at all)
+    keeps ONE source of truth for "is this block fx-capable" (R-31-1).
+    Soft-optional: a missing/unreadable file degrades to "seed nothing this
+    run" rather than hard-failing an unrelated /sgs-update.
+    """
+    if not path.exists():
+        return set()
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return {slug for slug, effects in data.items() if effects}
+    except Exception as exc:  # noqa: BLE001
+        print(f"Stage 1 (fx-attr-rows): WARN failed to read {path.name}: {exc}")
+        return set()
+
+
+def _seed_missing_fx_attr_rows(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
+    """Stage 1 sub-step B2.6 — INSERT missing `block_attributes` rows for the
+    `fx*` attribute set on every fx-capable block (FR-38-22 cloning-lift
+    investigation, 2026-09-04).
+
+    THE GAP THIS CLOSES: `fx*` attrs (`fxTrigger`, `fxPath`, `fxShape`, …) are
+    added to a block's registered schema entirely client-side, via `fx.js`'s
+    `registerBlockType` filter — they appear in NO block.json. Stage 1's
+    normal attribute discovery only reads block.json, so these attrs never
+    got a `block_attributes` row at all (confirmed: `_apply_attr_classification_
+    overrides`'s layer 2.5, `_collect_fx_attr_namespace_overrides`, only
+    classifies rows that ALREADY exist — it has printed "MISSING ROW" for
+    every one of these names since D432, and nothing ever created the row).
+    Without a row, the cloning walker's `block_attrs(slug)` lookup can never
+    see these attrs, so `lift_behavioural_attrs` can never lift them from a
+    draft — this was the actual, previously-undiagnosed reason `fx*` attrs
+    vanish on clone (FR-38-22).
+
+    Deliberately minimal, additive-only INSERT — sets only the columns the
+    converter's read path actually consumes (`db_lookup.block_attrs()`:
+    attr_name/attr_type/role/canonical_slot/derived_selector) plus `source`.
+    Leaves `css_property` NULL on insert; the EXISTING layer 2.5 step
+    (`_collect_fx_attr_namespace_overrides`, called right after this from
+    `_apply_attr_classification_overrides`) then classifies it in the SAME
+    run, so there is still exactly one writer of `css_property` — this step
+    only ever creates the row, never sets that column itself. `attr_type` is
+    seeded as `'string'` uniformly: the sole consumer of this column in the
+    read path (`lift_behavioural_attrs`) only tests `!= 'array'`, so the
+    exact JS-side type (some `fx*` attrs are numeric) does not affect
+    correctness here; getting it more precise needs parsing `fx.js`, which
+    is out of scope for this additive fix.
+
+    Returns {"fx_attr_rows_inserted": int, "fx_attr_rows_blocks": int}.
+    """
+    c = conn.cursor()
+    fx_map = _load_fx_attr_css_property_map()
+    slugs = _load_fx_qualifying_block_slugs()
+    inserted = 0
+    touched_blocks: set[str] = set()
+    for slug in sorted(slugs):
+        for attr_name in fx_map:
+            exists = c.execute(
+                "SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
+                (slug, attr_name),
+            ).fetchone()
+            if exists:
+                continue
+            inserted += 1
+            touched_blocks.add(slug)
+            if not dry_run:
+                c.execute(
+                    "INSERT INTO block_attributes "
+                    "(block_slug, attr_name, attr_type, role, source) "
+                    "VALUES (?, ?, 'string', 'behaviour', 'sgs')",
+                    (slug, attr_name),
+                )
+    return {
+        "fx_attr_rows_inserted": inserted,
+        "fx_attr_rows_blocks": len(touched_blocks),
+    }
+
+
 def _apply_attr_classification_overrides(
     conn: sqlite3.Connection,
     blocks_dir: Path,
@@ -2879,6 +2970,16 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         # twice to converge. JSON-only, no DB mutation, so it is safe this early.
         _run_css_property_classifier_seed(conn)
 
+        # --- Stage 1 sub-step B2.6: create missing fx* block_attributes rows ---
+        # (FR-38-22 cloning-lift fix, 2026-09-04. MUST run BEFORE sub-step C so
+        #  its existing layer-2.5 fx:* classification also reaches the rows
+        #  this step just created, in the SAME run.)
+        fx_row_counts = _seed_missing_fx_attr_rows(conn, dry_run=False)
+        print(
+            f"Stage 1 (fx-attr-rows): inserted={fx_row_counts['fx_attr_rows_inserted']} "
+            f"row(s) across {fx_row_counts['fx_attr_rows_blocks']} block(s)."
+        )
+
         # --- Stage 1 sub-step C: apply per-attr classification overrides ---
         # (AFTER canonical assignment so overrides are the final writer, and AFTER
         #  sub-step B2 so the derived layer it reads is THIS run's, not the last one's.)
@@ -2980,6 +3081,12 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
             f"allowed_blocks_populated={ab_populated} (already stored), "
             f"allowed_blocks_updated={ab_updated} (would drift), "
             f"allowed_blocks_dynamic_skipped={ab_dynamic_skipped}."
+        )
+        fx_row_counts = _seed_missing_fx_attr_rows(conn, dry_run=True)
+        print(
+            f"Stage 1 (fx-attr-rows) [dry-run]: would insert="
+            f"{fx_row_counts['fx_attr_rows_inserted']} row(s) across "
+            f"{fx_row_counts['fx_attr_rows_blocks']} block(s)."
         )
         _apply_attr_classification_overrides(conn, blocks_dir, dry_run=True)
 

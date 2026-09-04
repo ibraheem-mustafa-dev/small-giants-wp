@@ -5391,6 +5391,20 @@ def resolve_slug_from_bem(sgs_classes: list[str]) -> str | None:
 # Spec 22 §FR-31-2 — scalar attr lifting (NULL equivalent_block only)
 # ----------------------------------------------------------------------------
 
+def _kebab_to_camel(name: str) -> str:
+    """Convert a kebab-case remainder (`fx-trigger`) to camelCase (`fxTrigger`).
+
+    Universal helper for matching a DOM `data-sgs-<kebab>` attribute against a
+    block's camelCase attr names — used by `lift_behavioural_attrs` section
+    (a); not fx-specific (R-31-9). A remainder with no hyphen is returned
+    unchanged.
+    """
+    parts = name.split("-")
+    if len(parts) == 1:
+        return name
+    return parts[0] + "".join(p[:1].upper() + p[1:] for p in parts[1:] if p)
+
+
 def lift_behavioural_attrs(node: object, slug: str) -> dict:
     """Return a dict of scalar block attrs inferred from node's DOM attributes and classes.
 
@@ -5429,9 +5443,18 @@ def lift_behavioural_attrs(node: object, slug: str) -> dict:
         if not isinstance(html_attr, str):
             continue
         if html_attr.startswith("data-sgs-"):
-            attr_name = html_attr[len("data-sgs-"):]
+            raw_remainder = html_attr[len("data-sgs-"):]
+            # A DOM data-attribute is conventionally kebab-case
+            # (`data-sgs-fx-trigger`) while the block attr it targets is
+            # camelCase (`fxTrigger`) — try the literal remainder first
+            # (covers an author who already writes `data-sgs-fxTrigger`),
+            # then the kebab->camelCase conversion. Fixed 2026-09-04
+            # (FR-38-22 investigation): before this, ANY kebab-named
+            # data-sgs-* attribute silently failed to lift — not just fx's.
+            candidates = (raw_remainder, _kebab_to_camel(raw_remainder))
+            attr_name = next((c for c in candidates if c in attrs), None)
             # Only lift if the attr exists on this block AND is scalar (not array)
-            if attr_name in attrs and attrs[attr_name].get("attr_type") != "array":
+            if attr_name is not None and attrs[attr_name].get("attr_type") != "array":
                 # Only lift if equivalent_block_for returns None (scalar, not block-equiv)
                 if equivalent_block_for(slug, attr_name) is None:
                     # Value may be a list when BS4 parses multi-value attrs; take first
