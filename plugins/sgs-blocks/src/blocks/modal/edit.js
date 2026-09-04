@@ -13,13 +13,8 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import { resolveColourToken, DesignTokenPicker } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { resolveTextColourPreviewStyle } from '../../utils';
-
-const TRIGGER_STYLE_OPTIONS = [
-	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
-	{ label: __( 'Secondary', 'sgs-blocks' ), value: 'secondary' },
-	{ label: __( 'Text Link', 'sgs-blocks' ), value: 'text-link' },
-];
 
 const MAX_WIDTH_OPTIONS = [
 	{ label: __( 'Small (480px)', 'sgs-blocks' ), value: 'small' },
@@ -141,16 +136,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<SelectControl
+					<ToggleGroupControl
 						label={ __( 'Button style', 'sgs-blocks' ) }
 						value={ triggerStyle }
-						options={ TRIGGER_STYLE_OPTIONS }
 						onChange={ ( val ) =>
-							setAttributes( { triggerStyle: val } )
+							setAttributes( { triggerStyle: val || 'primary' } )
 						}
+						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
+					>
+						<ToggleGroupControlOption value="primary" label={ __( 'Primary', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="secondary" label={ __( 'Secondary', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="text-link" label={ __( 'Text Link', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
 					{ /* Moved in from the shared SgsColourPanel (D622 — an
 					     element-scoped colour belongs in its own element's
 					     TIER 1 panel; "trigger button" is a declared element
