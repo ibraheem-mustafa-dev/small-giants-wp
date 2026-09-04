@@ -812,3 +812,99 @@ parked (Bean's call).
   from "trivial" to "genuinely hard, custom-property architecture"** — see the session 10
   reclassification note above. Correct any stale "trivial" characterisation of these 4 rows in
   a future dispatch.
+
+## `sgs_text_decls()` defect closed across all 7 remaining instances — 2026-09-04 (session 11)
+
+**Verified before touching anything:** session 10's two dispatched rows (`pricing-table.ctaBackground`/
+`.popularBadgeBackground`, `nav-menu.underlineColour`) had ALREADY landed, deployed, and been
+live-verified by a concurrent session on this shared tree while this session was still
+investigating (commits `73c0a74ca`, `e1ca47c01`, `56afb54de`, doc write-up `8eddf87e1`) — nothing
+left to do there. Bean redirected this session's scope to the `sgs/info-box` gradient bug named
+above, with an instruction to check the ledger/plan doc for overall progress first (which is how
+the concurrent landing was caught before duplicating it).
+
+**The fix.** `sgs_text_decls()` (`includes/helpers-colour-variants.php:169`) always builds
+`'color:' . sgs_colour_value( $normal )` — even when `$normal` resolved to a full gradient
+function string — because it exists only to serve the flat-colour case; it was never meant to be
+gradient-safe on its own. The companion `sgs_text_colour_gradient_fallback_rule()` several of
+these blocks already called is NOT a fix for that: it emits ONLY the
+`@supports not (background-clip:text)` fallback branch, never the primary
+`background-image`/`background-clip:text`/`color:transparent` declaration set — that's
+`sgs_text_colour_decl()`'s job, and none of the 7 broken blocks called it. Net effect: the
+primary rule emitted invalid CSS the browser silently dropped, and the only real declaration in
+play was the near-unreachable pre-`background-clip:text`-support fallback — so the gradient
+never actually painted on any current browser, for any of these 7 blocks, since each one's D744
+migration shipped.
+
+**`scripts/check-text-gradient-companion.js` could not have caught this** — it verifies the
+companion call is PRESENT alongside `sgs_text_decls()`, not that the PRIMARY emission is correct.
+Every one of these 7 blocks had the companion call and still shipped broken. Worth naming as a
+gate blind spot for whoever next builds a static check in this area — the real invariant is
+"a gradient-capable text row's primary declaration must come from `sgs_text_colour_decl()`, not
+`sgs_text_decls()`", which is a stronger and different claim than "the companion rule exists
+somewhere in the file".
+
+**Fixed, same swap in each (`sgs_text_decls()`/`sgs_emit_state_colour_css()` → resolve →
+`sgs_text_colour_decl()` → `sgs_emit_state_colour_css()`, keeping each block's pre-existing
+companion-rule call unchanged):**
+- `sgs/info-box` — `textColour` (root) and `linkColour` (descendant `a`), the two rows named in
+  session 10.
+- `sgs/buybox`, `sgs/icon-list`, `sgs/notice-banner`, `sgs/team-member` — `textColour` (root or,
+  for icon-list, the per-item `.sgs-icon-list__text` element).
+- `sgs/product-card` — the root `textColour` row specifically (**distinct** from
+  `titleColour`/`descColour`/`priceColour`/`priceNoteColour`, which remain genuinely hard/
+  custom-property-fed per the session 10 reclassification above and were NOT touched).
+- `sgs/testimonial` — both rows in its existing `textColour`/`linkColour` loop.
+
+`sgs/testimonial-slider` was already correct — it had independently found and fixed this exact
+defect earlier the same day, with a comment naming `sgs/info-box` as sharing it, which is the
+evidence trail that led to this session's audit of the remaining `sgs_text_decls()` call sites.
+
+**Audited, confirmed NOT this defect:** `grep -rl "sgs_text_decls" src/blocks/*/render.php`
+returns exactly these 8 files (the 7 above + testimonial-slider); no other block calls it, so the
+audit is exhaustive for this specific helper — it does not claim to cover every gradient-capable
+text row in the framework, only every call site of this one helper.
+
+**Deliberately not attempted — needs live WooCommerce product context, no fixture possible:**
+`sgs/buybox`'s render.php short-circuits its ENTIRE render to a hardcoded WooCommerce-core
+fallback markup string unless `class_exists('WooCommerce')` AND a queried post ID resolves to a
+real, published, VARIABLE product — so while the `textColour` code fix above is correct and
+shipped, it cannot be live-probed with a bare block-comment fixture the way the other 6 could.
+Documented in `check-colour-gradient-roundtrip.js`'s `KNOWN_SKIPPED` table rather than silently
+omitted.
+
+**Verified, not just asserted:** `npm run build` clean; `npm run gate:fast` 89/89 green;
+`node scripts/check-text-gradient-companion.js --check` 0 findings (unchanged — this gate was
+never the one catching or missing this defect, see above); `node scripts/colour-codemod/survey.js`
+CONFORMANT 111→113. Six new `check-colour-gradient-roundtrip.js` `FIXTURES` entries added
+(`info-box`, `icon-list`, `notice-banner`, `product-card.textColour`, `team-member`,
+`testimonial`) plus the `buybox` `KNOWN_SKIPPED` reason; `--self-test` 15/15 still green.
+Committed `a65d06927` on `main` (scoped visual-diff-gate bypass used —
+`SGS_VISUAL_GATE_SKIP=<7 blocks>` — reasoned in the commit's own gate-bypass message: the change
+is byte-identical CSS for every existing flat-colour instance, since `sgs_text_colour_decl()`'s
+flat branch emits the same `color:X` via `sgs_colour_value()` `sgs_text_decls()` did; the only
+behaviour change is that a previously-broken gradient-set instance now actually paints, which is
+what the live probe below is for instead of a before/after screenshot diff).
+
+⛔ **NOT YET DEPLOYED OR LIVE-VERIFIED — blocked by unrelated shared-tree state, not by this
+fix.** Two peer interactive sessions were active on `main` throughout (`ListAgents` showed
+`small-giants-wp-90`/`small-giants-wp-bd`), with genuine uncommitted work in
+`src/blocks/pricing-table/{block.json,edit.js,render.php}` plus a 266-line uncommitted rewrite of
+`scripts/behavioural-analyser/css-property-classifications.json`. Deploying straight from the
+main tree risks shipping a concurrent session's unreviewed in-progress edit to the live canary —
+so this session built from an isolated `git worktree` at this commit instead (the documented
+"merge via isolated worktree when shared" pattern), which correctly excluded the pricing-table
+risk but ALSO excluded that classifications.json rewrite — and the shared `sgs-framework.db`
+apparently now expects it: `build-deploy.py`'s F6 tier failed with 24 "rogue seed" findings (a
+`css_property` value in the DB with no matching entry in the classifier layer) across blocks this
+session never touched (nav-menu, post-grid, process-steps, quote, separator, trust-bar,
+whatsapp-cta, and product-card's OTHER rows) — none from the 7 blocks this session actually
+edited. Confirmed via direct diff that the main tree's uncommitted classifications.json already
+contains fixes for exactly those 24 attrs, so this is the concurrent session's own
+in-progress classifier update, not a defect in this session's work. The isolated worktree's
+`vendor/` (PHPStan) was also absent (gitignored, no fresh-clone install) — a second, smaller
+blocker layered on top. Worktree was cleaned up (junction unlinked, `git worktree remove`) rather
+than forced through with `--allow-dirty`/`--takeover`. **Whoever deploys this next: coordinate
+with whichever session owns the pricing-table/classifications.json work first (or wait for it to
+land), then deploy `main` normally — the code fix itself needs no further changes, only a clean
+tree to deploy from.**
