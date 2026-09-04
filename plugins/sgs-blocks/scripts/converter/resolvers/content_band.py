@@ -92,17 +92,12 @@ def _layer_priorities(prop: str) -> tuple[str, ...]:
 _BAND_BOX_PROPS = frozenset({"padding", "margin"})
 
 
-def _band_family_suffix(base_prop: str, conn: Any) -> str | None:
-    """Derive the box-object family suffix (e.g. ``'BandPadding'``) for a base
-    CSS property (``'padding'``/``'margin'``) by reading its longhand
-    per-side suffix from ``property_suffixes`` (DB-first, R-31-1 — never a
-    hardcoded property->attr dict) and stripping the ``'Top'`` side tail —
-    the same band-mirror vocabulary already seeded for the longhand sides
-    (see ``attr_for_area_property``'s Band-prefix exclusion filter, D194).
-
-    Returns ``None`` when the per-side rows aren't seeded yet (e.g.
-    ``BandMargin*`` before Defect 3's DB reseed lands) — the caller correctly
-    treats that as "the box-object path doesn't apply", never a guess.
+def _band_family_row_suffix(base_prop: str, conn: Any) -> str | None:
+    """Read the raw per-side suffix (e.g. ``'BandPaddingTop'``) seeded in
+    ``property_suffixes`` for a base CSS property's longhand top side
+    (DB-first, R-31-1 — never a hardcoded property->attr dict). Returns
+    ``None`` when the per-side rows aren't seeded yet (e.g. ``BandMargin*``
+    before Defect 3's DB reseed lands).
 
     ``property_suffixes`` seeds TWO distinct rows per longhand side (e.g.
     ``PaddingTop`` for the flat OUTER family, ``BandPaddingTop`` for the
@@ -110,14 +105,19 @@ def _band_family_suffix(base_prop: str, conn: Any) -> str | None:
     ``role``, so the ``'Band'`` name prefix is the only live discriminator
     between them; filtered here rather than picking whichever row SQLite
     returns first.
+
+    Deliberately returns the RAW row, not a side-stripped family name — the
+    stripping happens in ``_content_band_box_write`` itself, in the same
+    scope that re-validates the result against ``db_lookup.box_family_for``
+    before it is ever used (§3/§6 box-family-guard AST gate: a side-token
+    string test must sit alongside a genuine ``box_family`` DB check, not in
+    an isolated helper the gate can't see that check from).
     """
     row = conn.execute(
         "SELECT suffix FROM property_suffixes WHERE css_property = ? AND suffix LIKE 'Band%'",
         (f"{base_prop}-top",),
     ).fetchone()
-    if row is None or not row[0].endswith("Top"):
-        return None
-    return row[0][: -len("Top")]
+    return row[0] if row else None
 
 
 def _content_band_box_write(decl: Any, ctx: Any) -> Write | list[Write] | GAP | None:
@@ -167,9 +167,15 @@ def _content_band_box_write(decl: Any, ctx: Any) -> Write | list[Write] | GAP | 
     if base_prop is None:
         return None
 
-    band_suffix = _band_family_suffix(base_prop, ctx.conn)
-    if band_suffix is None:
+    # Side-token strip on a value already READ from property_suffixes (a DB
+    # read, not a name-guessed grouping) -- but never trusted alone: `family`
+    # is only used below once `box_family` (the real DB classification) has
+    # confirmed it, so a wrongly-derived suffix fails closed rather than
+    # silently grouping the wrong attrs (§3/§6 box-family-guard AST gate).
+    raw_suffix = _band_family_row_suffix(base_prop, ctx.conn)
+    if raw_suffix is None or not raw_suffix.endswith("Top"):
         return None
+    band_suffix = raw_suffix[: -len("Top")]
 
     prefix = db_lookup.layer_attr_prefix("CONTENT") or ""
     family = f"{prefix}{band_suffix}"

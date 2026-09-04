@@ -132,9 +132,9 @@ def test_content_band_margin_sole_child_case_once_box_family_seeded(conn, monkey
     shared worktree, so re-seeding now would attribute unreviewed changes to
     this fix). This test proves the CODE is correct independent of that seed
     step, by monkeypatching `db_lookup.box_family_for` AND `content_band.
-    _band_family_suffix` (the latter added when the box-suffix lookup moved
-    off a hardcoded dict onto a live `property_suffixes` query, R-31-1 —
-    `BandMarginTop` isn't seeded yet either, so this must be faked alongside
+    _band_family_row_suffix` (the latter added when the box-suffix lookup
+    moved off a hardcoded dict onto a live `property_suffixes` query, R-31-1
+    — `BandMarginTop` isn't seeded yet either, so this must be faked alongside
     `box_family_for` for the post-seed state to be fully simulated) to the
     post-seed state the declarative block.json change + a future
     `property_suffixes` seed will produce once `/sgs-update` runs.
@@ -150,14 +150,14 @@ def test_content_band_margin_sole_child_case_once_box_family_seeded(conn, monkey
 
     monkeypatch.setattr(db_lookup, "box_family_for", _fake_box_family_for)
 
-    real_band_family_suffix = content_band._band_family_suffix
+    real_band_family_row_suffix = content_band._band_family_row_suffix
 
-    def _fake_band_family_suffix(base_prop, conn_arg):
+    def _fake_band_family_row_suffix(base_prop, conn_arg):
         if base_prop == "margin":
-            return "BandMargin"
-        return real_band_family_suffix(base_prop, conn_arg)
+            return "BandMarginTop"
+        return real_band_family_row_suffix(base_prop, conn_arg)
 
-    monkeypatch.setattr(content_band, "_band_family_suffix", _fake_band_family_suffix)
+    monkeypatch.setattr(content_band, "_band_family_row_suffix", _fake_band_family_row_suffix)
 
     out = content_band.resolve(Decl("margin-top", "15px", "Base"), _ctx(conn))
     assert isinstance(out, Write)
