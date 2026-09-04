@@ -230,6 +230,17 @@ const GRADE_CONTRAST = 1.0;
 const GRADE_SATURATION = 1.0;
 const GRADE_HUE_SHIFT = -0.00159265358979299;
 
+/*
+ * ── Dark-ground grade variants — MEASURED FROM THE REFERENCE'S OWN DARK
+ *    PRESET, not invented (`.claude/scratch/stripe-hero-poc/index.html:236`:
+ *    `colorSaturation: 1.15, colorHueShift: -0.0315926535897932`). Contrast
+ *    is identical in both presets (1.0) so has no dark variant. Selected by
+ *    `isDarkGround` at upload time, alongside the same `groundLuma` gate the
+ *    fragment shader's depth-fade block already computes.
+ */
+const DEFAULT_GRADE_SATURATION_DARK = 1.15;
+const DEFAULT_GRADE_HUE_SHIFT_DARK = -0.0315926535897932;
+
 const DEFAULT_GLOW_AMOUNT = 1.98;
 const DEFAULT_GLOW_POWER = 0.806;
 const DEFAULT_GLOW_RAMP = 0.834;
@@ -555,27 +566,72 @@ void main() {
 		return;
 	}
 
-	vec3 colour = texture( u_texture, v_uv ).rgb;
+	// D946/1a — sample the FULL texel (colour + real coverage alpha, see
+	// buildFieldImageData()'s Porter-Duff coverage accumulation) and mix
+	// its colour against the client's own ground colour using that alpha,
+	// BEFORE any of the grading/striation pipeline runs. Without this, a
+	// white-gap texel (alpha near 0, RGB near-white) painted straight to
+	// screen would show literal opaque white regardless of ground preset —
+	// this is what made a dark-ground instance show white smudges.
+	vec4 texSample = texture( u_texture, v_uv );
+	vec3 colour = mix( u_ground, texSample.rgb, texSample.a );
+
+	// Ground luminance decides both which grading constants were uploaded
+	// (see the JS-side isDarkGround branch at uniform-upload time) and
+	// whether the light-theme-only fine-texture mechanism below runs at all.
+	// Computed once, before it's needed, so both the striation gate and the
+	// depth-fade gate further down read the exact same value.
+	float groundLuma = dot( u_ground, vec3( 0.299, 0.587, 0.114 ) );
+	bool isDarkGround = groundLuma < 0.5;
 
 	// §3(a) fine-line striation / glow-gate — matches surfaceColor() in
 	// shaders/39798.glsl (constants: see DEFAULT_STRIATION_* declarations).
-	float glowGate = sgsGlowGate( v_uv );
-	float striationNoise = sgsStriationNoise( v_uv );
-	float atten = 1.0 - colour.b * u_colourAttenuation;
-	float parabolaFalloff = 1.0 - sgsParabola( v_uv.x, u_parabolaPower );
-	colour += striationNoise * u_striationStrength * atten * glowGate * parabolaFalloff;
+	// D946/1b — LIGHT-GROUND ONLY: the real dark-theme reference
+	// (shaders/98230.glsl) declares u_glowAmount/u_glowPower/u_glowRamp but
+	// never reads them in main() at all — this whole mechanism (glow-gate,
+	// fine-noise striation, and the camera-facing lift below) has no dark
+	// equivalent in the reference, so it is skipped entirely for dark ground
+	// rather than run with borrowed light-theme numbers. glowGate is left
+	// at a neutral 1.0 so nothing downstream that might read it degrades.
+	// The real dark-theme technique (periodic lines, u_lineAmount around
+	// 425) is deliberately DEFERRED, not forgotten — porting it is new
+	// scope needing its own design gate (see D926/D927: a technique ported
+	// from the wrong preset once caused a large, wrong regression).
+	float glowGate = 1.0;
+	if ( ! isDarkGround ) {
+		glowGate = sgsGlowGate( v_uv );
+		float striationNoise = sgsStriationNoise( v_uv );
+		float atten = 1.0 - colour.b * u_colourAttenuation;
+		// D946/1c — floored, not a bare 0-to-1 falloff: sgsParabola reaches
+		// exactly 1.0 at v_uv.x=0.5, so 1.0 minus sgsParabola(...) used to
+		// hit a true zero at the mesh's horizontal midline — a total
+		// striation blackout measured as a ~31% luma dip landing in the
+		// visually prominent lower third of the ribbon at this preset.
+		// mix(0.4, 1.0, ...) keeps the same falloff shape (still darkest at
+		// the midline) without ever reaching a full blackout. 0.4 is a
+		// starting value for a visible screenshot check, not an
+		// independently re-measured constant — Bean may want to tune it
+		// after looking at the live result.
+		float parabolaFalloff = mix( 0.4, 1.0, 1.0 - sgsParabola( v_uv.x, u_parabolaPower ) );
+		colour += striationNoise * u_striationStrength * atten * glowGate * parabolaFalloff;
+	}
 
 	colour = grade( colour );
 
 	// Camera-facing lift — matches shaders/39798.glsl's
 	// "color += (1.0 - pdy) * 0.25" exactly. (The old §3(b) legacy
 	// periodic-line term that used to sit here is deleted — D926/D927.)
-	colour += ( 1.0 - glowGate ) * 0.25;
+	// Light-ground only, same reasoning as the striation block above:
+	// glowGate is neutral (1.0) for dark ground, so this term is already a
+	// no-op there, but the if keeps the intent explicit rather than
+	// relying on the neutral value silently cancelling it.
+	if ( ! isDarkGround ) {
+		colour += ( 1.0 - glowGate ) * 0.25;
+	}
 
 	// Depth fade, dark-ground only — D926/D927; see FRAGMENT_SHADER's JS
 	// doc comment above for why.
-	float groundLuma = dot( u_ground, vec3( 0.299, 0.587, 0.114 ) );
-	if ( groundLuma < 0.5 ) {
+	if ( isDarkGround ) {
 		float depthFade = clamp( v_depth * u_depthFadeScale, 0.0, 1.0 );
 		colour = mix( colour, u_ground, depthFade );
 	}

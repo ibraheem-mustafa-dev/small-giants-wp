@@ -333,9 +333,16 @@ export function buildFieldImageData( stops, width, height, { nBlobs = 36, radius
 			const warpY = ( noiseY( x, y ) - 0.5 ) * height * 0.1;
 
 			// Alpha-over compositing, linear-light, starting from white.
+			// `coverage` accumulates alongside colour using the SAME
+			// Porter-Duff "over" formula — this is the real per-pixel "how
+			// much ink is here" value, written to the canvas's own alpha
+			// channel below instead of a hardcoded opaque 255. Without this,
+			// every "white gap" pixel is baked as literal opaque white RGB,
+			// which renders wrong on a dark ground preset (D946/1a).
 			let r = 1;
 			let g = 1;
 			let b = 1;
+			let coverage = 0;
 			for ( const blob of blobs ) {
 				const dx = x - blob.cx + warpX;
 				const dy = y - blob.cy + warpY;
@@ -350,13 +357,14 @@ export function buildFieldImageData( stops, width, height, { nBlobs = 36, radius
 				r = blob.colour[ 0 ] * a + r * ( 1 - a );
 				g = blob.colour[ 1 ] * a + g * ( 1 - a );
 				b = blob.colour[ 2 ] * a + b * ( 1 - a );
+				coverage = a + coverage * ( 1 - a );
 			}
 
 			const i = ( y * width + x ) * 4;
 			data[ i ] = Math.round( linearToSrgb( r ) * 255 );
 			data[ i + 1 ] = Math.round( linearToSrgb( g ) * 255 );
 			data[ i + 2 ] = Math.round( linearToSrgb( b ) * 255 );
-			data[ i + 3 ] = 255;
+			data[ i + 3 ] = Math.round( coverage * 255 );
 		}
 	}
 	return new ImageData( data, width, height );

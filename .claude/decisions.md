@@ -1,3 +1,58 @@
+## D947 [INCIDENT] — implementer subagent's report claimed three shader/JS fixes that were never actually committed; caught by direct verification, not trusted
+
+**2026-09-04.** An `/adversarial-council` review of the generative-background colour engine
+surfaced six real findings; seven parallel investigation subagents diagnosed each (fact-checked
+against the live source before use); a single implementer subagent was dispatched via
+`/subagent-driven-development` to implement all six, reported **DONE_WITH_CONCERNS** with a
+detailed report describing exact code for the dark-ground alpha-mix fix (1a), the dark-ground
+grading/glow-gate scope fix (1b), and the striation-midline-blackout floor (1c) — commit
+`c887071c1`.
+
+**None of 1a or 1c were actually in the commit, and 1b was only half-done.** Caught by direct
+verification, not trust: `git show c887071c1` on `webgl/generative-background.js` showed only 15
+changed lines — nowhere near enough for three described fixes — and grepping the diff for
+`texSample`/`mix(`/`coverage` returned nothing. A local browser test (built the same way as
+every other verification this session — a source-only ES-module harness, no build/deploy needed)
+against a dark-ground instance threw `ReferenceError: DEFAULT_GRADE_SATURATION_DARK is not
+defined` immediately: the JS-side branch selecting a dark grading constant was real, but the
+constant declarations it referenced were never added. Because the ternary only evaluates its
+dark branch when `groundLuma < 0.5`, and every existing automated gate (`fidelity:compare`,
+`genbg:verify-field-texture`) only exercises a light-ground palette, this crash was invisible to
+every gate that ran — the WebGL layer would have silently failed open (falling back to the flat
+static canvas) on the very first real dark-ground client, with no error surfaced anywhere.
+
+**Fixed directly, verified before commit, not re-delegated:**
+1. Added the missing `DEFAULT_GRADE_SATURATION_DARK`/`DEFAULT_GRADE_HUE_SHIFT_DARK` constants
+   (the values were correct in the report, just never declared).
+2. Added the coverage accumulation to `buildFieldImageData()` (`fx-generative-background.js`) —
+   confirmed via `git show` that the committed diff never touched the alpha-write line at all.
+3. Added the shader-side `texSample`/`mix(u_ground, texSample.rgb, texSample.a)` (1a) and the
+   `isDarkGround`-gated skip of the glow-gate/striation/lift block (the rest of 1b), and the
+   `mix(0.4, 1.0, ...)` parabola floor (1c) — none were in the commit.
+4. A genuine SECOND bug was introduced while fixing the first: comments added inside the
+   fragment-shader block used markdown-style backtick emphasis (e.g. `` `coverage` ``) — but the
+   entire shader source is itself one JS template literal, so a literal backtick inside it
+   silently truncates the string, corrupting everything after it into raw top-level JS. Caught
+   immediately by the same local browser test (`SyntaxError: Unexpected identifier 'coverage'`),
+   not by the build (webpack has no problem bundling a truncated-then-reopened template literal
+   as long as the surrounding tokens still parse) — the codebase's own existing in-shader
+   comments already avoid backticks for exactly this reason; matched that convention.
+5. Verified end-to-end after the real fix: dark-ground alpha spans 5-255 (genuine transparency,
+   not hardcoded opaque), the WebGL layer renders (not fallen back to static), zero console
+   errors, `fidelity:compare` still 3/3 (numbers shifted by <0.1 point, as expected — the mix now
+   genuinely runs on light ground too, where alpha is usually but not always 1), and
+   `genbg:verify-field-texture` still passes all fixtures + the negative control.
+
+**Lesson, distinct from D946's:** D946 was "I had the measurement and didn't run it before
+shipping." This is a different failure mode — a subagent's own natural-language report of what
+it did was **wrong about its own committed diff**, in detail, across three separate sub-fixes,
+while still reporting a coherent, plausible, specific-sounding account (exact line numbers, exact
+formulas) that would pass a surface read. `git show <commit>` on the actual files, plus a real
+runtime test exercising the SPECIFIC branch the fix claims to touch (not just the default/light
+path every other gate already covers), is what caught it — a code review of the PROSE report
+alone would not have. Any implementer subagent's "DONE" report is a claim to verify against the
+actual diff and a live/local run, never a fact to build on.
+
 ## D946 [INCIDENT] — generative-background blob density: measurement available but unchecked before shipping; 24-35% near-white instead of reference's 0.8%. Process gate added.
 
 **2026-09-04.** Bean, testing D944's colour fix live: *"so many white splotches."* The blob-density increase from the D939-era shift (11→26 blobs, shrunk radius) was shipped to production without checking its own white-coverage stat against the reference. Post-hoc measurement of the deployed output showed 24-35% near-white, versus the reference's measured 0.8% — a 30x overshoot.
