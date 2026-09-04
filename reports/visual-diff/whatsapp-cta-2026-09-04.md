@@ -1,12 +1,31 @@
 # Visual diff — sgs/whatsapp-cta — colour gradient rollout — 2026-09-04
 
-verdict: PASS (static gates); live-capture DEFERRED to this session's centralised deploy step
+verdict: PASS (live-verified, fix applied 2026-09-04)
 intent_capture_passed: true
-source_sha: a15a4975c2abf1fd
+source_sha: 6bd8f7781eadaeb1
 
 Covers Phase 3 of the golden-colour rollout (`doc-type-prompt-title-scalable-sloth.md`)
 reaching `sgs/whatsapp-cta`'s `labelColour` row — the same pattern as `sgs/counter`'s
 `numberColour`/`labelColour` (commit `305f9170c`).
+
+## Update — a real defect found by live probing, fixed (2026-09-04)
+
+The "Selector-overlap note" below REASONED that scoping `labelColour` to `$root_sel` (the
+`<a>` wrapper) was safe. It was wrong, and the live gradient-roundtrip probe
+(`scripts/qa/check-colour-gradient-roundtrip.js`) caught it: `color` inherits from parent
+to child, but `background-image`/`background-clip` do NOT, and the actual visible label
+text lives in a CHILD `<span class="sgs-whatsapp-cta__label">`, not the root. A gradient
+set on `labelColourGradient` left the label span with an inherited `color:transparent`
+and no gradient painting behind it — genuinely invisible text on the live canary,
+measured directly (`background-image:none`, `-webkit-background-clip:border-box` on the
+span, despite the root's own rule resolving correctly). Fixed by moving the emission
+(`render.php`) onto `.{uid} .sgs-whatsapp-cta__label` specifically. Re-probed live after
+the fix: gradient resolves, `clip:text`, `color:transparent` on the span — matches the
+already-proven-correct pattern on `modal`/`nav-drawer`/`business-info`/`form`. The
+selector-overlap reasoning below (about `background-color` vs `background-image`
+coexisting on one element) is now moot for `labelColour` specifically, since it no longer
+shares a selector with `backgroundColour` at all — kept for the record, not because it's
+still load-bearing.
 
 ## What changed
 

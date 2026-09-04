@@ -146,13 +146,19 @@ if ( $btn_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $btn_decls ) . ';}';
 }
 
-// --- Label (text) colour — separate rule, D636 gradient-capable. ---
+// --- Label (text) colour — separate rule, D636 gradient-capable. Scoped to
+// the label SPAN itself, not the root <a> (D948 fix, 2026-09-04): `color`
+// inherits from the root to the child span, but `background-image`/
+// `background-clip` do not, so a gradient set on $root_sel left the visible
+// label text with inherited color:transparent and no gradient behind it —
+// invisible, live-verified on the sandybrown canary. ---
 if ( '' !== $label_colour_effective ) {
+	$label_colour_sel  = '.' . $uid . ' .sgs-whatsapp-cta__label';
 	$label_colour_decl = sgs_text_colour_decl( $label_colour_effective );
 	if ( '' !== $label_colour_decl ) {
-		$scoped_css[] = "{$root_sel}{{$label_colour_decl};}";
+		$scoped_css[] = "{$label_colour_sel}{{$label_colour_decl};}";
 	}
-	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $label_colour_effective );
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_colour_sel, $label_colour_effective );
 }
 
 // --- Base spacing + border-radius via the stable core style engine (skip-
