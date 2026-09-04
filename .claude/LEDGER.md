@@ -163,9 +163,44 @@ may already have solved it.
 
 All 16 media atoms adopted by all six in-scope blocks. Narrative:
 `memory/session-2026-09-02-client-controls-track.md`. Deferred + named there: `hero`'s motion
-CSS-emission, `container`'s Image tab, `product-card`'s `box-shape` adoption; `trust-bar`/
-`brand-strip` nested media not started.
+CSS-emission, `container`'s Image tab, `product-card`'s `box-shape` adoption. `trust-bar`/
+`brand-strip` nested media — DONE 2026-09-04, see the SPEC-35 CAPABILITY-ROUTING TRACK below.
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
 Narrative: `memory/session-2026-08-22-editor-errors-track.md`. Nothing pending.
+
+## ▶ SPEC-35 CAPABILITY-ROUTING TRACK — CLOSED 2026-09-04, all four items, deployed + live-verified
+
+Plan archived: `.claude/plans/archive/spec-35-capability-routing-doctrine.md` (its own status
+line carries the full closure record — read that, not a summary here). All four items the doc
+called open are closed, three needed no build at all:
+- **Part 6 gate** — already a real hard gate since the 2026-08-24 `gates.json` refactor; the
+  doc's own `||`-advisory description was stale. Verified live, 0 violations.
+- **`testimonial`/`image-sequence` crop decision** — both already resolved before this session
+  (`image-sequence`'s dead declaration self-documents its own removal; `testimonial`'s three
+  media slots were already correctly handled, `orgLogo` deliberately fixed/non-overridable).
+- **Part 7 native-supports census** — script existed, never run; ran + committed
+  `reports/migrations/native-supports-census-2026-09-04.json`, 0 findings.
+- **Part 4 multi-image item-schema extension — the only real build.** `gallery`/`card-grid`/
+  `trust-bar`/`brand-strip` each gained a stable per-item `_key`
+  (`src/utils/generateItemKey.js`) and a per-item crop control, deployed and live-verified via
+  the generated collected-CSS stylesheet on each of 4 probe pages (created + verified + deleted).
+  `card-grid`/`gallery` get full object-fit + focal-point; `trust-bar` (image-badge variant
+  only)/`brand-strip` get object-fit only, matching the established logo-content convention (no
+  crosshair on non-photographic media). Two parallel Sonnet subagents built `trust-bar`/
+  `brand-strip` from the `card-grid` reference commit — one real regression surfaced and fixed
+  (`badgeImageObjectFit` lost its only in-file reference when the canvas preview switched to
+  per-item values; fixed by falling back to the block-wide default instead of a literal).
+  Commits: `a314fdc47`/`335a0885a` (card-grid+gallery), `ef051e39c` (unrelated `icon-list` gate
+  fix that was blocking the whole project's build), `0fbfb51d2`/`94485dad5` (trust-bar/
+  brand-strip). Reports: `reports/visual-diff/{card-grid,gallery,trust-bar,brand-strip}-
+  2026-09-04.md`.
+
+⚠ **Two shared-resource incidents this session, both resolved, neither mine to have caused:**
+a `check-box-family-guard` finding on `converter/resolvers/content_band.py` (a concurrent
+session's file, fixed by them) and a `db-consistency` gate finding on `sgs/nav-drawer`/
+`notice-banner`/`post-grid` (also fixed by a concurrent session before I re-attempted the
+commit) both briefly blocked this track's commits. Neither was baselined blind — both were
+confirmed unrelated to this track's payload before waiting on the other session, per this
+project's own "don't touch a shared/high-blast-radius file without coordination" rule.
