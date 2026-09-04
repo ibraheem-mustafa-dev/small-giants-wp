@@ -1159,8 +1159,15 @@
       "fields": {
         "css_property": "box-shadow",
         "css_layer": "OUTER",
-        "css_element": "wrapper",
-        "css_state": "hover"
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "fx",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -1618,9 +1625,28 @@
     },
     {
       "slug": "sgs/heading",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
       "attr": "boxShadowHover",
       "fields": {
         "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "boxShadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow-color",
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
@@ -2220,7 +2246,7 @@
       "attr": "iconColourHover",
       "fields": {
         "css_property": "color",
-        "css_state": "hover"
+        "css_element": "icon"
       }
     },
     {
@@ -2769,6 +2795,7 @@
       "attr": "toggleCloseColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "close"
       }
     },
@@ -2777,6 +2804,7 @@
       "attr": "toggleCloseColourHover",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "close",
         "css_state": "hover"
       }
@@ -3095,6 +3123,7 @@
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "icon"
       }
     },
@@ -3103,6 +3132,7 @@
       "attr": "iconColourHover",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "icon",
         "css_state": "hover"
       }
@@ -3416,6 +3446,8 @@
       "attr": "textColourHover",
       "fields": {
         "css_property": "color",
+        "role": "color",
+        "css_element": "read-more",
         "css_state": "hover"
       }
     },
@@ -4607,6 +4639,15 @@
     },
     {
       "slug": "sgs/testimonial",
+      "attr": "nameColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "reviewer-name"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
       "attr": "nameFontSize",
       "fields": {
         "css_property": "font-size",
@@ -4619,6 +4660,15 @@
       "fields": {
         "css_property": "font-weight",
         "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "orgColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "org-name"
       }
     },
     {
@@ -4637,6 +4687,24 @@
         "role": "color",
         "css_element": "quote-text",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "ratingColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "rating"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "roleColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "reviewer-role"
       }
     },
     {
@@ -4662,6 +4730,15 @@
         "css_property": "box-shadow",
         "css_layer": "OUTER",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "summaryColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "summary"
       }
     },
     {
@@ -4776,9 +4853,28 @@
     },
     {
       "slug": "sgs/text",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
       "attr": "boxShadowHover",
       "fields": {
         "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "boxShadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow-color",
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
@@ -4924,8 +5020,7 @@
       "attr": "badgeImageShadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "badge-img",
-        "css_state": "hover"
+        "css_element": "badge-img"
       }
     },
     {
@@ -4977,8 +5072,7 @@
       "attr": "iconCircleShadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "icon-badge",
-        "css_state": "hover"
+        "css_element": "icon-badge"
       }
     },
     {
@@ -5523,6 +5617,14 @@
       "fields": {
         "css_property": "object-fit",
         "css_element": "logo"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "nameColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "caption"
       }
     },
     {
@@ -8819,6 +8921,14 @@
     },
     {
       "slug": "sgs/option-picker",
+      "attr": "labelColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
       "attr": "pillBorderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
@@ -9160,6 +9270,14 @@
     },
     {
       "slug": "sgs/pricing-table",
+      "attr": "featureColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "feature"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
       "attr": "flexDirection",
       "fields": {
         "css_property": "flex-direction",
@@ -9277,6 +9395,14 @@
       "fields": {
         "css_property": "anim:easing",
         "css_element": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "titleColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "title"
       }
     },
     {
@@ -9645,6 +9771,14 @@
     },
     {
       "slug": "sgs/quote",
+      "attr": "attributionColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
       "attr": "attributionMarginTop",
       "fields": {
         "css_property": "margin-top",
@@ -9750,15 +9884,6 @@
       "fields": {
         "css_property": "width",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "alignContent",
-      "fields": {
-        "css_property": "align-content",
-        "css_layer": "GRID",
-        "css_element": "inner"
       }
     },
     {
@@ -11092,19 +11217,17 @@
     },
     {
       "slug": "sgs/testimonial",
-      "attr": "nameColour",
+      "attr": "nameColourGradient",
       "fields": {
-        "css_property": "color",
-        "role": "color",
+        "css_property": "background-image",
         "css_element": "reviewer-name"
       }
     },
     {
       "slug": "sgs/testimonial",
-      "attr": "orgColour",
+      "attr": "orgColourGradient",
       "fields": {
-        "css_property": "color",
-        "role": "color",
+        "css_property": "background-image",
         "css_element": "org-name"
       }
     },
@@ -11126,10 +11249,9 @@
     },
     {
       "slug": "sgs/testimonial",
-      "attr": "ratingColour",
+      "attr": "ratingColourGradient",
       "fields": {
-        "css_property": "color",
-        "role": "color",
+        "css_property": "background-image",
         "css_element": "rating"
       }
     },
@@ -11143,10 +11265,9 @@
     },
     {
       "slug": "sgs/testimonial",
-      "attr": "roleColour",
+      "attr": "roleColourGradient",
       "fields": {
-        "css_property": "color",
-        "role": "color",
+        "css_property": "background-image",
         "css_element": "reviewer-role"
       }
     },
@@ -11184,10 +11305,9 @@
     },
     {
       "slug": "sgs/testimonial",
-      "attr": "summaryColour",
+      "attr": "summaryColourGradient",
       "fields": {
-        "css_property": "color",
-        "role": "color",
+        "css_property": "background-image",
         "css_element": "summary"
       }
     },
