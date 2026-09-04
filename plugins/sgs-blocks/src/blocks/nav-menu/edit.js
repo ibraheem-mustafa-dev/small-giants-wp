@@ -197,6 +197,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		submenuMinWidth,
 		submenuRadius,
 		submenuPadding,
+		navColourHover,
+		burgerColourHover,
+		submenuColourHover,
 	} = attributes;
 
 	// Burger Menu 'Custom' reveal — UI-only state (the stored value is collapsePoint).
@@ -527,6 +530,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					gradientValue: navColourGradient,
 					onGradientChange: ( val ) => setAttributes( { navColourGradient: val ?? '' } ),
 				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: navColourHover,
+					onChange: ( val ) => setAttributes( { navColourHover: val ?? '' } ),
+					linked: true,
+					},
 			],
 		},
 		{
@@ -649,6 +659,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					onGradientChange: ( val ) => setAttributes( { burgerColourGradient: val ?? '' } ),
 					linked: true,
 				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: burgerColourHover,
+					onChange: ( val ) => setAttributes( { burgerColourHover: val ?? '' } ),
+					linked: true,
+				},
 			],
 		},
 		{
@@ -660,6 +677,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: burgerBg,
 					onChange: ( val ) => setAttributes( { burgerBg: val ?? '' } ),
+					gradientValue: attributes.burgerBgGradient,
+					onGradientChange: ( val ) => setAttributes( { burgerBgGradient: val ?? '' } ),
 					linked: true,
 				},
 				{
@@ -680,6 +699,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: indicatorColour,
 					onChange: ( val ) => setAttributes( { indicatorColour: val ?? '' } ),
+					gradientValue: attributes.indicatorColourGradient,
+					onGradientChange: ( val ) => setAttributes( { indicatorColourGradient: val ?? '' } ),
 					linked: true,
 				},
 			],
@@ -709,6 +730,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					onChange: ( val ) => setAttributes( { submenuColour: val ?? '' } ),
 					gradientValue: submenuColourGradient,
 					onGradientChange: ( val ) => setAttributes( { submenuColourGradient: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: submenuColourHover,
+					onChange: ( val ) => setAttributes( { submenuColourHover: val ?? '' } ),
 					linked: true,
 				},
 			],

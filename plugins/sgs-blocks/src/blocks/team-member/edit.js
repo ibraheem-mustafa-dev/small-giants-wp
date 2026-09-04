@@ -297,6 +297,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginTablet,
 		marginMobile,
 		maxWidth,
+		nameColourHover,
+		roleColourHover,
 	} = attributes;
 
 	const isCompact = 'compact' === displayMode;
@@ -403,6 +405,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: nameColourGradient,
 								onGradientChange: ( val ) => setAttributes( { nameColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: nameColourHover,
+								onChange: ( val ) => setAttributes( { nameColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					{
@@ -419,6 +428,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: roleColourGradient,
 								onGradientChange: ( val ) => setAttributes( { roleColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: roleColourHover,
+								onChange: ( val ) => setAttributes( { roleColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					cardShadow && {

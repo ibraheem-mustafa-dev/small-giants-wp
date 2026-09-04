@@ -40,7 +40,13 @@
 			"imageControlsExplicit": true,
 			"_comment_mediaElements": "37-media-no-handroll remediation (2026-09-03, CORRECTED same day via /qc-council). NOT a new client control: prefix 'sgs' resolves (sgs_media_element_attr) to the SAME 'sgsObjectFit' attribute imageControlsExplicit's legacy image-controls extension already injects and already exposes an 'Object fit' dropdown for -- the original unprefixed entry here created a SECOND, dead 'Object fit' dropdown (QC-council finding: two identically-labelled controls in the same inspector) and, worse, left the legacy sgs_media_position_css() call in render.php free to emit a literal object-fit declaration from any PRE-EXISTING sgsObjectFit value on the SAME selector the atom now paints -- a live double-emission risk for any team-member instance saved before this fix, not just a cosmetic duplicate. render.php now clears sgsObjectFit before that call (mirrors sgs/gallery's identical fix) so only object-position emits from the legacy path, and the atom owns object-fit exclusively via this SAME attribute. style.css's hardcoded object-fit:cover was removed; the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` atom stylesheet paints the identical default.",
 			"mediaElements": [
-				{ "prefix": "sgs", "context": "element", "atoms": [ "object-fit" ] }
+				{
+					"prefix": "sgs",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
 			],
 			"scalarContentLift": true,
 			"presetSelectors": [
@@ -396,6 +402,14 @@
 		"borderRadiusMobile": {
 			"type": "object",
 			"default": {}
+		},
+		"nameColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"roleColourHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

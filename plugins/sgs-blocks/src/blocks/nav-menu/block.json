@@ -138,9 +138,10 @@
 						"fill"
 					],
 					"attrMap": {
-						"css:background-color": "indicatorColour"
+						"css:background-color": "indicatorColour",
+						"css:background-image": "indicatorColourGradient"
 					},
-					"_note": "The `.sgs-nav-menu__indicator` sliding pill (render.php:1582-1583), view.js-animated behind the active/hovered item — only rendered when `indicatorStyle='pill'`. Added 2026-08-15, no manifest element previously covered it. `indicatorColour` mapped explicitly (attrMap) rather than via the default `{prefix}Suffix` convention: the fill cluster's css:background-color member only lists `BackgroundColour`/`Bg`/`Background` suffixes, none of which matches `indicatorColour`'s bare `Colour` form. `clusters: [\"fill\"]` is declared (not `[]`) SPECIFICALLY so the forward-resolution pass actually visits css:background-color and consults this attrMap — an attrMap on an element with `clusters: []` is never consulted (nothing ever iterates it), which was caught live: the first version of this fix (clusters: []) left indicatorColour unclaimed and it surfaced as a NEW style-defect orphan instead of resolving. The other fill-cluster members (opacity/background-image/etc.) become honest GAPs — ungated, and correct, since this element has no such controls."
+					"_note": "indicatorColourGradient added 2026-09-04 (fix.js codemod apply, Bug A fix) -- non-empty wins over indicatorColour. The `.sgs-nav-menu__indicator` sliding pill (render.php:1582-1583), view.js-animated behind the active/hovered item — only rendered when `indicatorStyle='pill'`. Added 2026-08-15, no manifest element previously covered it. `indicatorColour` mapped explicitly (attrMap) rather than via the default `{prefix}Suffix` convention: the fill cluster's css:background-color member only lists `BackgroundColour`/`Bg`/`Background` suffixes, none of which matches `indicatorColour`'s bare `Colour` form. `clusters: [\"fill\"]` is declared (not `[]`) SPECIFICALLY so the forward-resolution pass actually visits css:background-color and consults this attrMap — an attrMap on an element with `clusters: []` is never consulted (nothing ever iterates it), which was caught live: the first version of this fix (clusters: []) left indicatorColour unclaimed and it surfaced as a NEW style-defect orphan instead of resolving. The other fill-cluster members (opacity/background-image/etc.) become honest GAPs — ungated, and correct, since this element has no such controls."
 				},
 				"featured": {
 					"label": "Featured item",
@@ -175,7 +176,8 @@
 					"attrMap": {
 						"css:width": "burgerSize",
 						"css:height": "burgerSize",
-						"css:color-gradient": "burgerColourGradient"
+						"css:color-gradient": "burgerColourGradient",
+						"css:background-image": "burgerBgGradient"
 					},
 					"states": {
 						"hover": {
@@ -189,7 +191,9 @@
 				"sublink": {
 					"label": "Submenu link",
 					"order": 8,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "",
 					"attrMap": {
 						"css:color": "submenuColour",
@@ -456,6 +460,26 @@
 			"default": {}
 		},
 		"navBgGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"navColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"burgerColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"burgerBgGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"indicatorColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuColourHover": {
 			"type": "string",
 			"default": ""
 		}

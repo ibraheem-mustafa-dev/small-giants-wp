@@ -633,6 +633,9 @@ if ( '' !== $name_colour_effective ) {
 	}
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $name_colour_sel, $name_colour_effective );
 }
+if ( '' !== ( $attributes['nameColourHover'] ?? '' ) ) {
+	$scoped_css[] = sgs_hover_state_rules( "{$name_colour_sel}", "color:" . sgs_colour_value( $attributes['nameColourHover'] ), ':focus-visible' );
+}
 $role_colour_effective = sgs_resolve_text_colour_or_gradient( $role_colour, $role_colour_gradient );
 if ( '' !== $role_colour_effective ) {
 	$role_colour_decl = sgs_text_colour_decl( $role_colour_effective );
@@ -640,6 +643,9 @@ if ( '' !== $role_colour_effective ) {
 		$scoped_css[] = "{$role_colour_sel}{{$role_colour_decl};}";
 	}
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $role_colour_sel, $role_colour_effective );
+}
+if ( '' !== ( $attributes['roleColourHover'] ?? '' ) ) {
+	$scoped_css[] = sgs_hover_state_rules( "{$role_colour_sel}", "color:" . sgs_colour_value( $attributes['roleColourHover'] ), ':focus-visible' );
 }
 
 // --- Photo object-position (Spec 35 capability-routing doctrine mechanism

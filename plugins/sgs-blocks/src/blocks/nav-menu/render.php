@@ -802,6 +802,7 @@ $indicator_style          = isset( $attributes['indicatorStyle'] ) && in_array( 
 	? (string) $attributes['indicatorStyle']
 	: 'none';
 $indicator_colour  = isset( $attributes['indicatorColour'] ) ? (string) $attributes['indicatorColour'] : '';
+$indicator_colour_gradient = sgs_css_gradient_value( $attributes['indicatorColourGradient'] ?? '' );
 $magnet_enabled    = ! empty( $attributes['itemMagnetEnabled'] );
 $bar_data_attrs    = '';
 $bar_data_attrs   .= 'pill' === $indicator_style ? ' data-sgs-nav-indicator' : '';
@@ -867,6 +868,9 @@ if ( '' !== $nav_colour_effective ) {
 		$css .= $uid_sel . '{' . $nav_colour_decl . ';}';
 	}
 	$css .= sgs_text_colour_gradient_fallback_rule( $uid_sel, $nav_colour_effective );
+}
+if ( '' !== ( $attributes['navColourHover'] ?? '' ) ) {
+	$css .= sgs_hover_state_rules( "{$uid_sel}", "color:" . sgs_colour_value( $attributes['navColourHover'] ), ':focus-visible' );
 }
 
 // 4b. Item colours (resting). Base is `inherit` in style.css; an unset slug
@@ -1155,6 +1159,9 @@ if ( '' !== $burger_colour_effective ) {
 	}
 	$css .= sgs_text_colour_gradient_fallback_rule( $uid_sel . ' .sgs-nav-menu__burger', $burger_colour_effective );
 }
+if ( '' !== ( $attributes['burgerColourHover'] ?? '' ) ) {
+	$css .= sgs_hover_state_rules( "{$uid_sel} .sgs-nav-menu__burger", "color:" . sgs_colour_value( $attributes['burgerColourHover'] ), ':focus-visible' );
+}
 
 /*
  * RESTING background — the base for burgerHoverColour's hover state (Spec 35
@@ -1164,8 +1171,9 @@ if ( '' !== $burger_colour_effective ) {
  * byte-identical default when this is left unset.
  */
 $burger_bg = isset( $attributes['burgerBg'] ) ? (string) $attributes['burgerBg'] : '';
+$burger_bg_gradient = sgs_css_gradient_value( $attributes['burgerBgGradient'] ?? '' );
 if ( '' !== $burger_bg ) {
-	$css .= $uid_sel . ' .sgs-nav-menu__burger{background-color:' . sgs_colour_value( $burger_bg ) . ';}';
+	$css .= $uid_sel . ' .sgs-nav-menu__burger{' . sgs_background_paint_decl( $burger_bg, $burger_bg_gradient ) . ';}';
 }
 $burger_hover_slug = isset( $attributes['burgerHoverColour'] ) ? (string) $attributes['burgerHoverColour'] : '';
 if ( '' !== $burger_hover_slug ) {
@@ -1409,6 +1417,9 @@ if ( '' !== $submenu_colour_effective ) {
 	}
 	$css .= sgs_text_colour_gradient_fallback_rule( $uid_sel . ' .sgs-nav-menu__sublink', $submenu_colour_effective );
 }
+if ( '' !== ( $attributes['submenuColourHover'] ?? '' ) ) {
+	$css .= sgs_hover_state_rules( "{$uid_sel} .sgs-nav-menu__sublink", "color:" . sgs_colour_value( $attributes['submenuColourHover'] ), ':focus-visible' );
+}
 
 /*
  * Hover/focus read as DESIGN, not as a stray underline: a tinted row plus a
@@ -1603,7 +1614,7 @@ $css .= $uid_sel . ' .sgs-nav-menu__mega-viewall{display:inline-block;margin-top
  * token default) is attribute-driven, so it belongs in the scoped <style>.
  */
 if ( 'pill' === $indicator_style && '' !== $indicator_colour ) {
-	$css .= $uid_sel . ' .sgs-nav-menu__indicator{background-color:' . sgs_colour_value( $indicator_colour ) . ';}';
+	$css .= $uid_sel . ' .sgs-nav-menu__indicator{' . sgs_background_paint_decl( $indicator_colour, $indicator_colour_gradient ) . ';}';
 }
 
 // 4g-bis. ROOT BOX — max-width + native spacing + responsive padding tiers.
