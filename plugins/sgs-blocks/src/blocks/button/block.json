@@ -64,6 +64,7 @@
 						"css:text-transform": "textTransform",
 						"css:text-decoration": "textDecoration",
 						"css:color": "colourText",
+						"css:color-gradient": "colourTextGradient",
 						"css:background-color": "colourBackground",
 						"css:background-image": "colourBackgroundGradient",
 						"css:width": "customWidth",
@@ -82,6 +83,7 @@
 						"hover": {
 							"attrMap": {
 								"css:color": "colourTextHover",
+								"css:color-gradient": "colourTextHoverGradient",
 								"css:background-color": "colourBackgroundHover",
 								"css:background-image": "colourBackgroundHoverGradient",
 								"css:border-color": "borderColourHover",
@@ -262,9 +264,19 @@
 			"type": "string",
 			"default": ""
 		},
+		"colourTextGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the button's TEXT via background-clip:text instead of a flat colourText. Non-empty (and valid) wins at render time. Precondition: sgs/button paints its own background on the SAME selector as its text, so this instance's background paint moves onto a private `::after` layer only when this (or colourTextHoverGradient) is set — see plugins/sgs-blocks/CLAUDE.md 'Real text gradient'. Every button with no gradient set is unaffected."
+		},
 		"colourTextHover": {
 			"type": "string",
 			"default": ""
+		},
+		"colourTextHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of colourTextGradient. Non-empty (and valid) wins over colourTextHover on :hover/:focus-visible."
 		},
 		"colourBackground": {
 			"type": "string",

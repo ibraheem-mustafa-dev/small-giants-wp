@@ -258,6 +258,11 @@ $tier_object_synthetic_attrs = array_merge(
 // Colours (custom mode only).
 $colour_text              = isset( $attributes['colourText'] ) ? $attributes['colourText'] : '';
 $colour_text_hover        = isset( $attributes['colourTextHover'] ) ? $attributes['colourTextHover'] : '';
+// D636-family sibling attrs — resolved further down (step 8) alongside the
+// border-colour gradient, once $uid exists for the scoped selector. Read
+// here purely to keep every attribute extraction in one place (step 1).
+$colour_text_gradient       = isset( $attributes['colourTextGradient'] ) ? (string) $attributes['colourTextGradient'] : '';
+$colour_text_hover_gradient = isset( $attributes['colourTextHoverGradient'] ) ? (string) $attributes['colourTextHoverGradient'] : '';
 $colour_bg                = isset( $attributes['colourBackground'] ) ? $attributes['colourBackground'] : '';
 $colour_bg_gradient       = isset( $attributes['colourBackgroundGradient'] ) ? $attributes['colourBackgroundGradient'] : '';
 $colour_bg_hover          = isset( $attributes['colourBackgroundHover'] ) ? $attributes['colourBackgroundHover'] : '';
@@ -945,6 +950,94 @@ if ( '' !== $colour_border_gradient ) {
 		'' !== $colour_border_hover_gradient ? $colour_border_hover_gradient : sgs_colour_value( $colour_border_hover ),
 		$has_border_width ? ( '' !== $border_width_top ? $border_width_top : '1px' ) : '1px'
 	);
+}
+
+// --- Text-colour gradient (colourTextGradient/colourTextHoverGradient) —
+// D636 sibling recipe: the gradient wins over the flat colourText/
+// colourTextHover when set+valid. UNLIKE every other gradient on this
+// block, text needs a precondition check first (CLAUDE.md "Real text
+// gradient" — plugins/sgs-blocks/CLAUDE.md): `.sgs-button`'s base rule +
+// all three presets (style.css) paint the button's OWN background on the
+// EXACT SAME selector a text colour targets, and `background-clip:text`
+// (which sgs_text_colour_decl() emits for a gradient) clips whatever
+// background that selector paints to the glyph shapes — it would erase the
+// button's own fill.
+//
+// So the background is moved onto a `.{uid}.sgs-button::after` layer, but
+// ONLY for THIS INSTANCE and ONLY when a text gradient is actually valid —
+// gated on sgs_css_gradient_value() returning non-empty, not merely on the
+// attribute being set. Every other button on every site keeps rendering
+// through the shared class-driven rules in style.css completely untouched
+// (this whole block is byte-identical no-op for a flat-colour button).
+//
+// Hand-built rather than a call to sgs_block_background_layer_css(): that
+// helper takes an already-resolved paint declaration, but sgs/button's
+// background is CLASS-driven through a --sgs-btn-bg*/--sgs-btn-bg-image*
+// var() chain (Spec 32 FR-32-2 — three presets + a per-instance override +
+// an sgs/multi-button group default; see style.css's own file-header
+// comment) that this file never resolves to a literal value. Moving that
+// SAME var() chain from `.sgs-button`'s own background-* onto
+// `.{uid}.sgs-button::after`'s background-* — and neutralising it on the
+// element itself — reproduces the identical resolved paint through the
+// exact same vars, so whichever preset/override would have won still wins.
+//
+// Specificity: the doubled `.{uid}.{uid}.sgs-button` selector (0,3,0) is used
+// for the RESTING override rather than the usual single `.{uid}.sgs-button`
+// (0,2,0) — style.css's shared `.sgs-button:hover,.sgs-button:focus-visible`
+// rule is ALSO (0,2,0), so a single-uid resting rule would only beat it by
+// document order, which this file's own min-height comment (step 4) records
+// as measured FALSE in some bundling scenarios. The doubled selector beats
+// (0,2,0) unconditionally, matching that precedent (Pattern A elsewhere in
+// this file already uses the same trick for the same reason).
+$text_gradient_value       = sgs_css_gradient_value( $colour_text_gradient );
+$text_gradient_hover_value = sgs_css_gradient_value( $colour_text_hover_gradient );
+
+if ( '' !== $text_gradient_value || '' !== $text_gradient_hover_value ) {
+	$btn_sel        = ".{$uid}.sgs-button";
+	$btn_sel_strong = ".{$uid}.{$uid}.sgs-button";
+
+	// Neutralise the element's own background (it now paints on ::after) and
+	// establish the stacking context the negative z-index layer needs.
+	$scoped_css_parts[] = "{$btn_sel_strong}{position:relative;isolation:isolate;background-color:transparent;background-image:none;}";
+	$scoped_css_parts[] = "{$btn_sel}::after{content:\"\";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background-color:var(--sgs-btn-bg, var(--sgs-mb-btn-bg-default, transparent));background-image:var(--sgs-btn-bg-image, none);}";
+	// Hover/focus repaint the ::after layer with the SAME hover var chain the
+	// shared stylesheet would otherwise have applied to the element itself.
+	$scoped_css_parts[] = sgs_hover_state_rules(
+		$btn_sel,
+		'background-color:var(--sgs-btn-bg-hover, var(--sgs-btn-bg, var(--sgs-mb-btn-bg-default, transparent)));background-image:var(--sgs-btn-bg-hover-image, var(--sgs-btn-bg-image, none))',
+		':focus-visible',
+		'::after'
+	);
+
+	if ( '' !== $text_gradient_value ) {
+		$text_gradient_decl = sgs_text_colour_decl( $text_gradient_value );
+		if ( '' !== $text_gradient_decl ) {
+			$scoped_css_parts[] = "{$btn_sel_strong}{{$text_gradient_decl};}";
+		}
+		// MANDATORY companion (helpers-tokens.php docblock) — old-browser
+		// fallback for a gradient text colour; targets the exact same
+		// selector the decl above was emitted onto.
+		$scoped_css_parts[] = sgs_text_colour_gradient_fallback_rule( $btn_sel_strong, $text_gradient_value );
+	}
+
+	if ( '' !== $text_gradient_hover_value ) {
+		$text_gradient_hover_decl = sgs_text_colour_decl( $text_gradient_hover_value );
+		if ( '' !== $text_gradient_hover_decl ) {
+			$scoped_css_parts[] = sgs_hover_state_rules( $btn_sel, $text_gradient_hover_decl . ';', ':focus-visible' );
+		}
+		// Hover-state fallback — same touch-safe wrapping as sgs/heading's own
+		// hover-gradient fallback (D636 precedent): the guarded :hover branch
+		// goes through sgs_hover_media_wrap() + SGS_HOVER_NOT_TOUCH (the
+		// @supports rule can't be injected into by sgs_hover_guarded_rule()
+		// itself, since it isn't a plain selector/decl pair), and the
+		// keyboard-reachable :focus-visible branch is unguarded.
+		$text_gradient_hover_fallback = sgs_hover_media_wrap(
+			sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $btn_sel . ':hover', $text_gradient_hover_value )
+		) . sgs_text_colour_gradient_fallback_rule( $btn_sel . ':focus-visible', $text_gradient_hover_value );
+		if ( '' !== $text_gradient_hover_fallback ) {
+			$scoped_css_parts[] = $text_gradient_hover_fallback;
+		}
+	}
 }
 
 $wrapper_attr = get_block_wrapper_attributes(

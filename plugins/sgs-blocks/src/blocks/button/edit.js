@@ -180,7 +180,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		lineHeight,
 		letterSpacing,
 		colourText,
+		colourTextGradient,
 		colourTextHover,
+		colourTextHoverGradient,
 		colourBackground,
 		colourBackgroundGradient,
 		colourBackgroundHover,
@@ -388,12 +390,18 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: colourText,
 								onChange: ( val ) => setAttributes( { colourText: val ?? '' } ),
+								gradientValue: colourTextGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { colourTextGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: colourTextHover,
 								onChange: ( val ) => setAttributes( { colourTextHover: val ?? '' } ),
+								gradientValue: colourTextHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { colourTextHoverGradient: val ?? '' } ),
 							},
 						],
 					},
