@@ -428,11 +428,11 @@ if ( $base_decls ) {
 // Transition — applied on the element always (preset AND custom).
 $scoped_css_parts[] = ".{$uid}.sgs-button{transition:all {$transition_duration}ms {$transition_easing};}";
 
-// Hover scale (skip if exactly 1.0 — no-op).
+// Hover scale (skip if exactly 1.0 — no-op). Touch-safe: guarded via
+// sgs_hover_state_rules() so a tap doesn't stick the scale on touchscreens.
 if ( abs( $hover_scale - 1.0 ) > 0.001 ) {
 	$scale_val          = round( $hover_scale, 3 );
-	$scoped_css_parts[] = ".{$uid}.sgs-button:hover{transform:scale({$scale_val});}";
-	$scoped_css_parts[] = ".{$uid}.sgs-button:focus-visible{transform:scale({$scale_val});}";
+	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:scale({$scale_val})" );
 }
 
 // Hover: colour hovers are CLASS-driven (Spec 32) via the --sgs-btn-*-hover vars
@@ -450,12 +450,12 @@ if ( '' !== $box_shadow_hover ) {
 }
 
 if ( $hover_rules ) {
-	$scoped_css_parts[] = ".{$uid}.sgs-button:hover,.{$uid}.sgs-button:focus-visible{" . implode( ';', $hover_rules ) . ';}';
+	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", implode( ';', $hover_rules ) );
 }
 
 // Icon hover colour.
 if ( $icon_col_hov ) {
-	$scoped_css_parts[] = ".{$uid}.sgs-button:hover .sgs-button__icon,.{$uid}.sgs-button:focus-visible .sgs-button__icon{color:" . sgs_colour_value( $icon_col_hov ) . ';}';
+	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", 'color:' . sgs_colour_value( $icon_col_hov ), ':focus-visible', ' .sgs-button__icon' );
 }
 
 // Typography + border-radius — base + tablet + mobile on the SAME

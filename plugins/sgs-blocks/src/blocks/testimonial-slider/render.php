@@ -349,8 +349,23 @@ if ( $slider_hover_decls ) {
 // :hover/:focus-within only (mirrors sgs/testimonial's own borderColourHover
 // gradient — same hover-only semantics, no resting-state border to override).
 if ( '' !== $hover_border_gradient ) {
+	// Touch-safe: sgs_border_gradient_css() has no hover-only mode (it bails
+	// when $normal_paint is empty), so a hover-scoped selector is baked in as
+	// its own "normal_paint" call — this must therefore carry its own guard
+	// rather than relying on the helper's $hover_paint branch. Layer 1 (media)
+	// wraps the whole rule via sgs_hover_media_wrap(); layer 2 (touch class) is
+	// prefixed onto the selector per that function's own documented pattern
+	// for opaque-rule callers. Focus-within stays outside both guards.
+	$slider_scoped_css .= sgs_hover_media_wrap(
+		sgs_border_gradient_css(
+			SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover',
+			$hover_border_gradient,
+			null,
+			'1px'
+		)
+	);
 	$slider_scoped_css .= sgs_border_gradient_css(
-		$root_sel . ':hover,' . $root_sel . ':focus-within',
+		$root_sel . ':focus-within',
 		$hover_border_gradient,
 		null,
 		'1px'

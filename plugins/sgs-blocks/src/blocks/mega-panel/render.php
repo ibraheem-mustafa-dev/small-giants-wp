@@ -388,8 +388,8 @@ if ( '' !== $group_border_resting_gradient ) {
 // instant colour swap, not part of the animated property set). ------------
 $css .= $style_crd . $rel_group . '{position:relative;transition:transform .2s ease;}';
 $css .= $style_crd . $rel_group . '::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 20px 40px -12px rgba(0,0,0,.28);opacity:0;transition:opacity .3s ease;pointer-events:none;}';
-$css .= $style_crd . $rel_group . ':hover,' . $style_crd . $rel_group . ':focus-within{transform:translateY(-3px);border-color:var(--sgs-mm-accent-border);}';
-$css .= $style_crd . $rel_group . ':hover::after,' . $style_crd . $rel_group . ':focus-within::after{opacity:1;}';
+$css .= sgs_hover_state_rules( $style_crd . $rel_group, 'transform:translateY(-3px);border-color:var(--sgs-mm-accent-border)', ':focus-within' );
+$css .= sgs_hover_state_rules( $style_crd . $rel_group, 'opacity:1', ':focus-within', '::after' );
 $css .= '@media (prefers-reduced-motion: reduce){'
 	. $style_crd . $rel_group . '{transition:none;}'
 	. $style_crd . $rel_group . '::after{transition:none;}'
@@ -402,8 +402,23 @@ $css .= '@media (prefers-reduced-motion: reduce){'
 // accent-border-color is exclusively a hover/focus-within paint on this
 // `cards`-style tile).
 if ( '' !== $accent_border_gradient ) {
+	// Touch-safe: sgs_border_gradient_css() has no hover-only mode (it bails
+	// when $normal_paint is empty), so a hover-scoped selector is baked in as
+	// its own "normal_paint" call — this must therefore carry its own guard
+	// rather than relying on the helper's $hover_paint branch. Layer 1 (media)
+	// wraps the whole rule via sgs_hover_media_wrap(); layer 2 (touch class) is
+	// prefixed onto the selector per that function's own documented pattern
+	// for opaque-rule callers. Focus-within stays outside both guards.
+	$css .= sgs_hover_media_wrap(
+		sgs_border_gradient_css(
+			SGS_HOVER_NOT_TOUCH . ' ' . $style_crd . $rel_group . ':hover',
+			$accent_border_gradient,
+			null,
+			'1px'
+		)
+	);
 	$css .= sgs_border_gradient_css(
-		$style_crd . $rel_group . ':hover,' . $style_crd . $rel_group . ':focus-within',
+		$style_crd . $rel_group . ':focus-within',
 		$accent_border_gradient,
 		null,
 		'1px'
