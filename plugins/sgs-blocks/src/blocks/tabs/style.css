@@ -375,6 +375,10 @@
 		background-color: var( --wp--preset--color--surface-alt, #f5f7f7 );
 		border-color: var( --wp--preset--color--primary, currentColor );
 		color: var( --wp--preset--color--primary, currentColor );
+		/* Rule 43 (WCAG 1.4.1): selected state must not rely on colour alone —
+		 * the resting border is already 1px solid, so bump to 2px as the
+		 * non-colour signal. */
+		border-width: 2px;
 	}
 
 	/* Hide the underline indicator at mobile — full-button styling carries the active state */

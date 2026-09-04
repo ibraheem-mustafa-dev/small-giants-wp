@@ -143,6 +143,10 @@
 
 .sgs-toc__link--active {
 	font-weight: 600;
+	/* Rule 43 (WCAG 1.4.1): the active-link colour rule below (:where(), colour
+	 * only) must not be the sole signal — text-decoration is the non-colour
+	 * signal for a text link. */
+	text-decoration: underline;
 }
 
 /* Spec 32: no block emits an inline `style` property declaration any more,
