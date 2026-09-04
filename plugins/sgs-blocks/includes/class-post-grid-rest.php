@@ -406,7 +406,7 @@ class Post_Grid_REST {
 			if ( '' !== $sgs_pg_uid && class_exists( 'SGS_Media_Element' ) ) {
 				$img_attrs['class'] .= ' ' . implode(
 					' ',
-					SGS_Media_Element::element_classes( SGS_Media_Element::scope_class( $sgs_pg_uid, '' ) )
+					\SGS_Media_Element::element_classes( \SGS_Media_Element::scope_class( $sgs_pg_uid, '' ) )
 				);
 			}
 
