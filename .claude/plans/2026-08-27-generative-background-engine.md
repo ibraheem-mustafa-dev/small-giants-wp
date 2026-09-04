@@ -217,8 +217,23 @@ live-page comparison is too confounded by geometry/shader/content to be the prim
 untouched; `fidelity-compare.mjs` unaffected by construction (it uses the reference's own texture
 on both sides). Full account: D944.
 
-**Still outstanding: Bean's NAMED visual sign-off against the "B-movie 3D VFX" risk.** No number
-closes that — it is his eye, and the acceptance criteria say so.
+✅ **Bean's NAMED visual sign-off — GIVEN 2026-09-04.** An `/adversarial-council` review (six
+personas) then found six further real gaps: a dark-ground opaque-alpha bug, light-theme-only
+grading applied unconditionally under a dark ground, a striation-killing midline blackout, no
+regression fixture, no narrow-hue-palette client warning, and a stale help string. All six
+diagnosed via seven parallel investigation subagents (fact-checked against the live source before
+use), then implemented. Two process incidents surfaced and fixed along the way: **D947** — an
+implementer subagent's report described three fixes in convincing detail that were never actually
+in the commit (caught by `git show` + a real runtime test on the specific code path the fix
+claimed to touch, not by trusting the report); and a build-breaking typo in an unrelated
+concurrent commit's `postbuild` script (fixed since it blocked every Windows build, not just this
+one). Bean viewed the live canary after all fixes shipped: **"Looks good."** This closes Phase 3 —
+no more open items on this plan. Full account: D939-D948.
+
+**PHASE 3 CLOSED.** The generative-background engine is shipped, sign-off given, no known open
+defects. Any further work here (dark-preset periodic-line texture, per-instance colour/shape/size/
+position client controls beyond colour, a proper regression gate promoted from advisory) is new
+scope, not a continuation of this plan — see `.claude/parking.md` if any of it gets parked.
 
 ---
 

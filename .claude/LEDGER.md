@@ -113,7 +113,7 @@ UNRESOLVED cross-file cases (optional, never part of the confirmed 24), and `Sgs
   identical bug independently; read every diff before committing.
 - **Re-check the D-ceiling immediately before every write, not once per session.**
 
-## ▶ MOTION TRACK (A closed+live; B Phase 3 — Bean's visual sign-off is the only open item)
+## ▶ MOTION TRACK (A closed+live; B Phase 3 — CLOSED, Bean's visual sign-off given 2026-09-04)
 
 ⛔ **TWO SEPARATE TRACKS. Never re-merge them.** No phase number is shared.
 
@@ -131,9 +131,17 @@ VERTEX SHADER only — palette PNG stays off-limits as a shipped asset; Three.js
 ⭐ Gate E stays held — `.claude/scratch/stripe-hero-poc/` is in ZERO git files; `fidelity-
 baseline.json` + `reference-matrices.json` are what survive a `git clean -xdf`.
 
-**Only open item:** Bean's named visual sign-off — a look judgement no measurement closes.
-Canary fixtures `[GATE — DO NOT DELETE]`: 3135, 3141, 3079, 3072. Timeline sub-feature: nothing
-outstanding (full defect/addenda history swept to memory).
+**CLOSED 2026-09-04.** An `/adversarial-council` review surfaced six real gaps in the colour
+engine (dark-ground opaque-alpha bug, light-theme-only grading applied unconditionally under dark
+ground, a striation-killing midline blackout, no regression fixture, no narrow-hue-palette
+warning, a stale help string) — all six fixed and verified. Two process incidents along the way,
+both recorded: **D947** (an implementer subagent's report claimed three fixes that were never
+actually committed — caught by `git show` + a real runtime test, not by trusting the report) and
+**D948-adjacent** (a literal `(D948)` inside an unquoted `postbuild` echo string, from an unrelated
+concurrent commit, broke every Windows build — fixed, since it blocked everyone not just this
+track). Bean viewed the live canary after all fixes shipped and confirmed: **"Looks good."** Full
+account: D939-D948 (read together). Canary fixtures `[GATE — DO NOT DELETE]`: 3135, 3141, 3079,
+3072. Timeline sub-feature: nothing outstanding (full defect/addenda history swept to memory).
 
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (D725/D726, D731-D733)
 
