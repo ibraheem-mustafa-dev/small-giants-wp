@@ -283,33 +283,37 @@ if ( ! empty( $base_style_engine_args ) ) {
 
 // --- D744: Text colour (flat-or-gradient, base + hover) — block-private
 // replacement for the retired native supports.color.text/gradients. Both
-// states land on the SAME root selector as the background paint below, so
-// this uses sgs_text_decls()/sgs_emit_state_colour_css() (declarations only)
-// rather than a variant that owns its own rule — mirrors sgs/product-card's
-// identical text-and-background-on-one-element case. ---
-$sgs_info_text_decls = sgs_text_decls(
-	$attributes,
-	array(
-		'base'           => 'textColour',
-		'hover'          => 'textColourHover',
-		'gradient'       => 'textColourGradient',
-		'hover_gradient' => 'textColourHoverGradient',
-	)
-);
-if ( $sgs_info_text_decls['normal'] || $sgs_info_text_decls['hover'] ) {
-	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, $sgs_info_text_decls['normal'], $sgs_info_text_decls['hover'] );
-}
-// Gradient companion rule — MUST accompany sgs_text_decls(): that façade
-// emits a bare `color:` declaration even when the resolved value is a
-// gradient string, which is invalid CSS the browser silently drops without
-// this rule (background-clip:text fallback for browsers that don't support
-// it, plus the actual background-clip:text painting itself).
+// states land on the SAME root selector as the background paint below.
+// FIXED 2026-09-04 — was sgs_text_decls()/sgs_emit_state_colour_css(), which
+// always emits a bare `color:` declaration even for a resolved gradient
+// string (invalid CSS, silently dropped: live-verified this painted
+// `color:var(--wp--preset--color--linear-gradient90degff...)`, i.e. never
+// actually rendered a gradient). The MANDATORY companion rule below
+// (sgs_text_colour_gradient_fallback_rule) was already present and correct —
+// it emits only the `@supports not(...)` fallback branch, not the primary
+// background-clip:text paint, so its presence alone could not have masked
+// this. sgs_text_colour_decl() is the correct primary primitive: it resolves
+// to the flat `color:` OR the full background-clip:text declaration set
+// depending on what was resolved. See CLAUDE.md "Colour EMISSION helpers". ---
 $sgs_info_text_normal_resolved = sgs_resolve_text_colour_or_gradient( $sgs_text_colour, (string) ( $attributes['textColourGradient'] ?? '' ) );
 $sgs_info_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
 	isset( $attributes['textColourHover'] ) ? (string) $attributes['textColourHover'] : '',
 	(string) ( $attributes['textColourHoverGradient'] ?? '' )
 );
-$scoped_css[]                  = sgs_text_colour_gradient_fallback_rule( $root_sel, $sgs_info_text_normal_resolved );
+$sgs_info_text_normal_decl     = sgs_text_colour_decl( $sgs_info_text_normal_resolved );
+$sgs_info_text_hover_decl      = sgs_text_colour_decl( $sgs_info_text_hover_resolved );
+if ( '' !== $sgs_info_text_normal_decl || '' !== $sgs_info_text_hover_decl ) {
+	$scoped_css[] = sgs_emit_state_colour_css(
+		$root_sel,
+		'' !== $sgs_info_text_normal_decl ? array( $sgs_info_text_normal_decl ) : array(),
+		'' !== $sgs_info_text_hover_decl ? array( $sgs_info_text_hover_decl ) : array()
+	);
+}
+// Gradient companion rule — MUST accompany sgs_text_colour_decl(): its
+// gradient branch has no `@supports` fallback of its own for a browser that
+// doesn't support background-clip:text. A no-op for a flat colour, safe to
+// call unconditionally.
+$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $sgs_info_text_normal_resolved );
 if ( '' !== $sgs_info_text_hover_resolved && $sgs_info_text_hover_resolved !== $sgs_info_text_normal_resolved ) {
 	$scoped_css[] = sgs_hover_media_wrap(
 		sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover', $sgs_info_text_hover_resolved )
@@ -365,26 +369,13 @@ if ( in_array( $info_box_text_align, array( 'left', 'center', 'right' ), true ) 
 // native mechanism used (excludes `.wp-element-button` so a CTA rendered as
 // a link-styled button keeps its own button colours), same base+hover shape
 // as every other colour row on this block.
-$sgs_link_sel        = $root_sel . ' a:where(:not(.wp-element-button))';
-$sgs_info_link_decls = sgs_text_decls(
-	$attributes,
-	array(
-		'base'           => 'linkColour',
-		'hover'          => 'linkColourHover',
-		'gradient'       => 'linkColourGradient',
-		'hover_gradient' => 'linkColourHoverGradient',
-	)
-);
-if ( $sgs_info_link_decls['normal'] || $sgs_info_link_decls['hover'] ) {
-	$scoped_css[] = sgs_emit_state_colour_css( $sgs_link_sel, $sgs_info_link_decls['normal'], $sgs_info_link_decls['hover'] );
-}
-
-// Companion rule — MANDATORY now that the link map carries gradient keys, and
-// a harmless no-op for a flat colour. sgs_text_decls() emits a bare `color:`
-// declaration even when the resolved value is a gradient string, which is
-// invalid CSS the browser drops silently. Enforced by
-// scripts/check-text-gradient-companion.js. $sgs_link_sel is a SINGLE selector
-// (the :where() is one compound, not a list), so appending :hover to it is safe.
+// FIXED 2026-09-04 — same defect as the text-colour block above: was
+// sgs_text_decls()/sgs_emit_state_colour_css(), which always emits a bare
+// `color:` even for a resolved gradient string (invalid CSS, dropped).
+// sgs_text_colour_decl() is the correct primary primitive. $sgs_link_sel is a
+// SINGLE selector (the :where() is one compound, not a list), so appending
+// :hover to it below is safe.
+$sgs_link_sel                  = $root_sel . ' a:where(:not(.wp-element-button))';
 $sgs_info_link_normal_resolved = sgs_resolve_text_colour_or_gradient(
 	(string) ( $attributes['linkColour'] ?? '' ),
 	(string) ( $attributes['linkColourGradient'] ?? '' )
@@ -393,6 +384,21 @@ $sgs_info_link_hover_resolved  = sgs_resolve_text_colour_or_gradient(
 	(string) ( $attributes['linkColourHover'] ?? '' ),
 	(string) ( $attributes['linkColourHoverGradient'] ?? '' )
 );
+$sgs_info_link_normal_decl     = sgs_text_colour_decl( $sgs_info_link_normal_resolved );
+$sgs_info_link_hover_decl      = sgs_text_colour_decl( $sgs_info_link_hover_resolved );
+if ( '' !== $sgs_info_link_normal_decl || '' !== $sgs_info_link_hover_decl ) {
+	$scoped_css[] = sgs_emit_state_colour_css(
+		$sgs_link_sel,
+		'' !== $sgs_info_link_normal_decl ? array( $sgs_info_link_normal_decl ) : array(),
+		'' !== $sgs_info_link_hover_decl ? array( $sgs_info_link_hover_decl ) : array()
+	);
+}
+
+// Companion rule — MANDATORY now that the link map carries gradient keys, and
+// a harmless no-op for a flat colour. Enforced by
+// scripts/check-text-gradient-companion.js (which checks a companion call is
+// PRESENT, not that the primary emission is correct — see the fix note
+// above for why that gap let this ship broken).
 
 $sgs_info_link_grad_css = sgs_text_colour_gradient_fallback_rule( $sgs_link_sel, $sgs_info_link_normal_resolved );
 if ( '' !== $sgs_info_link_grad_css ) {

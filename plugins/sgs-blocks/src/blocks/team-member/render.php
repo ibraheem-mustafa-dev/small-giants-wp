@@ -546,22 +546,11 @@ if ( '' !== $sgs_tm_bg_css ) {
 	$scoped_css[] = $sgs_tm_bg_css;
 }
 
-$sgs_tm_text_decls = sgs_text_decls(
-	$attributes,
-	array(
-		'base'           => 'textColour',
-		'hover'          => 'textColourHover',
-		'gradient'       => 'textColourGradient',
-		'hover_gradient' => 'textColourHoverGradient',
-	)
-);
-if ( $sgs_tm_text_decls['normal'] || $sgs_tm_text_decls['hover'] ) {
-	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, $sgs_tm_text_decls['normal'], $sgs_tm_text_decls['hover'] );
-}
-// Gradient companion rule — MUST accompany every sgs_text_decls() call:
-// that façade emits a bare `color:` declaration even when the resolved
-// value is a gradient string, which is invalid CSS the browser silently
-// drops without this rule (`check-text-gradient-companion.js`).
+// FIXED 2026-09-04 — was sgs_text_decls()/sgs_emit_state_colour_css(), which
+// always emits a bare `color:` even for a resolved gradient string (invalid
+// CSS, silently dropped — same defect proven live on sgs/info-box and
+// sgs/testimonial-slider). sgs_text_colour_decl() is the correct primary
+// primitive; the companion fallback rule below was already correct.
 $sgs_tm_text_normal_resolved = sgs_resolve_text_colour_or_gradient(
 	(string) ( $attributes['textColour'] ?? '' ),
 	(string) ( $attributes['textColourGradient'] ?? '' )
@@ -570,6 +559,18 @@ $sgs_tm_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
 	(string) ( $attributes['textColourHover'] ?? '' ),
 	(string) ( $attributes['textColourHoverGradient'] ?? '' )
 );
+$sgs_tm_text_normal_decl     = sgs_text_colour_decl( $sgs_tm_text_normal_resolved );
+$sgs_tm_text_hover_decl      = sgs_text_colour_decl( $sgs_tm_text_hover_resolved );
+if ( '' !== $sgs_tm_text_normal_decl || '' !== $sgs_tm_text_hover_decl ) {
+	$scoped_css[] = sgs_emit_state_colour_css(
+		$root_sel,
+		'' !== $sgs_tm_text_normal_decl ? array( $sgs_tm_text_normal_decl ) : array(),
+		'' !== $sgs_tm_text_hover_decl ? array( $sgs_tm_text_hover_decl ) : array()
+	);
+}
+// Gradient companion rule — MUST accompany sgs_text_colour_decl(): its
+// gradient branch has no @supports fallback of its own
+// (`check-text-gradient-companion.js`).
 $sgs_tm_text_fallback_css    = sgs_text_colour_gradient_fallback_rule( $root_sel, $sgs_tm_text_normal_resolved );
 if ( '' !== $sgs_tm_text_fallback_css ) {
 	$scoped_css[] = $sgs_tm_text_fallback_css;

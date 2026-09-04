@@ -448,22 +448,11 @@ if ( ! empty( $base_style_engine_args ) ) {
 // root itself — a text gradient (`background-clip:text`) on the root would
 // otherwise clip or overwrite the background paint (mirrors sgs/product-card's
 // text/background pseudo-element split). ---
-$sgs_bb_text_decls = sgs_text_decls(
-	$attributes,
-	array(
-		'base'           => 'textColour',
-		'hover'          => 'textColourHover',
-		'gradient'       => 'textColourGradient',
-		'hover_gradient' => 'textColourHoverGradient',
-	)
-);
-if ( $sgs_bb_text_decls['normal'] || $sgs_bb_text_decls['hover'] ) {
-	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, $sgs_bb_text_decls['normal'], $sgs_bb_text_decls['hover'] );
-}
-// Gradient companion rule — a no-op for a flat colour, MUST accompany every
-// sgs_text_decls() call: that façade emits a bare `color:` declaration even
-// when the resolved value is a gradient string, which is invalid CSS the
-// browser silently drops without this rule.
+// FIXED 2026-09-04 — was sgs_text_decls()/sgs_emit_state_colour_css(), which
+// always emits a bare `color:` even for a resolved gradient string (invalid
+// CSS, silently dropped — same defect proven live on sgs/info-box and
+// sgs/testimonial-slider). sgs_text_colour_decl() is the correct primary
+// primitive; the companion fallback rule below was already correct.
 $sgs_bb_text_normal_resolved = sgs_resolve_text_colour_or_gradient(
 	(string) ( $attributes['textColour'] ?? '' ),
 	(string) ( $attributes['textColourGradient'] ?? '' )
@@ -472,6 +461,18 @@ $sgs_bb_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
 	(string) ( $attributes['textColourHover'] ?? '' ),
 	(string) ( $attributes['textColourHoverGradient'] ?? '' )
 );
+$sgs_bb_text_normal_decl     = sgs_text_colour_decl( $sgs_bb_text_normal_resolved );
+$sgs_bb_text_hover_decl      = sgs_text_colour_decl( $sgs_bb_text_hover_resolved );
+if ( '' !== $sgs_bb_text_normal_decl || '' !== $sgs_bb_text_hover_decl ) {
+	$scoped_css[] = sgs_emit_state_colour_css(
+		$root_sel,
+		'' !== $sgs_bb_text_normal_decl ? array( $sgs_bb_text_normal_decl ) : array(),
+		'' !== $sgs_bb_text_hover_decl ? array( $sgs_bb_text_hover_decl ) : array()
+	);
+}
+// Gradient companion rule — a no-op for a flat colour, MUST accompany
+// sgs_text_colour_decl(): its gradient branch has no @supports fallback of
+// its own.
 
 $sgs_bb_text_gradient_rule = sgs_text_colour_gradient_fallback_rule( $root_sel, $sgs_bb_text_normal_resolved );
 if ( '' !== $sgs_bb_text_gradient_rule ) {

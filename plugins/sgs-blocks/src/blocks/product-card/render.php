@@ -360,22 +360,14 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 $sgs_pc_root_sel = '.' . $sgs_card_uid . '.wp-block-sgs-product-card';
 
 // --- Text colour (flat-or-gradient, base + hover) ---
-$sgs_pc_text_decls = sgs_text_decls(
-	$attributes,
-	array(
-		'base'           => 'textColour',
-		'hover'          => 'textColourHover',
-		'gradient'       => 'textColourGradient',
-		'hover_gradient' => 'textColourHoverGradient',
-	)
-);
-if ( $sgs_pc_text_decls['normal'] || $sgs_pc_text_decls['hover'] ) {
-	$sgs_card_typo_css .= sgs_emit_state_colour_css( $sgs_pc_root_sel, $sgs_pc_text_decls['normal'], $sgs_pc_text_decls['hover'] );
-}
-// Gradient companion rule — a no-op for a flat colour, MUST accompany every
-// sgs_text_decls() call: that façade emits a bare `color:` declaration even
-// when the resolved value is a gradient string, which is invalid CSS the
-// browser silently drops without this rule.
+// FIXED 2026-09-04 — was sgs_text_decls()/sgs_emit_state_colour_css(), which
+// always emits a bare `color:` even for a resolved gradient string (invalid
+// CSS, silently dropped — same defect proven live on sgs/info-box and
+// sgs/testimonial-slider). Distinct from the titleColour/descColour/
+// priceColour/priceNoteColour rows, which paint via a genuinely different
+// custom-property mechanism and stay out of scope here. sgs_text_colour_decl()
+// is the correct primary primitive; the companion fallback rule below was
+// already correct.
 $sgs_pc_text_normal_resolved = sgs_resolve_text_colour_or_gradient(
 	(string) ( $attributes['textColour'] ?? '' ),
 	(string) ( $attributes['textColourGradient'] ?? '' )
@@ -384,6 +376,18 @@ $sgs_pc_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
 	(string) ( $attributes['textColourHover'] ?? '' ),
 	(string) ( $attributes['textColourHoverGradient'] ?? '' )
 );
+$sgs_pc_text_normal_decl     = sgs_text_colour_decl( $sgs_pc_text_normal_resolved );
+$sgs_pc_text_hover_decl      = sgs_text_colour_decl( $sgs_pc_text_hover_resolved );
+if ( '' !== $sgs_pc_text_normal_decl || '' !== $sgs_pc_text_hover_decl ) {
+	$sgs_card_typo_css .= sgs_emit_state_colour_css(
+		$sgs_pc_root_sel,
+		'' !== $sgs_pc_text_normal_decl ? array( $sgs_pc_text_normal_decl ) : array(),
+		'' !== $sgs_pc_text_hover_decl ? array( $sgs_pc_text_hover_decl ) : array()
+	);
+}
+// Gradient companion rule — a no-op for a flat colour, MUST accompany
+// sgs_text_colour_decl(): its gradient branch has no @supports fallback of
+// its own.
 $sgs_card_typo_css          .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_root_sel, $sgs_pc_text_normal_resolved );
 if ( '' !== $sgs_pc_text_hover_resolved && $sgs_pc_text_hover_resolved !== $sgs_pc_text_normal_resolved ) {
 	$sgs_card_typo_css .= sgs_hover_media_wrap(

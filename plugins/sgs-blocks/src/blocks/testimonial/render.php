@@ -222,24 +222,15 @@ foreach ( array(
 ) as $sgs_tm_text_row ) {
 	list( $sgs_tm_sel, $sgs_tm_base, $sgs_tm_hover, $sgs_tm_grad, $sgs_tm_hover_grad ) = $sgs_tm_text_row;
 
-	$sgs_tm_decls = sgs_text_decls(
-		$attributes,
-		array(
-			'base'           => $sgs_tm_base,
-			'hover'          => $sgs_tm_hover,
-			'gradient'       => $sgs_tm_grad,
-			'hover_gradient' => $sgs_tm_hover_grad,
-		)
-	);
-	if ( $sgs_tm_decls['normal'] || $sgs_tm_decls['hover'] ) {
-		$scoped_css[] = sgs_emit_state_colour_css( $sgs_tm_sel, $sgs_tm_decls['normal'], $sgs_tm_decls['hover'] );
-	}
-
-	// Companion rule — MANDATORY beside every sgs_text_decls() call, and a
-	// harmless no-op for a flat colour. That facade emits a bare `color:`
-	// declaration even when the resolved value is a gradient string, which is
-	// invalid CSS the browser drops silently. Enforced by
-	// scripts/check-text-gradient-companion.js.
+	// FIXED 2026-09-04 — was sgs_text_decls()/sgs_emit_state_colour_css(),
+	// which always emits a bare `color:` even for a resolved gradient string
+	// (invalid CSS, silently dropped — same defect proven live on
+	// sgs/info-box and sgs/testimonial-slider). sgs_text_colour_decl() is the
+	// correct primary primitive; the companion fallback rule below was
+	// already correct. Enforced by scripts/check-text-gradient-companion.js
+	// (checks the companion call is present, not that the primary emission
+	// is correct — see the fix note above for why that gap let this ship
+	// broken).
 	$sgs_tm_normal_resolved = sgs_resolve_text_colour_or_gradient(
 		(string) ( $attributes[ $sgs_tm_base ] ?? '' ),
 		(string) ( $attributes[ $sgs_tm_grad ] ?? '' )
@@ -248,6 +239,15 @@ foreach ( array(
 		(string) ( $attributes[ $sgs_tm_hover ] ?? '' ),
 		(string) ( $attributes[ $sgs_tm_hover_grad ] ?? '' )
 	);
+	$sgs_tm_normal_decl     = sgs_text_colour_decl( $sgs_tm_normal_resolved );
+	$sgs_tm_hover_decl      = sgs_text_colour_decl( $sgs_tm_hover_resolved );
+	if ( '' !== $sgs_tm_normal_decl || '' !== $sgs_tm_hover_decl ) {
+		$scoped_css[] = sgs_emit_state_colour_css(
+			$sgs_tm_sel,
+			'' !== $sgs_tm_normal_decl ? array( $sgs_tm_normal_decl ) : array(),
+			'' !== $sgs_tm_hover_decl ? array( $sgs_tm_hover_decl ) : array()
+		);
+	}
 
 	$sgs_tm_grad_css = sgs_text_colour_gradient_fallback_rule( $sgs_tm_sel, $sgs_tm_normal_resolved );
 	if ( '' !== $sgs_tm_grad_css ) {
