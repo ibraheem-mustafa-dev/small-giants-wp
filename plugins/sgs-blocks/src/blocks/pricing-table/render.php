@@ -482,7 +482,18 @@ if ( '' !== $badge_colour_effective ) {
 	}
 	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $pt_badge_sel, $badge_colour_effective );
 }
-if ( $badge_bg || $badge_bg_gradient ) {
+// popularBadgeColourHover — own independent emission on $pt_badge_sel, same
+// fix shape as priceColourHover above: this must NOT be folded into the
+// unrelated billing-toggle-label-hover block below (wrong selector, wrong
+// gate — only ran when toggleLabelHoverColour was also set).
+if ( '' !== ( $attributes['popularBadgeColourHover'] ?? '' ) ) {
+	$responsive_css .= sgs_emit_state_colour_css(
+		$pt_badge_sel,
+		array(),
+		array( 'color:' . sgs_colour_value( $attributes['popularBadgeColourHover'] ) )
+	);
+}
+if ( $badge_bg || $badge_bg_gradient || ( '' !== ( $attributes['popularBadgeBackgroundHover'] ?? '' ) ) ) {
 	// Background painted on its OWN `::after` layer, not the badge element's own
 	// selector — `.sgs-pricing-table__badge` is already `position:absolute`
 	// (style.css), so this skips `sgs_block_background_layer_css()`'s hardcoded
@@ -495,6 +506,15 @@ if ( $badge_bg || $badge_bg_gradient ) {
 	// popularBadgeBackgroundGradient sibling wins over popularBadgeBackground
 	// when set+valid, via sgs_background_paint_decl() (D956-shape rollout).
 	$responsive_css .= $pt_badge_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . sgs_background_paint_decl( $badge_bg, $badge_bg_gradient ) . ';}';
+	// popularBadgeBackgroundHover — own independent emission, same fix shape as
+	// above. Hand-built (not sgs_block_background_layer_css()) because the
+	// badge's `::after` layer is itself hand-built for the position:absolute
+	// reason noted above; :focus-within matches that helper's own convention
+	// for a background-layer hover pair.
+	$badge_bg_hover_decl = sgs_background_paint_decl( (string) ( $attributes['popularBadgeBackgroundHover'] ?? '' ), '' );
+	if ( '' !== $badge_bg_hover_decl ) {
+		$responsive_css .= sgs_hover_state_rules( $pt_badge_sel, $badge_bg_hover_decl . ';', ':focus-within', '::after' );
+	}
 }
 // D636 Task 1b — sibling gradient attribute wins when set+valid. The
 // block-local $colour_val() closure only ever emits a preset-slug var(), so
@@ -540,9 +560,14 @@ if ( '' !== $feature_colour_effective ) {
 // positioned in style.css, so the full helper (position:relative +
 // isolation:isolate) is safe here. ctaBackgroundGradient sibling wins over
 // ctaBackground when set+valid, via sgs_background_paint_decl().
-$pt_cta_sel = $root_sel . ' .sgs-pricing-table__cta';
-if ( $cta_background || $cta_background_gradient ) {
-	$responsive_css .= sgs_block_background_layer_css( $pt_cta_sel, sgs_background_paint_decl( $cta_background, $cta_background_gradient ) );
+$pt_cta_sel           = $root_sel . ' .sgs-pricing-table__cta';
+$cta_background_hover = (string) ( $attributes['ctaBackgroundHover'] ?? '' );
+if ( $cta_background || $cta_background_gradient || '' !== $cta_background_hover ) {
+	$responsive_css .= sgs_block_background_layer_css(
+		$pt_cta_sel,
+		sgs_background_paint_decl( $cta_background, $cta_background_gradient ),
+		sgs_background_paint_decl( $cta_background_hover, '' )
+	);
 }
 // D956 -- sibling gradient wins when set+valid. Safe unconditionally now
 // that ctaBackground (above) paints on its own `::after` layer.
@@ -555,6 +580,15 @@ if ( '' !== $cta_colour_effective ) {
 	}
 	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $pt_cta_sel, $cta_colour_effective );
 }
+// ctaColourHover — own independent emission on $pt_cta_sel, same fix shape as
+// priceColourHover above.
+if ( '' !== ( $attributes['ctaColourHover'] ?? '' ) ) {
+	$responsive_css .= sgs_emit_state_colour_css(
+		$pt_cta_sel,
+		array(),
+		array( 'color:' . sgs_colour_value( $attributes['ctaColourHover'] ) )
+	);
+}
 // Task 2 (cluster A) — titleColour/titleColourGradient sibling pair. The
 // declaration paints onto a COMMA-JOINED selector pair (`.sgs-pricing-table__name`
 // is the real rendered element; `.sgs-pricing-table__title` is a back-compat
@@ -562,14 +596,34 @@ if ( '' !== $cta_colour_effective ) {
 // rule is emitted against the SAME joined selector list, not just the first
 // member, or the alias element would lose its fallback and render invisible
 // text on any browser without background-clip:text support.
+$title_sel              = $root_sel . ' .sgs-pricing-table__name,' . $root_sel . ' .sgs-pricing-table__title';
 $title_colour_effective = sgs_resolve_text_colour_or_gradient( $title_colour, $title_colour_gradient );
 if ( '' !== $title_colour_effective ) {
-	$title_sel         = $root_sel . ' .sgs-pricing-table__name,' . $root_sel . ' .sgs-pricing-table__title';
 	$title_colour_decl = sgs_text_colour_decl( $title_colour_effective );
 	if ( '' !== $title_colour_decl ) {
 		$responsive_css .= $title_sel . '{' . $title_colour_decl . '}';
 	}
 	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $title_sel, $title_colour_effective );
+}
+// titleColourHover — own independent emission on $title_sel, same fix shape
+// as priceColourHover above.
+if ( '' !== ( $attributes['titleColourHover'] ?? '' ) ) {
+	$responsive_css .= sgs_emit_state_colour_css(
+		$title_sel,
+		array(),
+		array( 'color:' . sgs_colour_value( $attributes['titleColourHover'] ) )
+	);
+}
+// featureColourHover — own independent emission on $feature_sel, same fix
+// shape as priceColourHover above. $feature_sel is only defined inside the
+// featureColour block above (conditional on featureColour/Gradient being
+// set), so it is rebuilt here unconditionally rather than relied upon.
+if ( '' !== ( $attributes['featureColourHover'] ?? '' ) ) {
+	$responsive_css .= sgs_emit_state_colour_css(
+		$root_sel . ' .sgs-pricing-table__feature',
+		array(),
+		array( 'color:' . sgs_colour_value( $attributes['featureColourHover'] ) )
+	);
 }
 // Billing-toggle label hover tint — previously a hardcoded color-mix() (+
 // rgba fallback) in style.css with no backing attribute; replaced by this
@@ -577,31 +631,24 @@ if ( '' !== $title_colour_effective ) {
 // original CSS's scoping (the text-style toggle uses colour/track, not a
 // background tint). Hover-only: an empty attribute means no hover tint at
 // all, not a hardcoded fallback.
+//
+// FIXED 2026-09-04 — this block previously accreted titleColourHover/
+// featureColourHover/ctaColourHover/popularBadgeColourHover/
+// ctaBackgroundHover/popularBadgeBackgroundHover into $pt_toggle_label_hover_decls,
+// which only ever fires when $pt_toggle_label_hover_decl (a completely
+// unrelated attribute, toggleLabelHoverColour) is ALSO set, and which paints
+// the wrong element (the billing-toggle label) for every one of those six
+// attributes regardless. Found live, same defect class priceColourHover was
+// already fixed for on 2026-09-03. Each of the six now has its own
+// independent emission on its own correct selector, placed next to its base
+// attribute above/below; this block is restricted back to its own single
+// purpose.
 $pt_toggle_label_hover_decl = sgs_background_paint_decl( $toggle_label_hover_colour, $toggle_label_hover_colour_gradient );
 if ( '' !== $pt_toggle_label_hover_decl ) {
-	$pt_toggle_label_hover_decls = array( $pt_toggle_label_hover_decl . ';' );
-if ( '' !== ( $attributes['titleColourHover'] ?? '' ) ) {
-	$pt_toggle_label_hover_decls[] = 'color:' . sgs_colour_value( $attributes['titleColourHover'] );
-}
-if ( '' !== ( $attributes['featureColourHover'] ?? '' ) ) {
-	$pt_toggle_label_hover_decls[] = 'color:' . sgs_colour_value( $attributes['featureColourHover'] );
-}
-if ( '' !== ( $attributes['ctaColourHover'] ?? '' ) ) {
-	$pt_toggle_label_hover_decls[] = 'color:' . sgs_colour_value( $attributes['ctaColourHover'] );
-}
-if ( '' !== ( $attributes['popularBadgeColourHover'] ?? '' ) ) {
-	$pt_toggle_label_hover_decls[] = 'color:' . sgs_colour_value( $attributes['popularBadgeColourHover'] );
-}
-if ( '' !== ( $attributes['ctaBackgroundHover'] ?? '' ) ) {
-	$pt_toggle_label_hover_decls[] = 'background-color:' . sgs_colour_value( $attributes['ctaBackgroundHover'] );
-}
-if ( '' !== ( $attributes['popularBadgeBackgroundHover'] ?? '' ) ) {
-	$pt_toggle_label_hover_decls[] = 'background-color:' . sgs_colour_value( $attributes['popularBadgeBackgroundHover'] );
-}
-	$responsive_css             .= sgs_emit_state_colour_css(
+	$responsive_css .= sgs_emit_state_colour_css(
 		$root_sel . ' .sgs-pricing-table__billing-toggle--style-button .sgs-pricing-table__toggle-label',
 		array(),
-		$pt_toggle_label_hover_decls
+		array( $pt_toggle_label_hover_decl )
 	);
 }
 
