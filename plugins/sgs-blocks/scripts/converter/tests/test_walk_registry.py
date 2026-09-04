@@ -195,7 +195,7 @@ def test_classifier_typed_composites_are_not_holders():
 
 def test_gate_scan_files_cover_the_dispatch_surface():
     names = {p.name for p in no_slug_literal._SCAN_FILES}
-    assert {"recognition.py", "dispatch_table.py", "orchestrator.py", "walk.py"} <= names
+    assert {"recognition.py", "dispatch_table.py", "dispatch_spine.py", "walk.py"} <= names
 
 
 def test_gate_catches_slug_keyed_registry_entry(tmp_path):

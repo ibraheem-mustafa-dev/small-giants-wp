@@ -27,7 +27,7 @@ WHAT IT REJECTS
 SCOPE
     converter/resolvers/*.py + converter/services/*.py (recursive), excluding
     test files; PLUS the converter-root dispatch surface: recognition.py,
-    dispatch_table.py, orchestrator.py, walk.py (widened EXECUTION Step 5,
+    dispatch_table.py, dispatch_spine.py, walk.py (widened EXECUTION Step 5,
     2026-07-04 — the FR-31-2.8 registry lands exactly there, and a slug-keyed
     registry entry is the carve-out this gate exists to catch; the old
     "intentionally out of scope" exemption is retired).
@@ -60,14 +60,14 @@ _CONVERTER = _HERE.parent                            # scripts/converter/
 _SCAN_DIRS = [_CONVERTER / "resolvers", _CONVERTER / "services"]
 # Individual converter-root files in scope (Stage-2 recognition lives at the root, not
 # under resolvers/services — design §9-fold-G / cheat MF-2 closed the scope gap).
-# WIDENED (EXECUTION Step 5, STOP-41, 2026-07-04): dispatch_table.py + orchestrator.py
+# WIDENED (EXECUTION Step 5, STOP-41, 2026-07-04): dispatch_table.py + dispatch_spine.py
 # + walk.py are exactly where the FR-31-2.8 registry lands — a slug-keyed registry
 # entry there is an R-31-9 carve-out this gate must catch (the old "intentionally out
 # of scope" exemption is retired). Plant-tested in test_no_slug_literal.py.
 _SCAN_FILES = [
     _CONVERTER / "recognition.py",
     _CONVERTER / "dispatch_table.py",
-    _CONVERTER / "orchestrator.py",
+    _CONVERTER / "dispatch_spine.py",
     _CONVERTER / "walk.py",
 ]
 _BASELINE = _HERE / "no-slug-literal-baseline.json"

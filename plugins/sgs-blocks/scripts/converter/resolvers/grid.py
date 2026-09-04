@@ -311,7 +311,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             )
         attr = tier_state_suffix(base_attr, decl, ctx.conn)
         if db_lookup.box_family_for(ctx.block_slug, attr) is not None:
-            # Lazy import — root_supports imports converter.orchestrator, which
+            # Lazy import — root_supports imports converter.dispatch_spine, which
             # imports converter.resolvers (this package); a top-level import here
             # would be circular (mirrors outer_box.py's identical lazy-import of
             # the same helper for the same reason).

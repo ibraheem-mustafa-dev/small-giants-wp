@@ -22,7 +22,7 @@ import pytest
 
 from converter.context import Ctx, Decl
 from converter.models import GapOrigin
-from converter.orchestrator import process_element
+from converter.dispatch_spine import process_element
 from converter.services.border_side import border_side_write
 from converter.db.db_lookup import SGS_DB
 

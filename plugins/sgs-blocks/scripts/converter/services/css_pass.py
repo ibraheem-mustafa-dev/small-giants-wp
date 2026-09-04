@@ -23,7 +23,7 @@ from typing import Any
 
 from converter.context import Ctx, Decl, Recognition
 from converter.recognition import build_ctx
-from converter.orchestrator import process_element
+from converter.dispatch_spine import process_element
 from converter.services.styling_helpers import (
     collect_css_decls_for_element,
     collect_state_decls_for_element,

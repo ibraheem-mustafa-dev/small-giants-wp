@@ -25,7 +25,7 @@ import pytest
 
 from converter.context import Ctx, Decl, Destination
 from converter.models import Write
-from converter.orchestrator import ConservationError, process_element
+from converter.dispatch_spine import ConservationError, process_element
 from converter.resolvers import REGISTRY
 from converter.services.layer_detect import layer_detect
 from converter.db import db_lookup
@@ -52,7 +52,7 @@ def _fixed_box_family(monkeypatch, family_map: dict[str, str]):
     (only the tier-suffixed ``paddingTablet``/``paddingMobile`` do), so tests
     exercising the MERGE mechanism itself must declare the attr a box family
     explicitly, same as production resolvers do via a real DB row."""
-    import converter.orchestrator as _mod
+    import converter.dispatch_spine as _mod
     monkeypatch.setattr(
         _mod.db_lookup, "box_family_for",
         lambda slug, attr: family_map.get(attr),
@@ -279,7 +279,7 @@ def test_destination_first_dict_write_not_aliased(conn, monkeypatch):
 
 def test_element_result_attrs_first_dict_write_not_aliased(monkeypatch):
     """Same aliasing proof for the SELF-merge path (`ElementResult.attrs()`)."""
-    from converter.orchestrator import ElementResult
+    from converter.dispatch_spine import ElementResult
 
     _fixed_box_family(monkeypatch, {"padding": "padding"})
     first_write = Write("padding", {"top": "10px"}, "padding-top", "Base")
@@ -309,7 +309,7 @@ def test_attrs_non_box_dict_attr_written_twice_raises_collision(monkeypatch):
     (e.g. a media/background {url,id,alt} object). box_family_for() returns
     None for it, so two writes to the SAME attr must raise — never silently
     per-key-merge (that would launder a real collision)."""
-    from converter.orchestrator import ConservationError, ElementResult
+    from converter.dispatch_spine import ConservationError, ElementResult
 
     # box_family_for returns None for every attr (no box family registered) —
     # exactly the "not a box-object attr" case this gate must catch.
@@ -326,7 +326,7 @@ def test_attrs_box_family_attr_still_merges_as_before(monkeypatch):
     """Sanity companion: a genuine box_family attr (box_family_for returns a
     value) still merges per-key across multiple dict Writes — the fix must
     not regress the legitimate box-object accumulation path."""
-    from converter.orchestrator import ElementResult
+    from converter.dispatch_spine import ElementResult
 
     _fixed_box_family(monkeypatch, {"padding": "padding"})
     result = ElementResult(block_slug="sgs/container", decl_count=2, decl_results=2)

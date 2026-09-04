@@ -40,7 +40,7 @@ import pytest
 
 from converter.context import Ctx, Decl
 from converter.models import GapOrigin, Write
-from converter.orchestrator import process_element
+from converter.dispatch_spine import process_element
 from converter.db.db_lookup import SGS_DB
 
 

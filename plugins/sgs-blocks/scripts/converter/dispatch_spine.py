@@ -1,4 +1,4 @@
-"""orchestrator.py — dispatch + conservation spine (design §3 / §4).
+"""dispatch_spine.py — dispatch + conservation spine (design §3 / §4).
 
 Matches the `walk` / `convert_page` seam (drop-in target, NOT swapped live yet,
 D-MODULAR). For the vertical slice it exposes:

@@ -52,7 +52,7 @@ from typing import Any
 from bs4 import Tag
 
 from converter.db import db_lookup
-from converter.orchestrator import ConservationError
+from converter.dispatch_spine import ConservationError
 from converter.services.styling_helpers import (
     collect_css_decls_for_element,
     split_value_unit,

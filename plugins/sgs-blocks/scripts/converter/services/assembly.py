@@ -64,7 +64,7 @@ def _fold_trace(stage: str, **kwargs: Any) -> None:
 
 from converter.context import ChildBlock, ContentGap, Recognition, ScalarLift
 from converter.recognition import variant_attrs
-from converter.orchestrator import emit_block_markup
+from converter.dispatch_spine import emit_block_markup
 from converter.services import content_gap_collector as _gap_collector
 from converter.services.styling_helpers import collect_css_decls_for_element
 from converter.db import db_lookup

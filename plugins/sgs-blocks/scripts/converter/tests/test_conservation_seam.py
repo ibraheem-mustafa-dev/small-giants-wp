@@ -14,7 +14,7 @@ import pytest
 
 from converter.context import Ctx, Decl
 from converter.models import GAP, GapOrigin, Write
-from converter.orchestrator import (
+from converter.dispatch_spine import (
     ConservationError,
     ElementResult,
     _check_conservation,

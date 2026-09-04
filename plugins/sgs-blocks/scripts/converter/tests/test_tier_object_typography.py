@@ -28,7 +28,7 @@ import pytest
 
 from converter.context import Ctx, Decl
 from converter.db.db_lookup import SGS_DB, tier_object_base
-from converter.orchestrator import process_element
+from converter.dispatch_spine import process_element
 
 
 def _ctx(conn: sqlite3.Connection, *, block_slug: str,

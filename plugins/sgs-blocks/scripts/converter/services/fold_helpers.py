@@ -550,7 +550,7 @@ def _fold_band_arrangement(
     # ---- grid-template-* → the grid resolver, GRID-pinned --------------------
     track_decls = [d for d in held if d.property != "display"]
     if track_decls:
-        from converter.orchestrator import process_element
+        from converter.dispatch_spine import process_element
         from converter.services.recognise_helpers import get_container_kind
         from converter.services.has_inner import derive_delegates_content
 
@@ -709,7 +709,7 @@ def fold_band_css(
         return gaps
 
     # ---- The ONE cascade: process_element with a parent DESTINATION ----
-    from converter.orchestrator import process_element
+    from converter.dispatch_spine import process_element
     from converter.services.recognise_helpers import get_container_kind
     from converter.services.has_inner import derive_delegates_content
 

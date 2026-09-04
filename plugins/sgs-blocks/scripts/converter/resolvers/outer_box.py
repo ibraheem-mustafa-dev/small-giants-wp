@@ -115,7 +115,7 @@ from converter.services.value_serialise import value_serialise
 # NOTE: root_supports._parse_padding_shorthand (the generic 1-4-value CSS
 # box-model parser D307 reuses for the box-family self-merge branch below) is
 # imported LAZILY inside resolve(), not at module scope — root_supports.py
-# imports converter.orchestrator, which imports converter.resolvers (this
+# imports converter.dispatch_spine, which imports converter.resolvers (this
 # package, for REGISTRY), which imports this module — a module-level import
 # here would be a circular-import cycle. The deferred import is safe: by the
 # time resolve() actually runs, orchestrator/resolvers are fully loaded.

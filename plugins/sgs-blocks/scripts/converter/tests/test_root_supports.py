@@ -21,7 +21,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 from bs4 import BeautifulSoup
 
-from converter.orchestrator import ConservationError
+from converter.dispatch_spine import ConservationError
 from converter.services.root_supports import (
     _write_responsive_attr,
     lift_root_supports_to_style,

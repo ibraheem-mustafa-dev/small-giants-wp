@@ -18,7 +18,7 @@ import pytest
 
 from converter.context import Ctx, Decl
 from converter.models import GapOrigin, Write
-from converter.orchestrator import emit_block_markup, process_element
+from converter.dispatch_spine import emit_block_markup, process_element
 from converter.db.db_lookup import SGS_DB
 
 
