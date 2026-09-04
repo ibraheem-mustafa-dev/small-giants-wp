@@ -269,29 +269,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			<SgsColourPanel
 				rows={ [
 					{
-						key: 'title',
-						label: __( 'Title colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: titleColour,
-								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
-								linked: true,
-								gradientValue: titleColourGradient,
-								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: titleColourHover,
-								onChange: ( val ) => setAttributes( { titleColourHover: val ?? '' } ),
-								linked: true,
-								},
-						],
-					},
-					{
 						key: 'price',
 						label: __( 'Price colour', 'sgs-blocks' ),
 						gradientCapable: true,
@@ -333,98 +310,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: featureColourHover,
 								onChange: ( val ) => setAttributes( { featureColourHover: val ?? '' } ),
-								linked: true,
-								},
-						],
-					},
-					{
-						key: 'cta-text',
-						label: __( 'CTA text colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: ctaColour,
-								onChange: ( val ) => setAttributes( { ctaColour: val ?? '' } ),
-								linked: true,
-								gradientValue: ctaColourGradient,
-								onGradientChange: ( val ) => setAttributes( { ctaColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: ctaColourHover,
-								onChange: ( val ) => setAttributes( { ctaColourHover: val ?? '' } ),
-								linked: true,
-								},
-						],
-					},
-					{
-						key: 'cta-background',
-						label: __( 'CTA background colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: ctaBackground,
-								onChange: ( val ) => setAttributes( { ctaBackground: val ?? '' } ),
-								linked: true,
-								gradientValue: ctaBackgroundGradient,
-								onGradientChange: ( val ) => setAttributes( { ctaBackgroundGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: ctaBackgroundHover,
-								onChange: ( val ) => setAttributes( { ctaBackgroundHover: val ?? '' } ),
-								linked: true,
-								},
-						],
-					},
-					{
-						key: 'badge-text',
-						label: __( 'Popular badge text colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: popularBadgeColour,
-								onChange: ( val ) => setAttributes( { popularBadgeColour: val ?? '' } ),
-								linked: true,
-								gradientValue: popularBadgeColourGradient,
-								onGradientChange: ( val ) => setAttributes( { popularBadgeColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: popularBadgeColourHover,
-								onChange: ( val ) => setAttributes( { popularBadgeColourHover: val ?? '' } ),
-								linked: true,
-								},
-						],
-					},
-					{
-						key: 'badge-background',
-						label: __( 'Popular badge background colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: popularBadgeBackground,
-								onChange: ( val ) => setAttributes( { popularBadgeBackground: val ?? '' } ),
-								linked: true,
-								gradientValue: popularBadgeBackgroundGradient,
-								onGradientChange: ( val ) => setAttributes( { popularBadgeBackgroundGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: popularBadgeBackgroundHover,
-								onChange: ( val ) => setAttributes( { popularBadgeBackgroundHover: val ?? '' } ),
 								linked: true,
 								},
 						],
@@ -528,6 +413,52 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ /* Moved in from the shared SgsColourPanel (D622 — an
+					     element-scoped colour belongs in its own element's
+					     TIER 1 panel; "cta button" is a declared element whose
+					     attrMap claims ctaColour/ctaBackground). */ }
+					<DesignTokenPicker
+						label={ __( 'CTA text colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: ctaColour,
+								onChange: ( val ) => setAttributes( { ctaColour: val ?? '' } ),
+								linked: true,
+								gradientValue: ctaColourGradient,
+								onGradientChange: ( val ) => setAttributes( { ctaColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: ctaColourHover,
+								onChange: ( val ) => setAttributes( { ctaColourHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'CTA background colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: ctaBackground,
+								onChange: ( val ) => setAttributes( { ctaBackground: val ?? '' } ),
+								linked: true,
+								gradientValue: ctaBackgroundGradient,
+								onGradientChange: ( val ) => setAttributes( { ctaBackgroundGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: ctaBackgroundHover,
+								onChange: ( val ) => setAttributes( { ctaBackgroundHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
 				</PanelBody>
 
 				{ /* Container wrapper (WS-4 mirror) */ }
@@ -550,6 +481,51 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ /* Moved in from the shared SgsColourPanel (D622); "popular
+					     badge" is a declared element whose attrMap claims
+					     popularBadgeColour/popularBadgeBackground. */ }
+					<DesignTokenPicker
+						label={ __( 'Popular badge text colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: popularBadgeColour,
+								onChange: ( val ) => setAttributes( { popularBadgeColour: val ?? '' } ),
+								linked: true,
+								gradientValue: popularBadgeColourGradient,
+								onGradientChange: ( val ) => setAttributes( { popularBadgeColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: popularBadgeColourHover,
+								onChange: ( val ) => setAttributes( { popularBadgeColourHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Popular badge background colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: popularBadgeBackground,
+								onChange: ( val ) => setAttributes( { popularBadgeBackground: val ?? '' } ),
+								linked: true,
+								gradientValue: popularBadgeBackgroundGradient,
+								onGradientChange: ( val ) => setAttributes( { popularBadgeBackgroundGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: popularBadgeBackgroundHover,
+								onChange: ( val ) => setAttributes( { popularBadgeBackgroundHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
 				</PanelBody>
 			</InspectorControls>
 
@@ -569,6 +545,30 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+					{ /* Moved in from the shared SgsColourPanel (D622); "plan
+					     name" is a declared element whose attrMap claims
+					     titleColour. */ }
+					<DesignTokenPicker
+						label={ __( 'Title colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: titleColour,
+								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
+								linked: true,
+								gradientValue: titleColourGradient,
+								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: titleColourHover,
+								onChange: ( val ) => setAttributes( { titleColourHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
 					/>
 				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
