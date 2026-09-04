@@ -4369,7 +4369,15 @@ function main() {
 	// class of debt; two more instances of the one already accepted here.
 	// (sgs/product-card.ctaColourText(Hover)Gradient did NOT need a raise —
 	// that CTA element IS canvas-previewed, so no new finding.)
-	const CHECK_A_OPEN_BACKLOG = 213;
+	// RAISED 213 -> 216 (2026-09-04, colour-conformance hover-state rollout):
+	// sgs/process-steps.titleColourHover/descriptionColourHover/numberColourHover.
+	// Same structural cause as this block's ALREADY-baselined
+	// numberBackgroundHover and its siblings — process-steps' editor canvas
+	// has no `:hover` preview mechanism of any kind, so no control on it can
+	// ever satisfy this check, new or old. Not a new class of debt.
+	// (sgs/product-card's 4 new gradient attrs and sgs/nav-menu.itemBgGradient
+	// did NOT need a raise — those elements ARE canvas-previewed already.)
+	const CHECK_A_OPEN_BACKLOG = 216;
 	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
 
 	if ( isJson ) {

@@ -115,11 +115,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		connectorStyle,
 		numberStyle,
 		numberColour,
+		numberColourHover,
 		numberBackground,
 		titleColour,
 		titleColourGradient,
+		titleColourHover,
 		descriptionColour,
 		descriptionColourGradient,
+		descriptionColourHover,
 		backgroundColour,
 		textColour,
 		backgroundColourHover,
@@ -279,6 +282,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { numberColour: val ?? '' } ),
 								linked: true,
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: numberColourHover,
+								onChange: ( val ) => setAttributes( { numberColourHover: val ?? '' } ),
+								linked: true,
+							},
 						] }
 					/>
 					{ ( () => {
@@ -317,6 +327,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: titleColourGradient,
 								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: titleColourHover,
+								onChange: ( val ) => setAttributes( { titleColourHover: val ?? '' } ),
+								linked: true,
+							},
 						] }
 					/>
 				</PanelBody>
@@ -335,6 +352,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								linked: true,
 								gradientValue: descriptionColourGradient,
 								onGradientChange: ( val ) => setAttributes( { descriptionColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: descriptionColourHover,
+								onChange: ( val ) => setAttributes( { descriptionColourHover: val ?? '' } ),
+								linked: true,
 							},
 						] }
 					/>

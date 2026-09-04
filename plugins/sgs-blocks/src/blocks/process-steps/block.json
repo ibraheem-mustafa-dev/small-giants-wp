@@ -122,6 +122,13 @@
 						"tag": "headingLevel",
 						"css:background-image": "titleColourGradient"
 					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "titleColourHover"
+							}
+						}
+					},
 					"_note": "block.json declares `selectors.typography: '.sgs-process-steps__title'`, so the root's native typography paints the step TITLE. titleColour is a separate design-token colour attr (resolves via default convention `title`+`Colour`). `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:413, `.sgs-process-steps__title`) but doesn't match the `title` prefix convention on its own."
 				},
 				"number": {
@@ -140,7 +147,8 @@
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:background-color": "numberBackgroundHover"
+								"css:background-color": "numberBackgroundHover",
+								"css:color": "numberColourHover"
 							}
 						}
 					},
@@ -156,6 +164,13 @@
 					"attrMap": {
 						"css:color": "descriptionColour",
 						"css:background-image": "descriptionColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "descriptionColourHover"
+							}
+						}
 					},
 					"_note": "Only colour is independently controlled for the description — font-size/weight/line-height are honest gaps (no per-element typography attrs declared for this element)."
 				},
@@ -265,11 +280,19 @@
 			"type": "string",
 			"default": ""
 		},
+		"titleColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"descriptionColour": {
 			"type": "string",
 			"default": "text-muted"
 		},
 		"descriptionColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"descriptionColourHover": {
 			"type": "string",
 			"default": ""
 		},
@@ -383,6 +406,10 @@
 			"default": ""
 		},
 		"numberBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"numberColourHover": {
 			"type": "string",
 			"default": ""
 		}

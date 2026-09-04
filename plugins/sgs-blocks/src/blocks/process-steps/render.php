@@ -402,6 +402,15 @@ if ( '' !== $number_background_hover ) {
 	$scoped_css[] = sgs_hover_state_rules( $step_sel, 'background-color:' . sgs_colour_value( $number_background_hover ), ':focus-within', $num_el );
 }
 
+// Hover number colour — same ancestor-hover shape as numberBackgroundHover
+// above (hovering the STEP repaints the badge's descendant number colour).
+$number_colour_hover = (string) ( $attributes['numberColourHover'] ?? '' );
+if ( '' !== $number_colour_hover ) {
+	$step_sel     = $root_sel . ' .sgs-process-steps__step';
+	$num_el       = ' .sgs-process-steps__number';
+	$scoped_css[] = sgs_hover_state_rules( $step_sel, 'color:' . sgs_colour_value( $number_colour_hover ), ':focus-within', $num_el );
+}
+
 // D636 — sibling gradient attribute wins when set+valid (text-colour gradient
 // rollout, mirrors sgs/counter's numberColour/labelColour pattern).
 $title_colour_effective = sgs_resolve_text_colour_or_gradient( $title_colour, $title_colour_gradient );
@@ -413,6 +422,17 @@ if ( '' !== $title_colour_effective ) {
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $title_scope, $title_colour_effective );
 }
 
+// Hover title colour — same ancestor-hover shape as numberBackgroundHover/
+// numberColourHover above (hovering the STEP repaints the descendant title
+// colour). Gradient is deliberately untouched here (titleColour's gradient
+// dimension stays normal-state-only).
+$title_colour_hover = (string) ( $attributes['titleColourHover'] ?? '' );
+if ( '' !== $title_colour_hover ) {
+	$step_sel     = $root_sel . ' .sgs-process-steps__step';
+	$title_el     = ' .sgs-process-steps__title';
+	$scoped_css[] = sgs_hover_state_rules( $step_sel, 'color:' . sgs_colour_value( $title_colour_hover ), ':focus-within', $title_el );
+}
+
 $description_colour_effective = sgs_resolve_text_colour_or_gradient( $description_colour, $description_colour_gradient );
 if ( '' !== $description_colour_effective ) {
 	$description_colour_decl = sgs_text_colour_decl( $description_colour_effective );
@@ -420,6 +440,16 @@ if ( '' !== $description_colour_effective ) {
 		$scoped_css[] = "{$desc_scope}{{$description_colour_decl};}";
 	}
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $desc_scope, $description_colour_effective );
+}
+
+// Hover description colour — same ancestor-hover shape as above. Gradient
+// deliberately untouched (descriptionColour's gradient dimension stays
+// normal-state-only).
+$description_colour_hover = (string) ( $attributes['descriptionColourHover'] ?? '' );
+if ( '' !== $description_colour_hover ) {
+	$step_sel     = $root_sel . ' .sgs-process-steps__step';
+	$desc_el      = ' .sgs-process-steps__description';
+	$scoped_css[] = sgs_hover_state_rules( $step_sel, 'color:' . sgs_colour_value( $description_colour_hover ), ':focus-within', $desc_el );
 }
 
 // ---------------------------------------------------------------------------

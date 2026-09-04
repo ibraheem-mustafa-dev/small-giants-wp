@@ -46,6 +46,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		theme,
 		cardStyle,
 		starColour,
+		starColourHover,
 		autoplay,
 		autoplaySpeed,
 		showDots,
@@ -102,6 +103,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: starColour,
 								onChange: ( val ) => setAttributes( { starColour: val || 'accent' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: starColourHover,
+								onChange: ( val ) => setAttributes( { starColourHover: val ?? '' } ),
 								linked: true,
 							},
 						] }

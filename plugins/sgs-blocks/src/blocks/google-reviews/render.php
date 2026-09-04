@@ -305,6 +305,19 @@ if ( $gr_dot_decls_normal || $gr_dot_decls_hover ) {
 	$gr_responsive_css .= sgs_emit_state_colour_css( $gr_root_sel . ' .sgs-google-reviews__dot::before', $gr_dot_decls_normal, $gr_dot_decls_hover );
 }
 
+// Star fill — hover only (normal-state fill is already handled by the
+// `--sgs-gr-star-colour` custom property + `sgs-google-reviews--star-{slug}`
+// modifier class emitted above; this adds ONLY the hover state, same lighter
+// state-colour emitter as the dot indicator immediately above).
+$gr_star_colour_hover = (string) ( $attributes['starColourHover'] ?? '' );
+$gr_star_decls_hover  = array();
+if ( '' !== $gr_star_colour_hover ) {
+	$gr_star_decls_hover[] = 'fill:' . sgs_colour_value( $gr_star_colour_hover ) . ';';
+}
+if ( $gr_star_decls_hover ) {
+	$gr_responsive_css .= sgs_emit_state_colour_css( $gr_root_sel . ' .sgs-google-reviews__star--full', array(), $gr_star_decls_hover );
+}
+
 $gr_style_engine_args = array();
 
 $gr_color_args = array();

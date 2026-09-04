@@ -98,6 +98,13 @@
 					"attrMap": {
 						"css:fill": "starColour"
 					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:fill": "starColourHover"
+							}
+						}
+					},
 					"_note": "The rating-stars SVG (sgs_render_stars_svg(), render.php:341-390) — full/half-fill stars carry an enum-modifier class on the wrapper (sgs-google-reviews--star-{slug}, render.php:222) that style.css keys off (.sgs-google-reviews--star-{slug} .sgs-google-reviews__star--full{fill:...}, style.css:168-176). starColour's PRIMARY, visible effect is this SVG fill — earlier classification derived background-color instead, because the same attribute ALSO feeds --sgs-gr-star-colour (render.php:230-232), a custom property with a SECOND, low-visibility consumer: .sgs-google-reviews__breakdown-fill (style.css:120, the ratings-breakdown bars, hidden unless showBreakdown is on) and .sgs-google-reviews__dot.is-active::before (style.css:579, the slider pagination dot). Same one-attribute-drives-two-unrelated-CSS-properties-on-two-unrelated-elements shape as product-search's `input` element note for inputBorderColour — declared on the primary, named node (the star SVG); the background-color consumer rides the same underlying value rather than getting a second manifest entry. Palette-coverage gap (style.css only recognises 2 legacy enum values against the full open-palette control) is a separate, unfixed client-facing bug — not addressed by this classification fix."
 				},
 				"arrow": {
@@ -282,6 +289,10 @@
 		"starColour": {
 			"type": "string",
 			"default": "accent"
+		},
+		"starColourHover": {
+			"type": "string",
+			"default": ""
 		},
 		"autoplay": {
 			"type": "boolean",
