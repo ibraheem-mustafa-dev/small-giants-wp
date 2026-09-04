@@ -1,3 +1,56 @@
+## D956 [ROUTINE] — Defect 3 CLOSED (contentBandMargin DB-seeded); 3 unrelated routing-determinism ambiguities fixed en route
+
+**2026-09-04, same session as D950/D954.** Closes out Phase 5 in full — all 5 of the qc-council-
+validated loop-defect fixes (D954) are now committed. Two things happened here, in order.
+
+**Defect 3 closed for real.** `/sgs-update` was run (per Bean's ask) to activate the margin
+routing D954 built but left dormant. Seeded `scripts/data/property-suffixes.json` with
+`BandMarginTop`/`Right`/`Bottom`/`Left` (mirroring the existing `BandPaddingTop` family exactly;
+verified DB backup taken via `Connection.backup()` first, not a file copy). `container/block.json`'s
+`contentBandMargin` box family is now live in `block_attributes` — confirmed via the real,
+non-mocked resolver (`margin-top` → `Write(attr='contentBandMargin', ...)`), no monkeypatch needed.
+
+**A genuine regression surfaced by running with real data, not the council's monkeypatched
+tests.** The CONTENT-first margin priority added for Defect 3 short-circuits BEFORE the existing
+OUTER self-merge branch's `margin: 0 auto` horizontal-centring exclusion ever runs — so the
+deliberate non-lift of the centring idiom (already reproduced structurally via
+`margin-inline:auto` on the band) would have started being mis-lifted as a literal
+`{left:auto,right:auto}` box value. Caught by `test_sgs_feature_grid_surfaces_both_gap_kinds`, a
+real fixture test that predates this session — not invented for it. Fixed by porting the same
+exclusion check into the CONTENT-band path. This is the concrete case for why a live full-suite
+run after any DB-affecting change matters even when unit tests (monkeypatched or not) already pass.
+
+**The full `/sgs-update` run also surfaced 5 pre-existing, unrelated findings** via the
+`db-consistency` F6 gate (real, not introduced by this session) — blocked the Defect-3 commit at
+the real git `pre-commit` hook level (not the Claude-side `[gates-ok:...]` layer, which does not
+fire for a terminal `git commit`). Bean's ruling: fix them properly rather than baseline or
+`--no-verify`. Fixed:
+- `sgs/nav-drawer`: `toggleCloseColour`/`toggleCloseColourHover` both resolved to
+  `(css:color, element=close, state=NULL)` via the default `{prefix}{suffix}` convention, with no
+  way to tell them apart — despite the manifest's own comment claiming "no per-block attribute
+  behind :hover" (stale/wrong: `render.php` genuinely wires the Hover attr via
+  `sgs_hover_state_rules()`, affecting both `:hover` and `:focus-visible`). Declared an explicit
+  `attrMap` + `states.hover.attrMap` so they resolve to distinct slots.
+- `sgs/notice-banner`: identical shape, `iconColour`/`iconColourHover` on the `icon` element —
+  same fix.
+- `sgs/post-grid`: `textColourHover` resolved `css_element=NULL`/`derived_selector=NULL` (an
+  undeclared sub-element paint) because it genuinely paints FOUR descendant elements (title
+  link/excerpt/meta/read-more) on the card's ancestor-hover — a shape with no existing precedent
+  anywhere else in the codebase (checked via a full block.json scan). Declared on all 4 real
+  target elements' `states.hover.attrMap`, since that reflects reality rather than working around
+  the gate; noted the schema limitation (one row per attr in `block_attributes` means only ONE of
+  the 4 elements is DB-recorded — `read-more` won by declaration/iteration order) for whoever next
+  needs this shape, rather than silently accepting it as fully solved.
+
+Full converter suite: 775 passed, 1 skipped, 10 xfailed throughout. Both `check-box-family-guard`
+and `cheat-gate` clean; `db-consistency` F6 gate: 5 NEW → 0 NEW (1 pre-existing baselined finding,
+unrelated, unchanged).
+
+**Phase 5 status: CLOSED, all 5 defects fixed and committed** (commits `567c4b95d`, `c7ace188b`,
+`70b95e1e1`, `3f86fd0b8`, `611611521`). The governing plan
+(`.claude/plans/2026-08-01-db-derivation-and-converter-cleanup.md`) is now fully complete across
+all 5 phases and ready to archive.
+
 ## D955 [ROUTINE] — Rule 4 skip-with-reason reporting for unrouted fx attributes
 
 **2026-09-04.** Closes the last named-but-deferred gap from D952's adversarial-council review.

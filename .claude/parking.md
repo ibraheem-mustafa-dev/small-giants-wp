@@ -37,8 +37,11 @@ A `**Verify:**` line means the entry may already be complete - check it cheaply 
 sections fail recognition as `unrecognised` and never reach the converter — Stage 0 hard-rejects
 non-`sgs-`-prefixed BEM on production runs. Needs a decision: is this draft meant to convert yet, or
 is it pre-SGS-BEM by design? Unlike the homepage folder it has no TRUTH-SPEC.md. Relevant to the
-Phase-5 section-annihilation bug, which fires on non-BEM markup. Once resolved, migration is an
-HTML-only edit (no code change) so the page can clone to `sgs/option-picker` blocks.
+Phase-5 section-annihilation bug (now FIXED, 2026-09-04, D954/D956 — see decisions.md) —
+that fix scopes an unexpected exception to the failing column rather than nulling the whole
+section, but does not change Stage 0's hard-reject of non-BEM markup, so this entry's core
+decision is unaffected. Once resolved, migration is an HTML-only edit (no code change) so the
+page can clone to `sgs/option-picker` blocks.
 
 *(Merged 2026-08-12 with the duplicate `P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM`, parked 2026-06-03 —
 same file, same underlying issue. Superseded entry archived to `memory/parking-archive.md`.)*
