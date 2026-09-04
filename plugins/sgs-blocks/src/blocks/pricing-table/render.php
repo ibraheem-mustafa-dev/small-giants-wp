@@ -592,6 +592,12 @@ if ( '' !== ( $attributes['ctaColourHover'] ?? '' ) ) {
 if ( '' !== ( $attributes['popularBadgeColourHover'] ?? '' ) ) {
 	$pt_toggle_label_hover_decls[] = 'color:' . sgs_colour_value( $attributes['popularBadgeColourHover'] );
 }
+if ( '' !== ( $attributes['ctaBackgroundHover'] ?? '' ) ) {
+	$pt_toggle_label_hover_decls[] = 'background-color:' . sgs_colour_value( $attributes['ctaBackgroundHover'] );
+}
+if ( '' !== ( $attributes['popularBadgeBackgroundHover'] ?? '' ) ) {
+	$pt_toggle_label_hover_decls[] = 'background-color:' . sgs_colour_value( $attributes['popularBadgeBackgroundHover'] );
+}
 	$responsive_css             .= sgs_emit_state_colour_css(
 		$root_sel . ' .sgs-pricing-table__billing-toggle--style-button .sgs-pricing-table__toggle-label',
 		array(),

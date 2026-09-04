@@ -144,6 +144,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		featureColourHover,
 		ctaColourHover,
 		popularBadgeColourHover,
+		ctaBackgroundHover,
+		popularBadgeBackgroundHover,
 	} = attributes;
 
 	const [ palette ] = useSettings( 'color.palette' );
@@ -372,6 +374,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: ctaBackgroundGradient,
 								onGradientChange: ( val ) => setAttributes( { ctaBackgroundGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: ctaBackgroundHover,
+								onChange: ( val ) => setAttributes( { ctaBackgroundHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					{
@@ -411,6 +420,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: popularBadgeBackgroundGradient,
 								onGradientChange: ( val ) => setAttributes( { popularBadgeBackgroundGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: popularBadgeBackgroundHover,
+								onChange: ( val ) => setAttributes( { popularBadgeBackgroundHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					{

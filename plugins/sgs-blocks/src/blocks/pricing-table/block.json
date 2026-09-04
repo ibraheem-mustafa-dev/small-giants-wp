@@ -689,6 +689,14 @@
 		"popularBadgeColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"ctaBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"popularBadgeBackgroundHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",
