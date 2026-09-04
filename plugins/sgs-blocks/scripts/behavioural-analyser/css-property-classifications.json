@@ -175,28 +175,10 @@
     },
     {
       "slug": "sgs/brand-strip",
-      "attr": "columnsDesktop",
+      "attr": "columns",
       "fields": {
         "css_property": "height,max-width,width",
         "css_tier": "desktop",
-        "css_layer": "OUTER"
-      }
-    },
-    {
-      "slug": "sgs/brand-strip",
-      "attr": "columnsMobile",
-      "fields": {
-        "css_property": "height,max-width,width",
-        "css_tier": "mobile",
-        "css_layer": "OUTER"
-      }
-    },
-    {
-      "slug": "sgs/brand-strip",
-      "attr": "columnsTablet",
-      "fields": {
-        "css_property": "height,max-width,width",
-        "css_tier": "tablet",
         "css_layer": "OUTER"
       }
     },
@@ -2058,32 +2040,10 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "textAlignDesktop",
+      "attr": "textAlign",
       "fields": {
         "css_property": "text-align",
-        "css_tier": "desktop",
-        "css_layer": "GRID_AREA",
-        "css_element": "content"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "textAlignMobile",
-      "fields": {
-        "css_property": "text-align",
-        "css_tier": "mobile",
-        "css_layer": "GRID_AREA",
-        "css_element": "content"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "textAlignTablet",
-      "fields": {
-        "css_property": "text-align",
-        "css_tier": "tablet",
-        "css_layer": "GRID_AREA",
-        "css_element": "content"
+        "css_element": "headline"
       }
     },
     {
@@ -2246,7 +2206,9 @@
       "attr": "iconColourHover",
       "fields": {
         "css_property": "color",
-        "css_element": "icon"
+        "role": "color",
+        "css_element": "item-icon",
+        "css_state": "hover"
       }
     },
     {
@@ -3879,14 +3841,6 @@
     },
     {
       "slug": "sgs/product-card",
-      "attr": "tagTextColour",
-      "fields": {
-        "css_property": "color",
-        "css_element": "tag"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
       "attr": "titleColour",
       "fields": {
         "css_property": "color",
@@ -5161,6 +5115,7 @@
       "attr": "titleColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "title"
       }
     },
@@ -5249,6 +5204,7 @@
       "attr": "labelColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -5669,6 +5625,22 @@
         "css_property": "stroke",
         "role": "color",
         "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "labelColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "textColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "text"
       }
     },
     {
@@ -8589,6 +8561,23 @@
     },
     {
       "slug": "sgs/modal",
+      "attr": "closeColourTextGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/modal",
+      "attr": "closeColourTextHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "close",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/modal",
       "attr": "modalBackground",
       "fields": {
         "css_property": "background-color",
@@ -8601,6 +8590,14 @@
       "attr": "triggerBackgroundGradient",
       "fields": {
         "css_property": "background-image",
+        "css_element": "trigger"
+      }
+    },
+    {
+      "slug": "sgs/modal",
+      "attr": "triggerColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
         "css_element": "trigger"
       }
     },
@@ -8743,6 +8740,22 @@
       }
     },
     {
+      "slug": "sgs/nav-drawer",
+      "attr": "toggleCloseColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "burgerColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "burger"
+      }
+    },
+    {
       "slug": "sgs/nav-menu",
       "attr": "navBg",
       "fields": {
@@ -8758,6 +8771,14 @@
       "fields": {
         "css_property": "color",
         "role": "color",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "submenuColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
         "css_element": "sublink"
       }
     },
@@ -9099,6 +9120,14 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "excerptColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "excerpt"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "flexDirection",
       "fields": {
         "css_property": "flex-direction",
@@ -9180,10 +9209,26 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "metaColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "readMoreColour",
       "fields": {
         "css_property": "color",
         "role": "color",
+        "css_element": "read-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "readMoreColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
         "css_element": "read-more"
       }
     },
@@ -9220,6 +9265,14 @@
       "fields": {
         "css_property": "color",
         "role": "color",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "titleColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
         "css_element": "title"
       }
     },
@@ -9449,6 +9502,14 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "descriptionColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "headingLevel",
       "fields": {
         "css_property": "tag",
@@ -9503,6 +9564,14 @@
         "css_property": "color",
         "role": "color",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "titleColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "title"
       }
     },
     {
@@ -9593,6 +9662,23 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "ctaColourTextGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ctaColourTextHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "cta",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "headingLevel",
       "fields": {
         "css_property": "tag",
@@ -9613,6 +9699,14 @@
       "attr": "tagFullWidth",
       "fields": {
         "css_property": "width",
+        "css_element": "tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagTextColourGradient",
+      "fields": {
+        "css_property": "background-image",
         "css_element": "tag"
       }
     },
@@ -9846,12 +9940,29 @@
       }
     },
     {
+      "slug": "sgs/quote",
+      "attr": "textColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
       "slug": "sgs/separator",
       "attr": "colour",
       "fields": {
         "css_property": "border-color",
         "role": "color",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "contentColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "content"
       }
     },
     {
@@ -11912,6 +12023,14 @@
     },
     {
       "slug": "sgs/trust-bar",
+      "attr": "labelColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "badge-label"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -11953,6 +12072,14 @@
         "css_property": "box-shadow",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "title"
       }
     },
     {
@@ -12136,6 +12263,14 @@
       }
     },
     {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "labelColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/accordion",
       "attr": "borderRadiusMobile",
       "fields": {
@@ -12207,6 +12342,33 @@
         "css_property": "border-radius",
         "css_tier": "tablet",
         "css_element": "strip-spacing"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "columnsDesktop",
+      "fields": {
+        "css_property": "height,max-width,width",
+        "css_tier": "desktop",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "columnsMobile",
+      "fields": {
+        "css_property": "height,max-width,width",
+        "css_tier": "mobile",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "columnsTablet",
+      "fields": {
+        "css_property": "height,max-width,width",
+        "css_tier": "tablet",
+        "css_layer": "OUTER"
       }
     },
     {
