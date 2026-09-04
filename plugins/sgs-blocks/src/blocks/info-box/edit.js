@@ -18,6 +18,7 @@ import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { colourVar } from '../../utils';
 
 /**
@@ -605,71 +606,135 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				</PanelBody>
 
 				{ /* ===== Card Style ===== */ }
-				<PanelBody title={ __( 'Card Style', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
+				<ToolsPanel
+					label={ __( 'Card Style', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							cardStyle: 'elevated',
+							effectHover: 'lift',
+							scaleHover: '',
+							grayscaleHover: false,
+							transitionDuration: '300',
+							transitionEasing: 'ease-in-out',
+							shadowHover: '',
+						} )
+					}
+				>
+					<ToolsPanelItem
 						label={ __( 'Card style', 'sgs-blocks' ) }
-						value={ cardStyle }
-						options={ CARD_STYLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
+						hasValue={ () => cardStyle !== 'elevated' }
+						onDeselect={ () => setAttributes( { cardStyle: 'elevated' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Card style', 'sgs-blocks' ) }
+							value={ cardStyle }
+							options={ CARD_STYLE_OPTIONS }
+							onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						value={ effectHover }
-						options={ HOVER_EFFECT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { effectHover: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<TextControl
-						label={ __( 'Scale on hover (e.g. 1.03)', 'sgs-blocks' ) }
-						value={ scaleHover }
-						onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
-						placeholder="1.03"
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<ToggleControl
-						label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
-						checked={ grayscaleHover }
-						onChange={ ( val ) => setAttributes( { grayscaleHover: val } ) }
-						help={ __(
-							'Desaturates the media at rest; restores full colour on hover.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-					/>
-					<RangeControl
-						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
-						value={ parseInt( transitionDuration, 10 ) || 300 }
-						onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
-						min={ 0 }
-						max={ 1000 }
-						step={ 50 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Transition easing', 'sgs-blocks' ) }
-						value={ transitionEasing }
-						options={ EASING_OPTIONS }
-						onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ /* shadowHover — declared + read by render.php (preset-slug ONLY,
-						no colour, no editor control at all) until this fix (Stage 0
-						orphan attr, D621/D622). Landed straight on the target shape
-						(shape + colour), not the old fixed subtle/raised/floating/glow
-						allowlist. */ }
-					<ShadowControl
+						hasValue={ () => effectHover !== 'lift' }
+						onDeselect={ () => setAttributes( { effectHover: 'lift' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Hover effect', 'sgs-blocks' ) }
+							value={ effectHover }
+							options={ HOVER_EFFECT_OPTIONS }
+							onChange={ ( val ) => setAttributes( { effectHover: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						attrNames={ shadowAttrKeys( 'shadowHover' ) }
-					/>
-				</PanelBody>
+						hasValue={ () => shadowHover !== '' }
+						onDeselect={ () => setAttributes( { shadowHover: '' } ) }
+						isShownByDefault
+					>
+						{ /* shadowHover — declared + read by render.php (preset-slug ONLY,
+							no colour, no editor control at all) until this fix (Stage 0
+							orphan attr, D621/D622). Landed straight on the target shape
+							(shape + colour), not the old fixed subtle/raised/floating/glow
+							allowlist. */ }
+						<ShadowControl
+							label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ shadowAttrKeys( 'shadowHover' ) }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Scale on hover (e.g. 1.03)', 'sgs-blocks' ) }
+						hasValue={ () => scaleHover !== '' }
+						onDeselect={ () => setAttributes( { scaleHover: '' } ) }
+					>
+						<TextControl
+							label={ __( 'Scale on hover (e.g. 1.03)', 'sgs-blocks' ) }
+							value={ scaleHover }
+							onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
+							placeholder="1.03"
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
+						hasValue={ () => grayscaleHover !== false }
+						onDeselect={ () =>
+							setAttributes( { grayscaleHover: false } )
+						}
+					>
+						<ToggleControl
+							label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
+							checked={ grayscaleHover }
+							onChange={ ( val ) => setAttributes( { grayscaleHover: val } ) }
+							help={ __(
+								'Desaturates the media at rest; restores full colour on hover.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+						hasValue={ () => transitionDuration !== '300' }
+						onDeselect={ () =>
+							setAttributes( { transitionDuration: '300' } )
+						}
+					>
+						<RangeControl
+							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+							value={ parseInt( transitionDuration, 10 ) || 300 }
+							onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
+							min={ 0 }
+							max={ 1000 }
+							step={ 50 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Transition easing', 'sgs-blocks' ) }
+						hasValue={ () => transitionEasing !== 'ease-in-out' }
+						onDeselect={ () =>
+							setAttributes( { transitionEasing: 'ease-in-out' } )
+						}
+					>
+						<SelectControl
+							label={ __( 'Transition easing', 'sgs-blocks' ) }
+							value={ transitionEasing }
+							options={ EASING_OPTIONS }
+							onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+				</ToolsPanel>
 
 				{ /* ===== Layout ===== */ }
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>

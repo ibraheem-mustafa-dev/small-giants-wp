@@ -36,7 +36,7 @@ import {
 	ShadowControl,
 	shadowAttrKeys,
 } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
 
 // ---------------------------------------------------------------------------
@@ -485,10 +485,27 @@ export default function Edit( { attributes, setAttributes } ) {
 				   the element's own colour (moved out of the shared Colour
 				   panel above — text's colour belongs with text's other
 				   properties, not bundled with `background`'s). */ }
-				<PanelBody
-					title={ __( 'Typography', 'sgs-blocks' ) }
-					initialOpen={ false }
+				<ToolsPanel
+					label={ __( 'Typography', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							textDecoration: '',
+							textTransform: '',
+							fontFamily: '',
+							textAlign: '',
+							textColour: '',
+							textColourGradient: '',
+							textColourHover: '',
+							textColourHoverGradient: '',
+						} )
+					}
 				>
+					<ToolsPanelItem
+						label={ __( 'Font', 'sgs-blocks' ) }
+						hasValue={ () => true }
+						onDeselect={ () => {} }
+						isShownByDefault
+					>
 					{ /*
 					 * Font size + line height via shared TypographyControls.
 					 * Handles: fontSize/fontSizeUnit (fontSize is a TIER OBJECT here
@@ -558,7 +575,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					   a second, conflicting flat-value UnitControl that would clobber the
 					   letterSpacing OBJECT with a bare number. Removed rather than fixed:
 					   TypographyControls is the single owner. */ }
+					</ToolsPanelItem>
 
+					<ToolsPanelItem
+						label={ __( 'Text decoration & transform', 'sgs-blocks' ) }
+						hasValue={ () => textDecoration !== '' || textTransform !== '' }
+						onDeselect={ () =>
+							setAttributes( { textDecoration: '', textTransform: '' } )
+						}
+					>
 					<SelectControl
 						label={ __( 'Text decoration', 'sgs-blocks' ) }
 						value={ textDecoration }
@@ -579,6 +604,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Font family', 'sgs-blocks' ) }
+						hasValue={ () => fontFamily !== '' }
+						onDeselect={ () => setAttributes( { fontFamily: '' } ) }
+					>
 					<TextControl
 						label={ __( 'Font family', 'sgs-blocks' ) }
 						value={ fontFamily }
@@ -589,6 +621,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Text align', 'sgs-blocks' ) }
+						hasValue={ () => textAlign !== '' }
+						onDeselect={ () => setAttributes( { textAlign: '' } ) }
+						isShownByDefault
+					>
 					<SelectControl
 						label={ __( 'Text align', 'sgs-blocks' ) }
 						value={ textAlign }
@@ -599,6 +639,26 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Text colour', 'sgs-blocks' ) }
+						hasValue={ () =>
+							( textColour ?? '' ) !== '' ||
+							( textColourGradient ?? '' ) !== '' ||
+							( textColourHover ?? '' ) !== '' ||
+							( textColourHoverGradient ?? '' ) !== ''
+						}
+						onDeselect={ () =>
+							setAttributes( {
+								textColour: '',
+								textColourGradient: '',
+								textColourHover: '',
+								textColourHoverGradient: '',
+							} )
+						}
+						isShownByDefault
+					>
 					{ /* Text colour — moved out of the shared Colour panel above
 					   (was jammed together with `background`'s colour there);
 					   this is `text`'s own css:color member and belongs with
@@ -630,7 +690,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						] }
 						contrastAgainst={ textContrastAgainst }
 					/>
-				</PanelBody>
+					</ToolsPanelItem>
+				</ToolsPanel>
 
 				{ /* ---- Background — `background`'s own TIER-1 panel ----
 				   A real declared element (the block's `::after` paint layer,

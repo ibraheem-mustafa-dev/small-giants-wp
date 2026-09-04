@@ -21,6 +21,7 @@ import {
 	resolveColourToken,
 } from '../../components';
 import { backgroundPreview, spacingPreview } from '../../utils';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	PanelBody,
 	SelectControl,
@@ -420,10 +421,43 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				    is this block's only styled element. max-width/contentWidth stay
 				    on ContainerWrapperControls's own "Container / Wrapper" panel
 				    (mounted above) rather than being duplicated here. */ }
-				<PanelBody
-					title={ __( 'Layout', 'sgs-blocks' ) }
-					initialOpen={ true }
+				<ToolsPanel
+					label={ __( 'Layout', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							padding: {},
+							paddingTablet: {},
+							paddingMobile: {},
+							margin: {},
+							marginTablet: {},
+							marginMobile: {},
+							flexDirection: { desktop: 'row', mobile: 'column' },
+							gap: { desktop: '12px', mobile: '8px' },
+							flexWrap: { desktop: 'nowrap', mobile: 'nowrap' },
+							justifyContent: { desktop: 'flex-start' },
+							alignItems: { desktop: 'center', mobile: 'stretch' },
+							borderWidth: {},
+							borderStyle: 'solid',
+							borderColour: '',
+							borderColourGradient: '',
+							borderRadius: {},
+							borderRadiusTablet: {},
+							borderRadiusMobile: {},
+						} )
+					}
 				>
+					<ToolsPanelItem
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						hasValue={ () =>
+							JSON.stringify( attributes.padding ?? {} ) !== '{}' ||
+							JSON.stringify( attributes.paddingTablet ?? {} ) !== '{}' ||
+							JSON.stringify( attributes.paddingMobile ?? {} ) !== '{}'
+						}
+						onDeselect={ () =>
+							setAttributes( { padding: {}, paddingTablet: {}, paddingMobile: {} } )
+						}
+						isShownByDefault
+					>
 					{ /* ── Padding & margin (A1, D638 — sgs/container parity) ──
 					    Base tier writes the block's OWN `padding`/`margin` object
 					    attrs — this block no longer declares supports.spacing, so
@@ -456,7 +490,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { [ attrFor[ tier ] ]: next } );
 						} }
 					/>
-					<hr style={ { margin: '16px 0' } } />
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						hasValue={ () =>
+							JSON.stringify( attributes.margin ?? {} ) !== '{}' ||
+							JSON.stringify( attributes.marginTablet ?? {} ) !== '{}' ||
+							JSON.stringify( attributes.marginMobile ?? {} ) !== '{}'
+						}
+						onDeselect={ () =>
+							setAttributes( { margin: {}, marginTablet: {}, marginMobile: {} } )
+						}
+					>
 					<ResponsiveBoxControl
 						label={ __( 'Margin', 'sgs-blocks' ) }
 						presets
@@ -471,9 +517,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { [ attrFor[ tier ] ]: next } );
 						} }
 					/>
+					</ToolsPanelItem>
 
-					<hr style={ { margin: '16px 0' } } />
-
+					<ToolsPanelItem
+						label={ __( 'Direction', 'sgs-blocks' ) }
+						hasValue={ () =>
+							JSON.stringify( flexDirection ?? {} ) !==
+							JSON.stringify( { desktop: 'row', mobile: 'column' } )
+						}
+						onDeselect={ () =>
+							setAttributes( { flexDirection: { desktop: 'row', mobile: 'column' } } )
+						}
+						isShownByDefault
+					>
 					{ /*
 						  `flexDirection` is a TIER OBJECT — ONE attr holding
 						  {desktop,tablet,mobile} (Spec 35 pass), same shape as
@@ -495,9 +551,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+					</ToolsPanelItem>
 
-					<hr style={ { margin: '12px 0' } } />
-
+					<ToolsPanelItem
+						label={ __( 'Gap', 'sgs-blocks' ) }
+						hasValue={ () =>
+							JSON.stringify( attributes.gap ?? {} ) !==
+							JSON.stringify( { desktop: '12px', mobile: '8px' } )
+						}
+						onDeselect={ () =>
+							setAttributes( { gap: { desktop: '12px', mobile: '8px' } } )
+						}
+					>
 					{ /*
 						  Gap is a TIER OBJECT — ONE attr holding
 						  {desktop,tablet,mobile} (Spec 35 pass 1, 2026-08-10).
@@ -522,9 +587,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+					</ToolsPanelItem>
 
-					<hr style={ { margin: '12px 0' } } />
-
+					<ToolsPanelItem
+						label={ __( 'Wrap', 'sgs-blocks' ) }
+						hasValue={ () =>
+							JSON.stringify( flexWrap ?? {} ) !==
+							JSON.stringify( { desktop: 'nowrap', mobile: 'nowrap' } )
+						}
+						onDeselect={ () =>
+							setAttributes( { flexWrap: { desktop: 'nowrap', mobile: 'nowrap' } } )
+						}
+					>
 					{ /*
 						  `flexWrap` is a TIER OBJECT — same shape as `flexDirection`
 						  above. `flexWrapTablet`/`…Mobile` are no longer declared
@@ -545,9 +619,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+					</ToolsPanelItem>
 
-					<hr style={ { margin: '12px 0' } } />
-
+					<ToolsPanelItem
+						label={ __( 'Button spacing', 'sgs-blocks' ) }
+						hasValue={ () =>
+							JSON.stringify( justifyContent ?? {} ) !==
+							JSON.stringify( { desktop: 'flex-start' } )
+						}
+						onDeselect={ () =>
+							setAttributes( { justifyContent: { desktop: 'flex-start' } } )
+						}
+					>
 					{ /*
 						  `justifyContent` is a TIER OBJECT — same shape as
 						  `flexDirection` above. `justifyContentTablet`/`…Mobile`
@@ -568,9 +651,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+					</ToolsPanelItem>
 
-					<hr style={ { margin: '12px 0' } } />
-
+					<ToolsPanelItem
+						label={ __( 'Button alignment', 'sgs-blocks' ) }
+						hasValue={ () =>
+							JSON.stringify( alignItems ?? {} ) !==
+							JSON.stringify( { desktop: 'center', mobile: 'stretch' } )
+						}
+						onDeselect={ () =>
+							setAttributes( { alignItems: { desktop: 'center', mobile: 'stretch' } } )
+						}
+					>
 					{ /*
 						  `alignItems` is a TIER OBJECT — same shape as
 						  `flexDirection` above. `alignItemsTablet`/`…Mobile` are
@@ -592,9 +684,32 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+					</ToolsPanelItem>
 
-					<hr style={ { margin: '16px 0' } } />
-
+					<ToolsPanelItem
+						label={ __( 'Border', 'sgs-blocks' ) }
+						hasValue={ () =>
+							JSON.stringify( attributes.borderWidth ?? {} ) !== '{}' ||
+							attributes.borderStyle !== 'solid' ||
+							( attributes.borderColour ?? '' ) !== '' ||
+							( attributes.borderColourGradient ?? '' ) !== '' ||
+							JSON.stringify( attributes.borderRadius ?? {} ) !== '{}' ||
+							JSON.stringify( attributes.borderRadiusTablet ?? {} ) !== '{}' ||
+							JSON.stringify( attributes.borderRadiusMobile ?? {} ) !== '{}'
+						}
+						onDeselect={ () =>
+							setAttributes( {
+								borderWidth: {},
+								borderStyle: 'solid',
+								borderColour: '',
+								borderColourGradient: '',
+								borderRadius: {},
+								borderRadiusTablet: {},
+								borderRadiusMobile: {},
+							} )
+						}
+						isShownByDefault
+					>
 					{ /* ── Border — group root border (width/style/colour/gradient/
 					    radius). Merged in from the former standalone "Border" panel. */ }
 					<SgsBorderControl
@@ -619,7 +734,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { [ radiusKey ]: next } );
 						} }
 					/>
-				</PanelBody>
+					</ToolsPanelItem>
+				</ToolsPanel>
 			</InspectorControls>
 
 			<div { ...innerBlocksProps } />
