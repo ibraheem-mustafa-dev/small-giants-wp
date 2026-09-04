@@ -90,6 +90,7 @@
 						"css:color": "itemColour",
 						"css:color-gradient": "itemColourGradient",
 						"css:background-color": "itemBg",
+						"css:background-image": "itemBgGradient",
 						"css:border-radius": "itemRadius",
 						"css:font-size": "itemFontSize",
 						"css:font-weight": "itemFontWeight",
@@ -283,6 +284,11 @@
 		"itemBg": {
 			"type": "string",
 			"default": ""
+		},
+		"itemBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting nav-item background via the same ::before layer as itemBg (D942 recipe item 1); non-empty wins over the flat itemBg colour, mirroring itemColourGradient's sibling-wins pattern."
 		},
 		"itemColourHover": {
 			"type": "string",

@@ -884,8 +884,9 @@ $item_colour = isset( $attributes['itemColour'] ) ? (string) $attributes['itemCo
 // a client-chosen gradient can't meaningfully replace -- separate decision.
 $item_colour_gradient  = isset( $attributes['itemColourGradient'] ) ? (string) $attributes['itemColourGradient'] : '';
 $item_colour_effective = sgs_resolve_text_colour_or_gradient( $item_colour, $item_colour_gradient );
-$item_bg     = isset( $attributes['itemBg'] ) ? sanitize_html_class( $attributes['itemBg'] ) : '';
-$item_bg_hex = '' !== $item_bg ? sgs_resolve_palette_hex( $item_bg, '' ) : '';
+$item_bg          = isset( $attributes['itemBg'] ) ? sanitize_html_class( $attributes['itemBg'] ) : '';
+$item_bg_hex      = '' !== $item_bg ? sgs_resolve_palette_hex( $item_bg, '' ) : '';
+$item_bg_gradient = sgs_css_gradient_value( $attributes['itemBgGradient'] ?? '' );
 
 /*
  * Shape + motion come from ATTRIBUTES and theme TOKENS, never literals. The
@@ -910,7 +911,7 @@ if ( '' !== $item_colour_effective ) {
 	}
 	$css .= sgs_text_colour_gradient_fallback_rule( $link_sel, $item_colour_effective );
 }
-if ( '' !== $item_bg_hex ) {
+if ( '' !== $item_bg_hex || '' !== $item_bg_gradient ) {
 	/*
 	 * D942 recipe item 1 (`itemColour`): `itemColour`'s `color:` and
 	 * `itemBg`'s `background-color:` used to paint the SAME selector
@@ -925,9 +926,11 @@ if ( '' !== $item_bg_hex ) {
 	 * unused anywhere else in this block's own CSS, so the background
 	 * moves there instead (same shape, hand-composed for the free slot).
 	 * Applies regardless of hoverStyle, same as the resting paint it
-	 * replaces.
+	 * replaces. `itemBgGradient` (below) is the sibling gradient wired
+	 * 2026-09-04 — the second argument was previously a literal `null`
+	 * placeholder.
 	 */
-	$item_bg_before_decl = sgs_background_paint_decl( $item_bg_hex, null );
+	$item_bg_before_decl = sgs_background_paint_decl( $item_bg_hex, $item_bg_gradient );
 	$css                .= $link_sel . '{position:relative;isolation:isolate;border-radius:' . esc_attr( (string) $item_radius ) . 'px;}';
 	$css                .= $link_sel . '::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . $item_bg_before_decl . ';}';
 }

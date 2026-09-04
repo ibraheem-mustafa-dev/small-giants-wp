@@ -162,6 +162,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		itemColour,
 		itemColourGradient,
 		itemBg,
+		itemBgGradient,
 		itemColourHover,
 		itemBgHover,
 		itemRadius,
@@ -554,6 +555,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{
 			key: 'item-bg',
 			label: __( 'Item background', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -561,6 +563,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: itemBg,
 					onChange: ( val ) => setAttributes( { itemBg: val ?? '' } ),
 					linked: true,
+					gradientValue: itemBgGradient,
+					onGradientChange: ( val ) => setAttributes( { itemBgGradient: val ?? '' } ),
 				},
 				{
 					key: 'hover',
