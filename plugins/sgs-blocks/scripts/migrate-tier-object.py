@@ -270,20 +270,31 @@ def classify(attrs: dict, prop: str):
     return 'FLAT', sibs
 
 
-def reads_attr_directly(block_dir: Path, prop: str) -> int:
+def reads_attr_directly(block_dir: Path, prop: str, base_key: str = None) -> int:
+    """`base_key` is the actual JSON key holding the base declaration (`_base_attr_key`) —
+    `prop` for the common case, `prop + 'Desktop'` for the three families whose base
+    declares suffixed (see `_base_attr_spec`). Defaults to `prop` so every existing call
+    site (self-test fixtures included) is unchanged when the caller doesn't have it."""
     rp = block_dir / 'render.php'
     if not rp.exists():
         return 0
     src = rp.read_text(encoding='utf-8', errors='replace')
-    return len(re.findall(r"\[['\"]" + re.escape(prop) + r"(?:Tablet|Mobile)?['\"]\]", src))
+    base = re.escape(base_key or prop)
+    prop_re = re.escape(prop)
+    return len(re.findall(
+        r"\[['\"](?:" + base + r"|" + prop_re + r"Tablet|" + prop_re + r"Mobile)['\"]\]", src))
 
 
-def edit_refs(block_dir: Path, prop: str) -> int:
+def edit_refs(block_dir: Path, prop: str, base_key: str = None) -> int:
+    """See `reads_attr_directly`'s `base_key` note — same widening, same default."""
     ej = block_dir / 'edit.js'
     if not ej.exists():
         return 0
     src = ej.read_text(encoding='utf-8', errors='replace')
-    return len(re.findall(r"\b" + re.escape(prop) + r"(?:Tablet|Mobile)?\b", src))
+    base = re.escape(base_key or prop)
+    prop_re = re.escape(prop)
+    return len(re.findall(
+        r"\b(?:" + base + r"|" + prop_re + r"Tablet|" + prop_re + r"Mobile)\b", src))
 
 
 # Added D574 (2026-08-11) — see the module docstring's "WHAT IT DOES DO — PART 2" section.
@@ -879,18 +890,25 @@ def _strip_php_comments(src: str) -> str:
     return re.sub(r'/\*.*?\*/|//[^\n]*', _blank_but_keep_lines, src, flags=re.DOTALL)
 
 
-def render_state(block_dir: Path, prop: str) -> str:
-    """Classify how render.php currently reads `prop`. See module docstring."""
+def render_state(block_dir: Path, prop: str, base_key: str = None) -> str:
+    """Classify how render.php currently reads `prop`. See module docstring.
+
+    `base_key` (see `reads_attr_directly`'s note) lets the three `<prop>Desktop`-based
+    families (D777) be recognised by their ACTUAL declared key — without it, a block
+    reading only `$attributes['columnsDesktop']` (never bare `$attributes['columns']`)
+    read as DELEGATED/UNCLEAR because every pattern below anchored on the bare name."""
     rp = block_dir / 'render.php'
     if not rp.exists():
         return 'DELEGATED'
     src = _strip_php_comments(rp.read_text(encoding='utf-8', errors='replace'))
+    base = re.escape(base_key or prop)
+    prop_re = re.escape(prop)
     # A bare \bprop\b also matches plain-English prose — a docblock listing "gap" as a
     # feature, or "a real WCAG 2.1 gap" — which is not a code usage. Require a code-like
     # marker ($, ' or ") immediately before the token: `$gap`, `$attributes['gap']`,
     # `"gap"`. Confirmed against form/render.php:8,301, which mention "gap" only in
     # prose and correctly fall through to DELEGATED once this gate is applied.
-    if not re.search(r"[\$'\"]" + re.escape(prop) + r"\b", src):
+    if not re.search(r"[\$'\"](?:" + base + r"|" + prop_re + r")\b", src):
         return 'DELEGATED'
     # NORMALISED: the object is read through the shared normaliser. Real call shape
     # (confirmed against gallery/render.php:58) is POSITIONAL —
@@ -898,23 +916,32 @@ def render_state(block_dir: Path, prop: str) -> str:
     # never takes the property name as a string argument, only the already-indexed
     # value. Anchor on the bracket-indexed argument, not a string-literal parameter.
     if re.search(r"sgs_responsive_normalise_object\(\s*\$attributes\[['\"]"
-                 + re.escape(prop) + r"['\"]\]", src):
+                 + base + r"['\"]\]", src):
         return 'NORMALISED'
-    # RAW: the OLD flat-scalar bracket read — `$attributes['prop']` or `['propTablet']`,
-    # the exact pattern that PHP array-to-string-coerces to "Array" when the attr is
-    # actually object-typed (D569/D570's root cause).
-    if re.search(r"\[['\"]" + re.escape(prop) + r"(?:Tablet|Mobile)?['\"]\]", src):
+    # RAW: the OLD flat-scalar bracket read — `$attributes['prop']` (or its Desktop-
+    # suffixed base form) or `['propTablet']`/`['propMobile']` — the exact pattern that
+    # PHP array-to-string-coerces to "Array" when the attr is actually object-typed
+    # (D569/D570's root cause).
+    if re.search(r"\[['\"](?:" + base + r"|" + prop_re + r"Tablet|" + prop_re + r"Mobile)['\"]\]", src):
         return 'RAW'
     return 'UNCLEAR'
 
 
-def edit_state(block_dir: Path, prop: str) -> str:
-    """Classify how edit.js currently wires the control for `prop`. See module docstring."""
+def edit_state(block_dir: Path, prop: str, base_key: str = None) -> str:
+    """Classify how edit.js currently wires the control for `prop`. See module docstring.
+
+    `base_key` (see `reads_attr_directly`'s note) — without it, hero's real
+    `desktop: 'textAlignDesktop'` attrMap entry matches neither the LEGACY pattern
+    (which only recognised `textAlign`/`textAlignTablet`/`textAlignMobile`) nor the bare
+    fallback (`\\btextAlign\\b` never matches inside `textAlignDesktop` — there is no word
+    boundary between the shared "textAlign" and "Desktop"), so the block misclassified
+    UNCLEAR/NONE despite genuinely having a wired control."""
     ej = block_dir / 'edit.js'
     if not ej.exists():
         return 'NONE'
     src = ej.read_text(encoding='utf-8', errors='replace')
     prop_re = re.escape(prop)
+    base = re.escape(base_key or prop)
     has_shared_import = bool(_SHARED_CONTROL_IMPORT_RE.search(src))
     # A local <ResponsiveOverride ... value={attributes.prop} ...
     #   onChange={... setAttributes({ prop: ... })} pattern — the DONE shape, matching
@@ -929,24 +956,27 @@ def edit_state(block_dir: Path, prop: str) -> str:
         # file (site-footer-row/site-header-row's pattern) — both are equally DONE, the
         # variable's origin doesn't change the wiring's correctness.
         value_bound = (
-            re.search(r'\battributes(?:\.|\[[\'"])' + prop_re + r'\b', block_src)
+            re.search(r'\battributes(?:\.|\[[\'"])' + base + r'\b', block_src)
             or (
-                re.search(r'value=\{\s*' + prop_re + r'\s*\}', block_src)
-                and re.search(r'\b' + prop_re + r'\s*,?\s*\}\s*=\s*attributes\b'
-                               r'|\{[^{}]*\b' + prop_re + r'\b[^{}]*\}\s*=\s*attributes\b',
+                re.search(r'value=\{\s*' + base + r'\s*\}', block_src)
+                and re.search(r'\b' + base + r'\s*,?\s*\}\s*=\s*attributes\b'
+                               r'|\{[^{}]*\b' + base + r'\b[^{}]*\}\s*=\s*attributes\b',
                                src)
             )
         )
         if not value_bound:
             continue
-        if re.search(r'setAttributes\(\s*\{\s*(?:\[[^\]]*\]|' + prop_re + r')\s*:', block_src):
+        if re.search(r'setAttributes\(\s*\{\s*(?:\[[^\]]*\]|' + base + r')\s*:', block_src):
             return 'OVERRIDDEN'
     # LEGACY: the old flat-attrMap-inside-<ResponsiveControl> bridging pattern (what
     # site-footer-row's gridTemplateRows looked like before pass 3b) — a plain object
-    # literal mapping breakpoint names to `prop`/`propTablet`/`propMobile` string values.
-    if re.search(r"(?:desktop|tablet|mobile)\s*:\s*['\"]" + prop_re + r"(?:Tablet|Mobile)?['\"]", src):
+    # literal mapping breakpoint names to `prop`/`propTablet`/`propMobile` string values,
+    # OR — the Desktop-suffixed base form (`desktop: 'textAlignDesktop'`, hero's real
+    # shape) via `base`.
+    if re.search(r"(?:desktop|tablet|mobile)\s*:\s*['\"](?:" + base + r"|"
+                 + prop_re + r"Tablet|" + prop_re + r"Mobile)['\"]", src):
         return 'LEGACY'
-    if re.search(r"\b" + prop_re + r"\b", src):
+    if re.search(r"\b(?:" + base + r"|" + prop_re + r")\b", src):
         return 'SHARED' if has_shared_import else 'UNCLEAR'
     return 'SHARED' if has_shared_import else 'NONE'
 
@@ -964,6 +994,7 @@ def survey(prop: str):
             continue
         d = bj.parent
         base_spec = _base_attr_spec(attrs, prop) or {}
+        base_key = _base_attr_key(attrs, prop)
         out.append({
             'slug': data.get('name', d.name),
             'dir': d,
@@ -971,10 +1002,10 @@ def survey(prop: str):
             'siblings': sibs,
             'default': base_spec.get('default'),
             'base_type': base_spec.get('type'),
-            'render_reads': reads_attr_directly(d, prop),
-            'edit_refs': edit_refs(d, prop),
-            'render_state': render_state(d, prop),
-            'edit_state': edit_state(d, prop),
+            'render_reads': reads_attr_directly(d, prop, base_key),
+            'edit_refs': edit_refs(d, prop, base_key),
+            'render_state': render_state(d, prop, base_key),
+            'edit_state': edit_state(d, prop, base_key),
         })
     return out
 

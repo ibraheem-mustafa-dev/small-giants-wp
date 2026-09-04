@@ -343,10 +343,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		splitContentOrder,
 		// Phase 1 — vertical alignment.
 		verticalAlignment,
-		// HC2 — per-breakpoint text alignment on .sgs-hero__content.
-		textAlignDesktop,
-		textAlignTablet,
-		textAlignMobile,
+		// HC2 — per-breakpoint text alignment on .sgs-hero__content. TIER OBJECT
+		// (D777/S2 fix, 2026-09-04) — {desktop,tablet,mobile}, mirrors
+		// gridTemplateColumns/splitContentOrder just above.
+		textAlign,
 		// Alignment & grid (gap 1, 2026-09-02) — the shared wrapper's `inner`
 		// grid/flex layout element (class-sgs-container-wrapper.php:3057-3068)
 		// consumes all 7 of these; none had an editor control until now. `layout`
@@ -426,8 +426,8 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// HC2: desktop text-align preview for the content column.
 	// Also preview contentBackground when set.
 	const contentPreviewStyle = {};
-	if ( textAlignDesktop ) {
-		contentPreviewStyle.textAlign = textAlignDesktop;
+	if ( textAlign?.desktop ) {
+		contentPreviewStyle.textAlign = textAlign.desktop;
 	}
 	if ( contentBackground ) {
 		contentPreviewStyle.backgroundColor = contentBackground;
@@ -910,9 +910,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							setAttributes( {
 								alignment: 'left',
 								verticalAlignment: 'center',
-								textAlignDesktop: '',
-								textAlignTablet: '',
-								textAlignMobile: '',
+								textAlign: {},
 								minHeight: { mobile: '360px' },
 								contentBackground: '',
 								contentPadding: { desktop: {} },
@@ -966,44 +964,33 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						</ToolsPanelItem>
 
 						{/* HC2: per-breakpoint text-align on the content column.
-						    Empty = inherit the variant's own alignment. */}
+						    Empty = inherit the variant's own alignment. textAlign is a
+						    TIER OBJECT {desktop,tablet,mobile} (D777/S2 fix,
+						    2026-09-04) — ONE attr, bound directly via
+						    <ResponsiveOverride> (mirrors minHeight/gridTemplateColumns
+						    above), replacing the old three-flat-attr attrMap. */}
 						<ToolsPanelItem
 							label={ __( 'Content text align', 'sgs-blocks' ) }
 							hasValue={ () =>
-								!! textAlignDesktop || !! textAlignTablet || !! textAlignMobile
+								!! textAlign?.desktop || !! textAlign?.tablet || !! textAlign?.mobile
 							}
-							onDeselect={ () =>
-								setAttributes( {
-									textAlignDesktop: '',
-									textAlignTablet: '',
-									textAlignMobile: '',
-								} )
-							}
+							onDeselect={ () => setAttributes( { textAlign: {} } ) }
 						>
-							<ResponsiveControl
+							<ResponsiveOverride
 								label={ __( 'Content text align', 'sgs-blocks' ) }
+								value={ textAlign }
+								onChange={ ( obj ) => setAttributes( { textAlign: obj } ) }
 							>
-								{ ( breakpoint ) => {
-									const attrMap = {
-										desktop: 'textAlignDesktop',
-										tablet: 'textAlignTablet',
-										mobile: 'textAlignMobile',
-									};
-									return (
-										<SelectControl
-											value={ attributes[ attrMap[ breakpoint ] ] || '' }
-											options={ TEXT_ALIGN_OPTIONS }
-											onChange={ ( val ) =>
-												setAttributes( {
-													[ attrMap[ breakpoint ] ]: val,
-												} )
-											}
-											__nextHasNoMarginBottom
-											__next40pxDefaultSize
-										/>
-									);
-								} }
-							</ResponsiveControl>
+								{ ( { ownValue, setOwnValue } ) => (
+									<SelectControl
+										value={ ownValue ?? '' }
+										options={ TEXT_ALIGN_OPTIONS }
+										onChange={ setOwnValue }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								) }
+							</ResponsiveOverride>
 						</ToolsPanelItem>
 
 						<ToolsPanelItem

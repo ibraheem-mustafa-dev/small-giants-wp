@@ -53,6 +53,19 @@
 			"disposition": "accepted-debt"
 		},
 		{
+			"check": "parent-child-duplicate",
+			"block": "sgs/hero",
+			"attr": "textAlign",
+			"severity": "parent-child:heuristic",
+			"keeper": "BOTH -- parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
+			"sources": [
+				"sgs/hero edit.js: parent-level control for \"textAlign\"",
+				"sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
+			],
+			"reason": "Added 2026-09-04, same shape as the sgs/info-box textAlign entry above and covered by the same 2026-08-21 Bean ruling: a parent-level alignment on a block that mounts sgs/text is the root-scoped INHERITABLE default, not a duplicate of the child's own control. Verified empirically, not asserted -- render.php:295-301/819-826 writes `.{uid} .sgs-hero__content{text-align:...}` on the InnerBlocks SLOT ROOT (`.sgs-hero__content`, confirmed as the exact className useInnerBlocksProps assigns at edit.js:651), and any nested sgs/text/sgs/heading child inherits that value through normal CSS cascade unless it sets its own alignment. Newly surfaced by the tier-object migration (D777) that renamed textAlignDesktop/Tablet/Mobile to one bare `textAlign` attr -- the heuristic could not pattern-match the old suffixed names, so this pairing existed unnoticed before the rename, not because of it.",
+			"disposition": "by-design"
+		},
+		{
 			"check": "same-file-duplicate",
 			"block": "sgs/product-card",
 			"attr": "ctaText",

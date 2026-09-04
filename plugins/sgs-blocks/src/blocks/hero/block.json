@@ -511,17 +511,9 @@
 			"type": "string",
 			"default": "ease-in-out"
 		},
-		"textAlignMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"textAlignTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"textAlignDesktop": {
-			"type": "string",
-			"default": ""
+		"textAlign": {
+			"type": "object",
+			"default": {}
 		},
 		"bgParallax": {
 			"type": "boolean",

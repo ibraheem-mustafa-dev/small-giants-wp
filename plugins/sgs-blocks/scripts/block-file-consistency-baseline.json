@@ -109,6 +109,12 @@
       "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
     },
     {
+      "type": "orphan_attr",
+      "block": "sgs/container",
+      "attr": "contentBandMargin",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
       "type": "undeclared_render_ref",
       "block": "sgs/decorative-image",
       "attr": "fx",

@@ -296,9 +296,10 @@ $content_padding_mobile_obj = is_array( $content_padding_tiers['mobile'] ) ? $co
 // (no @media), tablet/mobile via the scoped <style> @media mechanism — mirrors
 // the existing responsive-CSS builder. Empty string / 'inherit' = no emit so
 // unset instances keep the variant's own alignment (sgs-hero--align-*).
-$text_align_desktop = $attributes['textAlignDesktop'] ?? '';
-$text_align_tablet  = $attributes['textAlignTablet'] ?? '';
-$text_align_mobile  = $attributes['textAlignMobile'] ?? '';
+$text_align_tiers   = sgs_responsive_normalise_object( $attributes['textAlign'] ?? null );
+$text_align_desktop = $text_align_tiers['desktop'] ?? '';
+$text_align_tablet  = $text_align_tiers['tablet'] ?? '';
+$text_align_mobile  = $text_align_tiers['mobile'] ?? '';
 $allowed_text_align = array( 'left', 'center', 'right', 'start', 'end', 'justify' );
 
 // Layout grid (split variant). splitColumnRatio* was retired (Step 6 / D-next,
