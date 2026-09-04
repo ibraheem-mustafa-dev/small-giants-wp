@@ -222,7 +222,7 @@ if ( '' !== $sgs_icon_stroke_grad['css'] ) {
 	$scoped_css[] = "{$root_sel} .sgs-icon__svg svg{" . $sgs_icon_stroke_grad['css'] . ';}';
 }
 if ( '' !== $sgs_icon_stroke_grad_hover['css'] ) {
-	$scoped_css[] = "{$root_sel} .sgs-icon__link:hover .sgs-icon__svg svg,{$root_sel} .sgs-icon__link:focus-visible .sgs-icon__svg svg{" . $sgs_icon_stroke_grad_hover['css'] . ';}';
+	$scoped_css[] = sgs_hover_state_rules( "{$root_sel} .sgs-icon__link", $sgs_icon_stroke_grad_hover['css'], ':focus-visible', ' .sgs-icon__svg svg' );
 }
 
 $root_decls = $var_decls;

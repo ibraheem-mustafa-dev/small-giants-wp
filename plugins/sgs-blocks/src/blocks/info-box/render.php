@@ -311,7 +311,9 @@ $sgs_info_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
 );
 $scoped_css[]                  = sgs_text_colour_gradient_fallback_rule( $root_sel, $sgs_info_text_normal_resolved );
 if ( '' !== $sgs_info_text_hover_resolved && $sgs_info_text_hover_resolved !== $sgs_info_text_normal_resolved ) {
-	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover,' . $root_sel . ':focus-visible', $sgs_info_text_hover_resolved );
+	$scoped_css[] = sgs_hover_media_wrap(
+		sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover', $sgs_info_text_hover_resolved )
+	) . sgs_text_colour_gradient_fallback_rule( $root_sel . ':focus-visible', $sgs_info_text_hover_resolved );
 }
 
 // --- D744: Background colour (flat-or-gradient, base + hover) — painted on
@@ -397,10 +399,9 @@ if ( '' !== $sgs_info_link_grad_css ) {
 	$scoped_css[] = $sgs_info_link_grad_css;
 }
 if ( '' !== $sgs_info_link_hover_resolved && $sgs_info_link_hover_resolved !== $sgs_info_link_normal_resolved ) {
-	$sgs_info_link_grad_hover_css = sgs_text_colour_gradient_fallback_rule(
-		$sgs_link_sel . ':hover,' . $sgs_link_sel . ':focus-visible',
-		$sgs_info_link_hover_resolved
-	);
+	$sgs_info_link_grad_hover_css = sgs_hover_media_wrap(
+		sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $sgs_link_sel . ':hover', $sgs_info_link_hover_resolved )
+	) . sgs_text_colour_gradient_fallback_rule( $sgs_link_sel . ':focus-visible', $sgs_info_link_hover_resolved );
 	if ( '' !== $sgs_info_link_grad_hover_css ) {
 		$scoped_css[] = $sgs_info_link_grad_hover_css;
 	}
@@ -485,7 +486,9 @@ if ( $sgs_hover_decls ) {
 // scoped to the ":hover" selector itself so it wins over the flat border-color
 // decl above (emitted after it, same cascade-order trick as the flat rule). ---
 if ( '' !== $sgs_hover_border_gradient ) {
-	$scoped_css[] = sgs_border_gradient_css( "{$root_sel}:hover", $sgs_hover_border_gradient, null, '1px' );
+	$scoped_css[] = sgs_hover_media_wrap(
+		sgs_border_gradient_css( SGS_HOVER_NOT_TOUCH . " {$root_sel}:hover", $sgs_hover_border_gradient, null, '1px' )
+	);
 }
 
 $root_attr_args = array(

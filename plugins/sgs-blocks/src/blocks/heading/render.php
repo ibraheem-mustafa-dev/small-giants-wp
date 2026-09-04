@@ -424,9 +424,10 @@ if ( $hover_rules || $has_scale ) {
 	$scoped_css[] = "{$root_sel}{transition:all {$transition_duration}ms {$transition_easing};}";
 	$scoped_css[] = "@media(prefers-reduced-motion:reduce){{$root_sel}{transition:none !important;transform:none !important;}}";
 	if ( $hover_rules ) {
-		$hover_sel           = "{$root_sel}:hover,{$root_sel}:focus-within";
-		$scoped_css[]        = "{$hover_sel}{" . implode( ';', $hover_rules ) . ';}';
-		$hover_fallback_rule = sgs_text_colour_gradient_fallback_rule( $hover_sel, $hover_colour_effective );
+		$scoped_css[]         = sgs_hover_state_rules( $root_sel, implode( ';', $hover_rules ), ':focus-within' );
+		$hover_fallback_rule  = sgs_hover_media_wrap(
+			sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover', $hover_colour_effective )
+		) . sgs_text_colour_gradient_fallback_rule( $root_sel . ':focus-within', $hover_colour_effective );
 		if ( '' !== $hover_fallback_rule ) {
 			$scoped_css[] = $hover_fallback_rule;
 		}

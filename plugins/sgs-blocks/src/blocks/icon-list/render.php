@@ -346,7 +346,7 @@ if ( function_exists( 'sgs_typography_css_rule' ) ) {
 if ( $icon_colour ) {
 	$scoped_css[] = "{$icon_sel}{color:" . sgs_colour_value( $icon_colour ) . ';}';
 	if ( '' !== ( $attributes['iconColourHover'] ?? '' ) ) {
-		$scoped_css[] = "{$icon_sel}:hover,{$icon_sel}:focus-visible{color:" . sgs_colour_value( $attributes['iconColourHover'] ) . '}';
+		$scoped_css[] = sgs_hover_state_rules( $icon_sel, 'color:' . sgs_colour_value( $attributes['iconColourHover'] ), ':focus-visible' );
 	}
 }
 // D636/D644 icon/SVG gradient — one rule paints every item's icon (mirrors the
@@ -388,7 +388,9 @@ if ( '' !== $sgs_ilist_text_grad_css ) {
 	$scoped_css[] = $sgs_ilist_text_grad_css;
 }
 if ( '' !== $sgs_ilist_text_hover_resolved && $sgs_ilist_text_hover_resolved !== $sgs_ilist_text_normal_resolved ) {
-	$sgs_ilist_text_grad_hover_css = sgs_text_colour_gradient_fallback_rule( $text_sel . ':hover,' . $text_sel . ':focus-visible', $sgs_ilist_text_hover_resolved );
+	$sgs_ilist_text_grad_hover_css = sgs_hover_media_wrap(
+		sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $text_sel . ':hover', $sgs_ilist_text_hover_resolved )
+	) . sgs_text_colour_gradient_fallback_rule( $text_sel . ':focus-visible', $sgs_ilist_text_hover_resolved );
 	if ( '' !== $sgs_ilist_text_grad_hover_css ) {
 		$scoped_css[] = $sgs_ilist_text_grad_hover_css;
 	}

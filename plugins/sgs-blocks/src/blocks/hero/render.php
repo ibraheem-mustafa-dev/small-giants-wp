@@ -418,8 +418,9 @@ if ( '' !== $resting_text_colour_fallback_rule ) {
 	$responsive_css .= $resting_text_colour_fallback_rule;
 }
 if ( $hover_decls ) {
-	$hover_sel                       = "{$root_sel}:hover,{$root_sel}:focus-visible";
-	$hover_text_colour_fallback_rule = sgs_text_colour_gradient_fallback_rule( $hover_sel, $hover_text_colour_effective );
+	$hover_text_colour_fallback_rule = sgs_hover_media_wrap(
+		sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover', $hover_text_colour_effective )
+	) . sgs_text_colour_gradient_fallback_rule( $root_sel . ':focus-visible', $hover_text_colour_effective );
 	if ( '' !== $hover_text_colour_fallback_rule ) {
 		$responsive_css .= $hover_text_colour_fallback_rule;
 	}
@@ -431,7 +432,9 @@ if ( $hover_decls ) {
 // path above already reads as inert at rest — border-style is never set — so
 // the gradient mask mirrors that: it only exists inside the :hover rule). ---
 if ( '' !== $hover_border_colour_gradient ) {
-	$responsive_css .= sgs_border_gradient_css( "{$root_sel}:hover", $hover_border_colour_gradient, null, '1px' );
+	$responsive_css .= sgs_hover_media_wrap(
+		sgs_border_gradient_css( SGS_HOVER_NOT_TOUCH . " {$root_sel}:hover", $hover_border_colour_gradient, null, '1px' )
+	);
 }
 
 // Split variant: replace the default flex layout with CSS Grid.

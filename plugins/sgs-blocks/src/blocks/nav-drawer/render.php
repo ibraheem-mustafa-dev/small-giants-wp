@@ -341,7 +341,7 @@ if ( '' !== $close_colour_slug ) {
 // it is NOT a candidate for a states exemption. :focus-visible is paired with
 // :hover so keyboard users get the same affordance.
 if ( '' !== $close_colour_hover_slug ) {
-	$css .= $close_sel . ':hover,' . $close_sel . ':focus-visible{color:' . sgs_colour_value( $close_colour_hover_slug ) . ';}';
+	$css .= sgs_hover_state_rules( $close_sel, 'color:' . sgs_colour_value( $close_colour_hover_slug ), ':focus-visible' );
 }
 
 // ── Anchor geometry (desktop variants). Guard on "is either attribute
