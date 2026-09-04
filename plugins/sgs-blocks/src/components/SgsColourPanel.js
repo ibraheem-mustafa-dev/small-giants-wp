@@ -130,6 +130,12 @@ export default function SgsColourPanel( { rows } ) {
 							states={ row.states }
 								borderStyle={ row.borderStyle }
 								onBorderStyleChange={ row.onBorderStyleChange }
+							{ ...( row.gradientCapable
+								? {
+										contrastAgainst: row.contrastAgainst,
+										contrastLabel: row.contrastLabel,
+								  }
+								: {} ) }
 						/>
 					);
 				} ) }

@@ -3801,3 +3801,63 @@ attribute alongside the existing flat-colour attribute; gradient wins when set a
 
 Full record: `decisions.md` D636 (scope), D643/D644 (Phase 0 + `css:stroke`), D645 (first 4
 mechanisms + the 2 cross-builder merge collisions), D646 (border sweep), D648 (`gridItemBorder`).
+
+### P-GRADIENT-CONTRAST-ROLLOUT — 7 remaining `GradientCapableColourControl` callers with no WCAG contrast check
+**Status:** RESOLVED (2026-09-04, same session as parking) · **Bucket:** framework · **Parked:** 2026-09-04
+
+`GradientCapableColourControl.js` gained an opt-in WCAG contrast check (`contrastAgainst`/
+`contrastLabel` props — advisory Notice inside the popover, WARN ONLY, never blocks saving) this
+session, extracted from `sgs/site-header`/`sgs/site-footer`'s existing flat-colour contrast-warning
+pattern into a shared `src/utils/wcag-contrast.js` module (adds `worstGradientContrastRatio()` for
+the gradient case — worst-stop method against the resolved background). Wired into exactly 2 of 9
+call sites as a pilot: `sgs/site-header-row` and `sgs/site-footer-row`'s Text row, each resolving
+`contrastAgainst` from the nearest `sgs/site-header`/`sgs/site-footer` ancestor's
+`backgroundColour` (via `getBlockParentsByBlockName`) — but ONLY when the parent's background is
+actually what's visible behind the row's text, i.e. only when the row itself paints no
+background/gradient of its own. When the row has its own background set, the check is skipped
+entirely rather than comparing against a colour that isn't what's rendered (Bean-corrected
+2026-09-04 — the pilot's first cut wrongly fell back to comparing against the row's OWN background
+in that case).
+
+**Closed out same session, dispatched via `/dispatching-parallel-agents` (5 haiku branches, one
+per disjoint block file; the controller — not the dispatched agents — ran all git operations,
+per the lesson from this same session's stash incident):**
+- `hero/edit.js` — wired against root `backgroundColour` (flat-only; skipped when
+  `backgroundColourGradient` also set).
+- `card-grid/edit.js` — wired against `cardBackground` (flat-only, same gradient-skip guard) on
+  both the title and subtitle text rows.
+- `container/components/GridItemDefaultsPanel.js` — wired against `gridItemBackground`
+  (flat-only, same guard) since the text and background defaults are set together in one panel.
+- `components/colour-variants/textRow.js` + `components/SgsColourPanel.js` — extended the SHARED
+  plumbing (not a specific caller): `textRow()` now accepts + forwards optional
+  `contrastAgainst`/`contrastLabel` on its returned row descriptor, and `SgsColourPanel` forwards
+  those onto `GradientCapableColourControl` when a row is `gradientCapable`. Additive only — every
+  existing `textRow()`/`SgsColourPanel` caller that doesn't pass the new params is unaffected.
+- `text/edit.js` — wired against the block's own `backgroundColour` when set (flat-only, same
+  guard); skipped when the block has no background of its own (its actual background then
+  depends on the parent container at insertion time, which cannot be resolved statically the way
+  `site-header-row`'s single fixed parent type can).
+- `table-of-contents/edit.js` — **left permanently unwired, not parked work.** The block declares
+  no background attribute at all (`supports.color.background: false`) and has no fixed parent
+  block type — there is no background it could ever check against without inventing one. This is
+  a structural non-applicability, not a residual to revisit.
+
+⚠ **Two of the five agent-dispatched wirings shipped a real bug the controller caught and fixed
+before commit**: `card-grid` and the FIRST cut of `text/edit.js` computed `contrastAgainst` as
+"flat colour OR gradient string" (`text/edit.js` literally passed the raw gradient function
+string through when only a gradient background was set) — `contrastAgainst` only ever accepted a
+FLAT colour/token, so a gradient string fails to parse as a colour, returns luminance `-1`, and
+`meetsWCAG_AA()` then ALWAYS reports failure regardless of the real text colour: an unconditional
+false "fails contrast" warning on every text block with a gradient background. `GridItemDefaultsPanel`
+shipped the same class of bug independently. Fixed uniformly to: pass the flat background ONLY
+when no gradient sibling is also set (gradient wins the paint per D636 convention, so a flat-only
+comparison would also be comparing against a surface that isn't rendered when both are set) —
+otherwise skip the check. Caught by the controller reading each dispatched diff before commit, not
+by any build gate — none of these compile-checked or exercised the runtime contrast maths.
+
+**Explicitly NOT wired, real residual (see `P-BORDER-CONTRAST-THRESHOLD` below):**
+`components/SgsBorderControl.js` — routed to "handle inline" by `/delegate`'s complexity signal
+rather than dispatched, and on inspection needs a real design decision before it can be wired
+correctly (border contrast is a UI-component check per WCAG 1.4.11, 3:1, not the 4.5:1 text
+threshold `GradientCapableColourControl`'s check is hardcoded to) — parked separately, not folded
+into this now-closed entry.

@@ -39,11 +39,35 @@ import { __ } from '@wordpress/i18n';
  *                                    o.attrs; ignored on the o.get/o.set path.
  * @param {Function} [o.setAttributes] The block's setAttributes. Required with
  *                                    o.attrs; ignored on the o.get/o.set path.
- * @param {Function} [o.get]          Non-top-level reader — see fillRow's header.
- * @param {Function} [o.set]          Non-top-level writer — companion to o.get.
- * @return {Object} A row descriptor: { key, label, states, gradientCapable? }.
+ * @param {Function} [o.get]             Non-top-level reader — see fillRow's header.
+ * @param {Function} [o.set]             Non-top-level writer — companion to o.get.
+ * @param {string}   [o.contrastAgainst] Opt-in WCAG contrast check (see
+ *                                    `GradientCapableColourControl`'s own prop of the
+ *                                    same name) — a hex colour or theme palette token
+ *                                    naming the background ACTUALLY rendered behind
+ *                                    this row's text. The caller is responsible for
+ *                                    working that out (it depends on the block's own
+ *                                    background attributes/context — there is no
+ *                                    general answer this row builder can derive).
+ *                                    Passed straight through onto the descriptor;
+ *                                    ignored entirely when the row isn't
+ *                                    `gradientCapable` (DesignTokenPicker has no
+ *                                    contrast check). Omit for no behaviour change.
+ * @param {string}   [o.contrastLabel]   Paired override text — see the same prop on
+ *                                    `GradientCapableColourControl`.
+ * @return {Object} A row descriptor: { key, label, states, gradientCapable?, contrastAgainst?, contrastLabel? }.
  */
-export default function textRow( { key, label, attrs, attributes, setAttributes, get, set } ) {
+export default function textRow( {
+	key,
+	label,
+	attrs,
+	attributes,
+	setAttributes,
+	get,
+	set,
+	contrastAgainst,
+	contrastLabel,
+} ) {
 	if ( ( get || set ) && attrs ) {
 		throw new Error(
 			`textRow( "${ key }" ): supply EITHER attrs (top-level attribute binding) OR ` +
@@ -121,5 +145,7 @@ export default function textRow( { key, label, attrs, attributes, setAttributes,
 		label,
 		states: hover ? [ normal, hoverState ] : [ normal ],
 		...( gradient || hoverGradient ? { gradientCapable: true } : {} ),
+		...( contrastAgainst ? { contrastAgainst } : {} ),
+		...( contrastLabel ? { contrastLabel } : {} ),
 	};
 }

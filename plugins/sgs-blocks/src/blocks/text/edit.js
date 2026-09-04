@@ -405,6 +405,25 @@ export default function Edit( { attributes, setAttributes } ) {
 		? 'wp-block-sgs-text wp-block-sgs-text--has-drop-cap'
 		: 'wp-block-sgs-text';
 
+	// Contrast check for text colour — warn if text fails WCAG AA contrast
+	// against the text block's own background. When the text has no background
+	// set, there's no static background to compare against (it depends on the
+	// parent container context, which varies per insertion), so the check is
+	// skipped. Follows the site-header-row pattern (same block structure).
+	//
+	// `contrastAgainst` only accepts a FLAT colour/token — it is not itself
+	// gradient-aware. When `backgroundColourGradient` is set, the gradient (not
+	// the flat `backgroundColour`) is what actually paints (D636: gradient wins
+	// over flat), so comparing against the flat colour would compare against a
+	// surface that isn't rendered — skip the check entirely in that case rather
+	// than feed the raw gradient string in (it fails to parse as a colour and
+	// would show an always-wrong "fails contrast" warning regardless of the
+	// real text colour).
+	const textContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
 	const blockProps = useBlockProps( {
 		className: editorClassName,
 		style: { ...buildEditorStyle( attributes ), ...dropCapStyle },
@@ -609,6 +628,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
 							},
 						] }
+						contrastAgainst={ textContrastAgainst }
 					/>
 				</PanelBody>
 

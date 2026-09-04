@@ -307,6 +307,17 @@ export default function Edit( { attributes, setAttributes } ) {
 	const isWcProductMode = source === 'wc-product';
 	const isCptCollectionMode = source === 'cpt-collection';
 
+	// Contrast check for card text (title/subtitle) against the card's
+	// background. `contrastAgainst` only accepts a FLAT colour/token, so this
+	// only fires when a flat `cardBackground` is set AND no
+	// `cardBackgroundGradient` overrides it — when a gradient is set, the
+	// gradient (not the flat colour) is what actually paints, so comparing
+	// against the flat colour would compare against a surface that isn't
+	// rendered. Otherwise the check is skipped (ambiguous/inherited/gradient
+	// background). Mirrors site-header-row's rowHasOwnBackground pattern.
+	const cardBackgroundForContrast =
+		cardBackground && ! cardBackgroundGradient ? cardBackground : '';
+
 	// Flat help-text resolution (no nested ternary — S3358).
 	let sourceHelp = __( 'Add and arrange cards manually below.', 'sgs-blocks' );
 	if ( isWcProductMode ) {
@@ -437,6 +448,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								linked: true,
 							},
 						] }
+						{ ...( cardBackgroundForContrast ? { contrastAgainst: cardBackgroundForContrast } : {} ) }
 					/>
 				</PanelBody>
 			</InspectorControls>
@@ -466,6 +478,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								linked: true,
 							},
 						] }
+						{ ...( cardBackgroundForContrast ? { contrastAgainst: cardBackgroundForContrast } : {} ) }
 					/>
 				</PanelBody>
 			</InspectorControls>

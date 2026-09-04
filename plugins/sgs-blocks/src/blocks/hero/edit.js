@@ -702,6 +702,16 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
 						gradientCapable: true,
+						// Contrast check against the root section background.
+						// `contrastAgainst` only accepts a FLAT colour/token —
+						// when `backgroundColourGradient` is also set, the gradient
+						// (not the flat colour) is what actually paints, so the
+						// check is skipped in that case rather than comparing
+						// against a surface that isn't rendered.
+						contrastAgainst:
+							backgroundColour && ! backgroundColourGradient
+								? backgroundColour
+								: '',
 						states: [
 							{
 								key: 'normal',

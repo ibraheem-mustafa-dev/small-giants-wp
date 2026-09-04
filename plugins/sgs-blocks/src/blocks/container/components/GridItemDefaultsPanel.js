@@ -274,8 +274,21 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 			     a bare DesignTokenPicker — the component itself must change. Same
 			     trap this session's Step 3 negative control caught on sgs/container
 			     and sgs/cta-section's OWN root text rows. */ }
+			{ /* Contrast warning: text defaults are paired with background defaults
+			     set in this same panel. When a grid item child uses both defaults
+			     (no override), the text renders on the background. Warn if that
+			     pairing lacks WCAG AA contrast. `contrastAgainst` only accepts a
+			     FLAT colour/token — when `gridItemBackgroundGradient` is also set,
+			     the gradient (not the flat colour) is what actually paints, so the
+			     check is skipped in that case rather than comparing against a
+			     surface that isn't rendered. */ }
 			<GradientCapableColourControl
 				label={ __( 'Text colour', 'sgs-blocks' ) }
+				contrastAgainst={
+					gridItemBackground && ! gridItemBackgroundGradient
+						? gridItemBackground
+						: ''
+				}
 				states={ [
 					{
 						key: 'normal',

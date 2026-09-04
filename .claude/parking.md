@@ -381,40 +381,37 @@ Two overlapping Bean-reported visual-QC defect registers against the live page-8
 
 ## Framework: blocks, theme, specs
 
-### P-GRADIENT-CONTRAST-ROLLOUT — 7 remaining `GradientCapableColourControl` callers with no WCAG contrast check
+### P-BORDER-CONTRAST-THRESHOLD — `SgsBorderControl.js` needs a UI-component (3:1) contrast mode before it can adopt the check
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-04
 
-`GradientCapableColourControl.js` gained an opt-in WCAG contrast check (`contrastAgainst`/
-`contrastLabel` props — advisory Notice inside the popover, WARN ONLY, never blocks saving) this
-session, extracted from `sgs/site-header`/`sgs/site-footer`'s existing flat-colour contrast-warning
-pattern into a shared `src/utils/wcag-contrast.js` module (adds `worstGradientContrastRatio()` for
-the gradient case — worst-stop method against the resolved background). Wired into exactly 2 of 9
-call sites as a pilot: `sgs/site-header-row` and `sgs/site-footer-row`'s Text row, each resolving
-`contrastAgainst` from the nearest `sgs/site-header`/`sgs/site-footer` ancestor's
-`backgroundColour` (via `getBlockParentsByBlockName`) — but ONLY when the parent's background is
-actually what's visible behind the row's text, i.e. only when the row itself paints no
-background/gradient of its own. When the row has its own background set, the check is skipped
-entirely rather than comparing against a colour that isn't what's rendered (Bean-corrected
-2026-09-04 — the pilot's first cut wrongly fell back to comparing against the row's OWN background
-in that case, which the row's own text/background pairing needs its own separate check for, not
-this one).
+The `GradientCapableColourControl.js`/`textRow.js`/`SgsColourPanel.js` WCAG contrast check (opt-in
+`contrastAgainst`/`contrastLabel`, advisory-only, built 2026-09-04 — see
+`memory/parking-archive.md`'s closed `P-GRADIENT-CONTRAST-ROLLOUT` entry for the full build +
+rollout record) is now wired into every TEXT-colour caller that has a determinable background
+(hero, text, card-grid, container's grid-item defaults, plus the site-header-row/site-footer-row
+pilot). `components/SgsBorderControl.js` was the one remaining caller and was deliberately NOT
+wired this session.
 
-**7 remaining callers, not yet wired** (verified live via `grep -l GradientCapableColourControl
-src/blocks/*/edit.js src/components/*.js` — re-run rather than trusting this list, it will drift):
-`blocks/hero/edit.js`, `blocks/text/edit.js`, `blocks/card-grid/edit.js`,
-`blocks/table-of-contents/edit.js`, `blocks/container/components/GridItemDefaultsPanel.js`,
-`components/colour-variants/textRow.js` (feeds `SgsColourPanel`'s row renderer, so wiring this one
-is broader-reaching than a single block), `components/SgsBorderControl.js`.
+**Why it's a real residual, not a same-recipe fill-in:** `SgsBorderControl.js` composes
+`GradientCapableColourControl` for BORDER colour, not text colour. WCAG contrast for a border is
+a UI-component check (1.4.11 Non-text Contrast, 3:1 minimum against the adjacent surface) — a
+genuinely different, lower threshold from the 4.5:1 TEXT threshold the current check is hardcoded
+to (`meetsWCAG_AA( ratio, false )` inside `GradientCapableColourControl.js`'s `StateContent`,
+`isLargeText` always `false`). Wiring `contrastAgainst` onto `SgsBorderControl` as-is would apply
+the wrong (too strict) threshold and produce false-positive warnings on plenty of legitimate,
+WCAG-compliant borders.
 
-Each needs its own background-pairing worked out by READING that block first — do not assume a
-flat `backgroundColour` attribute exists; several are nested/context-dependent (same judgement
-call the pilot required for the row blocks). Recipe: read the block's attribute list + edit.js
-body in full, determine the correct `contrastAgainst` scope (own attr vs inherited-from-ancestor
-vs block-context), pass it to the existing `<GradientCapableColourControl>` mount(s) — no changes
-needed to the shared component itself, it is already built and battle-tested by the pilot.
+**Recipe:** give `GradientCapableColourControl` a way to select the 3:1 threshold instead of
+4.5:1 for this call site — e.g. a `contrastMinRatio`/`contrastPurpose: 'border' | 'text'` prop
+threaded down to the `meetsWCAG_AA()` call (its existing `isLargeText` param already models a
+second, lower (3:1) threshold, so this may be as simple as exposing that axis to the caller rather
+than inventing a new one — check before adding a new parameter). Then wire `SgsBorderControl`
+against whichever background attribute its own caller passes in (it may need a new
+`contrastAgainst` pass-through prop on `SgsBorderControl` itself, mirroring the `borderStyle`/
+`onBorderStyleChange` pass-through pattern already there).
 
-**Trigger:** next WCAG/design-system session, or when a client complains about a gradient-text
-readability issue on one of the 7 blocks above.
+**Trigger:** next WCAG/design-system session, or when a client complains about a low-contrast
+border being hard to see.
 
 ### P-MEDIA-ALIGNMENT-SHARED-CONTROL — `alignment` duplicated ad hoc across unrelated blocks
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-01
