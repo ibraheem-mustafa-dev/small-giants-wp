@@ -156,6 +156,29 @@ function runRuleAgainstFixture( mod, fixtureAbsPath ) {
 			}
 		}
 
+		// Same reasoning again for rule 41 (41-co2-element-grouping-order,
+		// C14/C4): it consumes placement-reach.py's `--json` ownership/element/
+		// contested map instead of re-deriving THE PLACEMENT RULE's resolution
+		// itself. That CLI always scans the REAL src/blocks tree (no
+		// --blocks-dir flag exists), so it can never see a fixture's synthetic
+		// blocks — a fixture slug is never a key in the real map. A fixture
+		// directory may therefore seed `_placement-reach.json` at its root
+		// (same shape placement-reach.py's --json prints: `{slug: {elements,
+		// ownership, blockLevel, contested}}`); absent = the real CLI
+		// invocation, unchanged for every other rule and fixture.
+		const placementReachFile = path.join( tmpBase, '_placement-reach.json' );
+		if ( fs.existsSync( placementReachFile ) ) {
+			try {
+				ctx.__placementReach = JSON.parse( fs.readFileSync( placementReachFile, 'utf8' ) );
+			} catch ( e ) {
+				return {
+					pass: false,
+					reason: `fixture root has a malformed _placement-reach.json: ${ e.message }`,
+					findings: [],
+				};
+			}
+		}
+
 		let findings = [];
 
 		if ( mod.scope === 'per-block' ) {

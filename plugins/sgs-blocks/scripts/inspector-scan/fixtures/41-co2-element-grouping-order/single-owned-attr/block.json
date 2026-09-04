@@ -1,0 +1,6 @@
+{
+	"name": "sgs/single-owned-attr",
+	"attributes": {
+		"soloAttr": { "type": "string" }
+	}
+}

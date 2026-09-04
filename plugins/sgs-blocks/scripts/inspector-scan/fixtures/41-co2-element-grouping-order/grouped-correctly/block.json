@@ -1,0 +1,7 @@
+{
+	"name": "sgs/grouped-correctly",
+	"attributes": {
+		"titleColour": { "type": "string" },
+		"titleFontSize": { "type": "number" }
+	}
+}
