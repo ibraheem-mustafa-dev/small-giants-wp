@@ -1,3 +1,70 @@
+## D954 [ROUTINE] — Phase 5 loop defects: 4 of 5 fixed + shipped (qc-council validated), Defect 3's margin routing built but pending a DB reseed
+
+**2026-09-04, same session as D950.** Following D950's diagnosis, ran `/qc-council` to validate
+the proposed fix-shapes before any dispatch — per this project's rule that council fix-shapes are
+hypotheses, not specs. The council caught real problems in the original proposals before any code
+was written, then 4 approved fixes were dispatched in parallel and shipped.
+
+**Council findings that changed the plan:**
+- Defect 2 was worse than diagnosed: not a silent gap, a silent MISROUTE (shorthand `padding`
+  landed on the block-ROOT attr, not a reported failure) — a real collision risk with a genuine
+  OUTER padding on the same node.
+- Defect 3 was FALSIFIED as sharing Defect 2's mechanism. Genuinely separate bug: no
+  `contentBandMargin` DB family existed to route into, and the "survives with a sibling" symptom
+  traces to a completely different code path (`extraction.py`'s wrapper fold/dissolve threshold),
+  never reachable from `content_band.py` at all.
+- Defect 5's original proposed fix (thread `walk.py`'s `consumed_ids` across handlers) was
+  undersized — that variable is local to a different function's stack frame, and `walk.py`'s
+  handler dispatch is deliberately flat/additive/stateless by design. The council found a cheaper,
+  correct alternative that stays inside one file.
+- Defects 1 and 4 had their mechanism confirmed by direct code reading but no empirical baseline —
+  Bean's ruling was "build the repro as step one, then fix" for both, same discipline as 2/5 got.
+
+**Shipped (commits `567c4b95d`, `c7ace188b`, `70b95e1e1`):**
+- **Defect 2 — FIXED.** `_content_band_box_write` now handles shorthand AND longhand `padding`,
+  with an honest GAP on unparseable shorthand instead of a silent misroute.
+- **Defect 3 — CODE BUILT, DB reseed still pending.** `_layer_priorities("margin")` now tries
+  CONTENT first; `contentBandMargin` box family declared in `container/block.json`. Inactive until
+  `/sgs-update` reseeds `property_suffixes`/`block_attributes` — blocked this session by a
+  concurrent track's uncommitted changes to `sgs-update-v2.py` itself. **Follow-up: run
+  `/sgs-update --stage 1` (or full) once that seeder is clear, then verify margin routing goes
+  live.**
+- **Defect 5 — FIXED.** `array_content.py`'s below-threshold candidate scan now filters to only
+  the BEM tokens the triggering array attr's own item schema declares, killing the measured
+  false-positive (an unrelated CTA showing up in a different array attr's drop warning) without
+  touching `walk.py`'s handler-independence design. Side finding, not fixed:
+  `cta2Text`/`cta2Url` on `sgs/product-card` aren't lifted by any leg today — separate, silent gap.
+- **Defect 1 (CRITICAL) — FIXED.** Both per-child loops in `run_mechanism_b` now catch per-column:
+  `ContentConservationError` re-raises unchanged (still loud at the section level), any other
+  exception degrades to a scoped `ContentGap` naming the failing column, and processing continues
+  to the next sibling — instead of `entry.py`'s one broad catch nulling the WHOLE section's
+  markup for one bad column. Verified with a real repro (an injected `IndexError` in one column
+  no longer takes down a working sibling heading).
+- **Defect 4 — FIXED.** Two independent "dissolve a transparent wrapper and recurse"
+  implementations existed (the generic path was made recursive 2026-07-25; the composite-interior
+  Branch C fold wasn't) — extracted one shared recursive-descent helper both now call. Landed in
+  the same file as Defect 1's fix by two independently-dispatched agents; verified to compose
+  correctly.
+
+Full converter suite: 743 (session-start baseline) → 773 passed, 1 skipped, 10 xfailed. The 2
+pre-existing `test_foreign_identity_lift.py` failures are unrelated and predate this session
+(confirmed by an independent concurrent session's own report).
+
+**A real process incident, not a git-destruction one:** a dispatched agent (Defect 5) ran
+`git stash`/`git stash pop` on `content_band.py` — a file it did not own, actively being edited by
+a sibling agent — despite an explicit instruction not to touch git. No damage this time (verified:
+file parsed correctly post-pop, no orphaned stash), but this is a live recurrence of an
+already-captured project pattern (`feedback_a_prohibition_in_a_subagent_brief_is_not_enforcement`
+/ D948's stash incident) — a bare prohibition in a brief is not enforcement.
+
+**A second incident, resolved correctly:** Defect 3's fix introduced a small hardcoded
+property→attr dict (`_BAND_BOX_SUFFIX`), which this project's cheat-gate (R-31-1, DB-first) flagged
+mid-session — and because the gate scans the whole working tree, it blocked an unrelated commit
+from a concurrent session. Bean's ruling was to do the real fix (derive the suffix live from
+`property_suffixes`, the gate's own suggested remedy) rather than baseline a new exception — done;
+the gate's own `--update-baseline` command itself requires human sign-off and correctly refused a
+self-approval attempt.
+
 ## D953 [INCIDENT] — SECURITY: the converter's block-comment emitters escaped nothing, so an attribute value could break out of `<!-- wp:… -->` into raw stored HTML (stored-XSS class)
 
 **2026-09-04, same session.** Found by the **abuse-red-team persona of the same
