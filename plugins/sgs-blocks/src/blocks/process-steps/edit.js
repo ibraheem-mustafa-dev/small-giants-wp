@@ -272,6 +272,20 @@ export default function Edit( { attributes, setAttributes } ) {
 			   override and these four panels each need a different title. */ }
 			<InspectorControls group="styles">
 				<PanelBody title={ __( 'Step number badge', 'sgs-blocks' ) } className="sgs-colour-panel">
+					{ /* Moved in from the Settings-tab "Appearance" panel
+					     (D622 — an element-scoped control belongs in its own
+					     element's TIER 1 panel; "step number badge" is a
+					     declared element whose attrMap claims numberStyle). */ }
+					<SelectControl
+						label={ __( 'Number style', 'sgs-blocks' ) }
+						value={ numberStyle }
+						options={ NUMBER_STYLE_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { numberStyle: val } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 					<DesignTokenPicker
 						label={ __( 'Number colour', 'sgs-blocks' ) }
 						states={ [
@@ -315,6 +329,23 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			<InspectorControls group="styles">
 				<PanelBody title={ __( 'Step title', 'sgs-blocks' ) } className="sgs-colour-panel">
+					{ /* Moved in from the Settings-tab "Step title" panel
+					     (D622 — an element-scoped control belongs in its own
+					     element's TIER 1 panel). */ }
+					<SelectControl
+						label={ __( 'Heading level', 'sgs-blocks' ) }
+						value={ headingLevel || 'h3' }
+						options={ HEADING_LEVEL_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { headingLevel: val } )
+						}
+						help={ __(
+							'Pick the level that fits your page outline — usually H3 under a page-level H2.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 					<DesignTokenPicker
 						label={ __( 'Title colour', 'sgs-blocks' ) }
 						states={ [
@@ -413,22 +444,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<InspectorControls>
-				<PanelBody title={ __( 'Step title', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'Heading level', 'sgs-blocks' ) }
-						value={ headingLevel || 'h3' }
-						options={ HEADING_LEVEL_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { headingLevel: val } )
-						}
-						help={ __(
-							'Pick the level that fits your page outline — usually H3 under a page-level H2.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
 				<PanelBody title={ __( 'Steps', 'sgs-blocks' ) }>
 					{ steps.map( ( step, index ) => (
 						<StepEditor
@@ -456,16 +471,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ CONNECTOR_OPTIONS }
 						onChange={ ( val ) =>
 							setAttributes( { connectorStyle: val } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Number style', 'sgs-blocks' ) }
-						value={ numberStyle }
-						options={ NUMBER_STYLE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { numberStyle: val } )
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
