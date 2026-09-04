@@ -278,14 +278,14 @@ $root_var_decls = array_merge(
 if ( $handle_icon_col ) {
 	$root_var_decls[] = '--sgs-before-after-handle-icon-colour:' . sgs_colour_value( $handle_icon_col );
 }
-// Label colour/background — same custom-property-value rule as the divider/
-// handle above; style.css reads --sgs-before-after-label-colour and
-// --sgs-before-after-label-bg-colour with the current literal as fallback.
+// Label colour — same custom-property-value rule as the divider/handle
+// above; style.css reads --sgs-before-after-label-colour with the current
+// literal as fallback. labelBackgroundColour moved OFF this mechanism
+// 2026-09-04 (see $label_sel below) to free the element's own
+// background-image for a text gradient on labelColour — see that section
+// for why.
 if ( $label_colour ) {
 	$root_var_decls[] = '--sgs-before-after-label-colour:' . sgs_colour_value( $label_colour );
-}
-if ( $label_bg_colour ) {
-	$root_var_decls[] = '--sgs-before-after-label-bg-colour:' . sgs_colour_value( $label_bg_colour );
 }
 
 $scoped_css[] = "{$root_sel}{" . implode( ';', $root_var_decls ) . ';}';
@@ -352,8 +352,41 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 
 // --- Label typography (font-weight/font-style — plain declarations; these
 // have no hardcoded CSS default to compete with, so they stay as direct
-// overrides). Colour/background are handled above via custom properties. ---
+// overrides). labelColour stays on the custom-property mechanism above
+// (style.css's own default fallback); its gradient sibling + labelBackgroundColour
+// are handled below via a direct scoped rule. ---
 $label_sel = $root_sel . ' .wp-block-sgs-before-after__label';
+
+// labelColour/labelBackgroundColour SHARE this one selector — a text gradient
+// needs background-clip:text on the element, which would clip the element's
+// OWN background paint to the glyph shapes, so labelBackgroundColour must
+// move onto its own `::after` layer first (same precondition as
+// pricing-table's ctaColour/ctaBackground split). Moved OFF the old
+// --sgs-before-after-label-bg-colour custom property entirely (style.css
+// updated to match) so there is exactly one background mechanism, not two
+// competing ones. The unset case defaults to the SAME rgba(0,0,0,0.6) the
+// old custom property's own CSS fallback used, via sgs_colour_value()'s raw-
+// CSS passthrough, so an instance that never touched this control renders
+// byte-identical.
+$label_bg_gradient = (string) ( $attributes['labelBackgroundColourGradient'] ?? '' );
+$scoped_css[]       = sgs_block_background_layer_css(
+	$label_sel,
+	sgs_background_paint_decl( $label_bg_colour ? (string) $label_bg_colour : 'rgba(0,0,0,0.6)', $label_bg_gradient )
+);
+// labelColour gradient sibling — direct scoped rule, safe now that the
+// background lives on the ::after layer above. The pre-existing
+// --sgs-before-after-label-colour custom property (style.css) still sets
+// the flat fallback; this rule wins by source order for the gradient case,
+// same pattern already proven on sgs/product-card.
+$label_colour_gradient  = (string) ( $attributes['labelColourGradient'] ?? '' );
+$label_colour_effective = sgs_resolve_text_colour_or_gradient( (string) $label_colour, $label_colour_gradient );
+if ( '' !== $label_colour_effective ) {
+	$label_colour_decl = sgs_text_colour_decl( $label_colour_effective );
+	if ( '' !== $label_colour_decl ) {
+		$scoped_css[] = $label_sel . '{' . $label_colour_decl . ';}';
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_sel, $label_colour_effective );
+}
 
 $label_decls = array();
 if ( $attributes['labelFontWeight'] ?? '' ) {

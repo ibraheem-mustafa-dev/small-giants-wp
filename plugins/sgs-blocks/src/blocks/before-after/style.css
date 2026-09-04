@@ -184,11 +184,14 @@
 	display: inline-block;
 	padding: 4px 10px;
 	border-radius: var( --wp--custom--border-radius--medium, 4px );
-	/* Fallback is the CSS default look; render.php only sets these custom
-	 * properties' VALUES when labelBackgroundColour/labelColour are actually
-	 * configured (Spec 32 — overrides are custom-property values, never a
-	 * competing selector{property:value} rule). */
-	background-color: var( --sgs-before-after-label-bg-colour, rgba( 0, 0, 0, 0.6 ) );
+	/* Fallback is the CSS default look; render.php only sets this custom
+	 * property's VALUE when labelColour is actually configured (Spec 32 —
+	 * overrides are custom-property values, never a competing
+	 * selector{property:value} rule). labelBackgroundColour moved to its own
+	 * scoped ::after layer (2026-09-04, sgs_block_background_layer_css()) so
+	 * a labelColour text gradient's background-clip:text cannot clip it —
+	 * render.php emits that rule unconditionally now, background-color is no
+	 * longer set here at all. */
 	color: var( --sgs-before-after-label-colour, #fff );
 	font-size: 13px;
 	line-height: var( --sgs-before-after-label-line-height, 1.4 );

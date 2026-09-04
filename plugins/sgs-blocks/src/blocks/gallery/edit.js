@@ -255,8 +255,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		showCaptions,
 		captionReveal,
 		captionColour,
+		captionColourGradient,
 		captionBgColour,
+		captionBgColourGradient,
 		overlayColourHover,
+		overlayColourHoverGradient,
 		scaleHover,
 		imageZoomHover,
 		grayscaleHover,
@@ -445,6 +448,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'overlay',
 						label: __( 'Hover overlay colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'hover',
@@ -452,6 +456,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: overlayColourHover,
 								onChange: ( val ) => setAttributes( { overlayColourHover: val ?? '' } ),
 								linked: true,
+								gradientValue: overlayColourHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { overlayColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -704,6 +710,8 @@ export default function Edit( { attributes, setAttributes } ) {
 										value: captionColour,
 										onChange: ( val ) => setAttributes( { captionColour: val ?? '' } ),
 										linked: true,
+										gradientValue: captionColourGradient,
+										onGradientChange: ( val ) => setAttributes( { captionColourGradient: val ?? '' } ),
 									},
 								] }
 							/>
@@ -716,6 +724,8 @@ export default function Edit( { attributes, setAttributes } ) {
 										value: captionBgColour,
 										onChange: ( val ) => setAttributes( { captionBgColour: val ?? '' } ),
 										linked: true,
+										gradientValue: captionBgColourGradient,
+										onGradientChange: ( val ) => setAttributes( { captionBgColourGradient: val ?? '' } ),
 									},
 								] }
 							/>

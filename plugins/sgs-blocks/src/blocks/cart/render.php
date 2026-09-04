@@ -123,13 +123,7 @@ $ssr_count = 0;
 $sgs_cart_vars = array(
 	'--sgs-cart-icon-size:' . $icon_size . 'px',
 	'--sgs-cart-icon-colour:' . sgs_colour_value( $icon_colour ),
-	'--sgs-cart-badge-colour:' . sgs_colour_value( $badge_colour ),
-	'--sgs-cart-badge-text-colour:' . sgs_colour_value( $badge_text_colour ),
 );
-if ( $has_panel ) {
-	$sgs_cart_vars[] = '--sgs-cart-panel-bg:' . sgs_colour_value( $panel_bg_slug );
-	$sgs_cart_vars[] = '--sgs-cart-panel-text:' . sgs_colour_value( $panel_text_slug );
-}
 
 // ── Margin — WP-native style.spacing.margin object (skip-serialised), NOT
 // auto-inlined. Tiers are SGS custom object attrs, hand-built shorthand. ─────
@@ -172,11 +166,64 @@ if ( null !== $margin_mob_val ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$sel}{margin:{$margin_mob_val};}}";
 }
 
-// ── Cart custom-property VALUES (icon size/colour, badge colours, panel
-// bg/text) — scoped rule on the SAME uid selector, NOT inline (Spec 32
-// FR-32-4 as amended 2026-07-18 / D345). ────────────────────────────────────
+// ── Cart custom-property VALUES (icon size/colour) — scoped rule on the
+// SAME uid selector, NOT inline (Spec 32 FR-32-4 as amended 2026-07-18 /
+// D345). Badge/panel colours moved off this mechanism 2026-09-04 (below) —
+// each pairs a fill (background) and text colour on the SAME element, which
+// a text gradient's background-clip:text would otherwise clip, so the fill
+// half now routes through its own ::after layer. ───────────────────────────
 if ( $sgs_cart_vars ) {
 	$scoped_css[] = $sel . '{' . implode( ';', $sgs_cart_vars ) . '}';
+}
+
+// Badge: badgeColour (fill) / badgeTextColour (text) share .sgs-cart__badge.
+// HAND-BUILT ::after, NOT sgs_block_background_layer_css() — the badge is
+// already `position:absolute` (style.css, positions it top:2px/right:2px on
+// the icon), and that helper hardcodes `position:relative` on the same
+// selector, which would silently break the badge's own positioning (the
+// exact trap sgs/pricing-table's popularBadgeBackground already documents).
+$badge_sel             = $sel . ' .sgs-cart__badge';
+$badge_colour_gradient = (string) ( $attributes['badgeColourGradient'] ?? '' );
+$badge_bg_paint        = sgs_background_paint_decl( $badge_colour, $badge_colour_gradient );
+if ( '' !== $badge_bg_paint ) {
+	$scoped_css[] = $badge_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . $badge_bg_paint . ';}';
+}
+$badge_text_gradient  = (string) ( $attributes['badgeTextColourGradient'] ?? '' );
+$badge_text_effective = sgs_resolve_text_colour_or_gradient( $badge_text_colour, $badge_text_gradient );
+if ( '' !== $badge_text_effective ) {
+	$badge_text_decl = sgs_text_colour_decl( $badge_text_effective );
+	if ( '' !== $badge_text_decl ) {
+		$scoped_css[] = $badge_sel . '{' . $badge_text_decl . ';}';
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $badge_sel, $badge_text_effective );
+}
+
+// Panel: panelBg (fill) / panelTextColour (text) share .sgs-cart__panel —
+// same split, only rendered when $has_panel (flyout|drawer displayMode).
+// Also HAND-BUILT: the panel's own `--flyout`/`--drawer` modifier classes
+// declare `position:absolute`/`position:fixed` respectively, at the SAME
+// (0,2,0) specificity as a uid-scoped rule here would carry — relying on
+// sgs_block_background_layer_css()'s `position:relative` to win on source
+// order is exactly the kind of silent, unprovable win/loss this file's own
+// discipline avoids. The panel is always positioned by one of those two
+// modifiers whenever it renders, so `::after` has a positioning context
+// without this code adding one.
+if ( $has_panel ) {
+	$panel_sel         = $sel . ' .sgs-cart__panel';
+	$panel_bg_gradient = (string) ( $attributes['panelBgGradient'] ?? '' );
+	$panel_bg_paint    = sgs_background_paint_decl( $panel_bg_slug, $panel_bg_gradient );
+	if ( '' !== $panel_bg_paint ) {
+		$scoped_css[] = $panel_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . $panel_bg_paint . ';}';
+	}
+	$panel_text_gradient  = (string) ( $attributes['panelTextColourGradient'] ?? '' );
+	$panel_text_effective = sgs_resolve_text_colour_or_gradient( $panel_text_slug, $panel_text_gradient );
+	if ( '' !== $panel_text_effective ) {
+		$panel_text_decl = sgs_text_colour_decl( $panel_text_effective );
+		if ( '' !== $panel_text_decl ) {
+			$scoped_css[] = $panel_sel . '{' . $panel_text_decl . ';}';
+		}
+		$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $panel_sel, $panel_text_effective );
+	}
 }
 
 // ── Media-element atom layer (rule 37-media-no-handroll fix) — item-thumbnail

@@ -527,6 +527,18 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'popularBadgeBackgroundHover',
 	'toggleLabelHoverColour',
 	'toggleLabelHoverColourGradient',
+	// 21-row custom-property-fed migration (2026-09-04) — same class as
+	// above: these gradient siblings paint a scoped CSS rule/::after layer
+	// render.php builds, which the editor canvas never executes.
+	'labelColourGradient',
+	'labelBackgroundColourGradient',
+	'badgeColourGradient',
+	'badgeTextColourGradient',
+	'panelBgGradient',
+	'panelTextColourGradient',
+	'captionColourGradient',
+	'captionBgColourGradient',
+	'overlayColourHoverGradient',
 ] );
 
 // WP-native block-supports attribute names, consumed automatically by

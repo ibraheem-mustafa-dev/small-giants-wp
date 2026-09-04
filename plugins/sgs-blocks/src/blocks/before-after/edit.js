@@ -463,7 +463,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		beforeLabel,
 		afterLabel,
 		labelColour,
+		labelColourGradient,
 		labelBackgroundColour,
+		labelBackgroundColourGradient,
 		orientation,
 		reverseDirection,
 		startPosition,
@@ -496,24 +498,30 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'labelText',
 						label: __( 'Label text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: labelColour,
 								onChange: ( val ) => setAttributes( { labelColour: val } ),
+								gradientValue: labelColourGradient,
+								onGradientChange: ( val ) => setAttributes( { labelColourGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'labelBackground',
 						label: __( 'Label background colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: labelBackgroundColour,
 								onChange: ( val ) => setAttributes( { labelBackgroundColour: val } ),
+								gradientValue: labelBackgroundColourGradient,
+								onGradientChange: ( val ) => setAttributes( { labelBackgroundColourGradient: val ?? '' } ),
 							},
 						],
 					},

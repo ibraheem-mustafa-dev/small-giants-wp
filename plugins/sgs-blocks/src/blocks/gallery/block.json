@@ -112,9 +112,11 @@
 					],
 					"prefix": "caption",
 					"attrMap": {
-						"css:background-color": "captionBgColour"
+						"css:background-color": "captionBgColour",
+						"css:background-image": "captionBgColourGradient",
+						"css:color-gradient": "captionColourGradient"
 					},
-					"_note": "Only shown when showCaptions is true. css:color resolves via the default convention (captionColour)."
+					"_note": "Only shown when showCaptions is true. css:color resolves via the default convention (captionColour). Gradient siblings added 2026-09-04: captionBgColourGradient paints a hand-built ::after layer (NOT sgs_block_background_layer_css() — .sgs-gallery__caption is already position:absolute, which that helper would silently override), freeing the element's own background-image for captionColourGradient's background-clip:text."
 				},
 				"item": {
 					"label": "Grid item",
@@ -220,13 +222,25 @@
 			"type": "string",
 			"default": "text-inverse"
 		},
+		"captionColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"captionBgColour": {
 			"type": "string",
 			"default": "primary-dark"
 		},
+		"captionBgColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"overlayColourHover": {
 			"type": "string",
 			"default": "primary-dark"
+		},
+		"overlayColourHoverGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"scaleHover": {
 			"type": "string",

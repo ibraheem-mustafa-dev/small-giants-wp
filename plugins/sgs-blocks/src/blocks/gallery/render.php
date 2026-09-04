@@ -142,9 +142,23 @@ if ( $stagger_delay > 0 ) {
 	$inline_styles_parts[] = '--sgs-stagger:' . absint( $stagger_delay ) . 'ms';
 }
 // Always emit colour CSS vars — fallbacks are set above so these are never empty.
-$inline_styles_parts[] = '--sgs-hover-overlay:' . sgs_colour_value( $hover_overlay_colour );
-$inline_styles_parts[] = '--sgs-caption-colour:' . sgs_colour_value( $caption_colour );
-$inline_styles_parts[] = '--sgs-caption-bg:' . sgs_colour_value( $caption_bg_colour );
+// overlayColourHover paints an EXISTING .sgs-gallery__img-wrap::after (the
+// hover fade layer) with no text sharing that selector, so its gradient
+// sibling is a simple sibling custom property (2026-09-04) — style.css gains
+// one new background-image:var(...,none) line next to the existing
+// background:var(--sgs-hover-overlay,...) declaration.
+$inline_styles_parts = array_merge(
+	$inline_styles_parts,
+	sgs_custom_property_gradient_decls(
+		'sgs-hover-overlay',
+		(string) $hover_overlay_colour,
+		(string) ( $attributes['overlayColourHoverGradient'] ?? '' )
+	)
+);
+// captionColour/captionBgColour moved OFF this custom-property mechanism
+// 2026-09-04 — see the scoped rule near $root_sel below (they share
+// .sgs-gallery__caption, which a text gradient's background-clip:text would
+// otherwise clip).
 
 $inline_styles = implode( ';', $inline_styles_parts ) . ';';
 
@@ -203,6 +217,27 @@ $uid      = 'sgs-gallery-' . substr( md5( wp_json_encode( $attributes ) . ( $blo
 $root_sel = '.' . $uid . '.wp-block-sgs-gallery';
 
 $gallery_responsive_css = '';
+
+// Caption: captionColour (text) / captionBgColour (fill) share
+// .sgs-gallery__caption, which is already `position:absolute` (style.css) —
+// HAND-BUILT ::after, not sgs_block_background_layer_css() (that helper's
+// own position:relative would override the caption's absolute positioning,
+// the same trap sgs/cart's badge/panel already document).
+$sgs_gallery_caption_sel      = $root_sel . ' .sgs-gallery__caption';
+$sgs_gallery_caption_bg_grad  = (string) ( $attributes['captionBgColourGradient'] ?? '' );
+$sgs_gallery_caption_bg_paint = sgs_background_paint_decl( (string) $caption_bg_colour, $sgs_gallery_caption_bg_grad );
+if ( '' !== $sgs_gallery_caption_bg_paint ) {
+	$gallery_responsive_css .= $sgs_gallery_caption_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;' . $sgs_gallery_caption_bg_paint . ';}';
+}
+$sgs_gallery_caption_grad      = (string) ( $attributes['captionColourGradient'] ?? '' );
+$sgs_gallery_caption_effective = sgs_resolve_text_colour_or_gradient( (string) $caption_colour, $sgs_gallery_caption_grad );
+if ( '' !== $sgs_gallery_caption_effective ) {
+	$sgs_gallery_caption_decl = sgs_text_colour_decl( $sgs_gallery_caption_effective );
+	if ( '' !== $sgs_gallery_caption_decl ) {
+		$gallery_responsive_css .= $sgs_gallery_caption_sel . '{' . $sgs_gallery_caption_decl . ';}';
+	}
+	$gallery_responsive_css .= sgs_text_colour_gradient_fallback_rule( $sgs_gallery_caption_sel, $sgs_gallery_caption_effective );
+}
 
 // -------------------------------------------------------------------------
 // Media-element atom layer (rule 37-media-no-handroll fix) — grid-thumbnail

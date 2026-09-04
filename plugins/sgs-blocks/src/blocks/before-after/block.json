@@ -62,7 +62,11 @@
 						"fill"
 					],
 					"prefix": "label",
-					"_note": "'fill' cluster added 2026-08-15 so labelBackgroundColour (previously an unclaimed style-defect orphan) resolves via the default convention: label + BackgroundColour. labelColour already resolved fine under 'text' (css:color, suffix Colour)."
+					"attrMap": {
+						"css:color-gradient": "labelColourGradient",
+						"css:background-image": "labelBackgroundColourGradient"
+					},
+					"_note": "'fill' cluster added 2026-08-15 so labelBackgroundColour (previously an unclaimed style-defect orphan) resolves via the default convention: label + BackgroundColour. labelColour already resolved fine under 'text' (css:color, suffix Colour). Gradient siblings for both added 2026-09-04 as explicit attrMap entries (the default convention's suffix table doesn't cover *ColourGradient/*BackgroundColourGradient) — labelBackgroundColourGradient moved to its own ::after layer (sgs_block_background_layer_css()) to free the element's background-image for labelColourGradient's background-clip:text."
 				},
 				"divider": {
 					"label": "Divider",
@@ -307,7 +311,15 @@
 			"type": "string",
 			"default": ""
 		},
+		"labelColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"labelBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"labelBackgroundColourGradient": {
 			"type": "string",
 			"default": ""
 		},

@@ -211,6 +211,10 @@
 	position:   absolute;
 	inset:      0;
 	background: var( --sgs-hover-overlay, transparent );
+	/* Gradient sibling (2026-09-04) — must come AFTER the background:
+	 * shorthand above (which also sets background-image), composites over
+	 * it; unset falls back to "none" so the flat colour is untouched. */
+	background-image: var( --sgs-hover-overlay-gradient, none );
 	opacity:    0;
 	transition: opacity var( --sgs-transition-duration ) var( --sgs-transition-easing );
 	pointer-events: none;
@@ -340,8 +344,11 @@
 	align-items: flex-end;
 	padding:     0 12px 10px;
 	margin:      0;
-	background:  var( --sgs-caption-bg );
-	color:       var( --sgs-caption-colour );
+	/* background/color moved to a render.php-emitted ::after layer + direct
+	 * text rule (2026-09-04) so a captionColour text gradient's
+	 * background-clip:text cannot clip the caption's own fill — this
+	 * element is `position:absolute` already, so no position rule is
+	 * added here. */
 	font-size:   0.875rem;
 	line-height: 1.4;
 	text-align:  center;

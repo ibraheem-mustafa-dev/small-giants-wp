@@ -30,7 +30,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconColour,
 		iconColourGradient,
 		badgeColour,
+		badgeColourGradient,
 		badgeTextColour,
+		badgeTextColourGradient,
 		ariaLabel,
 		showZero,
 		hideWhenEmpty,
@@ -45,7 +47,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		autoOpenOnAdd,
 		hideOnCartCheckoutPages,
 		panelBg,
+		panelBgGradient,
 		panelTextColour,
+		panelTextColourGradient,
 	} = attributes;
 
 	const hasPanel = 'link' !== ( displayMode || 'link' );
@@ -91,6 +95,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'badgeBackground',
 						label: __( 'Badge background', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -98,12 +103,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: badgeColour,
 								onChange: ( val ) => setAttributes( { badgeColour: val ?? '' } ),
 								linked: true,
+								gradientValue: badgeColourGradient,
+								onGradientChange: ( val ) => setAttributes( { badgeColourGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'badgeText',
 						label: __( 'Badge text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -111,12 +119,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: badgeTextColour,
 								onChange: ( val ) => setAttributes( { badgeTextColour: val ?? '' } ),
 								linked: true,
+								gradientValue: badgeTextColourGradient,
+								onGradientChange: ( val ) => setAttributes( { badgeTextColourGradient: val ?? '' } ),
 							},
 						],
 					},
 					hasPanel && {
 						key: 'panelBackground',
 						label: __( 'Panel background', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -124,12 +135,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: panelBg,
 								onChange: ( val ) => setAttributes( { panelBg: val ?? '' } ),
 								linked: true,
+								gradientValue: panelBgGradient,
+								onGradientChange: ( val ) => setAttributes( { panelBgGradient: val ?? '' } ),
 							},
 						],
 					},
 					hasPanel && {
 						key: 'panelText',
 						label: __( 'Panel text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -137,6 +151,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: panelTextColour,
 								onChange: ( val ) => setAttributes( { panelTextColour: val ?? '' } ),
 								linked: true,
+								gradientValue: panelTextColourGradient,
+								onGradientChange: ( val ) => setAttributes( { panelTextColourGradient: val ?? '' } ),
 							},
 						],
 					},
