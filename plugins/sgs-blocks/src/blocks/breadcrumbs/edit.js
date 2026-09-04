@@ -60,7 +60,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		showHome,
 		homeLabel,
 		linkColour,
+		linkColourGradient,
 		separatorColour,
+		separatorColourGradient,
 		currentColour,
 		paddingTablet,
 		paddingMobile,
@@ -89,24 +91,30 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'link',
 						label: __( 'Link colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: linkColour,
 								onChange: ( val ) => setAttributes( { linkColour: val ?? '' } ),
+								gradientValue: linkColourGradient,
+								onGradientChange: ( val ) => setAttributes( { linkColourGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'separator',
 						label: __( 'Separator colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: separatorColour,
 								onChange: ( val ) => setAttributes( { separatorColour: val ?? '' } ),
+								gradientValue: separatorColourGradient,
+								onGradientChange: ( val ) => setAttributes( { separatorColourGradient: val ?? '' } ),
 							},
 						],
 					},

@@ -46,7 +46,13 @@
 			"collection": true,
 			"_comment_mediaElements": "37-media-no-handroll close-out (2026-09-03). The post-thumbnail <img> is ONE element rendered by Post_Grid_REST::render_card() (class sgs-post-grid__img) regardless of layout mode -- the two hardcoded object-fit:cover rules in style.css (grid-mode .sgs-post-grid__img and list-mode .sgs-post-grid--list .sgs-post-grid__image img) both target that same element via different ancestor-scoped selectors, never two elements. Unprefixed/single-slot, mirrors sgs/decorative-image's adoption shape. Only object-fit adopted (in scope for this pass) -- no attribute hand-declared, matching every existing adopter (decorative-image/before-after/media/hero): the runtime injection filter (src/blocks/extensions/media-elements.js) supplies objectFit/objectFitTablet/objectFitMobile, and the atom's own CSS var() chain already resolves to 'cover' when unset (assets/css/media-atoms/object-fit.css), matching this block's prior hardcoded default with zero attribute-default duplication.",
 			"mediaElements": [
-				{ "prefix": "", "context": "element", "atoms": [ "object-fit" ] }
+				{
+					"prefix": "",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
 			],
 			"elements": {
 				"grid": {
@@ -96,7 +102,8 @@
 					"prefix": "card",
 					"attrMap": {
 						"css:background-color": "cardBgColour",
-						"css:box-shadow": "shadow"
+						"css:box-shadow": "shadow",
+						"css:background-image": "cardBgColourGradient"
 					},
 					"states": {
 						"hover": {
@@ -430,6 +437,10 @@
 		"cardBgColour": {
 			"type": "string",
 			"default": "surface"
+		},
+		"cardBgColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"backgroundColourHover": {
 			"type": "string"

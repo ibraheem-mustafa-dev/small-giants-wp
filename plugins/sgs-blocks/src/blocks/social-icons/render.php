@@ -44,6 +44,8 @@ $icon_size           = (int) ( $attributes['iconSize'] ?? 24 );
 // border-color or currentColor value).
 $icon_background        = $attributes['iconBackground'] ?? 'text-muted';
 $icon_background_hover  = $attributes['iconBackgroundHover'] ?? 'primary';
+$icon_background_gradient        = $attributes['iconBackgroundGradient'] ?? '';
+$icon_background_hover_gradient  = $attributes['iconBackgroundHoverGradient'] ?? '';
 $icon_border_colour       = $attributes['iconBorderColour'] ?? 'text-muted';
 $icon_border_colour_hover = $attributes['iconBorderColourHover'] ?? 'primary';
 $icon_border_gradient       = sgs_css_gradient_value( $attributes['iconBorderColourGradient'] ?? '' );
@@ -263,12 +265,15 @@ $gap_slug     = '' !== $gap_slug_raw ? $gap_slug_raw : preg_replace( '/[^0-9]/',
 $gap_slug     = '' !== $gap_slug ? $gap_slug : '20';
 $root_decls   = array(
 	'gap:var(--wp--preset--spacing--' . $gap_slug . ')',
-	'--sgs-social-bg:' . sgs_colour_value( $icon_background ),
-	'--sgs-social-bg-hover:' . sgs_colour_value( $icon_background_hover ),
-	'--sgs-social-border:' . sgs_colour_value( $icon_border_colour ),
-	'--sgs-social-border-hover:' . sgs_colour_value( $icon_border_colour_hover ),
-	'--sgs-social-glyph:' . sgs_colour_value( $icon_glyph_colour ),
-	'--sgs-social-glyph-hover:' . sgs_colour_value( $icon_glyph_colour_hover ),
+);
+$root_decls = array_merge(
+	$root_decls,
+	sgs_custom_property_gradient_decls( 'sgs-social-bg', $icon_background, $icon_background_gradient ),
+	sgs_custom_property_gradient_decls( 'sgs-social-bg-hover', $icon_background_hover, $icon_background_hover_gradient ),
+	sgs_custom_property_gradient_decls( 'sgs-social-border', $icon_border_colour, sgs_css_gradient_value( $icon_border_gradient ) ),
+	sgs_custom_property_gradient_decls( 'sgs-social-border-hover', $icon_border_colour_hover, sgs_css_gradient_value( $icon_border_gradient_hover ) ),
+	sgs_custom_property_gradient_decls( 'sgs-social-glyph', $icon_glyph_colour, '' ),
+	sgs_custom_property_gradient_decls( 'sgs-social-glyph-hover', $icon_glyph_colour_hover, '' ),
 );
 $scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
 

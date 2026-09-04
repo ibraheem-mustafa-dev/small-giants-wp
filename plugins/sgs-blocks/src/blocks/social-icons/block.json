@@ -91,6 +91,7 @@
 						"css:color": "iconGlyphColour",
 						"css:stroke": "iconGlyphColourGradient",
 						"css:background-color": "iconBackground",
+						"css:background-image": "iconBackgroundGradient",
 						"css:border-color": "iconBorderColour",
 						"css:border-color-gradient": "iconBorderColourGradient"
 					},
@@ -100,6 +101,7 @@
 								"css:color": "iconGlyphColourHover",
 								"css:stroke": "iconGlyphColourHoverGradient",
 								"css:background-color": "iconBackgroundHover",
+								"css:background-image": "iconBackgroundHoverGradient",
 								"css:border-color": "iconBorderColourHover",
 								"css:border-color-gradient": "iconBorderColourHoverGradient"
 							}
@@ -168,9 +170,17 @@
 			"type": "string",
 			"default": "text-muted"
 		},
+		"iconBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"iconBackgroundHover": {
 			"type": "string",
 			"default": "primary"
+		},
+		"iconBackgroundHoverGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"iconBorderColour": {
 			"type": "string",

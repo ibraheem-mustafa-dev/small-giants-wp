@@ -88,9 +88,10 @@ $hover_border_gradient      = sgs_css_gradient_value( $attributes['itemBorderCol
 $tile_shadow         = $attributes['tileShadow'] ?? '';
 $tile_shadow_colour  = $attributes['tileShadowColour'] ?? '';
 $tile_shadow_colour_hover = $attributes['tileShadowColourHover'] ?? '';
-$hover_bg_colour     = $attributes['itemBackgroundColourHover'] ?? '';
-$hover_text_colour   = $attributes['itemTextColourHover'] ?? '';
-$hover_border_colour = $attributes['itemBorderColourHover'] ?? '';
+$hover_bg_colour           = $attributes['itemBackgroundColourHover'] ?? '';
+$hover_text_colour         = $attributes['itemTextColourHover'] ?? '';
+$hover_text_colour_gradient = sgs_css_gradient_value( $attributes['itemTextColourHoverGradient'] ?? '' );
+$hover_border_colour       = $attributes['itemBorderColourHover'] ?? '';
 // Root-element colour + gradient + hover -- paints the block's OWN
 // root `<div>` (see $root_sel below), distinct from tileBackgroundColour (the
 // 'tile' element) and the item*Hover attrs above (the 'item' element, the
@@ -476,6 +477,26 @@ if ( $show_names && function_exists( 'sgs_typography_css_rule' ) ) {
 		$scoped_css[] = "{$root_sel} .sgs-brand-strip__name{--sgs-name-text-align:" . $name_align_raw . ';}';
 	}
 }
+
+	// --- Item hover text colour — gradient sibling (D636 text-gradient rollout,
+	// 2026-09-04). The gradient wins over the flat colour when set+valid
+	// (sgs_resolve_text_colour_or_gradient()), painted via sgs_text_colour_decl()
+	// (color:X for flat, background-clip:text for a gradient) with the mandatory
+	// @supports fallback rule for browsers without clip-text support. The flat
+	// colour continues to be emitted via --sgs-tile-hover-text custom property
+	// (above) — the direct rule wins by source order, leaving flat instances
+	// byte-identical. The item tile has no background of its own (style.css
+	// .sgs-brand-strip__item), so background-clip:text is safe here. ---
+	$item_hover_sel            = "{$root_sel} .sgs-brand-strip__item:hover";
+	$item_text_hover_effective = sgs_resolve_text_colour_or_gradient( $hover_text_colour, $hover_text_colour_gradient );
+	$item_text_hover_decl      = sgs_text_colour_decl( $item_text_hover_effective );
+	if ( '' !== $item_text_hover_decl ) {
+		$scoped_css[] = "{$item_hover_sel}{" . $item_text_hover_decl . ';}';
+		$item_text_hover_fallback_rule = sgs_text_colour_gradient_fallback_rule( $item_hover_sel, $item_text_hover_effective );
+		if ( '' !== $item_text_hover_fallback_rule ) {
+			$scoped_css[] = $item_text_hover_fallback_rule;
+		}
+	}
 
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME selector (contract §B2: tablet max-width:1023px,

@@ -295,6 +295,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		tileShadowColour,
 		itemBackgroundColourHover,
 		itemTextColourHover,
+		itemTextColourHoverGradient,
 		itemBorderColourHover,
 		itemBorderColourHoverGradient,
 		backgroundColour,
@@ -510,13 +511,17 @@ export default function Edit( { attributes, setAttributes } ) {
 					},
 					{
 						key: 'captionHover',
-						label: __( 'Caption colour (hover)', 'sgs-blocks' ),
+						label: __( 'Tile text colour (hover)', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: itemTextColourHover,
 								onChange: ( val ) => setAttributes( { itemTextColourHover: val } ),
+								gradientValue: itemTextColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { itemTextColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

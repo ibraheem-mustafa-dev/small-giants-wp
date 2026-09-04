@@ -182,11 +182,15 @@ $carousel_speed       = absint( $attributes['carouselSpeed'] ?? 5000 );
 $carousel_show_dots   = (bool) ( $attributes['carouselShowDots'] ?? true );
 $carousel_show_arrows = (bool) ( $attributes['carouselShowArrows'] ?? true );
 
-// Card bg colour CSS custom property.
-$card_bg = '';
-if ( ! empty( $attributes['cardBgColour'] ) ) {
-	$card_bg = sgs_colour_value( $attributes['cardBgColour'] );
-}
+// Card bg colour + gradient custom properties (D956 phase 3 rollout).
+// sgs_custom_property_gradient_decls() returns an array of declarations
+// to merge into $extra_styles; unset gradient wins via background-image
+// layering over background-color in style.css (one new line there).
+$card_bg_decls = sgs_custom_property_gradient_decls(
+	'sgs-card-bg',
+	! empty( $attributes['cardBgColour'] ) ? (string) $attributes['cardBgColour'] : '',
+	(string) ( $attributes['cardBgColourGradient'] ?? '' )
+);
 
 // -------------------------------------------------------------------------
 // Build WP_Query — published posts only.
@@ -272,7 +276,6 @@ $extra_styles = array_filter(
 			'--sgs-columns-tablet:' . $columns_tablet,
 			'--sgs-columns-mobile:' . $columns_mobile,
 			'--sgs-gap:' . $gap_css,
-			$card_bg ? '--sgs-card-bg:' . $card_bg : '',
 			// Resting shadow: --sgs-card-shadow already carries a hardcoded
 			// preset default in style.css (scoped to .sgs-post-grid, the
 			// same class this inline style attaches to), consumed by the
@@ -284,6 +287,7 @@ $extra_styles = array_filter(
 			$hover_scale ? '--sgs-hover-scale:' . esc_attr( $hover_scale ) : '',
 			$hover_shadow ? '--sgs-hover-shadow:' . sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour ) : '',
 		),
+		$card_bg_decls,
 		sgs_transition_vars( $attributes )
 	)
 );

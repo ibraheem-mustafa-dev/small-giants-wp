@@ -57,6 +57,7 @@ $submit_colour_gradient = $attributes['submitColourGradient'] ?? '';
 $submit_background = $attributes['submitBackground'] ?? '';
 $submit_background_gradient = sgs_css_gradient_value( $attributes['submitBackgroundGradient'] ?? '' );
 $progress_colour   = $attributes['progressBarColour'] ?? 'primary';
+$progress_colour_gradient = $attributes['progressBarColourGradient'] ?? '';
 
 // Count form steps from inner blocks (not rendered content).
 $steps       = array();
@@ -279,15 +280,19 @@ if ( '' !== $submit_colour_effective || $submit_background || $submit_background
 // `.uid .sgs-form__progress`, NOT an inline `style="--x:y"` attribute. Uses the
 // SAME uid as the color/border/typography/submit-button supports above
 // (minted eagerly here when none of those already needed one) so everything
-// lands in ONE scoped <style>.
-if ( $progress_colour ) {
+// lands in ONE scoped <style>. progressBarColourGradient sibling (2026-09-04)
+// — the gradient wins when set; flat colour acts as fallback.
+$progress_colour_decls = function_exists( 'sgs_custom_property_gradient_decls' )
+	? sgs_custom_property_gradient_decls( 'sgs-progress-colour', (string) $progress_colour, $progress_colour_gradient )
+	: array();
+if ( ! empty( $progress_colour_decls ) ) {
 	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
 		// The uid is hoisted above; this now registers the CLASS exactly once. It
 		// used to key on empty($sgs_form_uid), which the hoist made permanently
 		// false -- so the class stopped being added and .{uid}.sgs-form matched nothing.
 		$sgs_form_supports_classes[] = $sgs_form_uid;
 	}
-	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__progress{--sgs-progress-colour:' . sgs_colour_value( $progress_colour ) . ';}';
+	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__progress{' . implode( ';', $progress_colour_decls ) . ';}';
 }
 
 // Prev-button, tile + file-label hover colours — moved off style.css hardcoded

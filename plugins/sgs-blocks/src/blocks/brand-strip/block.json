@@ -405,6 +405,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"itemTextColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of itemTextColourHover. Non-empty wins over itemTextColourHover on :hover/:focus-within."
+		},
 		"itemBorderColourHover": {
 			"type": "string",
 			"default": ""

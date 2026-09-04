@@ -94,7 +94,10 @@
 					"clusters": [
 						"text"
 					],
-					"prefix": "label"
+					"prefix": "label",
+					"attrMap": {
+						"css:color-gradient": "labelColourGradient"
+					}
 				}
 			}
 		}
@@ -150,6 +153,10 @@
 		"labelColour": {
 			"type": "string",
 			"default": "text-muted"
+		},
+		"labelColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"cardStyle": {
 			"type": "string",

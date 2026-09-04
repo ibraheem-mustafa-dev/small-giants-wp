@@ -54,13 +54,15 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // 2. Extract attributes with defaults.
 // ---------------------------------------------------------------------------
 
-$separator        = $attributes['separator'] ?? '/';
-$show_home        = $attributes['showHome'] ?? true;
-$home_label       = $attributes['homeLabel'] ?? 'Home';
-$link_colour      = $attributes['linkColour'] ?? 'text-muted';
-$separator_colour = $attributes['separatorColour'] ?? 'text-muted';
-$current_colour   = $attributes['currentColour'] ?? 'text';
-$anchor           = $attributes['anchor'] ?? '';
+$separator             = $attributes['separator'] ?? '/';
+$show_home             = $attributes['showHome'] ?? true;
+$home_label            = $attributes['homeLabel'] ?? 'Home';
+$link_colour           = $attributes['linkColour'] ?? 'text-muted';
+$link_colour_gradient  = $attributes['linkColourGradient'] ?? '';
+$separator_colour      = $attributes['separatorColour'] ?? 'text-muted';
+$separator_colour_grad = $attributes['separatorColourGradient'] ?? '';
+$current_colour        = $attributes['currentColour'] ?? 'text';
+$anchor                = $attributes['anchor'] ?? '';
 
 // Base padding/margin — WP-native style.spacing.* objects (skip-serialised).
 $base_padding_obj = array();
@@ -120,6 +122,28 @@ $colour_var_decls[] = '--sgs-breadcrumbs-link-colour:' . sgs_colour_value( $link
 $colour_var_decls[] = '--sgs-breadcrumbs-separator-colour:' . sgs_colour_value( $separator_colour );
 $colour_var_decls[] = '--sgs-breadcrumbs-current-colour:' . sgs_colour_value( $current_colour );
 $scoped_css[]       = "{$root_sel}{" . implode( ';', $colour_var_decls ) . ';}';
+
+// --- Link colour gradient support (FR-?-?). Resolve flat/gradient siblings,
+// emit direct scoped rules alongside the custom properties above. ---
+$link_colour_effective = sgs_resolve_text_colour_or_gradient( $link_colour, $link_colour_gradient );
+if ( '' !== $link_colour_effective ) {
+	$link_colour_decl = sgs_text_colour_decl( $link_colour_effective );
+	if ( '' !== $link_colour_decl ) {
+		$scoped_css[] = "{$root_sel} .sgs-breadcrumbs__item a{" . $link_colour_decl . ';}';
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( "{$root_sel} .sgs-breadcrumbs__item a", $link_colour_effective );
+}
+
+// --- Separator colour gradient support (FR-?-?). Resolve flat/gradient
+// siblings, emit direct scoped rules alongside the custom properties above. ---
+$separator_colour_effective = sgs_resolve_text_colour_or_gradient( $separator_colour, $separator_colour_grad );
+if ( '' !== $separator_colour_effective ) {
+	$separator_colour_decl = sgs_text_colour_decl( $separator_colour_effective );
+	if ( '' !== $separator_colour_decl ) {
+		$scoped_css[] = "{$root_sel} .sgs-breadcrumbs__separator{" . $separator_colour_decl . ';}';
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( "{$root_sel} .sgs-breadcrumbs__separator", $separator_colour_effective );
+}
 
 // --- Base spacing (padding/margin) + WP colour/typography supports — skip-
 // serialised, emitted scoped via the stable core style engine (exactly how

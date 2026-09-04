@@ -146,9 +146,10 @@
 					],
 					"prefix": "progressBar",
 					"attrMap": {
-						"css:background-color": "progressBarColour"
+						"css:background-color": "progressBarColour",
+						"css:background-image": "progressBarColourGradient"
 					},
-					"_note": "progressBarColour drives the `--sgs-progress-colour` custom-property value (render.php:230-235) — a colour setting, not a real background-color declaration, so mapped explicitly rather than via the default Bg/Background suffixes."
+					"_note": "progressBarColour drives the `--sgs-progress-colour` custom-property value; progressBarColourGradient drives the `--sgs-progress-colour-gradient` sibling (2026-09-04). Both are custom-property-fed (not real declarations), so mapped explicitly. The gradient wins when set (render.php line 290 uses sgs_custom_property_gradient_decls)."
 				},
 				"focus-ring": {
 					"label": "Focus ring",
@@ -219,6 +220,11 @@
 		"progressBarColour": {
 			"type": "string",
 			"default": "primary"
+		},
+		"progressBarColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the progress bar with a gradient instead of a flat colour. Non-empty wins over progressBarColour at render time."
 		},
 		"prevColourBackground": {
 			"type": "string",

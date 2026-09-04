@@ -114,6 +114,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		numberColour,
 		numberColourGradient,
 		labelColour,
+		labelColourGradient,
 	} = attributes;
 
 	const className = [
@@ -160,12 +161,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'label',
 						label: __( 'Label colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: labelColour,
 								onChange: ( val ) => setAttributes( { labelColour: val } ),
+								gradientValue: labelColourGradient,
+								onGradientChange: ( val ) => setAttributes( { labelColourGradient: val ?? '' } ),
 							},
 						],
 					},

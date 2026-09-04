@@ -534,6 +534,7 @@ select.sgs-form-field__input {
 	height: 4px;
 	border-radius: 2px;
 	background-color: var(--sgs-progress-colour, var(--wp--preset--color--primary, #0f7e80));
+	background-image: var(--sgs-progress-colour-gradient, none);
 	transition: width 0.3s ease;
 }
 

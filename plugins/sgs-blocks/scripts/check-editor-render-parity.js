@@ -539,6 +539,19 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'captionColourGradient',
 	'captionBgColourGradient',
 	'overlayColourHoverGradient',
+	// 7-block parallel-dispatch migration (2026-09-04) — same class again.
+	// Verified these are the ONLY 6 genuinely new names (222 total - 216
+	// prior ceiling = 6): every other finding surfaced when filtering by
+	// these 6 blocks' names (requireLogin, shadow, tileBorderColour, etc.)
+	// is pre-existing debt already inside the 216 ceiling, unrelated to
+	// this dispatch — NOT added here, since exempting them would need its
+	// own verification this pass never did.
+	'linkColourGradient',
+	'separatorColourGradient',
+	'progressBarColourGradient',
+	'cardBgColourGradient',
+	'iconBackgroundGradient',
+	'iconBackgroundHoverGradient',
 ] );
 
 // WP-native block-supports attribute names, consumed automatically by

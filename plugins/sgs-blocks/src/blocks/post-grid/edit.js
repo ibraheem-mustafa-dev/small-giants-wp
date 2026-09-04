@@ -296,6 +296,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		readMoreColour,
 		readMoreColourGradient,
 		cardBgColour,
+		cardBgColourGradient,
 		backgroundColourHover,
 		textColourHover,
 		textColourHoverGradient,
@@ -916,12 +917,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					     borderColourHover). */ }
 					<DesignTokenPicker
 						label={ __( 'Card background colour', 'sgs-blocks' ) }
+						gradientCapable={ true }
 						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: cardBgColour,
 								onChange: ( val ) => setAttributes( { cardBgColour: val ?? '' } ),
+								gradientValue: cardBgColourGradient,
+								onGradientChange: ( val ) => setAttributes( { cardBgColourGradient: val ?? '' } ),
 								linked: true,
 							},
 							{

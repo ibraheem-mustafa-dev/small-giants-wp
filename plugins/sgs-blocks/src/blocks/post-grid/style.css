@@ -153,6 +153,7 @@
 	position: relative;
 	overflow: hidden;
 	background-color: var( --sgs-card-bg );
+	background-image: var( --sgs-card-bg-gradient, none );
 	transition:
 		transform var( --sgs-transition-duration ) var( --sgs-transition-easing ),
 		box-shadow var( --sgs-transition-duration ) var( --sgs-transition-easing ),

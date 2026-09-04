@@ -66,6 +66,7 @@ $number_colour   = $attributes['numberColour'] ?? 'primary';
 // mirrors sgs/container's shipped backgroundOverlayColour/overlayGradient.
 $number_colour_gradient = $attributes['numberColourGradient'] ?? '';
 $label_colour           = $attributes['labelColour'] ?? 'text-muted';
+$label_colour_gradient  = $attributes['labelColourGradient'] ?? '';
 $card_style_raw         = $attributes['cardStyle'] ?? 'elevated';
 $digit_style_raw        = $attributes['digitStyle'] ?? 'simple';
 
@@ -226,13 +227,14 @@ if ( '' !== $text_align ) {
 // D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
 // a gradient value cannot ride a `color: var(--x)` custom property (the
 // consuming declaration in style.css is a plain `color:`), so when the
-// sibling numberColourGradient wins, the custom-property write is skipped
+// sibling gradient wins, the custom-property write is skipped
 // (the static rule's own `inherit` fallback applies) and a direct scoped
-// rule on `.sgs-countdown__number` below carries the background-clip:text
-// mechanism instead. numberColour itself is UNCHANGED — never a gradient.
+// rule below carries the background-clip:text mechanism instead.
 $number_colour_gradient_valid = sgs_css_gradient_value( $number_colour_gradient );
+$label_colour_gradient_valid  = sgs_css_gradient_value( $label_colour_gradient );
 $number_colour_for_var        = ( '' !== $number_colour_gradient_valid ) ? '' : $number_colour;
-$scoped_css[]                 = "{$root_sel}{--sgs-countdown-number-colour:" . sgs_colour_value( $number_colour_for_var ) . ';--sgs-countdown-label-colour:' . sgs_colour_value( $label_colour ) . ';}';
+$label_colour_for_var         = ( '' !== $label_colour_gradient_valid ) ? '' : $label_colour;
+$scoped_css[]                 = "{$root_sel}{--sgs-countdown-number-colour:" . sgs_colour_value( $number_colour_for_var ) . ';--sgs-countdown-label-colour:' . sgs_colour_value( $label_colour_for_var ) . ';}';
 
 if ( '' !== $number_colour_gradient_valid ) {
 	$number_gradient_sel = "{$root_sel} .sgs-countdown__number";
@@ -241,6 +243,15 @@ if ( '' !== $number_colour_gradient_valid ) {
 		$scoped_css[] = "{$number_gradient_sel}{{$number_colour_decl};}";
 	}
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $number_gradient_sel, $number_colour_gradient_valid );
+}
+
+if ( '' !== $label_colour_gradient_valid ) {
+	$label_gradient_sel = "{$root_sel} .sgs-countdown__label";
+	$label_colour_decl  = sgs_text_colour_decl( $label_colour_gradient_valid );
+	if ( '' !== $label_colour_decl ) {
+		$scoped_css[] = "{$label_gradient_sel}{{$label_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_gradient_sel, $label_colour_gradient_valid );
 }
 
 // --- Responsive tiers — padding/margin/border-radius, each routed through the

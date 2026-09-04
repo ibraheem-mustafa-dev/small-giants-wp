@@ -42,6 +42,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		submitColour,
 		submitBackground,
 		progressBarColour,
+		progressBarColourGradient,
 		formFocusRingColour,
 		formFocusRingWidth,
 		formFocusRingOpacity,
@@ -179,6 +180,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{
 						key: 'progress-bar',
 						label: __( 'Progress bar colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -186,6 +188,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: progressBarColour,
 								onChange: ( val ) => setAttributes( { progressBarColour: val ?? '' } ),
 								linked: true,
+								gradientValue: progressBarColourGradient,
+								onGradientChange: ( val ) => setAttributes( { progressBarColourGradient: val ?? '' } ),
 							},
 						],
 					},
