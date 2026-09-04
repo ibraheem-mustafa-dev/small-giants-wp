@@ -32,6 +32,7 @@ import {
 	InspectorControls,
 	MediaUpload,
 	MediaUploadCheck,
+	useSettings,
 } from '@wordpress/block-editor';
 import {
 	SelectControl,
@@ -43,8 +44,8 @@ import {
 import { __, sprintf } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 import { useSelect } from '@wordpress/data';
-import { useState, useEffect } from '@wordpress/element';
-import { DesignTokenPicker } from '../../components';
+import { useState, useEffect, useMemo } from '@wordpress/element';
+import { DesignTokenPicker, resolveColourToken } from '../../components';
 import { isExtensionHidden } from './hide-extensions';
 import qualifyingBlocks from './generated-fx-qualifying-blocks.json';
 import fxEffectMeta from './generated-fx-effect-meta.json';
@@ -1652,6 +1653,110 @@ function useMotionBudget( enabled ) {
 	return budget;
 }
 
+/*
+ * ── Narrow-hue-palette warning (D946/1f) ────────────────────────────────────
+ * Bean's approved direction: WARN, don't block. Reuses the exact pattern
+ * already shipped for this shape of problem — `sgs/site-header`'s
+ * `contrastSafe` mechanism (a computed check against the operator's own
+ * colour choices, a non-dismissible `<Notice status="warning">` naming the
+ * specific issue) — rather than inventing a second warning mechanism.
+ *
+ * The CURRENT alpha-composite blob engine's real vulnerability, measured
+ * this session, is the OPPOSITE of what the (now-corrected) Colour 2 help
+ * text used to say: colours picked too CLOSE together in hue wash out;
+ * colours spread wide — even near-opposite ones like navy+gold — work fine.
+ */
+
+/**
+ * RGB (each 0-255) -> hue, 0-360 degrees. Standard HSL hue formula. A fully
+ * achromatic (grey) input has no real hue; it is reported as 0 rather than
+ * excluded — a near-grey stop reads as "close to everything" in the
+ * plain-English warning anyway, which is the right outcome even though the
+ * literal hue value is arbitrary for it.
+ *
+ * @param {number} r 0-255.
+ * @param {number} g 0-255.
+ * @param {number} b 0-255.
+ * @return {number} Hue, 0-360.
+ */
+function rgbToHue( r, g, b ) {
+	const rN = r / 255;
+	const gN = g / 255;
+	const bN = b / 255;
+	const max = Math.max( rN, gN, bN );
+	const min = Math.min( rN, gN, bN );
+	const delta = max - min;
+	if ( delta === 0 ) {
+		return 0;
+	}
+	let h;
+	if ( max === rN ) {
+		h = ( ( gN - bN ) / delta ) % 6;
+	} else if ( max === gN ) {
+		h = ( bN - rN ) / delta + 2;
+	} else {
+		h = ( rN - gN ) / delta + 4;
+	}
+	h *= 60;
+	if ( h < 0 ) {
+		h += 360;
+	}
+	return h;
+}
+
+/**
+ * Circular distance between two hues on the colour wheel, 0-180 degrees
+ * (the shorter way around).
+ *
+ * @param {number} a Hue, 0-360.
+ * @param {number} b Hue, 0-360.
+ * @return {number} Distance, 0-180.
+ */
+function circularHueDistance( a, b ) {
+	const diff = Math.abs( a - b ) % 360;
+	return diff > 180 ? 360 - diff : diff;
+}
+
+/**
+ * Resolve a stored `DesignTokenPicker` value (slug, hex, rgb(), var(), …) to
+ * a hue, via the SAME probe-element technique `wcag-contrast.js`'s
+ * `calculateRelativeLuminance()` already uses for `var()` — the browser's
+ * own computed style is the only reliable way to turn an arbitrary CSS
+ * colour syntax into concrete channels without re-implementing CSS colour
+ * parsing.
+ *
+ * @param {string} value   Stored colour value.
+ * @param {Array}  palette Active theme colour palette ([{ slug, color }]).
+ * @return {number|null} Hue, 0-360, or null when the value is empty/unresolvable.
+ */
+function resolveHue( value, palette ) {
+	const resolved = resolveColourToken( value, palette );
+	if ( ! resolved ) {
+		return null;
+	}
+	const probe = document.createElement( 'div' );
+	probe.style.color = resolved;
+	document.body.appendChild( probe );
+	const computed = getComputedStyle( probe ).color;
+	document.body.removeChild( probe );
+	const m = computed.match( /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/ );
+	if ( ! m ) {
+		return null;
+	}
+	return rgbToHue( parseInt( m[ 1 ], 10 ), parseInt( m[ 2 ], 10 ), parseInt( m[ 3 ], 10 ) );
+}
+
+/**
+ * Threshold below which the four generative-background colours are flagged
+ * as too close together — a conservative starting threshold, not
+ * independently re-validated below 30°; revisit if real client feedback
+ * disagrees. The investigation's measured data showed genuinely washed
+ * palettes at 4-7 degrees spread and healthy results from 100+ degrees.
+ *
+ * @type {number}
+ */
+const FX_GEN_HUE_SPREAD_WARNING_THRESHOLD = 30;
+
 /**
  * The "Scroll & effects" inspector panel (Spec 38 §7).
  */
@@ -1681,6 +1786,41 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 		 * behind a "Show more" disclosure in the panel below.
 		 */
 		const [ showGenAdvanced, setShowGenAdvanced ] = useState( false );
+
+		/*
+		 * D946/1f — narrow-hue-palette warning. Same unconditional-hook
+		 * reasoning as `motionBudget`/`showGenAdvanced` above: called before
+		 * both early returns so the hook count never changes between a
+		 * qualifying and a non-qualifying block. `useSettings` itself is
+		 * cheap and side-effect-free when its result goes unused.
+		 */
+		const [ genColourPalette ] = useSettings( 'color.palette' );
+		const genHueSpreadWarning = useMemo( () => {
+			const hues = [
+				attributes.fxGenColour1,
+				attributes.fxGenColour2,
+				attributes.fxGenColour3,
+				attributes.fxGenColour4,
+			]
+				.map( ( v ) => resolveHue( v, genColourPalette ) )
+				.filter( ( h ) => null !== h );
+			if ( hues.length < 2 ) {
+				return null;
+			}
+			let maxSpread = 0;
+			for ( let i = 0; i < hues.length; i++ ) {
+				for ( let j = i + 1; j < hues.length; j++ ) {
+					maxSpread = Math.max( maxSpread, circularHueDistance( hues[ i ], hues[ j ] ) );
+				}
+			}
+			return maxSpread < FX_GEN_HUE_SPREAD_WARNING_THRESHOLD ? maxSpread : null;
+		}, [
+			attributes.fxGenColour1,
+			attributes.fxGenColour2,
+			attributes.fxGenColour3,
+			attributes.fxGenColour4,
+			genColourPalette,
+		] );
 
 		if ( ! qualifies ) {
 			return <BlockEdit { ...props } />;
@@ -2932,6 +3072,18 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 						  */ }
 						{ 'generative-background' === fx && (
 							<>
+								{ null !== genHueSpreadWarning && (
+									<Notice
+										status="warning"
+										isDismissible={ false }
+										className="sgs-fx-gen-hue-spread-notice"
+									>
+										{ __(
+											'These four colours are close together on the colour wheel — the background effect may look flat or washed out. Try picking colours from more different parts of the colour wheel.',
+											'sgs-blocks'
+										) }
+									</Notice>
+								) }
 								<DesignTokenPicker
 									label={ __( 'Colour 1', 'sgs-blocks' ) }
 									help={ __(
@@ -2953,7 +3105,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 								<DesignTokenPicker
 									label={ __( 'Colour 2', 'sgs-blocks' ) }
 									help={ __(
-										'For a premium result pick colours that sit NEXT TO each other on the colour wheel — opposite colours (e.g. blue and orange) blend through a muddy grey band.',
+										'For a premium result pick colours spread WIDELY across the colour wheel — colours that sit too close together (even similar-looking shades of one hue) can blend into a flat, washed-out result.',
 										'sgs-blocks'
 									) }
 									states={ [

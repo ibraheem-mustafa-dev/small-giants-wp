@@ -1,3 +1,15 @@
+## D946 [INCIDENT] — generative-background blob density: measurement available but unchecked before shipping; 24-35% near-white instead of reference's 0.8%. Process gate added.
+
+**2026-09-04.** Bean, testing D944's colour fix live: *"so many white splotches."* The blob-density increase from the D939-era shift (11→26 blobs, shrunk radius) was shipped to production without checking its own white-coverage stat against the reference. Post-hoc measurement of the deployed output showed 24-35% near-white, versus the reference's measured 0.8% — a 30x overshoot.
+
+**Process failure, not a measurement gap.** The white-percentage measurement function existed (the same proxy that D944 used to validate colour distribution: `1 - min(R,G,B)/255` on sampled pixels, binned as near-white = coverage < 0.10). I had the tool and the reference's baseline number. I didn't run the check before shipping the change. This is different from discovering a measurement was needed after the fact -- it's running the measurement *after* deploying, when the commit gate should have caught it.
+
+**Measured and swept BEFORE touching the live page this time.** Tested blob count/radius combinations against the same near-white measurement across 6 seeds: `N_BLOBS = 36` with radius `(0.18 + rng() * 0.14) * width` lands at 3.3% avg near-white (range 1.5-6.7%), close to the reference's 0.8% without erasing genuine gaps entirely (the visibility/density benefit from the original overcorrection survives). Extended the leading comment block in `buildFieldImageData()` to document both measurements as load-bearing constants -- the UV-window constraint (why blob density must be high: the geometry only reveals ~45% of the canvas) and the white-percentage target (why these exact constants, swept not guessed).
+
+**Verification:** live deploy confirmed via SSH canvas-read, same method as D944.
+
+**Lesson:** measurement *availability* is not enforcement. A function sitting in code but not executed as a pre-ship gate is the same as not having the function at all. The fix is structural: either promote the measurement to a CI gate that BLOCKS on an out-of-range value, or add it to a mandatory pre-ship ritual that Bean signs off on before `git push`. (Cf. D941, which was a stale-source problem; this is a gate-application problem -- both are process, different failure modes.)
+
 ## D945 [ROUTINE] — D936 batch: correction to "9 of 9" (it's 8; `burgerColour` was a routing miscategorisation, not a fix), plus the missing live-verification record
 
 **2026-09-04.** Two corrections found by an independent `/qc` pass on this session's own handoff,

@@ -265,9 +265,21 @@ function makeValueNoise( width, height, cell, rng ) {
  * @param {number[][]} stops  sRGB 0-1 colours, exactly 4.
  * @param {number}     width  Image width, px.
  * @param {number}     height Image height, px.
+ * @param {Object}     [blobShape] Blob-count/radius override — EXPORTED
+ *   and parameterised (rather than left as inline literals) solely so
+ *   `scripts/generative-background/verify-field-texture.mjs`'s negative
+ *   control can re-run this SAME real generator against the exact
+ *   overcorrected D946 config it was reverted from (`N_BLOBS = 26`,
+ *   `radius = (0.1 + rng()*0.12) * width`), rather than hand-rolling a
+ *   second copy of the compositing maths. Every real caller (this file's
+ *   own `attachStaticCanvas()` included) omits it and gets the shipped
+ *   defaults below unchanged.
+ * @param {number}     [blobShape.nBlobs]      Blob count. Default 36 (shipped).
+ * @param {number}     [blobShape.radiusMin]   Radius formula's base fraction of width. Default 0.18 (shipped).
+ * @param {number}     [blobShape.radiusRange] Radius formula's random range fraction of width. Default 0.14 (shipped).
  * @return {ImageData} The built image.
  */
-function buildFieldImageData( stops, width, height ) {
+export function buildFieldImageData( stops, width, height, { nBlobs = 36, radiusMin = 0.18, radiusRange = 0.14 } = {} ) {
 	const rng = mulberry32( seedFromColours( stops ) );
 	// ⚠ Blob scale is calibrated against TWO measurements, not guessed — read
 	// both before changing these numbers. (1) A UV-visualisation debug render
@@ -294,10 +306,10 @@ function buildFieldImageData( stops, width, height ) {
 		srgbToLinear( b ),
 	] );
 
-	const N_BLOBS = 36;
+	const N_BLOBS = nBlobs;
 	const blobs = [];
 	for ( let i = 0; i < N_BLOBS; i++ ) {
-		const radius = ( 0.18 + rng() * 0.14 ) * width;
+		const radius = ( radiusMin + rng() * radiusRange ) * width;
 		blobs.push( {
 			cx: rng() * width,
 			cy: rng() * height,

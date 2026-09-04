@@ -812,9 +812,20 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 	gl.uniform1f( u( 'u_dispFreqZ' ), dispFreqZ );
 	gl.uniform1fv( u( 'u_foldFreq[0]' ), foldFreq );
 	gl.uniform1fv( u( 'u_foldPower[0]' ), foldPower );
+	// D946/1b — ground colour resolved ONCE, here, ahead of the grading
+	// uniforms below (`ground` itself is declared further down for the
+	// depth-fade/§3(a) uniforms; both reads use the exact same
+	// `opts.groundColour`/`DEFAULT_GROUND` fallback + luminance formula the
+	// fragment shader's own `groundLuma` gate uses, so JS and GLSL never
+	// disagree on which side of the light/dark line a preset falls).
+	const groundForGrading = Array.isArray( opts.groundColour ) ? opts.groundColour : DEFAULT_GROUND;
+	const groundLumaForGrading =
+		0.299 * groundForGrading[ 0 ] + 0.587 * groundForGrading[ 1 ] + 0.114 * groundForGrading[ 2 ];
+	const isDarkGround = groundLumaForGrading < 0.5;
+
 	gl.uniform1f( u( 'u_contrast' ), GRADE_CONTRAST );
-	gl.uniform1f( u( 'u_saturation' ), GRADE_SATURATION );
-	gl.uniform1f( u( 'u_hueShift' ), GRADE_HUE_SHIFT );
+	gl.uniform1f( u( 'u_saturation' ), isDarkGround ? DEFAULT_GRADE_SATURATION_DARK : GRADE_SATURATION );
+	gl.uniform1f( u( 'u_hueShift' ), isDarkGround ? DEFAULT_GRADE_HUE_SHIFT_DARK : GRADE_HUE_SHIFT );
 
 	// Striation / glow-gate + depth-fade uniforms (§3, 2026-08-28 build).
 	const glowAmount =
