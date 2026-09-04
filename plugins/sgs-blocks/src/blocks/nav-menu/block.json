@@ -153,6 +153,9 @@
 						"layout"
 					],
 					"prefix": "featured",
+					"attrMap": {
+						"css:color-gradient": "featuredColourGradient"
+					},
 					"states": {
 						"hover": {
 							"attrMap": {
@@ -163,7 +166,7 @@
 							}
 						}
 					},
-					"_note": "render.php:431-459. featuredFontWeightHover is a genuine hover-state weight change (only emitted when it differs from resting), declared under `text` cluster's css:font-weight member."
+					"_note": "render.php:431-459. featuredFontWeightHover is a genuine hover-state weight change (only emitted when it differs from resting), declared under `text` cluster's css:font-weight member. featuredColourGradient added 2026-09-04 (mirrors burgerColourGradient's shape) -- explicit attrMap since css:color-gradient is not resolved by the default {prefix}Suffix convention, same reason burgerColourGradient needed one. Resting LABEL form only; PILL form and the submenu-inheritance custom property stay flat (see render.php comments)."
 				},
 				"burger": {
 					"label": "Burger toggle",
@@ -360,6 +363,11 @@
 		"featuredColour": {
 			"type": "string",
 			"default": "accent"
+		},
+		"featuredColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the featured bar item's LABEL-form text with a background-clip:text mechanism instead of a flat colour (mirrors burgerColourGradient). Non-empty wins over featuredColour. Resting LABEL form only (no featuredBg set) -- the PILL form (featuredBg set) keeps its WCAG-contrast-resolved flat foreground, and the submenu inheritance custom property (--sgs-nm-featured-colour) stays flat-only because its consumer paints a background on the same selector (see render.php)."
 		},
 		"featuredBg": {
 			"type": "string",

@@ -173,6 +173,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		underlineThickness,
 		underlineOffset,
 		featuredColour,
+		featuredColourGradient,
 		featuredBg,
 		featuredColourHover,
 		featuredBgHover,
@@ -610,12 +611,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{
 			key: 'featured-text',
 			label: __( 'Featured text colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: featuredColour,
 					onChange: ( val ) => setAttributes( { featuredColour: val ?? '' } ),
+					gradientValue: featuredColourGradient,
+					onGradientChange: ( val ) => setAttributes( { featuredColourGradient: val ?? '' } ),
 					linked: true,
 				},
 				{

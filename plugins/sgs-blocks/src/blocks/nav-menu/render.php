@@ -1069,12 +1069,17 @@ if ( 'pill' === $hover_style && '' !== $item_bg_hover_hex ) {
  * text #3a2e26 on primary #e68a95 = 5.28:1 PASS, so the draft's own pairing is
  * adopted verbatim — the fidelity fix and the a11y fix are the same fix.
  */
-$featured_sel     = $uid_sel . ' .sgs-nav-menu__item--featured .sgs-nav-menu__link';
-$featured_colour  = isset( $attributes['featuredColour'] ) && '' !== $attributes['featuredColour']
+$featured_sel      = $uid_sel . ' .sgs-nav-menu__item--featured .sgs-nav-menu__link';
+$featured_colour   = isset( $attributes['featuredColour'] ) && '' !== $attributes['featuredColour']
 	? (string) $attributes['featuredColour']
 	: 'accent';
-$featured_bg_slug = isset( $attributes['featuredBg'] ) ? sanitize_html_class( $attributes['featuredBg'] ) : '';
-$featured_bg_hex  = '' !== $featured_bg_slug ? sgs_resolve_palette_hex( $featured_bg_slug, '' ) : '';
+// featuredColourGradient is the gradient sibling (mirrors burgerColourGradient,
+// D956 rollout) -- resting LABEL form only (no featured_bg). Gradient wins when
+// set+valid.
+$featured_colour_gradient  = isset( $attributes['featuredColourGradient'] ) ? (string) $attributes['featuredColourGradient'] : '';
+$featured_colour_effective = sgs_resolve_text_colour_or_gradient( $featured_colour, $featured_colour_gradient );
+$featured_bg_slug  = isset( $attributes['featuredBg'] ) ? sanitize_html_class( $attributes['featuredBg'] ) : '';
+$featured_bg_hex   = '' !== $featured_bg_slug ? sgs_resolve_palette_hex( $featured_bg_slug, '' ) : '';
 
 $featured_radius       = isset( $attributes['featuredRadius'] ) ? (float) $attributes['featuredRadius'] : 8;
 $featured_radius_hover = isset( $attributes['featuredRadiusHover'] ) && null !== $attributes['featuredRadiusHover']
@@ -1091,7 +1096,11 @@ if ( '' !== $featured_bg_hex ) {
 	$featured_fg  = sgs_wcag_preferred_text_colour_for_bg( $featured_bg_hex, $preferred_fg );
 	$css         .= $featured_sel . '{background-color:' . esc_attr( $featured_bg_hex ) . ';color:' . esc_attr( $featured_fg ) . ';font-weight:' . esc_attr( (string) $featured_weight ) . ';border-radius:' . esc_attr( (string) $featured_radius ) . 'px;}';
 } else {
-	$css .= $featured_sel . '{color:' . sgs_colour_value( $featured_colour ) . ';font-weight:' . esc_attr( (string) $featured_weight ) . ';}';
+	$featured_colour_decl = sgs_text_colour_decl( $featured_colour_effective );
+	if ( '' !== $featured_colour_decl ) {
+		$css .= $featured_sel . '{' . $featured_colour_decl . ';font-weight:' . esc_attr( (string) $featured_weight ) . ';}';
+	}
+	$css .= sgs_text_colour_gradient_fallback_rule( $featured_sel, $featured_colour_effective );
 }
 
 /*
@@ -1115,6 +1124,19 @@ if ( '' !== $featured_bg_hex ) {
 } elseif ( '' !== $featured_colour ) {
 	// LABEL form — no background was chosen, so the submenu row stays
 	// transparent rather than inventing a pill the bar itself does not have.
+	//
+	// Deliberately flat-only (featuredColourGradient is NOT read here). The
+	// consumer of --sgs-nm-featured-colour, render.php's
+	// `.sgs-nav-menu__subitem--featured .sgs-nav-menu__sublink` rule, paints
+	// BOTH `color:var(--sgs-nm-featured-colour,…)` AND
+	// `background:var(--sgs-nm-featured-bg,…)` on the SAME selector, so
+	// background-clip:text would clip that background paint too --
+	// textSharesElementWithBackground() precondition failure (see
+	// CLAUDE.md "Colour EMISSION helpers" + submenuColourGradient's block.json
+	// note for the identical precedent on this same file's sublink element).
+	// Fixing this needs the submenu featured background moved onto its own
+	// ::after layer (sgs_block_background_layer_css()) first -- out of scope
+	// for this pass.
 	$sgs_nm_featured_vars .= '--sgs-nm-featured-colour:' . sgs_colour_value( $featured_colour ) . ';'
 		. '--sgs-nm-featured-bg:transparent;';
 }
