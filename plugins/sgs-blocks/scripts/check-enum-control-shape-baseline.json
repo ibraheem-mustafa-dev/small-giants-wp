@@ -235,6 +235,12 @@
       "disposition": "accepted-debt"
     },
     {
+      "block": "timeline",
+      "attr": "datePosition",
+      "reason": "FALSE POSITIVE, not real debt: resolve_control()'s WINDOW=900-char mark-matching misattributes this finding's control -- the true datePosition SelectControl (labels 'In its own column'/'Next to the title', 17-18 chars, correctly rendered as SelectControl per D812) sits near the milestoneSize SelectControl (labels 'Compact'/'Full-height', longest=11) in source, and resolve_control() picks up milestoneSize's tag_start instead because a 'datePosition' text mark elsewhere in the file falls within WINDOW of BOTH controls. Verified directly: manually resolving the DATE_POSITION_OPTIONS const array (bypassing resolve_control's mark-window heuristic) gives longest=17/18, which recommends SelectControl -- matching what's already shipped. No code change needed on timeline/edit.js. The detector's window-based disambiguation needs a real fix (narrow WINDOW or a stronger nearest-mark tie-break) as a follow-up; this baseline entry unblocks deploys in the meantime.",
+      "disposition": "detector-limitation"
+    },
+    {
       "block": "trust-bar",
       "attr": "autoScrollSpeed",
       "disposition": "accepted-debt"
