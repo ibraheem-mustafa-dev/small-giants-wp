@@ -79,7 +79,9 @@
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
 						"css:background-color": "backgroundColour",
+						"css:background-color-gradient": "backgroundColourGradient",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:border-radius": "borderRadius",
@@ -95,13 +97,15 @@
 						"hover": {
 							"attrMap": {
 								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient",
 								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient",
 								"css:border-color": "borderColourHover",
 								"css:border-color-gradient": "borderColourHoverGradient"
 							}
 						}
 					},
-					"_note": "No `layer` declared (leaf content block, no grid/flex attrs). `effectHover` is a preset picker choosing WHICH hover treatment applies (Spec 35 FR-35-5 false-friend — contains 'Hover' but is not itself a state-variant style property, so it is NOT mapped into `states.hover` and stays an honest orphan/behaviour toggle). Root native `typography` is declared in block.json but routed via `selectors.typography` to `.sgs-process-steps__title`, NOT this wrapper — see the `title` element, which owns text-cluster typography instead."
+					"_note": "No `layer` declared (leaf content block, no grid/flex attrs). `effectHover` is a preset picker choosing WHICH hover treatment applies (Spec 35 FR-35-5 false-friend — contains 'Hover' but is not itself a state-variant style property, so it is NOT mapped into `states.hover` and stays an honest orphan/behaviour toggle). Root native `typography` is declared in block.json but routed via `selectors.typography` to `.sgs-process-steps__title`, NOT this wrapper — see the `title` element, which owns text-cluster typography instead. backgroundColourGradient/textColourGradient added (QC-council-validated) — keyed `css:background-color-gradient`/`css:color-gradient` distinct from each other, since this wrapper paints BOTH background and text on the same root selector (info-box's `box` element precedent). render.php moves the background paint onto a `::after` layer (`sgs_block_background_layer_css()`) so it cannot be clipped by a text gradient's `background-clip:text` on the same node."
 				},
 				"title": {
 					"label": "Step title",
@@ -298,19 +302,40 @@
 		},
 		"backgroundColour": {
 			"type": "string",
-			"default": ""
+			"default": "",
+			"description": "RESTING wrapper background colour — block-private (native supports.color.background is disabled)."
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the RESTING wrapper background instead of the flat backgroundColour. Non-empty wins over backgroundColour at render time (mirrors the borderColourGradient/numberBackgroundGradient pattern)."
 		},
 		"textColour": {
 			"type": "string",
 			"default": ""
 		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the RESTING wrapper text colour instead of the flat textColour. Non-empty wins over textColour at render time (background-clip:text)."
+		},
 		"backgroundColourHover": {
 			"type": "string",
 			"default": ""
 		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the HOVER wrapper background instead of the flat backgroundColourHover. Non-empty wins over backgroundColourHover at render time."
+		},
 		"textColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the HOVER wrapper text colour instead of the flat textColourHover. Non-empty wins over textColourHover at render time (background-clip:text)."
 		},
 		"borderColourHover": {
 			"type": "string",

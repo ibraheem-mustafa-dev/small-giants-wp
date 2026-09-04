@@ -124,9 +124,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		descriptionColourGradient,
 		descriptionColourHover,
 		backgroundColour,
+		backgroundColourGradient,
 		textColour,
+		textColourGradient,
 		backgroundColourHover,
+		backgroundColourHoverGradient,
 		textColourHover,
+		textColourHoverGradient,
 		borderColourHover,
 		borderColourHoverGradient,
 		effectHover,
@@ -411,6 +415,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: textColour,
 								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -418,6 +424,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: textColourHover,
 								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
 							},
 						] }
 					/>
@@ -430,6 +438,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: backgroundColour,
 								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
 								linked: true,
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) => setAttributes( { backgroundColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -437,6 +447,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: backgroundColourHover,
 								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
 								linked: true,
+								gradientValue: backgroundColourHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
 							},
 						] }
 					/>

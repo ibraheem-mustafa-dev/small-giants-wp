@@ -72,8 +72,9 @@ $title_colour            = $attributes['titleColour'] ?? '';
 $title_colour_gradient   = $attributes['titleColourGradient'] ?? '';
 $description_colour      = $attributes['descriptionColour'] ?? '';
 $description_colour_gradient = $attributes['descriptionColourGradient'] ?? '';
-$hover_background_colour = $attributes['backgroundColourHover'] ?? '';
-$hover_text_colour       = $attributes['textColourHover'] ?? '';
+// backgroundColourHover/textColourHover are read directly from $attributes
+// further down (sgs_resolve_text_colour_or_gradient()/sgs_fill_decls()), not
+// pre-extracted here — they no longer feed the flat $hover_decls bucket.
 $hover_border_colour     = $attributes['borderColourHover'] ?? '';
 $hover_border_gradient   = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 $hover_effect            = $attributes['effectHover'] ?? 'none';
@@ -143,16 +144,20 @@ if ( isset( $attributes['borderRadius'] ) ) {
 $border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
 $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
 
-// WP `color` / `typography` / `shadow` support values (skip-serialised in
-// block.json → NOT auto-inlined). Passed wholesale to the style engine below
-// — the engine safely ignores any sub-key it doesn't recognise.
-$style_color_args = array();
-if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-	$style_color_args['text'] = (string) $attributes['textColour'];
-}
-if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-	$style_color_args['background'] = (string) $attributes['backgroundColour'];
-}
+// WP `typography` / `shadow` support values (skip-serialised in block.json →
+// NOT auto-inlined). Passed wholesale to the style engine below — the engine
+// safely ignores any sub-key it doesn't recognise.
+//
+// D-pending (QC-council-validated, 2026-09-04): wrapper text/background
+// colour used to be bundled into a `color` sub-key here and fed wholesale
+// into the SAME style-engine call as typography/shadow. Removed — that path
+// only ever emits a bare `color:`/`background-color:` declaration, which
+// silently drops a gradient string as invalid CSS. Text/background now emit
+// separately below via the shared gradient-aware primitives (see CLAUDE.md
+// "Colour EMISSION helpers" — sgs_resolve_text_colour_or_gradient() /
+// sgs_text_colour_decl() / sgs_text_colour_gradient_fallback_rule() for
+// text; sgs_fill_decls() / sgs_block_background_layer_css() for background).
+// Only the typography/shadow sub-keys stay in the wholesale call below.
 $style_typography_args = isset( $attributes['style']['typography'] ) && is_array( $attributes['style']['typography'] ) ? $attributes['style']['typography'] : array();
 $style_shadow          = isset( $attributes['style']['shadow'] ) ? (string) $attributes['style']['shadow'] : '';
 $preset_text_slug      = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
@@ -267,15 +272,13 @@ if ( 'none' !== $border_style ) {
 	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
 }
 
-// Hover colour declarations — emitted as a scoped .uid{…}:hover rule via the
-// shared helper. No fallback values (matches the info-box pattern).
+// Hover border colour declaration — emitted as a scoped .uid{…}:hover rule
+// via the shared helper. No fallback values (matches the info-box pattern).
+// Wrapper text/background hover colour moved OUT of this bucket
+// (QC-council-validated, 2026-09-04) — they now emit via the gradient-aware
+// primitives below (sgs_resolve_text_colour_or_gradient()/sgs_fill_decls()),
+// which building them here too would duplicate on the same selector.
 $hover_decls = array();
-if ( $hover_background_colour ) {
-	$hover_decls[] = 'background-color:' . sgs_colour_value( $hover_background_colour );
-}
-if ( $hover_text_colour ) {
-	$hover_decls[] = 'color:' . sgs_colour_value( $hover_text_colour );
-}
 if ( $hover_border_colour ) {
 	$hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
 }
@@ -285,6 +288,62 @@ if ( $hover_border_colour ) {
 if ( $hover_decls ) {
 	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, array(), $hover_decls );
 }
+
+// --- Wrapper TEXT colour (flat-or-gradient, base + hover) — block-private
+// replacement for the retired native supports.color.text/gradients (D744
+// pattern, mirrors sgs/info-box's `box` element). Both states land on the
+// SAME root selector as the background paint below, which is why that
+// background is moved onto a `::after` layer rather than painting the root
+// directly — background-clip:text (used when a gradient resolves here)
+// clips the WHOLE background painting area of this element to the glyph
+// shapes, so a same-selector background-color would vanish. ---
+$sgs_ps_text_normal_resolved = sgs_resolve_text_colour_or_gradient(
+	$attributes['textColour'] ?? '',
+	(string) ( $attributes['textColourGradient'] ?? '' )
+);
+$sgs_ps_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
+	isset( $attributes['textColourHover'] ) ? (string) $attributes['textColourHover'] : '',
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+$sgs_ps_text_normal_decl     = sgs_text_colour_decl( $sgs_ps_text_normal_resolved );
+$sgs_ps_text_hover_decl      = sgs_text_colour_decl( $sgs_ps_text_hover_resolved );
+if ( '' !== $sgs_ps_text_normal_decl || '' !== $sgs_ps_text_hover_decl ) {
+	$scoped_css[] = sgs_emit_state_colour_css(
+		$root_sel,
+		'' !== $sgs_ps_text_normal_decl ? array( $sgs_ps_text_normal_decl ) : array(),
+		'' !== $sgs_ps_text_hover_decl ? array( $sgs_ps_text_hover_decl ) : array()
+	);
+}
+// Gradient companion rule — MUST accompany sgs_text_colour_decl(): its
+// gradient branch has no `@supports` fallback of its own for a browser that
+// doesn't support background-clip:text. A no-op for a flat colour, safe to
+// call unconditionally.
+$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $sgs_ps_text_normal_resolved );
+if ( '' !== $sgs_ps_text_hover_resolved && $sgs_ps_text_hover_resolved !== $sgs_ps_text_normal_resolved ) {
+	$scoped_css[] = sgs_hover_media_wrap(
+		sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover', $sgs_ps_text_hover_resolved )
+	) . sgs_text_colour_gradient_fallback_rule( $root_sel . ':focus-visible', $sgs_ps_text_hover_resolved );
+}
+
+// --- Wrapper BACKGROUND colour (flat-or-gradient, base + hover) — painted on
+// a `::after` layer, never the root itself, so the text colour/gradient
+// above (background-clip:text on the SAME $root_sel) cannot clip or
+// overwrite it (both use background-image). Mirrors sgs/info-box/
+// sgs/product-card. ---
+$sgs_ps_bg_decls = sgs_fill_decls(
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+$scoped_css[]     = sgs_block_background_layer_css(
+	$root_sel,
+	$sgs_ps_bg_decls['normal'][0] ?? '',
+	$sgs_ps_bg_decls['hover'][0] ?? ''
+);
 
 // --- Base spacing (padding/margin), border-radius, WP colour + typography +
 // shadow supports — skip-serialised, emitted scoped via the stable core style
@@ -305,10 +364,6 @@ if ( ! empty( $base_spacing ) ) {
 
 if ( null !== $base_border_radius ) {
 	$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
-}
-
-if ( ! empty( $style_color_args ) ) {
-	$base_style_engine_args['color'] = $style_color_args;
 }
 
 if ( ! empty( $style_typography_args ) ) {
