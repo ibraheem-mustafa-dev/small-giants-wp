@@ -12,17 +12,57 @@ Read `CLAUDE.md` in full, then `.claude/plans/2026-09-03-golden-colour-staged-ro
 full. The plan carries this session's full history in its Phase 3 log — read that log before
 picking a row, not just the table below.
 
-## Where Phase 3 stands
+## Where the plan stands
 
-19 rows across 13 blocks are wired, live-verified, and deployed. Three more sibling sessions
-closed 6 further rows on the same tree the same day. **Re-run `survey.js` before trusting any
-count in this prompt** — the backlog moves under concurrent sessions.
+Phases 0, 1, 2, 4, and 5 are all closed (the plan doc marks each explicitly). Phase 3 — the
+text-colour gradient rollout — is the one still open, and it is not just the row backlog.
+**Every item below is a real, specified gap this session found by re-reading the plan in
+full, not a new idea.** Pick from this list; don't assume the row backlog is the whole job.
 
-```bash
-node plugins/sgs-blocks/scripts/colour-codemod/survey.js --json > /tmp/survey.json
-```
+## Every open task, in priority order
 
-## What's left, classified by real per-block investigation (not guessed)
+1. **The row backlog** — 19 rows across 13 blocks are wired, live-verified, deployed. 6 more
+   closed by sibling sessions the same day. 11 remain, classified below. **Re-run `survey.js`
+   before trusting any count in this prompt** — the backlog moves under concurrent sessions.
+   ```bash
+   node plugins/sgs-blocks/scripts/colour-codemod/survey.js --json > /tmp/survey.json
+   ```
+2. **The `supports.sgs.colourGrant` migration stamp — specified in the plan, never built.**
+   `grep -rl "colourGrant" plugins/sgs-blocks/src/blocks/*/block.json` returns **zero**
+   blocks, despite 19+ genuinely migrated rows. The plan's own words: *"Nothing marks a
+   migrated block today, so a `git revert` silently un-migrates blocks the progress table
+   still lists as done."* Build the stamp (`supports.sgs.colourGrant: "<commit-sha>"`,
+   written atomically with each block's change) plus a check reconciling the stamp set
+   against a live `survey.js` run, then backfill it onto every block already migrated by this
+   session and its siblings. Do this **before** wiring more rows — every new row you wire
+   without the stamp is more backfill work later.
+3. **The DB/manifest three-state resolution split — specified, never measured.** The plan's
+   "Ruling: three-state, not two" section calls this out as needing measurement *before*
+   Phase 3 continues at scale, because it sizes the real remaining work. Never done. Run it:
+   for every unresolved-mechanism colour attr (`survey.js`'s own count), classify (a) DB
+   `css_property` resolves — use it, (b) DB empty but the block's manifest `attrMap` has a
+   matching `css:` entry — seed the DB from the manifest (proven method, see the plan), (c)
+   neither — refuse and count. Report the split; it tells you whether the true remaining
+   population is a known-method manifest-seeding pass or genuinely smaller than any headline
+   count suggests.
+4. **Two stale doc pointers** — `.claude/plans/archive/2026-08-23-colour-capability-grant-PLAN.md`'s
+   frontmatter and `.claude/plans/archive/2026-09-02-findings-31-golden-colour-control.md:20`
+   both still point at the design doc's pre-archive live path. Five-minute fix, named in the
+   plan's Phase 0 section, never done.
+5. **The detector residual — not a colour-wiring task, flag it to whoever owns rule 31.**
+   14 of the non-conformant rows (`borderColourHover`, `shadowHoverColour`, and similar) have
+   an attribute name that is ITSELF a hover attribute — rule 31 miscounts them as "missing a
+   hover sibling" when they ARE the hover sibling, with no resting value to add one to. Not
+   this rollout's fix; name it to the session that next touches
+   `scripts/inspector-scan/rules/31-golden-colour-control.js`.
+6. **Named, lower priority, no new information this session** — re-take U11 extension
+   attribution's numbers (`fx.js` mount count, `states=` carriers), the no-paint-path rows
+   beyond this session's Phase 3 batch (re-count fresh, the plan's old "104" predates this
+   session's more precise classification), the 35 custom-property rows (blocked on
+   `style.css`, no phase owns that file yet), shadow colour, repeater-item colours, media-atom
+   colours. Full detail in the plan's "Deferred, named, not dropped" section.
+
+## The row backlog, classified by real per-block investigation (not guessed)
 
 **Two EASY rows — do these first.** `google-reviews.arrowColourText` and
 `.writeReviewColourText`. The shared helper `sgs_button_element_style_css()`

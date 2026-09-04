@@ -83,7 +83,13 @@ refuses beats a broad codemod that guesses. Same repo, same week, measurable.
 
 ---
 
-## Phase 0 — UNBLOCK. Nothing else runs until this lands.
+## Phase 0 — UNBLOCK. Nothing else runs until this lands. — ✅ DONE (verified 2026-09-04)
+
+`adopt.js`'s own self-test now asserts the correct shape directly:
+`check( 'border row is refused by name, file byte-identical, no borderRow emitted', ... )` with
+`assert( ! /borderRow/.test( after ), ... )` — the broken emit path described below is gone.
+Re-verify with `node scripts/colour-codemod/adopt.js --self-test` if picking this plan back up
+after a gap; the check above is the fast confirmation.
 
 **`adopt.js` writes an import of a module deleted eleven days ago.** `borderRow.js` was
 deleted at `dd2989ec2`; `src/components/index.js` exports only `fillRow` and `textRow`. But
@@ -330,7 +336,15 @@ Do not try to do both dimensions in one edit.
 
 ---
 
-## Phase 4 — Deploy and probe ⭐ THE CLOSURE POINT
+## Phase 4 — Deploy and probe ⭐ THE CLOSURE POINT — ✅ DONE for this session's 19 rows (2026-09-04)
+
+The probe this phase specifies is built: `scripts/qa/check-colour-gradient-roundtrip.js`,
+covering all four requirements below (real hover/resolved-gradient assertion, negative control
+per pair, no HTML grepping). Deployed to sandybrown and live-verified 5/5 PASS this session —
+see the Phase 3 progress log above. **Not closed for the plan as a whole** — only 19 of the
+full backlog's rows have been probed; re-run this phase's discipline (deploy, then probe, with
+a negative control) for every future batch, extending the script's `FIXTURES` table rather
+than rebuilding it.
 
 `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` — the only sanctioned
 path. Then a live computed-style probe, modelled on `scripts/qa/check-border-roundtrip.js`
@@ -356,7 +370,14 @@ eye-verified — and that result stands whether or not a codemod is ever built.
 
 ---
 
-## Phase 5 — Record actuals, then the architecture decision
+## Phase 5 — Record actuals, then the architecture decision — ✅ DONE (2026-09-04)
+
+`reports/colour-grant-progress.md` is written, as part of the batch commit. The architecture
+question below is answered: **do not build a codemod for this migration** — see the report for
+the measured reasoning (assisted-manual at real speed, two real bugs caught by human judgement
+a codemod's shape-classification would need to encode correctly to avoid). Re-open this
+decision only if the remaining backlog's shape turns out to be far more uniform than the first
+30-odd rows suggest.
 
 Write `reports/colour-grant-progress.md` **as part of the batch commit**, never afterwards
 from memory. Header carries the denominator command and its output. Blocks enumerated, never
@@ -480,12 +501,39 @@ live path.
 - A `block.json` change is a visual change: needs `reports/visual-diff/<block>-<date>.md`.
 - **D752 is the mandate.** If machinery fights it, the mandate wins and the machinery changes.
 
-## Deferred, named, not dropped
+## Deferred, named, not dropped — audited 2026-09-04, session 8
 
-U11 extension attribution (its numbers need re-taking: 15 `fx.js` mounts with 9 carrying
-`states=`, plus `hover-effects.js`'s lazy-`require` mount that no import-following reach map
-can see, and 30 blocks declare `hover` against 16 declaring `fx`) · the 104 no-paint-path rows
-beyond the 20 single-shape blocks · the 35 custom-property rows · shadow colour · repeater-item
-colours · media-atom colours · `grant.js` itself, pending Phase 5. (The contrast guard entry
-formerly here is BUILT — see the correction above; `SgsBorderControl`'s 44-caller wiring is the
-one piece of it still genuinely deferred, deliberately not parked.)
+**Specified in this plan but never built — real gaps, not stale text:**
+
+- **The `supports.sgs.colourGrant: "<commit-sha>"` migration stamp** (see "A block must be
+  able to say it has been migrated" above). Confirmed via
+  `grep -rl "colourGrant" src/blocks/*/block.json` → **zero blocks**, despite 19+ rows across
+  13+ blocks now genuinely migrated. Without this stamp, "which blocks are done" still has no
+  command that answers it — only this plan's prose, which drifts. Worth building before the
+  backlog grows much further, not because any specific migration broke without it.
+- **The (a)/(b)/(c) DB/manifest resolution split** ("Ruling: three-state, not two" above) —
+  never measured. Sizes the real remaining work: if most of the ~350 unresolved-mechanism
+  colour attrs (`survey.js`'s own count, re-run for the live figure) are case (b) — DB empty
+  but the manifest `attrMap` has a `css:` entry — it's a known-method manifest-seeding pass;
+  if mostly (c), the true population is smaller than any headline count suggests.
+- **The 14-of-175 rows whose attribute name is itself a hover attr** (`borderColourHover`,
+  `shadowHoverColour`, etc.) — rule 31 miscounts them as "missing a hover sibling" when they
+  ARE the hover sibling. Named in Phase 2's residual as a DETECTOR fix, for a session that
+  owns rule 31 specifically — not a colour-wiring task.
+- **Two stale doc pointers** (Phase 0's own "Stale pointers to fix" note) — `2026-08-23-colour-
+  capability-grant-PLAN.md`'s frontmatter and `2026-09-02-findings-31-golden-colour-control.md:20`
+  still point at the pre-archive live path for the design doc. Small, mechanical, never done.
+
+**Named, still genuinely deferred, no new information this session:** U11 extension
+attribution (numbers need re-taking — 15 `fx.js` mounts with 9 carrying `states=`, plus
+`hover-effects.js`'s lazy-`require` mount no import-following reach map can see, and 30 blocks
+declare `hover` against 16 declaring `fx`) · the no-paint-path rows beyond this session's
+Phase 3 batch (re-count via fresh `survey.js`, the plan's old "104" figure predates this
+session's more precise per-row classification) · the 35 custom-property rows (fail in
+`style.css`, which no phase above touches) · shadow colour · repeater-item colours ·
+media-atom colours.
+
+**Resolved, no longer deferred:** `grant.js` (the codemod) — Phase 5 answered this: don't
+build it, see `reports/colour-grant-progress.md`. The contrast guard — built, session 7 (see
+the correction above); only `SgsBorderControl`'s 44-caller wiring remains, deliberately not
+parked (Bean's call).
