@@ -269,6 +269,14 @@ function resolveDirectSelector( php, varName ) {
 	// same protection (Finding 1, cross-tier review 2026-09-04).
 	const semiIdx = findStatementEndRespectingStrings( php, start );
 	if ( semiIdx === -1 ) return { ok: false, reason: 'unterminated-statement' };
+	// Minor finding (cross-tier review 2026-09-04): the old naive `indexOf(';', idx)`
+	// guaranteed semiIdx >= idx by construction (a forward search from idx can only
+	// find something at or after idx). `findStatementEndRespectingStrings` searches
+	// from `start` (the statement's own line start), not from `idx` (the helper
+	// call), so that guarantee is no longer automatic — refuse rather than emit a
+	// negative-length / backwards slice if it's ever violated (e.g. two statements
+	// sharing a line, or `start` landing inside an already-open string).
+	if ( semiIdx < idx ) return { ok: false, reason: 'statement-end-before-helper-call' };
 	const end = semiIdx + 1;
 	const stmt = php.slice( start, end );
 	const localIdx = idx - start;
@@ -368,6 +376,177 @@ function findStatementEndRespectingStrings( php, fromIdx ) {
 	return -1;
 }
 
+// ---------------------------------------------------------------------------
+// Hoisting a `direct-new-statement` insertion out of the base-value guard(s)
+// it would otherwise land inside (the bug this task fixes, cross-tier review
+// 2026-09-04, Bean-flagged). Every Strategy-T-shaped consumption statement
+// observed live sits nested inside one or two `if ( '' !== $var )` presence
+// guards testing the BASE attribute's resolved value (nav-menu:864/866,
+// team-member:629/631) — splicing the hover block at the consumption
+// statement's own `;` therefore lands it inside those same guards, so the
+// hover CSS silently never renders when the base colour is unset (a
+// legitimate client choice). The fix already shipped for `burgerBg`/
+// `burgerHoverColour` (nav-menu:1166-1173): each is its own TOP-LEVEL `if`,
+// sibling to the guard, not nested inside it. These two helpers find that
+// same outer boundary generically, string/comment aware, PHP-tokenizer-lite
+// (not a naive brace count — `{`/`}` inside a string or a `//`/`/* */`
+// comment must not be mistaken for real block delimiters).
+// ---------------------------------------------------------------------------
+
+// Returns the stack of `{ openPos, header }` frames — every unmatched `{`
+// still open at `uptoIdx`, scanning forward from php[0] — where `header` is
+// the raw source text between the previous statement/block boundary
+// (`;`/`{`/`}`) and the `{` itself (e.g. `if ( '' !== $nav_colour_effective )`).
+function scanBraceFrames( php, uptoIdx ) {
+	const stack = [];
+	let inString = null;
+	let inLineComment = false;
+	let inBlockComment = false;
+	let lastBoundary = 0;
+	for ( let i = 0; i < uptoIdx; i++ ) {
+		const ch = php[ i ];
+		if ( inLineComment ) {
+			if ( ch === '\n' ) inLineComment = false;
+			continue;
+		}
+		if ( inBlockComment ) {
+			if ( ch === '*' && php[ i + 1 ] === '/' ) {
+				inBlockComment = false;
+				i++;
+			}
+			continue;
+		}
+		if ( inString ) {
+			if ( ch === '\\' ) {
+				i++;
+				continue;
+			}
+			if ( ch === inString ) inString = null;
+			continue;
+		}
+		if ( ch === '"' || ch === "'" ) {
+			inString = ch;
+			continue;
+		}
+		if ( ch === '/' && php[ i + 1 ] === '/' ) {
+			inLineComment = true;
+			i++;
+			continue;
+		}
+		if ( ch === '#' ) {
+			inLineComment = true;
+			continue;
+		}
+		if ( ch === '/' && php[ i + 1 ] === '*' ) {
+			inBlockComment = true;
+			i++;
+			continue;
+		}
+		if ( ch === '{' ) {
+			stack.push( { openPos: i, header: php.slice( lastBoundary, i ).trim() } );
+			lastBoundary = i + 1;
+			continue;
+		}
+		if ( ch === '}' ) {
+			stack.pop();
+			lastBoundary = i + 1;
+			continue;
+		}
+		if ( ch === ';' ) {
+			lastBoundary = i + 1;
+		}
+	}
+	return stack;
+}
+
+// Given php[openPos] === '{', returns the index of its matching '}' (same
+// string/comment-aware scan as scanBraceFrames), or -1 if unterminated.
+function findMatchingBrace( php, openPos ) {
+	let depth = 0;
+	let inString = null;
+	let inLineComment = false;
+	let inBlockComment = false;
+	for ( let i = openPos; i < php.length; i++ ) {
+		const ch = php[ i ];
+		if ( inLineComment ) {
+			if ( ch === '\n' ) inLineComment = false;
+			continue;
+		}
+		if ( inBlockComment ) {
+			if ( ch === '*' && php[ i + 1 ] === '/' ) {
+				inBlockComment = false;
+				i++;
+			}
+			continue;
+		}
+		if ( inString ) {
+			if ( ch === '\\' ) {
+				i++;
+				continue;
+			}
+			if ( ch === inString ) inString = null;
+			continue;
+		}
+		if ( ch === '"' || ch === "'" ) {
+			inString = ch;
+			continue;
+		}
+		if ( ch === '/' && php[ i + 1 ] === '/' ) {
+			inLineComment = true;
+			i++;
+			continue;
+		}
+		if ( ch === '#' ) {
+			inLineComment = true;
+			continue;
+		}
+		if ( ch === '/' && php[ i + 1 ] === '*' ) {
+			inBlockComment = true;
+			i++;
+			continue;
+		}
+		if ( ch === '{' ) {
+			depth++;
+			continue;
+		}
+		if ( ch === '}' ) {
+			depth--;
+			if ( depth === 0 ) return i;
+			continue;
+		}
+	}
+	return -1;
+}
+
+// A bare presence guard on some variable — `if ( '' !== $var )` — the ONLY
+// enclosing-condition shape every observed base-value guard uses. Deliberately
+// narrow: REFUSES to hoist past anything else (an `elseif`, a compound
+// condition, a guard on an unrelated variable) rather than guessing that it's
+// safe to jump out of it too.
+function isSimplePresenceGuard( header ) {
+	return /^if\s*\(\s*''\s*!==\s*\$[A-Za-z_][A-Za-z0-9_]*\s*\)$/.test( header );
+}
+
+// Walks OUTWARD from the consumption statement's own frames (innermost
+// first), hoisting the insertion point past every enclosing simple presence
+// guard, and stops — returning the boundary reached so far — the moment an
+// enclosing frame is anything else (not conditional on the base attribute's
+// presence, per the task brief's own phrasing). For a statement that isn't
+// nested in any such guard at all (frames empty, or the innermost frame
+// doesn't match), returns `stmtEnd` unchanged — the original behaviour.
+function computeHoistedInsertionPoint( php, stmtStart, stmtEnd ) {
+	const frames = scanBraceFrames( php, stmtStart );
+	let insertionPoint = stmtEnd;
+	for ( let i = frames.length - 1; i >= 0; i-- ) {
+		const frame = frames[ i ];
+		if ( ! isSimplePresenceGuard( frame.header ) ) break;
+		const closePos = findMatchingBrace( php, frame.openPos );
+		if ( closePos === -1 || closePos < insertionPoint ) break;
+		insertionPoint = closePos + 1;
+	}
+	return insertionPoint;
+}
+
 function resolveTextGradientChainSelector( php, attr, varName ) {
 	const callRe = /\$([A-Za-z_][A-Za-z0-9_]*)\s*=\s*sgs_resolve_text_colour_or_gradient\s*\(([\s\S]*?)\)\s*;/g;
 	const attrNeedle = varName
@@ -457,7 +636,7 @@ function resolveTextGradientChainSelector( php, attr, varName ) {
 			if ( braceIdx === -1 ) continue;
 			const tpl = beforeInterp.slice( 0, braceIdx ).trim();
 			if ( ! tpl ) continue;
-			consumptionCandidates.push( { selectorTemplate: tpl, stmt: candStmt, stmtEndIdx: candStmtEndIdx } );
+			consumptionCandidates.push( { selectorTemplate: tpl, stmt: candStmt, stmtEndIdx: candStmtEndIdx, stmtStart: lineStart } );
 			continue;
 		}
 
@@ -481,11 +660,11 @@ function resolveTextGradientChainSelector( php, attr, varName ) {
 		if ( braceIdx === -1 ) continue;
 		const tpl = built.slice( 0, braceIdx ).trim();
 		if ( ! tpl ) continue;
-		consumptionCandidates.push( { selectorTemplate: tpl, stmt: candStmt, stmtEndIdx: candStmtEndIdx } );
+		consumptionCandidates.push( { selectorTemplate: tpl, stmt: candStmt, stmtEndIdx: candStmtEndIdx, stmtStart: lineStart } );
 	}
 	if ( consumptionCandidates.length === 0 ) return { ok: false, reason: 'no-concat-or-interp-consumption-site-found-for-decl-var' };
 	if ( consumptionCandidates.length > 1 ) return { ok: false, reason: 'multiple-text-gradient-chain-sites-ambiguous' };
-	const { selectorTemplate, stmt, stmtEndIdx } = consumptionCandidates[ 0 ];
+	const { selectorTemplate, stmt, stmtEndIdx, stmtStart } = consumptionCandidates[ 0 ];
 
 	const pushMatch = stmt.match( /^\s*\$([A-Za-z_][A-Za-z0-9_]*)\s*(\[\s*\]|\.\s*=)/ );
 	if ( ! pushMatch ) return { ok: false, reason: 'consumption-statement-not-a-recognised-css-assembly-shape' };
@@ -495,6 +674,7 @@ function resolveTextGradientChainSelector( php, attr, varName ) {
 		selectorTemplate,
 		sinkVar: pushMatch[ 1 ],
 		sinkIsAppend: pushMatch[ 2 ].trim().startsWith( '.' ),
+		stmtStart,
 		stmtEnd: stmtEndIdx + 1,
 	};
 }
@@ -1028,6 +1208,7 @@ function planRow( db, dir, slug, row, phpText, blockJsonPathOverride ) {
 				propText: sel.propText,
 				sinkVar: sel.sinkVar,
 				sinkIsAppend: sel.sinkIsAppend,
+				stmtStart: sel.stmtStart,
 				stmtEnd: sel.stmtEnd,
 			};
 		} else {
@@ -1051,6 +1232,7 @@ function planRow( db, dir, slug, row, phpText, blockJsonPathOverride ) {
 				propText: 'color',
 				sinkVar: chain.sinkVar,
 				sinkIsAppend: chain.sinkIsAppend,
+				stmtStart: chain.stmtStart,
 				stmtEnd: chain.stmtEnd,
 			};
 		} else {
@@ -1392,7 +1574,20 @@ function applyRenderPhpFix( phpText, plan ) {
 		return phpText.slice( 0, plan.insertBeforeLine ) + insertion + phpText.slice( plan.insertBeforeLine );
 	}
 
-	const indent = indentOfLine( phpText, phpText.lastIndexOf( '\n', plan.stmtEnd - 1 ) + 1 );
+	// The consumption statement (`plan.stmtEnd`) routinely sits nested inside
+	// one or two `if ( '' !== $var )` guards testing the BASE attribute's
+	// resolved value — splicing at the statement's own `;` would land the
+	// hover block INSIDE those guards, so it silently never renders when the
+	// base colour is unset. Hoist past every such enclosing guard (matching
+	// the already-shipped burgerBg/burgerHoverColour top-level shape,
+	// nav-menu:1166-1173) via `computeHoistedInsertionPoint` — a no-op
+	// (returns `plan.stmtEnd` unchanged) when the statement isn't nested in a
+	// base-value guard at all, or when `plan.stmtStart` is unavailable (an
+	// older/other caller that hasn't been updated to supply it).
+	const insertAt = plan.stmtStart != null
+		? computeHoistedInsertionPoint( phpText, plan.stmtStart, plan.stmtEnd )
+		: plan.stmtEnd;
+	const indent = indentOfLine( phpText, phpText.lastIndexOf( '\n', insertAt - 1 ) + 1 );
 	let insertion;
 	if ( plan.sinkIsAppend ) {
 		// Double-quoted, matching the array-push branch below — NOT the
@@ -1414,7 +1609,7 @@ function applyRenderPhpFix( phpText, plan ) {
 			`${ indent }\t$${ plan.sinkVar }[] = "${ plan.selectorTemplate }:hover,${ plan.selectorTemplate }:focus-visible{${ plan.propText }:" . sgs_colour_value( ${ hoverGuardVar } ) . '}';\n` +
 			`${ indent }}`;
 	}
-	const newSrc = phpText.slice( 0, plan.stmtEnd ) + insertion + phpText.slice( plan.stmtEnd );
+	const newSrc = phpText.slice( 0, insertAt ) + insertion + phpText.slice( insertAt );
 	return newSrc;
 }
 
@@ -2672,6 +2867,33 @@ if ( '' !== $name_colour_effective ) {
 		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
 		const php = fs.readFileSync( path.join( fx10, 'render.php' ), 'utf8' );
 		assert( php.includes( '{$name_colour_sel}:hover' ), 'expected the rebuilt interpolation selector to appear in the new :hover rule — got: ' + php );
+
+		// PLACEMENT LOCK (the task-2-review bug this task fixes): the fixture's
+		// consumption statement sits nested TWO `if` levels deep
+		// (`if ('' !== $name_colour_effective) { if ('' !== $name_colour_decl) { <consumption> } }`
+		// — the exact team-member:629/631 shape). A naive splice at the
+		// consumption statement's own `;` lands the new hover `if` INSIDE both
+		// guards, which is syntactically valid but semantically dead whenever
+		// the base colour is unset. Assert the hover block landed AFTER the
+		// OUTER guard's own closing brace, not merely that ':hover' appears
+		// somewhere in the file (that weaker assertion above would pass either
+		// way — it's exactly what let this bug through review the first time).
+		const outerGuardCloseMarker = "gradient_fallback_rule( $name_colour_sel, $name_colour_effective );\n}";
+		const outerGuardCloseIdx = php.indexOf( outerGuardCloseMarker );
+		assert( outerGuardCloseIdx !== -1, 'fixture render.php missing its expected outer-guard close shape — fixture drifted: ' + php );
+		const hoverIfIdx = php.indexOf( "if ( '' !== ( $attributes['nameColourHover']" );
+		assert( hoverIfIdx !== -1, 'hover if-guard not found in output: ' + php );
+		assert(
+			hoverIfIdx > outerGuardCloseIdx,
+			'PLACEMENT REGRESSION: the hover if-block landed INSIDE the base-value guard(s) instead of hoisted past them — got: ' + php
+		);
+		// The hoisted block must also be TOP-LEVEL (0 indent), matching the
+		// already-shipped burgerBg/burgerHoverColour shape (nav-menu:1166-1173)
+		// — not merely somewhere after the guard but still nested a level.
+		assert(
+			/^if \( '' !== \( \$attributes\['nameColourHover'\]/m.test( php ),
+			'hover if-block is not at top-level (0 indent) — expected the burgerBg/burgerHoverColour sibling shape: ' + php
+		);
 	} );
 
 	// --- (iii) no-intermediate-variable, concatenation consumption shape (nav-menu.submenuColour's real pattern) ---
@@ -2753,6 +2975,26 @@ if ( '' !== $sublink_colour_effective ) {
 		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
 		const php = fs.readFileSync( path.join( fx11, 'render.php' ), 'utf8' );
 		assert( php.includes( '{$uid_sel} .sgs-fixture-k__sublink:hover' ), 'expected the rebuilt concat selector to appear in the new :hover rule — got: ' + php );
+
+		// PLACEMENT LOCK — same shape as fixture-j (nav-menu:864/866 for real):
+		// the consumption statement sits nested inside
+		// `if ('' !== $sublink_colour_effective) { ... }`. Assert the hover
+		// block landed AFTER that guard's own close, not merely that ':hover'
+		// appears somewhere — a nested-but-present hover rule passes the
+		// weaker assertion above and is the exact defect this task fixes.
+		const outerGuardCloseMarker = "gradient_fallback_rule( $uid_sel . ' .sgs-fixture-k__sublink', $sublink_colour_effective );\n}";
+		const outerGuardCloseIdx = php.indexOf( outerGuardCloseMarker );
+		assert( outerGuardCloseIdx !== -1, 'fixture render.php missing its expected outer-guard close shape — fixture drifted: ' + php );
+		const hoverIfIdx = php.indexOf( "if ( '' !== ( $attributes['sublinkColourHover']" );
+		assert( hoverIfIdx !== -1, 'hover if-guard not found in output: ' + php );
+		assert(
+			hoverIfIdx > outerGuardCloseIdx,
+			'PLACEMENT REGRESSION: the hover if-block landed INSIDE the base-value guard instead of hoisted past it — got: ' + php
+		);
+		assert(
+			/^if \( '' !== \( \$attributes\['sublinkColourHover'\]/m.test( php ),
+			'hover if-block is not at top-level (0 indent) — expected the burgerBg/burgerHoverColour sibling shape: ' + php
+		);
 	} );
 
 	// --- (iv) FINDING 3 — two consumption sites for the same decl var must be REFUSED as ambiguous, never silently pick the first ---
