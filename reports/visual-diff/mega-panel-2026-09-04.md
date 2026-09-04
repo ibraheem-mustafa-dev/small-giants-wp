@@ -37,8 +37,37 @@ sandybrown canary, run twice:
   painted `1px solid`. This is EXPECTED and is itself evidence the new attrs did not
   exist server-side yet (WP silently drops attributes a live block.json hasn't
   declared) — not a defect in the migration.
-- **Post-deploy**: see the "Update" section below, added once `build-deploy.py
-  --target sandybrown --blocks-only` has run and the probe was re-executed.
+- **Post-deploy** (`build-deploy.py --target sandybrown --blocks-only`, commit
+  `20bcb52b8`): **PASS** — `positive[4px solid rgb(230, 138, 149)] · control[0px none
+  rgb(230, 138, 149)] · expected colour rgb(230, 138, 149)`. Assertions 2 and 3
+  confirmed directly on the live frontend.
+
+## Update — default-instance parity + editor-path confirmed (2026-09-04, post-deploy)
+
+Two further live checks, both against the deployed canary:
+
+1. **Default-instance parity (assertion 1)** — `POST
+   /wp-json/wp/v2/block-renderer/sgs/mega-panel?context=edit` with `attributes: {}`
+   (no `borderWidth`/`borderStyle` set) returns
+   `border-style:solid;border-width:1px 1px 1px 1px;border-color:var(--sgs-mm-panel-border);`
+   — byte-identical in effect to the pre-migration hardcoded
+   `border:1px solid var(--sgs-mm-panel-border);` shorthand it replaced.
+2. **Editor render path (assertion 2, editor-adjacent)** — the same endpoint with
+   `borderWidth:{top:6px,right:6px,bottom:6px,left:6px}, borderStyle:'dashed'`
+   returns `border-style:dashed;border-width:6px 6px 6px 6px;border-color:...` — this
+   is the SAME `render.php` invocation the block editor's native preview calls
+   (WP core's `ServerSideRender`/block-renderer REST route), so it proves the
+   editor-facing render path resolves the new attrs correctly.
+
+**Interactive editor-canvas screenshot NOT captured** — the shared Playwright MCP
+browser was locked by another concurrent session (`Error: Browser is already in use`)
+on 3 attempts; per the task brief this is reported honestly rather than forced or
+fabricated. The block-renderer REST checks above exercise the identical PHP render
+path the editor canvas calls, so the remaining uncaptured risk is narrow (React
+control-wiring/UI-only, e.g. whether `SgsBorderControl`'s width box actually calls
+`setAttributes` on drag) — the `edit.js` prop wiring for that mirrors
+`sgs/accordion-item`'s already-proven-live pattern exactly (same
+`widthValues`/`onWidthChange`/`styleValue`/`onStyleChange` shape).
 
 ## Why before/after (pixel diff) doesn't apply
 
