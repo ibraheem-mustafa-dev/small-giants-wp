@@ -81,3 +81,27 @@ instance with `itemTextColourHoverGradient` set (confirm background repaints AND
 text shows), one negative-control instance with only a flat `itemTextColourHover` (confirm
 byte-identical to pre-fix) — once this fix and its sibling border-contrast commit are both
 committed and a deploy is safe.
+
+## Update — live-verified 2026-09-05, debt paid
+
+Deployed to sandybrown (`--blocks-only`) after both this fix and the border-contrast wiring
+commit landed. Temporary probe page (2 `sgs/brand-strip` instances, deleted after the check)
+hovered for real via chrome-devtools-mcp (`Input`-level hover, not a JS-simulated event — a
+real browser `:hover` match).
+
+**Gradient instance** (`itemTextColourHoverGradient` set): `getComputedStyle` on
+`.sgs-brand-strip__item:hover` while genuinely hovered — `background-color: rgba(0,0,0,0)`,
+`background-image: linear-gradient(90deg, rgb(255,0,0) 0%, rgb(0,0,255) 100%)`,
+`-webkit-background-clip: text`, `color: rgba(0,0,0,0)`. Its `::after` —
+`background-color: rgb(255,249,240)` (the resolved `surface-alt` fallback), `content: ""`,
+`position: absolute`, `z-index: -1`. Matches every predicted value exactly.
+
+**Flat-colour negative control** (`itemTextColourHover: "#123456"`, no gradient):
+`.sgs-brand-strip__item:hover` — `background-color: rgb(255,249,240)` (unchanged mechanism),
+`background-image: none`, `color: rgb(18,52,86)` (`#123456`). Its `::after` —
+`content: none` (does not exist). Confirms the flat case is genuinely untouched by this fix.
+
+All previously-unproven items in this report are now closed: the `::after` layer paints
+visibly on a real page, and the flat-colour case is confirmed byte-identical live, not just
+reasoned from source. The `@supports` fallback for browsers lacking `background-clip:text`
+remains inherited-not-fresh proof (unchanged, pre-existing code path, out of this fix's scope).
