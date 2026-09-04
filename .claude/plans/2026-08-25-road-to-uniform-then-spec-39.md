@@ -134,12 +134,29 @@ properly measured and gated now (44 blocks via `SgsBorderControl`, ratcheted
 DECLARED-BUT-DEAD, the "2 of 15 working" figure was stale. C11: E11 selector-aware
 governance (D283) fixed the detector attribution gap outright, not just disclosed it.
 
-⛔ **C4, C5, C10 confirmed genuinely OPEN.** C4: CO-2's own spec text says verbatim
-"UNENFORCED... do not cite CO-2 as gated" — `gates.json` has zero CO-2 references. C5: no
-rule exists for "bespoke panel duplicates a native supports panel" — only a `HIGH` priority
-note in `setting-registry.json`. C10: `brand-strip/edit.js` still imports `MediaPicker`, not
-`MediaGalleryPicker` — the swap described as "already done in gallery/edit.js" never
-happened on brand-strip.
+✅ **C4, C5, C10 all RESOLVED 2026-09-04 — properly scoped rather than built blind.** All
+three were investigated in parallel (isolated worktrees) before any code was written, per
+`.claude/THE-MIGRATION-METHOD.md`'s "settle the shape first" discipline.
+
+- **C4 — descoped, not dropped.** CO-2 is genuinely distinct from the already-gated
+  placement rule (`placement-reach.py`), but building its detector needs an AST walk of
+  every block's `edit.js` PLUS a judgement call on the ~32-42% of attributes
+  `placement-reach.py` itself already reports as CONTESTED/unresolved. This is its own
+  `/phase-planner`-sized item, not a mechanical backlog item — do not fold it back in here.
+- **C5 — descoped, genuinely not actionable as a general rule.** Verified: `check-duplicate-
+  controls.js` targets a different bug class entirely (confirmed by reading the whole
+  2787-line file). A general "bespoke duplicates native" detector can't distinguish a real
+  gap from a deliberate KEEP-SGS choice (Part G's D402 table shows most apparent duplicates
+  — shadow, minHeight, sticky, lightbox — are deliberate) without reproducing the
+  ~600-false-positive failure that got `scattered-element-controls.js` deleted. Fixed a real
+  doc self-contradiction found along the way: CO-15 claimed this WAS gated; corrected to
+  match Part L's already-correct audit. Report:
+  `.claude/reports/2026-09-04-c5-native-supports-duplicate-panel-scoping.md`.
+- **C10 — architectural mismatch, not a like-for-like swap.** `MediaGalleryPicker` is a
+  bulk multi-select-into-one-array component (gallery mounts it ONCE for the whole array);
+  brand-strip needs N independent single-image slots (one `MediaPicker` per logo row, via
+  `LogoEditor`). Forcing the swap means either an untested single-item-array hack or a real
+  UI redesign of `LogoEditor` — a design decision for Bean, not a mechanical item.
 
 ⚠ **C6 and C7 PARTIALLY CLOSED, real residual work remains.** C6 (rule
 `03-dense-panel-candidate`): **10 panels remaining** (form-field-checkbox/date/file/number/
