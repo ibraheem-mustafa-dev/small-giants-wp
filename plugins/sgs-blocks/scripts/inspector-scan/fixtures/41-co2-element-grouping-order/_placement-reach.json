@@ -60,5 +60,29 @@
 		"ownership": { "backgroundColour": "wrapper", "borderColour": "wrapper" },
 		"blockLevel": [],
 		"contested": {}
+	},
+	"sgs/colour-row-one-panel": {
+		"elements": {
+			"icon": { "label": "Icon", "order": 1, "prefix": "icon" }
+		},
+		"ownership": { "iconColour": "icon", "iconSize": "icon" },
+		"blockLevel": [],
+		"contested": {}
+	},
+	"sgs/colour-scattered-three-way": {
+		"elements": {
+			"title": { "label": "Title", "order": 1, "prefix": "title" }
+		},
+		"ownership": { "titleColour": "title", "titleSize": "title", "titleBorder": "title" },
+		"blockLevel": [],
+		"contested": {}
+	},
+	"sgs/colour-attr-duplicated": {
+		"elements": {
+			"title": { "label": "Title", "order": 1, "prefix": "title" }
+		},
+		"ownership": { "titleColourA": "title", "titleColourB": "title" },
+		"blockLevel": [],
+		"contested": {}
 	}
 }

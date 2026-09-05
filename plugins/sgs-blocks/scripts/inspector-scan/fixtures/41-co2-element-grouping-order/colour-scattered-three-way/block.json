@@ -1,0 +1,8 @@
+{
+	"name": "sgs/colour-scattered-three-way",
+	"attributes": {
+		"titleColour": { "type": "string" },
+		"titleSize": { "type": "number" },
+		"titleBorder": { "type": "string" }
+	}
+}

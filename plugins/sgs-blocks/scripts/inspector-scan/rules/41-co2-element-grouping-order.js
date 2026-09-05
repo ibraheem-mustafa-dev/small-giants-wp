@@ -84,6 +84,42 @@
 //     place regardless of authoring order (PART O "Where the tabs go"),
 //     so axis D only ever compares two of THIS block's own JSX mounts.
 //
+// COLOUR-ROW EXEMPTION (D533/D537/D618/D609/D622, added 2026-09-05): a
+// read-only audit found axis A false-flagging every block that follows the
+// framework's OWN documented colour architecture (plugins/sgs-blocks/CLAUDE.md
+// "Colour controls" — D609/D618/D622) — "colour lives as one row inside the
+// single shared `<SgsColourPanel>`, everything else about that element lives
+// in the element's own panel" is a deliberate TWO-MECHANISM design, not
+// scattering. `nav-menu/edit.js` and `trust-bar/edit.js` are the canonical
+// examples, both explicitly protected by D618/D609 against exactly this
+// split being collapsed back into one panel (that collapse previously
+// reintroduced a duplicate-control bug those decisions fixed).
+//
+// The exemption is narrow on purpose, matching the same "narrow beats broad"
+// discipline as the isWrapper gate below: an element's controls are exempt
+// from axis A ONLY when the split is EXACTLY colour-row + one other panel —
+//   - exactly 2 distinct panel locations total (not 3+),
+//   - exactly ONE of those two is a `<SgsColourPanel` mount (identified by
+//     JSX tag name — `panelTagNames()` already lists it as a panel because
+//     `components.discover()` sees it wraps a `<PanelBody>` internally),
+//   - exactly ONE is a genuinely different panel, and
+//   - no single owned attribute's OWN control itself resolves to more than
+//     one panel (an attribute mentioned inside BOTH the colour panel and
+//     another panel is real scattering of that attribute, colour or not,
+//     and must still be flagged).
+// Anything wider — 3+ locations, colour split across MULTIPLE non-colour
+// panels, or a colour control duplicated across panels — is NOT exempted and
+// falls through to the normal scattered-element finding.
+//
+// Proven with BOTH a positive and negative control fixtures (not just
+// asserted in prose, per this rule's own standing discipline demonstrated
+// by the isWrapper gate below): `colour-row-one-panel` (2-location legit
+// split, must NOT flag) and `colour-scattered-three-way` (genuine 3-way
+// scatter) + `colour-attr-duplicated` (colour split across TWO separate
+// SgsColourPanel mounts — D609's "a colour control living in more than one
+// place", zero non-colour panels involved) — both negative controls must
+// STILL flag.
+//
 // SCATTERED-ELEMENT-CONTROLS.JS CAUTIONARY TALE (do not repeat it): a prior
 // attempt at this exact class of rule was DELETED 2026-09-02 after ~600
 // false positives, because it grouped PURELY by the DB's `css_element`
@@ -306,6 +342,46 @@ module.exports = {
 			const distinctPanels = new Set( [ ...attrPanelIndices.values() ].map( ( hits ) => hits[ 0 ] ) );
 			if ( distinctPanels.size <= 1 ) continue; // correctly grouped
 
+			// ── Colour-row exemption (D533/D537/D618/D609/D622) — see header. ──
+			// "Colour lives as one row inside the shared SgsColourPanel, everything
+			// else about this element lives in its own panel" is the framework's
+			// documented two-mechanism model, not scattering. Narrow on purpose:
+			// exactly 2 distinct locations total, exactly one of them a
+			// SgsColourPanel mount, exactly one a genuinely different panel — a
+			// 3rd location (co-2-scattered-three-way fixture) or a SECOND colour-
+			// panel mount (colour-attr-duplicated fixture, "a colour control
+			// living in more than one place") both still fall through to the
+			// normal finding, since neither can ever satisfy this exact 1-and-1
+			// split.
+			//
+			// ⚠ Deliberately NOT also gating on "does any single attr's hits list
+			// touch >1 panel" — measured live and reverted after it produced real
+			// false negatives on framework code that is NOT scattering:
+			// `resetAll={ () => setAttributes({ tileBorderColourGradient: '', ... }) }`
+			// blocks (brand-strip/notice-banner/quote) legitimately re-mention a
+			// colour attr's name in the element's OWN panel purely to reset it
+			// alongside that panel's other controls, and D609 9c's "omit the row
+			// when it doesn't apply" gating (`iconCircleShadow && { key: ... }`,
+			// trust-bar) legitimately re-mentions a non-colour sibling attr INSIDE
+			// the colour panel as a visibility condition, not a second control.
+			// Both are ordinary framework patterns, not duplicate controls — and
+			// a text-slice regex match (this rule's whole detection primitive)
+			// cannot tell "referenced as a reset/gate" from "edited by a second
+			// control" apart. The 1-colour + 1-other panel-COUNT constraint above
+			// already forecloses every case this task brief's three scattering
+			// classes describe; see the header comment for the fixture proof.
+			const panelTagName = ( idx ) => {
+				const opening = panels[ idx ].openingElement;
+				return opening && opening.name && opening.name.type === 'JSXIdentifier' ? opening.name.name : null;
+			};
+			const colourPanelIndices = [ ...distinctPanels ].filter( ( i ) => panelTagName( i ) === 'SgsColourPanel' );
+			const nonColourPanelIndices = [ ...distinctPanels ].filter( ( i ) => panelTagName( i ) !== 'SgsColourPanel' );
+			const isDocumentedColourRowModel =
+				distinctPanels.size === 2 &&
+				colourPanelIndices.length === 1 &&
+				nonColourPanelIndices.length === 1;
+			if ( isDocumentedColourRowModel ) continue; // D609/D618/D622 model — not scattering
+
 			const panelNames = [ ...distinctPanels ]
 				.sort( ( a, b ) => a - b )
 				.map( ( i ) => panelLabel( panels[ i ], i ) );
@@ -391,12 +467,15 @@ module.exports = {
 			'contested-attr',
 			'dom-order-mismatch',
 			'colour-after-typography',
+			'colour-scattered-three-way',
+			'colour-attr-duplicated',
 		],
 		mustNotFlag: [
 			'grouped-correctly',
 			'no-manifest',
 			'single-owned-attr',
 			'wrapper-element-not-flagged',
+			'colour-row-one-panel',
 		],
 	},
 };
