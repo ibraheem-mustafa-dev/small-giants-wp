@@ -192,6 +192,97 @@ const RAW_COLOUR_COMPONENT_NAMES = new Set( [
 
 const NATIVE_COLOR_SUBFLAGS = [ 'background', 'gradients', 'text', 'link' ];
 
+// ── Standalone row-control recognition fix (2026-09-05) ──────────────────
+// The standalone branch used to recognise ONLY the literal tag name
+// 'DesignTokenPicker'. Two real gaps existed, both closed here:
+//
+//   (a) FALSE POSITIVE — `states={ ident.states }` where `ident` is bound to
+//       a row-descriptor HELPER call (fillRow/textRow) elsewhere in the file
+//       fell through to the legacy single-value path, which defaults the
+//       state count to 1. Bean-verified live: process-steps
+//       numberBackgroundRow (fillRow, base+hover+gradient+hoverGradient —
+//       numberBackgroundHover IS declared) and site-header-row/
+//       site-footer-row's fillRowDescriptor (backgroundColourHover IS
+//       declared) were BOTH 2-state rows misreported as 1-state.
+//   (b) INVISIBLE ROW — a block that mounts `<GradientCapableColourControl>`
+//       DIRECTLY (never through SgsColourPanel) was skipped entirely by the
+//       standalone branch's name check (card-grid x2, nav-drawer, text x2),
+//       and a LOCAL ternary alias choosing between the two controls at
+//       runtime (`const TextRowControl = cond ? GradientCapableColourControl
+//       : DesignTokenPicker`, site-header-row/site-footer-row's own text
+//       row) mounts under a THIRD name this rule never recognised at all —
+//       worse than a false positive, a row with zero visibility.
+//
+// GradientCapableColourControl.js's own header states it mirrors
+// DesignTokenPicker's row shape (states/label/gradientValue/onGradientChange)
+// exactly, so recognising both — plus any local alias that resolves ONLY to
+// the two of them — is sound without guessing at an arbitrary component name.
+const STANDALONE_ROW_CONTROL_NAMES = new Set( [ 'DesignTokenPicker', 'GradientCapableColourControl' ] );
+
+/**
+ * ONE traversal collecting BOTH (a) local ternary aliases that resolve only
+ * to STANDALONE_ROW_CONTROL_NAMES, and (b) every identifier bound to a
+ * row-descriptor init (candidate for resolveRowDescriptorFromStatesExpr
+ * below) — deliberately indiscriminate on (b): describeRow() is the strict
+ * shape-checker, so collecting every VariableDeclarator init is safe (an
+ * unrelated binding — a number, a JSX element, a function — simply fails
+ * describeRow()'s shape checks and resolves to null, same as today).
+ *
+ * @param {Function} traverseFn Runs a Babel visitor object over one file.
+ * @return {{aliases:Set<string>, descriptorBindings:Object}}
+ */
+function collectStandaloneRowHelpers( traverseFn ) {
+	const aliases = new Set();
+	const descriptorBindings = Object.create( null );
+	traverseFn( {
+		VariableDeclarator( nodePath ) {
+			const node = nodePath.node;
+			if ( ! node.id || node.id.type !== 'Identifier' || ! node.init ) return;
+			descriptorBindings[ node.id.name ] = node.init;
+			if (
+				node.init.type === 'ConditionalExpression' &&
+				node.init.consequent.type === 'Identifier' &&
+				node.init.alternate.type === 'Identifier' &&
+				STANDALONE_ROW_CONTROL_NAMES.has( node.init.consequent.name ) &&
+				STANDALONE_ROW_CONTROL_NAMES.has( node.init.alternate.name )
+			) {
+				aliases.add( node.id.name );
+			}
+		},
+	} );
+	return { aliases, descriptorBindings };
+}
+
+/**
+ * Resolve `ident.states` back to its row descriptor via describeRow() — the
+ * SAME normaliser the SgsColourPanel `rows` path already uses for a helper
+ * call (fillRow/textRow), so a row built this way scores identically
+ * regardless of which JSX shape mounts it. Returns null when `statesExpr`
+ * isn't that MemberExpression shape, OR the identifier isn't bound to
+ * anything describeRow() recognises (falls through to the existing legacy
+ * single-value path unchanged).
+ *
+ * @param {Object|null} statesExpr        The `states=` JSX attribute's expression.
+ * @param {Object}      descriptorBindings collectStandaloneRowHelpers()'s result.
+ * @return {Object|null} describeRow()'s descriptor, or null.
+ */
+function resolveRowDescriptorFromStatesExpr( statesExpr, descriptorBindings ) {
+	if (
+		! statesExpr ||
+		statesExpr.type !== 'MemberExpression' ||
+		statesExpr.computed ||
+		! statesExpr.object ||
+		statesExpr.object.type !== 'Identifier' ||
+		! statesExpr.property ||
+		statesExpr.property.type !== 'Identifier' ||
+		statesExpr.property.name !== 'states'
+	) {
+		return null;
+	}
+	const init = descriptorBindings[ statesExpr.object.name ];
+	return init ? describeRow( init ) : null;
+}
+
 // ── Shared golden engine (C4 step 1, 2026-08-19) ──────────────────────────
 // These helpers were DEFINED here and are now imported. They moved verbatim so
 // this rule's output cannot change — regression check on the extraction: 409
@@ -416,6 +507,13 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 		( visitors ) => ctx.cache.traverse( file, visitors ),
 		unwrapRowObject
 	);
+	// Same standalone-control widening as the per-block walk below (header
+	// comment on STANDALONE_ROW_CONTROL_NAMES) — the file's own comment on the
+	// `statesProvidedByParent` guard warns these are TWO SEPARATE walks over
+	// the same question; a fix added to one must be added to both, or half the
+	// population drifts unfixed.
+	const { aliases: sharedAliasNames, descriptorBindings: sharedDescriptorBindings } =
+		collectStandaloneRowHelpers( ( visitors ) => ctx.cache.traverse( file, visitors ) );
 
 	function resolveArrayLike( node, depth ) {
 		if ( ! node || depth > 6 ) return [];
@@ -450,9 +548,20 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 		return resolveArrayLike( rowsExpr, 0 ).map( unwrapRowObject ).filter( Boolean );
 	}
 
-	function emitSharedRow( { rowKey, statesArray, gradientCapable, line } ) {
+	function emitSharedRow( {
+		rowKey,
+		statesArray,
+		gradientCapable,
+		line,
+		statesCountOverride = null,
+		hasGradientOverride = null,
+	} ) {
 		const statesCount =
-			statesArray && statesArray.type === 'ArrayExpression' ? statesArray.elements.length : 1;
+			statesCountOverride !== null
+				? statesCountOverride
+				: statesArray && statesArray.type === 'ArrayExpression'
+				? statesArray.elements.length
+				: 1;
 		// Shared-owner rows use the schema's floor of 2 — see the header note:
 		// a per-mounting-block derived minimum has no single correct answer
 		// for one owner-scoped finding, so this never attempts to derive one.
@@ -488,7 +597,10 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 			} );
 		}
 
-		const hasGradient = gradientCapable === true || statesArrayHasGradient( statesArray );
+		const hasGradient =
+			hasGradientOverride !== null
+				? hasGradientOverride
+				: gradientCapable === true || statesArrayHasGradient( statesArray );
 		const sharedMechanism = resolveSharedRowMechanism( ctx, file, mountedByList );
 		const sharedShadowExempt = sharedMechanism.mechanisms.includes( 'shadow' );
 		if ( ! hasGradient && ! sharedShadowExempt ) {
@@ -544,7 +656,7 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 				return;
 			}
 
-			if ( name === 'DesignTokenPicker' ) {
+			if ( STANDALONE_ROW_CONTROL_NAMES.has( name ) || sharedAliasNames.has( name ) ) {
 				// ⭐ `statesProvidedByParent` — the picker is single-state because its
 				// ENCLOSING control owns the normal/hover axis (Bean's ruling 2026-08-22:
 				// "the colour picker should be single state because the whole panel should
@@ -573,11 +685,48 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 				const rowKey = labelText ? slugify( labelText ) : `standalone-line-${ line }`;
 
 				if ( statesExpr && statesExpr.type === 'ArrayExpression' ) {
-					emitSharedRow( { rowKey, statesArray: statesExpr, gradientCapable: false, line } );
+					emitSharedRow( {
+						rowKey,
+						statesArray: statesExpr,
+						gradientCapable: name === 'GradientCapableColourControl',
+						line,
+					} );
+				} else if ( statesExpr ) {
+					// A `states=` attribute IS present but isn't a literal array — try
+					// the descriptor resolver. If it doesn't resolve, this is a
+					// GENUINELY AMBIGUOUS pass-through (e.g. SgsColourPanel.js's own
+					// internal `const Control = row.gradientCapable ? … ;
+					// <Control states={ row.states } />`, where `row` is a `.map()`
+					// callback parameter, or SgsBorderControl.js's `states={
+					// colourStates }` prop pass-through) — NOT the legacy
+					// value=/onChange= shape. Defaulting an unresolvable case to "1
+					// state, flag" would be a GUESS in the over-count direction — the
+					// exact false-positive class this fix exists to remove. Skip
+					// rather than guess; declared blind spot, same direction as every
+					// other one in the header (can only under-count, never over).
+					const descriptor = resolveRowDescriptorFromStatesExpr( statesExpr, sharedDescriptorBindings );
+					if ( descriptor ) {
+						emitSharedRow( {
+							rowKey: descriptor.rowKey || rowKey,
+							statesArray: null,
+							gradientCapable: descriptor.gradientCapable === true,
+							line: descriptor.line || line,
+							statesCountOverride: descriptor.statesCount,
+							hasGradientOverride: descriptor.hasGradient,
+						} );
+					}
 				} else {
+					// No `states` attr at all — the legacy single-value API
+					// (value=/onChange=), structurally always 1 state. Unambiguous,
+					// unchanged from before this fix.
 					const hasDirectGradient =
 						!! findJsxAttr( node, 'gradientValue' ) || !! findJsxAttr( node, 'onGradientChange' );
-					emitSharedRow( { rowKey, statesArray: null, gradientCapable: hasDirectGradient, line } );
+					emitSharedRow( {
+						rowKey,
+						statesArray: null,
+						gradientCapable: hasDirectGradient || name === 'GradientCapableColourControl',
+						line,
+					} );
 				}
 			}
 		},
@@ -941,6 +1090,12 @@ module.exports = {
 			},
 		} );
 
+		// Same standalone-control widening as scanSharedOwnerRows above (header
+		// comment on STANDALONE_ROW_CONTROL_NAMES) — TWO SEPARATE walks over the
+		// same question; a fix added to one must be added to both.
+		const { aliases: standaloneAliasNames, descriptorBindings: standaloneDescriptorBindings } =
+			collectStandaloneRowHelpers( ( visitors ) => ctx.cache.traverse( editFile, visitors ) );
+
 		// Recursively resolve an expression to the flat list of candidate row
 		// nodes it can statically be shown to contribute — an inline array's
 		// elements, a spread's argument (itself resolved recursively), both
@@ -1081,9 +1236,11 @@ module.exports = {
 					return;
 				}
 
-				// ── standalone DesignTokenPicker (not inside a SgsColourPanel
-				// rows array — those never appear as their own JSX element) ──────
-				if ( name === 'DesignTokenPicker' ) {
+				// ── standalone DesignTokenPicker / GradientCapableColourControl /
+				// a local alias resolving only to the two of them (not inside a
+				// SgsColourPanel rows array — those never appear as their own JSX
+				// element) — see STANDALONE_ROW_CONTROL_NAMES header note ──────
+				if ( STANDALONE_ROW_CONTROL_NAMES.has( name ) || standaloneAliasNames.has( name ) ) {
 					const statesExpr = jsxAttrExpr( node, 'states' );
 					const labelExpr = jsxAttrExpr( node, 'label' );
 					let labelText = null;
@@ -1110,18 +1267,63 @@ module.exports = {
 						return;
 					}
 					if ( statesExpr && statesExpr.type === 'ArrayExpression' ) {
-						checkRow( { rowKey, statesArray: statesExpr, gradientCapable: false, line } );
+						checkRow( {
+							rowKey,
+							statesArray: statesExpr,
+							// NOT hardcoded false: mounting GradientCapableColourControl
+							// directly (bypassing SgsColourPanel's row-level flag) IS the
+							// text-gradient mechanism declaration for THIS row — see the
+							// mismatch this fixes below (card-grid, nav-drawer, text).
+							gradientCapable: name === 'GradientCapableColourControl',
+							line,
+						} );
+					} else if ( statesExpr ) {
+						// A `states=` attribute IS present but isn't a literal array.
+						// `ident.states` where `ident` is bound to a row-descriptor HELPER
+						// call (fillRow/textRow) elsewhere in this file resolves via the
+						// SAME normaliser the SgsColourPanel `rows` path uses for a helper
+						// call, so this scores identically regardless of which JSX shape
+						// mounts it — THE CONFIRMED FALSE-POSITIVE FIX (process-steps
+						// numberBackgroundRow; site-header-row/site-footer-row
+						// fillRowDescriptor: both genuine 2-state rows this branch used to
+						// default to 1).
+						//
+						// ⛔ If it does NOT resolve, this is a GENUINELY AMBIGUOUS
+						// pass-through (a `.map()` callback parameter, a plain function
+						// argument) — NOT the legacy value=/onChange= shape below, which is
+						// unambiguously 1 state by construction. Defaulting an unresolvable
+						// case to "1 state, flag" would be a GUESS in the OVER-count
+						// direction — precisely the false-positive class this fix removes.
+						// Skip rather than guess; declared blind spot, same direction as
+						// every other one in the header (can only under-count, never over).
+						const descriptor = resolveRowDescriptorFromStatesExpr(
+							statesExpr,
+							standaloneDescriptorBindings
+						);
+						if ( descriptor ) {
+							checkRow( {
+								rowKey: descriptor.rowKey || rowKey,
+								statesArray: null,
+								gradientCapable: descriptor.gradientCapable === true,
+								line: descriptor.line || line,
+								statesCountOverride: descriptor.statesCount,
+								hasGradientOverride: descriptor.hasGradient,
+								attrNameOverride: descriptor.attrName,
+								gradientAttrNameOverride: descriptor.gradientAttrName,
+							} );
+						}
 					} else {
-						// Legacy single-value API: value={...} onChange={...}, no
-						// states array, and structurally no gradient prop (verified
-						// live: no `<DesignTokenPicker` tag in the tree carries a
-						// direct gradientValue/onGradientChange JSX attribute).
+						// No `states` attr at all — the legacy single-value API
+						// (value={...} onChange={...}), structurally always 1 state and
+						// structurally no gradient prop except a direct gradientValue/
+						// onGradientChange JSX attribute. Unambiguous, unchanged from
+						// before this fix.
 						const hasDirectGradient =
 							!! findJsxAttr( node, 'gradientValue' ) || !! findJsxAttr( node, 'onGradientChange' );
 						checkRow( {
 							rowKey,
 							statesArray: null,
-							gradientCapable: hasDirectGradient,
+							gradientCapable: hasDirectGradient || name === 'GradientCapableColourControl',
 							line,
 						} );
 					}
@@ -1172,6 +1374,11 @@ module.exports = {
 			// _meta.stateVocabulary.real. A typo must not buy silent exemption
 			// from the state floor, or the floor stops meaning anything.
 			'sole-unknown-state-row',
+			// NEGATIVE CONTROLS for the 2026-09-05 standalone-control fix (below)
+			// — each proves the fix resolves a REAL 2-state/gradient row without
+			// blanket-exempting every row shaped like it.
+			'standalone-descriptor-row-missing-hover',
+			'standalone-gradientcapable-direct-missing-hover',
 		],
 		mustNotFlag: [
 			// A row whose SOLE state is a declared, admitted, non-normal state IS
@@ -1191,6 +1398,25 @@ module.exports = {
 			// reached the same way as FixtureSharedRowPanel above must not
 			// flag.
 			'FixtureCleanSharedRowPanel',
+			// THE 2026-09-05 FIX — Bean-verified false positive (process-steps
+			// numberBackgroundRow; site-header-row/site-footer-row
+			// fillRowDescriptor): a standalone control mounted via
+			// `states={ ident.states }` where `ident` is bound to a fillRow()/
+			// textRow() call must resolve its REAL state/gradient count, not
+			// the legacy-default 1.
+			'standalone-descriptor-row-conformant',
+			// Widened recognition — a DIRECT <GradientCapableColourControl>
+			// mount (bypassing SgsColourPanel entirely) was previously
+			// INVISIBLE to this rule (card-grid, nav-drawer, text). Must not
+			// flag when conformant, and gradientCapable must derive from the
+			// tag name itself (proven via the seeded 'text' mechanism in
+			// _css-property-map.json).
+			'standalone-gradientcapable-direct-conformant',
+			// Proves the descriptor-resolution fix applies to
+			// scanSharedOwnerRows() too, not only the per-block walk — see
+			// the file's own `statesProvidedByParent` comment on why these
+			// are two separate walks over the same question.
+			'shared-descriptor-row-mount',
 		],
 	},
 };

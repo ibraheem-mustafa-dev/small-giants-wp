@@ -11,5 +11,10 @@
 		"textColourHover": "color",
 		"textColourGradient": "color-gradient",
 		"textColourHoverGradient": "color-gradient"
+	},
+	"sgs/standalone-gradientcapable-direct-conformant": {
+		"titleColour": "color",
+		"titleColourHover": "color",
+		"titleColourGradient": "color-gradient"
 	}
 }
