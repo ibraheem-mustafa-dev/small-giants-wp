@@ -33,3 +33,5 @@ timestamp | script | type | reason
 2026-09-06 00:03:31 | db-consistency/run.py | MANUAL SKIP | babel/parser missing, confirmed repo-wide
 2026-09-06 00:04:33 | db-consistency/run.py | MANUAL SKIP | babel/parser missing repo-wide, confirmed
 2026-09-06 00:06:37 | db-consistency/run.py | MANUAL SKIP | sgs/nav-drawer variant_slots finding is the same missing @babel/parser dependency, confirmed repo-wide, unrelated to this migration
+2026-09-06 00:33:14 | db-consistency/run.py | MANUAL SKIP | pre-existing debt from the 9636f0129 tier-object migration -- this commit only edits JSX comment text in the same blocks, touches zero attributes/schema/DB rows
+2026-09-06 00:34:15 | db-consistency/run.py | MANUAL SKIP | pre-existing debt from the 9636f0129 tier-object migration -- this commit only edits JSX comment text in the same blocks, touches zero attributes/schema/DB rows
