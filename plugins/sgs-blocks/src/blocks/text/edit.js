@@ -127,7 +127,7 @@ function boxShorthand( box, keys ) {
 }
 
 function buildEditorStyle( attributes ) {
-	const {
+	const { padding, margin,
 		style,
 		textColour,
 		textColourGradient,
@@ -222,9 +222,9 @@ function buildEditorStyle( attributes ) {
 	// tier-object attrs { desktop, tablet, mobile } (desktop tier previewed
 	// here only); border-radius stays WP-native style.border.radius; border
 	// width comes from the SGS custom borderWidth object attr.
-	const paddingPreview = boxShorthand( padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) previewStyle.padding = paddingPreview;
-	const marginPreview = boxShorthand( margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) previewStyle.margin = marginPreview;
 
 	// CSS border-radius shorthand order: top-left top-right bottom-right bottom-left.

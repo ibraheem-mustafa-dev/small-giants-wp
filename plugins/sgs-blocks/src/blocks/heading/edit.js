@@ -202,7 +202,7 @@ function boxShorthand( box, keys ) {
 
 /** Build wrapper-level inline style for the editor canvas (mirrors render.php $wrapper_inline). */
 function buildWrapperStyle( attributes ) {
-	const { textAlign, backgroundColour, borderWidth, borderStyle, borderColour, borderColourGradient, style, inheritStyle, customWidth, customWidthUnit } = attributes;
+	const { padding, margin, textAlign, backgroundColour, borderWidth, borderStyle, borderColour, borderColourGradient, style, inheritStyle, customWidth, customWidthUnit } = attributes;
 	const wrapperStyle = {};
 	// Contract §A (render.php): inheritStyle suppresses block-level wrapper
 	// styling (background/border/text-align) and inherits from the parent —
@@ -249,11 +249,11 @@ function buildWrapperStyle( attributes ) {
 	// Base padding/margin preview — padding/margin are owned tier-object
 	// attrs { desktop, tablet, mobile }; the desktop tier is a box (box-model
 	// order top/right/bottom/left).
-	const paddingPreview = boxShorthand( padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}

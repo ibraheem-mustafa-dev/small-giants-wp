@@ -32,7 +32,7 @@ function boxShorthand( box, keys ) {
 }
 
 export default function Edit( { attributes, setAttributes } ) {
-	const {
+	const { padding, margin,
 		style,
 		phoneNumber,
 		message,
@@ -65,11 +65,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		...resolveTextColourPreviewStyle( labelColour, labelColourGradient, colourVar ),
 		backgroundColor: colourVar( backgroundColour ) || undefined,
 	};
-	const paddingPreview = boxShorthand( padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		rootStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		rootStyle.margin = marginPreview;
 	}

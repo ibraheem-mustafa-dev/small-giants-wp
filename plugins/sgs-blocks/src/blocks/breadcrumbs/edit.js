@@ -30,7 +30,7 @@ function boxShorthand( box, keys ) {
 
 /** Build the root's inline preview style for the editor canvas (mirrors render.php's scoped root declarations). */
 function buildRootStyle( attributes ) {
-	const { linkColour, separatorColour, currentColour, style } = attributes;
+	const { padding, margin, linkColour, separatorColour, currentColour, style } = attributes;
 	const rootStyle = {
 		'--sgs-breadcrumbs-link-colour': colourVar( linkColour ) || undefined,
 		'--sgs-breadcrumbs-separator-colour': colourVar( separatorColour ) || undefined,
@@ -40,11 +40,11 @@ function buildRootStyle( attributes ) {
 	// Base padding/margin preview — padding/margin are owned tier-object
 	// attrs { desktop, tablet, mobile }; the desktop tier is a box (box-model
 	// order top/right/bottom/left).
-	const paddingPreview = boxShorthand( padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		rootStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		rootStyle.margin = marginPreview;
 	}

@@ -72,8 +72,8 @@ function buildRootPreviewStyle( style, padding, margin ) {
 	const previewStyle = {
 		color: color.text || undefined,
 		backgroundColor: color.background || undefined,
-		padding: boxShorthand( padding ),
-		margin: boxShorthand( margin ),
+		padding: boxShorthand( padding?.desktop ),
+		margin: boxShorthand( margin?.desktop ),
 		borderRadius: radiusShorthand( border.radius ),
 		borderWidth: border.width || undefined,
 		borderStyle: border.style || undefined,

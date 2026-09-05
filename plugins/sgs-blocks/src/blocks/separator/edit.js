@@ -134,7 +134,7 @@ function currentIconName( attrs ) {
 // ---------------------------------------------------------------------------
 
 export default function Edit( { attributes, setAttributes } ) {
-	const {
+	const { padding, margin,
 		style,
 		lineStyle,
 		width,
@@ -196,7 +196,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				: undefined,
 	};
 
-	const paddingPreview = boxShorthand( padding, [
+	const paddingPreview = boxShorthand( padding?.desktop, [
 		'top',
 		'right',
 		'bottom',
@@ -206,7 +206,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		rootPreviewStyle.padding = paddingPreview;
 	}
 	const marginProps = alignmentMargin( alignment );
-	const marginPreview = boxShorthand( margin, [
+	const marginPreview = boxShorthand( margin?.desktop, [
 		'top',
 		'right',
 		'bottom',

@@ -121,7 +121,7 @@ function boxShorthand( box, keys ) {
 // ---------------------------------------------------------------------------
 
 function buildWrapperStyle( attributes ) {
-	const {
+	const { padding, margin,
 		inheritStyle,
 		backgroundColour,
 		style,
@@ -168,11 +168,11 @@ function buildWrapperStyle( attributes ) {
 		}
 	}
 
-	const paddingPreview = boxShorthand( padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}

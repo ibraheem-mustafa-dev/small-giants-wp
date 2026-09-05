@@ -100,7 +100,7 @@ function currentIconName( attrs ) {
 }
 
 export default function Edit( { attributes, setAttributes } ) {
-	const {
+	const { padding, margin,
 		style,
 		iconSource,
 		iconSize,
@@ -178,11 +178,11 @@ export default function Edit( { attributes, setAttributes } ) {
 	// Base padding/margin preview — padding/margin are owned tier-object
 	// attrs { desktop, tablet, mobile }; the desktop tier is a box (box-model
 	// order top/right/bottom/left).
-	const paddingPreview = boxShorthand( padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		previewStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		previewStyle.margin = marginPreview;
 	}

@@ -72,7 +72,7 @@ function boxShorthand( box, keys ) {
 // (radius/width/style/colour — all skip-serialised so useBlockProps() no
 // longer auto-applies them) + the SGS kept-scalar width family.
 function buildWrapperStyle( attributes ) {
-	const { style, maxWidth, backgroundColour, textColour, textColourGradient } = attributes;
+	const { padding, margin, style, maxWidth, backgroundColour, textColour, textColourGradient } = attributes;
 	const wrapperStyle = {};
 
 	// D635-pattern migration: background/text preview now reads the flat
@@ -108,11 +108,11 @@ function buildWrapperStyle( attributes ) {
 		wrapperStyle.borderColor = style.border.color;
 	}
 
-	const paddingPreview = boxShorthand( padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}

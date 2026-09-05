@@ -210,18 +210,18 @@ function boxShorthand( box ) {
  * match render.php's scoped output, mirroring sgs/quote + sgs/media).
  */
 function buildWrapperStyle( attributes ) {
-	const { style } = attributes;
+	const { padding, margin, style } = attributes;
 	const wrapperStyle = {};
 
 	if ( style?.color?.background ) {
 		wrapperStyle.backgroundColor = style.color.background;
 	}
 
-	const paddingPreview = boxShorthand( padding );
+	const paddingPreview = boxShorthand( padding?.desktop );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( margin );
+	const marginPreview = boxShorthand( margin?.desktop );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}

@@ -120,14 +120,14 @@ function boxShorthand( box, keys ) {
 // and carries zero inline declarations — this inline style exists only for
 // the live editor preview, same exception documented in sgs/quote's edit.js.
 function buildWrapperStyle( attributes ) {
-	const { style, maxWidth } = attributes;
+	const { padding, margin, style, maxWidth } = attributes;
 	const wrapperStyle = {};
 
-	const paddingPreview = boxShorthand( padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}

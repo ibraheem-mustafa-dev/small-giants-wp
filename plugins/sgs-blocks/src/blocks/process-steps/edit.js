@@ -108,7 +108,7 @@ function StepEditor( { step, index, onChange, onRemove } ) {
 }
 
 export default function Edit( { attributes, setAttributes } ) {
-	const {
+	const { padding, margin,
 		style,
 		steps,
 		headingLevel,
@@ -183,11 +183,11 @@ export default function Edit( { attributes, setAttributes } ) {
 			wrapperPreviewStyle.borderImage = `${ borderColourGradient } 1`;
 		}
 	}
-	const paddingPreview = boxShorthand( padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		wrapperPreviewStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		wrapperPreviewStyle.margin = marginPreview;
 	}

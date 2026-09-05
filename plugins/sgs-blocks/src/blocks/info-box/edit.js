@@ -87,7 +87,7 @@ function boxShorthand( box ) {
  * @returns {Object} React inline-style object.
  */
 function buildPreviewStyle( attributes ) {
-	const { style, width, maxWidth, backgroundColour, backgroundColourGradient, textColour, borderColourGradient, textAlign } = attributes;
+	const { padding, margin, style, width, maxWidth, backgroundColour, backgroundColourGradient, textColour, borderColourGradient, textAlign } = attributes;
 	const preview = {};
 
 	// Mirrors render.php's `$info_box_text_align` resolution exactly — the
@@ -158,9 +158,9 @@ function buildPreviewStyle( attributes ) {
 			: `var(--wp--preset--shadow--${ style.shadow })`;
 	}
 
-	const paddingPreview = boxShorthand( padding );
+	const paddingPreview = boxShorthand( padding?.desktop );
 	if ( paddingPreview ) preview.padding = paddingPreview;
-	const marginPreview = boxShorthand( margin );
+	const marginPreview = boxShorthand( margin?.desktop );
 	if ( marginPreview ) preview.margin = marginPreview;
 
 	if ( maxWidth ) {

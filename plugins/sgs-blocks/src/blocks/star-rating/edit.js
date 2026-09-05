@@ -32,14 +32,14 @@ function boxShorthand( box ) {
 
 /** Build the wrapper's editor-preview style (mirrors render.php's scoped base declarations). */
 function buildWrapperStyle( attributes ) {
-	const { style } = attributes;
+	const { padding, margin, style } = attributes;
 	const wrapperStyle = {};
 
-	const paddingPreview = boxShorthand( padding );
+	const paddingPreview = boxShorthand( padding?.desktop );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( margin );
+	const marginPreview = boxShorthand( margin?.desktop );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}

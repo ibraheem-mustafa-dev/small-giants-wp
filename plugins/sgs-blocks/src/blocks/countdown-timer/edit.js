@@ -41,15 +41,15 @@ function boxShorthand( box, order = [ 'top', 'right', 'bottom', 'left' ] ) {
  * media precedent).
  */
 function buildPreviewStyle( attributes ) {
-	const { style, textAlign, fontSize, fontSizeUnit, fontWeight, fontStyle, lineHeight, lineHeightUnit } = attributes;
+	const { padding, margin, style, textAlign, fontSize, fontSizeUnit, fontWeight, fontStyle, lineHeight, lineHeightUnit } = attributes;
 
 	const preview = {};
 
-	const paddingPreview = boxShorthand( padding );
+	const paddingPreview = boxShorthand( padding?.desktop );
 	if ( paddingPreview ) {
 		preview.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( margin );
+	const marginPreview = boxShorthand( margin?.desktop );
 	if ( marginPreview ) {
 		preview.margin = marginPreview;
 	}

@@ -31,7 +31,7 @@ function boxShorthand(box, keys) {
 }
 
 export default function Edit({ attributes, setAttributes }) {
-  const {
+  const { padding, margin,
     style,
     number,
     prefix,
@@ -65,9 +65,9 @@ export default function Edit({ attributes, setAttributes }) {
   // top/right/bottom/left); radius stays WP-native style.border.radius
   // (top-left/top-right/bottom-right/bottom-left).
   const wrapperPreviewStyle = {};
-  const paddingPreview = boxShorthand(padding, ["top", "right", "bottom", "left"]);
+  const paddingPreview = boxShorthand(padding?.desktop, ["top", "right", "bottom", "left"]);
   if (paddingPreview) wrapperPreviewStyle.padding = paddingPreview;
-  const marginPreview = boxShorthand(margin, ["top", "right", "bottom", "left"]);
+  const marginPreview = boxShorthand(margin?.desktop, ["top", "right", "bottom", "left"]);
   if (marginPreview) wrapperPreviewStyle.margin = marginPreview;
   const radiusPreview = boxShorthand(style?.border?.radius, ["topLeft", "topRight", "bottomRight", "bottomLeft"]);
   if (radiusPreview) wrapperPreviewStyle.borderRadius = radiusPreview;

@@ -136,7 +136,7 @@ function ItemEditor({ item, fallback, onChange, onRemove }) {
 }
 
 export default function Edit({ attributes, setAttributes }) {
-  const {
+  const { padding, margin,
     items,
     icon: defaultIconName,
     defaultIconSource,
@@ -209,9 +209,9 @@ export default function Edit({ attributes, setAttributes }) {
   // Editor-canvas preview only (contract §A note above) — mirrors render.php's
   // scoped output so the canvas matches the frontend.
   const previewStyle = {};
-  const paddingPreview = boxShorthand(padding, ["top", "right", "bottom", "left"]);
+  const paddingPreview = boxShorthand(padding?.desktop, ["top", "right", "bottom", "left"]);
   if (paddingPreview) previewStyle.padding = paddingPreview;
-  const marginPreview = boxShorthand(margin, ["top", "right", "bottom", "left"]);
+  const marginPreview = boxShorthand(margin?.desktop, ["top", "right", "bottom", "left"]);
   if (marginPreview) previewStyle.margin = marginPreview;
   const radiusPreview = boxShorthand(style?.border?.radius, ["topLeft", "topRight", "bottomRight", "bottomLeft"]);
   if (radiusPreview) previewStyle.borderRadius = radiusPreview;

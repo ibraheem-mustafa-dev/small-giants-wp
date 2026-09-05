@@ -227,7 +227,7 @@ function boxShorthand( box, keys ) {
  * manual reconstruction for visual parity, exactly like sgs/quote.
  */
 function buildRootPreviewStyle( attributes ) {
-	const { style, borderWidth, borderStyle, borderColour, borderColourGradient } = attributes;
+	const { padding, margin, style, borderWidth, borderStyle, borderColour, borderColourGradient } = attributes;
 	const previewStyle = {};
 
 	const colourText = style?.color?.text;
@@ -269,11 +269,11 @@ function buildRootPreviewStyle( attributes ) {
 		}
 	}
 
-	const paddingPreview = boxShorthand( padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		previewStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		previewStyle.margin = marginPreview;
 	}

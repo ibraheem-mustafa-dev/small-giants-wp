@@ -131,7 +131,7 @@ function parseUnit( raw, currentUnit ) {
 // <ResponsiveOverride> exposes.
 
 export default function Edit( { attributes, setAttributes } ) {
-	const {
+	const { padding, margin,
 		style,
 		label,
 		url,
@@ -346,9 +346,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( boxShadowPreview ) {
 		previewStyle.boxShadow = boxShadowPreview;
 	}
-	const paddingPreview = boxShorthand( padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) previewStyle.padding = paddingPreview;
-	const marginPreview = boxShorthand( margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) previewStyle.margin = marginPreview;
 	// widthType / customWidth / customWidthUnit are TIER OBJECTS (Spec 35
 	// migration, 2026-08-11) — the editor preview always shows the DESKTOP tier.
