@@ -147,7 +147,11 @@
 						"hover": {
 							"attrMap": {
 								"css:background-color": "overlayColourHover"
-							}
+							},
+							"noBaseByDesign": [
+								"css:background-color"
+							],
+							"_noBaseByDesignNote": "css:background-color (overlayColourHover) legitimately has NO resting counterpart: this element's overlay is a hover-reveal affordance — at rest there is no overlay to colour, so a 'resting overlay colour' control would paint a permanent tint over every gallery image rather than adding capability. The block declares only overlayColourHover / overlayColourHoverGradient; no resting sibling exists or should. Same shape as sgs/post-grid's card.scaleHover. NOT a suppression hatch — the attribute was declared here on 2026-09-05 to fix a rogue seed (css_property present in the DB with no authored source), and render.php:145 confirms it paints an EXISTING .sgs-gallery__img-wrap::after on hover."
 						}
 					},
 					"_note_hover": "overlayColourHover declared 2026-09-05: render.php:145 states it paints an EXISTING `.sgs-gallery__img-wrap::after` overlay on hover. Was a rogue seed (css_property in the DB, declared nowhere)."

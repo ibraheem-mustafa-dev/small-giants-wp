@@ -438,7 +438,17 @@ export default function Edit({ attributes, setAttributes, name }) {
   // it here at least shows the state took effect instead of looking silent.
   // `bgPreview.className` is the shared marker set (`src/utils/background-preview.js`,
   // 2026-08-26) — the same one every other adopting block now applies.
-  const editorClassName = [ className, bgPreview.className, svgPreview.className ]
+  // NOTE the SPREAD on svgPreview.className. `backgroundPreview()` returns its
+  // className as a STRING, but `svgBackgroundPreview()` returns a string ARRAY
+  // (see its @return). Passing the array to `.join(' ')` unspread stringifies it
+  // with COMMAS — `[ 'a', [ 'x', 'y' ] ].join(' ')` is `"a x,y"` — which emits
+  // one unusable comma-joined token and silently drops all four SVG classes
+  // (has-bg-svg / svg-<position> / svg-anim-<n> / svg-speed-<n>), so position,
+  // animation and speed do nothing on the canvas. Caught 2026-09-05 while
+  // wiring site-header; CHECK A still passed throughout, because it verifies an
+  // attribute NAME is referenced outside the Inspector, not that the CSS it
+  // produces is correct.
+  const editorClassName = [ className, bgPreview.className, ...svgPreview.className ]
     .filter( Boolean )
     .join( " " );
 

@@ -35,7 +35,7 @@ import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, Sg
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils/responsive';
-import { backgroundPreview, spacingPreview } from '../../utils';
+import { backgroundPreview, spacingPreview, svgBackgroundPreview } from '../../utils';
 import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from '../../utils/wcag-contrast';
 
 /**
@@ -309,6 +309,26 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
 	}, colourPalette );
 
+	// Decorative SVG background layer — editor mirror (2026-09-05). Deliberately
+	// NOT folded into backgroundPreview()'s return: that helper paints via
+	// `--sgs-ed-bg-*` custom properties on a ::before, whereas the SVG layer is a
+	// real element whose painting rules already ship in style.css (loaded in the
+	// canvas via block.json `style`). See svgBackgroundPreview()'s own docblock.
+	// Attributes enumerated EXPLICITLY rather than passing `attributes` wholesale
+	// — the same convention backgroundPreview()'s call site above already uses:
+	// it documents exactly which attrs this mirror reads, and
+	// check-editor-render-parity.js (CHECK A) resolves an attribute as
+	// canvas-reflected only when its NAME appears outside the Inspector panels.
+	const svgPreview = svgBackgroundPreview( {
+		bgSvgContent: attributes.bgSvgContent,
+		bgSvgPosition: attributes.bgSvgPosition,
+		bgSvgAnimation: attributes.bgSvgAnimation,
+		bgSvgAnimationSpeed: attributes.bgSvgAnimationSpeed,
+		bgSvgOpacity: attributes.bgSvgOpacity,
+		bgSvgMinHeight: attributes.bgSvgMinHeight,
+		bgSvgTextShadow: attributes.bgSvgTextShadow,
+	} );
+
 	// Active device tier for the padding/margin preview below — this block had
 	// no previewTier mechanism of its own, so this follows sgs/container's
 	// getDeviceType read exactly (same source its own Layout panel writes).
@@ -336,8 +356,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	}, previewTier );
 
 	const blockProps = useBlockProps( {
-		className: [ 'sgs-site-header', bgPreview.className ].filter( Boolean ).join( ' ' ),
-		style: { ...bgPreview.style, ...spacePreview },
+		className: [ 'sgs-site-header', bgPreview.className, ...svgPreview.className ]
+			.filter( Boolean )
+			.join( ' ' ),
+		style: { ...bgPreview.style, ...svgPreview.style, ...spacePreview },
 	} );
 	const refEl = useRef( null );
 
@@ -420,6 +442,18 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		templateLock: 'all',
 		orientation: 'vertical',
 	} );
+
+	// Mirrors class-sgs-container-wrapper.php:2794-2798. `aria-hidden` matches the
+	// server; `pointer-events:none` is editor-only insurance so the decorative
+	// layer can never swallow a click meant for the block or its children.
+	const svgLayer = svgPreview.hasSvg ? (
+		<div
+			className="sgs-container__svg-bg"
+			aria-hidden="true"
+			style={ { pointerEvents: 'none' } }
+			dangerouslySetInnerHTML={ { __html: svgPreview.markup } }
+		/>
+	) : null;
 
 	const {
 		headerSticky,
@@ -1224,7 +1258,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 			{ /* Editor canvas renders as <header> to match the frontend banner
 			     landmark (FR-37-13 fix B; P-HEADER-EDITOR-TAG-PARITY). */ }
-			<header ref={ refEl } { ...innerBlocksProps } />
+			<header ref={ refEl } { ...innerBlocksProps }>
+				{ svgLayer }
+				{ innerBlocksProps.children }
+			</header>
 		</>
 	);
 }

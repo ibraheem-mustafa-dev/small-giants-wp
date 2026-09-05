@@ -15,6 +15,7 @@ import {
 } from '@wordpress/components';
 import MediaPicker from '../../components/MediaPicker';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
+import { svgBackgroundPreview } from '../../utils';
 import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox,
 	SgsBorderControl,
 	resolveColourToken,
@@ -124,15 +125,41 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	};
 	const activeMedia = resolveActiveMedia();
 
+	// Decorative SVG background layer — editor-canvas mirror (2026-09-05), the
+	// same integration sgs/container carries (its edit.js is the worked
+	// reference). cta-section hands its FULL attribute set to
+	// SGS_Container_Wrapper::render() at the foot of render.php, so the wrapper
+	// paints this family on the frontend (class-sgs-container-wrapper.php:975 /
+	// :1634-1641 / :2794-2802) while the canvas showed nothing at all.
+	//
+	// Attributes are enumerated EXPLICITLY rather than passing `attributes`
+	// wholesale: it documents exactly which attrs this mirror reads, and
+	// check-editor-render-parity.js (CHECK A) resolves an attribute as
+	// canvas-reflected only when its NAME appears outside the Inspector panels,
+	// so a whole-object hand-off renders correctly but still reads as a desync.
+	const svgPreview = svgBackgroundPreview( {
+		bgSvgContent: attributes.bgSvgContent,
+		bgSvgPosition: attributes.bgSvgPosition,
+		bgSvgAnimation: attributes.bgSvgAnimation,
+		bgSvgAnimationSpeed: attributes.bgSvgAnimationSpeed,
+		bgSvgOpacity: attributes.bgSvgOpacity,
+		bgSvgMinHeight: attributes.bgSvgMinHeight,
+		bgSvgTextShadow: attributes.bgSvgTextShadow,
+	} );
+
 	const className = [
 		'sgs-cta-section',
 		`sgs-cta-section--${ ctaLayout }`,
 		gradientPreset ? `sgs-cta-section--gradient-${ gradientPreset }` : '',
+		...svgPreview.className,
 	]
 		.filter( Boolean )
 		.join( ' ' );
 
-	const wrapperStyle = {};
+	// `svgPreview.style` carries --sgs-svg-opacity (+ --sgs-svg-min-height when
+	// set); the painting rules themselves already ship in sgs/container's
+	// style.css, which block.json loads into the canvas.
+	const wrapperStyle = { ...svgPreview.style };
 	if ( activeMedia && activeMedia.type === 'image' && activeMedia.url ) {
 		wrapperStyle.backgroundImage = `url(${ activeMedia.url })`;
 		wrapperStyle.backgroundSize = 'cover';
@@ -197,6 +224,22 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// Note: cta-section has no backgroundColourGradient sibling (see block.json comment),
 	// so we check only the flat backgroundColour value.
 	const ctaSectionContrastAgainst = backgroundColour || '';
+
+	// Mirrors class-sgs-container-wrapper.php:2794-2798. `aria-hidden` matches
+	// the server; `pointer-events:none` is editor-only insurance so the
+	// decorative layer can never swallow a click meant for the block or its
+	// children. Rendered as the FIRST child of the block's own root element so
+	// the existing `.sgs-container__svg-bg` rules (loaded in the canvas) paint
+	// it; foreground vs background stacking is handled by the marker class on
+	// the root, exactly as on the frontend.
+	const svgLayer = svgPreview.hasSvg ? (
+		<div
+			className="sgs-container__svg-bg"
+			aria-hidden="true"
+			style={ { pointerEvents: 'none' } }
+			dangerouslySetInnerHTML={ { __html: svgPreview.markup } }
+		/>
+	) : null;
 
 	return (
 		<>
@@ -729,6 +772,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ svgLayer }
 				{ activeMedia &&
 					activeMedia.type === 'video' &&
 					activeMedia.url && (

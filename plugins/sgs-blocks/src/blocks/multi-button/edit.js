@@ -20,7 +20,7 @@ import {
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
-import { backgroundPreview, spacingPreview } from '../../utils';
+import { backgroundPreview, spacingPreview, svgBackgroundPreview } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	PanelBody,
@@ -139,6 +139,26 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// canvas — the shared mirror (src/utils/background-preview.js, 2026-08-26)
 	// fixes that the same way sgs/container already did.
 	const [ colourPalette ] = useSettings( 'color.palette' );
+	// Decorative SVG background layer — editor mirror (2026-09-05). Sibling of
+	// backgroundPreview() below, deliberately NOT folded into it: that helper
+	// paints via `--sgs-ed-bg-*` custom properties on a ::before, whereas the
+	// SVG layer is a real element whose painting rules already ship in the
+	// block's style.css (loaded in the canvas via block.json `style`). See
+	// svgBackgroundPreview()'s own docblock. Attributes are enumerated
+	// EXPLICITLY — check-editor-render-parity.js (CHECK A) resolves an
+	// attribute as canvas-reflected only when its NAME appears outside the
+	// Inspector panels, so a whole-object hand-off would render correctly but
+	// still read as a desync.
+	const svgPreview = svgBackgroundPreview( {
+		bgSvgContent: attributes.bgSvgContent,
+		bgSvgPosition: attributes.bgSvgPosition,
+		bgSvgAnimation: attributes.bgSvgAnimation,
+		bgSvgAnimationSpeed: attributes.bgSvgAnimationSpeed,
+		bgSvgOpacity: attributes.bgSvgOpacity,
+		bgSvgMinHeight: attributes.bgSvgMinHeight,
+		bgSvgTextShadow: attributes.bgSvgTextShadow,
+	} );
+
 	const bgPreview = backgroundPreview( {
 		backgroundImage: attributes.backgroundImage,
 		bgVideo: attributes.bgVideo,
@@ -201,6 +221,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		justifyContent: justify,
 		alignItems: align,
 		...bgPreview.style,
+		...svgPreview.style,
 		...spacePreview,
 	};
 
@@ -209,12 +230,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// row this block renders, so this roster is never relaxed.
 	const allowedBlocks = [ 'sgs/button' ];
 
-	const blockProps = useBlockProps( { className: bgPreview.className, style: editorStyle } );
+	const blockProps = useBlockProps( {
+		className: [ bgPreview.className, ...svgPreview.className ].filter( Boolean ).join( ' ' ),
+		style: editorStyle,
+	} );
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		allowedBlocks,
 		template: TEMPLATE,
 		templateLock: false,
 	} );
+
+	// Mirrors class-sgs-container-wrapper.php:2794-2798. `aria-hidden` matches
+	// the server; `pointer-events:none` is editor-only insurance so the
+	// decorative layer can never swallow a click meant for the block or its
+	// children.
+	const svgLayer = svgPreview.hasSvg ? (
+		<div
+			className="sgs-container__svg-bg"
+			aria-hidden="true"
+			style={ { pointerEvents: 'none' } }
+			dangerouslySetInnerHTML={ { __html: svgPreview.markup } }
+		/>
+	) : null;
 
 	return (
 		<>
@@ -749,7 +786,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				</ToolsPanel>
 			</InspectorControls>
 
-			<div { ...innerBlocksProps } />
+			{ /* Spread first, then state children explicitly: innerBlocksProps
+			    CARRIES a `children` prop, so the SVG layer has to be composed
+			    with it rather than added alongside the spread (which React
+			    would silently discard). */ }
+			<div { ...innerBlocksProps }>
+				{ svgLayer }
+				{ innerBlocksProps.children }
+			</div>
 		</>
 	);
 }
