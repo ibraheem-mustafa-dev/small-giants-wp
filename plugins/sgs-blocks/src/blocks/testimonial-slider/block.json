@@ -44,13 +44,10 @@
 						"css:background-color": "backgroundColour",
 						"css:color": "textColour",
 						"css:color-gradient": "textColourGradient",
-						"css:font-size": "native:typography.fontSize",
-						"css:line-height": "native:typography.lineHeight",
-						"css:letter-spacing": "native:typography.letterSpacing",
-						"css:text-transform": "native:typography.textTransform",
-						"css:font-weight": "native:typography.fontWeight",
-						"css:font-style": "native:typography.fontStyle",
-						"css:text-align": "native:typography.textAlign",
+						"css:font-size": "fontSize",
+						"css:line-height": "lineHeight",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
 						"css:grid-template-columns": "gridTemplateColumns",
 						"css:grid-template-rows": "gridTemplateRows",
 						"css:grid-auto-rows": "gridAutoRows",
@@ -73,7 +70,7 @@
 							}
 						}
 					},
-					"_note": "css:align-items is an honest gap (no alignItems attr declared — only alignContent/justifyItems). `nameFontSize` was removed 2026-08-06 — no editor control, no consumer anywhere in the repo (D338-cleared). textColourGradient/textColourHoverGradient added 2026-09-04 (D744-pattern text-colour gradient rollout) -- background moved off this same root selector onto a ::after layer (sgs_block_background_layer_css()) so background-clip:text on the text colour cannot clip the background paint, mirroring sgs/info-box's identical text-and-background-on-one-element migration."
+					"_note": "css:align-items is an honest gap (no alignItems attr declared — only alignContent/justifyItems). `nameFontSize` was removed 2026-08-06 — no editor control, no consumer anywhere in the repo (D338-cleared). textColourGradient/textColourHoverGradient added 2026-09-04 (D744-pattern text-colour gradient rollout) -- background moved off this same root selector onto a ::after layer (sgs_block_background_layer_css()) so background-clip:text on the text colour cannot clip the background paint, mirroring sgs/info-box's identical text-and-background-on-one-element migration. Typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight); no letterSpacing/textTransform/textAlign control is offered, so those remain honest gaps (matches sgs/accordion's wrapper element)."
 				},
 				"arrow": {
 					"label": "Prev/next arrow",
@@ -112,16 +109,6 @@
 			"background": false,
 			"text": false,
 			"gradients": false,
-			"__experimentalSkipSerialization": true
-		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"letterSpacing": true,
-			"textTransform": true,
-			"fontWeight": true,
-			"fontStyle": true,
 			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
@@ -349,6 +336,30 @@
 		"borderRadiusMobile": {
 			"type": "object",
 			"default": {}
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		}
 	},
 	"editorScript": "file:./index.js",

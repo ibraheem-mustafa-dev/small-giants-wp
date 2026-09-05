@@ -34,6 +34,7 @@ import {
 import { ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, fillRow,
 	SgsBorderControl,
 	resolveColourToken,
+	TypographyControls,
 } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 
@@ -258,12 +259,25 @@ export default function Edit( { attributes, setAttributes } ) {
 					</p>
 				</PanelBody>
 
+				{ /* Typography — replaces the old WP-native supports.typography
+				    (fontSize/lineHeight only) with the shared TypographyControls
+				    component + sgs_typography_css_rule() render.php helper
+				    (D971/D972 full-replacement track). Root prefix "" since this
+				    block has a single styled root element. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+					/>
+				</PanelBody>
+
 				{ /* ---- Wrapper (width + responsive box families) ----
 				   Box-object interface contract §B/§E: padding/margin base
 				   route to WP-native style.spacing.* (skip-serialised →
 				   scoped, not inline); tiers are the paddingTablet/
 				   paddingMobile + marginTablet/marginMobile object attrs.
-				   Border/colour/typography stay on the native WP panels. */ }
+				   Border/colour stay on the native WP panels. */ }
 				<PanelBody title={ __( 'Wrapper', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }

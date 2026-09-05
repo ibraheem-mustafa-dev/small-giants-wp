@@ -14,6 +14,7 @@ import {
 	ResponsiveBorderRadiusControl,
 	SgsColourPanel,
 	SgsBorderControl,
+	TypographyControls,
 	resolveColourToken,
 } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
@@ -461,6 +462,24 @@ export default function Edit( { attributes, setAttributes } ) {
 							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
 							setAttributes( { [ radiusKey ]: next } );
 						} }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Styles tab ────────────────────────────────────────────
+			 * Typography — replaces the old WP-native supports.typography
+			 * (fontSize/lineHeight only) with the shared TypographyControls
+			 * component + sgs_typography_css_rule() render.php helper
+			 * (D971/D972 full-replacement track). Root prefix "" since this
+			 * is a single-target block (the <nav> wrapper); the helper also
+			 * now offers weight/style, which native typography never
+			 * exposed here. */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
 					/>
 				</PanelBody>
 			</InspectorControls>

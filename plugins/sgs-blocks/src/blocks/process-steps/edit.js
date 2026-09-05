@@ -28,7 +28,7 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 ];
-import { IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker } from '../../components';
+import { IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker, TypographyControls } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 
 const CONNECTOR_OPTIONS = [
@@ -394,6 +394,19 @@ export default function Edit( { attributes, setAttributes } ) {
 								linked: true,
 							},
 						] }
+					/>
+					{ /* Typography — replaces the old WP-native supports.typography
+					   (fontSize/lineHeight/fontWeight/fontStyle, plus letterSpacing/
+					   textTransform/textAlign now dropped as honest gaps) with the
+					   shared TypographyControls component + sgs_typography_css_rule()
+					   render.php helper (D971/D972 full-replacement track). Prefix
+					   "title" matches this element's own attrMap prefix — native
+					   typography previously painted the step title via
+					   `selectors.typography: ".sgs-process-steps__title"`, now removed. */ }
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="title"
 					/>
 				</PanelBody>
 			</InspectorControls>

@@ -111,10 +111,6 @@ if ( isset( $attributes['borderRadius'] ) ) {
 		}
 	}
 }
-if ( ! empty( $sgs_container_style_group['typography'] ) && is_array( $sgs_container_style_group['typography'] ) ) {
-	$sgs_container_style_engine_input['typography'] = $sgs_container_style_group['typography'];
-}
-
 if ( ! empty( $sgs_container_style_engine_input ) ) {
 	$sgs_container_supports_uid = 'sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 	$sgs_container_supports_sel = '.' . $sgs_container_supports_uid . '.wp-block-sgs-container';
@@ -313,10 +309,6 @@ if ( '' !== $sgs_container_text_align ) {
 	$sgs_container_supports_css  .= $sgs_container_text_align_sel . '{text-align:' . esc_attr( $sgs_container_text_align ) . ';}';
 }
 
-// Preset font-size slug — skip-serialisation drops WP's automatic has-*-font-size
-// class, so re-add it manually (mirrors sgs/label). fontSize IS declared/supported
-// on this block (typography.fontSize), unlike the two ghosts removed below.
-//
 // ⛔ REMOVED 2026-08-20 (base-background-colour build, this session): the
 // $attributes['backgroundColor'] / ['textColor'] / ['gradient'] reads that used
 // to live here were a GHOST — none of the three is declared in block.json
@@ -336,11 +328,20 @@ if ( '' !== $sgs_container_text_align ) {
 // none is invented here; it is now correctly editor-invisible AND render-inert
 // (was previously editor-invisible but render-active, which is worse). `gradient`
 // had zero authorings anywhere and was never wired to any control — pure debt.
-$sgs_container_preset_fontsize = isset( $attributes['fontSize'] ) ? sanitize_html_class( $attributes['fontSize'] ) : '';
 
-if ( '' !== $sgs_container_preset_fontsize ) {
-	$sgs_container_supports_classes[] = 'has-' . $sgs_container_preset_fontsize . '-font-size';
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Replaces the retired WP-native
+// supports.typography (fontSize/lineHeight/textAlign/letterSpacing/textTransform/
+// fontWeight/fontStyle) with the framework's own helper, which also now offers
+// fontWeight/fontStyle. The old preset-font-size-slug re-add (has-*-font-size)
+// is retired alongside it — fontSize is now an object attr driven by
+// TypographyControls, not a native string preset slug.
+if ( empty( $sgs_container_supports_uid ) ) {
+	$sgs_container_supports_uid       = 'sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+	$sgs_container_supports_classes[] = $sgs_container_supports_uid;
 }
+$sgs_container_typography_sel = '.' . $sgs_container_supports_uid . '.wp-block-sgs-container';
+$sgs_container_supports_css  .= sgs_typography_css_rule( $attributes, '', $sgs_container_typography_sel );
 
 $sgs_container_wrapper_opts = array( 'tag' => $html_tag );
 if ( ! empty( $sgs_container_supports_classes ) ) {

@@ -195,42 +195,17 @@ $slider_scoped_css .= sgs_block_background_layer_css(
 // (native border_args removed by the Shape-B migration -- width/style/colour
 //  are block-private attrs now, emitted below)
 
-// Typography — the block itself renders no direct text node (the quote
-// text belongs to the child sgs/testimonial InnerBlocks), so this scopes
-// to the root element, not the stale/unused block.json `selectors.typography`
-// (.sgs-testimonial-slider__quote — no element in this block's own markup
-// ever carried that class).
-$slider_typography_args = array();
-if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
-	$slider_typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
-}
-if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
-	$slider_typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
-}
-if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
-	$slider_typography_args['letterSpacing'] = sgs_css_length_value( $attributes['style']['typography']['letterSpacing'] );
-}
-if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
-	$slider_typography_args['textTransform'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['textTransform'] );
-}
-if ( isset( $attributes['style']['typography']['fontWeight'] ) && '' !== $attributes['style']['typography']['fontWeight'] ) {
-	$slider_typography_args['fontWeight'] = sgs_css_keyword_sanitise( (string) $attributes['style']['typography']['fontWeight'] );
-}
-if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
-	$slider_typography_args['fontStyle'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['fontStyle'] );
-}
-if ( ! empty( $slider_typography_args ) ) {
-	$slider_typography_scoped = wp_style_engine_get_styles(
-		array( 'typography' => $slider_typography_args ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $slider_typography_scoped['css'] ) ) {
-		$slider_scoped_css .= $slider_typography_scoped['css'];
-	}
-}
-if ( isset( $attributes['style']['typography']['textAlign'] ) && '' !== $attributes['style']['typography']['textAlign'] ) {
-	$slider_scoped_css .= $root_sel . '{text-align:' . sgs_css_keyword_sanitise( $attributes['style']['typography']['textAlign'] ) . '}';
-}
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). The block itself renders no
+// direct text node (the quote text belongs to the child sgs/testimonial
+// InnerBlocks), so this scopes to the root element, not the stale/unused
+// block.json `selectors.typography` (.sgs-testimonial-slider__quote — no
+// element in this block's own markup ever carried that class). Replaces the
+// old WP-native supports.typography (fontSize/lineHeight/letterSpacing/
+// textTransform/fontWeight/fontStyle/textAlign) — letterSpacing/textTransform/
+// textAlign are honest gaps the shared helper doesn't cover (matches
+// sgs/accordion's wrapper element).
+$slider_scoped_css .= sgs_typography_css_rule( $attributes, '', $root_sel );
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add them

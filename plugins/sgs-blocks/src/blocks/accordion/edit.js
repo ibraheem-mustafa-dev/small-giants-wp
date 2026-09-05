@@ -17,6 +17,7 @@ import {
   IconPicker,
   ResponsiveBoxControl,
   SgsBorderControl,
+  TypographyControls,
   resolveColourToken,
 } from "../../components";
 import ContainerWrapperControls from "../container/components/ContainerWrapperControls";
@@ -237,6 +238,19 @@ export default function Edit({ attributes, setAttributes }) {
 
       {/* ── Styles tab ─────────────────────────────────────────────── */}
       <InspectorControls group="styles">
+        {/* Typography — replaces the old WP-native supports.typography
+            (fontSize/lineHeight only) with the shared TypographyControls
+            component + sgs_typography_css_rule() render.php helper (D971/D972
+            full-replacement track). Root prefix "" since this is a
+            single-target block; defaults also expose weight/style, which
+            native typography never offered here. */}
+        <PanelBody title={ __( "Typography", "sgs-blocks" ) } initialOpen={ false }>
+          <TypographyControls
+            attributes={ attributes }
+            setAttributes={ setAttributes }
+            prefix=""
+          />
+        </PanelBody>
         {/* Responsive spacing (padding + margin) — box-object interface contract
             (.claude/plans/2026-07-09-box-object-interface-contract.md §5). Base tier
             writes to the WP-native style.spacing object (also visible in the Styles >

@@ -25,11 +25,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"textAlign": true,
-			"__experimentalSkipSerialization": true
-		},
 		"spacing": {
 			"margin": true,
 			"padding": true,
@@ -83,8 +78,11 @@
 						"css:border-radius": "borderRadius",
 						"css:background-color": "backgroundColour",
 						"css:color": "textColour",
-						"css:font-size": "native:typography.fontSize",
-						"css:text-align": "native:typography.textAlign",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
+						"css:text-align": "textAlign",
 						"css:transition-duration": "transitionDuration",
 						"css:transition-timing-function": "transitionEasing",
 						"css:box-shadow": "cardShadow",
@@ -104,7 +102,7 @@
 							}
 						}
 					},
-					"_note": "D294 content-KIND, no-wrapper (render.php:5-47) — the root <div> IS the block, no SGS_Container_Wrapper call (dropped 2026-07-10). FR-35-5 Task 4c fix (2026-07-21, Bean's Option A): the card now has a RESTING-state `cardShadow` attr (render.php:118,247-256; style.css –sgs-card-shadow fallback) alongside the existing hover-only `shadowHover` (render.php:239-243), so shadowHover is STATE_OK not STATE_WITHOUT_BASE — same fix shape as card-grid's cardShadow (Task 4). An empty cardShadow control means the card inherits the theme token exactly as before. `scaleHover` (transform:scale on hover) has no matching cluster member (no css:transform exists in the vocabulary) — an honest ORPHAN, not a gap. line-height/letter-spacing/font-weight/font-style/text-transform/text-decoration/font-family are honest gaps — the card root only supports fontSize+textAlign natively (typography supports = {fontSize:true, textAlign:true} only)."
+					"_note": "D294 content-KIND, no-wrapper (render.php:5-47) — the root <div> IS the block, no SGS_Container_Wrapper call (dropped 2026-07-10). FR-35-5 Task 4c fix (2026-07-21, Bean's Option A): the card now has a RESTING-state `cardShadow` attr (render.php:118,247-256; style.css –sgs-card-shadow fallback) alongside the existing hover-only `shadowHover` (render.php:239-243), so shadowHover is STATE_OK not STATE_WITHOUT_BASE — same fix shape as card-grid's cardShadow (Task 4). An empty cardShadow control means the card inherits the theme token exactly as before. `scaleHover` (transform:scale on hover) has no matching cluster member (no css:transform exists in the vocabulary) — an honest ORPHAN, not a gap. Typography FULLY migrated off native WP support (Bean-locked architecture decision, 2026-09-05, D971/D972 full-replacement track) — root prefix '' (fontSize/fontWeight/fontStyle/lineHeight via TypographyControls + sgs_typography_css_rule(); textAlign is now a plain block-private attribute rendered via the block's own has-text-align-* class mechanism, no longer WP-native supports.typography.textAlign). letter-spacing/text-transform/text-decoration/font-family are supported by the shared helper but have no editor control on this block yet — honest gaps."
 				},
 				"image": {
 					"label": "Photo",
@@ -190,8 +188,7 @@
 		}
 	},
 	"selectors": {
-		"root": ".wp-block-sgs-team-member",
-		"typography": ".sgs-team-member__name"
+		"root": ".wp-block-sgs-team-member"
 	},
 	"attributes": {
 		"photo": {
@@ -425,6 +422,35 @@
 		},
 		"roleColourHover": {
 			"type": "string",
+			"default": ""
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"textAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
 			"default": ""
 		}
 	},

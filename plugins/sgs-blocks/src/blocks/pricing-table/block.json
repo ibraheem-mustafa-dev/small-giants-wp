@@ -29,11 +29,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"__experimentalSkipSerialization": true
-		},
 		"spacing": {
 			"margin": true,
 			"padding": true,
@@ -77,8 +72,6 @@
 					"attrMap": {
 						"css:color": "native:color.text",
 						"css:background-color": "native:color.background",
-						"css:font-size": "native:typography.fontSize",
-						"css:line-height": "native:typography.lineHeight",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:border-width": "borderWidth",
@@ -88,7 +81,7 @@
 						"css:max-width": "maxWidth",
 						"css:border-color-gradient": "borderColourGradient"
 					},
-					"_note": "Mirrors sgs/container's wrapper/grid split. Only fontSize+lineHeight are declared under `typography` (no letterSpacing/textTransform/fontWeight/fontStyle/textAlign/fontFamily) — the remaining text members are honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element."
+					"_note": "Mirrors sgs/container's wrapper/grid split. Typography (fontSize/lineHeight) migrated OFF this element's WP-native support onto the `title` element's own titleFontSize*/titleLineHeight* attrs (D971/D972 full-replacement track) — the native support always rendered onto `.sgs-pricing-table__name` via `selectors.typography`, not the wrapper, so this was a mis-scoped mapping being corrected, not a capability removed. The remaining text-cluster members (letterSpacing/textTransform/textAlign/fontFamily) are honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element."
 				},
 				"inner": {
 					"label": "Inner (grid / flex layout)",
@@ -114,6 +107,7 @@
 				"title": {
 					"label": "Plan name",
 					"order": 3,
+					"prefix": "title",
 					"clusters": [
 						"text",
 						"fill"
@@ -130,7 +124,7 @@
 							}
 						}
 					},
-					"_note": "Rendered once per plan into `.sgs-pricing-table__name` (block.json `selectors.typography` also targets the back-compat `.sgs-pricing-table__title` alias). Only colour is block-level and independently controlled — no titleFontSize/Weight exists, an honest gap. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:379/381) but this element has no `prefix` declared, so it needs an explicit map. titleColourGradient (cluster A Task 2) is the text-colour gradient sibling to titleColour — background-clip:text mechanism, same recipe as priceColour/priceColourGradient; the 'fill' cluster was added solely to place this member. The rendered declaration paints onto a comma-joined selector pair (`.sgs-pricing-table__name,.sgs-pricing-table__title`) — see render.php's `$title_sel`. 2026-09-05: `states.hover.css:color`->titleColourHover declared explicitly (render.php:610-616 -- `sgs_emit_state_colour_css( $title_sel, array(), array( 'color:…' ) )`, whose third argument is the HOVER decl list, emitted via `sgs_hover_state_rules()` on `:hover, :focus-visible`, helpers-tokens.php:1351-1363). Without it titleColourHover derived to state=NULL and collided with ctaColourHover/popularBadgeColourHover on the (color, element=NULL, state=NULL) slot."
+					"_note": "Rendered once per plan into `.sgs-pricing-table__name` (block.json `selectors.typography` used to also target the back-compat `.sgs-pricing-table__title` alias, before the native support this element hosted was retired). `prefix: title` added 2026-09-05 (D971/D972 full-replacement track) so titleFontSize/titleFontSizeUnit/titleFontWeight/titleFontStyle/titleLineHeight/titleLineHeightUnit resolve via the standard {prefix}{Suffix} convention with no explicit attrMap entry needed (mirrors sgs/counter's `label` element) — this element previously had no font-size/weight control at all; that gap is now closed. `attrMap.tag` stays explicit — `headingLevel` sets the rendered tag on this element (render.php:379/381) and does not follow the typography-suffix convention. titleColourGradient (cluster A Task 2) is the text-colour gradient sibling to titleColour — background-clip:text mechanism, same recipe as priceColour/priceColourGradient; the 'fill' cluster was added solely to place this member. The rendered declaration paints onto a comma-joined selector pair (`.sgs-pricing-table__name,.sgs-pricing-table__title`) — see render.php's `$title_sel`. 2026-09-05: `states.hover.css:color`->titleColourHover declared explicitly (render.php:610-616 -- `sgs_emit_state_colour_css( $title_sel, array(), array( 'color:…' ) )`, whose third argument is the HOVER decl list, emitted via `sgs_hover_state_rules()` on `:hover, :focus-visible`, helpers-tokens.php:1351-1363). Without it titleColourHover derived to state=NULL and collided with ctaColourHover/popularBadgeColourHover on the (color, element=NULL, state=NULL) slot."
 				},
 				"price": {
 					"label": "Price",
@@ -245,10 +239,9 @@
 			}
 		}
 	},
-	"_selectorsNote": "S1 fix (2026-09-02, uniformity sweep, inspector-scan rule 33): selectors.typography retargeted from '.sgs-pricing-table__title' (never emitted by any rendered markup) to '.sgs-pricing-table__name' (render.php:364, the block's real per-plan title element).",
+	"_selectorsNote": "S1 fix (2026-09-02, uniformity sweep, inspector-scan rule 33): selectors.typography retargeted from '.sgs-pricing-table__title' (never emitted by any rendered markup) to '.sgs-pricing-table__name' (render.php:364, the block's real per-plan title element). Removed 2026-09-05 (D971/D972) — the WP-native typography support this selector redirected is gone; the `title` element now owns titleFontSize*/titleLineHeight* as block-private attrs rendered via sgs_typography_css_rule(), which targets its own selector directly (render.php's `$title_sel`) and needs no Block Selectors API redirection.",
 	"selectors": {
-		"root": ".wp-block-sgs-pricing-table",
-		"typography": ".sgs-pricing-table__name"
+		"root": ".wp-block-sgs-pricing-table"
 	},
 	"attributes": {
 		"columns": {
@@ -489,6 +482,30 @@
 		"titleColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"titleFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"titleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"titleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"titleFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"titleLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"titleLineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		},
 		"priceColour": {
 			"type": "string",

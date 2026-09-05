@@ -1060,36 +1060,14 @@ if ( ! empty( $hero_style_engine_args ) ) {
 	}
 }
 
-// Typography — declared selector (block.json selectors.typography.root)
-// targets .sgs-hero__headline, so scope the rule there rather than root_sel.
-$typography_args = array();
-if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
-	$typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
-}
-if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
-	$typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
-}
-if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
-	$typography_args['letterSpacing'] = sgs_css_length_value( $attributes['style']['typography']['letterSpacing'] );
-}
-if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
-	$typography_args['textTransform'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['textTransform'] );
-}
-if ( isset( $attributes['style']['typography']['fontWeight'] ) && '' !== $attributes['style']['typography']['fontWeight'] ) {
-	$typography_args['fontWeight'] = sgs_css_keyword_sanitise( (string) $attributes['style']['typography']['fontWeight'] );
-}
-if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
-	$typography_args['fontStyle'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['fontStyle'] );
-}
-if ( ! empty( $typography_args ) ) {
-	$typography_scoped = wp_style_engine_get_styles(
-		array( 'typography' => $typography_args ),
-		array( 'selector' => $root_sel . ' .sgs-hero__headline' )
-	);
-	if ( ! empty( $typography_scoped['css'] ) ) {
-		$responsive_css .= $typography_scoped['css'];
-	}
-}
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
+// supports.typography (fontSize/lineHeight/letterSpacing/textTransform/
+// fontWeight/fontStyle), which had been scoped to `.sgs-hero__headline` — a
+// class hero's own rendered markup never emits (see block.json's
+// `_selectorsNote`), so those 6 controls were silent no-ops. Scoped to
+// $root_sel (the wrapper), matching block.json's corrected `selectors.typography`.
+$responsive_css .= sgs_typography_css_rule( $attributes, '', $root_sel );
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color class onto the wrapper — re-add it manually (mirrors sgs/quote)

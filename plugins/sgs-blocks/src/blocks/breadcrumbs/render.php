@@ -97,8 +97,6 @@ $style_color_gradient = isset( $attributes['style']['color']['gradient'] ) ? (st
 $preset_text_slug     = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug       = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
-$style_font_size = isset( $attributes['style']['typography']['fontSize'] ) ? (string) $attributes['style']['typography']['fontSize'] : '';
-
 // ---------------------------------------------------------------------------
 // 3. Resolve scope id. Uid is a CLASS (contract §B3) — the element's single
 // `id` attribute stays free for the anchor (ToC target).
@@ -176,10 +174,6 @@ if ( ! empty( $color_args ) ) {
 	$base_style_engine_args['color'] = $color_args;
 }
 
-if ( '' !== $style_font_size ) {
-	$base_style_engine_args['typography'] = array( 'fontSize' => $style_font_size );
-}
-
 if ( ! empty( $base_style_engine_args ) ) {
 	$base_scoped_styles = wp_style_engine_get_styles(
 		$base_style_engine_args,
@@ -189,6 +183,13 @@ if ( ! empty( $base_style_engine_args ) ) {
 		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
+
+// --- Typography — root prefix '', shared TypographyControls/
+// sgs_typography_css_rule() mechanism (D971/D972 full-replacement track).
+// Replaces the old WP-native supports.typography (fontSize only) with the
+// framework's own helper, which also now offers fontWeight/fontStyle/
+// lineHeight. Inherited across link/separator/current, same as before. ---
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
 
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME root selector (contract §B/§B2: tablet

@@ -9,6 +9,7 @@ import {
 } from '@wordpress/components';
 import { SgsColourPanel, ResponsiveBoxControl, ResponsiveBorderRadiusControl,
 	SgsBorderControl,
+	TypographyControls,
 	resolveColourToken,
 } from '../../components';
 import { colourVar, textPaintPreview } from '../../utils';
@@ -43,7 +44,7 @@ function boxShorthand( box, order = [ 'top', 'right', 'bottom', 'left' ] ) {
  * media precedent).
  */
 function buildPreviewStyle( attributes ) {
-	const { style, textAlign } = attributes;
+	const { style, textAlign, fontSize, fontSizeUnit, fontWeight, fontStyle, lineHeight, lineHeightUnit } = attributes;
 
 	const preview = {};
 
@@ -81,8 +82,23 @@ function buildPreviewStyle( attributes ) {
 	if ( style?.color?.background ) {
 		preview.backgroundColor = style.color.background;
 	}
-	if ( style?.typography?.fontSize ) {
-		preview.fontSize = style.typography.fontSize;
+	// Typography — migrated off WP-native style.typography.fontSize onto the
+	// shared TypographyControls attribute shape (D971/D972). Base/desktop tier
+	// only for the canvas preview, matching sgs/quote + sgs/media precedent
+	// (tablet/mobile tiers are not simulated on the fixed-width canvas).
+	const fontSizeDesktop = fontSize && 'object' === typeof fontSize ? fontSize.desktop : fontSize;
+	if ( fontSizeDesktop ) {
+		preview.fontSize = `${ fontSizeDesktop }${ fontSizeUnit || 'px' }`;
+	}
+	if ( fontWeight ) {
+		preview.fontWeight = fontWeight;
+	}
+	if ( fontStyle ) {
+		preview.fontStyle = fontStyle;
+	}
+	const lineHeightDesktop = lineHeight && 'object' === typeof lineHeight ? lineHeight.desktop : lineHeight;
+	if ( lineHeightDesktop ) {
+		preview.lineHeight = `${ lineHeightDesktop }${ lineHeightUnit || '' }`;
 	}
 	if ( textAlign ) {
 		preview.textAlign = textAlign;
@@ -295,6 +311,36 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
+				{ /* Typography — replaces the old WP-native supports.typography
+				    (fontSize + textAlign only) with the shared TypographyControls
+				    component + sgs_typography_css_rule() render.php helper
+				    (D971/D972 full-replacement track). Root prefix "" — the wrapper
+				    is the only element this block-level typography targets (the
+				    number/label elements keep their own colour-only controls).
+				    TypographyControls has no text-align field, so that control
+				    stays a plain SelectControl mirroring render.php's own
+				    allowed_aligns allowlist. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+					/>
+					<SelectControl
+						label={ __( 'Text align', 'sgs-blocks' ) }
+						value={ attributes.textAlign || '' }
+						options={ [
+							{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+							{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+							{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+							{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
+							{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
+						] }
+						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
 				<PanelBody title={ __( 'Responsive spacing', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }

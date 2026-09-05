@@ -29,16 +29,6 @@
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"letterSpacing": true,
-			"textTransform": true,
-			"fontWeight": true,
-			"fontStyle": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"is_section_root": true,
 			"containerKind": "section",
@@ -126,6 +116,12 @@
 						"css:box-shadow": "shadow",
 						"css:box-shadow-color": "shadowColour",
 						"css:border-color-gradient": "borderColourGradient",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
+						"css:letter-spacing": "letterSpacing",
+						"css:text-transform": "textTransform",
 						"anim:parallax": "bgParallax",
 						"anim:duration": "bgAnimationDuration"
 					},
@@ -213,18 +209,10 @@
 					"clusters": [
 						"text"
 					],
-					"prefix": "headline",
 					"attrMap": {
-						"css:font-size": "native:typography.fontSize",
-						"css:font-weight": "native:typography.fontWeight",
-						"css:line-height": "native:typography.lineHeight",
-						"css:letter-spacing": "native:typography.letterSpacing",
-						"css:font-style": "native:typography.fontStyle",
-						"css:text-transform": "native:typography.textTransform",
-						"css:text-align": "native:typography.textAlign",
 						"css:color": "native:color.text"
 					},
-					"_note": "block.json `selectors.typography.root` scopes the wrapper's native typography support to `.sgs-hero__headline`, so these native paths are this element's controls, not the wrapper's. `headlineMarginBottom` (the standalone parent-side spacing override) was RETIRED 2026-08-12 (Spec 35 Phase 2.3, Bean-confirmed dead — its live values were scratch-page defaults, not deliberate client settings) — no layout member remains on this element."
+					"_note": "Typography REPOINTED to the `wrapper` element 2026-09-05 (D971/D972 full-replacement track — migrated off WP-native `supports.typography` onto the shared TypographyControls/sgs_typography_css_rule() mechanism, prefix ''). `_selectorsNote` above already corrected `selectors.typography` from `.sgs-hero__headline` to the block root `.wp-block-sgs-hero` on 2026-09-02 because this class is never emitted by hero's own rendered markup — so these controls were always the WRAPPER's, never this element's, and the migration completes that correction rather than reversing it. `native:color.text` stays mapped here for now even though native `supports.color.text` is disabled (`false`) on this block — a pre-existing dead mapping, out of scope for this migration. `headlineMarginBottom` (the standalone parent-side spacing override) was RETIRED 2026-08-12 (Spec 35 Phase 2.3, Bean-confirmed dead — its live values were scratch-page defaults, not deliberate client settings) — no layout member remains on this element."
 				},
 				"sub-headline": {
 					"label": "Sub-headline",
@@ -297,8 +285,7 @@
 	"_selectorsNote": "S1 fix (2026-09-02, uniformity sweep, inspector-scan rule 33): selectors.typography retargeted from '.sgs-hero__headline' to the block root ('.wp-block-sgs-hero', matching cta-section/info-box/notice-banner). '.sgs-hero__headline' is set ONLY as an InnerBlocks TEMPLATE child's className in edit.js, never emitted by hero's own rendered markup — the old selector generated a scoped rule at CSS specificity (0,2,0) that could never beat the child block's own inline typography at (1,0,0,0), so hero's 7 declared native typography controls were silent no-ops (Spec 35 F.1).",
 	"selectors": {
 		"root": ".wp-block-sgs-hero",
-		"border": ".wp-block-sgs-hero",
-		"typography": ".wp-block-sgs-hero"
+		"border": ".wp-block-sgs-hero"
 	},
 	"attributes": {
 		"templateLock": {
@@ -441,6 +428,43 @@
 			"type": "string",
 			"default": "",
 			"role": "content"
+		},
+		"_comment_typography": "D971/D972 full-replacement track (2026-09-05) — root prefix '' (wrapper element), replacing the deleted WP-native `supports.typography`. Mirrors sgs/accordion's already-migrated shape exactly. letterSpacing/letterSpacingUnit/textTransform are ADDITIONAL to the base fontSize/fontSizeUnit/fontWeight/fontStyle/lineHeight/lineHeightUnit set because the native support being replaced actually declared AND render.php actually consumed both (the old selector was broken — see block.json's `_selectorsNote` — but the attributes were live, not dead, so dropping them here would be a real scope reduction, not a cleanup).",
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"letterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"letterSpacingUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"textTransform": {
+			"type": "string",
+			"default": ""
 		},
 		"minHeight": {
 			"type": "object",

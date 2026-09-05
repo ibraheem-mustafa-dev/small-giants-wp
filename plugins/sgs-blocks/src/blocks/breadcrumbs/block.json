@@ -28,10 +28,6 @@
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"__experimentalSkipSerialization": true
-		},
 		"spacing": {
 			"margin": true,
 			"padding": true,
@@ -53,14 +49,18 @@
 				"wrapper": {
 					"label": "Breadcrumb bar",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [ "text", "fill", "layout" ],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:color.background",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin"
 					},
-					"_note": "No selectors.typography is declared (only selectors.root), so the block-level typography.fontSize serialises as an inherited default across link/separator/current rather than a per-crumb control — no text cluster claimed here for size."
+					"_note": "Typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight) — serialises as an inherited default across link/separator/current rather than a per-crumb control, same inheritance behaviour as before the migration."
 				},
 				"item": {
 					"label": "Crumb link",
@@ -122,6 +122,30 @@
 		"currentColour": {
 			"type": "string",
 			"default": "text"
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		},
 		"paddingTablet": {
 			"type": "object",

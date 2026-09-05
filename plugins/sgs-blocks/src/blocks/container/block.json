@@ -23,16 +23,6 @@
 		"anchor": true,
 		"html": false,
 		"color": false,
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"letterSpacing": true,
-			"textTransform": true,
-			"fontWeight": true,
-			"fontStyle": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"_comment_overlayNotAdopted": "backgroundImage/Size/Position/Repeat/Attachment, backgroundOverlay*, bgVideo*/bgSvg*/bgParallax/bgKenBurns are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- settled 2026-09-03 (Bean-directed) after this exact question was investigated. A background panel applied to the whole block is a different feature from a client-configurable <img>/<video> element (which the media-atom system in supports.sgs.mediaElements DOES cover), so it is correctly out of scope for that system and is not a deferred migration. Detector rule 37-media-no-handroll (scripts/inspector-scan/rules/37-media-no-handroll.js) encodes this discriminator: a bare `background`/`bg`-prefixed attribute is panel-owned and never flagged; an element-prefixed attribute (e.g. splitMediaObjectFit) still is.",
 			"intrinsicColumns": true,
@@ -87,12 +77,10 @@
 					"attrMap": {
 						"css:color": "textColour",
 						"css:background-color": "backgroundColour",
-						"css:font-size": "native:typography.fontSize",
-						"css:font-weight": "native:typography.fontWeight",
-						"css:line-height": "native:typography.lineHeight",
-						"css:letter-spacing": "native:typography.letterSpacing",
-						"css:font-style": "native:typography.fontStyle",
-						"css:text-transform": "native:typography.textTransform",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:line-height": "lineHeight",
+						"css:font-style": "fontStyle",
 						"css:text-align": "textAlign",
 						"css:padding": "padding",
 						"css:margin": "margin",
@@ -111,6 +99,7 @@
 					},
 					"_note_border": "R2c pattern (mirrors sgs/product-card, D-pending 2026-08-25): root border colour/width/style are block-private attrs (borderColour/borderColourGradient/borderWidth/borderStyle), not the native __experimentalBorder path — a single owner instead of the native Styles-tab colour panel and an SGS panel both writing style.border. Native __experimentalBorder is reduced to radius only (a corner-shape control, not a paint decision) and stays skip-serialised, emitted scoped via the style engine exactly as before. borderWidth has NO default (unset = no border, matching the padding attribute's no-default discipline right below) and is a base-only box object (no Tablet/Mobile siblings, matching product-card's own borderWidth).",
 					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; the wrapper declares no `prefix`, so ROLLOUT REQUIREMENT 1 applies). bgKenBurns has no animation-cluster member (it's a Ken-Burns preset toggle, not a scroll-trigger/parallax/preset/duration/easing/stagger control) and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — this block has no sgsAnimation*/staggerDelay/scroll-trigger attributes.",
+					"_note_typography": "Typography migrated off the old WP-native supports.typography (fontSize/lineHeight/textAlign/letterSpacing/textTransform/fontWeight/fontStyle) onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972 full-replacement track), root prefix '' (fontSize/fontSizeUnit/fontWeight/fontStyle/lineHeight/lineHeightUnit) — mirrors sgs/accordion. css:letter-spacing and css:text-transform are now honest gaps (no letterSpacing/textTransform control is offered); css:text-align keeps mapping to the block's own pre-existing textAlign attribute, unrelated to this migration.",
 					"states": {
 						"hover": {
 							"attrMap": {
@@ -748,6 +737,31 @@
 				"justify"
 			],
 			"default": ""
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Root wrapper typography (D971/D972 full-replacement track, mirrors sgs/accordion) — replaces the retired WP-native supports.typography.fontSize. Consumed by sgs_typography_css_rule() via the shared TypographyControls component, prefix ''."
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		}
 	},
 	"providesContext": {

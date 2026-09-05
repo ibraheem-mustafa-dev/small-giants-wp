@@ -101,6 +101,34 @@
 		"marginMobile": {
 			"type": "object",
 			"default": {}
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		}
 	},
 	"variations": [
@@ -205,11 +233,6 @@
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"fontFamily": true,
-			"__experimentalSkipSerialization": true
-		},
 		"spacing": {
 			"margin": true,
 			"padding": true,
@@ -230,13 +253,19 @@
 				"wrapper": {
 					"label": "Info box",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [ "fill", "layout", "text" ],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:color.background",
 						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin"
-					}
+						"css:margin": "native:spacing.margin",
+						"css:font-size": "fontSize",
+						"css:font-family": "fontFamily",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight"
+					},
+					"_note_typography": "Typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972 full-replacement track) — root prefix '' (fontSize/fontSizeUnit/fontFamily/fontWeight/fontStyle/lineHeight/lineHeightUnit). render.php applies the rule to $root_sel, the whole `.{uid}` wrapper div (there is no `selectors.typography` override), so it was already root-scoped under native supports — this migration keeps that scope unchanged, only the mechanism moves. fontFamily control (showFontFamily) preserved to match the pre-migration native `supports.typography.fontFamily:true` capability."
 				},
 				"text": {
 					"label": "Value text",
@@ -244,8 +273,6 @@
 					"clusters": [ "text" ],
 					"prefix": "text",
 					"attrMap": {
-						"css:font-size": "native:typography.fontSize",
-						"css:font-family": "native:typography.fontFamily",
 						"css:color": "textColour",
 						"css:background-image": "textColourGradient"
 					},

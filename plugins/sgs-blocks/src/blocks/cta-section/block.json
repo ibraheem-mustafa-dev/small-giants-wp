@@ -75,7 +75,7 @@
 						"css:color-gradient": "textColourGradient",
 						"css:border-color-gradient": "borderColourGradient"
 					},
-					"_note": "block.json's own Selectors API deliberately splits colour: color.background/color.text are scoped to the wrapper root (.wp-block-sgs-cta-section) so buttons/body/ribbon inherit text colour by cascade, while typography (fontSize/lineHeight/etc) is re-selectored to .sgs-cta-section__headline — see the 'headline' element below for that half of the split.",
+					"_note": "block.json's own Selectors API deliberately splits colour: color.background/color.text are scoped to the wrapper root (.wp-block-sgs-cta-section) so buttons/body/ribbon inherit text colour by cascade. Typography (fontSize/lineHeight/etc) was migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972) and is ALSO emitted on the wrapper root, matching core/group's inheritance-only approach — the 'headline' element's attrMap below documents which bare attributes paint it, not a distinct selector.",
 					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; no `prefix` declared, per ROLLOUT REQUIREMENT 1). bgKenBurns is a separate preset toggle with no animation-cluster member and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — no sgsAnimation*/staggerDelay/scroll-trigger attrs on this block.",
 					"states": {
 						"hover": {
@@ -95,13 +95,13 @@
 						"text"
 					],
 					"attrMap": {
-						"css:font-size": "native:typography.fontSize",
-						"css:font-weight": "native:typography.fontWeight",
-						"css:line-height": "native:typography.lineHeight",
-						"css:letter-spacing": "native:typography.letterSpacing",
-						"css:font-style": "native:typography.fontStyle",
-						"css:text-transform": "native:typography.textTransform",
-						"css:text-align": "native:typography.textAlign"
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:line-height": "lineHeight",
+						"css:letter-spacing": "letterSpacing",
+						"css:font-style": "fontStyle",
+						"css:text-transform": "textTransform",
+						"css:text-align": "textAlign"
 					},
 					"_note_textcolour": "css:color intentionally UNMAPPED. It previously pointed at native:color.text, which was switched off here so the native colour UI would not compete with the block's SgsColourPanel text row (rule 31). Leaving the pointer would have recreated the dead binding fixed on sgs/container in 0f2c167f. The headline now INHERITS the root text colour the wrapper sets (D713) — a real gap report on this element is honest, a wrong mapping is not."
 				},
@@ -187,16 +187,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"letterSpacing": true,
-			"textTransform": true,
-			"fontWeight": true,
-			"fontStyle": true,
-			"__experimentalSkipSerialization": true
-		},
 		"spacing": {
 			"margin": true,
 			"padding": true,
@@ -212,14 +202,46 @@
 		"spacing": {
 			"padding": ".wp-block-sgs-cta-section",
 			"margin": ".wp-block-sgs-cta-section"
-		},
-		"typography": {
-			"root": ".wp-block-sgs-cta-section"
 		}
 	},
 	"attributes": {
 		"textAlign": {
 			"type": "string"
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"letterSpacing": {
+			"type": "number"
+		},
+		"letterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"textTransform": {
+			"type": "string",
+			"default": ""
 		},
 		"headline": {
 			"type": "string",

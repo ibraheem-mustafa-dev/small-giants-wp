@@ -12,7 +12,7 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, ToggleControl, Notice } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
-import { ResponsiveBoxControl, SgsColourPanel, DesignTokenPicker } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel, DesignTokenPicker, TypographyControls } from '../../components';
 
 /** Labels for the type selector drop-down. */
 const TYPE_OPTIONS = [
@@ -248,6 +248,27 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
 							}
 						} }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				{ /* Typography — replaces the old WP-native supports.typography
+				   (fontSize/fontFamily only) with the shared TypographyControls
+				   component + sgs_typography_css_rule() render.php helper
+				   (D971/D972 full-replacement track). Root prefix "" — this
+				   block's typography was already applied to the whole wrapper
+				   div ($root_sel in render.php), not a specific child element,
+				   so the scope is unchanged, only the mechanism moves.
+				   showFontFamily preserves the pre-migration native
+				   fontFamily:true capability. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+						showFontFamily
 					/>
 				</PanelBody>
 			</InspectorControls>

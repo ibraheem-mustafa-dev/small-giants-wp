@@ -17,6 +17,7 @@ import { createBlock } from '@wordpress/blocks';
 import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, fillRow, textRow, SgsLengthControl,
 	SgsBorderControl,
 	resolveColourToken,
+	TypographyControls,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { colourVar } from '../../utils';
@@ -529,6 +530,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   gradient sibling attribute, so there is no second control that can
 			   disagree with the native one about what the solid colour is. */ }
 			<InspectorControls group="styles">
+				{ /* Typography — replaces the old WP-native supports.typography
+				   (fontSize/lineHeight only) with the shared TypographyControls
+				   component + sgs_typography_css_rule() render.php helper
+				   (D971/D972 full-replacement track). Root prefix "" — this
+				   block's typography support targeted the block root
+				   (.wp-block-sgs-info-box), same as sgs/accordion. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+					/>
+				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }

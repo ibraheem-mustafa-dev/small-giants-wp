@@ -176,30 +176,16 @@ if ( ! empty( $sgs_form_style_engine_input ) ) {
 	}
 }
 
-// Typography — declared selector (block.json selectors.typography.root,
-// none declared for sgs/form, so scope to the block root itself).
-$sgs_form_typography_args = array();
-if ( isset( $sgs_form_style_group['typography']['fontSize'] ) && '' !== $sgs_form_style_group['typography']['fontSize'] ) {
-	$sgs_form_typography_args['fontSize'] = (string) $sgs_form_style_group['typography']['fontSize'];
+// Typography — migrated off WP-native supports.typography onto the shared
+// TypographyControls/sgs_typography_css_rule() mechanism (D971/D972 full-
+// replacement track), root prefix '' (fontSize/fontWeight/fontStyle/
+// lineHeight). Registers the uid class unconditionally the same way the
+// legacy block did (it can't know in advance whether the helper will emit
+// any CSS), matching sgs/accordion's migrated shape.
+if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+	$sgs_form_supports_classes[] = $sgs_form_uid;
 }
-if ( isset( $sgs_form_style_group['typography']['lineHeight'] ) && '' !== $sgs_form_style_group['typography']['lineHeight'] ) {
-	$sgs_form_typography_args['lineHeight'] = (string) $sgs_form_style_group['typography']['lineHeight'];
-}
-if ( ! empty( $sgs_form_typography_args ) ) {
-	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
-		// The uid is hoisted above; this now registers the CLASS exactly once. It
-		// used to key on empty($sgs_form_uid), which the hoist made permanently
-		// false -- so the class stopped being added and .{uid}.sgs-form matched nothing.
-		$sgs_form_supports_classes[] = $sgs_form_uid;
-	}
-	$sgs_form_typography_scoped = wp_style_engine_get_styles(
-		array( 'typography' => $sgs_form_typography_args ),
-		array( 'selector' => '.' . $sgs_form_uid . '.sgs-form' )
-	);
-	if ( ! empty( $sgs_form_typography_scoped['css'] ) ) {
-		$sgs_form_supports_css .= $sgs_form_typography_scoped['css'];
-	}
-}
+$sgs_form_supports_css .= sgs_typography_css_rule( $attributes, '', $sgs_form_sel );
 
 $sgs_form_preset_text = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $sgs_form_preset_bg   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';

@@ -8,10 +8,11 @@
  * emitted scoped via wp_style_engine_get_styles() into the block's own
  * <style> tag, mirroring sgs/heading + sgs/quote.
  *
- * `typography` support (textAlign) is skip-serialised, read back, and
- * emitted scoped (same mechanism as color/spacing above), so the wrapper
- * stays inline-free regardless of which typography sub-features are
- * enabled in future.
+ * Typography (font-size/weight/style/line-height) is migrated off the old
+ * WP-native `supports.typography` onto the shared TypographyControls editor
+ * component + `sgs_typography_css_rule()` render helper (D971/D972
+ * full-replacement track), root prefix '' — emitted scoped, same mechanism
+ * as color/spacing above, so the wrapper stays inline-free.
  *
  * BOX-GROUP (contract §B): padding/margin are box objects. Base = WP-native
  * style.spacing.padding/margin (skip-serialised); tiers = paddingTablet/
@@ -238,15 +239,6 @@ $style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (stri
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
-// WP `typography` support values (skip-serialised in block.json → NOT
-// auto-inlined). Only `textAlign` is currently enabled in supports.typography
-// (rendered as a `has-text-align-*` class by get_block_wrapper_attributes(),
-// unaffected by skip-serialisation), but fontSize/lineHeight are read
-// defensively here so the wrapper stays inline-free if either is enabled in
-// future — mirrors sgs/quote's identical read of style.typography.
-$style_font_size   = isset( $attributes['style']['typography']['fontSize'] ) ? (string) $attributes['style']['typography']['fontSize'] : '';
-$style_line_height = isset( $attributes['style']['typography']['lineHeight'] ) ? (string) $attributes['style']['typography']['lineHeight'] : '';
-
 // ---------------------------------------------------------------------------
 // Scoped CSS assembly — content-hash uid is a CLASS (this block has a genuine
 // multi-child root: a row of <a> icon items, so the existing container div
@@ -338,17 +330,6 @@ if ( ! empty( $color_args ) ) {
 	$base_style_engine_args['color'] = $color_args;
 }
 
-$typography_args = array();
-if ( '' !== $style_font_size ) {
-	$typography_args['fontSize'] = $style_font_size;
-}
-if ( '' !== $style_line_height ) {
-	$typography_args['lineHeight'] = $style_line_height;
-}
-if ( ! empty( $typography_args ) ) {
-	$base_style_engine_args['typography'] = $typography_args;
-}
-
 if ( ! empty( $base_style_engine_args ) ) {
 	$base_scoped_styles = wp_style_engine_get_styles(
 		$base_style_engine_args,
@@ -387,6 +368,13 @@ if ( null !== $margin_mob_val ) {
 if ( $mobile_box_decls ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
 }
+
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
+// supports.typography (textAlign only — dead in practice, this root is
+// display:flex with no inline/block content of its own) with the framework's
+// own helper, which offers font-size/weight/style/line-height instead.
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
 
 // ---------------------------------------------------------------------------
 // Root element classes + attributes. NO 'style' key is passed to

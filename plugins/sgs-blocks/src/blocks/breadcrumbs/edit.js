@@ -6,7 +6,7 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
-import { SgsColourPanel, ResponsiveBoxControl } from '../../components';
+import { SgsColourPanel, ResponsiveBoxControl, TypographyControls } from '../../components';
 import { colourVar } from '../../utils';
 
 const SEPARATOR_OPTIONS = [
@@ -197,6 +197,23 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
 							}
 						} }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				{ /* Typography — replaces the old WP-native supports.typography
+				   (fontSize only) with the shared TypographyControls component +
+				   sgs_typography_css_rule() render.php helper (D971/D972
+				   full-replacement track). Root prefix "" since this is a
+				   single-target block; defaults also expose weight/style/line-
+				   height, which native typography never offered here. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
 					/>
 				</PanelBody>
 			</InspectorControls>

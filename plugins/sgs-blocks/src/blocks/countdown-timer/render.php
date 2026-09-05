@@ -151,9 +151,10 @@ $style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (stri
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
-// WP `typography` support values (skip-serialised).
-$style_font_size  = isset( $attributes['style']['typography']['fontSize'] ) ? (string) $attributes['style']['typography']['fontSize'] : '';
-$preset_size_slug = isset( $attributes['fontSize'] ) ? sanitize_html_class( $attributes['fontSize'] ) : '';
+// Typography — migrated off WP-native supports.typography onto the shared
+// TypographyControls/sgs_typography_css_rule() mechanism (D971/D972
+// full-replacement track). textAlign stays a plain custom-attr keyword
+// (TypographyControls offers no text-align field).
 $text_align_raw   = isset( $attributes['textAlign'] ) ? (string) $attributes['textAlign'] : '';
 $allowed_aligns   = array( 'left', 'center', 'right', 'justify' );
 $text_align       = in_array( $text_align_raw, $allowed_aligns, true ) ? $text_align_raw : '';
@@ -203,10 +204,6 @@ if ( ! empty( $color_args ) ) {
 	$base_args['color'] = $color_args;
 }
 
-if ( '' !== $style_font_size ) {
-	$base_args['typography'] = array( 'fontSize' => $style_font_size );
-}
-
 if ( ! empty( $base_args ) ) {
 	$base_out = wp_style_engine_get_styles( $base_args, array( 'selector' => $root_sel ) );
 	if ( ! empty( $base_out['css'] ) ) {
@@ -219,6 +216,12 @@ if ( ! empty( $base_args ) ) {
 if ( '' !== $text_align ) {
 	$scoped_css[] = "{$root_sel}{text-align:{$text_align};}";
 }
+
+// --- Typography — root prefix '', shared TypographyControls/
+// sgs_typography_css_rule() mechanism (D971/D972 full-replacement track).
+// Replaces the old WP-native supports.typography (fontSize only) with the
+// framework's own helper, which also now offers fontWeight/fontStyle/lineHeight.
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
 
 // --- Number/label colour custom-property VALUES (FR-32-4, D345) — scoped, NOT
 // inline. Values are sanitised via sgs_colour_value() and routed into the
@@ -327,9 +330,6 @@ if ( '' !== $preset_text_slug ) {
 if ( '' !== $preset_bg_slug ) {
 	$classes[] = 'has-background';
 	$classes[] = 'has-' . $preset_bg_slug . '-background-color';
-}
-if ( '' !== $preset_size_slug ) {
-	$classes[] = 'has-' . $preset_size_slug . '-font-size';
 }
 
 $root_attr_args = array(

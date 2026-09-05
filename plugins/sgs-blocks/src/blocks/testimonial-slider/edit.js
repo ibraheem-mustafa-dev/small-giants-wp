@@ -21,6 +21,7 @@ import {
 } from '@wordpress/components';
 import { SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
+	TypographyControls,
 	resolveColourToken,
 } from '../../components';
 import { colourVar } from '../../utils';
@@ -478,6 +479,22 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						);
 					} )() }
+				</PanelBody>
+			</InspectorControls>
+			{ /* ── Styles tab ─────────────────────────────────────────────
+			   Typography — replaces the old WP-native supports.typography
+			   (fontSize/lineHeight only) with the shared TypographyControls
+			   component + sgs_typography_css_rule() render.php helper
+			   (D971/D972 full-replacement track). Root prefix "" — the
+			   quote text itself is child-owned by sgs/testimonial, but the
+			   slider root scopes its own text-colour/typography styling. */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+					/>
 				</PanelBody>
 			</InspectorControls>
 			{ /* showLayout={false}: this block builds its OWN internal structure

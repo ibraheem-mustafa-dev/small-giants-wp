@@ -16,6 +16,7 @@ import {
 import { useEffect } from '@wordpress/element';
 import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel,
 	SgsBorderControl,
+	TypographyControls,
 } from '../../components';
 import { NumberControl } from '../../components/primitives';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
@@ -521,6 +522,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
+				{ /* Typography — replaces the old WP-native supports.typography
+					(fontSize/lineHeight only) with the shared TypographyControls
+					component + sgs_typography_css_rule() render.php helper (D971/D972
+					full-replacement track). Root prefix "" since this is a
+					single-target block; defaults also expose weight/style, which
+					native typography never offered here. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+					/>
+				</PanelBody>
 				<PanelBody
 					title={ __( 'Focus State', 'sgs-blocks' ) }
 					initialOpen={ false }

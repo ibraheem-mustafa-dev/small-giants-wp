@@ -28,11 +28,6 @@
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"__experimentalSkipSerialization": true
-		},
 		"spacing": {
 			"margin": true,
 			"padding": true,
@@ -67,8 +62,10 @@
 					"attrMap": {
 						"css:color": "native:color.text",
 						"css:background-color": "native:color.background",
-						"css:font-size": "native:typography.fontSize",
-						"css:line-height": "native:typography.lineHeight",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:border-width": "borderWidth",
@@ -77,7 +74,7 @@
 						"css:border-radius": "borderRadius",
 						"css:border-color-gradient": "borderColourGradient"
 					},
-					"_note": "Single-element block (the <nav> root) — no `layer` declared, so the 12 ARRANGEMENT members are never asked (this block has no grid/flex attrs at all — correct). Only fontSize+lineHeight are declared under typography support (no letterSpacing/textTransform/fontWeight/fontStyle/textAlign/fontFamily), no width/height/box-shadow/aspect-ratio/max-width attrs exist — all honest gaps."
+					"_note": "Single-element block (the <nav> root) — no `layer` declared, so the 12 ARRANGEMENT members are never asked (this block has no grid/flex attrs at all — correct). Typography migrated off the old WP-native supports.typography (fontSize+lineHeight only) onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972 full-replacement track), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight) — the helper also now offers fontWeight/fontStyle, which native typography never exposed here. No letterSpacing/textTransform/textAlign/fontFamily control is offered, and no width/height/box-shadow/aspect-ratio/max-width attrs exist — honest gaps."
 				},
 				"title": {
 					"label": "TOC title",
@@ -117,8 +114,7 @@
 		}
 	},
 	"selectors": {
-		"root": ".wp-block-sgs-table-of-contents",
-		"typography": ".sgs-toc__title"
+		"root": ".wp-block-sgs-table-of-contents"
 	},
 	"attributes": {
 		"headingLevels": {
@@ -241,6 +237,30 @@
 		"borderRadius": {
 			"type": "object",
 			"default": {}
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		}
 	},
 	"render": "file:./render.php",

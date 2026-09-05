@@ -149,8 +149,7 @@ $style_border_args     = ! empty( $style_group['border'] ) && is_array( $style_g
 // RADIUS (and any other key) is left untouched — 388 stored instances rely on
 // style.border.radius reaching wp_style_engine_get_styles() below.
 unset( $style_border_args['color'] );
-$style_typography_args = ! empty( $style_group['typography'] ) && is_array( $style_group['typography'] ) ? $style_group['typography'] : array();
-$style_shadow          = isset( $style_group['shadow'] ) ? (string) $style_group['shadow'] : '';
+$style_shadow = isset( $style_group['shadow'] ) ? (string) $style_group['shadow'] : '';
 
 // D744: native color support (background/text/link/gradients) is retired —
 // $style_group['color'] and $style_group['elements']['link'] are no longer
@@ -159,9 +158,13 @@ $style_shadow          = isset( $style_group['shadow'] ) ? (string) $style_group
 // (they are conditionally-registered attrs, not always-present ones), so
 // there is no preset-slug has-*-color class to re-add either — the whole
 // native colour surface this section used to bridge is gone by construction,
-// not by a runtime check. $preset_fontsize_slug (typography.fontSize, a
-// SEPARATE support left untouched) is still needed below.
-$preset_fontsize_slug = isset( $attributes['fontSize'] ) ? sanitize_html_class( $attributes['fontSize'] ) : '';
+// not by a runtime check.
+//
+// D971/D972 — typography (fontSize/lineHeight, previously a native
+// supports.typography with __experimentalSkipSerialization) is retired the
+// same way: fontSize is now a block-private tier-object attribute consumed
+// below via sgs_typography_css_rule(), so there is no preset fontSize SLUG
+// left to derive a has-*-font-size class from either.
 
 // ---------------------------------------------------------------------------
 // 5. Wrapper CSS custom-property VALUES (hover colours + transition timing).
@@ -224,13 +227,10 @@ if ( $sgs_hover_gray ) {
 	$sgs_classes[] = 'sgs-has-grayscale';
 }
 
-// D744: has-text-color / has-background / has-*-gradient-background are
-// retired with native color support — WP no longer registers textColor/
-// backgroundColor/gradient on this block's schema, so there is no preset
-// slug left to re-add a class for.
-if ( '' !== $preset_fontsize_slug ) {
-	$sgs_classes[] = 'has-' . $preset_fontsize_slug . '-font-size';
-}
+// D744/D971: has-text-color / has-background / has-*-gradient-background /
+// has-*-font-size are all retired with their native supports — WP no longer
+// registers textColor/backgroundColor/gradient/fontSize preset slugs on this
+// block's schema, so there is no preset slug left to re-add a class for.
 
 // ---------------------------------------------------------------------------
 // 8. Scoped CSS assembly — box/border/colour/typography/shadow/width +
@@ -263,10 +263,6 @@ if ( ! empty( $style_border_args ) ) {
 	$base_style_engine_args['border'] = $style_border_args;
 }
 
-if ( ! empty( $style_typography_args ) ) {
-	$base_style_engine_args['typography'] = $style_typography_args;
-}
-
 if ( '' !== $style_shadow ) {
 	$base_style_engine_args['shadow'] = $style_shadow;
 }
@@ -280,6 +276,15 @@ if ( ! empty( $base_style_engine_args ) ) {
 		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
+
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
+// supports.typography (fontSize + lineHeight only) with the framework's own
+// helper, which also now offers fontWeight/fontStyle. Emitted onto the SAME
+// root selector InnerBlocks children inherit from (HC2 — parent owns LAYOUT,
+// child owns TYPOGRAPHY; an unset child inherits this, any child setting its
+// own typography still wins by cascade).
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
 
 // --- D744: Text colour (flat-or-gradient, base + hover) — block-private
 // replacement for the retired native supports.color.text/gradients. Both

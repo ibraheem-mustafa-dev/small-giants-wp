@@ -17,6 +17,7 @@ import {
 import { Icon, plus, close } from '@wordpress/icons';
 import { DesignTokenPicker, IconPicker, LinkPopoverField, SgsColourPanel, resolveColourToken,
 	SgsBorderControl,
+	TypographyControls,
 	fillRow,
 } from '../../components';
 import { colourVar, resolveResponsiveTier, resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle } from '../../utils';
@@ -569,6 +570,19 @@ export default function Edit( { attributes, setAttributes } ) {
 								linked: true,
 							},
 						] }
+					/>
+				</PanelBody>
+				{ /* Typography — replaces the old WP-native supports.typography (fontSize/
+				   lineHeight only, mis-scoped onto the block root) with the shared
+				   TypographyControls component + sgs_typography_css_rule() render.php helper
+				   (D971/D972 full-replacement track). Prefix "title" — the native support this
+				   panel replaces always rendered onto `.sgs-pricing-table__name`
+				   (block.json `selectors.typography`), the "title" element, not the wrapper. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="title"
 					/>
 				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>

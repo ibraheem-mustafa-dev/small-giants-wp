@@ -32,11 +32,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"__experimentalSkipSerialization": true
-		},
 		"spacing": {
 			"margin": true,
 			"padding": true,
@@ -138,10 +133,14 @@
 						"text"
 					],
 					"prefix": "title",
-					"_note": "css:color resolves via the default convention (titleColour). No font-size/weight attrs exist — honest GAPs. states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below for the one-attr/four-elements ancestor-hover shape this closes. titleColourGradient (778879732 rollout, Phase 3) is the text-colour gradient sibling, emitted as a direct decl in render.php rather than via the block's --sgs-pg-* custom-property chain (which cannot carry a gradient).",
+					"_note": "css:color resolves via the default convention (titleColour). states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below for the one-attr/four-elements ancestor-hover shape this closes. titleColourGradient (778879732 rollout, Phase 3) is the text-colour gradient sibling, emitted as a direct decl in render.php rather than via the block's --sgs-pg-* custom-property chain (which cannot carry a gradient). Typography (font-size/weight/style/line-height) migrated off WP-native `supports.typography` onto the shared TypographyControls/sgs_typography_css_rule() mechanism 2026-09-05 (D971/D972) -- this element was the native support's actual target (block.json `selectors.typography` pointed at `.sgs-post-grid__title`, not the block root), so prefix 'title' carries the new attrs cleanly via the default {prefix}{Suffix} convention.",
 					"attrMap": {
 						"css:color": "titleColour",
-						"css:color-gradient": "titleColourGradient"
+						"css:color-gradient": "titleColourGradient",
+						"css:font-size": "titleFontSize",
+						"css:font-weight": "titleFontWeight",
+						"css:font-style": "titleFontStyle",
+						"css:line-height": "titleLineHeight"
 					},
 					"states": {
 						"hover": {
@@ -254,8 +253,7 @@
 		}
 	},
 	"selectors": {
-		"root": ".wp-block-sgs-post-grid",
-		"typography": ".sgs-post-grid__title"
+		"root": ".wp-block-sgs-post-grid"
 	},
 	"attributes": {
 		"postType": {
@@ -402,6 +400,30 @@
 		"titleColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"titleFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"titleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"titleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"titleFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"titleLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"titleLineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		},
 		"excerptColour": {
 			"type": "string",
