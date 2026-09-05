@@ -2482,6 +2482,59 @@ if _SGS_DB_PRESENT_AT_IMPORT:
 
 
 # ----------------------------------------------------------------------------
+# Idempotent schema migration — variant_composition_slots (Task 2,
+# InnerBlocks-composition fingerprinting, 2026-09-05)
+# ----------------------------------------------------------------------------
+# Sibling table to variant_slots above, but for CHILD BLOCK SLUGS rather than
+# attribute (name, value) pairs: a variant's discriminating InnerBlocks
+# composition, extracted from `variations.js` by
+# `variant-value-extractor/extract-variation-values.js` (Task 1) and
+# populated by `/sgs-update` Stage 1 (Task 2) via set-difference over each
+# variant's `innerBlockSlugs`, exactly mirroring how variant_slots is
+# populated over attribute pairs.
+#
+# DELIBERATELY DUPLICATED in both this file and sgs-update-v2.py, for the
+# SAME REASON variant_slots's own schema-ensure is duplicated above: a
+# one-off writer script (`/sgs-update`) and this converter package don't
+# share a schema-migration import — see the block comment above
+# `_migrate_variant_detection_schema` for the full rationale. This is pure
+# schema (additive, no data); population is a `/sgs-update` responsibility.
+#
+# Safe to call repeatedly. Runs at module load.
+def _migrate_variant_composition_schema() -> None:
+    """Idempotent migration: create the `variant_composition_slots` table if
+    absent. Schema only — no data seeding.
+
+    Safe to call repeatedly. Runs at module load.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS variant_composition_slots (
+                block_slug TEXT NOT NULL,
+                variant_value TEXT NOT NULL,
+                unique_child_slug TEXT NOT NULL,
+                PRIMARY KEY (block_slug, variant_value, unique_child_slug)
+            )
+            """
+        )
+        conn.commit()
+    except sqlite3.OperationalError:
+        # DB read-only / locked / missing — soft-fail. Composition detection
+        # then simply has no rows to read (callers must treat absence as
+        # "no fingerprint", never an error).
+        pass
+    finally:
+        conn.close()
+
+
+# Run migration at module load (idempotent — safe to call repeatedly).
+if _SGS_DB_PRESENT_AT_IMPORT:
+    _migrate_variant_composition_schema()
+
+
+# ----------------------------------------------------------------------------
 # Idempotent schema migration — block_composition.container_kind (D150 2026-06-02)
 # ----------------------------------------------------------------------------
 # Workstream A: adds a container_kind TEXT column (section|layout|content|NULL)

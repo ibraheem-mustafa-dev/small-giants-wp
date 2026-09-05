@@ -602,6 +602,29 @@ def _index_sgs_block_files(
     if "slot_value" not in variant_slots_cols:
         c.execute("ALTER TABLE variant_slots ADD COLUMN slot_value TEXT")
 
+    # --- variant_composition_slots schema (Task 2, InnerBlocks-composition ---
+    # fingerprinting, 2026-09-05). Sibling table to variant_slots above, but
+    # for CHILD BLOCK SLUGS rather than attribute (name, value) pairs: a
+    # variant's discriminating InnerBlocks composition (e.g. sgs/nav-drawer's
+    # `split-zone-serif` uniquely nests `sgs/card-grid`; `two-column-editorial`
+    # nests nothing unique). Populated by /sgs-update Stage 1 from Task 1's
+    # JS extractor (`variant-value-extractor/extract-variation-values.js`)
+    # reading each variant's `innerBlockSlugs`. Deliberately duplicated here
+    # AND in converter/db/db_lookup.py's own schema-ensure — same reasoning
+    # as variant_slots's duplication (see that table's migration comment in
+    # db_lookup.py): a one-off writer script (this one) and the converter
+    # package don't share a schema-migration import.
+    c.execute(
+        """
+        CREATE TABLE IF NOT EXISTS variant_composition_slots (
+            block_slug TEXT NOT NULL,
+            variant_value TEXT NOT NULL,
+            unique_child_slug TEXT NOT NULL,
+            PRIMARY KEY (block_slug, variant_value, unique_child_slug)
+        )
+        """
+    )
+
     # --- preset_implications schema (Build #3 Option B, AUTO-DERIVE, 2026-07-24) ---
     # Preset-absence transfer: teaches the converter what a block's style-preset
     # enum values (cardStyle/effectHover) actually PAINT (box-shadow/border/
@@ -939,6 +962,48 @@ def _index_sgs_block_files(
                         "INSERT OR IGNORE INTO variant_slots "
                         "(block_slug, variant_value, unique_slot, slot_value) VALUES (?, ?, ?, NULL)",
                         (slug, v_value, slot),
+                    )
+
+        # --- variant_composition_slots population (Task 2, InnerBlocks-
+        # composition fingerprinting, 2026-09-05) ---
+        # THIRD population pass, sibling to the two `variant_slots` branches
+        # above. Where those score a variant by its ATTRIBUTE (name, value)
+        # pairs, this scores it by which CHILD BLOCK SLUGS its `variations.js`
+        # nests — e.g. sgs/nav-drawer's `split-zone-serif` uniquely nests
+        # `sgs/card-grid` among its siblings, a signal invisible to the
+        # attribute-based passes above (all 7 nav-drawer variants nest
+        # `sgs/nav-menu`, so that slug alone discriminates nothing).
+        # Set-difference methodology is IDENTICAL to the value-aware
+        # attribute-pairs branch above: each variant's discriminating child
+        # slugs = its own slug SET minus the UNION of every sibling variant's
+        # slug set. Set semantics — a child slug repeated within one variant's
+        # own list doesn't matter; what matters is whether ANY sibling
+        # variant's list also contains that slug at all.
+        #
+        # Soft-optional enrichment, never a hard /sgs-update failure: a
+        # missing `variations.js`, missing `node`, parse error, or non-JSON
+        # extractor output all fall back to "no composition rows for this
+        # block" via `_extract_variation_composition_slugs` returning None —
+        # exactly the same soft-fail-to-None contract as
+        # `_extract_variation_attribute_values` above.
+        c.execute("DELETE FROM variant_composition_slots WHERE block_slug = ?", (slug,))
+        composition_variants = _extract_variation_composition_slugs(block_dir)
+        if composition_variants:
+            per_variant_child_sets: dict[str, set] = {
+                v_name: set(v_slugs)
+                for v_name, v_slugs in composition_variants.items()
+                if isinstance(v_slugs, list)
+            }
+            for v_name, own_children in per_variant_child_sets.items():
+                sibling_children: set = set()
+                for other_name, other_children in per_variant_child_sets.items():
+                    if other_name != v_name:
+                        sibling_children.update(other_children)
+                for child_slug in sorted(own_children - sibling_children):
+                    c.execute(
+                        "INSERT OR IGNORE INTO variant_composition_slots "
+                        "(block_slug, variant_value, unique_child_slug) VALUES (?, ?, ?)",
+                        (slug, v_name, child_slug),
                     )
 
         # --- preset_implications AUTO-DERIVE (Build #3 Option B, 2026-07-24) ---
@@ -2291,6 +2356,64 @@ def _extract_variation_attribute_values(block_dir: Path) -> "dict | None":
         return None
     return {
         v_name: v_data.get("attributes", {})
+        for v_name, v_data in variants.items()
+        if isinstance(v_data, dict)
+    }
+
+
+def _extract_variation_composition_slugs(block_dir: Path) -> "dict | None":
+    """Run `extract-variation-values.js` against `block_dir/variations.js` and
+    return each variant's `innerBlockSlugs` list.
+
+    Mirrors `_extract_variation_attribute_values` exactly — same extractor,
+    same subprocess invocation (timeout, args), same soft-fail-to-None on a
+    missing `variations.js`, missing extractor script, missing `node`, a
+    non-zero exit, or non-JSON stdout — but reads the extractor's
+    `innerBlockSlugs` field per variant instead of `attributes`.
+    `unresolvedInnerBlocks` (a per-variant count, not a slug) is intentionally
+    not surfaced here — an unresolved child contributes nothing to either the
+    variant's own slug set or the sibling union, so it cannot manufacture a
+    false discriminator; it is simply invisible to this table, exactly like an
+    absent InnerBlocks entry.
+
+    Returns `{variant_name: [child_block_slug, ...], ...}`, or `None` when the
+    block has no `variations.js` or extraction failed. A `None` return means
+    "no composition fingerprint for this block" — this is a soft-optional
+    enrichment, never a hard dependency for `/sgs-update` to complete.
+    """
+    variations_path = block_dir / "variations.js"
+    if not variations_path.exists():
+        return None
+    if not _VARIATIONS_VALUE_EXTRACTOR.exists():
+        print(
+            f"Stage 1 (variant-composition): WARN extractor script missing at "
+            f"{_VARIATIONS_VALUE_EXTRACTOR} — skipping composition fingerprint for {block_dir.name}"
+        )
+        return None
+    try:
+        proc = subprocess.run(
+            ["node", str(_VARIATIONS_VALUE_EXTRACTOR), str(variations_path)],
+            capture_output=True, text=True, timeout=30, check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        print(f"Stage 1 (variant-composition): WARN failed to run extractor for {block_dir.name}: {exc}")
+        return None
+    if proc.returncode != 0:
+        print(
+            f"Stage 1 (variant-composition): WARN extractor exited {proc.returncode} for "
+            f"{block_dir.name}: {(proc.stderr or '').strip()}"
+        )
+        return None
+    try:
+        payload = json.loads(proc.stdout)
+    except (json.JSONDecodeError, ValueError) as exc:
+        print(f"Stage 1 (variant-composition): WARN extractor emitted non-JSON for {block_dir.name}: {exc}")
+        return None
+    variants = payload.get("variants") if isinstance(payload, dict) else None
+    if not isinstance(variants, dict):
+        return None
+    return {
+        v_name: v_data.get("innerBlockSlugs", [])
         for v_name, v_data in variants.items()
         if isinstance(v_data, dict)
     }
