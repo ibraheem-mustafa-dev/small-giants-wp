@@ -3133,6 +3133,31 @@
 			"notes": "Added 2026-08-16 (D644, gradient rollout Task 1b decision). Mirrors css:fill's shape exactly — the same 'a CSS property the registry lacked' gap, one property earlier. Distinct from css:fill: fill paints closed SVG geometry (a shape divider's path), stroke paints line geometry (an icon's outline). SGS icons (Lucide) are stroke-based, so a gradient-capable icon control needs this member to exist before it can declare \"css:stroke\": \"<attr>\" in an element's attrMap."
 		},
 		{
+			"setting_key": "css:fill-gradient",
+			"category": "css-property",
+			"label": "Fill (SVG paint, gradient)",
+			"optimal_control": {
+				"component": "DesignTokenPicker (states array with gradientValue/onGradientChange, as every other gradient-capable colour control)",
+				"props": {
+					"enableAlpha": true,
+					"clearable": true
+				},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "enableAlpha + clearable",
+				"reset_disclosure": "allowReset"
+			},
+			"shared_component": "DesignTokenPicker",
+			"spec_ref": "Spec 35 Part B (Colour completeness) + Part H",
+			"current_state": "3 instances at declaration time (sgs/google-reviews starColourGradient, sgs/star-rating starColourGradient + emptyColourGradient)",
+			"divergence": "painted on fill-based SVG glyph geometry (star ratings) via a real SVG gradient def + fill:url(#id) CSS override, so css:color / css:background-image do not apply",
+			"divergence_severity": "low",
+			"notes": "Added 2026-09-05, extending the D636/D644 gradient rollout from stroke-based icon glyphs (css:stroke above) to fill-based SVG shapes. Same mechanism, one target swapped: sgs_svg_stroke_gradient() (helpers-svg-gradient.php) gained a third $target param ('stroke'|'fill') so it can emit fill:url(#id) instead of stroke:url(#id) for glyphs whose presentation attribute is fill=\"...\" (star ratings) rather than stroke=\"currentColor\" (icon glyphs). Distinct from css:fill: that member is the FLAT fill value; this is its gradient sibling, same {flatAttr}Gradient naming convention as css:stroke's icon-colour siblings."
+		},
+		{
 			"setting_key": "css:transform",
 			"category": "css-property",
 			"label": "Transform (flip / mirror / rotate)",

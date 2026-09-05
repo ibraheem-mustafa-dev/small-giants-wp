@@ -165,6 +165,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		groupBorderColourHover,
 		groupBorderColourGradientHover,
 		iconColour,
+		iconColourGradient,
 		accentBackgroundImage,
 		maxWidth,
 		panelPadding,
@@ -196,7 +197,19 @@ export default function Edit( { attributes, setAttributes } ) {
 	// / `.sgs-mega-aside` even though those are separate elements.
 	const iconBackgroundValue = colourVar( iconBackground ) || 'var(--wp--preset--color--accent)';
 	const groupBorderValue = colourVar( groupBorderColourHover ) || 'var(--wp--preset--color--accent)';
-	const iconColourValue = colourVar( iconColour ) || 'var(--wp--preset--color--accent)';
+	// Gradient-set preview (D636 pattern, mirrors sgs/text's firstLetterColour
+	// precedent): a background-clip:text declaration cannot be expressed
+	// through a single CSS custom-property value consumed by a DESCENDANT
+	// selector — `--sgs-mm-accent-text` feeds `.sgs-icon-list__icon` several
+	// DOM levels down via style.css/editor.css, so there is nowhere to attach
+	// the extra background-image/background-clip/color:transparent trio. When
+	// the gradient sibling is set the canvas simply falls back to the accent
+	// default rather than emitting an invalid custom-property value; the
+	// frontend (render.php + sgs_text_colour_decl()) renders the gradient
+	// correctly via a direct rule scoped to the descendant selector.
+	const iconColourValue = iconColourGradient
+		? 'var(--wp--preset--color--accent)'
+		: colourVar( iconColour ) || 'var(--wp--preset--color--accent)';
 	const accentImageValue = colourVar( accentBackgroundImage ) || 'var(--wp--preset--color--accent)';
 	const shellStyle = {
 		// Per-role accent custom properties (D643) — style.css derives
@@ -364,6 +377,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) =>
 									setAttributes( { iconColour: val ?? 'accent' } ),
 								linked: true,
+								gradientValue: iconColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconColourGradient: val ?? '' } ),
 							},
 						],
 					},

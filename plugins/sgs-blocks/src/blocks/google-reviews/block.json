@@ -96,7 +96,8 @@
 						"fill"
 					],
 					"attrMap": {
-						"css:fill": "starColour"
+						"css:fill": "starColour",
+						"css:fill-gradient": "starColourGradient"
 					},
 					"states": {
 						"hover": {
@@ -293,6 +294,10 @@
 		"starColour": {
 			"type": "string",
 			"default": "accent"
+		},
+		"starColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"starColourHover": {
 			"type": "string",

@@ -75,9 +75,10 @@
 					],
 					"attrMap": {
 						"css:background-color": "iconBackground",
-						"css:color": "iconColour"
+						"css:color": "iconColour",
+						"css:color-gradient": "iconColourGradient"
 					},
-					"_note": "CROSS-BLOCK REUSE (2026-08-28, NULL css_element fix proposal §5): the actual rendered selector is `.sgs-icon-list__icon` — a CHILD block's (sgs/icon-list) own BEM class, reused here as markup inside this panel's parent-paints-child model (CF-10, see the `panel` element's own note). This element exists so iconBackground/iconColour (the icon-chip background-color/color painted uniformly across all 3 group styles — columns/cards/minimal, render.php §4) classify to a real owning element instead of drifting to NULL css_element, matching the same cross-block-reuse documentation pattern already used elsewhere in this codebase (e.g. how a composite documents a child-owned selector it paints but does not declare controls for)."
+					"_note": "CROSS-BLOCK REUSE (2026-08-28, NULL css_element fix proposal §5): the actual rendered selector is `.sgs-icon-list__icon` — a CHILD block's (sgs/icon-list) own BEM class, reused here as markup inside this panel's parent-paints-child model (CF-10, see the `panel` element's own note). This element exists so iconBackground/iconColour (the icon-chip background-color/color painted uniformly across all 3 group styles — columns/cards/minimal, render.php §4) classify to a real owning element instead of drifting to NULL css_element, matching the same cross-block-reuse documentation pattern already used elsewhere in this codebase (e.g. how a composite documents a child-owned selector it paints but does not declare controls for). iconColourGradient (mega-panel.iconColour gradient-conformance close-out) is the sibling gradient attribute — added to this attrMap so it classifies to the SAME `icon` element instead of drifting ORPHAN:UNCLASSIFIED, matching `panel`/`group`'s own css:border-color-gradient siblings above."
 				},
 				"group": {
 					"label": "Group tile",
@@ -156,6 +157,11 @@
 			"type": "string",
 			"default": "accent",
 			"_note": "Renamed from `accentTextColour` (2026-08-28, NULL css_element fix proposal §5) — split from the old single `accent` attribute (D643). Feeds the icon-chip `color` (icon glyph colour) across all 3 group styles. Default unchanged from the retired `accent` attribute. The generic name matches the established codebase convention and closes a NULL css_element classification gap via the new `icon` manifest element below."
+		},
+		"iconColourGradient": {
+			"type": "string",
+			"default": "",
+			"_note": "Sibling gradient attribute (D636 text-colour/gradient pattern) for `iconColour` — closes the mega-panel.iconColour non-conformant colour row. A non-empty valid CSS gradient string wins over the flat `iconColour` on the icon-chip `color`, rendered via `sgs_text_colour_decl()`'s background-clip:text trio + its mandatory `sgs_text_colour_gradient_fallback_rule()` companion. `iconColour` itself is left completely untouched when this is set, matching every other flat/gradient sibling pair in this block (groupBorderColour/groupBorderColourGradient etc.)."
 		},
 		"accentBackgroundImage": {
 			"type": "string",

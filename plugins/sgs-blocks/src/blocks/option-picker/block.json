@@ -85,7 +85,8 @@
 					"prefix": "pill",
 					"attrMap": {
 						"css:background-color": "pillBgColour",
-						"css:border-color-gradient": "pillBorderColourGradient"
+						"css:border-color-gradient": "pillBorderColourGradient",
+						"css:color-gradient": "pillTextColourGradient"
 					},
 					"states": {
 						"hover": {
@@ -104,7 +105,7 @@
 							}
 						}
 					},
-					"_note": "FR-35-5 — 'selected' (NOT :hover/:active) is the correct state name for the pillSelected* family: style.css:200/246/277 key the selected look off `input[type=radio]:checked ~ .pill`, which is the [aria-current]/is-active family the states vocabulary calls 'selected'. UPDATE (2026-09-03, block owner reversal of the original FR-35-5 exception below): the CSS ALSO shows a `:hover` visual (style.css:192/241/272) which USED TO be a STATIC preset-variant rule with no distinct hover-only attribute behind it — Bean explicitly reversed that exception, so `pillBgColourHover`/`pillTextColourHover` now exist as real attributes and are declared as this element's 'hover' state below, mirroring sgs/nav-menu's item-bg/item-text normal+hover row pattern. The original rationale is preserved here for context only: 'no distinct hover-only attribute behind it (no pillHoverBgColour etc. exists) — correctly NOT declared as a state per FR-35-5 rule 1 (opt-in, attribute-backed only)' — that reasoning no longer applies now that the attributes exist. css:background-color needs explicit attrMap (pillBgColour doesn't match the default Background/Bg/BackgroundColour suffixes); css:border-color (pillBorderColour) and css:border-radius (pillBorderRadius) and css:padding (pillPadding) and css:font-size (pillFontSize) all resolve via the default convention. css:font-weight is an honest gap — no pillFontWeight attr exists. GRADIENT DEFERRED (2026-09-03, named not silently dropped): pillBgColourHover paints via a CSS custom-property fallback chain (`var(--sgs-op-bg-hover, var(--sgs-op-bg, <preset default>))`) feeding a `background-color` declaration in style.css — a gradient needs `background-image` instead, so adding it here means conditionally switching which property the rule declares, not just the value. That is a distinct design problem from the fill/border gradient mechanism (`sgs_background_paint_decl()`/`sgs_border_gradient_css()`) used elsewhere this session and needs its own pass."
+					"_note": "FR-35-5 — 'selected' (NOT :hover/:active) is the correct state name for the pillSelected* family: style.css:200/246/277 key the selected look off `input[type=radio]:checked ~ .pill`, which is the [aria-current]/is-active family the states vocabulary calls 'selected'. UPDATE (2026-09-03, block owner reversal of the original FR-35-5 exception below): the CSS ALSO shows a `:hover` visual (style.css:192/241/272) which USED TO be a STATIC preset-variant rule with no distinct hover-only attribute behind it — Bean explicitly reversed that exception, so `pillBgColourHover`/`pillTextColourHover` now exist as real attributes and are declared as this element's 'hover' state below, mirroring sgs/nav-menu's item-bg/item-text normal+hover row pattern. The original rationale is preserved here for context only: 'no distinct hover-only attribute behind it (no pillHoverBgColour etc. exists) — correctly NOT declared as a state per FR-35-5 rule 1 (opt-in, attribute-backed only)' — that reasoning no longer applies now that the attributes exist. css:background-color needs explicit attrMap (pillBgColour doesn't match the default Background/Bg/BackgroundColour suffixes); css:border-color (pillBorderColour) and css:border-radius (pillBorderRadius) and css:padding (pillPadding) and css:font-size (pillFontSize) all resolve via the default convention. css:font-weight is an honest gap — no pillFontWeight attr exists. GRADIENT DEFERRED (2026-09-03, named not silently dropped): pillBgColourHover paints via a CSS custom-property fallback chain (`var(--sgs-op-bg-hover, var(--sgs-op-bg, <preset default>))`) feeding a `background-color` declaration in style.css — a gradient needs `background-image` instead, so adding it here means conditionally switching which property the rule declares, not just the value. That is a distinct design problem from the fill/border gradient mechanism (`sgs_background_paint_decl()`/`sgs_border_gradient_css()`) used elsewhere this session and needs its own pass. pillTextColourGradient (2026-09-05) is UNRELATED to that deferral — resting text-colour already paints via a plain `color:` declaration (not `background-color`), so the D636 text builder (`sgs_resolve_text_colour_or_gradient()`/`sgs_text_colour_decl()`/`sgs_text_colour_gradient_fallback_rule()`) applies directly, same recipe as labelColourGradient; css:color-gradient needs the explicit attrMap entry above since the default prefix convention only covers css:color, not the gradient sibling."
 				}
 			},
 			"boxFamilies": {
@@ -239,6 +240,11 @@
 		"pillTextColour": {
 			"type": "string",
 			"default": ""
+		},
+		"pillTextColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting pill text via background-clip:text (D636 text builder). Non-empty wins over pillTextColour."
 		},
 		"pillBgColourHover": {
 			"type": "string",

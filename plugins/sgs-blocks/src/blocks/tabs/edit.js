@@ -52,6 +52,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		tabAlignment,
 		tabStyle,
 		tabTextColour,
+		tabTextColourGradient,
 		tabBgColour,
 		tabActiveTextColour,
 		tabActiveBgColour,
@@ -212,6 +213,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: tabTextColour,
 								onChange: ( val ) => setAttributes( { tabTextColour: val ?? '' } ),
 								linked: true,
+								gradientValue: tabTextColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { tabTextColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'current',

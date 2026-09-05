@@ -178,6 +178,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		pillBgColour,
 		pillBgColourHover,
 		pillTextColour,
+		pillTextColourGradient,
 		pillTextColourHover,
 		pillBorderColour,
 		pillBorderColourGradient,
@@ -288,6 +289,22 @@ export default function Edit( { attributes, setAttributes } ) {
 	// preview in this component.
 	const pillPaddingPreview = boxShorthand( pillPadding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 
+	// Pill TEXT colour/gradient preview — flat pillTextColour already renders
+	// in-canvas via the --sgs-op-text custom-property VALUE set on the root
+	// (buildRootPreviewStyle() above, consumed by style.css's existing
+	// `color:var(--sgs-op-text,…)` rules), so this is additive: empty for a
+	// flat/unset value (resolveTextColourPreviewStyle() returns `{}`, no
+	// duplicate declaration), and the MANDATORY inline preview only for a
+	// gradient — a CSS custom property cannot carry a gradient value, so the
+	// var() mechanism alone cannot preview it (same reasoning as the root
+	// border-gradient preview at buildRootPreviewStyle() above). Same recipe
+	// as labelColour/labelColourGradient's preview further down this file.
+	const pillTextPreviewStyle = resolveTextColourPreviewStyle(
+		pillTextColour,
+		pillTextColourGradient,
+		colourVar
+	);
+
 	/* ── Canvas preview pills ── */
 	const renderPills = () => {
 		if ( optionItems.length === 0 ) {
@@ -314,7 +331,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				<span key={ index } className={ pillClass }>
 					<span
 						className="sgs-option-picker__pill"
-						style={ pillPaddingPreview ? { padding: pillPaddingPreview } : undefined }
+						style={ {
+							...( pillPaddingPreview ? { padding: pillPaddingPreview } : {} ),
+							...pillTextPreviewStyle,
+						} }
 					>
 						{ item.label || item.key || `Option ${ index + 1 }` }
 					</span>
@@ -392,6 +412,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'pillText',
 						label: __( 'Pill text', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -399,6 +420,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: pillTextColour,
 								onChange: ( val ) => setAttributes( { pillTextColour: val ?? '' } ),
 								linked: true,
+								gradientValue: pillTextColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { pillTextColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -406,6 +430,14 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: pillTextColourHover,
 								onChange: ( val ) => setAttributes( { pillTextColourHover: val ?? '' } ),
 								linked: true,
+								// No pillTextColourHoverGradient attribute exists (out of
+								// scope for this rollout — see block.json pill-element
+								// note). GradientCapableColourControl's Solid picker calls
+								// state.onGradientChange('') unconditionally on every pick
+								// regardless of which state tab is active, so every state
+								// in a gradientCapable row needs a handler even when it has
+								// nothing to persist — a no-op here, not a missing feature.
+								onGradientChange: () => {},
 							},
 							{
 								key: 'current',
@@ -413,6 +445,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: pillSelectedTextColour,
 								onChange: ( val ) => setAttributes( { pillSelectedTextColour: val ?? '' } ),
 								linked: true,
+								// Same reasoning as 'hover' above — no
+								// pillSelectedTextColourGradient attribute exists.
+								onGradientChange: () => {},
 							},
 						],
 					},

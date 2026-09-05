@@ -159,6 +159,8 @@ function PreviewCard( { post, attributes } ) {
 		excerptColourGradient,
 		metaColour,
 		metaColourGradient,
+		categoryBadgeColour,
+		categoryBadgeColourGradient,
 		readMoreColour,
 		readMoreColourGradient,
 		cardBgColour,
@@ -174,6 +176,7 @@ function PreviewCard( { post, attributes } ) {
 	const titleStyle = resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar );
 	const excStyle   = resolveTextColourPreviewStyle( excerptColour, excerptColourGradient, colourVar );
 	const metaStyle  = resolveTextColourPreviewStyle( metaColour, metaColourGradient, colourVar );
+	const badgeStyle = resolveTextColourPreviewStyle( categoryBadgeColour, categoryBadgeColourGradient, colourVar );
 	const rmStyle    = resolveTextColourPreviewStyle( readMoreColour, readMoreColourGradient, colourVar );
 
 	const isOverlay = cardStyle === 'overlay';
@@ -198,7 +201,7 @@ function PreviewCard( { post, attributes } ) {
 					</div>
 
 					{ showCategory && firstCat && ( cardStyle === 'card' || isOverlay ) && (
-						<span className="sgs-post-grid__badge">
+						<span className="sgs-post-grid__badge" style={ badgeStyle }>
 							{ firstCat.name }
 						</span>
 					) }
@@ -220,7 +223,7 @@ function PreviewCard( { post, attributes } ) {
 				) }
 
 				{ showCategory && firstCat && ( cardStyle === 'flat' || cardStyle === 'minimal' ) && (
-					<span className="sgs-post-grid__category">
+					<span className="sgs-post-grid__category" style={ badgeStyle }>
 						{ firstCat.name }
 					</span>
 				) }
@@ -292,6 +295,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		metaColour,
 		metaColourGradient,
 		categoryBadgeColour,
+		categoryBadgeColourGradient,
 		categoryBadgeBgColour,
 		readMoreColour,
 		readMoreColourGradient,
@@ -508,12 +512,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'category-badge-text',
 						label: __( 'Category badge text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: categoryBadgeColour,
 								onChange: ( val ) => setAttributes( { categoryBadgeColour: val ?? '' } ),
+								gradientValue: categoryBadgeColourGradient,
+								onGradientChange: ( val ) => setAttributes( { categoryBadgeColourGradient: val ?? '' } ),
 								linked: true,
 							},
 						],

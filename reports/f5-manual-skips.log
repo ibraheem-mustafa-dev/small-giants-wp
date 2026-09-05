@@ -1,0 +1,2 @@
+timestamp | script | type | reason
+2026-09-05 02:27:53 | db-consistency/run.py | MANUAL SKIP | pre-existing DB-consistency findings across 8 unrelated blocks from concurrent sessions live-DB reseeds, none touched by this commit

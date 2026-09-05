@@ -19,17 +19,19 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-$rating              = (float) ( $attributes['rating'] ?? 5 );
-$max_rating          = (int) ( $attributes['maxRating'] ?? 5 );
-$star_size           = (int) ( $attributes['starSize'] ?? 24 );
-$star_colour_slug    = (string) ( $attributes['starColour'] ?? 'accent' );
-$star_colour         = sgs_colour_value( $star_colour_slug );
-$empty_colour        = sgs_colour_value( $attributes['emptyColour'] ?? 'border' );
-$label               = $attributes['label'] ?? '';
-$show_numeric        = $attributes['showNumeric'] ?? false;
-$schema_enabled      = $attributes['schemaEnabled'] ?? true;
-$schema_item_name    = $attributes['schemaItemName'] ?? '';
-$schema_review_count = (int) ( $attributes['schemaReviewCount'] ?? 1 );
+$rating                = (float) ( $attributes['rating'] ?? 5 );
+$max_rating            = (int) ( $attributes['maxRating'] ?? 5 );
+$star_size             = (int) ( $attributes['starSize'] ?? 24 );
+$star_colour_slug      = (string) ( $attributes['starColour'] ?? 'accent' );
+$star_colour           = sgs_colour_value( $star_colour_slug );
+$empty_colour          = sgs_colour_value( $attributes['emptyColour'] ?? 'border' );
+$star_colour_gradient  = (string) ( $attributes['starColourGradient'] ?? '' );
+$empty_colour_gradient = (string) ( $attributes['emptyColourGradient'] ?? '' );
+$label                 = $attributes['label'] ?? '';
+$show_numeric          = $attributes['showNumeric'] ?? false;
+$schema_enabled        = $attributes['schemaEnabled'] ?? true;
+$schema_item_name      = $attributes['schemaItemName'] ?? '';
+$schema_review_count   = (int) ( $attributes['schemaReviewCount'] ?? 1 );
 
 // displayMode: stars-only | stars-with-value | stars-with-value-and-count
 $allowed_display_modes = array( 'stars-only', 'stars-with-value', 'stars-with-value-and-count' );
@@ -112,6 +114,28 @@ $uid      = 'sgs-str-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-star-rating';
 
 $scoped_css = array();
+
+// --- Star/empty-star fill gradient (D636/D644 rollout) — reuses the shared
+// SVG stroke-gradient primitive, targeting `fill` since these are fill-based
+// SVG shapes, not stroke-based icon glyphs. Each full/empty star is its own
+// separate <svg> (no shared class from the browser's point of view until we
+// add one below), so a gradient painted via `fill:url(#id)` CSS needs (a) a
+// `<defs>` present ONCE anywhere in the document — `url(#id)` resolves
+// document-wide — and (b) a CSS class on the fill-carrying <path> for the
+// rule to target, since the flat `fill="…"` presentation attribute has no
+// class to select otherwise. Presentation attribute stays as the no-JS/
+// invalid-gradient fallback; CSS `fill:` always wins over it regardless of
+// specificity (SVG2 cascade rule), same mechanism sgs_svg_stroke_gradient()
+// already documents for stroke-based icons. ---
+$star_fill_grad  = sgs_svg_stroke_gradient( $star_colour_gradient, $uid . '-star-grad', 'fill' );
+$empty_fill_grad = sgs_svg_stroke_gradient( $empty_colour_gradient, $uid . '-empty-grad', 'fill' );
+
+if ( '' !== $star_fill_grad['css'] ) {
+	$scoped_css[] = "{$root_sel} .sgs-star-rating__star--full{" . $star_fill_grad['css'] . ';}';
+}
+if ( '' !== $empty_fill_grad['css'] ) {
+	$scoped_css[] = "{$root_sel} .sgs-star-rating__star--empty{" . $empty_fill_grad['css'] . ';}';
+}
 
 // --- Base spacing + colour — skip-serialised, emitted scoped via the core
 // style engine (exactly how WP core outputs `layout` support). ---
@@ -216,9 +240,21 @@ if ( $is_tp_official ) {
 	);
 }
 
+// Tracks whether each gradient's <defs> has already been injected into an
+// earlier star this loop — only needs to exist once in the DOM (see the note
+// above the $star_fill_grad/$empty_fill_grad computation).
+$star_fill_defs_injected  = false;
+$empty_fill_defs_injected = false;
+
 for ( $i = 1; ! $is_tp_official && $i <= $max_rating; $i++ ) {
 	if ( $i <= floor( $rating ) ) {
-		$fill = $star_colour;
+		$fill       = $star_colour;
+		$star_class = 'sgs-star-rating__star--full';
+		$fill_defs  = '';
+		if ( ! $star_fill_defs_injected && '' !== $star_fill_grad['defs'] ) {
+			$fill_defs               = $star_fill_grad['defs'];
+			$star_fill_defs_injected = true;
+		}
 	} elseif ( $i === ceil( $rating ) && fmod( $rating, 1 ) >= 0.25 ) {
 		$grad_id     = $unique_id . '-half-' . $i;
 		$fill        = "url(#$grad_id)";
@@ -235,14 +271,22 @@ for ( $i = 1; ! $is_tp_official && $i <= $max_rating; $i++ ) {
 		);
 		continue;
 	} else {
-		$fill = $empty_colour;
+		$fill       = $empty_colour;
+		$star_class = 'sgs-star-rating__star--empty';
+		$fill_defs  = '';
+		if ( ! $empty_fill_defs_injected && '' !== $empty_fill_grad['defs'] ) {
+			$fill_defs                = $empty_fill_grad['defs'];
+			$empty_fill_defs_injected = true;
+		}
 	}
 
 	$stars_html .= sprintf(
-		'<svg width="%d" height="%d" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' .
-		'<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="%s"/></svg>',
+		'<svg width="%d" height="%d" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">%s' .
+		'<path class="%s" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="%s"/></svg>',
 		$star_size,
 		$star_size,
+		$fill_defs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr()'d fragments by sgs_svg_stroke_gradient().
+		esc_attr( $star_class ),
 		$fill
 	);
 }

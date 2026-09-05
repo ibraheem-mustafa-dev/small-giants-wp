@@ -221,6 +221,21 @@ function meaningful_tokens( array $tokens, int $start, int $end ): array {
 /**
  * One-hop hover-taint classification for a single call argument span.
  *
+ * Recognises TWO simple shapes as within the bounded one-hop vocabulary:
+ *   - a bare `$variable` (traced against $localMap, as before), and
+ *   - this codebase's idiomatic double-quoted curly interpolation,
+ *     `"{$variable} literal text"` — PHP's tokenizer splits this into a
+ *     bare `"` delimiter char, `T_CURLY_OPEN`, `T_VARIABLE`, a bare `}`
+ *     char, then `T_ENCAPSED_AND_WHITESPACE` for the trailing literal, then
+ *     a closing bare `"`. Before 2026-09-05 the bare `"`/`T_CURLY_OPEN`/`}`
+ *     tokens fell through to the "any other token kind" branch and marked
+ *     the WHOLE argument `unresolved` — which is EVERY real call site in
+ *     this codebase, since none of them build a raw hover-carrying string
+ *     via plain `.` concatenation. Only the EXACT one-variable shape inside
+ *     the braces is recognised; anything else (property/array access, a
+ *     nested call) stays outside the bounded vocabulary and is still
+ *     reported unresolved rather than guessed at.
+ *
  * @param array $tokens
  * @param array{0:int,1:int} $span
  * @param array<string,bool> $localMap Variable name => was locally assigned a `:hover`-carrying value in this function.
@@ -231,33 +246,72 @@ function classify_arg_hover( array $tokens, array $span, array $localMap ): stri
 		return 'unresolved'; // argument position not actually passed at this call site
 	}
 	$sawComplex = false;
-	for ( $p = $span[0]; $p <= $span[1]; $p++ ) {
+	$p          = $span[0];
+	while ( $p <= $span[1] ) {
 		$t = $tokens[ $p ];
 		if ( is_array( $t ) ) {
 			if ( in_array( $t[0], SKIPPABLE_TOKEN_TYPES, true ) ) {
+				$p++;
 				continue;
 			}
 			if ( in_array( $t[0], array( T_CONSTANT_ENCAPSED_STRING, T_ENCAPSED_AND_WHITESPACE ), true ) ) {
 				if ( false !== strpos( $t[1], ':hover' ) ) {
 					return 'yes';
 				}
+				$p++;
 				continue; // plain literal, no hover — simple, keeps resolving
 			}
 			if ( T_VARIABLE === $t[0] ) {
 				if ( ! empty( $localMap[ $t[1] ] ) ) {
 					return 'yes';
 				}
+				$p++;
 				continue; // traced within this function, not hover-tainted — simple
+			}
+			if ( T_CURLY_OPEN === $t[0] ) {
+				$innerIdx = $p + 1;
+				while ( $innerIdx <= $span[1] && is_array( $tokens[ $innerIdx ] ) && in_array( $tokens[ $innerIdx ][0], SKIPPABLE_TOKEN_TYPES, true ) ) {
+					$innerIdx++;
+				}
+				$closeIdx = $innerIdx + 1;
+				while ( $closeIdx <= $span[1] && is_array( $tokens[ $closeIdx ] ) && in_array( $tokens[ $closeIdx ][0], SKIPPABLE_TOKEN_TYPES, true ) ) {
+					$closeIdx++;
+				}
+				$isSimpleCurlyVar = (
+					$innerIdx <= $span[1] && is_array( $tokens[ $innerIdx ] ) && T_VARIABLE === $tokens[ $innerIdx ][0]
+					&& $closeIdx <= $span[1] && '}' === $tokens[ $closeIdx ]
+				);
+				if ( $isSimpleCurlyVar ) {
+					if ( ! empty( $localMap[ $tokens[ $innerIdx ][1] ] ) ) {
+						return 'yes';
+					}
+					$p = $closeIdx + 1;
+					continue; // "{$var}" curly interpolation of an untainted variable — simple
+				}
+				// Not the bounded one-variable shape (property/array access,
+				// a nested call inside the braces) — outside the vocabulary.
+				$sawComplex = true;
+				$p++;
+				continue;
 			}
 			// any other token kind (T_STRING function name, T_ARRAY, T_OBJECT_OPERATOR,
 			// T_DOUBLE_ARROW, etc.) is outside the bounded one-hop vocabulary.
 			$sawComplex = true;
+			$p++;
 			continue;
 		}
 		if ( '.' === $t ) {
+			$p++;
 			continue; // string concatenation operator — simple
 		}
+		if ( '"' === $t ) {
+			$p++;
+			continue; // bare double-quote delimiter char — PHP splits an interpolated
+			// double-quoted string into this + T_CURLY_OPEN/T_ENCAPSED_AND_WHITESPACE
+			// segments; the delimiter itself carries no information — simple.
+		}
 		$sawComplex = true;
+		$p++;
 	}
 	return $sawComplex ? 'unresolved' : 'no';
 }
@@ -348,7 +402,25 @@ function find_registered_calls( array $tokens, int $bodyStart, int $bodyEnd, arr
 		$argDepth  = 0;
 		for ( $k = $openParen + 1; $k < $close; $k++ ) {
 			$tk = $tokens[ $k ];
-			if ( '(' === $tk || '[' === $tk || '{' === $tk ) {
+			// A string's `{$var}` complex interpolation opens with the ARRAY
+			// token T_CURLY_OPEN (or T_DOLLAR_OPEN_CURLY_BRACES for the rarer
+			// `${var}` form) but closes with a plain `}` CHAR token — an
+			// asymmetric pair. Checking only the raw `'{' === $tk` char here
+			// (found 2026-09-05) never matches the opening array token, so
+			// depth never increments for it, while the closing `'}' === $tk`
+			// DOES match and decrements — driving $argDepth permanently
+			// negative for the rest of this call's argument list the moment
+			// ANY argument contains this codebase's idiomatic
+			// `"{$root_sel} .sgs-x__y"` selector shape. Once negative, the
+			// real top-level comma after that argument is judged NOT at
+			// depth 0 and is never split on, silently merging every
+			// remaining argument into the interpolated one — see
+			// scan_file()'s own body-end walk (`T_CURLY_OPEN === $t[0]`)
+			// for the same recognition already used correctly there.
+			if (
+				'(' === $tk || '[' === $tk || '{' === $tk
+				|| ( is_array( $tk ) && ( T_CURLY_OPEN === $tk[0] || T_DOLLAR_OPEN_CURLY_BRACES === $tk[0] ) )
+			) {
 				$argDepth++;
 			} elseif ( ')' === $tk || ']' === $tk || '}' === $tk ) {
 				$argDepth--;
@@ -907,7 +979,19 @@ function scan_file( string $path, ?array $registry ): array {
 			$crossFileFlags       = array_merge( $crossFileFlags, $result['cross_file_flags'] );
 			$crossFileUnresolved  = array_merge( $crossFileUnresolved, $result['cross_file_unresolved'] );
 
-			$consumedRanges[] = array( $bodyStart, $bodyEnd );
+			// Consumed range starts at the ORIGINAL `function` keyword token
+			// ($i, untouched since loop entry), not $bodyStart — the
+			// declaration head (name + parameter list, e.g.
+			// `function sgs_border_gradient_css( string $selector, ... )`)
+			// sits BEFORE the opening `{` and was previously left in the
+			// "gap" segment scanned below. `find_registered_calls()` matches
+			// any `T_STRING === registered-name` token followed by `(`,
+			// with no way to tell a declaration head from a real call — so
+			// every registered emitter's OWN signature was misdetected as a
+			// self-call, and its typed parameter list (`string $selector`)
+			// made classify_arg_hover() report the "call" unresolved. Fixed
+			// 2026-09-05 by excluding the whole declaration from every gap.
+			$consumedRanges[] = array( $i, $bodyEnd );
 
 			$i = $bodyEnd + 1;
 			continue;
@@ -1076,6 +1160,130 @@ PHP;
 			$assert( false === $fnEntry['has_hover_literal'], 'named-function fixture: the top-level gap entry (just the open tag) carries no hover literal' );
 		}
 	}
+
+	// ── Fixture 4: cross-file, curly-interpolated selector, SAFE ────────
+	// Regression coverage for the 2026-09-05 fix (three compounding bugs,
+	// all in JOB B's cross-file machinery, none in JOB A above):
+	//   (1) find_registered_calls()'s argument-splitter tracked bracket
+	//       depth using a raw `'{' === $tk` char check, which never matches
+	//       the interpolation-open ARRAY token T_CURLY_OPEN — but its
+	//       matching close IS a raw `}` char and DID match, driving depth
+	//       negative and silently merging every argument after a
+	//       `"{$var} literal"` selector into one span.
+	//   (2) classify_arg_hover() had no vocabulary for T_CURLY_OPEN or the
+	//       bare `"` string-delimiter chars at all, so even a correctly
+	//       split argument fell to `unresolved`.
+	//   (3) scan_file()'s consumed-range bookkeeping recorded only
+	//       [bodyStart, bodyEnd] (the `{…}` body), leaving a registered
+	//       emitter's OWN declaration head (`function sgs_x( string $selector,
+	//       ... )`) sitting in a "gap" segment, where find_registered_calls()
+	//       matched the declaration's own name+paren as a fake self-call.
+	// This fixture reproduces the exact real-world shape (curly-interpolated
+	// selector, THEN two more arguments, one of them null) that was
+	// reported UNRESOLVED for all 9 render.php call sites before the fix —
+	// it must now resolve CLEAN, not unresolved, not flagged.
+	$testRegistry = array(
+		'emitters'          => array(
+			'sgs_test_emitter_css' => array(
+				'selector_param_index'   => 0,
+				'guard_gate_param_index' => 2,
+				'guard_skip_literals'    => array( 'null' ),
+			),
+		),
+		'guard_recognition' => array(
+			'layer1_wrapper_functions' => array(),
+			'layer2_selector_constant' => '',
+		),
+	);
+
+	$curlySafeSource = <<<'PHP'
+<?php
+$root_sel = '.uid';
+$paint = 'red';
+$scoped_css[] = sgs_test_emitter_css(
+	"{$root_sel} .sgs-x__y",
+	$paint,
+	null,
+	'2px'
+);
+PHP;
+
+	$curlySafePath = tempnam( sys_get_temp_dir(), 'sgs-hover-selftest-curlysafe-' ) . '.php';
+	file_put_contents( $curlySafePath, $curlySafeSource );
+
+	$curlySafeResult = scan_file( $curlySafePath, $testRegistry );
+	@unlink( $curlySafePath );
+
+	$assert( null === $curlySafeResult['error'], 'curly-safe fixture: scan completes without error' );
+	$assert( 0 === count( $curlySafeResult['cross_file_flags'] ), 'curly-safe fixture: not flagged unguarded' );
+	$assert( 0 === count( $curlySafeResult['cross_file_unresolved'] ), 'curly-safe fixture: not unresolved — this is the exact shape that regressed to UNRESOLVED for 9 real render.php call sites pre-fix' );
+	$assert( 1 === count( $curlySafeResult['cross_file_calls'] ), 'curly-safe fixture: exactly one cross-file call recorded (proves the argument splitter did not merge/drop it)' );
+	if ( 1 === count( $curlySafeResult['cross_file_calls'] ) ) {
+		$assert( 'clean-no-hover' === $curlySafeResult['cross_file_calls'][0]['resolution'], 'curly-safe fixture: resolved clean-no-hover, not unresolved-selector' );
+	}
+
+	// ── Fixture 5: cross-file, curly-interpolated selector, GENUINELY
+	// UNGUARDED — mandatory NEGATIVE CONTROL. Proves the fix did not turn
+	// into a blanket exemption: a selector that IS hover-tainted (built via
+	// the SAME curly-interpolation shape, from a local variable carrying a
+	// literal `:hover`) passed into a registered emitter with its
+	// registry-declared skip literal at the gate position MUST still be
+	// flagged. A checker that always resolves `"{$var} …"` selectors clean
+	// would pass this fixture — it must not.
+	$curlyUnguardedSource = <<<'PHP'
+<?php
+$base = '.uid';
+$tainted_sel = "{$base}:hover";
+$paint = 'red';
+$scoped_css[] = sgs_test_emitter_css(
+	"{$tainted_sel} .sgs-x__y",
+	$paint,
+	null,
+	'2px'
+);
+PHP;
+
+	$curlyUnguardedPath = tempnam( sys_get_temp_dir(), 'sgs-hover-selftest-curlyunguarded-' ) . '.php';
+	file_put_contents( $curlyUnguardedPath, $curlyUnguardedSource );
+
+	$curlyUnguardedResult = scan_file( $curlyUnguardedPath, $testRegistry );
+	@unlink( $curlyUnguardedPath );
+
+	$assert( null === $curlyUnguardedResult['error'], 'curly-unguarded NEGATIVE CONTROL: scan completes without error' );
+	$assert( 1 === count( $curlyUnguardedResult['cross_file_flags'] ), 'curly-unguarded NEGATIVE CONTROL: genuinely unguarded call IS flagged — proves the curly-brace fix is not a blanket exemption' );
+	if ( 1 === count( $curlyUnguardedResult['cross_file_flags'] ) ) {
+		$assert( 'flagged-unguarded' === $curlyUnguardedResult['cross_file_flags'][0]['resolution'], 'curly-unguarded NEGATIVE CONTROL: resolution is flagged-unguarded' );
+	}
+
+	// ── Fixture 6: a registered emitter's OWN declaration must never be
+	// misdetected as a call to itself — NEGATIVE CONTROL for bug (3) above.
+	// Before the consumed-range fix, `function sgs_test_emitter_css( string
+	// $selector, string $paint, ?string $hover = null, string $width='2px')`
+	// sat in a top-level "gap" segment (declarations are never inside their
+	// own body), and find_registered_calls() matched the name+`(` exactly
+	// like a real call, then reported it UNRESOLVED because a typed
+	// parameter (`string $selector`) isn't a recognised simple shape —
+	// which is precisely what happened for real at
+	// includes/helpers-tokens.php:873 and :1293 (the two emitters'
+	// definition lines). This fixture defines the SAME emitter name (so it
+	// IS in the registry and would be matched if the bug were present) and
+	// asserts zero cross-file calls are recorded anywhere in the file.
+	$ownDeclSource = <<<'PHP'
+<?php
+function sgs_test_emitter_css( string $selector, string $paint, ?string $hover = null, string $width = '2px' ): string {
+	return "{$selector}{border:{$width} solid {$paint};}";
+}
+PHP;
+
+	$ownDeclPath = tempnam( sys_get_temp_dir(), 'sgs-hover-selftest-owndecl-' ) . '.php';
+	file_put_contents( $ownDeclPath, $ownDeclSource );
+
+	$ownDeclResult = scan_file( $ownDeclPath, $testRegistry );
+	@unlink( $ownDeclPath );
+
+	$assert( null === $ownDeclResult['error'], 'own-declaration NEGATIVE CONTROL: scan completes without error' );
+	$assert( 0 === count( $ownDeclResult['cross_file_calls'] ), 'own-declaration NEGATIVE CONTROL: the function\'s own declaration head is never recorded as a call to itself' );
+	$assert( 0 === count( $ownDeclResult['cross_file_unresolved'] ), 'own-declaration NEGATIVE CONTROL: no phantom unresolved cross-file case from the declaration head' );
 
 	if ( 0 === $failCount ) {
 		fwrite( STDOUT, "\nSELF-TEST: PASS (all assertions green)\n" );

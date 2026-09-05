@@ -201,9 +201,10 @@
 					"prefix": "categoryBadge",
 					"attrMap": {
 						"css:color": "categoryBadgeColour",
+						"css:color-gradient": "categoryBadgeColourGradient",
 						"css:background-color": "categoryBadgeBgColour"
 					},
-					"_note": "css:color resolves via the default convention (categoryBadgeColour)."
+					"_note": "css:color resolves via the default convention (categoryBadgeColour). categoryBadgeColourGradient (2026-09-05) is the text-colour gradient sibling, same D956-shape recipe as title/meta/readMore on this block -- emitted as a direct decl targeting both .sgs-post-grid__badge and .sgs-post-grid__category in render.php (the two mutually-exclusive elements this one block-level attribute drives, per cardStyle)."
 				},
 				"read-more": {
 					"label": "Read more link",
@@ -421,6 +422,10 @@
 		"categoryBadgeColour": {
 			"type": "string",
 			"default": "text-inverse"
+		},
+		"categoryBadgeColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"categoryBadgeBgColour": {
 			"type": "string",

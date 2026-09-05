@@ -97,7 +97,18 @@ $bg_blur     = ! empty( $attributes['bgBlur'] );
 $accent_bg_slug     = isset( $attributes['iconBackground'] ) ? sanitize_html_class( (string) $attributes['iconBackground'] ) : 'accent';
 $accent_border_slug = isset( $attributes['groupBorderColourHover'] ) ? sanitize_html_class( (string) $attributes['groupBorderColourHover'] ) : 'accent';
 $accent_border_gradient = sgs_css_gradient_value( $attributes['groupBorderColourGradientHover'] ?? '' );
-$accent_text_slug   = isset( $attributes['iconColour'] ) ? sanitize_html_class( (string) $attributes['iconColour'] ) : 'accent';
+// iconColour (D636 flat/gradient sibling pattern, closes mega-panel.iconColour
+// non-conformance): NOT run through sanitize_html_class() like the other
+// slug-only accent attrs above — it is a free-text colour value (raw hex/var()
+// or a full CSS gradient function string when iconColourGradient is set), and
+// sanitize_html_class() would mangle a gradient string's parentheses/commas.
+// $icon_colour_effective/$icon_colour_decl are resolved once here and consumed
+// at all 3 layout-mode icon selectors below (§4/§4-icon), replacing the old
+// --sgs-mm-accent-text custom-property indirection entirely.
+$icon_colour_raw          = isset( $attributes['iconColour'] ) ? (string) $attributes['iconColour'] : 'accent';
+$icon_colour_gradient_raw = isset( $attributes['iconColourGradient'] ) ? (string) $attributes['iconColourGradient'] : '';
+$icon_colour_effective    = sgs_resolve_text_colour_or_gradient( $icon_colour_raw, $icon_colour_gradient_raw );
+$icon_colour_decl         = sgs_text_colour_decl( $icon_colour_effective );
 
 // NEW resting-state group-tile border (2026-08-28) — independent of the
 // hover pair above. Empty raw value = no override (the `cards` tile keeps
@@ -184,7 +195,6 @@ $css = '';
 
 $accent_bg_value     = sgs_colour_value( $accent_bg_slug );
 $accent_border_value = sgs_colour_value( $accent_border_slug );
-$accent_text_value   = sgs_colour_value( $accent_text_slug );
 $accent_image_value  = sgs_colour_value( $accent_image_slug );
 
 // panelBg: attr value (token slug or raw colour) resolves via sgs_colour_value
@@ -235,7 +245,6 @@ if ( '' !== $panel_bg_raw ) {
 $css .= $root_sel . '{'
 	. '--sgs-mm-text:' . $text_value . ';'
 	. '--sgs-mm-muted:var(--wp--preset--color--text-muted, #606D80);'
-	. '--sgs-mm-accent-text:' . $accent_text_value . ';'
 	. '--sgs-mm-accent-border:' . $accent_border_value . ';'
 	. '--sgs-mm-accent-bg:' . $accent_bg_value . ';'
 	. '--sgs-mm-accent-image:' . $accent_image_value . ';'
@@ -399,13 +408,13 @@ if ( function_exists( 'sgs_emit_responsive_css' ) ) {
 $css .= $style_col . $rel_content . '{display:flex;flex-wrap:wrap;}';
 $css .= $style_col . $rel_group . ',' . $style_col . $rel_card_grid . '{flex:1 1 200px;min-width:0;}';
 $css .= $style_col . $rel_item . '{display:flex;align-items:flex-start;gap:13px;padding:11px 12px;border-radius:13px;}';
-$css .= $style_col . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent-text);}';
+$css .= $style_col . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);' . $icon_colour_decl . ';}';
 
 // -- cards -----------------------------------------------------------------
 $css .= $style_crd . $rel_content . '{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;}';
 $css .= $style_crd . $rel_group . '{padding:17px;border-radius:15px;border:1px solid var(--sgs-mm-panel-border);border-color:var(--sgs-mm-group-border-resting, var(--sgs-mm-panel-border));background-color:var(--sgs-mm-card);}';
 $css .= $style_crd . $rel_item . '{display:flex;align-items:flex-start;gap:13px;padding:0;border-radius:0;}';
-$css .= $style_crd . $rel_icon . '{width:36px;height:36px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent-text);}';
+$css .= $style_crd . $rel_icon . '{width:36px;height:36px;border-radius:10px;background-color:var(--sgs-mm-soft);' . $icon_colour_decl . ';}';
 
 // Resting-state border GRADIENT (2026-08-28) — masked ::before ring, scoped
 // to the resting (non-hover) `.sgs-mega-group` tile, independent of the
@@ -467,7 +476,16 @@ if ( '' !== $accent_border_gradient ) {
 // -- minimal -------------------------------------------------------------
 $css .= $style_min . $rel_content . '{display:flex;flex-direction:column;gap:2px;}';
 $css .= $style_min . $rel_item . '{display:flex;align-items:center;justify-content:space-between;padding:15px 14px;border-radius:14px;}';
-$css .= $style_min . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent-text);}';
+$css .= $style_min . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);' . $icon_colour_decl . ';}';
+
+// Mandatory gradient-fallback companion (D636) — @supports not(background-clip:text)
+// rule for browsers lacking it. A no-op ('') when $icon_colour_effective is a flat
+// colour. One combined selector list is safe here: sgs_text_colour_gradient_fallback_rule()
+// treats $selector as an opaque string, unlike sgs_hover_state_rules().
+$css .= sgs_text_colour_gradient_fallback_rule(
+	$style_col . $rel_icon . ',' . $style_crd . $rel_icon . ',' . $style_min . $rel_icon,
+	$icon_colour_effective
+);
 
 // -- group heading visibility (headings toggle + the cards/minimal invariant:
 // both styles hide the group heading unconditionally per §3; columns respects

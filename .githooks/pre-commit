@@ -51,7 +51,22 @@ fi
 # f5-commit-gate.py is a session-scoped early-warning layer that does NOT fire
 # for a terminal `git commit` / GUI commit). Runs the 4 static gates' --check
 # (baseline-aware: only a NEW violation blocks) when the commit touches the
-# sgs-blocks plugin. Bypass: `git commit --no-verify` (deliberate, leaves a gap).
+# sgs-blocks plugin.
+#
+# Scoped bypass (added 2026-09-05, Bean-directed — "a safe no-verify mode"):
+# a single F5 gate script can flag a NEW violation in a block a commit never
+# touched — the gates read a live SHARED DB other concurrent sessions reseed —
+# which blocks EVERY session's commits, not just the one that happens to run
+# first. `SGS_F5_SKIP="<script>[,<script>...]"` (matching a name from the `for g`
+# list below, e.g. `db-consistency/run.py`) + a mandatory `SGS_F5_SKIP_REASON`
+# skips ONLY the named script(s), for THIS commit only — gitleaks, the
+# extension-attribute check above, sgs-gates.sh's own checks (visual-diff,
+# block-uniformity, wp-* pre-merge, inspector-scan, cheat-gate baseline-diff)
+# and every OTHER F5 script not named still run. `SKIP` without `REASON` fails
+# closed (refuses the bypass), same discipline as `SGS_VISUAL_GATE_SKIP`. Every
+# use is logged to reports/f5-manual-skips.log, tracked in git, for audit. This
+# is scoped-and-logged, not `--no-verify` (which silently discards gitleaks and
+# every other unrelated gate to get past one).
 if git diff --cached --name-only | grep -Eq '^plugins/sgs-blocks/'; then
 	if command -v python.exe >/dev/null 2>&1; then PY=python.exe
 	elif command -v python >/dev/null 2>&1; then PY=python
@@ -62,10 +77,27 @@ if git diff --cached --name-only | grep -Eq '^plugins/sgs-blocks/'; then
 	else
 		F5_DIR="plugins/sgs-blocks/scripts"
 		F5_FAIL=0
+		REPO_ROOT="$(git rev-parse --show-toplevel)"
 		for g in cheat-gate/run.py excluded-gate/run.py ledger/coverage_check.py db-consistency/run.py; do
+			SKIPPED=0
+			for _skip_name in $(printf '%s' "${SGS_F5_SKIP:-}" | tr ',' ' '); do
+				if [ "$_skip_name" = "$g" ]; then
+					if [ -z "${SGS_F5_SKIP_REASON:-}" ]; then
+						echo "   ✗ $g: SGS_F5_SKIP set but SGS_F5_SKIP_REASON is empty — refusing silent bypass" >&2
+					else
+						echo "   ⚠ $g: MANUAL SKIP — $SGS_F5_SKIP_REASON" >&2
+						printf '%s | %s | MANUAL SKIP | %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$g" "$SGS_F5_SKIP_REASON" >> "$REPO_ROOT/reports/f5-manual-skips.log"
+						SKIPPED=1
+					fi
+				fi
+			done
+			if [ "$SKIPPED" -eq 1 ]; then
+				continue
+			fi
 			if [ -f "$F5_DIR/$g" ]; then
 				if ! ( cd "$F5_DIR" && "$PY" "$g" --check ); then
 					echo "pre-commit BLOCKED by F5 gate: $g found a NEW violation (run it with --report for detail)." >&2
+					echo "  Scoped bypass if this is genuinely pre-existing/unrelated debt: SGS_F5_SKIP=$g SGS_F5_SKIP_REASON=\"...\" git commit ..." >&2
 					F5_FAIL=1
 				fi
 			fi

@@ -567,6 +567,30 @@ if ( '' !== $label_colour_gradient_fallback ) {
 	$scoped_css[] = $label_colour_gradient_fallback;
 }
 
+// Pill resting TEXT flat-or-gradient (D636 "text" builder) — same recipe as
+// the legend colour above and the pillBorderColourGradient border builder
+// (§7, ~line 421). $sel_pill (root_sel + .sgs-option-picker__pill, 3
+// classes) OUT-SPECIFIES every per-variant resting rule in style.css
+// (`.sgs-option-picker--{style} .sgs-option-picker__pill`, 2 classes), the
+// exact specificity precedent the pillBorderColourGradient rule already
+// relies on — no source-order dependency. The hover-state colour
+// (--sgs-op-text-hover, chained to --sgs-op-text in §6) still wins on
+// hover/focus-within because that static rule carries an extra pseudo-class
+// (specificity 4 vs this rule's 3), so hover behaviour is unaffected by this
+// change. Empty pillTextColour + empty pillTextColourGradient -> $effective
+// is '' -> decl is '' -> no scoped rule emitted (additive-safety guarantee,
+// existing --sgs-op-text var mechanism keeps governing unchanged).
+$pill_text_colour_gradient  = $attributes['pillTextColourGradient'] ?? '';
+$pill_text_colour_effective = sgs_resolve_text_colour_or_gradient( $pill_text_colour, $pill_text_colour_gradient );
+$pill_text_colour_decl      = sgs_text_colour_decl( $pill_text_colour_effective );
+if ( '' !== $pill_text_colour_decl ) {
+	$scoped_css[] = "{$sel_pill}{{$pill_text_colour_decl};}";
+}
+$pill_text_colour_gradient_fallback = sgs_text_colour_gradient_fallback_rule( $sel_pill, $pill_text_colour_effective );
+if ( '' !== $pill_text_colour_gradient_fallback ) {
+	$scoped_css[] = $pill_text_colour_gradient_fallback;
+}
+
 // ---------------------------------------------------------------------------
 // 8. FR-27-B2: resolve WooCommerce attribute taxonomy for swatch lookup.
 // ---------------------------------------------------------------------------

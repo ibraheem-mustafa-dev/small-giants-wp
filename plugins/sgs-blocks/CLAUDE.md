@@ -866,6 +866,31 @@ the real state.
 scan is per-function-body, so a hover rule reached through a cross-file data flow is invisible
 to it — one such case is known in `helpers-tokens.php`'s `sgs_border_gradient_css()`.
 
+### Known precedent-function registry (2026-09-05)
+
+**Check this table BEFORE designing any new colour-emission mechanism.** Built because
+`sgs_svg_stroke_gradient()` was independently rediscovered as "the answer" for
+SVG paint-gradient 3 separate times in one week by investigations that didn't know it
+already existed — wasted search time recurring on a schedule. Add a row here whenever a
+future session finds (or re-finds) a working precedent for a problem shape not yet
+listed.
+
+| Problem shape | Known precedent | Where |
+|---|---|---|
+| SVG paint (fill/stroke) gradient | `sgs_svg_stroke_gradient()` + `sgs_svg_inject_defs()` | `includes/helpers-svg-gradient.php:51,199` |
+| Text colour/gradient, base OR ancestor-hover, one owned scoped rule | `sgs_resolve_text_colour_or_gradient()` + `sgs_text_colour_decl()` + `sgs_text_colour_gradient_fallback_rule()` (+ `sgs_hover_state_rules()`'s 4-arg form for ancestor-hover) | `includes/helpers-tokens.php:1124` + worked example `src/blocks/post-grid/render.php:670-689`, `src/blocks/brand-strip/render.php:502-515` |
+| Per-item dynamic-loop colour (repeater/query loop) | `:nth-child(N)`-scoped rule per iteration | `src/blocks/pricing-table/render.php:171,223-248` (`ribbonColour`) |
+| Fill or text colour, base+hover, flat-or-gradient, one owned rule | `sgs_fill_states_css()` / `sgs_text_states_css()` | `includes/helpers-colour-variants.php:109,215` |
+| Background/border custom-property gradient (static compiled stylesheet consumer) | `sgs_custom_property_gradient_decls()` — emits `--var` + `--var-gradient` siblings; stylesheet needs one added `background-image:var(--x-gradient,none)` (or `border-image`) line next to the existing `background-color:var(--x)` line | `includes/helpers-tokens.php:953` — proven on `brand-strip`, `post-grid`, `social-icons`, `form`, `gallery`, `before-after` |
+| A block's own `$root_sel`/`$sel_*`-scoped per-instance `<style>` rule needs to override a static compiled stylesheet default (incl. across a block's own WP style variants) | Emit the override into the block's own `$scoped_css[]` array, keyed to its own already-defined selector (e.g. `$sel_pill`) — the scoped `<style>` block is enqueued after the compiled stylesheet, so equal-or-greater specificity wins by source order. No new mechanism needed; every block that assembles `$scoped_css` already relies on this | `src/blocks/option-picker/render.php:415-419` (explicit comment: rules rooted at `$root_sel` "out-specify the variant") |
+
+⚠ The custom-property-gradient row above is BACKGROUND/BORDER only — every live use
+feeds a `background-color` or `border-color` custom property. A `color:`-consuming
+custom property is the TEXT row above, not this one — even when the block has multiple
+WP style variants consuming the same custom property (the variants differ only in
+fallback DEFAULT, not in selector/property shape, so they don't change which mechanism
+applies).
+
 ### Colour EMISSION helpers — the render.php side (2026-09-03)
 
 **Written because the gap cost real time.** A 2026-09-03 session spent most of its length

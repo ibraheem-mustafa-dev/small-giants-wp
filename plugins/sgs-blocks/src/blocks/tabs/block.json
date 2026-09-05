@@ -92,6 +92,7 @@
 					],
 					"attrMap": {
 						"css:color": "tabTextColour",
+						"css:color-gradient": "tabTextColourGradient",
 						"css:background-color": "tabBgColour",
 						"css:border-color": "tabIndicatorColour",
 						"css:border-color-gradient": "tabIndicatorColourGradient",
@@ -175,6 +176,11 @@
 		"tabTextColour": {
 			"type": "string",
 			"default": "text-muted"
+		},
+		"tabTextColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting tab label text instead of a flat colour. Non-empty wins over tabTextColour at render time."
 		},
 		"tabActiveTextColour": {
 			"type": "string",

@@ -326,6 +326,22 @@ if ( $gr_star_decls_hover ) {
 	$gr_responsive_css .= sgs_emit_state_colour_css( $gr_root_sel . ' .sgs-google-reviews__star--full', array(), $gr_star_decls_hover );
 }
 
+// Star fill gradient (D636/D644 rollout) — reuses the shared SVG
+// stroke-gradient primitive, targeting `fill` instead of `stroke` since the
+// star SVGs are fill-based, not stroke-based like icon glyphs. Mirrors
+// icon-list's "one gradient, injected once, painted via a scoped CSS rule
+// that reaches every repeated instance" pattern — the star SVG markup is
+// emitted repeatedly by sgs_render_stars_svg() (aggregate rating + every
+// per-review rating), so the <defs> only need to exist once in the DOM
+// (`url(#id)` resolves document-wide) while the CSS rule below paints every
+// `.sgs-google-reviews__star--full` instance. Scoped to the SAME element the
+// flat starColour/starColourHover attrs already target (block.json star._note).
+$gr_star_colour_gradient = (string) ( $attributes['starColourGradient'] ?? '' );
+$gr_star_stroke_grad     = sgs_svg_stroke_gradient( $gr_star_colour_gradient, $gr_uid . '-star-grad', 'fill' );
+if ( '' !== $gr_star_stroke_grad['css'] ) {
+	$gr_responsive_css .= $gr_root_sel . ' .sgs-google-reviews__star--full{' . $gr_star_stroke_grad['css'] . ';}';
+}
+
 $gr_style_engine_args = array();
 
 $gr_color_args = array();
@@ -403,10 +419,27 @@ if ( ! function_exists( 'sgs_render_stars_svg' ) ) {
 	 * Uses Lucide-compatible 5-point star SVG paths.
 	 * Full stars are solid; half stars use a clip-path split; empty stars are outline only.
 	 *
-	 * @param float $star_rating Rating value (0-5).
+	 * @param float  $star_rating        Rating value (0-5).
+	 * @param string $fill_gradient_defs Optional `<defs>…</defs>` markup for a
+	 *                                    star-fill gradient (D636/D644 rollout,
+	 *                                    from sgs_svg_stroke_gradient(...,'fill')).
+	 *                                    Injected into the FIRST rendered star
+	 *                                    SVG only (per call, and only once per
+	 *                                    unique defs string across all calls in
+	 *                                    this request) — `url(#id)` resolves
+	 *                                    document-wide, so a single `<defs>`
+	 *                                    paints every repeated star instance via
+	 *                                    the block's own scoped CSS rule; a
+	 *                                    duplicate `id` per block instance is
+	 *                                    avoided by tracking already-injected
+	 *                                    defs strings in a static map that
+	 *                                    persists across every call this
+	 *                                    function makes on the page.
 	 * @return string HTML for star rating.
 	 */
-	function sgs_render_stars_svg( float $star_rating ): string {
+	function sgs_render_stars_svg( float $star_rating, string $fill_gradient_defs = '' ): string {
+		static $gradient_defs_emitted = array();
+
 		$full_stars  = (int) floor( $star_rating );
 		$half_star   = ( $star_rating - $full_stars ) >= 0.5 ? 1 : 0;
 		$empty_stars = 5 - $full_stars - $half_star;
@@ -425,17 +458,37 @@ if ( ! function_exists( 'sgs_render_stars_svg' ) ) {
 		$html = '<div class="sgs-google-reviews__stars" role="img" aria-label="' . $label . '">';
 		$uid  = wp_unique_id( 'star-half-' );
 
+		// Consume the gradient defs on the first full/half star this call
+		// renders, but only once EVER per unique defs string (guards against
+		// a duplicate `id` when this function is called repeatedly — once for
+		// the aggregate rating, once per individual review).
+		$defs_to_inject = '';
+		if ( '' !== $fill_gradient_defs && ! isset( $gradient_defs_emitted[ $fill_gradient_defs ] ) ) {
+			$defs_to_inject                               = $fill_gradient_defs;
+			$gradient_defs_emitted[ $fill_gradient_defs ] = true;
+		}
+
 		for ( $i = 0; $i < $full_stars; $i++ ) {
-			$html .= '<svg class="sgs-google-reviews__star sgs-google-reviews__star--full" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="' . $star_path . '"/></svg>';
+			$star_svg = '<svg class="sgs-google-reviews__star sgs-google-reviews__star--full" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="' . $star_path . '"/></svg>';
+			if ( '' !== $defs_to_inject ) {
+				$star_svg       = sgs_svg_inject_defs( $star_svg, $defs_to_inject );
+				$defs_to_inject = '';
+			}
+			$html .= $star_svg;
 		}
 
 		if ( $half_star ) {
 			// Half star: left half filled, right half outline, achieved via clipPath.
-			$html .= '<svg class="sgs-google-reviews__star sgs-google-reviews__star--half" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">';
-			$html .= '<defs><clipPath id="' . esc_attr( $uid ) . '"><rect x="0" y="0" width="12" height="24"/></clipPath></defs>';
-			$html .= '<path class="sgs-google-reviews__star-outline" d="' . $star_path . '"/>';
-			$html .= '<path class="sgs-google-reviews__star-fill" d="' . $star_path . '" clip-path="url(#' . esc_attr( $uid ) . ')"/>';
-			$html .= '</svg>';
+			$half_svg  = '<svg class="sgs-google-reviews__star sgs-google-reviews__star--half" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">';
+			$half_svg .= '<defs><clipPath id="' . esc_attr( $uid ) . '"><rect x="0" y="0" width="12" height="24"/></clipPath></defs>';
+			$half_svg .= '<path class="sgs-google-reviews__star-outline" d="' . $star_path . '"/>';
+			$half_svg .= '<path class="sgs-google-reviews__star-fill" d="' . $star_path . '" clip-path="url(#' . esc_attr( $uid ) . ')"/>';
+			$half_svg .= '</svg>';
+			if ( '' !== $defs_to_inject ) {
+				$half_svg       = sgs_svg_inject_defs( $half_svg, $defs_to_inject );
+				$defs_to_inject = '';
+			}
+			$html .= $half_svg;
 		}
 
 		for ( $i = 0; $i < $empty_stars; $i++ ) {
@@ -477,7 +530,7 @@ ob_start();
 if ( $show_aggregate && ! in_array( $variant, array( 'badge', 'floating-badge' ), true ) ) :
 	?>
 	<div class="sgs-google-reviews__aggregate">
-		<?php echo sgs_render_stars_svg( $rating ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		<?php echo sgs_render_stars_svg( $rating, $gr_star_stroke_grad['defs'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<div class="sgs-google-reviews__aggregate-text">
 			<strong><?php echo esc_html( number_format( $rating, 1 ) ); ?></strong>
 			<?php
@@ -562,7 +615,7 @@ endif;
 if ( in_array( $variant, array( 'badge', 'floating-badge' ), true ) ) :
 	?>
 	<div class="sgs-google-reviews__badge">
-		<?php echo sgs_render_stars_svg( $rating ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		<?php echo sgs_render_stars_svg( $rating, $gr_star_stroke_grad['defs'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<div class="sgs-google-reviews__badge-text">
 			<strong><?php echo esc_html( number_format( $rating, 1 ) ); ?></strong>
 			<span><?php echo esc_html( number_format( $rating_count ) ) . ' ' . esc_html__( 'reviews', 'sgs-blocks' ); ?></span>
@@ -647,7 +700,7 @@ else :
 						<?php endif; ?>
 					</div>
 
-					<?php echo sgs_render_stars_svg( $review_rating ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<?php echo sgs_render_stars_svg( $review_rating, $gr_star_stroke_grad['defs'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
 					<?php if ( ! empty( $text ) ) : ?>
 						<p class="sgs-google-reviews__text"><?php echo esc_html( $text ); ?></p>

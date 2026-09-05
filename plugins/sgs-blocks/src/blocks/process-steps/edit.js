@@ -116,6 +116,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		numberStyle,
 		numberColour,
 		numberColourHover,
+		numberColourHoverGradient,
 		numberBackground,
 		titleColour,
 		titleColourGradient,
@@ -314,6 +315,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: numberColourHover,
 								onChange: ( val ) => setAttributes( { numberColourHover: val ?? '' } ),
 								linked: true,
+								gradientValue: numberColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { numberColourHoverGradient: val ?? '' } ),
 							},
 						] }
 					/>

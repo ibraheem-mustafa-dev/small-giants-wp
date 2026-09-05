@@ -478,6 +478,35 @@ const BABEL_PARSE_OPTS = {
 // — an inconsistency that later reads as deliberate. Measured, not inferred:
 // `--json` reported 208 net-new before, 177 after.
 const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
+	// Server-behaviour-only attrs (2026-09-05, Bean-approved). Verified by
+	// reading every consumption site: these reach NO CSS and NO markup, so
+	// there is nothing a canvas could show. `requireLogin`/`rateLimit` are read
+	// at form/render.php:77-78 and go straight into a `set_transient()`
+	// server-side config cache (form/render.php:89-99) so the submit handler
+	// can enforce them without trusting client data — they never touch output.
+	// Both are declared by `sgs/form` alone, so this name-keyed exemption
+	// cannot over-reach to another block.
+	'requireLogin',
+	'rateLimit',
+	// Accessibility-only attr (2026-09-05). `thumbnailDecorative` sets
+	// `aria-hidden="true"` on the thumbnail and nothing else
+	// (image-sequence/render.php:267-269 and :281-283) — the identical shape as
+	// `ariaLabel` already exempted below. Declared by `sgs/image-sequence`
+	// alone.
+	'thumbnailDecorative',
+	// Hover-only transform (2026-09-05). `scaleHover` emits a
+	// `transform:scale()` exclusively through `sgs_hover_state_rules()`
+	// (button/render.php:438-441) — a `:hover` rule, and the editor canvas
+	// never renders a hover state, which is the SAME doctrine already applied
+	// to the client-set hover VALUES below.
+	// ⚠ NAME-KEYED, AND THIS NAME IS NOT UNIQUE: `scaleHover` is declared by 11
+	// blocks (button, card-grid, gallery, heading, icon, info-box, post-grid,
+	// quote, team-member, testimonial, text). Only `sgs/button` has a finding
+	// today, so this also pre-emptively suppresses the other 10. That is
+	// intended — the attribute means the same thing on every one of them — but
+	// if any block ever uses `scaleHover` for a NON-hover transform, this
+	// exemption would hide a real desync there.
+	'scaleHover',
 	'bgSvgAnimation',
 	'bgSvgAnimationSpeed',
 	'bgParallax',
@@ -4571,7 +4600,25 @@ function main() {
 	// ceiling is ratcheted to the new true count rather than left at 216, so
 	// the correction does not silently bank 20 findings' worth of slack for a
 	// future regression to hide in.
-	const CHECK_A_OPEN_BACKLOG = 196;
+	// RAISED 196 -> 197 (2026-09-05, D948-follow-up — sgs/tabs.tabTextColourGradient):
+	// same structural cause as this block's ALREADY-baselined tabIndicatorColourGradient/
+	// tabActiveIndicatorColourGradient/panelBorderColourGradient siblings — tabs' editor
+	// canvas cssVars preview has no gradient-rendering mechanism at all (it only maps
+	// flat colours to `--sgs-tab-*` custom properties), so no gradient control on this
+	// block can ever satisfy this check, new or old. Not a new class of debt.
+	// LOWERED 197 -> 193 (2026-09-05, this session — four exemptions added to
+	// EDITOR_INVISIBLE_BY_DESIGN above: requireLogin, rateLimit,
+	// thumbnailDecorative, scaleHover). The tabs raise directly above is KEPT and
+	// is inside this number — it is a real finding, just now counted against a
+	// lower ceiling.
+	// ⚠ Measured by diffing the finding SETS, not the counts. The raw count only
+	// moved 196 -> 193 while this change removed four, because CONCURRENT peer
+	// sessions edited the same tree during the run: they closed
+	// post-grid.categoryBadgeColour and process-steps.numberColourHover (their
+	// colour-conformance track) and added star-rating.starColourGradient +
+	// star-rating.emptyColourGradient alongside the tabs one. Trusting the counts
+	// would have mis-attributed their work to this commit.
+	const CHECK_A_OPEN_BACKLOG = 193;
 	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
 
 	if ( isJson ) {

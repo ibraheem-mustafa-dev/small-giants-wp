@@ -103,6 +103,15 @@ $css_vars[] = '--sgs-transition-duration:' . $transition . 'ms';
 // as every other border-colour attribute. Non-empty gradient wins over the
 // flat colour; each state uses its own selector (not `:hover`) so the ring
 // only appears on the tab actually in that state.
+// D948-follow-up (2026-09-05) — resting tab TEXT colour/gradient. tabTextColour
+// resolves to css:color in the DB (a genuine text row, not border), so it takes
+// the text-colour/gradient primitive rather than the masked-ring border
+// mechanism above. Resting state only (`:not([aria-selected='true'])`) — mirrors
+// the D636 indicator scoping so this override never clobbers the ALREADY-
+// selected tab, which stays governed by tabActiveTextColour (untouched here).
+$tab_text_effective = sgs_resolve_text_colour_or_gradient( $attributes['tabTextColour'] ?? '', $attributes['tabTextColourGradient'] ?? '' );
+$tab_text_decl      = sgs_text_colour_decl( $tab_text_effective );
+
 $tab_indicator_gradient        = sgs_css_gradient_value( $attributes['tabIndicatorColourGradient'] ?? '' );
 $tab_active_indicator_gradient = sgs_css_gradient_value( $attributes['tabActiveIndicatorColourGradient'] ?? '' );
 $panel_border_gradient         = sgs_css_gradient_value( $attributes['panelBorderColourGradient'] ?? '' );
@@ -198,6 +207,17 @@ if ( '' !== $panel_border_gradient ) {
 		null,
 		'1px'
 	);
+}
+
+// Resting tab TEXT colour/gradient override (D948-follow-up) — scoped rule
+// beats the compiled stylesheet's `color: var( --sgs-tab-text, … )` default by
+// source order (this <style> is enqueued after style-index.css) at
+// equal-or-greater specificity. `:not([aria-selected='true'])` keeps this from
+// ever painting the active tab, which stays governed by tabActiveTextColour.
+if ( '' !== $tab_text_decl ) {
+	$tab_text_sel         = "{$root_sel} .sgs-tabs__tab:not([aria-selected='true'])";
+	$tabs_responsive_css .= "{$tab_text_sel}{{$tab_text_decl};}";
+	$tabs_responsive_css .= sgs_text_colour_gradient_fallback_rule( $tab_text_sel, $tab_text_effective );
 }
 
 // $css_vars (CSS custom-property VALUES only, e.g. --sgs-tab-text:…) stay

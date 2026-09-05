@@ -459,11 +459,32 @@ if ( '' !== $number_background_hover ) {
 
 // Hover number colour — same ancestor-hover shape as numberBackgroundHover
 // above (hovering the STEP repaints the badge's descendant number colour).
-$number_colour_hover = (string) ( $attributes['numberColourHover'] ?? '' );
-if ( '' !== $number_colour_hover ) {
+// Flat-or-gradient (D636 "text" builder, known-precedent registry row 2) —
+// sgs_resolve_text_colour_or_gradient() picks numberColourHoverGradient when
+// set + valid, leaving the flat numberColourHover value untouched.
+// sgs_text_colour_decl() emits a plain `color:` declaration for a flat
+// colour, or the background-clip:text trio for a gradient.
+// sgs_text_colour_gradient_fallback_rule() is the MANDATORY companion
+// @supports fallback (a no-op for a flat colour) — this is the ancestor-hover
+// shape lifted verbatim from sgs/post-grid's textColourHover pattern
+// (post-grid/render.php:670-689), substituting the step/number selectors.
+$number_colour_hover_raw          = (string) ( $attributes['numberColourHover'] ?? '' );
+$number_colour_hover_gradient_raw = (string) ( $attributes['numberColourHoverGradient'] ?? '' );
+$number_colour_hover_effective    = sgs_resolve_text_colour_or_gradient( $number_colour_hover_raw, $number_colour_hover_gradient_raw );
+$number_colour_hover_decl         = sgs_text_colour_decl( $number_colour_hover_effective );
+if ( '' !== $number_colour_hover_decl ) {
 	$step_sel     = $root_sel . ' .sgs-process-steps__step';
 	$num_el       = ' .sgs-process-steps__number';
-	$scoped_css[] = sgs_hover_state_rules( $step_sel, 'color:' . sgs_colour_value( $number_colour_hover ), ':focus-within', $num_el );
+	$scoped_css[] = sgs_hover_state_rules( $step_sel, $number_colour_hover_decl, ':focus-within', $num_el );
+
+	// Companion rule — matches sgs_hover_state_rules() above (a comma-joined
+	// selector list here is safe: unlike sgs_hover_state_rules(),
+	// sgs_text_colour_gradient_fallback_rule() takes $selector as an opaque
+	// string and never appends a pseudo-class to it).
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule(
+		$step_sel . ':hover' . $num_el . ',' . $step_sel . ':focus-within' . $num_el,
+		$number_colour_hover_effective
+	);
 }
 
 // D636 — sibling gradient attribute wins when set+valid (text-colour gradient

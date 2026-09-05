@@ -241,28 +241,29 @@ $uid = sanitize_html_class( 'sgs-post-grid-' . substr( md5( wp_json_encode( $att
 // Params array passed to render_card() — mirrors REST endpoint params.
 // -------------------------------------------------------------------------
 $card_params = array(
-	'cardStyle'             => $card_style,
-	'showImage'             => (bool) ( $attributes['showImage'] ?? true ),
-	'showTitle'             => (bool) ( $attributes['showTitle'] ?? true ),
-	'showExcerpt'           => (bool) ( $attributes['showExcerpt'] ?? true ),
-	'showDate'              => (bool) ( $attributes['showDate'] ?? true ),
-	'showAuthor'            => (bool) ( $attributes['showAuthor'] ?? false ),
-	'showCategory'          => (bool) ( $attributes['showCategory'] ?? true ),
-	'showReadMore'          => (bool) ( $attributes['showReadMore'] ?? true ),
-	'readMoreText'          => sanitize_text_field( $attributes['readMoreText'] ?? __( 'Read more', 'sgs-blocks' ) ),
-	'excerptLength'         => absint( $attributes['excerptLength'] ?? 20 ),
-	'imageSize'             => sanitize_key( $attributes['imageSize'] ?? 'medium_large' ),
-	'aspectRatio'           => $aspect_ratio,
-	'titleColour'           => $attributes['titleColour'] ?? 'primary',
-	'excerptColour'         => $attributes['excerptColour'] ?? 'text',
-	'metaColour'            => $attributes['metaColour'] ?? 'text-muted',
-	'categoryBadgeColour'   => $attributes['categoryBadgeColour'] ?? 'text-inverse',
-	'categoryBadgeBgColour' => $attributes['categoryBadgeBgColour'] ?? 'primary',
-	'readMoreColour'        => $attributes['readMoreColour'] ?? 'primary',
+	'cardStyle'                   => $card_style,
+	'showImage'                   => (bool) ( $attributes['showImage'] ?? true ),
+	'showTitle'                   => (bool) ( $attributes['showTitle'] ?? true ),
+	'showExcerpt'                 => (bool) ( $attributes['showExcerpt'] ?? true ),
+	'showDate'                    => (bool) ( $attributes['showDate'] ?? true ),
+	'showAuthor'                  => (bool) ( $attributes['showAuthor'] ?? false ),
+	'showCategory'                => (bool) ( $attributes['showCategory'] ?? true ),
+	'showReadMore'                => (bool) ( $attributes['showReadMore'] ?? true ),
+	'readMoreText'                => sanitize_text_field( $attributes['readMoreText'] ?? __( 'Read more', 'sgs-blocks' ) ),
+	'excerptLength'               => absint( $attributes['excerptLength'] ?? 20 ),
+	'imageSize'                   => sanitize_key( $attributes['imageSize'] ?? 'medium_large' ),
+	'aspectRatio'                 => $aspect_ratio,
+	'titleColour'                 => $attributes['titleColour'] ?? 'primary',
+	'excerptColour'               => $attributes['excerptColour'] ?? 'text',
+	'metaColour'                  => $attributes['metaColour'] ?? 'text-muted',
+	'categoryBadgeColour'         => $attributes['categoryBadgeColour'] ?? 'text-inverse',
+	'categoryBadgeColourGradient' => (string) ( $attributes['categoryBadgeColourGradient'] ?? '' ),
+	'categoryBadgeBgColour'       => $attributes['categoryBadgeBgColour'] ?? 'primary',
+	'readMoreColour'              => $attributes['readMoreColour'] ?? 'primary',
 	// 37-media-no-handroll: threaded through to render_card() so the
 	// featured-image <img> can carry the media-atom marker class — see the
 	// $sgs_pg_uid comment in class-post-grid-rest.php.
-	'uid'                   => $uid,
+	'uid'                         => $uid,
 );
 
 // -------------------------------------------------------------------------
@@ -601,11 +602,31 @@ $responsive_css .= $root_sel . ' .sgs-post-grid__card{' . Post_Grid_REST::card_v
 // which cannot carry a gradient), scoped under $root_sel so the same
 // descendant-selector rule also styles cards injected later by view.js AJAX
 // pagination. Mirrors sgs/counter's numberColour/labelColour pattern.
+//
+// categoryBadgeColour joins this same loop (2026-09-05, colour-conformance
+// closeout): the value is BLOCK-LEVEL, identical for every card in this grid
+// (card_params is built once above from $attributes, not per-post), NOT
+// per-post data — the badge paints a static operator-chosen colour, not a
+// value derived from the post's own category term. It still rides the
+// --sgs-pg-badge-colour custom property too (Post_Grid_REST::card_vars_decls(),
+// consumed by style.css's `.sgs-post-grid__badge`/`.sgs-post-grid__category`
+// fallback rules) — that legacy custom-property chain is harmless dead weight
+// now (categoryBadgeBgColour still legitimately needs it, a fill/
+// background-color value, not a text/color one), because this loop's
+// $root_sel-scoped rule out-specifies the bare-class style.css default
+// unconditionally (same "own scoped rule beats the compiled stylesheet"
+// mechanism documented for sgs/option-picker — no new mechanism needed here
+// either). categoryBadgeColour drives TWO mutually-exclusive elements
+// depending on cardStyle (badge pill for card/overlay, plain inline label for
+// flat/minimal — class-post-grid-rest.php render_card() lines ~440/480), so
+// the selector is comma-joined to both, mirroring sgs/pricing-table's
+// title_sel dual-alias-selector pattern.
 $post_grid_text_rows = array(
-	'titleColour'    => $root_sel . ' .sgs-post-grid__title a',
-	'excerptColour'  => $root_sel . ' .sgs-post-grid__excerpt',
-	'metaColour'     => $root_sel . ' .sgs-post-grid__meta',
-	'readMoreColour' => $root_sel . ' .sgs-post-grid__readmore',
+	'titleColour'         => $root_sel . ' .sgs-post-grid__title a',
+	'excerptColour'       => $root_sel . ' .sgs-post-grid__excerpt',
+	'metaColour'          => $root_sel . ' .sgs-post-grid__meta',
+	'categoryBadgeColour' => $root_sel . ' .sgs-post-grid__badge,' . $root_sel . ' .sgs-post-grid__category',
+	'readMoreColour'      => $root_sel . ' .sgs-post-grid__readmore',
 );
 foreach ( $post_grid_text_rows as $post_grid_attr => $post_grid_sel ) {
 	$post_grid_flat      = $card_params[ $post_grid_attr ] ?? '';

@@ -80,7 +80,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		maxRating,
 		starSize,
 		starColour,
+		starColourGradient,
 		emptyColour,
+		emptyColourGradient,
 		label,
 		showNumeric,
 		schemaEnabled,
@@ -154,6 +156,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: emptyColour,
 								onChange: ( val ) => setAttributes( { emptyColour: val ?? '' } ),
+								gradientValue: emptyColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { emptyColourGradient: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -200,6 +205,9 @@ export default function Edit( { attributes, setAttributes } ) {
 									label: __( 'Normal', 'sgs-blocks' ),
 									value: starColour,
 									onChange: ( val ) => setAttributes( { starColour: val ?? '' } ),
+									gradientValue: starColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { starColourGradient: val ?? '' } ),
 									linked: true,
 								},
 							] }

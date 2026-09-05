@@ -46,6 +46,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		theme,
 		cardStyle,
 		starColour,
+		starColourGradient,
 		starColourHover,
 		autoplay,
 		autoplaySpeed,
@@ -107,6 +108,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: starColour,
 								onChange: ( val ) => setAttributes( { starColour: val || 'accent' } ),
+								gradientValue: starColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { starColourGradient: val ?? '' } ),
 								linked: true,
 							},
 							{

@@ -34,6 +34,7 @@ NUL
 # WordPress
 *.log
 !reports/visual-diff/manual-skips.log
+!reports/f5-manual-skips.log
 wp-content/uploads/
 
 # flexWrap migration working cache (migrate-container-flexwrap-and-stack-candidates.py)

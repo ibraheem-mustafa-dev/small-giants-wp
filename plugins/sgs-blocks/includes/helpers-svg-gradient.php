@@ -42,14 +42,19 @@ defined( 'ABSPATH' ) || exit;
  *                              "{$uid}-icon-grad" / "{$uid}-icon-grad-h").
  *                              Sanitised to [A-Za-z0-9-] here; an id that
  *                              sanitises to '' fails closed.
+ * @param string $target       SVG paint property to target — 'stroke' (default,
+ *                              stroke-based icons) or 'fill' (fill-based SVG
+ *                              shapes, e.g. star ratings). Any other value
+ *                              falls back to 'stroke'.
  * @return array{defs:string,css:string} 'defs' = the <defs>…</defs> markup to
  *         inject into the icon's own <svg> (empty string when the gradient is
- *         empty/invalid/unsupported-type); 'css' = the `stroke:url(#id)`
+ *         empty/invalid/unsupported-type); 'css' = the `{$target}:url(#id)`
  *         declaration to scope onto the icon's SVG selector (empty alongside
  *         an empty 'defs' — never emit one without the other).
  */
-function sgs_svg_stroke_gradient( string $gradient_css, string $id ): array {
-	$empty = array(
+function sgs_svg_stroke_gradient( string $gradient_css, string $id, string $target = 'stroke' ): array {
+	$target = in_array( $target, array( 'stroke', 'fill' ), true ) ? $target : 'stroke';
+	$empty  = array(
 		'defs' => '',
 		'css'  => '',
 	);
@@ -177,7 +182,7 @@ function sgs_svg_stroke_gradient( string $gradient_css, string $id ): array {
 
 	return array(
 		'defs' => $defs,
-		'css'  => 'stroke:url(#' . $id . ')',
+		'css'  => $target . ':url(#' . $id . ')',
 	);
 }
 
