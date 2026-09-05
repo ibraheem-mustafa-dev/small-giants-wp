@@ -30,6 +30,7 @@ import {
 	ShadowControl,
 	SgsColourPanel,
 	DesignTokenPicker,
+	GradientCapableColourControl,
 	TypographyControls,
 	fillRow,
 	textRow,
@@ -418,32 +419,6 @@ export default function Edit( { attributes, setAttributes, context } ) {
 							},
 						],
 					},
-					{
-						key: 'role',
-						label: __( 'Role colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: roleColour,
-								onChange: ( val ) =>
-									setAttributes( { roleColour: val ?? '' } ),
-								linked: true,
-								gradientValue: roleColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { roleColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: roleColourHover,
-								onChange: ( val ) =>
-									setAttributes( { roleColourHover: val ?? '' } ),
-								linked: true,
-								},
-						],
-					},
 					shadowHover && {
 						key: 'shadowHover',
 						label: __( 'Hover shadow colour', 'sgs-blocks' ),
@@ -537,202 +512,6 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						</div>
 					</BaseControl>
 				</PanelBody>
-
-				{ /* ── Rating — visibility + content (behaviour). Appearance
-				     [colour, size] moved to the Styles tab below. ── */ }
-				{ ( effectiveVariant === 'rating-led' || effectiveVariant === 'classic-card' ) && (
-					<ToolsPanel
-						label={ __( 'Rating', 'sgs-blocks' ) }
-						resetAll={ () =>
-							setAttributes( {
-								showRating: false,
-								ratingType: 'stars',
-								ratingStars: 0,
-								ratingScale: 0,
-								ratingScaleMax: '10',
-								verified: false,
-								sourcePlatform: '',
-								reviewDate: '',
-							} )
-						}
-					>
-						<ToolsPanelItem
-							label={ __( 'Show a rating', 'sgs-blocks' ) }
-							hasValue={ () => showRating !== false }
-							onDeselect={ () => setAttributes( { showRating: false } ) }
-							isShownByDefault
-						>
-							<ToggleControl
-								label={ __( 'Show a rating', 'sgs-blocks' ) }
-								help={ __(
-									'Ratings are optional. Leave off for testimonials with no score.',
-									'sgs-blocks'
-								) }
-								checked={ showRating }
-								onChange={ ( val ) =>
-									setAttributes( { showRating: val } )
-								}
-								__nextHasNoMarginBottom
-							/>
-						</ToolsPanelItem>
-						{ showRating && effectiveVariant === 'rating-led' && (
-							<ToolsPanelItem
-								label={ __( 'Rating type', 'sgs-blocks' ) }
-								hasValue={ () => ratingType !== 'stars' }
-								onDeselect={ () => setAttributes( { ratingType: 'stars' } ) }
-							>
-								<SelectControl
-									label={ __( 'Rating type', 'sgs-blocks' ) }
-									value={ ratingType }
-									options={ [
-										{
-											label: __( 'Stars (out of 5)', 'sgs-blocks' ),
-											value: 'stars',
-										},
-										{
-											label: __( 'Numeric score', 'sgs-blocks' ),
-											value: 'scale',
-										},
-									] }
-									onChange={ ( val ) =>
-										setAttributes( { ratingType: val } )
-									}
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-						) }
-						{ showRating &&
-							showStarsControl &&
-							( effectiveVariant === 'classic-card' ||
-								ratingType === 'stars' ) && (
-								<ToolsPanelItem
-									label={ __( 'Stars', 'sgs-blocks' ) }
-									hasValue={ () => ratingStars !== 0 }
-									onDeselect={ () => setAttributes( { ratingStars: 0 } ) }
-								>
-									<RangeControl
-										label={ __( 'Stars', 'sgs-blocks' ) }
-										value={ ratingStars }
-										onChange={ ( val ) =>
-											setAttributes( { ratingStars: val } )
-										}
-										min={ 0 }
-										max={ 5 }
-										step={ 0.5 }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
-									/>
-								</ToolsPanelItem>
-							) }
-						{ showRating &&
-							effectiveVariant === 'rating-led' &&
-							ratingType === 'scale' && (
-								<>
-									<ToolsPanelItem
-										label={ __( 'Score', 'sgs-blocks' ) }
-										hasValue={ () => ratingScale !== 0 }
-										onDeselect={ () => setAttributes( { ratingScale: 0 } ) }
-									>
-										<RangeControl
-											label={ __( 'Score', 'sgs-blocks' ) }
-											value={ ratingScale }
-											onChange={ ( val ) =>
-												setAttributes( {
-													ratingScale: val,
-												} )
-											}
-											min={ 0 }
-											max={ 10 }
-											step={ 0.1 }
-											__nextHasNoMarginBottom
-											__next40pxDefaultSize
-										/>
-									</ToolsPanelItem>
-									<ToolsPanelItem
-										label={ __( 'Out of (max)', 'sgs-blocks' ) }
-										hasValue={ () => ratingScaleMax !== '10' }
-										onDeselect={ () => setAttributes( { ratingScaleMax: '10' } ) }
-									>
-										<TextControl
-											label={ __(
-												'Out of (max)',
-												'sgs-blocks'
-											) }
-											value={ ratingScaleMax }
-											onChange={ ( val ) =>
-												setAttributes( {
-													ratingScaleMax: val,
-												} )
-											}
-											__nextHasNoMarginBottom
-											__next40pxDefaultSize
-										/>
-									</ToolsPanelItem>
-								</>
-							) }
-						{ showRating && effectiveVariant === 'rating-led' && (
-							<>
-								<ToolsPanelItem
-									label={ __( 'Verified badge', 'sgs-blocks' ) }
-									hasValue={ () => verified !== false }
-									onDeselect={ () => setAttributes( { verified: false } ) }
-								>
-									<ToggleControl
-										label={ __(
-											'Verified badge',
-											'sgs-blocks'
-										) }
-										checked={ verified }
-										onChange={ ( val ) =>
-											setAttributes( { verified: val } )
-										}
-										__nextHasNoMarginBottom
-									/>
-								</ToolsPanelItem>
-								<ToolsPanelItem
-									label={ __( 'Source platform', 'sgs-blocks' ) }
-									hasValue={ () => sourcePlatform !== '' }
-									onDeselect={ () => setAttributes( { sourcePlatform: '' } ) }
-								>
-									<TextControl
-										label={ __(
-											'Source platform',
-											'sgs-blocks'
-										) }
-										help={ __(
-											'e.g. Trustpilot, Google',
-											'sgs-blocks'
-										) }
-										value={ sourcePlatform }
-										onChange={ ( val ) =>
-											setAttributes( {
-												sourcePlatform: val,
-											} )
-										}
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
-									/>
-								</ToolsPanelItem>
-								<ToolsPanelItem
-									label={ __( 'Review date', 'sgs-blocks' ) }
-									hasValue={ () => reviewDate !== '' }
-									onDeselect={ () => setAttributes( { reviewDate: '' } ) }
-								>
-									<TextControl
-										label={ __( 'Review date', 'sgs-blocks' ) }
-										value={ reviewDate }
-										onChange={ ( val ) =>
-											setAttributes( { reviewDate: val } )
-										}
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
-									/>
-								</ToolsPanelItem>
-							</>
-						) }
-					</ToolsPanel>
-				) }
 
 				{ /* ── Media (gated per variant) ── */ }
 				{ ( showAvatar || showLogo || showWork ) && (
@@ -954,6 +733,260 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					</PanelBody>
 				) }
 
+				{ /* ── Rating — visibility + content (behaviour). Appearance
+				     [colour, size] moved to the Styles tab below. ── */ }
+				{ ( effectiveVariant === 'rating-led' || effectiveVariant === 'classic-card' ) && (
+					<ToolsPanel
+						label={ __( 'Rating', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								showRating: false,
+								ratingType: 'stars',
+								ratingStars: 0,
+								ratingScale: 0,
+								ratingScaleMax: '10',
+								verified: false,
+								sourcePlatform: '',
+								reviewDate: '',
+								ratingSize: 16,
+								ratingColour: '',
+								ratingColourGradient: '',
+								ratingColourHover: '',
+							} )
+						}
+					>
+						<ToolsPanelItem
+							label={ __( 'Show a rating', 'sgs-blocks' ) }
+							hasValue={ () => showRating !== false }
+							onDeselect={ () => setAttributes( { showRating: false } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Show a rating', 'sgs-blocks' ) }
+								help={ __(
+									'Ratings are optional. Leave off for testimonials with no score.',
+									'sgs-blocks'
+								) }
+								checked={ showRating }
+								onChange={ ( val ) =>
+									setAttributes( { showRating: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						{ showRating && effectiveVariant === 'rating-led' && (
+							<ToolsPanelItem
+								label={ __( 'Rating type', 'sgs-blocks' ) }
+								hasValue={ () => ratingType !== 'stars' }
+								onDeselect={ () => setAttributes( { ratingType: 'stars' } ) }
+							>
+								<SelectControl
+									label={ __( 'Rating type', 'sgs-blocks' ) }
+									value={ ratingType }
+									options={ [
+										{
+											label: __( 'Stars (out of 5)', 'sgs-blocks' ),
+											value: 'stars',
+										},
+										{
+											label: __( 'Numeric score', 'sgs-blocks' ),
+											value: 'scale',
+										},
+									] }
+									onChange={ ( val ) =>
+										setAttributes( { ratingType: val } )
+									}
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
+						) }
+						{ showRating &&
+							showStarsControl &&
+							( effectiveVariant === 'classic-card' ||
+								ratingType === 'stars' ) && (
+								<ToolsPanelItem
+									label={ __( 'Stars', 'sgs-blocks' ) }
+									hasValue={ () => ratingStars !== 0 }
+									onDeselect={ () => setAttributes( { ratingStars: 0 } ) }
+								>
+									<RangeControl
+										label={ __( 'Stars', 'sgs-blocks' ) }
+										value={ ratingStars }
+										onChange={ ( val ) =>
+											setAttributes( { ratingStars: val } )
+										}
+										min={ 0 }
+										max={ 5 }
+										step={ 0.5 }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+							) }
+						{ showRating &&
+							effectiveVariant === 'rating-led' &&
+							ratingType === 'scale' && (
+								<>
+									<ToolsPanelItem
+										label={ __( 'Score', 'sgs-blocks' ) }
+										hasValue={ () => ratingScale !== 0 }
+										onDeselect={ () => setAttributes( { ratingScale: 0 } ) }
+									>
+										<RangeControl
+											label={ __( 'Score', 'sgs-blocks' ) }
+											value={ ratingScale }
+											onChange={ ( val ) =>
+												setAttributes( {
+													ratingScale: val,
+												} )
+											}
+											min={ 0 }
+											max={ 10 }
+											step={ 0.1 }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+									</ToolsPanelItem>
+									<ToolsPanelItem
+										label={ __( 'Out of (max)', 'sgs-blocks' ) }
+										hasValue={ () => ratingScaleMax !== '10' }
+										onDeselect={ () => setAttributes( { ratingScaleMax: '10' } ) }
+									>
+										<TextControl
+											label={ __(
+												'Out of (max)',
+												'sgs-blocks'
+											) }
+											value={ ratingScaleMax }
+											onChange={ ( val ) =>
+												setAttributes( {
+													ratingScaleMax: val,
+												} )
+											}
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+									</ToolsPanelItem>
+								</>
+							) }
+						{ showRating && effectiveVariant === 'rating-led' && (
+							<>
+								<ToolsPanelItem
+									label={ __( 'Verified badge', 'sgs-blocks' ) }
+									hasValue={ () => verified !== false }
+									onDeselect={ () => setAttributes( { verified: false } ) }
+								>
+									<ToggleControl
+										label={ __(
+											'Verified badge',
+											'sgs-blocks'
+										) }
+										checked={ verified }
+										onChange={ ( val ) =>
+											setAttributes( { verified: val } )
+										}
+										__nextHasNoMarginBottom
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Source platform', 'sgs-blocks' ) }
+									hasValue={ () => sourcePlatform !== '' }
+									onDeselect={ () => setAttributes( { sourcePlatform: '' } ) }
+								>
+									<TextControl
+										label={ __(
+											'Source platform',
+											'sgs-blocks'
+										) }
+										help={ __(
+											'e.g. Trustpilot, Google',
+											'sgs-blocks'
+										) }
+										value={ sourcePlatform }
+										onChange={ ( val ) =>
+											setAttributes( {
+												sourcePlatform: val,
+											} )
+										}
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Review date', 'sgs-blocks' ) }
+									hasValue={ () => reviewDate !== '' }
+									onDeselect={ () => setAttributes( { reviewDate: '' } ) }
+								>
+									<TextControl
+										label={ __( 'Review date', 'sgs-blocks' ) }
+										value={ reviewDate }
+										onChange={ ( val ) =>
+											setAttributes( { reviewDate: val } )
+										}
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+							</>
+						) }
+						{ /* ── Rating appearance (colour + star size), consolidated
+						     in from the Styles-tab "Rating appearance" panel —
+						     CO-2 / THE PLACEMENT RULE TIER 1 requires "Rating"'s
+						     content, styling and hover to live in one panel. ── */ }
+						{ showRating && (
+							<ToolsPanelItem
+								label={ __( 'Star size (px)', 'sgs-blocks' ) }
+								hasValue={ () => ratingSize !== 16 }
+								onDeselect={ () => setAttributes( { ratingSize: 16 } ) }
+							>
+								<RangeControl
+									label={ __( 'Star size (px)', 'sgs-blocks' ) }
+									value={ ratingSize }
+									onChange={ ( val ) =>
+										setAttributes( { ratingSize: val } )
+									}
+									min={ 10 }
+									max={ 32 }
+									step={ 1 }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
+						) }
+						{ /* Moved in from the shared SgsColourPanel (D622 — an
+						     element-scoped colour belongs in its own element's
+						     TIER 1 panel; "rating" is a declared element whose
+						     attrMap claims ratingColour). */ }
+						{ showRating && (
+							<DesignTokenPicker
+								label={ __( 'Rating colour', 'sgs-blocks' ) }
+								states={ [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: ratingColour,
+										onChange: ( val ) =>
+											setAttributes( { ratingColour: val ?? '' } ),
+										linked: true,
+										gradientValue: ratingColourGradient,
+										onGradientChange: ( val ) =>
+											setAttributes( { ratingColourGradient: val ?? '' } ),
+									},
+									{
+										key: 'hover',
+										label: __( 'Hover', 'sgs-blocks' ),
+										value: ratingColourHover,
+										onChange: ( val ) =>
+											setAttributes( { ratingColourHover: val ?? '' } ),
+										linked: true,
+									},
+								] }
+							/>
+						) }
+					</ToolsPanel>
+				) }
+
 				{ /* ── SEO schema (behaviour — enables/disables structured-data
 				     output; moved here from after Width & spacing so all
 				     Settings panels sit together before the Styles group). ── */ }
@@ -1015,60 +1048,6 @@ export default function Edit( { attributes, setAttributes, context } ) {
 			{ /* ── Styles tab (appearance — colour, typography, hover
 			     appearance, layout geometry) ── */ }
 			<InspectorControls group="styles">
-				{ /* ── Rating appearance (colour + star size), split out of
-				     the Settings-tab Rating panel above. ── */ }
-				{ ( effectiveVariant === 'rating-led' || effectiveVariant === 'classic-card' ) && (
-					<PanelBody
-						title={ __( 'Rating appearance', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						{ showRating && (
-							<RangeControl
-								label={ __( 'Star size (px)', 'sgs-blocks' ) }
-								value={ ratingSize }
-								onChange={ ( val ) =>
-									setAttributes( { ratingSize: val } )
-								}
-								min={ 10 }
-								max={ 32 }
-								step={ 1 }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
-						{ /* Moved in from the shared SgsColourPanel (D622 — an
-						     element-scoped colour belongs in its own element's
-						     TIER 1 panel; "rating" is a declared element whose
-						     attrMap claims ratingColour). */ }
-						{ showRating && (
-							<DesignTokenPicker
-								label={ __( 'Rating colour', 'sgs-blocks' ) }
-								states={ [
-									{
-										key: 'normal',
-										label: __( 'Normal', 'sgs-blocks' ),
-										value: ratingColour,
-										onChange: ( val ) =>
-											setAttributes( { ratingColour: val ?? '' } ),
-										linked: true,
-										gradientValue: ratingColourGradient,
-										onGradientChange: ( val ) =>
-											setAttributes( { ratingColourGradient: val ?? '' } ),
-									},
-									{
-										key: 'hover',
-										label: __( 'Hover', 'sgs-blocks' ),
-										value: ratingColourHover,
-										onChange: ( val ) =>
-											setAttributes( { ratingColourHover: val ?? '' } ),
-										linked: true,
-									},
-								] }
-							/>
-						) }
-					</PanelBody>
-				) }
-
 				{ /* ── Typography ── */ }
 				<PanelBody
 					title={ __( 'Typography', 'sgs-blocks' ) }
@@ -1326,6 +1305,38 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									value: nameColourHover,
 									onChange: ( val ) =>
 										setAttributes( { nameColourHover: val ?? '' } ),
+									linked: true,
+								},
+							] }
+						/>
+						{ /* Moved in from the shared top-level SgsColourPanel — CO-2 /
+						     THE PLACEMENT RULE TIER 1 names "Reviewer role" a
+						     declared element (order 4); its only control is this
+						     colour row, so it belongs alongside "Reviewer name"'s
+						     controls here rather than in the block-root Colour
+						     panel. GradientCapableColourControl (not
+						     DesignTokenPicker+gradientCapable) because this is a
+						     TEXT-mechanism colour row (rule 31). */ }
+						<GradientCapableColourControl
+							label={ __( 'Role colour', 'sgs-blocks' ) }
+							states={ [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: roleColour,
+									onChange: ( val ) =>
+										setAttributes( { roleColour: val ?? '' } ),
+									linked: true,
+									gradientValue: roleColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { roleColourGradient: val ?? '' } ),
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: roleColourHover,
+									onChange: ( val ) =>
+										setAttributes( { roleColourHover: val ?? '' } ),
 									linked: true,
 								},
 							] }

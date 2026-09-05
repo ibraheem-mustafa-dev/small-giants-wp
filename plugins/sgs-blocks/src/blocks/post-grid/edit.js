@@ -678,14 +678,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					</ResponsiveOverride>
 					{ /* Gap is provided by the shared ContainerWrapperControls panel below. */ }
-					<SelectControl
-						label={ __( 'Image aspect ratio', 'sgs-blocks' ) }
-						value={ aspectRatio }
-						options={ ASPECT_RATIO_OPTIONS }
-						onChange={ set( 'aspectRatio' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
 				</PanelBody>
 
 				{ /* Panel 3: Content */ }
@@ -696,6 +688,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							showImage: true,
 							imageSize: 'medium_large',
 							imageDecorative: false,
+							aspectRatio: '16 / 9',
+							imageZoomHover: true,
 							showTitle: true,
 							showExcerpt: true,
 							excerptLength: 20,
@@ -709,8 +703,15 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					<ToolsPanelItem
 						label={ __( 'Show image', 'sgs-blocks' ) }
-						hasValue={ () => showImage !== true }
-						onDeselect={ () => setAttributes( { showImage: true } ) }
+						hasValue={ () =>
+							showImage !== true || imageZoomHover !== true
+						}
+						onDeselect={ () =>
+							setAttributes( {
+								showImage: true,
+								imageZoomHover: true,
+							} )
+						}
 						isShownByDefault
 					>
 						<SgsBooleanField
@@ -720,6 +721,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						>
 							{ showImage && (
 								<>
+									{ /* Consolidated in from the "Layout" panel — CO-2 /
+									     THE PLACEMENT RULE TIER 1 names "Post image" a
+									     declared element; aspect ratio is image-owned. */ }
+									<SelectControl
+										label={ __( 'Image aspect ratio', 'sgs-blocks' ) }
+										value={ aspectRatio }
+										options={ ASPECT_RATIO_OPTIONS }
+										onChange={ set( 'aspectRatio' ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
 									<SelectControl
 										label={ __( 'Image size', 'sgs-blocks' ) }
 										value={ imageSize }
@@ -750,6 +762,15 @@ export default function Edit( { attributes, setAttributes } ) {
 										) }
 										checked={ imageDecorative }
 										onChange={ set( 'imageDecorative' ) }
+										__nextHasNoMarginBottom
+									/>
+									{ /* Consolidated in from the "Hover Effects" panel —
+									     same TIER 1 reason; image zoom on hover is
+									     image-owned. */ }
+									<ToggleControl
+										label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
+										checked={ imageZoomHover }
+										onChange={ set( 'imageZoomHover' ) }
 										__nextHasNoMarginBottom
 									/>
 								</>
@@ -956,6 +977,37 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						] }
 					/>
+					{ /* Consolidated in from the "Hover Effects" panel — CO-2 /
+					     THE PLACEMENT RULE TIER 1 names "Post card" a declared
+					     element; scale + shadow (base & hover) are card-owned. */ }
+					<RangeControl
+						label={ __( 'Hover scale', 'sgs-blocks' ) }
+						value={ parseFloat( scaleHover ) || 1 }
+						onChange={ ( val ) => setAttributes( { scaleHover: String( val ) } ) }
+						min={ 1 }
+						max={ 1.1 }
+						step={ 0.01 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<ShadowControl
+						label={ __( 'Shadow', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'shadow',
+							colour: 'shadowColour',
+						} }
+					/>
+					<ShadowControl
+						label={ __( 'Hover shadow', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'shadowHover',
+							colour: 'shadowHoverColour',
+						} }
+					/>
 				</PanelBody>
 
 				{ /* Panel 5: Pagination & Filters */ }
@@ -997,82 +1049,12 @@ export default function Edit( { attributes, setAttributes } ) {
 					label={ __( 'Hover Effects', 'sgs-blocks' ) }
 					resetAll={ () =>
 						setAttributes( {
-							scaleHover: '',
-							shadow: '',
-							shadowColour: '',
-							shadowHover: '',
-							shadowHoverColour: '',
 							imageZoomHover: true,
 							transitionDuration: '300',
 							transitionEasing: 'ease',
 						} )
 					}
 				>
-					<ToolsPanelItem
-						label={ __( 'Hover scale', 'sgs-blocks' ) }
-						hasValue={ () => !! scaleHover && scaleHover !== '' }
-						onDeselect={ () => setAttributes( { scaleHover: '' } ) }
-					>
-						<RangeControl
-							label={ __( 'Hover scale', 'sgs-blocks' ) }
-							value={ parseFloat( scaleHover ) || 1 }
-							onChange={ ( val ) => setAttributes( { scaleHover: String( val ) } ) }
-							min={ 1 }
-							max={ 1.1 }
-							step={ 0.01 }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Shadow', 'sgs-blocks' ) }
-						hasValue={ () => !! shadow }
-						onDeselect={ () =>
-							setAttributes( { shadow: '', shadowColour: '' } )
-						}
-					>
-						<ShadowControl
-							label={ __( 'Shadow', 'sgs-blocks' ) }
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							attrNames={ {
-								base: 'shadow',
-								colour: 'shadowColour',
-							} }
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Hover shadow', 'sgs-blocks' ) }
-						hasValue={ () => !! shadowHover }
-						onDeselect={ () =>
-							setAttributes( { shadowHover: '', shadowHoverColour: '' } )
-						}
-					>
-						<ShadowControl
-							label={ __( 'Hover shadow', 'sgs-blocks' ) }
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							attrNames={ {
-								base: 'shadowHover',
-								colour: 'shadowHoverColour',
-							} }
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
-						hasValue={ () => imageZoomHover !== true }
-						onDeselect={ () =>
-							setAttributes( { imageZoomHover: true } )
-						}
-						isShownByDefault
-					>
-						<ToggleControl
-							label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
-							checked={ imageZoomHover }
-							onChange={ set( 'imageZoomHover' ) }
-							__nextHasNoMarginBottom
-						/>
-					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
 						hasValue={ () => transitionDuration !== '300' }
