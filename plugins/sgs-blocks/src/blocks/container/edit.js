@@ -13,7 +13,7 @@ import {
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, resolveColourToken, SgsBorderControl } from "../../components";
-import { resolveShadowPreview, resolveResponsiveTier, backgroundPaintPreview, backgroundPreview, boxShorthand, resolveBoxTierPreview } from "../../utils";
+import { resolveShadowPreview, resolveResponsiveTier, backgroundPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview } from "../../utils";
 import {
   LayoutPanel,
   WidthPanel,
@@ -198,6 +198,28 @@ export default function Edit({ attributes, setAttributes, name }) {
   // 2026-08-26) so the same mirror serves every other block mounting
   // `BackgroundPanel` (composite-mirror rule, CLAUDE.md). `bgPreview.style`
   // carries the same custom-property set this block used to build inline.
+  // Decorative SVG background layer — editor mirror (2026-09-05). Deliberately
+  // NOT folded into backgroundPreview()'s return: that helper paints via
+  // `--sgs-ed-bg-*` custom properties on a ::before, whereas the SVG layer is a
+  // real element whose painting rules already ship in style.css (loaded in the
+  // canvas via block.json `style`). See svgBackgroundPreview()'s own docblock.
+  // Attributes enumerated EXPLICITLY rather than passing `attributes` wholesale
+  // — the same convention backgroundPreview()'s call site below already uses.
+  // Two reasons, both real: it documents exactly which attrs this mirror reads,
+  // and check-editor-render-parity.js (CHECK A) resolves an attribute as
+  // canvas-reflected only when its NAME appears outside the Inspector panels. A
+  // whole-object hand-off renders correctly but reads to that gate as a desync,
+  // which is precisely the false-negative shape its own header documents.
+  const svgPreview = svgBackgroundPreview( {
+    bgSvgContent: attributes.bgSvgContent,
+    bgSvgPosition: attributes.bgSvgPosition,
+    bgSvgAnimation: attributes.bgSvgAnimation,
+    bgSvgAnimationSpeed: attributes.bgSvgAnimationSpeed,
+    bgSvgOpacity: attributes.bgSvgOpacity,
+    bgSvgMinHeight: attributes.bgSvgMinHeight,
+    bgSvgTextShadow: attributes.bgSvgTextShadow,
+  } );
+
   const bgPreview = backgroundPreview( {
     backgroundImage: attributes.backgroundImage,
     bgVideo: attributes.bgVideo,
@@ -219,6 +241,7 @@ export default function Edit({ attributes, setAttributes, name }) {
     minHeight: resolveResponsiveTier( attributes.minHeight, previewTier )?.value || undefined,
     ...(shadow && { boxShadow: resolveShadowPreview( shadow ) }),
     ...bgPreview.style,
+    ...svgPreview.style,
     // Base (SGS-owned) background paint — the OUTER-most layer, below the
     // media ::before and the overlay span. Text paint is applied AFTER
     // background so it wins the shared `backgroundImage` key exactly as the
@@ -415,7 +438,7 @@ export default function Edit({ attributes, setAttributes, name }) {
   // it here at least shows the state took effect instead of looking silent.
   // `bgPreview.className` is the shared marker set (`src/utils/background-preview.js`,
   // 2026-08-26) — the same one every other adopting block now applies.
-  const editorClassName = [ className, bgPreview.className ]
+  const editorClassName = [ className, bgPreview.className, svgPreview.className ]
     .filter( Boolean )
     .join( " " );
 
@@ -437,6 +460,18 @@ export default function Edit({ attributes, setAttributes, name }) {
       templateLock: attributes.templateLock || undefined,
     }
   );
+
+  // Mirrors class-sgs-container-wrapper.php:2794-2798. `aria-hidden` matches the
+  // server; `pointer-events:none` is editor-only insurance so the decorative
+  // layer can never swallow a click meant for the block or its children.
+  const svgLayer = svgPreview.hasSvg ? (
+    <div
+      className="sgs-container__svg-bg"
+      aria-hidden="true"
+      style={ { pointerEvents: 'none' } }
+      dangerouslySetInnerHTML={ { __html: svgPreview.markup } }
+    />
+  ) : null;
 
   return (
     <>
@@ -772,10 +807,18 @@ export default function Edit({ attributes, setAttributes, name }) {
 
       { hasBandProps ? (
         <div { ...blockProps }>
+          { svgLayer }
           <div { ...innerBlocksProps } />
         </div>
       ) : (
-        <div { ...innerBlocksProps } />
+        // Spread first, then state children explicitly: innerBlocksProps
+        // CARRIES a `children` prop, so the SVG layer has to be composed with
+        // it rather than added alongside the spread (which React would
+        // silently discard).
+        <div { ...innerBlocksProps }>
+          { svgLayer }
+          { innerBlocksProps.children }
+        </div>
       ) }
     </>
   );

@@ -1,4 +1,5 @@
 import { resolveColourToken } from '../components/DesignTokenPicker';
+import { sanitiseSvg } from './sanitise-svg';
 
 /**
  * Shared editor-canvas mirror of the container/composite background stack —
@@ -204,5 +205,109 @@ export function backgroundPreview( attributes, colourPalette ) {
 		hasOverlay: overlayPreview.hasOverlay,
 		hasParallax: !! bgParallax,
 		className,
+	};
+}
+
+/* ==========================================================================
+ * SVG background layer — editor-canvas mirror (2026-09-05)
+ * ==========================================================================
+ *
+ * The `bgSvg*` family was DELIBERATELY excluded from this module's original
+ * 2026-08-26 extraction (see the header) because `sgs/container` had never
+ * built a mirror for it either — there was nothing to extract. This is that
+ * missing mirror, added after a fresh design pass as the header required.
+ *
+ * WHY THIS SHAPE (and not the `--sgs-ed-*` custom-property + `::before`
+ * approach the image/video half above uses): the frontend's SVG layer is a
+ * REAL ELEMENT, and every rule that paints it already ships in the block's
+ * `style.css` — which `block.json`'s `style` field loads into the editor
+ * canvas as well as the front end. So rendering the SAME element with the
+ * SAME class names makes the EXISTING stylesheet do all the work: opacity,
+ * foreground/background stacking, the four animation modes and all three
+ * speeds, with ZERO new CSS and no second vocabulary to drift.
+ * (`src/blocks/container/style.css:294-310` paints the layer;
+ * `:349-392` the animations.)
+ *
+ * Mirrors `SGS_Container_Wrapper::render()` exactly:
+ *  - classes            class-sgs-container-wrapper.php:1634-1641
+ *  - layer markup       :2794-2798
+ *  - position routing   :2801-2802
+ *  - --sgs-svg-opacity  :2750  (scoped to `.{uid} .sgs-container__svg-bg`
+ *                              server-side; set here on the block wrapper
+ *                              instead, where it inherits to the same layer —
+ *                              the editor has no per-instance uid stylesheet)
+ *  - --sgs-svg-min-height :1403-1404
+ *
+ * ⛔ Keep the enum allowlists below in step with the PHP. They are the same
+ * three the server validates against (:958-970); an out-of-enum value must
+ * fall back to the SAME default on both sides or the canvas lies about what
+ * the page will render.
+ *
+ * ⛔ The SVG is sanitised through the shared `sanitiseSvg()` before it is ever
+ * handed to `dangerouslySetInnerHTML`. That helper's allowlist is GENERATED
+ * from the server's own `sgs_svg_kses_allowed_tags()` and gate-checked, so the
+ * two sides refuse the identical set rather than merely a similar one.
+ */
+
+const SVG_POSITIONS = [ 'background', 'foreground' ];
+const SVG_ANIMATIONS = [ 'none', 'pulse', 'float', 'wave' ];
+const SVG_SPEEDS = [ 'slow', 'medium', 'fast' ];
+
+/**
+ * Editor-canvas mirror of the wrapper's decorative SVG background layer.
+ *
+ * @param {Object} attributes Block attributes (reads the `bgSvg*` family).
+ * @return {{hasSvg: boolean, className: string[], style: Object, markup: string, position: string}}
+ *   `markup` is ALREADY SANITISED and safe for `dangerouslySetInnerHTML`.
+ */
+export function svgBackgroundPreview( attributes ) {
+	const {
+		bgSvgContent = '',
+		bgSvgPosition = 'background',
+		bgSvgAnimation = 'none',
+		bgSvgAnimationSpeed = 'medium',
+		bgSvgOpacity = 100,
+		bgSvgMinHeight = '',
+		bgSvgTextShadow = false,
+	} = attributes || {};
+
+	// `$has_bg_svg = ! empty( $bg_svg_content )` — the single gate the whole
+	// server-side block sits behind (class-sgs-container-wrapper.php:975).
+	const hasSvg = !! ( bgSvgContent && String( bgSvgContent ).trim() );
+	if ( ! hasSvg ) {
+		return { hasSvg: false, className: [], style: {}, markup: '', position: 'background' };
+	}
+
+	const position = SVG_POSITIONS.includes( bgSvgPosition ) ? bgSvgPosition : 'background';
+	const animation = SVG_ANIMATIONS.includes( bgSvgAnimation ) ? bgSvgAnimation : 'none';
+	const speed = SVG_SPEEDS.includes( bgSvgAnimationSpeed ) ? bgSvgAnimationSpeed : 'medium';
+
+	// `absint()` server-side: negatives become their absolute value, non-numeric
+	// becomes 0. Mirrored rather than clamped so an out-of-range value shows the
+	// same thing in both places.
+	const rawOpacity = Math.abs( parseInt( bgSvgOpacity, 10 ) );
+	const opacity = Number.isNaN( rawOpacity ) ? 100 : rawOpacity;
+
+	const className = [
+		'sgs-container--has-bg-svg',
+		`sgs-container--svg-${ position }`,
+		`sgs-container--svg-anim-${ animation }`,
+		`sgs-container--svg-speed-${ speed }`,
+	];
+	if ( bgSvgTextShadow ) {
+		className.push( 'sgs-container--svg-text-shadow' );
+	}
+
+	const style = { '--sgs-svg-opacity': String( opacity / 100 ) };
+	if ( bgSvgMinHeight ) {
+		style[ '--sgs-svg-min-height' ] = bgSvgMinHeight;
+	}
+
+	return {
+		hasSvg: true,
+		className,
+		style,
+		markup: sanitiseSvg( String( bgSvgContent ) ),
+		position,
 	};
 }
