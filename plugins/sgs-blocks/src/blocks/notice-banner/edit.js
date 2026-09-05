@@ -23,7 +23,7 @@ import {
 	TypographyControls,
 } from '../../components';
 import { colourVar } from '../../utils';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 // Box-object interface contract — length units for the kept-scalar maxWidth
 // attr (base only, matches the pre-existing attribute set). contentWidth was
@@ -174,11 +174,17 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const isAnnouncement = 'announcement' === displayMode;
 
+	// Mirrors render.php's own allowlist exactly (left/center/right only —
+	// 'justify' is not a valid has-text-align-* class) so the editor canvas
+	// shows the same class the frontend emits.
+	const canvasTextAlign = [ 'left', 'center', 'right' ].includes( textAlign ) ? textAlign : '';
+
 	const className = [
 		'sgs-notice-banner',
 		`sgs-notice-banner--${ variant }`,
 		isAnnouncement ? 'sgs-notice-banner--announcement' : '',
 		isAnnouncement ? `sgs-notice-banner--sticky-${ stickyPosition }` : '',
+		canvasTextAlign ? `has-text-align-${ canvasTextAlign }` : '',
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -451,16 +457,27 @@ export default function Edit( { attributes, setAttributes } ) {
 				   pattern) rather than native — the full-replacement rule
 				   (rule 45) flags ANY declared supports.typography sub-key,
 				   so textAlign moved off the native mechanism too, driving
-				   the same has-text-align-* class render.php already emits. */ }
+				   the same has-text-align-* class render.php already emits.
+				   D812 (2026-08-26): a 5-option enum with longest rendered
+				   label <=12 chars ("— inherit —", 11 chars) renders as
+				   ToggleGroupControl, not SelectControl. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
+					<ToggleGroupControl
 						label={ __( 'Text align', 'sgs-blocks' ) }
 						value={ textAlign }
-						options={ TEXT_ALIGN_OPTIONS }
 						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
+						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
+					>
+						{ TEXT_ALIGN_OPTIONS.map( ( option ) => (
+							<ToggleGroupControlOption
+								key={ option.value }
+								value={ option.value }
+								label={ option.label }
+							/>
+						) ) }
+					</ToggleGroupControl>
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
@@ -532,13 +549,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourLinked={ true }
 						contrastAgainst={ noticeBannerContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius ?? {},
+							tablet: attributes.borderRadiusTablet ?? {},
+							mobile: attributes.borderRadiusMobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
-							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
+							setAttributes( { [ radiusKey ]: next } );
 						} }
 					/>
 				</PanelBody>

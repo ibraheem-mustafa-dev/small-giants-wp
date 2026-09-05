@@ -147,6 +147,15 @@
 	gap: 0.5em;
 	font-style: normal;
 	margin: 0;
+}
+
+/*
+ * Line-height default — :where() keeps this at specificity 0 so the uid-scoped
+ * lineHeight rule (sgs_typography_css_rule, emitted only when the operator
+ * sets a value) always wins. Sanctioned F3-exempt overridable-default pattern
+ * (mirrors sgs/product-card's identical :where() block).
+ */
+:where(.sgs-business-address) {
 	line-height: 1.6;
 }
 

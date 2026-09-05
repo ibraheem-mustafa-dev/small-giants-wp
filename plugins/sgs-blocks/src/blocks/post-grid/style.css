@@ -336,6 +336,16 @@
 
 .sgs-post-grid__title {
 	margin: 0 0 10px;
+}
+
+/*
+ * Typography defaults — :where() keeps these at specificity 0 so the
+ * uid-scoped titleFontSize/titleLineHeight/titleFontWeight rule
+ * (sgs_typography_css_rule, prefix "title") always wins. Sanctioned
+ * F3-exempt overridable-default pattern (mirrors sgs/product-card's
+ * line-height :where() block).
+ */
+:where(.sgs-post-grid__title) {
 	font-size: 1.125rem;
 	line-height: 1.35;
 	font-weight: 700;

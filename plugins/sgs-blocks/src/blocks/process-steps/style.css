@@ -126,8 +126,17 @@
 
 .sgs-process-steps__title {
 	font-size: var(--wp--preset--font-size--medium);
-	font-weight: 700;
 	margin: 0 0 var(--wp--preset--spacing--10) 0;
+}
+
+/*
+ * Typography defaults — :where() keeps these at specificity 0 so the
+ * uid-scoped titleFontWeight/titleLineHeight rule (sgs_typography_css_rule,
+ * prefix "title") always wins. Sanctioned F3-exempt overridable-default
+ * pattern (mirrors sgs/product-card's line-height :where() block).
+ */
+:where(.sgs-process-steps__title) {
+	font-weight: 700;
 	line-height: 1.3;
 }
 

@@ -47,7 +47,7 @@ import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverFiel
 	TypographyControls,
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { colourVar, resolveShadowPreviewComposed, resolveTextColourPreviewStyle } from '../../utils';
 
 const CARD_STYLES = [
@@ -375,10 +375,15 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( { socialLinks: [ ...socialLinks, { platform: 'website', url: '', opensInNewTab: true, rel: '' } ] } );
 	};
 
+	// Mirrors render.php's own allowlist exactly so the editor canvas shows
+	// the same class the frontend emits.
+	const canvasTextAlign = [ 'left', 'center', 'right', 'justify' ].includes( textAlign ) ? textAlign : '';
+
 	const className = [
 		'sgs-team-member',
 		`sgs-team-member--${ cardStyle }`,
 		isCompact && 'sgs-team-member--compact',
+		canvasTextAlign && `has-text-align-${ canvasTextAlign }`,
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -793,22 +798,33 @@ export default function Edit( { attributes, setAttributes } ) {
 				   any block). Root prefix "" since the card root is the single
 				   typography target. textAlign is now a plain block-private
 				   attribute — TypographyControls has no alignment picker, so a
-				   dedicated SelectControl is mounted alongside it; render.php's
-				   existing has-text-align-* class mechanism is unchanged. */ }
+				   dedicated control is mounted alongside it; render.php's
+				   existing has-text-align-* class mechanism is unchanged.
+				   D812 (2026-08-26): a 5-option enum with longest rendered
+				   label <=12 chars ("Justify", 7 chars) renders as
+				   ToggleGroupControl, not SelectControl. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""
 					/>
-					<SelectControl
+					<ToggleGroupControl
 						label={ __( 'Text alignment', 'sgs-blocks' ) }
 						value={ textAlign || '' }
-						options={ TEXT_ALIGN_OPTIONS }
 						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
+						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
+					>
+						{ TEXT_ALIGN_OPTIONS.map( ( option ) => (
+							<ToggleGroupControlOption
+								key={ option.value }
+								value={ option.value }
+								label={ option.label }
+							/>
+						) ) }
+					</ToggleGroupControl>
 				</PanelBody>
 
 				{ /* Box-object interface contract §B/§E: padding/margin base routes
@@ -879,13 +895,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourLinked={ true }
 						contrastAgainst={ teamMemberContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius ?? {},
+							tablet: attributes.borderRadiusTablet ?? {},
+							mobile: attributes.borderRadiusMobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
-							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
+							setAttributes( { [ radiusKey ]: next } );
 						} }
 					/>
 				</PanelBody>
