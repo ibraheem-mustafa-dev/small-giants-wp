@@ -149,6 +149,7 @@ discriminator as check-tier-storage-shape.py, deliberately, so gate and codemod 
 """
 
 import argparse
+import functools
 import io
 import json
 import re
@@ -272,9 +273,58 @@ def _companion_media_stem(attrs: dict, prop: str) -> bool:
     return False
 
 
-def classify(attrs: dict, prop: str):
+# Phase 2 fix (2026-09-06, tier-object migration): classify()'s ASSET branch could not
+# distinguish a genuine per-tier ASSET family (backgroundImage/backgroundImageTablet/
+# backgroundImageMobile — three independent media references, correctly NOT a migration
+# target) from a BOX-OF-SIDES family declared three times, once per device
+# (padding/paddingTablet/paddingMobile — a box_family attribute that SHOULD fold into one
+# tier-of-boxes object, exactly the shape contentBandPadding already uses). Both shapes are
+# "object base + object siblings of the same type" at the block.json level, so the old
+# ASSET test reported both as "correct as-is" — verified live: `--survey --property padding`
+# reported "0 block(s) to migrate" against a real 63-block unmigrated surface (Ship-PM,
+# adversarial council, 2026-09-06).
+#
+# The discriminator is the DB's `box_family` column — the SAME column the converter's
+# `box_family_for()`/`tier_object_base()` already treat as the sole legitimate gate for
+# this exact question (R-31-1: never re-derive from the attr NAME). A read-only,
+# structural check: does ANY of this family's siblings carry a non-null box_family? A
+# genuine box-of-sides family's siblings DO (measured: sgs/container.paddingTablet ->
+# box_family='padding'); a genuine per-tier ASSET family's siblings do NOT (measured:
+# sgs/container.backgroundImageTablet -> box_family=None).
+#
+# ⛔ Deliberately a lightweight read-only sqlite3 query here, NOT an import of
+# `converter/db/db_lookup.py` — that module runs schema-migration side effects on import
+# (confirmed live this session: importing it deleted 2 stale `roles.json`-orphaned rows as
+# an "intended reconciliation" the module docstring never surfaces to a caller expecting a
+# read). A survey/census tool must never become a writer as a side effect of being run.
+@functools.lru_cache(maxsize=4096)
+def _sibling_box_family(block_slug: "str | None", sibling_attr: str) -> "str | None":
+    """Read-only: the DB's `box_family` for one sibling attr, or None if unknown/absent.
+
+    Returns None immediately (no DB hit) when `block_slug` is unavailable — every existing
+    self-test fixture calls `classify()` with a synthetic dict and no real block slug, and
+    must keep classifying exactly as before this fix (ASSET, not BOX_FLAT) rather than
+    silently querying a real block's DB row for a fabricated attribute name."""
+    if not block_slug or not SGS_DB.exists():
+        return None
+    con = sqlite3.connect(f'file:{SGS_DB}?mode=ro', uri=True)
+    try:
+        row = con.execute(
+            'SELECT box_family FROM block_attributes WHERE block_slug = ? AND attr_name = ?',
+            (block_slug, sibling_attr),
+        ).fetchone()
+    finally:
+        con.close()
+    return row[0] if row and row[0] else None
+
+
+def classify(attrs: dict, prop: str, block_slug: "str | None" = None):
     """Return (kind, sibling_names). kind in
-    FLAT|BLENDED|OBJECT|ASSET|ABSENT|ART_DIRECTED_MEDIA.
+    FLAT|BLENDED|OBJECT|ASSET|BOX_FLAT|ABSENT|ART_DIRECTED_MEDIA.
+
+    `block_slug` is optional (defaults to None, preserving every existing self-test
+    fixture's behaviour byte-for-byte) — pass the real block slug from `survey()`'s own
+    disk scan to enable the BOX_FLAT discrimination below.
 
     See `_base_attr_spec()` for why the base lookup isn't a plain `attrs.get(prop)`."""
     spec = _base_attr_spec(attrs, prop)
@@ -287,6 +337,14 @@ def classify(attrs: dict, prop: str):
             return 'OBJECT', []
         # Sibling type must DIFFER from the base for this to be half-migrated.
         if all(attrs[s].get('type') == 'object' for s in sibs):
+            if any(_sibling_box_family(block_slug, s) for s in sibs):
+                # A box_family-tagged sibling means THIS is padding/margin/borderRadius's
+                # shape: the same box declared once per device tier, not a genuine
+                # per-tier asset. It needs the box-of-sides -> tier-of-boxes fold (a
+                # separate codemod — this kind is deliberately excluded from every
+                # MIGRATABLE filter in THIS script, same construction as
+                # ART_DIRECTED_MEDIA, so it is reported, never silently folded here).
+                return 'BOX_FLAT', sibs
             return 'ASSET', sibs          # consistent per-tier object family — correct as-is
         return 'BLENDED', sibs
     if not sibs:
@@ -1019,7 +1077,8 @@ def survey(prop: str):
         except json.JSONDecodeError:
             continue
         attrs = data.get('attributes', {})
-        kind, sibs = classify(attrs, prop)
+        slug = data.get('name', bj.parent.name)
+        kind, sibs = classify(attrs, prop, block_slug=slug)
         if kind in ('ABSENT',):
             continue
         d = bj.parent
@@ -2036,6 +2095,52 @@ def self_test() -> int:
               '(would have been silently folded into a responsive object pre-fix)',
               classify(_attrs, _prop)[0] == 'ART_DIRECTED_MEDIA')
 
+    # ================================================================================
+    # classify() — BOX_FLAT discrimination (2026-09-06, Phase 2 tier-object migration).
+    # Must be REACHABLE (positive: a real box-of-sides family, box_family-tagged in the
+    # DB), must NOT overmatch a genuine per-tier ASSET family (negative control, same
+    # object-base+object-siblings shape), must NOT overmatch an ALREADY-migrated
+    # tier-of-boxes family (second negative control), and the block_slug=None fallback
+    # (every synthetic self-test fixture above this point) must keep classifying exactly
+    # as before this fix — proving the DB check never fires without a real slug.
+    # ================================================================================
+    _kind_no_slug, _ = classify(
+        {'padding': {'type': 'object'}, 'paddingTablet': {'type': 'object'},
+         'paddingMobile': {'type': 'object'}},
+        'padding',
+    )
+    check('negative control: classify() called with NO block_slug (every synthetic '
+          f'fixture in this suite) still classifies ASSET (got {_kind_no_slug!r}), never '
+          'BOX_FLAT — the DB check must not fire on a fabricated attribute name',
+          _kind_no_slug == 'ASSET')
+
+    _bj_container = json.loads((BLOCKS_DIR / 'container' / 'block.json').read_text(encoding='utf-8'))
+    _attrs_container = _bj_container.get('attributes', {})
+    _kind_padding, _sibs_padding = classify(_attrs_container, 'padding', block_slug='sgs/container')
+    check(f'positive: sgs/container.padding (a real box-of-sides family, box_family '
+          f'tagged on its Tablet/Mobile siblings) classifies BOX_FLAT (got {_kind_padding!r}), '
+          'not ASSET — this is the exact "--survey reports 0 to migrate" defect the '
+          'adversarial council proved live this session',
+          _kind_padding == 'BOX_FLAT')
+    check('BOX_FLAT sibling list still names the Tablet/Mobile attrs (reported, not '
+          'silently absorbed into ASSET)',
+          set(_sibs_padding) == {'paddingTablet', 'paddingMobile'})
+
+    _kind_bg, _ = classify(_attrs_container, 'backgroundImage', block_slug='sgs/container')
+    check(f'negative control: sgs/container.backgroundImage (same object-base + '
+          f'object-siblings SHAPE as padding, but a genuine per-tier ASSET, not a box '
+          f'family) still classifies ASSET (got {_kind_bg!r}), never BOX_FLAT — the '
+          'box_family DB column is doing the discriminating, not classify() treating '
+          'every consistent object family as a box',
+          _kind_bg == 'ASSET')
+
+    _kind_cbp, _ = classify(_attrs_container, 'contentBandPadding', block_slug='sgs/container')
+    check('negative control is not vacuous: sgs/container.contentBandPadding (already '
+          f'migrated to the tier-of-boxes shape, no Tablet/Mobile siblings declared) '
+          f'classifies OBJECT (got {_kind_cbp!r}), not BOX_FLAT — an already-done family '
+          'must not be re-flagged',
+          _kind_cbp == 'OBJECT')
+
     if failures:
         print(f'\n{len(failures)} FAILURE(S): {failures}')
         return 1
@@ -2076,7 +2181,7 @@ def main() -> int:
     shared_findings = survey_shared_includes(prop)
 
     if args.survey or not (args.fix or args.check):
-        for kind in ('FLAT', 'BLENDED', 'OBJECT', 'ASSET'):
+        for kind in ('FLAT', 'BLENDED', 'OBJECT', 'ASSET', 'BOX_FLAT'):
             group = [r for r in rows if r['kind'] == kind]
             if not group:
                 continue
@@ -2086,6 +2191,15 @@ def main() -> int:
                       f"render={r['render_state']:10} edit={r['edit_state']}")
         targets = [r for r in rows if r['kind'] in ('FLAT', 'BLENDED')]
         print(f'\n{len(targets)} block(s) to migrate for "{prop}" (block.json shape).')
+        box_targets = [r for r in rows if r['kind'] == 'BOX_FLAT']
+        if box_targets:
+            print(f'\n⚠ {len(box_targets)} block(s) declare "{prop}" as a box-of-sides family '
+                  '(padding/margin/borderRadius-shaped: this box, once per device tier) that '
+                  'is NOT migrated by this tool\'s --fix — it needs the separate box-of-sides '
+                  '-> tier-of-boxes fold (Phase 2, Step 6):')
+            for r in box_targets:
+                print(f"   {r['slug']:28} default={json.dumps(r['default']):26} "
+                      f"render={r['render_state']:10} edit={r['edit_state']}")
         # S2/S3 follow-up applies to EVERY block carrying the prop, not just S1 targets —
         # an OBJECT-kind block (block.json already done) can still have LEGACY edit.js or
         # RAW render.php, which is exactly what pass 3b's wasted re-discovery was about.
