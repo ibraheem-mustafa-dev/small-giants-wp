@@ -336,8 +336,18 @@
 			"default": ""
 		},
 		"splitImageAlt": {
-			"type": "object",
-			"default": {}
+			"type": "string",
+			"default": ""
+		},
+
+		"splitImageAltTablet": {
+			"type": "string",
+			"default": ""
+		},
+
+		"splitImageAltMobile": {
+			"type": "string",
+			"default": ""
 		},
 		"splitImageIdTablet": {
 			"type": "integer",
