@@ -167,6 +167,61 @@ surfaces measure? — never on preserving the current page.
 Neither gap is fixed yet — read them as known scope limits, not solved problems, before
 trusting either gate's "0 findings" on a new colour/grid-item-shaped change.
 
+### Editor-canvas mirrors — the shared-wrapper pattern + 4 traps (CHECK A, 2026-09-05)
+
+`check-editor-render-parity.js` CHECK A finds attributes a control WRITES and `render.php`
+uses correctly, where the editor canvas shows nothing — the client moves a control and sees
+no change. 210 -> 156 on 2026-09-05. Full plan + per-phase detail:
+`.claude/prompts/2026-09-05-check-a-editor-canvas-phases-2-4.md`.
+
+**The pattern that scales.** A shared thing is mirrorable ONCE only if it OWNS THE SELECTOR:
+
+| Kind | Example | Owns selector? | Mirror once? |
+|---|---|---|---|
+| Shared **renderer** | `SGS_Container_Wrapper` | yes — markup + uid class + rule | ✅ |
+| Shared **atom** | `includes/media/atoms/*` | yes — one property on a scoped class | ✅ |
+| Shared **control panel** | `BackgroundPanel`, `GridItemDefaultsPanel` | no — only writes the attr | ❌ |
+| Shared **value helper** | `sgs_colour_value`, `sgs_text_decls` | no — caller places the value | ❌ |
+
+A shared CONTROL creates the illusion of a shared mechanism: `BackgroundPanel` is mounted by
+5 blocks, so 85 findings looked like one root cause — but the sharing was the WRAPPER
+underneath, not the panel. Shared-on-the-way-in is not shared-on-the-way-out.
+
+Reference implementation: `svgBackgroundPreview()` in `src/utils/background-preview.js`,
+adopted by 8 blocks (`f4fc7333a` / `9cea87e9b` / `a64e9e344`). It renders the SAME element with
+the SAME class names as the frontend, so the rules already in `style.css` — which `block.json`'s
+`style` field loads into the canvas as well as the front end — do all the painting, with ZERO new
+CSS and no second vocabulary to drift.
+
+**⛔ FOUR TRAPS. Each shipped or nearly shipped a defect on 2026-09-05.**
+
+1. **Enumerate attributes explicitly at the call site.** CHECK A resolves an attribute as
+   canvas-reflected only when its NAME appears outside `InspectorControls`/`BlockControls`.
+   Handing a preview helper `attributes` wholesale renders CORRECTLY and still reads as a
+   desync. Same blind spot as the ServerSideRender pass-through wrapper (`89475bb3a`): the
+   exemption matched only the bare identifier `attributes={ attributes }`, so
+   `attributes={ omitNullAttributes( attributes ) }` flagged all 14 of `sgs/before-after`'s
+   attributes while its canvas was showing real `render.php` output.
+2. **A gate's scope is not the defect's scope.** `svgBackgroundPreview()` returns `className`
+   as a string ARRAY; its sibling `backgroundPreview()` returns a STRING.
+   `[ a, [ 'x','y' ] ].join(' ')` is `"a x,y"` — one unusable comma-joined token, so all four
+   SVG classes were silently dead while the layer still rendered. **CHECK A passed throughout.**
+   Read the emitted CSS; never close on green. (Same week: `check-text-gradient-companion`
+   passed while `sgs_text_decls()` shipped an invalid bare `color:` for gradients.)
+3. **Block CSS is LIFTED, not inline** — `wp-content/uploads/sgs-css/*.css`. Grepping page HTML
+   for a rule proves NOTHING; a verification pass reported ABSENT for three working fixes
+   because of exactly this. Follow the linked stylesheet.
+4. **`curl` the canary with `-L`** — pages 301-redirect; without it you get an empty body and
+   conclude the block did not render.
+
+**Before wiring a canvas mirror, confirm the FRONTEND actually paints it.** `sgs/hero` declared
+7 `bgSvg*` attributes and offered them in the Background panel while rendering NOTHING — its
+`render.php` nulled `bgSvgContent` on the very array passed to the wrapper, so the wrapper's
+`$has_bg_svg` gate was permanently false (fixed `a64e9e344`; Bean's call was "paint them", not
+"delete the controls"). Mirroring a layer the page never renders is the INVERSE of what CHECK A
+exists for. Check for a back door before concluding — a helper, atom or `render_block` injector
+could paint it — rather than trusting a grep of the block's own files.
+
 ### `scripts/scattered-element-controls.js` — DELETED 2026-09-02, do not rebuild it
 
 ⛔ **Retired via `/qc-council` (Bean-directed) after it produced ~600 false-positive findings in
@@ -595,7 +650,7 @@ that catches a broken deploy).
 
 | Block | Status |
 |---|---|
-| Container | Deployed (SVG background layer added 2026-05-28 D93 — `bgSvg*` attrs + SVG tab in Background panel. **2026-08-17 (D647)** — `main` removed from the `tagName` HTML-tag option (it's always a page-unique landmark, no nesting exception); `nav`/`aside` gained a new `ariaLabel` attr + "Landmark label" control, shown only for those two tags.) **2026-08-21 (D710) — PARTLY REVERSED:** `main` is BACK in the `tagName` option, because removing it outright meant ALL NINE templates authored `tagName:"main"` and ZERO pages rendered a `<main>` landmark (measured live). D647's reasoning still holds and is preserved by a per-request singleton guard in the shared wrapper: the FIRST container claiming `main` renders it, any later one falls back to `section`, so a client duplicating a container still cannot produce two landmarks.) **2026-08-28 correction:** D710 only ever restored `main` to `block.json`'s `tagName` enum — `edit.js`'s `TAG_NAME_OPTIONS` array (the dropdown an operator actually sees) never got the matching entry, so the schema allowed it but the UI couldn't select it. Fixed same day. ⚠ Also found live: `sgs/hero`/`sgs/trust-bar`/`sgs/cta-section` reference `attributes.tagName` only inside their `nav`/`aside` `ariaLabel` conditional — none of the three has an actual tag-picker dropdown at all; only `sgs/container` does. Not fixed this session — flagged for triage. **2026-08-22 (D742) — shop-archive Phase 2 close-out:** `layout` default `""`→`"flex"` (retroactive, matches CSS's own `row` default — same generic gap closed on `sgs/form` too, given its own `"stack"` default); new `minColumnWidth`/`minColumnWidthUnit` grid-column-floor attrs, reusing `sgs/site-footer-row`'s `sgs_intrinsic_columns_track()` mechanism via a new optional `$basis` parameter; editor canvas now mirrors padding/margin/background+text colour+gradient/`bgParallax`/`gridAutoRows`/the background overlay (colour/gradient/opacity/blend-mode) — the overlay mirror reuses `sgs_overlay_decls()` (`helpers-tokens.php`) as its spec rather than a third hand-rolled implementation. `sgs-framework.db` reseeded — `sgs/container: 93 attributes`. ⚠ `bgSvg*` (7 attrs) and grid-item-scoped colour/gradient/shadow attrs remain unmirrored on canvas — named debt, not silently dropped; the grid-item family specifically needs a per-child scoped-CSS mechanism `edit.js` doesn't have yet.) |
+| Container | Deployed (SVG background layer added 2026-05-28 D93 — `bgSvg*` attrs + SVG tab in Background panel. **2026-08-17 (D647)** — `main` removed from the `tagName` HTML-tag option (it's always a page-unique landmark, no nesting exception); `nav`/`aside` gained a new `ariaLabel` attr + "Landmark label" control, shown only for those two tags.) **2026-08-21 (D710) — PARTLY REVERSED:** `main` is BACK in the `tagName` option, because removing it outright meant ALL NINE templates authored `tagName:"main"` and ZERO pages rendered a `<main>` landmark (measured live). D647's reasoning still holds and is preserved by a per-request singleton guard in the shared wrapper: the FIRST container claiming `main` renders it, any later one falls back to `section`, so a client duplicating a container still cannot produce two landmarks.) **2026-08-28 correction:** D710 only ever restored `main` to `block.json`'s `tagName` enum — `edit.js`'s `TAG_NAME_OPTIONS` array (the dropdown an operator actually sees) never got the matching entry, so the schema allowed it but the UI couldn't select it. Fixed same day. ⚠ Also found live: `sgs/hero`/`sgs/trust-bar`/`sgs/cta-section` reference `attributes.tagName` only inside their `nav`/`aside` `ariaLabel` conditional — none of the three has an actual tag-picker dropdown at all; only `sgs/container` does. Not fixed this session — flagged for triage. **2026-08-22 (D742) — shop-archive Phase 2 close-out:** `layout` default `""`→`"flex"` (retroactive, matches CSS's own `row` default — same generic gap closed on `sgs/form` too, given its own `"stack"` default); new `minColumnWidth`/`minColumnWidthUnit` grid-column-floor attrs, reusing `sgs/site-footer-row`'s `sgs_intrinsic_columns_track()` mechanism via a new optional `$basis` parameter; editor canvas now mirrors padding/margin/background+text colour+gradient/`bgParallax`/`gridAutoRows`/the background overlay (colour/gradient/opacity/blend-mode) — the overlay mirror reuses `sgs_overlay_decls()` (`helpers-tokens.php`) as its spec rather than a third hand-rolled implementation. `sgs-framework.db` reseeded — `sgs/container: 93 attributes`. ⚠ **`bgSvg*` CANVAS MIRROR SHIPPED 2026-09-05** via the shared `svgBackgroundPreview()` (`src/utils/background-preview.js`), adopted by all 8 wrapper blocks — that debt is closed. Grid-item-scoped colour/gradient/shadow attrs remain unmirrored on canvas — named debt, not silently dropped; the grid-item family specifically needs a per-child scoped-CSS mechanism `edit.js` doesn't have yet.) |
 | Hero | Deployed (**Split-media per-device TYPE 2026-08-13** — `splitMediaType`/`Tablet`/`Mobile` + `splitVideo*`/`splitSvg*` families replace the old unified `splitMedia` attribute outright, deleted (`4fe39e6d`); a split hero can now be an image on desktop and an SVG on mobile. **Split-media overlay + motion, same session (D596/D597):** `mediaOverlayColour`/`Gradient*` on the split column, separate from the section's own `backgroundOverlayColour` (legacy `overlayColour` deleted — it was a dead duplicate control); `mediaParallax`/`mediaKenBurns`/`mediaAnimationDuration` as a motion pair scoped to the split-media element, mutually exclusive same as the section's own `bgParallax`/`bgKenBurns` pair. **D597 fix:** `hero/style.css` and `container/style.css` each declared a DIFFERENT animation under the identical global `@keyframes sgs-ken-burns` name — silently overwriting whichever loaded last, across every block sharing the wrapper — renamed both. **D598 fix:** the split-order control's swap now applies live in the editor canvas, not just on the published page. **D600 (same day):** `splitImageBleed` tested live (was assumed dead, wasn't) and defaulted to `true` — full-bleed is now the standard split-hero look, not opt-in; then found and fixed to also reach `video`/`svg` tiers (previously image-only — a bled video kept its native aspect ratio and overflowed its column), by targeting the type-modifier class `sgs_tier_media_render()` already emits, no `render.php` change needed. ⚠ Video/SVG tiers still have NO width/height/border/padding/object-fit controls of their own at all — a separate, bigger, still-open gap. **2026-08-15** — a `split-media` element was declared in `supports.sgs.elements` to close a `css_element` drift orphan on `splitImageMobileObjectPosition`. Important correction worth recording: `split-media` and `split-image` are BOTH current, intentional class names carried simultaneously on the same node by `sgs_tier_media_render()` — `split-media` is the type-agnostic base, `split-image` the image-type extra class. Neither is a stale leftover from the D595 image→image/video/svg generalisation, and the compound selector `.split-image.split-media--mobile` is deliberate (dropping either half weakens specificity from (0,3,0) to (0,2,0)). Manifest-only, no render.php change. See `decisions.md` for the D-number.) |
 | Info Box | Deployed |
 | Counter | Deployed |

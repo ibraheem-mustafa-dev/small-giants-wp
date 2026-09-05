@@ -1,3 +1,84 @@
+## D965 [ROUTINE] — CHECK A editor-canvas backlog 210 -> 156: phase 1 closed, descriptors authored, and three live client-facing defects found by the act of authoring them
+
+**2026-09-05, CHECK A editor-canvas track.** Started as a research question — "is our static
+canvas the WordPress standard, and must we hand-code 200+ previews?" — and closed as a phased
+plan plus phase 1 shipped and live-verified.
+
+**The research answer (two subagents, sources verified against real code, not blogs).** Hand-written
+JSX preview IS WordPress's official default; `@wordpress/server-side-render`'s own README calls
+itself "a fallback or legacy mechanism… not appropriate for developing new features against", and
+core practises it — 6 SSR blocks out of ~100, all leaf blocks, all wrapped in `useDisabled`. SSR
+was ruled out for us on a hard incompatibility, not preference: `/wp/v2/block-renderer` hardcodes
+`'innerBlocks' => array()`, and 41 of 84 SGS blocks use InnerBlocks or RichText. Competitor survey
+(Stackable/Kadence/GenerateBlocks/Spectra/Greenshift/Otter/CoBlocks, source read): NOBODY uses SSR
+for styling; the ones that solved PHP/JS duplication deleted the PHP generator entirely. Spectra,
+which hand-maintains both, was measured actively drifting — 5 of ~19 selectors on one block exist
+on only one side. **The pattern worth stealing turned out to be our own**: `includes/media/atoms/*`
++ `src/components/media/atoms/*` are 16 PAIRED atoms whose halves are held byte-identical by
+`scripts/tests/test-media-atom-parity.mjs`, with an anti-vacuity ratchet. Evidence it works: only
+2 of ~196 findings touch media-atom-governed properties.
+
+**Two of my own fix-shapes were falsified before shipping, which is the process working.** (a) I
+claimed `block_attributes` "already IS the descriptor registry" — a structural pre-gate measured
+25 of 196 complete, and the columns are heuristically DERIVED. Bean pushed back on discarding them
+on provenance; a full audit of all 88 long-tail rows then showed **86% are manifest-AUTHORED**
+(copied verbatim from `supports.sgs.elements[].attrMap`), 71.6% fully accurate, **0% with a wrong
+property**. He was right and I was wrong. (b) I proposed a classifier type guard rejecting
+string/boolean attrs; `small-giants-wp-29` measured it would strip `css_property` from up to 641
+colour rows. Their role-based counter-proposal was then measured by me and found INSUFFICIENT —
+it rejects 2 of 8 contending attrs on `responsive-logo`, leaving 6. Neither guard shipped.
+
+**The load-bearing finding, which became the fix others built on:** precedence is
+`css_property = manifest_css_property or emission_css_property` (`extract-signatures.py:2683`), so
+**a manifest can only ADD a correct owner — it can never RETRACT a wrong heuristic one.** Proved
+by declaring `responsive-logo`'s true `max-width` owner and watching the finding go from 4
+competing attrs to 5. `attr-classification-overrides.json` is not the venue either; its own header
+reserves it for genuine mis-derivations, "never to correct plain accuracy bugs in the classifier".
+`-29` built the durable fix on this: making an explicit manifest declaration AUTHORITATIVE for its
+slot (3 contended slots / 9 attrs blast radius, measured before shipping).
+
+**THREE LIVE CLIENT-FACING DEFECTS, none on anyone's list**, all surfaced because authoring a
+truthful descriptor forces you to read what `render.php` actually does:
+- `sgs/testimonial` — five hover colours each pushed a bare `color:` into ONE bucket emitted on
+  `$root_sel`. Only the last survived, and none reached elements that set their own resting colour.
+  `quoteColourHover` was already correct and the old comment even explained why it was held out of
+  the bucket; the reasoning was never applied to the other five.
+- `sgs/brand-strip` — `nameColourHover`, identical shape, colliding with `textColourHover`.
+- `sgs/hero` — 7 `bgSvg*` attributes declared and offered in the Background panel, rendering
+  NOTHING: `render.php` nulled `bgSvgContent` on the very array passed to the wrapper, so
+  `$has_bg_svg` was permanently false. Every other entry in that null list guards a real duplicate
+  hero builds itself; this one guarded nothing. A back door was checked (helper/atom/injector), not
+  assumed. **Bean's design call: paint them, not delete the controls.**
+
+**A subagent correctly REFUSED to wire hero's canvas** and escalated instead of satisfying the
+gate — mirroring an SVG the page never renders is the inverse of what CHECK A exists for. That
+restraint is the behaviour to reinforce.
+
+**Phase 1 shipped: all 35 `bgSvg*` findings closed across 8 blocks** via a shared
+`svgBackgroundPreview()`, deployed and LIVE-VERIFIED with negative controls (probe page 3297;
+reports in `reports/visual-diff/{testimonial,brand-strip,hero}-2026-09-05.md`). Two independent
+subagents caught a real bug in my own reference: the helper returns `className` as an ARRAY while
+its sibling returns a STRING, so `.join(' ')` comma-joined it and all four SVG classes were
+silently dead while the layer still rendered — **and CHECK A passed throughout**, because it
+verifies an attribute NAME is referenced, not that the resulting CSS is correct.
+
+**Gate movement:** CHECK A 210 -> 156. `db-consistency` 25 NEW -> 0 (passing).
+`check-hover-state-classification` FAIL(2) -> PASS. Zero baseline entries added — the residual
+findings were written up in `reports/2026-09-05-db-consistency-residual-ambiguities.md` and handed
+to their owner rather than silenced.
+
+**Method errors worth recording, both mine:** I verified the live fixes by grepping page HTML and
+reported ABSENT for three WORKING fixes — this project LIFTS block CSS to
+`uploads/sgs-css/*.css`. And `curl` without `-L` on the canary returns an empty body (301). Both
+now documented in `plugins/sgs-blocks/CLAUDE.md`.
+
+Commits (`main`): `89475bb3a` (SSR pass-through exemption + ceiling 216->196), `b4abced52`
+(15 authored declarations + testimonial/brand-strip hover fixes), `f4fc7333a`
+(`svgBackgroundPreview` + container), `4d4bb2cf1` (residual write-up), `42cba6071` (recorded
+disproof), `9cea87e9b` (6 blocks + className fix), `a64e9e344` (hero un-nulled + wired),
+`2ec2f1a0c` (live visual-diff captures). Next-session plan:
+`.claude/prompts/2026-09-05-check-a-editor-canvas-phases-2-4.md`.
+
 ## D964 [ROUTINE] — Colour-conformance's remaining-8-hard-rows prompt closed as 7 proven-pattern-reuse rows, not the 4-needs-a-design-gate split it described; a live shared-DB reseed conflict root-caused and fixed
 
 **2026-09-05, colour-conformance continuation.** Re-verified `.claude/prompts/2026-09-04-colour-conformance-remaining-8-hard-rows.md` against the live tree before building anything, per this project's own "a carried plan claim is a hypothesis" rule — found it stale on two counts: `post-grid.cardBgColour` was already CONFORMANT (a parallel session had shipped `sgs_custom_property_gradient_decls()` the same day) and `brand-strip.itemTextColourHover` was already fully wired. The prompt's "Group 4 needs a design gate, no precedent exists" claim was also wrong once checked: `tabs.tabTextColour`/`mega-panel.iconColour`/`option-picker.pillTextColour` all closed via the SAME proven text-gradient primitive Group 2 uses (`sgs_resolve_text_colour_or_gradient()`/`sgs_text_colour_decl()`/`sgs_text_colour_gradient_fallback_rule()`), base-state only, no ancestor-hover wrapper needed — confirmed by reading `option-picker/render.php`'s own comment that scoped rules already "out-specify the variant". No design gate was needed.

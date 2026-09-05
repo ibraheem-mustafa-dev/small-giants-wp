@@ -1123,6 +1123,38 @@ Converter routing of these classes to TYPED-ATTR destinations (not child InnerBl
 
 Every new SGS block MUST follow this customisation standard. Violations are caught by the `check-dead-controls.js` prebuild guard.
 
+### 0. The editor CANVAS must reflect the control, not just accept it (2026-09-05, D965)
+
+A control is not customisable if the client cannot see its effect where they are working. Writing
+the attribute and rendering it correctly on the published page is only half the contract — the
+block editor canvas must show the change too. Enforced by
+`plugins/sgs-blocks/scripts/check-editor-render-parity.js` (CHECK A, "editor-canvas desync"),
+which finds attributes a control writes and `render.php` consumes correctly while the canvas shows
+nothing.
+
+**This is a client-experience requirement, not a nicety.** Per this spec's own premise, clients are
+tech-illiterate and work exclusively in the block editor. A colour picker that appears to do
+nothing reads to them as a broken product, whatever the front end does.
+
+**Mirror a shared mechanism ONCE — but only one that OWNS ITS SELECTOR.** A shared *renderer*
+(`SGS_Container_Wrapper`) or a shared *atom* (`includes/media/atoms/*`) owns markup, class and
+rule, so one mirror serves every adopting block. A shared *control panel* (`BackgroundPanel`) or a
+shared *value helper* (`sgs_colour_value`, `sgs_text_decls`) does not — the caller decides the
+selector, so there is nothing single to mirror. Shared-on-the-way-in is not shared-on-the-way-out.
+
+Reference implementation: `svgBackgroundPreview()` in `src/utils/background-preview.js`, adopted by
+8 blocks — it renders the same element with the same class names as the frontend so the block's own
+`style.css` (loaded into the canvas by `block.json`'s `style` field) does all the painting, with no
+new CSS and no second vocabulary to drift.
+
+⛔ **Never mirror a layer the frontend does not actually paint** — that is the inverse of what this
+check exists for. Confirm the render path first, including helpers, atoms and `render_block`
+injectors, rather than grepping the block's own files.
+
+Full pattern, the four traps that shipped defects, and the phased backlog:
+`plugins/sgs-blocks/CLAUDE.md` → "Editor-canvas mirrors" and
+`.claude/prompts/2026-09-05-check-a-editor-canvas-phases-2-4.md`.
+
 ### 1. Native `supports` for wrapper-level controls
 
 Use WP core `supports` for spacing, colour, border, and typography controls on the block wrapper. Do NOT re-implement these with custom attributes.
