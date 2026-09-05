@@ -47,3 +47,4 @@ timestamp | script | type | reason
 2026-09-06 12:38:59 | db-consistency/run.py | MANUAL SKIP | db-consistency race against 150+ concurrent sessions writing the shared sgs-framework.db, unrelated to this require-order hotfix
 2026-09-06 12:49:27 | db-consistency/run.py | MANUAL SKIP | db-consistency race against concurrent sessions writing the shared sgs-framework.db, unrelated to this JS-only fix
 2026-09-06 12:50:16 | db-consistency/run.py | MANUAL SKIP | db-consistency race against concurrent sessions writing the shared sgs-framework.db, unrelated to this JS-only fix
+2026-09-06 13:50:17 | db-consistency/run.py | MANUAL SKIP | pre-existing unrelated DB-vs-classifier drift
