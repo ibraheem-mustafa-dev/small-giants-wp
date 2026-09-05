@@ -931,6 +931,35 @@ function hoverAttrName( baseAttr ) {
 	return baseAttr + 'Hover';
 }
 
+// A base attribute that is ITSELF already a state attribute has no hover
+// sibling to synthesise — `itemTextColourHover` + 'Hover' is
+// `itemTextColourHoverHover`, an attribute no block.json declares and no
+// client control can ever reach.
+//
+// WHY THIS GUARD EXISTS (2026-09-05). `hasExplicitNormalState()` above checks
+// the STATE KEY ('normal'), not the attribute NAME bound to it. `sgs/brand-strip`
+// models its hover text colour as a single row whose `normal`-keyed state is
+// bound to `itemTextColourHover` — a semantically-hover attribute in a
+// structurally-normal slot. The key-only check passed, and the tool planned a
+// render.php read of `$attributes['itemTextColourHoverHover']`. WordPress
+// silently DISCARDS an attribute a block.json doesn't declare (D338), so that
+// would have shipped permanently-dead render code behind a control that could
+// never be set, through a green gate — the exact silent-failure class this
+// codemod's refuse-rather-than-guess discipline exists to prevent.
+//
+// Deliberately NAME-based, not existence-based: this tool legitimately CREATES
+// the hover attribute in block.json as part of its own fix (see the self-test
+// assertions for borderColourHover / numberBackgroundHover), so "must already
+// exist" would refuse every genuine target. What is never legitimate is
+// stacking a second state suffix onto a name that already carries one.
+const STATE_SUFFIXES = [ 'Hover', 'Focus', 'Active', 'Selected', 'Scrolled' ];
+
+function baseAttrIsAlreadyStateScoped( baseAttr ) {
+	if ( ! baseAttr ) return null;
+	const hit = STATE_SUFFIXES.find( ( s ) => baseAttr.endsWith( s ) );
+	return hit || null;
+}
+
 // ---------------------------------------------------------------------------
 // TASK 2 — gradient dimension for fill/border mechanisms (task-2-brief.md).
 //
@@ -1368,6 +1397,18 @@ function planRow( db, dir, slug, row, phpText, blockJsonPathOverride ) {
 	}
 
 	// hover only, from here.
+	const alreadyStateScoped = baseAttrIsAlreadyStateScoped( row.attr );
+	if ( alreadyStateScoped ) {
+		return {
+			fixable: false,
+			reason:
+				'REFUSED:base-attr-is-already-state-scoped (the row\'s normal-slot attribute "' +
+				row.attr + '" already ends in "' + alreadyStateScoped +
+				'", so the synthesised sibling would be "' + hoverAttrName( row.attr ) +
+				'" — a double state suffix no block.json declares and WP would silently discard)',
+		};
+	}
+
 	const normalState = findStateByKey( row.statesNode, 'normal' );
 	if ( ! normalState ) return { fixable: false, reason: 'REFUSED:normal-state-node-not-found' };
 	if ( findStateByKey( row.statesNode, 'hover' ) ) {
@@ -3671,6 +3712,42 @@ if ( '' !== $strap_colour ) {
 		assert(
 			/^if \( '' !== \( \$attributes\['strapColourHover'\]/m.test( php ),
 			'hover if-block is not at top-level (0 indent) — expected the burgerBg/burgerHoverColour sibling shape: ' + php
+		);
+	} );
+
+	// -----------------------------------------------------------------------
+	// 2026-09-05 — double-state-suffix guard. Found live on
+	// sgs/brand-strip.itemTextColourHover, whose `normal`-KEYED state is bound
+	// to an attribute whose NAME already carries a state suffix. The
+	// state-key-only check let it through and the tool planned a render read of
+	// `$attributes['itemTextColourHoverHover']` — an attribute no block.json
+	// declares, which WP silently discards (D338): permanently-dead render code
+	// behind an unreachable control, through a green gate.
+	// -----------------------------------------------------------------------
+	check( 'double-state-suffix: an already-state-scoped base attr is REFUSED by name, never stacked into <attr>HoverHover', () => {
+		// POSITIVE: every state suffix is recognised, whatever the prefix.
+		for ( const suffix of STATE_SUFFIXES ) {
+			assert(
+				baseAttrIsAlreadyStateScoped( 'itemTextColour' + suffix ) === suffix,
+				'expected "' + suffix + '" to be recognised as an already-scoped state suffix'
+			);
+		}
+
+		// NEGATIVE CONTROL: a genuine resting-state attribute must NOT be
+		// refused — without this the guard could over-match and silently
+		// refuse every real target, which looks identical to a clean run.
+		for ( const ok of [ 'titleColour', 'borderColour', 'numberBackground', 'bannerColour' ] ) {
+			assert(
+				baseAttrIsAlreadyStateScoped( ok ) === null,
+				'OVER-MATCH: "' + ok + '" is a resting-state attribute and must remain fixable'
+			);
+		}
+
+		// The suffix must be matched at the END only — a state word appearing
+		// mid-name is not a state scope.
+		assert(
+			baseAttrIsAlreadyStateScoped( 'hoverCardColour' ) === null,
+			'OVER-MATCH: a state word inside the name is not a trailing state suffix'
 		);
 	} );
 
