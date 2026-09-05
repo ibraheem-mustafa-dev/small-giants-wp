@@ -77,12 +77,16 @@ via a new composition-detection signal (D969, PR #38). Full per-session detail:
 
 **Invoke `/autopilot` first.**
 
-The Spec 32/35 gates track is now FULLY CLOSED this session — see D970. The live open thread is
-the typography full-replacement track (D971/D972): foundation (census, detector, switcher
-component) is shipped and verified; the migration work is what remains. Full task-by-task
-orchestration, priority order, and guardrails: `.claude/prompts/2026-09-06-typography-full-replacement-next-session.md`
-— read it in full before starting, do not re-derive the plan from this file. Check `ListAgents`
-first, this tree runs many concurrent sessions.
+Two live prompt docs, pick either (independent, no ordering requirement between them):
+
+- **Typography full-replacement** (D971/D972) — foundation shipped, migration work remains.
+  Full plan: `.claude/prompts/2026-09-06-typography-full-replacement-next-session.md`.
+- **Spec 32/35 residual debt** (D970) — the core track is closed; rule-41/43 framework debt it
+  surfaced is not. Full plan: `.claude/prompts/2026-09-04-spec32-35-gates-next-session.md`
+  (updated 2026-09-06, still live — despite the filename's date).
+
+Read whichever you pick in full before starting; do not re-derive the plan from this file. Check
+`ListAgents` first, this tree runs many concurrent sessions.
 
 ## ▶ ROAD-TO-UNIFORM RECONCILIATION — FULLY CLOSED, all 9 items, qc-council-audited.
 
@@ -103,16 +107,17 @@ until reconciled.
 `01-tab-group` and `21-render-without-control` both closed to zero. Nothing else open — see
 COLOUR TRACK for `31-golden-colour-control`.
 
-## ▶ SPEC 32/35 GATES TRACK — CLOSED 2026-09-06. Full history: `.claude/prompts/2026-09-04-spec32-35-gates-next-session.md` (consumed, historical). Detail: D970.
+## ▶ SPEC 32/35 GATES TRACK — core track CLOSED 2026-09-06; residual rule-41/43 debt still open. Full task list: `.claude/prompts/2026-09-04-spec32-35-gates-next-session.md` (updated 2026-09-06, still live — do not treat as historical). Detail: D970.
 
 Opened 2026-09-04: Spec 32 §5 blob-sanitisation gate, rules 42/43/44, rule-41 61→42, 2 live
 `sgs/post-grid` bugs fixed, 3 D812 control-shape findings root-caused. Closed 2026-09-06 (this
 session): the 3 D812 fixes deployed + live-verified; rule 43's pending recheck found + fixed a
 real bug (`93dacf0d4`, TOC underline losing to a hover-animation on specificity, not yet
-deployed — see the prompt doc); rule-41 batches (`3548f7c85`/`689c3f2b5`) built an unauthorised colour-panel
+deployed); rule-41 batches (`3548f7c85`/`689c3f2b5`) built an unauthorised colour-panel
 mechanism on 10 of 11 blocks, reverted + detector corrected (D970, `5f0c2e2d0`/`c330f2a6b`); one
-independent bug fixed (`responsive-logo` attrMap gap, `ed41a61c9`). Residual: rule 41 at 26 (10
-real scattering + 16 unrelated `dom-order` debt) — general framework debt, not re-opened here.
+independent bug fixed (`responsive-logo` attrMap gap, `ed41a61c9`). **Still open, full detail in
+the prompt doc:** rule 41 at 26 (10 real scattering + 16 `dom-order` debt); rule 43 at 13 across
+9 blocks, including 8 findings of a new, unexamined kind (`ambiguous-state-property`).
 
 ## ▶ TYPOGRAPHY FULL-REPLACEMENT TRACK — OPENED 2026-09-06. Detail: D970 (why)/D971 (architecture)/D972 (foundation shipped). Next-session orchestration: `.claude/prompts/2026-09-06-typography-full-replacement-next-session.md`.
 
