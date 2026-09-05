@@ -220,7 +220,8 @@
 				"type": "object",
 				"properties": {
 					"icon": {
-						"type": "string"
+						"type": "string",
+						"role": "icon"
 					},
 					"number": {
 						"type": "string"

@@ -103,7 +103,7 @@ const variations = [
 		},
 		isActive: [ 'variantPreset' ],
 		innerBlocks: [
-			navMenu( { itemFontSize: 45, itemFontWeight: '200', itemFontSizeMobile: 32 } ),
+			navMenu( { itemFontSize: { desktop: 45, mobile: 32 }, itemFontWeight: '200' } ),
 			[ 'sgs/social-icons' ],
 			[ 'sgs/text', { text: __( 'See our latest work.', 'sgs-blocks' ) } ],
 		],
@@ -124,7 +124,7 @@ const variations = [
 		},
 		isActive: [ 'variantPreset' ],
 		innerBlocks: [
-			navMenu( { itemFontSize: 56, itemFontSizeMobile: 36 } ),
+			navMenu( { itemFontSize: { desktop: 56, mobile: 36 } } ),
 			[ 'sgs/icon-list' ],
 			[ 'sgs/button', { label: __( 'Get started', 'sgs-blocks' ) } ],
 		],
@@ -165,7 +165,7 @@ const variations = [
 		},
 		isActive: [ 'variantPreset' ],
 		innerBlocks: [
-			navMenu( { itemFontSize: 64, listColumns: { desktop: 2, mobile: 1 }, itemFontSizeMobile: 40 } ),
+			navMenu( { itemFontSize: { desktop: 64, mobile: 40 }, listColumns: { desktop: 2, mobile: 1 } } ),
 			[ 'sgs/button', { label: __( "Let's talk", 'sgs-blocks' ) } ],
 		],
 	},

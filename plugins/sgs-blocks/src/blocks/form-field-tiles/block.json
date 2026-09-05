@@ -131,7 +131,8 @@
 						"type": "string"
 					},
 					"icon": {
-						"type": "string"
+						"type": "string",
+						"role": "icon"
 					},
 					"iconSource": {
 						"type": "string"

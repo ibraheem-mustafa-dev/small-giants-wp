@@ -339,7 +339,7 @@ _SEEDED_TABLES: dict[str, tuple[str, tuple[str, ...], str]] = {
     "slots": (
         "slots.json",
         ("slot_name", "scope", "aliases", "standalone_block", "notes",
-         "standalone_block_default_attrs"),
+         "standalone_block_default_attrs", "resolves_whole_instance"),
         "CREATE TABLE IF NOT EXISTS slots ("
         "  slot_name TEXT NOT NULL,"
         "  scope TEXT NOT NULL CHECK (scope IN ('section','element')),"
@@ -348,6 +348,7 @@ _SEEDED_TABLES: dict[str, tuple[str, tuple[str, ...], str]] = {
         "  notes TEXT,"
         "  created_at TEXT DEFAULT CURRENT_TIMESTAMP,"
         "  standalone_block_default_attrs TEXT,"
+        "  resolves_whole_instance TEXT,"
         "  PRIMARY KEY (slot_name, scope)"
         ")",
     ),
@@ -420,6 +421,17 @@ def _seed_table_ordered(table: str) -> None:
     conn = sqlite3.connect(SGS_DB)
     try:
         conn.execute(ddl)
+        # Idempotent column-add (mirrors the block_attributes override-column
+        # pattern): `CREATE TABLE IF NOT EXISTS` above is a no-op against an
+        # ALREADY-EXISTING table, so a column widening one of these seeded
+        # tables gains over time (e.g. slots.resolves_whole_instance, Check#12
+        # Build 3, 2026-09-06) never reaches a live DB created before the
+        # widening. ADD any column this table's declared `cols` names but the
+        # live table doesn't have yet.
+        existing_cols = {r[1] for r in conn.execute(f'PRAGMA table_info("{table}")').fetchall()}  # noqa: S608
+        for col in cols:
+            if col not in existing_cols:
+                conn.execute(f'ALTER TABLE "{table}" ADD COLUMN {col} TEXT')  # noqa: S608
         current = conn.execute(
             f'SELECT {collist} FROM "{table}" ORDER BY rowid'  # noqa: S608 — fixed names
         ).fetchall()
@@ -1011,6 +1023,41 @@ def standalone_block_for(canonical_slot: str) -> str | None:
     return result
 
 
+@functools.lru_cache(maxsize=1)
+def _container_marker_slots() -> frozenset[str]:
+    """{slot_name} for element-scope slots with resolves_whole_instance='true'.
+
+    Check#12 Build 3 (container-marker resolver rule, 2026-09-06). These slots'
+    standalone_block is a WHOLE NESTED COMPOSITE to insert as-is when a draft
+    child's BEM token resolves here — never a scalar content field to guess a
+    role for by picking among the target block's own content-bearing attrs.
+    Data-driven (slots.json's `resolves_whole_instance` column) — no per-slug
+    literal here or in any caller.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT slot_name FROM slots "
+            "WHERE scope='element' AND resolves_whole_instance = 'true'"
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return frozenset()
+    finally:
+        conn.close()
+    return frozenset(r[0] for r in rows)
+
+
+def is_container_marker_slot(canonical_slot: str | None) -> bool:
+    """True when `canonical_slot` is a container-marker slot (see
+    `_container_marker_slots()`). A caller resolving a draft child's
+    extraction ROLE for such a slot should stop — the child is a whole
+    nested block instance, not a value to route into one of the target
+    block's own scalar attributes."""
+    if not canonical_slot:
+        return False
+    return canonical_slot in _container_marker_slots()
+
+
 def _normalise(token: str) -> str:
     """Strip hyphens/underscores and lowercase. So 'max-width' == 'maxWidth' == 'max_width'.
     Per Bean's note 2026-05-14: multi-word attrs should auto-handle hyphen variants."""
@@ -1045,10 +1092,15 @@ def attr_name_for_slot_or_alias(block_slug: str, slot_or_alias: str) -> str | No
     e.g. attr_name_for_slot_or_alias('sgs/product-card', 'media') → 'image' (if canonical_slot='media' set)
     """
     norm_target = _normalise(slot_or_alias)
-    # First pass: exact canonical_slot match
+    # First pass: exact canonical_slot match (or one of its
+    # canonical_slot_aliases — Check#12 Build 2, 2026-09-06: e.g.
+    # sgs/button.label's canonical_slot='button' also answers to
+    # 'button-outline'/'button-primary'/'buttonSecondary').
     for name, info in block_attrs(block_slug).items():
         cs = info.get("canonical_slot")
         if cs and (_normalise(cs) == norm_target or _normalise(name) == norm_target):
+            return name
+        if any(_normalise(a) == norm_target for a in info.get("canonical_slot_aliases") or ()):
             return name
     # Second pass: by attr_name only (normalised)
     for name in block_attrs(block_slug):
@@ -1103,27 +1155,61 @@ def modifier_kind(modifier: str) -> str | None:
 # ----------------------------------------------------------------------------
 
 @functools.lru_cache(maxsize=256)
+def _parse_canonical_slot_aliases(raw: str | None) -> list[str]:
+    """Parse `block_attributes.canonical_slot_aliases` (a JSON-array-as-TEXT
+    column, Check#12 Build 2, 2026-09-06) into a plain list. Soft-fails to []
+    on a missing/malformed value — an alias widening is additive, never
+    load-bearing for the primary `canonical_slot` match."""
+    if not raw:
+        return []
+    try:
+        parsed = json.loads(raw)
+    except (ValueError, TypeError):
+        return []
+    return [a for a in parsed if isinstance(a, str)] if isinstance(parsed, list) else []
+
+
 def block_attrs(block_slug: str) -> dict[str, dict]:
-    """Return {attr_name: {role, canonical_slot, attr_type, derived_selector}} for a block.
+    """Return {attr_name: {role, canonical_slot, canonical_slot_aliases, attr_type,
+    derived_selector}} for a block.
 
     `derived_selector` (added 2026-06-11 for the universal scalar-lift,
     _lift_scalar_attrs_by_selector) is the BEM class selector for the draft
     element this attr extracts from (e.g. '.sgs-testimonial__text'). NULL for
     attrs with no draft element. Consumed by FR-31-2 / FR-31-5 D1 selector-lift.
+
+    `canonical_slot_aliases` (Check#12 Build 2, 2026-09-06) is a list of
+    EXTRA slot names this attr also answers to, beyond its primary
+    `canonical_slot` — e.g. sgs/button.label's canonical_slot='button' plus
+    aliases ['button-outline','button-primary','buttonSecondary'], the 3
+    other style-variant slots that are the same button element. Empty list
+    when the column is absent/NULL (an ordinary single-slot attr). Column may
+    not exist yet on an unmigrated DB — `PRAGMA table_info` guards the SELECT.
     """
     conn = sqlite3.connect(SGS_DB)
     try:
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(block_attributes)").fetchall()}
+        has_aliases_col = "canonical_slot_aliases" in cols
+        select_cols = "attr_name, attr_type, role, canonical_slot, derived_selector" + (
+            ", canonical_slot_aliases" if has_aliases_col else ""
+        )
         rows = conn.execute(
-            "SELECT attr_name, attr_type, role, canonical_slot, derived_selector "
-            "FROM block_attributes WHERE block_slug = ?",
+            f"SELECT {select_cols} FROM block_attributes WHERE block_slug = ?",  # noqa: S608
             (block_slug,),
         ).fetchall()
     finally:
         conn.close()
-    result = {
-        name: {"attr_type": t, "role": role, "canonical_slot": cs, "derived_selector": ds}
-        for name, t, role, cs, ds in rows
-    }
+    result = {}
+    for row in rows:
+        name, t, role, cs, ds = row[:5]
+        aliases_raw = row[5] if has_aliases_col else None
+        result[name] = {
+            "attr_type": t,
+            "role": role,
+            "canonical_slot": cs,
+            "derived_selector": ds,
+            "canonical_slot_aliases": _parse_canonical_slot_aliases(aliases_raw),
+        }
     if not result:
         _trace("db_lookup_miss", lookup="block_attrs", block_slug=block_slug)
     return result
@@ -1367,6 +1453,75 @@ def content_order_attr_for(block_slug: str) -> "str | None":
     if len(candidates) != 1:
         return None
     return candidates[0][0]
+
+
+@functools.lru_cache(maxsize=1024)
+def attr_for_grid_column_count(block_slug: str) -> "str | None":
+    """The block's grid COLUMN-COUNT destination attr, DB-driven (R-31-1).
+
+    ``grid.py``'s ``grid-template-columns`` branch derives an integer column
+    COUNT from a ``repeat(N, …)`` track-list, as a SECOND Write alongside the
+    raw template string. Historically this destination was a hardcoded literal
+    attr name (``"columns"``) — a block naming its count destination anything
+    else (e.g. ``sgs/nav-menu``'s ``listColumns``, a tier-object attr feeding
+    its in-drawer vertical-list grid) silently lost the value: ``"columns"``
+    doesn't exist on that block, so the write was dropped with no gap logged
+    (a plain KeyError-shaped miss, not even a tracked NO_DESTINATION).
+
+    A block opts in by declaring an explicit PSEUDO-property attrMap entry —
+    ``"css:grid-template-columns:count"`` — on the element that owns its grid
+    track, e.g. ``sgs/nav-menu``'s ``"bar"`` element:
+    ``"attrMap": {"css:gap": "gap", "css:grid-template-columns:count": "listColumns"}``.
+    This mirrors the existing pseudo-property convention already in this
+    codebase (``"css:color-gradient"`` is not a real CSS property either — it's
+    a manifest-level destination tag, resolved the same way).
+
+    Deliberately NOT routed through ``attr_for_property`` — that function's
+    entry gate queries ``property_suffixes`` for an EXACT ``css_property``
+    match and returns ``None`` immediately when no row exists, and
+    ``property_suffixes`` only ever holds real CSS property names. A pseudo
+    property never has a ``property_suffixes`` row by definition, so
+    ``attr_for_property`` can never resolve it — this queries
+    ``block_attributes`` directly instead, the same base-domain shape
+    ``_base_domain_attrs_for_css_property`` uses, but WITHOUT that helper's
+    root/self/wrapper ``css_element`` restriction (the count destination is
+    typically declared on the block's own GRID-layer child element, e.g.
+    nav-menu's ``bar`` — not necessarily the block's root).
+
+    Falls back to ``None`` when undeclared; the caller (``grid.py``) then
+    applies the ONE remaining hardcoded literal (``"columns"``) that every
+    pre-existing grid-bearing block relies on implicitly today — this
+    function adds a DB-driven alternative route, never a second hardcoded
+    name (R-31-1).
+
+    ≥2 matching attrs -> ``AmbiguousCssPropAttrError`` (fail loud, matches the
+    sibling column-first lookups' discipline), never a silent rowid pick.
+    """
+    if not block_slug:
+        return None
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT attr_name FROM block_attributes "
+            "WHERE block_slug = ? AND css_property = ? "
+            "AND (css_tier IS NULL OR css_tier = 'desktop') "
+            "AND css_state IS NULL "
+            "ORDER BY rowid",
+            (block_slug, "grid-template-columns:count"),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return None
+    finally:
+        conn.close()
+    attrs = tuple(r[0] for r in rows)
+    if len(attrs) > 1:
+        raise AmbiguousCssPropAttrError(
+            f"attr_for_grid_column_count({block_slug!r}): {len(attrs)} attrs "
+            f"match pseudo-property 'grid-template-columns:count' "
+            f"({', '.join(attrs)}); add a css_element disambiguator or remove "
+            "the duplicate registration."
+        )
+    return attrs[0] if attrs else None
 
 
 @functools.lru_cache(maxsize=1024)

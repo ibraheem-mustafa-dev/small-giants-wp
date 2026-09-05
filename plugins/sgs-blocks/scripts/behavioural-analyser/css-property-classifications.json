@@ -9947,6 +9947,15 @@
     },
     {
       "slug": "sgs/nav-menu",
+      "attr": "listColumns",
+      "fields": {
+        "css_property": "grid-template-columns:count",
+        "css_layer": "GRID",
+        "css_element": "bar"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
       "attr": "navBg",
       "fields": {
         "css_property": "background-color",

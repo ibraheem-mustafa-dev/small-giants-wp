@@ -121,21 +121,33 @@ def _slot_extraction_role(slot: str | None) -> str | None:
     """
     if not slot:
         return None
+    if db_lookup.is_container_marker_slot(slot):
+        # Check#12 Build 3 (2026-09-06): this slot's target block is a WHOLE
+        # NESTED COMPOSITE instance (like the pre-existing `step`/`badge`
+        # shapes), never a scalar content field. Guessing a role by picking
+        # among the target block's own content-bearing attrs would misroute
+        # real content (e.g. routing plain wrapper text into an image field).
+        # Data-driven via slots.json's `resolves_whole_instance` column — see
+        # db_lookup.is_container_marker_slot()'s docstring.
+        return None
     block = db_lookup.standalone_block_for(slot)
     if not block:
         return None
     content_roles = db_lookup._content_bearing_roles()
     candidates = [
-        (info.get("role"), info.get("canonical_slot"))
+        (info.get("role"), info.get("canonical_slot"), info.get("canonical_slot_aliases") or [])
         for info in (db_lookup.block_attrs(block) or {}).values()
         if info.get("role") in content_roles
     ]
     if not candidates:
         return None
-    # Prefer the candidate that OWNS this slot (its own canonical_slot
-    # matches) — this is what disambiguates sgs/media's image vs video.
-    for role, cslot in candidates:
-        if cslot == slot:
+    # Prefer the candidate that OWNS this slot (its own canonical_slot matches,
+    # OR the slot is one of its canonical_slot_aliases — Check#12 Build 2,
+    # 2026-09-06: e.g. sgs/media.imageUrl's canonical_slot='image' also
+    # answers to 'avatar'/'background-image') — this is what disambiguates
+    # sgs/media's image vs video.
+    for role, cslot, aliases in candidates:
+        if cslot == slot or slot in aliases:
             # Return the block's own content role verbatim — the shared
             # field_extractors dispatches it (incl. 'identity' → icon-slug, in
             # the extractor, not here: 'role' is a no_slug_literal-guarded name).
@@ -233,7 +245,7 @@ def _field_owns_token(field_key: str, bem_token: str) -> bool:
 # Roles that read a specific attribute/descendant (safe to self-extract from a
 # flat item root); text-content is EXCLUDED (it would concatenate a structured
 # item's children).
-_FLAT_SELF_ROLES = frozenset({"icon-slug", "identity", "url-href", "link-href",
+_FLAT_SELF_ROLES = frozenset({"icon-slug", "identity", "icon", "url-href", "link-href",
                               "image-object", "rating"})
 
 

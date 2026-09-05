@@ -96,6 +96,7 @@ FIX for a violation — two routes, both real, neither a workaround:
 """
 from __future__ import annotations
 
+import json
 import sqlite3
 import sys
 from pathlib import Path
@@ -179,19 +180,68 @@ def _undeclared_array_fields(conn: sqlite3.Connection) -> list[tuple[str, str, s
         return []
 
 
-def _candidates(
-    conn: sqlite3.Connection, block: str, content_roles: frozenset[str]
-) -> list[tuple[str, str, str | None]]:
-    """(attr_name, role, canonical_slot) content-bearing candidates on a block."""
+def _container_marker_slots(conn: sqlite3.Connection) -> frozenset[str]:
+    """Slots whose `resolves_whole_instance` column is 'true' (Check#12 Build 3,
+    2026-09-06). Mirrors db_lookup.is_container_marker_slot()'s own query on the
+    CALLER's connection so a planted fixture is authoritative here too. These
+    slots' target block is a whole nested composite to insert as-is (like the
+    pre-existing `step`/`badge` shapes) — never a scalar field to guess a role
+    for, so they are excluded from the guess/determinate/confirmed classification
+    entirely rather than being expected to resolve to a role at all.
+    """
     try:
         rows = conn.execute(
-            "SELECT attr_name, role, canonical_slot FROM block_attributes "
-            "WHERE block_slug = ?",
+            "SELECT slot_name FROM slots "
+            "WHERE scope = 'element' AND resolves_whole_instance = 'true'"
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return frozenset()
+    return frozenset(r[0] for r in rows)
+
+
+def _canonical_slot_aliases(raw: str | None) -> tuple[str, ...]:
+    """Parse a `canonical_slot_aliases` TEXT column (Check#12 Build 2,
+    2026-09-06) into a tuple. Soft-fails to () on a missing/malformed value."""
+    if not raw:
+        return ()
+    try:
+        parsed = json.loads(raw)
+    except (ValueError, TypeError):
+        return ()
+    if not isinstance(parsed, list):
+        return ()
+    return tuple(a for a in parsed if isinstance(a, str))
+
+
+def _candidates(
+    conn: sqlite3.Connection, block: str, content_roles: frozenset[str]
+) -> list[tuple[str, str, str | None, tuple[str, ...]]]:
+    """(attr_name, role, canonical_slot, canonical_slot_aliases) content-bearing
+    candidates on a block. `canonical_slot_aliases` (Check#12 Build 2) lists
+    EXTRA slot names the attr also answers to beyond its primary
+    `canonical_slot` (e.g. sgs/button.label answers to canonical_slot='button'
+    plus the 3 other button style-variant slots) — an exact match against
+    either is CONFIRMED, not a guess. Column may not exist on an unmigrated DB.
+    """
+    try:
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(block_attributes)").fetchall()}
+        has_aliases_col = "canonical_slot_aliases" in cols
+        select_cols = "attr_name, role, canonical_slot" + (
+            ", canonical_slot_aliases" if has_aliases_col else ""
+        )
+        rows = conn.execute(
+            f"SELECT {select_cols} FROM block_attributes WHERE block_slug = ?",  # noqa: S608
             (block,),
         ).fetchall()
     except sqlite3.OperationalError:
         return []
-    return [(a, r, cs) for a, r, cs in rows if r in content_roles]
+    out = []
+    for row in rows:
+        a, r, cs = row[:3]
+        aliases_raw = row[3] if has_aliases_col else None
+        if r in content_roles:
+            out.append((a, r, cs, _canonical_slot_aliases(aliases_raw)))
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -215,6 +265,7 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
     violations: list[Violation] = []
 
     content_roles = _content_bearing_roles(conn)
+    container_marker_slots = _container_marker_slots(conn)
     if not content_roles:
         # No roles table / no content-bearing classification: the resolver
         # itself returns None for everything, so there is nothing to guess at.
@@ -240,6 +291,15 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
         domain.setdefault(slot_name, None)
 
     for slot in sorted(domain):
+        if slot in container_marker_slots:
+            # Check#12 Build 3 (2026-09-06): this slot's target block is a
+            # whole nested composite to insert as-is (the same shape `step`/
+            # `badge` already have by construction — zero content-bearing
+            # candidates on their own target block). Forcing a canonical_slot
+            # onto one of the target block's content attrs would misroute
+            # real content, so this is not a role question at all. PASS.
+            continue
+
         # Resolve the target block through the REAL accessor, so the
         # 'status=built' cross-check the resolver applies is applied here too.
         block = db_lookup.standalone_block_for(slot)
@@ -251,7 +311,7 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
             continue  # resolver returns None
 
         resolved = _slot_extraction_role(slot)
-        candidate_roles = sorted({r for _a, r, _cs in candidates})
+        candidate_roles = sorted({r for _a, r, _cs, _al in candidates})
 
         # --- drift guard -------------------------------------------------
         # The real function must return one of the candidate roles this check
@@ -281,15 +341,18 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
             ))
             continue
 
-        if any(cs == slot for _a, _r, cs in candidates):
-            continue  # CONFIRMED — the exact-match branch anchors the answer
+        if any(cs == slot or slot in al for _a, _r, cs, al in candidates):
+            # CONFIRMED — the exact-match branch anchors the answer, either
+            # via canonical_slot itself or a canonical_slot_aliases entry
+            # (Check#12 Build 2, 2026-09-06).
+            continue
 
         if len(candidate_roles) < 2:
             continue  # DETERMINATE — one possible answer whatever the row order
 
         # GUESS — the returned role is decided by DB row order.
         owning = sorted(
-            f"{a} (role={r}, canonical_slot={cs!r})" for a, r, cs in candidates
+            f"{a} (role={r}, canonical_slot={cs!r})" for a, r, cs, _al in candidates
         )
         affected = fields_by_slot.get(slot, [])
         affected_txt = (
