@@ -83,6 +83,7 @@ _check_tier_composition_mod = _load_sibling("check_tier_composition")
 _check_css_property_reseed_mod = _load_sibling("check_css_property_reseed")
 _check_motion_fx_reseed_mod = _load_sibling("check_motion_fx_reseed")
 _check_fx_qualifying_blocks_stale_mod = _load_sibling("check_fx_qualifying_blocks_stale")
+_check_dead_composition_signal_mod = _load_sibling("check_dead_composition_signal")
 
 Violation = _models_mod.Violation
 
@@ -127,6 +128,7 @@ _CHECK_LABELS = {
     "tier_composition": "Check #7 — tier ↔ composition_role/container_kind",
     "css_property_reseed": "Check #8 — css_property/css_layer/css_element/css_state/css_tier Reseed-Survival",
     "motion_fx_reseed": "Check #9 — Spec 38 fx_effects Reseed-Survival",
+    "dead_composition_signal": "Check #10 — Dead Composition Discriminator",
 }
 
 # Display order for the grouped report.
@@ -139,7 +141,7 @@ _CHECK_LABELS = {
 _CHECK_ORDER = (
     "routing", "composition", "variants",
     "overrides_drift", "variant_reseed", "orphan_roles", "tier_composition",
-    "css_property_reseed", "motion_fx_reseed",
+    "css_property_reseed", "motion_fx_reseed", "dead_composition_signal",
 )
 
 
@@ -246,6 +248,7 @@ def main() -> int:
         violations.extend(_check_css_property_reseed_mod.run(conn))
         violations.extend(_check_motion_fx_reseed_mod.run(conn))
         violations.extend(_check_fx_qualifying_blocks_stale_mod.run(conn))
+        violations.extend(_check_dead_composition_signal_mod.run(conn))
     except sqlite3.OperationalError as exc:
         # DB present but DRIFTED (e.g. a required table missing) — this is a
         # real integrity problem, distinct from plain absence, and must fail

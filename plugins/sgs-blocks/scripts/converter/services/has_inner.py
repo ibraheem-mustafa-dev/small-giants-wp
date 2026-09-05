@@ -50,6 +50,15 @@ _RENDER_CONTENT_RE = re.compile(
     r"|if\s*\(\s*\$content"
     r"|\$block\s*->\s*inner_blocks"
     r"|do_blocks\s*\(\s*\$content\s*\)"
+    # Bare trailing function-call argument on its own line (e.g. printf(...)'s
+    # last positional arg), immediately preceding the closing `)` on the next
+    # line — no comma, no method call, no operator touching it on that line.
+    # Confirmed live in nav-drawer/render.php: `$content` alone on a line,
+    # directly followed by `);`. Anchored to the WHOLE line (^...$) so it
+    # only matches when $content is the line's entire (trimmed) content —
+    # narrower than a bare `\$content` alternative would be, so it cannot
+    # match $content appearing mid-expression on its own line.
+    r"|^\s*\$content\s*$"
 )
 
 

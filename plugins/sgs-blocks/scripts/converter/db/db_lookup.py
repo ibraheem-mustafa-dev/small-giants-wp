@@ -2482,6 +2482,59 @@ if _SGS_DB_PRESENT_AT_IMPORT:
 
 
 # ----------------------------------------------------------------------------
+# Idempotent schema migration — variant_composition_slots (Task 2,
+# InnerBlocks-composition fingerprinting, 2026-09-05)
+# ----------------------------------------------------------------------------
+# Sibling table to variant_slots above, but for CHILD BLOCK SLUGS rather than
+# attribute (name, value) pairs: a variant's discriminating InnerBlocks
+# composition, extracted from `variations.js` by
+# `variant-value-extractor/extract-variation-values.js` (Task 1) and
+# populated by `/sgs-update` Stage 1 (Task 2) via set-difference over each
+# variant's `innerBlockSlugs`, exactly mirroring how variant_slots is
+# populated over attribute pairs.
+#
+# DELIBERATELY DUPLICATED in both this file and sgs-update-v2.py, for the
+# SAME REASON variant_slots's own schema-ensure is duplicated above: a
+# one-off writer script (`/sgs-update`) and this converter package don't
+# share a schema-migration import — see the block comment above
+# `_migrate_variant_detection_schema` for the full rationale. This is pure
+# schema (additive, no data); population is a `/sgs-update` responsibility.
+#
+# Safe to call repeatedly. Runs at module load.
+def _migrate_variant_composition_schema() -> None:
+    """Idempotent migration: create the `variant_composition_slots` table if
+    absent. Schema only — no data seeding.
+
+    Safe to call repeatedly. Runs at module load.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS variant_composition_slots (
+                block_slug TEXT NOT NULL,
+                variant_value TEXT NOT NULL,
+                unique_child_slug TEXT NOT NULL,
+                PRIMARY KEY (block_slug, variant_value, unique_child_slug)
+            )
+            """
+        )
+        conn.commit()
+    except sqlite3.OperationalError:
+        # DB read-only / locked / missing — soft-fail. Composition detection
+        # then simply has no rows to read (callers must treat absence as
+        # "no fingerprint", never an error).
+        pass
+    finally:
+        conn.close()
+
+
+# Run migration at module load (idempotent — safe to call repeatedly).
+if _SGS_DB_PRESENT_AT_IMPORT:
+    _migrate_variant_composition_schema()
+
+
+# ----------------------------------------------------------------------------
 # Idempotent schema migration — block_composition.container_kind (D150 2026-06-02)
 # ----------------------------------------------------------------------------
 # Workstream A: adds a container_kind TEXT column (section|layout|content|NULL)
@@ -3603,6 +3656,42 @@ def _variant_slots_map(block_slug: str) -> tuple:
 
 
 @functools.lru_cache(maxsize=256)
+def _variant_composition_slots_map(block_slug: str) -> tuple:
+    """Return ((variant_value, (unique_child_slug, ...)), ...).
+
+    Reads the `variant_composition_slots` table (populated by /sgs-update from
+    the JS variant-value extractor's `innerBlockSlugs` output — Task 1/2 of the
+    variant-composition-fingerprinting plan, 2026-09-05). Mirrors
+    `_variant_slots_map`'s query/cache shape exactly, but the composition
+    signal has no `slot_value` column — a discriminating child slug is a
+    NAME-only fact (this variant's InnerBlocks seed uniquely includes this
+    child block, full stop), so there's nothing analogous to preset-variant
+    value-matching here. Cached per slug — static for a pipeline run, same as
+    `_variant_slots_map`.
+
+    Soft-fails to an empty tuple when the table is absent (pre-migration DB) —
+    `detect_variant`'s composition tiebreak treats that as "no composition
+    signal available", falling through to today's attribute-only behaviour
+    exactly as it does when `child_slugs` itself is None.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT variant_value, unique_child_slug FROM variant_composition_slots "
+            "WHERE block_slug = ?",
+            (block_slug,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        rows = []
+    finally:
+        conn.close()
+    grouped: dict = {}
+    for variant_value, unique_child_slug in rows:
+        grouped.setdefault(variant_value, []).append(unique_child_slug)
+    return tuple((v, tuple(slugs)) for v, slugs in grouped.items())
+
+
+@functools.lru_cache(maxsize=256)
 def declared_variant_values(block_slug: str) -> frozenset:
     """Every variant value the block DECLARES, from the enum on `blocks.variant_attr`.
 
@@ -3833,7 +3922,57 @@ def _slot_score(slot_value: "str | None", populated_attrs: dict, unique_slot: st
     return 1 if _canon_slot_value(actual) == slot_value else 0
 
 
-def detect_variant(block_slug: str, populated_attrs: dict) -> str | None:
+def _composition_tiebreak(
+    block_slug: str, tied_variants: "set[str] | frozenset[str]", child_slugs: "list[str] | None"
+) -> str | None:
+    """Attempt to break an attribute-score tie using InnerBlocks composition.
+
+    TIEBREAKER ONLY (variant-composition-fingerprinting plan, Task 3,
+    2026-09-05) — never additive, never a way to detect a variant that the
+    attribute signal didn't already narrow to a tie among `tied_variants`.
+    Scoring is SET-OVERLAP membership (`len(variant_slugs & set(child_slugs))`),
+    NOT an exact-sequence match: the walker's assembled child order reflects
+    DOM order, which need not match a variant template's declaration order, so
+    order isn't a meaningful part of "which variant is this" — only WHICH
+    children are present is.
+
+    Returns the single tied variant with a strictly-higher composition score
+    than every other tied variant, or None when composition data is
+    unavailable, still ties, or every tied variant scores 0 (no signal) — the
+    caller falls through to today's existing tie/miss behaviour in every one
+    of those cases.
+    """
+    if not child_slugs:
+        return None
+    tied = set(tied_variants)
+    if len(tied) < 2:
+        return None
+    comp_map = dict(_variant_composition_slots_map(block_slug))
+    input_slugs = set(child_slugs)
+    comp_scores = sorted(
+        (
+            (len(set(comp_map.get(variant_value, ())) & input_slugs), variant_value)
+            for variant_value in tied
+        ),
+        reverse=True,
+    )
+    top_comp_count, top_comp_variant = comp_scores[0]
+    if top_comp_count == 0:
+        return None
+    if len(comp_scores) > 1 and comp_scores[1][0] == top_comp_count:
+        return None
+    _trace(
+        "variant_detect_composition_tiebreak_hit",
+        block_slug=block_slug,
+        tied=",".join(sorted(tied)),
+        variant=top_comp_variant,
+    )
+    return top_comp_variant
+
+
+def detect_variant(
+    block_slug: str, populated_attrs: dict, child_slugs: "list[str] | None" = None
+) -> str | None:
     """Detect a block's variant from the draft's extracted attrs THIS run.
 
     For each variant, sum `_slot_score` across its DISCRIMINATING slots
@@ -3846,11 +3985,32 @@ def detect_variant(block_slug: str, populated_attrs: dict) -> str | None:
     set) scores only on an EXACT value match — a shared name at a different
     value contributes 0, never a false hit (see `_slot_score`).
 
+    `child_slugs` (variant-composition-fingerprinting plan, Task 3, 2026-09-05)
+    is the OPTIONAL recognized-child-slug list for THIS draft node (assembled
+    by `assembly.py` before this call) — default `None` so every caller that
+    doesn't pass it (today, none do) is byte-identical to pre-Task-3 behaviour.
+    When supplied, it is consulted ONLY as a tiebreaker (see
+    `_composition_tiebreak`), in two places:
+
+      1. A 0-0(-0...) tie: `_variant_slots_map` only returns rows for variants
+         that HAVE discriminating attrs at all — a variant with NONE (e.g.
+         nav-drawer's `split-zone-serif`/`two-column-editorial`, whose every
+         attribute value duplicates a sibling's) never appears in `scores` in
+         the first place, so it can't even be a candidate for the ordinary
+         tie check below. Composition can still discriminate these, so the
+         candidate pool here is widened to every DECLARED variant
+         (`declared_variant_values`), not just the ones `variant_slots` knows
+         about.
+      2. The ordinary tie check (>=2 variants matched, same top score >0):
+         candidates are exactly the variants tied at that top score, per the
+         existing ambiguity guard.
+
     Returns None when:
       - the block declares no variant_slots, or
-      - no variant scored above zero (nothing matched), or
-      - the top score is a tie between >=2 variants (ambiguous — leave the
-        block's default rather than guess).
+      - no variant scored above zero and composition didn't resolve it, or
+      - the top score is a tie between >=2 variants and composition didn't
+        resolve it either (ambiguous — leave the block's default rather than
+        guess).
 
     R-31-1 (DB-driven, no slug literal).
     """
@@ -3869,10 +4029,21 @@ def detect_variant(block_slug: str, populated_attrs: dict) -> str | None:
     )
     top_count, top_variant = scores[0]
     if top_count == 0:
+        # See docstring point 1 — every declared variant is a candidate here,
+        # not just the ones with variant_slots rows (those all scored 0 too,
+        # but a variant absent from `variants` altogether is equally at 0 and
+        # must not be excluded from the composition tiebreak).
+        resolved = _composition_tiebreak(block_slug, declared_variant_values(block_slug), child_slugs)
+        if resolved is not None:
+            return resolved
         _trace("variant_detect_miss", block_slug=block_slug, reason="no_slots_matched")
         return None
     # Ambiguity guard: a tie at the top means we cannot disambiguate → leave default.
     if len(scores) > 1 and scores[1][0] == top_count:
+        tied_names = {v for cnt, v in scores if cnt == top_count}
+        resolved = _composition_tiebreak(block_slug, tied_names, child_slugs)
+        if resolved is not None:
+            return resolved
         tied = ",".join(v for cnt, v in scores if cnt == top_count)
         _trace("variant_detect_tie", block_slug=block_slug, top_count=top_count, tied=tied)
         return None
