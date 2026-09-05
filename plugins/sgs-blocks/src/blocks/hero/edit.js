@@ -44,6 +44,7 @@ import {
 	resolveBackgroundPaintPreviewStyle,
 	textPaintPreview,
 	backgroundPaintPreview,
+	resolveResponsiveTier,
 } from '../../utils';
 // No-inline migration: hero no longer uses the default
 // <ContainerWrapperControls> aggregator — its unconditional "Content band" /
@@ -466,6 +467,36 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		// every other hover-only pair in this file (hover has no canvas state).
 		...textPaintPreview( textColour, textColourGradient, colourPalette ),
 	};
+	// Grid-track (split) / flex-axis (standard) canvas preview — 2026-09-05,
+	// mirrors render.php's own gating exactly (added in the same fix) now that
+	// the frontend genuinely paints these 7 attributes. Previously exempted as
+	// dead; that was true until render.php was fixed, so this closes the
+	// resulting editor-canvas gap rather than leaving it re-opened.
+	if ( isSplit ) {
+		if ( justifyItems && justifyItems !== 'stretch' ) {
+			wrapperStyle.justifyItems = justifyItems;
+		}
+		if ( alignContent && alignContent !== 'stretch' ) {
+			wrapperStyle.alignContent = alignContent;
+		}
+		if ( gridAutoRows ) {
+			wrapperStyle.gridAutoRows = gridAutoRows;
+		}
+		const gridRowsDesktop = resolveResponsiveTier( gridTemplateRows, 'desktop' )?.value;
+		if ( gridRowsDesktop ) {
+			wrapperStyle.gridTemplateRows = gridRowsDesktop;
+		}
+	} else {
+		if ( flexDirection ) {
+			wrapperStyle.flexDirection = flexDirection;
+		}
+		if ( justifyContent ) {
+			wrapperStyle.justifyContent = justifyContent;
+		}
+		if ( flexWrap && flexWrap !== 'wrap' ) {
+			wrapperStyle.flexWrap = flexWrap;
+		}
+	}
 	if ( ! isSplit && backgroundImage?.url ) {
 		wrapperStyle.backgroundImage = `url(${ backgroundImage.url })`;
 		wrapperStyle.backgroundSize = 'cover';

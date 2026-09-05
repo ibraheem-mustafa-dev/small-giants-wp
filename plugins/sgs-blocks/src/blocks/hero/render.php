@@ -337,6 +337,72 @@ $split_order_mobile = $split_order_obj['mobile'] ?? 'media-first';
 // cap) — the legacy per-hero contentMaxWidth* family was removed 2026-06-09.
 $vertical_alignment = $attributes['verticalAlignment'] ?? 'center';
 
+// ── Grid-track alignment (split variant) + flex-axis controls (standard
+// variant) — 7 attributes declared in block.json with real inspector controls
+// that render.php never read at all until now (root-caused this session: no
+// grep match anywhere in this file). Hero has exactly TWO variants (`standard`
+// / `split`, see the `variant` enum above) and its root element is a genuine
+// CSS layout container either way — `.sgs-hero{display:flex}` is the base rule
+// in style.css, and `.sgs-hero--split{display:grid}` overrides it for split
+// (mirrored below by the unconditional `.uid{display:grid}` emission inside
+// the `$is_split` branch). So: justifyItems/alignContent/gridAutoRows/
+// gridTemplateRows are GRID-track properties, meaningful only when split;
+// justifyContent/flexDirection/flexWrap are FLEX-axis properties, meaningful
+// only when NOT split. Gating + allowlists mirror
+// SGS_Container_Wrapper's own grid/flex branches exactly
+// (includes/class-sgs-container-wrapper.php ~L879-902), so a value here means
+// the same thing an operator already knows from sgs/container. Never routed
+// through the shared wrapper itself (Composite-mirror rule, CLAUDE.md) —
+// hero's split grid is bespoke (fixed 2-column, not the wrapper's generic
+// column-count grid), so these extend hero's OWN existing $is_split CSS
+// builder below rather than the wrapper's generic branch.
+$justify_items         = $attributes['justifyItems'] ?? 'stretch';
+$align_content         = $attributes['alignContent'] ?? 'stretch';
+$allowed_justify_items = array( 'stretch', 'start', 'center', 'end' );
+$allowed_align_content = array( 'stretch', 'start', 'center', 'end', 'space-between', 'space-around', 'space-evenly' );
+if ( ! in_array( $justify_items, $allowed_justify_items, true ) ) {
+	$justify_items = 'stretch';
+}
+if ( ! in_array( $align_content, $allowed_align_content, true ) ) {
+	$align_content = 'stretch';
+}
+// gridAutoRows is a plain scalar (block.json: type string, default '') —
+// is_array guard mirrors the wrapper's own D549 defence (a future tier-object
+// migration of this attr would otherwise PHP-coerce to the literal "Array").
+$grid_auto_rows = $attributes['gridAutoRows'] ?? '';
+$grid_auto_rows = is_array( $grid_auto_rows ) ? '' : $grid_auto_rows;
+// gridTemplateRows is ALREADY a TIER OBJECT on this block (block.json: type
+// object, default {}) — same shape as gridTemplateColumns above, read through
+// the same shared normaliser.
+$grid_row_tiers           = sgs_responsive_normalise_object( $attributes['gridTemplateRows'] ?? null );
+$grid_row_template        = $grid_row_tiers['desktop'] ?? '';
+$grid_row_template_tablet = $grid_row_tiers['tablet'] ?? '';
+$grid_row_template_mobile = $grid_row_tiers['mobile'] ?? '';
+
+// Flex-axis attrs — apply to the root ONLY on the non-split (flex) variant.
+// flexWrap's block.json default is 'wrap' (not '') — an untouched instance
+// therefore already resolves to 'wrap' via the `?? 'wrap'` fallback below, and
+// gating emission on "differs from that default" (not "is non-empty") is what
+// keeps an untouched hero byte-identical: style.css has never declared a
+// flex-wrap rule for `.sgs-hero`, so the current live default is the browser's
+// own initial `nowrap` — emitting 'wrap' unconditionally would be a real,
+// silent behaviour change for every existing hero on this attribute's default.
+$justify_content         = $attributes['justifyContent'] ?? '';
+$flex_direction          = $attributes['flexDirection'] ?? '';
+$flex_wrap               = $attributes['flexWrap'] ?? 'wrap';
+$allowed_justify_content = array( '', 'flex-start', 'center', 'flex-end', 'space-between', 'space-around' );
+$allowed_flex_direction  = array( '', 'row', 'column' );
+$allowed_flex_wrap       = array( 'wrap', 'nowrap' );
+if ( ! in_array( $justify_content, $allowed_justify_content, true ) ) {
+	$justify_content = '';
+}
+if ( ! in_array( $flex_direction, $allowed_flex_direction, true ) ) {
+	$flex_direction = '';
+}
+if ( ! in_array( $flex_wrap, $allowed_flex_wrap, true ) ) {
+	$flex_wrap = 'wrap';
+}
+
 // Split layout renders the media column on the explicit 'split' variant.
 // FR-22-20 (2026-06-01): the cloning converter now DETECTS the variant from the
 // draft's extracted fingerprint and sets variant='split' (universal variant
@@ -444,6 +510,30 @@ if ( '' !== $hover_border_colour_gradient ) {
 // display:grid is deferred to the scoped .uid rule (was previously pushed inline via $styles).
 if ( $is_split ) {
 	$responsive_css .= '.' . $uid . '{display:grid}';
+
+	// ── Grid-track alignment + row controls (justifyItems/alignContent/
+	// gridAutoRows/gridTemplateRows) — mirrors SGS_Container_Wrapper's own
+	// grid branch gating exactly (unset/default = no declaration, matching
+	// the browser's own grid initial values, so an untouched split hero stays
+	// byte-identical). See the attribute-read block above for the rationale.
+	if ( 'stretch' !== $justify_items ) {
+		$responsive_css .= '.' . $uid . '{justify-items:' . esc_attr( $justify_items ) . '}';
+	}
+	if ( 'stretch' !== $align_content ) {
+		$responsive_css .= '.' . $uid . '{align-content:' . esc_attr( $align_content ) . '}';
+	}
+	if ( '' !== trim( (string) $grid_auto_rows ) ) {
+		$responsive_css .= '.' . $uid . '{grid-auto-rows:' . esc_attr( sgs_sanitize_grid_template( $grid_auto_rows ) ) . '}';
+	}
+	if ( '' !== trim( (string) $grid_row_template ) ) {
+		$responsive_css .= '.' . $uid . '{grid-template-rows:' . esc_attr( sgs_sanitize_grid_template( $grid_row_template ) ) . '}';
+	}
+	if ( '' !== trim( (string) $grid_row_template_tablet ) ) {
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . '{grid-template-rows:' . esc_attr( sgs_sanitize_grid_template( $grid_row_template_tablet ) ) . '}}';
+	}
+	if ( '' !== trim( (string) $grid_row_template_mobile ) ) {
+		$responsive_css .= '@media (max-width:767px){.' . $uid . '{grid-template-rows:' . esc_attr( sgs_sanitize_grid_template( $grid_row_template_mobile ) ) . '}}';
+	}
 
 	// ── Content-band cap (grid-aware) ──
 	// The universal wrapper caps content via an injected `.sgs-container__inner`
@@ -585,6 +675,24 @@ if ( $is_split ) {
 	} else {
 		// media-first (default).
 		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__media{order:1}.' . $uid . ' .sgs-hero__content{order:2}}';
+	}
+} else {
+	// ── Flex-axis controls (non-split variants) — justifyContent/flexDirection/
+	// flexWrap. `.sgs-hero{display:flex}` is the base rule in style.css (the
+	// standard variant then adds `flex-direction:column;justify-content:center`
+	// at class specificity (0,1,0) via `.sgs-hero--standard`); these three
+	// attrs let an operator override that on the scoped `.uid` rule, which
+	// out-specifies the class default by source + specificity, matching every
+	// other scoped override in this file. Unset/default = no declaration, so
+	// an untouched hero keeps the CSS-class default unchanged.
+	if ( '' !== $flex_direction ) {
+		$responsive_css .= '.' . $uid . '{flex-direction:' . esc_attr( $flex_direction ) . '}';
+	}
+	if ( '' !== $justify_content ) {
+		$responsive_css .= '.' . $uid . '{justify-content:' . esc_attr( $justify_content ) . '}';
+	}
+	if ( 'wrap' !== $flex_wrap ) {
+		$responsive_css .= '.' . $uid . '{flex-wrap:' . esc_attr( $flex_wrap ) . '}';
 	}
 }
 

@@ -636,31 +636,17 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'backgroundColourScrolledGradient',
 	'textColourScrolled',
 	'scrollEffect',
-	// `sgs/hero`'s generic grid/flex/stack layout attrs (2026-09-05, root-caused
-	// during this session's Phase 2 work, exempted now rather than faked — see
-	// Phase 2 commit daddbbb1's message for `justifyItems`/`alignContent`/
-	// `gridAutoRows`). Verified: hero/render.php never reads `layout`,
-	// `justifyContent`, `flexDirection`, `flexWrap`, or `gridTemplateRows`
-	// directly, and never sets its own `layout` attribute to 'grid'/'flex'/
-	// 'stack' anywhere — hero's split-media grid is instead forced by an
-	// unconditional `display:grid` rule keyed on `$is_split`
-	// (render.php:445-446), completely bypassing the shared wrapper's generic
-	// layout branch that would otherwise consume these seven attributes. They
-	// are genuinely dead on the frontend TODAY, in every hero variant — this is
-	// a real bug (hero's split-grid path never engages the wrapper's grid
-	// branch), tracked separately, not an editor-canvas gap this check can fix.
-	// ⚠ NAME-KEYED — `justifyItems`/`alignContent`/`gridAutoRows` are shared
-	// names other blocks use for LIVE findings; safe today because no other
-	// block has a finding under these names after Phase 2 closed
-	// cta-section/gallery/trust-bar's, but re-verify before ever reusing this
-	// exemption reasoning for a new block.
-	'justifyContent',
-	'flexDirection',
-	'flexWrap',
-	'gridTemplateRows',
-	'justifyItems',
-	'alignContent',
-	'gridAutoRows',
+	// CORRECTION (2026-09-05, same session): `sgs/hero`'s generic grid/flex
+	// layout attrs (`justifyItems`/`alignContent`/`gridAutoRows`/
+	// `gridTemplateRows`/`justifyContent`/`flexDirection`/`flexWrap`) were
+	// exempted here as "genuinely dead on the frontend" after confirming
+	// hero/render.php never read them. That was true at the time — root-caused
+	// and then FIXED the same session (hero/render.php now reads all 7,
+	// gated exactly like `SGS_Container_Wrapper`'s own grid/flex branches:
+	// grid-track properties on the split variant, flex-axis properties on the
+	// standard variant) — and `hero/edit.js`'s canvas mirror was wired to
+	// match. Entry removed; these names are live findings again if the mirror
+	// ever regresses, which is correct.
 	// `sgs/hero.splitMediaDecorative` (2026-09-05) — confirmed a11y-only by
 	// render.php's own comment: blanks `alt` and sets `aria-hidden` on the
 	// split-media wrapper, a state never exposed to assistive tech any other
@@ -674,15 +660,26 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	// faking a canvas preview for an effect the frontend never paints would be
 	// the same inverted-CHECK-A mistake as hero's grid attrs above.
 	'dividers',
-	// `sgs/form`'s "Previous button" colour family (2026-09-05) — confirmed
-	// ZERO references anywhere in form/render.php (the Previous button markup
-	// itself exists at ~line 465, but this colour is never applied to it) —
-	// genuinely dead on the frontend today, not an editor-mirror gap. Real bug
-	// (the Previous button's background colour control does nothing), tracked
-	// separately; not faked here.
-	'prevColourBackground',
+	// `sgs/form.prevColourBackgroundHover`/`prevColourBackgroundHoverGradient`
+	// (2026-09-05) — client-set hover VALUES, same doctrine as every other
+	// hover entry above: render.php's `sgs_button_element_style_css()` paints
+	// these via a `:hover` rule the editor canvas never simulates.
+	// ⚠ CORRECTION (same session): this entry ORIGINALLY also listed the
+	// RESTING-state `prevColourBackground`/`prevColourBackgroundGradient`,
+	// exempted as "dead on the frontend" after a literal grep of
+	// form/render.php for "prevColour" returned zero matches. That grep was a
+	// false negative — a concurrent peer session's commit (23d7ea1d7,
+	// landed the same day) had already wired the mechanism via
+	// `sgs_button_element_style_css( $attributes, 'prev', … )`, which builds
+	// its attribute keys by STRING CONCATENATION (`$prefix.'ColourBackground'`),
+	// invisible to a literal-string grep — the exact class of miss this
+	// session's `sgs/modal` fix had already flagged for the SAME helper.
+	// Verified live on the canary this time (not just re-grepped): the
+	// resting mechanism genuinely works. Removed the two resting-state names
+	// from this exemption and wired a real editor-canvas preview instead (a
+	// Previous-button element next to the existing Submit-button preview,
+	// `form/edit.js`) — see that file for the fix.
 	'prevColourBackgroundHover',
-	'prevColourBackgroundGradient',
 	'prevColourBackgroundHoverGradient',
 	// `sgs/cart`'s mini-cart panel colours (2026-09-05) — `panelBg`/
 	// `panelTextColour` paint a native `<dialog>` (FR-36-10) built server-side

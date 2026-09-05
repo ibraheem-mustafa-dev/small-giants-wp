@@ -21,7 +21,7 @@ import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPa
 } from '../../components';
 import { NumberControl } from '../../components/primitives';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { resolveTextColourPreviewStyle } from '../../utils';
+import { resolveTextColourPreviewStyle, backgroundPaintPreview } from '../../utils';
 
 const SUBMIT_STYLE_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
@@ -97,6 +97,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const progressBarStyle = {
 		backgroundColor: resolveColourToken( progressBarColour, palette ) || undefined,
 	};
+
+	// prevColourBackground(Gradient) canvas preview (2026-09-05) — CHECK A
+	// finding. render.php's `.sgs-form__button--prev` mechanism
+	// (sgs_button_element_style_css( $attributes, 'prev', … )) already paints
+	// this correctly on the frontend; the editor canvas never rendered a
+	// Previous-button element at all (multi-step "previous" state has no
+	// natural moment to show without real step navigation), same gap the
+	// Submit button preview below was built to close. Resting state only —
+	// the Hover-suffixed siblings are already canvas-exempted, same doctrine
+	// as every other hover value this session.
+	const prevButtonStyle = backgroundPaintPreview(
+		prevColourBackground,
+		prevColourBackgroundGradient,
+		palette
+	);
 
 	// GROUND-TRUTH: source=file, confirmed against render.php:311-373 +
 	// helpers-colour-variants.php's sgs_border_states_css()/sgs_fill_states_css()
@@ -655,6 +670,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					211-228 emits a real, unconditional `color`/`background-color`
 					rule on this exact element; the preview had never carried it. */ }
 				<div className="sgs-form__actions">
+					{ /* Editor-canvas-only Previous-button preview (2026-09-05) — same
+						reasoning as the Submit button preview above: no real multi-step
+						navigation exists in the editor canvas, so without this element
+						prevColourBackground(Gradient) showed no visible effect while
+						editing, even though render.php already paints it correctly via
+						`.sgs-form__button--prev` (sgs_button_element_style_css()). */ }
+					<button
+						type="button"
+						className="sgs-form__button sgs-form__button--prev"
+						style={ prevButtonStyle }
+					>
+						{ __( 'Previous', 'sgs-blocks' ) }
+					</button>
 					<button
 						type="button"
 						className={ `sgs-form__button sgs-form__button--submit sgs-form__button--${ submitStyle }` }
