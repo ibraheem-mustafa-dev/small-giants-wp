@@ -1183,10 +1183,37 @@ function runFixDelegate( applyFlag ) {
 	}
 }
 
-if ( process.argv.includes( '--self-test' ) ) {
-	process.exit( runSelfTest() ? 0 : 1 );
-} else if ( process.argv.includes( '--fix' ) ) {
-	runFixDelegate( process.argv.includes( '--apply' ) );
-} else {
-	main();
+/**
+ * Library surface for OTHER scripts in this directory (e.g.
+ * classify-end-shape.js) that need this file's row-detection + per-attribute
+ * tracing primitives. Deliberately does NOT export `main`/`runSelfTest`/
+ * `runFixDelegate` — a consumer wanting the census or the fix pipeline should
+ * shell out to this file's CLI, not call its entry points as a library (the
+ * CLI's own stdout/exit-code contract is the stable interface for that; these
+ * are the internals a sibling classifier needs instead, so the row parse is
+ * never re-derived a second way).
+ */
+module.exports = {
+	BLOCKS_DIR,
+	loadDbRows,
+	blockDirs,
+	rowsInFile,
+	isStatesExempt,
+	isGradientExempt,
+	gradientExtensibility,
+	extractCallArgLists,
+	traceBoundVars,
+	GRADIENT_CAPABLE_HELPERS,
+	GRADIENT_ONLY_ARG_HELPERS,
+	COMPOSER_MAP_HELPERS,
+};
+
+if ( require.main === module ) {
+	if ( process.argv.includes( '--self-test' ) ) {
+		process.exit( runSelfTest() ? 0 : 1 );
+	} else if ( process.argv.includes( '--fix' ) ) {
+		runFixDelegate( process.argv.includes( '--apply' ) );
+	} else {
+		main();
+	}
 }
