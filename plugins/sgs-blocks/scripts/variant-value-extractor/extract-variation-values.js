@@ -195,6 +195,39 @@ function findVariationsArray( ast ) {
 }
 
 /**
+ * Find a function declaration by name from program body.
+ * Supports both FunctionDeclaration and VariableDeclaration (FunctionExpression/ArrowFunction).
+ *
+ * @param {string} fnName
+ * @param {import('@babel/types').File} ast
+ * @return {import('@babel/types').Node|null}
+ */
+function findFunctionDeclaration( fnName, ast ) {
+	if ( ! ast.program?.body ) {
+		return null;
+	}
+
+	for ( const stmt of ast.program.body ) {
+		if ( stmt.type === 'FunctionDeclaration' && stmt.id.name === fnName ) {
+			return stmt;
+		}
+
+		const decl = stmt.declarations?.[ 0 ];
+		if (
+			stmt.type === 'VariableDeclaration' &&
+			decl?.id.type === 'Identifier' &&
+			decl.id.name === fnName &&
+			decl.init &&
+			(decl.init.type === 'FunctionExpression' || decl.init.type === 'ArrowFunctionExpression')
+		) {
+			return decl.init;
+		}
+	}
+
+	return null;
+}
+
+/**
  * Resolve a CallExpression to a local function declaration and extract its
  * return value's first element if it's an ArrayExpression with a StringLiteral.
  *
@@ -208,32 +241,12 @@ function resolveLocalFunctionCallBlock( callNode, ast ) {
 		return { ok: false };
 	}
 
-	const fnName = callNode.callee.name;
-	let fnDecl = null;
-
-	// Find the function declaration matching this name.
-	// Walk the program body directly to find declarations.
-	if ( ast.program && ast.program.body ) {
-		for ( const stmt of ast.program.body ) {
-			if ( stmt.type === 'FunctionDeclaration' && stmt.id.name === fnName ) {
-				fnDecl = stmt;
-				break;
-			}
-			if (
-				stmt.type === 'VariableDeclaration' &&
-				stmt.declarations[ 0 ] &&
-				stmt.declarations[ 0 ].id.type === 'Identifier' &&
-				stmt.declarations[ 0 ].id.name === fnName &&
-				stmt.declarations[ 0 ].init &&
-				(stmt.declarations[ 0 ].init.type === 'FunctionExpression' || stmt.declarations[ 0 ].init.type === 'ArrowFunctionExpression')
-			) {
-				fnDecl = stmt.declarations[ 0 ].init;
-				break;
-			}
-		}
+	const fnDecl = findFunctionDeclaration( callNode.callee.name, ast );
+	if ( ! fnDecl ) {
+		return { ok: false };
 	}
 
-	if ( ! fnDecl ) {
+	if ( ! fnDecl.body ) {
 		return { ok: false };
 	}
 
@@ -242,10 +255,6 @@ function resolveLocalFunctionCallBlock( callNode, ast ) {
 	// treat the body itself as the return value.
 	let returnValue = null;
 	let returnCount = 0;
-
-	if ( ! fnDecl.body ) {
-		return { ok: false };
-	}
 
 	// Case 1: Concise-body arrow function — body IS the return value directly.
 	if ( fnDecl.body.type !== 'BlockStatement' ) {
@@ -286,17 +295,51 @@ function resolveLocalFunctionCallBlock( callNode, ast ) {
 	}
 
 	// If multiple returns or no return found, fail.
-	if ( returnCount !== 1 || ! returnValue || returnValue.type !== 'ArrayExpression' ) {
+	if ( returnCount !== 1 || ! returnValue || returnValue?.type !== 'ArrayExpression' ) {
 		return { ok: false };
 	}
 
 	// Check if the first element is a StringLiteral (the block slug).
 	const firstEl = returnValue.elements[ 0 ];
-	if ( ! firstEl || firstEl.type !== 'StringLiteral' ) {
+	if ( ! firstEl || firstEl?.type !== 'StringLiteral' ) {
 		return { ok: false };
 	}
 
 	return { ok: true, value: firstEl.value };
+}
+
+/**
+ * Process a single inner block element and extract its slug if possible.
+ *
+ * @param {import('@babel/types').Node} el
+ * @param {import('@babel/types').File} ast
+ * @return {{slug?: string, resolved: boolean}}
+ */
+function processInnerBlockElement( el, ast ) {
+	if ( ! el ) {
+		return { resolved: false };
+	}
+
+	// Case 1: ArrayExpression — direct block definition.
+	if ( el.type === 'ArrayExpression' ) {
+		const firstEl = el.elements[ 0 ];
+		if ( firstEl?.type === 'StringLiteral' ) {
+			return { slug: firstEl.value, resolved: true };
+		}
+		return { resolved: false };
+	}
+
+	// Case 2: CallExpression — local helper function.
+	if ( el.type === 'CallExpression' ) {
+		const result = resolveLocalFunctionCallBlock( el, ast );
+		if ( result.ok ) {
+			return { slug: result.value, resolved: true };
+		}
+		return { resolved: false };
+	}
+
+	// Case 3: Any other shape — unresolved.
+	return { resolved: false };
 }
 
 /**
@@ -311,34 +354,12 @@ function extractInnerBlockSlugs( innerBlocksNode, ast ) {
 	let unresolvedInnerBlocks = 0;
 
 	for ( const el of innerBlocksNode.elements ) {
-		if ( ! el ) {
-			continue;
+		const result = processInnerBlockElement( el, ast );
+		if ( result.resolved && result.slug ) {
+			innerBlockSlugs.push( result.slug );
+		} else {
+			unresolvedInnerBlocks++;
 		}
-
-		// Case 1: ArrayExpression — direct block definition.
-		if ( el.type === 'ArrayExpression' ) {
-			const firstEl = el.elements[ 0 ];
-			if ( firstEl && firstEl.type === 'StringLiteral' ) {
-				innerBlockSlugs.push( firstEl.value );
-			} else {
-				unresolvedInnerBlocks++;
-			}
-			continue;
-		}
-
-		// Case 2: CallExpression — local helper function.
-		if ( el.type === 'CallExpression' ) {
-			const result = resolveLocalFunctionCallBlock( el, ast );
-			if ( result.ok ) {
-				innerBlockSlugs.push( result.value );
-			} else {
-				unresolvedInnerBlocks++;
-			}
-			continue;
-		}
-
-		// Case 3: Any other shape — unresolved.
-		unresolvedInnerBlocks++;
 	}
 
 	return { innerBlockSlugs, unresolvedInnerBlocks };

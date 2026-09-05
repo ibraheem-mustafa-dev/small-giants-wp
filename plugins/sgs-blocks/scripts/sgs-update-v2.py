@@ -2939,7 +2939,7 @@ def _extract_variation_attribute_values(block_dir: Path) -> "dict | None":
         return None
     try:
         payload = json.loads(proc.stdout)
-    except (json.JSONDecodeError, ValueError) as exc:
+    except ValueError as exc:
         print(f"Stage 1 (variant-values): WARN extractor emitted non-JSON for {block_dir.name}: {exc}")
         return None
     variants = payload.get("variants") if isinstance(payload, dict) else None
@@ -2997,7 +2997,7 @@ def _extract_variation_composition_slugs(block_dir: Path) -> "dict | None":
         return None
     try:
         payload = json.loads(proc.stdout)
-    except (json.JSONDecodeError, ValueError) as exc:
+    except ValueError as exc:
         print(f"Stage 1 (variant-composition): WARN extractor emitted non-JSON for {block_dir.name}: {exc}")
         return None
     variants = payload.get("variants") if isinstance(payload, dict) else None

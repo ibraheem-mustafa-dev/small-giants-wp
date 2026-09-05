@@ -1567,5 +1567,6 @@ class TestCheck10PlantedViolation:
             f"dead-discriminator variants, got {len(violations)}"
         )
         v = violations[0]
-        assert "variant-a" in v.detail and "variant-b" in v.detail
+        assert "variant-a" in v.detail
+        assert "variant-b" in v.detail
         assert v.key == dead_composition_signal_key("sgs/fake-multi-block")
