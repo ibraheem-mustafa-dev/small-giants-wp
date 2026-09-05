@@ -49,6 +49,8 @@ import {
 	ResponsiveOverride,
 	ResponsiveBoxControl,
 	SgsColourPanel,
+	DesignTokenPicker,
+	GradientCapableColourControl,
 	ShadowControl,
 	SgsLengthControl,
 	TypographyControls,
@@ -407,23 +409,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						],
 					},
 					{
-						key: 'attributionColour',
-						label: __( 'Attribution colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: attributionColour,
-								onChange: ( val ) => setAttributes( { attributionColour: val ?? '' } ),
-								linked: true,
-								gradientValue: attributionColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { attributionColourGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
 						key: 'boxShadowColour',
 						label: __( 'Shadow colour', 'sgs-blocks' ),
 						states: [
@@ -522,8 +507,36 @@ export default function Edit( { attributes, setAttributes } ) {
 									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
-							{ /* Attribution text colour moved to the top-level SgsColourPanel
-							   (D618/D621) — "Attribution colour" row. */ }
+							{ /* Moved in from the shared top-level SgsColourPanel — CO-2,
+							   THE PLACEMENT RULE names "attribution" a TIER-1
+							   element, so its colour belongs in this same panel
+							   alongside the HTML tag + typography controls. */ }
+							<ToolsPanelItem
+								label={ __( 'Attribution colour', 'sgs-blocks' ) }
+								hasValue={ () => !! attributionColour }
+								onDeselect={ () =>
+									setAttributes( {
+										attributionColour: '',
+										attributionColourGradient: '',
+									} )
+								}
+							>
+								<GradientCapableColourControl
+									label={ __( 'Attribution colour', 'sgs-blocks' ) }
+									states={ [
+										{
+											key: 'normal',
+											label: __( 'Normal', 'sgs-blocks' ),
+											value: attributionColour,
+											onChange: ( val ) => setAttributes( { attributionColour: val ?? '' } ),
+											linked: true,
+											gradientValue: attributionColourGradient,
+											onGradientChange: ( val ) =>
+												setAttributes( { attributionColourGradient: val ?? '' } ),
+										},
+									] }
+								/>
+							</ToolsPanelItem>
 
 							{ /* Attribution typography (font size/weight/style/family/
 							   decoration/transform/line-height) — rebuilt onto the shared

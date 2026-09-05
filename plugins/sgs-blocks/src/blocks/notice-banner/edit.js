@@ -15,6 +15,7 @@ import {
 	IconPreview,
 	ResponsiveBoxControl,
 	SgsColourPanel,
+	DesignTokenPicker,
 	SgsLengthControl,
 	fillRow,
 	textRow,
@@ -228,29 +229,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						attributes,
 						setAttributes,
 					} ),
-					{
-						key: 'iconColour',
-						label: __( 'Icon colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: iconColour,
-								onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
-								linked: true,
-								gradientValue: iconColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { iconColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: iconColourHover,
-								onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
-								linked: true,
-								},
-						],
-					},
 				] }
 			/>
 			<InspectorControls>
@@ -418,7 +396,32 @@ export default function Edit( { attributes, setAttributes } ) {
 										__nextHasNoMarginBottom
 									/>
 								) }
-								{ /* Icon colour moved to the top-level SgsColourPanel (D618/D621). */ }
+								{ /* Moved in from the shared top-level SgsColourPanel — CO-2,
+								   THE PLACEMENT RULE names "icon" a TIER-1 element, so
+								   its colour belongs in this same panel item, alongside
+								   the icon picker above. */ }
+								<DesignTokenPicker
+									label={ __( 'Icon colour', 'sgs-blocks' ) }
+									states={ [
+										{
+											key: 'normal',
+											label: __( 'Normal', 'sgs-blocks' ),
+											value: iconColour,
+											onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
+											linked: true,
+											gradientValue: iconColourGradient,
+											onGradientChange: ( val ) =>
+												setAttributes( { iconColourGradient: val ?? '' } ),
+										},
+										{
+											key: 'hover',
+											label: __( 'Hover', 'sgs-blocks' ),
+											value: iconColourHover,
+											onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
+											linked: true,
+										},
+									] }
+								/>
 							</ToolsPanelItem>
 						) }
 					</ToolsPanel>

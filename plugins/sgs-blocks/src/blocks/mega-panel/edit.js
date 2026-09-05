@@ -383,20 +383,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
-					{
-						key: 'accentBackgroundImage',
-						label: __( 'Accent background image', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: accentBackgroundImage,
-								onChange: ( val ) =>
-									setAttributes( { accentBackgroundImage: val ?? 'accent' } ),
-								linked: true,
-							},
-						],
-					},
 				] }
 			/>
 			<InspectorControls>
@@ -625,6 +611,28 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 					</p>
+					{ /* Moved in from the shared top-level SgsColourPanel — CO-2,
+					   THE PLACEMENT RULE names "aside" a TIER-1 element, so its
+					   accent background image belongs in this panel alongside
+					   width and the divider colour below. */ }
+					<SgsColourPanel
+						rows={ [
+							{
+								key: 'accentBackgroundImage',
+								label: __( 'Accent background image', 'sgs-blocks' ),
+								states: [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: accentBackgroundImage,
+										onChange: ( val ) =>
+											setAttributes( { accentBackgroundImage: val ?? 'accent' } ),
+										linked: true,
+									},
+								],
+							},
+						] }
+					/>
 					<SgsLengthControl
 						label={ __( 'Aside width', 'sgs-blocks' ) }
 						value={ asideWidth || '' }

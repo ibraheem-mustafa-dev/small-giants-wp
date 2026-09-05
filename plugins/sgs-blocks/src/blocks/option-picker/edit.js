@@ -31,6 +31,8 @@ import {
 	ResponsiveControl,
 	ResponsiveBoxControl,
 	SgsColourPanel,
+	DesignTokenPicker,
+	GradientCapableColourControl,
 	SgsLengthControl,
 	SgsBorderControl,
 	MediaElementPanel,
@@ -366,23 +368,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			<SgsColourPanel
 				rows={ [
 					{
-						key: 'label',
-						label: __( 'Label colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: labelColour,
-								onChange: ( val ) => setAttributes( { labelColour: val ?? '' } ),
-								linked: true,
-								gradientValue: labelColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { labelColourGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
 						key: 'pillBackground',
 						label: __( 'Pill background', 'sgs-blocks' ),
 						states: [
@@ -690,6 +675,25 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody title={ __( 'Label', 'sgs-blocks' ) } initialOpen={ false }>
 					{ showLabel && (
 						<>
+							{ /* Moved in from the shared top-level SgsColourPanel —
+							   CO-2, THE PLACEMENT RULE names "Group label (legend)"
+							   a TIER-1 element, so its colour belongs in this same
+							   panel alongside typography + margin below. */ }
+							<GradientCapableColourControl
+								label={ __( 'Label colour', 'sgs-blocks' ) }
+								states={ [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: labelColour,
+										onChange: ( val ) => setAttributes( { labelColour: val ?? '' } ),
+										linked: true,
+										gradientValue: labelColourGradient,
+										onGradientChange: ( val ) =>
+											setAttributes( { labelColourGradient: val ?? '' } ),
+									},
+								] }
+							/>
 							<TypographyControls
 								attributes={ attributes }
 								setAttributes={ setAttributes }

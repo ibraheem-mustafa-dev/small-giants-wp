@@ -27,6 +27,7 @@ import {
 	ResponsiveOverride,
 	ResponsiveBoxControl,
 	SgsColourPanel,
+	DesignTokenPicker,
 	ShadowControl,
 	resolveColourToken,
 	SgsLengthControl,
@@ -430,30 +431,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						],
 					},
 					{
-						key: 'icon',
-						label: __( 'Icon colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: iconColour,
-								onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
-								gradientValue: iconColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { iconColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: iconColourHover,
-								onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
-								gradientValue: iconColourHoverGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { iconColourHoverGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
 						key: 'shadow',
 						label: __( 'Shadow colour', 'sgs-blocks' ),
 						states: [
@@ -641,6 +618,48 @@ export default function Edit( { attributes, setAttributes } ) {
 											/>
 										) }
 									</ResponsiveOverride>
+								</ToolsPanelItem>
+								{ /* Moved in from the shared SgsColourPanel — CO-2,
+								   THE PLACEMENT RULE names "icon" a TIER-1 element,
+								   so its colour lives here alongside size, matching
+								   the comment above this ToolsPanel's own intent. */ }
+								<ToolsPanelItem
+									label={ __( 'Icon colour', 'sgs-blocks' ) }
+									hasValue={ () => !! iconColour || !! iconColourHover }
+									onDeselect={ () =>
+										setAttributes( {
+											iconColour: '',
+											iconColourGradient: '',
+											iconColourHover: '',
+											iconColourHoverGradient: '',
+										} )
+									}
+									isShownByDefault
+								>
+									<DesignTokenPicker
+										label={ __( 'Icon colour', 'sgs-blocks' ) }
+										gradientCapable={ true }
+										states={ [
+											{
+												key: 'normal',
+												label: __( 'Normal', 'sgs-blocks' ),
+												value: iconColour,
+												onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
+												gradientValue: iconColourGradient,
+												onGradientChange: ( val ) =>
+													setAttributes( { iconColourGradient: val ?? '' } ),
+											},
+											{
+												key: 'hover',
+												label: __( 'Hover', 'sgs-blocks' ),
+												value: iconColourHover,
+												onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
+												gradientValue: iconColourHoverGradient,
+												onGradientChange: ( val ) =>
+													setAttributes( { iconColourHoverGradient: val ?? '' } ),
+											},
+										] }
+									/>
 								</ToolsPanelItem>
 							</ToolsPanel>
 						</>
