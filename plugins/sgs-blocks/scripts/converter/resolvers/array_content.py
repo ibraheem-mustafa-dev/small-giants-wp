@@ -105,6 +105,19 @@ def _slot_extraction_role(slot: str | None) -> str | None:
     below). The exact-match preference only matters, and is only applied,
     when the target block actually has more than one candidate to choose
     between.
+
+    True scope (re-enumerated live DB-wide, 2026-09-05): 29 slots route to a
+    target block with more than one content-bearing candidate; of those, 22
+    still fall through to the ``candidates[0][0]`` guess below because no
+    candidate's ``canonical_slot`` matches the incoming slot. sgs/media's
+    image-vs-video case is the one this session fixed; it is NOT the only
+    multi-candidate case DB-wide. Known residual, not yet fixed: the
+    ``avatar``/``background-image``/``background-video`` slots all route to
+    sgs/media (14 candidates) and resolve to ``svgContent``'s role ``'svg'``
+    — the same wrong-role-guess shape as the bug this fix closes for
+    ``media``/``image``. Fixing that residual is out of scope here; it needs
+    its own disambiguation pass (or a slot-to-candidate widening beyond exact
+    ``canonical_slot`` match) rather than being folded into this docstring.
     """
     if not slot:
         return None
