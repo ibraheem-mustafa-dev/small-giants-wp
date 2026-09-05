@@ -77,195 +77,12 @@ via a new composition-detection signal (D969, PR #38). Full per-session detail:
 
 **Invoke `/autopilot` first.**
 
-The Spec 32/35 gates track is now FULLY CLOSED this session — see D970 + the section below. The
-live open thread is the NEW typography full-replacement track (D971/D972): foundation (census,
-detector, switcher component) is shipped and verified; the actual migration work is what's left.
-Check `ListAgents` first, this tree runs many concurrent sessions — the shared DB and shared git
-tree both got hit by cross-session collisions multiple times tonight, resolved by asking rather
-than forcing through.
-
-## Task 1 — Migrate the 19 native-only blocks to the shared typography component
-
-**What:** for each of `accordion`, `breadcrumbs`, `business-info`, `container`,
-`countdown-timer`, `cta-section`, `form`, `hero`, `info-box`, `notice-banner`, `post-grid`,
-`pricing-table`, `process-steps`, `product-faq`, `social-icons`, `table-of-contents`,
-`team-member`, `testimonial-slider`, `timeline` — remove `supports.typography` from
-`block.json`, wire `TypographyControls` into `edit.js` at native's current selector (18 of 19
-already resolved by rule 33's live output; only `form` needs a manual selector read), swap
-`render.php`'s style-read for `sgs_typography_css_rule()`. Transform all three files atomically —
-every one of these 19 sets `__experimentalSkipSerialization: true`, so a block.json-only edit
-breaks rendering silently.
-**Why:** the primary migration gap — zero work started on these 19.
-**Estimated time:** ~10-15 min per block, mechanical once proven on one.
-
-**Orchestration:**
-- Execution: delegated parallel subagents per disjoint block, but do ONE solo first to prove the
-  3-file transform pattern before fanning out
-- Model: sonnet via `/delegate`
-- Brief: rule 45's live output names the block; rule 33's live output (0 findings) names the
-  selector/target for 18 of the 19
-- Depends on: none — single-target blocks need zero switcher API changes
-- Parallel with: Task 3 (disjoint files)
-- /qc gate after: rule 45 count drops by exactly the blocks migrated + live render check per
-  block at 3 breakpoints, before commit
-
-**Acceptance:** rule 45's "native declaration" finding count drops from 25 to 6 (the double-writer
-blocket in Task 3, handled separately) or 0 if Task 3 also completes; live-verified no rendering
-regression on at least 3 sampled blocks across the 19.
-
-## Task 2 — Tidy the 4 duplicate-logic blocks (button/heading/label/text)
-
-**What:** these 4 already use `TypographyControls` correctly in `edit.js` but hand-roll their OWN
-render-side logic instead of calling `sgs_typography_css_rule()` — a real architecture gap, NOT
-a live bug (D972 disproved the suspected defect; verified live at 3 breakpoints). Behaviour-
-preserving refactor only: swap each hand-rolled CSS emission for the shared helper call, same
-selector.
-**Why:** closes rule 45's remaining 4 findings; removes drift-prone duplicate logic.
-**Estimated time:** ~15-20 min per block — verify render output is byte-identical, not "looks
-the same".
-
-**Orchestration:**
-- Execution: delegated, parallel subagents (4 disjoint files)
-- Model: sonnet via `/delegate`
-- Brief: read each block's current hand-rolled logic first, confirm what CSS it currently
-  emits, then swap to the shared helper call and confirm identical output — this is a
-  behaviour-preserving refactor, treat any output diff as a bug to fix, not an acceptable change
-- Depends on: none · Parallel with: Task 1, Task 3
-- /qc gate after: live Playwright check confirming computed CSS is unchanged pre/post refactor
-  on all 4 blocks at 3 breakpoints
-
-**Acceptance:** rule 45 finding count for these 4 drops to 0; live-verified zero visual/CSS
-change on all 4 blocks.
-
-## Task 3 — Resolve the 4 real double-writer conflicts
-
-**What:** `testimonial` (highest-risk — 3 elements, native and the shared component's
-`quoteFontSize` target the SAME selector), `card-grid`+`icon-list` (one element clean, one
-genuinely conflicting), `collapsible-text` (1 element, direct collision). Read `render.php` per
-block to prove which mechanism currently wins before choosing — whichever renders today is what
-live content depends on, not whichever is "correct" long-term. `testimonial`'s `quote`/`summary`
-also need a flat-string → tiered-object attribute migration; use `card-grid`'s clean 2-target
-wiring (`90b50989a`) as the reference shape.
-**Why:** the only blocks where two mechanisms could silently disagree on what a client sees.
-**Estimated time:** ~30-45 min per block, genuine investigation, not mechanical.
-
-**Orchestration:**
-- Execution: delegated, one subagent per block (NOT parallelised within `testimonial` — its 3
-  elements share one file)
-- Model: opus via `/delegate` (judgement-heavy, not mechanical)
-- Brief: D972 has the exact collision per block (which selector, which attr); read
-  `render.php`'s actual CSS-emission order to prove which mechanism currently wins before
-  changing anything
-- Depends on: none · Parallel with: Task 1, Task 2 (disjoint blocks — but do NOT run a
-  Task-1-style parallel fan-out on `testimonial`/`card-grid`/`icon-list` since Tasks 1 and 3
-  would otherwise both touch the same files if scoping drifts — confirm no overlap before
-  dispatching)
-- /qc gate after: live Playwright check per block confirming the RIGHT value (the one client
-  content currently shows) survives the migration, not just "a value renders"
-
-**Acceptance:** rule 45's "both mechanisms" finding count drops to 0 for these 4; live-verified
-no visible change to existing client-facing typography.
-
-## Task 4 — Live-verify the switcher on `card-grid`
-
-**What:** the switcher is built and wired on `card-grid` (`90b50989a`) but live verification
-never completed — blocked all night by another session's dirty files in the shared deploy
-directory. Deploy (scoped `--payload` if not clean) and verify: renders, switching shows right
-values, edit-then-switch-back preserves the value, modified-indicator appears only when
-customised.
-**Why:** every Task 3 block depends on this being proven correct first.
-**Estimated time:** ~10 min once the tree allows a scoped deploy.
-
-**Orchestration:**
-- Execution: inline or delegated, single agent
-- Model: sonnet via `/delegate`
-- Brief: `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --blocks-only
-  --payload <scoped-to-TypographyControls.js+card-grid>` if the tree isn't clean; never
-  `--allow-dirty`, never stash another session's files
-- Depends on: none · Parallel with: Tasks 1-3
-- /qc gate after: this IS the qc gate for Task 3's dependents — do not consider the switcher
-  production-ready until this passes
-
-**Acceptance:** all 4 checks (render/switch/preserve/indicator) confirmed live on the canary,
-not just in local source.
-
-## Task 5 — Deploy + live-verify the rule-43 table-of-contents fix
-
-**What:** `93dacf0d4` (the active-link underline fix) is committed, not deployed.
-**Why:** small, low-risk, already isolated — no reason to leave it queued once the tree clears.
-**Estimated time:** ~5 min.
-
-**Orchestration:**
-- Execution: inline, single agent · Model: sonnet · Depends on: none · Parallel with: anything
-
-**Acceptance:** live-verified the active TOC link shows an underline, not just a colour change.
-
-## Task 6 — Reconcile the 24h+ orphaned stash
-
-**What:** `git stash@{0}` (26 files, base `7a2c68b05`) is still unresolved, now 3+ days old
-(flagged at every SessionStart hook since). Contains real uncommitted work across ~18 blocks
-(list in the `▶ ROAD-TO-UNIFORM RECONCILIATION` section below).
-**Why:** it's dead weight nobody has claimed, and blocks a clean `git stash list`.
-**Estimated time:** ~15-20 min (read + reconcile file-by-file, several blocks have moved on).
-
-**Orchestration:**
-- Execution: inline main thread (needs judgement per file, not mechanical)
-- Model: opus (main agent)
-- Brief: `git stash show -p stash@{0} > backup.patch` first, then apply file-by-file, checking
-  each against what's since landed on `main`
-- Depends on: none · Parallel with: Task 1
-
-**Acceptance:** stash reconciled and dropped, or explicitly re-flagged with a reason it can't be
-yet (never left silently unresolved another session).
-
-## Dependency graph
-
-```
-Task 1 (parallel, 19 native-only blocks)   Task 2 (parallel, 4 tidy-ups)   Task 3 (opus, 4 conflicts)
-  ↓ rule-45 count + live render check         ↓ CSS byte-identical check      ↓ live "right value" check
-  commit per block                            commit per block                commit per block
-        \_______________________________________|_______________________________/
-                                    ↓
-                    Task 4 (switcher live-verify — unblocks once tree clears)
-                                    ↓
-                          all feed rule 45 -> 0
-Task 5 (deploy TOC fix) and Task 6 (stash reconciliation) — independent, no ordering requirement
-with anything above.
-```
-
-## Methodology guardrails (do not skip)
-
-- **An already-documented architecture rule still gets violated if nobody checks it** (NEW this
-  session, D970/mistakes.md) — before building any GENERAL mechanism touching a shared
-  component's placement/architecture (colour panel, typography panel, border control), read the
-  relevant CLAUDE.md/spec section in full, don't rely on memory of it. A rule documented days
-  ago is exactly as binding as one documented a year ago; the failure is never checking it.
-- **Prove the cause before "fixing" a suspected bug** (this session, D972) — a suspected
-  flat-vs-tiered attribute shape bug in the shared typography helper was investigated and
-  DISPROVED by reading the actual code + live-verifying on the canary, not fixed on assumption.
-  Committing an unneeded "fix" would have been a redundant second implementation of already-working
-  logic. Always verify a bug is real (read the code, check live) before writing the fix.
-- **A carried plan claim is a hypothesis, not ground truth** — re-verify against the live tree
-  before building from ANY prompt doc or prior session's summary, including this one — a prior
-  13-block typography census guessed wrong on every count this session (D972).
-- **A live shared DB is also a write target, not just the git tree** — re-check row counts
-  after any DB write; a concurrent session's own write can silently wipe a fresh insert with no
-  error (D964). Fix the DETECTOR the write path trusts, never bolt a second write path on.
-- **Deploy before measure** — any live-verified change needs a real deploy + cache purge first.
-  Coordinate timing with whichever peer session is active (`ListAgents`) — a scoped `--payload`
-  deploy is the sanctioned way through a dirty shared tree, never `--allow-dirty` or stashing
-  another session's uncommitted files (this session hit this exact wall twice, refused both
-  times, reported honestly rather than forcing through).
-- **A gate's own scope is not the whole defect** — read the actual emitted output, not just
-  whether a check passed.
-- **A subagent's "verification only"/"no destructive commands" instruction is not enforcement**
-  (recurred 4x this project, see `mistakes.md`) — give a scratch baseline instead of forbidding
-  a tool, and independently re-verify shared-state safety after any agent reports done.
-- Path-scoped commits only, re-check branch + `git status` immediately before every commit.
-- `npm run gate:fast` after every change; read the full output. Use `SGS_F5_SKIP`/
-  `SGS_F5_SKIP_REASON` (not `--no-verify`) when a gate finding is genuinely pre-existing and
-  unrelated — logged to `reports/f5-manual-skips.log`.
-- Never `phpcbf` — realign phpcs warnings by hand.
+The Spec 32/35 gates track is now FULLY CLOSED this session — see D970. The live open thread is
+the typography full-replacement track (D971/D972): foundation (census, detector, switcher
+component) is shipped and verified; the migration work is what remains. Full task-by-task
+orchestration, priority order, and guardrails: `.claude/prompts/2026-09-06-typography-full-replacement-next-session.md`
+— read it in full before starting, do not re-derive the plan from this file. Check `ListAgents`
+first, this tree runs many concurrent sessions.
 
 ## ▶ ROAD-TO-UNIFORM RECONCILIATION — FULLY CLOSED, all 9 items, qc-council-audited.
 
@@ -274,8 +91,8 @@ All 9 items closed (2026-08-25). Full detail: `.claude/plans/archive/2026-08-25-
 CSS-injection sanitisation has no gate for `borderStyle`/`textTransform` free-text attrs (9
 unaudited `render.php` files); `text/edit.js`'s "Font" reset is a no-op.
 
-⚠ **`git stash@{0}` (26 files, base `7a2c68b05`) STILL UNRESOLVED**, 3+ days old — see Task 6
-above. Files: `hero`/`button`/`before-after`/`brand-strip`/`buybox`/`cta-section`/`heading`/
+⚠ **`git stash@{0}` (26 files, base `7a2c68b05`) STILL UNRESOLVED**, 3+ days old — see Task 6 in
+`.claude/prompts/2026-09-06-typography-full-replacement-next-session.md`. Files: `hero`/`button`/`before-after`/`brand-strip`/`buybox`/`cta-section`/`heading`/
 `icon-list`/`icon`/`info-box`/`mega-panel`/`nav-drawer`/`quote`/`site-footer(-row)`/
 `site-header(-row)`/`testimonial(-slider)`/`trust-bar`/`GradientCapableColourControl.js`/
 generative-background shader files/`utils/index.js`/`parking.md`. Do NOT `git stash drop`/`clear`
@@ -292,12 +109,12 @@ Opened 2026-09-04: Spec 32 §5 blob-sanitisation gate, rules 42/43/44, rule-41 6
 `sgs/post-grid` bugs fixed, 3 D812 control-shape findings root-caused. Closed 2026-09-06 (this
 session): the 3 D812 fixes deployed + live-verified; rule 43's pending recheck found + fixed a
 real bug (`93dacf0d4`, TOC underline losing to a hover-animation on specificity, not yet
-deployed — Task 5); rule-41 batches (`3548f7c85`/`689c3f2b5`) built an unauthorised colour-panel
+deployed — see the prompt doc); rule-41 batches (`3548f7c85`/`689c3f2b5`) built an unauthorised colour-panel
 mechanism on 10 of 11 blocks, reverted + detector corrected (D970, `5f0c2e2d0`/`c330f2a6b`); one
 independent bug fixed (`responsive-logo` attrMap gap, `ed41a61c9`). Residual: rule 41 at 26 (10
 real scattering + 16 unrelated `dom-order` debt) — general framework debt, not re-opened here.
 
-## ▶ TYPOGRAPHY FULL-REPLACEMENT TRACK — OPENED 2026-09-06. Detail: D970 (why)/D971 (architecture)/D972 (foundation shipped). Next-session orchestration: Tasks 1-4 above.
+## ▶ TYPOGRAPHY FULL-REPLACEMENT TRACK — OPENED 2026-09-06. Detail: D970 (why)/D971 (architecture)/D972 (foundation shipped). Next-session orchestration: `.claude/prompts/2026-09-06-typography-full-replacement-next-session.md`.
 
 **Decision (D971):** fully replace native `supports.typography` with shared `TypographyControls`
 everywhere, including root-inheritance cases — a claimed CSS-inheritance blocker was checked and
@@ -310,11 +127,11 @@ nothing lost.
 fixes); new detector `45-typography-full-replacement.js` (advisory, 29 findings — caught + fixed
 its own false-positive before shipping); switcher component on `TypographyControls.js`
 (`targets=[]` prop, zero-diff for single-target blocks, wired on `card-grid`, live verification
-blocked by a concurrent session's dirty tree — Task 4); a suspected helper bug was investigated
+blocked by a concurrent session's dirty tree — see the prompt doc); a suspected helper bug was investigated
 and DISPROVED, not fixed (already handles both attribute shapes correctly; the 4 "partial
 adoption" blocks just hand-roll a duplicate, non-broken path).
 
-**Still open — Tasks 1-4 above:** migrate 19 native-only blocks; tidy 4 duplicate-logic blocks;
+**Still open — full task list in the prompt doc:** migrate 19 native-only blocks; tidy 4 duplicate-logic blocks;
 resolve 4 double-writer conflicts; live-verify the switcher. No collision with the separate
 tier-object migration (disjoint attribute namespaces, checked directly).
 
