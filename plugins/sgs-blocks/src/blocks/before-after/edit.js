@@ -45,6 +45,7 @@ import {
 	SgsBorderControl,
 	resolveColourToken,
 	MediaElementPanel,
+	IconPicker,
 } from '../../components';
 import { BooleanResponsiveControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -471,10 +472,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		startPosition,
 		fxDraggable,
 		dividerColour,
+		dividerColourGradient,
 		dividerWidth,
 		handleColour,
 		handleColourGradient,
 		handleIconColour,
+		handleIconColourGradient,
+		handleIconSource,
+		handleIconName,
 		heightUnit,
 		boxShadow,
 		boxShadowColour,
@@ -686,6 +691,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: dividerColour,
 								onChange: ( val ) => setAttributes( { dividerColour: val } ),
+								gradientValue: dividerColourGradient,
+								onGradientChange: ( val ) => setAttributes( { dividerColourGradient: val ?? '' } ),
 							},
 						] }
 					/>
@@ -728,8 +735,19 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: handleIconColour,
 								onChange: ( val ) => setAttributes( { handleIconColour: val } ),
+								gradientValue: handleIconColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { handleIconColourGradient: val ?? '' } ),
 							},
 						] }
+					/>
+					<IconPicker
+						label={ __( 'Handle icon', 'sgs-blocks' ) }
+						value={ { source: handleIconSource, name: handleIconName } }
+						onChange={ ( { source, name } ) =>
+							setAttributes( { handleIconSource: source, handleIconName: name } )
+						}
+						sources={ [ 'lucide', 'wp-icon' ] }
 					/>
 				</PanelBody>
 

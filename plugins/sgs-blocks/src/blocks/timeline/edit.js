@@ -498,6 +498,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		connectorColourGradient,
 		connectorProgressFill,
 		connectorFillColour,
+		connectorFillColourGradient,
 		dateColour,
 		scrollEffect,
 		revealOnScroll,
@@ -603,6 +604,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			'--sgs-timeline-fill-colour': connectorFillColour
 				? `var(--wp--preset--color--${ connectorFillColour })`
 				: undefined,
+			'--sgs-timeline-fill-colour-gradient': connectorFillColourGradient || undefined,
 			// Task 3 (2026-08-30) — milestoneMinHeight/entryGap. Mirrors
 			// render.php exactly: BOTH custom-property values are emitted
 			// unconditionally (unset -> undefined -> no declaration, matching
@@ -906,6 +908,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: connectorFillColour,
 								onChange: ( val ) =>
 									setAttributes( { connectorFillColour: val ?? '' } ),
+								gradientValue: connectorFillColourGradient,
+								onGradientChange: ( val ) => setAttributes( { connectorFillColourGradient: val ?? '' } ),
 								linked: true,
 							},
 						] }

@@ -37,6 +37,8 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 require_once __DIR__ . '/media-render.php';
 
 // ---------------------------------------------------------------------------
@@ -136,6 +138,15 @@ $divider_colour  = $attributes['dividerColour'] ?? '';
 $divider_width   = isset( $attributes['dividerWidth'] ) ? max( 1, (float) $attributes['dividerWidth'] ) : 3;
 $handle_colour   = $attributes['handleColour'] ?? '';
 $handle_icon_col = $attributes['handleIconColour'] ?? '';
+
+// Handle icon — resolved via the shared Lucide/wp-icon + IconPicker mechanism
+// (2026-09-05 migration off the hand-rolled two-polyline SVG). Source is
+// restricted to the two inline-SVG sources at the schema level (block.json
+// enum) since a stroke gradient needs a real <svg> to inject <defs> into.
+$handle_icon_source   = $attributes['handleIconSource'] ?? 'lucide';
+$handle_icon_source   = in_array( $handle_icon_source, array( 'lucide', 'wp-icon' ), true ) ? $handle_icon_source : 'lucide';
+$handle_icon_name     = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attributes['handleIconName'] ?? 'chevrons-left-right' ) );
+$handle_icon_gradient = (string) ( $attributes['handleIconColourGradient'] ?? '' );
 
 $label_colour    = $attributes['labelColour'] ?? '';
 $label_bg_colour = $attributes['labelBackgroundColour'] ?? '';
@@ -256,7 +267,8 @@ $root_var_decls = array();
 $root_var_decls[] = '--sgs-before-after-divider-width:' . round( $divider_width, 2 ) . 'px';
 
 if ( $divider_colour ) {
-	$root_var_decls[] = '--sgs-before-after-divider-colour:' . sgs_colour_value( $divider_colour );
+	$divider_colour_gradient = $attributes['dividerColourGradient'] ?? '';
+	$root_var_decls          = array_merge( $root_var_decls, sgs_custom_property_gradient_decls( 'sgs-before-after-divider-colour', $divider_colour, $divider_colour_gradient ) );
 }
 // Gradient sibling (2026-09-04): --sgs-before-after-handle-colour has no
 // stable selector of its own (a draggable handle, styled purely via the
@@ -275,7 +287,20 @@ $root_var_decls = array_merge(
 		(string) ( $attributes['handleColourGradient'] ?? '' )
 	)
 );
-if ( $handle_icon_col ) {
+// Handle icon stroke gradient (2026-09-05, svg-paint-gradient end-shape — the
+// ONLY row of this shape in the framework). Unlike the background-image
+// custom-property-gradient pattern used elsewhere on this block,
+// --sgs-before-after-handle-icon-colour feeds a `stroke:` declaration
+// directly (style.css:266), and `stroke:url(#id)` — same as `stroke` taking
+// any other paint value — is valid, so a gradient sets the SAME custom
+// property to a `url(#id)` reference rather than needing a second sibling
+// var. sgs_svg_stroke_gradient() fails soft (empty defs/css) on an
+// empty/invalid gradient, so this is always safe to compute.
+$handle_icon_grad_id  = $uid . '-handle-icon-grad';
+$sgs_handle_icon_grad = sgs_svg_stroke_gradient( $handle_icon_gradient, $handle_icon_grad_id, 'stroke' );
+if ( '' !== $sgs_handle_icon_grad['defs'] ) {
+	$root_var_decls[] = '--sgs-before-after-handle-icon-colour:url(#' . $handle_icon_grad_id . ')';
+} elseif ( $handle_icon_col ) {
 	$root_var_decls[] = '--sgs-before-after-handle-icon-colour:' . sgs_colour_value( $handle_icon_col );
 }
 // Label colour — same custom-property-value rule as the divider/handle
@@ -557,6 +582,19 @@ if ( $fx_draggable && ! is_admin() ) {
 
 $range_id = $uid . '-range';
 
+// Handle icon SVG — resolved via the shared Lucide/wp-icon lookup, with the
+// gradient <defs> (if any) injected as the first child. Falls back to the
+// original hand-rolled two-polyline chevron markup if resolution fails
+// (empty slug lookup, e.g. a stale/typo'd icon name) so the divider is never
+// left with no icon at all.
+$handle_icon_svg = 'wp-icon' === $handle_icon_source
+	? sgs_get_wp_icon( $handle_icon_name )
+	: sgs_get_lucide_icon( $handle_icon_name );
+if ( '' === $handle_icon_svg ) {
+	$handle_icon_svg = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 3 12 9 18"></polyline><polyline points="15 6 21 12 15 18"></polyline></svg>';
+}
+$handle_icon_svg = sgs_svg_inject_defs( $handle_icon_svg, $sgs_handle_icon_grad['defs'] );
+
 ?>
 <?php
 // ── Block-private border: width / style / colour (Shape B). ──
@@ -695,10 +733,14 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 		<div class="wp-block-sgs-before-after__divider" aria-hidden="true">
 			<div class="wp-block-sgs-before-after__divider-line"></div>
 			<div class="wp-block-sgs-before-after__handle">
-				<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<polyline points="9 6 3 12 9 18"></polyline>
-					<polyline points="15 6 21 12 15 18"></polyline>
-				</svg>
+				<?php
+				// $handle_icon_svg resolved above (§8 top) via
+				// sgs_get_lucide_icon()/sgs_get_wp_icon(), pre-sanitised
+				// static lookup-table markup with the gradient <defs> (if
+				// any) already injected — same trust boundary as sgs/icon's
+				// identical emission.
+				echo $handle_icon_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				?>
 			</div>
 		</div>
 		<label class="wp-block-sgs-before-after__range-label sgs-screen-reader-text" for="<?php echo esc_attr( $range_id ); ?>">

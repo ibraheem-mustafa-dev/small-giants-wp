@@ -24,22 +24,17 @@ const TYPE_OPTIONS = [
 	{ label: __( 'Copyright Notice', 'sgs-blocks' ), value: 'copyright'   },
 	{ label: __( 'Tagline / Description', 'sgs-blocks' ), value: 'description' },
 	{ label: __( 'Google Maps Embed', 'sgs-blocks' ), value: 'map'        },
+	{ label: __( 'Website Credit / Attribution', 'sgs-blocks' ), value: 'attribution' },
 ];
 
 /** Types that support the showIcon toggle. */
 const ICON_TYPES = new Set( [ 'phone', 'email', 'address' ] );
-
-/** Types that expose link toggles. */
-const LINK_PHONE_TYPES = new Set( [ 'phone' ] );
-const LINK_EMAIL_TYPES = new Set( [ 'email' ] );
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		displayType,
 		showIcon,
 		labelCollapse,
-		linkPhone,
-		linkEmail,
 		style,
 		paddingTablet,
 		paddingMobile,
@@ -47,12 +42,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginMobile,
 		iconColour,
 		iconColourGradient,
+		iconColourHover,
+		iconColourHoverGradient,
 		textColour,
 		textColourGradient,
+		textColourHover,
+		textColourHoverGradient,
 		labelColour,
 		labelColourGradient,
-		linkHoverBackgroundImage,
-		linkHoverTextColour,
+		attributionHoverColour,
+		attributionHoverColourFallback,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -63,14 +62,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			{ /* D618/D609 — ONE grouped, SGS-OWNED colour panel (own PanelBody,
 			   default InspectorControls group), rendered FIRST so it sits at
-			   the top of the inspector. `linkHoverBackgroundImage` /
-			   `linkHoverTextColour` (split 2026-08-16, D643 — see block.json's
-			   `link` element note) have no "normal" sibling attribute in this
-			   block's schema (style.css's own #e7d768 credit-sweep colour is
-			   the implicit normal state), so each renders as a single-state
-			   row rather than a normal/hover pair. `supports.color` sub-flags
-			   are now false so WordPress generates no native colour UI to
-			   overlap with this panel. */ }
+			   the top of the inspector. `supports.color` sub-flags are now
+			   false so WordPress generates no native colour UI to overlap
+			   with this panel. Text colour + Icon colour each carry a real
+			   normal/hover pair (added 2026-09-05 — the framework's 2-state
+			   standard, sgs_text_states_css()/mirroring sgs/button's icon
+			   states.hover shape, is now used rather than a single-state row). */ }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -87,6 +84,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { textColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								gradientValue: textColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourHoverGradient: val ?? '' } ),
+							},
 						],
 					},
 					{
@@ -101,6 +107,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: iconColourGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { iconColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: iconColourHover,
+								onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
+								gradientValue: iconColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -169,43 +184,44 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
-				{ ( LINK_PHONE_TYPES.has( displayType ) || LINK_EMAIL_TYPES.has( displayType ) ) && (
-					<PanelBody title={ __( 'Link Options', 'sgs-blocks' ) } initialOpen={ false }>
-						{ LINK_PHONE_TYPES.has( displayType ) && (
-							<ToggleControl
-								label={ __( 'Make phone number clickable', 'sgs-blocks' ) }
-								checked={ linkPhone }
-								onChange={ ( val ) => setAttributes( { linkPhone: val } ) }
-								__nextHasNoMarginBottom
-							/>
-						) }
-						{ LINK_EMAIL_TYPES.has( displayType ) && (
-							<ToggleControl
-								label={ __( 'Make email address clickable', 'sgs-blocks' ) }
-								checked={ linkEmail }
-								onChange={ ( val ) => setAttributes( { linkEmail: val } ) }
-								__nextHasNoMarginBottom
-							/>
-						) }
+				{ /* 2026-09-05: replaces the old "Link Options" panel, which was
+				   gated on phone/email but controlled the ATTRIBUTION
+				   credit-sweep colour (`.sgs-business-attribution
+				   .sgs-business-info__link`, style.css:99-134) — a control
+				   that visibly did nothing on a phone/email instance, while
+				   the display type that actually needed it (attribution) had
+				   no exposed control at all. `linkPhone`/`linkEmail` toggles
+				   are gone entirely — phone/email now always render as links
+				   (see block.json's `link` element note + render.php). */ }
+				{ 'attribution' === displayType && (
+					<PanelBody title={ __( 'Hover Colour', 'sgs-blocks' ) } initialOpen={ false }>
 						<DesignTokenPicker
-							label={ __( 'Link hover colour', 'sgs-blocks' ) }
+							label={ __( 'Hover colour', 'sgs-blocks' ) }
+							help={ __(
+								'The colour the website-credit link sweeps to on hover. Defaults to the SGS brand colour when unset.',
+								'sgs-blocks'
+							) }
 							states={ [
 								{
 									key: 'hover',
 									label: __( 'Hover', 'sgs-blocks' ),
-									value: linkHoverBackgroundImage,
-									onChange: ( val ) => setAttributes( { linkHoverBackgroundImage: val ?? '' } ),
+									value: attributionHoverColour,
+									onChange: ( val ) => setAttributes( { attributionHoverColour: val ?? '' } ),
 								},
 							] }
 						/>
 						<DesignTokenPicker
-							label={ __( 'Link hover colour (older browsers)', 'sgs-blocks' ) }
+							label={ __( 'Hover colour (older browsers)', 'sgs-blocks' ) }
+							help={ __(
+								'Fallback for browsers with no text-clip support — a plain colour swap instead of the sweep.',
+								'sgs-blocks'
+							) }
 							states={ [
 								{
 									key: 'hover',
 									label: __( 'Hover', 'sgs-blocks' ),
-									value: linkHoverTextColour,
-									onChange: ( val ) => setAttributes( { linkHoverTextColour: val ?? '' } ),
+									value: attributionHoverColourFallback,
+									onChange: ( val ) => setAttributes( { attributionHoverColourFallback: val ?? '' } ),
 								},
 							] }
 						/>
