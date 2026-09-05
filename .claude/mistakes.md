@@ -1,11 +1,22 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-09-05 (colour-conformance continuation) (1 new entry added — a subagent
-brief's prohibition is not enforcement, 3rd recurrence this week; 1 oldest entry pruned to archive
-to hold the ~30 cap.)
+**Last updated:** 2026-09-06 (is_responsive closeout handoff) (1 new entry added — a deferral
+can be recorded only in another session's own progress doc, not parking.md; 1 oldest entry
+pruned to archive to hold the ~30 cap.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-06] A deferral can be recorded only in another session's own progress doc, not parking.md
+- **Pattern key:** `deferred-work-search-beyond-parking-md`
+- **Evidence:** closing out 3 deferred Minors from an `is_responsive` fix, `parking.md` and
+  `plans/` held nothing. A broader grep of `.claude/memory/` found the exact deferred-items list
+  in `sdd-progress.md` — a progress doc belonging to an entirely unrelated session's own tracked
+  work (`variant-composition-fingerprinting`), which had noted the deferral as a side comment.
+- **Rule:** on any "close out/update the docs" request, grep `.claude/memory/*` alongside
+  `parking.md`/`plans/`/`decisions.md` — "nothing in parking.md" is inconclusive, not proof
+  nothing was deferred. Update only the specific stale lines found elsewhere, never the whole
+  doc, since it is shared-tree state another session may still read.
+
 ### [2026-09-05] A subagent brief's "no destructive git commands" / "verification only" prohibition is not enforcement — it's the 3rd recurrence in a week
 - **Pattern key:** `a-prohibition-in-a-subagent-brief-is-not-enforcement`
 - **Evidence:** two background subagents ran `git stash` on this actively shared tree despite an
@@ -249,19 +260,7 @@ to hold the ~30 cap.)
 - **Pattern key:** `ledger-replace-means-fold-in-not-delete`
 - **Feedback file:** [feedback_ledger_replace_means_fold_in_not_delete.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_ledger_replace_means_fold_in_not_delete.md)
 
-### [2026-08-16] Parallel agent dispatch needs one isolated clone/worktree per agent, never a shared directory
-- **Pattern key:** `parallel-agent-dispatch-needs-one-directory-each`
-- **Evidence:** 3 shadow-migration subagents were dispatched in parallel into the SAME isolated clone,
-  expecting the clone itself to provide isolation. It isolated them from other sessions, not from EACH
-  OTHER — concurrent `npm run build` runs and concurrent edits to a shared JSON file
-  (`attr-classification-overrides.json`) silently clobbered each other's work, including one agent's
-  ~26-line addition vanishing entirely. A second, separate instance hit the identical pattern when a
-  doc-update agent collided with a different concurrent session over `.claude/LEDGER.md`.
-- **Rule:** Before dispatching N agents in parallel for file-editing/build work in the same repo,
-  provision N separate clones/worktrees first — one working directory shared among concurrently-running
-  agents is zero isolation, regardless of how isolated that directory is from anyone else.
-
-*(15 entries dated 2026-08-04 through 2026-08-15 pruned to `memory/mistakes-archive.md` — oldest
+*(16 entries dated 2026-08-04 through 2026-08-16 pruned to `memory/mistakes-archive.md` — oldest
 by date, moved verbatim, to make room at cap. See `memory/mistakes-archive.md` for the full
 history of prunes.)*
 

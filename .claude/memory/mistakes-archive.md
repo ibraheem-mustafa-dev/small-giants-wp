@@ -6,6 +6,20 @@ under any name — see `.claude/reports/2026-08-12-doc-audit-register.md` §5).
 
 ---
 
+## 2026-09-06 (is_responsive closeout handoff) — 1-entry prune, oldest by date, moved verbatim, to make room for 1 new stub at cap
+
+### [2026-08-16] Parallel agent dispatch needs one isolated clone/worktree per agent, never a shared directory
+- **Pattern key:** `parallel-agent-dispatch-needs-one-directory-each`
+- **Evidence:** 3 shadow-migration subagents were dispatched in parallel into the SAME isolated clone,
+  expecting the clone itself to provide isolation. It isolated them from other sessions, not from EACH
+  OTHER — concurrent `npm run build` runs and concurrent edits to a shared JSON file
+  (`attr-classification-overrides.json`) silently clobbered each other's work, including one agent's
+  ~26-line addition vanishing entirely. A second, separate instance hit the identical pattern when a
+  doc-update agent collided with a different concurrent session over `.claude/LEDGER.md`.
+- **Rule:** Before dispatching N agents in parallel for file-editing/build work in the same repo,
+  provision N separate clones/worktrees first — one working directory shared among concurrently-running
+  agents is zero isolation, regardless of how isolated that directory is from anyone else.
+
 ## 2026-09-04 (session 6 handoff) — 2-entry prune, oldest by date, moved verbatim, to make room for 2 new stubs at cap
 
 ### [2026-08-15] A grep for a string the style engine never emits is not evidence a block lacks an emitter

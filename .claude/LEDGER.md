@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-09-05 (colour-conformance D964; CHECK A track D965/D967 — CLOSED at 0)
+last_updated: 2026-09-06 (is_responsive tidy-up closeout — D968, CLOSED)
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -14,7 +14,22 @@ into native blocks a non-technical client can then edit. Multiple sessions share
 concurrently, every session — treat this as the norm, not the exception (this session ran
 alongside 150+ peer sessions on the same tree, coordinated via re-verification not trust).
 
-**2026-09-05 (this session) — closed the colour-conformance "remaining 8 hard rows" prompt,
+**2026-09-06 (this session) — closed out the 3 Minor items deferred from the `is_responsive`
+fix (D968), plan-mode session, low blast-radius.** Renamed `_is_box_family_attr` ->
+`_is_box_family_base_name` to state its real contract (box test valid only for BASE names,
+inside the no-evidence fallback branch, blind to Tablet/Mobile suffixes by construction —
+behaviour unchanged, name honest now); `_compute_is_responsive()` now takes `attr_def`
+directly from the caller's own loop instead of re-deriving it; trimmed the ~200-line module
+comment to the five shapes + detection order + a pointer to D968 (full narrative moved there);
+corrected `plugins/sgs-blocks/CLAUDE.md`'s S5 section, whose "533 attrs, zero ambiguous" claim
+doesn't hold once TIER-of-BOXES and RECORD/ASSET shapes are counted. No behaviour change,
+verified not assumed: self-test 13/13 before/after, `css_tier` distribution unchanged
+(null 6207/desktop 5/mobile 66/tablet 66), converter suite 775 passed unchanged, 6 live DB
+spot-checks across all 5 shapes correct. `npm run gate:fast` 90/91 (the 1 failure,
+`dbschema-check_schema_drift` on `variant_composition_slots`, is pre-existing + unrelated —
+another session's concurrent work, not touched). Commit `148e83bfd`, pushed to `main`.
+
+**2026-09-05 (prior session) — closed the colour-conformance "remaining 8 hard rows" prompt,
 found it stale on 2 counts before building, and root-caused a live shared-DB reseed conflict.**
 Re-checked the prompt against the live tree first (per the "carried plan claim is a hypothesis"
 rule) — 2 of its 8 rows were already done by a parallel session, and its "4 rows need a new
@@ -40,31 +55,12 @@ fixed, 25 rows mechanically closed); `fix.js` itself was hardened (a live PHP-co
 a touch-safe-hover doctrine violation, caught by a full-branch review no per-task round could
 catch); first-ever real `--apply` run shipped + deployed + live-verified.
 
-**Session 11 (this one) — closed the `sgs_text_decls()` gradient bug at its ROOT, not just its
-7 known instances, then ran a `/qc-council` pass that closed 4 more rows and cleanly scoped the
-remaining 8.** Verified session 10's dispatched fix (pricing-table/nav-menu) had ALREADY landed
-via a concurrent session before duplicating it — caught by reading the ledger/plan doc first, as
-directed. Found `sgs_text_decls()` (the shared PHP primitive 7+ blocks call for text-gradient
-rows) always built a bare `color:` declaration even for a resolved GRADIENT string — invalid CSS,
-silently dropped, despite every caller already having the mandatory `@supports` companion rule
-(which alone can't fix a wrong primary declaration). Fixed 7 blocks by hand
-(`a65d06927`/`c8fdb0cc7`), then hardened the PRIMITIVE ITSELF in place
-(`da2b54583`) — byte-identical for every flat-colour caller, structurally closes this defect
-class for every future caller too, not just the 7 found this session. Deployed + live-verified
-by a peer session (`small-giants-wp-bd`) via real Playwright gradient probes, 7/7 PASS with
-clean negative controls.
-
-Then ran `/qc-council` on 2 more proposed fix-shapes for the 12 `gradient-path-deferred` rows
-`fix.js` refuses to touch — both proposals were WRONG as stated (no shared helper fits 6
-divergent blocks; no native colour support was actually enabled on the 2 "native retirement"
-targets) but each surfaced a smaller, real, evidence-backed fix underneath. Closed 4 more rows
-(`nav-menu.featuredColour` `fb06b593d`, `process-steps.background+textColour` `a3e6a8a7f`,
-`button.colourText` `0376109be`). Dispatched 4 read-only precedent-search agents for the
-remaining 8 — found working precedent for 6 of them (SVG-fill-gradient, ancestor-hover-gradient,
-2 dynamic-loop shapes), confirmed NO precedent exists anywhere for the other 4 (genuine new
-architecture, flagged for a design gate). Full detail + exact fix-shapes:
-`.claude/prompts/2026-09-04-colour-conformance-remaining-8-hard-rows.md` (fresh this session,
-supersedes + deletes the session-11 continuation prompt, consumed).
+**Session 11 (historical, superseded by D964's closure below) — closed `sgs_text_decls()`'s
+gradient bug at its ROOT** (a bare `color:` was emitted even for a resolved gradient string,
+silently invalid), fixed 7 blocks + hardened the shared primitive itself (`da2b54583`), then
+`/qc-council`'d 2 proposed fixes for the remaining hard rows and closed 4 more. Left 8 rows
+cleanly scoped, since fully closed — see COLOUR TRACK below + D964. Prompt doc consumed +
+deleted.
 
 **A separate, concurrent session (`small-giants-wp-90`) ran a Spec 32/35 gates-closure track
 in parallel with colour-conformance session 11** — different scope, same tree, coordinated live
@@ -96,6 +92,7 @@ passed to the wrapper). Bean's call: paint them, not delete.
 
 ## State Snapshot
 
+- **This session's commit (`main`):** `148e83bfd` (is_responsive tidy-up closeout, D968).
 - **Branch:** `main`. This session ran alongside 150+ peer sessions (`ListAgents`) committing
   concurrently — path-scope every commit, re-check `git status`/branch immediately before each
   one. The shared `sgs-framework.db` is a live-write target too, not just the git tree: a
@@ -336,6 +333,12 @@ All 16 media atoms adopted by all six in-scope blocks. Narrative:
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
 Narrative: `memory/session-2026-08-22-editor-errors-track.md`. Nothing pending.
+
+## ▶ IS_RESPONSIVE TIDY-UP — CLOSED 2026-09-06 (D968). Nothing pending.
+
+3 deferred Minors from the original `is_responsive` fix (61f70ba08) closed with no behaviour
+change — see Human Summary above + D968 for full detail. `.claude/prompts/2026-09-06-is-
+responsive-closeout.md` consumed and deleted; do not re-dispatch from it.
 
 ## ▶ SPEC-35 CAPABILITY-ROUTING TRACK — CLOSED 2026-09-04 (prior session), all four items
 
