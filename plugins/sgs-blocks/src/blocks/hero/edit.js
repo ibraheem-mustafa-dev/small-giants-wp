@@ -56,7 +56,7 @@ import {
 	ShapeDividersPanel,
 } from '../container/components/ContainerWrapperControls';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { sanitiseSvg, svgBackgroundPreview } from '../../utils';
+import { sanitiseSvg, svgBackgroundPreview, backgroundPreview } from '../../utils';
 
 // ── Phase 1 constant options ─────────────────────────────────────────────────
 // BORDER_STYLE_OPTIONS (the local 4-option none/solid/dashed/dotted list) was removed
@@ -404,8 +404,48 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		bgSvgTextShadow: attributes.bgSvgTextShadow,
 	} );
 
+	// Background media (backgroundRepeat/backgroundAttachment) — editor mirror,
+	// CHECK A findings 2026-09-05. Narrower than container's own backgroundPreview()
+	// call on purpose: hero already renders its OWN hand-built overlay <span>
+	// further down (mirrors render.php's overlay markup exactly) and its OWN
+	// split-media ken-burns/parallax (mediaKenBurns/mediaParallax — a SEPARATE
+	// attribute family scoped to the foreground media column, see
+	// mediaWrapperStyle above). Passing backgroundOverlayColour/overlayGradient/
+	// bgKenBurns/bgParallax into backgroundPreview() here would mount a SECOND,
+	// overlapping preview mechanism (its own `::after` overlay / ken-burns
+	// custom-property layer) for effects this file already previews by hand —
+	// two overlapping previews for one setting is unfalsifiable (prove-the-
+	// cause-before-fix), so only the fields hero previews NOWHERE else
+	// (backgroundImage/backgroundSize/backgroundPosition/backgroundRepeat/
+	// backgroundAttachment/bgVideo) are passed. `[]` stands in for the colour
+	// palette — none of those fields resolve a colour token, so a real palette
+	// is not needed here (verified: resolveColourToken() short-circuits on an
+	// empty/undefined value before ever touching the palette argument).
+	//
+	// ⚠ Gated to the SPLIT variant only, deliberately — a verified frontend fact,
+	// not a style choice. render.php NULLS `backgroundImage` before it ever
+	// reaches SGS_Container_Wrapper for the STANDARD variant (render.php
+	// ~:1549-1562: standard paints its own private LCP <img> instead), so
+	// backgroundRepeat/backgroundAttachment have ZERO effect on a standard hero
+	// — an <img> has no tiling or fixed-attachment concept. Only the split
+	// variant hands backgroundImage through to the wrapper's CSS `::before`
+	// layer (class-sgs-container-wrapper.php ~:1232/:1240), which is the ONLY
+	// place these two properties actually paint. Applying this preview
+	// unconditionally would make the canvas show a repeating/fixed background
+	// on a standard hero that the frontend never renders — the exact class of
+	// mismatch CHECK A exists to close, just inverted.
+	const bgMediaPreview = backgroundPreview( {
+		backgroundImage: attributes.backgroundImage,
+		bgVideo: attributes.bgVideo,
+		backgroundSize: attributes.backgroundSize,
+		backgroundPosition: attributes.backgroundPosition,
+		backgroundRepeat: attributes.backgroundRepeat,
+		backgroundAttachment: attributes.backgroundAttachment,
+	}, [] );
+
 	const wrapperStyle = {
 		...svgPreview.style,
+		...( isSplit ? bgMediaPreview.style : {} ),
 		...resolveBackgroundPaintPreviewStyle(
 			backgroundColour,
 			backgroundColourGradient
@@ -645,12 +685,20 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// NOTE the SPREAD on svgPreview.className — it returns a string ARRAY, and
 	// passing it unspread to .join(' ') stringifies it with COMMAS, silently
 	// killing all four SVG classes. Same trap fixed on container 2026-09-05.
+	//
+	// bgMediaPreview.className is the OPPOSITE shape — backgroundPreview()
+	// returns className as a single STRING (e.g. "sgs-ed-has-bg-media"), not an
+	// array, so it is wrapped in `[ ... ]` (one element) rather than spread with
+	// `...` — spreading a string here would explode it into one array entry per
+	// CHARACTER. Only merged when `isSplit`, matching the same gate the style
+	// spread above uses (see bgMediaPreview's own comment for why).
 	const className = [
 		'sgs-hero',
 		`sgs-hero--${ variant }`,
 		`sgs-hero--align-${ alignment }`,
 		hasBackgroundPaint ? 'has-background' : null,
 		...svgPreview.className,
+		...( isSplit ? [ bgMediaPreview.className ] : [] ),
 	]
 		.filter( Boolean )
 		.join( ' ' );

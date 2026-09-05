@@ -330,6 +330,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		gap,
 		layout,
 		gridTemplateColumns,
+		justifyItems,
+		alignContent,
+		alignItems,
+		gridAutoRows,
 		autoScroll,
 		autoScrollSpeed,
 		autoScrollPauseOnHover,
@@ -472,6 +476,26 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				display: 'grid',
 				gridTemplateColumns: badgeGridTemplateColumns,
 				gap: gapCssValue( gap ),
+				// CHECK A (2026-09-05) — justifyItems/alignContent/alignItems/
+				// gridAutoRows are declared in block.json (css:grid-auto-rows,
+				// css:justify-items, css:align-content, + the alignItems attr)
+				// and render correctly on the frontend via
+				// class-sgs-container-wrapper.php's grid branch, but were never
+				// mirrored on this canvas. Hand-adapted (not routed through the
+				// shared applyGridLayoutPreview()) because that helper resolves
+				// gridTemplateColumns/columns itself via resolveResponsiveTier() —
+				// this block has ALREADY resolved its own tier via
+				// gridTemplateColumnsPreview() into a plain string above, and
+				// handing that resolved string back into the shared helper's
+				// tier-object resolver would silently return '' (resolveResponsiveTier
+				// indexes a plain string by tier key, which is always undefined).
+				// The 4-line body below is copied verbatim from
+				// applyGridLayoutPreview()'s grid branch (src/utils/grid-layout-preview.js)
+				// so behaviour still matches class-sgs-container-wrapper.php exactly.
+				...( gridAutoRows ? { gridAutoRows } : {} ),
+				alignItems,
+				...( justifyItems && justifyItems !== 'stretch' ? { justifyItems } : {} ),
+				...( alignContent && alignContent !== 'stretch' ? { alignContent } : {} ),
 			} : {} ),
 		},
 	} );

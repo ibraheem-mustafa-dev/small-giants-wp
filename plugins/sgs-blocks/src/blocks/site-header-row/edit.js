@@ -28,7 +28,7 @@ import {
 	GradientCapableColourControl,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
-import { resolveResponsiveTier } from '../../utils';
+import { resolveResponsiveTier, boxShorthand, resolveContentWidthPreview, contentBandPreview } from '../../utils';
 
 // TIER 2 (THE PLACEMENT RULE, Spec 35 Part O) — `row` is the block's
 // isWrapper element with clusters [text, fill, layout], so its controls
@@ -312,31 +312,76 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				justifyContent: justifyContent || 'flex-start',
 		  };
 
+	// Margin (CHECK A) — a TIER OBJECT (Spec 37 FR-37-16), each tier itself a
+	// {top,right,bottom,left} box — UNLIKE sgs/container's `margin`, which is a
+	// flat box with separate marginTablet/marginMobile sibling attrs. This
+	// block declares no such siblings (block.json boxFamilies.margin: ['margin']
+	// only), so it resolves via resolveResponsiveTier() + boxShorthand()
+	// directly, not resolveBoxTierPreview() (that helper expects 3 separate
+	// attrs). Fixed to the 'desktop' tier — the same convention every other
+	// resolveResponsiveTier() call in this file already uses (columnsDesktop,
+	// gridTemplateColumnsValue), none of which track the live device switcher.
+	const marginPreview = boxShorthand( resolveResponsiveTier( margin, 'desktop' )?.value );
+
+	// Max width (CHECK A) — a TIER OBJECT holding a plain CSS length per tier
+	// (not a box), same shape as `gap`/`columns` above.
+	const maxWidthPreview = resolveResponsiveTier( maxWidth, 'desktop' )?.value;
+
+	const style = { ...previewStyle, ...paddingPreview };
+	if ( marginPreview ) style.margin = marginPreview;
+	if ( maxWidthPreview ) style.maxWidth = maxWidthPreview;
+
+	// Content band (CHECK A) — mirrors sgs/container's Layer 2 mirror exactly
+	// via the shared contentBandPreview()/resolveContentWidthPreview() utils.
+	// This block has NO `contentBandPadding` attribute (block.json declares
+	// none), so band padding is always {} — only `contentWidth` can open a
+	// band. Default contentWidth is {desktop:'full'}, which resolves to '' (no
+	// cap) via resolveContentWidthPreview(), so hasBandProps stays false and
+	// the canvas renders a single layer exactly as today until the operator
+	// explicitly sets Content width away from Full — matches
+	// class-sgs-container-wrapper.php's documented default-full-no-band
+	// behaviour for this block.
+	const bandMaxWidth = resolveContentWidthPreview(
+		resolveResponsiveTier( contentWidth, 'desktop' )?.value
+	);
+	const { hasBandProps, bandStyle } = contentBandPreview( {
+		contentWidth: bandMaxWidth,
+		bandPadding: {},
+		style,
+		layout,
+	} );
+
 	const blockProps = useBlockProps( {
 		className: `sgs-site-header-row${
 			rowSlot ? ` sgs-site-header-row--${ rowSlot }` : ''
 		}`,
-		style: { ...previewStyle, ...paddingPreview },
+		style,
 	} );
 
-	const innerBlocksProps = useInnerBlocksProps( blockProps, {
-		templateLock: false,
-		orientation: 'horizontal',
-		renderAppender: hasInnerBlocks
-			? undefined
-			: () => (
-					<RowQuickInsertAppender
-						clientId={ clientId }
-						promoted={ HEADER_PROMOTED }
-						label={ __( 'Add a header element', 'sgs-blocks' ) }
-						instructions={ __(
-							'Choose a common header element below, or use the block inserter (+) for anything else.',
-							'sgs-blocks'
-						) }
-					/>
-			  ),
-		prioritizedInserterBlocks: HEADER_PROMOTED_SLUGS,
-	} );
+	// The children belong to the BAND when one renders, and to the root when
+	// one does not — useInnerBlocksProps is called exactly once either way,
+	// branching the ARGUMENT (mirrors sgs/container/edit.js).
+	const innerBlocksProps = useInnerBlocksProps(
+		hasBandProps ? { className: 'sgs-container__inner', style: bandStyle } : blockProps,
+		{
+			templateLock: false,
+			orientation: 'horizontal',
+			renderAppender: hasInnerBlocks
+				? undefined
+				: () => (
+						<RowQuickInsertAppender
+							clientId={ clientId }
+							promoted={ HEADER_PROMOTED }
+							label={ __( 'Add a header element', 'sgs-blocks' ) }
+							instructions={ __(
+								'Choose a common header element below, or use the block inserter (+) for anything else.',
+								'sgs-blocks'
+							) }
+						/>
+				  ),
+			prioritizedInserterBlocks: HEADER_PROMOTED_SLUGS,
+		}
+	);
 
 	// Pilot WCAG contrast check on the Text row (D-pending, gap-candidate
 	// register task). The row's own `backgroundColour` is the effective
@@ -881,7 +926,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				/>
 			</InspectorControls>
 
-			<div { ...innerBlocksProps } />
+			{ hasBandProps ? (
+				<div { ...blockProps }>
+					<div { ...innerBlocksProps } />
+				</div>
+			) : (
+				<div { ...innerBlocksProps } />
+			) }
 		</>
 	);
 }

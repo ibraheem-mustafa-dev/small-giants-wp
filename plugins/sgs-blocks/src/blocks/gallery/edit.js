@@ -46,10 +46,22 @@ import {
 	FocalPointPicker,
 } from '@wordpress/components';
 import { useRef, useEffect, useMemo } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
 import SgsColourPanel from '../../components/SgsColourPanel';
 import MediaGalleryPicker from '../../components/MediaGalleryPicker';
 import ResponsiveOverride from '../../components/ResponsiveOverride';
-import { colourVar, resolveResponsiveTier, generateItemKey, withStableItemKeys, focalPointToObjectPosition } from '../../utils';
+import {
+	colourVar,
+	resolveResponsiveTier,
+	generateItemKey,
+	withStableItemKeys,
+	focalPointToObjectPosition,
+	boxShorthand,
+	resolveBoxTierPreview,
+	resolveContentWidthPreview,
+	contentBandPreview,
+	applyGridLayoutPreview,
+} from '../../utils';
 
 // -------------------------------------------------------------------------
 // Static option arrays (defined outside component to avoid re-creation)
@@ -376,6 +388,19 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( { mediaItems: mappedItems } );
 	};
 
+	// Active device tier for the padding/margin/maxWidth/contentWidth/grid-layout
+	// canvas mirror below — read from the SAME source the inspector's global
+	// device toggle writes (`core/editor` getDeviceType), mirroring
+	// sgs/container's edit.js and ResponsiveControl.js:103. Without this the
+	// preview would always show the desktop tier while the operator edits
+	// tablet/mobile.
+	const previewTier = useSelect( ( select ) => {
+		const ed = select( 'core/editor' );
+		const device =
+			ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
+		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
+	}, [] );
+
 	// gap is a TIER OBJECT — resolve the desktop tier (what the canvas shows)
 	// before testing/using it. String() on the raw object would yield
 	// "[object Object]", a non-empty string that fails the numeric test and
@@ -414,6 +439,81 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( captionBgColour ) {
 		inlineStyles[ '--sgs-caption-bg' ] = colourVar( captionBgColour );
 	}
+
+	// ── Editor-canvas mirror: padding / margin / maxWidth / contentWidth /
+	// grid layout (CHECK A editor-canvas desync fix, 2026-09-05). All 8 are
+	// applied by SGS_Container_Wrapper::render() (render.php calls it with
+	// kind='layout', container_queries=true) onto the OUTER wrapper element —
+	// or its content band, when contentWidth creates one — but were never
+	// read back here, so a client moving any of these controls saw no change
+	// until publish. Mirrors sgs/container's edit.js (the reference
+	// implementation this pattern was built for), adapted to this block's own
+	// attribute shapes — see the per-property notes below.
+
+	// padding/margin: Spec 37 FR-37-16 shape here is ONE attribute holding
+	// {desktop,tablet,mobile}, each tier ITSELF a {top,right,bottom,left} box
+	// (ResponsiveBoxControls -> BoxControl) — NOT sgs/container's flat trio of
+	// `padding`/`paddingTablet`/`paddingMobile` box attrs (this block declares
+	// no such Tablet/Mobile siblings at all). resolveBoxTierPreview() still
+	// does the correct per-side merge; it is just fed the three tiers pulled
+	// out of this block's single object instead of three separate attributes.
+	const galleryPaddingObj = attributes.padding && typeof attributes.padding === 'object' ? attributes.padding : {};
+	const galleryMarginObj  = attributes.margin  && typeof attributes.margin  === 'object' ? attributes.margin  : {};
+	const paddingPreview = boxShorthand(
+		resolveBoxTierPreview( galleryPaddingObj.desktop, galleryPaddingObj.tablet, galleryPaddingObj.mobile, previewTier )
+	);
+	if ( paddingPreview ) inlineStyles.padding = paddingPreview;
+	const marginPreview = boxShorthand(
+		resolveBoxTierPreview( galleryMarginObj.desktop, galleryMarginObj.tablet, galleryMarginObj.mobile, previewTier )
+	);
+	if ( marginPreview ) inlineStyles.margin = marginPreview;
+
+	// maxWidth: a plain {desktop,tablet,mobile} scalar tier object — same
+	// shape as sgs/container's own maxWidth, so the same resolver applies
+	// unchanged.
+	const previewMaxWidth = resolveResponsiveTier( attributes.maxWidth, previewTier )?.value;
+	if ( previewMaxWidth ) inlineStyles.maxWidth = previewMaxWidth;
+
+	// Grid layout preview (justifyItems/alignContent/alignItems/gridAutoRows) —
+	// shared with sgs/container via applyGridLayoutPreview(). This block's own
+	// `layout` attribute (grid/masonry/carousel) doubles as the value the
+	// wrapper reads as its layout-mode switch: class-sgs-container-wrapper.php
+	// only emits these declarations onto the OUTER element when
+	// `'grid' === $layout` — masonry/carousel never match the grid/flex/stack
+	// branches applyGridLayoutPreview() implements, so this call is a correct
+	// no-op for those two layouts. `columns`/`attributes.gridTemplateColumns`
+	// are the SAME attributes the PHP wrapper itself reads (confirmed in
+	// class-sgs-container-wrapper.php) and that this block already uses above
+	// for its own inner `.sgs-gallery__grid` thumbnail-track preview — reusing
+	// them here does not change that existing preview, which stays driven by
+	// `previewGridStyle` below.
+	applyGridLayoutPreview( inlineStyles, {
+		layout,
+		alignItems: attributes.alignItems,
+		justifyItems: attributes.justifyItems,
+		alignContent: attributes.alignContent,
+		gridAutoRows: attributes.gridAutoRows,
+		gridTemplateColumns: attributes.gridTemplateColumns,
+		columns,
+	} );
+
+	// contentWidth band (Layer 2 / `.sgs-container__inner`) — this block
+	// declares no `contentBandPadding` sibling attribute, so band padding is
+	// always empty; the band still exists whenever contentWidth resolves to a
+	// real cap. Must run BEFORE useBlockProps(): contentBandPreview() mutates
+	// `inlineStyles` in place, migrating any grid/flex declarations just
+	// written above onto the band (mirrors the wrapper's own $grid_on_inner
+	// re-routing), so blockProps must be built from the ALREADY-migrated
+	// object.
+	const galleryBandMaxWidth = resolveContentWidthPreview(
+		resolveResponsiveTier( attributes.contentWidth, previewTier )?.value
+	);
+	const { hasBandProps, bandStyle } = contentBandPreview( {
+		contentWidth: galleryBandMaxWidth,
+		bandPadding: {},
+		style: inlineStyles,
+		layout,
+	} );
 
 	const blockProps = useBlockProps( {
 		className: `sgs-gallery sgs-gallery--${ layout } sgs-gallery--hover-${ effectHover }`,
@@ -1066,6 +1166,105 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ /* ============================================================
 			     Live preview canvas
 			     ============================================================ */ }
+			{ /* Content band (Layer 2 / `.sgs-container__inner`) — mirrors
+			   sgs/container's edit.js: when contentWidth resolves to a real
+			   cap (or, on a block that has one, band padding is set), the
+			   frontend renders a capped inner band around the block's content
+			   rather than applying the cap to the full-bleed outer wrapper.
+			   `hasBandProps`/`bandStyle` are computed above via the shared
+			   `contentBandPreview()` util so this canvas matches. */ }
+			{ hasBandProps ? (
+				<div { ...blockProps }>
+					<div className="sgs-container__inner" style={ bandStyle }>
+						{ items.length === 0 && (
+							<div className="sgs-gallery-editor__placeholder">
+								<p>
+									{ __(
+										'No media selected. Use the "Images" panel in the sidebar to add photos or videos.',
+										'sgs-blocks'
+									) }
+								</p>
+								<MediaGalleryPicker
+									value={ [] }
+									onChange={ onSelectImages }
+									resolveItem={ ( media ) =>
+										resolveGalleryMedia( media, imageSize )
+									}
+									allowedTypes={ [ 'image', 'video' ] }
+									addLabel={ __( 'Add media', 'sgs-blocks' ) }
+									buttonVariant="primary"
+									className="sgs-gallery-editor__media-btn"
+								/>
+							</div>
+						) }
+
+						{ items.length > 0 && (
+							<div
+								className="sgs-gallery__grid"
+								style={ previewGridStyle }
+							>
+								{ items.map( ( item, index ) => {
+									const isVideo =
+										item.type === 'video' ||
+										( item.mime &&
+											item.mime.startsWith( 'video/' ) );
+									const itemFit = item.objectFit || 'cover';
+									const wrapStyle = {
+										...( aspectRatio ? { aspectRatio } : {} ),
+										objectFit: itemFit,
+										objectPosition:
+											'cover' === itemFit
+												? focalPointToObjectPosition( item.focalPoint || { x: 0.5, y: 0.5 } )
+												: undefined,
+										width: '100%',
+										display: 'block',
+									};
+									return (
+										<figure
+											key={ item._key || item.id || index }
+											className="sgs-gallery__item"
+											style={
+												aspectRatio
+													? {
+															'--sgs-aspect-ratio':
+																aspectRatio,
+													  }
+													: {}
+											}
+										>
+											<div className="sgs-gallery__img-wrap">
+												{ isVideo ? (
+													<video
+														src={ item.url }
+														className="sgs-gallery__img"
+														muted
+														loop
+														playsInline
+														style={ wrapStyle }
+													/>
+												) : (
+													<img
+														src={ item.url }
+														alt={ item.alt || '' }
+														className="sgs-gallery__img"
+														loading="lazy"
+														style={ wrapStyle }
+													/>
+												) }
+											</div>
+											{ showCaptions && item.caption && (
+												<figcaption className="sgs-gallery__caption">
+													{ item.caption }
+												</figcaption>
+											) }
+										</figure>
+									);
+								} ) }
+							</div>
+						) }
+					</div>
+				</div>
+			) : (
 			<div { ...blockProps }>
 				{ items.length === 0 && (
 					<div className="sgs-gallery-editor__placeholder">
@@ -1154,6 +1353,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</div>
 				) }
 			</div>
+		) }
 		</>
 	);
 }

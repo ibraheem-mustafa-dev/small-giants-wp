@@ -13,7 +13,7 @@ import {
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, resolveColourToken, SgsBorderControl } from "../../components";
-import { resolveShadowPreview, resolveResponsiveTier, backgroundPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview } from "../../utils";
+import { resolveShadowPreview, resolveResponsiveTier, backgroundPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview } from "../../utils";
 import {
   LayoutPanel,
   WidthPanel,
@@ -83,26 +83,6 @@ const TAG_NAME_OPTIONS = [
   { label: __( "Figure", "sgs-blocks" ), value: "figure" },
   { label: __( "Main (page landmark)", "sgs-blocks" ), value: "main" },
 ];
-
-/**
- * Editor mirror of `$sgs_resolve_content_width` in class-sgs-container-wrapper.php.
- *
- * Kept token-for-token in step with the PHP: `normal`/`wide` map to the SAME global
- * custom properties the frontend uses, so the canvas band and the rendered band resolve
- * to one number rather than two that merely look alike. `full` and `''` both resolve to
- * NOTHING — they are identical on the frontend (:508-524) and must stay identical here,
- * because "no cap" is what makes `$has_band_props` false and suppresses the band entirely.
- *
- * @param {string} value Raw contentWidth tier value.
- * @return {string} A CSS length, or '' for no cap.
- */
-function resolveContentWidthPreview( value ) {
-	const v = String( value ?? '' );
-	if ( v === 'normal' ) return 'var(--wp--style--global--content-size,1200px)';
-	if ( v === 'wide' ) return 'var(--wp--style--global--wide-size,1400px)';
-	if ( v === 'full' || v === '' ) return '';
-	return v;
-}
 
 /**
  * Same resolution rule as `backgroundPaintPreview()`, but for TEXT colour —
@@ -284,87 +264,22 @@ export default function Edit({ attributes, setAttributes, name }) {
     }
   }
 
-  if (layout === "grid") {
-    style.display = "grid";
-    // SB-2: use the gridTemplateColumns string attr when set so the editor preview
-    // matches render.php output for asymmetric grids (e.g. "5fr 3fr", "60% 40%").
-    // gridTemplateColumns is a TIER OBJECT (Spec 35 pass 3a) — calling .trim()
-    // on it threw `p?.trim is not a function` and CRASHED the editor canvas.
-    // The canvas preview represents the DESKTOP tier, so resolve that tier.
-    // ⛔ Found only by opening the editor: no static gate in this repo can see
-    // a type error inside an edit component (D567, same class).
-    const gtcDesktop = resolveResponsiveTier( gridTemplateColumns, 'desktop' )?.value;
-    // columns is also a TIER OBJECT (Spec 35 pass 4) — resolve the desktop
-    // tier the same way, or this renders "repeat([object Object], 1fr)" and
-    // silently breaks the editor grid preview (same D567 class as above).
-    const columnsDesktop = resolveResponsiveTier( attributes.columns, 'desktop' )?.value;
-    style.gridTemplateColumns = String( gtcDesktop ?? '' ).trim()
-      ? String( gtcDesktop ).trim()
-      : `repeat(${ columnsDesktop || 2 }, 1fr)`;
-    // gridAutoRows is a plain scalar on this block (not yet tier-capable in
-    // its own block.json — see class-sgs-container-wrapper.php's D549 guard),
-    // so it previews unconditionally for the grid layout, same as the other
-    // QB-1 grid-track properties.
-    if ( gridAutoRows ) {
-      style.gridAutoRows = gridAutoRows;
-    }
-    style.alignItems = alignItems;
-    if ( justifyItems && justifyItems !== "stretch" ) {
-      style.justifyItems = justifyItems;
-    }
-    if ( alignContent && alignContent !== "stretch" ) {
-      style.alignContent = alignContent;
-    }
-  } else if (layout === "flex") {
-    style.display = "flex";
-    style.alignItems = alignItems;
-    // Mirrors class-sgs-container-wrapper.php's flex branch exactly (~:1315-1331),
-    // INCLUDING the column+wrap invariant: per CSS Flexbox L1 9.4 a column-axis
-    // container with wrap sizes each line from its items rather than being handed
-    // the parent's own cross size, so a child ignores the parent's width. That is
-    // true however the value arrived, so it is coerced here too — an operator who
-    // picks 'wrap' on a column axis sees the SAME safe behaviour on canvas that
-    // they get on the published page, not a canvas that looks fine and then breaks.
-    const isColumnAxis = flexDirection.indexOf( "column" ) === 0;
-    const effectiveFlexWrap =
-      isColumnAxis && ( flexWrap === "wrap" || flexWrap === "wrap-reverse" )
-        ? "nowrap"
-        : flexWrap;
-    if ( "" !== effectiveFlexWrap ) {
-      style.flexWrap = effectiveFlexWrap;
-    }
-    if ( "" !== flexDirection ) {
-      style.flexDirection = flexDirection;
-    }
-    if ( "" !== justifyContent ) {
-      style.justifyContent = justifyContent;
-    }
-  } else if ( layout === "stack" ) {
-    // Task 3 — mirror class-sgs-container-wrapper.php's stack branch (~:1341-1371)
-    // onto the canvas. Stack is display:flex with the column axis FORCED, never read
-    // from flexDirection — that is the whole point of the mode: an operator who set
-    // flexDirection:"row" on a previous layout and then picks Stack still gets a
-    // column, because Stack answers "which axis" outright rather than depending on a
-    // second control staying in sync with it. flexDirection is therefore deliberately
-    // never read in this branch, matching the PHP wrapper exactly.
-    style.display = "flex";
-    style.alignItems = alignItems;
-    // Because the axis is ALWAYS column under Stack (never conditional on the
-    // flexDirection attr, unlike the flex branch above), the column+wrap invariant
-    // from CSS Flexbox L1 9.4 always applies here: a wrapped column-axis container
-    // sizes each line from its items rather than being handed the parent's cross
-    // size, so a child ignores the parent's width. Coerced unconditionally, same
-    // reasoning as the PHP wrapper's stack branch.
-    const stackEffectiveFlexWrap =
-      flexWrap === "wrap" || flexWrap === "wrap-reverse" ? "nowrap" : flexWrap;
-    if ( "" !== stackEffectiveFlexWrap ) {
-      style.flexWrap = stackEffectiveFlexWrap;
-    }
-    style.flexDirection = "column";
-    if ( "" !== justifyContent ) {
-      style.justifyContent = justifyContent;
-    }
-  }
+  // Grid/flex/stack layout preview — shared with every other block routed through
+  // SGS_Container_Wrapper::render() via `applyGridLayoutPreview()`
+  // (`src/utils/grid-layout-preview.js`, extracted 2026-09-05 from this block, the
+  // only one that had built it). Mutates `style` in place.
+  applyGridLayoutPreview( style, {
+    layout,
+    alignItems,
+    justifyItems,
+    alignContent,
+    gridAutoRows,
+    gridTemplateColumns,
+    columns: attributes.columns,
+    flexDirection,
+    flexWrap,
+    justifyContent,
+  } );
 
   // Editor preview: when a literal maxWidth is set, apply it as inline max-width.
   // Breakout (alignwide / alignfull) is driven by WP-native align attr — no inline style needed.
@@ -390,34 +305,20 @@ export default function Edit({ attributes, setAttributes, name }) {
   );
   const bandPadTier = resolveResponsiveTier( attributes.contentBandPadding, previewTier )?.value;
   const bandPad = bandPadTier && typeof bandPadTier === "object" ? bandPadTier : {};
-  const hasBandPadding = [ "top", "right", "bottom", "left" ].some( ( side ) => !! bandPad[ side ] );
-  const hasBandProps = bandMaxWidth !== "" || hasBandPadding;
 
-  const bandStyle = {};
-  if ( bandMaxWidth ) {
-    bandStyle.maxWidth = bandMaxWidth;
-    bandStyle.marginInline = "auto";
-  }
-  if ( bandPad.top ) bandStyle.paddingTop = bandPad.top;
-  if ( bandPad.right ) bandStyle.paddingRight = bandPad.right;
-  if ( bandPad.bottom ) bandStyle.paddingBottom = bandPad.bottom;
-  if ( bandPad.left ) bandStyle.paddingLeft = bandPad.left;
-
-  // GRID-ON-INNER. The frontend moves the grid ONTO the band whenever a band exists
-  // (`$grid_on_inner`, ~:902) — which is why commit a28a1121 had to delete the
-  // `.sgs-cols-*` classes: they addressed the wrapper after the grid had moved. The
-  // canvas has to make the same move, or a grid container previews its columns on the
-  // full-bleed outer while rendering them on the capped band.
-  const gridOnInner = ( layout === "grid" || layout === "flex" || layout === "stack" ) && hasBandProps;
-  if ( gridOnInner ) {
-    for ( const key of [ "display", "gridTemplateColumns", "gridAutoRows", "gap", "alignItems",
-                         "justifyItems", "alignContent", "flexWrap", "flexDirection", "justifyContent" ] ) {
-      if ( style[ key ] !== undefined ) {
-        bandStyle[ key ] = style[ key ];
-        delete style[ key ];
-      }
-    }
-  }
+  // Content band (Layer 2 / `.sgs-container__inner`) + grid-on-inner migration —
+  // shared with every other block routed through SGS_Container_Wrapper::render() via
+  // `contentBandPreview()` (`src/utils/content-band-preview.js`, extracted 2026-09-05
+  // from this block, the only one that had built it). Mutates `style` in place when a
+  // band exists (grid-on-inner: the frontend moves grid/flex declarations onto the
+  // band, so the canvas must too — a grid container would otherwise preview its
+  // columns on the full-bleed outer while rendering them on the capped band).
+  const { hasBandProps, bandStyle } = contentBandPreview( {
+    contentWidth: bandMaxWidth,
+    bandPadding: bandPad,
+    style,
+    layout,
+  } );
 
   const className = [
     "sgs-container",

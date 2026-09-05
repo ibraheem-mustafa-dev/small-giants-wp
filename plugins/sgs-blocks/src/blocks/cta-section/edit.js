@@ -3,6 +3,7 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -15,7 +16,7 @@ import {
 } from '@wordpress/components';
 import MediaPicker from '../../components/MediaPicker';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
-import { svgBackgroundPreview } from '../../utils';
+import { backgroundPreview, svgBackgroundPreview, applyGridLayoutPreview } from '../../utils';
 import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox,
 	SgsBorderControl,
 	resolveColourToken,
@@ -125,6 +126,45 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	};
 	const activeMedia = resolveActiveMedia();
 
+	// D288/D636: colours are stored as theme-token SLUGS or a custom hex —
+	// resolved the same way sgs/container's editor preview does
+	// (resolveColourToken against the live palette), so backgroundPreview()'s
+	// overlay-colour mirror below actually shows on canvas.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+
+	// Editor-canvas mirror for the shared whole-block BACKGROUND PANEL family —
+	// backgroundRepeat / backgroundAttachment / bgVideo / backgroundOverlayBlendMode
+	// + siblings (background image/size/position, ken-burns, parallax, overlay
+	// colour/gradient/opacity). This is a SEPARATE background system from
+	// cta-section's OWN image/video slot above (backgroundMedia/backgroundImage,
+	// resolved into `activeMedia` and painted directly on the block root a few
+	// lines below) — see block.json's "_comment_overlayNotAdopted" note:
+	// backgroundImage/Size/Position/Repeat/Attachment, backgroundOverlay*,
+	// bgVideo*/bgSvg*/bgParallax/bgKenBurns are the shared whole-block BACKGROUND
+	// PANEL, rendered server-side by SGS_Container_Wrapper's sgs_overlay_decls()
+	// (class-sgs-container-wrapper.php) via render.php's `$cta_helper_attrs`
+	// hand-off (`backgroundImage` is nulled there to avoid double-rendering this
+	// block's own image slot; `bgVideo` is NOT nulled, so it renders through this
+	// shared mechanism for real, distinct from the `activeMedia` video path).
+	// Same `backgroundPreview()` mirror as sgs/container's edit.js (the worked
+	// reference). Attributes enumerated EXPLICITLY, same reasoning as svgPreview
+	// below.
+	const bgPreview = backgroundPreview( {
+		backgroundImage: attributes.backgroundImage,
+		bgVideo: attributes.bgVideo,
+		backgroundSize: attributes.backgroundSize,
+		backgroundPosition: attributes.backgroundPosition,
+		backgroundRepeat: attributes.backgroundRepeat,
+		backgroundAttachment: attributes.backgroundAttachment,
+		bgKenBurns: attributes.bgKenBurns,
+		bgAnimationDuration: attributes.bgAnimationDuration,
+		bgParallax: attributes.bgParallax,
+		backgroundOverlayColour: attributes.backgroundOverlayColour,
+		overlayGradient: attributes.overlayGradient,
+		backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
+		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
+	}, colourPalette );
+
 	// Decorative SVG background layer — editor-canvas mirror (2026-09-05), the
 	// same integration sgs/container carries (its edit.js is the worked
 	// reference). cta-section hands its FULL attribute set to
@@ -147,24 +187,62 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		bgSvgTextShadow: attributes.bgSvgTextShadow,
 	} );
 
+	// NOTE the SPREAD on svgPreview.className. `backgroundPreview()` returns its
+	// className as a STRING, but `svgBackgroundPreview()` returns a string ARRAY
+	// (see its @return) — spreading the array (not nesting it) mirrors
+	// sgs/container's exact `editorClassName` line, the worked reference. Nesting
+	// it (`[a, b].join(' ')` on an unspread array) stringifies with COMMAS and
+	// silently drops the SVG marker classes — caught live on sgs/container
+	// 2026-09-05, see this block's own utils/background-preview.js docblock.
 	const className = [
 		'sgs-cta-section',
 		`sgs-cta-section--${ ctaLayout }`,
 		gradientPreset ? `sgs-cta-section--gradient-${ gradientPreset }` : '',
+		bgPreview.className,
 		...svgPreview.className,
 	]
 		.filter( Boolean )
 		.join( ' ' );
 
-	// `svgPreview.style` carries --sgs-svg-opacity (+ --sgs-svg-min-height when
-	// set); the painting rules themselves already ship in sgs/container's
-	// style.css, which block.json loads into the canvas.
-	const wrapperStyle = { ...svgPreview.style };
+	// `bgPreview.style` carries the shared background/overlay/ken-burns custom
+	// properties (painted via the `sgs-ed-*` marker classes above, in the shared
+	// editor stylesheet); `svgPreview.style` carries --sgs-svg-opacity (+
+	// --sgs-svg-min-height when set) — the painting rules for both already ship
+	// in sgs/container's style.css, which block.json loads into the canvas.
+	// `activeMedia`'s own literal backgroundImage/backgroundSize/backgroundPosition
+	// below are cta-section's OWN image slot (a separate mechanism — see the
+	// bgPreview comment above) and always win when set, since bgPreview never
+	// writes those same literal keys (it writes `--sgs-ed-bg-*` custom properties
+	// instead).
+	const wrapperStyle = { ...bgPreview.style, ...svgPreview.style };
 	if ( activeMedia && activeMedia.type === 'image' && activeMedia.url ) {
 		wrapperStyle.backgroundImage = `url(${ activeMedia.url })`;
 		wrapperStyle.backgroundSize = 'cover';
 		wrapperStyle.backgroundPosition = 'center';
 	}
+
+	// Grid/flex/stack layout preview — shared with every other block routed
+	// through SGS_Container_Wrapper::render() via `applyGridLayoutPreview()`
+	// (`src/utils/grid-layout-preview.js`). Mutates `wrapperStyle` in place.
+	// `layout` here is cta-section's CONTAINER grid/flex/stack attribute (the
+	// "Layout (grid/flex)" panel below writes to it) — NOT `ctaLayout`/
+	// `contentLayout`, cta-section's own centred/left/split content arrangement.
+	// render.php confirms this: `$cta_helper_attrs = $attributes` is handed to
+	// SGS_Container_Wrapper::render() unchanged, so the wrapper reads
+	// `$attributes['layout']` directly for grid/flex/stack, exactly as
+	// sgs/container does for its own `layout` attribute.
+	applyGridLayoutPreview( wrapperStyle, {
+		layout: attributes.layout,
+		alignItems: attributes.alignItems,
+		justifyItems: attributes.justifyItems,
+		alignContent: attributes.alignContent,
+		gridAutoRows: attributes.gridAutoRows,
+		gridTemplateColumns: attributes.gridTemplateColumns,
+		columns: attributes.columns,
+		flexDirection: attributes.flexDirection,
+		flexWrap: attributes.flexWrap,
+		justifyContent: attributes.justifyContent,
+	} );
 	// Editor-canvas parity for cta-section's OWN scoped shadow (rendered
 	// independent of the shared wrapper — see render.php's C3 guard). Shape
 	// (`shadow`) + colour (`shadowColour`) are separate attrs since D621/D622;

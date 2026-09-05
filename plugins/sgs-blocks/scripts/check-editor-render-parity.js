@@ -4618,7 +4618,14 @@ function main() {
 	// colour-conformance track) and added star-rating.starColourGradient +
 	// star-rating.emptyColourGradient alongside the tabs one. Trusting the counts
 	// would have mis-attributed their work to this commit.
-	const CHECK_A_OPEN_BACKLOG = 193;
+	// LOWERED 193 -> 156 (2026-09-05, Phase-2 session start — re-ratchet only, no
+	// code change yet). The ceiling had drifted 37 findings above the live
+	// netNew count (verified twice this session, stable across the check), left
+	// un-ratcheted overnight while 3+ peer sessions were committing concurrently.
+	// Banking that slack risks hiding a real regression before Phase 2's
+	// layout/box fixes land. Will be lowered again once Phase 2 closes its 31
+	// targeted findings.
+	const CHECK_A_OPEN_BACKLOG = 156;
 	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
 
 	if ( isJson ) {
