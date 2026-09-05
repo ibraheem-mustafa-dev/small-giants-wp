@@ -4625,7 +4625,21 @@ function main() {
 	// Banking that slack risks hiding a real regression before Phase 2's
 	// layout/box fixes land. Will be lowered again once Phase 2 closes its 31
 	// targeted findings.
-	const CHECK_A_OPEN_BACKLOG = 156;
+	// LOWERED 156 -> 128 (2026-09-05, Phase-2 close — commit daddbbb1). 28 of the
+	// 31 targeted layout/box findings closed across gallery (8), site-footer-row
+	// + site-header-row (3 each), cta-section (8) and trust-bar (4); hero closes
+	// only 2 of its 5 (backgroundRepeat/backgroundAttachment) — its
+	// justifyItems/alignContent/gridAutoRows are genuinely dead attributes on
+	// the frontend today (hero's split-grid never sets layout='grid', so the
+	// shared wrapper's grid branch that emits those properties never fires),
+	// left open pending a render.php fix rather than papered over with a fake
+	// canvas preview. Live-verified on the sandybrown canary (not just the
+	// gate): dispatching justifyItems/alignContent/gridAutoRows on a live
+	// sgs/trust-bar block and backgroundImage/backgroundRepeat/
+	// backgroundAttachment on a live sgs/hero (split variant) block both
+	// updated the actual editor-canvas DOM inline style, read via
+	// getComputedStyle, not just re-measured by this script.
+	const CHECK_A_OPEN_BACKLOG = 128;
 	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
 
 	if ( isJson ) {
