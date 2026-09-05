@@ -513,7 +513,8 @@ if ( $date_colour ) {
 	$wrapper_style_parts[] = '--sgs-date-colour:' . sgs_colour_value( $date_colour );
 }
 if ( $progress_fill && $fill_colour ) {
-	$wrapper_style_parts[] = '--sgs-timeline-fill-colour:' . sgs_colour_value( $fill_colour );
+	$fill_colour_gradient = $attributes['connectorFillColourGradient'] ?? '';
+	$wrapper_style_parts  = array_merge( $wrapper_style_parts, sgs_custom_property_gradient_decls( 'sgs-timeline-fill-colour', $fill_colour, $fill_colour_gradient ) );
 }
 if ( $reveal_stagger > 0 ) {
 	$wrapper_style_parts[] = '--sgs-reveal-stagger:' . $reveal_stagger . 'ms';

@@ -87,6 +87,7 @@
 .sgs-timeline__progress-fill {
 	@extend %sgs-progress-masked;
 	background-color: var(--sgs-timeline-fill-colour);
+	background-image: var(--sgs-timeline-fill-colour-gradient, none);
 }
 
 .sgs-timeline__progress-glow {
@@ -873,6 +874,7 @@
 	// and not on source order.
 	&.is-reached::before {
 		background-color: var(--sgs-timeline-fill-colour);
+		background-image: var(--sgs-timeline-fill-colour-gradient, none);
 	}
 
 	// When a Lucide icon is present, hide the default circle.
@@ -888,6 +890,7 @@
 	// is the same `--sgs-connector-colour` the dot uses.
 	&.is-reached .sgs-timeline__node-icon {
 		background-color: var(--sgs-timeline-fill-colour);
+		background-image: var(--sgs-timeline-fill-colour-gradient, none);
 	}
 }
 

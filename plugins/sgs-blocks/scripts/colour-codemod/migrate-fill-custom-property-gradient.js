@@ -300,8 +300,17 @@ function buildStyleCssEdits( css, cssVar ) {
 	// `background: var(--x, ...)` (as the WHOLE value, not composed inside a
 	// larger gradient/shorthand — refuse rather than guess on those), add a
 	// sibling `background-image: var(--x-gradient, none);` line right after.
+	// The fallback-default group is OPTIONAL — `var(--x)` with no fallback
+	// (timeline's 3 real consumers, style.scss:89,875,890) is the same shape
+	// as `var(--x, default)`, just without a default. The "whole value on its
+	// own line" constraint (anchored `^…$`, property name = background(-color)
+	// only) is unchanged, so a composed value like
+	// `background-image: linear-gradient(90deg, var(--x, default) 50%, …)`
+	// still correctly refuses — its property token is `background-image`,
+	// which this group never matches, and its `var(...)` is not the whole
+	// value anyway.
 	const gradVar = cssVar + '-gradient';
-	const lineRe = new RegExp( '^([\\t ]*)(background(?:-color)?)\\s*:\\s*var\\(\\s*' + cssVar + '\\s*,[^)]*\\)\\s*;\\s*$', 'gm' );
+	const lineRe = new RegExp( '^([\\t ]*)(background(?:-color)?)\\s*:\\s*var\\(\\s*' + cssVar + '\\s*(?:,[^)]*)?\\)\\s*;\\s*$', 'gm' );
 	let count = 0;
 	const newCss = css.replace( lineRe, ( full, indent ) => {
 		count++;
@@ -310,15 +319,124 @@ function buildStyleCssEdits( css, cssVar ) {
 	return { text: newCss, count };
 }
 
+/**
+ * Scan backward from `idx` for the nearest unmatched `{` that opens the
+ * object literal containing position `idx` — a real brace-balance walk,
+ * not a regex guess, so it doesn't care what's inside the object (nested
+ * braces, i18n calls with their own parens, arrow functions, etc.).
+ */
+function findEnclosingBraceStart( text, idx ) {
+	let depth = 0;
+	for ( let i = idx; i >= 0; i-- ) {
+		const c = text[ i ];
+		if ( c === '}' ) depth++;
+		else if ( c === '{' ) {
+			if ( depth === 0 ) return i;
+			depth--;
+		}
+	}
+	return -1;
+}
+
+/** Forward counterpart of findEnclosingBraceStart — the matching `}` for an opening `{` at `start`. */
+function findMatchingBraceEnd( text, start ) {
+	let depth = 0;
+	for ( let i = start; i < text.length; i++ ) {
+		const c = text[ i ];
+		if ( c === '{' ) depth++;
+		else if ( c === '}' ) {
+			depth--;
+			if ( depth === 0 ) return i;
+		}
+	}
+	return -1;
+}
+
+/**
+ * Finds the `{ key: 'normal', label: …, value: ATTR, onChange: … }` state
+ * object for `attr`, wherever it lives — inside an SgsColourPanel row's
+ * `states` array OR a bare `<DesignTokenPicker states={[…]} />` array. Both
+ * shapes use the IDENTICAL state-object literal; only what wraps them
+ * differs (a plain JS row-descriptor object vs a JSX component prop).
+ *
+ * Replaces the old `stateRe` regex (`label:[^,]*,`), which silently failed
+ * on every real row in this codebase — `label: __( 'Normal', 'sgs-blocks' )`
+ * has its OWN internal comma inside the i18n call, so `[^,]*` stopped
+ * there and the rest of the pattern never lined up. Proven broken via
+ * `node -e` against both before-after.dividerColour and
+ * timeline.connectorFillColour before this fix; both are real target rows,
+ * not an invented fixture.
+ *
+ * Finds the object by brace-balancing OUTWARD from a `value: ATTR,` match,
+ * rather than trying to parse the whole object left-to-right — so nothing
+ * inside `label`'s own value (parens, nested calls, extra commas) can
+ * confuse it.
+ */
+function findStateObjectForAttr( js, attr ) {
+	const valueRe = new RegExp( 'value:\\s*' + attr + '\\s*,' );
+	let searchFrom = 0;
+	for ( ;; ) {
+		const rel = valueRe.exec( js.slice( searchFrom ) );
+		if ( ! rel ) return null;
+		const valueIdx = searchFrom + rel.index;
+		searchFrom = valueIdx + rel[ 0 ].length;
+
+		const objStart = findEnclosingBraceStart( js, valueIdx );
+		if ( objStart === -1 ) continue;
+		const objEnd = findMatchingBraceEnd( js, objStart );
+		if ( objEnd === -1 ) continue;
+
+		// Require a sibling `key: '...'` BEFORE `value:` inside this same
+		// object — the shape both mechanisms share — so an unrelated
+		// `value: attr,` elsewhere (e.g. inside a different helper call)
+		// can't be mistaken for a state-object row.
+		const before = js.slice( objStart, valueIdx );
+		if ( ! /key:\s*['"]\w+['"]/.test( before ) ) continue;
+
+		const rest = js.slice( valueIdx, objEnd + 1 );
+		const onChangeRel = /onChange:/.exec( rest );
+		if ( ! onChangeRel ) continue;
+		const onChangeStart = valueIdx + onChangeRel.index + onChangeRel[ 0 ].length;
+
+		return { objStart, objEnd, onChangeStart };
+	}
+}
+
 function buildEditJsEdits( js, attr, gradAttr, cssVarBase ) {
 	// Refuse rather than guess: require the base attr to already be
 	// destructured from `attributes` at least once, and require a
-	// SgsColourPanel row (`value: attr,` inside a `states:` array) to exist.
-	// This mirrors every hand-fix done tonight — a row without both is a
-	// different edit.js shape this script does not attempt.
+	// recognisable colour-control row to exist. This mirrors every hand-fix
+	// done tonight — a row matching neither shape is a different edit.js
+	// shape this script does not attempt.
 	if ( ! new RegExp( '\\b' + attr + ',' ).test( js ) ) return { ok: false, reason: 'attr-not-destructured' };
+
+	// Shape 1 — SgsColourPanel row: a `{ key:, label:, states: […] }` row
+	// descriptor object passed into the panel's `rows` array.
 	const rowRe = new RegExp( '(\\{[^{}]*key:\\s*[\'"]\\w+[\'"][^{}]*label:[^{}]*states:\\s*\\[[^\\]]*value:\\s*' + attr + ',[^\\]]*\\])', 's' );
-	if ( ! rowRe.test( js ) ) return { ok: false, reason: 'no-recognisable-SgsColourPanel-row-for-attr' };
+	// Shape 2 — a bare `<DesignTokenPicker … states={[…]} />` (or
+	// `<GradientCapableColourControl>`) mount: `label` is a JSX prop of the
+	// component itself, not a sibling field inside a row object, so Shape
+	// 1's regex structurally cannot match it (no enclosing `{ key:, label:,
+	// states: }` object exists). Confirmed common across the wider
+	// fill-custom-property-gradient backlog (star-rating, trust-bar,
+	// mega-panel, business-info, card-grid, audio, and others). Detected by
+	// finding the JSX opening tag whose `states={…}` prop contains a
+	// `value: ATTR,` state — deliberately NOT matched by searching for a
+	// literal `<DesignTokenPicker` tag inside an SgsColourPanel `rows`
+	// array, because that array is plain JS data (row descriptor objects),
+	// never a literal JSX element — so the two shapes cannot double-match
+	// the same source in this codebase. Verified directly against
+	// before-after/edit.js, which mounts BOTH shapes in one file (its
+	// SgsColourPanel `rows` array + several bare DesignTokenPicker panels).
+	const dtpTagRe = new RegExp(
+		'<(DesignTokenPicker|GradientCapableColourControl)\\b[^>]*?\\sstates=\\{[\\s\\S]*?value:\\s*' + attr + ',[\\s\\S]*?\\]\\s*\\}[^>]*?/>',
+		'g'
+	);
+	const isRowShape = rowRe.test( js );
+	const isDtpShape = ! isRowShape && dtpTagRe.test( js );
+	if ( ! isRowShape && ! isDtpShape ) {
+		return { ok: false, reason: 'no-recognisable-colour-control-row-for-attr' };
+	}
 
 	let newText = js;
 	// 1) destructure the gradient attr next to the base one.
@@ -333,28 +451,25 @@ function buildEditJsEdits( js, attr, gradAttr, cssVarBase ) {
 		);
 	}
 
-	// 3) the colour-panel row: add gradientCapable + gradientValue/onGradientChange
-	//    to the specific state object whose value is the base attr. Match up
-	//    to the END of the onChange arrow function's own statement (its own
+	// 3) the state object: add gradientValue/onGradientChange to the
+	//    specific state entry whose value is the base attr — works
+	//    identically for both shapes, since both wrap the SAME state-object
+	//    literal (see findStateObjectForAttr's docblock). Insert after the
+	//    END of the onChange arrow function's own statement (its own
 	//    trailing comma before the next prop or the closing brace) rather
 	//    than a naive [^,}]* class, which breaks on an onChange body like
 	//    `( val ) => setAttributes( { attr: val } )` — that body's OWN `}`
-	//    terminates the naive class early. balancedCloseAfter() finds the
-	//    real end by paren-balancing from `onChange:` onward.
-	const stateRe = new RegExp( '\\{\\s*key:\\s*[\'"]\\w+[\'"],\\s*label:[^,]*,\\s*value:\\s*' + attr + ',\\s*onChange:' );
-	const stateMatch = stateRe.exec( newText );
-	if ( stateMatch ) {
-		const onChangeStart = stateMatch.index + stateMatch[ 0 ].length;
-		const found = findOnChangeStatementEnd( newText, onChangeStart );
-		if ( found === null ) return { ok: false, reason: 'could-not-find-end-of-onChange-statement' };
-		const newProps = '\n\t\t\t\t\t\t\t\tgradientValue: ' + gradAttr + ',\n\t\t\t\t\t\t\t\tonGradientChange: ( val ) => setAttributes( { ' + gradAttr + ": val ?? '' } ),";
-		newText =
-			found.delimiter === ','
-				? newText.slice( 0, found.index + 1 ) + newProps + newText.slice( found.index + 1 )
-				: newText.slice( 0, found.index ) + ',' + newProps + newText.slice( found.index );
-	} else {
-		return { ok: false, reason: 'state-object-pattern-not-matched-for-edit' };
-	}
+	//    terminates the naive class early. findOnChangeStatementEnd() finds
+	//    the real end by paren-balancing from `onChange:` onward.
+	const found1 = findStateObjectForAttr( newText, attr );
+	if ( ! found1 ) return { ok: false, reason: 'state-object-pattern-not-matched-for-edit' };
+	const found = findOnChangeStatementEnd( newText, found1.onChangeStart );
+	if ( found === null ) return { ok: false, reason: 'could-not-find-end-of-onChange-statement' };
+	const newProps = '\n\t\t\t\t\t\t\t\tgradientValue: ' + gradAttr + ',\n\t\t\t\t\t\t\t\tonGradientChange: ( val ) => setAttributes( { ' + gradAttr + ": val ?? '' } ),";
+	newText =
+		found.delimiter === ','
+			? newText.slice( 0, found.index + 1 ) + newProps + newText.slice( found.index + 1 )
+			: newText.slice( 0, found.index ) + ',' + newProps + newText.slice( found.index );
 
 	return { ok: true, newText };
 }
