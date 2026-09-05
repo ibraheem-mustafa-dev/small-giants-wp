@@ -1112,21 +1112,39 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Text Styling', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
+					{ /*
+					 * Multi-target switcher (2026-09-05) — title + subtitle share
+					 * ONE full control set at a time instead of stacking two,
+					 * proving the shared TypographyControls `targets` API against
+					 * a real 2-target block. `card-grid` was picked over
+					 * `sgs/testimonial` because testimonial's quote/summary are
+					 * NOT actually on this shared component yet (flat legacy
+					 * string attrs + hand-rolled controls) — migrating them was
+					 * out of scope for this task; title/subtitle here are
+					 * genuinely object-typed + already rendered via
+					 * sgs_typography_css_rule(), so this is a real, clean case.
+					 */ }
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						prefix="title"
-						showWeight={ false }
-						showStyle={ false }
-						showLineHeight={ false }
-					/>
-					<TypographyControls
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="subtitle"
-						showWeight={ false }
-						showStyle={ false }
-						showLineHeight={ false }
+						targets={ [
+							{
+								key: 'title',
+								label: __( 'Title', 'sgs-blocks' ),
+								prefix: 'title',
+								showWeight: false,
+								showStyle: false,
+								showLineHeight: false,
+							},
+							{
+								key: 'subtitle',
+								label: __( 'Subtitle', 'sgs-blocks' ),
+								prefix: 'subtitle',
+								showWeight: false,
+								showStyle: false,
+								showLineHeight: false,
+							},
+						] }
 					/>
 				</PanelBody>
 
