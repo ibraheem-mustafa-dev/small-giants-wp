@@ -62,6 +62,7 @@ $link_colour_gradient  = $attributes['linkColourGradient'] ?? '';
 $separator_colour      = $attributes['separatorColour'] ?? 'text-muted';
 $separator_colour_grad = $attributes['separatorColourGradient'] ?? '';
 $current_colour        = $attributes['currentColour'] ?? 'text';
+$current_colour_grad   = $attributes['currentColourGradient'] ?? '';
 $anchor                = $attributes['anchor'] ?? '';
 
 // Base padding/margin — WP-native style.spacing.* objects (skip-serialised).
@@ -141,6 +142,18 @@ if ( '' !== $separator_colour_effective ) {
 		$scoped_css[] = "{$root_sel} .sgs-breadcrumbs__separator{" . $separator_colour_decl . ';}';
 	}
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( "{$root_sel} .sgs-breadcrumbs__separator", $separator_colour_effective );
+}
+
+// --- Current-page colour gradient support. Resolve flat/gradient siblings,
+// emit direct scoped rules alongside the custom property above (same
+// trio pattern as linkColour/separatorColour above). ---
+$current_colour_effective = sgs_resolve_text_colour_or_gradient( $current_colour, $current_colour_grad );
+if ( '' !== $current_colour_effective ) {
+	$current_colour_decl = sgs_text_colour_decl( $current_colour_effective );
+	if ( '' !== $current_colour_decl ) {
+		$scoped_css[] = "{$root_sel} .sgs-breadcrumbs__item--current{" . $current_colour_decl . ';}';
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( "{$root_sel} .sgs-breadcrumbs__item--current", $current_colour_effective );
 }
 
 // --- Base spacing (padding/margin) + WP colour/typography supports — skip-

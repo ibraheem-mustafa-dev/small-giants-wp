@@ -123,6 +123,11 @@
 			"type": "string",
 			"default": "text"
 		},
+		"currentColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the current-page crumb text with a background-clip:text mechanism instead of a flat colour. Non-empty wins over currentColour."
+		},
 		"fontSize": {
 			"type": "object",
 			"default": {}
