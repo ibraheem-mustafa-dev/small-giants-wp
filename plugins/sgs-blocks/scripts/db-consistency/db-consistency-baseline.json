@@ -1,22 +1,3 @@
 [
-  "amb:sgs/form:background-color:typography:button:None:None",
-  "amb:sgs/google-reviews:background-color:typography:arrow:None:None",
-  "amb:sgs/google-reviews:background-color:typography:write-review:None:None",
-  "amb:sgs/google-reviews:border-color:wrapper_css:arrow:None:None",
-  "amb:sgs/google-reviews:color:typography:arrow:None:None",
-  "amb:sgs/google-reviews:color:typography:write-review:None:None",
-  "amb:sgs/modal:background-color:typography:close:None:None",
-  "amb:sgs/modal:color:typography:close:None:None",
-  "amb:sgs/post-grid:background-color:typography:card:None:None",
-  "cssprop:ambiguous:sgs/form:background-color::button::",
-  "cssprop:ambiguous:sgs/google-reviews:background-color::arrow::",
-  "cssprop:ambiguous:sgs/google-reviews:background-color::write-review::",
-  "cssprop:ambiguous:sgs/google-reviews:border-color::arrow::",
-  "cssprop:ambiguous:sgs/google-reviews:color::arrow::",
-  "cssprop:ambiguous:sgs/google-reviews:color::write-review::",
-  "cssprop:ambiguous:sgs/modal:background-color::close::",
-  "cssprop:ambiguous:sgs/modal:color::close::",
-  "cssprop:rogue:sgs/brand-strip:logoFit",
-  "cssprop:undeclared-subelement:sgs/brand-strip:logoFit",
-  "vc:sgs/nav-drawer:anchored-card-stack|centred-statement|editorial-ghost-list|solid-brand-light|split-zone-serif|two-column-editorial"
+  "vc:sgs/nav-drawer:split-zone-serif|two-column-editorial"
 ]
