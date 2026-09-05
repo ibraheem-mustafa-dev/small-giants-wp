@@ -46,9 +46,11 @@ $header_col = $block->context['sgs/accordionHeaderColour'] ?? '';
 $header_bg  = $block->context['sgs/accordionHeaderBackground'] ?? '';
 $icon_col   = $block->context['sgs/accordionIconColour'] ?? '';
 // D636/D644 icon/SVG gradient sibling — non-empty wins over icon_col above.
-$icon_col_gradient = $block->context['sgs/accordionIconColourGradient'] ?? '';
-$open_icon  = sanitize_key( $block->context['sgs/accordionOpenIcon'] ?? 'chevron-down' );
-$close_icon = sanitize_key( $block->context['sgs/accordionCloseIcon'] ?? 'chevron-up' );
+$icon_col_gradient       = $block->context['sgs/accordionIconColourGradient'] ?? '';
+$icon_col_hover          = $block->context['sgs/accordionIconColourHover'] ?? '';
+$icon_col_hover_gradient = $block->context['sgs/accordionIconColourHoverGradient'] ?? '';
+$open_icon               = sanitize_key( $block->context['sgs/accordionOpenIcon'] ?? 'chevron-down' );
+$close_icon              = sanitize_key( $block->context['sgs/accordionCloseIcon'] ?? 'chevron-up' );
 
 // Unique scoped-CSS hook (CLASS — container/hero/quote convention).
 $uid      = 'sgs-accordion-item-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
@@ -88,6 +90,24 @@ if ( $icon_col ) {
 $sgs_ai_stroke_grad = sgs_svg_stroke_gradient( $icon_col_gradient, $uid . '-ig' );
 if ( '' !== $sgs_ai_stroke_grad['css'] ) {
 	$responsive_css .= $root_sel . ' .sgs-accordion-item__icon-open svg,' . $root_sel . ' .sgs-accordion-item__icon-close svg{' . $sgs_ai_stroke_grad['css'] . '}';
+}
+
+// Icon hover — via the shared sgs_icon_gradient_css() composer (2026-09-06).
+// This block's icon is always Lucide (no source picker on the parent), so the
+// composer always takes the SVG stroke-gradient branch. sgs_hover_state_rules()
+// appends its suffix to a single target, so it's called once per icon span.
+$sgs_ai_header_sel      = $root_sel . ' .sgs-accordion-item__header';
+$sgs_ai_icon_hover_grad = sgs_icon_gradient_css( 'lucide', $icon_col_hover_gradient, $uid . '-igh', '' );
+if ( '' !== $sgs_ai_icon_hover_grad['css'] ) {
+	$responsive_css .= sgs_hover_state_rules( $sgs_ai_header_sel, $sgs_ai_icon_hover_grad['css'], ':focus-visible', ' .sgs-accordion-item__icon-open svg' );
+	$responsive_css .= sgs_hover_state_rules( $sgs_ai_header_sel, $sgs_ai_icon_hover_grad['css'], ':focus-visible', ' .sgs-accordion-item__icon-close svg' );
+} elseif ( '' !== $icon_col_hover ) {
+	$icon_hover_slug = $sgs_css_slug( $icon_col_hover );
+	if ( '' !== $icon_hover_slug ) {
+		$icon_hover_decl = 'color:var(--wp--preset--color--' . $icon_hover_slug . ')';
+		$responsive_css .= sgs_hover_state_rules( $sgs_ai_header_sel, $icon_hover_decl, ':focus-visible', ' .sgs-accordion-item__icon-open' );
+		$responsive_css .= sgs_hover_state_rules( $sgs_ai_header_sel, $icon_hover_decl, ':focus-visible', ' .sgs-accordion-item__icon-close' );
+	}
 }
 
 // NO-INLINE: this block emits zero inline style property declarations.
@@ -154,6 +174,9 @@ if ( ! $close_icon_svg ) {
 // is sufficient.
 if ( '' !== $sgs_ai_stroke_grad['defs'] ) {
 	$open_icon_svg = sgs_svg_inject_defs( $open_icon_svg, $sgs_ai_stroke_grad['defs'] );
+}
+if ( '' !== $sgs_ai_icon_hover_grad['defs'] ) {
+	$open_icon_svg = sgs_svg_inject_defs( $open_icon_svg, $sgs_ai_icon_hover_grad['defs'] );
 }
 
 $icon_html = sprintf(
@@ -250,10 +273,10 @@ if ( 'none' !== $border_style ) {
 	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
 	// through to the browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt             = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr             = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb             = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl             = '' !== $border_width_left ? $border_width_left : '0';
 		$responsive_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
 	}
 
@@ -287,7 +310,8 @@ if ( 'none' !== $border_style ) {
 // serialisation. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$border_radius_obj = is_array( $attributes['borderRadius'] ?? null ) ? $attributes['borderRadius'] : array();
+$radius_tiers      = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(
 		array( 'border' => array( 'radius' => $border_radius_obj ) ),
@@ -297,7 +321,7 @@ if ( ! empty( $border_radius_obj ) ) {
 		$responsive_css .= $border_radius_out['css'];
 	}
 }
-$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
+$border_radius_tablet_obj = $radius_tiers['tablet'];
 if ( ! empty( $border_radius_tablet_obj ) ) {
 	$border_radius_tab_out = wp_style_engine_get_styles(
 		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
@@ -307,7 +331,7 @@ if ( ! empty( $border_radius_tablet_obj ) ) {
 		$responsive_css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
 	}
 }
-$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$border_radius_mobile_obj = $radius_tiers['mobile'];
 if ( ! empty( $border_radius_mobile_obj ) ) {
 	$border_radius_mob_out = wp_style_engine_get_styles(
 		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),

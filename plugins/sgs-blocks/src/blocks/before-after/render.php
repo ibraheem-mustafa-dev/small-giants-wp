@@ -114,8 +114,8 @@ $start_position = max( 0, min( 100, $start_position ) );
 // 3. Frame (root) attributes.
 // ---------------------------------------------------------------------------
 
-$box_shadow        = $attributes['boxShadow'] ?? '';
-$box_shadow_colour = $attributes['boxShadowColour'] ?? '';
+$box_shadow              = $attributes['boxShadow'] ?? '';
+$box_shadow_colour       = $attributes['boxShadowColour'] ?? '';
 $box_shadow_colour_hover = $attributes['boxShadowColourHover'] ?? '';
 
 // `maxWidth` is a TIER OBJECT (Spec 35) — ONE attr holding
@@ -143,10 +143,12 @@ $handle_icon_col = $attributes['handleIconColour'] ?? '';
 // (2026-09-05 migration off the hand-rolled two-polyline SVG). Source is
 // restricted to the two inline-SVG sources at the schema level (block.json
 // enum) since a stroke gradient needs a real <svg> to inject <defs> into.
-$handle_icon_source   = $attributes['handleIconSource'] ?? 'lucide';
-$handle_icon_source   = in_array( $handle_icon_source, array( 'lucide', 'wp-icon' ), true ) ? $handle_icon_source : 'lucide';
-$handle_icon_name     = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attributes['handleIconName'] ?? 'chevrons-left-right' ) );
-$handle_icon_gradient = (string) ( $attributes['handleIconColourGradient'] ?? '' );
+$handle_icon_source         = $attributes['handleIconSource'] ?? 'lucide';
+$handle_icon_source         = in_array( $handle_icon_source, array( 'lucide', 'wp-icon' ), true ) ? $handle_icon_source : 'lucide';
+$handle_icon_name           = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attributes['handleIconName'] ?? 'chevrons-left-right' ) );
+$handle_icon_gradient       = (string) ( $attributes['handleIconColourGradient'] ?? '' );
+$handle_icon_col_hover      = (string) ( $attributes['handleIconColourHover'] ?? '' );
+$handle_icon_gradient_hover = (string) ( $attributes['handleIconColourHoverGradient'] ?? '' );
 
 $label_colour    = $attributes['labelColour'] ?? '';
 $label_bg_colour = $attributes['labelBackgroundColour'] ?? '';
@@ -163,7 +165,7 @@ $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', '
 // 4. Resolve scope. Uid is a CLASS (anchor stays a free `id`).
 // ---------------------------------------------------------------------------
 
-$anchor   = $attributes['anchor'] ?? '';
+$anchor = $attributes['anchor'] ?? '';
 // $uid computed earlier, ahead of the resolve_media() calls — see the
 // comment there.
 $root_sel = '.' . $uid . '.wp-block-sgs-before-after';
@@ -303,6 +305,20 @@ if ( '' !== $sgs_handle_icon_grad['defs'] ) {
 } elseif ( $handle_icon_col ) {
 	$root_var_decls[] = '--sgs-before-after-handle-icon-colour:' . sgs_colour_value( $handle_icon_col );
 }
+
+// Handle icon hover — same custom-property mechanism, via the shared
+// sgs_icon_gradient_css() composer (2026-09-06). style.css's static
+// :hover/:focus-visible rule (build-time touch-guarded, per this project's
+// hover-guard convention for compiled stylesheets — not sgs_hover_state_rules(),
+// which is for PER-INSTANCE scoped <style> output) reads this var with a
+// fallback to the resting colour above.
+$handle_icon_grad_hover_id  = $uid . '-handle-icon-grad-hover';
+$sgs_handle_icon_grad_hover = sgs_icon_gradient_css( $handle_icon_source, $handle_icon_gradient_hover, $handle_icon_grad_hover_id, '' );
+if ( '' !== $sgs_handle_icon_grad_hover['css'] ) {
+	$root_var_decls[] = '--sgs-before-after-handle-icon-colour-hover:url(#' . $handle_icon_grad_hover_id . ')';
+} elseif ( '' !== $handle_icon_col_hover ) {
+	$root_var_decls[] = '--sgs-before-after-handle-icon-colour-hover:' . sgs_colour_value( $handle_icon_col_hover );
+}
 // Label colour — same custom-property-value rule as the divider/handle
 // above; style.css reads --sgs-before-after-label-colour with the current
 // literal as fallback. labelBackgroundColour moved OFF this mechanism
@@ -394,7 +410,7 @@ $label_sel = $root_sel . ' .wp-block-sgs-before-after__label';
 // CSS passthrough, so an instance that never touched this control renders
 // byte-identical.
 $label_bg_gradient = (string) ( $attributes['labelBackgroundColourGradient'] ?? '' );
-$scoped_css[]       = sgs_block_background_layer_css(
+$scoped_css[]      = sgs_block_background_layer_css(
 	$label_sel,
 	sgs_background_paint_decl( $label_bg_colour ? (string) $label_bg_colour : 'rgba(0,0,0,0.6)', $label_bg_gradient )
 );
@@ -439,7 +455,7 @@ $label_line_height_unit = $attributes['labelLineHeightUnit'] ?? '';
 // button/render.php's $tier_object_synthetic_attrs. labelLineHeight stays
 // genuinely flat (no Tablet/Mobile siblings).
 $label_font_size_obj = sgs_responsive_normalise_object( $attributes['labelFontSize'] ?? null );
-$css_label_tiers = sgs_responsive_css_rule(
+$css_label_tiers     = sgs_responsive_css_rule(
 	array_merge(
 		$attributes,
 		array(
@@ -594,6 +610,7 @@ if ( '' === $handle_icon_svg ) {
 	$handle_icon_svg = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 3 12 9 18"></polyline><polyline points="15 6 21 12 15 18"></polyline></svg>';
 }
 $handle_icon_svg = sgs_svg_inject_defs( $handle_icon_svg, $sgs_handle_icon_grad['defs'] );
+$handle_icon_svg = sgs_svg_inject_defs( $handle_icon_svg, $sgs_handle_icon_grad_hover['defs'] );
 
 ?>
 <?php
@@ -615,10 +632,10 @@ if ( 'none' !== $border_style ) {
 	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
 	// through to the browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt          = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr          = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb          = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl          = '' !== $border_width_left ? $border_width_left : '0';
 		$scoped_css[] = $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
 	}
 
@@ -652,7 +669,8 @@ if ( 'none' !== $border_style ) {
 // serialisation. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$border_radius_obj = is_array( $attributes['borderRadius'] ?? null ) ? $attributes['borderRadius'] : array();
+$radius_tiers      = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(
 		array( 'border' => array( 'radius' => $border_radius_obj ) ),
@@ -662,7 +680,7 @@ if ( ! empty( $border_radius_obj ) ) {
 		$scoped_css[] = $border_radius_out['css'];
 	}
 }
-$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
+$border_radius_tablet_obj = $radius_tiers['tablet'];
 if ( ! empty( $border_radius_tablet_obj ) ) {
 	$border_radius_tab_out = wp_style_engine_get_styles(
 		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
@@ -672,7 +690,7 @@ if ( ! empty( $border_radius_tablet_obj ) ) {
 		$scoped_css[] = '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
 	}
 }
-$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$border_radius_mobile_obj = $radius_tiers['mobile'];
 if ( ! empty( $border_radius_mobile_obj ) ) {
 	$border_radius_mob_out = wp_style_engine_get_styles(
 		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),

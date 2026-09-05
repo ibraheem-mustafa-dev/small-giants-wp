@@ -47,8 +47,7 @@
 					"marginMobile"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -56,7 +55,11 @@
 					"label": "Wrapper",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "native:color.text",
@@ -80,7 +83,9 @@
 					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 2,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
@@ -98,7 +103,10 @@
 				"header": {
 					"label": "Item header",
 					"order": 3,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"attrMap": {
 						"css:color": "headerColour",
 						"css:background-color": "headerBackground"
@@ -108,12 +116,23 @@
 				"icon": {
 					"label": "Toggle icon",
 					"order": 4,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"attrMap": {
 						"css:color": "iconColour",
 						"css:stroke": "iconColourGradient"
 					},
-					"_note": "iconColour paints the open/close chevron. openIcon/closeIcon (icon slug) and iconPosition are content/variant fields, not independent style controls, so only the colour member is mapped — the rest are honest gaps. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "iconColourHover",
+								"css:stroke": "iconColourHoverGradient"
+							}
+						}
+					},
+					"_note": "iconColour paints the open/close chevron. openIcon/closeIcon (icon slug) and iconPosition are content/variant fields, not independent style controls, so only the colour member is mapped — the rest are honest gaps. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover/iconColourHoverGradient (2026-09-06, colour-conformance closeout) mirror the same mechanism, consumed by sgs/accordion-item via block context exactly like the resting pair (providesContext below)."
 				},
 				"item": {
 					"label": "Accordion item",
@@ -179,15 +198,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"fontSize": {
 			"type": "object",
@@ -227,6 +240,15 @@
 			"default": "",
 			"description": "CSS gradient string painting the toggle chevron's stroke instead of a flat colour. Non-empty wins over iconColour at render time (D636/D644)."
 		},
+		"iconColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"iconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the toggle chevron's stroke on hover instead of a flat colour. Non-empty wins over iconColourHover at render time."
+		},
 		"openIcon": {
 			"type": "string",
 			"default": "chevron-down"
@@ -245,7 +267,12 @@
 		},
 		"layout": {
 			"type": "string",
-			"enum": ["", "flex", "stack", "grid"],
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
 			"default": ""
 		},
 		"gridTemplateColumns": {
@@ -297,7 +324,11 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 2,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"flexDirection": {
 			"type": "string",
@@ -340,6 +371,8 @@
 		"sgs/accordionHeaderBackground": "headerBackground",
 		"sgs/accordionIconColour": "iconColour",
 		"sgs/accordionIconColourGradient": "iconColourGradient",
+		"sgs/accordionIconColourHover": "iconColourHover",
+		"sgs/accordionIconColourHoverGradient": "iconColourHoverGradient",
 		"sgs/accordionOpenIcon": "openIcon",
 		"sgs/accordionCloseIcon": "closeIcon",
 		"sgs/accordionDefaultOpen": "defaultOpen"

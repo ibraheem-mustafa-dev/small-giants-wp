@@ -70,8 +70,7 @@
 			},
 			"boxFamilies": {
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			}
 		}
@@ -83,6 +82,8 @@
 		"sgs/accordionHeaderBackground",
 		"sgs/accordionIconColour",
 		"sgs/accordionIconColourGradient",
+		"sgs/accordionIconColourHover",
+		"sgs/accordionIconColourHoverGradient",
 		"sgs/accordionOpenIcon",
 		"sgs/accordionCloseIcon",
 		"sgs/accordionDefaultOpen"
@@ -159,15 +160,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"render": "file:./render.php",

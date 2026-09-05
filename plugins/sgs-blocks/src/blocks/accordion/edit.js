@@ -53,6 +53,8 @@ export default function Edit({ attributes, setAttributes }) {
     headerBackground,
     iconColour,
     iconColourGradient,
+    iconColourHover,
+    iconColourHoverGradient,
     openIcon,
     closeIcon,
   } = attributes;
@@ -177,6 +179,15 @@ export default function Edit({ attributes, setAttributes }) {
                 gradientValue: iconColourGradient,
                 onGradientChange: (val) =>
                   setAttributes({ iconColourGradient: val ?? "" }),
+              },
+              {
+                key: "hover",
+                label: __("Hover", "sgs-blocks"),
+                value: iconColourHover,
+                onChange: (val) => setAttributes({ iconColourHover: val }),
+                gradientValue: iconColourHoverGradient,
+                onGradientChange: (val) =>
+                  setAttributes({ iconColourHoverGradient: val ?? "" }),
               },
             ]}
           />
@@ -327,13 +338,13 @@ export default function Edit({ attributes, setAttributes }) {
             }
             colourLinked={ true }
             radiusValues={ {
-              base: attributes.borderRadius ?? {},
-              tablet: attributes.borderRadiusTablet ?? {},
-              mobile: attributes.borderRadiusMobile ?? {},
-            } }
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
             onRadiusChange={ ( tier, next ) => {
-              const radiusKey = tier === "base" ? "borderRadius" : tier === "tablet" ? "borderRadiusTablet" : "borderRadiusMobile";
-              setAttributes( { [ radiusKey ]: next } );
+            	const key = tier === 'base' ? 'desktop' : tier;
+            	setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
             } }
           />
         </PanelBody>

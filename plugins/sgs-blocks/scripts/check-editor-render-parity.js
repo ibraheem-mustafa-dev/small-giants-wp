@@ -598,6 +598,16 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	// class as the existing hover-value entries above — the editor canvas never
 	// simulates `:hover`/`:focus`.
 	'iconColourHover',
+	// Same class, the gradient sibling (2026-09-06, sgs_icon_gradient_css()
+	// icon-gradient closeout): a per-instance client-set hover gradient value,
+	// emitted into the block's own scoped <style> at render time via
+	// sgs_hover_state_rules() — the canvas never executes render.php, same
+	// "unpreviewable, not unpreviewed" reasoning as every other hover-value
+	// entry here. Declared by sgs/cart and sgs/accordion (via block context).
+	'iconColourHoverGradient',
+	// sgs/before-after's equivalent pair, same mechanism, different attr name.
+	'handleIconColourHover',
+	'handleIconColourHoverGradient',
 	'priceColourHover',
 	'descriptionColourHover',
 	'roleColourHover',

@@ -478,6 +478,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		handleColourGradient,
 		handleIconColour,
 		handleIconColourGradient,
+		handleIconColourHover,
+		handleIconColourHoverGradient,
 		handleIconSource,
 		handleIconName,
 		heightUnit,
@@ -739,6 +741,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { handleIconColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: handleIconColourHover,
+								onChange: ( val ) => setAttributes( { handleIconColourHover: val } ),
+								gradientValue: handleIconColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { handleIconColourHoverGradient: val ?? '' } ),
+							},
 						] }
 					/>
 					<IconPicker
@@ -882,13 +893,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
 						radiusValues={ {
-							base: attributes.borderRadius ?? {},
-							tablet: attributes.borderRadiusTablet ?? {},
-							mobile: attributes.borderRadiusMobile ?? {},
-						} }
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
 						onRadiusChange={ ( tier, next ) => {
-							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-							setAttributes( { [ radiusKey ]: next } );
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>
