@@ -199,6 +199,53 @@ function extractForeachBodies( php ) {
 	return bodies;
 }
 
+// Cross-block context delegation (2026-09-06). A parent block can declare
+// `providesContext` (e.g. sgs/accordion's "sgs/accordionIconColour": "iconColour")
+// and never consume the attribute in its OWN render.php at all — a CHILD
+// block (sgs/accordion-item, via `usesContext`) reads
+// `$block->context['sgs/accordionIconColour']` instead. Every check in
+// detectCurrentShape() only ever read the DECLARING block's own render.php,
+// so a real, fully-working implementation living in the child was invisible
+// to it — accordion.iconColour reported "unknown, incomplete" despite
+// accordion-item/render.php already calling sgs_svg_stroke_gradient()
+// correctly. Rather than teaching every check about `$block->context[...]`
+// syntax, this normalises the CHILD's render.php text so its context reads
+// look exactly like the parent's own `attributes['x']` reads, then lets the
+// existing regexes run unchanged against that transformed text.
+function findContextDelegatedPhp( blockJson, attr ) {
+	const provides = blockJson && blockJson.providesContext;
+	if ( ! provides || typeof provides !== 'object' ) return null;
+	const relevantCtxKeys = Object.keys( provides ).filter(
+		( k ) => provides[ k ] === attr || provides[ k ] === attr + 'Gradient'
+	);
+	if ( ! relevantCtxKeys.length ) return null;
+
+	for ( const childDir of blockDirs() ) {
+		const childJsonPath = path.join( BLOCKS_DIR, childDir, 'block.json' );
+		if ( ! fs.existsSync( childJsonPath ) ) continue;
+		let childJson;
+		try {
+			childJson = JSON.parse( fs.readFileSync( childJsonPath, 'utf8' ) );
+		} catch ( e ) {
+			continue;
+		}
+		const uses = childJson.usesContext || [];
+		if ( ! relevantCtxKeys.some( ( k ) => uses.includes( k ) ) ) continue;
+
+		const childRenderPath = path.join( BLOCKS_DIR, childDir, 'render.php' );
+		if ( ! fs.existsSync( childRenderPath ) ) continue;
+		let childPhp = stripComments( fs.readFileSync( childRenderPath, 'utf8' ) );
+		for ( const ctxKey of Object.keys( provides ) ) {
+			const localAttr = provides[ ctxKey ];
+			const escapedKey = ctxKey.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
+			const ctxRe = new RegExp( '\\$block->context\\[\\s*[\'"]' + escapedKey + '[\'"]\\s*\\]', 'g' );
+			childPhp = childPhp.replace( ctxRe, "attributes['" + localAttr + "']" );
+		}
+		return childPhp;
+	}
+	return null;
+}
+
 function detectCurrentShape( php, attr ) {
 	// Traced once, reused by every step below that needs to follow a bound
 	// local var back to `attributes['attr']` (e.g. `$number_colour = $attributes['numberColour'] ?? '';`
@@ -273,10 +320,21 @@ function detectCurrentShape( php, attr ) {
 	}
 
 	// 5 — SVG stroke/fill gradient (gradient-only-arg helper on the SIBLING).
+	// Same bound-var indirection fix as step 1: cart/accordion both bind the
+	// gradient attr to a local var first ($icon_colour_gradient = $attributes
+	// ['iconColourGradient'] ?? '';) before passing it to
+	// sgs_svg_stroke_gradient() — the literal-only check missed both,
+	// reporting them "unknown/incomplete" despite already being fully wired.
 	const gradAttr = attr + 'Gradient';
+	const gradBoundVars = traceBoundVars( php, gradAttr, 2 );
 	for ( const helper of GRADIENT_ONLY_ARG_HELPERS ) {
 		if ( new RegExp( helper + '\\([^)]*attributes\\[\\s*[\'"]' + gradAttr + '[\'"]' ).test( php ) ) {
 			return { shape: END_SHAPES.SVG_PAINT_GRADIENT.key, evidence: helper + "(...attributes['" + gradAttr + "']...)", complete: true };
+		}
+		for ( const v of gradBoundVars ) {
+			if ( new RegExp( helper + '\\([^)]*\\$' + v + '\\b' ).test( php ) ) {
+				return { shape: END_SHAPES.SVG_PAINT_GRADIENT.key, evidence: helper + '(...$' + v + '...)', complete: true };
+			}
 		}
 	}
 
@@ -462,7 +520,16 @@ function main() {
 				continue; // already conformant on both dimensions — nothing to classify.
 			}
 
-			const current = detectCurrentShape( php, row.attr );
+			let current = detectCurrentShape( php, row.attr );
+			if ( 'unknown' === current.shape || 'bare-custom-property-no-gradient' === current.shape ) {
+				const delegatedPhp = findContextDelegatedPhp( blockJson, row.attr );
+				if ( delegatedPhp ) {
+					const delegatedCurrent = detectCurrentShape( delegatedPhp, row.attr );
+					if ( 'unknown' !== delegatedCurrent.shape ) {
+						current = { ...delegatedCurrent, evidence: '(via child block context) ' + delegatedCurrent.evidence };
+					}
+				}
+			}
 			const recommended = mechanism
 				? recommendEndShape( { blockDir: dir, blockJson, attr: row.attr, row, mechanism, current, styleCss, dbBlockRows: db[ slug ] } )
 				: { shape: 'unclassified', reason: 'no css_property resolved in DB for this attr — schema gap, not a shape question', evidence: null };
