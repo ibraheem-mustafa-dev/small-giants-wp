@@ -1198,6 +1198,32 @@ def _index_sgs_block_files(
         """
     )
 
+    # --- variant_composition_attr_slots schema (child-ATTRIBUTE-VALUE ---
+    # composition fingerprinting, 2026-09-06). THIRD sibling: where
+    # variant_slots keys on the PARENT's own (attr, value) pairs and
+    # variant_composition_slots on a uniquely-nested CHILD SLUG, this keys on a
+    # nested child's OWN attribute value — the signal for two variants that
+    # nest the identical set of child block types and differ only in how one of
+    # those children is configured (sgs/nav-drawer's `two-column-editorial` vs
+    # `floating-capped-card`, both {sgs/nav-menu, sgs/button}, separated by the
+    # nav-menu's `listColumns`). Populated by Stage 1 from the same JS
+    # extractor, reading each variant's per-child `attributes`. Duplicated here
+    # AND in converter/db/db_lookup.py for the same reason as both tables
+    # above; see that file's migration comment for why this is a separate
+    # table rather than two nullable columns on variant_composition_slots.
+    c.execute(
+        """
+        CREATE TABLE IF NOT EXISTS variant_composition_attr_slots (
+            block_slug TEXT NOT NULL,
+            variant_value TEXT NOT NULL,
+            child_slug TEXT NOT NULL,
+            child_attr_name TEXT NOT NULL,
+            child_attr_value TEXT NOT NULL,
+            PRIMARY KEY (block_slug, variant_value, child_slug, child_attr_name, child_attr_value)
+        )
+        """
+    )
+
     # --- preset_implications schema (Build #3 Option B, AUTO-DERIVE, 2026-07-24) ---
     # Preset-absence transfer: teaches the converter what a block's style-preset
     # enum values (cardStyle/effectHover) actually PAINT (box-shadow/border/
@@ -1596,6 +1622,17 @@ def _index_sgs_block_files(
                         "(block_slug, variant_value, unique_child_slug) VALUES (?, ?, ?)",
                         (slug, v_name, child_slug),
                     )
+
+        # --- variant_composition_attr_slots population (child-ATTRIBUTE-VALUE
+        # composition fingerprinting, 2026-09-06) ---
+        # FOURTH population pass. The slug-set signal above can only separate
+        # variants whose nested child SLUG SETS differ; this one separates two
+        # variants nesting the identical set of child block types by a nested
+        # child's own attribute VALUE. Factored into its own function (like
+        # `_populate_preset_implications` below) so the derivation is
+        # independently callable and testable rather than inline-only. Same
+        # soft-fail contract as every extractor-backed pass here.
+        _populate_variant_composition_attr_slots(c, slug, block_dir)
 
         # --- preset_implications AUTO-DERIVE (Build #3 Option B, 2026-07-24) ---
         # See _populate_preset_implications docstring. No-op for the ~95% of
@@ -3008,6 +3045,134 @@ def _extract_variation_composition_slugs(block_dir: Path) -> "dict | None":
         for v_name, v_data in variants.items()
         if isinstance(v_data, dict)
     }
+
+
+def _extract_variation_composition_attrs(block_dir: Path) -> "dict | None":
+    """Run `extract-variation-values.js` and return each variant's CHILD blocks
+    with their own declared attributes.
+
+    Mirrors `_extract_variation_composition_slugs` exactly — same extractor,
+    same subprocess invocation, same soft-fail-to-None on a missing
+    `variations.js`, missing extractor script, missing `node`, a non-zero exit,
+    or non-JSON stdout — but reads the extractor's `innerBlocks` field (each
+    entry `{slug, attributes, nonLiteralAttrs}`) rather than the flat
+    `innerBlockSlugs` list.
+
+    `nonLiteralAttrs` is intentionally not surfaced: an attribute the extractor
+    could not statically evaluate (an `__( … )` i18n call, an identifier)
+    contributes to neither the variant's own triple set nor the sibling union,
+    so it cannot manufacture a false discriminator — it is simply invisible to
+    this table, exactly like an absent attribute.
+
+    Returns `{variant_name: [{'slug': str, 'attributes': dict}, ...], ...}`, or
+    `None`. A `None` return means "no child-attribute fingerprint for this
+    block" — soft-optional enrichment, never a hard `/sgs-update` dependency.
+    """
+    variations_path = block_dir / "variations.js"
+    if not variations_path.exists():
+        return None
+    if not _VARIATIONS_VALUE_EXTRACTOR.exists():
+        print(
+            f"Stage 1 (variant-composition-attrs): WARN extractor script missing at "
+            f"{_VARIATIONS_VALUE_EXTRACTOR} — skipping child-attribute fingerprint "
+            f"for {block_dir.name}"
+        )
+        return None
+    try:
+        proc = subprocess.run(
+            ["node", str(_VARIATIONS_VALUE_EXTRACTOR), str(variations_path)],
+            capture_output=True, text=True, timeout=30, check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        print(
+            f"Stage 1 (variant-composition-attrs): WARN failed to run extractor for "
+            f"{block_dir.name}: {exc}"
+        )
+        return None
+    if proc.returncode != 0:
+        print(
+            f"Stage 1 (variant-composition-attrs): WARN extractor exited {proc.returncode} "
+            f"for {block_dir.name}: {(proc.stderr or '').strip()}"
+        )
+        return None
+    try:
+        payload = json.loads(proc.stdout)
+    except ValueError as exc:
+        print(
+            f"Stage 1 (variant-composition-attrs): WARN extractor emitted non-JSON for "
+            f"{block_dir.name}: {exc}"
+        )
+        return None
+    variants = payload.get("variants") if isinstance(payload, dict) else None
+    if not isinstance(variants, dict):
+        return None
+    return {
+        v_name: v_data.get("innerBlocks", [])
+        for v_name, v_data in variants.items()
+        if isinstance(v_data, dict)
+    }
+
+
+def _populate_variant_composition_attr_slots(c, slug: str, block_dir: Path) -> int:
+    """Repopulate `variant_composition_attr_slots` for ONE block.
+
+    THIRD population pass, sibling to the two `variant_slots` branches and the
+    `variant_composition_slots` pass in Stage 1. Where those score a variant by
+    its own attribute (name, value) pairs, or by which child block SLUGS its
+    `variations.js` nests, this scores it by a nested child's OWN attribute
+    VALUE — the only remaining signal when two variants nest the identical set
+    of child block types (measured: `sgs/nav-drawer`'s `two-column-editorial`
+    and `floating-capped-card` both nest exactly {sgs/nav-menu, sgs/button};
+    only `two-column-editorial`'s nav-menu sets `listColumns`).
+
+    Set-difference methodology is IDENTICAL to both siblings: each variant's
+    discriminating triples = its own `(child_slug, attr_name, canonical_value)`
+    SET minus the UNION of every sibling variant's triple set. A triple shared
+    with any sibling discriminates nothing and is dropped — which is why the
+    `gap: '4px'` every nav-drawer variant's nav-menu carries produces no rows.
+
+    Delete-then-insert = idempotent; reflects the current `variations.js` on
+    every run. Returns the number of rows written (0 when the block has no
+    `variations.js`, no extractable child attributes, or nothing unique).
+
+    R-31-1: no block, child slug or attribute name appears anywhere here.
+    """
+    c.execute("DELETE FROM variant_composition_attr_slots WHERE block_slug = ?", (slug,))
+    composition_attrs = _extract_variation_composition_attrs(block_dir)
+    if not composition_attrs:
+        return 0
+
+    per_variant_triples: dict[str, set] = {}
+    for v_name, children in composition_attrs.items():
+        if not isinstance(children, list):
+            continue
+        triples: set = set()
+        for child in children:
+            if not isinstance(child, dict):
+                continue
+            child_slug = child.get("slug")
+            child_attrs = child.get("attributes")
+            if not isinstance(child_slug, str) or not isinstance(child_attrs, dict):
+                continue
+            for attr_name, attr_value in child_attrs.items():
+                triples.add((child_slug, attr_name, _canon_slot_value(attr_value)))
+        per_variant_triples[v_name] = triples
+
+    written = 0
+    for v_name, own_triples in per_variant_triples.items():
+        sibling_triples: set = set()
+        for other_name, other_triples in per_variant_triples.items():
+            if other_name != v_name:
+                sibling_triples.update(other_triples)
+        for child_slug, attr_name, canon_val in sorted(own_triples - sibling_triples):
+            c.execute(
+                "INSERT OR IGNORE INTO variant_composition_attr_slots "
+                "(block_slug, variant_value, child_slug, child_attr_name, child_attr_value) "
+                "VALUES (?, ?, ?, ?, ?)",
+                (slug, v_name, child_slug, attr_name, canon_val),
+            )
+            written += 1
+    return written
 
 
 def _populate_preset_implications(

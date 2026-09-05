@@ -19,7 +19,20 @@ intentional no-unique-feature fallback (e.g. sgs/trust-bar's 'text-only').
 Only when a SECOND variant also has an empty (or identical non-empty)
 signature does detection become genuinely ambiguous.
 
-FULL SIGNATURE = (attribute_slots, composition_slots) — 2026-09-05 update.
+FULL SIGNATURE = (attribute_slots, composition_slots, composition_attr_slots)
+— 2026-09-06 update; the two-half version is described immediately below and
+still applies to the first two halves.
+
+THIRD HALF (2026-09-06): detect_variant() can also tell two variants apart by a
+nested CHILD's own attribute value (`variant_composition_attr_slots`). That is
+the only signal left when two variants nest the IDENTICAL set of child block
+slugs — their composition halves are then equal by construction, so a check
+that stopped at two halves would report a genuinely discriminable pair as
+ambiguous. sgs/nav-drawer's 'two-column-editorial' vs 'floating-capped-card' is
+that case: both nest {sgs/nav-menu, sgs/button}, and only the former's nav-menu
+sets `listColumns`. Two variants now collide only when ALL THREE halves match.
+
+The two-half rule (2026-09-05), unchanged for those halves:
 detect_variant() can now also tell two variants apart via InnerBlocks
 composition fingerprinting (variant_composition_slots — see Spec-plan
 "variant-composition-fingerprinting", Task 2/4). A variant's full
@@ -190,21 +203,55 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
             if variant_value in composition_signature:
                 composition_signature[variant_value].add(unique_child_slug)
 
-        # FULL signature = (attribute_slots, composition_slots) as a tuple of
-        # two frozensets. Two variants only collide when BOTH halves match —
-        # a variant with an empty attribute signature but a real, unique
-        # composition signature is correctly distinguishable from another
-        # empty-attribute variant that has no composition signature either.
-        full_signature: dict[str, tuple[frozenset, frozenset]] = {
-            name: (frozenset(attr_signature[name]), frozenset(composition_signature[name]))
+        # THIRD half — child-ATTRIBUTE-VALUE composition (2026-09-06).
+        # detect_variant() can now ALSO tell two variants apart by a nested
+        # child's own attribute value (variant_composition_attr_slots), which
+        # is the only signal available when two variants nest the IDENTICAL
+        # set of child block slugs and so have identical composition halves
+        # (sgs/nav-drawer's 'two-column-editorial' vs 'floating-capped-card',
+        # both {sgs/nav-menu, sgs/button}). Without this half, a variant that
+        # IS discriminable would still be reported ambiguous here — a check
+        # blind to a signal the detector actually uses.
+        #
+        # Soft-fails to an empty signature when the table is absent
+        # (pre-migration DB), which reproduces this check's exact
+        # pre-2026-09-06 behaviour rather than erroring.
+        try:
+            composition_attr_rows = conn.execute(
+                "SELECT variant_value, child_slug, child_attr_name, child_attr_value "
+                "FROM variant_composition_attr_slots WHERE block_slug = ?",
+                (block_slug,),
+            ).fetchall()
+        except sqlite3.OperationalError:
+            composition_attr_rows = []
+
+        composition_attr_signature: dict[str, set] = {name: set() for name in variant_names}
+        for variant_value, child_slug, attr_name, attr_value in composition_attr_rows:
+            if variant_value in composition_attr_signature:
+                composition_attr_signature[variant_value].add(
+                    (child_slug, attr_name, attr_value)
+                )
+
+        # FULL signature = (attribute_slots, composition_slots,
+        # composition_attr_slots) as a tuple of three frozensets. Two variants
+        # only collide when ALL THREE halves match — a variant with empty
+        # attribute AND composition halves but a real, unique child-attribute
+        # half is correctly distinguishable.
+        full_signature: dict[str, tuple[frozenset, frozenset, frozenset]] = {
+            name: (
+                frozenset(attr_signature[name]),
+                frozenset(composition_signature[name]),
+                frozenset(composition_attr_signature[name]),
+            )
             for name in variant_names
         }
 
         # Group variants by identical FULL signature. A group of size 1 is
         # safe (including the single allowed empty-signature fallback);
         # size >= 2 means detect_variant cannot tell those variants apart —
-        # neither their attributes nor their composition differ.
-        by_signature: dict[tuple[frozenset, frozenset], list[str]] = {}
+        # neither their attributes, nor their composition, nor their
+        # children's own attribute values differ.
+        by_signature: dict[tuple[frozenset, frozenset, frozenset], list[str]] = {}
         for name, sig in full_signature.items():
             by_signature.setdefault(sig, []).append(name)
 
@@ -213,7 +260,7 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
                 continue
 
             names_sorted = sorted(names)
-            attr_sig, composition_sig = sig
+            attr_sig, composition_sig, composition_attr_sig = sig
             attr_label = (
                 "empty (no discriminating attrs)" if not attr_sig
                 else ", ".join(sorted(attr_sig))
@@ -222,23 +269,37 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
                 "empty (no discriminating InnerBlocks composition)" if not composition_sig
                 else ", ".join(sorted(composition_sig))
             )
-            label = f"attrs: {attr_label} / composition: {composition_label}"
+            composition_attr_label = (
+                "empty (no discriminating child attribute values)"
+                if not composition_attr_sig
+                else ", ".join(
+                    f"{child}.{attr}={value}"
+                    for child, attr, value in sorted(composition_attr_sig)
+                )
+            )
+            label = (
+                f"attrs: {attr_label} / composition: {composition_label} / "
+                f"child attrs: {composition_attr_label}"
+            )
 
             violations.append(Violation(
                 check="variants",
                 block=block_slug,
                 detail=(
                     f"{block_slug}: variants {names_sorted} share the same discriminator "
-                    f"signature — {label}. detect_variant cannot tell them apart from either "
-                    f"the draft's extracted CSS or its InnerBlocks composition."
+                    f"signature — {label}. detect_variant cannot tell them apart from the "
+                    f"draft's extracted CSS, its InnerBlocks composition, or its children's "
+                    f"own attribute values."
                 ),
                 fix=(
                     f"Give each variant in {names_sorted} its own distinguishing signal — "
-                    f"either a styling attr under supports.sgs.variants, or a unique "
-                    f"InnerBlocks child fingerprint via variant_composition_slots — in "
+                    f"a styling attr under supports.sgs.variants, a unique InnerBlocks "
+                    f"child fingerprint via variant_composition_slots, or a distinct "
+                    f"attribute value on one of its nested children (seeded into "
+                    f"variant_composition_attr_slots from that block's variations.js) — in "
                     f"src/blocks/{block_slug.replace('sgs/', '')}/block.json — only ONE "
-                    f"variant per block may keep an empty/no-op discriminator set on BOTH "
-                    f"halves (the intentional no-unique-feature fallback). Then run: "
+                    f"variant per block may keep an empty/no-op discriminator set on ALL "
+                    f"THREE halves (the intentional no-unique-feature fallback). Then run: "
                     f"python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 1"
                 ),
                 key=variant_key(block_slug, "|".join(names_sorted)),

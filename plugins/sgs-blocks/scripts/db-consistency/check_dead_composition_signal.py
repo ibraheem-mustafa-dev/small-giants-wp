@@ -17,9 +17,12 @@ impossible to miss again, for ANY block, now or in the future.
 
 THE RULE
 ----------------------------------------------------------------------------
-For every `block_slug` with at least one row in `variant_composition_slots`
-(a real, non-empty InnerBlocks-composition discriminator exists for at least
-one of its variants), that block MUST have at least ONE of three content-
+For every `block_slug` with at least one row in `variant_composition_slots` OR
+in `variant_composition_attr_slots` (extended 2026-09-06 — the child-ATTRIBUTE-
+VALUE composition signal is dead in exactly the same way, and by exactly the
+same mechanism, if the converter can never see the block's composed children)
+— i.e. a real, non-empty InnerBlocks-composition discriminator exists for at
+least one of its variants — that block MUST have at least ONE of three content-
 extraction paths — the mechanisms by which the converter can ever see the
 block's actual composed children at convert-time and therefore ever populate
 `variant_composition_slots`-shaped signal for `detect_variant()` to read:
@@ -124,9 +127,21 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
     # Every block with at least one composition discriminator, plus the
     # distinct variant values that carry one — so a violation can name exactly
     # which variant(s) are affected, not just the block.
+    #
+    # BOTH composition tables (2026-09-06). `variant_composition_attr_slots`
+    # (a nested CHILD's own attribute value) reaches detect_variant() by the
+    # very same route as `variant_composition_slots` (the child's slug) — the
+    # converter must be able to see the block's composed children at
+    # convert-time, or neither signal can ever fire. A row in the newer table
+    # on a block with no content-extraction path is dead in exactly the way
+    # this check exists to catch, so it is UNIONed in rather than left
+    # invisible. The check's rule, remedy and output are otherwise unchanged.
     rows = conn.execute(
-        "SELECT block_slug, variant_value "
-        "FROM variant_composition_slots "
+        "SELECT block_slug, variant_value FROM ("
+        "  SELECT block_slug, variant_value FROM variant_composition_slots"
+        "  UNION"
+        "  SELECT block_slug, variant_value FROM variant_composition_attr_slots"
+        ") "
         "GROUP BY block_slug, variant_value "
         "ORDER BY block_slug, variant_value"
     ).fetchall()

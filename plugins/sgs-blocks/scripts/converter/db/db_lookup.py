@@ -2535,6 +2535,86 @@ if _SGS_DB_PRESENT_AT_IMPORT:
 
 
 # ----------------------------------------------------------------------------
+# Idempotent schema migration — variant_composition_attr_slots
+# (child-ATTRIBUTE-VALUE composition fingerprinting, 2026-09-06)
+# ----------------------------------------------------------------------------
+# THIRD variant-discrimination table, sibling to `variant_slots` (the PARENT's
+# own attribute (name, value) pairs) and `variant_composition_slots` (the
+# parent's uniquely-nested child block SLUGS). This one keys on a nested
+# CHILD's own attribute value: `(child_slug, child_attr_name,
+# child_attr_value)`.
+#
+# WHY A THIRD TABLE RATHER THAN TWO NULLABLE COLUMNS ON
+# `variant_composition_slots`:
+#
+#   1. Different PRIMARY KEY. That table's PK is
+#      (block_slug, variant_value, unique_child_slug) — one row per
+#      discriminating slug. This signal needs several rows per (variant,
+#      child_slug) pair, one per discriminating attribute, so the PK must
+#      widen. SQLite cannot ALTER a PRIMARY KEY; widening it means rebuilding
+#      the table (create-copy-drop-rename) on a DB shared live across
+#      concurrent sessions, for zero behavioural gain.
+#   2. Different SCORING TIER. The slug signal is checked FIRST and, when it
+#      resolves, this one is never consulted (see `_composition_tiebreak`).
+#      Two signals scored in different tiers read far more honestly as two
+#      tables than as one table whose rows mean different things depending on
+#      whether two columns are NULL.
+#   3. PRECEDENT. `variant_slots` and `variant_composition_slots` are already
+#      separate sibling tables rather than one table with a discriminator
+#      column, for exactly this "different signal, different shape" reason.
+#
+# Populated by `/sgs-update` Stage 1
+# (`sgs-update-v2.py::_populate_variant_composition_attr_slots`) by
+# set-difference over each variant's `(child_slug, attr, canonical_value)`
+# triples, extracted from `variations.js` by
+# `variant-value-extractor/extract-variation-values.js` — the SAME
+# methodology as the two tables above. No block, child slug or attribute name
+# is named anywhere in code (R-31-1).
+#
+# `child_attr_value` is the canonical JSON form produced by
+# `_canon_slot_value`, matching `variant_slots.slot_value` exactly, so the
+# reader can compare an extracted value with a single string equality.
+#
+# DELIBERATELY DUPLICATED in both this file and sgs-update-v2.py, for the SAME
+# REASON the two schema-ensures above are — see the block comment above
+# `_migrate_variant_detection_schema`. Pure schema (additive, no data).
+#
+# Safe to call repeatedly. Runs at module load.
+def _migrate_variant_composition_attr_schema() -> None:
+    """Idempotent migration: create `variant_composition_attr_slots` if absent.
+
+    Schema only — no data seeding. Safe to call repeatedly; runs at module load.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS variant_composition_attr_slots (
+                block_slug TEXT NOT NULL,
+                variant_value TEXT NOT NULL,
+                child_slug TEXT NOT NULL,
+                child_attr_name TEXT NOT NULL,
+                child_attr_value TEXT NOT NULL,
+                PRIMARY KEY (block_slug, variant_value, child_slug, child_attr_name, child_attr_value)
+            )
+            """
+        )
+        conn.commit()
+    except sqlite3.OperationalError:
+        # DB read-only / locked / missing — soft-fail, identically to the two
+        # sibling migrations above. Detection then simply has no rows to read
+        # (absence is "no fingerprint", never an error).
+        pass
+    finally:
+        conn.close()
+
+
+# Run migration at module load (idempotent — safe to call repeatedly).
+if _SGS_DB_PRESENT_AT_IMPORT:
+    _migrate_variant_composition_attr_schema()
+
+
+# ----------------------------------------------------------------------------
 # Idempotent schema migration — block_composition.container_kind (D150 2026-06-02)
 # ----------------------------------------------------------------------------
 # Workstream A: adds a container_kind TEXT column (section|layout|content|NULL)
@@ -3692,6 +3772,44 @@ def _variant_composition_slots_map(block_slug: str) -> tuple:
 
 
 @functools.lru_cache(maxsize=256)
+def _variant_composition_attr_slots_map(block_slug: str) -> tuple:
+    """Return ((variant_value, ((child_slug, attr_name, canon_value), ...)), ...).
+
+    Reads `variant_composition_attr_slots` (populated by /sgs-update from the
+    JS variant-value extractor's per-child `attributes` output — the
+    child-ATTRIBUTE-VALUE composition signal, 2026-09-06). Third sibling to
+    `_variant_slots_map` (the parent's own attribute pairs) and
+    `_variant_composition_slots_map` (uniquely-nested child slugs); same
+    query/cache shape as both.
+
+    Unlike the slug map, this one IS value-aware — a shared child slug at a
+    DIFFERENT attribute value must score 0, exactly as `_slot_score` treats a
+    shared attribute name at a different value. `child_attr_value` is stored in
+    `_canon_slot_value`'s canonical JSON form, so scoring is one string
+    comparison.
+
+    Soft-fails to an empty tuple when the table is absent (pre-migration DB) —
+    the caller then behaves exactly as it does when no child attribute data was
+    supplied at all.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT variant_value, child_slug, child_attr_name, child_attr_value "
+            "FROM variant_composition_attr_slots WHERE block_slug = ?",
+            (block_slug,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        rows = []
+    finally:
+        conn.close()
+    grouped: dict = {}
+    for variant_value, child_slug, attr_name, attr_value in rows:
+        grouped.setdefault(variant_value, []).append((child_slug, attr_name, attr_value))
+    return tuple((v, tuple(triples)) for v, triples in grouped.items())
+
+
+@functools.lru_cache(maxsize=256)
 def declared_variant_values(block_slug: str) -> frozenset:
     """Every variant value the block DECLARES, from the enum on `blocks.variant_attr`.
 
@@ -3922,8 +4040,100 @@ def _slot_score(slot_value: "str | None", populated_attrs: dict, unique_slot: st
     return 1 if _canon_slot_value(actual) == slot_value else 0
 
 
+def _composition_attr_score(
+    triples: "tuple", child_blocks: "list[tuple[str, dict]]"
+) -> int:
+    """Score ONE variant's child-attribute discriminators against real children.
+
+    `triples` is that variant's `(child_slug, attr_name, canon_value)` rows;
+    `child_blocks` is the draft's recognised children as `(slug, attrs)` pairs.
+    A triple scores 1 when SOME child of that slug carries that attribute at
+    that exact canonical value — the same value-aware contract as `_slot_score`
+    for a preset-variant slot: a matching NAME at a different VALUE is worth 0,
+    identical to the attribute being absent (weak/neutral, never negative,
+    never a hit).
+
+    Set semantics on the child list: several children may share a slug (a
+    variant could nest two `sgs/button`s), so any one of them satisfying the
+    triple is enough — order and multiplicity carry no meaning here, exactly as
+    in the slug-set tiebreak above.
+    """
+    score = 0
+    for child_slug, attr_name, canon_value in triples:
+        for actual_slug, actual_attrs in child_blocks:
+            if actual_slug != child_slug or not isinstance(actual_attrs, dict):
+                continue
+            if attr_name not in actual_attrs:
+                continue
+            actual = actual_attrs[attr_name]
+            if not _slot_extracted(actual):
+                continue
+            if _canon_slot_value(actual) == canon_value:
+                score += 1
+                break
+    return score
+
+
+def _composition_attr_tiebreak(
+    block_slug: str,
+    tied_variants: "set[str] | frozenset[str]",
+    child_blocks: "list[tuple[str, dict]] | None",
+) -> str | None:
+    """TIER 2 of the composition tiebreak — a nested CHILD's own attribute VALUE.
+
+    WHY THIS TIER EXISTS (2026-09-06). Tier 1 (`_composition_tiebreak`'s slug
+    set-overlap) can only separate variants whose nested child SLUG SETS
+    differ. Two variants can legitimately nest the identical set of child block
+    types and still be structurally different, because one of those children is
+    configured differently — the measured case is `sgs/nav-drawer`'s
+    `two-column-editorial` vs `floating-capped-card`: both nest exactly
+    {`sgs/nav-menu`, `sgs/button`}, and `two-column-editorial` is the only
+    variant across all seven whose nested `sgs/nav-menu` sets `listColumns`
+    (a genuinely rendered, CSS-extractable `grid-template-columns` rule —
+    `nav-menu/render.php`). Slug-uniqueness has nothing to discriminate on
+    there; the child's attribute value does.
+
+    Same discipline as tier 1: TIEBREAKER ONLY, never additive, and it returns
+    the single tied variant with a STRICTLY higher score than every other tied
+    variant — None on no data, a tie, or an all-zero field, so the caller falls
+    through to its existing tie/miss behaviour.
+
+    R-31-1: every (child slug, attribute, value) triple comes from
+    `variant_composition_attr_slots`; no block, child or attribute is named in
+    this code.
+    """
+    if not child_blocks:
+        return None
+    tied = set(tied_variants)
+    if len(tied) < 2:
+        return None
+    attr_map = dict(_variant_composition_attr_slots_map(block_slug))
+    scores = sorted(
+        (
+            (_composition_attr_score(attr_map.get(variant_value, ()), child_blocks), variant_value)
+            for variant_value in tied
+        ),
+        reverse=True,
+    )
+    top_count, top_variant = scores[0]
+    if top_count == 0:
+        return None
+    if len(scores) > 1 and scores[1][0] == top_count:
+        return None
+    _trace(
+        "variant_detect_composition_attr_tiebreak_hit",
+        block_slug=block_slug,
+        tied=",".join(sorted(tied)),
+        variant=top_variant,
+    )
+    return top_variant
+
+
 def _composition_tiebreak(
-    block_slug: str, tied_variants: "set[str] | frozenset[str]", child_slugs: "list[str] | None"
+    block_slug: str,
+    tied_variants: "set[str] | frozenset[str]",
+    child_slugs: "list[str] | None",
+    child_blocks: "list[tuple[str, dict]] | None" = None,
 ) -> str | None:
     """Attempt to break an attribute-score tie using InnerBlocks composition.
 
@@ -3941,37 +4151,51 @@ def _composition_tiebreak(
     unavailable, still ties, or every tied variant scores 0 (no signal) — the
     caller falls through to today's existing tie/miss behaviour in every one
     of those cases.
+
+    TWO TIERS, IN ORDER (2026-09-06):
+
+      TIER 1 — child SLUG uniqueness (`child_slugs`, unchanged). Whenever it
+      resolves, that answer is returned and tier 2 is never consulted, so this
+      extension cannot change any result the slug signal already produced.
+
+      TIER 2 — a nested child's own ATTRIBUTE VALUE (`child_blocks`, see
+      `_composition_attr_tiebreak`). Reached only when tier 1 has nothing to
+      discriminate on — the identical-child-slug-set case. Requires the
+      caller to pass the children's real extracted attributes; a caller
+      passing only `child_slugs` gets exactly the pre-2026-09-06 behaviour.
     """
-    if not child_slugs:
-        return None
     tied = set(tied_variants)
     if len(tied) < 2:
         return None
-    comp_map = dict(_variant_composition_slots_map(block_slug))
-    input_slugs = set(child_slugs)
-    comp_scores = sorted(
-        (
-            (len(set(comp_map.get(variant_value, ())) & input_slugs), variant_value)
-            for variant_value in tied
-        ),
-        reverse=True,
-    )
-    top_comp_count, top_comp_variant = comp_scores[0]
-    if top_comp_count == 0:
-        return None
-    if len(comp_scores) > 1 and comp_scores[1][0] == top_comp_count:
-        return None
-    _trace(
-        "variant_detect_composition_tiebreak_hit",
-        block_slug=block_slug,
-        tied=",".join(sorted(tied)),
-        variant=top_comp_variant,
-    )
-    return top_comp_variant
+    if child_slugs:
+        comp_map = dict(_variant_composition_slots_map(block_slug))
+        input_slugs = set(child_slugs)
+        comp_scores = sorted(
+            (
+                (len(set(comp_map.get(variant_value, ())) & input_slugs), variant_value)
+                for variant_value in tied
+            ),
+            reverse=True,
+        )
+        top_comp_count, top_comp_variant = comp_scores[0]
+        if top_comp_count > 0 and not (
+            len(comp_scores) > 1 and comp_scores[1][0] == top_comp_count
+        ):
+            _trace(
+                "variant_detect_composition_tiebreak_hit",
+                block_slug=block_slug,
+                tied=",".join(sorted(tied)),
+                variant=top_comp_variant,
+            )
+            return top_comp_variant
+    return _composition_attr_tiebreak(block_slug, tied, child_blocks)
 
 
 def detect_variant(
-    block_slug: str, populated_attrs: dict, child_slugs: "list[str] | None" = None
+    block_slug: str,
+    populated_attrs: dict,
+    child_slugs: "list[str] | None" = None,
+    child_blocks: "list[tuple[str, dict]] | None" = None,
 ) -> str | None:
     """Detect a block's variant from the draft's extracted attrs THIS run.
 
@@ -4005,6 +4229,16 @@ def detect_variant(
          candidates are exactly the variants tied at that top score, per the
          existing ambiguity guard.
 
+    `child_blocks` (child-attribute-value composition signal, 2026-09-06) is
+    the OPTIONAL `[(child_slug, child_attrs_dict), ...]` list for the same
+    children, carrying each recognised child's own extracted attributes rather
+    than just its slug. It feeds TIER 2 of the composition tiebreak, consulted
+    only when the tier-1 slug signal cannot discriminate — the case where two
+    variants nest the identical set of child block types and differ only in how
+    one of those children is configured (`sgs/nav-drawer`'s
+    `two-column-editorial`). Default `None` keeps every caller that doesn't
+    pass it byte-identical to pre-2026-09-06 behaviour.
+
     Returns None when:
       - the block declares no variant_slots, or
       - no variant scored above zero and composition didn't resolve it, or
@@ -4033,7 +4267,9 @@ def detect_variant(
         # not just the ones with variant_slots rows (those all scored 0 too,
         # but a variant absent from `variants` altogether is equally at 0 and
         # must not be excluded from the composition tiebreak).
-        resolved = _composition_tiebreak(block_slug, declared_variant_values(block_slug), child_slugs)
+        resolved = _composition_tiebreak(
+            block_slug, declared_variant_values(block_slug), child_slugs, child_blocks
+        )
         if resolved is not None:
             return resolved
         _trace("variant_detect_miss", block_slug=block_slug, reason="no_slots_matched")
@@ -4041,7 +4277,7 @@ def detect_variant(
     # Ambiguity guard: a tie at the top means we cannot disambiguate → leave default.
     if len(scores) > 1 and scores[1][0] == top_count:
         tied_names = {v for cnt, v in scores if cnt == top_count}
-        resolved = _composition_tiebreak(block_slug, tied_names, child_slugs)
+        resolved = _composition_tiebreak(block_slug, tied_names, child_slugs, child_blocks)
         if resolved is not None:
             return resolved
         tied = ",".join(v for cnt, v in scores if cnt == top_count)

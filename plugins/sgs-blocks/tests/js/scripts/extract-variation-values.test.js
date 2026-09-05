@@ -40,6 +40,10 @@ describe( 'extract-variation-values', () => {
 				attributes: {},
 				nonLiteralAttrs: [],
 				innerBlockSlugs: [ 'sgs/button', 'sgs/text' ],
+				innerBlocks: [
+					{ slug: 'sgs/button', attributes: { label: 'Click me' }, nonLiteralAttrs: [] },
+					{ slug: 'sgs/text', attributes: { text: 'Hello' }, nonLiteralAttrs: [] },
+				],
 				unresolvedInnerBlocks: 0,
 			} );
 		} );
@@ -66,6 +70,10 @@ describe( 'extract-variation-values', () => {
 				attributes: {},
 				nonLiteralAttrs: [],
 				innerBlockSlugs: [ 'sgs/button', 'sgs/text' ],
+				innerBlocks: [
+					{ slug: 'sgs/button', attributes: { label: 'Click' }, nonLiteralAttrs: [] },
+					{ slug: 'sgs/text', attributes: { text: 'Help' }, nonLiteralAttrs: [] },
+				],
 				unresolvedInnerBlocks: 0,
 			} );
 		} );
@@ -90,6 +98,10 @@ describe( 'extract-variation-values', () => {
 				attributes: {},
 				nonLiteralAttrs: [],
 				innerBlockSlugs: [ 'sgs/nav-menu', 'sgs/button' ],
+				innerBlocks: [
+					{ slug: 'sgs/nav-menu', attributes: {}, nonLiteralAttrs: [] },
+					{ slug: 'sgs/button', attributes: { label: 'Go' }, nonLiteralAttrs: [] },
+				],
 				unresolvedInnerBlocks: 0,
 			} );
 		} );
@@ -115,6 +127,9 @@ describe( 'extract-variation-values', () => {
 				attributes: {},
 				nonLiteralAttrs: [],
 				innerBlockSlugs: [ 'sgs/button' ],
+				innerBlocks: [
+					{ slug: 'sgs/button', attributes: { label: 'OK' }, nonLiteralAttrs: [] },
+				],
 				unresolvedInnerBlocks: 3, // spread, missing function, identifier
 			} );
 		} );
@@ -144,6 +159,7 @@ describe( 'extract-variation-values', () => {
 				attributes: {},
 				nonLiteralAttrs: [],
 				innerBlockSlugs: [],
+				innerBlocks: [],
 				unresolvedInnerBlocks: 1,
 			} );
 		} );
@@ -174,6 +190,7 @@ describe( 'extract-variation-values', () => {
 				attributes: {},
 				nonLiteralAttrs: [],
 				innerBlockSlugs: [],
+				innerBlocks: [],
 				unresolvedInnerBlocks: 1,
 			} );
 		} );
@@ -203,6 +220,9 @@ describe( 'extract-variation-values', () => {
 				attributes: {},
 				nonLiteralAttrs: [],
 				innerBlockSlugs: [ 'sgs/only' ],
+				innerBlocks: [
+					{ slug: 'sgs/only', attributes: {}, nonLiteralAttrs: [] },
+				],
 				unresolvedInnerBlocks: 0,
 			} );
 		} );
@@ -234,6 +254,7 @@ describe( 'extract-variation-values', () => {
 				attributes: {},
 				nonLiteralAttrs: [],
 				innerBlockSlugs: [],
+				innerBlocks: [],
 				unresolvedInnerBlocks: 1,
 			} );
 		} );
@@ -264,6 +285,7 @@ describe( 'extract-variation-values', () => {
 				attributes: {},
 				nonLiteralAttrs: [],
 				innerBlockSlugs: [],
+				innerBlocks: [],
 				unresolvedInnerBlocks: 1,
 			} );
 		} );
@@ -292,6 +314,9 @@ describe( 'extract-variation-values', () => {
 				attributes: {},
 				nonLiteralAttrs: [],
 				innerBlockSlugs: [ 'sgs/outer-only' ],
+				innerBlocks: [
+					{ slug: 'sgs/outer-only', attributes: {}, nonLiteralAttrs: [] },
+				],
 				unresolvedInnerBlocks: 0,
 			} );
 		} );
@@ -317,6 +342,7 @@ describe( 'extract-variation-values', () => {
 				attributes: {},
 				nonLiteralAttrs: [],
 				innerBlockSlugs: [],
+				innerBlocks: [],
 				unresolvedInnerBlocks: 1,
 			} );
 		} );
@@ -336,6 +362,7 @@ describe( 'extract-variation-values', () => {
 				attributes: { someAttr: 'value' },
 				nonLiteralAttrs: [],
 				innerBlockSlugs: [],
+				innerBlocks: [],
 				unresolvedInnerBlocks: 0,
 			} );
 		} );
@@ -365,8 +392,146 @@ describe( 'extract-variation-values', () => {
 				attributes: { drawerBg: 'primary' },
 				nonLiteralAttrs: [],
 				innerBlockSlugs: [ 'sgs/nav-menu', 'sgs/icon-list', 'sgs/text', 'sgs/button' ],
+				innerBlocks: [
+					{ slug: 'sgs/nav-menu', attributes: { gap: '4px' }, nonLiteralAttrs: [] },
+					{ slug: 'sgs/icon-list', attributes: {}, nonLiteralAttrs: [] },
+					{ slug: 'sgs/text', attributes: { text: 'Hello' }, nonLiteralAttrs: [] },
+					{ slug: 'sgs/button', attributes: { label: 'Click' }, nonLiteralAttrs: [] },
+				],
 				unresolvedInnerBlocks: 1, // unknownHelper
 			} );
+		} );
+	} );
+
+	describe( 'child-block attribute extraction (child-attribute-value composition signal)', () => {
+		test( 'a helper spread merges the call arguments over the helper defaults', () => {
+			// The REAL shape of every current SGS variations helper, and the case
+			// the whole signal turns on: sgs/nav-drawer's `two-column-editorial` is
+			// the only variant whose nav-menu sets `listColumns`, and it reaches
+			// the helper through `...extra`. If the spread were not evaluated, that
+			// discriminator would silently not exist.
+			const source = `
+				function navMenu( extra = {} ) {
+					return [ 'sgs/nav-menu', { gap: '4px', ...extra } ];
+				}
+				const variations = [
+					{
+						name: 'two-column',
+						attributes: {},
+						innerBlocks: [
+							navMenu( { itemFontSize: 64, listColumns: { desktop: 2, mobile: 1 } } ),
+						],
+					},
+					{
+						name: 'plain',
+						attributes: {},
+						innerBlocks: [ navMenu() ],
+					},
+				];
+				export default variations;
+			`;
+			const result = extractFromFixture( source );
+			expect( result.variants[ 'two-column' ].innerBlocks ).toEqual( [
+				{
+					slug: 'sgs/nav-menu',
+					attributes: {
+						gap: '4px',
+						itemFontSize: 64,
+						listColumns: { desktop: 2, mobile: 1 },
+					},
+					nonLiteralAttrs: [],
+				},
+			] );
+			// NEGATIVE CONTROL — the same helper with no argument must NOT inherit
+			// the other call's overrides. Were the bindings leaking, both variants
+			// would carry `listColumns` and the discriminator would vanish.
+			expect( result.variants[ 'plain' ].innerBlocks ).toEqual( [
+				{ slug: 'sgs/nav-menu', attributes: { gap: '4px' }, nonLiteralAttrs: [] },
+			] );
+		} );
+
+		test( 'a non-literal child attribute is named, not invented, and does not discard its literal siblings', () => {
+			const source = `
+				const variations = [
+					{
+						name: 'partial',
+						attributes: {},
+						innerBlocks: [
+							[ 'sgs/button', { label: __( 'Get in touch', 'sgs-blocks' ), width: 3 } ],
+						],
+					},
+				];
+				export default variations;
+			`;
+			const result = extractFromFixture( source );
+			expect( result.variants[ 'partial' ].innerBlocks ).toEqual( [
+				{ slug: 'sgs/button', attributes: { width: 3 }, nonLiteralAttrs: [ 'label' ] },
+			] );
+		} );
+
+		test( 'an unresolvable spread inside a child attribute object is reported, never silently dropped', () => {
+			const source = `
+				const variations = [
+					{
+						name: 'bad-spread',
+						attributes: {},
+						innerBlocks: [
+							[ 'sgs/nav-menu', { gap: '4px', ...somethingUnknown } ],
+						],
+					},
+				];
+				export default variations;
+			`;
+			const result = extractFromFixture( source );
+			expect( result.variants[ 'bad-spread' ].innerBlocks ).toEqual( [
+				{ slug: 'sgs/nav-menu', attributes: { gap: '4px' }, nonLiteralAttrs: [ '...' ] },
+			] );
+		} );
+
+		test( 'a helper whose parameters cannot be bound yields the slug with NO attributes', () => {
+			// Destructuring parameter — refused rather than guessed. The slug still
+			// resolves, so the pre-existing composition signal is unaffected.
+			const source = `
+				function odd( { a } ) {
+					return [ 'sgs/nav-menu', { gap: a } ];
+				}
+				const variations = [
+					{
+						name: 'unbindable',
+						attributes: {},
+						innerBlocks: [ odd( { a: '4px' } ) ],
+					},
+				];
+				export default variations;
+			`;
+			const result = extractFromFixture( source );
+			expect( result.variants[ 'unbindable' ].innerBlocks ).toEqual( [
+				{ slug: 'sgs/nav-menu', attributes: {}, nonLiteralAttrs: [] },
+			] );
+			expect( result.variants[ 'unbindable' ].innerBlockSlugs ).toEqual( [ 'sgs/nav-menu' ] );
+		} );
+
+		test( 'an inherited Object.prototype name is never treated as a bound identifier', () => {
+			// `evalLiteral` looks bindings up with Object.hasOwn. With `in`, the
+			// identifier `toString` would resolve to a function and be emitted as a
+			// bogus attribute value.
+			const source = `
+				function helper( extra = {} ) {
+					return [ 'sgs/nav-menu', { weird: toString } ];
+				}
+				const variations = [
+					{
+						name: 'proto',
+						attributes: {},
+						innerBlocks: [ helper() ],
+					},
+				];
+				export default variations;
+			`;
+			const result = extractFromFixture( source );
+			expect( result.variants[ 'proto' ].innerBlocks ).toEqual( [
+				{ slug: 'sgs/nav-menu', attributes: {}, nonLiteralAttrs: [ 'weird' ] },
+			] );
 		} );
 	} );
 

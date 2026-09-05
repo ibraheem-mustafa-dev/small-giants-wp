@@ -65,6 +65,7 @@ def _fold_trace(stage: str, **kwargs: Any) -> None:
 from converter.context import ChildBlock, ContentGap, Recognition, ScalarLift
 from converter.recognition import variant_attrs
 from converter.dispatch_spine import emit_block_markup
+from converter.block_serialization import parse_block_open_comment
 from converter.services import content_gap_collector as _gap_collector
 from converter.services.styling_helpers import collect_css_decls_for_element
 from converter.db import db_lookup
@@ -409,8 +410,36 @@ def build_block_markup(
     if rec.slug is not None:
         _variant_attr = db_lookup.variant_attr_for(rec.slug)
         if _variant_attr is not None:
-            _child_slugs = [r.slug for r in results if isinstance(r, ChildBlock)]
-            _detected = db_lookup.detect_variant(rec.slug, attrs, child_slugs=_child_slugs)
+            _child_records = [r for r in results if isinstance(r, ChildBlock)]
+            _child_slugs = [r.slug for r in _child_records]
+            # Child-ATTRIBUTE-VALUE composition signal (2026-09-06). Tier 1 of
+            # the composition tiebreak needs only the child SLUGS above; tier 2
+            # needs each child's OWN extracted attributes, for the case where
+            # two variants nest the identical set of child block types and
+            # differ only in how one of those children is configured.
+            #
+            # `ChildBlock` carries `(slug, content)` where `content` is the
+            # child's already-SERIALISED block markup — its attributes exist
+            # there and nowhere else at this point in the pipeline, because
+            # `build_block_markup()` returns a string, not a dict. Reading them
+            # back from the markup is therefore the whole plumbing change: it
+            # reuses the emitted artefact rather than threading a parallel
+            # attribute channel through every ChildBlock construction site (six
+            # of them, in three different extraction paths). The read-back is
+            # exact, not lossy — see `parse_block_open_comment`'s docstring for
+            # why the first `-->` is provably the terminator.
+            #
+            # An unparseable child contributes nothing rather than an empty
+            # guess: it is simply absent from `_child_blocks`, so it can never
+            # manufacture a match.
+            _child_blocks: list[tuple[str, dict]] = []
+            for _cb in _child_records:
+                _parsed = parse_block_open_comment(_cb.content)
+                if _parsed is not None:
+                    _child_blocks.append((_cb.slug, _parsed[1]))
+            _detected = db_lookup.detect_variant(
+                rec.slug, attrs, child_slugs=_child_slugs, child_blocks=_child_blocks
+            )
             if isinstance(_detected, str):
                 attrs[_variant_attr] = _detected
 

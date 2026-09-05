@@ -32,12 +32,41 @@
  * value-based discriminator candidate for that variant, exactly like an
  * absent attribute).
  *
+ * CHILD-BLOCK ATTRIBUTES (2026-09-06 — child-attribute-value composition
+ * signal). Alongside each variant's own `attributes`, this script also emits
+ * the ATTRIBUTES each nested InnerBlocks child declares, under `innerBlocks`.
+ * That is the extraction half of the sibling signal to `innerBlockSlugs`: a
+ * variant whose nested child SLUG SET is identical to another variant's can
+ * still be discriminated when one of those children carries an attribute
+ * VALUE no sibling variant's same-slug child carries (`sgs/nav-drawer`'s
+ * `two-column-editorial` is the motivating case — its `sgs/nav-menu` child is
+ * the only one across all 7 variants setting `listColumns`).
+ *
+ * Child attributes are evaluated PER PROPERTY, exactly like the variant's own
+ * `attributes` above: a property whose value is not statically literal (an
+ * `__( … )` i18n call, an identifier, a computed key) is skipped and named in
+ * that child's `nonLiteralAttrs`, never invented. A child written as a call to
+ * a local helper (`navMenu( { … } )`) is resolved by substituting the call's
+ * own arguments into the helper's parameters and evaluating the returned
+ * object literal — including an object SPREAD of a bound parameter
+ * (`{ gap: '4px', ...extra }`), which is how every current SGS variations
+ * helper is written. A helper shape this cannot evaluate yields the slug with
+ * NO attributes (never a guessed set).
+ *
  * OUTPUT SHAPE (stdout, single JSON document):
  *   {
  *     "variants": {
  *       "<variant-name>": {
  *         "attributes": { "<attr>": <plain JSON value>, ... },
- *         "nonLiteralAttrs": [ "<attr>", ... ]
+ *         "nonLiteralAttrs": [ "<attr>", ... ],
+ *         "innerBlockSlugs": [ "<slug>", ... ],
+ *         "innerBlocks": [
+ *           { "slug": "<slug>",
+ *             "attributes": { "<attr>": <plain JSON value>, ... },
+ *             "nonLiteralAttrs": [ "<attr>", ... ] },
+ *           ...
+ *         ],
+ *         "unresolvedInnerBlocks": <count>
  *       },
  *       ...
  *     }
@@ -68,10 +97,18 @@ const BABEL_PARSE_OPTS = {
  * reference, call expression, spread, computed key, template with
  * expressions, etc.) — the caller must not guess a value in that case.
  *
+ * `bindings` (optional, 2026-09-06) maps an identifier NAME to an already-
+ * evaluated plain value. It exists solely so a local helper function's body can
+ * be evaluated with its own parameters bound to the call site's arguments (see
+ * `resolveLocalFunctionCallBlock`). Without a binding an `Identifier` stays
+ * non-literal exactly as before — the default `{}` keeps every pre-existing
+ * caller byte-identical.
+ *
  * @param {import('@babel/types').Node} node
+ * @param {Object} [bindings] Identifier name -> already-evaluated plain value.
  * @return {{ok: boolean, value?: *}}
  */
-function evalLiteral( node ) {
+function evalLiteral( node, bindings = {} ) {
 	if ( ! node ) {
 		return { ok: false };
 	}
@@ -82,6 +119,14 @@ function evalLiteral( node ) {
 			return { ok: true, value: node.value };
 		case 'NullLiteral':
 			return { ok: true, value: null };
+		case 'Identifier':
+			// Only a BOUND identifier is a literal. `Object.prototype`-inherited
+			// names (`toString`, `constructor`, …) must never resolve — hence
+			// `Object.hasOwn`, not `name in bindings`.
+			if ( Object.hasOwn( bindings, node.name ) ) {
+				return { ok: true, value: bindings[ node.name ] };
+			}
+			return { ok: false };
 		case 'TemplateLiteral':
 			// Only a template with ZERO interpolations is a literal (`4px` written
 			// as a template for some reason) — one with expressions is not.
@@ -92,6 +137,19 @@ function evalLiteral( node ) {
 		case 'ObjectExpression': {
 			const out = {};
 			for ( const prop of node.properties ) {
+				if ( prop.type === 'SpreadElement' ) {
+					const spread = evalLiteral( prop.argument, bindings );
+					if (
+						! spread.ok ||
+						spread.value === null ||
+						typeof spread.value !== 'object' ||
+						Array.isArray( spread.value )
+					) {
+						return { ok: false };
+					}
+					Object.assign( out, spread.value );
+					continue;
+				}
 				if ( prop.type !== 'ObjectProperty' || prop.computed ) {
 					return { ok: false };
 				}
@@ -103,7 +161,7 @@ function evalLiteral( node ) {
 				if ( key === null ) {
 					return { ok: false };
 				}
-				const val = evalLiteral( prop.value );
+				const val = evalLiteral( prop.value, bindings );
 				if ( ! val.ok ) {
 					return { ok: false };
 				}
@@ -117,7 +175,7 @@ function evalLiteral( node ) {
 				if ( el === null ) {
 					return { ok: false };
 				}
-				const val = evalLiteral( el );
+				const val = evalLiteral( el, bindings );
 				if ( ! val.ok ) {
 					return { ok: false };
 				}
@@ -128,6 +186,65 @@ function evalLiteral( node ) {
 		default:
 			return { ok: false };
 	}
+}
+
+/**
+ * Evaluate an ObjectExpression PROPERTY BY PROPERTY, keeping every statically-
+ * literal member and naming the rest rather than failing the whole object.
+ *
+ * This is the same partial-evaluation contract the variant's own `attributes`
+ * object already uses (a `label: __( 'Get in touch', 'sgs-blocks' )` entry must
+ * not discard the sibling `listColumns: { desktop: 2 }` entry alongside it),
+ * factored out so child-block attribute objects get identical treatment.
+ *
+ * An unresolvable SPREAD is reported as the pseudo-key `...` in
+ * `nonLiteralAttrs` — it is a real, named gap (some unknown set of properties
+ * may be missing), never silently ignored.
+ *
+ * @param {import('@babel/types').ObjectExpression} objNode
+ * @param {Object} [bindings] Identifier name -> already-evaluated plain value.
+ * @return {{attributes: Object, nonLiteralAttrs: string[]}}
+ */
+function evalObjectPartial( objNode, bindings = {} ) {
+	const attributes = {};
+	const nonLiteralAttrs = [];
+	if ( ! objNode || objNode.type !== 'ObjectExpression' ) {
+		return { attributes, nonLiteralAttrs };
+	}
+	for ( const prop of objNode.properties ) {
+		if ( prop.type === 'SpreadElement' ) {
+			const spread = evalLiteral( prop.argument, bindings );
+			if (
+				spread.ok &&
+				spread.value !== null &&
+				typeof spread.value === 'object' &&
+				! Array.isArray( spread.value )
+			) {
+				Object.assign( attributes, spread.value );
+			} else {
+				nonLiteralAttrs.push( '...' );
+			}
+			continue;
+		}
+		if ( prop.type !== 'ObjectProperty' || prop.computed ) {
+			continue;
+		}
+		const key = prop.key.type === 'Identifier'
+			? prop.key.name
+			: prop.key.type === 'StringLiteral'
+				? prop.key.value
+				: null;
+		if ( key === null ) {
+			continue;
+		}
+		const val = evalLiteral( prop.value, bindings );
+		if ( val.ok ) {
+			attributes[ key ] = val.value;
+		} else {
+			nonLiteralAttrs.push( key );
+		}
+	}
+	return { attributes, nonLiteralAttrs };
 }
 
 /**
@@ -228,12 +345,73 @@ function findFunctionDeclaration( fnName, ast ) {
 }
 
 /**
+ * Bind a local function's PARAMETERS to a call site's ARGUMENTS, so the
+ * function's returned object literal can be evaluated concretely.
+ *
+ * Only simple parameter shapes are bound: a bare `Identifier`, or an
+ * `AssignmentPattern` whose left side is an Identifier (`extra = {}`) — the
+ * default is evaluated and used when the call passes no argument at that
+ * position. Anything else (destructuring pattern, rest element) yields
+ * `{ ok: false }`, and the caller then reports the child's attributes as
+ * unresolved rather than guessing them.
+ *
+ * @param {import('@babel/types').Node} fnDecl
+ * @param {import('@babel/types').CallExpression} callNode
+ * @return {{ok: boolean, bindings?: Object}}
+ */
+function bindCallArguments( fnDecl, callNode ) {
+	const bindings = {};
+	const params = fnDecl.params || [];
+	for ( let i = 0; i < params.length; i++ ) {
+		const param = params[ i ];
+		const arg = callNode.arguments[ i ];
+		let name = null;
+		let defaultNode = null;
+		if ( param.type === 'Identifier' ) {
+			name = param.name;
+		} else if ( param.type === 'AssignmentPattern' && param.left.type === 'Identifier' ) {
+			name = param.left.name;
+			defaultNode = param.right;
+		} else {
+			return { ok: false };
+		}
+		if ( arg === undefined ) {
+			if ( defaultNode === null ) {
+				// No argument and no default — JS would bind `undefined`, which is
+				// not a JSON value. Refuse rather than invent one.
+				return { ok: false };
+			}
+			const def = evalLiteral( defaultNode, bindings );
+			if ( ! def.ok ) {
+				return { ok: false };
+			}
+			bindings[ name ] = def.value;
+			continue;
+		}
+		const val = evalLiteral( arg, bindings );
+		if ( ! val.ok ) {
+			return { ok: false };
+		}
+		bindings[ name ] = val.value;
+	}
+	return { ok: true, bindings };
+}
+
+/**
  * Resolve a CallExpression to a local function declaration and extract its
  * return value's first element if it's an ArrayExpression with a StringLiteral.
  *
+ * Also returns the returned array's SECOND element when it is an
+ * ObjectExpression (the child block's attributes), together with the
+ * parameter->argument `bindings` needed to evaluate it — 2026-09-06, for the
+ * child-attribute-value composition signal. `attributesNode` is null (and
+ * `bindings` `{}`) whenever the helper's shape cannot be bound concretely; the
+ * SLUG resolution is unaffected in that case, preserving the pre-existing
+ * contract exactly.
+ *
  * @param {import('@babel/types').CallExpression} callNode
  * @param {import('@babel/types').File} ast
- * @return {{ok: boolean, value?: string}}
+ * @return {{ok: boolean, value?: string, attributesNode?: Object|null, bindings?: Object}}
  */
 function resolveLocalFunctionCallBlock( callNode, ast ) {
 	// Must be a call to an Identifier (simple function name, not a property access).
@@ -305,15 +483,31 @@ function resolveLocalFunctionCallBlock( callNode, ast ) {
 		return { ok: false };
 	}
 
-	return { ok: true, value: firstEl.value };
+	const secondEl = returnValue.elements[ 1 ];
+	let attributesNode = null;
+	let bindings = {};
+	if ( secondEl && secondEl.type === 'ObjectExpression' ) {
+		const bound = bindCallArguments( fnDecl, callNode );
+		if ( bound.ok ) {
+			attributesNode = secondEl;
+			bindings = bound.bindings;
+		}
+	}
+
+	return { ok: true, value: firstEl.value, attributesNode, bindings };
 }
 
 /**
- * Process a single inner block element and extract its slug if possible.
+ * Process a single inner block element and extract its slug — plus, since
+ * 2026-09-06, its own declared ATTRIBUTES.
+ *
+ * `attributes`/`nonLiteralAttrs` are always present on a resolved child (both
+ * empty when the entry declares no attributes object, or when the helper shape
+ * could not be bound). Slug resolution is unchanged.
  *
  * @param {import('@babel/types').Node} el
  * @param {import('@babel/types').File} ast
- * @return {{slug?: string, resolved: boolean}}
+ * @return {{slug?: string, attributes?: Object, nonLiteralAttrs?: string[], resolved: boolean}}
  */
 function processInnerBlockElement( el, ast ) {
 	if ( ! el ) {
@@ -324,7 +518,12 @@ function processInnerBlockElement( el, ast ) {
 	if ( el.type === 'ArrayExpression' ) {
 		const firstEl = el.elements[ 0 ];
 		if ( firstEl?.type === 'StringLiteral' ) {
-			return { slug: firstEl.value, resolved: true };
+			const secondEl = el.elements[ 1 ];
+			const { attributes, nonLiteralAttrs } =
+				secondEl && secondEl.type === 'ObjectExpression'
+					? evalObjectPartial( secondEl )
+					: { attributes: {}, nonLiteralAttrs: [] };
+			return { slug: firstEl.value, attributes, nonLiteralAttrs, resolved: true };
 		}
 		return { resolved: false };
 	}
@@ -333,7 +532,10 @@ function processInnerBlockElement( el, ast ) {
 	if ( el.type === 'CallExpression' ) {
 		const result = resolveLocalFunctionCallBlock( el, ast );
 		if ( result.ok ) {
-			return { slug: result.value, resolved: true };
+			const { attributes, nonLiteralAttrs } = result.attributesNode
+				? evalObjectPartial( result.attributesNode, result.bindings )
+				: { attributes: {}, nonLiteralAttrs: [] };
+			return { slug: result.value, attributes, nonLiteralAttrs, resolved: true };
 		}
 		return { resolved: false };
 	}
@@ -343,26 +545,33 @@ function processInnerBlockElement( el, ast ) {
 }
 
 /**
- * Extract inner block slugs from an `innerBlocks` array.
+ * Extract inner block slugs (and each child's own attributes) from an
+ * `innerBlocks` array.
  *
  * @param {import('@babel/types').ArrayExpression} innerBlocksNode
  * @param {import('@babel/types').File} ast
- * @return {{innerBlockSlugs: string[], unresolvedInnerBlocks: number}}
+ * @return {{innerBlockSlugs: string[], innerBlocks: Object[], unresolvedInnerBlocks: number}}
  */
 function extractInnerBlockSlugs( innerBlocksNode, ast ) {
 	const innerBlockSlugs = [];
+	const innerBlocks = [];
 	let unresolvedInnerBlocks = 0;
 
 	for ( const el of innerBlocksNode.elements ) {
 		const result = processInnerBlockElement( el, ast );
 		if ( result.resolved && result.slug ) {
 			innerBlockSlugs.push( result.slug );
+			innerBlocks.push( {
+				slug: result.slug,
+				attributes: result.attributes || {},
+				nonLiteralAttrs: result.nonLiteralAttrs || [],
+			} );
 		} else {
 			unresolvedInnerBlocks++;
 		}
 	}
 
-	return { innerBlockSlugs, unresolvedInnerBlocks };
+	return { innerBlockSlugs, innerBlocks, unresolvedInnerBlocks };
 }
 
 /**
@@ -432,13 +641,21 @@ function extract( filePath ) {
 			}
 		}
 		let innerBlockSlugs = [];
+		let innerBlocks = [];
 		let unresolvedInnerBlocks = 0;
 		if ( innerBlocksNode ) {
 			const result = extractInnerBlockSlugs( innerBlocksNode, ast );
 			innerBlockSlugs = result.innerBlockSlugs;
+			innerBlocks = result.innerBlocks;
 			unresolvedInnerBlocks = result.unresolvedInnerBlocks;
 		}
-		variants[ name ] = { attributes, nonLiteralAttrs, innerBlockSlugs, unresolvedInnerBlocks };
+		variants[ name ] = {
+			attributes,
+			nonLiteralAttrs,
+			innerBlockSlugs,
+			innerBlocks,
+			unresolvedInnerBlocks,
+		};
 	}
 	return { variants };
 }
@@ -467,4 +684,4 @@ if ( require.main === module ) {
 	main();
 }
 
-module.exports = { extract, evalLiteral, findVariationsArray };
+module.exports = { extract, evalLiteral, evalObjectPartial, findVariationsArray };

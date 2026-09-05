@@ -167,3 +167,158 @@ def test_detect_variant_composition_tie_still_ambiguous_falls_through():
     attrs = {"drawerBg": "footer-bg", "drawerAlign": "left", "closeStyle": "separate-x"}
     two_column_slugs = ["sgs/nav-menu", "sgs/button"]
     assert db_lookup.detect_variant("sgs/nav-drawer", attrs, child_slugs=two_column_slugs) is None
+
+
+# ----------------------------------------------------------------------------
+# db_lookup.detect_variant — TIER 2: child-ATTRIBUTE-VALUE composition
+# (2026-09-06)
+# ----------------------------------------------------------------------------
+# Same real fixture, the case tier 1 provably cannot reach.
+# `two-column-editorial` and `floating-capped-card` nest the IDENTICAL child
+# slug set {sgs/nav-menu, sgs/button}, so slug-uniqueness has nothing to
+# discriminate on (the test directly above pins that). What separates them is
+# the nested nav-menu's own configuration: `two-column-editorial` is the only
+# one of the seven variants whose nav-menu sets `listColumns` — a genuinely
+# rendered, CSS-extractable responsive grid-template-columns rule
+# (nav-menu/render.php).
+
+_TWO_COLUMN_ATTRS = {"drawerBg": "surface", "closeStyle": "text-swap"}
+_TWO_COLUMN_CHILD_SLUGS = ["sgs/nav-menu", "sgs/button"]
+_TWO_COLUMN_CHILD_BLOCKS = [
+    (
+        "sgs/nav-menu",
+        {
+            "gap": "4px",
+            "itemFontSize": 64,
+            "listColumns": {"desktop": 2, "mobile": 1},
+            "itemFontSizeMobile": 40,
+        },
+    ),
+    ("sgs/button", {}),
+]
+
+
+def test_detect_variant_resolved_by_child_attribute_value():
+    """`two-column-editorial`'s REAL preset attrs + REAL children, verbatim from
+    `src/blocks/nav-drawer/variations.js`.
+
+    Every one of its own attribute values is duplicated by a sibling variant
+    (drawerBg:surface and closeStyle:text-swap both also appear on
+    `floating-capped-card`), so it has no `variant_slots` row and scores 0 on
+    attributes. Its child SLUG set is identical to `floating-capped-card`'s, so
+    tier 1 scores 0 too. Passing the children's own attributes must resolve it
+    via tier 2 — the `variant_composition_attr_slots` rows /sgs-update derived
+    from those same nav-menu overrides.
+    """
+    from converter.db import db_lookup
+
+    assert db_lookup.detect_variant(
+        "sgs/nav-drawer",
+        _TWO_COLUMN_ATTRS,
+        child_slugs=_TWO_COLUMN_CHILD_SLUGS,
+        child_blocks=_TWO_COLUMN_CHILD_BLOCKS,
+    ) == "two-column-editorial"
+
+
+def test_detect_variant_child_attribute_default_off_path_unchanged():
+    """NEGATIVE CONTROL for the tier itself: the identical case with
+    `child_blocks` omitted must STILL return None.
+
+    This is the pre-2026-09-06 result (the FAIL row in the task-2 audit), and
+    it proves the new tier is genuinely doing the work rather than something
+    else having changed — and that the extension is purely opt-in for any
+    caller that does not supply child attributes.
+    """
+    from converter.db import db_lookup
+
+    assert db_lookup.detect_variant(
+        "sgs/nav-drawer", _TWO_COLUMN_ATTRS, child_slugs=_TWO_COLUMN_CHILD_SLUGS
+    ) is None
+    assert db_lookup.detect_variant(
+        "sgs/nav-drawer",
+        _TWO_COLUMN_ATTRS,
+        child_slugs=_TWO_COLUMN_CHILD_SLUGS,
+        child_blocks=[],
+    ) is None
+
+
+def test_detect_variant_child_attribute_is_value_aware_not_name_aware():
+    """NEGATIVE CONTROL for the SCORING: the same children carrying the same
+    attribute NAMES at DIFFERENT values must not resolve.
+
+    Mirrors `_slot_score`'s preset-variant contract — a shared name at a
+    different value is worth 0, exactly as if the attribute were absent. Were
+    the tier name-keyed instead of value-keyed, this would wrongly return
+    `two-column-editorial`.
+    """
+    from converter.db import db_lookup
+
+    wrong_values = [
+        (
+            "sgs/nav-menu",
+            {
+                "gap": "4px",
+                "itemFontSize": 21,
+                "listColumns": {"desktop": 5, "mobile": 4},
+                "itemFontSizeMobile": 19,
+            },
+        ),
+        ("sgs/button", {}),
+    ]
+    assert db_lookup.detect_variant(
+        "sgs/nav-drawer",
+        _TWO_COLUMN_ATTRS,
+        child_slugs=_TWO_COLUMN_CHILD_SLUGS,
+        child_blocks=wrong_values,
+    ) is None
+
+
+def test_detect_variant_child_attribute_tier1_still_wins():
+    """Tier 1 (slug uniqueness) must keep precedence.
+
+    `split-zone-serif`'s real children include the unique `sgs/card-grid`, AND
+    its nav-menu carries no discriminating attributes at all. It must still
+    resolve to `split-zone-serif` when child attributes are supplied — the new
+    tier must not perturb a case the slug signal already answers.
+    """
+    from converter.db import db_lookup
+
+    attrs = {"drawerBg": "footer-bg", "drawerAlign": "left", "closeStyle": "separate-x"}
+    child_blocks = [
+        ("sgs/nav-menu", {"gap": "4px"}),
+        ("sgs/icon-list", {}),
+        ("sgs/text", {}),
+        ("sgs/social-icons", {}),
+        ("sgs/card-grid", {}),
+    ]
+    assert db_lookup.detect_variant(
+        "sgs/nav-drawer",
+        attrs,
+        child_slugs=[s for s, _a in child_blocks],
+        child_blocks=child_blocks,
+    ) == "split-zone-serif"
+
+
+def test_parse_block_open_comment_round_trips_child_attributes():
+    """The plumbing this tier depends on: `assembly.py` holds each child only as
+    SERIALISED markup, and reads its attributes back with
+    `parse_block_open_comment`. Prove that read-back is exact for a value that
+    exercises core's comment-escaping (a `-->` inside a string), and that an
+    unreadable opener reports absence rather than a guessed `{}`.
+    """
+    from converter.block_serialization import parse_block_open_comment
+    from converter.dispatch_spine import emit_block_markup
+
+    attrs = {"listColumns": {"desktop": 2, "mobile": 1}, "label": "a --> b"}
+    markup = emit_block_markup("sgs/nav-menu", attrs)
+    assert parse_block_open_comment(markup) == ("sgs/nav-menu", attrs)
+
+    # No-attribute block: name resolves, attributes are an empty dict.
+    assert parse_block_open_comment(emit_block_markup("sgs/card-grid", {})) == (
+        "sgs/card-grid",
+        {},
+    )
+
+    # Not a block comment at all — absence, never a guess.
+    assert parse_block_open_comment("<div>not a block</div>") is None
+    assert parse_block_open_comment("") is None
