@@ -84,16 +84,16 @@ $content_mode          = in_array( $content_mode_raw, $allowed_content_modes, tr
 // ---------------------------------------------------------------------------
 
 $base_padding_obj = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $padding_side => $padding_value ) {
+if ( isset( $attributes['padding'] ) && is_array( $attributes['padding'] ) ) {
+	foreach ( $attributes['padding'] as $padding_side => $padding_value ) {
 		if ( is_string( $padding_value ) && '' !== $padding_value ) {
 			$base_padding_obj[ $padding_side ] = $padding_value;
 		}
 	}
 }
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $margin_side => $margin_value ) {
+if ( isset( $attributes['margin'] ) && is_array( $attributes['margin'] ) ) {
+	foreach ( $attributes['margin'] as $margin_side => $margin_value ) {
 		if ( is_string( $margin_value ) && '' !== $margin_value ) {
 			$base_margin_obj[ $margin_side ] = $margin_value;
 		}

@@ -30,15 +30,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true,
-			"__experimentalDefaultControls": {
-				"margin": false,
-				"padding": false
-			}
-		},
 		"sgs": {
 			"scalarStylingLift": true,
 			"arrayContentLift": true,
@@ -64,8 +55,8 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:max-width": "maxWidth",
 						"css:width": "width",
 						"css:border-width": "borderWidth",
@@ -129,12 +120,10 @@
 			},
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderWidth": [
 					"borderWidth"
@@ -153,6 +142,18 @@
 		"typography": ".sgs-option-picker__pill"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"label": {
 			"type": "string",
 			"default": "Choose an option"
@@ -333,22 +334,6 @@
 			"default": {
 				"desktop": {}
 			}
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"borderRadius": {
 			"type": "object",

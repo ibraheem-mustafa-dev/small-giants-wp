@@ -118,16 +118,16 @@ if ( ! $evergreen_mode && $target_date ) {
 // ---------------------------------------------------------------------------
 
 $base_padding_obj = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $side => $val ) {
+if ( isset( $attributes['padding'] ) && is_array( $attributes['padding'] ) ) {
+	foreach ( $attributes['padding'] as $side => $val ) {
 		if ( is_string( $val ) && '' !== $val ) {
 			$base_padding_obj[ $side ] = $val;
 		}
 	}
 }
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $side => $val ) {
+if ( isset( $attributes['margin'] ) && is_array( $attributes['margin'] ) ) {
+	foreach ( $attributes['margin'] as $side => $val ) {
 		if ( is_string( $val ) && '' !== $val ) {
 			$base_margin_obj[ $side ] = $val;
 		}

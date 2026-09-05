@@ -81,11 +81,11 @@ $typography_css      = sgs_typography_css_rule( $attributes, '', $typography_sel
 // ---------------------------------------------------------------------------
 
 // WP-native base padding/margin objects (skip-serialised — NOT auto-inlined).
-$base_padding_obj = ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) )
-	? $attributes['style']['spacing']['padding']
+$base_padding_obj = ( isset( $attributes['padding'] ) && is_array( $attributes['padding'] ) )
+	? $attributes['padding']
 	: array();
-$base_margin_obj  = ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) )
-	? $attributes['style']['spacing']['margin']
+$base_margin_obj  = ( isset( $attributes['margin'] ) && is_array( $attributes['margin'] ) )
+	? $attributes['margin']
 	: array();
 
 // SGS custom tier object attrs.

@@ -11,7 +11,7 @@
 
 <!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface","contentWidth":{"desktop":"800px"},"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"flexWrap":"wrap","templateLock":"contentOnly"} -->
 
-	<!-- wp:sgs/heading {"content":"Frequently Asked Questions","textAlign":"center","fontSize":{"desktop":"xx-large"},"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} /-->
+	<!-- wp:sgs/heading {"content":"Frequently Asked Questions","textAlign":"center","fontSize":{"desktop":"xx-large"},"margin":{"bottom":"var:preset|spacing|60"}} /-->
 
 	<!-- wp:sgs/accordion -->
 	<!-- wp:sgs/accordion-item {"title":"How long does a typical project take?"} -->

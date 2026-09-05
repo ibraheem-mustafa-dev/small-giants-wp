@@ -219,11 +219,86 @@ def fix_radius_edit_js(block_dir: Path, apply: bool):
     return True, f'rewrote radius wiring in {edit_js.relative_to(REPO)}', None
 
 
+# --- POST-REDIRECT shape (Group 1, Phase 3, 2026-09-05): the 32 blocks
+# migrated off native `supports.spacing` by migrate-off-native-spacing.py +
+# redirect-native-spacing-reads.py now read/write the flat trio DIRECTLY (no
+# attrFor map) via a base/else if-branch. Two confirmed variants, differing
+# only in whether the attribute is accessed as `attributes.X` (Shape A --
+# accordion/cta-section/form/nav-menu) or as a destructured local `X` (Shape
+# B -- button/audio/most others). Both write via a direct
+# `setAttributes({prop:next})` for base and a ternary/template-literal key
+# for tablet/mobile -- confirmed by reading real files, not invented.
+def _make_post_redirect_pattern(prop: str, attrs_prefix: str) -> re.Pattern:
+    """`attrs_prefix` is `'attributes\\.'` for Shape A or `''` for Shape B."""
+    p = re.escape(prop)
+    ap = attrs_prefix
+    return re.compile(
+        r'([ \t]*)<ResponsiveBoxControl\n'
+        r'\s*label=\{\s*__\(\s*([\'"])((?:(?!\2).)*)\2\s*,\s*[\'"]sgs-blocks[\'"]\s*\)\s*\}\n'
+        r'(\s*presets\n)?'
+        r'\s*values=\{\s*\{\n'
+        r'\s*base:\s*' + ap + p + r'\s*\?\?\s*\{\}\s*,\n'
+        r'\s*tablet:\s*' + ap + p + r'Tablet\s*\?\?\s*\{\}\s*,\n'
+        r'\s*mobile:\s*' + ap + p + r'Mobile\s*\?\?\s*\{\}\s*,\n'
+        r'\s*\}\s*\}\n'
+        r'\s*onChange=\{\s*\(\s*tier,\s*next\s*\)\s*=>\s*\{\n'
+        r'\s*if\s*\(\s*(?:tier\s*===\s*[\'"]base[\'"]|[\'"]base[\'"]\s*===\s*tier)\s*\)\s*\{\n'
+        # The WRITE key is always bare (`padding: next`) regardless of Shape
+        # A/B -- `attributes.padding: next` is not valid JS. Only the READ
+        # side (`values={{base: ...}}`) ever carries the `attributes.` prefix.
+        r'\s*setAttributes\(\s*\{\s*' + p + r':\s*next\s*,?\s*\}\s*\)\s*;?\n'
+        r'\s*\}\s*else\s*\{\n'
+        r'(?:(?!\}\s*\}\s*\n\s*/>).)*?'  # the tablet/mobile write -- ternary or template literal, either is fine
+        r'\s*\}\s*\}\n'
+        r'([ \t]*)/>',
+        re.MULTILINE | re.DOTALL,
+    )
+
+
+def post_redirect_edit_js_state(edit_js: Path, prop: str):
+    if not edit_js.exists():
+        return 'ABSENT', None, None
+    src = edit_js.read_text(encoding='utf-8')
+    for prefix in ('attributes\\.', ''):
+        pattern = _make_post_redirect_pattern(prop, prefix)
+        m = pattern.search(src)
+        if m:
+            return 'POST_REDIRECT', m, prefix
+    return None, None, None
+
+
+def fix_post_redirect_edit_js(block_dir: Path, prop: str, apply: bool):
+    edit_js = block_dir / 'edit.js'
+    state, match, _prefix = post_redirect_edit_js_state(edit_js, prop)
+    if state != 'POST_REDIRECT':
+        return False, '', 'edit.js is not the exact POST_REDIRECT shape for "%s" -- refusing' % prop
+
+    src = edit_js.read_text(encoding='utf-8')
+    label = match.group(3)
+    presets = bool(match.group(4))
+    indent = match.group(1)
+    closing_indent = match.group(5)
+    replacement = _replacement(prop, label, presets, indent, closing_indent)
+    new_src = src[:match.start()] + replacement + src[match.end():]
+
+    with_imports = ensure_imports(new_src, needs_sgs_box_control=presets)
+    if with_imports is None:
+        return False, '', 'could not find a "../../components" import line to extend -- refusing'
+    new_src = with_imports
+
+    if not apply:
+        return True, 'would rewrite <ResponsiveBoxControl> (%s, POST_REDIRECT shape) -> <ResponsiveOverride>+%s in %s' % (
+            label, 'SgsBoxControl' if presets else 'BoxControl', edit_js.relative_to(REPO)), None
+    edit_js.write_text(new_src, encoding='utf-8')
+    return True, 'rewrote %s control (POST_REDIRECT shape) in %s' % (label, edit_js.relative_to(REPO)), None
+
+
 def edit_js_state(edit_js: Path, prop: str):
     """Return ('LEGACY', match) if the exact canonical shape is found,
+    ('POST_REDIRECT', match) if the Group-1 direct-write shape is found,
     ('ABSENT', None) if no <ResponsiveBoxControl> for this prop appears at
-    all, or ('UNCLEAR', None) if the prop is referenced but doesn't match the
-    exact shape (needs a human look, never auto-fixed)."""
+    all, or ('UNCLEAR', None) if the prop is referenced but doesn't match any
+    known exact shape (needs a human look, never auto-fixed)."""
     if not edit_js.exists():
         return 'ABSENT', None
     src = edit_js.read_text(encoding='utf-8')
@@ -231,8 +306,11 @@ def edit_js_state(edit_js: Path, prop: str):
     m = pattern.search(src)
     if m:
         return 'LEGACY', m
+    pr_state, pr_match, _prefix = post_redirect_edit_js_state(edit_js, prop)
+    if pr_state == 'POST_REDIRECT':
+        return 'POST_REDIRECT', pr_match
     # Does the prop appear at all in a ResponsiveBoxControl context?
-    if re.search(r'<ResponsiveBoxControl[\s\S]{0,400}?attributes\.' + re.escape(prop) + r'\b', src):
+    if re.search(r'<ResponsiveBoxControl[\s\S]{0,400}?' + re.escape(prop) + r'\b', src):
         return 'UNCLEAR', None
     return 'ABSENT', None
 
@@ -362,6 +440,8 @@ def main() -> int:
         print(f'\n{n} block(s) with a FLAT_TRIO block.json shape for "{prop}".')
         n_legacy = sum(1 for r in rows if r['editjs'] == 'LEGACY')
         print(f'{n_legacy} block(s) with the exact canonical LEGACY edit.js wiring (auto-fixable).')
+        n_post_redirect = sum(1 for r in rows if r['editjs'] == 'POST_REDIRECT')
+        print(f'{n_post_redirect} block(s) with the POST_REDIRECT (Group 1) edit.js wiring (auto-fixable).')
         n_unclear = sum(1 for r in rows if r['editjs'] == 'UNCLEAR')
         if n_unclear:
             print(f'{n_unclear} block(s) UNCLEAR edit.js wiring — needs individual review:')
@@ -372,11 +452,13 @@ def main() -> int:
 
     if args.fix:
         for r in rows:
-            if r['blockjson'] != 'FLAT_TRIO' or r['editjs'] != 'LEGACY':
+            if r['blockjson'] != 'FLAT_TRIO' or r['editjs'] not in ('LEGACY', 'POST_REDIRECT'):
                 continue
             ok_bj, desc_bj, err_bj = fix_block_json(r['dir'], prop, apply=args.apply)
             if prop == 'borderRadius':
                 ok_ej, desc_ej, err_ej = fix_radius_edit_js(r['dir'], apply=args.apply)
+            elif r['editjs'] == 'POST_REDIRECT':
+                ok_ej, desc_ej, err_ej = fix_post_redirect_edit_js(r['dir'], prop, apply=args.apply)
             else:
                 ok_ej, desc_ej, err_ej = fix_edit_js(r['dir'], prop, apply=args.apply)
             tag = 'APPLY' if args.apply else 'DRY-RUN'

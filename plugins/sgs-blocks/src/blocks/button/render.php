@@ -143,16 +143,16 @@ $min_height_mob_u = in_array( $min_height_mob_u, $allowed_units, true ) ? $min_h
 // paddingTablet/paddingMobile + marginTablet/marginMobile OBJECT attrs
 // { top, right, bottom, left } (a missing key = that side unset).
 $base_spacing_padding = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+if ( isset( $attributes['padding'] ) && is_array( $attributes['padding'] ) ) {
+	foreach ( $attributes['padding'] as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_spacing_padding[ $spacing_side ] = $spacing_value;
 		}
 	}
 }
 $base_spacing_margin = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+if ( isset( $attributes['margin'] ) && is_array( $attributes['margin'] ) ) {
+	foreach ( $attributes['margin'] as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_spacing_margin[ $spacing_side ] = $spacing_value;
 		}

@@ -24,40 +24,39 @@
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				]
 			},
 			"elements": {
 				"wrapper": {
 					"label": "Wrapper",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "native:color.text",
 						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin"
+						"css:padding": "padding",
+						"css:margin": "margin"
 					},
 					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-star-rating — display:flex hardcoded, no attribute, so no `layer`/arrangement members). No width/height/max-width/border/box-shadow/gap attribute exists on this block — honest gaps. Content-KIND, block-private (D294)."
 				},
 				"star": {
 					"label": "Star",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "star",
 					"_note": "SVG glyph fill (render.php:227/244, sgs_colour_value($attributes['starColour'])) — starColour is mapped EXPLICITLY to css:fill above. The prefix convention would resolve it to css:color, which is FALSE — this block never emits a CSS `color` declaration for the star; render.php:227/244 writes fill=\"...\" as an SVG presentation attribute (see this file's header, render.php:7-8). The convention is a guess, and /sgs-update deliberately refuses to seed css_property from it (extract-signatures.py:2502), so before this mapping the DB held NULL and every DB-reading consumer (survey.js, rule 31, the cloning pipeline) was blind to it. emptyColour is a real but separate scalar (the unfilled-star fill) with no member of its own — an honest orphan mirroring sgs/icon-list's iconSize pattern. No font-size/weight/line-height surface — an SVG star has no typography.",
 					"attrMap": {
@@ -68,7 +67,9 @@
 				"star-empty": {
 					"label": "Star (unfilled)",
 					"order": 3,
-					"clusters": [ "fill" ],
+					"clusters": [
+						"fill"
+					],
 					"prefix": "",
 					"_note_prefix": "prefix \"\" is the documented explicit opt-out from orphan-scanning (findOrphans: `if ( prefix === '' ) continue`), same as sgs/business-info's `link` element. Required here because emptyColour IS claimed — by the explicit css:fill attrMap entry below — but the gate cannot see that claim: css:fill is declared appliesToLayers:[\"OUTER\"] in cluster-member-sets.json (its suffixes are ShapeDividerTop/BottomColour), so memberAppliesToElement() skips it on a leaf element and it is never enumerated, never added to claimedAttrs. Without this opt-out the scan reports a style-defect orphan for an attribute that is correctly mapped — a FALSE POSITIVE, not an unaddressed control. Verified: /sgs-update Stage 1 reads attrMap directly (not via cluster enumeration) and derives css_property=fill, css_element=star-empty. RESIDUAL: whether css:fill should be widened from an OUTER shape-divider member to a general SVG-glyph paint member is a shared-vocabulary decision, deliberately not taken here.",
 					"attrMap": {
@@ -99,6 +100,18 @@
 		}
 	],
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"rating": {
 			"type": "number",
 			"default": 5
@@ -156,22 +169,6 @@
 				"stars-with-value",
 				"stars-with-value-and-count"
 			]
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		}
 	},
 	"editorScript": "file:./index.js",

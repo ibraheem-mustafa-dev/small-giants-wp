@@ -26,15 +26,7 @@ import {
 	FlexBlock,
 	Notice,
 } from '@wordpress/components';
-import {
-	TypographyControls,
-	ResponsiveControl,
-	ResponsiveBoxControl,
-	SgsColourPanel,
-	SgsLengthControl,
-	SgsBorderControl,
-	MediaElementPanel,
-} from '../../components';
+import { TypographyControls, ResponsiveControl, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, SgsBorderControl, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, borderPaintPreview } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -129,11 +121,11 @@ function buildRootPreviewStyle( attributes ) {
 		}
 	}
 
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		rootStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		rootStyle.margin = marginPreview;
 	}
@@ -926,38 +918,34 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Width / spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 					<SgsLengthControl
 						label={ __( 'Width', 'sgs-blocks' ) }
 						value={ width || '' }

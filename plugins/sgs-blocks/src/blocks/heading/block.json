@@ -26,11 +26,6 @@
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"boxFamilies": {
 				"borderWidth": [
@@ -40,12 +35,10 @@
 					"borderRadius"
 				],
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				]
 			},
 			"elements": {
@@ -71,8 +64,8 @@
 						"css:text-align": "textAlign",
 						"css:text-wrap": "textWrap",
 						"css:font-family": "fontFamily",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
@@ -123,6 +116,18 @@
 	},
 	"render": "file:./render.php",
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"headingRole": {
 			"type": "string",
 			"enum": [
@@ -219,22 +224,6 @@
 				"line-through"
 			],
 			"default": ""
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"backgroundColour": {
 			"type": "string",

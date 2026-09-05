@@ -25,37 +25,34 @@
 			"wide",
 			"full"
 		],
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				]
 			},
 			"elements": {
 				"wrapper": {
 					"label": "Player wrapper",
 					"order": 1,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin"
+						"css:padding": "padding",
+						"css:margin": "margin"
 					}
 				},
 				"accent": {
 					"label": "Accent colour",
 					"order": 2,
-					"clusters": [ "fill" ],
+					"clusters": [
+						"fill"
+					],
 					"prefix": "accent",
 					"attrMap": {
 						"css:background-color": "accentColour",
@@ -66,7 +63,9 @@
 				"spectrum": {
 					"label": "Spectrum colour",
 					"order": 3,
-					"clusters": [ "fill" ],
+					"clusters": [
+						"fill"
+					],
 					"prefix": "spectrum",
 					"attrMap": {
 						"css:background-color": "spectrumColour"
@@ -77,21 +76,17 @@
 		}
 	},
 	"attributes": {
-		"paddingTablet": {
+		"padding": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
-		"paddingMobile": {
+		"margin": {
 			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"audioUrl": {
 			"type": "string",

@@ -31,12 +31,10 @@
 			"arrayContentLift": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"contentBandPadding": [
 					"contentBandPadding"
@@ -58,8 +56,8 @@
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "backgroundColour",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
@@ -185,11 +183,6 @@
 			"background": false,
 			"gradients": false,
 			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
 		}
 	},
 	"selectors": {
@@ -204,6 +197,18 @@
 		}
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"textAlign": {
 			"type": "string"
 		},
@@ -623,22 +628,6 @@
 			]
 		},
 		"contentWidth": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
 			"type": "object",
 			"default": {}
 		},

@@ -20,18 +20,7 @@ import {
 	ToolbarGroup,
 	ToolbarButton,
 } from '@wordpress/components';
-import {
-	IconPicker,
-	TypographyControls,
-	ResponsiveControl,
-	ResponsiveOverride,
-	ResponsiveBoxControl,
-	SgsColourPanel,
-	ShadowControl,
-	resolveColourToken,
-	SgsLengthControl,
-	SgsBorderControl,
-} from '../../components';
+import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, resolveColourToken, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { LinkPopoverContent } from '../../components';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
@@ -357,9 +346,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( boxShadowPreview ) {
 		previewStyle.boxShadow = boxShadowPreview;
 	}
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) previewStyle.padding = paddingPreview;
-	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) previewStyle.margin = marginPreview;
 	// widthType / customWidth / customWidthUnit are TIER OBJECTS (Spec 35
 	// migration, 2026-08-11) — the editor preview always shows the DESKTOP tier.
@@ -957,38 +946,34 @@ export default function Edit( { attributes, setAttributes } ) {
 				   routes to WP-native style.spacing (mirrors sgs/container); tiers are
 				   paddingTablet/paddingMobile + marginTablet/marginMobile object attrs. */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* Effects */ }

@@ -28,11 +28,6 @@
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"shadow": {
 			"__experimentalSkipSerialization": true
 		},
@@ -47,12 +42,10 @@
 			},
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
 					"borderRadius"
@@ -74,8 +67,8 @@
 					"attrMap": {
 						"css:color": "native:color.text",
 						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:border-radius": "borderRadius",
 						"css:border-width": "borderWidth",
 						"css:border-color": "borderColour",
@@ -116,7 +109,9 @@
 				"progress": {
 					"label": "Progress fill",
 					"order": 4,
-					"clusters": [ "fill" ],
+					"clusters": [
+						"fill"
+					],
 					"attrMap": {
 						"css:background-color": "connectorFillColour",
 						"css:background-image": "connectorFillColourGradient"
@@ -155,6 +150,18 @@
 		"typography": ".sgs-timeline__title"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"orientation": {
 			"type": "string",
 			"default": "vertical"
@@ -363,22 +370,6 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the even-row background band via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over rowStripeColourB. No attrMap entry — see rowStripeColourAGradient's description."
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"borderRadius": {
 			"type": "object",

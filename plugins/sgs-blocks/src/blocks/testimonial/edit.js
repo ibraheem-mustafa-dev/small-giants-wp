@@ -24,20 +24,7 @@ import {
 	ToggleControl,
 	BaseControl,
 } from '@wordpress/components';
-import {
-	ResponsiveBoxControl,
-	ResponsiveControl,
-	ShadowControl,
-	SgsColourPanel,
-	DesignTokenPicker,
-	TypographyControls,
-	fillRow,
-	textRow,
-	SgsLengthControl,
-	SgsBorderControl,
-	resolveColourToken,
-	MediaElementPanel,
-} from '../../components';
+import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsColourPanel, DesignTokenPicker, TypographyControls, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -1511,52 +1498,34 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					title={ __( 'Width & spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( {
-									style: {
-										...style,
-										spacing: { ...style?.spacing, padding: next },
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next,
-								} );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( {
-									style: {
-										...style,
-										spacing: { ...style?.spacing, margin: next },
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next,
-								} );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 					<SgsLengthControl
 						label={ __( 'Outer max-width', 'sgs-blocks' ) }
 						value={ maxWidth || '' }

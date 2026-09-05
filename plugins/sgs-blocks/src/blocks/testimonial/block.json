@@ -37,11 +37,6 @@
 			"fontStyle": true,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"shadow": {
 			"__experimentalSkipSerialization": true
 		},
@@ -82,8 +77,8 @@
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "backgroundColour",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:max-width": "maxWidth",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
@@ -287,12 +282,10 @@
 			"scalarStylingLift": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
 					"borderRadius"
@@ -308,6 +301,18 @@
 		"typography": ".sgs-testimonial__quote"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"variant": {
 			"type": "string",
 			"default": "",
@@ -613,22 +618,6 @@
 			"default": ""
 		},
 		"_comment_boxTiers": "No-inline migration contract §B: tablet/mobile tier overrides for the WP-native style.spacing.padding/margin base (paddingTablet/paddingMobile/marginTablet/marginMobile).",
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"quoteColourHover": {
 			"type": "string",
 			"default": ""

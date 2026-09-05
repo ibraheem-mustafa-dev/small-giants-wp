@@ -28,21 +28,14 @@
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"interactivity": true,
 		"sgs": {
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
 					"borderRadius"
@@ -59,8 +52,8 @@
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
@@ -105,6 +98,18 @@
 		"root": ".wp-block-sgs-countdown-timer"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"targetDate": {
 			"type": "string",
 			"default": ""
@@ -164,22 +169,6 @@
 		"digitStyle": {
 			"type": "string",
 			"default": "simple"
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"borderWidth": {
 			"type": "object",

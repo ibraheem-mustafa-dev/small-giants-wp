@@ -9,7 +9,7 @@ import {
 	Flex,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken, SgsColourPanel, TypographyControls } from '../../components';
+import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken, SgsColourPanel, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { spacingVar, borderPaintPreview } from '../../utils';
 
 // Site Info mode pulls from this fixed set of networks (same 8 slugs the
@@ -156,8 +156,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	// NOTE: `style` here is WP's native style-support object attribute (holds
 	// style.spacing/style.color) — distinct from this block's own `iconStyle`
 	// attribute (plain/filled/outlined/pill variant).
-	const basePadding = style?.spacing?.padding;
-	const baseMargin = style?.spacing?.margin;
+	const basePadding = padding;
+	const baseMargin = margin;
 	const previewStyle = {};
 	const paddingPreview = boxShorthand( basePadding );
 	if ( paddingPreview ) {
@@ -581,38 +581,34 @@ export default function Edit( { attributes, setAttributes } ) {
 				   emitted scoped by render.php); tiers are the paddingTablet/
 				   paddingMobile + marginTablet/marginMobile object attrs. */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 			</InspectorControls>
 

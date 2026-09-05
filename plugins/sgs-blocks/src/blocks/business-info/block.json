@@ -19,6 +19,18 @@
 	"textdomain": "sgs-blocks",
 	"icon": "building",
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"displayType": {
 			"type": "string",
 			"default": "phone",
@@ -41,7 +53,12 @@
 		"labelCollapse": {
 			"type": "string",
 			"default": "none",
-			"enum": [ "none", "mobile", "tablet", "all" ]
+			"enum": [
+				"none",
+				"mobile",
+				"tablet",
+				"all"
+			]
 		},
 		"iconColour": {
 			"type": "string",
@@ -96,22 +113,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"fontSize": {
 			"type": "object",
 			"default": {}
@@ -147,90 +148,204 @@
 			"title": "Website Credit",
 			"description": "The agency attribution link. Framework-owned, not client data — the text and URL are constants, so a client cannot blank the backlink. Place it anywhere in the footer bottom row.",
 			"icon": "admin-links",
-			"keywords": [ "attribution", "credit", "built by", "website by", "agency", "backlink" ],
-			"attributes": { "displayType": "attribution" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"attribution",
+				"credit",
+				"built by",
+				"website by",
+				"agency",
+				"backlink"
+			],
+			"attributes": {
+				"displayType": "attribution"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		},
 		{
 			"name": "phone",
 			"title": "Business Phone",
 			"description": "The business phone number from Business Details — click-to-call.",
 			"icon": "phone",
-			"keywords": [ "phone", "tel", "call", "contact", "number" ],
-			"attributes": { "displayType": "phone" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"phone",
+				"tel",
+				"call",
+				"contact",
+				"number"
+			],
+			"attributes": {
+				"displayType": "phone"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		},
 		{
 			"name": "email",
 			"title": "Business Email",
 			"description": "The business email address from Business Details — click-to-email.",
 			"icon": "email",
-			"keywords": [ "email", "mail", "contact", "address" ],
-			"attributes": { "displayType": "email" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"email",
+				"mail",
+				"contact",
+				"address"
+			],
+			"attributes": {
+				"displayType": "email"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		},
 		{
 			"name": "address",
 			"title": "Business Address",
 			"description": "The business postal address from Business Details.",
 			"icon": "location",
-			"keywords": [ "address", "location", "postal", "where" ],
-			"attributes": { "displayType": "address" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"address",
+				"location",
+				"postal",
+				"where"
+			],
+			"attributes": {
+				"displayType": "address"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		},
 		{
 			"name": "hours",
 			"title": "Opening Hours",
 			"description": "The weekly opening hours from Business Details.",
 			"icon": "clock",
-			"keywords": [ "hours", "opening", "times", "schedule", "open" ],
-			"attributes": { "displayType": "hours" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"hours",
+				"opening",
+				"times",
+				"schedule",
+				"open"
+			],
+			"attributes": {
+				"displayType": "hours"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		},
 		{
 			"name": "socials",
 			"title": "Social Links",
 			"description": "The social profile links from Business Details, as icons.",
 			"icon": "share",
-			"keywords": [ "social", "socials", "facebook", "instagram", "links" ],
-			"attributes": { "displayType": "socials" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"social",
+				"socials",
+				"facebook",
+				"instagram",
+				"links"
+			],
+			"attributes": {
+				"displayType": "socials"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		},
 		{
 			"name": "copyright",
 			"title": "Copyright Line",
 			"description": "The copyright / trademark line from Business Details.",
 			"icon": "editor-textcolor",
-			"keywords": [ "copyright", "trademark", "legal", "footer" ],
-			"attributes": { "displayType": "copyright" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"copyright",
+				"trademark",
+				"legal",
+				"footer"
+			],
+			"attributes": {
+				"displayType": "copyright"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		},
 		{
 			"name": "description",
 			"title": "Business Tagline",
 			"description": "The short business tagline / description from Business Details.",
 			"icon": "editor-paragraph",
-			"keywords": [ "tagline", "description", "strapline", "about", "slogan" ],
-			"attributes": { "displayType": "description" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"tagline",
+				"description",
+				"strapline",
+				"about",
+				"slogan"
+			],
+			"attributes": {
+				"displayType": "description"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		},
 		{
 			"name": "map",
 			"title": "Business Map",
 			"description": "An embedded map link to the business location from Business Details.",
 			"icon": "location-alt",
-			"keywords": [ "map", "directions", "google maps", "location" ],
-			"attributes": { "displayType": "map" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"map",
+				"directions",
+				"google maps",
+				"location"
+			],
+			"attributes": {
+				"displayType": "map"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		}
 	],
 	"supports": {
@@ -243,32 +358,29 @@
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				]
 			},
 			"elements": {
 				"wrapper": {
 					"label": "Info box",
 					"order": 1,
-					"clusters": [ "fill", "layout", "text" ],
+					"clusters": [
+						"fill",
+						"layout",
+						"text"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:font-size": "fontSize",
 						"css:font-family": "fontFamily",
 						"css:font-weight": "fontWeight",
@@ -280,7 +392,9 @@
 				"text": {
 					"label": "Value text",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "text",
 					"attrMap": {
 						"css:color": "textColour",
@@ -301,7 +415,9 @@
 				"label": {
 					"label": "Label",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "label",
 					"attrMap": {
 						"css:background-image": "labelColourGradient"
@@ -311,7 +427,10 @@
 				"icon": {
 					"label": "Icon",
 					"order": 4,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"attrMap": {
 						"css:color": "iconColour",
 						"css:stroke": "iconColourGradient"
@@ -345,8 +464,15 @@
 		"root": ".wp-block-sgs-business-info"
 	},
 	"styles": [
-		{ "name": "text", "label": "Text", "isDefault": true },
-		{ "name": "button", "label": "Button" }
+		{
+			"name": "text",
+			"label": "Text",
+			"isDefault": true
+		},
+		{
+			"name": "button",
+			"label": "Button"
+		}
 	],
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

@@ -10,18 +10,7 @@ import {
 	ToggleControl,
 	Notice,
 } from '@wordpress/components';
-import {
-	IconPicker,
-	IconPreview,
-	ResponsiveBoxControl,
-	SgsColourPanel,
-	SgsLengthControl,
-	fillRow,
-	textRow,
-	SgsBorderControl,
-	resolveColourToken,
-	TypographyControls,
-} from '../../components';
+import { IconPicker, IconPreview, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
@@ -134,11 +123,11 @@ function buildWrapperStyle( attributes ) {
 	const { style, maxWidth } = attributes;
 	const wrapperStyle = {};
 
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}
@@ -500,38 +489,34 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 							help={ __( 'Exact CSS length, e.g. 800px. Leave blank for no cap.', 'sgs-blocks' ) }
 						/>
-						<ResponsiveBoxControl
-							label={ __( 'Padding', 'sgs-blocks' ) }
-							presets
-							values={ {
-								base: style?.spacing?.padding ?? {},
-								tablet: paddingTablet ?? {},
-								mobile: paddingMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								if ( 'base' === tier ) {
-									setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-								} else {
-									setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-								}
-							} }
-						/>
-						<ResponsiveBoxControl
-							label={ __( 'Margin', 'sgs-blocks' ) }
-							presets
-							values={ {
-								base: style?.spacing?.margin ?? {},
-								tablet: marginTablet ?? {},
-								mobile: marginMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								if ( 'base' === tier ) {
-									setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-								} else {
-									setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-								}
-							} }
-						/>
+						<ResponsiveOverride
+							value={ attributes.padding }
+							onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<SgsBoxControl
+									label={ __( 'Padding', 'sgs-blocks' ) }
+									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+									units={ BOX_UNITS }
+									presets
+									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								/>
+							) }
+						</ResponsiveOverride>
+						<ResponsiveOverride
+							value={ attributes.margin }
+							onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<SgsBoxControl
+									label={ __( 'Margin', 'sgs-blocks' ) }
+									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+									units={ BOX_UNITS }
+									presets
+									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								/>
+							) }
+						</ResponsiveOverride>
 					</PanelBody>
 				) }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>

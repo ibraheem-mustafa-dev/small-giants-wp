@@ -9,16 +9,7 @@ import {
   Button,
   Notice,
 } from "@wordpress/components";
-import {
-  IconPicker,
-  IconPreview,
-  ResponsiveBoxControl,
-  TypographyControls,
-  SgsColourPanel,
-  fillRow,
-  textRow,
-  SgsBorderControl,
-} from "../../components";
+import { IconPicker, IconPreview, ResponsiveBoxControl, TypographyControls, SgsColourPanel, fillRow, textRow, SgsBorderControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from "../../components";
 import { colourVar, spacingVar } from "../../utils";
 import { ToggleGroupControl, ToggleGroupControlOption } from "../../components/primitives";
 
@@ -218,9 +209,9 @@ export default function Edit({ attributes, setAttributes }) {
   // Editor-canvas preview only (contract §A note above) — mirrors render.php's
   // scoped output so the canvas matches the frontend.
   const previewStyle = {};
-  const paddingPreview = boxShorthand(style?.spacing?.padding, ["top", "right", "bottom", "left"]);
+  const paddingPreview = boxShorthand(padding, ["top", "right", "bottom", "left"]);
   if (paddingPreview) previewStyle.padding = paddingPreview;
-  const marginPreview = boxShorthand(style?.spacing?.margin, ["top", "right", "bottom", "left"]);
+  const marginPreview = boxShorthand(margin, ["top", "right", "bottom", "left"]);
   if (marginPreview) previewStyle.margin = marginPreview;
   const radiusPreview = boxShorthand(style?.border?.radius, ["topLeft", "topRight", "bottomRight", "bottomLeft"]);
   if (radiusPreview) previewStyle.borderRadius = radiusPreview;
@@ -604,38 +595,34 @@ export default function Edit({ attributes, setAttributes }) {
            tiers are the paddingTablet/paddingMobile + marginTablet/
            marginMobile object attrs. */}
         <PanelBody title={__("Spacing", "sgs-blocks")} initialOpen={false}>
-          <ResponsiveBoxControl
-            label={__("Padding", "sgs-blocks")}
-            presets
-            values={{
-              base: style?.spacing?.padding ?? {},
-              tablet: paddingTablet ?? {},
-              mobile: paddingMobile ?? {},
-            }}
-            onChange={(tier, next) => {
-              if ("base" === tier) {
-                setAttributes({ style: { ...style, spacing: { ...style?.spacing, padding: next } } });
-              } else {
-                setAttributes({ [`padding${"tablet" === tier ? "Tablet" : "Mobile"}`]: next });
-              }
-            }}
-          />
-          <ResponsiveBoxControl
-            label={__("Margin", "sgs-blocks")}
-            presets
-            values={{
-              base: style?.spacing?.margin ?? {},
-              tablet: marginTablet ?? {},
-              mobile: marginMobile ?? {},
-            }}
-            onChange={(tier, next) => {
-              if ("base" === tier) {
-                setAttributes({ style: { ...style, spacing: { ...style?.spacing, margin: next } } });
-              } else {
-                setAttributes({ [`margin${"tablet" === tier ? "Tablet" : "Mobile"}`]: next });
-              }
-            }}
-          />
+          <ResponsiveOverride
+          	value={ attributes.padding }
+          	onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+          >
+          	{ ( { ownValue, setOwnValue } ) => (
+          		<SgsBoxControl
+          			label={ __( 'Padding', 'sgs-blocks' ) }
+          			values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+          			units={ BOX_UNITS }
+          			presets
+          			onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+          		/>
+          	) }
+          </ResponsiveOverride>
+          <ResponsiveOverride
+          	value={ attributes.margin }
+          	onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+          >
+          	{ ( { ownValue, setOwnValue } ) => (
+          		<SgsBoxControl
+          			label={ __( 'Margin', 'sgs-blocks' ) }
+          			values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+          			units={ BOX_UNITS }
+          			presets
+          			onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+          		/>
+          	) }
+          </ResponsiveOverride>
         </PanelBody>
 
         {/* Box-object interface contract §1/§5: borderWidth is an SGS custom

@@ -258,11 +258,11 @@ $scoped_css[] = sgs_responsive_css_rule(
 // --- Base padding/margin — WP-native style.spacing (skip-serialised) emitted
 // scoped via the stable core style engine. ---
 
-$base_padding_obj = ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) )
-	? $attributes['style']['spacing']['padding']
+$base_padding_obj = ( isset( $attributes['padding'] ) && is_array( $attributes['padding'] ) )
+	? $attributes['padding']
 	: array();
-$base_margin_obj  = ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) )
-	? $attributes['style']['spacing']['margin']
+$base_margin_obj  = ( isset( $attributes['margin'] ) && is_array( $attributes['margin'] ) )
+	? $attributes['margin']
 	: array();
 
 if ( ! empty( $base_padding_obj ) || ! empty( $base_margin_obj ) ) {

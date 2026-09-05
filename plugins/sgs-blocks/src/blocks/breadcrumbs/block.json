@@ -28,28 +28,25 @@
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"collection": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				]
 			},
 			"elements": {
 				"wrapper": {
 					"label": "Breadcrumb bar",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:color.background",
@@ -57,28 +54,34 @@
 						"css:font-weight": "fontWeight",
 						"css:font-style": "fontStyle",
 						"css:line-height": "lineHeight",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin"
+						"css:padding": "padding",
+						"css:margin": "margin"
 					},
 					"_note": "Typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight) — serialises as an inherited default across link/separator/current rather than a per-crumb control, same inheritance behaviour as before the migration."
 				},
 				"item": {
 					"label": "Crumb link",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "link",
 					"_note": "Renamed from 'link' 2026-08-15 (element-manifest drift fix) — no `.sgs-breadcrumbs__link` class exists anywhere in render.php; the anchor carries no class at all, and its parent `<li>` is `.sgs-breadcrumbs__item` (render.php:347). `linkColour` already resolved to css_element='item' via the markup-fallback derivation before this rename. `prefix` stays 'link' (the attribute-name prefix, e.g. linkColour) — unrelated to the element key."
 				},
 				"separator": {
 					"label": "Separator",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "separator"
 				},
 				"current": {
 					"label": "Current page",
 					"order": 4,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "current",
 					"_note": "NOT renamed (2026-08-15 audit) — its base class is ALSO `.sgs-breadcrumbs__item` (render.php:342, modified `--current`), so `currentColour`'s markup-fallback derivation ALSO resolves to css_element='item', identically to the 'item' element above. Two manifest elements cannot share one JSON key, and 'item' is already claimed by the link element (the more common case). Same single-valued-css_element schema limitation the task brief carves out for sgs/hero and sgs/trust-bar: a real DB orphan against 'current' will persist after reseed, but renaming here would either collide with 'item' or silently merge two distinct semantic controls (crumb link vs. terminal unlinked crumb) under one key. Left as-is deliberately — needs a schema decision (multi-valued css_element or a modifier axis), not a manifest edit."
 				}
@@ -89,6 +92,18 @@
 		"root": ".wp-block-sgs-breadcrumbs"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"separator": {
 			"type": "string",
 			"default": "/"
@@ -151,22 +166,6 @@
 		"lineHeightUnit": {
 			"type": "string",
 			"default": "em"
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		}
 	},
 	"editorScript": "file:./index.js",

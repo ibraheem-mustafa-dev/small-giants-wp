@@ -18,18 +18,26 @@
 	"icon": "phone",
 	"supports": {
 		"sgs": {
-			"enabledExtensions": [ "hover" ],
-			"hoverDefaults": { "scalePreset": "1.02", "shadow": "raised", "imageZoom": false, "focusRing": true },
-			"hoverExcludeControls": [ "imageZoom", "grayscale" ],
+			"enabledExtensions": [
+				"hover"
+			],
+			"hoverDefaults": {
+				"scalePreset": "1.02",
+				"shadow": "raised",
+				"imageZoom": false,
+				"focusRing": true
+			},
+			"hoverExcludeControls": [
+				"imageZoom",
+				"grayscale"
+			],
 			"scalarStylingLift": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
 					"borderRadiusTablet",
@@ -40,7 +48,11 @@
 				"button": {
 					"label": "Button",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"prefix": "label",
 					"_note": "Contract §B3 single-semantic-element block — the <a> IS the block root (no wrapper div); it plays both the wrapper and the button/label element. labelColour/labelFontSize/labelFontWeight/labelFontStyle resolve via the default {prefix}{suffix} convention (prefix: 'label').",
@@ -48,8 +60,8 @@
 						"css:background-color": "backgroundColour",
 						"css:color": "labelColour",
 						"css:background-image": "labelColourGradient",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:border-radius": "native:__experimentalBorder.radius"
 					}
 				}
@@ -63,11 +75,6 @@
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"__experimentalBorder": {
 			"radius": true,
 			"__experimentalSkipSerialization": true
@@ -78,6 +85,18 @@
 		"typography": ".sgs-whatsapp-cta__label"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"phoneNumber": {
 			"type": "string"
 		},
@@ -96,7 +115,10 @@
 		},
 		"showOn": {
 			"type": "object",
-			"default": {"desktop": true, "mobile": true}
+			"default": {
+				"desktop": true,
+				"mobile": true
+			}
 		},
 		"labelColour": {
 			"type": "string",
@@ -125,22 +147,6 @@
 		"backgroundColour": {
 			"type": "string",
 			"default": "whatsapp"
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"borderRadiusTablet": {
 			"type": "object",

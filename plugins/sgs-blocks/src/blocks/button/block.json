@@ -25,21 +25,14 @@
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"iconPicker": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderWidth": [
 					"borderWidth"
@@ -72,8 +65,8 @@
 						"css:background-image": "colourBackgroundGradient",
 						"css:width": "customWidth",
 						"css:min-height": "minHeight",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
@@ -121,6 +114,18 @@
 		}
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"label": {
 			"type": "string",
 			"default": "Click Here",
@@ -200,22 +205,6 @@
 		"minHeightMobileUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"fontFamily": {
 			"type": "string",

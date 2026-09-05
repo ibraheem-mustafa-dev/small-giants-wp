@@ -221,16 +221,16 @@ $gap_slug = preg_replace( '/[^0-9]/', '', $gap );
 // ---------------------------------------------------------------------------
 
 $base_padding_obj = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+if ( isset( $attributes['padding'] ) && is_array( $attributes['padding'] ) ) {
+	foreach ( $attributes['padding'] as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_padding_obj[ $spacing_side ] = $spacing_value;
 		}
 	}
 }
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+if ( isset( $attributes['margin'] ) && is_array( $attributes['margin'] ) ) {
+	foreach ( $attributes['margin'] as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_margin_obj[ $spacing_side ] = $spacing_value;
 		}

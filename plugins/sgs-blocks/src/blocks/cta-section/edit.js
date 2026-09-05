@@ -17,11 +17,7 @@ import {
 import MediaPicker from '../../components/MediaPicker';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
 import { backgroundPreview, svgBackgroundPreview, applyGridLayoutPreview } from '../../utils';
-import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox,
-	SgsBorderControl,
-	resolveColourToken,
-	TypographyControls,
-} from '../../components';
+import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl } from '../../components';
 // No-inline migration (2026-07-09): cta-section no longer uses the default
 // <ContainerWrapperControls> aggregator wholesale — its ResponsiveSpacingPanel /
 // ContentBandPanel sub-panels still write to LEGACY FLAT attrs
@@ -614,53 +610,35 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					Dimensions panel); tablet/mobile write to the paddingTablet/paddingMobile
 					and marginTablet/marginMobile object attrs read by the wrapper's @media tiers. */ }
 				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: attributes.style?.spacing?.padding ?? {},
-							tablet: attributes.paddingTablet ?? {},
-							mobile: attributes.paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( tier === 'base' ) {
-								setAttributes( {
-									style: {
-										...attributes.style,
-										spacing: { ...attributes.style?.spacing, padding: next },
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
-								} );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 					<hr style={ { margin: '16px 0' } } />
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: attributes.style?.spacing?.margin ?? {},
-							tablet: attributes.marginTablet ?? {},
-							mobile: attributes.marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( tier === 'base' ) {
-								setAttributes( {
-									style: {
-										...attributes.style,
-										spacing: { ...attributes.style?.spacing, margin: next },
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ tier === 'tablet' ? 'marginTablet' : 'marginMobile' ]: next,
-								} );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* Content band (Layer 2 __inner) padding — per-area object attr (contract §2),

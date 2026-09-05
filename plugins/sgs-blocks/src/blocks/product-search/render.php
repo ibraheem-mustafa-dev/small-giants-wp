@@ -176,11 +176,11 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 // Emitted scoped via the stable core style engine. ---
 
 $sgs_spacing_args = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	$sgs_spacing_args['padding'] = $attributes['style']['spacing']['padding'];
+if ( isset( $attributes['padding'] ) && is_array( $attributes['padding'] ) ) {
+	$sgs_spacing_args['padding'] = $attributes['padding'];
 }
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	$sgs_spacing_args['margin'] = $attributes['style']['spacing']['margin'];
+if ( isset( $attributes['margin'] ) && is_array( $attributes['margin'] ) ) {
+	$sgs_spacing_args['margin'] = $attributes['margin'];
 }
 if ( ! empty( $sgs_spacing_args ) ) {
 	$sgs_base_scoped = wp_style_engine_get_styles(

@@ -28,11 +28,6 @@
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"shadow": {
 			"__experimentalSkipSerialization": true
 		},
@@ -41,12 +36,10 @@
 			"arrayContentLift": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderWidth": [
 					"borderWidth"
@@ -71,8 +64,8 @@
 						"css:color-gradient": "textColourGradient",
 						"css:background-color": "backgroundColour",
 						"css:background-color-gradient": "backgroundColourGradient",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:border-radius": "borderRadius",
 						"css:border-width": "borderWidth",
 						"css:border-color": "borderColour",
@@ -197,6 +190,18 @@
 		"root": ".sgs-process-steps"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"steps": {
 			"type": "array",
 			"default": [
@@ -360,22 +365,6 @@
 		"effectHover": {
 			"type": "string",
 			"default": "none"
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"borderWidth": {
 			"type": "object",

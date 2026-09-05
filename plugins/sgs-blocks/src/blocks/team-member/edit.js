@@ -20,7 +20,7 @@
  * (render.php), so nothing here is persisted to post_content.
  *
  * Padding/margin are edited via ResponsiveBoxControl (box-object interface
- * contract): base routes to WP-native style.spacing.padding/margin, tablet/
+ * contract): base routes to WP-native padding/margin, tablet/
  * mobile route to the paddingTablet/paddingMobile/marginTablet/marginMobile
  * object attrs. Border width/colour/style/radius stay on WP's native
  * automatic Styles-tab panels (no custom UI needed — team-member declares
@@ -40,12 +40,7 @@ import {
 	RangeControl,
 	Button,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow,
-	SgsBorderControl,
-	resolveColourToken,
-	DesignTokenPicker,
-	TypographyControls,
-} from '../../components';
+import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { colourVar, resolveShadowPreviewComposed, resolveTextColourPreviewStyle } from '../../utils';
@@ -256,11 +251,11 @@ function buildWrapperStyle( attributes ) {
 		wrapperStyle.borderColor = style.border.color;
 	}
 
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}
@@ -833,38 +828,34 @@ export default function Edit( { attributes, setAttributes } ) {
 				   marginTablet/marginMobile object attrs. Border width/colour/
 				   style/radius stay on WP's native automatic Styles panels. */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* Width — outer maxWidth (kept-scalar, base only — matches the
