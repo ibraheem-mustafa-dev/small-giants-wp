@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-09-05 (colour-conformance continuation: remaining-8-hard-rows prompt closed, D964)
+last_updated: 2026-09-05 (colour-conformance D964 + CHECK A editor-canvas track D965, concurrent)
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -79,6 +79,19 @@ via 3 parallel investigation subagents, independently fact-checked against sourc
 applying (caught one agent's wrong import-path claim and one missing dead-code deletion before
 committing). Full detail: `.claude/prompts/2026-09-04-spec32-35-gates-next-session.md`.
 
+**A separate concurrent session ran the CHECK A editor-canvas track (D965).** Research question
+("is our static canvas the WP standard, or must we hand-code 200+ previews?") closed with phase 1
+shipped and live-verified. Hand-written JSX preview IS WP's default; SSR is a documented legacy
+fallback and impossible here anyway (`/wp/v2/block-renderer` hardcodes empty innerBlocks; many blocks
+use InnerBlocks/RichText — count is gate-authoritative, never hardcoded). The whole-debt fix is our OWN media-atom pattern extended past
+media, not Stackable's. **CHECK A 210 -> 156; db-consistency 25 NEW -> 1 (the deliberate nav-drawer
+design call); hover-state-classification FAIL -> PASS.** Three LIVE client-facing defects fixed,
+none previously known: `sgs/testimonial`'s five hover colours and `sgs/brand-strip`'s one each
+pushed a bare `color:` into one root-emitted bucket (only the last survived, none reached elements
+setting their own resting colour); `sgs/hero` declared seven `bgSvg*` attrs and offered them in the
+Background panel while rendering NOTHING (`render.php` nulled `bgSvgContent` on the very array
+passed to the wrapper). Bean's call: paint them, not delete.
+
 **Canary:** sandybrown-nightingale-600381.hostingersite.com; no live client sites yet.
 
 ## State Snapshot
@@ -109,6 +122,11 @@ committing). Full detail: `.claude/prompts/2026-09-04-spec32-35-gates-next-sessi
   (post-grid fatal namespace bug, deployed), `b8088d274` (post-grid REST uid crash, deployed),
   `ba5dc407f`/`fee0631b8`/`c7f25aa75` (the 3 D812 control-shape fixes: hero.justifyItems,
   modal.triggerStyle, trustpilot-reviews.theme). 2 deploys to sandybrown, both live-verified.
+- **CHECK A track commits (all on `main`, interleaved):** `89475bb3a` (SSR exemption + ceiling
+  216->196), `b4abced52` (15 declarations + testimonial/brand-strip hover fixes), `f4fc7333a`
+  (`svgBackgroundPreview` + container), `4d4bb2cf1` (residual write-up), `42cba6071` (disproof),
+  `9cea87e9b` (6 blocks + className comma-join bug), `a64e9e344` (hero), `2ec2f1a0c` (live
+  captures), `ecec63fc9` (docs/D965). Deployed + live-verified.
 - **Live fronts:** `31-golden-colour-control` — down to the 8 rows named above (from 241 at
   session 8). Everything else in this track's original scope unchanged from session 10.
 - **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
@@ -254,6 +272,26 @@ dialog blocked most of it, later cleared and rerun — 15 of 15 blocks confirmed
 rounds by the second pass). 23 of 45 baseline/exemption files across the whole gate corpus carry
 real debt (~555 entries total) — not this track's job to clear, but worth knowing for anyone
 picking a next gate to work.
+
+## ▶ CHECK A EDITOR-CANVAS TRACK — phase 1 CLOSED (35/35), 210 -> 156. Plan: `.claude/prompts/2026-09-05-check-a-editor-canvas-phases-2-4.md`. Detail: D965.
+
+**Phase 1 closed:** all 35 `bgSvg*` findings across 8 wrapper blocks, via a shared
+`svgBackgroundPreview()` that renders the SAME element with the SAME classes as the frontend, so
+the existing `style.css` (already in the canvas via `block.json`'s `style`) paints it with zero new
+CSS. Deployed + live-verified with negative controls (probe 3297;
+`reports/visual-diff/{testimonial,brand-strip,hero}-2026-09-05.md`).
+
+**Remaining, bucketed and measured (re-derive, don't trust these counts):** phase 2 layout/box on
+wrapper blocks (31, same mirror); phase 3 colour (~96, needs a DESIGN GATE before any build);
+phase 4 long tail (29, already split into 13 with a full DB descriptor + ~15 correctly
+descriptor-less class-toggle/child-block shapes).
+
+**Standards recorded:** Spec 02 item 0 (a shared mechanism is mirrorable once only if it OWNS ITS
+SELECTOR); DONE-checklist 7b; `plugins/sgs-blocks/CLAUDE.md` "Editor-canvas mirrors" + four traps.
+
+**Open, Bean's call:** `sgs/nav-drawer`'s variant-discriminator collision (F6's only remaining
+violation) — deliberately NOT closed: `variantPreset` gates zero conditional CSS by design, so
+fabricating a discriminator would make `detect_variant` pick the wrong variant on a real clone.
 
 ## ▶ COLOUR TRACK — the "remaining 8 hard rows" prompt CLOSED 2026-09-05 (D964). Detail: `.claude/plans/2026-09-03-golden-colour-staged-rollout.md` + D964.
 

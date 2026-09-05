@@ -1537,8 +1537,9 @@ $sgs_hero_null_attrs = array(
 	// in the Background panel — rendered NOTHING, on the page or in the editor.
 	// A client could set a decorative background SVG, its position, opacity,
 	// min-height, text-shadow, animation and speed, and see no effect anywhere.
-	// Restoring it makes hero paint this layer exactly as the other eight
-	// wrapper-adopting blocks do, per the composite-mirror rule.
+	// Restoring it makes hero paint this layer exactly as the other seven
+	// wrapper-adopting blocks do, per the composite-mirror rule. (Eight blocks declare
+	// bgSvgContent in total INCLUDING hero, so the others number seven.)
 	//
 	// minHeight is a TIER OBJECT (Spec 35 pass 3b) — nulling the one attr
 	// nulls all three tiers; the old minHeightTablet/minHeightMobile entries

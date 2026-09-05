@@ -23,7 +23,7 @@ CSS is correct (see "Traps" below).
 |---|---|---|---|---|
 | 1 | `bgSvg*` family | 35 | `svgBackgroundPreview()` | **CLOSED — 35/35, 8 blocks** |
 | 2 | layout/box on wrapper blocks | 31 | Same wrapper mirror, extended | **NEXT — start here** |
-| 3 | Gradient siblings + flat colour | ~98 | Colour atoms + PHP/JS parity gate | The structural one |
+| 3 | Gradient siblings + flat colour | ~96 | Colour atoms + PHP/JS parity gate | The structural one |
 | 4 | Long tail | 29 | Split — see below | Last |
 
 Counts drift as peers commit. **Re-derive them, do not trust this table**: run
@@ -70,11 +70,11 @@ report deviations rather than silently copy.
 
 ---
 
-## Phase 3 — colour (~98) — THE STRUCTURAL ONE, design-gate first
+## Phase 3 — colour (~96) — THE STRUCTURAL ONE, design-gate first
 
-**98 of the remaining findings are colour** (gradient siblings + flat), spread across ~40 blocks
+**96 of the remaining 156 findings are colour** (gradient siblings + flat), spread across ~40 blocks
 that each paint colour their own way. Measured this session: the shared PHP primitive
-`sgs_text_decls` has only 8 callers and covers 5 of the 92; `sgs_colour_value` has 62 callers but
+`sgs_text_decls` has only 8 callers and covers 5 of them; `sgs_colour_value` has 62 callers but
 only RESOLVES a value — it does not own the selector. **There is no single existing thing to
 mirror.** That is why colour cannot be closed the way phases 1 and 2 can.
 
@@ -84,7 +84,7 @@ mirror.** That is why colour cannot be closed the way phases 1 and 2 can.
 `scripts/tests/test-media-atom-parity.mjs`, which carries an anti-vacuity ratchet
 (`IMPLEMENTED_ATOMS = 16`). Read that gate's docblock — it names the architecture in the project's
 own words: *"one stylesheet, one descriptor, two thin value-setters… the achievable, testable claim
-is that they AGREE."* Evidence it works: only 2 of ~196 findings touch media-atom-governed
+is that they AGREE."* Evidence it works: only 2 findings touch media-atom-governed
 properties.
 
 ⛔ **Do NOT start building.** This is a shared-mechanism change across ~40 blocks — CLAUDE.md rule 7

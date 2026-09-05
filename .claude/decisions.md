@@ -9,7 +9,7 @@ JSX preview IS WordPress's official default; `@wordpress/server-side-render`'s o
 itself "a fallback or legacy mechanism… not appropriate for developing new features against", and
 core practises it — 6 SSR blocks out of ~100, all leaf blocks, all wrapped in `useDisabled`. SSR
 was ruled out for us on a hard incompatibility, not preference: `/wp/v2/block-renderer` hardcodes
-`'innerBlocks' => array()`, and 41 of 84 SGS blocks use InnerBlocks or RichText. Competitor survey
+`'innerBlocks' => array()`, and a large share of SGS blocks use InnerBlocks or RichText (the live block count is gate-authoritative — `blockCount` in the CHECK A JSON — never hardcode it). Competitor survey
 (Stackable/Kadence/GenerateBlocks/Spectra/Greenshift/Otter/CoBlocks, source read): NOBODY uses SSR
 for styling; the ones that solved PHP/JS duplication deleted the PHP generator entirely. Spectra,
 which hand-maintains both, was measured actively drifting — 5 of ~19 selectors on one block exist
@@ -62,7 +62,7 @@ its sibling returns a STRING, so `.join(' ')` comma-joined it and all four SVG c
 silently dead while the layer still rendered — **and CHECK A passed throughout**, because it
 verifies an attribute NAME is referenced, not that the resulting CSS is correct.
 
-**Gate movement:** CHECK A 210 -> 156. `db-consistency` 25 NEW -> 0 (passing).
+**Gate movement:** CHECK A 210 -> 156 — decomposed honestly: **-14** from a detector false-positive exemption (`89475bb3a`, `sgs/before-after`, negative-control-tested), **-3** from a peer's `cedf7aadc`, and **-37** from this session's actual fixes. `db-consistency` 25 NEW -> **1** (the deliberate `sgs/nav-drawer` variant-discriminator design call, left open on purpose).
 `check-hover-state-classification` FAIL(2) -> PASS. Zero baseline entries added — the residual
 findings were written up in `reports/2026-09-05-db-consistency-residual-ambiguities.md` and handed
 to their owner rather than silenced.
