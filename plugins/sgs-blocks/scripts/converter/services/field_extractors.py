@@ -482,7 +482,8 @@ def extract_field_value(
     # ------------------------------------------------------------------
     # css-modifier — extract the BEM --<modifier> suffix from the element's
     # class list (e.g. "badge--light" → "light").
-    # NOT wired into any schema in this task; provided for future callers.
+    # Wired into the cloning pipeline via lift_scalar_content's gate;
+    # first real DB adopter is sgs/testimonial's ratingType attribute (D885).
     # ------------------------------------------------------------------
     if role == "css-modifier":
         for cls in (element.get("class") or []):
