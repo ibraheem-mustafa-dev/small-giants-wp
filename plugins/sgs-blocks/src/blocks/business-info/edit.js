@@ -228,10 +228,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
-				{ /* ── Spacing panel ── Box-object interface contract §B: padding/margin
-				   base routes to WP-native style.spacing.* (skip-serialised in block.json
-				   so it serialises scoped, not inline — mirrors sgs/heading); tiers are the
-				   paddingTablet/paddingMobile + marginTablet/marginMobile object attrs. */ }
+				{ /* ── Spacing panel ── padding/margin are each a single block-owned
+				   tier-object attr { desktop, tablet, mobile }, written via
+				   ResponsiveOverride + SgsBoxControl; read directly by this
+				   block's render.php. */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveOverride
 						value={ attributes.padding }

@@ -269,11 +269,11 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				{ /* ---- Wrapper (width + responsive box families) ----
-				   Box-object interface contract §B/§E: padding/margin base
-				   route to WP-native style.spacing.* (skip-serialised →
-				   scoped, not inline); tiers are the paddingTablet/
-				   paddingMobile + marginTablet/marginMobile object attrs.
-				   Border/colour stay on the native WP panels. */ }
+				   padding/margin are each a single block-owned tier-object
+				   attr { desktop, tablet, mobile }, written via
+				   ResponsiveOverride + SgsBoxControl; read directly by this
+				   block's render.php. Border/colour stay on the native WP
+				   panels. */ }
 				<PanelBody title={ __( 'Wrapper', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveOverride
 						value={ attributes.padding }

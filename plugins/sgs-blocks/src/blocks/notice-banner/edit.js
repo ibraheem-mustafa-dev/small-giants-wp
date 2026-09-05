@@ -475,10 +475,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 				{ /* NO-INLINE + NO-WRAPPER (2026-07-10): content-KIND, box+width only —
 				     dropped SGS_Container_Wrapper (D294) in favour of block-private
-				     scoped output (matches sgs/quote). Padding/margin route to the
-				     WP-native style.spacing.* object (base) + custom Tablet/Mobile
-				     box-object tiers; only shown in inline mode — announcement mode
-				     is always full-width + fixed. */ }
+				     scoped output (matches sgs/quote). padding/margin are each a
+				     single block-owned tier-object attr { desktop, tablet, mobile },
+				     read directly by this block's render.php; only shown in inline
+				     mode — announcement mode is always full-width + fixed. */ }
 				{ ! isAnnouncement && (
 					<PanelBody title={ __( 'Wrapper', 'sgs-blocks' ) } initialOpen={ false }>
 						<SgsLengthControl

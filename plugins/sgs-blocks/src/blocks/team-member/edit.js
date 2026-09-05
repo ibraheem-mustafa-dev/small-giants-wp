@@ -822,11 +822,11 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ToggleGroupControl>
 				</PanelBody>
 
-				{ /* Box-object interface contract §B/§E: padding/margin base routes
-				   to WP-native style.spacing.* (skip-serialised → scoped, not
-				   inline); tiers are the paddingTablet/paddingMobile +
-				   marginTablet/marginMobile object attrs. Border width/colour/
-				   style/radius stay on WP's native automatic Styles panels. */ }
+				{ /* padding/margin are each a single block-owned tier-object attr
+				   { desktop, tablet, mobile }, written via ResponsiveOverride +
+				   SgsBoxControl; read by SGS_Container_Wrapper's tier-object
+				   emission path. Border width/colour/style/radius stay on WP's
+				   native automatic Styles panels. */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveOverride
 						value={ attributes.padding }

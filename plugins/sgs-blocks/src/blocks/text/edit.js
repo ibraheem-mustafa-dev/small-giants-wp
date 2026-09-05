@@ -218,11 +218,10 @@ function buildEditorStyle( attributes ) {
 		previewStyle.width = `${ customWidth }${ customWidthUnit }`;
 	}
 
-	// Box-object interface contract §5: base padding/margin/border-radius come
-	// from WP-native style.spacing.* / style.border.radius (object); border
-	// width from the SGS custom borderWidth object attr. Tablet/mobile tiers
-	// stay flat per-side attrs (contract exception for this block — not
-	// previewed here, matching the pre-existing desktop-only canvas preview).
+	// Base padding/margin/border-radius preview — padding/margin are owned
+	// tier-object attrs { desktop, tablet, mobile } (desktop tier previewed
+	// here only); border-radius stays WP-native style.border.radius; border
+	// width comes from the SGS custom borderWidth object attr.
 	const paddingPreview = boxShorthand( padding, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) previewStyle.padding = paddingPreview;
 	const marginPreview = boxShorthand( margin, [ 'top', 'right', 'bottom', 'left' ] );
@@ -742,12 +741,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						presets={ false }
 					/>
 
-					{ /* Box-object interface contract §B (100% box-group): base padding/
-					   margin route to WP-native style.spacing (mirrors sgs/container +
-					   sgs/button); tablet/mobile tiers are the SGS object attrs
-					   marginTablet/marginMobile + paddingTablet/paddingMobile, written
-					   via the container/button onChange( tier, next ) split. The device
-					   switcher selects base/tablet/mobile. */ }
+					{ /* padding/margin are each a single block-owned tier-object attr
+					   { desktop, tablet, mobile }, written via ResponsiveOverride +
+					   SgsBoxControl; read directly by this block's render.php. The
+					   device switcher selects desktop/tablet/mobile. */ }
 					<ResponsiveOverride
 						value={ attributes.margin }
 						onChange={ ( obj ) => setAttributes( { margin: obj } ) }

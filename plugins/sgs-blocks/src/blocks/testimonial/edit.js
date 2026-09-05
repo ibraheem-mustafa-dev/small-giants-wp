@@ -1489,11 +1489,11 @@ export default function Edit( { attributes, setAttributes, context } ) {
 				</PanelBody>
 
 				{ /* ── Width / spacing (WS-4 container-mirror, content kind).
-				     Box-object interface contract §B/§E: padding/margin base
-				     routes to WP-native style.spacing.* (skip-serialised →
-				     scoped, not inline); tiers are the paddingTablet/
-				     paddingMobile + marginTablet/marginMobile object attrs
-				     (mirrors sgs/quote's block-private Wrapper panel). ── */ }
+				     padding/margin are each a single block-owned tier-object
+				     attr { desktop, tablet, mobile }, written via
+				     ResponsiveOverride + SgsBoxControl; read directly by this
+				     block's render.php (mirrors sgs/quote's block-private
+				     Wrapper panel). ── */ }
 				<PanelBody
 					title={ __( 'Width & spacing', 'sgs-blocks' ) }
 					initialOpen={ false }

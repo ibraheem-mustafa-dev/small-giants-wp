@@ -1065,10 +1065,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				   this property-family panel, despite the shared cluster
 				   name.
 
-				   Box-object interface contract §B/§E: padding/margin base
-				   routes to WP-native style.spacing.* (skip-serialised ->
-				   scoped, not inline); tiers are the paddingTablet/
-				   paddingMobile + marginTablet/marginMobile object attrs.
+				   padding/margin are each a single block-owned tier-object
+				   attr { desktop, tablet, mobile }, written via
+				   ResponsiveOverride + SgsBoxControl; read directly by this
+				   block's render.php.
 				   Box-object interface contract §1/§5: borderWidth is an SGS
 				   custom object attr (base only, no tiers — no WP-native
 				   per-side width support); border-radius routes to WP-native

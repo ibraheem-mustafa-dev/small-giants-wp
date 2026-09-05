@@ -626,11 +626,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 
 				{ /* Padding/margin — same `layout` cluster on the wrapper element,
-				   merged into this panel (was a separate "Spacing" panel). Box-object
-				   interface contract §B/§E: padding/margin base routes to WP-native
-				   style.spacing.* (skip-serialised → scoped); tiers are the
-				   paddingTablet/paddingMobile + marginTablet/marginMobile object
-				   attrs. */ }
+				   merged into this panel (was a separate "Spacing" panel). Each is a
+				   single block-owned tier-object attr { desktop, tablet, mobile },
+				   written via ResponsiveOverride + SgsBoxControl; read directly by
+				   this block's render.php. */ }
 					<ResponsiveOverride
 						value={ attributes.padding }
 						onChange={ ( obj ) => setAttributes( { padding: obj } ) }

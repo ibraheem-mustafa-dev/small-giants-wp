@@ -246,8 +246,9 @@ function buildWrapperStyle( attributes ) {
 	if ( borderRadiusPreview ) {
 		wrapperStyle.borderRadius = borderRadiusPreview;
 	}
-	// Base padding/margin preview — WP-native style.spacing.* objects
-	// (contract §B; box-model order top/right/bottom/left).
+	// Base padding/margin preview — padding/margin are owned tier-object
+	// attrs { desktop, tablet, mobile }; the desktop tier is a box (box-model
+	// order top/right/bottom/left).
 	const paddingPreview = boxShorthand( padding, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
@@ -621,11 +622,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ToggleGroupControl>
 				</PanelBody>
 
-				{ /* ── Spacing panel ── Box-object interface contract §B/§E:
-				   padding/margin base routes to WP-native style.spacing.* (mirrors
-				   sgs/container + sgs/button); tiers are the paddingTablet/paddingMobile
-				   + marginTablet/marginMobile object attrs. The spacing support declares
-				   __experimentalSkipSerialization so base serialises scoped, not inline. */ }
+				{ /* ── Spacing panel ── padding/margin are each a single block-owned
+				   tier-object attr { desktop, tablet, mobile }, written via
+				   ResponsiveOverride + SgsBoxControl; read directly by this
+				   block's render.php. */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveOverride
 						value={ attributes.padding }

@@ -151,11 +151,11 @@ export default function Edit( { attributes, setAttributes } ) {
 	const isSiteInfoSource = 'site-info' === source;
 	const [ palette ] = useSettings( 'color.palette' );
 
-	// Box-object interface contract §5: base padding/margin preview mirrors the
-	// WP-native style.spacing.* object read by render.php's style engine call.
-	// NOTE: `style` here is WP's native style-support object attribute (holds
-	// style.spacing/style.color) — distinct from this block's own `iconStyle`
-	// attribute (plain/filled/outlined/pill variant).
+	// Base padding/margin preview — padding/margin are owned tier-object
+	// attrs { desktop, tablet, mobile }, read directly by render.php.
+	// NOTE: `style` here is WP's native style-support object attribute (now
+	// holds only style.color, not spacing) — distinct from this block's own
+	// `iconStyle` attribute (plain/filled/outlined/pill variant).
 	const basePadding = padding;
 	const baseMargin = margin;
 	const previewStyle = {};
@@ -576,10 +576,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /* ── Spacing panel ── Box-object interface contract §B/§E: padding/
-				   margin base routes to WP-native style.spacing.* (skip-serialised,
-				   emitted scoped by render.php); tiers are the paddingTablet/
-				   paddingMobile + marginTablet/marginMobile object attrs. */ }
+				{ /* ── Spacing panel ── padding/margin are each a single block-owned
+				   tier-object attr { desktop, tablet, mobile }, written via
+				   ResponsiveOverride + SgsBoxControl; read directly by this
+				   block's render.php. */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveOverride
 						value={ attributes.padding }
