@@ -1252,6 +1252,63 @@ def tier_object_base(block_slug: str, attr_name: str) -> bool:
 
 
 @functools.lru_cache(maxsize=1024)
+def box_family_is_tier_shaped(block_slug: str, attr_name: str) -> bool:
+    """True iff ``attr_name`` is a box-family attribute that has been folded
+    into the TIER-of-BOXES shape (Phase 2 tier-object migration, 2026-09-06):
+    ``{desktop:{top,right,bottom,left}, tablet:{...}, mobile:{...}}`` — ONE
+    attribute, not three physical sibling attributes.
+
+    WHY THIS EXISTS: ``box_family_for()`` alone cannot answer this. Both a
+    genuine per-tier FLAT box family (the legacy shape — three independent
+    physical attributes, e.g. un-migrated ``padding``/``paddingTablet``/
+    ``paddingMobile``, each ``box_family='padding'``) and an ALREADY-TIER-OF-
+    BOXES family (``contentBandPadding``, or ``padding`` once migrated) carry
+    the identical self-referential ``box_family`` value on their base
+    attribute — the column was never designed to distinguish the two shapes,
+    only to answer "does this attr belong to a box family at all".
+
+    ⛔ The absence of Tablet/Mobile sibling ROWS alone is NOT enough either —
+    proven by a real regression this predicate's first version caused:
+    ``sgs/container.borderWidth`` is self-referential (``box_family=
+    'borderWidth'``) and genuinely has no Tablet/Mobile siblings (it has
+    never been responsive, per its own block.json description — a base-only
+    box, not a per-device one), so a sibling-only check misclassifies it as
+    tier-shaped too. The real discriminator is the base attribute's
+    DECLARED DEFAULT: a tier-of-boxes attribute's default is always
+    ``{"desktop": {...}}`` (the migration codemod folds the old base default
+    as the desktop tier, matching ``contentBandPadding``'s existing shape,
+    D549); a genuinely non-tiered box's default has no ``desktop`` key at
+    all (``borderWidth``'s is bare ``{}``). Structural, DB-read, no name
+    literal (R-31-1).
+
+    Callers (the converter's dispatch/merge layer): when this returns True,
+    a per-tier declaration must write to the BASE attr name (never a
+    suffixed sibling name — it no longer exists) with its value wrapped
+    under the tier key, and merges accumulate by TIER, not by side.
+    """
+    if _TIER_SIBLING_SUFFIX_RE.search(attr_name):
+        return False
+    family = box_family_for(block_slug, attr_name)
+    if family is None or family != attr_name:
+        return False
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT default_value FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, attr_name),
+        ).fetchone()
+    finally:
+        conn.close()
+    if not row or not row[0]:
+        return False
+    try:
+        default = json.loads(row[0])
+    except (ValueError, TypeError):
+        return False
+    return isinstance(default, dict) and "desktop" in default
+
+
+@functools.lru_cache(maxsize=1024)
 def content_order_attr_for(block_slug: str) -> "str | None":
     """The block's MEDIA/CONTENT area-order tier-object attr, or None.
 

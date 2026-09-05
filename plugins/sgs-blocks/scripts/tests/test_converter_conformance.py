@@ -602,4 +602,14 @@ class TestDispatchDeterminism:
         # No flat attr exists for these (block, property) pairs — the dispatch
         # must return None so root-supports handles them via style.*.
         assert db.attr_for_property("sgs/container", "padding-top") is None
-        assert db.attr_for_property("sgs/hero", "font-size") is None
+        # ⛔ CORRECTED 2026-09-06 — the `sgs/hero.font-size` case here was a real
+        # NEGATIVE fixture until the typography-full-replacement track
+        # (60329dfc6) gave sgs/hero a real, DB-mapped `fontSize` attribute
+        # (`typography`, `fontSize`, `number_px`) as part of its own,
+        # independent migration. "No destination exists for hero font-size" is
+        # simply no longer true — see test_typography_owns_leaf_text_props
+        # above, which already asserts the POSITIVE case for the same
+        # dispatch family on a sibling block. Removed rather than asserted
+        # False, since asserting the wrong thing on purpose is worse than one
+        # fewer negative example; test_typography_owns_leaf_text_props still
+        # covers this dispatch path's positive case.

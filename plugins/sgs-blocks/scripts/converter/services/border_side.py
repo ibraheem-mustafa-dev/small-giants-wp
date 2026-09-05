@@ -73,7 +73,7 @@ def border_side_write(decl: Any, ctx: Any) -> Write | None:
     base_attr = attr_resolve(ctx, "OUTER", _BORDER_WIDTH_PROP)
     if base_attr is None:
         return None
-    object_attr = tier_state_suffix(base_attr, decl, ctx.conn)
+    object_attr = tier_state_suffix(base_attr, decl, ctx.conn, ctx.block_slug)
 
     # Self-merge box-object signal: the attr IS its own family base (the same gate
     # outer_box / content_band use, ``box_family_for(block, attr) == attr``). Binding

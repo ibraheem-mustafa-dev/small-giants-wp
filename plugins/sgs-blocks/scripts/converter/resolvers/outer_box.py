@@ -220,7 +220,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     if prop == "padding":
         _pad_attr = attr_resolve(ctx, "OUTER", prop)
         if _pad_attr is not None and db_lookup.box_family_for(ctx.block_slug, _pad_attr) == _pad_attr:
-            _pad_tgt = tier_state_suffix(_pad_attr, decl, ctx.conn)
+            _pad_tgt = tier_state_suffix(_pad_attr, decl, ctx.conn, ctx.block_slug)
             if validate(ctx, _pad_tgt, decl.value):
                 from converter.services.root_supports import (
                     _parse_padding_shorthand as _parse_box_shorthand_value,
@@ -314,7 +314,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # Step 4 + 4a: re-append the tier suffix THEN the interaction-state suffix
     # (universal shared helper — §3.A). A :hover/:focus/:active decl routes to the
     # block's `{base}{Tier}{State}` companion (validated below) else an honest gap.
-    attr = tier_state_suffix(base_attr, decl, ctx.conn)
+    attr = tier_state_suffix(base_attr, decl, ctx.conn, ctx.block_slug)
     if not validate(ctx, attr, decl.value):
         return gap_writer(
             ctx, decl, GapOrigin.NO_DESTINATION,

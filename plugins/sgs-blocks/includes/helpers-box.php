@@ -222,6 +222,70 @@ if ( ! function_exists( 'sgs_corner_object_shorthand' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_border_radius_tiers' ) ) {
+	/**
+	 * Resolve a block's `borderRadius` attribute into desktop/tablet/mobile
+	 * corner objects, shape-agnostic (Phase 2 tier-object migration,
+	 * 2026-09-06): correctly handles BOTH the migrated shape (one tier-object
+	 * attribute `{desktop,tablet,mobile}`, each a corner object) and the
+	 * legacy flat shape (a bare corner object at `borderRadius`, with
+	 * `borderRadiusTablet`/`borderRadiusMobile` as separate sibling
+	 * attributes — passed in via `$legacy_tablet`/`$legacy_mobile` since a
+	 * block with the OLD shape still has them declared and readable).
+	 *
+	 * Extracted from the identical ~19-line block duplicated across every
+	 * block's render.php (the same duplication class `helpers-box.php`'s
+	 * other helpers were built to close, D722) — this is that same fix for
+	 * the border-radius family, one function instead of 46+ inline copies.
+	 *
+	 * @param array $attributes    The block's render attributes.
+	 * @param mixed $legacy_tablet Raw `$attributes['borderRadiusTablet'] ?? null`,
+	 *                             for a block that hasn't migrated yet.
+	 * @param mixed $legacy_mobile Raw `$attributes['borderRadiusMobile'] ?? null`.
+	 * @return array{base: array|string|null, tablet: array, mobile: array}
+	 */
+	function sgs_border_radius_tiers( array $attributes, $legacy_tablet = null, $legacy_mobile = null ): array {
+		$raw = $attributes['borderRadius'] ?? null;
+
+		$has_tier_key = is_array( $raw ) && (
+			array_key_exists( 'desktop', $raw ) || array_key_exists( 'tablet', $raw ) || array_key_exists( 'mobile', $raw )
+		);
+
+		if ( $has_tier_key ) {
+			$desktop_raw = $raw['desktop'] ?? null;
+			$tablet_obj  = is_array( $raw['tablet'] ?? null ) ? $raw['tablet'] : array();
+			$mobile_obj  = is_array( $raw['mobile'] ?? null ) ? $raw['mobile'] : array();
+		} else {
+			$desktop_raw = $raw;
+			$tablet_obj  = is_array( $legacy_tablet ) ? $legacy_tablet : array();
+			$mobile_obj  = is_array( $legacy_mobile ) ? $legacy_mobile : array();
+		}
+
+		$base = null;
+		if ( is_string( $desktop_raw ) && '' !== $desktop_raw ) {
+			$base = $desktop_raw;
+		} elseif ( is_array( $desktop_raw ) ) {
+			$clean   = array();
+			$has_any = false;
+			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
+				$clean[ $corner ] = isset( $desktop_raw[ $corner ] ) ? sgs_css_length_value( $desktop_raw[ $corner ] ) : '';
+				if ( '' !== $clean[ $corner ] ) {
+					$has_any = true;
+				}
+			}
+			if ( $has_any ) {
+				$base = $clean;
+			}
+		}
+
+		return array(
+			'base'   => $base,
+			'tablet' => $tablet_obj,
+			'mobile' => $mobile_obj,
+		);
+	}
+}
+
 if ( ! function_exists( 'sgs_label_box_css_rule' ) ) {
 	/**
 	 * Build the SCOPED CSS for a label-style box on ONE selector.

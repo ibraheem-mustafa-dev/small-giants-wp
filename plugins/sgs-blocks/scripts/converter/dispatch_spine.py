@@ -38,6 +38,7 @@ from converter.dispatch_table import resolver_id
 from converter.models import GAP, GapOrigin, Write
 from converter.resolvers import REGISTRY, outer_box
 from converter.services.layer_detect import layer_detect
+from converter.services.tier_object import tier_object_key
 
 
 class ConservationError(AssertionError):
@@ -78,6 +79,34 @@ class ElementResult:
         out: dict[str, int | float | str | dict] = {}
         for w in self.writes:
             existing = out.get(w.attr)
+
+            # TIER-of-BOXES box-family attr (Phase 2, 2026-09-06): padding/margin/
+            # borderRadius once migrated off the flat 3-sibling shape, and
+            # contentBandPadding/contentBandMargin/gridItemPadding/
+            # gridItemBorderRadius which already were. `box_family_for()` alone
+            # cannot tell this apart from a genuine flat box (both carry the same
+            # self-referential value) — `box_family_is_tier_shaped()` adds the
+            # missing bit (no Tablet/Mobile SIBLING ROWS declared). Every tier's
+            # write already targets the SAME bare attr name (tier_state_suffix
+            # stopped suffixing it, same Phase 2 change), so this branch nests each
+            # write's box value under its OWN tier key instead of merging box
+            # SIDES together — the axis this attr varies on is TIER, not SIDE.
+            if isinstance(w.value, dict) and db_lookup.box_family_is_tier_shaped(
+                self.block_slug, w.attr
+            ):
+                # DB-driven key derivation (R-31-1) — never a hardcoded
+                # {"Base": "desktop", ...} dict; see tier_object_key()'s own
+                # docstring for the earlier revision the anti-cheat gate
+                # correctly refused for exactly that.
+                tier_key = tier_object_key(w.tier) or "desktop"
+                if isinstance(existing, dict):
+                    tier_box = existing.setdefault(tier_key, {})
+                    for k, v in w.value.items():
+                        tier_box.setdefault(k, v)
+                else:
+                    out[w.attr] = {tier_key: dict(w.value)}
+                continue
+
             is_box = isinstance(w.value, dict) and (
                 db_lookup.box_family_for(self.block_slug, w.attr) is not None
             )

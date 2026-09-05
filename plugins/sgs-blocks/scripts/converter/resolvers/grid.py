@@ -195,7 +195,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             return tier_object_write(
                 ctx, decl, prop, base_attr, order_value, validate_raw=order_value
             )
-        attr = tier_state_suffix(base_attr, decl, ctx.conn)
+        attr = tier_state_suffix(base_attr, decl, ctx.conn, ctx.block_slug)
         if not validate(ctx, attr, order_value):
             return gap_writer(
                 ctx, decl, GapOrigin.NO_DESTINATION,
@@ -233,7 +233,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
                 return template_write
             writes: list[Write] = [template_write]
         else:
-            template_attr = tier_state_suffix(base_template_attr, decl, ctx.conn)
+            template_attr = tier_state_suffix(base_template_attr, decl, ctx.conn, ctx.block_slug)
             if not validate(ctx, template_attr, decl.value):
                 return gap_writer(
                     ctx, decl, GapOrigin.NO_DESTINATION,
@@ -257,7 +257,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
                 if not isinstance(count_write, GAP):
                     writes.append(count_write)
             else:
-                count_attr = tier_state_suffix(base_count_attr, decl, ctx.conn)
+                count_attr = tier_state_suffix(base_count_attr, decl, ctx.conn, ctx.block_slug)
                 if validate(ctx, count_attr, str(n)):
                     writes.append(
                         Write(attr=count_attr, value=n, property=prop, tier=decl.tier)
@@ -284,7 +284,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
         # branch above for the full rationale (identical mechanism).
         if tier_object_base(ctx.block_slug, base_gap_attr):
             return tier_object_write(ctx, decl, prop, base_gap_attr, value, validate_raw=decl.value)
-        gap_attr = tier_state_suffix(base_gap_attr, decl, ctx.conn)
+        gap_attr = tier_state_suffix(base_gap_attr, decl, ctx.conn, ctx.block_slug)
         if not validate(ctx, gap_attr, decl.value):
             return gap_writer(
                 ctx, decl, GapOrigin.NO_DESTINATION,
@@ -309,7 +309,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
                 ctx, decl, GapOrigin.NO_DESTINATION,
                 f"{ctx.block_slug} has no GRID (gridItem*) attr for {prop}",
             )
-        attr = tier_state_suffix(base_attr, decl, ctx.conn)
+        attr = tier_state_suffix(base_attr, decl, ctx.conn, ctx.block_slug)
         if db_lookup.box_family_for(ctx.block_slug, attr) is not None:
             # Lazy import — root_supports imports converter.dispatch_spine, which
             # imports converter.resolvers (this package); a top-level import here
@@ -343,7 +343,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
                 ctx, decl, GapOrigin.NO_DESTINATION,
                 f"{ctx.block_slug} has no GRID (gridItem*) attr for {prop}",
             )
-        attr = tier_state_suffix(base_attr, decl, ctx.conn)
+        attr = tier_state_suffix(base_attr, decl, ctx.conn, ctx.block_slug)
         if db_lookup.box_family_for(ctx.block_slug, attr) is not None:
             raw = strip_important(decl.value).strip()
             corners = _expand_border_radius_corners(raw)
@@ -376,7 +376,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
                 f"{ctx.block_slug} has no GRID (gridItem*) attr for border-radius "
                 f"(longhand {prop})",
             )
-        attr = tier_state_suffix(base_attr, decl, ctx.conn)
+        attr = tier_state_suffix(base_attr, decl, ctx.conn, ctx.block_slug)
         box_family = db_lookup.box_family_for(ctx.block_slug, attr)
         if box_family is None:
             return gap_writer(
@@ -401,7 +401,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
                 ctx, decl, GapOrigin.NO_DESTINATION,
                 f"{ctx.block_slug} has no GRID (gridItem*) attr for {prop}",
             )
-        attr = tier_state_suffix(base_attr, decl, ctx.conn)
+        attr = tier_state_suffix(base_attr, decl, ctx.conn, ctx.block_slug)
         if not validate(ctx, attr, decl.value):
             return gap_writer(
                 ctx, decl, GapOrigin.NO_DESTINATION,

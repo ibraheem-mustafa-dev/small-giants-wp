@@ -219,10 +219,22 @@ def test_natively_consumed_property_does_not_double_emit():
         f"a natively-consumed length must appear exactly once (style.spacing."
         f"padding only), got {markup.count('60px')} occurrences: {markup}"
     )
-    assert '"contentBandPadding":{"top":"60px"}' in markup, (
-        f"padding-top must land in contentBandPadding.top — container has no "
-        f"supports.spacing since 7422698e, so there is no native style.spacing "
-        f"leaf for it to take. Got: {markup}"
+    # ⚠ CORRECTED 2026-09-06 (Phase 2 tier-object migration). The prior
+    # expectation here — `{"top":"60px"}` with no `desktop` wrapper — was
+    # itself a latent bug this fix uncovered: `contentBandPadding` IS a
+    # TIER-of-BOXES attr ({desktop,tablet,mobile}), and the converter's own
+    # merge logic (`dispatch_spine.attrs()`) could not tell that apart from a
+    # genuinely flat box family, so it merged the Base-tier write directly
+    # onto the attr with no tier nesting at all — exactly the same defect
+    # this session found and fixed for `padding`/`margin`/`borderRadius`,
+    # just never caught for `contentBandPadding` because no test exercised
+    # its Base-tier-only shape this precisely. `box_family_is_tier_shaped()`
+    # (converter/db/db_lookup.py) is the fix; this assertion reflects the
+    # now-correct output.
+    assert '"contentBandPadding":{"desktop":{"top":"60px"}}' in markup, (
+        f"padding-top must land in contentBandPadding.desktop.top — container "
+        f"has no supports.spacing since 7422698e, so there is no native "
+        f"style.spacing leaf for it to take. Got: {markup}"
     )
     # Post-D581 guard: container no longer declares supports.color.background,
     # so nothing may emit a native background leaf for it. This is the assertion
