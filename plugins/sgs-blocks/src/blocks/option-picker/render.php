@@ -96,6 +96,7 @@ $pill_size            = $attributes['pillSize'] ?? 'medium';
 $colour_preset        = $attributes['colourPreset'] ?? '';
 $show_selected_tick   = array_key_exists( 'showSelectedTick', $attributes ) ? (bool) $attributes['showSelectedTick'] : true;
 $pill_bg_colour       = $attributes['pillBgColour'] ?? '';
+$pill_bg_colour_gradient = $attributes['pillBgColourGradient'] ?? '';
 $pill_text_colour     = $attributes['pillTextColour'] ?? '';
 
 // Pill HOVER colours — real attributes since 2026-09-03 (FR-35-5 exception
@@ -103,6 +104,7 @@ $pill_text_colour     = $attributes['pillTextColour'] ?? '';
 // static preset-variant hover look via the CSS var() fallback chain in
 // style.css (no behaviour change for an instance with nothing configured).
 $pill_bg_colour_hover   = $attributes['pillBgColourHover'] ?? '';
+$pill_bg_colour_hover_gradient = $attributes['pillBgColourHoverGradient'] ?? '';
 $pill_text_colour_hover = $attributes['pillTextColourHover'] ?? '';
 
 $pill_border_colour   = $attributes['pillBorderColour'] ?? '';
@@ -301,15 +303,16 @@ $pill_padding_mobile_obj = is_array( $pill_padding_tiers['mobile'] ) ? $pill_pad
 
 $var_decls = array();
 
-if ( $pill_bg_colour ) {
-	$var_decls[] = '--sgs-op-bg:' . sgs_colour_value( $pill_bg_colour );
-}
+// pillBgColour/pillBgColourHover gradient siblings (2026-09-05) — same
+// custom-property-gradient shape already proven on brand-strip/post-grid/
+// social-icons/form/gallery/before-after (helpers-tokens.php:953); style.css
+// carries the matching background-image:var(--sgs-op-bg[-hover]-gradient,none)
+// line next to the existing background-color:var(...) rule.
+$var_decls = array_merge( $var_decls, sgs_custom_property_gradient_decls( 'sgs-op-bg', $pill_bg_colour, $pill_bg_colour_gradient ) );
 if ( $pill_text_colour ) {
 	$var_decls[] = '--sgs-op-text:' . sgs_colour_value( $pill_text_colour );
 }
-if ( $pill_bg_colour_hover ) {
-	$var_decls[] = '--sgs-op-bg-hover:' . sgs_colour_value( $pill_bg_colour_hover );
-}
+$var_decls = array_merge( $var_decls, sgs_custom_property_gradient_decls( 'sgs-op-bg-hover', $pill_bg_colour_hover, $pill_bg_colour_hover_gradient ) );
 if ( $pill_text_colour_hover ) {
 	$var_decls[] = '--sgs-op-text-hover:' . sgs_colour_value( $pill_text_colour_hover );
 }

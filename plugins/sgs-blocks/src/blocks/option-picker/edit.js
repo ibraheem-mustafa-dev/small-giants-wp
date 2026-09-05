@@ -90,8 +90,10 @@ function buildRootPreviewStyle( attributes ) {
 		maxWidth,
 		width,
 		pillBgColour,
+		pillBgColourGradient,
 		pillTextColour,
 		pillBgColourHover,
+		pillBgColourHoverGradient,
 		pillTextColourHover,
 		pillBorderColour,
 		pillSelectedBgColour,
@@ -146,8 +148,10 @@ function buildRootPreviewStyle( attributes ) {
 	// Pill colour/radius vars — CSS custom-property VALUES only (Spec 32
 	// FR-32-4), same channel render.php emits on the root element's style.
 	if ( pillBgColour )               rootStyle[ '--sgs-op-bg' ]              = colourVar( pillBgColour );
+	if ( pillBgColourGradient )       rootStyle[ '--sgs-op-bg-gradient' ]      = pillBgColourGradient;
 	if ( pillTextColour )             rootStyle[ '--sgs-op-text' ]            = colourVar( pillTextColour );
 	if ( pillBgColourHover )          rootStyle[ '--sgs-op-bg-hover' ]        = colourVar( pillBgColourHover );
+	if ( pillBgColourHoverGradient )  rootStyle[ '--sgs-op-bg-hover-gradient' ] = pillBgColourHoverGradient;
 	if ( pillTextColourHover )        rootStyle[ '--sgs-op-text-hover' ]      = colourVar( pillTextColourHover );
 	if ( pillBorderColour )           rootStyle[ '--sgs-op-border' ]          = colourVar( pillBorderColour );
 	if ( pillSelectedBgColour )       rootStyle[ '--sgs-op-sel-bg' ]          = colourVar( pillSelectedBgColour );
@@ -176,7 +180,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		colourPreset,
 		showSelectedTick,
 		pillBgColour,
+		pillBgColourGradient,
 		pillBgColourHover,
+		pillBgColourHoverGradient,
 		pillTextColour,
 		pillTextColourGradient,
 		pillTextColourHover,
@@ -402,6 +408,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'pillBackground',
 						label: __( 'Pill background', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -409,6 +416,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: pillBgColour,
 								onChange: ( val ) => setAttributes( { pillBgColour: val ?? '' } ),
 								linked: true,
+								gradientValue: pillBgColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { pillBgColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -416,6 +426,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: pillBgColourHover,
 								onChange: ( val ) => setAttributes( { pillBgColourHover: val ?? '' } ),
 								linked: true,
+								gradientValue: pillBgColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { pillBgColourHoverGradient: val ?? '' } ),
 							},
 							{
 								key: 'current',
@@ -423,6 +436,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: pillSelectedBgColour,
 								onChange: ( val ) => setAttributes( { pillSelectedBgColour: val ?? '' } ),
 								linked: true,
+								// No pillSelectedBgColourGradient attribute exists (out of
+								// scope for this rollout, same reasoning as pillText's
+								// 'current' state below) — a required no-op, not a missing
+								// feature (GradientCapableColourControl calls
+								// onGradientChange('') on every pick for every state in a
+								// gradientCapable row).
+								onGradientChange: () => {},
 							},
 						],
 					},

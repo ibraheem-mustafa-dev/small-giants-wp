@@ -10,9 +10,15 @@
  * touches more than ~3 blocks the first deliverable is the detector, not the
  * edit — and the survey runs BEFORE the design, not after it.
  *
- * IT WRITES NOTHING. Census only. The --fix half is deliberately not in this
- * file yet: a fixer written before its own census has no way to know what it
- * should be refusing.
+ * `--fix [--apply]` DELEGATES to fix.js (spawned as a child process, its own
+ * engine untouched) rather than duplicating fix.js's AST-level per-row parse
+ * here — that parse is what fix.js's own refusal reasons are built on, and
+ * re-deriving it a second way risks the two tools disagreeing. This makes
+ * survey.js the ONE entry point Bean asked for (2026-09-05): find (census),
+ * categorise (verdict), and fix, in one command — `node survey.js --fix
+ * --apply` — without the historical split into two commands a user had to
+ * know to run in order. Plain `node survey.js` (no flag) still only writes
+ * the census, unchanged.
  *
  * AUTOFIXABILITY IS GATED ON THE BLOCK'S OWN EMISSION CAPABILITY. Adding a hover
  * state or a gradient path is two mechanical edits (edit.js + block.json). The
@@ -1159,8 +1165,28 @@ $css = '--sgs-x:' . $other_value . ';';
 	return failures === 0;
 }
 
+/**
+ * `--fix [--apply]` — delegate to fix.js as a child process (its engine is
+ * untouched; this is a thin CLI merge, not a reimplementation). Runs the
+ * census first so a fix run always starts from a fresh classification, then
+ * hands off. Exit code propagates so a `--check`-style CI use stays honest.
+ */
+function runFixDelegate( applyFlag ) {
+	main();
+	const fixJs = path.join( __dirname, 'fix.js' );
+	const args = [ fixJs, '--fix' ];
+	if ( applyFlag ) args.push( '--apply' );
+	try {
+		execFileSync( 'node', args, { stdio: 'inherit' } );
+	} catch ( err ) {
+		process.exitCode = err.status || 1;
+	}
+}
+
 if ( process.argv.includes( '--self-test' ) ) {
 	process.exit( runSelfTest() ? 0 : 1 );
+} else if ( process.argv.includes( '--fix' ) ) {
+	runFixDelegate( process.argv.includes( '--apply' ) );
 } else {
 	main();
 }
