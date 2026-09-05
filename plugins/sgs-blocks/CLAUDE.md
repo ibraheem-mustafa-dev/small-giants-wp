@@ -612,6 +612,38 @@ but genuinely per-device, e.g. `gridItemPadding` — proven by render evidence, 
 `{x,y}`, `testimonial.orgLogo` `{id,url,alt}`). See `_compute_is_responsive()` in
 `scripts/sgs-update-v2.py` for the five-shape detection it actually needed.
 
+**The canonical TIER-of-BOXES envelope (Phase 2, 2026-09-06) — settle this once, do not
+re-derive it per property.** Every TIER-of-BOXES attribute (`contentBandPadding`,
+`gridItemPadding`, `gridItemBorderRadius` today; `padding`/`margin`/`borderRadius` once
+migrated off the flat box-of-sides-declared-per-tier shape — `migrate-tier-object.py`'s
+`classify()` now reports these as `BOX_FLAT`, not `ASSET`, so `--survey` can see them) is
+ONE attribute holding `{desktop:{...}, tablet:{...}, mobile:{...}}` — always this envelope,
+never a variant of it. What differs is what lives INSIDE each tier's object, driven by
+whether the property is SIDE-keyed or CORNER-keyed:
+- **SIDE-keyed** (padding, margin): each tier holds `{top, right, bottom, left}`, read via
+  `sgs_box_object_shorthand()`.
+- **CORNER-keyed** (borderRadius): each tier holds `{topLeft, topRight, bottomRight,
+  bottomLeft}`, read via `sgs_corner_object_shorthand()` — NOT the side helper. This makes
+  explicit what `gridItemBorderRadius`'s existing `transform` escape hatch in
+  `class-sgs-container-wrapper.php` (~L3127-3143) already does implicitly: it exists
+  because radius keys are corners, not sides, not because corner properties need a
+  different outer envelope.
+
+⚠ **WordPress provides ZERO schema-level protection for what's inside a tier's object —
+proven live, not assumed (Phase 2, Step 2).** Every tier-object attribute in this codebase
+declares `{"type": "object", "default": {}}` with no nested `properties` schema
+constraining sub-keys. Confirmed by writing a real post with `maxWidth:
+{"desktop":"90vh","tablet":123,"mobile":null}` (a malformed `tablet` value) and reading it
+back through `WP_Block_Type::prepare_attributes_for_render()` on the live canary: WordPress
+passed the malformed value through completely UNCHANGED — no coercion, no rejection, no
+whole-object wipe. This means **the PHP helper (`sgs_responsive_normalise_object()`) and
+the JS write helper are the ENTIRE defence**, not a backstop behind a WP-native check. Two
+concrete obligations follow: (1) every write into a tier-object attribute must go through a
+helper that spreads the existing object first (never a bare `setAttributes({attr:
+{tier: value}})`, which silently drops the other two tiers with nothing to catch it — see
+`patchTier()`), and (2) every PHP read must defensively handle a missing/wrong-typed
+sub-key itself, since WordPress will hand it through as-authored.
+
 ⚠ **Do NOT re-derive the shape from `default`.** A `"default": {}` proves nothing — 448 of 533
 object attrs declare exactly that (this doc has carried "532" and "533" inconsistently in
 adjacent sentences — re-run the count rather than trusting either cached figure). A reading
@@ -781,7 +813,9 @@ Every block MUST provide per-element customisation matching Kadence/Spectra dept
 
 > **TYPOGRAPHY — use the SHARED component, never bespoke font controls (MANDATORY, Bean R-22-13 2026-06-11).** For ANY per-element typography (font size / weight / style / line-height on a title, label, pill, link, price, etc.) use the shared **`TypographyControls`** component (`src/components/TypographyControls.js`, exported from `../../components`) in edit.js + the shared **`sgs_typography_css_rule( $attributes, $prefix, $selector )`** helper (`includes/helpers-typography.php`, auto-loaded via `render-helpers.php`) in render.php. This gives the canonical SGS inspector UI everywhere: **font size = `<ResponsiveControl>` wrapping a `<UnitControl>` (number + unit in one integrated input — NOT a RangeControl + separate SelectControl dropdown)**, **weight + style = SelectControl dropdowns**,
 >
-> ⚑ **CORRECTED 2026-08-10 (Spec 35 Phase 1.2).** This line used to read *"`<ResponsiveControl>` **device-icon switcher** wrapping a `<UnitControl>`"*. `ResponsiveControl` **no longer renders any switcher** — its own docblock now says so. The device tier is chosen ONCE, in the global toggle docked at the bottom of the inspector (`src/blocks/extensions/responsive-device-toggle.js`), which is a text-labelled `ToggleGroupControl`, not device icons. `ResponsiveControl` still wraps the control and still passes the tier to its child, so the rest of this rule is unchanged — but anyone building from the old wording would expect per-control device icons that no longer exist. ⛔ Do NOT add a per-control switcher: `inspector-scan` rule 25 flags it. **line-height = `<UnitControl>` (number + unit; empty string unit = unitless, matching the PHP helper's `''` → unitless semantic)**. Attr shape per element: `{prefix}FontSize` (number) + `{prefix}FontSizeUnit`/`Tablet`/`Mobile` + `{prefix}FontWeight`/`FontStyle` + `{prefix}LineHeight`/`Unit`; the helper emits a per-instance uid-scoped `<style>` (base + tablet + mobile) and honours a legacy STRING fontSize verbatim for back-compat. Do NOT hand-roll a TextControl/SelectControl font-size or emit `--x-font-size` CSS vars per block — that path produced the inconsistent stacked-RangeControl + unit-dropdown controls this rule exists to kill. Blocks already on it: text/heading/button/label/quote (canonical) + counter/whatsapp-cta/mobile-nav/option-picker/trust-bar/product-card (migrated 2026-06-11). Adopt it for every new typography control + keep all blocks aligned.
+> ⚑ **CORRECTED 2026-08-10 (Spec 35 Phase 1.2).** This line used to read *"`<ResponsiveControl>` **device-icon switcher** wrapping a `<UnitControl>`"*. `ResponsiveControl` **no longer renders any switcher** — its own docblock now says so. The device tier is chosen ONCE, in the global toggle docked at the bottom of the inspector (`src/blocks/extensions/responsive-device-toggle.js`), which is a text-labelled `ToggleGroupControl`, not device icons. `ResponsiveControl` still wraps the control and still passes the tier to its child, so the rest of this rule is unchanged — but anyone building from the old wording would expect per-control device icons that no longer exist. ⛔ Do NOT add a per-control switcher: `inspector-scan` rule 25 flags it. **line-height = `<UnitControl>` (number + unit; empty string unit = unitless, matching the PHP helper's `''` → unitless semantic)**. Attr shape per element: `{prefix}FontSize` (number) + `{prefix}FontSizeUnit`/`Tablet`/`Mobile` + `{prefix}FontWeight`/`FontStyle` + `{prefix}LineHeight`/`Unit`; the helper emits a per-instance uid-scoped `<style>` (base + tablet + mobile) and honours a legacy STRING fontSize verbatim for back-compat. Do NOT hand-roll a TextControl/SelectControl font-size or emit `--x-font-size` CSS vars per block — that path produced the inconsistent stacked-RangeControl + unit-dropdown controls this rule exists to kill. Adopt it for every new typography control + keep all blocks aligned.
+>
+> ⚑ **EXTENDED 2026-09-06 (D971/D972/D973) — full replacement, not just new controls.** WordPress's native `supports.typography` block support is BANNED outright, not merely superseded for new work — every block declaring it has been migrated onto this shared mechanism (rule `45-typography-full-replacement.js` gates on any remaining native declaration; `npm run` its `inspector-scan` before assuming a block is clean). A claimed CSS-inheritance blocker for root-level typography was checked and disproven (D971) — a real CSS rule on the root cascades to unset children from ANY source, native or not. The helper also now resolves a theme font-size PRESET SLUG stored inside a *tiered* `{desktop,tablet,mobile}` object's `desktop` key (not just the old flat-legacy-string shape) via its `transform` extension point on the tiered spec — this closes a real gap `sgs/heading`/`sgs/text` hit live (D973). Never cache which blocks have migrated here — it drifts; query rule 45's live output instead.
 
 1. Native WordPress `supports` for wrapper-level controls (colour, typography, spacing, border)
 2. Custom attributes + controls for each inner text element (colour via `SgsColourPanel` — see "Colour controls" below; font size/weight/style/line-height via the shared `TypographyControls` component — see box above)
