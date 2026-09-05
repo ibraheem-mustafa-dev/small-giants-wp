@@ -1,3 +1,105 @@
+## D972 [ROUTINE] — Typography full-replacement foundation shipped: real census, detector, switcher; a suspected helper bug was investigated and DISPROVED
+
+**2026-09-06.** Follow-on to D970/D971. Built the three foundational pieces before any of the 19
+native-only blocks get migrated, per this project's "build the detector before the 4th file
+edit" rule.
+
+**Real 4-bucket census across all 84 blocks** (a prior 13-block guess was wrong on every count):
+14 already correctly using the shared `TypographyControls` component (done); 19 native-only
+(18 have a machine-resolvable target already via rule 33's existing selector work, only `form`
+needs a one-off manual selector read); 6 blocks mix both mechanisms, but only 4 are real
+double-writer conflicts needing a hand look (`testimonial` highest-risk — 3 elements, 1
+collision; `card-grid`/`icon-list` one collision each; `collapsible-text` one collision) — the
+other 2 (`counter`, `quote`) are a false alarm, each mechanism governs a genuinely different
+element; 44 blocks have neither (18 genuinely textless, ~25 real gaps, 12 of which collapse to
+one or two shared form-field fixes rather than 12 separate ones). Zero collision confirmed with
+the separate in-flight tier-object migration (disjoint attribute namespaces).
+
+**Detector shipped:** `41-co2-element-grouping-order` and `31-golden-colour-control` are
+colour-only; a NEW rule `45-typography-full-replacement.js` (advisory, `openBacklog: 29`) flags
+any block still declaring native `supports.typography` or mixing both mechanisms without full
+adoption. First draft had a real false-positive bug (gated on the generic "text" property
+cluster alone, catching icon fills and close buttons) — caught via the same vacuity-proof
+discipline rule 41's fix used (disable the guard, confirm the fixture wrongly passes, re-enable,
+confirm it correctly fails), before shipping.
+
+**Switcher built:** `TypographyControls.js` gained an opt-in `targets={[{key,label,prefix,...}]}`
+prop — 1 target renders exactly as before (zero changes needed to any existing single-target
+call site, proven against `sgs/button`), 2-3 targets get a `ToggleGroupControl` switcher, 4+ get
+a `SelectControl` dropdown, both thresholds data-driven off `targets.length` (never a per-block
+override, per Rule 3). Includes a modified-value indicator per target (a customised target
+that's not currently selected would otherwise look untouched — a real support-ticket trap a
+parallel risk assessment flagged). Wired for real on `sgs/card-grid` (title/subtitle); live
+Playwright verification still pending a clear shared tree.
+
+**A suspected helper bug was investigated and DISPROVED, not fixed** — per
+`prove-the-cause-before-fix.md`, exactly as intended. The 4 "partial adoption" findings
+(`button`/`heading`/`label`/`text`) looked like they might mean `sgs_typography_css_rule()`
+couldn't handle the responsive tier-object shape these blocks use. Read + live-verified instead
+of assumed: the helper has handled both shapes correctly since `d6ca8b10c`; these 4 blocks just
+don't call it at all — they each hand-roll an equivalent code path. Real (a duplicate-logic
+architecture gap, worth tidying) but not urgent (nothing is broken; verified live at
+desktop/tablet/mobile on the canary). No file was touched for this non-fix.
+
+Full working detail + open items: next-session orchestration in `.claude/LEDGER.md`'s
+TYPOGRAPHY FULL-REPLACEMENT TRACK section.
+
+## D971 [ROUTINE] — Typography architecture: FULLY REPLACE native `supports.typography` with the shared `TypographyControls` component everywhere, including root-inheritance cases
+
+**2026-09-06, Bean-directed, verified not assumed.** A risk assessment first claimed native
+typography must be retained on some blocks because a child block needs to inherit font settings
+from a parent, and only native WP typography could do that. Bean pushed back, correctly: CSS
+inheritance is a browser/cascade behaviour, not something native WP typography uniquely
+provides. Dispatched a dedicated verification (not just re-reasoning) — confirmed FALSE. The
+existing shared helper (`sgs_typography_css_rule()`) already supports being scoped to a block's
+root selector, in production use on 5 blocks today; a real CSS rule on the root, from ANY
+source, cascades to unset children identically. Decisions D625/D626 already establish this exact
+mechanism as an SGS-owned wrapper capability — the plan's own trajectory was already toward
+this, not away from it.
+
+**One genuine, separate consideration checked and cleared:** WordPress Global Styles lets a
+client set a per-block-TYPE typography default from the Site Editor (distinct from the
+inheritance question). Checked `theme/sgs-theme/theme.json` directly: only core blocks
+(`core/quote`, `core/navigation`, etc.) use this today — zero `sgs/*` blocks do. Nothing is lost
+by removing native `supports.typography` from any SGS block right now. A future per-block-type
+default (if ever wanted) is separate, smaller work, not a blocker.
+
+**Decision: full replacement, no coexistence branch.** This unblocks a clean single-mechanism
+migration instead of a permanently-forked one. See D972 for what shipped against this decision.
+
+## D970 [INCIDENT] — Colour-control placement: a shared-mechanism change was built and shipped WITHOUT reading an already-documented architecture rule; reverted same night
+
+**2026-09-06.** Two mechanical rule-41 batches tonight (committed `3548f7c85`/`689c3f2b5`) moved
+colour controls for 10 of 11 touched blocks OUT of the shared `SgsColourPanel` component into a
+bespoke per-element mount (`DesignTokenPicker`/`GradientCapableColourControl` inside a separate
+`ToolsPanel`). A read-only audit proved this was the wrong shape: `plugins/sgs-blocks/CLAUDE.md`
+already documented, in commit `6a204a21e` (2026-08-30, ~6 days before the first of tonight's two
+batches), that colour has NO general per-element-panel mechanism and "should not be built without
+a design gate" — verified via `git blame`, not assumed (an earlier draft of this write-up wrongly
+guessed "6 minutes"; corrected after an independent QC check caught it). D533/D537/D618/D609/D622 all converge on the real rule: colour lives as ONE ROW inside
+the single shared `SgsColourPanel`; "the element's panel" in D622's own wording refers to that
+row's placement inside the shared component, not a separate JSX mount. `nav-menu`/`trust-bar`
+(both correctly left untouched by the batches, on instinct) are the working reference examples.
+7 of the 11 "fixed" blocks weren't even closing the finding they targeted — they traded one
+rule-41 violation for a different one (`dom-order-vs-declared-order`), a false sense of progress.
+
+**Fix, same night:** surgically reverted all 10 wrong extractions back to `SgsColourPanel` rows
+(`5f0c2e2d0`, keeping the one legitimate unrelated change bundled in the same commit —
+`testimonial`'s panel-merge). Taught the detector itself the real rule instead of re-litigating
+per block: rule 41 now exempts the documented "one `SgsColourPanel` row + one other panel for
+non-colour controls" shape from `co2-scattered-element`, proven with a real positive AND
+negative control including a vacuity check (`c330f2a6b`). Net result: rule 41 45 -> 26 (10 real
+scattering left, 16 unrelated pre-existing `dom-order` debt). One independent real bug found
+along the way and fixed cleanly: `sgs/responsive-logo` had no `attrMap` entry disambiguating
+`width`/`maxHeight` between its `image` and `wrapper` elements (`ed41a61c9`).
+
+**Why this is filed as an INCIDENT, not routine progress:** the failure mode is the one this
+project's Rule 7 exists to prevent — a shared/high-blast-radius mechanism shipped without a
+design gate, discovered only because a full audit was run proactively, not because a review
+caught it first. Captured as a lesson (see mistakes.md / CC memory) so a future session checks
+the relevant CLAUDE.md section's git blame before assuming a rule's "how" is settled just
+because its "does this need fixing" is.
+
 ## D969 [ROUTINE] — CHECK A closed 128->0; 4 dead-attribute bugs root-caused; nav-drawer variant collision fixed via a new composition-based detection signal + structural guard
 
 **2026-09-05.** Three linked pieces of work, same session.

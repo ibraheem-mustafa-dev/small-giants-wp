@@ -1,11 +1,29 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-09-06 (is_responsive closeout handoff) (1 new entry added — a deferral
-can be recorded only in another session's own progress doc, not parking.md; 1 oldest entry
-pruned to archive to hold the ~30 cap.)
+**Last updated:** 2026-09-06 (typography-migration handoff) (1 new entry added — a shared-mechanism
+doc committed mid-session can still get violated minutes later; 1 oldest entry pruned to archive
+to hold the ~30 cap.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-06] An already-documented architecture rule still got violated because nobody checked the doc before building the mechanism it forbids
+- **Pattern key:** `an-already-documented-architecture-rule-still-got-violated`
+- **Evidence:** `plugins/sgs-blocks/CLAUDE.md`'s "Colour controls" section explicitly forbade
+  mounting a colour control inside an element's own panel ("no general mechanism... should not
+  be built without a design gate") — documented in commit `6a204a21e`, 2026-08-30. A mechanical
+  rule-41 fix batch on 2026-09-05/06 built exactly that forbidden mechanism across 10 blocks
+  anyway, ~6 days later — not because the doc was hard to find or newly written, but because
+  nobody checked it before treating "colour needs fixing somewhere" as license to invent how. A
+  full read-only audit (not a review, a proactive one) caught it the same night; reverted (D970).
+  (An earlier draft of this entry wrongly claimed the gap was "6 minutes" in the same session —
+  corrected to the true ~6 days after an independent QC check caught the fabricated precision;
+  the lesson holds either way, but state figures you've actually measured, not guessed.)
+- **Rule:** before building any general mechanism (not a one-off block fix) that touches a shared
+  component's placement/architecture, read the relevant CLAUDE.md/spec section in full — don't
+  rely on general familiarity or an earlier read — and check its git blame if timing might
+  matter. A documented rule is binding regardless of whether it's a day old or a year old; the
+  failure here was never checking, not the rule being too recent to know about.
+
 ### [2026-09-06] A deferral can be recorded only in another session's own progress doc, not parking.md
 - **Pattern key:** `deferred-work-search-beyond-parking-md`
 - **Evidence:** closing out 3 deferred Minors from an `is_responsive` fix, `parking.md` and
@@ -256,11 +274,7 @@ pruned to archive to hold the ~30 cap.)
 - **Pattern key:** `verify-incoming-session-brief-against-repo`
 - **Feedback file:** [feedback_verify_incoming_session_brief_against_repo.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_incoming_session_brief_against_repo.md)
 
-### [2026-08-16] A "replace each session" living-status doc's rule governs its own cruft, not another thread's same-day, not-yet-archived work
-- **Pattern key:** `ledger-replace-means-fold-in-not-delete`
-- **Feedback file:** [feedback_ledger_replace_means_fold_in_not_delete.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_ledger_replace_means_fold_in_not_delete.md)
-
-*(16 entries dated 2026-08-04 through 2026-08-16 pruned to `memory/mistakes-archive.md` — oldest
+*(17 entries dated 2026-08-04 through 2026-08-16 pruned to `memory/mistakes-archive.md` — oldest
 by date, moved verbatim, to make room at cap. See `memory/mistakes-archive.md` for the full
 history of prunes.)*
 

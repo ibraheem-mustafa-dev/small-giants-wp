@@ -3070,3 +3070,34 @@ PHP emitter ever touches. Measured after the fact: **233 `:hover` lines across 4
 files, zero guarded** — a larger population than the one that was fixed. **When you fix a behaviour
 at a shared emitter, measure how much of that behaviour actually flows through the emitter before
 describing the fix as universal.** The guard is real; the scope claim was not.
+
+### E24. Earned 2026-09-06 — Spec 32/35 gates closure + typography-migration opening session, D970
+
+⛔ **STOP-A-DOCUMENTED-RULE-IS-JUST-AS-BINDING-WHETHER-ITS-DAYS-OLD-OR-A-YEAR-OLD.**
+`plugins/sgs-blocks/CLAUDE.md`'s "Colour controls" section stated, in a commit landed ~6 days
+before a mechanical rule-41 fix batch started, that colour has no general per-element-panel
+mechanism and none should be built without a design gate. The batch built exactly that mechanism
+across 10 blocks anyway — not because the rule was missing, stale, or hard to find, but because
+nobody re-read the relevant section before treating "this needs fixing somewhere" as licence to
+invent the how. A proactive read-only audit (not a review — nobody asked for one) caught it the
+same night; reverted, detector corrected instead of re-litigated per block. (First write-up of
+this entry wrongly guessed the gap as "6 minutes" — corrected to the measured ~6 days after an
+independent QC check caught the fabricated precision; state figures you've verified, not
+estimated.) **Before building any GENERAL mechanism touching a shared component's placement or
+architecture, read the relevant doc section in full — don't rely on memory of it — regardless of
+how long ago it was written.**
+
+⛔ **STOP-A-SUSPECTED-BUG-IS-A-HYPOTHESIS-UNTIL-READ-AND-LIVE-CHECKED.** A shared PHP typography
+helper was suspected of breaking on responsive attribute values, based on 4 blocks' static
+detector findings. Reading the helper's actual code showed it already handled both value shapes
+correctly (added in an earlier, unrelated commit); a live check at three breakpoints confirmed
+responsive typography genuinely works today on all 4 blocks. The 4 findings were about something
+else entirely (those blocks don't call the shared helper at all — a real but non-urgent
+duplicate-logic gap, not a defect). **Committing the requested "fix" would have shipped a second,
+redundant implementation of already-working logic — the exact unfalsifiable-overlapping-fix
+trap.** Investigate before writing the patch, every time, even when the bug report sounds
+specific and confident.
+
+**D101 carry-forward receipt for E24.** Two STOP entries added (narrative `⛔ **STOP-…**` style,
+matching E15-E23), zero removed, zero reworded, zero ritual questions touched. Ritual questions
+in §C unchanged. STOP-bullet count: 29 before this session, 31 after.

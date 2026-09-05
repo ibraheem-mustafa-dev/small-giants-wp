@@ -6,6 +6,14 @@ under any name — see `.claude/reports/2026-08-12-doc-audit-register.md` §5).
 
 ---
 
+## 2026-09-06 (typography-migration handoff) — 1-entry prune, oldest by date, moved verbatim, to make room for 1 new stub at cap
+
+### [2026-08-16] A "replace each session" living-status doc's rule governs its own cruft, not another thread's same-day, not-yet-archived work
+- **Pattern key:** `ledger-replace-means-fold-in-not-delete`
+- **Feedback file:** [feedback_ledger_replace_means_fold_in_not_delete.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_ledger_replace_means_fold_in_not_delete.md)
+
+---
+
 ## 2026-09-06 (is_responsive closeout handoff) — 1-entry prune, oldest by date, moved verbatim, to make room for 1 new stub at cap
 
 ### [2026-08-16] Parallel agent dispatch needs one isolated clone/worktree per agent, never a shared directory
