@@ -33,6 +33,22 @@ multi-target switcher component all shipped and verified same night (D972); a su
 bug was investigated and DISPROVED rather than "fixed" (nothing was broken). Full orchestration
 for what's left: TYPOGRAPHY FULL-REPLACEMENT TRACK below.
 
+**2026-09-06 (same-day continuation, `small-giants-wp-30`) — Tasks 1+2 of the typography track
+shipped, 23 blocks, 2 merged PRs; a codemod was ruled out by evidence; the shared helper gained a
+real capability.** Resolved the 3+ day orphaned stash (checked every file against `main`, all 26
+superseded — dropped). Migrated all 19 native-only blocks + tidied all 4 duplicate-logic blocks
+onto the shared `TypographyControls`/`sgs_typography_css_rule()` mechanism — PR #40 (`0e3a1447f`)
++ PR #41 (`ddf04a5ea`), both merged. Bean asked mid-session whether a `--fix` codemod could
+replace the per-block agent dispatch; investigation found the "one shape" premise false (prefix
+varies by target element, detected only by reading each block's own `selectors.typography`) —
+proven concretely when 3 of 19 candidates (`heading`/`label`/`text`) independently stopped on the
+same real gap a codemod would have silently mismigrated. That gap (a theme font-size PRESET slug
+inside a tiered object — live-reachable, not theoretical) was root-caused and fixed in the shared
+helper itself via its pre-existing `transform` extension point, verified by 11 EXECUTED
+assertions against the real helper, not just read-through (D973). rule 45 findings: 29 → 6 (the
+remainder is Task 3's genuine conflicts + 2 known false alarms). **Deploy still pending** — full
+detail + next steps: TYPOGRAPHY FULL-REPLACEMENT TRACK below + D973.
+
 **Prior sessions, all historical and fully closed — narrative moved to their D-numbers, not
 repeated here:** `is_responsive` tidy-up (D968, `148e83bfd`); colour-conformance "remaining 8
 hard rows" + reseed-conflict fix (D964); a token-limit-truncated session's hand-wiring verified +
@@ -64,12 +80,18 @@ via a new composition-detection signal (D969, PR #38). Full per-session detail:
   `ed41a61c9` (real independent bug, `responsive-logo` attrMap gap). Rule-43 accessibility fix
   (table-of-contents underline): `93dacf0d4`, committed not yet deployed. See D970 for the
   incident narrative.
-- **Typography full-replacement track commits (this session):** `2750f1a1e` (detector rule 45),
-  `2e61e9803` (switcher API on `TypographyControls.js`), `90b50989a` (switcher wired on
-  `card-grid`). See TYPOGRAPHY FULL-REPLACEMENT TRACK below + D971/D972.
+- **Typography full-replacement track commits:** `2750f1a1e` (detector rule 45), `2e61e9803`
+  (switcher API on `TypographyControls.js`), `90b50989a` (switcher wired on `card-grid`) — all
+  foundation, D972. Migration: PR #40 `0e3a1447f` (19 blocks + button), PR #41 `ddf04a5ea` (shared
+  helper widened + heading/label/text) — D973. See TYPOGRAPHY FULL-REPLACEMENT TRACK below.
 - **Live fronts:** `31-golden-colour-control` — down to the 8 rows named above (from 241 at
-  session 8). `45-typography-full-replacement` — new, 29 findings (25 native + 4 partial
-  adoption). Everything else in this track's original scope unchanged from session 10.
+  session 8). `45-typography-full-replacement` — 6 findings (down from 29; the remainder is
+  Task 3's 4 genuine conflicts + 2 known false alarms). Everything else in this track's original
+  scope unchanged from session 10.
+- **Orphaned stash — RESOLVED 2026-09-06.** `stash@{0}` (26 files, base `7a2c68b05`) checked
+  file-by-file against `main`: every change was superseded (hover-safety codemod shipped
+  separately, WCAG contrast rollout resolved+archived, a dedup landed, the webgl file moved on via
+  its own commits). Dropped. Not open work any more — do not re-flag it.
 - **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
   Closed-track narrative lives in `memory/session-2026-09-04-tracks-history-sweep.md`, not here.
 
@@ -79,8 +101,8 @@ via a new composition-detection signal (D969, PR #38). Full per-session detail:
 
 Two live prompt docs, pick either (independent, no ordering requirement between them):
 
-- **Typography full-replacement** (D971/D972) — foundation shipped, migration work remains.
-  Full plan: `.claude/prompts/2026-09-06-typography-full-replacement-next-session.md`.
+- **Typography full-replacement** (D971/D972/D973) — Tasks 1+2 shipped + merged, deploy +
+  Tasks 3/4/5 remain. Full plan: `.claude/prompts/2026-09-06-typography-full-replacement-next-session.md`.
 - **Spec 32/35 residual debt** (D970) — the core track is closed; rule-41/43 framework debt it
   surfaced is not. Full plan: `.claude/prompts/2026-09-04-spec32-35-gates-next-session.md`
   (updated 2026-09-06, still live — despite the filename's date).
@@ -95,12 +117,9 @@ All 9 items closed (2026-08-25). Full detail: `.claude/plans/archive/2026-08-25-
 CSS-injection sanitisation has no gate for `borderStyle`/`textTransform` free-text attrs (9
 unaudited `render.php` files); `text/edit.js`'s "Font" reset is a no-op.
 
-⚠ **`git stash@{0}` (26 files, base `7a2c68b05`) STILL UNRESOLVED**, 3+ days old — see Task 6 in
-`.claude/prompts/2026-09-06-typography-full-replacement-next-session.md`. Files: `hero`/`button`/`before-after`/`brand-strip`/`buybox`/`cta-section`/`heading`/
-`icon-list`/`icon`/`info-box`/`mega-panel`/`nav-drawer`/`quote`/`site-footer(-row)`/
-`site-header(-row)`/`testimonial(-slider)`/`trust-bar`/`GradientCapableColourControl.js`/
-generative-background shader files/`utils/index.js`/`parking.md`. Do NOT `git stash drop`/`clear`
-until reconciled.
+✅ **`git stash@{0}` (26 files, base `7a2c68b05`) RESOLVED 2026-09-06** — checked file-by-file
+against `main`, every change was superseded elsewhere, dropped. Detail: LEDGER State Snapshot
+above.
 
 ## ▶ UNIFORMITY SWEEP TRACK — CLOSED bar one detector. Detail: D918/D919/D922/D924/D930/D933.
 
@@ -119,26 +138,30 @@ independent bug fixed (`responsive-logo` attrMap gap, `ed41a61c9`). **Still open
 the prompt doc:** rule 41 at 26 (10 real scattering + 16 `dom-order` debt); rule 43 at 13 across
 9 blocks, including 8 findings of a new, unexamined kind (`ambiguous-state-property`).
 
-## ▶ TYPOGRAPHY FULL-REPLACEMENT TRACK — OPENED 2026-09-06. Detail: D970 (why)/D971 (architecture)/D972 (foundation shipped). Next-session orchestration: `.claude/prompts/2026-09-06-typography-full-replacement-next-session.md`.
+## ▶ TYPOGRAPHY FULL-REPLACEMENT TRACK — OPENED 2026-09-06, Tasks 1+2 CLOSED same day. Detail: D970 (why)/D971 (architecture)/D972 (foundation)/D973 (Tasks 1+2). Next-session orchestration: `.claude/prompts/2026-09-06-typography-full-replacement-next-session.md`.
 
 **Decision (D971):** fully replace native `supports.typography` with shared `TypographyControls`
 everywhere, including root-inheritance cases — a claimed CSS-inheritance blocker was checked and
 disproven; WP Global Styles per-block-type overrides confirmed unused by any `sgs/*` block, so
 nothing lost.
 
-**Foundation shipped (D972), all live-verified:** real 84-block census (14 done / 19 native-only,
-18 machine-resolvable / 6 mixed, 4 real conflicts: `testimonial`+`card-grid`+`icon-list`+
-`collapsible-text` / 44 neither, 18 textless + ~25 real gaps collapsing to a couple shared
-fixes); new detector `45-typography-full-replacement.js` (advisory, 29 findings — caught + fixed
-its own false-positive before shipping); switcher component on `TypographyControls.js`
-(`targets=[]` prop, zero-diff for single-target blocks, wired on `card-grid`, live verification
-blocked by a concurrent session's dirty tree — see the prompt doc); a suspected helper bug was investigated
-and DISPROVED, not fixed (already handles both attribute shapes correctly; the 4 "partial
-adoption" blocks just hand-roll a duplicate, non-broken path).
+**Foundation (D972):** real 84-block census; detector `45-typography-full-replacement.js`;
+switcher component on `TypographyControls.js` (`targets=[]` prop, wired on `card-grid`); a
+suspected helper bug investigated and DISPROVED (nothing was broken).
 
-**Still open — full task list in the prompt doc:** migrate 19 native-only blocks; tidy 4 duplicate-logic blocks;
-resolve 4 double-writer conflicts; live-verify the switcher. No collision with the separate
-tier-object migration (disjoint attribute namespaces, checked directly).
+**Tasks 1+2 CLOSED (D973), merged to `main`:** all 19 native-only blocks migrated (PR #40,
+`0e3a1447f`) + all 4 duplicate-logic blocks tidied (PR #41, `ddf04a5ea`, which also widened the
+shared helper — a real preset-slug font-size gap, found independently by 3 blocks that correctly
+refused a lossy swap, fixed at the mechanism level via the helper's own `transform` extension
+point, not worked around per-block). rule 45: 29 → 6. A mid-session codemod question was answered
+by evidence (the per-block prefix/gap variance is real, not uniform — see D973) rather than
+assumption.
+
+**Still open — full task list in the prompt doc:** deploy + live spot-check both merged PRs
+(nothing has reached the canary yet); Task 3 (resolve 4 genuine double-writer conflicts —
+judgement-heavy); Task 4 (live-verify the card-grid switcher); Task 5 (deploy the already-committed
+TOC underline fix, `93dacf0d4`). No collision with the separate tier-object migration (disjoint
+attribute namespaces, checked directly). Task 6 (orphaned stash) is CLOSED — see State Snapshot.
 
 ## ▶ CHECK A EDITOR-CANVAS TRACK — CLOSED. 210 -> 0. Detail: D965 (phase 1 + standards) + D967 (positive-control fix).
 

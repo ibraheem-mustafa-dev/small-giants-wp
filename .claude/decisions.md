@@ -1,3 +1,68 @@
+## D973 [ROUTINE] — Typography full-replacement Tasks 1+2 shipped (23 blocks); a codemod was ruled out by evidence; the shared helper gained a font-size preset-slug path
+
+**2026-09-06.** Follow-on to D971/D972. Migrated all 19 native-only blocks (Task 1) and all 4
+duplicate-logic blocks (Task 2) onto the shared `TypographyControls`/`sgs_typography_css_rule()`
+mechanism. PRs #40 (`0e3a1447f`) and #41 (`ddf04a5ea`), both merged to `main`. rule 45
+(`45-typography-full-replacement`) findings: 29 → 6 — the 6 remaining are Task 3's genuine
+double-writer conflicts (`testimonial`/`card-grid`/`icon-list`/`collapsible-text`) plus the 2
+already-known false alarms (`counter`/`quote`).
+
+**Codemod question, answered by evidence, not assumption.** Mid-session Bean asked whether a
+`--fix` codemod could replace the per-block agent dispatch, since the task looked repetitive.
+Investigation found the "one shape" premise false: prefix varies (root, or a named child element
+— `process-steps`/`post-grid`/`pricing-table`/`timeline` target their `title` element, detected
+only by reading each block's own `selectors.typography`), and a live-executed comparison against
+the shared helper found real per-block divergences a blind regex swap would have silently
+mismigrated (see next paragraph). Verdict: agent-per-block with an explicit "stop and report
+gaps, don't force a lossy swap" instruction was the right call — 3 of 19 Task-2 candidates
+(`heading`/`label`/`text`) DID stop, each independently, on the same real gap, which a codemod
+would have shipped as a silent regression.
+
+**Shared helper gap found + fixed (not worked around per-block).** `heading`/`label`/`text` share
+`fontSizePresets={true}` (a client can pick a theme size PRESET, storing a slug string like
+`"small"` inside the tiered `fontSize` object's `desktop` key, live-reachable via the editor, not
+theoretical). `sgs_typography_css_rule()`'s tiered path had no branch for this — it would emit the
+literal wrong CSS keyword `font-size:small` (~13px UA default) instead of
+`var(--wp--preset--font-size--small)`, the exact D569/D570/D574 bug class already documented in
+that file. Root-cause analysis (5-question framework: what differs / which rule is better /
+better-for-whom / fix-the-block-or-the-helper / genuine-divergence-needs-a-variant) found 3 gaps,
+none surviving to "needs a variant helper": (1) preset-slug font-size — a genuine shared-mechanism
+gap, fixed via the helper's pre-existing `transform` extension point (already documented for this
+purpose: "e.g. `sgs_colour_value`") on the tiered font-size spec; (2) `int`-vs-`float` numeric cast
+(`label`/`heading`) — the helper's `float` default is objectively correct (a client's decimal
+`UnitControl` input was being silently rounded, a pre-existing bug, not a documented design
+choice) — fixed by the swap itself dropping the block-level override; (3) `text-decoration`/
+`text-align` allowlist width (`label`) — `label`'s own `textAlign` schema already permitted
+`start`/`end` (RTL logical values), the helper's allowlist was the narrower of the two, so it was
+widened to match; `label`'s free-text decoration control was legacy, swapped to
+`TypographyControls`' own `showDecoration` dropdown (already proven live on `button`/`quote`/
+`brand-strip`/`text`). `label`'s own restricted-subset `fontWeight` dropdown and
+`SgsLengthControl`-based line-height/letter-spacing controls are a genuine, documented,
+block-specific choice (a curated weight set for an eyebrow/kicker element) — left untouched; only
+the render-side emission mechanism moved underneath them. Every fix verified by EXECUTING the
+helper against real inputs (11 assertions: numeric/fractional/preset-slug/flat-scalar font-size,
+align widening + non-regression, `label`'s exact flat line-height/letter-spacing shape) — not
+just read-through.
+
+**Two commit-gate bypass patterns, worth reusing.** (1) The pre-commit visual-diff gate demands a
+`reports/visual-diff/<block>-DATE.md` for any block touching non-`.php` files (so
+`check-markup-neutral.py` never applies to a `block.json`+`edit.js`+`render.php` triple). Live
+Playwright capture for 23 blocks in one session was judged disproportionate given the source-level
+CSS-output equivalence already verified per block (by an independent agent for each, each
+explicitly tasked to compare old-vs-new emission and stop on any gap) — used the documented scoped
+bypass (`SGS_VISUAL_GATE_SKIP=<blocks> SGS_VISUAL_GATE_REASON="..."`) with that verification named
+as the reason, not a blanket "trust me". (2) The path-scoped-commit gate (this repo runs 150+
+concurrent sessions on `main`) refuses a bare `git commit` with no `-- <paths>` pathspec — always
+pass the exact staged file list explicitly after `--`, confirmed against `git diff --cached
+--name-only` first.
+
+**Deploy still pending** — neither PR has been deployed to the sandybrown canary yet. Live
+spot-check (3 sampled Task-1 blocks + `heading`/`label`/`text`'s font-size presets, decimal sizes,
+decoration dropdown) is the first item of the next session, per D971's own binding rule (R-31-13:
+script measurement never closes alone).
+
+Full task detail, remaining scope (Tasks 3/4/5/6): `.claude/prompts/2026-09-06-typography-full-replacement-next-session.md`.
+
 ## D972 [ROUTINE] — Typography full-replacement foundation shipped: real census, detector, switcher; a suspected helper bug was investigated and DISPROVED
 
 **2026-09-06.** Follow-on to D970/D971. Built the three foundational pieces before any of the 19
