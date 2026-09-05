@@ -333,6 +333,19 @@
 			"disposition": "by-design"
 		},
 		{
+			"check": "parent-child-duplicate",
+			"block": "sgs/notice-banner",
+			"attr": "textAlign",
+			"severity": "parent-child:heuristic",
+			"keeper": "BOTH -- parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
+			"sources": [
+				"sgs/notice-banner edit.js: parent-level control for \"textAlign\"",
+				"sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
+			],
+			"reason": "Same shape as the sgs/hero and sgs/info-box textAlign entries above, added by the same PR40/41 typography-full-replacement migration (D971/D972/D973) that moved textAlign off the retired native supports.typography onto a block-private bare attribute. Verified empirically: render.php:177-179,356-357 writes a `has-text-align-{left|center|right}` class on the WRAPPER root, which any nested sgs/text child inherits through normal CSS cascade unless it sets its own alignment (text/render.php owns its own text-align write on the child element itself). This is the inheritable wrapper default HC2 permits, not the per-element parent override HC2 forbids.",
+			"disposition": "by-design"
+		},
+		{
 			"check": "hover-duplicate",
 			"block": "sgs/team-member",
 			"attr": "grayscaleHover",

@@ -13,6 +13,7 @@ import { SgsColourPanel, ResponsiveBoxControl, ResponsiveBorderRadiusControl,
 	resolveColourToken,
 } from '../../components';
 import { colourVar, textPaintPreview } from '../../utils';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 const CARD_STYLES = [
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
@@ -318,28 +319,29 @@ export default function Edit( { attributes, setAttributes } ) {
 				    is the only element this block-level typography targets (the
 				    number/label elements keep their own colour-only controls).
 				    TypographyControls has no text-align field, so that control
-				    stays a plain SelectControl mirroring render.php's own
-				    allowed_aligns allowlist. */ }
+				    stays block-private. D812 (2026-08-26): a 5-option enum with
+				    longest rendered label <=12 chars ("— inherit —", 11 chars)
+				    renders as ToggleGroupControl, not SelectControl. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""
 					/>
-					<SelectControl
+					<ToggleGroupControl
 						label={ __( 'Text align', 'sgs-blocks' ) }
 						value={ attributes.textAlign || '' }
-						options={ [
-							{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-							{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-							{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-							{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
-							{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
-						] }
 						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
+						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
+					>
+						<ToggleGroupControlOption value="" label={ __( '— inherit —', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="left" label={ __( 'Left', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="center" label={ __( 'Centre', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="right" label={ __( 'Right', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="justify" label={ __( 'Justify', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
 				</PanelBody>
 				<PanelBody title={ __( 'Responsive spacing', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveBoxControl
@@ -404,13 +406,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius ?? {},
+							tablet: attributes.borderRadiusTablet ?? {},
+							mobile: attributes.borderRadiusMobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
-							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
+							setAttributes( { [ radiusKey ]: next } );
 						} }
 					/>
 				</PanelBody>

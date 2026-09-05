@@ -1,4 +1,5 @@
 [
+  "cssprop:rogue:sgs/nav-menu:listColumns",
   "roleguess:avatar",
   "roleguess:background-image",
   "roleguess:background-svg",
@@ -13,5 +14,12 @@
   "roleguess:option-picker",
   "roleguess:review",
   "roleguess:star",
-  "roleguess:testimonial"
+  "roleguess:testimonial",
+  "vc:sgs/nav-drawer:anchored-card-stack|centred-statement|editorial-ghost-list|solid-brand-light|split-zone-serif|two-column-editorial",
+  "vslot:sgs/nav-drawer:anchor",
+  "vslot:sgs/nav-drawer:drawerAlign",
+  "vslot:sgs/nav-drawer:drawerBg",
+  "vslot:sgs/nav-drawer:panelSize",
+  "vslot:sgs/nav-drawer:surfaceBlur",
+  "vslot:sgs/nav-drawer:surfaceOpacity"
 ]
