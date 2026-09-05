@@ -7,6 +7,34 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-09-05 — 1 entry RESOLVED: nav-drawer's variant discriminators fixed via a new composition-based signal
+
+> ### P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS — nav-drawer's 7 variantPresets have empty structural discriminators
+> **Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-28
+>
+> D403 shipped 7 nav-drawer `variantPreset` variations, but the `supports.sgs.variants` set-difference leaves 6 of 7 variants (anchored-card-stack / centred-statement / editorial-ghost-list / solid-brand-light / two-column-editorial / split-zone-serif) with an EMPTY discriminator signature — `detect_variant` cannot tell them apart from extracted CSS. This is the same class as `P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL` (the universal F6 ambiguity rule built from the trust-bar case). The `variantPreset` enum itself was added (mechanical transcription from variations.js) and this finding was consciously BASELINED (`db-consistency-baseline.json`) to unblock main's prebuild — that is not a fix.
+>
+> **To close:** give each variant structural/styling discriminators per the F6 fix pattern (only ONE variant may keep the empty fallback), then remove the baseline key. `detect_variant` is blind on nav-drawer until this lands.
+>
+> **Status reasoning:** assigned OPEN rather than DEFERRED because it names a concrete next-session trigger and blocks a live capability (drawer-variant cloning), not a speculative future want.
+>
+> **Trigger:** next nav/Spec-36 session — before any drawer-variant cloning is attempted.
+
+**RESOLVED 2026-09-05, PR #38.** D966 had already closed 5 of the 6 empty-signature variants
+(unrelated session, same week) — `anchored-card-stack`/`centred-statement`/`editorial-ghost-list`/
+`solid-brand-light` gained real attribute discriminators, and `floating-capped-card` was found
+(2026-09-05, during the closing fix's own investigation) to have ALWAYS had real unique
+attributes (`anchor`/`panelSize`/`surfaceBlur`), never actually part of the collision. The
+remaining genuine pair, `split-zone-serif`/`two-column-editorial`, shared every attribute value
+with a sibling — unresolvable via the prescribed fix ("give each variant structural/styling
+discriminators") without an invented, reference-site-inconsistent value change. Closed instead
+via a SECOND detection signal (InnerBlocks child-block composition, `variant_composition_slots`
+table + a `detect_variant()` tiebreaker), per Bean's direction that a structural guard was worth
+building over a one-off value tweak — and a new proactive check ("Check #10 — Dead Composition
+Discriminator") now catches this exact bug class on any future block. F6 Check #3 baseline key
+removed (not just re-baselined); `db-consistency/run.py --check` reports 0 violations for this
+block. Full detail: D969, `.claude/memory/sdd-progress.md`.
+
 ## 2026-09-02 — 1 entry SUPERSEDED: the detector itself was retired, not its rulings
 
 > **P-SCATTER-DETECTOR-FAMILY-CLASSIFICATION** — does a spacing/sizing split count as by-design

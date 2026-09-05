@@ -1,3 +1,58 @@
+## D969 [ROUTINE] — CHECK A closed 128->0; 4 dead-attribute bugs root-caused; nav-drawer variant collision fixed via a new composition-based detection signal + structural guard
+
+**2026-09-05.** Three linked pieces of work, same session.
+
+**CHECK A editor-canvas track fully closed (Phase 2-4, 128 -> 0).** Extracted
+`textPaintPreview()`/`borderPaintPreview()` to shared utils alongside the existing
+`backgroundPaintPreview()`; built `svg-gradient-preview.js` + a generic `IconPreview`
+gradient prop for SVG stroke/fill gradients; used `clientId`-scoped `<style>` mirrors where
+the real paint target is a CHILD block's element (form's tile/file-label colours,
+container's `gridItemBorderGradient`/`gridItemTextColourGradient`). Commits
+`daddbbb1b`/`bd4076235`/`358584e79`.
+
+**4 dead-attribute bugs CHECK A surfaced but couldn't fix itself, root-caused via
+`/dispatching-parallel-agents`, each live-verified, not just re-gated (`2fb58e412`):**
+`sgs/hero`'s 7 generic grid/flex layout attrs (its split-grid never engaged the shared
+wrapper's generic layout branch — extended hero's own bespoke CSS builder instead, per the
+composite-mirror rule, since hero's split grid is a fixed 2-column layout, not the
+wrapper's generic column-count grid); `sgs/icon-list.dividers` (class emitted, no CSS ever
+consumed it — added the real rule matching the sibling convention already used by
+`sgs/accordion`/`sgs/product-faq`); `sgs/form-field-tiles.selectedStyle` (3 options
+rendered identically — split into real per-variant CSS, default kept visually unchanged);
+`sgs/form`'s `prevColourBackground*` family turned out to already be wired server-side by a
+concurrent peer's same-day commit — the real gap was the editor canvas never rendering a
+Previous-button preview element at all, added one next to the existing Submit-button
+preview.
+
+**Nav-drawer's `split-zone-serif`/`two-column-editorial` F6 collision fixed for real, PR
+#38 (`feat/variant-composition-fingerprinting`, merged `9c40ab746`), via
+`/subagent-driven-development` + `/delegate` (7 tasks, each independently reviewed — several
+review rounds found and fixed real bugs, not rubber-stamped).** Root cause: both variants
+shared every attribute value with a sibling, so `variant_slots`-based scoring always tied at
+zero — genuinely unresolvable from attribute values alone. Fix: a SECOND detection signal,
+InnerBlocks child-block composition (`variant_composition_slots` table, same set-difference
+methodology as `variant_slots`), consulted by `detect_variant()` as a TIEBREAKER ONLY —
+never additive, never able to override a clean attribute-only win, verified adversarially
+(fabricated ties, nonsense input, cross-block checks — a decided attribute win is never
+overturned by contradicting composition). Wiring the real call site (`assembly.py`)
+honestly proved nav-drawer's children never actually get recognized as children in a real
+conversion; root cause was a shared regex heuristic (`has_inner.py`'s `$content`-consumption
+detector) missing a shape nav-drawer's `render.php` uses (`printf(..., $content)` as a bare
+trailing argument) — fixing the ONE regex correctly turned on content-extraction for
+nav-drawer AND one other genuinely-affected block, `sgs/mega-aside` (found via a full
+83-block universality sweep, not assumed). New proactive guard, "Check #10 — Dead
+Composition Discriminator" (`db-consistency/check_dead_composition_signal.py`), flags any
+FUTURE block that gets a real composition discriminator with no content-extraction path to
+ever reach it — verified with a genuine positive control (a real, temporary DB row
+insert/remove on a live block, independently re-verified by the closing reviewer using a
+DIFFERENT test block than the implementer used). Bonus finding along the way: the ORIGINAL
+scope of the bug was narrower than assumed — `floating-capped-card` was never actually part
+of the collision (it already had real unique attribute discriminators); the only genuine
+ambiguity was always the one pair, now resolved. Followed by a small `/delegate`-routed
+(Haiku) SonarCloud cleanup on the PR's 9 flagged code smells (`85f6e313f`), independently
+re-verified before commit. Full task-by-task build/review history: `.claude/memory/sdd-progress.md`.
+Plan (archived, all 7 tasks complete): `.claude/plans/archive/2026-09-05-variant-composition-fingerprinting.md`.
+
 ## D968 [ROUTINE] — `is_responsive` closeout: named the five attribute shapes, retired the code-review narrative from the module comment, corrected an over-broad S5 claim
 
 **2026-09-06.** Closed the three Minor items deferred from the `is_responsive` classification fix

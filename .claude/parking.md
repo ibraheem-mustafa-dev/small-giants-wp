@@ -227,9 +227,15 @@ slug should read as more important than the others — this is an index, not a r
    Trust-bar's own case is fixed (structural image controls double as its recogniser; the F6 gate
    is now a universal ambiguity rule — 2+ variants sharing an identical/empty signature =
    violation, one zero-signature fallback allowed) and unit-verified, but live-clone verification
-   was never done. The universal audit of other blocks' `variant_slots` rows for the same
-   styling-attr-discriminator defect is also still owed (see `P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS`,
-   the same defect class recurring on nav-drawer).
+   was never done. **Nav-drawer's own defect (the sub-item this residual pointed at) is RESOLVED**
+   — closed 2026-09-05 via a second, composition-based detection signal rather than a
+   structural/styling attribute fix (D969, archived in `memory/parking-archive.md`); F6 Check #3
+   reports 0 violations for this block, verified live, not re-baselined. **The universal audit is
+   also now substantively covered**, not by a manual walkthrough but by the automated F6 gate
+   itself running clean (0 violations) across every block with `variant_attr` set, plus a new
+   proactive check ("Check #10 — Dead Composition Discriminator") that would catch this exact
+   defect class the moment any future block introduces it. Residual scope narrows to just:
+   trust-bar's own live-clone verification, never done.
 
 3. **P-QUOTE-PATH2-SELF-NESTING** — the Path-2 self-nesting bug (an unrecognised child element
    resolving to its own parent block's slug, letting a block self-nest) is CODE RESOLVED and
@@ -256,10 +262,11 @@ slug should read as more important than the others — this is an index, not a r
 
 **Trigger:** one dedicated converter live-clone-verification session covering all four: (1) run
 the keyed css_property resolver against a real draft and confirm it improves fidelity; (2) same run,
-confirm trust-bar/nav-drawer variant detection resolves correctly and audit the remaining
-`variant_slots` rows; (3) after a canary deploy, re-seed the 4 self-nesting goldens per
-`P-CONFORMANCE-GOLDEN-DRIFT`'s discipline; (4) check team-member's Stage 11.6 content-keyed parity
-and strike that residual if it matches.
+confirm TRUST-BAR variant detection resolves correctly against a real draft (nav-drawer's own
+resolution — code + F6 gate + live editor-canvas proof — is done, see item 2 above; only
+trust-bar's live-clone leg remains open here); (3) after a canary deploy, re-seed the 4
+self-nesting goldens per `P-CONFORMANCE-GOLDEN-DRIFT`'s discipline; (4) check team-member's
+Stage 11.6 content-keyed parity and strike that residual if it matches.
 
 ## framework
 
@@ -363,17 +370,6 @@ When a block emits both a root residual (D289) and a per-area residual (D290), `
 `/sgs-update` Stage 11 (`sync-container-wrapping-blocks.py`) WARNS: detection finds `sgs/mega-panel` (section-kind) plus `sgs/mega-aside` and `sgs/mega-group` (content-kind) as container-wrapping blocks, but they are absent from the script's expected ground-truth roster, so the sync fails closed before `--apply` (correct behaviour; diffs at `pipeline-state/container-inheritance-sync/2026-07-28/`). Declaring them is a composite-mirror scope statement (D152 lineage), not a mechanical edit — which is why it is parked rather than patched.
 
 **Trigger:** next Spec-36 session or the next full `/sgs-update` — confirm each mega block's KIND, add to the expected roster, re-run Stage 11 clean. Owned by Track 2.
-
-### P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS — nav-drawer's 7 variantPresets have empty structural discriminators
-**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-28
-
-D403 shipped 7 nav-drawer `variantPreset` variations, but the `supports.sgs.variants` set-difference leaves 6 of 7 variants (anchored-card-stack / centred-statement / editorial-ghost-list / solid-brand-light / two-column-editorial / split-zone-serif) with an EMPTY discriminator signature — `detect_variant` cannot tell them apart from extracted CSS. This is the same class as `P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL` (the universal F6 ambiguity rule built from the trust-bar case). The `variantPreset` enum itself was added (mechanical transcription from variations.js) and this finding was consciously BASELINED (`db-consistency-baseline.json`) to unblock main's prebuild — that is not a fix.
-
-**To close:** give each variant structural/styling discriminators per the F6 fix pattern (only ONE variant may keep the empty fallback), then remove the baseline key. `detect_variant` is blind on nav-drawer until this lands.
-
-**Status reasoning:** assigned OPEN rather than DEFERRED because it names a concrete next-session trigger and blocks a live capability (drawer-variant cloning), not a speculative future want.
-
-**Trigger:** next nav/Spec-36 session — before any drawer-variant cloning is attempted.
 
 ### P-PAGE8-DISCREPANCY-REGISTER / P-PAGE8-QC-BATCH-9 — page-8 clone-fidelity visual defect registers
 **Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-06 / 2026-07-11

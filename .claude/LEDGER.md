@@ -48,19 +48,9 @@ this fast-moving shared tree stops blocking every session's commits. Full detail
 mid-work (D963).** Verified + committed a prior session's uncommitted hand-wiring of
 `SgsBorderControl`'s WCAG border-contrast prop across 27 blocks. Full detail: D963.
 
-**Sessions 8-10 (prior, compressed — full narrative in `memory/session-2026-09-04*.md`):**
-road-to-uniform's 9 items fully closed; the colour-conformance track ran a `/qc-council` audit
-that found `fix.js`'s own bugs were the real blocker for a large slice of the backlog (3 bugs
-fixed, 25 rows mechanically closed); `fix.js` itself was hardened (a live PHP-corruption risk +
-a touch-safe-hover doctrine violation, caught by a full-branch review no per-task round could
-catch); first-ever real `--apply` run shipped + deployed + live-verified.
-
-**Session 11 (historical, superseded by D964's closure below) — closed `sgs_text_decls()`'s
-gradient bug at its ROOT** (a bare `color:` was emitted even for a resolved gradient string,
-silently invalid), fixed 7 blocks + hardened the shared primitive itself (`da2b54583`), then
-`/qc-council`'d 2 proposed fixes for the remaining hard rows and closed 4 more. Left 8 rows
-cleanly scoped, since fully closed — see COLOUR TRACK below + D964. Prompt doc consumed +
-deleted.
+**Sessions 8-10 + Session 11 (all historical, fully closed):** full narrative in
+`memory/session-2026-09-04*.md` and D964 (colour-conformance track: `fix.js` bugs found +
+hardened, first real `--apply` run, `sgs_text_decls()` root-cause fix). See COLOUR TRACK below.
 
 **A separate, concurrent session (`small-giants-wp-90`) ran a Spec 32/35 gates-closure track
 in parallel with colour-conformance session 11** — different scope, same tree, coordinated live
@@ -80,19 +70,32 @@ committing). Full detail: `.claude/prompts/2026-09-04-spec32-35-gates-next-sessi
 shipped and live-verified. Hand-written JSX preview IS WP's default; SSR is a documented legacy
 fallback and impossible here anyway (`/wp/v2/block-renderer` hardcodes empty innerBlocks; many blocks
 use InnerBlocks/RichText — count is gate-authoritative, never hardcoded). The whole-debt fix is our OWN media-atom pattern extended past
-media, not Stackable's. **CHECK A 210 -> 0 (phases 2-4 by a concurrent session); db-consistency 25 NEW -> 1 (the deliberate nav-drawer
-design call); hover-state-classification FAIL -> PASS.** Three LIVE client-facing defects fixed,
+media, not Stackable's. **CHECK A 210 -> 0 (phases 2-4 by a concurrent session); hover-state-classification FAIL -> PASS.** Three LIVE client-facing defects fixed,
 none previously known: `sgs/testimonial`'s five hover colours and `sgs/brand-strip`'s one each
 pushed a bare `color:` into one root-emitted bucket (only the last survived, none reached elements
 setting their own resting colour); `sgs/hero` declared seven `bgSvg*` attrs and offered them in the
 Background panel while rendering NOTHING (`render.php` nulled `bgSvgContent` on the very array
 passed to the wrapper). Bean's call: paint them, not delete.
 
+**2026-09-05 (same session as CHECK A above) — closed 4 dead-attribute bugs CHECK A surfaced
+(hero's 7 layout attrs, icon-list's dividers, form-field-tiles' selectedStyle, form's Previous
+button preview) plus a real F6 baselined violation** (nav-drawer's `split-zone-serif`/
+`two-column-editorial`, permanently undetectable on attributes alone) **via a new universal
+InnerBlocks-composition detection signal + a proactive guard** (Check #10) so the bug class
+can't recur on a future block. db-consistency is genuinely 0 violations now, not re-baselined.
+PR #38 merged `9c40ab746`; SonarCloud cleanup `85f6e313f`. Full detail: D969,
+`.claude/memory/sdd-progress.md`.
+
 **Canary:** sandybrown-nightingale-600381.hostingersite.com; no live client sites yet.
 
 ## State Snapshot
 
 - **This session's commit (`main`):** `148e83bfd` (is_responsive tidy-up closeout, D968).
+- **Concurrent session's commits (`main`):** `daddbbb1b`+`bd4076235` (CHECK A Phase 2, layout/box),
+  `358584e79` (Phase 3/4, colour+long-tail, 128->0), `2fb58e412` (4 dead-attribute bugs), PR #38 =
+  `dcb856e31`..`cb0e3c23f`+`2392c9241` merged as `9c40ab746` (variant composition fingerprinting),
+  `85f6e313f` (SonarCloud cleanup on that PR). Task-by-task review ledger:
+  `.claude/memory/sdd-progress.md`.
 - **Branch:** `main`. This session ran alongside 150+ peer sessions (`ListAgents`) committing
   concurrently — path-scope every commit, re-check `git status`/branch immediately before each
   one. The shared `sgs-framework.db` is a live-write target too, not just the git tree: a
@@ -105,25 +108,12 @@ passed to the wrapper). Bean's call: paint them, not delete.
   (rule-40 SVG-sanitisation detection-gap fix), `9e82fa272` (PHP-helper + JS-component/atom
   catalogue + DB migration), `533634eb6` (reseed-survival fix for the wiped rows). D964 has the
   full narrative.
-- **Session 11 commits (prior sub-session, `main`):** `a65d06927` (7-block `sgs_text_decls`
-  fix), `c8fdb0cc7`, `da2b54583` (hardened the primitive itself + `sgs_text_states_css()`),
-  `fb06b593d`, `a3e6a8a7f`, `0376109be`, `a39ee3e4c` + `2acfcc5da`, `e4b3f8456`.
-- **Spec 32/35 gates session commits (`small-giants-wp-90`, all on `main`, interleaved with the
-  above):** `be6103869` (Spec 32 CSS-injection blob-sanitisation gate), `0ebfe205b` (Spec 35
-  rules 42/43/44), `49d7b1c14`+`9ad892ab8` (rule-41 round 1, 8 blocks), `e4fd4ad90` (spec
-  close-out doc), `64396ecee` (root-caused the enum-control-shape detector's window-heuristic
-  bug and baselined `timeline.datePosition` as a documented workaround — root cause identified,
-  not yet fixed at this commit), `da6e3fd82` (the actual detector fix — closest-mark-wins
-  tie-break + regression test — which also unmasked 3 real D812 findings the bug had been
-  hiding), `86a8ea627`
-  (post-grid fatal namespace bug, deployed), `b8088d274` (post-grid REST uid crash, deployed),
-  `ba5dc407f`/`fee0631b8`/`c7f25aa75` (the 3 D812 control-shape fixes: hero.justifyItems,
-  modal.triggerStyle, trustpilot-reviews.theme). 2 deploys to sandybrown, both live-verified.
-- **CHECK A track commits (all on `main`, interleaved):** `89475bb3a` (SSR exemption + ceiling
-  216->196), `b4abced52` (15 declarations + testimonial/brand-strip hover fixes), `f4fc7333a`
-  (`svgBackgroundPreview` + container), `4d4bb2cf1` (residual write-up), `42cba6071` (disproof),
-  `9cea87e9b` (6 blocks + className comma-join bug), `a64e9e344` (hero), `2ec2f1a0c` (live
-  captures), `ecec63fc9` (docs/D965). Deployed + live-verified.
+- **Session 11 commits:** fully superseded, see D964. Recover via `git log` if ever needed.
+- **CHECK A phase-1 commits:** fully closed, see D965. Recover via `git log` if ever needed.
+- **Spec 32/35 gates session commits (`small-giants-wp-90`) — STILL-OPEN hashes only** (the rest
+  of that session's commits are closed/deployed, recover via `git log` if needed): 3 D812
+  control-shape fixes not yet deployed+live-verified — `ba5dc407f` (hero.justifyItems),
+  `fee0631b8` (modal.triggerStyle), `c7f25aa75` (trustpilot-reviews.theme). See Task 1 below.
 - **Live fronts:** `31-golden-colour-control` — down to the 8 rows named above (from 241 at
   session 8). Everything else in this track's original scope unchanged from session 10.
 - **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
@@ -209,12 +199,11 @@ Task 1 (parallel subagents, rule-41 blocks)     Task 2 (inline, stash reconcilia
 ## ▶ ROAD-TO-UNIFORM RECONCILIATION — FULLY CLOSED, all 9 items, qc-council-audited.
 
 All 9 items closed (2026-08-25). Full detail + commits:
-`.claude/plans/archive/2026-08-25-road-to-uniform-then-spec-39.md`. 2 residual gaps found by
-that closure's own qc-council audit remain open, NOT part of the 9: (1) Spec 32 §5
-CSS-injection sanitisation has no gate — `borderStyle`/`textTransform` free-text attrs need
-`[^a-zA-Z-]` filtering before CSS concatenation, 9 unaudited `render.php` files named in
-`memory/session-2026-08-25*.md`; (2) `text/edit.js`'s "Font" `ToolsPanelItem` has a no-op
-individual reset (`hasValue={() => true}`, `onDeselect={() => {}}`) — small, one block.
+`.claude/plans/archive/2026-08-25-road-to-uniform-then-spec-39.md`. 2 residual gaps from that
+closure's own qc-council audit remain open, NOT part of the 9 — full detail in
+`memory/session-2026-08-25*.md`: (1) Spec 32 §5 CSS-injection sanitisation has no gate for
+`borderStyle`/`textTransform` free-text attrs (9 unaudited `render.php` files); (2)
+`text/edit.js`'s "Font" reset is a no-op (one block, small).
 
 ⚠ **`git stash@{0}` (26 files, base `7a2c68b05`) is STILL UNRESOLVED** — flagged at 3+ prior
 sessions' SessionStart hooks, now 24+ hours old. Contains real uncommitted work across
@@ -309,6 +298,10 @@ misclassifications; rule 31 −6 false positives, +3 previously-invisible real, 
 the reseed reset list, unmasking `product-card.tagTextColour`. Variant detection was DEAD for
 preset blocks — `nav-drawer` 0/7→5/7, capability blocks intact. ⚠ A shared-DB write and the
 code reading it MUST land together (blocked 2 peers). Gates 91/91. Detail: D966.
+
+**Nav-drawer's remaining 2 (`split-zone-serif`/`two-column-editorial`) closed same day, PR #38**
+(converter variant-detection — different mechanism than the CHECK A track below). See Human
+Summary above + D969 for the full writeup, not duplicated here.
 
 **Still open** (re-verified 2026-09-05): the old `quote.attributionColourHover` "needs a human
 pick" note is RETIRED as stale — that attr never existed and `fix --check` is clean after a
