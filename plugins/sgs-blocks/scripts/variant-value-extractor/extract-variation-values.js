@@ -237,8 +237,9 @@ function resolveLocalFunctionCallBlock( callNode, ast ) {
 		return { ok: false };
 	}
 
-	// Find all ReturnStatement nodes in the function body.
-	// For concise-body arrow functions, treat the body itself as the return value.
+	// Find all ReturnStatement nodes belonging to THIS function (not to any
+	// nested function declared inside it). For a concise-body arrow function,
+	// treat the body itself as the return value.
 	let returnValue = null;
 	let returnCount = 0;
 
@@ -251,63 +252,37 @@ function resolveLocalFunctionCallBlock( callNode, ast ) {
 		returnValue = fnDecl.body;
 		returnCount = 1;
 	} else {
-		// Case 2: Block-body function — recursively find all ReturnStatement nodes,
-		// but do NOT descend into nested functions.
-		function findReturnsInBlock( stmts, depth = 0 ) {
-			for ( const stmt of stmts ) {
-				if ( stmt.type === 'ReturnStatement' ) {
-					returnValue = stmt.argument;
-					returnCount++;
-				} else if (
-					stmt.type === 'IfStatement' ||
-					stmt.type === 'WhileStatement' ||
-					stmt.type === 'DoWhileStatement' ||
-					stmt.type === 'ForStatement' ||
-					stmt.type === 'ForInStatement' ||
-					stmt.type === 'ForOfStatement' ||
-					stmt.type === 'TryStatement'
-				) {
-					// Recursively search through control flow structures.
-					if ( stmt.consequent && stmt.consequent.type === 'BlockStatement' ) {
-						findReturnsInBlock( stmt.consequent.body, depth + 1 );
-					} else if ( stmt.consequent ) {
-						findReturnsInBlock( [ stmt.consequent ], depth + 1 );
-					}
-					if ( stmt.alternate ) {
-						if ( stmt.alternate.type === 'BlockStatement' ) {
-							findReturnsInBlock( stmt.alternate.body, depth + 1 );
-						} else {
-							findReturnsInBlock( [ stmt.alternate ], depth + 1 );
-						}
-					}
-					// For try/catch/finally
-					if ( stmt.block && stmt.block.type === 'BlockStatement' ) {
-						findReturnsInBlock( stmt.block.body, depth + 1 );
-					}
-					if ( stmt.handler && stmt.handler.body && stmt.handler.body.type === 'BlockStatement' ) {
-						findReturnsInBlock( stmt.handler.body.body, depth + 1 );
-					}
-					if ( stmt.finalizer && stmt.finalizer.type === 'BlockStatement' ) {
-						findReturnsInBlock( stmt.finalizer.body, depth + 1 );
-					}
-					// Loop statements (While/DoWhile/For/ForIn/ForOf) carry their body
-					// under `stmt.body`, which may be a BlockStatement (braced) or a
-					// single statement (unbraced, e.g. `for (...) return [...];`).
-					if ( stmt.body ) {
-						if ( stmt.body.type === 'BlockStatement' ) {
-							findReturnsInBlock( stmt.body.body, depth + 1 );
-						} else if ( stmt.body.type === 'ReturnStatement' ) {
-							returnValue = stmt.body.argument;
-							returnCount++;
-						} else {
-							findReturnsInBlock( [ stmt.body ], depth + 1 );
-						}
-					}
+		// Case 2: Block-body function — use @babel/traverse's own generic
+		// traversal (the same tool `findVariationsArray` above already uses)
+		// scoped to this function's body, rather than a hand-maintained list
+		// of "which statement types can contain a return". A generic
+		// ReturnStatement visitor walks every node shape automatically —
+		// switch cases, labeled statements, loops, try/catch, anything the
+		// grammar has — so a control-flow shape nobody has tested yet still
+		// gets its return counted correctly instead of silently ignored.
+		//
+		// The one thing the visitor must do by hand is skip returns that
+		// belong to a NESTED function (its own returns belong to IT, not the
+		// function under analysis here) — `path.getFunctionParent()` finds
+		// the nearest enclosing function for the ReturnStatement; if that
+		// isn't `fnDecl` itself, the return is nested and is skipped, and
+		// `path.skip()` stops the traversal from ever descending into that
+		// nested function's body at all.
+		traverse( fnDecl.body, {
+			noScope: true,
+			Function( nestedPath ) {
+				if ( nestedPath.node !== fnDecl ) {
+					nestedPath.skip();
 				}
-				// Do NOT recurse into nested function declarations.
-			}
-		}
-		findReturnsInBlock( fnDecl.body.body );
+			},
+			ReturnStatement( returnPath ) {
+				const owner = returnPath.getFunctionParent();
+				if ( owner && owner.node === fnDecl ) {
+					returnValue = returnPath.node.argument;
+					returnCount++;
+				}
+			},
+		} );
 	}
 
 	// If multiple returns or no return found, fail.

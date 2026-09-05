@@ -207,6 +207,95 @@ describe( 'extract-variation-values', () => {
 			} );
 		} );
 
+		test( 'helper function with a return inside a switch case plus an outer return is unresolved', () => {
+			const source = `
+				function switchTrap( kind ) {
+					switch ( kind ) {
+						case 'a':
+							return [ 'sgs/switch-inner', {} ];
+					}
+					return [ 'sgs/switch-outer', {} ];
+				}
+				const variations = [
+					{
+						name: 'test-switch-multi-return',
+						attributes: {},
+						innerBlocks: [
+							switchTrap( 'a' ),
+						],
+					},
+				];
+				export default variations;
+			`;
+			const result = extractFromFixture( source );
+			// The switch case's return + the outer return = 2 possible values,
+			// so it must resolve as unresolved (not fabricate 'sgs/switch-outer').
+			expect( result.variants[ 'test-switch-multi-return' ] ).toEqual( {
+				attributes: {},
+				nonLiteralAttrs: [],
+				innerBlockSlugs: [],
+				unresolvedInnerBlocks: 1,
+			} );
+		} );
+
+		test( 'helper function with a return inside a labeled loop plus an outer return is unresolved', () => {
+			const source = `
+				function labeledTrap() {
+					outer: for ( let i = 0; i < 1; i++ ) {
+						return [ 'sgs/labeled-inner', {} ];
+					}
+					return [ 'sgs/labeled-outer', {} ];
+				}
+				const variations = [
+					{
+						name: 'test-labeled-multi-return',
+						attributes: {},
+						innerBlocks: [
+							labeledTrap(),
+						],
+					},
+				];
+				export default variations;
+			`;
+			const result = extractFromFixture( source );
+			// The labeled loop's return + the outer return = 2 possible values,
+			// so it must resolve as unresolved (not fabricate 'sgs/labeled-outer').
+			expect( result.variants[ 'test-labeled-multi-return' ] ).toEqual( {
+				attributes: {},
+				nonLiteralAttrs: [],
+				innerBlockSlugs: [],
+				unresolvedInnerBlocks: 1,
+			} );
+		} );
+
+		test( 'a nested function\'s own return is not counted toward the outer function', () => {
+			const source = `
+				function outer() {
+					const inner = () => [ 'sgs/nested', {} ];
+					return [ 'sgs/outer-only', {} ];
+				}
+				const variations = [
+					{
+						name: 'test-nested-function-return',
+						attributes: {},
+						innerBlocks: [
+							outer(),
+						],
+					},
+				];
+				export default variations;
+			`;
+			const result = extractFromFixture( source );
+			// The inner arrow function's return must NOT be credited to outer() —
+			// outer() has exactly one return of its own and must resolve.
+			expect( result.variants[ 'test-nested-function-return' ] ).toEqual( {
+				attributes: {},
+				nonLiteralAttrs: [],
+				innerBlockSlugs: [ 'sgs/outer-only' ],
+				unresolvedInnerBlocks: 0,
+			} );
+		} );
+
 		test( 'helper function with non-array return', () => {
 			const source = `
 				function badHelper() {
