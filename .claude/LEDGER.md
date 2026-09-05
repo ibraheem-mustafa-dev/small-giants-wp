@@ -49,6 +49,19 @@ assertions against the real helper, not just read-through (D973). rule 45 findin
 remainder is Task 3's genuine conflicts + 2 known false alarms). **Deploy still pending** — full
 detail + next steps: TYPOGRAPHY FULL-REPLACEMENT TRACK below + D973.
 
+**2026-09-06 (separate parallel session) — colour-conformance: `svg-paint-gradient` end-shape
+CLOSED, `fill-custom-property-gradient` codemod hardened, a real `business-info` control bug
+fixed by eye.** The session's opening prompt undercounted scope (named ~7 rows across 3 blocks);
+re-running the real census (`classify-end-shape.js`) found 136 rows across 7 end-shapes. Closed
+`svg-paint-gradient` in full (`before-after.handleIconColour`, converted to the shared icon
+mechanism 11 other blocks already use) after discovering its apparent 2nd row was a
+misclassification from a stale block.json manifest entry. Hardened the
+`fill-custom-property-gradient` codemod (2 real detector bugs fixed as universal widenings, not
+per-row patches) and ran it on 2 rows. Separately fixed a real `business-info` design flaw Bean
+found by reading the controls (dead hover-colour pickers, pointless clickable toggles, a
+silently-wrong dropdown) — never a codemod row. All merged to `main` via PR #43, live-verified.
+Full detail: COLOUR TRACK below + `.claude/plans/2026-09-05-colour-conformance-shape-batch-triad.md`.
+
 **Prior sessions, all historical and fully closed — narrative moved to their D-numbers, not
 repeated here:** `is_responsive` tidy-up (D968, `148e83bfd`); colour-conformance "remaining 8
 hard rows" + reseed-conflict fix (D964); a token-limit-truncated session's hand-wiring verified +
@@ -170,27 +183,43 @@ session, `daddbbb1b`/`bd4076235`/`358584e79`/`2fb58e412`) closed 2026-09-05. Dur
 02 item 0 (a shared mechanism is mirrorable once only if it OWNS ITS SELECTOR); DONE-checklist
 7b; `plugins/sgs-blocks/CLAUDE.md` "Editor-canvas mirrors" + four traps.
 
-## ▶ COLOUR TRACK — the "remaining 8 hard rows" prompt CLOSED 2026-09-05 (D964). Detail: `.claude/plans/2026-09-03-golden-colour-staged-rollout.md` + D964.
+## ▶ COLOUR TRACK — end-shape census now the live front; svg-paint-gradient CLOSED 2026-09-06. Full plan + method learnings: `.claude/plans/2026-09-05-colour-conformance-shape-batch-triad.md`.
 
-**Live thread, owned by a different concurrent session, not this one:** building a UNIFIED
-`survey.js` absorbing `fix.js`'s job (find + categorise + fix as one tool, shape-batched not
-per-block). Full plan: `.claude/plans/2026-09-05-colour-conformance-shape-batch-triad.md`.
-Sessions 7-11 + the 2026-09-05 close-out session closed the hover-guard, contrast guard, first
-`--apply` run, and all 7 of the "remaining 8 hard rows" — full narrative D964/D963/D966/D969, not
-duplicated here.
+**The `survey.js`/`fix.js` unification this doc previously pointed at was superseded, not
+finished as originally scoped** — a concurrent session between 2026-09-05 and 2026-09-06 replaced
+that approach with `classify-end-shape.js`, a DB-driven classifier (reads real
+`block_attributes.css_property`, not a hand-maintained bucket list) against 12 named end-shapes
+(canonical definitions: `plugins/sgs-blocks/CLAUDE.md` "Colour EMISSION helpers"/"Known
+precedent-function registry"). **Full current census: 136 rows across 7 populated end-shapes** —
+`text-gradient` 38, `fill-custom-property-gradient` 35 open (2 fixed), `text-gradient-needs-bg-
+layer` 25, `fill-base-hover-flat` 17, `border-base-hover` 15, `per-item-loop` 2,
+`svg-paint-gradient` **0 open (CLOSED)**.
 
-**Still open** (re-verified 2026-09-05): the old `quote.attributionColourHover` "needs a human
-pick" note is RETIRED as stale — that attr never existed and `fix --check` is clean after a
-peer's rule-41 restructure (`3548f7c85`). ⚠ NEW, unexamined: a `sgs/quote` row whose attr won't
-resolve. `sgs_text_states_css()` (0 callers); the remaining genuinely-hard
-custom-property-architecture rows this session's 7-row closure did NOT cover (`mega-panel`'s
-OTHER rows besides `iconColour`, `social-icons`, `form.progressBarColour`, `product-card`'s 4
-title/desc/price rows, `tabs`' OTHER 2 rows besides `tabTextColour`); `option-picker.pillBgColour`
-/`.pillBgColourHover`'s OWN separately-deferred gradient note (block.json:107, 2026-09-03 —
-distinct from `pillTextColour`, which this session closed; do not fold the two together without
-asking Bean first); `cta-section.backgroundColour` (WP-native mechanism, not SGS helpers);
-`post-grid`'s OTHER loop/dynamic-key rows (`.titleColour`/`.excerptColour`/`.metaColour`/
-`.readMoreColour`).
+**2026-09-06 — `svg-paint-gradient` closed in full + `fill-custom-property-gradient` codemod
+hardened:** `before-after.handleIconColour` converted to the shared IconPicker/Lucide +
+`sgs_svg_stroke_gradient()` mechanism (commit `e8d296bf9`) — the category's only real row once a
+stale `timeline/block.json` manifest entry (wrongly claimed `css:stroke`, zero real stroke
+consumers) was fixed and the row correctly reclassified into `fill-custom-property-gradient`.
+`migrate-fill-custom-property-gradient.js` widened (missing-fallback-default CSS regex + a new
+`DesignTokenPicker` row-detection path, plus a pre-existing bug fixed in the already-working
+detection path) and run for real on `before-after.dividerColour` + `timeline.connectorFillColour`
+(commit `0fd0f8f66`) — deliberately not the other 35 `fill-custom-property-gradient` rows, per
+Bean's one-category-per-session direction. Separately, `business-info`'s link/hover/attribution
+controls had a real design flaw (Bean caught it by reading the actual controls, not from the
+census) — `linkHoverBackgroundImage`/`linkHoverTextColour` painted nothing for the phone/email
+links they appeared under, `linkPhone`/`linkEmail` had no real use case, and the "What to
+display" dropdown silently misreported "Phone Number" for attribution instances — all fixed by
+hand (commit `15237d85a`), never a codemod row. All 4 commits (+ DB reseed, `0e511be6d`) merged
+`main` via PR #43 (`1eb344ad0`), live-verified on sandybrown.
+
+**Next (Bean's directed cadence: one category per session):** `text-gradient` (38 rows) is next,
+no fixed order beyond that.
+
+**Still open, historical rows not yet re-verified against the new census** (carried forward,
+unconfirmed current status): `mega-panel`'s slug-derivation-shape rows,
+`social-icons`/`form.progressBarColour`/`product-card`'s title/desc/price rows/`tabs`' other rows
+— likely now inside `text-gradient`/`fill-base-hover-flat`, re-classify rather than assuming;
+`cta-section.backgroundColour` (WP-native mechanism, not SGS helpers, out of scope by design).
 
 ## ▶ MOTION TRACK (A closed+live; B closed).
 
