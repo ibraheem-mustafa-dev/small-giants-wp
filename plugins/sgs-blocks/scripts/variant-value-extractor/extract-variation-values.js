@@ -195,8 +195,125 @@ function findVariationsArray( ast ) {
 }
 
 /**
+ * Resolve a CallExpression to a local function declaration and extract its
+ * return value's first element if it's an ArrayExpression with a StringLiteral.
+ *
+ * @param {import('@babel/types').CallExpression} callNode
+ * @param {import('@babel/types').File} ast
+ * @return {{ok: boolean, value?: string}}
+ */
+function resolveLocalFunctionCallBlock( callNode, ast ) {
+	// Must be a call to an Identifier (simple function name, not a property access).
+	if ( callNode.callee.type !== 'Identifier' ) {
+		return { ok: false };
+	}
+
+	const fnName = callNode.callee.name;
+	let fnDecl = null;
+
+	// Find the function declaration matching this name.
+	// Walk the program body directly to find declarations.
+	if ( ast.program && ast.program.body ) {
+		for ( const stmt of ast.program.body ) {
+			if ( stmt.type === 'FunctionDeclaration' && stmt.id.name === fnName ) {
+				fnDecl = stmt;
+				break;
+			}
+			if (
+				stmt.type === 'VariableDeclaration' &&
+				stmt.declarations[ 0 ] &&
+				stmt.declarations[ 0 ].id.type === 'Identifier' &&
+				stmt.declarations[ 0 ].id.name === fnName &&
+				stmt.declarations[ 0 ].init &&
+				(stmt.declarations[ 0 ].init.type === 'FunctionExpression' || stmt.declarations[ 0 ].init.type === 'ArrowFunctionExpression')
+			) {
+				fnDecl = stmt.declarations[ 0 ].init;
+				break;
+			}
+		}
+	}
+
+	if ( ! fnDecl ) {
+		return { ok: false };
+	}
+
+	// Find the ReturnStatement in the function.
+	let returnCount = 0;
+	let returnValue = null;
+
+	if ( fnDecl.body ) {
+		const bodyToSearch = fnDecl.body.type === 'BlockStatement' ? fnDecl.body.body : [ fnDecl.body ];
+		for ( const stmt of bodyToSearch ) {
+			if ( stmt.type === 'ReturnStatement' && returnCount === 0 ) {
+				returnValue = stmt.argument;
+				returnCount++;
+				break; // Only accept the first return.
+			}
+		}
+	}
+
+	// If multiple returns or no return found, fail.
+	if ( returnCount !== 1 || ! returnValue || returnValue.type !== 'ArrayExpression' ) {
+		return { ok: false };
+	}
+
+	// Check if the first element is a StringLiteral (the block slug).
+	const firstEl = returnValue.elements[ 0 ];
+	if ( ! firstEl || firstEl.type !== 'StringLiteral' ) {
+		return { ok: false };
+	}
+
+	return { ok: true, value: firstEl.value };
+}
+
+/**
+ * Extract inner block slugs from an `innerBlocks` array.
+ *
+ * @param {import('@babel/types').ArrayExpression} innerBlocksNode
+ * @param {import('@babel/types').File} ast
+ * @return {{innerBlockSlugs: string[], unresolvedInnerBlocks: number}}
+ */
+function extractInnerBlockSlugs( innerBlocksNode, ast ) {
+	const innerBlockSlugs = [];
+	let unresolvedInnerBlocks = 0;
+
+	for ( const el of innerBlocksNode.elements ) {
+		if ( ! el ) {
+			continue;
+		}
+
+		// Case 1: ArrayExpression — direct block definition.
+		if ( el.type === 'ArrayExpression' ) {
+			const firstEl = el.elements[ 0 ];
+			if ( firstEl && firstEl.type === 'StringLiteral' ) {
+				innerBlockSlugs.push( firstEl.value );
+			} else {
+				unresolvedInnerBlocks++;
+			}
+			continue;
+		}
+
+		// Case 2: CallExpression — local helper function.
+		if ( el.type === 'CallExpression' ) {
+			const result = resolveLocalFunctionCallBlock( el, ast );
+			if ( result.ok ) {
+				innerBlockSlugs.push( result.value );
+			} else {
+				unresolvedInnerBlocks++;
+			}
+			continue;
+		}
+
+		// Case 3: Any other shape — unresolved.
+		unresolvedInnerBlocks++;
+	}
+
+	return { innerBlockSlugs, unresolvedInnerBlocks };
+}
+
+/**
  * @param {string} filePath Absolute path to a block's `variations.js`.
- * @return {{variants: Record<string, {attributes: Object, nonLiteralAttrs: string[]}>}}
+ * @return {{variants: Record<string, {attributes: Object, nonLiteralAttrs: string[], innerBlockSlugs: string[], unresolvedInnerBlocks: number}>}}
  */
 function extract( filePath ) {
 	const source = fs.readFileSync( filePath, 'utf8' );
@@ -213,6 +330,7 @@ function extract( filePath ) {
 		}
 		let name = null;
 		let attributesNode = null;
+		let innerBlocksNode = null;
 		for ( const prop of el.properties ) {
 			if ( prop.type !== 'ObjectProperty' || prop.key.type !== 'Identifier' ) {
 				continue;
@@ -228,6 +346,9 @@ function extract( filePath ) {
 			}
 			if ( prop.key.name === 'attributes' && prop.value.type === 'ObjectExpression' ) {
 				attributesNode = prop.value;
+			}
+			if ( prop.key.name === 'innerBlocks' && prop.value.type === 'ArrayExpression' ) {
+				innerBlocksNode = prop.value;
 			}
 		}
 		if ( name === null ) {
@@ -256,7 +377,14 @@ function extract( filePath ) {
 				}
 			}
 		}
-		variants[ name ] = { attributes, nonLiteralAttrs };
+		let innerBlockSlugs = [];
+		let unresolvedInnerBlocks = 0;
+		if ( innerBlocksNode ) {
+			const result = extractInnerBlockSlugs( innerBlocksNode, ast );
+			innerBlockSlugs = result.innerBlockSlugs;
+			unresolvedInnerBlocks = result.unresolvedInnerBlocks;
+		}
+		variants[ name ] = { attributes, nonLiteralAttrs, innerBlockSlugs, unresolvedInnerBlocks };
 	}
 	return { variants };
 }
