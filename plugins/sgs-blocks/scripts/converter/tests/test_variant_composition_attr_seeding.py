@@ -43,13 +43,21 @@ def updater():
     return _load_updater()
 
 
-def _fresh_db(routable: "list[tuple[str, str]]", unroutable: "list[tuple[str, str]]" = ()):
+def _fresh_db(
+    routable: "list[tuple[str, str]]",
+    unroutable: "list[tuple[str, str]]" = (),
+    tier_object: "list[tuple[str, str]]" = (),
+):
     """An in-memory DB with just the two tables the function touches.
 
-    `routable`   — (child_slug, attr_name) pairs given a css_property.
-    `unroutable` — (child_slug, attr_name) pairs DECLARED but with no routing.
-    Anything named in variations.js and absent from both lists is undeclared
-    entirely, the second real-world inert shape.
+    `routable`    — (child_slug, attr_name) pairs given a css_property.
+    `unroutable`  — (child_slug, attr_name) pairs DECLARED but with no routing.
+    `tier_object` — (child_slug, attr_name) pairs that are ROUTED *and* declared
+                    as TIER-SHAPED object attrs (`attr_type='object'`,
+                    `box_family` NULL, no Tablet/Mobile siblings) — the shape a
+                    real extraction always writes as `{"desktop": V}`.
+    Anything named in variations.js and absent from all three lists is
+    undeclared entirely, the third real-world inert shape.
     """
     conn = sqlite3.connect(":memory:")
     c = conn.cursor()
@@ -62,16 +70,22 @@ def _fresh_db(routable: "list[tuple[str, str]]", unroutable: "list[tuple[str, st
     )
     c.execute(
         "CREATE TABLE block_attributes ("
-        " block_slug TEXT, attr_name TEXT, css_property TEXT, css_element TEXT)"
+        " block_slug TEXT, attr_name TEXT, css_property TEXT, css_element TEXT,"
+        " attr_type TEXT, box_family TEXT)"
     )
     for child_slug, attr_name in routable:
         c.execute(
-            "INSERT INTO block_attributes VALUES (?, ?, 'font-size', 'item')",
+            "INSERT INTO block_attributes VALUES (?, ?, 'font-size', 'item', 'number', NULL)",
             (child_slug, attr_name),
         )
     for child_slug, attr_name in unroutable:
         c.execute(
-            "INSERT INTO block_attributes VALUES (?, ?, NULL, NULL)",
+            "INSERT INTO block_attributes VALUES (?, ?, NULL, NULL, 'object', NULL)",
+            (child_slug, attr_name),
+        )
+    for child_slug, attr_name in tier_object:
+        c.execute(
+            "INSERT INTO block_attributes VALUES (?, ?, 'font-size', 'item', 'object', NULL)",
             (child_slug, attr_name),
         )
     return conn, c
@@ -178,6 +192,95 @@ def test_negative_control_filter_off_would_seed_the_inert_row(updater, monkeypat
         written = updater._populate_variant_composition_attr_slots(c, "x/block", Path("."))
         assert written == 2
         assert ("variant-a", "x/child", "uniqueDead", "40") in _rows(c)
+    finally:
+        conn.close()
+
+
+def test_routed_tier_object_attr_with_a_flat_value_is_skipped(updater, monkeypatch):
+    """THE SECOND HALF OF OBSERVABILITY (2026-09-06, second review pass).
+
+    `uniqueRouted` here is ROUTED — the routability filter passes it — but the
+    child block declares it as a TIER-SHAPED object attr, so a real clone's
+    extraction always writes `{"desktop": 64}` and can never produce the flat
+    `64` copied out of variations.js. `_composition_attr_score` compares with
+    one exact string equality, so the row would score 0 on every clone forever
+    while still suppressing a Check #3 collision — inert in exactly the way the
+    routability filter exists to prevent, reached by a different route.
+
+    This is `sgs/nav-menu.itemFontSize`, and it is why `sgs/nav-drawer`'s
+    `two-column-editorial` remained undetectable end to end after the
+    routability filter shipped.
+    """
+    monkeypatch.setattr(
+        updater, "_extract_variation_composition_attrs", lambda _dir: _COMPOSITION
+    )
+    conn, c = _fresh_db(routable=[], tier_object=[("x/child", "uniqueRouted")])
+    try:
+        written = updater._populate_variant_composition_attr_slots(c, "x/block", Path("."))
+        assert written == 0
+        assert _rows(c) == []
+    finally:
+        conn.close()
+
+
+def test_routed_tier_object_attr_with_a_tier_shaped_value_is_kept(updater, monkeypatch):
+    """POSITIVE CONTROL for the shape filter — it must not reject tier attrs wholesale.
+
+    Without this the test above would pass against a filter that simply dropped
+    every object-typed attribute, which would be a different (and wrong) rule.
+    A tier-SHAPED authored value is exactly what a clone can produce, so it is
+    kept — and it is also the upstream remedy for the case above.
+    """
+    composition = {
+        "variant-a": [
+            {
+                "slug": "x/child",
+                "attributes": {"shared": "4px", "uniqueRouted": {"desktop": 64, "mobile": 40}},
+            }
+        ],
+        "variant-b": [{"slug": "x/child", "attributes": {"shared": "4px"}}],
+    }
+    monkeypatch.setattr(
+        updater, "_extract_variation_composition_attrs", lambda _dir: composition
+    )
+    conn, c = _fresh_db(routable=[], tier_object=[("x/child", "uniqueRouted")])
+    try:
+        written = updater._populate_variant_composition_attr_slots(c, "x/block", Path("."))
+        assert written == 1
+        assert _rows(c) == [
+            ("variant-a", "x/child", "uniqueRouted", '{"desktop":64,"mobile":40}')
+        ]
+    finally:
+        conn.close()
+
+
+def test_tier_object_predicate_respects_flat_sibling_and_suffix_carve_outs(updater):
+    """The tier-object mirror must match `db_lookup.tier_object_base` exactly.
+
+    Two carve-outs earn their place in the original and are asserted here so
+    this copy cannot silently drift into over-matching: an attribute whose name
+    IS a tier sibling is never a BASE, and an attribute that still declares flat
+    `Tablet`/`Mobile` siblings still uses the flat model — a flat value there is
+    correct, not broken.
+    """
+    conn, c = _fresh_db(routable=[], tier_object=[
+        ("x/child", "sizeMobile"),      # name is itself a tier sibling
+        ("x/child", "legacy"),          # object-typed but with flat siblings
+        ("x/child", "legacyTablet"),
+        ("x/child", "genuine"),         # a real tier base
+    ])
+    try:
+        assert updater._child_attr_is_tier_object(c, "x/child", "sizeMobile") is False
+        assert updater._child_attr_is_tier_object(c, "x/child", "legacy") is False
+        assert updater._child_attr_is_tier_object(c, "x/child", "genuine") is True
+        # A box-family object attr is a BOX, not a tier — accumulates by SIDE.
+        c.execute(
+            "INSERT INTO block_attributes VALUES "
+            "('x/child', 'padding', 'padding', 'item', 'object', 'padding')"
+        )
+        assert updater._child_attr_is_tier_object(c, "x/child", "padding") is False
+        # A flat value on a non-tier attr is always shape-compatible.
+        assert updater._child_attr_value_shape_matches(c, "x/child", "padding", "64") is True
     finally:
         conn.close()
 

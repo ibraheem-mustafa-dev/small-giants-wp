@@ -176,111 +176,149 @@ def test_detect_variant_composition_tie_still_ambiguous_falls_through():
 # Same real fixture, the case tier 1 provably cannot reach.
 # `two-column-editorial` and `floating-capped-card` nest the IDENTICAL child
 # slug set {sgs/nav-menu, sgs/button}, so slug-uniqueness has nothing to
-# discriminate on (the test directly above pins that). What separates them is
-# the nested nav-menu's own configuration: `two-column-editorial` is the only
-# one of the seven variants whose nav-menu carries `itemFontSize: 64` — and
-# that ONE attribute is the whole of the signal, because it is the only one of
-# the three unique-to-this-variant values that a clone can ever actually carry
-# (`font-size` on the `item` element, Front-1 routed).
+# discriminate on (the test directly above pins that). What CAN separate them
+# is the nested nav-menu's own configuration.
 #
-# The other two are in the fixture below because they ARE in variations.js, but
-# they are NOT part of the seeded signal (corrected 2026-09-06, task-5 review):
-# `listColumns` has no CSS routing (css_property/css_element both NULL) and
-# `itemFontSizeMobile` is not a declared `sgs/nav-menu` attribute at all
-# (itemFontSize migrated to a tier object). The seeder now skips both and
-# db-consistency Check #11 guards that. Keeping them in the fixture is
-# deliberate: a real clone's child attributes can contain values the signal
-# does not use, and scoring must simply ignore them.
+# ⚠ THE HONEST STATE OF `two-column-editorial` (2026-09-06, second review of
+# this mechanism). It is NOT resolvable today, and this file used to claim it
+# was. The claim survived because the fixture below hand-wrote
+# `itemFontSize: 64` — a FLAT scalar copied out of `variations.js`. A real
+# clone can never produce that: `sgs/nav-menu.itemFontSize` is a TIER-SHAPED
+# object attr, so `converter/resolvers/styling_content.py` (gated on
+# `db_lookup.tier_object_base`) always writes `{"desktop": 64}`, and
+# `_composition_attr_score` compares with a single exact string equality —
+# `'64'` vs `'{"desktop":64}'` can never match. The test proved the scoring
+# ARITHMETIC and not the EXTRACTABILITY, which is the same class of vacuity
+# the routability filter was built to close one layer up.
+#
+# All three of this variant's unique-in-variations.js child values are now
+# refused at seed time, each for a stated reason:
+#   itemFontSize        — routed, but a tier-object attr holding a flat value
+#   itemFontSizeMobile  — not a declared `sgs/nav-menu` attribute at all
+#   listColumns         — declared, but css_property/css_element both NULL
+# so it has ZERO seeded discriminators and `detect_variant` returns None. That
+# is the CORRECT outcome: an honest "cannot detect" beats a row that scores 0
+# on every real clone while suppressing Check #3's collision report. Inventing
+# a replacement discriminator to make this green again would repeat exactly the
+# mistake this pass exists to undo. The remedy is upstream — author
+# `itemFontSize: { desktop: 64, mobile: 40 }` in `variations.js` (the tier
+# shape the block actually declares), or give `listColumns` real routing.
 
 _TWO_COLUMN_ATTRS = {"drawerBg": "surface", "closeStyle": "text-swap"}
 _TWO_COLUMN_CHILD_SLUGS = ["sgs/nav-menu", "sgs/button"]
+# The shape a REAL clone's extraction produces — tier object, not flat scalar.
 _TWO_COLUMN_CHILD_BLOCKS = [
     (
         "sgs/nav-menu",
         {
             "gap": "4px",
-            "itemFontSize": 64,
+            "itemFontSize": {"desktop": 64},
             "listColumns": {"desktop": 2, "mobile": 1},
-            "itemFontSizeMobile": 40,
         },
     ),
     ("sgs/button", {}),
 ]
 
 
-def test_detect_variant_resolved_by_child_attribute_value():
-    """`two-column-editorial`'s REAL preset attrs + REAL children, verbatim from
-    `src/blocks/nav-drawer/variations.js`.
+def test_detect_variant_two_column_editorial_is_honestly_undetectable():
+    """`two-column-editorial` has NO observable discriminator — assert None.
 
-    Every one of its own attribute values is duplicated by a sibling variant
-    (drawerBg:surface and closeStyle:text-swap both also appear on
-    `floating-capped-card`), so it has no `variant_slots` row and scores 0 on
-    attributes. Its child SLUG set is identical to `floating-capped-card`'s, so
-    tier 1 scores 0 too. Passing the children's own attributes must resolve it
-    via tier 2 — the `variant_composition_attr_slots` rows /sgs-update derived
-    from those same nav-menu overrides.
+    Its own attribute values are all duplicated by `floating-capped-card`
+    (drawerBg:surface, closeStyle:text-swap), its child SLUG set is identical
+    to that variant's, and every one of its unique child ATTRIBUTE values is
+    refused at seed time (see the block comment above). `detect_variant` must
+    say so rather than resolve on a signal that cannot fire on a real clone.
+
+    Both the real extraction shape AND the old hand-written flat shape are
+    asserted, so neither a fixture drifting back to the flat value nor a
+    genuine tier write can quietly turn this green again without the
+    discriminator itself being fixed upstream.
     """
     from converter.db import db_lookup
 
-    assert db_lookup.detect_variant(
-        "sgs/nav-drawer",
-        _TWO_COLUMN_ATTRS,
-        child_slugs=_TWO_COLUMN_CHILD_SLUGS,
-        child_blocks=_TWO_COLUMN_CHILD_BLOCKS,
-    ) == "two-column-editorial"
-
-
-def test_detect_variant_child_attribute_default_off_path_unchanged():
-    """NEGATIVE CONTROL for the tier itself: the identical case with
-    `child_blocks` omitted must STILL return None.
-
-    This is the pre-2026-09-06 result (the FAIL row in the task-2 audit), and
-    it proves the new tier is genuinely doing the work rather than something
-    else having changed — and that the extension is purely opt-in for any
-    caller that does not supply child attributes.
-    """
-    from converter.db import db_lookup
-
-    assert db_lookup.detect_variant(
-        "sgs/nav-drawer", _TWO_COLUMN_ATTRS, child_slugs=_TWO_COLUMN_CHILD_SLUGS
-    ) is None
-    assert db_lookup.detect_variant(
-        "sgs/nav-drawer",
-        _TWO_COLUMN_ATTRS,
-        child_slugs=_TWO_COLUMN_CHILD_SLUGS,
-        child_blocks=[],
-    ) is None
-
-
-def test_detect_variant_child_attribute_is_value_aware_not_name_aware():
-    """NEGATIVE CONTROL for the SCORING: the same children carrying the same
-    attribute NAMES at DIFFERENT values must not resolve.
-
-    Mirrors `_slot_score`'s preset-variant contract — a shared name at a
-    different value is worth 0, exactly as if the attribute were absent. Were
-    the tier name-keyed instead of value-keyed, this would wrongly return
-    `two-column-editorial`.
-    """
-    from converter.db import db_lookup
-
-    wrong_values = [
-        (
-            "sgs/nav-menu",
-            {
-                "gap": "4px",
-                "itemFontSize": 21,
-                "listColumns": {"desktop": 5, "mobile": 4},
-                "itemFontSizeMobile": 19,
-            },
-        ),
+    flat_shape = [
+        ("sgs/nav-menu", {"gap": "4px", "itemFontSize": 64, "itemFontSizeMobile": 40}),
         ("sgs/button", {}),
     ]
-    assert db_lookup.detect_variant(
-        "sgs/nav-drawer",
-        _TWO_COLUMN_ATTRS,
-        child_slugs=_TWO_COLUMN_CHILD_SLUGS,
-        child_blocks=wrong_values,
-    ) is None
+    for children in (_TWO_COLUMN_CHILD_BLOCKS, flat_shape):
+        assert db_lookup.detect_variant(
+            "sgs/nav-drawer",
+            _TWO_COLUMN_ATTRS,
+            child_slugs=_TWO_COLUMN_CHILD_SLUGS,
+            child_blocks=children,
+        ) is None
+
+
+def test_composition_attr_tier_resolves_a_live_seeded_row():
+    """POSITIVE CONTROL for the tier itself, on a row that SURVIVES the filter.
+
+    Without this the file would assert only Nones and could not tell "tier 2
+    correctly declines" from "tier 2 is dead". `sgs/nav-drawer`'s surviving
+    discriminators are `itemFontWeight` — a plain `string` attr, routed
+    (`font-weight` on `item`), so its seeded value and the converter's write
+    are the same shape. Forcing the two variants that carry it into a tie must
+    resolve to the one whose value the children actually match.
+
+    Exercised through `_composition_attr_tiebreak` directly because both
+    variants resolve on their own attributes long before a tie can arise via
+    `detect_variant` — a constructed tie is the only honest way to reach the
+    tier with real data.
+    """
+    from converter.db import db_lookup
+
+    tied = {"editorial-ghost-list", "solid-brand-light"}
+    ghost_children = [("sgs/nav-menu", {"gap": "4px", "itemFontWeight": "200"})]
+    assert db_lookup._composition_attr_tiebreak(
+        "sgs/nav-drawer", tied, ghost_children
+    ) == "editorial-ghost-list"
+
+    light_children = [("sgs/nav-menu", {"gap": "4px", "itemFontWeight": "100"})]
+    assert db_lookup._composition_attr_tiebreak(
+        "sgs/nav-drawer", tied, light_children
+    ) == "solid-brand-light"
+
+
+def test_composition_attr_tier_is_value_aware_not_name_aware():
+    """NEGATIVE CONTROL for the SCORING, against the same live tie.
+
+    Same attribute NAME at a value neither variant seeds must score 0 for both
+    and return None — a name-keyed implementation would score them equal and
+    could still return None, so the positive control above is what makes this
+    control meaningful rather than vacuous.
+    """
+    from converter.db import db_lookup
+
+    tied = {"editorial-ghost-list", "solid-brand-light"}
+    wrong = [("sgs/nav-menu", {"gap": "4px", "itemFontWeight": "700"})]
+    assert db_lookup._composition_attr_tiebreak("sgs/nav-drawer", tied, wrong) is None
+
+
+def test_composition_attr_tier_off_path_unchanged():
+    """The tier is opt-in: no child attributes supplied means no tier-2 result."""
+    from converter.db import db_lookup
+
+    tied = {"editorial-ghost-list", "solid-brand-light"}
+    assert db_lookup._composition_attr_tiebreak("sgs/nav-drawer", tied, None) is None
+    assert db_lookup._composition_attr_tiebreak("sgs/nav-drawer", tied, []) is None
+
+
+def test_composition_attr_score_rejects_tier_object_vs_flat_shape():
+    """The DEFECT this pass closes, pinned at the scoring layer.
+
+    A flat seeded value and the tier object a real extraction writes can never
+    match. This asserts the arithmetic directly, so the reason the seeder now
+    refuses such a row is documented by an executable fact rather than prose.
+    """
+    from converter.db import db_lookup
+
+    triples = (("sgs/nav-menu", "itemFontSize", db_lookup._canon_slot_value(64)),)
+    tier_write = [("sgs/nav-menu", {"itemFontSize": {"desktop": 64}})]
+    flat_write = [("sgs/nav-menu", {"itemFontSize": 64})]
+
+    assert db_lookup._composition_attr_score(triples, tier_write) == 0
+    # Positive control: the arithmetic itself works — it is the SHAPE that
+    # cannot meet, not the comparison that is broken.
+    assert db_lookup._composition_attr_score(triples, flat_write) == 1
 
 
 def test_detect_variant_child_attribute_tier1_still_wins():

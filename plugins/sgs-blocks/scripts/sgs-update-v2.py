@@ -3122,7 +3122,13 @@ def _child_attr_has_css_routing(c, child_slug: str, attr_name: str) -> bool:
     no draft CSS declaration can ever resolve to it, so a clone can never
     populate it and any discriminator built on it is inert.
 
-    The SAME predicate is the rule of db-consistency Check #11
+    ROUTING IS ONLY HALF THE QUESTION. A routed attribute can still be
+    unmatchable if the SHAPE the converter writes differs from the shape the
+    triple stores — see `_child_attr_value_shape_matches` below, which is the
+    other half. Both must hold; `_child_attr_is_observable` is the combined
+    predicate and the one callers should use.
+
+    The SAME pair of predicates is the rule of db-consistency Check #11
     (`check_inert_composition_attr.py`). Keep the two in step: this one
     prevents the inert row, that one catches it if it appears by another route.
     """
@@ -3133,6 +3139,101 @@ def _child_attr_has_css_routing(c, child_slug: str, attr_name: str) -> bool:
         "LIMIT 1",
         (child_slug, attr_name),
     ).fetchone() is not None
+
+
+# TIER-SHAPED object attrs (Spec 35 Phase 1.4) — `{desktop,tablet,mobile}`.
+# Mirrors `converter/db/db_lookup.py::_TIER_SIBLING_SUFFIX_RE`; a name that IS
+# a tier sibling is never a tier BASE.
+_TIER_SIBLING_SUFFIX_RE = re.compile(r"(Tablet|Mobile|Desktop)$")
+
+
+def _child_attr_is_tier_object(c, child_slug: str, attr_name: str) -> bool:
+    """SQL mirror of `converter/db/db_lookup.py::tier_object_base`.
+
+    THE AUTHORITY IS `db_lookup.tier_object_base` — this is a duplicate for the
+    same reason `_canon_slot_value` and `_child_attr_has_css_routing` are
+    duplicated here: this one-off writer script shares no import with the
+    converter package, and `converter/db/db_lookup.py` runs six schema-migration
+    functions against the shared live DB as an IMPORT SIDE EFFECT, so importing
+    it from a writer stage is not an option. Four conditions, identical to the
+    original and in the same order; if that function's conditions change, change
+    these in the same commit.
+    """
+    if _TIER_SIBLING_SUFFIX_RE.search(attr_name):
+        return False
+    row = c.execute(
+        "SELECT attr_type, box_family FROM block_attributes "
+        "WHERE block_slug = ? AND attr_name = ?",
+        (child_slug, attr_name),
+    ).fetchone()
+    if not row or row[0] != "object" or row[1]:
+        return False
+    sibling = c.execute(
+        "SELECT 1 FROM block_attributes "
+        "WHERE block_slug = ? AND attr_name IN (?, ?) LIMIT 1",
+        (child_slug, attr_name + "Tablet", attr_name + "Mobile"),
+    ).fetchone()
+    return sibling is None
+
+
+def _child_attr_value_shape_matches(c, child_slug: str, attr_name: str, canon_value: str) -> bool:
+    """Could a real clone's extraction ever WRITE this exact canonical value?
+
+    THE SECOND HALF OF OBSERVABILITY (2026-09-06, review of `fe387139a`).
+    `_child_attr_has_css_routing` asks whether the converter can reach the
+    attribute at all. This asks whether the value it would write can ever
+    canonically EQUAL the seeded one — because `_composition_attr_score`
+    compares them with a single exact string equality, so a shape mismatch
+    scores 0 forever, exactly like an unrouted attribute.
+
+    THE MEASURED CASE. `sgs/nav-drawer`'s `two-column-editorial` was seeded
+    `sgs/nav-menu.itemFontSize = 64` (a flat scalar, copied verbatim out of
+    `variations.js`). `itemFontSize` is a TIER-SHAPED object attr, and
+    `converter/resolvers/styling_content.py` gates every write on
+    `db_lookup.tier_object_base(...)` and accumulates into
+    `lifted[attr][tier_key]` — so a real clone writes `{"desktop": 64}`,
+    canonicalising to `{"desktop":64}`, which can never equal `64`. The row
+    existed, the seeder accepted it, the whole test suite was green, and the
+    variant was still undetectable end to end. This is the project's own
+    `object-typed-attr-coerces-flat-to-default` lesson arriving through the
+    discriminator table instead of through `post_content`.
+
+    THE RULE, deliberately narrow: when the child attribute is a tier-object
+    BASE, a seeded value that is not itself a JSON OBJECT is refused. A
+    tier-shaped seeded value (`{"desktop":2,"mobile":1}`) is accepted — the
+    extraction can genuinely produce that shape when the draft declares the
+    matching breakpoints. Every non-tier attribute is accepted unchanged, so
+    flat-typed discriminators (`itemFontWeight`, a `string`) are untouched.
+
+    SCOPE LIMIT, stated rather than implied: this proves ONE incompatibility —
+    the one that is derivable from the DB alone and that has a measured victim.
+    It does not attempt to predict the converter's value NORMALISATION (a
+    `font-size` of `64` may be written as `"64px"`), which depends on the
+    draft's own CSS text and cannot be decided from the schema. A row passing
+    this check is not thereby proven matchable, only not proven UNmatchable.
+    """
+    if not _child_attr_is_tier_object(c, child_slug, attr_name):
+        return True
+    try:
+        return isinstance(json.loads(canon_value), dict)
+    except (TypeError, ValueError):
+        # `_canon_slot_value`'s `repr()` fallback — not JSON, so not the
+        # `{desktop,tablet,mobile}` object a tier write produces.
+        return False
+
+
+def _child_attr_is_observable(c, child_slug: str, attr_name: str, canon_value: str) -> bool:
+    """Can a real clone ever produce this triple? Routing AND value shape.
+
+    The single predicate the seeder gates on and db-consistency Check #11
+    re-asserts. Either half failing makes the row INERT — it scores 0 on every
+    clone forever while still counting toward the block's discriminating
+    signature in Check #3, which therefore stops reporting a real collision.
+    """
+    return (
+        _child_attr_has_css_routing(c, child_slug, attr_name)
+        and _child_attr_value_shape_matches(c, child_slug, attr_name, canon_value)
+    )
 
 
 def _populate_variant_composition_attr_slots(c, slug: str, block_dir: Path) -> int:
@@ -3154,16 +3255,27 @@ def _populate_variant_composition_attr_slots(c, slug: str, block_dir: Path) -> i
     with any sibling discriminates nothing and is dropped — which is why the
     `gap: '4px'` every nav-drawer variant's nav-menu carries produces no rows.
 
-    CSS-ROUTABILITY FILTER (2026-09-06, task-5 review finding). The set
+    OBSERVABILITY FILTER (`_child_attr_is_observable`, 2026-09-06). The set
     difference decides what DISCRIMINATES; this filter decides what the
-    converter can ever OBSERVE. A discriminating triple whose child attribute
-    has no CSS routing (`css_property`/`css_element` both NULL) can never be
-    populated from a real draft's CSS, so seeding it would create a row that
-    silently suppresses a Check #3 ambiguity report while resolving nothing —
-    exactly the "green gate over a dead feature" shape this project keeps
-    hitting. Such triples are SKIPPED and REPORTED by name, never silently
-    dropped. The filter runs AFTER the set difference so discrimination
-    semantics are byte-identical to before; only inert rows disappear.
+    converter can ever OBSERVE, and it has TWO halves because a row can be
+    inert in two different ways:
+
+      (a) NO CSS ROUTING — `css_property`/`css_element` both NULL, so no draft
+          CSS declaration can ever resolve to the attribute at all.
+      (b) UNWRITABLE VALUE SHAPE — the attribute is routed, but the value the
+          converter would write can never canonically equal the seeded one.
+          The measured case: a TIER-SHAPED object attr is always written as
+          `{"desktop": V}`, so a flat `V` copied out of `variations.js` scores
+          0 forever against `_composition_attr_score`'s exact string equality.
+          Half (b) was added after half (a) shipped and left
+          `two-column-editorial` still undetectable end to end.
+
+    Either way, seeding the triple would create a row that silently suppresses
+    a Check #3 ambiguity report while resolving nothing — exactly the "green
+    gate over a dead feature" shape this project keeps hitting. Such triples
+    are SKIPPED and REPORTED by name WITH THE REASON, never silently dropped.
+    The filter runs AFTER the set difference so discrimination semantics are
+    byte-identical to before; only inert rows disappear.
 
     Delete-then-insert = idempotent; reflects the current `variations.js` on
     every run. Returns the number of rows written (0 when the block has no
@@ -3201,8 +3313,13 @@ def _populate_variant_composition_attr_slots(c, slug: str, block_dir: Path) -> i
             if other_name != v_name:
                 sibling_triples.update(other_triples)
         for child_slug, attr_name, canon_val in sorted(own_triples - sibling_triples):
-            if not _child_attr_has_css_routing(c, child_slug, attr_name):
-                skipped.append((v_name, child_slug, attr_name, canon_val))
+            if not _child_attr_is_observable(c, child_slug, attr_name, canon_val):
+                reason = (
+                    "no CSS routing"
+                    if not _child_attr_has_css_routing(c, child_slug, attr_name)
+                    else "value shape a clone can never write (tier-object attr, flat value)"
+                )
+                skipped.append((v_name, child_slug, attr_name, canon_val, reason))
                 continue
             c.execute(
                 "INSERT OR IGNORE INTO variant_composition_attr_slots "
@@ -3219,11 +3336,11 @@ def _populate_variant_composition_attr_slots(c, slug: str, block_dir: Path) -> i
         # block.json element manifest attrMap), then re-run this stage.
         print(
             f"  [variant_composition_attr_slots] {slug}: "
-            f"{len(skipped)} discriminating child attribute(s) SKIPPED — no CSS "
-            f"routing, so a clone could never populate them:"
+            f"{len(skipped)} discriminating child attribute(s) SKIPPED — a clone "
+            f"could never produce them:"
         )
-        for v_name, child_slug, attr_name, canon_val in sorted(skipped):
-            print(f"      {v_name} -> {child_slug}.{attr_name} = {canon_val}")
+        for v_name, child_slug, attr_name, canon_val, reason in sorted(skipped):
+            print(f"      {v_name} -> {child_slug}.{attr_name} = {canon_val}  [{reason}]")
     return written
 
 
