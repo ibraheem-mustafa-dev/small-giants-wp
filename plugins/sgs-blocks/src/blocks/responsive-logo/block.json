@@ -73,7 +73,7 @@
 					"attrMap": {
 						"css:max-width": "maxWidth"
 					},
-					"_note": "Declared 2026-09-05. This element did not exist in the manifest at all, so its attrs fell to the heuristic path and FOUR of them (width, alt, logoSwitchCustomPx, logoDecorative) were each assigned css_property='max-width' — two of which are not CSS at all (`alt` is a string, `logoDecorative` a boolean). render.php:239-240 shows the real and only owner of max-width is the `maxWidth` tier object. Declaring it here gives the slot its true owner via the manifest-first precedence (css_property = manifest_css_property or emission_css_property)."
+					"_note": "Declared 2026-09-05. This element did not exist in the manifest at all, so its attrs fell to the heuristic path and FOUR of them (width, alt, logoSwitchCustomPx, logoDecorative) were each assigned css_property='max-width' — two of which are not CSS at all (`alt` is a string, `logoDecorative` a boolean). render.php:239-240 shows the real and only owner of max-width is the `maxWidth` tier object. Declaring it here gives the slot its true owner via the manifest-first precedence (css_property = manifest_css_property or emission_css_property). Tested 2026-09-05: removing this element's empty-string prefix does NOT change the max-width over-match (still 8 contending attrs after a reseed), so the empty prefix is NOT the cause — the over-assignment is in the classifier's emission heuristic, not this manifest."
 				}
 			}
 		},
