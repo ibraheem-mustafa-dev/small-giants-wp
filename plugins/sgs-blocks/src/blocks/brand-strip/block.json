@@ -200,7 +200,8 @@
 				"type": "object",
 				"properties": {
 					"media": {
-						"type": "object"
+						"type": "object",
+						"role": "image-object"
 					},
 					"alt": {
 						"type": "string"
