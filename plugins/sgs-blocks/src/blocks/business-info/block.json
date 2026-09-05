@@ -43,14 +43,6 @@
 			"default": "none",
 			"enum": [ "none", "mobile", "tablet", "all" ]
 		},
-		"linkPhone": {
-			"type": "boolean",
-			"default": true
-		},
-		"linkEmail": {
-			"type": "boolean",
-			"default": true
-		},
 		"iconColour": {
 			"type": "string",
 			"default": ""
@@ -59,6 +51,15 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the icon's stroke instead of a flat colour. Non-empty wins over iconColour at render time (D636/D644)."
+		},
+		"iconColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"iconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of iconColourGradient. Non-empty wins over iconColourHover on :hover/:focus-visible."
 		},
 		"textColour": {
 			"type": "string",
@@ -69,6 +70,15 @@
 			"default": "",
 			"description": "CSS gradient string painting the value text instead of a flat colour (background-clip:text). Non-empty wins over textColour at render time (D636 text-colour gradient rollout, 778879732 finish)."
 		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of textColourGradient. Non-empty wins over textColourHover on :hover/:focus-visible."
+		},
 		"labelColour": {
 			"type": "string",
 			"default": ""
@@ -78,11 +88,11 @@
 			"default": "",
 			"description": "CSS gradient string painting the label text (currently only visible on .sgs-business-hours__day) instead of a flat colour. Non-empty wins over labelColour at render time (D636 text-colour gradient rollout, 778879732 finish)."
 		},
-		"linkHoverBackgroundImage": {
+		"attributionHoverColour": {
 			"type": "string",
 			"default": ""
 		},
-		"linkHoverTextColour": {
+		"attributionHoverColourFallback": {
 			"type": "string",
 			"default": ""
 		},
@@ -276,8 +286,17 @@
 						"css:color": "textColour",
 						"css:background-image": "textColourGradient"
 					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:background-image": "textColourHoverGradient"
+							}
+						}
+					},
 					"_note_gradient": "textColourGradient (2026-09-04) is the text-colour gradient sibling to textColour, same background-clip:text mechanism as sgs/counter's numberColourGradient. Finishes the text-colour gradient rollout 778879732 started and explicitly left open.",
-					"_note_ownership": "css:color -> textColour added explicitly 2026-09-04 (rule 41-co2 fix pass) — without it, placement-reach's cluster fallback misrouted textColour to the 'icon' element (icon also declares the 'text' cluster for its own iconColour), because textColour had no explicit claim of its own despite its gradient sibling being explicitly mapped. Found live: moving Icon's own colour attrs into a dedicated panel (closing a genuine CO-2 scatter) surfaced this as a NEW scatter on Icon (owned attrs falsely including textColour). Grounded fix, not a guess — textColour is this element's own base colour, sibling to the already-explicit textColourGradient."
+					"_note_ownership": "css:color -> textColour added explicitly 2026-09-04 (rule 41-co2 fix pass) — without it, placement-reach's cluster fallback misrouted textColour to the 'icon' element (icon also declares the 'text' cluster for its own iconColour), because textColour had no explicit claim of its own despite its gradient sibling being explicitly mapped. Found live: moving Icon's own colour attrs into a dedicated panel (closing a genuine CO-2 scatter) surfaced this as a NEW scatter on Icon (owned attrs falsely including textColour). Grounded fix, not a guess — textColour is this element's own base colour, sibling to the already-explicit textColourGradient.",
+					"_note_hover": "textColourHover/textColourHoverGradient added 2026-09-05 (user-identified design flaw fix) — the top SgsColourPanel's 'Text colour' row previously exposed only a single 'normal' state despite the framework's 2-state standard (sgs_text_states_css()) being available. render.php now emits both states via that shared helper, scoped to the same wrapper selector as the base colour."
 				},
 				"label": {
 					"label": "Label",
@@ -297,16 +316,26 @@
 						"css:color": "iconColour",
 						"css:stroke": "iconColourGradient"
 					},
-					"_note": "iconColour resolves via css:color (style.css:42 `color: var(--sgs-bi-icon-colour, currentColor)`) — mirrors sgs/icon's own icon element + sgs/accordion's toggle-icon element, which use the same css:color/attrMap convention for a functional icon colour (Spec 35 vocabulary fix). showIcon remains an unmapped bespoke toggle, not a style-cluster member. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to `iconColourGradient`, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "iconColourHover",
+								"css:stroke": "iconColourHoverGradient"
+							}
+						}
+					},
+					"_note": "iconColour resolves via css:color (style.css:42 `color: var(--sgs-bi-icon-colour, currentColor)`) — mirrors sgs/icon's own icon element + sgs/accordion's toggle-icon element, which use the same css:color/attrMap convention for a functional icon colour (Spec 35 vocabulary fix). showIcon remains an unmapped bespoke toggle, not a style-cluster member. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to `iconColourGradient`, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php).",
+					"_note_hover": "iconColourHover/iconColourHoverGradient added 2026-09-05, mirroring sgs/button's icon element exactly (same Lucide stroke-based icon painted via ancestor `color:`, same helpers-svg-gradient.php stroke-gradient mechanism) — see block.json's button icon element for the identical states.hover shape."
 				},
 				"link": {
 					"label": "Link",
 					"order": 5,
 					"clusters": [],
 					"prefix": "",
-					"_note": "The `<a class=\"sgs-business-info__link\">` rendered for phone/email/map/attribution display types (render.php:118,138,319). Added 2026-08-15 — this attribute had no manifest home at all, causing an undeclared-element orphan. `linkHoverColour` (single attribute) was SPLIT 2026-08-16 (D643) into `linkHoverBackgroundImage` + `linkHoverTextColour` — ground-truthed against style.css:86-121: the resolved colour feeds TWO genuinely different CSS mechanisms on `.sgs-business-attribution .sgs-business-info__link` — (1) one gradient colour-stop inside the `background-image:linear-gradient(...)` text-clip sweep (the primary path, modern browsers), and (2) a plain `color:` declaration inside the `@supports not (background-clip:text)` fallback (older browsers with no text-clip support). A single flat-colour attribute happened to serve both today because they render the SAME visual outcome via different techniques, but a `color:` declaration can never legally hold a CSS gradient — so the pair had to split before either could gain a gradient option. Declaring either under `states.hover` was tried first but rejected — FR-35-5's STATE_WITHOUT_BASE check runs independent of `clusters`, so a hover-only colour with no resting counterpart always trips it, and this project's baseline may only ever go DOWN, never up for a genuinely-accepted new instance (unlike sgs/post-grid's pre-existing, already-baselined case). `prefix: \"\"` is the documented explicit opt-out from orphan-scanning (see resolveMember's `!== undefined` contract) — correct here because there is nothing else on this element for the scan to usefully claim; the css_element-drift audit this element exists to satisfy only checks that the KEY `link` resolves, not that every attribute funnels through the cluster/state machinery.",
+					"_note": "The `<a class=\"sgs-business-info__link\">` rendered for phone/email/map/attribution display types — every phone/email instance now ALWAYS renders as a link (the `linkPhone`/`linkEmail` toggles were removed 2026-09-05; there was no real use case for an unclickable phone number or email address). `linkHoverBackgroundImage`/`linkHoverTextColour` (D643, 2026-08-16) were renamed to `attributionHoverColour`/`attributionHoverColourFallback` the same day, because they only ever paint the attribution/website-credit hover sweep on `.sgs-business-attribution .sgs-business-info__link` (style.css:99-134) — the old names implied a general phone/email link-hover control, but no phone/email CSS ever consumed them, and the editor exposed them under a 'Link Options' panel gated on displayType being phone/email, where they visibly did nothing. The two mechanisms are unchanged: `attributionHoverColour` feeds the gradient colour-stop inside the `background-image:linear-gradient(...)` text-clip sweep (modern browsers); `attributionHoverColourFallback` feeds the plain `color:` declaration inside the `@supports not (background-clip:text)` fallback (older browsers). A `color:` declaration can never legally hold a CSS gradient, so the pair stays split. Both are now exposed ONLY on a displayType==='attribution' control in edit.js. `prefix: \"\"` is the documented explicit opt-out from orphan-scanning (see resolveMember's `!== undefined` contract) — correct here because there is nothing else on this element for the scan to usefully claim; the css_element-drift audit this element exists to satisfy only checks that the KEY `link` resolves, not that every attribute funnels through the cluster/state machinery.",
 					"attrMap": {
-						"css:background-image": "linkHoverBackgroundImage"
+						"css:background-image": "attributionHoverColour",
+						"css:color": "attributionHoverColourFallback"
 					}
 				}
 			}

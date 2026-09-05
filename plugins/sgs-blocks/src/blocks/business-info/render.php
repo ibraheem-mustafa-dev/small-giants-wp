@@ -42,8 +42,6 @@ $show_icon    = ! empty( $attributes['showIcon'] );
 // clip differs, and a clipped label stays in the a11y tree so an icon-only
 // phone/email link keeps its accessible name (WCAG name-required).
 $label_collapse = isset( $attributes['labelCollapse'] ) ? (string) $attributes['labelCollapse'] : 'none';
-$link_phone     = ! empty( $attributes['linkPhone'] );
-$link_email     = ! empty( $attributes['linkEmail'] );
 // Colour overrides (WCAG 1.4.3 fix, D-pending): empty by default — an unset
 // colour means "no override", so style.css's var(--sgs-bi-*, currentColor)
 // fallback inherits the surrounding container's text colour (e.g. the light
@@ -55,19 +53,27 @@ $link_email     = ! empty( $attributes['linkEmail'] );
 $icon_colour  = (string) ( $attributes['iconColour'] ?? '' );
 // D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above.
 $icon_colour_gradient = (string) ( $attributes['iconColourGradient'] ?? '' );
+// Icon hover siblings (2026-09-05) — mirror sgs/button's icon element exactly.
+$icon_colour_hover          = (string) ( $attributes['iconColourHover'] ?? '' );
+$icon_colour_hover_gradient = (string) ( $attributes['iconColourHoverGradient'] ?? '' );
 $text_colour  = (string) ( $attributes['textColour'] ?? '' );
 // D636 text-colour gradient sibling (778879732 rollout finish, 2026-09-04) —
 // non-empty wins over textColour/labelColour at render time.
 $text_colour_gradient  = (string) ( $attributes['textColourGradient'] ?? '' );
+// Text hover siblings (2026-09-05) — real normal/hover pair via sgs_text_states_css().
+$text_colour_hover          = (string) ( $attributes['textColourHover'] ?? '' );
+$text_colour_hover_gradient = (string) ( $attributes['textColourHoverGradient'] ?? '' );
 $label_colour = (string) ( $attributes['labelColour'] ?? '' );
 $label_colour_gradient = (string) ( $attributes['labelColourGradient'] ?? '' );
-// Link hover — unset means "no override", so style.css's #e7d768 default applies.
-// Split 2026-08-16 (D643): the resolved colour used to feed BOTH the gradient
-// colour-stop (background-image) AND the @supports-fallback `color:` from one
-// attribute. A `color:` value can never legally hold a gradient, so each CSS
-// technique now gets its own attribute — see block.json's `link` element note.
-$link_hover_bg_image_colour = (string) ( $attributes['linkHoverBackgroundImage'] ?? '' );
-$link_hover_text_colour     = (string) ( $attributes['linkHoverTextColour'] ?? '' );
+// Attribution hover-sweep colours — unset means "no override", so style.css's
+// #e7d768 default applies. Renamed 2026-09-05 from linkHoverBackgroundImage/
+// linkHoverTextColour (D643, 2026-08-16): both only ever paint the website-credit
+// sweep on `.sgs-business-attribution .sgs-business-info__link` (style.css),
+// never a phone/email link — see block.json's `link` element note. Split
+// because a `color:` value can never legally hold a gradient, so each CSS
+// technique keeps its own attribute.
+$attribution_hover_colour          = (string) ( $attributes['attributionHoverColour'] ?? '' );
+$attribution_hover_colour_fallback = (string) ( $attributes['attributionHoverColourFallback'] ?? '' );
 
 // Placeholder shown when data is missing.
 $placeholder = sprintf(
@@ -88,9 +94,12 @@ $sgs_is_editor_render = ! \SGS\Blocks\sgs_is_frontend_render();
 // definition below, which needs it) using the SAME uid this render also uses
 // for its scoped <style> further down (moved up unchanged — one definition,
 // referenced both here and where $root_sel is built).
-$uid                 = 'sgs-biz-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-$sgs_bi_stroke_grad  = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
-$sgs_bi_defs_injected = false;
+$uid                       = 'sgs-biz-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sgs_bi_stroke_grad        = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
+// Icon hover gradient sibling (2026-09-05) — same mechanism, own <defs> id/'-igh'
+// suffix, mirroring sgs/button's iconColourHoverGradient handling exactly.
+$sgs_bi_stroke_grad_hover  = sgs_svg_stroke_gradient( $icon_colour_hover_gradient, $uid . '-igh' );
+$sgs_bi_defs_injected      = false;
 
 /**
  * Helper: wrap an inline SVG icon in a presentational span.
@@ -98,15 +107,20 @@ $sgs_bi_defs_injected = false;
  * @param string $icon_name Lucide icon slug.
  * @return string HTML.
  */
-$icon_html = function ( string $icon_name ) use ( $show_icon, $sgs_bi_stroke_grad, &$sgs_bi_defs_injected ): string {
+$icon_html = function ( string $icon_name ) use ( $show_icon, $sgs_bi_stroke_grad, $sgs_bi_stroke_grad_hover, &$sgs_bi_defs_injected ): string {
 	if ( ! $show_icon ) {
 		return '';
 	}
 	$svg = sgs_get_lucide_icon( $icon_name );
 	// Gradient <defs> only needs to exist ONCE in the DOM — this closure can
 	// render more than once per instance (e.g. a combined display type).
-	if ( ! $sgs_bi_defs_injected && '' !== $sgs_bi_stroke_grad['defs'] ) {
-		$svg                   = sgs_svg_inject_defs( $svg, $sgs_bi_stroke_grad['defs'] );
+	if ( ! $sgs_bi_defs_injected ) {
+		if ( '' !== $sgs_bi_stroke_grad['defs'] ) {
+			$svg = sgs_svg_inject_defs( $svg, $sgs_bi_stroke_grad['defs'] );
+		}
+		if ( '' !== $sgs_bi_stroke_grad_hover['defs'] ) {
+			$svg = sgs_svg_inject_defs( $svg, $sgs_bi_stroke_grad_hover['defs'] );
+		}
 		$sgs_bi_defs_injected = true;
 	}
 	return sprintf( '<span class="sgs-business-info__icon" aria-hidden="true">%s</span>', $svg );
@@ -138,15 +152,13 @@ switch ( $display_type ) {
 		if ( '' !== $phone_raw ) {
 			$tel_href = 'tel:' . preg_replace( '/[^0-9+]/', '', $phone_raw );
 			$inner    = $icon_html( 'phone' ) . $label_html( Sgs_Site_Info::get_esc_html( 'phone' ) );
-			if ( $link_phone ) {
-				$html = sprintf(
-					'<a href="%s" class="sgs-business-info__link">%s</a>',
-					esc_url( $tel_href ),
-					$inner
-				);
-			} else {
-				$html = $inner;
-			}
+			// Always a link — there is no use case for an unclickable phone
+			// number, so the old linkPhone toggle was removed 2026-09-05.
+			$html = sprintf(
+				'<a href="%s" class="sgs-business-info__link">%s</a>',
+				esc_url( $tel_href ),
+				$inner
+			);
 			$html = '<p class="sgs-business-info sgs-business-phone">' . $html . '</p>';
 		} else {
 			$html = $sgs_is_editor_render ? '<p class="sgs-business-info sgs-business-phone">' . $placeholder . '</p>' : '';
@@ -158,15 +170,13 @@ switch ( $display_type ) {
 		$email_raw = (string) Sgs_Site_Info::get( 'email', '' );
 		if ( '' !== $email_raw && is_email( $email_raw ) ) {
 			$inner = $icon_html( 'mail' ) . $label_html( Sgs_Site_Info::get_esc_html( 'email' ) );
-			if ( $link_email ) {
-				$html = sprintf(
-					'<a href="%s" class="sgs-business-info__link">%s</a>',
-					esc_url( 'mailto:' . antispambot( $email_raw ) ),
-					$inner
-				);
-			} else {
-				$html = $inner;
-			}
+			// Always a link — there is no use case for an unclickable email
+			// address, so the old linkEmail toggle was removed 2026-09-05.
+			$html = sprintf(
+				'<a href="%s" class="sgs-business-info__link">%s</a>',
+				esc_url( 'mailto:' . antispambot( $email_raw ) ),
+				$inner
+			);
 			$html = '<p class="sgs-business-info sgs-business-email">' . $html . '</p>';
 		} else {
 			$html = $sgs_is_editor_render ? '<p class="sgs-business-info sgs-business-email">' . $placeholder . '</p>' : '';
@@ -415,6 +425,28 @@ $scoped_css = array();
 if ( '' !== $sgs_bi_stroke_grad['css'] ) {
 	$scoped_css[] = "{$root_sel} .sgs-business-info__icon svg{" . $sgs_bi_stroke_grad['css'] . ';}';
 }
+// Icon hover — flat colour + gradient siblings (2026-09-05), touch-safe via
+// sgs_hover_state_rules() (helpers-hover-state.php), mirroring sgs/button's
+// icon element exactly. The hover TRIGGER is the whole block wrapper
+// ($root_sel) rather than .sgs-business-info__link alone, because the icon
+// also renders on non-linked display types (address/hours) where there is no
+// link element to hover.
+if ( '' !== $icon_colour_hover ) {
+	$scoped_css[] = sgs_hover_state_rules(
+		$root_sel,
+		'color:' . sgs_colour_value( $icon_colour_hover ),
+		':focus-visible',
+		' .sgs-business-info__icon'
+	);
+}
+if ( '' !== $sgs_bi_stroke_grad_hover['css'] ) {
+	$scoped_css[] = sgs_hover_state_rules(
+		$root_sel,
+		$sgs_bi_stroke_grad_hover['css'],
+		':focus-visible',
+		' .sgs-business-info__icon svg'
+	);
+}
 
 // --- Colour bridge (icon/text/label) — a scoped custom-property declaration;
 // style.css consumes it via var(--sgs-bi-*, currentColor). Each custom
@@ -432,26 +464,33 @@ $sgs_bi_icon_colour_css = sgs_colour_value( $icon_colour );
 if ( '' !== $sgs_bi_icon_colour_css ) {
 	$sgs_bi_colour_decls[] = '--sgs-bi-icon-colour:' . $sgs_bi_icon_colour_css;
 }
-// textColour/labelColour moved OFF the custom-property bridge (2026-09-04,
-// D636 gradient rollout finish) — a custom property can never legally hold a
-// CSS gradient string the way --sgs-bi-icon-colour above still can for a flat
-// value, so these two now emit direct scoped declarations via the shared
-// sgs_resolve_text_colour_or_gradient()/sgs_text_colour_decl() helpers,
-// exactly mirroring sgs/counter's numberColour/labelColour. The "unset means
-// no override, inherit currentColor" contract is UNCHANGED: when neither the
-// flat nor the gradient attr is set, sgs_resolve_text_colour_or_gradient()
-// returns '', nothing is emitted, and style.css's
-// `var(--sgs-bi-text-colour, currentColor)` / `var(--sgs-bi-label-colour, currentColor)`
-// rules simply resolve their fallback (no --sgs-bi-text-colour/-label-colour
-// custom property is ever declared, by either mechanism).
-$text_colour_effective = sgs_resolve_text_colour_or_gradient( $text_colour, $text_colour_gradient );
-if ( '' !== $text_colour_effective ) {
-	$text_colour_decl = sgs_text_colour_decl( $text_colour_effective );
-	if ( '' !== $text_colour_decl ) {
-		$scoped_css[] = "{$root_sel}{{$text_colour_decl};}";
-	}
-	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_effective );
-}
+// textColour moved OFF the custom-property bridge (2026-09-04, D636 gradient
+// rollout finish) — a custom property can never legally hold a CSS gradient
+// string the way --sgs-bi-icon-colour above still can for a flat value, so it
+// emits direct scoped declarations, exactly mirroring sgs/counter's
+// numberColour. The "unset means no override, inherit currentColor" contract
+// is UNCHANGED: when none of the four text attrs are set,
+// sgs_text_states_css() emits nothing and style.css's
+// `var(--sgs-bi-text-colour, currentColor)` rule simply resolves its fallback
+// (that custom property is never declared by any mechanism any more).
+//
+// 2026-09-05: replaced the old single-state (normal only) hand-rolled call
+// with sgs_text_states_css() — the shared 2-state (normal+hover) helper
+// (helpers-colour-variants.php) already used for this exact shape elsewhere
+// in the framework. It resolves both states, emits the touch-safe hover pair
+// via sgs_hover_state_rules(), AND both mandatory gradient `@supports`
+// fallback rules, at the SAME $root_sel this block's text colour was already
+// scoped to.
+$scoped_css[] = sgs_text_states_css(
+	$root_sel,
+	$attributes,
+	array(
+		'base'           => 'textColour',
+		'hover'          => 'textColourHover',
+		'gradient'       => 'textColourGradient',
+		'hover_gradient' => 'textColourHoverGradient',
+	)
+);
 // labelColour's only real paint target today is .sgs-business-hours__day
 // (style.css:167 `color: var(--sgs-bi-label-colour, currentColor)`) — the
 // generic .sgs-business-info__label span carries no colour rule of its own,
@@ -465,19 +504,21 @@ if ( '' !== $label_colour_effective ) {
 	}
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_sel, $label_colour_effective );
 }
-// Link hover — same omit-when-unset contract as the three above. Unset falls back
-// to style.css's `var(--sgs-bi-link-hover-bg, #e7d768)` / `var(--sgs-bi-link-hover-text, #e7d768)`,
-// the SGS credit sweep colour. Two separate custom properties (split 2026-08-16,
-// D643) — one feeds the gradient colour-stop, one feeds the @supports fallback
-// `color:` — so each can be resolved independently and, later, so only the
-// gradient one can ever be offered a gradient value.
-$sgs_bi_link_hover_bg_css = sgs_colour_value( $link_hover_bg_image_colour );
-if ( '' !== $sgs_bi_link_hover_bg_css ) {
-	$sgs_bi_colour_decls[] = '--sgs-bi-link-hover-bg:' . $sgs_bi_link_hover_bg_css;
+// Attribution hover-sweep — same omit-when-unset contract as the icon colour
+// above. Unset falls back to style.css's `var(--sgs-bi-link-hover-bg, #e7d768)` /
+// `var(--sgs-bi-link-hover-text, #e7d768)`, the SGS credit sweep colour. Two
+// separate custom properties (split 2026-08-16, D643; renamed 2026-09-05 from
+// linkHoverBackgroundImage/linkHoverTextColour — see block.json's `link`
+// element note) — one feeds the gradient colour-stop, one feeds the
+// @supports fallback `color:` — so each can be resolved independently and,
+// later, so only the gradient one can ever be offered a gradient value.
+$sgs_bi_attribution_hover_bg_css = sgs_colour_value( $attribution_hover_colour );
+if ( '' !== $sgs_bi_attribution_hover_bg_css ) {
+	$sgs_bi_colour_decls[] = '--sgs-bi-link-hover-bg:' . $sgs_bi_attribution_hover_bg_css;
 }
-$sgs_bi_link_hover_text_css = sgs_colour_value( $link_hover_text_colour );
-if ( '' !== $sgs_bi_link_hover_text_css ) {
-	$sgs_bi_colour_decls[] = '--sgs-bi-link-hover-text:' . $sgs_bi_link_hover_text_css;
+$sgs_bi_attribution_hover_text_css = sgs_colour_value( $attribution_hover_colour_fallback );
+if ( '' !== $sgs_bi_attribution_hover_text_css ) {
+	$sgs_bi_colour_decls[] = '--sgs-bi-link-hover-text:' . $sgs_bi_attribution_hover_text_css;
 }
 if ( $sgs_bi_colour_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $sgs_bi_colour_decls ) . ';}';
