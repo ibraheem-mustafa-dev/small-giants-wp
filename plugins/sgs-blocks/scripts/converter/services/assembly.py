@@ -409,7 +409,8 @@ def build_block_markup(
     if rec.slug is not None:
         _variant_attr = db_lookup.variant_attr_for(rec.slug)
         if _variant_attr is not None:
-            _detected = db_lookup.detect_variant(rec.slug, attrs)
+            _child_slugs = [r.slug for r in results if isinstance(r, ChildBlock)]
+            _detected = db_lookup.detect_variant(rec.slug, attrs, child_slugs=_child_slugs)
             if isinstance(_detected, str):
                 attrs[_variant_attr] = _detected
 
