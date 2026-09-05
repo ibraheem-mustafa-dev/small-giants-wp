@@ -598,12 +598,25 @@ buckets, per `surveys/survey-responsive-shape.py`'s settled doctrine (Spec 35 Ph
 2026-08-10): **BOX is a CLOSED, NAMED set** — `padding` / `margin` / `borderWidth` /
 `borderRadius` and their prefixed variants (`cardPadding`, `gridItemBorderRadius`, …).
 Anything else object-typed is a TIER. That rule classifies all 533 object attributes in the
-tree with **zero** left ambiguous.
+tree with **zero** left ambiguous **for THIS script's own question** — see the scoping caveat
+below (added D968) before reusing it to answer a different one.
 
-⚠ **Do NOT re-derive the shape from `default`.** A `"default": {}` proves nothing — 448 of 532
-object attrs declare exactly that. A reading based on the default alone concluded 234 were
-"undeclared" and proposed an 83-file migration to add information that already existed in the
-survey script. Read the doctrine, not the defaults.
+⚠ **Scoping caveat (D968, 2026-09-06) — this doctrine answers "should a flat family be folded
+into an object?", NOT "can this attribute vary per device?"** `survey-responsive-shape.py`'s
+`classify()` is only ever reached from `find_families()`, which iterates attrs that ALREADY have
+declared tier siblings — so its TIER/BOX binary is correct for that narrower question, but is
+demonstrably wrong if reused to answer the second one: `is_responsive`'s own detection needed a
+fifth+sixth wrinkle this doctrine cannot express — **TIER-of-BOXES** (an attr that is box-NAMED
+but genuinely per-device, e.g. `gridItemPadding` — proven by render evidence, not by name) and
+**RECORD/ASSET** (object-typed, but neither a tier nor a box — e.g. `shapeDividerTopScale`
+`{x,y}`, `testimonial.orgLogo` `{id,url,alt}`). See `_compute_is_responsive()` in
+`scripts/sgs-update-v2.py` for the five-shape detection it actually needed.
+
+⚠ **Do NOT re-derive the shape from `default`.** A `"default": {}` proves nothing — 448 of 533
+object attrs declare exactly that (this doc has carried "532" and "533" inconsistently in
+adjacent sentences — re-run the count rather than trusting either cached figure). A reading
+based on the default alone concluded 234 were "undeclared" and proposed an 83-file migration to
+add information that already existed in the survey script. Read the doctrine, not the defaults.
 
 ⛔ **ENUM violations are a separate class and are NEVER auto-fixed.** A value can be the right
 TYPE and still not a permitted one — `layout:"grid"` on `sgs/testimonial-slider`, whose enum

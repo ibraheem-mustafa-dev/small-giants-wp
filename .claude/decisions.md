@@ -1,3 +1,53 @@
+## D968 [ROUTINE] — `is_responsive` closeout: named the five attribute shapes, retired the code-review narrative from the module comment, corrected an over-broad S5 claim
+
+**2026-09-06.** Closed the three Minor items deferred from the `is_responsive` classification fix
+(`61f70ba08`, D-pending at the time). No behaviour change — tidy-up only, verified by an unchanged
+13/13 self-test and an unchanged `css_tier` distribution.
+
+**The five shapes `block_attributes.is_responsive` now correctly distinguishes**, in
+`plugins/sgs-blocks/scripts/sgs-update-v2.py`:
+
+| Shape | Example | Value |
+|---|---|---|
+| TIER object — tiers inside the value | `container.minHeight` | 1 |
+| Flat tier siblings — one attr per device | `paddingTablet` / `paddingMobile` | 1 |
+| TIER-of-BOXES — tiers outside, box sides inside | `container.gridItemPadding` | 1 |
+| RECORD — a structured value, not per-device | `shapeDividerTopScale` `{x,y}` | 0 |
+| ASSET — a media struct, not per-device | `testimonial.orgLogo` `{id,url,alt}` | 0 |
+
+Detection order: render evidence -> box-name test -> record test -> tier-by-elimination. Rule:
+evidence can CONFIRM a positive the name-doctrine would miss, but can never SUPPRESS one.
+
+**Renamed `_is_box_family_attr()` -> `_is_box_family_base_name()`** — its real contract is
+narrower than its old name promised: a box test valid only for BASE names, only inside
+`_compute_is_responsive`'s no-evidence fallback branch, and blind to `Tablet`/`Mobile` suffixes by
+construction. The suffix-blindness itself is unchanged (a self-test fixture pins it) — only the
+name and docstring now say so honestly.
+
+**`_compute_is_responsive()` now takes `attr_def` directly** from the caller's own
+`attrs.items()` loop, instead of re-deriving it via `attrs.get(attr_name)` inside the function.
+Mechanical; both call sites and the self-test fixtures were updated to match.
+
+**`supports.sgs.containerKind` gates the wrapper-evidence channel, and that gate is narrower than
+actual wrapper routing** — ~40 blocks reference `SGS_Container_Wrapper`, only 20 declare
+`containerKind`. Currently outcome-neutral (verified against the corpus during the original fix,
+not assumed) — recorded here so a future maintainer doesn't have to re-derive it.
+
+**Corrected `plugins/sgs-blocks/CLAUDE.md`'s S5 section**, which claimed the BOX/TIER doctrine
+"classifies all 533 object attributes in the tree with zero left ambiguous." Demonstrably false in
+two directions, both surfaced by this work: TIER-of-BOXES (`gridItemPadding` is box-NAMED but
+genuinely per-device — `class-sgs-container-wrapper.php:3121` feeds it to
+`sgs_emit_responsive_css()` with no `'box'` key, so a flat value is unrenderable by construction),
+and RECORD/ASSET (object-typed, neither tier nor box). The doctrine is still correct for its OWN
+purpose — `survey-responsive-shape.py`'s `classify()` is only reached from `find_families()`,
+which iterates attrs that already have tier siblings, so it answers "should this flat family be
+folded into an object?", never "can this vary per device?" — added as a scoping caveat rather than
+deleting the claim.
+
+⛔ **Unchanged (do not re-litigate):** `block_attributes.css_tier` was not touched by this work and
+must never carry a value for a tier-object attribute — see the module comment above
+`_CONTAINER_WRAPPER_PHP_PATH` and `db_lookup.py:1673-1684`'s own warning.
+
 ## D967 [ROUTINE] — CHECK A backlog closed at 0 by a concurrent session; its self-test had a positive control that could no longer pass
 
 **2026-09-05/06, CHECK A editor-canvas track close-out.** The backlog D965 left at 156 is now **0**.
