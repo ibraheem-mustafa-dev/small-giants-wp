@@ -237,19 +237,64 @@ function resolveLocalFunctionCallBlock( callNode, ast ) {
 		return { ok: false };
 	}
 
-	// Find the ReturnStatement in the function.
-	let returnCount = 0;
+	// Find all ReturnStatement nodes in the function body.
+	// For concise-body arrow functions, treat the body itself as the return value.
 	let returnValue = null;
+	let returnCount = 0;
 
-	if ( fnDecl.body ) {
-		const bodyToSearch = fnDecl.body.type === 'BlockStatement' ? fnDecl.body.body : [ fnDecl.body ];
-		for ( const stmt of bodyToSearch ) {
-			if ( stmt.type === 'ReturnStatement' && returnCount === 0 ) {
-				returnValue = stmt.argument;
-				returnCount++;
-				break; // Only accept the first return.
+	if ( ! fnDecl.body ) {
+		return { ok: false };
+	}
+
+	// Case 1: Concise-body arrow function — body IS the return value directly.
+	if ( fnDecl.body.type !== 'BlockStatement' ) {
+		returnValue = fnDecl.body;
+		returnCount = 1;
+	} else {
+		// Case 2: Block-body function — recursively find all ReturnStatement nodes,
+		// but do NOT descend into nested functions.
+		function findReturnsInBlock( stmts, depth = 0 ) {
+			for ( const stmt of stmts ) {
+				if ( stmt.type === 'ReturnStatement' ) {
+					returnValue = stmt.argument;
+					returnCount++;
+				} else if (
+					stmt.type === 'IfStatement' ||
+					stmt.type === 'WhileStatement' ||
+					stmt.type === 'DoWhileStatement' ||
+					stmt.type === 'ForStatement' ||
+					stmt.type === 'ForInStatement' ||
+					stmt.type === 'ForOfStatement' ||
+					stmt.type === 'TryStatement'
+				) {
+					// Recursively search through control flow structures.
+					if ( stmt.consequent && stmt.consequent.type === 'BlockStatement' ) {
+						findReturnsInBlock( stmt.consequent.body, depth + 1 );
+					} else if ( stmt.consequent ) {
+						findReturnsInBlock( [ stmt.consequent ], depth + 1 );
+					}
+					if ( stmt.alternate ) {
+						if ( stmt.alternate.type === 'BlockStatement' ) {
+							findReturnsInBlock( stmt.alternate.body, depth + 1 );
+						} else {
+							findReturnsInBlock( [ stmt.alternate ], depth + 1 );
+						}
+					}
+					// For try/catch/finally
+					if ( stmt.block && stmt.block.type === 'BlockStatement' ) {
+						findReturnsInBlock( stmt.block.body, depth + 1 );
+					}
+					if ( stmt.handler && stmt.handler.body && stmt.handler.body.type === 'BlockStatement' ) {
+						findReturnsInBlock( stmt.handler.body.body, depth + 1 );
+					}
+					if ( stmt.finalizer && stmt.finalizer.type === 'BlockStatement' ) {
+						findReturnsInBlock( stmt.finalizer.body, depth + 1 );
+					}
+				}
+				// Do NOT recurse into nested function declarations.
 			}
 		}
+		findReturnsInBlock( fnDecl.body.body );
 	}
 
 	// If multiple returns or no return found, fail.

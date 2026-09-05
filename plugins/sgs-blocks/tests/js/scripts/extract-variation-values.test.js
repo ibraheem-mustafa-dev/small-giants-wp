@@ -119,7 +119,7 @@ describe( 'extract-variation-values', () => {
 			} );
 		} );
 
-		test( 'helper function with multiple returns (only first is used)', () => {
+		test( 'helper function with multiple returns is unresolved', () => {
 			const source = `
 				function complexHelper() {
 					if ( true ) {
