@@ -329,6 +329,7 @@ CREATE TABLE variant_slots (
               variant_value TEXT NOT NULL,
               unique_slot   TEXT NOT NULL,
               created_at    TEXT DEFAULT CURRENT_TIMESTAMP,
+              slot_value    TEXT,
               PRIMARY KEY (block_slug, variant_value, unique_slot)
             );
 

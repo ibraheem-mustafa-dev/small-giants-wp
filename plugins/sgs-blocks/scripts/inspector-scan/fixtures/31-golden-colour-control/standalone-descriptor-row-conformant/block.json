@@ -1,0 +1,12 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/standalone-descriptor-row-conformant",
+	"title": "Fixture: standalone DesignTokenPicker mounted with states={ ident.states } where ident is bound to a fillRow() call (process-steps numberBackgroundRow shape) — 2 states + gradient on both, must NOT flag",
+	"category": "sgs",
+	"attributes": {
+		"rowBackground": { "type": "string", "default": "" },
+		"rowBackgroundHover": { "type": "string", "default": "" },
+		"rowBackgroundGradient": { "type": "string", "default": "" },
+		"rowBackgroundHoverGradient": { "type": "string", "default": "" }
+	}
+}

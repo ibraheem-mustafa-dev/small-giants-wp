@@ -2428,13 +2428,25 @@ if _SGS_DB_PRESENT_AT_IMPORT:
 #     each variant's DISCRIMINATING slots (set-difference vs sibling variants).
 #     Populated by /sgs-update Stage 1 from block.json supports.sgs.variants.
 #
+# ADDITIVE (2026-09-05, VALUE-aware variant discrimination): variant_slots
+# gains a nullable `slot_value` column. A CAPABILITY variant (hero, trust-bar,
+# testimonial, product-card — the variant genuinely enables different
+# ATTRIBUTES) keeps NULL here; presence-of-name was already the correct
+# signal and this column changes nothing for it. A PRESET variant (nav-drawer
+# — all variants share the same attribute vocabulary, differing only in
+# VALUES) gets the literal value that attribute-name discriminates BY,
+# extracted from the block's `variations.js` (never block.json, which only
+# lists names). `detect_variant` treats a non-NULL `slot_value` as "must
+# match this exact value", not merely "must be present" — see its docstring.
+#
 # This migration is pure schema (additive, no data). Population is a /sgs-update
 # responsibility, so there is no seed dict here (R-31-1 dict-as-seed N/A).
 #
 # Safe to call repeatedly. Runs at module load.
 def _migrate_variant_detection_schema() -> None:
     """Idempotent migration: add blocks.variant_attr column + create the
-    variant_slots table if absent. Schema only — no data seeding.
+    variant_slots table (+ its `slot_value` column) if absent. Schema only —
+    no data seeding.
 
     Safe to call repeatedly. Runs at module load.
     """
@@ -2452,6 +2464,9 @@ def _migrate_variant_detection_schema() -> None:
               PRIMARY KEY (block_slug, variant_value, unique_slot)
             )
         """)
+        vs_cols = {row[1] for row in conn.execute("PRAGMA table_info(variant_slots)").fetchall()}
+        if "slot_value" not in vs_cols:
+            conn.execute("ALTER TABLE variant_slots ADD COLUMN slot_value TEXT")
         conn.commit()
     except sqlite3.OperationalError:
         # DB read-only / locked / missing — soft-fail. Variant detection then
@@ -3532,27 +3547,58 @@ def variant_attr_for(block_slug: str) -> str | None:
     return row[0] if row and row[0] else None
 
 
+def _canon_slot_value(value) -> str:
+    """Canonical string form of a variant discriminator's value.
+
+    MUST behave identically to `sgs-update-v2.py::_canon_slot_value` — one
+    writes `variant_slots.slot_value`, this reads it back to compare against
+    the draft's extracted attrs (`detect_variant`). Duplicated on purpose
+    (pure function, not a lookup dict — R-31-1 doesn't apply); see the
+    writer's copy for the reasoning.
+    """
+    try:
+        return json.dumps(value, sort_keys=True, separators=(",", ":"))
+    except (TypeError, ValueError):
+        return repr(value)
+
+
 @functools.lru_cache(maxsize=256)
 def _variant_slots_map(block_slug: str) -> tuple:
-    """Return ((variant_value, frozenset(discriminating slots)), ...) for a block.
+    """Return ((variant_value, frozenset((slot, slot_value_or_None))), ...).
 
-    Reads the variant_slots table (populated by /sgs-update via set-difference).
-    Cached per slug — the data is static for a pipeline run. Returns a tuple of
-    pairs (hashable, lru_cache-friendly); detect_variant consumes it.
+    Reads the variant_slots table (populated by /sgs-update). `slot_value` is
+    NULL for a capability-variant slot (name-only discrimination, unchanged
+    behaviour — `detect_variant` treats `None` as "presence is enough") and a
+    canonical JSON string for a preset-variant slot (value-aware
+    discrimination, 2026-09-05 — `detect_variant` then requires an exact
+    value match, not merely presence). Cached per slug — the data is static
+    for a pipeline run. Returns a tuple of pairs (hashable, lru_cache-friendly);
+    detect_variant consumes it.
     """
     conn = sqlite3.connect(SGS_DB)
     try:
         rows = conn.execute(
-            "SELECT variant_value, unique_slot FROM variant_slots WHERE block_slug = ?",
+            "SELECT variant_value, unique_slot, slot_value FROM variant_slots WHERE block_slug = ?",
             (block_slug,),
         ).fetchall()
     except sqlite3.OperationalError:
-        rows = []
+        # `slot_value` column absent (pre-migration DB) — soft-fail to the
+        # name-only shape rather than erroring the whole detector.
+        try:
+            rows = [
+                (v, s, None)
+                for v, s in conn.execute(
+                    "SELECT variant_value, unique_slot FROM variant_slots WHERE block_slug = ?",
+                    (block_slug,),
+                ).fetchall()
+            ]
+        except sqlite3.OperationalError:
+            rows = []
     finally:
         conn.close()
     grouped: dict = {}
-    for variant_value, unique_slot in rows:
-        grouped.setdefault(variant_value, set()).add(unique_slot)
+    for variant_value, unique_slot, slot_value in rows:
+        grouped.setdefault(variant_value, set()).add((unique_slot, slot_value))
     return tuple((v, frozenset(slots)) for v, slots in grouped.items())
 
 
@@ -3764,13 +3810,41 @@ def _slot_extracted(value: object) -> bool:
     return True
 
 
+def _slot_score(slot_value: "str | None", populated_attrs: dict, unique_slot: str) -> int:
+    """Score ONE discriminating slot against the draft's extracted attrs.
+
+    `slot_value is None` — a CAPABILITY-variant slot (name-only, unchanged
+    behaviour): presence of a meaningful value is the whole signal, worth 1.
+
+    `slot_value` set — a PRESET-variant slot (value-aware, 2026-09-05): the
+    extracted value must canonically EQUAL the stored value to score. This is
+    the fix for the bug this mechanism exists to close — a name shared by
+    every sibling variant (e.g. nav-drawer's `closeStyle`) must not score a
+    hit for the WRONG variant just because the name is present; a DIFFERENT
+    value at that name is worth 0, exactly the same as the name being absent
+    (weak/neutral, per the design brief — never a negative score, never a
+    hit).
+    """
+    actual = populated_attrs.get(unique_slot)
+    if not _slot_extracted(actual):
+        return 0
+    if slot_value is None:
+        return 1
+    return 1 if _canon_slot_value(actual) == slot_value else 0
+
+
 def detect_variant(block_slug: str, populated_attrs: dict) -> str | None:
     """Detect a block's variant from the draft's extracted attrs THIS run.
 
-    For each variant, count how many of its DISCRIMINATING slots (variant_slots)
-    were EXTRACTED into `populated_attrs` this run (presence of a meaningful
-    value per _slot_extracted — NOT the block's stored attrs). Return the variant
-    with the strictly-highest count.
+    For each variant, sum `_slot_score` across its DISCRIMINATING slots
+    (variant_slots) against `populated_attrs` this run (extracted THIS run —
+    NOT the block's stored attrs). Return the variant with the
+    strictly-highest score.
+
+    A capability-variant slot (`slot_value IS NULL`) scores on PRESENCE alone,
+    identical to pre-2026-09-05 behaviour. A preset-variant slot (`slot_value`
+    set) scores only on an EXACT value match — a shared name at a different
+    value contributes 0, never a false hit (see `_slot_score`).
 
     Returns None when:
       - the block declares no variant_slots, or
@@ -3785,7 +3859,10 @@ def detect_variant(block_slug: str, populated_attrs: dict) -> str | None:
         return None
     scores = sorted(
         (
-            (sum(1 for slot in slots if _slot_extracted(populated_attrs.get(slot))), variant_value)
+            (
+                sum(_slot_score(slot_value, populated_attrs, unique_slot) for unique_slot, slot_value in slots),
+                variant_value,
+            )
             for variant_value, slots in variants
         ),
         reverse=True,

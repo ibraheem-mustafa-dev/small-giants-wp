@@ -1,0 +1,10 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/standalone-descriptor-row-missing-hover",
+	"title": "NEGATIVE CONTROL for standalone-descriptor-row-conformant: byte-identical shape but fillRow() attrs carry no hover — genuinely 1 state — must STILL flag row-below-minimum-states, proving the descriptor-resolution fix does not blanket-exempt every descriptor-bound row",
+	"category": "sgs",
+	"attributes": {
+		"rowBackground": { "type": "string", "default": "" },
+		"rowBackgroundGradient": { "type": "string", "default": "" }
+	}
+}

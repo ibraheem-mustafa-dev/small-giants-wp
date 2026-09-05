@@ -1,0 +1,10 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/standalone-gradientcapable-direct-missing-hover",
+	"title": "NEGATIVE CONTROL for standalone-gradientcapable-direct-conformant: byte-identical shape but only the normal state — must STILL flag row-below-minimum-states, proving the widened GradientCapableColourControl recognition does not blanket-exempt every direct mount",
+	"category": "sgs",
+	"attributes": {
+		"titleColour": { "type": "string", "default": "" },
+		"titleColourGradient": { "type": "string", "default": "" }
+	}
+}

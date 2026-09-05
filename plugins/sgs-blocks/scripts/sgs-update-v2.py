@@ -578,6 +578,12 @@ def _index_sgs_block_files(
     # update run can populate blocks.variant_attr + variant_slots without
     # depending on the converter module being imported. Guarded ALTER +
     # CREATE IF NOT EXISTS — safe on every run.
+    #
+    # ADDITIVE (2026-09-05, VALUE-aware variant discrimination): variant_slots
+    # gains a nullable `slot_value` column — NULL for capability variants
+    # (unchanged, name-only discrimination), populated for preset variants
+    # (a block with `variations.js`, e.g. sgs/nav-drawer) with the literal
+    # value that name discriminates BY. See the per-block population below.
     blocks_cols = {row[1] for row in c.execute("PRAGMA table_info(blocks)").fetchall()}
     if "variant_attr" not in blocks_cols:
         c.execute("ALTER TABLE blocks ADD COLUMN variant_attr TEXT")
@@ -592,6 +598,9 @@ def _index_sgs_block_files(
         )
         """
     )
+    variant_slots_cols = {row[1] for row in c.execute("PRAGMA table_info(variant_slots)").fetchall()}
+    if "slot_value" not in variant_slots_cols:
+        c.execute("ALTER TABLE variant_slots ADD COLUMN slot_value TEXT")
 
     # --- preset_implications schema (Build #3 Option B, AUTO-DERIVE, 2026-07-24) ---
     # Preset-absence transfer: teaches the converter what a block's style-preset
@@ -862,24 +871,73 @@ def _index_sgs_block_files(
                 (desired_variant_attr, slug),
             )
         # Repopulate variant_slots for this block (delete-then-insert = idempotent;
-        # reflects the current block.json on every run). A variant's discriminating
-        # slots = its slots minus the union of every sibling variant's slots, so
-        # shared attrs (e.g. minHeight) never act as a discriminator.
+        # reflects the current block.json / variations.js on every run).
+        #
+        # Two DISTINCT mechanisms, chosen per-block (ADDITIVE, 2026-09-05):
+        #
+        #   NAME-ONLY (capability variants — hero, trust-bar, testimonial,
+        #   product-card; unchanged): a variant's discriminating slots = its
+        #   attribute NAMES minus the union of every sibling variant's names.
+        #   Correct when the variant genuinely enables a different attribute.
+        #
+        #   VALUE-AWARE (preset variants — a block with `variations.js`, e.g.
+        #   sgs/nav-drawer): every variant shares the same attribute NAMES, so
+        #   name-only set-difference collapses to empty. Instead discriminate
+        #   on (attribute name, literal value) PAIRS, extracted from
+        #   `variations.js` (never block.json, which carries names only) via
+        #   `_extract_variation_attribute_values`. A pair unique to one
+        #   variant is a valid discriminator even though its NAME is shared.
+        #
+        # UNIVERSAL EXCLUSION (both paths): the block's own variant-selector
+        # attribute (`variant_attr_name`) is never itself a candidate
+        # discriminator — it is exactly what detection exists to DERIVE, and
+        # the cloning converter's extracted `populated_attrs` never contains
+        # it (it comes from CSS/DOM extraction, not the block's own stored
+        # selector). For capability blocks this changes nothing (verified:
+        # none of hero/trust-bar/testimonial/product-card list their own
+        # variant_attr inside any variant's slot list, so it was already
+        # excluded by the name-diff). For a value-aware block it is essential
+        # — `variantPreset` is set to a distinct string per nav-drawer
+        # variant, which would otherwise "discriminate" every variant via an
+        # attribute the pipeline can never observe.
         c.execute("DELETE FROM variant_slots WHERE block_slug = ?", (slug,))
-        if variants_map:
+        value_aware_variants = _extract_variation_attribute_values(block_dir)
+        if value_aware_variants:
+            per_variant_pairs: dict[str, set] = {}
+            for v_name, v_attrs in value_aware_variants.items():
+                if not isinstance(v_attrs, dict):
+                    continue
+                per_variant_pairs[v_name] = {
+                    (attr, _canon_slot_value(val))
+                    for attr, val in v_attrs.items()
+                    if attr != variant_attr_name
+                }
+            for v_name, own_pairs in per_variant_pairs.items():
+                sibling_pairs: set = set()
+                for other_name, other_pairs in per_variant_pairs.items():
+                    if other_name != v_name:
+                        sibling_pairs.update(other_pairs)
+                for attr, canon_val in sorted(own_pairs - sibling_pairs):
+                    c.execute(
+                        "INSERT OR IGNORE INTO variant_slots "
+                        "(block_slug, variant_value, unique_slot, slot_value) VALUES (?, ?, ?, ?)",
+                        (slug, v_name, attr, canon_val),
+                    )
+        elif variants_map:
             for v_value, v_slots in variants_map.items():
                 if not isinstance(v_slots, list):
                     continue
+                own_slots = {s for s in v_slots if s != variant_attr_name}
                 sibling_slots: set = set()
                 for other_value, other_slots in variants_map.items():
                     if other_value == v_value or not isinstance(other_slots, list):
                         continue
-                    sibling_slots.update(other_slots)
-                discriminating = [s for s in v_slots if s not in sibling_slots]
+                    sibling_slots.update(s for s in other_slots if s != variant_attr_name)
+                discriminating = [s for s in own_slots if s not in sibling_slots]
                 for slot in discriminating:
                     c.execute(
                         "INSERT OR IGNORE INTO variant_slots "
-                        "(block_slug, variant_value, unique_slot) VALUES (?, ?, ?)",
+                        "(block_slug, variant_value, unique_slot, slot_value) VALUES (?, ?, ?, NULL)",
                         (slug, v_value, slot),
                     )
 
@@ -2166,6 +2224,76 @@ def _choose_neutral_value(value_signals: dict) -> "str | None":
         if preferred in neutrals:
             return preferred
     return neutrals[0]
+
+
+_VARIATIONS_VALUE_EXTRACTOR = (
+    Path(__file__).resolve().parent / "variant-value-extractor" / "extract-variation-values.js"
+)
+
+
+def _canon_slot_value(value) -> str:
+    """Canonical string form of a variant discriminator's value.
+
+    MUST behave identically to `converter/db/db_lookup.py::_canon_slot_value`
+    — one writes `variant_slots.slot_value`, the other reads it back to score
+    a candidate against the draft's extracted attrs. A duplicated 3-line pure
+    function (not a lookup dict — R-31-1 doesn't apply) is simpler and safer
+    than plumbing a shared import between a one-off writer script and the
+    converter package.
+    """
+    try:
+        return json.dumps(value, sort_keys=True, separators=(",", ":"))
+    except (TypeError, ValueError):
+        return repr(value)
+
+
+def _extract_variation_attribute_values(block_dir: Path) -> "dict | None":
+    """Run `extract-variation-values.js` against `block_dir/variations.js`.
+
+    Returns `{variant_name: {attr_name: value, ...}, ...}` (plain JSON values,
+    already excluding any attribute the extractor could not statically
+    evaluate — see that script's docstring), or `None` when the block has no
+    `variations.js`, or the extraction failed (missing `node`, parse error,
+    non-JSON output). A `None` return means "seed this block exactly as
+    before" (name-only) — this is a soft-optional enrichment, never a hard
+    dependency for `/sgs-update` to complete.
+    """
+    variations_path = block_dir / "variations.js"
+    if not variations_path.exists():
+        return None
+    if not _VARIATIONS_VALUE_EXTRACTOR.exists():
+        print(
+            f"Stage 1 (variant-values): WARN extractor script missing at "
+            f"{_VARIATIONS_VALUE_EXTRACTOR} — falling back to name-only for {block_dir.name}"
+        )
+        return None
+    try:
+        proc = subprocess.run(
+            ["node", str(_VARIATIONS_VALUE_EXTRACTOR), str(variations_path)],
+            capture_output=True, text=True, timeout=30, check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        print(f"Stage 1 (variant-values): WARN failed to run extractor for {block_dir.name}: {exc}")
+        return None
+    if proc.returncode != 0:
+        print(
+            f"Stage 1 (variant-values): WARN extractor exited {proc.returncode} for "
+            f"{block_dir.name}: {(proc.stderr or '').strip()}"
+        )
+        return None
+    try:
+        payload = json.loads(proc.stdout)
+    except (json.JSONDecodeError, ValueError) as exc:
+        print(f"Stage 1 (variant-values): WARN extractor emitted non-JSON for {block_dir.name}: {exc}")
+        return None
+    variants = payload.get("variants") if isinstance(payload, dict) else None
+    if not isinstance(variants, dict):
+        return None
+    return {
+        v_name: v_data.get("attributes", {})
+        for v_name, v_data in variants.items()
+        if isinstance(v_data, dict)
+    }
 
 
 def _populate_preset_implications(
