@@ -177,11 +177,49 @@ function stripComments( php ) {
 	return out;
 }
 
+// Brace-balanced body text of every top-level `foreach ( ... as ... ) { ... }`
+// in `php` (comments already stripped by the caller). Used to scope step 8's
+// per-item-loop check to ONE loop's body instead of the whole file.
+function extractForeachBodies( php ) {
+	const bodies = [];
+	const kwRe = /foreach\s*\([^)]*\bas\b[^)]*\)\s*\{/g;
+	let m;
+	while ( ( m = kwRe.exec( php ) ) !== null ) {
+		let depth = 1;
+		let i = m.index + m[ 0 ].length;
+		const start = i;
+		while ( i < php.length && depth > 0 ) {
+			if ( php[ i ] === '{' ) depth++;
+			else if ( php[ i ] === '}' ) depth--;
+			i++;
+		}
+		bodies.push( php.slice( start, i - 1 ) );
+		kwRe.lastIndex = i;
+	}
+	return bodies;
+}
+
 function detectCurrentShape( php, attr ) {
+	// Traced once, reused by every step below that needs to follow a bound
+	// local var back to `attributes['attr']` (e.g. `$number_colour = $attributes['numberColour'] ?? '';`
+	// then `sgs_resolve_text_colour_or_gradient( $number_colour, ... )`). Step 1
+	// used to check ONLY the literal `attributes['attr']` form and missed this
+	// indirection — a real false negative fixed 2026-09-06 after it produced 3
+	// false "unknown/incomplete" verdicts in one text-gradient spot-check
+	// (nav-drawer.drawerTextColour, counter.numberColour, label.textColour —
+	// all three already fully wired, just bound to a local var first).
+	const boundVars = traceBoundVars( php, attr, 2 );
+
 	// 1 — real text-gradient trio (most specific: three named calls together).
-	const hasResolve = new RegExp(
+	const hasResolveDirect = new RegExp(
 		'sgs_resolve_text_colour_or_gradient\\([^)]*attributes\\[\\s*[\'"]' + attr + '[\'"]'
 	).test( php );
+	const hasResolveViaVar = boundVars.some( ( v ) =>
+		extractCallArgLists( php, 'sgs_resolve_text_colour_or_gradient' ).some( ( argsText ) =>
+			new RegExp( '\\$' + v + '\\b' ).test( argsText )
+		)
+	);
+	const hasResolve = hasResolveDirect || hasResolveViaVar;
 	if ( hasResolve && /sgs_text_colour_decl\(/.test( php ) ) {
 		const hasFallback = /sgs_text_colour_gradient_fallback_rule\(/.test( php );
 		return {
@@ -198,8 +236,7 @@ function detectCurrentShape( php, attr ) {
 			return { shape: END_SHAPES.FILL_CUSTOM_PROPERTY_GRADIENT.key, evidence: 'sgs_custom_property_gradient_decls(...)', complete: true };
 		}
 	}
-	// same, via a bound local var (mega-panel-style 2-hop).
-	const boundVars = traceBoundVars( php, attr, 2 );
+	// same, via a bound local var (mega-panel-style 2-hop) — `boundVars` traced once, top of function.
 	for ( const v of boundVars ) {
 		for ( const argsText of extractCallArgLists( php, 'sgs_custom_property_gradient_decls' ) ) {
 			if ( new RegExp( '\\$' + v + '\\b' ).test( argsText ) ) {
@@ -262,13 +299,20 @@ function detectCurrentShape( php, attr ) {
 		return { shape: 'bare-custom-property-no-gradient', evidence: '--sgs-* custom property, sgs_colour_value(' + attr + '), no gradient sibling wired', complete: false };
 	}
 
-	// 8 — per-loop :nth-child pattern.
-	if (
-		new RegExp( 'foreach\\s*\\([^)]*\\bas\\b' ).test( php ) &&
-		new RegExp( 'attributes\\[\\s*[\'"]' + attr + '[\'"]' ).test( php ) &&
-		/nth-child/.test( php )
-	) {
-		return { shape: END_SHAPES.PER_ITEM_LOOP.key, evidence: 'foreach(...) + nth-child(...) near attributes[\'' + attr + '\']', complete: true };
+	// 8 — per-loop :nth-child pattern. Scoped to a SINGLE foreach body (brace-
+	// balanced), not "does this file contain a foreach AND an attr reference
+	// AND nth-child anywhere" — that unscoped version was a structural false
+	// positive fixed 2026-09-06 after it wrongly classified
+	// card-grid.textColourHover as per-item-loop (the file's only nth-child
+	// belongs to an unrelated animation-stagger attribute, in a DIFFERENT
+	// foreach than the one that never even touches textColourHover).
+	for ( const body of extractForeachBodies( php ) ) {
+		if (
+			new RegExp( 'attributes\\[\\s*[\'"]' + attr + '[\'"]' ).test( body ) &&
+			/nth-child/.test( body )
+		) {
+			return { shape: END_SHAPES.PER_ITEM_LOOP.key, evidence: 'attributes[\'' + attr + '\'] and nth-child(...) inside the SAME foreach body', complete: true };
+		}
 	}
 
 	return { shape: 'unknown', evidence: null, complete: false };
@@ -451,7 +495,19 @@ function main() {
 		const target = process.argv[ listIdx + 1 ];
 		console.log( '\n' + target + ':' );
 		for ( const r of results.filter( ( x ) => x.endShape === target ) ) {
-			console.log( '  ' + r.block + '.' + r.attr + '  (current: ' + r.currentShape + ( r.currentComplete === false ? ', incomplete' : '' ) + ')' );
+			// gap label: a row lands in this list if EITHER axis is incomplete —
+			// print which one(s), so "needs the full trio" and "trio already
+			// done, just missing a hover state" never look identical again
+			// (fixed 2026-09-06 after this conflation cost a wasted POC read on
+			// 3 already-conformant rows in one text-gradient spot-check).
+			const gaps = [];
+			if ( r.needsGradient || r.currentComplete === false ) gaps.push( 'gradient-trio' );
+			if ( r.needsHover ) gaps.push( 'hover-state' );
+			console.log(
+				'  ' + r.block + '.' + r.attr + '  (current: ' + r.currentShape +
+				( r.currentComplete === false ? ', incomplete' : '' ) +
+				')  [gap: ' + ( gaps.join( '+' ) || 'none' ) + ']'
+			);
 		}
 	}
 }
