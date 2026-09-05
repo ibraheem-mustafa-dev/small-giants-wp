@@ -3113,6 +3113,28 @@ def _extract_variation_composition_attrs(block_dir: Path) -> "dict | None":
     }
 
 
+def _child_attr_has_css_routing(c, child_slug: str, attr_name: str) -> bool:
+    """Can the converter ever EXTRACT this child attribute from a draft's CSS?
+
+    True only when the child block declares the attribute AND that attribute
+    carries Front-1 declarative CSS routing — `css_property` or `css_element`
+    populated on its `block_attributes` row (Spec 31 §3.A/§4). Both NULL means
+    no draft CSS declaration can ever resolve to it, so a clone can never
+    populate it and any discriminator built on it is inert.
+
+    The SAME predicate is the rule of db-consistency Check #11
+    (`check_inert_composition_attr.py`). Keep the two in step: this one
+    prevents the inert row, that one catches it if it appears by another route.
+    """
+    return c.execute(
+        "SELECT 1 FROM block_attributes "
+        "WHERE block_slug = ? AND attr_name = ? "
+        "AND (css_property IS NOT NULL OR css_element IS NOT NULL) "
+        "LIMIT 1",
+        (child_slug, attr_name),
+    ).fetchone() is not None
+
+
 def _populate_variant_composition_attr_slots(c, slug: str, block_dir: Path) -> int:
     """Repopulate `variant_composition_attr_slots` for ONE block.
 
@@ -3122,8 +3144,9 @@ def _populate_variant_composition_attr_slots(c, slug: str, block_dir: Path) -> i
     `variations.js` nests, this scores it by a nested child's OWN attribute
     VALUE — the only remaining signal when two variants nest the identical set
     of child block types (measured: `sgs/nav-drawer`'s `two-column-editorial`
-    and `floating-capped-card` both nest exactly {sgs/nav-menu, sgs/button};
-    only `two-column-editorial`'s nav-menu sets `listColumns`).
+    and `floating-capped-card` both nest exactly {sgs/nav-menu, sgs/button},
+    and only `two-column-editorial`'s nav-menu carries item-typography values
+    unique to it).
 
     Set-difference methodology is IDENTICAL to both siblings: each variant's
     discriminating triples = its own `(child_slug, attr_name, canonical_value)`
@@ -3131,9 +3154,21 @@ def _populate_variant_composition_attr_slots(c, slug: str, block_dir: Path) -> i
     with any sibling discriminates nothing and is dropped — which is why the
     `gap: '4px'` every nav-drawer variant's nav-menu carries produces no rows.
 
+    CSS-ROUTABILITY FILTER (2026-09-06, task-5 review finding). The set
+    difference decides what DISCRIMINATES; this filter decides what the
+    converter can ever OBSERVE. A discriminating triple whose child attribute
+    has no CSS routing (`css_property`/`css_element` both NULL) can never be
+    populated from a real draft's CSS, so seeding it would create a row that
+    silently suppresses a Check #3 ambiguity report while resolving nothing —
+    exactly the "green gate over a dead feature" shape this project keeps
+    hitting. Such triples are SKIPPED and REPORTED by name, never silently
+    dropped. The filter runs AFTER the set difference so discrimination
+    semantics are byte-identical to before; only inert rows disappear.
+
     Delete-then-insert = idempotent; reflects the current `variations.js` on
     every run. Returns the number of rows written (0 when the block has no
-    `variations.js`, no extractable child attributes, or nothing unique).
+    `variations.js`, no extractable child attributes, nothing unique, or
+    nothing unique that is also CSS-routable).
 
     R-31-1: no block, child slug or attribute name appears anywhere here.
     """
@@ -3159,12 +3194,16 @@ def _populate_variant_composition_attr_slots(c, slug: str, block_dir: Path) -> i
         per_variant_triples[v_name] = triples
 
     written = 0
+    skipped: list = []
     for v_name, own_triples in per_variant_triples.items():
         sibling_triples: set = set()
         for other_name, other_triples in per_variant_triples.items():
             if other_name != v_name:
                 sibling_triples.update(other_triples)
         for child_slug, attr_name, canon_val in sorted(own_triples - sibling_triples):
+            if not _child_attr_has_css_routing(c, child_slug, attr_name):
+                skipped.append((v_name, child_slug, attr_name, canon_val))
+                continue
             c.execute(
                 "INSERT OR IGNORE INTO variant_composition_attr_slots "
                 "(block_slug, variant_value, child_slug, child_attr_name, child_attr_value) "
@@ -3172,6 +3211,19 @@ def _populate_variant_composition_attr_slots(c, slug: str, block_dir: Path) -> i
                 (slug, v_name, child_slug, attr_name, canon_val),
             )
             written += 1
+    if skipped:
+        # A NAMED gap, never a silent drop: each of these genuinely
+        # discriminates its variant in variations.js but cannot be seen by the
+        # converter, because the child block's attribute has no CSS routing.
+        # The remedy is to give that attribute a routing declaration (its
+        # block.json element manifest attrMap), then re-run this stage.
+        print(
+            f"  [variant_composition_attr_slots] {slug}: "
+            f"{len(skipped)} discriminating child attribute(s) SKIPPED — no CSS "
+            f"routing, so a clone could never populate them:"
+        )
+        for v_name, child_slug, attr_name, canon_val in sorted(skipped):
+            print(f"      {v_name} -> {child_slug}.{attr_name} = {canon_val}")
     return written
 
 

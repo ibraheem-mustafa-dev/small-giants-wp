@@ -4087,11 +4087,32 @@ def _composition_attr_tiebreak(
     types and still be structurally different, because one of those children is
     configured differently — the measured case is `sgs/nav-drawer`'s
     `two-column-editorial` vs `floating-capped-card`: both nest exactly
-    {`sgs/nav-menu`, `sgs/button`}, and `two-column-editorial` is the only
+    {`sgs/nav-menu`, `sgs/button`}. Slug-uniqueness has nothing to
+    discriminate on there; the child's attribute value does.
+
+    WHICH child attribute actually carries it (corrected 2026-09-06, task-5
+    review finding). The investigation that motivated this tier named
+    `listColumns`: `two-column-editorial` is indeed the only
     variant across all seven whose nested `sgs/nav-menu` sets `listColumns`
     (a genuinely rendered, CSS-extractable `grid-template-columns` rule —
-    `nav-menu/render.php`). Slug-uniqueness has nothing to discriminate on
-    there; the child's attribute value does.
+    `nav-menu/render.php`). BUT `listColumns` carries no Front-1 CSS routing —
+    `block_attributes.css_property` and `css_element` are both NULL — so a real
+    draft clone can never populate it and it can never contribute to this
+    score. What discriminates `two-column-editorial` TODAY is ONE attribute on
+    the same child: `itemFontSize` (64), unique across the seven variants and
+    genuinely routed (`font-size` on the `item` element). Its sibling
+    `itemFontSizeMobile` (40) does NOT help either — `sgs/nav-menu` declares no
+    such attribute at all (`itemFontSize` migrated to a tier OBJECT), so it is
+    a value WordPress discards on the editor surface, not a signal.
+    Seeding now skips unroutable triples outright
+    (`sgs-update-v2.py`'s `_child_attr_has_css_routing`) and db-consistency
+    Check #11 (`check_inert_composition_attr.py`) fails on any that reach the
+    table by another route, so an inert row can no longer silently suppress a
+    Check #3 ambiguity report. Giving `listColumns` real routing is OPEN work:
+    the count-vs-track-list destination choice in `converter/resolvers/grid.py`
+    (hardcoded to the literal attr name "columns") must become DB-driven first,
+    or the resolver would write the track-list STRING into an integer-count
+    attribute and render one column where the draft has two.
 
     Same discipline as tier 1: TIEBREAKER ONLY, never additive, and it returns
     the single tied variant with a STRICTLY higher score than every other tied

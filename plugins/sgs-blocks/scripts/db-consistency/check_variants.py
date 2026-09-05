@@ -30,7 +30,17 @@ slugs — their composition halves are then equal by construction, so a check
 that stopped at two halves would report a genuinely discriminable pair as
 ambiguous. sgs/nav-drawer's 'two-column-editorial' vs 'floating-capped-card' is
 that case: both nest {sgs/nav-menu, sgs/button}, and only the former's nav-menu
-sets `listColumns`. Two variants now collide only when ALL THREE halves match.
+carries `itemFontSize`/`itemFontSizeMobile` values unique to it. Two variants now
+collide only when ALL THREE halves match.
+
+⚠ A THIRD-HALF ROW ONLY SUPPRESSES HONESTLY IF IT CAN FIRE (2026-09-06, task-5
+review). A row naming a child attribute with no CSS routing can never be
+populated on a clone, so it would silence a genuine collision here while
+resolving nothing. Two defences keep this half honest and BOTH must stay:
+`sgs-update-v2.py` refuses to seed an unroutable triple, and db-consistency
+Check #11 (`check_inert_composition_attr.py`) fails on any that appears by
+another route. Do not treat this half's suppression as trustworthy if either is
+removed.
 
 The two-half rule (2026-09-05), unchanged for those halves:
 detect_variant() can now also tell two variants apart via InnerBlocks

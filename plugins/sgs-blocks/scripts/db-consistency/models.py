@@ -79,6 +79,18 @@ def motion_fx_qualifying_key(block: str, kind: str) -> str:
     return f"fxqualify:{kind}:{block}"
 
 
+def inert_composition_attr_key(
+    block: str, variant: str, child: str, attr: str
+) -> str:
+    """Check #11 (Inert Child-Attribute Discriminator) stable dedup key.
+
+    Keyed per ROW, not per block: two variants of one block can name different
+    child attributes, and only one of them may be inert — a block-keyed key
+    would collapse them and hide the second finding behind the first.
+    """
+    return f"inertcompattr:{block}:{variant}:{child}:{attr}"
+
+
 def dead_composition_signal_key(block: str) -> str:
     """Check #10 (Dead Composition Discriminator) stable dedup key.
 

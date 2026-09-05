@@ -178,9 +178,19 @@ def test_detect_variant_composition_tie_still_ambiguous_falls_through():
 # slug set {sgs/nav-menu, sgs/button}, so slug-uniqueness has nothing to
 # discriminate on (the test directly above pins that). What separates them is
 # the nested nav-menu's own configuration: `two-column-editorial` is the only
-# one of the seven variants whose nav-menu sets `listColumns` — a genuinely
-# rendered, CSS-extractable responsive grid-template-columns rule
-# (nav-menu/render.php).
+# one of the seven variants whose nav-menu carries `itemFontSize: 64` — and
+# that ONE attribute is the whole of the signal, because it is the only one of
+# the three unique-to-this-variant values that a clone can ever actually carry
+# (`font-size` on the `item` element, Front-1 routed).
+#
+# The other two are in the fixture below because they ARE in variations.js, but
+# they are NOT part of the seeded signal (corrected 2026-09-06, task-5 review):
+# `listColumns` has no CSS routing (css_property/css_element both NULL) and
+# `itemFontSizeMobile` is not a declared `sgs/nav-menu` attribute at all
+# (itemFontSize migrated to a tier object). The seeder now skips both and
+# db-consistency Check #11 guards that. Keeping them in the fixture is
+# deliberate: a real clone's child attributes can contain values the signal
+# does not use, and scoring must simply ignore them.
 
 _TWO_COLUMN_ATTRS = {"drawerBg": "surface", "closeStyle": "text-swap"}
 _TWO_COLUMN_CHILD_SLUGS = ["sgs/nav-menu", "sgs/button"]
