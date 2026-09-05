@@ -41,28 +41,10 @@ $text_colour = $attributes['textColour'] ?? '';
 // D636 — sibling-attribute shape, mirrors sgs/container's shipped
 // backgroundOverlayColour/overlayGradient.
 $text_colour_gradient = $attributes['textColourGradient'] ?? '';
-// fontSize / lineHeight / letterSpacing are OBJECT-typed {desktop,tablet,mobile}
-// attrs (Spec 35 tier-object migration) — normalise via the shared helper rather
-// than raw-bracket-reading a Tablet/Mobile SIBLING attr that no longer exists in
-// this block's schema (WP silently discards a value written to an undeclared
-// attr — D338). $font_size stays the DESKTOP value for the downstream legacy-
-// string-preset check below; the object itself feeds the Pattern-A emitter.
-$font_size_obj    = sgs_responsive_normalise_object( $attributes['fontSize'] ?? null );
-$font_size        = $font_size_obj['desktop'];
-$font_size_unit   = $attributes['fontSizeUnit'] ?? 'px';
-$font_weight      = $attributes['fontWeight'] ?? '';
-$line_height_obj  = sgs_responsive_normalise_object( $attributes['lineHeight'] ?? null );
-$line_height      = $line_height_obj['desktop'];
-$line_height_unit = $attributes['lineHeightUnit'] ?? 'em';
-// Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
-$line_height_unit    = ( 'unitless' === $line_height_unit ) ? '' : $line_height_unit;
-$letter_spacing_obj  = sgs_responsive_normalise_object( $attributes['letterSpacing'] ?? null );
-$letter_spacing      = $letter_spacing_obj['desktop'];
-$letter_spacing_unit = $attributes['letterSpacingUnit'] ?? 'em';
-$font_style          = $attributes['fontStyle'] ?? '';
-$text_decoration     = $attributes['textDecoration'] ?? '';
-$text_transform      = $attributes['textTransform'] ?? '';
-$font_family         = $attributes['fontFamily'] ?? '';
+// fontSize / lineHeight / letterSpacing / fontWeight / fontStyle /
+// textDecoration / textTransform / fontFamily / textAlign are all emitted via
+// the shared sgs_typography_css_rule() helper below (step 6, D971/D972
+// full-replacement track) — no local variables needed for them any more.
 
 // Box-object interface contract §B (100% box-group): base padding/margin route
 // to WP-native style.spacing (read in step 6). Tablet/mobile tiers are the SGS
@@ -74,7 +56,6 @@ $padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attrib
 $margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
 $margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
 
-$text_align          = $attributes['textAlign'] ?? '';
 $max_width           = isset( $attributes['maxWidth'] ) ? $attributes['maxWidth'] : null;
 $max_width_unit      = $attributes['maxWidthUnit'] ?? 'px';
 $drop_cap            = ! empty( $attributes['dropCap'] );
@@ -237,31 +218,9 @@ if ( '' !== $text_colour_effective ) {
 // It is emitted on a `::after` pseudo-element layer instead, in step 6b
 // below — see sgs_block_background_layer_css() in helpers-tokens.php.
 
-if ( $font_weight ) {
-	$base_decls[] = 'font-weight:' . esc_attr( $font_weight );
-}
-
-if ( $font_style ) {
-	$base_decls[] = 'font-style:' . esc_attr( $font_style );
-}
-
-if ( $text_decoration ) {
-	$base_decls[] = 'text-decoration:' . esc_attr( $text_decoration );
-}
-
-if ( $text_transform ) {
-	$base_decls[] = 'text-transform:' . esc_attr( $text_transform );
-}
-
-if ( $font_family ) {
-	// CSS value, not an HTML attribute — strip to CSS-safe chars only.
-	$safe_font_family = preg_replace( '/[^A-Za-z0-9 ,\.\'"\-]/', '', (string) $font_family );
-	$base_decls[]     = 'font-family:' . $safe_font_family;
-}
-
-if ( $text_align ) {
-	$base_decls[] = 'text-align:' . esc_attr( $text_align );
-}
+// font-weight/font-style/text-decoration/text-transform/font-family/
+// text-align now emitted via sgs_typography_css_rule() below (step 6,
+// D971/D972 full-replacement track), not here.
 
 if ( null !== $max_width && '' !== $max_width ) {
 	$base_decls[] = 'max-width:' . floatval( $max_width ) . esc_attr( $max_width_unit );
@@ -333,44 +292,15 @@ $scope = '.wp-block-sgs-text.' . esc_attr( $anchor );
 // instances on the same page never collide.
 // ---------------------------------------------------------------------------
 
-// Pattern A object-model emitter: base + tablet + mobile emitted together on
-// the SAME selector ($scope), tier-diffed (Spec 35 tier-object migration —
-// fontSize/lineHeight/letterSpacing are now {desktop,tablet,mobile} OBJECT
-// attrs, not flat prop/propTablet/propMobile trios).
-$css_base_and_tiers = sgs_emit_responsive_css(
-	$scope,
-	array(
-		array(
-			'value'        => $attributes['fontSize'] ?? null,
-			'css'          => 'font-size',
-			'unit_default' => $font_size_unit,
-		),
-		array(
-			'value'        => $attributes['lineHeight'] ?? null,
-			'css'          => 'line-height',
-			'unit_default' => $line_height_unit,
-		),
-		array(
-			'value'        => $attributes['letterSpacing'] ?? null,
-			'css'          => 'letter-spacing',
-			'unit_default' => $letter_spacing_unit,
-		),
-	)
-);
-
-// A STRING desktop fontSize is a theme preset slug (core-block parity:
-// `"fontSize":"small"`). Read from the already-normalised $font_size (the
-// object's desktop tier) — NOT the raw $attributes['fontSize'] object, which
-// would PHP-coerce to the literal string "Array" (D569/D570's bug class).
-// The numeric emitter above skips non-numerics, so resolve it via
-// sgs_font_size_value() → var(--wp--preset--font-size--{slug}) on the same scope.
-// Mirrors the canonical legacy-string branch in helpers-typography.php.
-if ( null !== $font_size && '' !== $font_size && ! is_numeric( $font_size ) ) {
-	$preset_font_size = sgs_font_size_value( (string) $font_size );
-	if ( '' !== $preset_font_size ) {
-		$css_base_and_tiers .= $scope . '{font-size:' . $preset_font_size . ';}';
-	}
-}
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Covers fontSize (numeric
+// tiered OR a theme preset-slug string in the desktop tier — the helper's
+// font-size transform resolves a slug via sgs_font_size_value() exactly as
+// the old hand-rolled preset-slug branch here did, closing the D569/D570/
+// D574 bug class the same way) + lineHeight/letterSpacing (tiered) plus
+// fontWeight/fontStyle/textDecoration/textTransform/fontFamily/textAlign
+// (base-only, moved here from step 4's $base_decls above).
+$css_base_and_tiers = sgs_typography_css_rule( $attributes, '', $scope );
 
 // All other non-responsive declarations (colour, font, border, box-shadow,
 // width) — one scoped rule, never inline (Spec 32 FR-32-1 / step 4).

@@ -128,10 +128,31 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 		$flat_specs   = array();
 
 		if ( $size_is_tiered ) {
+			// A tier holding a non-numeric STRING is a theme font-size PRESET
+			// SLUG (TypographyControls' fontSizePresets picker writes one into
+			// the tiered object's desktop key when a client picks "Preset
+			// size" instead of a raw number) — resolve it via
+			// sgs_font_size_value() to the real preset custom property,
+			// exactly like the pre-migration hand-rolled logic on
+			// sgs/heading and sgs/text did. Without this branch a preset
+			// slug falls through to the generic length sanitiser and is
+			// emitted VERBATIM as a bare CSS keyword (e.g. `font-size:small`,
+			// the ~13px UA default) instead of the theme's actual token —
+			// found independently while migrating heading/text (2026-09-06).
+			// A numeric tier is unaffected: floatval()+unit reproduces
+			// sgs_responsive_format_atom_value()'s own numeric branch
+			// exactly, so this transform is a pure superset, never a
+			// behavioural change for the already-working numeric case.
 			$tiered_specs[] = array(
 				'value'        => $attributes[ $k_size ],
 				'css'          => 'font-size',
 				'unit_default' => $size_unit,
+				'transform'    => function ( $raw ) use ( $size_unit ) {
+					if ( is_numeric( $raw ) ) {
+						return (string) floatval( $raw ) . $size_unit;
+					}
+					return sgs_font_size_value( (string) $raw );
+				},
 			);
 		} else {
 			$flat_specs[] = array(
@@ -246,7 +267,11 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 		// font-weight/font-style/text-transform/text-decoration above.
 		// Allowlist-validated (brand-strip/render.php:370, heading/render.php
 		// precedent) — never interpolated raw.
-		$allowed_aligns = array( 'left', 'center', 'right', 'justify' );
+		// 'start'/'end' added 2026-09-06 -- the RTL-aware logical values, found
+		// missing while migrating sgs/label (its own block.json enum already
+		// permitted them; this allowlist was the narrower of the two, not the
+		// other way round -- widened here rather than narrowing the schema).
+		$allowed_aligns = array( 'left', 'center', 'right', 'justify', 'start', 'end' );
 		if ( ! empty( $attributes[ $k_align ] ) && in_array( $attributes[ $k_align ], $allowed_aligns, true ) ) {
 			$base_decls[] = 'text-align:' . $attributes[ $k_align ] . ';';
 		}
