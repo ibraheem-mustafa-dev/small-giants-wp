@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 6346,
+    "row_count": 6348,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -5293,6 +5293,7 @@
     "sgs/tabs::maxWidth": "layout",
     "sgs/tabs::orientation": "enum-mode",
     "sgs/tabs::panelBgColour": "color",
+    "sgs/tabs::panelBgColourGradient": "colour-gradient",
     "sgs/tabs::panelBorderColour": "color",
     "sgs/tabs::panelBorderColourGradient": "colour-gradient",
     "sgs/tabs::tabActiveBgColour": "color",
@@ -5301,6 +5302,7 @@
     "sgs/tabs::tabActiveTextColour": "color",
     "sgs/tabs::tabAlignment": "behaviour",
     "sgs/tabs::tabBgColour": "color",
+    "sgs/tabs::tabBgColourGradient": "colour-gradient",
     "sgs/tabs::tabHoverBgColour": "color",
     "sgs/tabs::tabIndicatorColour": "color",
     "sgs/tabs::tabIndicatorColourGradient": "colour-gradient",

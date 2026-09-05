@@ -75,13 +75,11 @@ $css_vars = array();
 
 $colour_props = array(
 	'tabTextColour'            => '--sgs-tab-text',
-	'tabBgColour'              => '--sgs-tab-bg',
 	'tabActiveTextColour'      => '--sgs-tab-active-text',
 	'tabActiveBgColour'        => '--sgs-tab-active-bg',
 	'tabIndicatorColour'       => '--sgs-tab-indicator',
 	'tabActiveIndicatorColour' => '--sgs-tab-active-indicator',
 	'tabHoverBgColour'         => '--sgs-tab-hover-bg',
-	'panelBgColour'            => '--sgs-panel-bg',
 	'panelBorderColour'        => '--sgs-panel-border',
 );
 
@@ -93,6 +91,15 @@ foreach ( $colour_props as $attr => $prop ) {
 		}
 	}
 }
+
+// tabBgColour/panelBgColour gradient siblings (2026-09-06, colour-conformance
+// closeout) — same custom-property-gradient shape already proven on
+// brand-strip/post-grid/social-icons/form/gallery/before-after/option-picker
+// (helpers-tokens.php:953); style.css carries the matching
+// background-image:var(--sgs-tab-bg[/panel]-gradient,none) line next to the
+// existing background-color/background rule.
+$css_vars = array_merge( $css_vars, sgs_custom_property_gradient_decls( 'sgs-tab-bg', $attributes['tabBgColour'] ?? '', $attributes['tabBgColourGradient'] ?? '' ) );
+$css_vars = array_merge( $css_vars, sgs_custom_property_gradient_decls( 'sgs-panel-bg', $attributes['panelBgColour'] ?? '', $attributes['panelBgColourGradient'] ?? '' ) );
 
 $css_vars[] = '--sgs-transition-duration:' . $transition . 'ms';
 

@@ -94,6 +94,7 @@
 						"css:color": "tabTextColour",
 						"css:color-gradient": "tabTextColourGradient",
 						"css:background-color": "tabBgColour",
+						"css:background-image": "tabBgColourGradient",
 						"css:border-color": "tabIndicatorColour",
 						"css:border-color-gradient": "tabIndicatorColourGradient",
 						"css:transition-duration": "transitionDuration"
@@ -124,6 +125,7 @@
 					],
 					"attrMap": {
 						"css:background-color": "panelBgColour",
+						"css:background-image": "panelBgColourGradient",
 						"css:border-color": "panelBorderColour",
 						"css:border-color-gradient": "panelBorderColourGradient"
 					},
@@ -189,6 +191,11 @@
 		"tabBgColour": {
 			"type": "string"
 		},
+		"tabBgColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting tab background via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over tabBgColour."
+		},
 		"tabActiveBgColour": {
 			"type": "string"
 		},
@@ -214,6 +221,11 @@
 		},
 		"panelBgColour": {
 			"type": "string"
+		},
+		"panelBgColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the panel background via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over panelBgColour."
 		},
 		"panelBorderColour": {
 			"type": "string",

@@ -55,6 +55,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		tabTextColour,
 		tabTextColourGradient,
 		tabBgColour,
+		tabBgColourGradient,
 		tabActiveTextColour,
 		tabActiveBgColour,
 		tabIndicatorColour,
@@ -63,6 +64,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		tabActiveIndicatorColourGradient,
 		tabHoverBgColour,
 		panelBgColour,
+		panelBgColourGradient,
 		panelBorderColour,
 		panelBorderColourGradient,
 		transitionDuration,
@@ -97,6 +99,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	if ( tabBgColour ) {
 		cssVars[ '--sgs-tab-bg' ] = colourVar( tabBgColour );
 	}
+	if ( tabBgColourGradient ) {
+		cssVars[ '--sgs-tab-bg-gradient' ] = tabBgColourGradient;
+	}
 	if ( tabActiveTextColour ) {
 		cssVars[ '--sgs-tab-active-text' ] = colourVar( tabActiveTextColour );
 	}
@@ -116,6 +121,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	}
 	if ( panelBgColour ) {
 		cssVars[ '--sgs-panel-bg' ] = colourVar( panelBgColour );
+	}
+	if ( panelBgColourGradient ) {
+		cssVars[ '--sgs-panel-bg-gradient' ] = panelBgColourGradient;
 	}
 	if ( panelBorderColour ) {
 		cssVars[ '--sgs-panel-border' ] = colourVar( panelBorderColour );
@@ -193,6 +201,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{
 						key: 'tab-bg',
 						label: __( 'Tab background', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -200,6 +209,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: tabBgColour,
 								onChange: ( val ) => setAttributes( { tabBgColour: val ?? '' } ),
 								linked: true,
+								gradientValue: tabBgColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { tabBgColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -207,6 +219,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: tabHoverBgColour,
 								onChange: ( val ) => setAttributes( { tabHoverBgColour: val ?? '' } ),
 								linked: true,
+								// No tabHoverBgColourGradient attribute exists (out of
+								// scope for this rollout) — required no-op, not a missing
+								// feature (GradientCapableColourControl calls
+								// onGradientChange('') on every pick for every state in a
+								// gradientCapable row).
+								onGradientChange: () => {},
 							},
 							{
 								key: 'current',
@@ -214,6 +232,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: tabActiveBgColour,
 								onChange: ( val ) => setAttributes( { tabActiveBgColour: val ?? '' } ),
 								linked: true,
+								onGradientChange: () => {},
 							},
 						],
 					},
@@ -269,6 +288,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{
 						key: 'panel-bg',
 						label: __( 'Panel background', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'current',
@@ -276,6 +296,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: panelBgColour,
 								onChange: ( val ) => setAttributes( { panelBgColour: val ?? '' } ),
 								linked: true,
+								gradientValue: panelBgColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { panelBgColourGradient: val ?? '' } ),
 							},
 						],
 					},
