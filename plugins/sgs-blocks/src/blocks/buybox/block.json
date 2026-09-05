@@ -35,8 +35,20 @@
 		"sgs": {
 			"_comment_mediaElements": "Two independently-scoped media elements: 'main' is the gallery-col.php .product-card__media .product-card-img (the large PDP display image); 'thumb' is the .product-card__thumb img thumbnail-rail image (a distinct role — a small selectable preview, not the same image rendered twice). Mirrors sgs/before-after's before/after prefix pattern so a client can set a different fit for each.",
 			"mediaElements": [
-				{ "prefix": "main", "context": "element", "atoms": [ "object-fit" ] },
-				{ "prefix": "thumb", "context": "element", "atoms": [ "object-fit" ] }
+				{
+					"prefix": "main",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				},
+				{
+					"prefix": "thumb",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
 			],
 			"boxFamilies": {
 				"margin": [
@@ -44,8 +56,7 @@
 					"marginMobile"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -224,15 +235,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"editorScript": "file:./index.js",

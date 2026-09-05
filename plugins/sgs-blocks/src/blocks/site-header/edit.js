@@ -28,11 +28,7 @@ import {
 	BackgroundPanel,
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
-import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox,
-	SgsBorderControl,
-	ShadowControl,
-	resolveColourToken,
-} from '../../components';
+import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, ShadowControl, resolveColourToken, SgsBoxControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils/responsive';
 import { backgroundPreview, spacingPreview, svgBackgroundPreview } from '../../utils';
@@ -680,13 +676,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						colourLinked={ true }
 						contrastAgainst={ headerContrastAgainst }
 						radiusValues={ {
-							base: attributes.borderRadius ?? {},
-							tablet: attributes.borderRadiusTablet ?? {},
-							mobile: attributes.borderRadiusMobile ?? {},
-						} }
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
 						onRadiusChange={ ( tier, next ) => {
-							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-							setAttributes( { [ radiusKey ]: next } );
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>
@@ -808,39 +804,35 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							} )
 						}
 					>
-						<ResponsiveBoxControl
-							label={ __( 'Padding', 'sgs-blocks' ) }
-							presets
-							values={ {
-								base: attributes.padding ?? {},
-								tablet: attributes.paddingTablet ?? {},
-								mobile: attributes.paddingMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								// Breakpoint -> attr map, not a computed ternary key. This
-								// is the canonical idiom (mirrors sgs/container's edit.js)
-								// that check-control-ux.js recognises as delegated-to-
-								// shared-component; a ternary inside a computed property
-								// key reads to the gate as an unwrapped direct write.
-								const attrFor = { base: 'padding', tablet: 'paddingTablet', mobile: 'paddingMobile' };
-								setAttributes( { [ attrFor[ tier ] ]: next } );
-							} }
-						/>
+						<ResponsiveOverride
+							value={ attributes.padding }
+							onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<SgsBoxControl
+									label={ __( 'Padding', 'sgs-blocks' ) }
+									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+									units={ BOX_UNITS }
+								presets
+									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								/>
+							) }
+						</ResponsiveOverride>
 						<hr style={ { margin: '16px 0' } } />
-						<ResponsiveBoxControl
-							label={ __( 'Margin', 'sgs-blocks' ) }
-							presets
-							values={ {
-								base: attributes.margin ?? {},
-								tablet: attributes.marginTablet ?? {},
-								mobile: attributes.marginMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								// Same canonical breakpoint -> attr map as Padding above.
-								const attrFor = { base: 'margin', tablet: 'marginTablet', mobile: 'marginMobile' };
-								setAttributes( { [ attrFor[ tier ] ]: next } );
-							} }
-						/>
+						<ResponsiveOverride
+							value={ attributes.margin }
+							onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<SgsBoxControl
+									label={ __( 'Margin', 'sgs-blocks' ) }
+									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+									units={ BOX_UNITS }
+									presets
+									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								/>
+							) }
+						</ResponsiveOverride>
 					</ToolsPanelItem>
 
 					{ /* contentBandPadding is a TIER OBJECT — ONE attr holding

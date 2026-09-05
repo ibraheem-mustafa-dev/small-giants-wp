@@ -183,27 +183,10 @@ $has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right 
 // Border-radius — WP-native style.border.radius (string = uniform, or an object
 // with topLeft/topRight/bottomLeft/bottomRight keys), base only. Skip-serialised
 // in block.json → emit scoped via the style engine in step 5.
-$base_border_radius = null;
-if ( isset( $attributes['borderRadius'] ) ) {
-	$radius_raw = $attributes['borderRadius'];
-	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-		$base_border_radius = $radius_raw;
-	} elseif ( is_array( $radius_raw ) ) {
-		$radius_clean   = array();
-		$has_any_corner = false;
-		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
-			if ( '' !== $radius_clean[ $corner ] ) {
-				$has_any_corner = true;
-			}
-		}
-		if ( $has_any_corner ) {
-			$base_border_radius = $radius_clean;
-		}
-	}
-}
-$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$radius_tiers            = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$base_border_radius       = $radius_tiers['base'];
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+$border_radius_mobile_obj = $radius_tiers['mobile'];
 
 // Base padding/margin — WP-native style.spacing.* objects (skip-serialised).
 // Kept as-is (string values incl. preset "var:preset|spacing|N" refs) and passed

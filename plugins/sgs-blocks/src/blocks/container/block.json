@@ -56,8 +56,7 @@
 					"borderWidth"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -295,7 +294,9 @@
 		},
 		"backgroundOverlayOpacity": {
 			"type": "object",
-			"default": {"desktop": 30}
+			"default": {
+				"desktop": 30
+			}
 		},
 		"overlayGradient": {
 			"type": "string",
@@ -639,15 +640,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"borderStyle": {
 			"type": "string",

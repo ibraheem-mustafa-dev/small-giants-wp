@@ -45,13 +45,23 @@
 			"scalarContentLift": true,
 			"_comment_mediaElements": "The image-swatch <img> (style.css .sgs-option-picker__swatch--image, render.php ~line 609) is a fixed 2rem square crop of a WooCommerce attribute term's `_sgs_swatch_image_id` image — no per-instance media picker, but the crop MODE (cover|contain) is a legitimate client choice (e.g. a white-background product photo may want 'contain'). Wired via the shared object-fit atom, prefix 'swatch', rather than the hand-rolled `object-fit: cover` that used to live in style.css (detector rule 37-media-no-handroll).",
 			"mediaElements": [
-				{ "prefix": "swatch", "context": "element", "atoms": [ "object-fit" ] }
+				{
+					"prefix": "swatch",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
 			],
 			"elements": {
 				"root": {
 					"label": "Picker (fieldset)",
 					"order": 1,
-					"clusters": [ "layout", "fill", "text" ],
+					"clusters": [
+						"layout",
+						"fill",
+						"text"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:padding": "native:spacing.padding",
@@ -71,7 +81,10 @@
 				"label": {
 					"label": "Group label (legend)",
 					"order": 2,
-					"clusters": [ "text", "layout" ],
+					"clusters": [
+						"text",
+						"layout"
+					],
 					"prefix": "label",
 					"attrMap": {
 						"css:color-gradient": "labelColourGradient"
@@ -81,7 +94,11 @@
 				"pill": {
 					"label": "Option pill",
 					"order": 3,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"prefix": "pill",
 					"attrMap": {
 						"css:background-color": "pillBgColour",
@@ -123,8 +140,7 @@
 					"borderWidth"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				],
 				"pillPadding": [
 					"pillPadding"
@@ -314,7 +330,9 @@
 		},
 		"pillPadding": {
 			"type": "object",
-			"default": {"desktop": {}}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"paddingTablet": {
 			"type": "object",
@@ -334,15 +352,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"borderWidth": {
 			"type": "object",

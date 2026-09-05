@@ -34,8 +34,7 @@
 					"borderWidth"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				],
 				"padding": [
 					"paddingTablet",
@@ -99,7 +98,9 @@
 				"background": {
 					"label": "Background",
 					"order": 3,
-					"clusters": [ "fill" ],
+					"clusters": [
+						"fill"
+					],
 					"isWrapper": false,
 					"attrMap": {
 						"css:background-color": "backgroundColour",
@@ -285,15 +286,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"borderStyle": {
 			"type": "string",

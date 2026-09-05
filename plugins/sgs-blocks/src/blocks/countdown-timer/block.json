@@ -45,8 +45,7 @@
 					"marginMobile"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -182,14 +181,6 @@
 			"type": "object",
 			"default": {}
 		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"borderWidth": {
 			"type": "object",
 			"default": {}
@@ -220,7 +211,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"fontSize": {
 			"type": "object",
@@ -249,7 +242,13 @@
 		"textAlign": {
 			"type": "string",
 			"default": "",
-			"enum": [ "", "left", "center", "right", "justify" ],
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
 			"description": "Migrated off WP-native supports.typography.textAlign (D971/D972 full-replacement track) — plain attribute + own SelectControl, since typography.fontSize was the only native flag TypographyControls replaces."
 		}
 	},

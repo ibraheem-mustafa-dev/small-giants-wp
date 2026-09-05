@@ -39,7 +39,11 @@
 		"sgs": {
 			"iconPicker": true,
 			"fx": {
-				"providesNatively": [ "scrub", "pin-scrub", "horizontal-panel" ]
+				"providesNatively": [
+					"scrub",
+					"pin-scrub",
+					"horizontal-panel"
+				]
 			},
 			"boxFamilies": {
 				"padding": [
@@ -51,8 +55,7 @@
 					"marginMobile"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				],
 				"borderWidth": [
 					"borderWidth"
@@ -62,7 +65,11 @@
 				"wrapper": {
 					"label": "Wrapper",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "native:color.text",
@@ -81,7 +88,9 @@
 				"title": {
 					"label": "Entry title",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "title",
 					"attrMap": {
 						"css:font-size": "titleFontSize",
@@ -95,7 +104,9 @@
 				"connector": {
 					"label": "Connector line / node",
 					"order": 3,
-					"clusters": [ "fill" ],
+					"clusters": [
+						"fill"
+					],
 					"attrMap": {
 						"css:background-color": "connectorColour",
 						"css:background-image": "connectorColourGradient"
@@ -115,7 +126,9 @@
 				"date": {
 					"label": "Entry date",
 					"order": 4,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "date",
 					"attrMap": {
 						"css:color": "dateColour"
@@ -125,7 +138,9 @@
 				"entry": {
 					"label": "Timeline entry",
 					"order": 5,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
 						"css:min-height": "milestoneMinHeight",
 						"css:margin-bottom": "entryGap"
@@ -146,24 +161,41 @@
 		},
 		"headingLevel": {
 			"type": "string",
-			"enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
+			"enum": [
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"p"
+			],
 			"default": "h3"
 		},
 		"contentLayout": {
 			"type": "string",
-			"enum": [ "alternating", "same-side", "single-column" ],
+			"enum": [
+				"alternating",
+				"same-side",
+				"single-column"
+			],
 			"default": "alternating",
 			"description": "How entries line up. Replaces the old `alignment` attribute (Task 3a) — 'alternating' and 'single-column' render identically to the old 'alternating'/'left'+'centre'. 'same-side' (Task 3b) is two-sided like 'alternating' but does not flip per row — every entry places the date and content on the same side, per the `contentSide` attribute."
 		},
 		"contentSide": {
 			"type": "string",
-			"enum": [ "start", "end" ],
+			"enum": [
+				"start",
+				"end"
+			],
 			"default": "end",
 			"description": "Which side the content sits on when contentLayout is 'same-side'. 'end' (default) puts content on the right, date on the left. 'start' mirrors it. Meaningless — and hidden in the editor — for 'alternating'/'single-column'."
 		},
 		"mobileLayout": {
 			"type": "string",
-			"enum": [ "stacked", "carousel" ],
+			"enum": [
+				"stacked",
+				"carousel"
+			],
 			"default": "stacked",
 			"description": "How the timeline behaves at 767px and below, independently of orientation/alignment. 'stacked' is today's collapse (unchanged). 'carousel' is a native horizontal scroll-snap row, ≤767px only — inert above that width in either orientation."
 		},
@@ -249,7 +281,12 @@
 		},
 		"scrollEffect": {
 			"type": "string",
-			"enum": [ "basic", "scrub", "pinned-journey", "pinned-horizontal" ],
+			"enum": [
+				"basic",
+				"scrub",
+				"pinned-journey",
+				"pinned-horizontal"
+			],
 			"default": "basic",
 			"description": "A layout-MODE selector, not a CSS property — deliberately absent from any element's attrMap (see the `entry` element note). Curated wrapper around the generic GSAP scroll-effects picker: 'basic' is today's viewport/connector reveal; 'scrub' ties milestone motion directly to scroll position; 'pinned-journey' pins the timeline and reveals milestones as the connector fills (vertical only); 'pinned-horizontal' pins and slides the track sideways (horizontal only)."
 		},
@@ -260,7 +297,10 @@
 		"revealTrigger": {
 			"type": "string",
 			"default": "viewport",
-			"enum": [ "viewport", "connector" ]
+			"enum": [
+				"viewport",
+				"connector"
+			]
 		},
 		"revealStagger": {
 			"type": "number",
@@ -272,7 +312,10 @@
 		},
 		"milestoneSize": {
 			"type": "string",
-			"enum": [ "compact", "full-height" ],
+			"enum": [
+				"compact",
+				"full-height"
+			],
 			"default": "compact",
 			"description": "Task 3 (2026-08-30). 'compact' is today's content-driven row height. 'full-height' gives each milestone a minimum height and lets its media fill the column, hero-split style — from tablet width (768px) up only; phones always render the compact size (there's no room for a full-height row on a 375px screen)."
 		},
@@ -288,7 +331,10 @@
 		},
 		"datePosition": {
 			"type": "string",
-			"enum": [ "own-column", "inline" ],
+			"enum": [
+				"own-column",
+				"inline"
+			],
 			"default": "inline",
 			"description": "Replaces the old `showDateColumn` boolean (Task 3a). 'own-column' only takes effect when contentLayout is 'single-column' — on phones the date always sits above the title, so there's room for it."
 		},
@@ -336,15 +382,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"borderWidth": {
 			"type": "object",

@@ -9,17 +9,7 @@ import {
 import { useSelect, useDispatch } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (layout kind).
 import ContainerWrapperControls, { BackgroundPanel } from '../container/components/ContainerWrapperControls';
-import {
-	ResponsiveOverride,
-	SpacingControl,
-	SgsColourPanel,
-	fillRow,
-	ResponsiveBoxControl,
-	SGS_FONT_WEIGHT_OPTIONS,
-	textRow,
-	SgsBorderControl,
-	resolveColourToken,
-} from '../../components';
+import { ResponsiveOverride, SpacingControl, SgsColourPanel, fillRow, ResponsiveBoxControl, SGS_FONT_WEIGHT_OPTIONS, textRow, SgsBorderControl, resolveColourToken, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { backgroundPreview, spacingPreview, svgBackgroundPreview, boxShorthand } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
@@ -557,24 +547,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					    through WordPress's native Dimensions panel, which the
 					    migration removes. Bean ruled full parity rather than a
 					    padding-only carve-out (Rule 3), so it is built here. */ }
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: attributes.padding ?? {},
-							tablet: attributes.paddingTablet ?? {},
-							mobile: attributes.paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							// Breakpoint -> attr map, not a computed ternary key. This is
-							// the canonical idiom (mirrors sgs/container's edit.js) that
-							// check-control-ux.js recognises as delegated-to-shared-
-							// component; a ternary inside a computed property key reads
-							// to the gate as an unwrapped direct write.
-							const attrFor = { base: 'padding', tablet: 'paddingTablet', mobile: 'paddingMobile' };
-							setAttributes( { [ attrFor[ tier ] ]: next } );
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+							presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 					</ToolsPanelItem>
 
 					<ToolsPanelItem
@@ -588,20 +574,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { margin: {}, marginTablet: {}, marginMobile: {} } )
 						}
 					>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: attributes.margin ?? {},
-							tablet: attributes.marginTablet ?? {},
-							mobile: attributes.marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							// Same canonical breakpoint -> attr map as Padding above.
-							const attrFor = { base: 'margin', tablet: 'marginTablet', mobile: 'marginMobile' };
-							setAttributes( { [ attrFor[ tier ] ]: next } );
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 					</ToolsPanelItem>
 
 					<ToolsPanelItem
@@ -811,13 +797,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						colourLinked={ true }
 						contrastAgainst={ multiButtonContrastAgainst }
 						radiusValues={ {
-							base: attributes.borderRadius ?? {},
-							tablet: attributes.borderRadiusTablet ?? {},
-							mobile: attributes.borderRadiusMobile ?? {},
-						} }
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
 						onRadiusChange={ ( tier, next ) => {
-							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-							setAttributes( { [ radiusKey ]: next } );
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 					</ToolsPanelItem>

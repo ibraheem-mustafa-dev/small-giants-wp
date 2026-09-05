@@ -94,8 +94,7 @@
 			"_ownership_note": "OWNERSHIP BOUNDARY (Spec 35): each slide is rendered by iterating $block->inner_blocks and calling $inner_block->render() (render.php:286-301) — a genuine child-block render, not a scalar array. Quote text, author name, role, rating, avatar and card-style all belong ENTIRELY to the child sgs/testimonial block's own manifest and are deliberately NOT declared here — declaring them would cross the delegated-rendering ownership boundary. Only the carousel chrome this block itself emits (slider wrapper, arrows, dots) is declared above.",
 			"boxFamilies": {
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			}
 		},
@@ -327,15 +326,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"fontSize": {
 			"type": "object",

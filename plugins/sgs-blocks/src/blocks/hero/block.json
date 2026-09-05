@@ -39,9 +39,32 @@
 			],
 			"_comment_mediaElements": "Wave 6 (2026-09-01). Migrates the split-media feature (image/video/SVG slot beside the text column) onto the shared media-atom system — NOT the section-level background (bgVideo/bgParallax/bgKenBurns/backgroundOverlay*), which stays on SGS_Container_Wrapper. THREE prefixes, not one, because hero's own legacy naming used three different conventions for one physical element and none may be renamed (D338): 'split' reproduces splitImage*/splitVideo*/splitMediaType* exactly (source + media-type bases); 'splitMedia' reproduces splitMediaObjectFit/splitMediaObjectPosition* exactly (object-fit + focal-point bases); 'media' reproduces mediaOverlayColour/mediaOverlayGradient/mediaParallax/mediaKenBurns/mediaAnimationDuration exactly (overlay + motion bases). The source atom's picker writes a NEW {base}Id/{base}Url pair (its own canonical shape) rather than hero's legacy composite {id,url,alt} object. NO read-time fallback to the legacy object — Bean-locked (2026-09-02): R-31-14 bans exactly that shape, and this block already carries a 2026-08-13 precedent of deleting an identically-shaped bridge for the same reason. An already-published hero instance holding only the legacy splitImage/splitVideo/splitSvg shape renders an EMPTY split-media slot until re-uploaded through the new picker (see render.php's own comment at the split-media source resolution). The legacy attributes stay declared (never renamed — D338), simply unread/unwritten going forward.",
 			"mediaElements": [
-				{ "prefix": "split", "context": "element", "atoms": [ "source", "media-type" ] },
-				{ "prefix": "splitMedia", "context": "element", "atoms": [ "object-fit", "focal-point", "box-shape", "media-padding" ] },
-				{ "prefix": "media", "context": "element", "atoms": [ "overlay", "motion" ] }
+				{
+					"prefix": "split",
+					"context": "element",
+					"atoms": [
+						"source",
+						"media-type"
+					]
+				},
+				{
+					"prefix": "splitMedia",
+					"context": "element",
+					"atoms": [
+						"object-fit",
+						"focal-point",
+						"box-shape",
+						"media-padding"
+					]
+				},
+				{
+					"prefix": "media",
+					"context": "element",
+					"atoms": [
+						"overlay",
+						"motion"
+					]
+				}
 			],
 			"variantAttr": "variant",
 			"variants": {
@@ -79,16 +102,13 @@
 					"contentBandPadding"
 				],
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -326,12 +346,10 @@
 			"type": "string",
 			"default": ""
 		},
-
 		"splitImageAltTablet": {
 			"type": "string",
 			"default": ""
 		},
-
 		"splitImageAltMobile": {
 			"type": "string",
 			"default": ""
@@ -361,7 +379,6 @@
 				"svg"
 			]
 		},
-
 		"splitMediaTypeTablet": {
 			"type": "string",
 			"default": "",
@@ -372,7 +389,6 @@
 				"svg"
 			]
 		},
-
 		"splitMediaTypeMobile": {
 			"type": "string",
 			"default": "",
@@ -634,12 +650,21 @@
 		"_comment_boxShapeNewBases": "C19 item 3 (2026-09-04) — the box-shape atom's remaining bases (Wave 6 only adopted object-fit/focal-point). Hand-declared, not left to auto-injection, because render.php/edit.js destructure them as literal variables (same precedent as the 'source atom pair' comment above). Mirrors sgs/media's own shapes exactly: MediaSizing carries no default (a 'default':null on a typed attr 400s SSR previews); Shape/AspectRatio/MinHeight/MaxWidth/MaxHeight match box-shape.js's MEDIA_ATTR_TYPES map. MaxWidthPercent has no default, same as every other non-tiered number base in the atom.",
 		"splitMediaMediaSizing": {
 			"type": "string",
-			"enum": [ "auto", "height", "ratio" ]
+			"enum": [
+				"auto",
+				"height",
+				"ratio"
+			]
 		},
 		"splitMediaShape": {
 			"type": "string",
 			"default": "none",
-			"enum": [ "none", "rounded", "circle", "square" ]
+			"enum": [
+				"none",
+				"rounded",
+				"circle",
+				"square"
+			]
 		},
 		"splitMediaAspectRatio": {
 			"type": "string",
@@ -792,7 +817,9 @@
 		},
 		"backgroundOverlayOpacity": {
 			"type": "object",
-			"default": {"desktop": 30}
+			"default": {
+				"desktop": 30
+			}
 		},
 		"backgroundPosition": {
 			"type": "string",
@@ -1022,28 +1049,16 @@
 		},
 		"padding": {
 			"type": "object",
-			"default": {},
+			"default": {
+				"desktop": {}
+			},
 			"description": "Base (desktop) padding, owned outright — hero declares NO supports.spacing, so before 2026-08-21 this control wrote to style.spacing and WordPress DISCARDED it on save (D338/D587 class). Matches the D555/D707 container shape."
 		},
 		"margin": {
 			"type": "object",
-			"default": {}
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"tagName": {
 			"type": "string",
@@ -1088,15 +1103,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"render": "file:./render.php",

@@ -71,8 +71,7 @@
 					"cardBorderWidth"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -274,12 +273,19 @@
 					},
 					"objectFit": {
 						"type": "string",
-						"enum": [ "cover", "contain", "fill" ],
+						"enum": [
+							"cover",
+							"contain",
+							"fill"
+						],
 						"default": "cover"
 					},
 					"focalPoint": {
 						"type": "object",
-						"default": { "x": 0.5, "y": 0.5 }
+						"default": {
+							"x": 0.5,
+							"y": 0.5
+						}
 					}
 				}
 			}
@@ -689,15 +695,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"titleColourHover": {
 			"type": "string",

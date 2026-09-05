@@ -168,8 +168,7 @@
 					"marginMobile"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			}
 		},
@@ -493,14 +492,6 @@
 			"type": "object",
 			"default": {}
 		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"borderWidth": {
 			"type": "object",
 			"default": {}
@@ -531,7 +522,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"nameColourHover": {
 			"type": "string",

@@ -82,27 +82,10 @@ $background_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
 // out of the declaration into a new CSS rule.
 // Border-radius — block-private corner object (2026-08-30 radius target-shape
 // correction), base + tablet + mobile tiers.
-$base_border_radius = null;
-if ( isset( $attributes['borderRadius'] ) ) {
-	$radius_raw = $attributes['borderRadius'];
-	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-		$base_border_radius = $radius_raw;
-	} elseif ( is_array( $radius_raw ) ) {
-		$radius_clean   = array();
-		$has_any_corner = false;
-		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
-			if ( '' !== $radius_clean[ $corner ] ) {
-				$has_any_corner = true;
-			}
-		}
-		if ( $has_any_corner ) {
-			$base_border_radius = $radius_clean;
-		}
-	}
-}
-$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$radius_tiers            = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$base_border_radius       = $radius_tiers['base'];
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+$border_radius_mobile_obj = $radius_tiers['mobile'];
 
 // Border-width — Box-object interface contract §1/§2: `borderWidth` is an SGS
 // custom OBJECT attr { top, right, bottom, left } — no WP-native border-width

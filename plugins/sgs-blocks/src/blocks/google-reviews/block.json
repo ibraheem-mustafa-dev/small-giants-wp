@@ -34,7 +34,13 @@
 			"imageControls": false,
 			"_comment_mediaElements": "Rule 37-media-no-handroll fix. The reviewer avatar photo (pulled live from the Google Places API, rendered by this block's own render.php loop) now routes its object-fit through the shared media-element atom layer instead of a style.css literal. This is a NEW client control -- no pre-existing object-fit picker on this block. render.php emits the atom's --sgs-media-object-fit custom property scoped to the block wrapper ($gr_uid) and appends the shared .sgs-media-el marker class to each avatar <img>; style.css no longer hardcodes object-fit on .sgs-google-reviews__avatar img, relying on assets/css/media-atoms/object-fit.css's cover fallback (identical default).",
 			"mediaElements": [
-				{ "prefix": "", "context": "element", "atoms": [ "object-fit" ] }
+				{
+					"prefix": "",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
 			],
 			"presetSelectors": [
 				"cardStyle"
@@ -176,8 +182,7 @@
 			},
 			"boxFamilies": {
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			}
 		},
@@ -431,15 +436,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"writeReviewColourBackground": {
 			"type": "string",

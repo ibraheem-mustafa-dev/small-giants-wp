@@ -45,15 +45,18 @@
 					"borderWidth"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
 				"button": {
 					"label": "Button",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:font-size": "fontSize",
@@ -96,7 +99,10 @@
 				"icon": {
 					"label": "Icon",
 					"order": 2,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"attrMap": {
 						"css:color": "iconColour",
 						"css:stroke": "iconColourGradient"
@@ -163,7 +169,9 @@
 		},
 		"widthType": {
 			"type": "object",
-			"default": {"desktop": "fit"}
+			"default": {
+				"desktop": "fit"
+			}
 		},
 		"customWidth": {
 			"type": "object",
@@ -171,11 +179,12 @@
 		},
 		"customWidthUnit": {
 			"type": "object",
-			"default": {"desktop": "px", "tablet": "px", "mobile": "px"}
+			"default": {
+				"desktop": "px",
+				"tablet": "px",
+				"mobile": "px"
+			}
 		},
-
-
-
 		"minHeight": {
 			"type": "object",
 			"default": {}
@@ -322,15 +331,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"boxShadow": {
 			"type": "string",

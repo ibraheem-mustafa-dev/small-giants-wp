@@ -998,13 +998,13 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
 						radiusValues={ {
-							base: attributes.borderRadius ?? {},
-							tablet: borderRadiusTablet ?? {},
-							mobile: borderRadiusMobile ?? {},
-						} }
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
 						onRadiusChange={ ( tier, next ) => {
-							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-							setAttributes( { [ radiusKey ]: next } );
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>
