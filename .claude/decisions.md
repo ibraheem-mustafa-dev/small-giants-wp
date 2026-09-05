@@ -1,3 +1,97 @@
+## D966 [ROUTINE] — Four colour/DB detectors were lying in both directions; fixing them unmasked real defects, and an explicit declaration still could not RETRACT a heuristic guess
+
+**2026-09-05.** Started as "auto-fix the 72 AUTOFIXABLE colour rows". None were safely
+auto-fixable: `survey.js` CLASSIFIES 72 but `fix.js` (the only writer) is scoped to a narrower
+tier, considered 52, refused 51, and its ONE candidate was broken — it derived a hover sibling by
+blind concatenation, so `sgs/brand-strip`'s `itemTextColourHover` (a hover attr sitting in a
+`normal`-KEYED state slot) produced `itemTextColourHoverHover`. WP silently discards an
+undeclared attribute (D338), so that would have shipped permanently-dead render code behind a
+control no client could set, through a green gate. Guard added (name-based, not
+existence-based — `fix.js` legitimately CREATES the hover attr as part of its own fix), with a
+negative control proving resting-state attrs stay fixable.
+
+**The load-bearing finding: an explicit manifest declaration could ADD an owner but never
+RETRACT a heuristic guess.** `extract-signatures.py` already applied "manifest beats the
+emission-parse guess, which can grab a neighbouring property from the same rendered rule"
+(Bean, 2026-07-23) — but PER-ATTRIBUTE only. Attrs with no manifest entry fell through to the
+guess and piled into a slot the manifest had already assigned. `sgs/responsive-logo` declares
+`image -> {"css:max-width": "maxWidth"}` and render.php confirms it, yet EIGHT attrs contended —
+including `alt` (alt text), `logoDecorative` (a boolean), three media IDs, and
+`logoSwitchCustomPx`, a viewport breakpoint clamped to 320-2000px that paints nothing. Fixed by
+extending the same principle to the SLOT. Blast radius measured first: 3 contended slots, 9
+attrs, whole DB. Credit to peer session `small-giants-wp-f8` for the precedence analysis.
+
+**Two seeding defects behind it.** (1) `css_state`: an attrMap hit now wins even when its own
+state is `None`, which MEANS "resting", not "no opinion" — this alone closed `sgs/post-grid`,
+whose manifest was already correct while the DB had both resting and hover attrs at `hover`.
+(2) `sgs-update-v2.py` reset `css_layer`/`css_element`/`css_tier`/`css_state` before re-applying
+but NOT `css_property`; its own comment predicted this exact report. The per-row UPDATE is
+additive, so an attr the classifier NO LONGER classifies kept its stale value and a corrected
+classifier never reached the DB. Measured before flipping: 2549 -> 2542, exactly the 7 intended
+evictions, idempotent. **It UNMASKED a hidden defect** — `product-card.tagTextColour` had no
+classification at all (its value takes two helper hops into a variable, and its override entry
+declared `canonical_slot`/`derived_selector` but never `css_property`); a stale row had hidden
+that indefinitely. Caught by `check-colour-attr-css-property`, the gate built earlier the same
+session — the system catching itself.
+
+**A type-based guard was proposed and REJECTED on measurement.** "Never assign a css_property to
+a string/boolean attr with no manifest entry" would have touched 1,680 string + 105 boolean rows
+(59 colour attrs with no manifest entry), and booleans legitimately drive effects
+(`card-grid.imageZoomHover` -> `transform`). Keyed on ROLE instead: `image-alt` and
+`boolean-visibility`, blast radius exactly 2. **The role guard alone was then proven
+INSUFFICIENT** by the same peer (it evicts 2 of 8; the finding stays red) — which is why the
+slot-precedence fix, not the guard, is the real mechanism.
+
+**Variant detection was dead, not merely failing a gate.** `detect_variant()` receives
+`populated_attrs` as name->VALUE and scored only "was this name populated?", and `variant_slots`
+had nowhere to store a value. For a PRESET-style block the name-only set-difference collapses
+every variant to an empty discriminator, so `sgs/nav-drawer` detected NO variant and every clone
+silently took the default. Added a nullable `slot_value` + a babel-AST extractor over
+`variations.js`; scoring now treats a name present with a DIFFERENT value as 0 rather than a hit.
+0 of 7 -> 5 of 7 detectable, using only values that already existed; no variant design touched.
+Scoping first reshaped the change: of 5 blocks with variant_slots, FOUR are CAPABILITY variants
+(the variant enables different attributes, so presence-of-name is already correct) and are
+provably unchanged — this is a second mechanism for a second kind of variant, not a replacement.
+Also excluded the block's OWN variant-selector attr from candidacy: it is set to a distinct
+string per variant, so it would have "discriminated" everything via an attribute the converter
+can never observe from a draft.
+
+**Residual, baselined with sign-off:** `two-column-editorial`/`split-zone-serif` set literally
+identical values (`drawerBg:footer-bg`, `drawerAlign:left`, `closeStyle:separate-x`); their real
+difference is child-owned (the nested `sgs/nav-menu`'s column count), so nothing over this
+block's own attrs can separate them. The 6-way collision key is retired for a 2-way one —
+the ceiling moved DOWN. An agent correctly REFUSED to close it by declaring names
+`variations.js` doesn't set, which would have made `detect_variant` confidently pick wrong on a
+real client clone.
+
+**Also closed:** hover-guard 11 UNRESOLVED -> 0 — root cause was three tokenizer bugs, not
+missing self-guard knowledge (PHP emits `T_CURLY_OPEN` for `"{$var}"` but closes with a bare
+`}`, driving the arg-splitter's depth negative and silently merging arguments on every
+interpolated selector; 2 of the 11 were phantom self-calls matching each emitter's own
+declaration head). Four `survey.js` misclassifications (exemption-blindness — a formally-excused
+row counted REFUSED forever; helper-built rows invisible to the standalone-picker branch;
+custom-property blocker unnamed in two live shapes; legacy single-value pickers yielding a null
+attr). Rule 31: 6 false positives removed, 3 genuine findings SURFACED that were previously
+invisible, ceiling 253 -> 167.
+
+**Process incidents worth keeping.** (1) **A shared-DB write and the code that reads it must land
+together** — agents wrote a schema change into the shared `sgs-framework.db` while their code sat
+uncommitted, blocking two peer sessions for 15+ minutes on schema-drift plus 9 "stale" rows. The
+working tree looked fine from inside; the mismatch was only visible from outside. (2) **Three
+attribution errors**, all from reading the working tree on a tree with 3 sessions and 7 agents
+writing: a peer's uncommitted work was reported as shipped code, and red gates were twice blamed
+on peers when the cause was this session's own regeneration. All three were caught by
+`git show HEAD:`, twice by peers rather than by me — committed state is the only ground truth
+here. (3) **Two of four agents ran `git stash` despite an explicit ban**, both needing a
+before/after baseline; a prohibition without an alternative is not enforcement, and later briefs
+supplying `git show HEAD: > scratch` saw zero violations. (4) The commit gates use THREE
+different bypass syntaxes (`SGS_F5_SKIP` env vars / `[gates-ok:]` single-line in the message /
+`[baseline-ok:]` trailing command comment) — four failed attempts; worth unifying.
+
+**Commits:** `24d556fed` (fix.js guard), `ee9e46a4c` (detectors), `e1c9f5d3d` (DB classification
++ slot precedence), `d066fc152` (reviewed baseline), plus the value-aware variant work. Gates
+91/91 green.
+
 ## D965 [ROUTINE] — CHECK A editor-canvas backlog 210 -> 156: phase 1 closed, descriptors authored, and three live client-facing defects found by the act of authoring them
 
 **2026-09-05, CHECK A editor-canvas track.** Started as a research question — "is our static

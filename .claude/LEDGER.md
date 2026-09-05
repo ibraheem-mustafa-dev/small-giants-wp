@@ -301,19 +301,20 @@ handed off 8. This session (2026-09-05) closed all 7 of those real remaining row
 already done by a parallel session) — full narrative in the Human Summary above and D964. Do not
 duplicate that narrative here.
 
-**`SgsBorderControl`'s contrast wiring CLOSED 2026-09-05 (D963)** — 31 of 48 mounts wired, 17
-exempt by manifest (no comparable `backgroundColour` attr), 1 excluded with a written reason
-(`multi-button`'s group-defaults mount), 0 targets remain. Built
-`scripts/colour-codemod/wire-border-contrast.js` (full survey/fix/check/self-test, gate 90) after
-the hand-wiring pass hit the detector-first gate (D542). Also fixed + live-verified a real
-`brand-strip` hover-selector bug found along the way (`.sgs-brand-strip__item:hover` shared
-between the fill and text-gradient mechanisms — see D963).
+**`SgsBorderControl` contrast wiring CLOSED (D963)** — 31/48 wired, 17 exempt, 1 excluded, 0
+targets. Gate 90 `wire-border-contrast.js`. Plus a live-verified `brand-strip` hover fix.
 
-**Still open, carried forward:** hover-guard's 11 pre-existing UNRESOLVED cross-file cases
-(optional, session 7); `sgs/quote.attributionColourHover` (BUILT-BUT-SELF-REFUSED — `fix.js` correctly
-declines, `quote.js` has multiple ambiguous destructure blocks, needs a human pick); `product-
-card.tagTextColour` (a DIFFERENT, more specific refusal — `normal-state-value-not-a-plain-
-identifier`); `sgs_text_states_css()` (built session 11, NOT yet adopted by any of the
+**Detector + DB layer fixed 2026-09-05 (D966).** hover-guard 11→0; 4 `survey.js`
+misclassifications; rule 31 −6 false positives, +3 previously-invisible real, ceiling
+253→167. DB: a manifest declaration can now RETRACT a heuristic guess, not only add
+(`responsive-logo` had 8 attrs contending for one slot it already owned); `css_property` joined
+the reseed reset list, unmasking `product-card.tagTextColour`. Variant detection was DEAD for
+preset blocks — `nav-drawer` 0/7→5/7, capability blocks intact. ⚠ A shared-DB write and the
+code reading it MUST land together (blocked 2 peers). Gates 91/91. Detail: D966.
+
+**Still open, carried forward:** `sgs/quote.attributionColourHover` (BUILT-BUT-SELF-REFUSED — `fix.js` correctly
+declines, `quote.js` has multiple ambiguous destructure blocks, needs a human pick);
+`sgs_text_states_css()` (built session 11, NOT yet adopted by any of the
 already-fixed blocks — a follow-up consolidation, not urgent); the remaining genuinely-hard
 custom-property-architecture rows this session's 7-row closure did NOT cover (`mega-panel`'s
 OTHER rows besides `iconColour`, `social-icons`, `form.progressBarColour`, `product-card`'s 4
