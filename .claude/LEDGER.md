@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-09-05 (colour-conformance D964 + CHECK A editor-canvas track D965, concurrent)
+last_updated: 2026-09-05 (colour-conformance D964; CHECK A track D965/D967 — CLOSED at 0)
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -84,7 +84,7 @@ committing). Full detail: `.claude/prompts/2026-09-04-spec32-35-gates-next-sessi
 shipped and live-verified. Hand-written JSX preview IS WP's default; SSR is a documented legacy
 fallback and impossible here anyway (`/wp/v2/block-renderer` hardcodes empty innerBlocks; many blocks
 use InnerBlocks/RichText — count is gate-authoritative, never hardcoded). The whole-debt fix is our OWN media-atom pattern extended past
-media, not Stackable's. **CHECK A 210 -> 156; db-consistency 25 NEW -> 1 (the deliberate nav-drawer
+media, not Stackable's. **CHECK A 210 -> 0 (phases 2-4 by a concurrent session); db-consistency 25 NEW -> 1 (the deliberate nav-drawer
 design call); hover-state-classification FAIL -> PASS.** Three LIVE client-facing defects fixed,
 none previously known: `sgs/testimonial`'s five hover colours and `sgs/brand-strip`'s one each
 pushed a bare `color:` into one root-emitted bucket (only the last survived, none reached elements
@@ -273,25 +273,23 @@ rounds by the second pass). 23 of 45 baseline/exemption files across the whole g
 real debt (~555 entries total) — not this track's job to clear, but worth knowing for anyone
 picking a next gate to work.
 
-## ▶ CHECK A EDITOR-CANVAS TRACK — phase 1 CLOSED (35/35), 210 -> 156. Plan: `.claude/prompts/2026-09-05-check-a-editor-canvas-phases-2-4.md`. Detail: D965.
+## ▶ CHECK A EDITOR-CANVAS TRACK — CLOSED. 210 -> 0. Detail: D965 (phase 1 + the standards) + D967 (positive-control fix).
 
-**Phase 1 closed:** all 35 `bgSvg*` findings across 8 wrapper blocks, via a shared
-`svgBackgroundPreview()` that renders the SAME element with the SAME classes as the frontend, so
-the existing `style.css` (already in the canvas via `block.json`'s `style`) paints it with zero new
-CSS. Deployed + live-verified with negative controls (probe 3297;
-`reports/visual-diff/{testimonial,brand-strip,hero}-2026-09-05.md`).
+**Whole backlog closed 2026-09-05.** Phase 1 (35 `bgSvg*` findings, 8 blocks) in the originating
+session via a shared `svgBackgroundPreview()`, deployed and live-verified with negative controls.
+**Phases 2-4 (the remaining 128, including the ~96 colour family) were closed by a CONCURRENT
+session** working from that session's plan doc — `daddbbb1b` / `bd4076235` / `358584e79`, plus
+`2fb58e412` root-causing 4 frontend bugs the close-out surfaced. Verified as real fixes, not
+suppression: 34 `edit.js` files, `textPaintPreview()`/`borderPaintPreview()` extracted to shared
+utils, a new `svg-gradient-preview.js`, and scoped `<style>` mirrors where the paint target is a
+CHILD block's element. Ceiling ratcheted to 0/0. Plan doc consumed and deleted.
 
-**Remaining, bucketed and measured (re-derive, don't trust these counts):** phase 2 layout/box on
-wrapper blocks (31, same mirror); phase 3 colour (~96, needs a DESIGN GATE before any build);
-phase 4 long tail (29, already split into 13 with a full DB descriptor + ~15 correctly
-descriptor-less class-toggle/child-block shapes).
-
-**Standards recorded:** Spec 02 item 0 (a shared mechanism is mirrorable once only if it OWNS ITS
+**Durable output:** Spec 02 item 0 (a shared mechanism is mirrorable once only if it OWNS ITS
 SELECTOR); DONE-checklist 7b; `plugins/sgs-blocks/CLAUDE.md` "Editor-canvas mirrors" + four traps.
 
-**Open, Bean's call:** `sgs/nav-drawer`'s variant-discriminator collision (F6's only remaining
-violation) — deliberately NOT closed: `variantPreset` gates zero conditional CSS by design, so
-fabricating a discriminator would make `detect_variant` pick the wrong variant on a real clone.
+**Open, Bean's call:** `sgs/nav-drawer`'s variant-discriminator collision — deliberately NOT
+closed: `variantPreset` gates zero conditional CSS by design, so fabricating a discriminator would
+make `detect_variant` pick the wrong variant on a real clone. Costs other sessions a bypass each.
 
 ## ▶ COLOUR TRACK — the "remaining 8 hard rows" prompt CLOSED 2026-09-05 (D964). Detail: `.claude/plans/2026-09-03-golden-colour-staged-rollout.md` + D964.
 

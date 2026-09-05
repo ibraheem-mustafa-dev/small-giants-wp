@@ -171,8 +171,9 @@ trusting either gate's "0 findings" on a new colour/grid-item-shaped change.
 
 `check-editor-render-parity.js` CHECK A finds attributes a control WRITES and `render.php`
 uses correctly, where the editor canvas shows nothing — the client moves a control and sees
-no change. 210 -> 156 on 2026-09-05. Full plan + per-phase detail:
-`.claude/prompts/2026-09-05-check-a-editor-canvas-phases-2-4.md`.
+no change. **210 -> 0 on 2026-09-05** — the whole backlog is CLOSED (phase 1 in this session, phases 2-4 by
+a concurrent session working from the same plan doc, which was consumed and removed). History:
+D965 + D967. The pattern and traps below remain live guidance for any NEW canvas mirror.
 
 **The pattern that scales.** A shared thing is mirrorable ONCE only if it OWNS THE SELECTOR:
 

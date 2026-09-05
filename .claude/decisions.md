@@ -1,3 +1,53 @@
+## D967 [ROUTINE] — CHECK A backlog closed at 0 by a concurrent session; its self-test had a positive control that could no longer pass
+
+**2026-09-05/06, CHECK A editor-canvas track close-out.** The backlog D965 left at 156 is now **0**.
+Phases 2-4 — the remaining 128 findings including the ~96 colour family that D965 flagged as
+needing a design gate — were closed by a CONCURRENT session working from this track's plan doc
+(`daddbbb1b`, `bd4076235`, `358584e79`, plus `2fb58e412` root-causing 4 frontend bugs the close-out
+surfaced). Credit theirs, not this session's.
+
+**Verified as real fixes, not suppression, before recording it as closed:** 34 `edit.js` files
+changed; `textPaintPreview()`/`borderPaintPreview()` extracted into the shared utils beside the
+existing `backgroundPaintPreview()`; a new `svg-gradient-preview.js` for icon/stroke/fill gradients
+(a genuinely different CSS technique from text gradients, confirmed per block against `render.php`);
+scoped `<style>` mirrors where the real paint target is a CHILD block's element rather than the
+parent's own JSX. Only 4 exemption-shaped lines across the whole commit. Ceiling ratcheted 128 -> 0.
+
+⚠ **The phase-3 colour architecture shipped WITHOUT the design gate** this track's plan doc demanded
+in bold ("⛔ Do NOT start building… CLAUDE.md rule 7 requires a design gate and Bean's approval
+first"), across ~34 blocks. The outcome reads sound from the diff — shared helpers extracted rather
+than per-block hacks, each attribute root-caused against `render.php` rather than assumed from its
+name — but the gate was skipped, and that is worth knowing before the pattern is cited as precedent.
+
+**THE FINDING WORTH KEEPING — a positive control that could no longer pass.** The gate's own R3-a
+resolver-widening regression test was FAILING while the gate itself reported a clean 0. Cause: the
+test proved the widening worked by asserting `bgSvgContent` appeared in the FINDINGS list, while its
+own comment sitting directly above the assertion said the findings list was explicitly NOT what it
+was proving. Implementation contradicted documented intent, so the moment `bgSvgContent` was
+legitimately FIXED (container previews it as of D965) the finding correctly vanished and the control
+became unpassable.
+
+Why that is dangerous rather than cosmetic: this is the ONLY control proving the R3-a widening still
+resolves attributes living entirely inside a shared component (`bgSvgContent` is destructured and
+`setAttributes`-written in `BackgroundPanel.js`; `edit.js` only MOUNTS it via JSX). A red self-test
+behind a green gate is the exact shape someone "fixes" by deleting the assertion — after which the
+resolver could go blind and CHECK A would report 0 because it could no longer SEE the attributes,
+indistinguishable from a clean tree.
+
+**Fix (`4dffa5950`):** extracted the ~20-line widening into `foldSharedComponentAttrSets()`,
+byte-identical at the call site, so the test can assert RECOGNITION — what it always meant to assert,
+and true whether or not the attribute is currently a finding. Before editing the assertion, the
+alternative reading (the resolver really had gone blind, in which case changing the test would hide
+a regression) was ruled out: `bgSvgContent` is still written in `BackgroundPanel.js` and is now read
+at `container/edit.js:176`. Non-vacuity proven by disabling the widening and watching the control
+fail with the original message.
+
+Docs reconciled to the closure rather than left stale: the LEDGER track compressed to a closed-track
+entry, Spec 02 and `plugins/sgs-blocks/CLAUDE.md` repointed off the consumed plan doc onto the
+durable "Editor-canvas mirrors" section, and the plan doc itself deleted in the same commit (a
+prompt is an instruction, not a record). `sgs/nav-drawer`'s variant-discriminator collision remains
+open as Bean's design call and is now costing other sessions a scoped bypass each.
+
 ## D966 [ROUTINE] — Four colour/DB detectors were lying in both directions; fixing them unmasked real defects, and an explicit declaration still could not RETRACT a heuristic guess
 
 **2026-09-05.** Started as "auto-fix the 72 AUTOFIXABLE colour rows". None were safely

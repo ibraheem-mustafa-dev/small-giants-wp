@@ -1151,9 +1151,9 @@ new CSS and no second vocabulary to drift.
 check exists for. Confirm the render path first, including helpers, atoms and `render_block`
 injectors, rather than grepping the block's own files.
 
-Full pattern, the four traps that shipped defects, and the phased backlog:
-`plugins/sgs-blocks/CLAUDE.md` → "Editor-canvas mirrors" and
-`.claude/prompts/2026-09-05-check-a-editor-canvas-phases-2-4.md`.
+Full pattern and the four traps that shipped defects: `plugins/sgs-blocks/CLAUDE.md` →
+"Editor-canvas mirrors". (The phased backlog this came from is CLOSED — CHECK A reached 0 on
+2026-09-05; its plan doc was consumed and removed. History: D965 + D967.)
 
 ### 1. Native `supports` for wrapper-level controls
 
