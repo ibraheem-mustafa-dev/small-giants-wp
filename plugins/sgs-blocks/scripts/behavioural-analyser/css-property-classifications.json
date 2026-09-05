@@ -22,11 +22,55 @@
       }
     },
     {
+      "slug": "sgs/accordion",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/audio",
       "attr": "accentColour",
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_element": "accent"
+      }
+    },
+    {
+      "slug": "sgs/audio",
+      "attr": "accentColourGradient",
+      "fields": {
+        "css_property": "background-image",
         "css_element": "accent"
       }
     },
@@ -67,15 +111,6 @@
     },
     {
       "slug": "sgs/before-after",
-      "attr": "dividerColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "divider-line"
-      }
-    },
-    {
-      "slug": "sgs/before-after",
       "attr": "dividerWidth",
       "fields": {
         "css_property": "width",
@@ -87,6 +122,7 @@
       "attr": "handleIconColour",
       "fields": {
         "css_property": "stroke",
+        "role": "color",
         "css_element": "handle"
       }
     },
@@ -373,6 +409,38 @@
     },
     {
       "slug": "sgs/breadcrumbs",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
       "attr": "linkColour",
       "fields": {
         "css_property": "color",
@@ -389,11 +457,62 @@
     },
     {
       "slug": "sgs/business-info",
+      "attr": "attributionHoverColour",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "attributionHoverColourFallback",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
         "role": "color",
         "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "iconColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "icon",
+        "css_state": "hover"
       }
     },
     {
@@ -406,28 +525,10 @@
     },
     {
       "slug": "sgs/business-info",
-      "attr": "linkHoverBackgroundImage",
+      "attr": "lineHeight",
       "fields": {
-        "css_property": "background-image",
-        "css_element": "link"
-      }
-    },
-    {
-      "slug": "sgs/business-info",
-      "attr": "linkHoverTextColour",
-      "fields": {
-        "css_property": "color",
-        "css_element": "link",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/business-info",
-      "attr": "textColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "text"
+        "css_property": "line-height",
+        "css_element": "wrapper"
       }
     },
     {
@@ -549,9 +650,9 @@
     },
     {
       "slug": "sgs/button",
-      "attr": "fontFamily",
+      "attr": "fontSize",
       "fields": {
-        "css_property": "font-family",
+        "css_property": "font-size",
         "css_element": "wrapper"
       }
     },
@@ -588,6 +689,22 @@
         "role": "color",
         "css_element": "icon",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "letterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "wrapper"
       }
     },
     {
@@ -954,6 +1071,42 @@
     },
     {
       "slug": "sgs/container",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
       "attr": "textAlign",
       "fields": {
         "css_property": "text-align",
@@ -980,10 +1133,42 @@
     },
     {
       "slug": "sgs/countdown-timer",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
       "attr": "labelColour",
       "fields": {
         "css_property": "color",
         "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1117,11 +1302,59 @@
     },
     {
       "slug": "sgs/cta-section",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "headline"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "headline"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "headline"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "letterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "headline"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "headline"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
       "attr": "shadow",
       "fields": {
         "css_property": "box-shadow",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "textTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "headline"
       }
     },
     {
@@ -1261,6 +1494,33 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "formFocusRingColour",
       "fields": {
         "css_property": "border-color",
@@ -1290,6 +1550,15 @@
       "fields": {
         "css_property": "outline-width",
         "css_element": "focus-ring"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1599,9 +1868,9 @@
     },
     {
       "slug": "sgs/heading",
-      "attr": "fontFamily",
+      "attr": "fontSize",
       "fields": {
-        "css_property": "font-family",
+        "css_property": "font-size",
         "css_element": "wrapper"
       }
     },
@@ -1690,20 +1959,18 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "backgroundOverlayOpacityMobile",
+      "attr": "alignContent",
       "fields": {
-        "css_property": "opacity",
-        "css_tier": "mobile",
-        "css_layer": "OUTER",
-        "css_element": "overlay"
+        "css_property": "align-content",
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
       "slug": "sgs/hero",
-      "attr": "backgroundOverlayOpacityTablet",
+      "attr": "backgroundOverlayOpacity",
       "fields": {
         "css_property": "opacity",
-        "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "overlay"
       }
@@ -1783,9 +2050,63 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "flexDirection",
+      "fields": {
+        "css_property": "flex-direction",
+        "css_layer": "GRID",
+        "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "gap",
       "fields": {
         "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "gridAutoRows",
+      "fields": {
+        "css_property": "grid-auto-rows",
         "css_layer": "GRID",
         "css_element": "inner"
       }
@@ -1797,6 +2118,51 @@
         "css_property": "grid-template-columns",
         "css_layer": "GRID",
         "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "gridTemplateRows",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_layer": "GRID",
+        "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "justifyContent",
+      "fields": {
+        "css_property": "justify-content",
+        "css_layer": "GRID",
+        "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "justifyItems",
+      "fields": {
+        "css_property": "justify-items",
+        "css_layer": "GRID",
+        "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "letterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2068,6 +2434,15 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "textTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "verticalAlignment",
       "fields": {
         "css_property": "align-items,justify-content",
@@ -2279,6 +2654,34 @@
     },
     {
       "slug": "sgs/info-box",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
       "attr": "scaleHover",
       "fields": {
         "css_property": "transform"
@@ -2305,9 +2708,9 @@
     },
     {
       "slug": "sgs/label",
-      "attr": "fontFamily",
+      "attr": "fontSize",
       "fields": {
-        "css_property": "font-family",
+        "css_property": "font-size",
         "css_element": "wrapper"
       }
     },
@@ -2340,14 +2743,6 @@
       "attr": "lineHeight",
       "fields": {
         "css_property": "line-height",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/label",
-      "attr": "textAlign",
-      "fields": {
-        "css_property": "text-align",
         "css_element": "wrapper"
       }
     },
@@ -2517,6 +2912,15 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "iconBackgroundGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "CONTENT",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
@@ -2540,6 +2944,15 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "panelBgGradient",
+      "fields": {
+        "css_property": "background-image",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -2580,15 +2993,6 @@
         "role": "color",
         "css_element": "close",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/modal",
-      "attr": "overlayColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "backdrop"
       }
     },
     {
@@ -3113,6 +3517,33 @@
     },
     {
       "slug": "sgs/notice-banner",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
@@ -3128,6 +3559,15 @@
         "role": "color",
         "css_element": "icon",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
       }
     },
     {
@@ -3185,25 +3625,6 @@
         "css_property": "max-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/option-picker",
-      "attr": "pillBgColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "pill"
-      }
-    },
-    {
-      "slug": "sgs/option-picker",
-      "attr": "pillBgColourHover",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "pill",
-        "css_state": "hover"
       }
     },
     {
@@ -3443,6 +3864,38 @@
       }
     },
     {
+      "slug": "sgs/post-grid",
+      "attr": "titleFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "titleFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "titleFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "titleLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "title"
+      }
+    },
+    {
       "slug": "sgs/pricing-table",
       "attr": "borderColour",
       "fields": {
@@ -3574,6 +4027,38 @@
       }
     },
     {
+      "slug": "sgs/pricing-table",
+      "attr": "titleFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "titleFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "titleFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "titleLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "name"
+      }
+    },
+    {
       "slug": "sgs/process-steps",
       "attr": "borderColour",
       "fields": {
@@ -3665,6 +4150,38 @@
         "role": "color",
         "css_element": "title",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "titleFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "titleFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "titleFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "titleLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "title"
       }
     },
     {
@@ -3976,6 +4493,36 @@
     },
     {
       "slug": "sgs/product-faq",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
       "attr": "textColour",
       "fields": {
         "css_property": "color",
@@ -4209,7 +4756,9 @@
       "slug": "sgs/responsive-logo",
       "attr": "width",
       "fields": {
-        "css_element": "image"
+        "css_property": "width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -4388,10 +4937,42 @@
     },
     {
       "slug": "sgs/social-icons",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
       "attr": "gap",
       "fields": {
         "css_property": "gap",
         "css_layer": "GRID",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
         "css_element": "wrapper"
       }
     },
@@ -4419,6 +5000,38 @@
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
         "css_element": "wrapper"
       }
     },
@@ -4461,15 +5074,6 @@
     },
     {
       "slug": "sgs/tabs",
-      "attr": "panelBgColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "panel"
-      }
-    },
-    {
-      "slug": "sgs/tabs",
       "attr": "panelBorderColour",
       "fields": {
         "css_property": "border-color",
@@ -4505,15 +5109,6 @@
         "role": "color",
         "css_element": "tab",
         "css_state": "current"
-      }
-    },
-    {
-      "slug": "sgs/tabs",
-      "attr": "tabBgColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "tab"
       }
     },
     {
@@ -4566,6 +5161,38 @@
       "fields": {
         "css_property": "box-shadow-color",
         "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
         "css_element": "wrapper"
       }
     },
@@ -4826,6 +5453,42 @@
     },
     {
       "slug": "sgs/testimonial-slider",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
       "attr": "slidesVisible",
       "fields": {
         "css_property": "flex",
@@ -4953,14 +5616,6 @@
     },
     {
       "slug": "sgs/text",
-      "attr": "fontFamily",
-      "fields": {
-        "css_property": "font-family",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/text",
       "attr": "fontSize",
       "fields": {
         "css_property": "font-size",
@@ -4985,18 +5640,26 @@
     },
     {
       "slug": "sgs/text",
-      "attr": "maxWidth",
+      "attr": "letterSpacing",
       "fields": {
-        "css_property": "max-width",
-        "css_layer": "OUTER",
+        "css_property": "letter-spacing",
         "css_element": "wrapper"
       }
     },
     {
       "slug": "sgs/text",
-      "attr": "textAlign",
+      "attr": "lineHeight",
       "fields": {
-        "css_property": "text-align",
+        "css_property": "line-height",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER",
         "css_element": "wrapper"
       }
     },
@@ -5054,24 +5717,6 @@
     },
     {
       "slug": "sgs/timeline",
-      "attr": "connectorColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "connector"
-      }
-    },
-    {
-      "slug": "sgs/timeline",
-      "attr": "connectorFillColour",
-      "fields": {
-        "css_property": "stroke",
-        "role": "color",
-        "css_element": "connector"
-      }
-    },
-    {
-      "slug": "sgs/timeline",
       "attr": "dateColour",
       "fields": {
         "css_property": "color",
@@ -5112,9 +5757,55 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "rowStripeColourAGradient",
+      "fields": {
+        "css_property": "background-image"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "rowStripeColourB",
       "fields": {
         "css_property": "background-color"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "rowStripeColourBGradient",
+      "fields": {
+        "css_property": "background-image"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "titleFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "titleFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "titleFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "titleLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "title"
       }
     },
     {
@@ -5166,6 +5857,14 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_element": "icon-badge"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "iconCircleBackgroundGradient",
+      "fields": {
+        "css_property": "background-image",
         "css_element": "icon-badge"
       }
     },
@@ -5661,6 +6360,23 @@
     },
     {
       "slug": "sgs/before-after",
+      "attr": "dividerColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "divider-line"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "dividerColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "divider-line"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
       "attr": "handleColour",
       "fields": {
         "css_property": "background-color",
@@ -5673,6 +6389,14 @@
       "attr": "handleColourGradient",
       "fields": {
         "css_property": "background-image",
+        "css_element": "handle"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "handleIconColourGradient",
+      "fields": {
+        "css_property": "stroke-gradient",
         "css_element": "handle"
       }
     },
@@ -5835,11 +6559,29 @@
     },
     {
       "slug": "sgs/business-info",
+      "attr": "fontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
       "attr": "iconColourGradient",
       "fields": {
         "css_property": "stroke",
         "role": "color",
         "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "iconColourHoverGradient",
+      "fields": {
+        "css_property": "stroke",
+        "role": "color",
+        "css_element": "icon",
+        "css_state": "hover"
       }
     },
     {
@@ -5852,10 +6594,38 @@
     },
     {
       "slug": "sgs/business-info",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
       "attr": "textColourGradient",
       "fields": {
         "css_property": "background-image",
         "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "textColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "text",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "textColourHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "text",
+        "css_state": "hover"
       }
     },
     {
@@ -5918,9 +6688,9 @@
     },
     {
       "slug": "sgs/button",
-      "attr": "fontSize",
+      "attr": "fontFamily",
       "fields": {
-        "css_property": "font-size",
+        "css_property": "font-family",
         "css_element": "wrapper"
       }
     },
@@ -5941,22 +6711,6 @@
         "role": "color",
         "css_element": "icon",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/button",
-      "attr": "letterSpacing",
-      "fields": {
-        "css_property": "letter-spacing",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/button",
-      "attr": "lineHeight",
-      "fields": {
-        "css_property": "line-height",
-        "css_element": "wrapper"
       }
     },
     {
@@ -6720,6 +7474,14 @@
       }
     },
     {
+      "slug": "sgs/countdown-timer",
+      "attr": "textAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/counter",
       "attr": "borderColourGradient",
       "fields": {
@@ -6938,6 +7700,14 @@
         "css_property": "box-shadow-color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "textAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "headline"
       }
     },
     {
@@ -8153,9 +8923,9 @@
     },
     {
       "slug": "sgs/heading",
-      "attr": "fontSize",
+      "attr": "fontFamily",
       "fields": {
-        "css_property": "font-size",
+        "css_property": "font-family",
         "css_element": "wrapper"
       }
     },
@@ -8190,15 +8960,6 @@
       "fields": {
         "css_property": "transition-timing-function",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "alignContent",
-      "fields": {
-        "css_property": "align-content",
-        "css_layer": "GRID",
-        "css_element": "inner"
       }
     },
     {
@@ -8307,60 +9068,6 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "flexDirection",
-      "fields": {
-        "css_property": "flex-direction",
-        "css_layer": "GRID",
-        "css_element": "inner"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "flexWrap",
-      "fields": {
-        "css_property": "flex-wrap",
-        "css_layer": "GRID",
-        "css_element": "inner"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "gridAutoRows",
-      "fields": {
-        "css_property": "grid-auto-rows",
-        "css_layer": "GRID",
-        "css_element": "inner"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "gridTemplateRows",
-      "fields": {
-        "css_property": "grid-template-rows",
-        "css_layer": "GRID",
-        "css_element": "inner"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "justifyContent",
-      "fields": {
-        "css_property": "justify-content",
-        "css_layer": "GRID",
-        "css_element": "inner"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "justifyItems",
-      "fields": {
-        "css_property": "justify-items",
-        "css_layer": "GRID",
-        "css_element": "inner"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
@@ -8439,6 +9146,14 @@
         "css_property": "object-position",
         "css_layer": "GRID_AREA",
         "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "backgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "wrapper"
       }
     },
     {
@@ -8730,9 +9445,9 @@
     },
     {
       "slug": "sgs/label",
-      "attr": "fontSize",
+      "attr": "fontFamily",
       "fields": {
-        "css_property": "font-size",
+        "css_property": "font-family",
         "css_element": "wrapper"
       }
     },
@@ -8741,6 +9456,14 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "textAlign",
+      "fields": {
+        "css_property": "text-align",
         "css_element": "wrapper"
       }
     },
@@ -8978,6 +9701,23 @@
     },
     {
       "slug": "sgs/modal",
+      "attr": "overlayColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "backdrop"
+      }
+    },
+    {
+      "slug": "sgs/modal",
+      "attr": "overlayColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "backdrop"
+      }
+    },
+    {
+      "slug": "sgs/modal",
       "attr": "triggerBackgroundGradient",
       "fields": {
         "css_property": "background-image",
@@ -9207,6 +9947,15 @@
     },
     {
       "slug": "sgs/nav-menu",
+      "attr": "listColumns",
+      "fields": {
+        "css_property": "grid-template-columns:count",
+        "css_layer": "GRID",
+        "css_element": "bar"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
       "attr": "navBg",
       "fields": {
         "css_property": "background-color",
@@ -9336,6 +10085,15 @@
     },
     {
       "slug": "sgs/notice-banner",
+      "attr": "textAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
       "attr": "textColour",
       "fields": {
         "css_property": "color",
@@ -9413,6 +10171,42 @@
       "fields": {
         "css_property": "color-gradient",
         "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillBgColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillBgColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillBgColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "pill",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillBgColourHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "pill",
+        "css_state": "hover"
       }
     },
     {
@@ -10533,6 +11327,14 @@
         "css_property": "color-gradient",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "maxHeight",
+      "fields": {
+        "css_property": "max-height",
+        "css_element": "wrapper"
       }
     },
     {
@@ -11756,6 +12558,23 @@
     },
     {
       "slug": "sgs/tabs",
+      "attr": "panelBgColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "panelBgColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
       "attr": "panelBorderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
@@ -11769,6 +12588,23 @@
         "css_property": "border-color-gradient",
         "css_element": "tab",
         "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "tabBgColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "tab"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "tabBgColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "tab"
       }
     },
     {
@@ -11905,6 +12741,14 @@
       "fields": {
         "css_property": "background-image",
         "css_element": "role"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "textAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "wrapper"
       }
     },
     {
@@ -12456,17 +13300,17 @@
     },
     {
       "slug": "sgs/text",
-      "attr": "letterSpacing",
+      "attr": "fontFamily",
       "fields": {
-        "css_property": "letter-spacing",
+        "css_property": "font-family",
         "css_element": "wrapper"
       }
     },
     {
       "slug": "sgs/text",
-      "attr": "lineHeight",
+      "attr": "textAlign",
       "fields": {
-        "css_property": "line-height",
+        "css_property": "text-align",
         "css_element": "wrapper"
       }
     },
@@ -12525,6 +13369,40 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "connectorColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "connector"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "connectorColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "connector"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "connectorFillColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "progress"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "connectorFillColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "progress"
       }
     },
     {
@@ -14154,16 +15032,6 @@
       "fields": {}
     },
     {
-      "slug": "sgs/heading",
-      "attr": "letterSpacingUnit",
-      "fields": {}
-    },
-    {
-      "slug": "sgs/heading",
-      "attr": "lineHeightUnit",
-      "fields": {}
-    },
-    {
       "slug": "sgs/hero",
       "attr": "splitMediaHeightUnit",
       "fields": {}
@@ -14181,16 +15049,6 @@
     {
       "slug": "sgs/hero",
       "attr": "splitMediaWidthUnit",
-      "fields": {}
-    },
-    {
-      "slug": "sgs/label",
-      "attr": "letterSpacingUnit",
-      "fields": {}
-    },
-    {
-      "slug": "sgs/label",
-      "attr": "lineHeightUnit",
       "fields": {}
     },
     {

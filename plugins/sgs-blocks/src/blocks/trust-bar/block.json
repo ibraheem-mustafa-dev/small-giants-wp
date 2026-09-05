@@ -256,7 +256,8 @@
 				"type": "object",
 				"properties": {
 					"icon": {
-						"type": "string"
+						"type": "string",
+						"role": "icon"
 					},
 					"iconSvg": {
 						"type": "string"

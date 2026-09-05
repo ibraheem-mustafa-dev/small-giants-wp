@@ -179,30 +179,28 @@ def test_detect_variant_composition_tie_still_ambiguous_falls_through():
 # discriminate on (the test directly above pins that). What CAN separate them
 # is the nested nav-menu's own configuration.
 #
-# ⚠ THE HONEST STATE OF `two-column-editorial` (2026-09-06, second review of
-# this mechanism). It is NOT resolvable today, and this file used to claim it
-# was. The claim survived because the fixture below hand-wrote
-# `itemFontSize: 64` — a FLAT scalar copied out of `variations.js`. A real
-# clone can never produce that: `sgs/nav-menu.itemFontSize` is a TIER-SHAPED
-# object attr, so `converter/resolvers/styling_content.py` (gated on
-# `db_lookup.tier_object_base`) always writes `{"desktop": 64}`, and
-# `_composition_attr_score` compares with a single exact string equality —
-# `'64'` vs `'{"desktop":64}'` can never match. The test proved the scoring
-# ARITHMETIC and not the EXTRACTABILITY, which is the same class of vacuity
-# the routability filter was built to close one layer up.
-#
-# All three of this variant's unique-in-variations.js child values are now
-# refused at seed time, each for a stated reason:
-#   itemFontSize        — routed, but a tier-object attr holding a flat value
-#   itemFontSizeMobile  — not a declared `sgs/nav-menu` attribute at all
-#   listColumns         — declared, but css_property/css_element both NULL
-# so it has ZERO seeded discriminators and `detect_variant` returns None. That
-# is the CORRECT outcome: an honest "cannot detect" beats a row that scores 0
-# on every real clone while suppressing Check #3's collision report. Inventing
-# a replacement discriminator to make this green again would repeat exactly the
-# mistake this pass exists to undo. The remedy is upstream — author
-# `itemFontSize: { desktop: 64, mobile: 40 }` in `variations.js` (the tier
-# shape the block actually declares), or give `listColumns` real routing.
+# ✅ `two-column-editorial` IS NOW RESOLVABLE (2026-09-05 follow-up session,
+# third review of this mechanism). The two upstream gaps this file's previous
+# comment named as the remedy are both closed:
+#   itemFontSize — `nav-drawer/variations.js` now authors the TIER shape the
+#                  block actually declares (`{desktop: 64, mobile: 40}`), not
+#                  a flat scalar, so the converter's write and the seeded
+#                  value are the same shape and match exactly.
+#   listColumns  — `converter/resolvers/grid.py` now resolves the grid
+#                  column-COUNT destination via a DB-driven lookup
+#                  (`db_lookup.attr_for_grid_column_count`, keyed on the
+#                  pseudo-property `"grid-template-columns:count"`) instead
+#                  of a single hardcoded `"columns"` literal, and
+#                  `sgs/nav-menu/block.json` declares
+#                  `"css:grid-template-columns:count": "listColumns"` — so it
+#                  is now CSS-routable (previously `css_property`/
+#                  `css_element` were both NULL, the exact reason this test
+#                  used to require the seed-time filter to refuse it).
+# Confirmed live: `variant_composition_attr_slots` now carries seeded rows for
+# both `two-column-editorial.sgs/nav-menu.itemFontSize` and `.listColumns`
+# (previously zero rows for this variant beyond `itemFontWeight`), and
+# `detect_variant()` returns `"two-column-editorial"` for the real-clone-
+# shaped fixture below.
 
 _TWO_COLUMN_ATTRS = {"drawerBg": "surface", "closeStyle": "text-swap"}
 _TWO_COLUMN_CHILD_SLUGS = ["sgs/nav-menu", "sgs/button"]
@@ -212,7 +210,7 @@ _TWO_COLUMN_CHILD_BLOCKS = [
         "sgs/nav-menu",
         {
             "gap": "4px",
-            "itemFontSize": {"desktop": 64},
+            "itemFontSize": {"desktop": 64, "mobile": 40},
             "listColumns": {"desktop": 2, "mobile": 1},
         },
     ),
@@ -220,19 +218,37 @@ _TWO_COLUMN_CHILD_BLOCKS = [
 ]
 
 
-def test_detect_variant_two_column_editorial_is_honestly_undetectable():
-    """`two-column-editorial` has NO observable discriminator — assert None.
+def test_detect_variant_two_column_editorial_now_resolves_on_real_clone_shape():
+    """`two-column-editorial` IS detected once given the shape a real clone
+    actually produces — the tier-object `itemFontSize`/`listColumns` fix.
 
-    Its own attribute values are all duplicated by `floating-capped-card`
-    (drawerBg:surface, closeStyle:text-swap), its child SLUG set is identical
-    to that variant's, and every one of its unique child ATTRIBUTE values is
-    refused at seed time (see the block comment above). `detect_variant` must
-    say so rather than resolve on a signal that cannot fire on a real clone.
+    `two-column-editorial` and `floating-capped-card` nest the IDENTICAL child
+    slug set {sgs/nav-menu, sgs/button}, so tier-1 slug-uniqueness has nothing
+    to discriminate on (see the ambiguous-tie test above this one). Tier 2
+    (child-attribute-value composition) now carries two real discriminating
+    rows for this variant — `itemFontSize` and `listColumns` — both routable
+    and both written in the tier-object shape a real clone actually produces.
+    """
+    from converter.db import db_lookup
 
-    Both the real extraction shape AND the old hand-written flat shape are
-    asserted, so neither a fixture drifting back to the flat value nor a
-    genuine tier write can quietly turn this green again without the
-    discriminator itself being fixed upstream.
+    assert db_lookup.detect_variant(
+        "sgs/nav-drawer",
+        _TWO_COLUMN_ATTRS,
+        child_slugs=_TWO_COLUMN_CHILD_SLUGS,
+        child_blocks=_TWO_COLUMN_CHILD_BLOCKS,
+    ) == "two-column-editorial"
+
+
+def test_detect_variant_two_column_editorial_flat_shape_still_fails_closed():
+    """NEGATIVE CONTROL — the OLD hand-written flat shape (what a clone would
+    have produced before `itemFontSize` was fixed to a tier object) must
+    still resolve to `None`, not `two-column-editorial`. This proves the
+    match is genuinely value-shape-aware (an exact string match against the
+    seeded tier-object JSON), not merely "some value is present" — a flat
+    `64`/`itemFontSizeMobile: 40` can never equal the seeded
+    `{"desktop":64,"mobile":40}` string, so this scenario (which no current
+    `variations.js` can produce any more, but which a REGRESSION back to the
+    flat shape would) must keep failing closed.
     """
     from converter.db import db_lookup
 
@@ -240,13 +256,12 @@ def test_detect_variant_two_column_editorial_is_honestly_undetectable():
         ("sgs/nav-menu", {"gap": "4px", "itemFontSize": 64, "itemFontSizeMobile": 40}),
         ("sgs/button", {}),
     ]
-    for children in (_TWO_COLUMN_CHILD_BLOCKS, flat_shape):
-        assert db_lookup.detect_variant(
-            "sgs/nav-drawer",
-            _TWO_COLUMN_ATTRS,
-            child_slugs=_TWO_COLUMN_CHILD_SLUGS,
-            child_blocks=children,
-        ) is None
+    assert db_lookup.detect_variant(
+        "sgs/nav-drawer",
+        _TWO_COLUMN_ATTRS,
+        child_slugs=_TWO_COLUMN_CHILD_SLUGS,
+        child_blocks=flat_shape,
+    ) is None
 
 
 def test_composition_attr_tier_resolves_a_live_seeded_row():

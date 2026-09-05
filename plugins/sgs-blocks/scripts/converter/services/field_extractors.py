@@ -412,8 +412,15 @@ def extract_field_value(
     #             via icon_resolver > BEM modifier)
     # 'identity' is the DB role on an icon block's source attr (sgs/icon.iconSource);
     # it resolves to an icon slug via the SAME chain (D-2026-07-02).
+    # 'icon' (added 2026-09-06, Check#12 roleguess Build 1) is the array-item
+    # field role — the analogous multi-format union to 'image-object' for a
+    # repeater's own icon field (sgs/trust-bar items[].icon, sgs/process-steps
+    # steps[].icon, sgs/form-field-tiles tiles[].icon) — resolves via the SAME
+    # chain: it stores whatever format the resolver actually found (a lucide
+    # slug, dashicon name, etc.), with a sibling field (e.g. iconSource) naming
+    # which format that is.
     # ------------------------------------------------------------------
-    if role in ("icon-slug", "identity"):
+    if role in ("icon-slug", "identity", "icon"):
         # Priority 1: data-icon / data-lucide attribute on the element.
         for attr_name in ("data-icon", "data-lucide"):
             val = element.get(attr_name)
