@@ -82,6 +82,8 @@
 		"sgs/accordionHeaderBackground",
 		"sgs/accordionIconColour",
 		"sgs/accordionIconColourGradient",
+		"sgs/accordionIconColourHover",
+		"sgs/accordionIconColourHoverGradient",
 		"sgs/accordionOpenIcon",
 		"sgs/accordionCloseIcon",
 		"sgs/accordionDefaultOpen"

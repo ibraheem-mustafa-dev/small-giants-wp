@@ -275,6 +275,14 @@
 	height: 16px;
 }
 
+.wp-block-sgs-before-after__handle:hover svg,
+.wp-block-sgs-before-after__handle:focus-visible svg {
+	/* Fallback chains to the resting colour, then the CSS default — render.php
+	 * only sets --sgs-before-after-handle-icon-colour-hover when
+	 * handleIconColourHover is actually configured. */
+	stroke: var( --sgs-before-after-handle-icon-colour-hover, var( --sgs-before-after-handle-icon-colour, #1e1e1e ) );
+}
+
 /* --- The native range input IS the accessible + no-JS-safe divider control.
  * It always renders and is always keyboard-operable; it is made visually
  * invisible (opacity 0) but full-size and on top, so pointer drag lands on

@@ -117,7 +117,15 @@
 						"css:stroke": "handleIconColour",
 						"css:stroke-gradient": "handleIconColourGradient"
 					},
-					"_note": "The draggable divider handle/grip (`.wp-block-sgs-before-after__handle`, render.php line 559). handleColour paints its background. handleIconColour styles the icon's SVG stroke — a property with no cluster-member analogue anywhere in cluster-member-sets.json (no css:stroke member exists in the current taxonomy), so it is deliberately left unclustered rather than force-fit into background-color. `prefix: \"\"` opts this element out of orphan-candidate scanning so handleIconColour is reported honestly as an accepted gap (adding a css:stroke member is a framework-level taxonomy change, out of scope for a single block's manifest). Found live 2026-08-15: DB tagged 2 attrs css_element='handle', undeclared until now. 2026-09-05 (svg-paint-gradient end-shape): handleIconColourGradient added as the FIRST svg-paint-gradient row in the framework — resolved via sgs_svg_stroke_gradient() (same mechanism as sgs/icon's iconColourGradient), never the background-image custom-property-gradient pattern used elsewhere on this same block, because a stroke gradient needs a real SVG <linearGradient>/<radialGradient> def, not a CSS background paint. css:stroke/css:stroke-gradient entries added here rather than to cluster-member-sets.json (still no framework-wide stroke-gradient vocabulary member — same scope boundary as the note above)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:stroke": "handleIconColourHover",
+								"css:stroke-gradient": "handleIconColourHoverGradient"
+							}
+						}
+					},
+					"_note": "The draggable divider handle/grip (`.wp-block-sgs-before-after__handle`, render.php line 559). handleColour paints its background. handleIconColour styles the icon's SVG stroke — a property with no cluster-member analogue anywhere in cluster-member-sets.json (no css:stroke member exists in the current taxonomy), so it is deliberately left unclustered rather than force-fit into background-color. `prefix: \"\"` opts this element out of orphan-candidate scanning so handleIconColour is reported honestly as an accepted gap (adding a css:stroke member is a framework-level taxonomy change, out of scope for a single block's manifest). Found live 2026-08-15: DB tagged 2 attrs css_element='handle', undeclared until now. 2026-09-05 (svg-paint-gradient end-shape): handleIconColourGradient added as the FIRST svg-paint-gradient row in the framework — resolved via sgs_svg_stroke_gradient() (same mechanism as sgs/icon's iconColourGradient), never the background-image custom-property-gradient pattern used elsewhere on this same block, because a stroke gradient needs a real SVG <linearGradient>/<radialGradient> def, not a CSS background paint. css:stroke/css:stroke-gradient entries added here rather than to cluster-member-sets.json (still no framework-wide stroke-gradient vocabulary member — same scope boundary as the note above). handleIconColourHover/handleIconColourHoverGradient (2026-09-06, colour-conformance closeout) resolved via the shared sgs_icon_gradient_css() composer, source-aware (lucide/wp-icon)."
 				}
 			}
 		},
@@ -419,6 +427,15 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the handle icon's SVG stroke via a real <linearGradient>/<radialGradient> def (sgs_svg_stroke_gradient(), same mechanism as sgs/icon's iconColourGradient) rather than the background-image custom-property pattern used elsewhere on this block (D636 gradient rollout, extended 2026-09-05 — the ONLY svg-paint-gradient row in the framework at the time this was added). Non-empty wins over handleIconColour at paint time."
+		},
+		"handleIconColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"handleIconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the handle icon's SVG stroke on hover, resolved via the shared sgs_icon_gradient_css() composer. Non-empty wins over handleIconColourHover at paint time."
 		},
 		"handleIconSource": {
 			"type": "string",

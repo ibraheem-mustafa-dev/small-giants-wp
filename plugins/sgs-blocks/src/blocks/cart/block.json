@@ -67,7 +67,15 @@
 						"css:color": "iconColour",
 						"css:stroke": "iconColourGradient"
 					},
-					"_note": "iconSize is a real attribute but is not a css:font-size (sets width/height, not text size) — no cluster member exists, so it is an honest ORPHAN (FR-35-4). `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "iconColourHover",
+								"css:stroke": "iconColourHoverGradient"
+							}
+						}
+					},
+					"_note": "iconSize is a real attribute but is not a css:font-size (sets width/height, not text size) — no cluster member exists, so it is an honest ORPHAN (FR-35-4). `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover/iconColourHoverGradient (2026-09-06, colour-conformance closeout) mirror sgs/icon's own hover states shape exactly — resolved via sgs_icon_gradient_css() on .sgs-cart__trigger:hover."
 				},
 				"badge": {
 					"label": "Item-count badge",
@@ -127,6 +135,15 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the cart icon's stroke instead of a flat colour. Non-empty wins over iconColour at render time (D636/D644)."
+		},
+		"iconColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"iconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the cart icon's stroke on hover instead of a flat colour. Non-empty wins over iconColourHover at render time."
 		},
 		"badgeColour": {
 			"type": "string",

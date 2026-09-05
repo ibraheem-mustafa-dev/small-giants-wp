@@ -29,6 +29,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconSize,
 		iconColour,
 		iconColourGradient,
+		iconColourHover,
+		iconColourHoverGradient,
 		badgeColour,
 		badgeColourGradient,
 		badgeTextColour,
@@ -89,6 +91,16 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: iconColourGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { iconColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: iconColourHover,
+								onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: iconColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

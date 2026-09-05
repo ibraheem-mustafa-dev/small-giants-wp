@@ -72,12 +72,14 @@ $icon_name             = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attribut
 $icon_size             = absint( $attributes['iconSize'] ?? 24 );
 $icon_colour           = $attributes['iconColour'] ?? 'primary';
 // D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above.
-$icon_colour_gradient  = $attributes['iconColourGradient'] ?? '';
-$badge_colour          = $attributes['badgeColour'] ?? 'accent';
-$badge_text_colour     = $attributes['badgeTextColour'] ?? 'accent-text';
-$aria_label            = sanitize_text_field( $attributes['ariaLabel'] ?? __( 'View your cart', 'sgs-blocks' ) );
-$show_zero             = ! empty( $attributes['showZero'] );
-$hide_when_empty       = ! empty( $attributes['hideWhenEmpty'] );
+$icon_colour_gradient       = $attributes['iconColourGradient'] ?? '';
+$icon_colour_hover          = $attributes['iconColourHover'] ?? '';
+$icon_colour_hover_gradient = $attributes['iconColourHoverGradient'] ?? '';
+$badge_colour               = $attributes['badgeColour'] ?? 'accent';
+$badge_text_colour          = $attributes['badgeTextColour'] ?? 'accent-text';
+$aria_label                 = sanitize_text_field( $attributes['ariaLabel'] ?? __( 'View your cart', 'sgs-blocks' ) );
+$show_zero                  = ! empty( $attributes['showZero'] );
+$hide_when_empty            = ! empty( $attributes['hideWhenEmpty'] );
 
 // FR-36-19 Phase 2 panel attrs.
 $panel_heading      = sanitize_text_field( $attributes['panelHeading'] ?? __( 'Your cart', 'sgs-blocks' ) );
@@ -278,6 +280,18 @@ $sgs_cart_stroke_grad = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '
 if ( '' !== $sgs_cart_stroke_grad['defs'] ) {
 	$icon_svg     = sgs_svg_inject_defs( $icon_svg, $sgs_cart_stroke_grad['defs'] );
 	$scoped_css[] = "{$sel} .sgs-cart__icon svg{" . $sgs_cart_stroke_grad['css'] . ';}';
+}
+
+// Icon hover — flat-or-gradient, via the shared sgs_icon_gradient_css()
+// composer (2026-09-06). This block's icon is always Lucide (no source
+// picker), so the composer always takes the SVG stroke-gradient branch;
+// using it anyway keeps every icon-hosting block on one call site.
+$sgs_cart_icon_hover_grad = sgs_icon_gradient_css( 'lucide', $icon_colour_hover_gradient, $uid . '-igh', "{$sel} .sgs-cart__icon svg" );
+if ( '' !== $sgs_cart_icon_hover_grad['css'] ) {
+	$icon_svg     = sgs_svg_inject_defs( $icon_svg, $sgs_cart_icon_hover_grad['defs'] );
+	$scoped_css[] = sgs_hover_state_rules( "{$sel} .sgs-cart__trigger", $sgs_cart_icon_hover_grad['css'], ':focus-visible', ' .sgs-cart__icon svg' );
+} elseif ( '' !== $icon_colour_hover ) {
+	$scoped_css[] = sgs_hover_state_rules( "{$sel} .sgs-cart__trigger", 'color:' . sgs_colour_value( $icon_colour_hover ), ':focus-visible', ' .sgs-cart__icon svg' );
 }
 
 // ── Accessible label with count ───────────────────────────────────────────────

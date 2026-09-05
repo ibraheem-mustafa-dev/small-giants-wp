@@ -478,6 +478,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		handleColourGradient,
 		handleIconColour,
 		handleIconColourGradient,
+		handleIconColourHover,
+		handleIconColourHoverGradient,
 		handleIconSource,
 		handleIconName,
 		heightUnit,
@@ -738,6 +740,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: handleIconColourGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { handleIconColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: handleIconColourHover,
+								onChange: ( val ) => setAttributes( { handleIconColourHover: val } ),
+								gradientValue: handleIconColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { handleIconColourHoverGradient: val ?? '' } ),
 							},
 						] }
 					/>
