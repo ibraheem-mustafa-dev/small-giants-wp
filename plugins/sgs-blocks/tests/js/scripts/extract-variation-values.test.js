@@ -148,6 +148,65 @@ describe( 'extract-variation-values', () => {
 			} );
 		} );
 
+		test( 'helper function with a return inside a loop plus an outer return is unresolved', () => {
+			const source = `
+				function trap() {
+					for ( let i = 0; i < 1; i++ ) {
+						return [ 'sgs/inner-wrong', {} ];
+					}
+					return [ 'sgs/outer', {} ];
+				}
+				const variations = [
+					{
+						name: 'test-loop-multi-return',
+						attributes: {},
+						innerBlocks: [
+							trap(),
+						],
+					},
+				];
+				export default variations;
+			`;
+			const result = extractFromFixture( source );
+			// The loop's return + the outer return = 2 possible values, so it
+			// must resolve as unresolved (not fabricate 'sgs/outer').
+			expect( result.variants[ 'test-loop-multi-return' ] ).toEqual( {
+				attributes: {},
+				nonLiteralAttrs: [],
+				innerBlockSlugs: [],
+				unresolvedInnerBlocks: 1,
+			} );
+		} );
+
+		test( 'helper function with the only return inside a loop resolves', () => {
+			const source = `
+				function single() {
+					for ( let i = 0; i < 1; i++ ) {
+						return [ 'sgs/only', {} ];
+					}
+				}
+				const variations = [
+					{
+						name: 'test-loop-single-return',
+						attributes: {},
+						innerBlocks: [
+							single(),
+						],
+					},
+				];
+				export default variations;
+			`;
+			const result = extractFromFixture( source );
+			// Exactly one return anywhere in the function (inside the loop),
+			// so it should resolve correctly.
+			expect( result.variants[ 'test-loop-single-return' ] ).toEqual( {
+				attributes: {},
+				nonLiteralAttrs: [],
+				innerBlockSlugs: [ 'sgs/only' ],
+				unresolvedInnerBlocks: 0,
+			} );
+		} );
+
 		test( 'helper function with non-array return', () => {
 			const source = `
 				function badHelper() {

@@ -290,6 +290,19 @@ function resolveLocalFunctionCallBlock( callNode, ast ) {
 					if ( stmt.finalizer && stmt.finalizer.type === 'BlockStatement' ) {
 						findReturnsInBlock( stmt.finalizer.body, depth + 1 );
 					}
+					// Loop statements (While/DoWhile/For/ForIn/ForOf) carry their body
+					// under `stmt.body`, which may be a BlockStatement (braced) or a
+					// single statement (unbraced, e.g. `for (...) return [...];`).
+					if ( stmt.body ) {
+						if ( stmt.body.type === 'BlockStatement' ) {
+							findReturnsInBlock( stmt.body.body, depth + 1 );
+						} else if ( stmt.body.type === 'ReturnStatement' ) {
+							returnValue = stmt.body.argument;
+							returnCount++;
+						} else {
+							findReturnsInBlock( [ stmt.body ], depth + 1 );
+						}
+					}
 				}
 				// Do NOT recurse into nested function declarations.
 			}
