@@ -151,7 +151,7 @@
     "added_commit": "d1e36104",
     "budget_ms": 25385,
     "order": 16,
-    "tier_reason": "Promoted full\u2192fast 2026-09-02 (P-DEAD-API-PROMOTE-TO-HARD-GATE): baseline is genuinely 0 (all 96 real WP/WC names promoted to the allowlist), self-test still catches the D641 incident call, and it already runs hard-blocking on every `npm start` via prestart \u2014 gating it on every prebuild too closes the gap where a plain `npm run build` (no start, no deploy) could still ship a hallucinated call."
+    "tier_reason": "Promoted full→fast 2026-09-02 (P-DEAD-API-PROMOTE-TO-HARD-GATE): baseline is genuinely 0 (all 96 real WP/WC names promoted to the allowlist), self-test still catches the D641 incident call, and it already runs hard-blocking on every `npm start` via prestart — gating it on every prebuild too closes the gap where a plain `npm run build` (no start, no deploy) could still ship a hallucinated call."
   },
   {
     "id": "check-control-ux",
@@ -422,7 +422,7 @@
     "added_commit": "60a920b6",
     "budget_ms": 35892,
     "order": 46,
-    "tier_reason": "47.3s / 33.8% \u2014 converter+oracle unit tests. Not deployed code; a converter regression cannot reach the canary, so pre-deploy is the honest home."
+    "tier_reason": "47.3s / 33.8% — converter+oracle unit tests. Not deployed code; a converter regression cannot reach the canary, so pre-deploy is the honest home."
   },
   {
     "id": "check-shared-css-state-rules",
@@ -441,7 +441,7 @@
     "added_commit": "7af5f95f",
     "budget_ms": 9826,
     "order": 48,
-    "tier_reason": "11.3s / 8.1% \u2014 whole-repo static inspector-rule scan."
+    "tier_reason": "11.3s / 8.1% — whole-repo static inspector-rule scan."
   },
   {
     "id": "check-element-manifest-conformance",
@@ -505,7 +505,7 @@
     "added_commit": "071b7915",
     "budget_ms": 15149,
     "order": 55,
-    "tier_reason": "16.7s / 11.9% \u2014 whole-repo static block-file structure audit."
+    "tier_reason": "16.7s / 11.9% — whole-repo static block-file structure audit."
   },
   {
     "id": "audit-block-uniformity",
@@ -911,5 +911,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 97
+  },
+  {
+    "id": "check-colour-attr-css-property",
+    "cmd": "python scripts/check-colour-attr-css-property.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 98
   }
 ]

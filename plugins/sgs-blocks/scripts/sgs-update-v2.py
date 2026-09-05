@@ -2632,7 +2632,17 @@ def _apply_attr_classification_overrides(
     # already-stored DB value. `css_layer`/`css_element`/`css_tier` never had this
     # failure mode because they were ALREADY in the reset list.
     if not dry_run:
-        for _reset_col in ("css_layer", "css_element", "css_tier", "css_state"):
+        # `css_property` ADDED to the reset list 2026-09-05. The comment above
+        # predicted this exact report: it was "deliberately left un-reset ...
+        # re-run the diagnostic after future reseeds if a stale css_property is
+        # ever reported". It was — three F6 routing-determinism findings
+        # (sgs/hero, sgs/responsive-logo) survived a corrected classifier because
+        # the per-row additive UPDATE below only sets columns present in that
+        # row's own `fields`, so an attr the classifier NO LONGER classifies kept
+        # whatever stale property was already stored. The classifier had been
+        # fixed to evict those attrs (slot-level manifest precedence); the DB
+        # simply never caught up — the identical failure mode `css_state` had.
+        for _reset_col in ("css_layer", "css_element", "css_tier", "css_state", "css_property"):
             if _reset_col in existing_cols:
                 c.execute(f"UPDATE block_attributes SET {_reset_col} = NULL")
     for (slug, attr), fields in combined.items():

@@ -2534,6 +2534,22 @@ def extract_css_property_and_layer() -> dict:
         block_dir = BLOCKS_DIR / short_slug
         php_path = block_dir / "render.php"
         css_path = block_dir / "style.css"
+        # Root cause (2026-09-05, D962-adjacent): this scan hardcoded the
+        # `style.css` filename and silently skipped the ENTIRE per-block
+        # CSS-consumption pass (`_custom_props_consumed` below) for any block
+        # that ships `style.scss` instead — a real, existing sibling naming
+        # convention in this codebase (sgs/timeline, sgs/responsive-logo), NOT
+        # a hypothetical. Cost: every colour attr on sgs/timeline that only
+        # resolves via its stylesheet (rowStripeColourA/rowStripeColourB) came
+        # back css_property=NULL, and survey.js's colour-conformance census
+        # refused both with REFUSED:no-css_property, undercounting the block's
+        # true conformance. Fall back to `style.scss` when `style.css` is
+        # absent — same file, later build step compiles one to the other, so
+        # reading whichever source file exists is faithful either way.
+        if not css_path.exists():
+            scss_path = block_dir / "style.scss"
+            if scss_path.exists():
+                css_path = scss_path
 
         # Manifest-derived data (element layers, root element, attrMap reverse
         # lookup) is read from block.json alone — a pure declarative fact that
@@ -2746,9 +2762,30 @@ def extract_css_property_and_layer() -> dict:
         # human-curated declaration, same standing as element. Selector-context
         # evidence (2026-07-21) is the fallback for the ~465 attrs on blocks with no
         # manifest coverage for this attr; it is still evidence, not name-parsing.
-        state = (manifest_hit or {}).get("css_state") or resolved_state.get((slug, attr))
+        #
+        # 2026-09-05 (db-consistency residual close-out) — an attrMap hit must win
+        # OUTRIGHT on the state axis, even when its OWN css_state is None. `None`
+        # here means "this attrMap entry is the BASE (resting) attrMap, not a
+        # states.<name>.attrMap entry" — an explicit declaration, not "no opinion".
+        # The old `or` treated it as "no opinion" and fell through to the emission
+        # guess whenever one existed, so a resting attrMap-declared attr could
+        # silently inherit a hover state from an unrelated (mis-paired) emission
+        # token — e.g. sgs/post-grid's `cardBgColour` (base attrMap, no state)
+        # picking up state='hover' from emission evidence that actually belongs to
+        # a different custom property chain entirely. Mirrors the css_property
+        # precedence above: only fall through to the emission guess when there is
+        # NO attrMap declaration for this attr at all.
+        if manifest_hit and manifest_hit.get("source") == "attrMap":
+            state = manifest_hit.get("css_state")
+        else:
+            state = resolved_state.get((slug, attr))
         if state:
             fields["css_state"] = state
+        # 2026-09-05 (db-consistency residual close-out) — track WHICH source won
+        # css_property, so the slot-precedence eviction pass below (just before the
+        # JSON write) can tell an authoritative manifest declaration apart from an
+        # emission-parse guess. Internal bookkeeping only — stripped before write.
+        fields["_prop_source"] = "manifest" if manifest_css_property else "emission"
         classification_entries.append({"slug": slug, "attr": attr, "fields": fields})
 
     # Manifest-only attrs (2026-07-23, Bean — declarative-first, R-31-1). An attr the block
@@ -2779,7 +2816,9 @@ def extract_css_property_and_layer() -> dict:
                 element in (None, "", "root", "self")
                 or (root_key is not None and element == root_key)
             )
-            fields = {"css_property": css_key}
+            # Every entry on this pass is seeded FROM an attrMap declaration (guarded
+            # above by `hit.get("source") != "attrMap"`) — always manifest-sourced.
+            fields = {"css_property": css_key, "_prop_source": "manifest"}
             # Same A7 verdict on the manifest-only path (an attrMap-declared attr the
             # emission parser could not trace). `attr in known_attrs` above already
             # excludes `native:*` targets, which are not real block attrs.
@@ -2865,7 +2904,13 @@ def extract_css_property_and_layer() -> dict:
                 # gridTemplateColumns*), and they stay open, correctly.
                 if not base_fields or not base_fields.get("css_property"):
                     continue
-                fields = {"css_property": base_fields["css_property"], "css_tier": tier}
+                fields = {
+                    "css_property": base_fields["css_property"],
+                    "css_tier": tier,
+                    # Inherit the base's provenance too — a tier sibling of a
+                    # manifest-owned attr is just as authoritative as its base.
+                    "_prop_source": base_fields.get("_prop_source", "emission"),
+                }
                 # Carry the base's SELECTOR context too. The sibling paints the same
                 # property on the same element in the same state — only the breakpoint
                 # differs. Dropping these would leave the tier row routable but aimed at
@@ -2895,6 +2940,95 @@ def extract_css_property_and_layer() -> dict:
             fields["inspector_control_type"] = "UnitControl"
             unit_control_written += 1
         classification_entries.append({"slug": slug, "attr": attr, "fields": fields})
+
+    # ---- slot-level precedence eviction (2026-09-05, db-consistency residual
+    # close-out; see reports/2026-09-05-db-consistency-residual-ambiguities.md).
+    #
+    # THE GAP: the per-attribute manifest-wins principle above (2026-07-23, Bean —
+    # "an explicit manifest attrMap `css:<property>` key ... WINS over the
+    # emission-parse guess") was applied PER-ATTRIBUTE but never PER-SLOT. An attr
+    # WITH its own manifest entry gets the right property; an attr with NO
+    # manifest entry falls through to the emission parse, which can grab a
+    # NEIGHBOURING property off the same rendered rule and pile onto a slot a
+    # manifest has already authoritatively assigned to someone else. Nothing
+    # evicted the guess, because precedence was additive, not exclusive — an
+    # explicit declaration must be able to RETRACT a heuristic guess, not merely
+    # sit alongside it.
+    #
+    # Slot key mirrors exactly how db-consistency's own resolver_bridge.py groups
+    # column-derived candidates for the live resolver
+    # (css_property, css_element, css_state, css_tier) — see enumerate_candidates's
+    # `col_by_key` grouping. NULL and "" are normalised to the same sentinel so a
+    # manifest row that omits a field and one that stores it empty are treated as
+    # the same slot (mirrors db-consistency's own `IFNULL(...,'')` grouping).
+    def _slot_key(fields: dict) -> tuple:
+        def _norm(v):
+            return v if v not in (None, "") else None
+
+        return (
+            fields.get("css_property"),
+            _norm(fields.get("css_element")),
+            _norm(fields.get("css_state")),
+            _norm(fields.get("css_tier")),
+        )
+
+    manifest_slots: set[tuple] = set()
+    for entry in classification_entries:
+        fields = entry["fields"]
+        if fields.get("_prop_source") == "manifest" and fields.get("css_property"):
+            manifest_slots.add((entry["slug"], *_slot_key(fields)))
+
+    _slot_evicted = 0
+    _slot_eviction_log: list[dict] = []
+    for entry in classification_entries:
+        fields = entry["fields"]
+        if fields.get("_prop_source") != "manifest" and fields.get("css_property"):
+            key = (entry["slug"], *_slot_key(fields))
+            if key in manifest_slots:
+                _slot_eviction_log.append(
+                    {
+                        "slug": entry["slug"],
+                        "attr": entry["attr"],
+                        "evicted_css_property": fields["css_property"],
+                    }
+                )
+                # Drop the property AND its dependent layer classification — a
+                # css_layer with no owning css_property is meaningless for
+                # routing. css_element/css_state are left untouched: they rest on
+                # independent evidence (BEM-selector / selector-context) and
+                # remain honest facts about the attr regardless of which slot it
+                # no longer contends for.
+                fields.pop("css_property", None)
+                fields.pop("css_layer", None)
+                _slot_evicted += 1
+
+    # Role guard (2026-09-05, same close-out): a non-painting role never carries a
+    # css_property, for the case where no manifest owner exists to evict it (the
+    # slot-precedence pass above only fires when a manifest-owned slot exists at
+    # the SAME key — this is the backstop for when it doesn't). Keyed on ROLE,
+    # never on attr_type: a type-based guard was measured and rejected — 1,680
+    # string + 105 boolean rows carry a legitimate css_property tree-wide
+    # (including 59 colour attrs with no manifest entry, and booleans that
+    # legitimately drive effects, e.g. card-grid.imageZoomHover -> transform,
+    # container.bgKenBurns -> animation). Role-based blast radius is exactly the
+    # 2 rows these roles actually describe (both sgs/responsive-logo: `alt`
+    # role=image-alt, `logoDecorative` role=boolean-visibility).
+    _NON_PAINTING_ROLES = frozenset({"image-alt", "boolean-visibility"})
+    _role_guarded = 0
+    for entry in classification_entries:
+        fields = entry["fields"]
+        if role_of.get((entry["slug"], entry["attr"])) in _NON_PAINTING_ROLES and fields.get(
+            "css_property"
+        ):
+            fields.pop("css_property", None)
+            fields.pop("css_layer", None)
+            _role_guarded += 1
+
+    # Strip the internal bookkeeping key from every entry before it reaches the
+    # on-disk truth file — it is provenance for THIS pass only, never a real
+    # classification field Stage 1C should apply.
+    for entry in classification_entries:
+        entry["fields"].pop("_prop_source", None)
 
     CSS_PROPERTY_CLASSIFICATIONS_PATH.write_text(
         json.dumps(
@@ -2962,6 +3096,9 @@ def extract_css_property_and_layer() -> dict:
         "unit_attrs_excluded": len(unit_attrs_excluded),
         "tier_inherited": _tier_inherited,
         "unit_control_written": unit_control_written,
+        "slot_precedence_evicted": _slot_evicted,
+        "slot_precedence_eviction_log": _slot_eviction_log,
+        "role_guard_evicted": _role_guarded,
         "resolved": {f"{s}::{a}": sorted(p) for (s, a), p in resolved.items()},
         "unresolved_reasons": {f"{s}::{a}": r for (s, a), r in unresolved_reasons.items()},
         "disagreements": disagreements,

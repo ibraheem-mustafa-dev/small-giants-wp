@@ -583,8 +583,11 @@
       "attr": "tagTextColour",
       "fields": {
         "canonical_slot": "label",
-        "derived_selector": ".sgs-product-card__tag--trial"
-      }
+        "derived_selector": ".sgs-product-card__tag--trial",
+        "css_property": "color",
+        "css_element": "tag"
+      },
+      "_why": "2026-09-05. UNMASKED by adding css_property to sgs-update-v2.py Stage 1C reset list: a STALE DB value had been masking the fact that the classifier cannot derive this row, and this entry declared canonical_slot/derived_selector but never css_property. Verified against product-card/render.php:625-635 - tagTextColour genuinely paints color on .{uid}.sgs-product-card__tag--trial via sgs_text_colour_decl(). The emission scanner cannot trace it because the value takes TWO helper hops into a variable (sgs_resolve_text_colour_or_gradient() -> $effective -> sgs_text_colour_decl()) and the selector is likewise built into a variable first, so no literal property/selector pair sits in one statement for the shape-matcher to find. Declares the color/tag pair the derived layer previously carried by accident."
     },
     {
       "slug": "sgs/product-card",
@@ -1210,22 +1213,31 @@
       "slug": "sgs/product-card",
       "attr": "pickerPillBgColour",
       "fields": {
-        "derived_selector": ".sgs-product-card__pill"
-      }
+        "derived_selector": ".sgs-product-card__pill",
+        "css_property": "background-color",
+        "css_element": "pill"
+      },
+      "_why": "2026-09-05 root-cause fix (colour-conformance census 9-row REFUSED:no-css_property gap, D962-adjacent). This attr is collected by sgs/product-card/render.php into $picker_style_attrs under a RENAMED key ('picker{X}Colour' -> '{x}Colour') and forwarded via render_block('sgs/option-picker', ...) -- the actual CSS emission happens inside option-picker's own render.php/style.css under the renamed key, which sgs/option-picker's OWN block_attributes row for that renamed key already correctly resolves (verified live via sgs-db.py). extract-signatures.py scans one block's render.php + style.css at a time and never follows a render_block() forward across a key rename, so this attr's real target was invisible to it. Value mirrors option-picker's own already-correct row for the same renamed attribute exactly."
     },
     {
       "slug": "sgs/product-card",
       "attr": "pickerPillTextColour",
       "fields": {
-        "derived_selector": ".sgs-product-card__pill"
-      }
+        "derived_selector": ".sgs-product-card__pill",
+        "css_property": "color",
+        "css_element": "pill"
+      },
+      "_why": "2026-09-05 root-cause fix (colour-conformance census 9-row REFUSED:no-css_property gap, D962-adjacent). This attr is collected by sgs/product-card/render.php into $picker_style_attrs under a RENAMED key ('picker{X}Colour' -> '{x}Colour') and forwarded via render_block('sgs/option-picker', ...) -- the actual CSS emission happens inside option-picker's own render.php/style.css under the renamed key, which sgs/option-picker's OWN block_attributes row for that renamed key already correctly resolves (verified live via sgs-db.py). extract-signatures.py scans one block's render.php + style.css at a time and never follows a render_block() forward across a key rename, so this attr's real target was invisible to it. Value mirrors option-picker's own already-correct row for the same renamed attribute exactly."
     },
     {
       "slug": "sgs/product-card",
       "attr": "pickerPillBorderColour",
       "fields": {
-        "derived_selector": ".sgs-product-card__pill"
-      }
+        "derived_selector": ".sgs-product-card__pill",
+        "css_property": "border-color",
+        "css_element": "pill"
+      },
+      "_why": "2026-09-05 root-cause fix (colour-conformance census 9-row REFUSED:no-css_property gap, D962-adjacent). This attr is collected by sgs/product-card/render.php into $picker_style_attrs under a RENAMED key ('picker{X}Colour' -> '{x}Colour') and forwarded via render_block('sgs/option-picker', ...) -- the actual CSS emission happens inside option-picker's own render.php/style.css under the renamed key, which sgs/option-picker's OWN block_attributes row for that renamed key already correctly resolves (verified live via sgs-db.py). extract-signatures.py scans one block's render.php + style.css at a time and never follows a render_block() forward across a key rename, so this attr's real target was invisible to it. Value mirrors option-picker's own already-correct row for the same renamed attribute exactly."
     },
     {
       "slug": "sgs/product-card",
@@ -2956,6 +2968,59 @@
         "css_element": "trigger"
       },
       "_why": "2026-09-03 rogue-seed fix. Same shape as sgs/form.submitBackground immediately above — triggerBackground resolves via the trigger element's bare {prefix}{suffix} default convention (no attrMap entry), which extract-signatures.py's classifier never records regardless of regeneration. Declared here so db-consistency's rogue-seed check recognises the value as understood rather than unexplained drift."
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerLabelColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "label"
+      },
+      "_why": "2026-09-05 root-cause fix (colour-conformance census 9-row REFUSED:no-css_property gap, D962-adjacent). This attr is collected by sgs/product-card/render.php into $picker_style_attrs under a RENAMED key ('picker{X}Colour' -> '{x}Colour') and forwarded via render_block('sgs/option-picker', ...) -- the actual CSS emission happens inside option-picker's own render.php/style.css under the renamed key, which sgs/option-picker's OWN block_attributes row for that renamed key already correctly resolves (verified live via sgs-db.py). extract-signatures.py scans one block's render.php + style.css at a time and never follows a render_block() forward across a key rename, so this attr's real target was invisible to it. Value mirrors option-picker's own already-correct row for the same renamed attribute exactly."
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "childBtnBackground",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "child-button"
+      },
+      "_why": "2026-09-05 root-cause fix (colour-conformance census 9-row REFUSED:no-css_property gap, D962-adjacent). sgs/multi-button/render.php emits this as a '--sgs-mb-btn-{bg|color}-default' CUSTOM PROPERTY on ITS OWN wrapper, but that custom property is only ever CONSUMED (resolved to a real CSS property) inside sgs/button/style.css -- a DIFFERENT block's stylesheet (the second fallback tier of --sgs-btn-bg / --sgs-btn-color, verified live at button/style.css:71-72,119-120). extract-signatures.py's _custom_props_consumed() reads only the CURRENT block's own style.css, so a cross-block custom-property hand-off is structurally invisible to it. Value matches sgs/button's own already-correct colourBackground/colourText rows (same custom-property chain, same wrapper element). CORRECTED same-day (2026-09-05): the first css_element choice ('wrapper'/None) collided with a sibling attr on the identical (property, writer_path, element, state, tier) routing tuple, caught live by db-consistency-run's NEW-violation gate (order 19) -- 'the live resolver silently picks the first by rowid order'. Corrected to a distinguishing css_element that is honest about the real target: these attrs paint a target this block's OWN 'wrapper'/'entry' element does not resolve to."
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "childBtnTextColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "child-button"
+      },
+      "_why": "2026-09-05 root-cause fix (colour-conformance census 9-row REFUSED:no-css_property gap, D962-adjacent). sgs/multi-button/render.php emits this as a '--sgs-mb-btn-{bg|color}-default' CUSTOM PROPERTY on ITS OWN wrapper, but that custom property is only ever CONSUMED (resolved to a real CSS property) inside sgs/button/style.css -- a DIFFERENT block's stylesheet (the second fallback tier of --sgs-btn-bg / --sgs-btn-color, verified live at button/style.css:71-72,119-120). extract-signatures.py's _custom_props_consumed() reads only the CURRENT block's own style.css, so a cross-block custom-property hand-off is structurally invisible to it. Value matches sgs/button's own already-correct colourBackground/colourText rows (same custom-property chain, same wrapper element). CORRECTED same-day (2026-09-05): the first css_element choice ('wrapper'/None) collided with a sibling attr on the identical (property, writer_path, element, state, tier) routing tuple, caught live by db-consistency-run's NEW-violation gate (order 19) -- 'the live resolver silently picks the first by rowid order'. Corrected to a distinguishing css_element that is honest about the real target: these attrs paint a target this block's OWN 'wrapper'/'entry' element does not resolve to."
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "toggleLabelHoverColour",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "toggle-label",
+        "css_state": "hover"
+      },
+      "_why": "2026-09-05 root-cause fix (colour-conformance census 9-row REFUSED:no-css_property gap, D962-adjacent). render.php builds this declaration via sgs_background_paint_decl($toggle_label_hover_colour, $toggle_label_hover_colour_gradient) -- a real shared helper (includes/helpers-tokens.php:829) that always returns a 'background-color:...' or 'background-image:...' declaration -- then passes the RETURNED STRING into sgs_emit_state_colour_css() on .sgs-pricing-table__toggle-label. extract-signatures.py's Shape D helper registry (_HELPER_SUFFIX_PROPS) only recognises PREFIX+SELECTOR-shaped helpers (helper(attrs, 'prefix', selector)); sgs_background_paint_decl is a VALUE-in/decl-out helper with a different calling convention entirely, so it was never registered and its output was invisible to the classifier. background-color (not -image) matches this codebase's established Colour/ColourGradient sibling-pair convention (verified live: colourBackgroundHover=background-color, colourBackgroundHoverGradient=background-image, same pattern on button/product-card/form/google-reviews/modal) -- the flat colour attr always resolves to the -color form, its Gradient sibling to the -image form."
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "rowStripeColourA",
+      "fields": {
+        "css_element": "entry-odd"
+      },
+      "_why": "2026-09-05. rowStripeColourA/rowStripeColourB both correctly resolve to css_property=background-color via the classifier (style.scss fallback fix), but both target .sgs-timeline__entry with no distinguishing element -- they paint ALTERNATE rows (:nth-child(odd)/:nth-child(even), style.scss:1455-1462), not the same slot, so leaving both css_element NULL creates a genuine ambiguous-routing collision (caught live by db-consistency-run's NEW-violation gate). entry-odd/entry-even name the real distinguishing selector."
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "rowStripeColourB",
+      "fields": {
+        "css_element": "entry-even"
+      },
+      "_why": "2026-09-05. See rowStripeColourA's entry (added alongside this one) -- same alternating-row disambiguation, opposite parity."
     }
   ]
 }
