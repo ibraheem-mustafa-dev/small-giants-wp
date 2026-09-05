@@ -290,10 +290,16 @@
 @media (prefers-reduced-motion: no-preference) {
 	/* Underline slide-in on links (#115) */
 	/* Targets navigation links and generic text links within content */
+	/* Rule 43 (WCAG 1.4.1) fix, 2026-09-05: excludes .sgs-toc__link, the same way
+	 * .wp-block-button__link is already excluded — sgs/table-of-contents manages
+	 * its own hover/active-state treatment (opacity dim, no slide-underline) and
+	 * needs its --active rule's text-decoration:underline to win; this rule's
+	 * higher specificity (.entry-content li a:not(...)) was silently stripping
+	 * that state signal whenever the TOC renders inside page/post content. */
 	.wp-block-navigation-item__content,
 	.sgs-text-link,
 	.entry-content p a,
-	.entry-content li a:not(.wp-block-button__link) {
+	.entry-content li a:not(.wp-block-button__link):not(.sgs-toc__link) {
 		position: relative;
 		text-decoration: none;
 	}
@@ -301,7 +307,7 @@
 	.wp-block-navigation-item__content::after,
 	.sgs-text-link::after,
 	.entry-content p a::after,
-	.entry-content li a:not(.wp-block-button__link)::after {
+	.entry-content li a:not(.wp-block-button__link):not(.sgs-toc__link)::after {
 		content: '';
 		position: absolute;
 		width: 100%;
@@ -317,7 +323,7 @@
 	.wp-block-navigation-item__content:hover::after,
 	.sgs-text-link:hover::after,
 	.entry-content p a:hover::after,
-	.entry-content li a:not(.wp-block-button__link):hover::after {
+	.entry-content li a:not(.wp-block-button__link):not(.sgs-toc__link):hover::after {
 		transform: scaleX(1);
 		transform-origin: bottom left;
 	}
