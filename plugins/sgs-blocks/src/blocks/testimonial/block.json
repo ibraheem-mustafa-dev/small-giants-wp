@@ -144,7 +144,15 @@
 						"css:color": "nameColour",
 						"css:font-size": "nameFontSize",
 						"css:background-image": "nameColourGradient"
-					}
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "nameColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful."
 				},
 				"reviewer-role": {
 					"label": "Reviewer role",
@@ -156,7 +164,15 @@
 					"attrMap": {
 						"css:color": "roleColour",
 						"css:background-image": "roleColourGradient"
-					}
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "roleColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful."
 				},
 				"org-name": {
 					"label": "Organisation name",
@@ -168,7 +184,15 @@
 					"attrMap": {
 						"css:color": "orgColour",
 						"css:background-image": "orgColourGradient"
-					}
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "orgColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful."
 				},
 				"avatar-image": {
 					"label": "Avatar image",
@@ -199,7 +223,15 @@
 						"css:font-size": "ratingSize",
 						"css:color": "ratingColour",
 						"css:background-image": "ratingColourGradient"
-					}
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "ratingColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful."
 				},
 				"summary": {
 					"label": "Summary phrase",
@@ -213,7 +245,15 @@
 						"css:font-size": "summaryFontSize",
 						"css:background-image": "summaryColourGradient"
 					},
-					"_note": "The summary phrase — <p class=\"sgs-testimonial__summary\"> (render.php:699), styled at render.php:276-283 (color <- summaryColour, font-size <- summaryFontSize). A SEPARATE element from quote-text, which is the <blockquote class=\"sgs-testimonial__quote\"> (render.php:704, styled :288-309): two different DOM nodes, so one entry cannot cover both, and quote-text's prefix \"quote\" can never reach a summary* attribute. Before this element existed summaryColour had no manifest home, so css_property stayed NULL and survey.js/rule 31/the cloning pipeline were all blind to it."
+					"_note": "The summary phrase — <p class=\"sgs-testimonial__summary\"> (render.php:699), styled at render.php:276-283 (color <- summaryColour, font-size <- summaryFontSize). A SEPARATE element from quote-text, which is the <blockquote class=\"sgs-testimonial__quote\"> (render.php:704, styled :288-309): two different DOM nodes, so one entry cannot cover both, and quote-text's prefix \"quote\" can never reach a summary* attribute. Before this element existed summaryColour had no manifest home, so css_property stayed NULL and survey.js/rule 31/the cloning pipeline were all blind to it.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "summaryColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful."
 				}
 			},
 			"variantAttr": "variant",

@@ -123,7 +123,14 @@
 						"css:background-image": "titleColourGradient",
 						"tag": "headingLevel"
 					},
-					"_note": "Rendered once per plan into `.sgs-pricing-table__name` (block.json `selectors.typography` also targets the back-compat `.sgs-pricing-table__title` alias). Only colour is block-level and independently controlled — no titleFontSize/Weight exists, an honest gap. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:379/381) but this element has no `prefix` declared, so it needs an explicit map. titleColourGradient (cluster A Task 2) is the text-colour gradient sibling to titleColour — background-clip:text mechanism, same recipe as priceColour/priceColourGradient; the 'fill' cluster was added solely to place this member. The rendered declaration paints onto a comma-joined selector pair (`.sgs-pricing-table__name,.sgs-pricing-table__title`) — see render.php's `$title_sel`."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "titleColourHover"
+							}
+						}
+					},
+					"_note": "Rendered once per plan into `.sgs-pricing-table__name` (block.json `selectors.typography` also targets the back-compat `.sgs-pricing-table__title` alias). Only colour is block-level and independently controlled — no titleFontSize/Weight exists, an honest gap. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:379/381) but this element has no `prefix` declared, so it needs an explicit map. titleColourGradient (cluster A Task 2) is the text-colour gradient sibling to titleColour — background-clip:text mechanism, same recipe as priceColour/priceColourGradient; the 'fill' cluster was added solely to place this member. The rendered declaration paints onto a comma-joined selector pair (`.sgs-pricing-table__name,.sgs-pricing-table__title`) — see render.php's `$title_sel`. 2026-09-05: `states.hover.css:color`->titleColourHover declared explicitly (render.php:610-616 -- `sgs_emit_state_colour_css( $title_sel, array(), array( 'color:…' ) )`, whose third argument is the HOVER decl list, emitted via `sgs_hover_state_rules()` on `:hover, :focus-visible`, helpers-tokens.php:1351-1363). Without it titleColourHover derived to state=NULL and collided with ctaColourHover/popularBadgeColourHover on the (color, element=NULL, state=NULL) slot."
 				},
 				"price": {
 					"label": "Price",
@@ -156,7 +163,14 @@
 						"css:color": "featureColour",
 						"css:background-image": "featureColourGradient"
 					},
-					"_note": "Only colour is block-level and independently controlled for `.sgs-pricing-table__feature` — no featureFontSize/Weight exists, an honest gap. featureColourGradient (cluster A Task 2) is the text-colour gradient sibling to featureColour — background-clip:text mechanism, same recipe as priceColour/priceColourGradient; the 'fill' cluster was added solely to place this member."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "featureColourHover"
+							}
+						}
+					},
+					"_note": "Only colour is block-level and independently controlled for `.sgs-pricing-table__feature` — no featureFontSize/Weight exists, an honest gap. featureColourGradient (cluster A Task 2) is the text-colour gradient sibling to featureColour — background-clip:text mechanism, same recipe as priceColour/priceColourGradient; the 'fill' cluster was added solely to place this member. 2026-09-05: `states.hover.css:color`->featureColourHover declared explicitly (render.php:621-626 -- `sgs_emit_state_colour_css()` on `$root_sel . ' .sgs-pricing-table__feature'`, the same selector this element's base attrMap paints, third argument = hover decls). Without it featureColour and featureColourHover both derived to (color, feature, state=NULL) and collided on one routing slot."
 				},
 				"cta": {
 					"label": "CTA button",
@@ -171,7 +185,14 @@
 						"css:background-color": "ctaBackground",
 						"css:background-image": "ctaBackgroundGradient"
 					},
-					"_note": "`ctaStyle` (accent/outline/etc. preset) is a variant/behaviour field, not an independent style control, so it is not mapped. No independent CTA font-size/border/padding attrs exist — honest gaps. ctaColourGradient (2026-09-04, D956) is the text-colour gradient sibling to ctaColour, safe unconditionally since ctaBackground already paints on a separate ::after layer (render.php sgs_block_background_layer_css()). ctaBackgroundGradient (2026-09-04) is the fill-colour gradient sibling to ctaBackground -- non-empty wins, resolved via sgs_background_paint_decl() on that same ::after layer."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "ctaColourHover"
+							}
+						}
+					},
+					"_note": "`ctaStyle` (accent/outline/etc. preset) is a variant/behaviour field, not an independent style control, so it is not mapped. No independent CTA font-size/border/padding attrs exist — honest gaps. ctaColourGradient (2026-09-04, D956) is the text-colour gradient sibling to ctaColour, safe unconditionally since ctaBackground already paints on a separate ::after layer (render.php sgs_block_background_layer_css()). ctaBackgroundGradient (2026-09-04) is the fill-colour gradient sibling to ctaBackground -- non-empty wins, resolved via sgs_background_paint_decl() on that same ::after layer. 2026-09-05: `states.hover.css:color`->ctaColourHover declared explicitly (render.php:585-590 -- `sgs_emit_state_colour_css( $pt_cta_sel, array(), array( 'color:…' ) )`, `$pt_cta_sel` at render.php:563 being the same `.sgs-pricing-table__cta` selector this element's base attrMap paints). Without it ctaColourHover derived to state=NULL and collided with titleColourHover/popularBadgeColourHover on the (color, element=NULL, state=NULL) slot. `ctaBackgroundHover` is NOT declared here -- it was not among the gate's findings and its emission was not audited in this pass."
 				},
 				"badge": {
 					"label": "Popular badge",
@@ -187,7 +208,14 @@
 						"css:background-color": "popularBadgeBackground",
 						"css:background-image": "popularBadgeBackgroundGradient"
 					},
-					"_note": "`popularBadgeText` (the badge copy) is a content field, not a style control — it correctly surfaces as an ORPHAN under this element's `popularBadge` prefix, matching the FR-35-4 pattern (wired to a real attribute, invisible to cluster-coherence, no separate note needed to suppress it). popularBadgeColourGradient (2026-09-04, D936/D937) is the text-colour gradient sibling, safe unconditionally since popularBadgeBackground paints on the badge's own `::after` layer (render.php), not this selector. popularBadgeBackgroundGradient (2026-09-04) is the fill-colour gradient sibling to popularBadgeBackground -- non-empty wins, resolved via sgs_background_paint_decl() on that same ::after layer."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "popularBadgeColourHover"
+							}
+						}
+					},
+					"_note": "`popularBadgeText` (the badge copy) is a content field, not a style control — it correctly surfaces as an ORPHAN under this element's `popularBadge` prefix, matching the FR-35-4 pattern (wired to a real attribute, invisible to cluster-coherence, no separate note needed to suppress it). popularBadgeColourGradient (2026-09-04, D936/D937) is the text-colour gradient sibling, safe unconditionally since popularBadgeBackground paints on the badge's own `::after` layer (render.php), not this selector. popularBadgeBackgroundGradient (2026-09-04) is the fill-colour gradient sibling to popularBadgeBackground -- non-empty wins, resolved via sgs_background_paint_decl() on that same ::after layer. 2026-09-05: `states.hover.css:color`->popularBadgeColourHover declared explicitly (render.php:489-495 -- `sgs_emit_state_colour_css( $pt_badge_sel, array(), array( 'color:…' ) )`, `$pt_badge_sel` at render.php:472 being the same `.sgs-pricing-table__badge` selector this element's base attrMap paints). This resolves BOTH gate findings for the attribute: the (color, element=NULL, state=NULL) three-way collision with titleColourHover/ctaColourHover, and the UNDECLARED sub-element paint -- the paint is on the badge element itself, not a sub-element, so the correct fix is this declaration rather than a new element key. `popularBadgeBackgroundHover` is NOT declared here -- it was not among the gate's findings and its emission was not audited in this pass."
 				},
 				"ribbon": {
 					"label": "Per-plan ribbon",

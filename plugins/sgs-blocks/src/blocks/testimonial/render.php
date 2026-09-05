@@ -586,27 +586,63 @@ if ( $stagger_delay ) {
 if ( $wrapper_vars ) {
 	$scoped_css[] = $root_sel . '{' . implode( ';', $wrapper_vars ) . '}';
 }
-if ( '' !== ( $attributes['summaryColourHover'] ?? '' ) ) {
-	$hover_decls[] = 'color:' . sgs_colour_value( $attributes['summaryColourHover'] );
+/*
+ * Per-element hover colours — ancestor-hover rules, NOT the root $hover_decls
+ * bucket (fixed 2026-09-05).
+ *
+ * THE BUG THIS REPLACES. summaryColourHover / nameColourHover / roleColourHover
+ * / orgColourHover / ratingColourHover each pushed a bare `color:` into
+ * $hover_decls, which is emitted ONCE against $root_sel. Two independent
+ * failures resulted, and neither raised an error:
+ *   1. Five `color:` declarations in ONE rule block — only the last non-empty
+ *      one survives the cascade. Setting a name hover AND a role hover could
+ *      never produce two different colours.
+ *   2. Even alone, a `color` on the card ROOT never reaches these elements:
+ *      each has its OWN explicit resting colour ($summary_colour_sel :317,
+ *      $name_colour_sel :380, $role_colour_sel :395, $org_colour_sel :406,
+ *      $rating_colour_sel :296), and an explicit declaration on the element
+ *      always beats one inherited from an ancestor.
+ * So all five controls were inert on the published page, not just absent from
+ * the editor canvas.
+ *
+ * `quoteColourHover` was ALREADY correct (see its ancestor-hover rule above)
+ * and the old comment here even explained why it was held out of the bucket —
+ * the same reasoning simply was never applied to these five. This uses that
+ * proven in-file pattern verbatim, reusing each element's existing resting
+ * selector variable so hover and resting can never drift onto different nodes.
+ *
+ * `:focus-within` twins the `:hover` so a keyboard user gets the same feedback
+ * — matching the quote rule, and preserving the accessibility guarantee the
+ * shared helper used to provide.
+ *
+ * $hover_decls itself is KEPT for `border-color` (:556), which genuinely does
+ * paint the card root.
+ */
+$testimonial_hover_colours = array(
+	array( $summary_colour_sel, $attributes['summaryColourHover'] ?? '' ),
+	array( $name_colour_sel, $attributes['nameColourHover'] ?? '' ),
+	array( $role_colour_sel, $attributes['roleColourHover'] ?? '' ),
+	array( $org_colour_sel, $attributes['orgColourHover'] ?? '' ),
+	array( $rating_colour_sel, $attributes['ratingColourHover'] ?? '' ),
+);
+foreach ( $testimonial_hover_colours as $sgs_hover_pair ) {
+	list( $sgs_hover_sel, $sgs_hover_val ) = $sgs_hover_pair;
+	if ( '' === (string) $sgs_hover_val ) {
+		continue;
+	}
+	// The resting selector already reads `$root_sel . ' .sgs-testimonial__x'`,
+	// so the ancestor state is inserted by swapping $root_sel for its
+	// :hover / :focus-within form rather than re-deriving the descendant class.
+	$sgs_hover_descendant = substr( $sgs_hover_sel, strlen( $root_sel ) );
+	$scoped_css[]         = $root_sel . ':hover' . $sgs_hover_descendant . ','
+		. $root_sel . ':focus-within' . $sgs_hover_descendant
+		. '{color:' . sgs_colour_value( $sgs_hover_val ) . ';}';
 }
-if ( '' !== ( $attributes['nameColourHover'] ?? '' ) ) {
-	$hover_decls[] = 'color:' . sgs_colour_value( $attributes['nameColourHover'] );
-}
-if ( '' !== ( $attributes['roleColourHover'] ?? '' ) ) {
-	$hover_decls[] = 'color:' . sgs_colour_value( $attributes['roleColourHover'] );
-}
-if ( '' !== ( $attributes['orgColourHover'] ?? '' ) ) {
-	$hover_decls[] = 'color:' . sgs_colour_value( $attributes['orgColourHover'] );
-}
-if ( '' !== ( $attributes['ratingColourHover'] ?? '' ) ) {
-	$hover_decls[] = 'color:' . sgs_colour_value( $attributes['ratingColourHover'] );
-}
+
 if ( $hover_decls ) {
 	// Via the ONE shared hover-colour helper, which also emits the
-	// `:focus-visible` twin a keyboard user needs.
-	// NOTE: `quoteColourHover` is deliberately NOT in this bucket — it paints a
-	// DESCENDANT (the quote), not the card root, so it is emitted as an
-	// ancestor-hover rule beside its resting sibling instead. See there.
+	// `:focus-visible` twin a keyboard user needs. Now carries only
+	// root-level declarations (border-color) — see the note above.
 	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, array(), $hover_decls );
 }
 

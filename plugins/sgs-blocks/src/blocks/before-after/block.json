@@ -19,8 +19,22 @@
 		"sgs": {
 			"_comment_mediaElements": "Wave 5b. Replaces the old universal imageControls extension's single shared sgsObjectFit/sgsObjectPosition pair (which set BOTH the before and after slots identically) with two independently-scoped media elements, one per slot.",
 			"mediaElements": [
-				{ "prefix": "before", "context": "element", "atoms": [ "object-fit", "focal-point" ] },
-				{ "prefix": "after", "context": "element", "atoms": [ "object-fit", "focal-point" ] }
+				{
+					"prefix": "before",
+					"context": "element",
+					"atoms": [
+						"object-fit",
+						"focal-point"
+					]
+				},
+				{
+					"prefix": "after",
+					"context": "element",
+					"atoms": [
+						"object-fit",
+						"focal-point"
+					]
+				}
 			],
 			"fx": {
 				"draggable": true
@@ -64,9 +78,11 @@
 					"prefix": "label",
 					"attrMap": {
 						"css:color-gradient": "labelColourGradient",
-						"css:background-image": "labelBackgroundColourGradient"
+						"css:background-image": "labelBackgroundColourGradient",
+						"css:background-color": "labelBackgroundColour"
 					},
-					"_note": "'fill' cluster added 2026-08-15 so labelBackgroundColour (previously an unclaimed style-defect orphan) resolves via the default convention: label + BackgroundColour. labelColour already resolved fine under 'text' (css:color, suffix Colour). Gradient siblings for both added 2026-09-04 as explicit attrMap entries (the default convention's suffix table doesn't cover *ColourGradient/*BackgroundColourGradient) — labelBackgroundColourGradient moved to its own ::after layer (sgs_block_background_layer_css()) to free the element's background-image for labelColourGradient's background-clip:text."
+					"_note": "'fill' cluster added 2026-08-15 so labelBackgroundColour (previously an unclaimed style-defect orphan) resolves via the default convention: label + BackgroundColour. labelColour already resolved fine under 'text' (css:color, suffix Colour). Gradient siblings for both added 2026-09-04 as explicit attrMap entries (the default convention's suffix table doesn't cover *ColourGradient/*BackgroundColourGradient) — labelBackgroundColourGradient moved to its own ::after layer (sgs_block_background_layer_css()) to free the element's background-image for labelColourGradient's background-clip:text.",
+					"_note_bg": "labelBackgroundColour declared 2026-09-05: read at render.php:141 and painted as the label's own background. render.php:283 records it was deliberately moved OFF the shared mechanism, which is why nothing declared it and it showed as a rogue seed."
 				},
 				"divider": {
 					"label": "Divider",

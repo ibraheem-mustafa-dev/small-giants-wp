@@ -378,9 +378,22 @@ $root_text_hover_decl      = sgs_text_colour_decl( $root_text_hover_effective );
 if ( '' !== $root_text_hover_decl ) {
 	$root_hover_decls[] = $root_text_hover_decl;
 }
-if ( '' !== ( $attributes['nameColourHover'] ?? '' ) ) {
-	$root_hover_decls[] = 'color:' . sgs_colour_value( $attributes['nameColourHover'] );
-}
+/*
+ * `nameColourHover` is NOT part of the root bucket (fixed 2026-09-05).
+ *
+ * It used to push a bare `color:` into $root_hover_decls, which is imploded
+ * into ONE rule against $root_sel. Two failures, neither of which errored:
+ *   1. `$root_text_hover_decl` above is ALSO a `color:` declaration in that
+ *      same bucket — two `color:` in one rule block means only the last
+ *      survives, so setting both textColourHover and nameColourHover could
+ *      never produce two colours.
+ *   2. `.sgs-brand-strip__name` sets its OWN explicit resting colour (see
+ *      $name_sel below), and an explicit declaration on the element always
+ *      beats one inherited from a hovered ancestor — so the root-level hover
+ *      never reached the name at all.
+ * Emitted below as an ancestor-hover rule on the name's own selector instead,
+ * the same shape sgs/testimonial uses for its per-element hover colours.
+ */
 if ( $root_hover_decls ) {
 	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $root_hover_decls ), ':focus-within' );
 	// Focus fallback selector matches the guarded-hover-rule shape so the
@@ -466,6 +479,14 @@ if ( $show_names && function_exists( 'sgs_typography_css_rule' ) ) {
 	if ( '' !== $name_text_decl ) {
 		$name_sel     = "{$root_sel} .sgs-brand-strip__name";
 		$scoped_css[] = "{$name_sel}{" . $name_text_decl . ';}';
+		// Ancestor-hover twin for nameColourHover — see the note at the root
+		// hover bucket above for why it cannot live there. `:focus-within`
+		// matches the root bucket's own keyboard-equivalent state.
+		if ( '' !== ( $attributes['nameColourHover'] ?? '' ) ) {
+			$scoped_css[] = "{$root_sel}:hover .sgs-brand-strip__name,"
+				. "{$root_sel}:focus-within .sgs-brand-strip__name"
+				. '{color:' . sgs_colour_value( $attributes['nameColourHover'] ) . ';}';
+		}
 		$name_text_fallback_rule = sgs_text_colour_gradient_fallback_rule( $name_sel, $name_text_effective );
 		if ( '' !== $name_text_fallback_rule ) {
 			$scoped_css[] = $name_text_fallback_rule;

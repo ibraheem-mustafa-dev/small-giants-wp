@@ -130,6 +130,14 @@
 						"tag": "headingLevel",
 						"css:background-image": "nameColourGradient"
 					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "nameColourHover"
+							}
+						}
+					},
+					"_note_hover": "nameColourHover (2026-09-05) -- render.php:637-639 emits sgs_hover_state_rules( $name_colour_sel, 'color:...', ':focus-visible' ), where $name_colour_sel = $root_sel . ' .sgs-team-member__name' (render.php:627). That is the NAME element's OWN :hover/:focus-visible, not the card root's, so css_element=name / css_state=hover is what render.php actually does. Declared explicitly because the `name` prefix convention resolves css:color to the RESTING nameColour only -- it cannot reach a state, so without this entry the derived DB left css_element/css_state NULL and nameColourHover collided with roleColourHover on the identical (color, NULL, NULL) routing slot.",
 					"_note": "css:color resolves via the default convention (nameColour). No nameFontSize/nameFontWeight/etc attrs exist — honest gaps; only the card-root fontSize (typography.fontSize) governs name/role/bio text size uniformly. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:320, `.sgs-team-member__name`) but doesn't match the `name` prefix convention on its own. `nameColourGradient` (2026-09-03) is the text-colour gradient sibling to nameColour, same background-clip:text mechanism as sgs/counter's numberColourGradient."
 				},
 				"role": {
@@ -142,6 +150,14 @@
 					"attrMap": {
 						"css:background-image": "roleColourGradient"
 					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "roleColourHover"
+							}
+						}
+					},
+					"_note_hover": "roleColourHover (2026-09-05) -- render.php:648-650 emits sgs_hover_state_rules( $role_colour_sel, 'color:...', ':focus-visible' ), where $role_colour_sel = $root_sel . ' .sgs-team-member__role' (render.php:628). The ROLE element's own :hover/:focus-visible, exactly mirroring nameColourHover above. Same reason for the explicit declaration: the `role` prefix convention only reaches the resting roleColour, leaving the hover attribute at (color, NULL, NULL) and colliding with nameColourHover.",
 					"_note": "css:color resolves via the default convention (roleColour, default 'text-muted'). No per-element font-size/weight — honest gaps. `roleColourGradient` (2026-09-03) is the text-colour gradient sibling to roleColour, same background-clip:text mechanism."
 				},
 				"bio": {

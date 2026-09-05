@@ -40,7 +40,13 @@
 			"imageControlsExplicit": true,
 			"_comment_mediaElements": "Rule 37-media-no-handroll fix (D-pending). Grid-thumbnail object-fit now routes through the shared media-element atom layer instead of a style.css literal. NOT a new client control: prefix 'sgs' resolves (sgs_media_element_attr) to the SAME 'sgsObjectFit' attribute the legacy universal image-controls extension (imageControls/imageControlsExplicit above) already injects and already exposes an 'Object Fit' dropdown for in the inspector — adding a second ObjectFitField here would give the client two controls for one property. render.php reads that existing value through SGS_Media_Element::style() and marks the grid <img> with the atom's scope class; style.css no longer hardcodes object-fit on .sgs-gallery__img, relying on assets/css/media-atoms/object-fit.css's cover fallback (identical default). The lightbox full-view image is deliberately NOT part of this — it keeps its own hardcoded object-fit:contain (style.css), which is not client-controllable.",
 			"mediaElements": [
-				{ "prefix": "sgs", "context": "element", "atoms": [ "object-fit" ] }
+				{
+					"prefix": "sgs",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
 			],
 			"fx": {
 				"draggable": true,
@@ -114,9 +120,11 @@
 					"attrMap": {
 						"css:background-color": "captionBgColour",
 						"css:background-image": "captionBgColourGradient",
-						"css:color-gradient": "captionColourGradient"
+						"css:color-gradient": "captionColourGradient",
+						"css:color": "captionColour"
 					},
-					"_note": "Only shown when showCaptions is true. css:color resolves via the default convention (captionColour). Gradient siblings added 2026-09-04: captionBgColourGradient paints a hand-built ::after layer (NOT sgs_block_background_layer_css() — .sgs-gallery__caption is already position:absolute, which that helper would silently override), freeing the element's own background-image for captionColourGradient's background-clip:text."
+					"_note": "Only shown when showCaptions is true. css:color resolves via the default convention (captionColour). Gradient siblings added 2026-09-04: captionBgColourGradient paints a hand-built ::after layer (NOT sgs_block_background_layer_css() — .sgs-gallery__caption is already position:absolute, which that helper would silently override), freeing the element's own background-image for captionColourGradient's background-clip:text.",
+					"_note_colour": "captionColour declared 2026-09-05: render.php:118 reads it and it paints the caption's text colour. It previously had css_property='color' in the DB with no authored source (a rogue seed that would vanish on the next reseed); declaring it here makes that value legitimate and durable."
 				},
 				"item": {
 					"label": "Grid item",
@@ -134,7 +142,15 @@
 					"order": 5,
 					"clusters": [],
 					"prefix": "",
-					"_note": "The wrapper around the rendered <img> inside each grid item (.sgs-gallery__img-wrap, render.php ~line 467/508) - carries the hover-reveal overlay. overlayColourHover is HOVER-ONLY (no resting overlayColour attribute exists on this block) so it is deliberately left unclustered rather than declared via states.hover, which would manufacture a new state-without-base finding against the D542-gated baseline (currently exactly 1, sgs/post-grid). prefix:\"\" opts this element out of orphan-candidate scanning so the attribute is reported honestly as a gap, not force-claimed. Found live 2026-08-15: DB tagged 1 attr css_element='img-wrap', undeclared until now."
+					"_note": "The wrapper around the rendered <img> inside each grid item (.sgs-gallery__img-wrap, render.php ~line 467/508) - carries the hover-reveal overlay. overlayColourHover is HOVER-ONLY (no resting overlayColour attribute exists on this block) so it is deliberately left unclustered rather than declared via states.hover, which would manufacture a new state-without-base finding against the D542-gated baseline (currently exactly 1, sgs/post-grid). prefix:\"\" opts this element out of orphan-candidate scanning so the attribute is reported honestly as a gap, not force-claimed. Found live 2026-08-15: DB tagged 1 attr css_element='img-wrap', undeclared until now.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "overlayColourHover"
+							}
+						}
+					},
+					"_note_hover": "overlayColourHover declared 2026-09-05: render.php:145 states it paints an EXISTING `.sgs-gallery__img-wrap::after` overlay on hover. Was a rogue seed (css_property in the DB, declared nowhere)."
 				}
 			},
 			"boxFamilies": {
@@ -168,12 +184,18 @@
 					},
 					"objectFit": {
 						"type": "string",
-						"enum": [ "cover", "contain" ],
+						"enum": [
+							"cover",
+							"contain"
+						],
 						"default": "cover"
 					},
 					"focalPoint": {
 						"type": "object",
-						"default": { "x": 0.5, "y": 0.5 }
+						"default": {
+							"x": 0.5,
+							"y": 0.5
+						}
 					}
 				}
 			}

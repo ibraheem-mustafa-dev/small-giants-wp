@@ -58,11 +58,13 @@
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:background-color": "navBgHover"
+								"css:background-color": "navBgHover",
+								"css:color": "navColourHover"
 							}
 						}
 					},
-					"_note": "The rendered <nav> (SGS_Container_Wrapper, composite-mirror rule R-31-9). Padding/margin ride the native spacing support; max-width is the flat attribute. navBg/navColour/navBgHover all write to the same bare $uid_sel wrapper selector (2026-08-28 fix — navBg previously only resolved via a hand-seeded attr-classification-overrides.json entry, not derivation; that override entry is now redundant, kept for now as a separate cleanup). The 12 ARRANGEMENT members (layer OUTER) — display/flex-direction/align-items/justify-content etc. — are honest GAPs: style.css:13-17 hardcodes `display:flex;align-items:center;justify-content:space-between` with no attribute behind any of it. Not fixed here — out of this task's scope (only STATE_WITHOUT_BASE cases are fixed)."
+					"_note": "The rendered <nav> (SGS_Container_Wrapper, composite-mirror rule R-31-9). Padding/margin ride the native spacing support; max-width is the flat attribute. navBg/navColour/navBgHover all write to the same bare $uid_sel wrapper selector (2026-08-28 fix — navBg previously only resolved via a hand-seeded attr-classification-overrides.json entry, not derivation; that override entry is now redundant, kept for now as a separate cleanup). The 12 ARRANGEMENT members (layer OUTER) — display/flex-direction/align-items/justify-content etc. — are honest GAPs: style.css:13-17 hardcodes `display:flex;align-items:center;justify-content:space-between` with no attribute behind any of it. Not fixed here — out of this task's scope (only STATE_WITHOUT_BASE cases are fixed).",
+					"_note_hover_nav": "navColourHover declared 2026-09-05: render.php:872-873 emits sgs_hover_state_rules( \"{$uid_sel}\", 'color:…', ':focus-visible' ) — the block ROOT, so it belongs on the wrapper element, not a descendant."
 				},
 				"bar": {
 					"label": "Item bar (flex row)",
@@ -180,17 +182,20 @@
 					"attrMap": {
 						"css:width": "burgerSize",
 						"css:height": "burgerSize",
+						"css:color": "burgerColour",
 						"css:color-gradient": "burgerColourGradient",
+						"css:background-color": "burgerBg",
 						"css:background-image": "burgerBgGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
+								"css:color": "burgerColourHover",
 								"css:background-color": "burgerHoverColour"
 							}
 						}
 					},
-					"_note": "burgerColour is the icon TEXT colour (css:color, render.php:466-469); burgerHoverColour drives the button's HOVER background-color (render.php:479-482, was 470-473 pre-fix), which previously had no resting counterpart — a client could style the hover fill but never the button's own resting fill (STATE_WITHOUT_BASE, Spec 35 FR-35-5). Fixed 2026-07-21 by adding the `burgerBg` base attribute + inspector control (edit.js Burger panel, Normal state) so css:background-color now resolves at base too. Unset burgerBg renders byte-identical to before (style.css:73-88 `background:none` default)."
+					"_note": "burgerColour is the icon TEXT colour (css:color, render.php:466-469); burgerHoverColour drives the button's HOVER background-color (render.php:479-482, was 470-473 pre-fix), which previously had no resting counterpart — a client could style the hover fill but never the button's own resting fill (STATE_WITHOUT_BASE, Spec 35 FR-35-5). Fixed 2026-07-21 by adding the `burgerBg` base attribute + inspector control (edit.js Burger panel, Normal state) so css:background-color now resolves at base too. Unset burgerBg renders byte-identical to before (style.css:73-88 `background:none` default). 2026-09-05: `css:color`->burgerColour (render.php:1189-1196), `css:background-color`->burgerBg (render.php:1210-1213) and `states.hover.css:color`->burgerColourHover (render.php:1199-1201, sgs_hover_state_rules on `:hover, :focus-visible`) declared EXPLICITLY. Two DB-consistency findings drove this: (a) burgerColour + burgerColourHover both derived to (color, burger, state=NULL), colliding on one routing slot -- the hover entry is what separates them; (b) burgerBg carried a rogue `css_property='background-color'` seed present in NEITHER the derived classifier layer NOR the overrides, so it would have vanished on the next reseed. The manifest is the durable source; the stray seed is not removed here because the attribute genuinely paints that property."
 				},
 				"sublink": {
 					"label": "Submenu link",
@@ -203,7 +208,14 @@
 						"css:color": "submenuColour",
 						"css:color-gradient": "submenuColourGradient"
 					},
-					"_note": "The submenu LINK — <a class=\"sgs-nav-menu__sublink\"> (render.php:410), painted at render.php's own scoped `.sgs-nav-menu__sublink{...}` rule. Declared explicitly because the emission classifier cannot reach it: prefix \"\" is the documented explicit opt-out from orphan-scanning: the sublink shares no name prefix with submenuColour, and a \"submenu\" prefix would wrongly try to claim submenuAlign/Caret/CloseGrace/MinWidth/Radius/Padding, which belong to the submenu PANEL rather than to this anchor. D956 (778879732 rollout, Phase 3): submenuColourGradient added as the text-colour gradient sibling — routed as a DIRECT decl (sgs_text_colour_decl/sgs_resolve_text_colour_or_gradient), replacing the previous --sgs-nm-submenu-colour custom-property indirection for this attribute, because a `var(--x, …)` chain feeding a fixed `color:` declaration cannot switch to `background-image` for a gradient (survey.js's `paints-via-colour-valued-custom-property` refusal reason)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "submenuColourHover"
+							}
+						}
+					},
+					"_note": "The submenu LINK — <a class=\"sgs-nav-menu__sublink\"> (render.php:410), painted at render.php's own scoped `.sgs-nav-menu__sublink{...}` rule. Declared explicitly because the emission classifier cannot reach it: prefix \"\" is the documented explicit opt-out from orphan-scanning: the sublink shares no name prefix with submenuColour, and a \"submenu\" prefix would wrongly try to claim submenuAlign/Caret/CloseGrace/MinWidth/Radius/Padding, which belong to the submenu PANEL rather than to this anchor. D956 (778879732 rollout, Phase 3): submenuColourGradient added as the text-colour gradient sibling — routed as a DIRECT decl (sgs_text_colour_decl/sgs_resolve_text_colour_or_gradient), replacing the previous --sgs-nm-submenu-colour custom-property indirection for this attribute, because a `var(--x, …)` chain feeding a fixed `color:` declaration cannot switch to `background-image` for a gradient (survey.js's `paints-via-colour-valued-custom-property` refusal reason). 2026-09-05: `states.hover.css:color`->submenuColourHover declared explicitly (render.php:1457-1459 -- `sgs_hover_state_rules()` on the SAME `.sgs-nav-menu__sublink` selector, `:hover, :focus-visible`). Without it submenuColour and submenuColourHover both derived to (color, sublink, state=NULL) and collided on one routing slot."
 				}
 			},
 			"boxFamilies": {

@@ -115,7 +115,16 @@
 					"order": 4,
 					"clusters": [],
 					"prefix": "",
-					"_note": "CORRECTION 2026-08-15: an earlier pass in this same fix RENAMED 'caption' to 'name', which was WRONG - the DB tags 8 attrs (nameFontSize/nameFontWeight/nameColour/nameFontStyle/nameLineHeight/nameLetterSpacing/nameTextTransform/nameTextDecoration) css_element='caption' (matching the ORIGINAL key) and only 1 attr (nameTextAlign) css_element='name'. Renaming would have cleared 1 orphan while creating 8 new ones. 'caption' is restored above; this bare 'name' element exists purely so the audit script's exact-key-match sees 'name' declared too. nameTextAlign already resolves fine functionally under 'caption' (prefix 'name' + suffix TextAlign, default convention) regardless of this element's own (empty) clusters - this entry exists only to satisfy the drift audit's separate, independent key-existence check. Found live 2026-08-15: DB tagged 1 attr css_element='name', undeclared until now."
+					"_note": "CORRECTION 2026-08-15: an earlier pass in this same fix RENAMED 'caption' to 'name', which was WRONG - the DB tags 8 attrs (nameFontSize/nameFontWeight/nameColour/nameFontStyle/nameLineHeight/nameLetterSpacing/nameTextTransform/nameTextDecoration) css_element='caption' (matching the ORIGINAL key) and only 1 attr (nameTextAlign) css_element='name'. Renaming would have cleared 1 orphan while creating 8 new ones. 'caption' is restored above; this bare 'name' element exists purely so the audit script's exact-key-match sees 'name' declared too. nameTextAlign already resolves fine functionally under 'caption' (prefix 'name' + suffix TextAlign, default convention) regardless of this element's own (empty) clusters - this entry exists only to satisfy the drift audit's separate, independent key-existence check. Found live 2026-08-15: DB tagged 1 attr css_element='name', undeclared until now.",
+					"attrMap": {},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "nameColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Was previously a bare `color:` in the root $root_hover_decls bucket, colliding with textColourHover's own `color:` in the same rule and never reaching this element (which sets its own explicit resting colour). render.php now emits an ancestor-hover rule on this element's selector, so the declaration is truthful."
 				},
 				"item": {
 					"label": "Tile hover surface",
