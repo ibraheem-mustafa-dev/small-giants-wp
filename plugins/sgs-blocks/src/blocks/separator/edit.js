@@ -30,7 +30,6 @@ import {
 	ResponsiveBoxControl,
 	TypographyControls,
 	SgsColourPanel,
-	DesignTokenPicker,
 	SgsGradientPicker,
 	SgsLengthControl,
 } from '../../components';
@@ -290,6 +289,22 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
+					{
+						key: 'contentColour',
+						label: __( 'Content colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: contentColour,
+								onChange: ( val ) => setAttributes( { contentColour: val ?? '' } ),
+								linked: true,
+								gradientValue: contentColourGradient,
+								onGradientChange: ( val ) => setAttributes( { contentColourGradient: val ?? '' } ),
+							},
+						],
+					},
 				] }
 			/>
 			<InspectorControls>
@@ -362,28 +377,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 
-					{ 'none' !== contentMode && (
-						/* Moved in from the shared top-level SgsColourPanel — CO-2,
-						   THE PLACEMENT RULE names "content" a TIER-1 element, so
-						   its colour belongs in this same panel (applies to both
-						   the icon and text sub-modes below). */
-						<DesignTokenPicker
-							label={ __( 'Content colour', 'sgs-blocks' ) }
-							gradientCapable={ true }
-							states={ [
-								{
-									key: 'normal',
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: contentColour,
-									onChange: ( val ) => setAttributes( { contentColour: val ?? '' } ),
-									linked: true,
-									gradientValue: contentColourGradient,
-									onGradientChange: ( val ) => setAttributes( { contentColourGradient: val ?? '' } ),
-								},
-							] }
-						/>
-					) }
-
 					{ 'icon' === contentMode && (
 						<>
 							<IconPicker
@@ -406,6 +399,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
+							{ /* Icon colour moved to the top-level SgsColourPanel
+							   (D618/D621) — "Content colour" row. */ }
 						</>
 					) }
 
@@ -421,6 +416,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
+							{ /* Text colour moved to the top-level SgsColourPanel
+							   (D618/D621) — "Content colour" row. */ }
 							<TypographyControls
 								attributes={ attributes }
 								setAttributes={ setAttributes }

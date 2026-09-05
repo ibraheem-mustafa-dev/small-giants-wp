@@ -15,8 +15,6 @@ import {
 } from '@wordpress/components';
 import {
 	SgsColourPanel,
-	DesignTokenPicker,
-	GradientCapableColourControl,
 	ResponsiveControl,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
@@ -452,6 +450,73 @@ export default function Edit( { attributes, setAttributes } ) {
 						],
 					},
 					{
+						key: 'tileBackground',
+						label: __( 'Tile background colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: tileBackgroundColour,
+								onChange: ( val ) => setAttributes( { tileBackgroundColour: val } ),
+								gradientValue: tileBackgroundColourGradient,
+								onGradientChange: ( val ) => setAttributes( { tileBackgroundColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: itemBackgroundColourHover,
+								onChange: ( val ) => setAttributes( { itemBackgroundColourHover: val } ),
+							},
+						],
+					},
+					{
+						key: 'tileBorder',
+						label: __( 'Tile border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: tileBorderColour,
+								onChange: ( val ) => setAttributes( { tileBorderColour: val } ),
+								gradientValue: tileBorderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { tileBorderColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: itemBorderColourHover,
+								onChange: ( val ) => setAttributes( { itemBorderColourHover: val } ),
+								gradientValue: itemBorderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { itemBorderColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'caption',
+						label: __( 'Caption colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: nameColour,
+								onChange: ( val ) => setAttributes( { nameColour: val } ),
+								gradientValue: nameColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { nameColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: nameColourHover,
+								onChange: ( val ) => setAttributes( { nameColourHover: val } ),
+								},
+						],
+					},
+					{
 						key: 'captionHover',
 						label: __( 'Tile text colour (hover)', 'sgs-blocks' ),
 						gradientCapable: true,
@@ -464,6 +529,26 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: itemTextColourHoverGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { itemTextColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					tileShadow && {
+						key: 'tileShadow',
+						label: __( 'Tile shadow colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: tileShadowColour,
+								onChange: ( val ) => setAttributes( { tileShadowColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes.tileShadowColourHover,
+								onChange: ( val ) => setAttributes( { tileShadowColourHover: val ?? '' } ),
+								linked: true,
 							},
 						],
 					},
@@ -694,43 +779,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</ToolsPanelItem>
 
-					{ /* Moved in from the shared SgsColourPanel (D609/D618 rollout
-					   superseded per CO-2, THE PLACEMENT RULE — "tile" is a
-					   declared TIER-1 element and its background colour belongs
-					   in its own panel, not the shared cross-element mount). */ }
-					<ToolsPanelItem
-						label={ __( 'Tile background colour', 'sgs-blocks' ) }
-						hasValue={ () => !! tileBackgroundColour || !! itemBackgroundColourHover }
-						onDeselect={ () =>
-							setAttributes( {
-								tileBackgroundColour: '',
-								tileBackgroundColourGradient: '',
-								itemBackgroundColourHover: '',
-							} )
-						}
-					>
-						<DesignTokenPicker
-							label={ __( 'Tile background colour', 'sgs-blocks' ) }
-							gradientCapable={ true }
-							states={ [
-								{
-									key: 'normal',
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: tileBackgroundColour,
-									onChange: ( val ) => setAttributes( { tileBackgroundColour: val } ),
-									gradientValue: tileBackgroundColourGradient,
-									onGradientChange: ( val ) => setAttributes( { tileBackgroundColourGradient: val ?? '' } ),
-								},
-								{
-									key: 'hover',
-									label: __( 'Hover', 'sgs-blocks' ),
-									value: itemBackgroundColourHover,
-									onChange: ( val ) => setAttributes( { itemBackgroundColourHover: val } ),
-								},
-							] }
-						/>
-					</ToolsPanelItem>
-
 					<ToolsPanelItem
 						label={ __( 'Tile padding', 'sgs-blocks' ) }
 						hasValue={ () => tilePadding !== 10 }
@@ -833,47 +881,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							max={ 10 }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-
-					{ /* Moved in from the shared SgsColourPanel (D609/D618 rollout
-					   superseded per CO-2, THE PLACEMENT RULE — "tile" is a
-					   declared TIER-1 element and its border colour belongs in
-					   its own panel, next to the border width above). */ }
-					<ToolsPanelItem
-						label={ __( 'Tile border colour', 'sgs-blocks' ) }
-						hasValue={ () => !! tileBorderColour || !! itemBorderColourHover }
-						onDeselect={ () =>
-							setAttributes( {
-								tileBorderColour: '',
-								tileBorderColourGradient: '',
-								itemBorderColourHover: '',
-								itemBorderColourHoverGradient: '',
-							} )
-						}
-					>
-						<DesignTokenPicker
-							label={ __( 'Tile border colour', 'sgs-blocks' ) }
-							states={ [
-								{
-									key: 'normal',
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: tileBorderColour,
-									onChange: ( val ) => setAttributes( { tileBorderColour: val } ),
-									gradientValue: tileBorderColourGradient,
-									onGradientChange: ( val ) =>
-										setAttributes( { tileBorderColourGradient: val ?? '' } ),
-								},
-								{
-									key: 'hover',
-									label: __( 'Hover', 'sgs-blocks' ),
-									value: itemBorderColourHover,
-									onChange: ( val ) => setAttributes( { itemBorderColourHover: val } ),
-									gradientValue: itemBorderColourHoverGradient,
-									onGradientChange: ( val ) =>
-										setAttributes( { itemBorderColourHoverGradient: val ?? '' } ),
-								},
-							] }
 						/>
 					</ToolsPanelItem>
 
@@ -992,31 +999,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ showNames && (
 						<>
-							{ /* Moved in from the shared SgsColourPanel (D609/D618
-							   rollout superseded per CO-2, THE PLACEMENT RULE —
-							   "caption" is a declared TIER-1 element and its
-							   colour belongs in its own panel, alongside its
-							   other typography/alignment controls). */ }
-							<GradientCapableColourControl
-								label={ __( 'Caption colour', 'sgs-blocks' ) }
-								states={ [
-									{
-										key: 'normal',
-										label: __( 'Normal', 'sgs-blocks' ),
-										value: nameColour,
-										onChange: ( val ) => setAttributes( { nameColour: val } ),
-										gradientValue: nameColourGradient,
-										onGradientChange: ( val ) =>
-											setAttributes( { nameColourGradient: val ?? '' } ),
-									},
-									{
-										key: 'hover',
-										label: __( 'Hover', 'sgs-blocks' ),
-										value: nameColourHover,
-										onChange: ( val ) => setAttributes( { nameColourHover: val } ),
-									},
-								] }
-							/>
 							<TypographyControls
 								attributes={ attributes }
 								setAttributes={ setAttributes }

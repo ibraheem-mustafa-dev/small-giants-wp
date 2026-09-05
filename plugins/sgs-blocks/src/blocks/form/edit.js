@@ -15,8 +15,6 @@ import {
 } from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
 import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel,
-	DesignTokenPicker,
-	GradientCapableColourControl,
 	SgsBorderControl,
 } from '../../components';
 import { NumberControl } from '../../components/primitives';
@@ -213,6 +211,37 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			<SgsColourPanel
 				rows={ [
 					{
+						key: 'submit-text',
+						label: __( 'Submit button text colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: submitColour,
+								onChange: ( val ) => setAttributes( { submitColour: val ?? '' } ),
+								linked: true,
+								gradientValue: attributes.submitColourGradient,
+								onGradientChange: ( val ) => setAttributes( { submitColourGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'submit-background',
+						label: __( 'Submit button background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: submitBackground,
+								onChange: ( val ) => setAttributes( { submitBackground: val ?? '' } ),
+								gradientValue: attributes.submitBackgroundGradient,
+								onGradientChange: ( val ) => setAttributes( { submitBackgroundGradient: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
 						key: 'progress-bar',
 						label: __( 'Progress bar colour', 'sgs-blocks' ),
 						gradientCapable: true,
@@ -225,6 +254,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								linked: true,
 								gradientValue: progressBarColourGradient,
 								onGradientChange: ( val ) => setAttributes( { progressBarColourGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'focus-ring',
+						label: __( 'Focus ring colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: formFocusRingColour,
+								onChange: ( val ) => setAttributes( { formFocusRingColour: val || 'primary' } ),
+								linked: true,
 							},
 						],
 					},
@@ -473,39 +515,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					{ /* Moved in from the shared top-level SgsColourPanel — CO-2,
-					   THE PLACEMENT RULE names "Submit button" a TIER-1 element,
-					   so its colours belong in this same panel alongside label
-					   and style. Two separate rows (different CSS properties —
-					   text vs background — not two states of one property). */ }
-					<GradientCapableColourControl
-						label={ __( 'Submit button text colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: submitColour,
-								onChange: ( val ) => setAttributes( { submitColour: val ?? '' } ),
-								linked: true,
-								gradientValue: attributes.submitColourGradient,
-								onGradientChange: ( val ) => setAttributes( { submitColourGradient: val ?? '' } ),
-							},
-						] }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Submit button background colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: submitBackground,
-								onChange: ( val ) => setAttributes( { submitBackground: val ?? '' } ),
-								gradientValue: attributes.submitBackgroundGradient,
-								onGradientChange: ( val ) => setAttributes( { submitBackgroundGradient: val ?? '' } ),
-								linked: true,
-							},
-						] }
-					/>
 				</PanelBody>
 
 			</InspectorControls>
@@ -516,22 +525,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Focus State', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					{ /* Moved in from the shared top-level SgsColourPanel — CO-2,
-					   THE PLACEMENT RULE names "Focus ring" a TIER-1 element,
-					   so its colour belongs in this same panel alongside
-					   width/opacity/offset below. */ }
-					<DesignTokenPicker
-						label={ __( 'Focus ring colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: formFocusRingColour,
-								onChange: ( val ) => setAttributes( { formFocusRingColour: val || 'primary' } ),
-								linked: true,
-							},
-						] }
-					/>
 					<RangeControl
 						label={ __( 'Focus ring width (px)', 'sgs-blocks' ) }
 						help={ __( 'Outline width in pixels when an input is keyboard-focused.', 'sgs-blocks' ) }

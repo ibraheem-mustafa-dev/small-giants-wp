@@ -30,7 +30,6 @@ import {
 	ShadowControl,
 	SgsColourPanel,
 	DesignTokenPicker,
-	GradientCapableColourControl,
 	TypographyControls,
 	fillRow,
 	textRow,
@@ -417,6 +416,32 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { borderColourHoverGradient: val ?? '' } ),
 							},
+						],
+					},
+					{
+						key: 'role',
+						label: __( 'Role colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: roleColour,
+								onChange: ( val ) =>
+									setAttributes( { roleColour: val ?? '' } ),
+								linked: true,
+								gradientValue: roleColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { roleColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: roleColourHover,
+								onChange: ( val ) =>
+									setAttributes( { roleColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					shadowHover && {
@@ -1305,38 +1330,6 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									value: nameColourHover,
 									onChange: ( val ) =>
 										setAttributes( { nameColourHover: val ?? '' } ),
-									linked: true,
-								},
-							] }
-						/>
-						{ /* Moved in from the shared top-level SgsColourPanel — CO-2 /
-						     THE PLACEMENT RULE TIER 1 names "Reviewer role" a
-						     declared element (order 4); its only control is this
-						     colour row, so it belongs alongside "Reviewer name"'s
-						     controls here rather than in the block-root Colour
-						     panel. GradientCapableColourControl (not
-						     DesignTokenPicker+gradientCapable) because this is a
-						     TEXT-mechanism colour row (rule 31). */ }
-						<GradientCapableColourControl
-							label={ __( 'Role colour', 'sgs-blocks' ) }
-							states={ [
-								{
-									key: 'normal',
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: roleColour,
-									onChange: ( val ) =>
-										setAttributes( { roleColour: val ?? '' } ),
-									linked: true,
-									gradientValue: roleColourGradient,
-									onGradientChange: ( val ) =>
-										setAttributes( { roleColourGradient: val ?? '' } ),
-								},
-								{
-									key: 'hover',
-									label: __( 'Hover', 'sgs-blocks' ),
-									value: roleColourHover,
-									onChange: ( val ) =>
-										setAttributes( { roleColourHover: val ?? '' } ),
 									linked: true,
 								},
 							] }

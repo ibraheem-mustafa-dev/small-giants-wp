@@ -15,7 +15,6 @@ import {
   ResponsiveBoxControl,
   TypographyControls,
   SgsColourPanel,
-  DesignTokenPicker,
   fillRow,
   textRow,
   SgsBorderControl,
@@ -364,6 +363,29 @@ export default function Edit({ attributes, setAttributes }) {
             attributes,
             setAttributes,
           }),
+          showIconColourRow && {
+            key: "icon",
+            label: __("Icon colour", "sgs-blocks"),
+            states: [
+              {
+                key: "normal",
+                label: __("Normal", "sgs-blocks"),
+                value: iconColour,
+                onChange: (val) => setAttributes({ iconColour: val ?? "" }),
+                linked: true,
+                gradientValue: iconColourGradient,
+                onGradientChange: (val) =>
+                  setAttributes({ iconColourGradient: val ?? "" }),
+              },
+              {
+                key: "hover",
+                label: __("Hover", "sgs-blocks"),
+                value: iconColourHover,
+                onChange: (val) => setAttributes({ iconColourHover: val ?? "" }),
+                linked: true,
+                },
+            ],
+          },
           textRow({
             key: "text",
             label: __("Text colour", "sgs-blocks"),
@@ -532,34 +554,6 @@ export default function Edit({ attributes, setAttributes }) {
             __nextHasNoMarginBottom
           	__next40pxDefaultSize
           />
-          {/* Moved in from the shared SgsColourPanel — CO-2, THE PLACEMENT
-             RULE names "item icon" a TIER-1 element, so its colour lives
-             here alongside size. Kept OMITTED (not disabled) when the
-             marker doesn't render an icon/emoji glyph, per D609 9c. */}
-          {showIconColourRow && (
-            <DesignTokenPicker
-              label={__("Icon colour", "sgs-blocks")}
-              states={[
-                {
-                  key: "normal",
-                  label: __("Normal", "sgs-blocks"),
-                  value: iconColour,
-                  onChange: (val) => setAttributes({ iconColour: val ?? "" }),
-                  linked: true,
-                  gradientValue: iconColourGradient,
-                  onGradientChange: (val) =>
-                    setAttributes({ iconColourGradient: val ?? "" }),
-                },
-                {
-                  key: "hover",
-                  label: __("Hover", "sgs-blocks"),
-                  value: iconColourHover,
-                  onChange: (val) => setAttributes({ iconColourHover: val ?? "" }),
-                  linked: true,
-                },
-              ]}
-            />
-          )}
           <SelectControl
             label={__("Spacing", "sgs-blocks")}
             value={gap}
