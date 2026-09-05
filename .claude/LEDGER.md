@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-09-06 (Spec 32/35 gates track closed; typography full-replacement track opened — D970/D971/D972)
+last_updated: 2026-09-06 (nav-drawer discriminator actually closed + Check #12 fully cleared — D974)
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -62,13 +62,27 @@ found by reading the controls (dead hover-colour pickers, pointless clickable to
 silently-wrong dropdown) — never a codemod row. All merged to `main` via PR #43, live-verified.
 Full detail: COLOUR TRACK below + `.claude/plans/2026-09-05-colour-conformance-shape-batch-triad.md`.
 
+**2026-09-06 (`small-giants-wp-26` continuation) — nav-drawer's `two-column-editorial` variant
+is genuinely detectable now (D969 alone hadn't closed it); Check #12 fully cleared, not
+baselined; a real schema-drift gap caught unprompted and fixed.** D969's composition tiebreaker
+(below) left this variant still returning `None` — its two candidate discriminators
+(`itemFontSize` seeded flat against a tiered schema; `listColumns` with zero CSS routing) were
+both unusable from a real clone. Fixed for real + confirmed live via `detect_variant()`
+(`3e8006dea`, merged `68378ab86`). Separately closed all 15 baselined Check #12
+(order-dependent role-resolution guard) findings — `db-consistency-baseline.json` back to `[]`
+— via 9 direct declarations, a widened `canonical_slot_aliases` mechanism, and a new
+container-marker resolver rule. Caught + fixed a `schema.sql` drift (2 tables from earlier
+work, 2 new columns from this session, `81852feaa`) via `check_schema_drift.py`, run
+unprompted. Full detail: D974.
+
 **Prior sessions, all historical and fully closed — narrative moved to their D-numbers, not
 repeated here:** `is_responsive` tidy-up (D968, `148e83bfd`); colour-conformance "remaining 8
 hard rows" + reseed-conflict fix (D964); a token-limit-truncated session's hand-wiring verified +
 committed (D963); Spec 32/35 gates closure by the session this one continues, prior to tonight's
 final closure above (superseded — see SPEC 32/35 GATES TRACK below); CHECK A editor-canvas
-210->0 across 2 concurrent sessions (D965/D967); 4 dead-attribute bugs + nav-drawer variant fix
-via a new composition-detection signal (D969, PR #38). Full per-session detail:
+210->0 across 2 concurrent sessions (D965/D967); 4 dead-attribute bugs + a composition-detection
+signal that turned out only PARTIALLY to fix nav-drawer's variant detection (D969, PR #38 —
+actually closed by D974 above, correcting this line). Full per-session detail:
 `memory/session-2026-09-04*.md`, `memory/session-2026-09-05*.md`.
 
 **Canary:** sandybrown-nightingale-600381.hostingersite.com; no live client sites yet.
@@ -77,9 +91,11 @@ via a new composition-detection signal (D969, PR #38). Full per-session detail:
 
 - **Prior sessions' commits (`main`), all closed, full detail in their D-numbers, recoverable via
   `git log`:** `148e83bfd` (is_responsive, D968); `daddbbb1b`/`bd4076235`/`358584e79`/`2fb58e412`
-  + PR #38 (`9c40ab746`)/`85f6e313f` (CHECK A + nav-drawer variant fix, D965/D967/D969,
+  + PR #38 (`9c40ab746`)/`85f6e313f` (CHECK A + nav-drawer composition-tiebreaker, D965/D967/D969,
   task-ledger `.claude/memory/sdd-progress.md`); `ed9e9ccda`/`aa8e6f5c3`/`9e82fa272`/`533634eb6`
-  (colour-conformance 7-row fix + reseed-survival, D964).
+  (colour-conformance 7-row fix + reseed-survival, D964); `f351464db`/`3e8006dea` merged
+  `68378ab86` (nav-drawer discriminator actually closed + Check #12, D974) + `81852feaa`
+  (schema.sql drift fix, D974).
 - **Branch:** `main`. This session ran alongside 150+ peer sessions (`ListAgents`) committing
   concurrently — path-scope every commit, re-check `git status`/branch immediately before each
   one. The shared `sgs-framework.db` is a live-write target too, not just the git tree — a

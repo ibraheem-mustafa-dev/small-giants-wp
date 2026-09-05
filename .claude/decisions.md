@@ -1,3 +1,64 @@
+## D974 [ROUTINE] — nav-drawer's `two-column-editorial` variant is genuinely detectable now (D969 corrected); Check #12 (role-resolution guard) shipped and fully cleared, not baselined
+
+**2026-09-06.** Closes out a follow-up from the `variant-detection-audit` line of work
+(`f351464db`, `3e8006dea`, merged via `68378ab86`; schema-drift companion fix `81852feaa`).
+Two separate pieces:
+
+**1. `two-column-editorial` is now actually detectable — D969 only got it partway.** D969
+(2026-09-05, PR #38) added a composition-based tiebreaker signal, but per the worktree's own
+honest exit report (`.superpowers/sdd/task-5-navdrawer-report.md`, gitignored, never
+committed) that signal still returned `None` for this variant — `itemFontSize` was seeded as
+a flat number against `sgs/nav-menu`'s tiered `{desktop,tablet,mobile}` schema (can never
+string-match a real clone's tiered write), and `listColumns` had no CSS-extraction route at
+all (`css_property`/`css_element` both NULL). **Root-caused and fixed for real:**
+`nav-drawer/variations.js` now seeds `itemFontSize` in the correct tiered shape, and
+`converter/resolvers/grid.py` resolves the grid column-COUNT destination DB-first via a new
+`db_lookup.attr_for_grid_column_count()` (keyed on a `"css:grid-template-columns:count"`
+attrMap pseudo-property, mirroring the existing `"css:color-gradient"` convention) instead of
+a single hardcoded `"columns"` literal — `sgs/nav-menu` opts in via its `block.json` attrMap;
+every other grid-bearing block keeps the literal fallback, confirmed byte-identical via a
+before/after regression check. Confirmed live: `detect_variant()` now returns
+`"two-column-editorial"` for a real-clone-shaped fixture, with a negative control proving the
+old flat-value shape still correctly fails closed. `parking.md`'s
+`P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL` residual entry, which had prematurely credited
+D969 alone with resolving this, is corrected alongside this decision.
+
+**2. Check #12 — order-dependent role-resolution guard (`f351464db`) — shipped AND fully
+cleared same session, not left baselined.** The check flags array-content slots whose
+extraction role is resolved by DB insertion order rather than an explicit declaration (the
+exact shape of the historical sgs/trust-bar image-badge silent-drop bug). It landed with 15
+pre-existing findings baselined; this session closed all 15 for real: 9 via direct
+`canonical_slot`/array-item `role` declarations (option-picker, disclaimer, media svg tiers,
+multi-button bg-video tiers, the button base slot, icon array-item fields), a widened
+`canonical_slot_aliases` mechanism so one attribute can answer to several structurally-related
+slot names (button style-variants; media avatar/background-image/background-video), and a new
+resolver rule recognising whole-instance "container marker" slots (review/testimonial/star/
+button-group) that skips scalar-attribute guessing entirely instead of forcing a wrong owner.
+`db-consistency-baseline.json` is back to `[]`. Full converter suite unchanged throughout at
+811 passed / 1 skipped / 10 xfailed.
+
+**Schema-drift companion fix.** The two new DB columns this added (`block_attributes.
+canonical_slot_aliases`, `slots.resolves_whole_instance`) plus two pre-existing undocumented
+tables from the earlier variant-detection-audit work (`variant_composition_slots`,
+`variant_composition_attr_slots`) were live in the shared `sgs-framework.db` but never
+captured in the committed `dbschema/schema.sql` — caught by `check_schema_drift.py --check`
+(a gate this session ran unprompted, not one that failed at commit time) and closed via
+`--regenerate` (`81852feaa`); `--check` now reports CLEAN.
+
+**Commit-gate note, worth recording once rather than re-discovering:** committing from a
+worktree while the ORIGINAL session's project root sits on an unrelated branch produces a
+predictable false positive on the F5 commit-gate hook — it resolves `_REPO` to that original
+root (not the worktree actually being committed), and reads it against the single
+globally-shared `sgs-framework.db` (fixed path outside any worktree), so a worktree's own
+freshly-reseeded DB rows appear "rogue" through the stale root's classifier files. The fix is
+to verify `db-consistency/run.py --report` directly inside the worktree being committed (0
+violations both times here), then bypass with `[gates-ok:...]` naming this exact mechanism —
+not to chase a phantom regression. Separately: a worktree with no `node_modules` of its own
+(never had `npm install` run in it) makes the same check fail-closed on a Node-based parser
+step for an unrelated reason (`MODULE_NOT_FOUND`) — fixed properly via `npm ci` in that
+worktree, not a manual `NODE_PATH` env hack (which a directory-junction attempt also proved
+fragile against a concurrent session's own `node_modules` churn on the root it pointed at).
+
 ## D973 [ROUTINE] — Typography full-replacement Tasks 1+2 shipped (23 blocks); a codemod was ruled out by evidence; the shared helper gained a font-size preset-slug path
 
 **2026-09-06.** Follow-on to D971/D972. Migrated all 19 native-only blocks (Task 1) and all 4

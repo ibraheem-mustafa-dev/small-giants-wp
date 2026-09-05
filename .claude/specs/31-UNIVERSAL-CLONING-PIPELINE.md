@@ -653,6 +653,28 @@ This is the **single authoritative content fork** for §3.B (it supersedes §3.B
 
 **ADDED (2026-09-05, PR #38 — composition-based tiebreaker).** Two `sgs/nav-drawer` variants (`split-zone-serif`, `two-column-editorial`) were permanently undetectable via `variant_slots` alone — they shared every attribute value with a sibling, scoring 0 with no rivals. A SECOND discriminating table, `variant_composition_slots(block_slug, variant_value, unique_child_slug)`, holds each variant's discriminating InnerBlocks CHILD-BLOCK-NAME set (same set-difference methodology, seeded from `variations.js`'s `innerBlocks` arrays via a JS AST extractor, `variant-value-extractor/extract-variation-values.js`). `detect_variant` gained an optional `child_slugs: list[str] | None = None` parameter, consulted ONLY as a TIEBREAKER when the attribute-value pass genuinely ties (including a 0-count tie/miss) — never additive, never able to override a clean attribute-only win, and completely inert (zero cost, zero behaviour change) for any caller that omits it. The one real call site, `assembly.py` step 4, builds `child_slugs` from the already-resolved `results` list (`[r.slug for r in results if isinstance(r, ChildBlock)]`) — content extraction has ALREADY run by that point in `build_block_markup`, so the recognized child slugs are free to read. **A block only benefits if it also has a real content-extraction path** (`derive_delegates_content()==1`, an `array-content-lift` capability, or a `block_attributes emit_shape='child'` row) — `sgs/nav-drawer` itself lacked one until the SAME PR widened `has_inner.py`'s `$content`-consumption regex (a bare trailing function argument, e.g. `printf(..., $content)`, wasn't in the original 11-alternative list), which also correctly turned on content-extraction for one previously-unknown-affected block, `sgs/mega-aside`. A new db-consistency check ("Check #10 — Dead Composition Discriminator", `db-consistency/check_dead_composition_signal.py`) flags any FUTURE block that gets `variant_composition_slots` rows without a working content-extraction path, so this exact silent-dead-code shape can't recur unnoticed. Task-by-task build/review history: `.claude/memory/sdd-progress.md`.
 
+**ADDED (2026-09-06, D974 — two more checks, and this variant's own defect actually closed.**
+The composition-tiebreaker above (PR #38, D969) did not make `sgs/nav-drawer`'s
+`two-column-editorial` detectable — its two candidate discriminators (`itemFontSize`, a
+tier-shaped attr seeded flat; `listColumns`, with no CSS-extraction route at all) were both
+unusable from a real clone. D974 fixed both (`variations.js` now seeds the correct tiered
+shape; `grid.py` resolves the grid column-count destination DB-first via
+`db_lookup.attr_for_grid_column_count`, letting a block opt in via a
+`"css:grid-template-columns:count"` attrMap pseudo-property instead of relying on the single
+hardcoded `"columns"` literal) — confirmed live via `detect_variant()` returning
+`"two-column-editorial"` for a real-clone-shaped fixture. Two more db-consistency checks
+followed the same "child-attribute-value composition signal" work: **Check #11** (unlabelled
+in the suite's own `_CHECK_ORDER` but wired) flags a stale `fx*`-qualifying-block roster; **Check
+#12 — order-dependent role-resolution guard** (`db-consistency/check_role_resolution_guess.py`)
+flags an array-content slot whose extraction role is resolved by DB insertion order rather than
+an explicit declaration (the `_slot_extraction_role()` fallback — the exact shape of the
+historical sgs/trust-bar image-badge silent-drop bug). Check #12 landed with 15 findings
+baselined; D974 closed all 15 for real the same session (direct `canonical_slot`/role
+declarations, a widened `canonical_slot_aliases` mechanism for one attribute answering to
+several related slot names, and a resolver rule recognising whole-instance "container marker"
+slots that skips scalar-attribute guessing rather than forcing a wrong owner) —
+`db-consistency-baseline.json` is back to `[]`.
+
 ### 13.6 Composite-mirror + render.php migration (FR-31-21.1 / FR-31-21.2 / FR-31-6)
 
 - **FR-31-21.1 — composite-mirror rule:** every composite with a built-in wrapper (`block_composition.wraps_block='sgs/container'`, 31-block roster) MIRRORS `sgs/container`'s wrapper capabilities per its `container_kind` (section/layout/content) — never diverges with per-block CSS hacks. Missing capabilities are design gaps to add to the composite (via DB seeding), never converter workarounds.
