@@ -50,9 +50,27 @@ import { Button, Flex, FlexItem, SelectControl } from '@wordpress/components';
 import { useSettings } from '@wordpress/block-editor';
 import ResponsiveControl from './ResponsiveControl';
 import ResponsiveOverride from './ResponsiveOverride';
-import { UnitControl } from './primitives';
+import { UnitControl, ToggleGroupControl, ToggleGroupControlOption } from './primitives';
 import { makeResponsive } from '../utils/responsive';
 import { flattenPresetSetting } from '../utils/presetSettings';
+
+/**
+ * Multi-target switcher threshold (Bean-approved design, 2026-09-05).
+ * 1 target -> no switcher (render the full control set directly, byte-identical
+ * to every existing single-target call site). 2-3 targets -> segmented
+ * ToggleGroupControl. 4+ targets -> SelectControl dropdown (a segmented control
+ * gets cramped beyond 3 options). This is a DATA-DRIVEN condition on the length
+ * of the `targets` array — never a per-block override prop or a per-block choice
+ * of control type (Rule 3, universal/no-carve-outs).
+ */
+const SGS_TYPOGRAPHY_SWITCHER_MAX_SEGMENTED = 3;
+
+/** Plain-text suffix marking a target with at least one non-default value set.
+ * A trailing bullet character (not a coloured DOM dot) so the SAME string works
+ * unchanged as both a ToggleGroupControlOption label and a SelectControl option
+ * label — the latter requires a plain string, so a JSX/coloured-dot indicator
+ * would only work in one of the two switcher shapes. */
+const SGS_TYPOGRAPHY_MODIFIED_SUFFIX = ' •';
 
 /**
  * Is this stored attribute value the modern {desktop,tablet,mobile} OBJECT
@@ -260,7 +278,7 @@ function parseUnitValue( raw, currentUnit ) {
  *   already guards against.
  * @return {JSX.Element} Controls fragment.
  */
-export default function TypographyControls( {
+function TypographyControlsFields( {
 	attributes,
 	setAttributes,
 	prefix = '',
@@ -691,5 +709,164 @@ export default function TypographyControls( {
 				</Flex>
 			) }
 		</>
+	);
+}
+
+/**
+ * Does the given target prefix carry at least one non-default typography
+ * value? Drives the switcher's modified-indicator (Bean-requested UX guard,
+ * 2026-09-05) — without it a client who customises target B, switches to
+ * target A, and sees A's defaults reads that as "the control does nothing"
+ * rather than "B is customised, A is untouched".
+ *
+ * Checks every attribute key this component reads/writes for the prefix
+ * (`typographyAttrKeys`), tiered-object-aware (a `{desktop:'',tablet:18,…}`
+ * object counts as modified because SOME tier is set, even though its own
+ * `desktop` slot is empty).
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {string} prefix     Attribute prefix for the target.
+ * @return {boolean} True when any attribute for this prefix has a set value.
+ */
+function targetHasCustomValues( attributes, prefix ) {
+	const keys = typographyAttrKeys( prefix );
+	return Object.values( keys ).some( ( attrKey ) => {
+		const val = attributes[ attrKey ];
+		if ( val === undefined || val === null || '' === val ) {
+			return false;
+		}
+		if ( isTieredValue( val ) ) {
+			return Object.values( val ).some(
+				( tierVal ) => undefined !== tierVal && null !== tierVal && '' !== tierVal
+			);
+		}
+		return true;
+	} );
+}
+
+/**
+ * Multi-target switcher (Bean-approved design, 2026-09-05). Wraps
+ * `TypographyControlsFields` with a target picker so a block with MULTIPLE
+ * typography-holding elements (testimonial's quote/summary/name, card-grid's
+ * title/subtitle, icon-list's heading/item, …) shows ONE full control set at
+ * a time instead of stacking one full set per element — the bloat problem
+ * this component was built to solve.
+ *
+ * Renders `ToggleGroupControl` (segmented buttons) at ≤3 targets, a
+ * `SelectControl` dropdown beyond that (a segmented control gets cramped).
+ * The threshold is a DATA-DRIVEN condition on `targets.length` — never a
+ * per-block override prop (Rule 3, universal/no-carve-outs).
+ *
+ * Selection is local component state (`useState`), NOT a persisted
+ * attribute — which element is currently being edited in the sidebar isn't
+ * something that needs to survive a page reload, only the underlying
+ * attribute VALUES for every target do (those are read straight off
+ * `attributes`, unaffected by which target is selected).
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes    Block attributes (shared across all targets).
+ * @param {Function} props.setAttributes Block setter (shared across all targets).
+ * @param {Array}    props.targets       `[{ key, label, prefix, ...fieldProps }]` —
+ *   `fieldProps` are any of `TypographyControlsFields`' own props (`showWeight`,
+ *   `showStyle`, `showLineHeight`, `showResponsive`, `fontSizePresets`,
+ *   `showFontFamily`, `showDecoration`, `showTransform`, `showLetterSpacing`,
+ *   `showHover`) — each target can expose a different subset, exactly as
+ *   today's separate per-element mounts do.
+ * @return {JSX.Element} Switcher + the active target's full control set.
+ */
+function TypographyTargetSwitcher( { attributes, setAttributes, targets } ) {
+	const [ selectedKey, setSelectedKey ] = useState( targets[ 0 ].key );
+	const current = targets.find( ( t ) => t.key === selectedKey ) || targets[ 0 ];
+	const { key: _currentKey, label: _currentLabel, prefix: currentPrefix, ...fieldProps } = current;
+	const useDropdown = targets.length > SGS_TYPOGRAPHY_SWITCHER_MAX_SEGMENTED;
+
+	/**
+	 * @param {Object} target One entry from `targets`.
+	 * @return {string} The target's label, suffixed when it carries a custom value.
+	 */
+	function switcherOptionLabel( target ) {
+		return targetHasCustomValues( attributes, target.prefix )
+			? target.label + SGS_TYPOGRAPHY_MODIFIED_SUFFIX
+			: target.label;
+	}
+
+	return (
+		<>
+			{ useDropdown ? (
+				<SelectControl
+					label={ __( 'Editing', 'sgs-blocks' ) }
+					value={ selectedKey }
+					options={ targets.map( ( t ) => ( {
+						label: switcherOptionLabel( t ),
+						value: t.key,
+					} ) ) }
+					onChange={ setSelectedKey }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) : (
+				<ToggleGroupControl
+					label={ __( 'Editing', 'sgs-blocks' ) }
+					value={ selectedKey }
+					isBlock
+					onChange={ setSelectedKey }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				>
+					{ targets.map( ( t ) => (
+						<ToggleGroupControlOption
+							key={ t.key }
+							value={ t.key }
+							label={ switcherOptionLabel( t ) }
+						/>
+					) ) }
+				</ToggleGroupControl>
+			) }
+			<TypographyControlsFields
+				{ ...fieldProps }
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				prefix={ currentPrefix }
+			/>
+		</>
+	);
+}
+
+/**
+ * Uniform typography controls — public entry point.
+ *
+ * Backward compatible by construction: every EXISTING call site passes a
+ * `prefix` (or nothing, defaulting to '') and no `targets` — those render
+ * through `TypographyControlsFields` exactly as before, zero behaviour
+ * change (Bean's back-compat requirement, 2026-09-05).
+ *
+ * Multi-target mode is OPT-IN via the new `targets` prop. A `targets` array
+ * of length 1 renders the same as no `targets` at all — the switcher only
+ * appears at 2+ targets, per the approved design ("1 target: no switcher").
+ *
+ * @param {Object} props
+ * @param {Array}  [props.targets] Optional multi-target descriptor array —
+ *   see `TypographyTargetSwitcher`'s own docblock for the shape. Omit for the
+ *   single-target path (identical to every pre-existing call site).
+ * @return {JSX.Element} Controls fragment.
+ */
+export default function TypographyControls( props ) {
+	const { targets, ...singleProps } = props;
+
+	if ( ! Array.isArray( targets ) || targets.length <= 1 ) {
+		return (
+			<TypographyControlsFields
+				{ ...singleProps }
+				{ ...( 1 === targets?.length ? targets[ 0 ] : {} ) }
+			/>
+		);
+	}
+
+	return (
+		<TypographyTargetSwitcher
+			attributes={ props.attributes }
+			setAttributes={ props.setAttributes }
+			targets={ targets }
+		/>
 	);
 }
