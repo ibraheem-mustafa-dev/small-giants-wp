@@ -1,0 +1,13 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/typography-support-all-false",
+	"title": "Fixture: declares supports.typography but every real sub-flag is false — must NOT flag case A (negative control)",
+	"category": "sgs",
+	"supports": {
+		"typography": {
+			"fontSize": false,
+			"__experimentalSkipSerialization": true
+		}
+	},
+	"attributes": {}
+}

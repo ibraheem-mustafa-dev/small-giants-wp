@@ -1,0 +1,21 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/typography-gap-no-mechanism",
+	"title": "Fixture: title element declares the text cluster but has neither native typography nor the shared component — must flag (case B)",
+	"category": "sgs",
+	"supports": {
+		"sgs": {
+			"elements": {
+				"title": {
+					"label": "Title",
+					"clusters": [ "text" ],
+					"prefix": "title",
+					"attrMap": {
+						"css:font-size": "titleFontSize"
+					}
+				}
+			}
+		}
+	},
+	"attributes": {}
+}

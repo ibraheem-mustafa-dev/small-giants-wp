@@ -1,0 +1,21 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/typography-component-partial-render-only",
+	"title": "Fixture: render.php calls the helper but edit.js never mounts TypographyControls — must flag (case C)",
+	"category": "sgs",
+	"supports": {
+		"sgs": {
+			"elements": {
+				"title": {
+					"label": "Title",
+					"clusters": [ "text" ],
+					"prefix": "title",
+					"attrMap": {
+						"css:font-size": "titleFontSize"
+					}
+				}
+			}
+		}
+	},
+	"attributes": {}
+}

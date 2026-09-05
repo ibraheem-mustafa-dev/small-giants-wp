@@ -1,0 +1,21 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/text-cluster-colour-only-not-typography",
+	"title": "Fixture: element declares clusters:[\"text\"] but attrMap has ONLY css:color (icon-fill-via-currentColor shape, sgs/icon's real shape) — must NOT flag (negative control, regression guard for the 19-false-positive bug found live 2026-09-05)",
+	"category": "sgs",
+	"supports": {
+		"sgs": {
+			"elements": {
+				"icon": {
+					"label": "Icon",
+					"clusters": [ "text", "fill" ],
+					"attrMap": {
+						"css:color": "iconColour",
+						"css:background-color": "backgroundColour"
+					}
+				}
+			}
+		}
+	},
+	"attributes": {}
+}
