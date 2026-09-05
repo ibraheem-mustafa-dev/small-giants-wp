@@ -336,8 +336,8 @@
 			"default": ""
 		},
 		"splitImageAlt": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"splitImageIdTablet": {
 			"type": "integer",
@@ -347,19 +347,11 @@
 			"type": "string",
 			"default": ""
 		},
-		"splitImageAltTablet": {
-			"type": "string",
-			"default": ""
-		},
 		"splitImageIdMobile": {
 			"type": "integer",
 			"default": 0
 		},
 		"splitImageUrlMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"splitImageAltMobile": {
 			"type": "string",
 			"default": ""
 		},
@@ -372,6 +364,7 @@
 				"svg"
 			]
 		},
+
 		"splitMediaTypeTablet": {
 			"type": "string",
 			"default": "",
@@ -382,6 +375,7 @@
 				"svg"
 			]
 		},
+
 		"splitMediaTypeMobile": {
 			"type": "string",
 			"default": "",
@@ -425,14 +419,6 @@
 			"default": ""
 		},
 		"splitSvgContentMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"splitMediaObjectPositionMobile": {
-			"type": "string",
-			"default": "center 20%"
-		},
-		"splitMediaObjectPositionTablet": {
 			"type": "string",
 			"default": ""
 		},
@@ -540,6 +526,14 @@
 		"splitMediaObjectPosition": {
 			"type": "string",
 			"default": "center center"
+		},
+		"splitMediaObjectPositionTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"splitMediaObjectPositionMobile": {
+			"type": "string",
+			"default": "center 20%"
 		},
 		"splitMediaWidth": {
 			"type": "number"
@@ -763,14 +757,8 @@
 			"type": "string"
 		},
 		"backgroundOverlayOpacity": {
-			"type": "number",
-			"default": 30
-		},
-		"backgroundOverlayOpacityTablet": {
-			"type": "number"
-		},
-		"backgroundOverlayOpacityMobile": {
-			"type": "number"
+			"type": "object",
+			"default": {"desktop": 30}
 		},
 		"backgroundPosition": {
 			"type": "string",

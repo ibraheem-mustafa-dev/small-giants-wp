@@ -171,16 +171,8 @@
 		"videoIdMobile": {
 			"type": "integer"
 		},
-		"thumbnailTablet": {
-			"type": "string",
-			"default": ""
-		},
 		"thumbnailIdTablet": {
 			"type": "integer"
-		},
-		"thumbnailMobile": {
-			"type": "string",
-			"default": ""
 		},
 		"thumbnailIdMobile": {
 			"type": "integer"
@@ -189,6 +181,7 @@
 			"type": "boolean",
 			"default": false
 		},
+
 		"videoAutoplayTablet": {
 			"type": [
 				"boolean",
@@ -197,6 +190,7 @@
 			"default": null,
 			"_comment": "Per-device playback-behaviour tiers (D-pending). null = inherit the tier above (Tablet inherits Desktop, Mobile inherits Tablet) — the framework's null-means-inherit convention, same as maxWidthTablet etc. Desktop has no *Desktop sibling; the unsuffixed attr above IS the desktop value."
 		},
+
 		"videoAutoplayMobile": {
 			"type": [
 				"boolean",
@@ -208,6 +202,7 @@
 			"type": "boolean",
 			"default": false
 		},
+
 		"videoLoopTablet": {
 			"type": [
 				"boolean",
@@ -215,6 +210,7 @@
 			],
 			"default": null
 		},
+
 		"videoLoopMobile": {
 			"type": [
 				"boolean",
@@ -226,6 +222,7 @@
 			"type": "boolean",
 			"default": true
 		},
+
 		"videoMutedTablet": {
 			"type": [
 				"boolean",
@@ -233,6 +230,7 @@
 			],
 			"default": null
 		},
+
 		"videoMutedMobile": {
 			"type": [
 				"boolean",
@@ -244,6 +242,7 @@
 			"type": "boolean",
 			"default": true
 		},
+
 		"videoControlsTablet": {
 			"type": [
 				"boolean",
@@ -251,6 +250,7 @@
 			],
 			"default": null
 		},
+
 		"videoControlsMobile": {
 			"type": [
 				"boolean",
@@ -262,6 +262,7 @@
 			"type": "boolean",
 			"default": true
 		},
+
 		"videoPlaysInlineTablet": {
 			"type": [
 				"boolean",
@@ -269,6 +270,7 @@
 			],
 			"default": null
 		},
+
 		"videoPlaysInlineMobile": {
 			"type": [
 				"boolean",
@@ -280,6 +282,7 @@
 			"type": "boolean",
 			"default": true
 		},
+
 		"videoLazyLoadTablet": {
 			"type": [
 				"boolean",
@@ -287,6 +290,7 @@
 			],
 			"default": null
 		},
+
 		"videoLazyLoadMobile": {
 			"type": [
 				"boolean",

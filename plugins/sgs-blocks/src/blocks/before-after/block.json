@@ -292,6 +292,7 @@
 			"default": false,
 			"_comment": "Gated behind prefers-reduced-motion at render time in view.js — reduced motion always starts both videos paused regardless of this attribute; the shared play/pause toggle remains available either way (explicit user action, never suppressed)."
 		},
+
 		"videoAutoplayTablet": {
 			"type": [
 				"boolean",
@@ -301,6 +302,7 @@
 			"default": null,
 			"_comment": "Per-device playback tier (D-pending). null = inherit the tier above (Tablet inherits Desktop, Mobile inherits Tablet) — same convention as sgs/media's videoAutoplayTablet/Mobile and every other *Tablet/*Mobile attr in this framework. Still gated behind prefers-reduced-motion at whichever tier is effective. 'string' is in the type union ONLY because @wordpress/server-side-render's GET transport serialises a null attribute value to an empty string in the REST query string (addQueryArgs cannot represent a real null) — without 'string' here, block-renderer's own schema validation 400s the editor's own live preview on every load (confirmed live 2026-09-01: rest_invalid_param, '[videoAutoplayTablet] is not of type boolean,null.'). render.php treats an empty string identically to null (inherit) — see the raw-value guard below."
 		},
+
 		"videoAutoplayMobile": {
 			"type": [
 				"boolean",

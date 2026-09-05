@@ -256,15 +256,9 @@
 			"type": "string"
 		},
 		"backgroundOverlayOpacity": {
-			"type": "number",
-			"default": 30
-		},
-		"backgroundOverlayOpacityTablet": {
-			"type": "number"
-		},
-		"backgroundOverlayOpacityMobile": {
-			"type": "number"
-		},
+			"type": "object",
+			"default": {"desktop": 30}
+		},
 		"backgroundPosition": {
 			"type": "string",
 			"default": "center center"

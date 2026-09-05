@@ -89,7 +89,13 @@ $overlay_colour_raw = $attributes['backgroundOverlayColour'] ?? '';
 // discovered after the selector matches) — that is a genuine LCP win and it stays.
 // D717: `backgroundOverlayOpacity` is the real 0-100 dimming attribute (see
 // sgs_overlay_decls() in helpers-tokens.php) — alpha is off on that colour row.
-$overlay_opacity = $attributes['backgroundOverlayOpacity'] ?? null;
+// backgroundOverlayOpacity is a TIER OBJECT {desktop,tablet,mobile} (Spec 35
+// migration, 2026-09-06); Tablet/Mobile siblings are no longer declared by
+// any block.json. A raw read here would hand sgs_overlay_decls() an array,
+// which is_numeric() silently rejects -- the desktop opacity would vanish
+// with no error, same failure mode as the pre-fix minHeight bug.
+$overlay_opacity_obj = sgs_responsive_normalise_object( $attributes['backgroundOverlayOpacity'] ?? null );
+$overlay_opacity     = $overlay_opacity_obj['desktop'] ?? null;
 // Read here (same pattern SGS_Container_Wrapper uses) so the overlay's own CSS
 // rule below can paint it. overlayGradient is ONE attribute holding the complete
 // CSS gradient value, validated through sgs_css_gradient_value() at the point of
@@ -107,8 +113,8 @@ $overlay_gradient_hover_raw = $attributes['overlayGradientHover'] ?? '';
 // lesson recur: updating the shared wrapper alone left these four stranded, which
 // audit-block-file-consistency caught as undeclared_render_ref. The tier axis is
 // OPACITY now; null means this tier does not override.
-$overlay_opacity_tablet = $attributes['backgroundOverlayOpacityTablet'] ?? null;
-$overlay_opacity_mobile = $attributes['backgroundOverlayOpacityMobile'] ?? null;
+$overlay_opacity_tablet = $overlay_opacity_obj['tablet'] ?? null;
+$overlay_opacity_mobile = $overlay_opacity_obj['mobile'] ?? null;
 $overlay_blend_mode     = $attributes['backgroundOverlayBlendMode'] ?? '';
 // The split column's sources are TYPED, one family per media kind:
 // splitImage* (image), splitVideo* (video), splitSvg* (inline SVG), each with a

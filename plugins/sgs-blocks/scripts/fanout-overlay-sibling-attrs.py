@@ -72,18 +72,17 @@ TARGET_BLOCKS = [
 # property three axes living in two different places on screen. Measured 2026-08-25 across
 # all 8 target blocks: colour/gradient tiers 0/8, opacity tiers 8/8, hover 8/8, blend 8/8.
 #
-# STOP: --check was RED against an OBSOLETE contract, and --fix --apply would have
-# REINTRODUCED 32 attributes D739 removed. A gate asserting a superseded contract is worse
-# than no gate, because its red reads as a backlog.
+# RETARGETED AGAIN 2026-09-06 (tier-object migration) - backgroundOverlayOpacity itself
+# folded into a single TIER OBJECT {desktop,tablet,mobile}; backgroundOverlayOpacityTablet/
+# Mobile are no longer declared by any block.json. Same STOP as D776: --check was about to go
+# RED against an OBSOLETE contract, and --fix --apply would have REINTRODUCED the exact two
+# scalar sibling attrs this session just folded away. Only the hover siblings (untouched by
+# this migration) remain required here.
 #
-# Each key carries its own SHAPE. Colour/gradient siblings are strings defaulting to empty;
-# the opacity tiers are NUMBERS with NO default - a number attr with a null default returns
-# 400 from every ServerSideRender preview, so declaring none is strictly safer.
+# Each key carries its own SHAPE. Colour/gradient siblings are strings defaulting to empty.
 SIBLING_SHAPES = {
     'backgroundOverlayColourHover': ('string', ''),
     'overlayGradientHover': ('string', ''),
-    'backgroundOverlayOpacityTablet': ('number', None),
-    'backgroundOverlayOpacityMobile': ('number', None),
 }
 
 SIBLING_KEYS = list(SIBLING_SHAPES)
