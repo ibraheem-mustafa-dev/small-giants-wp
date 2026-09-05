@@ -2046,7 +2046,22 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| $sgs_needs_uid_object_tier( $attributes['gridTemplateColumns'] ?? null )
 				|| $sgs_needs_uid_object_tier( $attributes['gridTemplateRows'] ?? null )
 				|| $sgs_needs_uid_object_tier( $attributes['columns'] ?? null )
-				|| $sgs_needs_uid_object_tier( $attributes['contentBandPadding'] ?? null );
+				|| $sgs_needs_uid_object_tier( $attributes['contentBandPadding'] ?? null )
+				// Phase 2 fix (2026-09-06): on a block whose `padding`/`margin`
+				// has migrated to the tier-of-boxes shape (D555 + the Phase 2
+				// box-object migration — e.g. sgs/container, sgs/hero), these
+				// were never added here, so a block whose ONLY customisation
+				// was padding/margin never minted a uid and the correct
+				// tier-object CSS emitted further down (which only runs
+				// `if ($uid)`) silently never fired. `$owned_spacing_padding`/
+				// `$owned_spacing_margin` above does NOT cover this case either
+				// for such a block — it expects `{top,right,bottom,left}` keys
+				// and gets `{desktop,tablet,mobile}` instead, so it silently
+				// computes empty (it's still load-bearing for blocks that
+				// haven't migrated off native `style.spacing`, so it stays).
+				// See decisions.md for the D-number.
+				|| $sgs_needs_uid_object_tier( $attributes['padding'] ?? null )
+				|| $sgs_needs_uid_object_tier( $attributes['margin'] ?? null );
 
 			// uid also needed when parallax/ken-burns is active, bg-video is responsive,
 			// base padding/margin needs a scoped (non-inline) home, a base outer
