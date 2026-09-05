@@ -74,11 +74,50 @@ def _bem_token(node: Tag) -> str | None:
 def _slot_extraction_role(slot: str | None) -> str | None:
     """Derive the field_extractors role for a canonical slot, DB-driven.
 
-    slot -> standalone block -> its content-bearing attr role. Two documented
-    normalisations for slots whose block role isn't a field_extractors handler:
+    slot -> standalone block -> that block's content-bearing attr role.
+    Two documented normalisations for slots whose block role isn't a
+    field_extractors handler:
       - the ``icon`` slot's block (sgs/icon) carries role='identity' → extract as
         'icon-slug' (the shared icon handler).
       - the ``link`` slot's block (sgs/button) → 'url-href' (nearest <a href>).
+
+    Disambiguation (fixed 2026-09-05, load-bearing): most target blocks have
+    exactly ONE content-bearing attr (e.g. sgs/label's ``text``, sgs/icon's
+    ``iconSource``), so "the first one found" was harmless. A POLYMORPHIC
+    target block that carries MORE THAN ONE content-bearing attr — e.g.
+    sgs/media, which has BOTH ``imageUrl`` (role='image-object',
+    canonical_slot='image') AND ``videoUrl`` (role='content',
+    canonical_slot='video') — is genuinely ambiguous: returning whichever one
+    the DB happens to return first (row-insertion order) silently routed a
+    ``media``/``image`` array field to ``videoUrl``'s role ('content' → rich
+    text), which finds no text on an ``<img>`` and drops the value, instead of
+    ``imageUrl``'s role ('image-object'). Fixed by preferring the candidate
+    whose OWN ``canonical_slot`` matches ``slot`` when more than one
+    content-bearing candidate exists.
+
+    This must NOT unconditionally require an exact canonical_slot match: a
+    slot name and the target block's own generic content attr can legitimately
+    use DIFFERENT canonical-slot tokens for the SAME concept (e.g. the
+    ``label`` slot resolves to sgs/label, whose only content-bearing attr is
+    ``text`` with canonical_slot='text', not 'label' — there is no second
+    candidate to disambiguate against, so the mismatch is harmless and the
+    old "return the only candidate" behaviour is preserved via the fallback
+    below). The exact-match preference only matters, and is only applied,
+    when the target block actually has more than one candidate to choose
+    between.
+
+    True scope (re-enumerated live DB-wide, 2026-09-05): 29 slots route to a
+    target block with more than one content-bearing candidate; of those, 22
+    still fall through to the ``candidates[0][0]`` guess below because no
+    candidate's ``canonical_slot`` matches the incoming slot. sgs/media's
+    image-vs-video case is the one this session fixed; it is NOT the only
+    multi-candidate case DB-wide. Known residual, not yet fixed: the
+    ``avatar``/``background-image``/``background-video`` slots all route to
+    sgs/media (14 candidates) and resolve to ``svgContent``'s role ``'svg'``
+    — the same wrong-role-guess shape as the bug this fix closes for
+    ``media``/``image``. Fixing that residual is out of scope here; it needs
+    its own disambiguation pass (or a slot-to-candidate widening beyond exact
+    ``canonical_slot`` match) rather than being folded into this docstring.
     """
     if not slot:
         return None
@@ -86,14 +125,26 @@ def _slot_extraction_role(slot: str | None) -> str | None:
     if not block:
         return None
     content_roles = db_lookup._content_bearing_roles()
-    for name, info in (db_lookup.block_attrs(block) or {}).items():
-        role = info.get("role")
-        if role in content_roles:
+    candidates = [
+        (info.get("role"), info.get("canonical_slot"))
+        for info in (db_lookup.block_attrs(block) or {}).values()
+        if info.get("role") in content_roles
+    ]
+    if not candidates:
+        return None
+    # Prefer the candidate that OWNS this slot (its own canonical_slot
+    # matches) — this is what disambiguates sgs/media's image vs video.
+    for role, cslot in candidates:
+        if cslot == slot:
             # Return the block's own content role verbatim — the shared
-            # field_extractors dispatches it (incl. 'identity' → icon-slug, in the
-            # extractor, not here: 'role' is a no_slug_literal-guarded name).
+            # field_extractors dispatches it (incl. 'identity' → icon-slug, in
+            # the extractor, not here: 'role' is a no_slug_literal-guarded name).
             return role
-    return None
+    # No candidate's canonical_slot matches the incoming slot (the common,
+    # unambiguous case — a single-content-attr block whose attr's generic
+    # canonical_slot token differs from the slot alias that led here).
+    # Preserve prior behaviour: return the first content-bearing role found.
+    return candidates[0][0]
 
 
 def _item_field_schema(slug: str, array_attr: str) -> list[tuple[str, str | None, str | None]]:

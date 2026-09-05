@@ -244,6 +244,7 @@
 					},
 					"media": {
 						"type": "string",
+						"role": "image-object",
 						"_note": "TWO shapes are accepted and both render. edit.js writes the OBJECT form { url, type, alt, ... } consumed by sgs_render_media(); a BARE URL STRING (what this declared type describes, and what the mega starter patterns use) is normalised to that object in render.php. Before 2026-07-29 the string form silently rendered NOTHING — sgs_render_media() bails on a non-array (helpers-media.php:168) — which cost both mega starter patterns all 8 card images through a green build. Do not 'tidy' the string branch away."
 					},
 					"badge": {

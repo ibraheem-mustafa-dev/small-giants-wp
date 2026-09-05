@@ -280,6 +280,7 @@
 					},
 					"media": {
 						"type": "object",
+						"role": "image-object",
 						"properties": {
 							"url": {
 								"type": "string"
