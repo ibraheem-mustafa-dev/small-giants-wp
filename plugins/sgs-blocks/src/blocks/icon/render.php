@@ -214,16 +214,34 @@ $root_sel = '.' . $uid . '.wp-block-sgs-icon';
 
 $scoped_css = array();
 
-// D636/D644 icon/SVG gradient — resting + hover. sgs_svg_stroke_gradient()
-// fails soft (empty defs/css) on an empty/invalid attribute value, so this is
-// always safe to compute even when neither gradient is set.
-$sgs_icon_stroke_grad       = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
-$sgs_icon_stroke_grad_hover = sgs_svg_stroke_gradient( $icon_colour_hover_gradient, $uid . '-igh' );
-if ( '' !== $sgs_icon_stroke_grad['css'] ) {
-	$scoped_css[] = "{$root_sel} .sgs-icon__svg svg{" . $sgs_icon_stroke_grad['css'] . ';}';
+// Icon gradient — resting + hover, ALL 4 IconPicker sources (2026-09-06,
+// sgs_icon_gradient_css() POC). Previously this called sgs_svg_stroke_gradient()
+// unconditionally and injected the result into an <svg> tag — a silent no-op
+// for dashicon/emoji, which render a <span> (font glyph / literal text), not
+// an SVG. The shared helper picks the right mechanism per source: SVG stroke-
+// gradient for lucide/wp-icon, text background-clip:text for dashicon/emoji
+// (both genuinely paint via `color:`, same as any other text-gradient row).
+$sgs_icon_grad_selector = 'dashicon' === $icon_source
+	? "{$root_sel} .sgs-icon__dashicon"
+	: ( 'emoji' === $icon_source ? "{$root_sel} .sgs-icon__emoji" : "{$root_sel} .sgs-icon__svg svg" );
+$sgs_icon_grad_suffix   = 'dashicon' === $icon_source
+	? ' .sgs-icon__dashicon'
+	: ( 'emoji' === $icon_source ? ' .sgs-icon__emoji' : ' .sgs-icon__svg svg' );
+
+$sgs_icon_grad       = sgs_icon_gradient_css( $icon_source, $icon_colour_gradient, $uid . '-ig', $sgs_icon_grad_selector );
+$sgs_icon_grad_hover = sgs_icon_gradient_css( $icon_source, $icon_colour_hover_gradient, $uid . '-igh', "{$root_sel} .sgs-icon__link:hover{$sgs_icon_grad_suffix}" );
+
+if ( '' !== $sgs_icon_grad['css'] ) {
+	$scoped_css[] = "{$sgs_icon_grad_selector}{" . $sgs_icon_grad['css'] . ';}';
 }
-if ( '' !== $sgs_icon_stroke_grad_hover['css'] ) {
-	$scoped_css[] = sgs_hover_state_rules( "{$root_sel} .sgs-icon__link", $sgs_icon_stroke_grad_hover['css'], ':focus-visible', ' .sgs-icon__svg svg' );
+if ( '' !== $sgs_icon_grad['fallback_rule'] ) {
+	$scoped_css[] = $sgs_icon_grad['fallback_rule'];
+}
+if ( '' !== $sgs_icon_grad_hover['css'] ) {
+	$scoped_css[] = sgs_hover_state_rules( "{$root_sel} .sgs-icon__link", $sgs_icon_grad_hover['css'], ':focus-visible', $sgs_icon_grad_suffix );
+}
+if ( '' !== $sgs_icon_grad_hover['fallback_rule'] ) {
+	$scoped_css[] = $sgs_icon_grad_hover['fallback_rule'];
 }
 
 $root_decls = $var_decls;
@@ -361,8 +379,8 @@ switch ( $icon_source ) {
 
 	case 'wp-icon':
 		$icon_svg = sgs_get_wp_icon( $wp_icon_name );
-		$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_icon_stroke_grad['defs'] );
-		$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_icon_stroke_grad_hover['defs'] );
+		$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_icon_grad['defs'] );
+		$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_icon_grad_hover['defs'] );
 		$output   = sprintf(
 			'<span class="sgs-icon__svg" aria-hidden="true">%s</span>',
 			$icon_svg
@@ -395,8 +413,8 @@ switch ( $icon_source ) {
 	case 'lucide':
 	default:
 		$icon_svg = sgs_get_lucide_icon( $icon_name );
-		$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_icon_stroke_grad['defs'] );
-		$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_icon_stroke_grad_hover['defs'] );
+		$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_icon_grad['defs'] );
+		$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_icon_grad_hover['defs'] );
 		$output   = sprintf(
 			'<span class="sgs-icon__svg" aria-hidden="true">%s</span>',
 			$icon_svg
