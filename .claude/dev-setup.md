@@ -31,6 +31,7 @@ Split from `.claude/architecture.md` on 2026-05-24 as part of Phase 10 D'-1. Con
 - [Deployment process](#deployment-process)
 - [Environment and tools](#environment-and-tools)
 - [Tooling catalogue — every gate, audit and codemod](#tooling-catalogue--every-gate-audit-and-codemod)
+- [Helper & component/atom catalogue](#helper--componentatom-catalogue)
 
 ---
 
@@ -1908,6 +1909,367 @@ for the verb you happen to have in mind.
 | `wp-update-block-attrs.js` | script-call+skill | Reusable Playwright helper that updates a block's attributes on a live WordPress post by going through the editor — using wp.blocks.createBlock(name… |
 
 <!-- TOOLING-CATALOGUE:END -->
+
+---
+
+## Helper & component/atom catalogue
+
+This section is **GENERATED** by `plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+Do not hand-edit it — edits are overwritten.
+
+The tooling catalogue above covers checker/migration/codemod SCRIPTS. This section covers the
+other half of "what already exists": PHP helper FUNCTIONS in
+`plugins/sgs-blocks/includes/helpers-*.php`, and shared JS editor components/atoms in
+`plugins/sgs-blocks/src/components/`. It exists because `sgs_svg_stroke_gradient()` was
+independently rediscovered from scratch three times in one week, and
+`sgs_custom_property_gradient_decls()` wasn't known about at all until stumbled on mid-task —
+search this before writing a new helper or component.
+
+Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`. `--check` fails
+if it is stale.
+
+<!-- HELPER-CATALOGUE:START -->
+
+This section is **GENERATED** by `plugins/sgs-blocks/scripts/generate-helper-catalogue.py`. Do not hand-edit — edits are overwritten. It covers the other half of "what already exists" that the tooling catalogue above doesn't: PHP helper FUNCTIONS (not scripts) and JS editor components/atoms. Built because `sgs_svg_stroke_gradient()` was independently rediscovered from scratch three times in one week, and `sgs_custom_property_gradient_decls()` wasn't known about at all until stumbled on mid-task — read this before writing a new helper or component that might already exist.
+
+### PHP helper functions — `includes/helpers-*.php`
+
+Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, grouped by file, with the one-line purpose from its own docblock (or the adjacent `//` comment when it has no docblock). **UNDOCUMENTED** means neither exists in source — that is a real gap in the code, not a gap in this catalogue; add a docblock rather than inferring a purpose here.
+
+#### `includes/helpers-box.php` — 8 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_css_length_sanitise` | `function sgs_css_length_sanitise( $value ): string` | Strip a CSS length value down to the safe grammar (digits, letters for the unit, dot, percent) — the shared form of the local… |
+| `sgs_css_keyword_sanitise` | `function sgs_css_keyword_sanitise( $value ): string` | Strip a CSS keyword value down to letters + hyphen only (e.g. 'inline-block', 'uppercase') — the shared form of the local… |
+| `sgs_native_border_style_width_args` | `function sgs_native_border_style_width_args( $style_raw, $width_raw ): array` | Gate a WP-native `style.border.style` + `style.border.width` PAIR so a border-style set with no width never falls through to the browser's… |
+| `sgs_native_border_has_width` | `function sgs_native_border_has_width( array $border ): bool` | True when a native `style.border` array carries a width in EITHER shape. |
+| `sgs_gate_native_border_style` | `function sgs_gate_native_border_style( array $border ): array` | Apply the SAME "no width = no border" gate (see `sgs_native_border_style_width_args()` above) to an ALREADY-BUILT native `style.border`… |
+| `sgs_box_object_shorthand` | `function sgs_box_object_shorthand( array $box ): ?string` | Build a 4-side CSS shorthand ("top right bottom left") from a box object, filling any unset side with '0'. Returns null when every side is… |
+| `sgs_corner_object_shorthand` | `function sgs_corner_object_shorthand( $box ): ?string` | Build a 4-CORNER CSS shorthand ("top-left top-right bottom-right bottom-left") from a corner-keyed box object, filling any unset corner… |
+| `sgs_label_box_css_rule` | `function sgs_label_box_css_rule( array $box, string $selector ): string` | Build the SCOPED CSS for a label-style box on ONE selector. |
+
+#### `includes/helpers-button-style.php` — 1 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_button_element_style_css` | `function sgs_button_element_style_css( array $attrs, string $prefix, string $selector, bool $bg_layer =…` | Build a scoped CSS string (base rule + hover/focus rule) for a built-in button-like element, reading a prefixed attribute set. |
+
+#### `includes/helpers-cart-panel.php` — 3 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_cart_trigger_html` | `function sgs_cart_trigger_html( string $mode, string $inner_html, array $args ): string` | Build the cart trigger for the given display mode. |
+| `sgs_cart_panel_body_html` | `function sgs_cart_panel_body_html( array $args ): string` | Build the shared mini-cart panel body. |
+| `sgs_cart_panel_wrapper_html` | `function sgs_cart_panel_wrapper_html( string $mode, string $body_html, array $args ): string` | Wrap the panel body in the element the display mode's ARIA pattern requires. |
+
+#### `includes/helpers-colour-variants.php` — 9 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_fill_decls` | `function sgs_fill_decls( array $attributes, array $map ): array` | Build the FILL (background) DECLARATIONS for a block, per state. |
+| `sgs_fill_states_css` | `function sgs_fill_states_css( string $selector, array $attributes, array $map ): string` | Convenience wrapper for a block that DOES own its own rule for this variant alone. |
+| `sgs_text_decls` | `function sgs_text_decls( array $attributes, array $map ): array` | Build the TEXT DECLARATIONS for a block, per state. |
+| `sgs_text_states_css` | `function sgs_text_states_css( string $selector, array $attributes, array $map ): string` | Convenience wrapper for a block that DOES own its own rule for this text-colour row alone — the sgs_fill_states_css() sibling for text.… |
+| `sgs_border_states_css` | `function sgs_border_states_css( string $selector, array $attributes, array $map ): string` | Emit the BORDER-colour CSS for a block, both states, at one selector. |
+| `sgs_overlay_decls_for` | `function sgs_overlay_decls_for( array $attributes, array $map ): array` | Build the OVERLAY DECLARATIONS for a block, per state. |
+| `sgs_shadow_attr` | `function sgs_shadow_attr( string $base, string $part = 'base' ): string` | Derive ONE of a shadow family's attribute names from its base name. |
+| `sgs_shadow_attr_map` | `function sgs_shadow_attr_map( string $base, bool $with_hover_shape = false, bool $with_hover_colour = false…` | The full attribute-name map for a shadow family, ready for sgs_shadow_decls(). |
+| `sgs_shadow_decls` | `function sgs_shadow_decls( array $attributes, array $map ): array` | Build the SHADOW DECLARATIONS for a block, per state. |
+
+#### `includes/helpers-colour-wcag.php` — 4 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_wcag_relative_luminance` | `function sgs_wcag_relative_luminance( string $hex ): float` | Compute the WCAG 2.1 relative luminance of an sRGB hex colour. |
+| `sgs_wcag_text_colour_for_bg` | `function sgs_wcag_text_colour_for_bg( string $hex ): string` | Return `#000` or `#fff` — whichever gives the higher WCAG contrast ratio against the supplied background hex colour. |
+| `sgs_wcag_preferred_text_colour_for_bg` | `function sgs_wcag_preferred_text_colour_for_bg( string $bg_hex, string $preferred_hex ): string` | Return a PREFERRED foreground colour when it meets WCAG AA (>= 4.5:1) against the given background; otherwise degrade to the binary… |
+| `sgs_resolve_palette_hex` | `function sgs_resolve_palette_hex( string $slug, string $fallback = '' ): string` | Resolve a theme.json palette colour to its hex value by slug, reading the MERGED global settings (default → theme → user/wp_global_styles)… |
+
+#### `includes/helpers-configurator-pricing.php` — 4 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_configurator_format_minor` | `function sgs_configurator_format_minor( int $minor, int $decimals ): string` | Format a minor-int price as a plain display string (symbol + amount), matching the SSR pattern used across the configurator (wc_price, tags… |
+| `sgs_configurator_mode_price` | `function sgs_configurator_mode_price( array $combo, string $mode, int $decimals, string $suffix ): string` | The current-price display string for a combo under a tax-display mode (TAX-UI). |
+| `sgs_configurator_mode_regular` | `function sgs_configurator_mode_regular( array $combo, string $mode, int $decimals ): string` | The struck-through regular-price display string for a combo under a tax mode. |
+| `sgs_configurator_per_unit_display` | `function sgs_configurator_per_unit_display( array $combo, string $mode, int $decimals, string $template )…` | Per-unit price display string for a combo under a tax mode, e.g. "£1.04 per bar". |
+
+#### `includes/helpers-container.php` — 8 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_sanitize_grid_template` | `function sgs_sanitize_grid_template( $value )` | Sanitise a CSS grid-template-columns value for safe inline-style emission. |
+| `sgs_serialise_box_sides` | `function sgs_serialise_box_sides( $box ): string` | Serialise a 4-side box-object attr ({top,right,bottom,left}) to a CSS padding shorthand string ("top right bottom left"). Neutral: an empty… |
+| `sgs_serialise_box_corners` | `function sgs_serialise_box_corners( $box ): string` | Serialise a 4-corner box-object attr ({topLeft,topRight,bottomLeft,bottomRight}) to a CSS border-radius shorthand string. CSS border-radius… |
+| `sgs_container_gap_value` | `function sgs_container_gap_value( $gap )` | Resolve a gap attribute value to a safe CSS declaration fragment (the part after "gap:"). |
+| `sgs_container_tier_gap` | `function sgs_container_tier_gap( array $attributes, string $tier ): string` | Resolve the effective gap for one device tier, under EITHER responsive model. |
+| `sgs_intrinsic_columns_track` | `function sgs_intrinsic_columns_track( int $count, string $gap_value, ?string $basis = null ): string` | Build a track list where the operator's column count is a CEILING, not a fixed number — so columns fall away when content genuinely stops… |
+| `sgs_container_tier_min_column_width` | `function sgs_container_tier_min_column_width( array $attributes, string $tier ): ?string` | Resolve the effective intrinsic-columns BASIS (minimum column width) for one device tier, from `sgs/container`'s client-configurable… |
+| `sgs_block_wants_intrinsic_columns` | `function sgs_block_wants_intrinsic_columns( $block ): bool` | Does this block type opt in to content-aware column collapse? |
+
+#### `includes/helpers-css-safety.php` — 2 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_css_length_value` | `function sgs_css_length_value( $value )` | Validate and normalise a CSS length-shaped value for safe inline emission. |
+| `sgs_css_length_value_self_test` | `function sgs_css_length_value_self_test()` | Run every accept/reject/backward-compat case and report an honest count. |
+
+#### `includes/helpers-hover-state.php` — 3 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_hover_guarded_rule` | `function sgs_hover_guarded_rule( string $hover_selector, string $decls ): string` | Wrap a hover-only rule in both guards. |
+| `sgs_hover_state_rules` | `function sgs_hover_state_rules( string $selector, string $decls, string $focus = ':focus-visible', string…` | Emit a hover state as a touch-safe PAIR: a guarded hover rule plus an unguarded focus rule carrying the identical declarations. |
+| `sgs_hover_media_wrap` | `function sgs_hover_media_wrap( string $rule ): string` | Wrap an ALREADY-BUILT hover rule in the layer-1 media query. |
+
+#### `includes/helpers-link.php` — 1 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_link_attributes` | `function sgs_link_attributes( ?array $link ): string` | Resolve an `SgsLinkControl` object attr into a safe HTML attribute string for an `<a>` tag (href + target + rel), ready to interpolate… |
+
+#### `includes/helpers-list-markers.php` — 5 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_list_marker_types` | `function sgs_list_marker_types()` | The allowed `markerType` values (no JSON `enum` on the attribute — blockjson-enum-coerces-invalid-to-default — so callers validate here). |
+| `sgs_list_marker_sanitise_type` | `function sgs_list_marker_sanitise_type( $raw, $fallback_type = 'icon' )` | Validate a stored `markerType` value, falling back to a safe default. |
+| `sgs_list_marker_element_tag` | `function sgs_list_marker_element_tag( $marker_type )` | The list ROOT tag for a given marker type. `numbered` renders a real `<ol>` so order is conveyed to assistive tech and crawlers; every… |
+| `sgs_list_marker_render` | `function sgs_list_marker_render( $marker_type, $icon_html )` | Build the per-item marker markup for one `<li>`. |
+| `sgs_icon_list_flatten_menu_blocks` | `function sgs_icon_list_flatten_menu_blocks( array $blocks )` | Flatten resolved nav blocks (from SGS_Nav_Menu_Source::blocks_from_ref()) into `{ text, url }` pairs shaped like an `sgs/icon-list` typed… |
+
+#### `includes/helpers-media-element.php` — 5 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_media_element_attr` | `function sgs_media_element_attr( $prefix, $base )` | Build a prefixed media attribute name. |
+| `sgs_media_element_stored_attr` | `function sgs_media_element_stored_attr( $block_slug, $prefix, $base )` | Resolve the attribute name a SURFACE actually stores. |
+| `sgs_media_element_value` | `function sgs_media_element_value( array $attributes, $name, $want = 'raw' )` | Read a media attribute's value, tolerating every storage SHAPE. |
+| `sgs_media_element_scope_class` | `function sgs_media_element_scope_class( $uid, $prefix )` | The per-ELEMENT scope class for one media element on a block. |
+| `sgs_media_element_style` | `function sgs_media_element_style( array $attributes, $prefix, $block_slug, $scope_class, array $atoms )` | Every declared atom's custom-property VALUES for one media element, as one scoped CSS rule. |
+
+#### `includes/helpers-media-position.php` — 2 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_media_position_focal_to_css` | `function sgs_media_position_focal_to_css( $focal_point )` | FocalPointPicker {x,y} (floats 0-1) -> CSS "X% Y%" object-position value. Clamped 0-1, rounded 2dp. Returns '' when unset or at the CSS… |
+| `sgs_media_position_css` | `function sgs_media_position_css( array $attributes, $prefix, $selector )` | Build a scoped object-fit/object-position CSS rule for one media element. The caller passes its OWN, already-safe selector — this function… |
+
+#### `includes/helpers-media.php` — 4 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_responsive_image` | `function sgs_responsive_image( int $id, string $url, string $alt = '', string $size = 'large', array $attrs =…` | Output a responsive image tag with srcset when a valid attachment ID is available. |
+| `sgs_next_background_image_index` | `function sgs_next_background_image_index(): int` | Return the next 1-based index in the PAGE-WIDE background-image render order. |
+| `sgs_render_stars` | `function sgs_render_stars( float $rating, int $best_rating = 5, int $size = 20, string $colour_css =…` | Render inline SVG star icons for a given rating value. |
+| `sgs_render_media` | `function sgs_render_media( $attrs, $context = '' )` | Render an image or video from a unified SGS media-slot attribute. |
+
+#### `includes/helpers-mega-render.php` — 1 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_mega_render_panel_content` | `function sgs_mega_render_panel_content( int $panel_id ): ?string` | Resolve a mega panel post ID to its rendered inner HTML, guarding against self-reference recursion + runaway depth. |
+
+#### `includes/helpers-responsive.php` — 15 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_responsive_sanitise_unit` | `function sgs_responsive_sanitise_unit( $unit )` | Strip a CSS unit down to safe letters/percent only. |
+| `sgs_responsive_css_rule` | `function sgs_responsive_css_rule( array $attributes, array $prop_map, $selector )` | Build a scoped responsive CSS rule (base + tablet + mobile) for one or more independent CSS properties on the SAME selector. |
+| `sgs_responsive_box_shorthand_rule` | `function sgs_responsive_box_shorthand_rule( array $attributes, $css_prop, array $sides, $unit_attr…` | Build a scoped responsive 4-side shorthand rule (e.g. margin / padding) for one selector. Mirrors the heading block's original wrapper… |
+| `sgs_responsive_side_order` | `function sgs_responsive_side_order()` | Canonical side order for box properties (also the CSS shorthand order). |
+| `sgs_responsive_normalise_object` | `function sgs_responsive_normalise_object( $raw, $is_box = false )` | Coerce a stored attribute value into the `{desktop,tablet,mobile}` shape. |
+| `sgs_responsive_atoms_from_spec` | `function sgs_responsive_atoms_from_spec( array $spec )` | Expand one property spec into a flat list of scalar "atoms". |
+| `sgs_responsive_format_atom_value` | `function sgs_responsive_format_atom_value( $raw, $unit, $cast, $transform )` | Format one raw atom value into a CSS value string, or null if unusable. |
+| `sgs_responsive_sanitise_css_value` | `function sgs_responsive_sanitise_css_value( $value )` | Sanitise a free-text CSS length/expression value for a scoped <style>. |
+| `sgs_emit_responsive_css` | `function sgs_emit_responsive_css( $selector, array $prop_map, array $opts = array() )` | Emit scoped responsive CSS for object-model properties on one selector. |
+| `sgs_canonicalise_responsive_attrs` | `function sgs_canonicalise_responsive_attrs( array $attrs )` | Canonicalisation ORACLE for object-model responsive attributes. |
+| `sgs_resolve_tier` | `function sgs_resolve_tier( $value, $tier = 'desktop', $default = null )` | Canonical tier-resolver — generalised cascade for both tri-state enums and scalar/null-marker values. Implements the contract: desktop… |
+| `sgs_emit_tier_rules` | `function sgs_emit_tier_rules( $uid_selector, $value, $css_on, $css_off = '', $default = 'off' )` | Emit scoped per-tier CSS rules (base + tablet + mobile) for a tri-state ('inherit'\|'on'\|'off') responsive behaviour attribute, resolved… |
+| `sgs_emit_tier_rules_map` | `function sgs_emit_tier_rules_map( $uid_selector, $value, array $css_by_value, $css_fallback = '', $default =…` | The general N-value form of {@see sgs_emit_tier_rules()}: emit scoped per-tier CSS for a responsive attribute whose resolved value is one… |
+| `sgs_resolve_on_tiers` | `function sgs_resolve_on_tiers( $raw, $on_marker, $default )` | Resolve a `{desktop,tablet,mobile}` responsive object into the list of tiers where the effective value equals $on_marker, via the canonical… |
+| `sgs_merge_tri_state_declarations` | `function sgs_merge_tri_state_declarations( $selector, $behaviours, $default = 'off', $on_marker = 'on' )` | Merge several tri-state ('on'/'off'/'inherit') behaviours that may write to the SAME selector into ONE set of declarations per tier, with a… |
+
+#### `includes/helpers-row-behaviour.php` — 3 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_row_shrink_css` | `function sgs_row_shrink_css( $selector, $padding )` | Build the per-instance "shrunk" vertical-padding CSS for one row. |
+| `sgs_block_is_header_essential` | `function sgs_block_is_header_essential( $block_name )` | Is this block type flagged as essential header furniture? |
+| `sgs_resolve_row_shrink_hide_target` | `function sgs_resolve_row_shrink_hide_target( $block, $raw_target )` | Validate the stored shrink-hide target against this row's actual children. |
+
+#### `includes/helpers-scoped-instance-vars.php` — 3 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_scope_class_for_root` | `function sgs_scope_class_for_root( string $root_tag_html, string $prefix ): string` | Find an existing SGS uid-pattern class (`sgs-<slug>-<8hex>`, the pattern every migrated render.php already emits as its scoping selector… |
+| `sgs_append_scoped_var_style` | `function sgs_append_scoped_var_style( string $block_content, string $scope_class, array $declarations )…` | Append a scoped `<style>` rule declaring CSS custom properties on the given scope class, to a block's rendered HTML. No-op when there are… |
+| `sgs_extract_root_opening_tag` | `function sgs_extract_root_opening_tag( string $root_and_beyond ): string` | Extract just the root element's OPENING tag from a block-content substring that starts at the real root (i.e. past any leading… |
+
+#### `includes/helpers-svg-gradient.php` — 2 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_svg_stroke_gradient` | `function sgs_svg_stroke_gradient( string $gradient_css, string $id, string $target = 'stroke' ): array` | Convert a validated CSS gradient string into SVG gradient-def markup plus the CSS declaration that paints an icon's stroke with it. |
+| `sgs_svg_inject_defs` | `function sgs_svg_inject_defs( string $svg_markup, string $defs ): string` | Inject an SVG gradient <defs> block as the first child of an SVG's opening tag. `<defs>` never paints on its own (SVG spec) so this is safe… |
+
+#### `includes/helpers-svg-kses.php` — 1 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_svg_kses_allowed_tags` | `function sgs_svg_kses_allowed_tags(): array` | Returns the wp_kses allowed-tags array for sanitising inline SVG markup. |
+
+#### `includes/helpers-tier-media.php` — 4 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_allowed_svg_tags` | `function sgs_allowed_svg_tags(): array` | The SGS inline-SVG allow-list for `wp_kses()`. |
+| `sgs_tier_media_render` | `function sgs_tier_media_render( array $tiers, string $base_class, string $uid, string $alt = '', array $extra…` | Render up to three device tiers of media, each with its own TYPE. |
+| `sgs_tier_media_has_source` | `function sgs_tier_media_has_source( array $spec ): bool` | Does a tier spec resolve to something renderable? |
+| `sgs_tier_media_toggle_css` | `function sgs_tier_media_toggle_css( array $present, string $base_class, string $uid ): string` | Breakpoint rules that show exactly one tier at any width. |
+
+#### `includes/helpers-tokens.php` — 33 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_attr_has_value` | `function sgs_attr_has_value( $val ): bool` | Determine whether an attribute value is meaningfully set. |
+| `sgs_css_value_has_breakout` | `function sgs_css_value_has_breakout( string $value ): bool` | True when a CSS VALUE contains a declaration/rule-breakout or URL-fetch token and must not be emitted into a scoped `<style>` element. |
+| `sgs_is_css_colour` | `function sgs_is_css_colour( string $value ): bool` | Determine whether a value is a direct CSS colour rather than a design token slug. |
+| `sgs_functional_colour_to_hex` | `function sgs_functional_colour_to_hex( string $value ): string` | Normalise a functional-colour notation — rgb()/rgba()/hsl()/hsla() — to a hex string (6-digit, or 8-digit `#RRGGBBAA` when an alpha < 1 is… |
+| `sgs_rgb_to_hex` | `function sgs_rgb_to_hex( array $rgb, string $alpha_tok = '' ): string` | Build a hex string from an RGB triple (each 0-255) + an optional CSS alpha token (0-1 float or a percentage). Emits 8-digit `#RRGGBBAA`… |
+| `sgs_css_num_or_pct` | `function sgs_css_num_or_pct( string $tok, float $pct_base ): float` | Resolve a CSS number-or-percentage token. A percentage is taken as a fraction of `$pct_base`; a bare number is returned as-is. |
+| `sgs_linear_srgb_to_255` | `function sgs_linear_srgb_to_255( float $c ): int` | Gamma-encode a linear-sRGB channel (0-1) to a clamped 0-255 byte. |
+| `sgs_hwb_to_rgb` | `function sgs_hwb_to_rgb( float $h, float $w, float $b ): array` | CSS Color 4 hwb() → RGB (each 0-255). H degrees, W/B percent (0-100). |
+| `sgs_oklab_to_rgb` | `function sgs_oklab_to_rgb( float $lightness, float $a, float $b ): array` | OKLab → sRGB (each 0-255). Björn Ottosson's canonical matrices. |
+| `sgs_lab_to_rgb` | `function sgs_lab_to_rgb( float $lightness, float $a, float $b ): array` | CIE Lab (D50) → sRGB (each 0-255) — via XYZ(D50) → linear sRGB with the CSS Color 4 Bradford-adapted D50→D65 matrix. |
+| `sgs_normalise_css_functional_colours` | `function sgs_normalise_css_functional_colours( string $value ): string` | Normalise EVERY functional-colour occurrence (rgb/rgba/hsl/hsla) EMBEDDED in a compound CSS value string to hex — e.g. a box-shadow `0 2px… |
+| `sgs_css_channel_to_255` | `function sgs_css_channel_to_255( string $tok ): int` | Convert an rgb() channel token (0-255 integer or a percentage) to 0-255. |
+| `sgs_css_alpha_to_255` | `function sgs_css_alpha_to_255( string $tok ): int` | Convert a CSS alpha token (0-1 float or a percentage) to a 0-255 byte. |
+| `sgs_hsl_to_rgb` | `function sgs_hsl_to_rgb( float $h, float $s, float $l ): array` | Convert HSL to RGB (each 0-255). H in degrees, S/L in percent (0-100). |
+| `sgs_colour_value` | `function sgs_colour_value( ?string $slug_or_value ): string` | Resolve a colour attribute value to a CSS colour string. |
+| `sgs_shadow_value` | `function sgs_shadow_value( ?string $slug_or_value ): string` | Resolve a shadow attribute value to a CSS box-shadow string. |
+| `sgs_shadow_value_composed` | `function sgs_shadow_value_composed( ?string $shape, ?string $colour ): string` | Compose a shadow SHAPE (offset-x/offset-y/blur/spread + optional `inset`, no embedded colour — `ShadowControl`'s stored value under the… |
+| `sgs_css_gradient_value` | `function sgs_css_gradient_value( ?string $value ): string` | Validate a CSS gradient value for safe emission into a scoped rule / custom property. |
+| `sgs_background_paint_value` | `function sgs_background_paint_value( ?string $colour, ?string $gradient ): array` | Resolve a colour attribute + its sibling gradient attribute to the correct `background-*` CSS declaration — Builder 1 of the D636 universal… |
+| `sgs_background_paint_decl` | `function sgs_background_paint_decl( ?string $colour, ?string $gradient ): string` | Convenience wrapper around sgs_background_paint_value() that returns the full CSS declaration string (`property:value`, no trailing… |
+| `sgs_block_background_layer_css` | `function sgs_block_background_layer_css( string $selector, string $paint_decl, string $hover_paint_decl = ''…` | Move a block's own BLOCK BACKGROUND paint off the element itself onto a `::after` pseudo-element layer, so a sibling text-gradient… |
+| `sgs_custom_property_gradient_decls` | `function sgs_custom_property_gradient_decls( string $var_name, string $flat, string $gradient ): array` | Gradient sibling for a colour-valued custom property that has NO stable CSS selector of its own to hang a direct scoped rule on (the shape… |
+| `sgs_gradient_overlay_attr` | `function sgs_gradient_overlay_attr( string $base, string $part = 'gradient' ): string` | Derive ONE of a gradient-overlay family's attribute names from its base. |
+| `sgs_gradient_overlay_attr_map` | `function sgs_gradient_overlay_attr_map( string $base, ?string $solid = null ): array` | The attribute-key map for a gradient-overlay family. |
+| `sgs_overlay_decls` | `function sgs_overlay_decls( ?string $colour, ?string $gradient, $opacity = null, ?string $blend_mode = null…` | Resolve an overlay LAYER's complete CSS declaration set — colour/gradient paint plus its own opacity (D717, 2026-08-21) plus its own blend… |
+| `sgs_text_colour_decl` | `function sgs_text_colour_decl( ?string $value ): string` | Resolve a text-colour attribute (flat colour OR gradient string, D636 single-attribute storage) into a bare CSS declaration fragment — no… |
+| `sgs_text_colour_gradient_fallback_rule` | `function sgs_text_colour_gradient_fallback_rule( string $selector, ?string $value ): string` | The `@supports not (background-clip: text)` fallback rule that MUST accompany `sgs_text_colour_decl()` whenever its input was a gradient (a… |
+| `sgs_resolve_text_colour_or_gradient` | `function sgs_resolve_text_colour_or_gradient( ?string $flat_value, ?string $gradient_value ): string` | Resolve which of a text-colour attribute's two SIBLING values should be used — the flat colour attribute, or its `{attr}Gradient` sibling. |
+| `sgs_grid_border_parts` | `function sgs_grid_border_parts( string $value ): array` | Split a `gridItemBorder`-style CSS border SHORTHAND string ("1px solid #ccc") into its width/style/colour parts, order-independent. |
+| `sgs_border_gradient_css` | `function sgs_border_gradient_css( string $selector, string $normal_paint, ?string $hover_paint = null, string…` | Universal masked-`::before` gradient-border emitter (D636 border builder, 2026-08-16). `border-color` cannot legally hold a CSS gradient —… |
+| `sgs_emit_state_colour_css` | `function sgs_emit_state_colour_css( string $selector, array $decls_normal, array $decls_hover ): string` | Universal per-instance hover/focus-visible colour-state emitter. |
+| `sgs_font_size_value` | `function sgs_font_size_value( ?string $slug_or_value ): string` | Resolve a font-size attribute value to a CSS font-size string. |
+| `sgs_transition_vars` | `function sgs_transition_vars( array $attributes ): array` | Build CSS custom properties for transition duration and easing. |
+
+#### `includes/helpers-typography.php` — 3 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_typography_attr` | `function sgs_typography_attr( $prefix, $base )` | Build a prefixed attribute key. '' + 'FontSize' → 'fontSize'; 'label' + 'FontSize' → 'labelFontSize'. |
+| `sgs_font_family_sanitise` | `function sgs_font_family_sanitise( $value ): string` | Sanitise a font-family value for safe CSS interpolation. |
+| `sgs_typography_css_rule` | `function sgs_typography_css_rule( array $attributes, $prefix, $selector )` | Build a scoped typography CSS rule string (base + responsive) for one element. The caller wraps the return value in a single <style> tag. |
+
+#### `includes/helpers-value-ladder.php` — 2 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_saving_display` | `function sgs_saving_display( int $anchor_per_unit_pence, int $pack_per_unit_pence, string $framing_mode, bool…` | Plain-text saving label for one row of the comparative value ladder (Spec 28 P1). |
+| `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 28 P1). |
+
+**24 files, 126 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+
+### JS shared editor components — `src/components/*.js`
+
+One row per file (top-level only, not sub-directories, except the dedicated `media/atoms/` table below). Purpose is the file's own top-of-file JSDoc/comment header — **UNDOCUMENTED** when absent.
+
+| File | Exports | Purpose |
+|---|---|---|
+| `AnimationControl.js` | `AnimationControl (default)` | Animation selector for block sidebar. |
+| `BooleanResponsiveControl.js` | `BooleanResponsiveControl (default)` | BooleanResponsiveControl — a single ToggleControl on Desktop, a 3-way Inherit/On/Off switch on Tablet/Mobile, driven by the… |
+| `BorderStyleControl.js` | `BorderStyleControl (default)` | BorderStyleControl — thin SGS wrapper matching WP core's native `BorderControlStylePicker` exactly (Bean-directed, 2026-08-19). |
+| `ColumnShapePicker.js` | `ColumnShapePicker (default)`, `weightsToTrack`, `activeShapeKey`, `ColumnShapePicker` | ColumnShapePicker — pick a column SHAPE by clicking a diagram (FR-37-42). |
+| `DateTimePickerField.js` | `DateTimePickerField (default)` | DateTimePickerField — the SGS standard DATE control (golden-controls.json goldens/input.json `date` row, Bean-approved live… |
+| `DesignTokenPicker.js` | `DesignTokenPicker (default)`, `resolveColourToken` | Colour picker that reads the active theme.json palette. |
+| `FocalPositionField.js` | `FocalPositionField (default)` | FocalPositionField — the SGS wrapper around WP-native `FocalPointPicker` |
+| `GradientCapableColourControl.js` | `GradientCapableColourControl (default)`, `isGradientValue` | GradientCapableColourControl — the text-colour gradient rollout's shared control (D636 Task 1b, "text" builder). |
+| `GradientOverlayControl.js` | `GradientOverlayControl (default)`, `gradientOverlayAttrName`, `gradientOverlayAttrKeys` | GradientOverlayControl |
+| `index.js` | `ResponsiveControl`, `BooleanResponsiveControl`, `ResponsiveOverride`… | export { default as ResponsiveControl } from './ResponsiveControl'; export { default as BooleanResponsiveControl } from… |
+| `LinkPopoverControl.js` | `LinkPopoverField (default)`, `LinkPopoverContent`, `TARGET_ENUM_OPTIONS` | LinkPopoverControl — the SGS standard LINK control (Spec 35 §2 LINK, promoted from `sgs/button`'s pilot 2026-08-13, Bean-approved… |
+| `MediaElementControls.js` | `mediaAttrName`, `mediaAttrType`, `mediaAttrKeys`, `mediaStoredAttrName`, `MEDIA_BASES`… | L1 — media attribute NAMING. The contract every later wave inherits. |
+| `MediaElementPanel.js` | `MediaElementPanel (default)` | L3 — the media element's DISPATCH layer. |
+| `MediaGalleryPicker.js` | `MediaGalleryPicker (default)` | MediaGalleryPicker — shared bulk multi-select media component for SGS blocks. |
+| `MediaPicker.js` | `MediaPicker (default)` | MediaPicker — shared media-slot component for SGS blocks. |
+| `MediaSizingPanel.js` | `MediaSizingPanel (default)`, `RATIO_OPTIONS` | MediaSizingPanel — the shared "media size & crop" panel (C19, 2026-08-27). |
+| `ResponsiveBoxControl.js` | `ResponsiveBoxControl (default)`, `ResponsiveBorderRadiusControl`, `BOX_UNITS`… | ResponsiveBoxControl / ResponsiveBorderRadiusControl — shared responsive box-family editor controls (Box-object interface… |
+| `ResponsiveBoxControls.js` | `ResponsiveBoxControls (default)` | ResponsiveBoxControls — Spec 37 FR-37-16 per-device spacing + width panel. |
+| `ResponsiveControl.js` | `ResponsiveControl (default)` | Responsive breakpoint switcher for block sidebar controls. |
+| `ResponsiveOverride.js` | `ResponsiveOverride (default)` | ResponsiveOverride — SGS-owned per-device override control (Spec 37 FR-37-16). |
+| `ResponsiveTriStateControl.js` | `ResponsiveTriStateControl (default)` | ResponsiveTriStateControl — the DP1 tri-state on/off control (Spec 35 T1.2). |
+| `RowQuickInsertAppender.js` | `RowQuickInsertAppender (default)` | Promoted quick-insert appender for a freeform row block (site-header-row / site-footer-row). Steering, not gating: the row still… |
+| `RowScrollBehaviourControls.js` | `RowScrollBehaviourControls (default)` | RowScrollBehaviourControls — per-row transparent / hide-on-scroll toggles |
+| `ScaleAxisControl.js` | `ScaleAxisControl (default)` | ScaleAxisControl — 2-axis (X/Y) proportional scale control with a link/unlink toggle (Spec 35 §F.2.3, D637). |
+| `SgsBooleanField.js` | `SgsBooleanField (default)` | SgsBooleanField — the SGS standard BOOLEAN control (golden-controls.json goldens/input.json `boolean` row, Bean-approved live… |
+| `SgsBorderControl.js` | `SgsBorderControl (default)` | SgsBorderControl — the border control PAIR, matching WP core's native `BorderBoxControl` layout (Bean-directed 2026-08-27 Task 0… |
+| `SgsBoxControl.js` | `SgsBoxControl (default)` | SgsBoxControl — compact 4-side box editor (padding / margin / border-width), built from native primitives with a hand-aligned row… |
+| `SgsColourPanel.js` | `SgsColourPanel (default)` | THE grouped colour panel — D609's "missing half" (amended 2026-08-13, corrected 2026-08-14 per Bean's direct challenge — see… |
+| `SgsFreeTextField.js` | `SgsFreeTextField (default)` | SgsFreeTextField — the SGS standard FREE-TEXT / BARE-NUMBER control |
+| `SgsLengthControl.js` | `SgsLengthControl (default)` | SgsLengthControl — thin SGS wrapper for a length/unit value (Bean-directed new build, 2026-08-19; same construction pattern… |
+| `SgsMultiSelectField.js` | `SgsMultiSelectField (default)` | SgsMultiSelectField — the SGS standard MULTI-SELECT / TOKEN control |
+| `ShadowControl.js` | `ShadowControl (default)`, `shadowAttrName`, `shadowAttrKeys` | ShadowControl — shared real shadow builder (Spec 35 Part I action item 3). |
+| `SpacingControl.js` | `SpacingControl (default)` | Spacing control that reads theme.json spacing presets. |
+| `TypographyControls.js` | `TypographyControls (default)`, `typographyAttrName`, `typographyAttrKeys`… | TypographyControls — shared, uniform typography UI for every SGS block. |
+
+**34 files.**
+
+### JS media atoms — `src/components/media/atoms/*.js`
+
+One row per file (top-level only, not sub-directories, except the dedicated `media/atoms/` table below). Purpose is the file's own top-of-file JSDoc/comment header — **UNDOCUMENTED** when absent.
+
+| File | Exports | Purpose |
+|---|---|---|
+| `box-shape.control.js` | `control` | `box-shape` atom — CONTROL half (JSX). |
+| `box-shape.js` | `normaliseRatio`, `resolveSizingMode`, `validateShape`, `resolveHeight`, `resolveWidth`… | `box-shape` atom — L2b control + disclosure + validator + value-setter. |
+| `caption.control.js` | `control` | `caption` atom — CONTROL half (JSX). |
+| `caption.js` | `attrKeys`, `validateTag`, `disclosure`, `validate`, `css` | `caption` atom — L2b control + disclosure + validator + value-setter. |
+| `focal-point.control.js` | `control` | `focal-point` atom — CONTROL half (JSX). |
+| `focal-point.js` | `resolvePosition`, `validate`, `disclosure`, `css` | `focal-point` atom — LOGIC half (L2b value-setter + validator + disclosure). |
+| `intrinsic.control.js` | `control` | Atom: INTRINSIC (control half). |
+| `intrinsic.js` | `disclosure`, `validate`, `css` | Atom: INTRINSIC (logic half) — the chosen media's own pixel dimensions. |
+| `link.control.js` | `control` | `link` atom — CONTROL half (JSX). |
+| `link.js` | `attrKeys`, `disclosure`, `validate`, `css` | `link` atom — L2b control + disclosure + validator + value-setter. |
+| `meaning.control.js` | `control` | Atom: MEANING (control half) — the editor UI. |
+| `meaning.js` | `altBaseFor`, `resolveMediaType`, `disclosure`, `validate`, `css`, `TYPE_VOCABULARY` | Atom: MEANING (logic half) — accessibility text for the media. |
+| `media-padding.control.js` | `control` | `media-padding` atom — CONTROL half (JSX). |
+| `media-padding.js` | `attrKeys`, `sidesToShorthand`, `disclosure`, `validate`, `css` | `media-padding` atom — L2b control + disclosure + validator + value-setter. |
+| `media-type.control.js` | `control` | `media-type` atom — CONTROL half (JSX-equivalent `control()`, via `createElement()`). |
+| `media-type.js` | `validate`, `disclosure`, `css`, `CANONICAL_ENUM`, `TIER_ENUM` | `media-type` atom — LOGIC half (pure: css/validate/disclosure). |
+| `motion.control.js` | `control` | `motion` atom — CONTROL half (JSX). |
+| `motion.js` | `validateBoolean`, `validateDuration`, `attrKeys`, `validate`, `disclosure`, `css` | `motion` atom — L2b control + disclosure + validator + value-setter. |
+| `object-fit.control.js` | `control` | `object-fit` atom — CONTROL half (JSX). |
+| `object-fit.js` | `validate`, `disclosure`, `css` | `object-fit` atom — LOGIC half (L2b value-setter + validator + disclosure). |
+| `opacity.control.js` | `control` | `opacity` atom — CONTROL half (JSX). |
+| `opacity.js` | `attrKeys`, `disclosure`, `validate`, `css` | `opacity` atom — L2b control + disclosure + validator + value-setter. |
+| `overlay.control.js` | `control` | `overlay` atom — CONTROL half (JSX). |
+| `overlay.js` | `validateGradient`, `resolveColour`, `resolvePaint`, `attrKeys`, `disclosure`… | `overlay` atom — L2b control + disclosure + validator + value-setter. |
+| `registry.js` | `basesForAtoms`, `atomsForElement`, `MEDIA_ATOMS`, `MEDIA_ATOM_IDS` | L2b — the ATOM registry. The middle level between names and panels. |
+| `shadow.control.js` | `control` | `shadow` atom — CONTROL half (JSX). |
+| `shadow.js` | `attrKeys`, `isRawShape`, `resolveShadow`, `disclosure`, `validate`, `css` | `shadow` atom — L2b control + disclosure + validator + value-setter. |
+| `source.control.js` | `control` | Atom: SOURCE (control half) — the editor UI. |
+| `source.js` | `resolveMediaType`, `disclosure`, `validate`, `css`, `TYPE_VOCABULARY` | Atom: SOURCE (logic half) — which media is showing. |
+| `svg-presentation.control.js` | `control` | `svg-presentation` atom — CONTROL half (JSX). |
+| `svg-presentation.js` | `validatePosition`, `validateAnimation`, `validateSpeed`, `attrKeys`, `disclosure`… | `svg-presentation` atom — L2b control + disclosure + validator + value-setter. |
+| `video-behaviour.control.js` | `control` | `video-behaviour` atom — CONTROL half (JSX-equivalent `control()`, via `createElement()`). |
+| `video-behaviour.js` | `validate`, `disclosure`, `css` | `video-behaviour` atom — LOGIC half (pure: css/validate/disclosure). |
+
+**33 files.**
+
+<!-- HELPER-CATALOGUE:END -->
 
 ---
 
