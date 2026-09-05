@@ -138,6 +138,7 @@ def _make_minimal_db(
     block_attributes: list[tuple],   # (block_slug, attr_name) or (block_slug, attr_name, role)
     blocks: list[tuple] | None = None,  # (slug, variant_attr) or (slug, variant_attr, tier)
     variant_slots: list[tuple] | None = None,  # (block_slug, variant_value, unique_slot)
+    variant_composition_slots: list[tuple] | None = None,  # (block_slug, variant_value, unique_child_slug)
     block_composition: list[tuple] | None = None,  # (block_slug, has_inner_blocks) or (..., composition_role, container_kind)
     roles: list[tuple] | None = None,  # (role_name,)
     variant_enum: list[tuple] | None = None,  # (block_slug, attr_name, enum_values_json)
@@ -153,6 +154,9 @@ def _make_minimal_db(
     the variant-attr's own declared enum roster (check #3's ambiguity rule
     reads this to see zero-discriminator variants that never get a
     variant_slots row).
+    variant_composition_slots rows are 3-tuples (block_slug, variant_value,
+    unique_child_slug) — the InnerBlocks-composition discriminator half of
+    check #3's FULL signature (2026-09-05 update).
     """
     conn = sqlite3.connect(":memory:")
     conn.execute(
@@ -170,6 +174,10 @@ def _make_minimal_db(
     conn.execute(
         "CREATE TABLE variant_slots "
         "(block_slug TEXT, variant_value TEXT, unique_slot TEXT)"
+    )
+    conn.execute(
+        "CREATE TABLE variant_composition_slots "
+        "(block_slug TEXT, variant_value TEXT, unique_child_slug TEXT)"
     )
     conn.execute(
         "CREATE TABLE block_composition "
@@ -202,6 +210,11 @@ def _make_minimal_db(
                 conn.execute("INSERT INTO blocks (slug, variant_attr, tier) VALUES (?,?,?)", row)
     if variant_slots:
         conn.executemany("INSERT INTO variant_slots VALUES (?,?,?)", variant_slots)
+    if variant_composition_slots:
+        conn.executemany(
+            "INSERT INTO variant_composition_slots VALUES (?,?,?)",
+            variant_composition_slots,
+        )
     if block_composition:
         for row in block_composition:
             if len(row) == 2:
@@ -471,6 +484,43 @@ class TestCheck3PlantedViolation:
         assert violations == [], (
             f"Expected 0 violations for a single empty-signature fallback, got {len(violations)}: "
             + "\n".join(v.detail for v in violations)
+        )
+
+    def test_check3_composition_signature_disambiguates_empty_attr_signature(self):
+        """Plant: two variants both with EMPTY variant_slots (attribute)
+        signatures — 'text-only' style, gate would previously flag them as
+        colliding (as sgs/nav-drawer's 'split-zone-serif'/'two-column-editorial'
+        pair genuinely did pre-fix). But ONE of them ('composed-variant') also
+        has a REAL, unique variant_composition_slots row — an InnerBlocks
+        composition discriminator. That must be enough to disambiguate it:
+        detect_variant can now tell them apart via composition even though
+        neither has a distinguishing styling attr. Only 'plain-variant' is left
+        as the single empty-FULL-signature fallback, so 0 violations expected.
+        """
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            blocks=[
+                ("sgs/test-block", "variant"),
+            ],
+            variant_slots=[],  # both variants have zero attribute-signature rows
+            variant_composition_slots=[
+                # Only 'composed-variant' gets a composition discriminator —
+                # 'plain-variant' gets none, so it stays the sole intentional
+                # empty-signature fallback.
+                ("sgs/test-block", "composed-variant", "sgs/card-grid"),
+            ],
+            variant_enum=[
+                ("sgs/test-block", "variant", '["plain-variant", "composed-variant"]'),
+            ],
+        )
+        violations = check_variants.run(conn)
+        conn.close()
+
+        assert violations == [], (
+            f"Expected 0 violations — 'composed-variant' has a unique composition "
+            f"discriminator even though its attribute signature is empty, got "
+            f"{len(violations)}: " + "\n".join(v.detail for v in violations)
         )
 
     def test_check3_ignores_empty_string_default_sentinel(self):
