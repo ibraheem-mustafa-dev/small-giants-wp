@@ -24,6 +24,8 @@ link-content     <a href> MINUS the block's own URL       str | None
                  template (needs ``link_template``)
 plain-integer    element text verbatim                   str | None
 css-modifier     BEM --<modifier> suffix on element cls  str | None
+numeric-content  first signed decimal token in text      float | None
+presence-boolean element MATCHED (existence is the value) True (always)
 
 Design constraints (all inherited from Spec 31 §3.B.0 / R-31-1 / R-31-9):
   - No block-slug literals.
@@ -33,7 +35,12 @@ Design constraints (all inherited from Spec 31 §3.B.0 / R-31-1 / R-31-9):
     orchestrator.converter_v2.icon_resolver, vetted per D248) is imported here
     as a shared recognition primitive, equivalent in role to db_lookup.
   - ``rating`` is the STAR-count role.  ``plain-integer`` is for verbatim text
-    numbers like "500+" or "01".  They are distinct and must not be conflated.
+    numbers like "500+" or "01".  ``numeric-content`` is for a genuinely
+    numeric (decimal-capable) score/value, e.g. a 0-100 review score — NOT a
+    star count and NOT an enum pick. All are distinct and must not be
+    conflated (Task 4, 2026-09-05: sgs/testimonial.ratingScale was previously
+    misrouted through 'select-from-enum', which the resolver gate correctly
+    excludes since a continuous score is not a fixed choice set).
 
 This module carries NO block-slug or variant literals; no DB calls (those belong
 in the resolvers that call us).
@@ -378,6 +385,29 @@ def extract_field_value(
         return extract_star_count(element)
 
     # ------------------------------------------------------------------
+    # numeric-content — a genuinely numeric (decimal-capable) scalar read
+    # verbatim from element text, e.g. sgs/testimonial.ratingScale ("9.2 /
+    # 10" -> 9.2). Distinct from 'rating' (STAR count, hardcoded 0..5 clamp
+    # via extract_star_count) and from 'plain-integer' (verbatim TEXT, no
+    # numeric parsing). Returns the FIRST signed decimal token found, as a
+    # Python float, or None when the element carries no numeric token (no
+    # guessed value, matching every other role's no-op floor).
+    # ------------------------------------------------------------------
+    if role == "numeric-content":
+        match = re.search(r"-?\d+(?:\.\d+)?", element.get_text())
+        return float(match.group(0)) if match else None
+
+    # ------------------------------------------------------------------
+    # presence-boolean — True purely because the matched element EXISTS
+    # (e.g. sgs/testimonial.verified: the badge's presence in the draft IS
+    # the signal, its text content is irrelevant). The caller only reaches
+    # this branch after a derived_selector match already succeeded, so
+    # there is nothing further to inspect on the element itself.
+    # ------------------------------------------------------------------
+    if role == "presence-boolean":
+        return True
+
+    # ------------------------------------------------------------------
     # icon-slug — priority chain (data-icon > data-lucide > inline <svg>
     #             via icon_resolver > BEM modifier)
     # 'identity' is the DB role on an icon block's source attr (sgs/icon.iconSource);
@@ -452,7 +482,8 @@ def extract_field_value(
     # ------------------------------------------------------------------
     # css-modifier — extract the BEM --<modifier> suffix from the element's
     # class list (e.g. "badge--light" → "light").
-    # NOT wired into any schema in this task; provided for future callers.
+    # Wired into the cloning pipeline via lift_scalar_content's gate;
+    # first real DB adopter is sgs/testimonial's ratingType attribute (D885).
     # ------------------------------------------------------------------
     if role == "css-modifier":
         for cls in (element.get("class") or []):

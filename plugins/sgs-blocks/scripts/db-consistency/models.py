@@ -79,6 +79,18 @@ def motion_fx_qualifying_key(block: str, kind: str) -> str:
     return f"fxqualify:{kind}:{block}"
 
 
+def inert_composition_attr_key(
+    block: str, variant: str, child: str, attr: str
+) -> str:
+    """Check #11 (Inert Child-Attribute Discriminator) stable dedup key.
+
+    Keyed per ROW, not per block: two variants of one block can name different
+    child attributes, and only one of them may be inert — a block-keyed key
+    would collapse them and hide the second finding behind the first.
+    """
+    return f"inertcompattr:{block}:{variant}:{child}:{attr}"
+
+
 def dead_composition_signal_key(block: str) -> str:
     """Check #10 (Dead Composition Discriminator) stable dedup key.
 
@@ -93,3 +105,19 @@ def dead_composition_signal_key(block: str) -> str:
     2026-09-05 task-7 report for the discovery).
     """
     return f"deadcomp:{block}"
+
+
+def role_resolution_guess_key(slot: str) -> str:
+    """Check #12 (Order-Dependent Role Resolution) stable dedup key.
+
+    Keyed per SLOT, not per block: the slot is the unit of the defect. Several
+    array-item fields (and any number of draft children) can route through one
+    ambiguous slot, and they share a single fix — a block-keyed or field-keyed
+    key would either collapse distinct ambiguous slots on the same target block
+    or report one problem N times.
+
+    The drift-guard variant is keyed "drift:<slot>" by its caller, so a check
+    that has stopped modelling the real resolver can never be mistaken for, or
+    baselined alongside, a genuine resolution guess on the same slot.
+    """
+    return f"roleguess:{slot}"

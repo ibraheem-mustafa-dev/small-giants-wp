@@ -1,1 +1,17 @@
-[]
+[
+  "roleguess:avatar",
+  "roleguess:background-image",
+  "roleguess:background-svg",
+  "roleguess:background-video",
+  "roleguess:button",
+  "roleguess:button-group",
+  "roleguess:button-outline",
+  "roleguess:button-primary",
+  "roleguess:buttonSecondary",
+  "roleguess:disclaimer",
+  "roleguess:icon",
+  "roleguess:option-picker",
+  "roleguess:review",
+  "roleguess:star",
+  "roleguess:testimonial"
+]

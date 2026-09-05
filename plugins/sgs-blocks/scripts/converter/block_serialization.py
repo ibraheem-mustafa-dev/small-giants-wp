@@ -30,6 +30,7 @@ convention. Any divergence is either a security hole or a parse failure.
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 
 # Core's strtr() map, in core's order. Ordering is load-bearing: ``\\`` must be
@@ -73,3 +74,54 @@ def serialize_block_attributes(
     for needle, replacement in _CORE_ESCAPES:
         encoded = encoded.replace(needle, replacement)
     return encoded
+
+
+# ---------------------------------------------------------------------------
+# The read-back side (2026-09-06)
+# ---------------------------------------------------------------------------
+# `parse_block_open_comment` recovers `(block_name, attributes)` from serialised
+# block markup this module produced. It exists so a pass that holds only the
+# EMITTED markup for a child block can still read that child's attributes —
+# specifically `assembly.py`'s variant-detection step, whose `ChildBlock`
+# records carry `(slug, markup)` and no structured attribute dict.
+#
+# WHY SPLITTING AT THE FIRST `-->` IS SAFE, not a guess: the escaping above
+# rewrites every `--` inside the attribute JSON to `--`, so no `-->`
+# can occur inside the JSON. The first `-->` after the opening `<!-- wp:` IS
+# therefore always the comment terminator. That is the same invariant
+# `WP_Block_Parser` relies on.
+#
+# No un-escaping step is needed either: the replacements produce `\uXXXX` JSON
+# escapes, which `json.loads` decodes back to the original characters.
+
+_BLOCK_OPEN_RE = re.compile(
+    r"\A\s*<!--\s+wp:(?P<name>[A-Za-z0-9_-]+/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)"
+    r"(?P<json>\s+\{.*?\})?\s*/?-->",
+    re.DOTALL,
+)
+
+
+def parse_block_open_comment(markup: str) -> tuple[str, dict[str, Any]] | None:
+    """Read back the OPENING block comment of serialised block markup.
+
+    Returns ``(block_name, attributes)`` — ``attributes`` is ``{}`` for a block
+    comment carrying no JSON — or ``None`` when `markup` does not begin with a
+    parseable ``<!-- wp:… -->`` opener, or its JSON does not decode to an
+    object. Never raises and never guesses: an unreadable opener is reported as
+    absence, so every caller treats it exactly like a block it could not read.
+    """
+    if not isinstance(markup, str) or not markup:
+        return None
+    match = _BLOCK_OPEN_RE.match(markup)
+    if match is None:
+        return None
+    raw_json = match.group("json")
+    if raw_json is None:
+        return match.group("name"), {}
+    try:
+        decoded = json.loads(raw_json)
+    except ValueError:
+        return None
+    if not isinstance(decoded, dict):
+        return None
+    return match.group("name"), decoded

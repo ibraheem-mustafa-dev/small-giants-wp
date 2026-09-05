@@ -728,7 +728,7 @@ def test_build_block_markup_sets_detected_variant(monkeypatch):
     monkeypatch.setattr(ext_mod.db_lookup, "variant_attr_for",
                         lambda slug: "variant" if slug == "sgs/testimonial" else None)
     monkeypatch.setattr(ext_mod.db_lookup, "detect_variant",
-                        lambda slug, attrs, child_slugs=None: "split")
+                        lambda slug, attrs, child_slugs=None, child_blocks=None: "split")
 
     node = _node_from_file(_TESTIMONIAL)
     rec = recognise(node)

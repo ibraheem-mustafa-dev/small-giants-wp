@@ -89,6 +89,7 @@ def _bootstrap_db_consistency():
     _load("check_orphan_roles")
     _load("check_tier_composition")
     _load("check_dead_composition_signal")
+    _load("check_role_resolution_guess")
 
 
 _bootstrap_db_consistency()
@@ -96,13 +97,13 @@ _bootstrap_db_consistency()
 from db_consistency.models import (  # noqa: E402
     Violation, routing_key, composition_key, variant_key,
     variant_reseed_key, orphan_role_key, tier_composition_key,
-    dead_composition_signal_key,
+    dead_composition_signal_key, role_resolution_guess_key,
 )
 from db_consistency import (  # noqa: E402
     check_routing, check_composition, check_variants,
     check_overrides_drift, check_variant_reseed,
     check_orphan_roles, check_tier_composition,
-    check_dead_composition_signal,
+    check_dead_composition_signal, check_role_resolution_guess,
 )
 from db_consistency.resolver_bridge import (  # noqa: E402
     lift_producible_attrs,
@@ -1570,3 +1571,262 @@ class TestCheck10PlantedViolation:
         assert "variant-a" in v.detail
         assert "variant-b" in v.detail
         assert v.key == dead_composition_signal_key("sgs/fake-multi-block")
+
+
+# ===========================================================================
+# 12. Check #12 — order-dependent role resolution (universal-variant-detection
+#     -audit plan, Part C — the structural guard for the defect class Part A
+#     fixed in _slot_extraction_role()).
+# ===========================================================================
+
+import contextlib  # noqa: E402
+import os  # noqa: E402
+import tempfile  # noqa: E402
+
+# The check imports the REAL _slot_extraction_role, which reads the DB through
+# converter/db/db_lookup.py's module-level SGS_DB path (plus several lru_caches).
+# The fixture below repoints that path at an on-disk fixture DB so the real
+# function and the check's own conn read the SAME planted data — a positive
+# control that exercises the live resolver, not a re-implementation of it.
+_db_lookup = check_role_resolution_guess.db_lookup
+
+
+def _clear_db_lookup_caches() -> None:
+    """Clear every lru_cache in db_lookup (discovered, not enumerated — an
+    enumerated list would silently stop clearing a cache added later)."""
+    for obj in vars(_db_lookup).values():
+        clear = getattr(obj, "cache_clear", None)
+        if callable(clear):
+            clear()
+
+
+@contextlib.contextmanager
+def _fixture_db(
+    *,
+    roles: list[tuple[str, str]],
+    blocks: list[str],
+    slots: list[tuple[str, str]],
+    block_attributes: list[tuple[str, str, str, "str | None"]],
+    array_item_schema: "list[tuple[str, str, str, int, str | None]] | None" = None,
+):
+    """Yield an open connection to an ON-DISK fixture DB, with db_lookup
+    repointed at it for the duration. Restores the real path + clears caches on
+    exit, so a fixture can never leak into the live-DB tests."""
+    fd, path = tempfile.mkstemp(suffix=".db")
+    os.close(fd)
+    conn = sqlite3.connect(path)
+    conn.execute("CREATE TABLE roles (role_name TEXT, classification TEXT)")
+    conn.executemany("INSERT INTO roles VALUES (?,?)", roles)
+    conn.execute("CREATE TABLE blocks (slug TEXT, status TEXT)")
+    conn.executemany("INSERT INTO blocks VALUES (?, 'built')", [(b,) for b in blocks])
+    conn.execute(
+        "CREATE TABLE slots (slot_name TEXT, scope TEXT, standalone_block TEXT, aliases TEXT)"
+    )
+    conn.executemany("INSERT INTO slots VALUES (?, 'element', ?, NULL)", slots)
+    conn.execute(
+        # attr_type + derived_selector are not read by this check, but the REAL
+        # db_lookup.block_attrs() the resolver calls SELECTs them by name — a
+        # fixture missing them makes the live function raise, not pass.
+        "CREATE TABLE block_attributes "
+        "(block_slug TEXT, attr_name TEXT, attr_type TEXT, role TEXT, "
+        " canonical_slot TEXT, derived_selector TEXT)"
+    )
+    conn.executemany(
+        "INSERT INTO block_attributes VALUES (?,?,'string',?,?,NULL)",
+        [(b, a, r, cs) for b, a, r, cs in block_attributes],
+    )
+    conn.execute(
+        "CREATE TABLE array_item_schema "
+        "(block_slug TEXT, array_attr TEXT, field_key TEXT, field_order INTEGER, role TEXT)"
+    )
+    conn.executemany(
+        "INSERT INTO array_item_schema VALUES (?,?,?,?,?)", array_item_schema or []
+    )
+    conn.commit()
+
+    real_path = _db_lookup.SGS_DB
+    _db_lookup.SGS_DB = Path(path)
+    _clear_db_lookup_caches()
+    try:
+        yield conn
+    finally:
+        _db_lookup.SGS_DB = real_path
+        _clear_db_lookup_caches()
+        conn.close()
+        with contextlib.suppress(OSError):
+            os.remove(path)
+
+
+_FIXTURE_ROLES = [
+    ("text-content", "content-bearing"),
+    ("image-object", "content-bearing"),
+    ("padding", "styling-behaviour"),
+]
+
+
+class TestCheck12PositiveControl:
+    """Proves check #12 both FIRES on a real reproduction of the defect and
+    stays SILENT on the shapes that are legitimately fine — per this project's
+    'a check that has never fired can't prove it works' doctrine."""
+
+    def test_check12_fires_on_order_dependent_resolution(self):
+        """POSITIVE CONTROL: 'fake-slot' routes to sgs/fake-target, which has
+        TWO content-bearing attrs with DIFFERENT roles and NEITHER carrying
+        canonical_slot='fake-slot'. _slot_extraction_role() therefore returns
+        whichever row comes first — the exact shape of the sgs/trust-bar
+        image-badge bug — and must be flagged."""
+        with _fixture_db(
+            roles=_FIXTURE_ROLES,
+            blocks=["sgs/fake-target"],
+            slots=[("fake-slot", "sgs/fake-target")],
+            block_attributes=[
+                ("sgs/fake-target", "videoUrl", "text-content", "video"),
+                ("sgs/fake-target", "imageUrl", "image-object", "image"),
+                ("sgs/fake-target", "padding", "padding", None),
+            ],
+            array_item_schema=[
+                ("sgs/fake-consumer", "items", "fake-slot", 0, None),
+            ],
+        ) as conn:
+            violations = check_role_resolution_guess.run(conn)
+
+        assert len(violations) == 1, (
+            f"Expected exactly 1 order-dependent-resolution violation, got "
+            f"{len(violations)}: " + "\n".join(v.detail for v in violations)
+        )
+        v = violations[0]
+        assert v.check == "role_resolution_guess"
+        assert v.block == "sgs/fake-target"
+        assert v.key == role_resolution_guess_key("fake-slot")
+        # The candidate roles that make it a guess must be named in the report.
+        assert "image-object" in v.detail and "text-content" in v.detail
+        # The concrete affected array-item field must be named, not just the slot.
+        assert "sgs/fake-consumer.items.fake-slot" in v.detail
+        # The fix must name both real routes.
+        assert "items.properties" in v.fix and "canonical_slot" in v.fix
+
+    def test_check12_silent_when_a_candidate_owns_the_slot(self):
+        """NEGATIVE CONTROL (CONFIRMED): identical fixture except one candidate
+        carries canonical_slot='fake-slot', so the exact-match branch anchors
+        the answer. The SAME fixture with the deliberate break removed — it
+        proves the check is keyed on the defect, not on the fixture."""
+        with _fixture_db(
+            roles=_FIXTURE_ROLES,
+            blocks=["sgs/fake-target"],
+            slots=[("fake-slot", "sgs/fake-target")],
+            block_attributes=[
+                ("sgs/fake-target", "videoUrl", "text-content", "video"),
+                ("sgs/fake-target", "imageUrl", "image-object", "fake-slot"),
+            ],
+            array_item_schema=[
+                ("sgs/fake-consumer", "items", "fake-slot", 0, None),
+            ],
+        ) as conn:
+            violations = check_role_resolution_guess.run(conn)
+
+        assert violations == [], (
+            "Expected 0 violations when a candidate's canonical_slot matches "
+            "the slot: " + "\n".join(v.detail for v in violations)
+        )
+
+    def test_check12_silent_when_all_candidates_share_one_role(self):
+        """NEGATIVE CONTROL (DETERMINATE): the fallback fires (no candidate
+        matches the slot) but every candidate carries the SAME role, so the
+        answer cannot change with row order. Documented-legitimate — the
+        'label -> sgs/label.text' shape — and must not be flagged."""
+        with _fixture_db(
+            roles=_FIXTURE_ROLES,
+            blocks=["sgs/fake-target"],
+            slots=[("fake-slot", "sgs/fake-target")],
+            block_attributes=[
+                ("sgs/fake-target", "text", "text-content", "text"),
+                ("sgs/fake-target", "subtitle", "text-content", "subtitle"),
+            ],
+        ) as conn:
+            violations = check_role_resolution_guess.run(conn)
+
+        assert violations == [], (
+            "Expected 0 violations when every candidate carries the same role: "
+            + "\n".join(v.detail for v in violations)
+        )
+
+    def test_check12_silent_when_target_block_has_no_content_attrs(self):
+        """NEGATIVE CONTROL: a target block with no content-bearing attribute at
+        all — the resolver returns None, there is no role to guess."""
+        with _fixture_db(
+            roles=_FIXTURE_ROLES,
+            blocks=["sgs/fake-target"],
+            slots=[("fake-slot", "sgs/fake-target")],
+            block_attributes=[
+                ("sgs/fake-target", "padding", "padding", None),
+            ],
+        ) as conn:
+            violations = check_role_resolution_guess.run(conn)
+
+        assert violations == [], (
+            "Expected 0 violations when the target block has no content-bearing "
+            "attribute: " + "\n".join(v.detail for v in violations)
+        )
+
+    def test_check12_drift_guard_fires_when_resolver_shape_changes(self):
+        """The check calls the REAL _slot_extraction_role. If that function is
+        refactored into a shape this check no longer models, the check must say
+        so LOUDLY rather than silently classify everything as passing (the
+        'a check that stopped detecting looks identical to a clean tree'
+        failure mode). Simulated by making it return an off-roster role."""
+        with _fixture_db(
+            roles=_FIXTURE_ROLES,
+            blocks=["sgs/fake-target"],
+            slots=[("fake-slot", "sgs/fake-target")],
+            block_attributes=[
+                ("sgs/fake-target", "videoUrl", "text-content", "video"),
+                ("sgs/fake-target", "imageUrl", "image-object", "image"),
+            ],
+        ) as conn:
+            with patch.object(
+                check_role_resolution_guess,
+                "_slot_extraction_role",
+                lambda _slot: "role-that-does-not-exist",
+            ):
+                violations = check_role_resolution_guess.run(conn)
+
+        assert len(violations) == 1, (
+            f"Expected 1 drift violation, got {len(violations)}"
+        )
+        assert violations[0].key == role_resolution_guess_key("drift:fake-slot")
+        assert "CHECK DRIFT" in violations[0].detail
+
+
+class TestCheck12LiveDB:
+    """Check #12 against the real DB — grounds the positive control in the
+    residual the resolver's own docstring documents as still open."""
+
+    @_skip_no_db
+    def test_check12_surfaces_the_documented_media_residual(self, live_conn):
+        """_slot_extraction_role()'s docstring names avatar/background-image/
+        background-video -> sgs/media -> role 'svg' as a KNOWN, still-unfixed
+        wrong-role guess. The check must surface all three — if it does not,
+        it is not detecting the defect class it was built for."""
+        violations = check_role_resolution_guess.run(live_conn)
+        keys = {v.key for v in violations}
+        for slot in ("avatar", "background-image", "background-video"):
+            assert role_resolution_guess_key(slot) in keys, (
+                f"Check #12 did not surface the documented residual slot "
+                f"'{slot}'. Found: {sorted(keys)}"
+            )
+        media = [v for v in violations if v.key == role_resolution_guess_key("avatar")][0]
+        assert media.block == "sgs/media"
+        assert "'svg'" in media.detail
+
+    @_skip_no_db
+    def test_check12_does_not_flag_confirmed_or_determinate_slots(self, live_conn):
+        """A real negative control on live data: the 'label' slot resolves to
+        sgs/label, whose single content-bearing attr is 'text' — a DETERMINATE
+        fallback the resolver's docstring calls legitimate. It must not be
+        flagged, or the check would fire on correct code."""
+        violations = check_role_resolution_guess.run(live_conn)
+        keys = {v.key for v in violations}
+        assert role_resolution_guess_key("label") not in keys, (
+            "Check #12 flagged the 'label' slot, whose fallback is "
+            "deterministic (one candidate role) — that is a false positive."
+        )

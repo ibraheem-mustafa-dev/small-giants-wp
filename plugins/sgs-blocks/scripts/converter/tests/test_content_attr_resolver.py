@@ -332,3 +332,131 @@ def test_tablet_still_loud_gap_unaffected_by_desktop_collapse(tmp_path, monkeypa
         f" declared sibling; got {result!r} — the Desktop collapse must not"
         f" leak into Tablet/Mobile resolution"
     )
+
+
+# ----------------------------------------------------------------------------
+# `_variant_modifier_tiebreak` regression (Task 3, 2026-09-05): a same-tier
+# alias tie between sgs/product-card's `featuredTag`/`trialTag` (both alias
+# element token 'tag' via canonical_slot='label') used to ALWAYS resolve to
+# whichever attr had the lower DB rowid, regardless of which BEM modifier
+# the draft's actual element carried — proven live: a `--featured`-modified
+# tag's text landed in `trialTag` every time. The fix reads `variant_slots`
+# (FR-31-20) to let the block's OWN variant-discrimination facts break the
+# tie via the draft's modifier. This DB-rowid-order dependency is exactly
+# the kind of defect a future `/sgs-update` reseed could silently
+# reintroduce (a reseed is free to renumber rowids) — this test pins the
+# reviewer's own manual verification as a permanent regression guard so a
+# reseed that flips row order fails CI instead of shipping silently.
+#
+# Manual verification this test reproduces (task-3 review, mods -> winner):
+#   mods=()                    -> trialTag     (pre-existing behaviour, unchanged)
+#   mods=('featured',)         -> featuredTag  (the fix)
+#   mods=('trial',)            -> trialTag
+#   mods=('featured','trial')  -> trialTag     (2 matches -> refuses to guess, falls back)
+# ----------------------------------------------------------------------------
+
+def _make_variant_tiebreak_db(tmp_path):
+    """Build the sgs/product-card 'tag' ambiguity fixture: two content attrs
+    both aliasing element token 'tag' via canonical_slot='label' (same
+    match-tier -> genuine ambiguity), plus `variant_slots` rows declaring
+    `featuredTag`/`trialTag` as the discriminating slot for the `featured`/
+    `trial` variants respectively — the DB facts `_variant_modifier_tiebreak`
+    reads. `trialTag` is inserted FIRST (lower rowid) so the pre-existing
+    "first DB row wins" default is `trialTag`, matching the reviewer's
+    verified `mods=()` case."""
+    rows = [
+        # rowid 1 — inserted first, so this is the rowid-order default winner.
+        ("sgs/product-card", "trialTag", "label", "nested", "text-content", "string"),
+        # rowid 2.
+        ("sgs/product-card", "featuredTag", "label", "nested", "text-content", "string"),
+    ]
+    slot_aliases = [("label", '["tag"]')]
+    db_path = _make_db(tmp_path, rows, slot_aliases)
+    conn = sqlite3.connect(str(db_path))
+    conn.execute(
+        "CREATE TABLE variant_slots (block_slug TEXT, variant_value TEXT,"
+        " unique_slot TEXT, slot_value TEXT)"
+    )
+    conn.executemany(
+        "INSERT INTO variant_slots (block_slug, variant_value, unique_slot, slot_value)"
+        " VALUES (?, ?, ?, NULL)",
+        [
+            ("sgs/product-card", "featured", "featuredTag"),
+            ("sgs/product-card", "trial", "trialTag"),
+        ],
+    )
+    conn.commit()
+    conn.close()
+    return db_path
+
+
+def test_variant_modifier_tiebreak_no_modifiers_keeps_rowid_default(tmp_path, monkeypatch):
+    """mods=() -> trialTag: pre-existing rowid-order behaviour, unchanged when
+    no modifier is supplied (the reviewer's baseline case)."""
+    db_path = _make_variant_tiebreak_db(tmp_path)
+    monkeypatch.setattr(db_lookup, "SGS_DB", db_path)
+
+    result = db_lookup.content_attr_for_element(
+        "sgs/product-card", "tag", modifiers=()
+    )
+    assert result is not None
+    attr_name, _emit_shape, _role, _attr_type = result
+    assert attr_name == "trialTag", (
+        f"Expected mods=() to keep the pre-existing rowid-order default"
+        f" 'trialTag'; got {attr_name!r}"
+    )
+
+
+def test_variant_modifier_tiebreak_featured_resolves_featured_tag(tmp_path, monkeypatch):
+    """mods=('featured',) -> featuredTag: THE FIX. Without the modifier
+    tie-break this would wrongly resolve to 'trialTag' by rowid order,
+    exactly the live bug (a --featured tag's text landing in trialTag)."""
+    db_path = _make_variant_tiebreak_db(tmp_path)
+    monkeypatch.setattr(db_lookup, "SGS_DB", db_path)
+
+    result = db_lookup.content_attr_for_element(
+        "sgs/product-card", "tag", modifiers=("featured",)
+    )
+    assert result is not None
+    attr_name, _emit_shape, _role, _attr_type = result
+    assert attr_name == "featuredTag", (
+        f"REGRESSION: mods=('featured',) resolved to {attr_name!r} instead of"
+        f" 'featuredTag' — a DB reseed that reorders block_attributes rowids"
+        f" has silently flipped the tie-break back to the rowid-wins bug"
+    )
+
+
+def test_variant_modifier_tiebreak_trial_resolves_trial_tag(tmp_path, monkeypatch):
+    """mods=('trial',) -> trialTag: the tie-break correctly names trialTag as
+    the discriminating slot for the 'trial' variant too (not just a
+    fallback-because-unmatched result)."""
+    db_path = _make_variant_tiebreak_db(tmp_path)
+    monkeypatch.setattr(db_lookup, "SGS_DB", db_path)
+
+    result = db_lookup.content_attr_for_element(
+        "sgs/product-card", "tag", modifiers=("trial",)
+    )
+    assert result is not None
+    attr_name, _emit_shape, _role, _attr_type = result
+    assert attr_name == "trialTag", (
+        f"Expected mods=('trial',) to resolve 'trialTag'; got {attr_name!r}"
+    )
+
+
+def test_variant_modifier_tiebreak_two_matches_refuses_to_guess(tmp_path, monkeypatch):
+    """mods=('featured','trial') -> trialTag (rowid-order fallback): BOTH
+    candidates match one of the supplied modifiers, so the tie-break is
+    genuinely ambiguous and must NOT guess — it falls back to the unchanged
+    first-by-rowid default, never inventing a new answer."""
+    db_path = _make_variant_tiebreak_db(tmp_path)
+    monkeypatch.setattr(db_lookup, "SGS_DB", db_path)
+
+    result = db_lookup.content_attr_for_element(
+        "sgs/product-card", "tag", modifiers=("featured", "trial")
+    )
+    assert result is not None
+    attr_name, _emit_shape, _role, _attr_type = result
+    assert attr_name == "trialTag", (
+        f"Expected a 2-match ambiguity to refuse to guess and fall back to"
+        f" the rowid-order default 'trialTag'; got {attr_name!r}"
+    )
