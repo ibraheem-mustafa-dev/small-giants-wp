@@ -26,7 +26,11 @@ $max_width          = $attributes['maxWidth'] ?? 'medium';
 $close_on_overlay   = $attributes['closeOnOverlay'] ?? true;
 $modal_background   = $attributes['modalBackground'] ?? 'white';
 $modal_background_gradient = sgs_css_gradient_value( $attributes['modalBackgroundGradient'] ?? '' );
-$overlay_colour     = sgs_colour_value( $attributes['overlayColour'] ?? 'text' );
+$overlay_colour     = $attributes['overlayColour'] ?? 'text';
+// overlayColourGradient (2026-09-06, colour-conformance closeout) — gradient
+// sibling resolved below via sgs_custom_property_gradient_decls(), same shape
+// as sgs/tabs tabBgColour/panelBgColour.
+$overlay_colour_gradient = $attributes['overlayColourGradient'] ?? '';
 $overlay_opacity    = $attributes['overlayOpacity'] ?? 50;
 
 // Generate unique ID for this modal instance.
@@ -80,9 +84,10 @@ if ( $modal_background ) {
 // declarations) — these are allowed on the wrapper per the no-inline
 // styling contract (Spec 32).
 $backdrop_vars = array();
-if ( $overlay_colour ) {
-	$backdrop_vars[] = '--sgs-modal-backdrop-colour:' . $overlay_colour;
-}
+// sgs_custom_property_gradient_decls() resolves the flat colour (via
+// sgs_colour_value()) and, when set+valid, its gradient sibling — emitting
+// --sgs-modal-backdrop-colour and --sgs-modal-backdrop-colour-gradient.
+$backdrop_vars = array_merge( $backdrop_vars, sgs_custom_property_gradient_decls( 'sgs-modal-backdrop-colour', $overlay_colour, $overlay_colour_gradient ) );
 if ( $overlay_opacity ) {
 	$backdrop_vars[] = '--sgs-modal-backdrop-opacity:' . ( (float) $overlay_opacity / 100 );
 }

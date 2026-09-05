@@ -61,6 +61,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		closeOnOverlay,
 		modalBackground,
 		overlayColour,
+		overlayColourGradient,
 		overlayOpacity,
 		closeColourBackground,
 		closeColourBackgroundHover,
@@ -289,11 +290,19 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody title={ __( 'Overlay', 'sgs-blocks' ) }>
 					<DesignTokenPicker
 						label={ __( 'Overlay colour', 'sgs-blocks' ) }
-						value={ overlayColour }
-						onChange={ ( val ) =>
-							setAttributes( { overlayColour: val ?? '' } )
-						}
-						linked
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: overlayColour,
+								onChange: ( val ) =>
+									setAttributes( { overlayColour: val ?? '' } ),
+								linked: true,
+								gradientValue: overlayColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { overlayColourGradient: val ?? '' } ),
+							},
+						] }
 						enableAlpha={ false }
 					/>
 					<RangeControl
@@ -349,9 +358,18 @@ export default function Edit( { attributes, setAttributes } ) {
 							flexShrink: 0,
 							borderRadius: '4px',
 							border: '1px solid #e5e5e5',
-							backgroundColor:
-								resolveColourToken( overlayColour, palette ) ||
-								undefined,
+							// overlayColourGradient (2026-09-06) — mirrors render.php's
+							// gradient-wins-over-flat precedence (sgs_custom_property_
+							// gradient_decls()); resolveColourToken (not colourVar) is
+							// used for the flat branch since this picker stores a raw
+							// resolved value via resolveColourToken above, not a slug-only var().
+							...( overlayColourGradient
+								? { backgroundImage: overlayColourGradient }
+								: {
+										backgroundColor:
+											resolveColourToken( overlayColour, palette ) ||
+											undefined,
+								  } ),
 							opacity: ( overlayOpacity ?? 50 ) / 100,
 						} }
 						aria-hidden="true"

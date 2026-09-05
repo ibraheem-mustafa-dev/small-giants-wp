@@ -48,6 +48,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		audioAutoplay,
 		audioPreload,
 		accentColour,
+		accentColourGradient,
 		spectrumColour,
 		title,
 		style,
@@ -71,6 +72,11 @@ export default function Edit( { attributes, setAttributes } ) {
 			'--sgs-audio-accent': accentColour
 				? resolveColourToken( accentColour, palette )
 				: 'var(--wp--preset--color--primary, #c9821f)',
+			// Gradient sibling (2026-09-06) — a SEPARATE custom property,
+			// mirroring render.php's --sgs-audio-accent-gradient. Only the 3
+			// genuine solid-fill background-image rules in style.css consume
+			// it; --sgs-audio-accent above is untouched.
+			...( accentColourGradient ? { '--sgs-audio-accent-gradient': accentColourGradient } : {} ),
 		},
 	} );
 	const hasAudio = audioUrl || audioId;
@@ -95,12 +101,16 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'accent',
 						label: __( 'Accent colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: accentColour,
 								onChange: ( value ) => setAttributes( { accentColour: value } ),
+								gradientValue: accentColourGradient,
+								onGradientChange: ( value ) =>
+									setAttributes( { accentColourGradient: value ?? '' } ),
 							},
 						],
 					},

@@ -126,6 +126,7 @@
 /* Backdrop: primary-dark 70% opacity, fade fast per Group J spec */
 .sgs-modal__dialog::backdrop {
 	background-color: var(--sgs-modal-backdrop-colour);
+	background-image: var(--sgs-modal-backdrop-colour-gradient, none);
 	opacity: 0;
 	transition:
 		opacity var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),

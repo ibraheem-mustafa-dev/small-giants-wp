@@ -58,9 +58,10 @@
 					"clusters": [ "fill" ],
 					"prefix": "accent",
 					"attrMap": {
-						"css:background-color": "accentColour"
+						"css:background-color": "accentColour",
+						"css:background-image": "accentColourGradient"
 					},
-					"_note": "accentColour is the player-brand colour (play button fill, seek thumb, progress arc — CSS var --sgs-audio-accent, style.css:61/86/94/103/107/174, all `background`/`background-image` uses). Mapped to css:background-color via explicit attrMap (Spec 35 vocabulary fix) rather than left as an honest zero-cluster orphan."
+					"_note": "accentColour is the player-brand colour (play button fill, seek thumb, progress arc — CSS var --sgs-audio-accent, style.css:61/86/94/103/107/174, all `background`/`background-image` uses). Mapped to css:background-color via explicit attrMap (Spec 35 vocabulary fix) rather than left as an honest zero-cluster orphan. GRADIENT SIBLING (2026-09-06, colour-conformance closeout): accentColourGradient added via css:background-image, but style.css only wires background-image:var(--sgs-audio-accent-gradient,none) onto the 3 GENUINE solid `background: var(--sgs-audio-accent...)` paints (play button style.css:61, seek-thumb ::-webkit-slider-thumb :94, seek-thumb ::-moz-range-thumb :103) — deliberately SKIPPED on 3 sites reusing the same --sgs-audio-accent var in a way a flat background-image override would break: the composed progress-track linear-gradient (:86), the composed radial glow gradient (:174, accent is a colour-mix ingredient inside an existing gradient formula), and the focus outline (:107, outline-color cannot take background-image at all). view.js also reads --sgs-audio-accent directly as a canvas fillStyle (waveform bars) and an SVG stroke (radial ring/arc) — unaffected, since the gradient sibling is a SEPARATE custom property only consumed by the 3 new background-image declarations, not a change to --sgs-audio-accent itself."
 				},
 				"spectrum": {
 					"label": "Spectrum colour",
@@ -70,7 +71,7 @@
 					"attrMap": {
 						"css:background-color": "spectrumColour"
 					},
-					"_note": "spectrumColour drives the reactive spectrum/oscilloscope visualiser accent (--sgs-audio-spectrum) — a functional signal colour, not a styled element. Declared via fill cluster + explicit attrMap (Spec 35 vocabulary fix, 2026-08-20), mirroring the accent element above."
+					"_note": "spectrumColour drives the reactive spectrum/oscilloscope visualiser accent (--sgs-audio-spectrum) — a functional signal colour, not a styled element. Declared via fill cluster + explicit attrMap (Spec 35 vocabulary fix, 2026-08-20), mirroring the accent element above. GRADIENT SIBLING SKIPPED (2026-09-06, colour-conformance closeout): --sgs-audio-spectrum is read exclusively by view.js as a canvas 2D fillStyle/strokeStyle for the live spectrum-bar / oscilloscope-line drawing (resolveColour() -> concrete rgb, per the file own comment that var() references will not paint on canvas) — never consumed by a CSS background-color rule. A CSS gradient string cannot be assigned as a canvas fillStyle/strokeStyle without constructing a CanvasGradient object from real pixel coordinates, which is a genuine new-design problem (reactive redraw on resize/scroll), not this mechanical background-image-sibling pattern. No block.json/render.php/style.css/edit.js change made for spectrumColour."
 				}
 			}
 		}
@@ -153,6 +154,11 @@
 		"accentColour": {
 			"type": "string",
 			"default": ""
+		},
+		"accentColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the play button / seek-thumb accent background via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over accentColour on those 3 sites only; the composed progress-track/glow gradients and the focus outline keep reading accentColour flat."
 		},
 		"spectrumColour": {
 			"type": "string",

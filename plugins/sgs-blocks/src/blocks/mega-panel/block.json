@@ -41,6 +41,7 @@
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "panelBg",
+						"css:background-image": "panelBgGradient",
 						"css:max-width": "maxWidth",
 						"css:padding": "panelPadding",
 						"css:border-width": "borderWidth",
@@ -75,6 +76,7 @@
 					],
 					"attrMap": {
 						"css:background-color": "iconBackground",
+						"css:background-image": "iconBackgroundGradient",
 						"css:color": "iconColour",
 						"css:color-gradient": "iconColourGradient"
 					},
@@ -132,6 +134,11 @@
 			"type": "string",
 			"default": "accent",
 			"_note": "Renamed from `accentBackground` (2026-08-28, NULL css_element fix proposal §5) — split from the old single `accent` attribute (D643, Bean-ruled: one colour attribute secretly painting 4 unrelated CSS properties blocks the gradient rollout — each property needs its own control). Feeds the icon-chip `background-color` (via the derived `--sgs-mm-soft` 10% tint) across all 3 group styles. Default unchanged from the retired `accent` attribute so existing rendering is preserved exactly. The generic name matches the established codebase convention (attribute name = generic `<element><Property>Colour`, default = bare token slug) and closes a NULL css_element classification gap via the new `icon` manifest element below."
+		},
+		"iconBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the icon-chip background via background-image, on the SAME `--sgs-mm-soft-gradient` custom property the icon selectors already consume alongside their existing `--sgs-mm-soft` 10%-tint background-color (render.php §2/§4). Non-empty wins over the derived iconBackground tint — the gradient paints at full strength rather than being colour-mixed, since a gradient cannot be meaningfully blended through color-mix()."
 		},
 		"groupBorderColour": {
 			"type": "string",
@@ -195,6 +202,11 @@
 		"panelBg": {
 			"type": "string",
 			"default": ""
+		},
+		"panelBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the panel background via background-image (--sgs-mm-panel-bg-gradient custom property, render.php §2). Non-empty wins over panelBg (and the built-in translucent surface default) on the same root selector."
 		},
 		"bgBlur": {
 			"type": "boolean",

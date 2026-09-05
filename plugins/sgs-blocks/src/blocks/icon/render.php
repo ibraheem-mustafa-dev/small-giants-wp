@@ -90,6 +90,7 @@ $emoji_char = wp_strip_all_tags( $emoji_char );
 $icon_size          = absint( $attributes['iconSize'] ?? 32 );
 $icon_colour        = $attributes['iconColour'] ?? 'primary';
 $bg_colour          = $attributes['backgroundColour'] ?? '';
+$bg_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
 $bg_shape           = $attributes['backgroundShape'] ?? 'none';
 $bg_padding         = $attributes['backgroundPadding'] ?? '';
 $link_url           = $attributes['linkUrl'] ?? '';
@@ -229,9 +230,15 @@ $root_decls = $var_decls;
 if ( $icon_colour ) {
 	$root_decls[] = 'color:' . sgs_colour_value( $icon_colour );
 }
-// Filled shapes (not outline): solid background-color literal declaration.
-if ( $bg_colour && 'none' !== $bg_shape && ! $is_outline ) {
-	$root_decls[] = 'background-color:' . sgs_colour_value( $bg_colour );
+// Filled shapes (not outline): solid background-color OR gradient literal
+// declaration — sgs_background_paint_decl() (helpers-tokens.php) picks
+// background-image:<gradient> when backgroundColourGradient is valid,
+// else background-color:<resolved colour>, else '' (nothing to emit).
+if ( 'none' !== $bg_shape && ! $is_outline ) {
+	$sgs_icon_bg_paint = sgs_background_paint_decl( $bg_colour, $bg_colour_gradient );
+	if ( '' !== $sgs_icon_bg_paint ) {
+		$root_decls[] = $sgs_icon_bg_paint;
+	}
 }
 // backgroundPadding — single uniform value (Spec 32 §6.1c: not a box family),
 // routed to the scoped <style> as a custom-property declaration.

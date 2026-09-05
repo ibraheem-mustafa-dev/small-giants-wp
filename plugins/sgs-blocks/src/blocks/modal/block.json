@@ -56,9 +56,10 @@
 					"prefix": "overlay",
 					"attrMap": {
 						"css:background-color": "overlayColour",
+						"css:background-image": "overlayColourGradient",
 						"css:opacity": "overlayOpacity"
 					},
-					"_note": "overlayColour/overlayOpacity drive `--sgs-modal-backdrop-colour`/`--sgs-modal-backdrop-opacity` custom-property VALUES on the wrapper (render.php:54-66), allowed inline per contract §A since they are variable values, not real property declarations. Mapped explicitly — overlayColour doesn't carry a Colour/BackgroundColour suffix match under the default convention."
+					"_note": "overlayColour/overlayOpacity drive `--sgs-modal-backdrop-colour`/`--sgs-modal-backdrop-opacity` custom-property VALUES on the wrapper (render.php:54-66), allowed inline per contract §A since they are variable values, not real property declarations. Mapped explicitly — overlayColour doesn't carry a Colour/BackgroundColour suffix match under the default convention. overlayColourGradient (2026-09-06, colour-conformance closeout) is its gradient sibling, same custom-property-gradient shape as tabBgColour/panelBgColour (sgs_custom_property_gradient_decls()) — non-empty wins over the flat overlayColour."
 				},
 				"close": {
 					"label": "Close button",
@@ -147,6 +148,11 @@
 		"overlayColour": {
 			"type": "string",
 			"default": "text"
+		},
+		"overlayColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the dialog backdrop scrim via a background-image custom-property sibling (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over overlayColour."
 		},
 		"overlayOpacity": {
 			"type": "number",

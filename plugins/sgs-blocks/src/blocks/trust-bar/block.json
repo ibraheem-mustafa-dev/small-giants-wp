@@ -131,6 +131,7 @@
 					"prefix": "icon",
 					"attrMap": {
 						"css:background-color": "iconCircleBackground",
+						"css:background-image": "iconCircleBackgroundGradient",
 						"css:width": "iconCircleSize",
 						"css:height": "iconCircleSize",
 						"css:border-radius": "iconCircleBorderRadius",
@@ -401,6 +402,11 @@
 			"type": "string",
 			"default": "surface"
 		},
+		"iconCircleBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the icon-circle badge background via a --sgs-trust-badge-circle-bg-gradient custom-property sibling (helpers-tokens.php sgs_custom_property_gradient_decls shape). Non-empty wins over iconCircleBackground (icon-circle variant only)."
+		},
 		"iconColour": {
 			"type": "string",
 			"default": "primary-dark"
@@ -578,14 +584,8 @@
 			"type": "string"
 		},
 		"backgroundOverlayOpacity": {
-			"type": "number",
-			"default": 30
-		},
-		"backgroundOverlayOpacityTablet": {
-			"type": "number"
-		},
-		"backgroundOverlayOpacityMobile": {
-			"type": "number"
+			"type": "object",
+			"default": {"desktop": 30}
 		},
 		"overlayGradient": {
 			"type": "string",

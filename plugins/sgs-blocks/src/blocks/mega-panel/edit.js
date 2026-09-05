@@ -180,6 +180,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		headings,
 		colourScheme,
 		iconBackground,
+		iconBackgroundGradient,
 		groupBorderColour,
 		groupBorderColourGradient,
 		groupBorderColourHover,
@@ -191,6 +192,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		panelPadding,
 		groupGap,
 		panelBg,
+		panelBgGradient,
 		bgBlur,
 		borderWidth,
 		borderStyle,
@@ -239,7 +241,25 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-mm-accent-border': groupBorderValue,
 		'--sgs-mm-accent-text': iconColourValue,
 		'--sgs-mm-accent-image': accentImageValue,
+		// iconBackgroundGradient canvas mirror (2026-09-06) — paints the icon-chip
+		// background-image at full strength, same approximation approach as the
+		// borderImage/groupBorderColourGradient mirrors below (a raw CSS function
+		// string, gated on looking like a real gradient() call).
+		'--sgs-mm-soft-gradient':
+			iconBackgroundGradient &&
+			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( iconBackgroundGradient )
+				? iconBackgroundGradient
+				: undefined,
 		'--sgs-mm-panel-bg': panelBg ? colourVar( panelBg ) || panelBg : undefined,
+		// panelBgGradient canvas mirror (2026-09-06) — same approach: --sgs-mm-panel-bg-gradient
+		// is consumed by style.css's dark-scheme rule and by this root's own
+		// panelBg background-color (once painted — see that attribute's own
+		// pre-existing gap, unaffected by this change).
+		'--sgs-mm-panel-bg-gradient':
+			panelBgGradient &&
+			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( panelBgGradient )
+				? panelBgGradient
+				: undefined,
 		'--sgs-mm-panel-border': borderColour
 			? colourVar( borderColour ) || borderColour
 			: undefined,
@@ -356,6 +376,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'background',
 						label: __( 'Background', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -363,12 +384,16 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: panelBg,
 								onChange: ( val ) => setAttributes( { panelBg: val ?? '' } ),
 								linked: true,
+								gradientValue: panelBgGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { panelBgGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'iconBackground',
 						label: __( 'Accent background', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -377,6 +402,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) =>
 									setAttributes( { iconBackground: val ?? 'accent' } ),
 								linked: true,
+								gradientValue: iconBackgroundGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconBackgroundGradient: val ?? '' } ),
 							},
 						],
 					},

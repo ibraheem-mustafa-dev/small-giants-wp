@@ -85,6 +85,11 @@
 	--sgs-mm-panel-border: rgba( 255, 255, 255, 0.11 );
 	color: var( --sgs-mm-text );
 	background-color: var( --sgs-mm-panel-bg );
+	/* panelBgGradient editor-canvas mirror (2026-09-06) — --sgs-mm-panel-bg-gradient
+	   is not redeclared in this dark-scheme rule, so an operator-set gradient
+	   (mirrored onto the root by edit.js) cascades in unchanged, matching
+	   render.php's dark_props behaviour. */
+	background-image: var( --sgs-mm-panel-bg-gradient, none );
 }
 
 .sgs-mega-panel__content {
@@ -256,6 +261,11 @@
 	height: 34px;
 	border-radius: 10px;
 	background-color: var( --sgs-mm-soft );
+	/* iconBackgroundGradient sibling (2026-09-06) — --sgs-mm-soft-gradient is
+	   set on the panel root by render.php §2 / edit.js's canvas mirror,
+	   paints the icon-chip at full strength (not colour-mixed, matching
+	   render.php's own comment on why a gradient bypasses the 10% tint). */
+	background-image: var( --sgs-mm-soft-gradient, none );
 	color: var( --sgs-mm-accent-text, var( --wp--preset--color--accent ) );
 }
 
@@ -306,6 +316,7 @@
 	height: 36px;
 	border-radius: 10px;
 	background-color: var( --sgs-mm-soft );
+	background-image: var( --sgs-mm-soft-gradient, none );
 	color: var( --sgs-mm-accent-text, var( --wp--preset--color--accent ) );
 }
 
@@ -327,6 +338,7 @@
 	height: 34px;
 	border-radius: 10px;
 	background-color: var( --sgs-mm-soft );
+	background-image: var( --sgs-mm-soft-gradient, none );
 	color: var( --sgs-mm-accent-text, var( --wp--preset--color--accent ) );
 }
 

@@ -106,6 +106,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconSize,
 		iconColour,
 		backgroundColour,
+		backgroundColourGradient,
 		backgroundShape,
 		backgroundPadding,
 		linkUrl,
@@ -148,8 +149,15 @@ export default function Edit( { attributes, setAttributes } ) {
 	const previewStyle = {
 		'--sgs-icon-size': `${ iconSize }px`,
 		color: colourVar( iconColour ) || undefined,
+		// Gradient wins over the flat colour — mirrors render.php's
+		// sgs_background_paint_decl() (helpers-tokens.php): background-image
+		// when backgroundColourGradient is set, else background-color.
+		backgroundImage:
+			backgroundColourGradient && backgroundShape !== 'none' && ! isOutline
+				? backgroundColourGradient
+				: undefined,
 		backgroundColor:
-			backgroundColour && backgroundShape !== 'none' && ! isOutline
+			! backgroundColourGradient && backgroundColour && backgroundShape !== 'none' && ! isOutline
 				? colourVar( backgroundColour )
 				: undefined,
 		'--sgs-icon-outline-colour':
@@ -256,6 +264,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					backgroundShape !== 'none' && {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -264,6 +273,11 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) =>
 									setAttributes( {
 										backgroundColour: val,
+									} ),
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										backgroundColourGradient: val ?? '',
 									} ),
 							},
 							{
@@ -274,6 +288,12 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( {
 										shapeColourHover: val,
 									} ),
+								// No shapeColourHoverGradient attribute exists (out of
+								// scope for this rollout) — required no-op, not a
+								// missing feature (GradientCapableColourControl calls
+								// onGradientChange('') on every pick for every state
+								// in a gradientCapable row).
+								onGradientChange: () => {},
 							},
 						],
 					},

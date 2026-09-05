@@ -82,6 +82,11 @@ $mobile_layout    = $attributes['mobileLayout'] ?? 'stacked';
 $mobile_layout    = in_array( $mobile_layout, array( 'stacked', 'carousel' ), true ) ? $mobile_layout : 'stacked';
 $connector_style  = $attributes['connectorStyle'] ?? 'line';
 $connector_colour = $attributes['connectorColour'] ?? 'border';
+// connectorColourGradient (2026-09-06, colour-conformance closeout) — the
+// `--sgs-connector-colour-gradient` sibling, same sgs_custom_property_gradient_decls()
+// shape already proven on brand-strip/post-grid/social-icons/form/gallery/
+// before-after/option-picker/tabs.
+$connector_colour_gradient = $attributes['connectorColourGradient'] ?? '';
 $date_colour      = $attributes['dateColour'] ?? 'accent';
 $progress_fill    = ! empty( $attributes['connectorProgressFill'] );
 $fill_colour      = $attributes['connectorFillColour'] ?? 'accent';
@@ -155,6 +160,15 @@ $media_decorative = ! empty( $attributes['milestoneMediaDecorative'] );
 $row_stripes   = ! empty( $attributes['rowStripes'] );
 $stripe_a      = $attributes['rowStripeColourA'] ?? '';
 $stripe_b      = $attributes['rowStripeColourB'] ?? 'surface-alt';
+// rowStripeColourA/BGradient (2026-09-06, colour-conformance closeout) — no
+// attrMap entry (see block.json's rowStripeColourAGradient description: A/B
+// both target the entry element's background-color via mutually exclusive
+// :nth-child(odd)/:nth-child(even) selectors, not the declared states
+// vocabulary), but the gradient siblings are still real custom-property values
+// resolved the same way as every other sgs_custom_property_gradient_decls()
+// adopter.
+$stripe_a_gradient = $attributes['rowStripeColourAGradient'] ?? '';
+$stripe_b_gradient = $attributes['rowStripeColourBGradient'] ?? '';
 
 // Sanitise orientation to avoid arbitrary CSS class injection. $content_layout
 // and $content_side were already validated above, so they need no separate
@@ -508,9 +522,16 @@ if ( '' !== $preset_bg_slug ) {
 
 // Wrapper CSS custom properties (VALUES only — contract §A allows `--var:value`).
 $wrapper_style_parts = array();
-if ( $connector_colour ) {
-	$wrapper_style_parts[] = '--sgs-connector-colour:' . sgs_colour_value( $connector_colour );
-}
+// connectorColour/connectorColourGradient (2026-09-06, colour-conformance
+// closeout) — same sgs_custom_property_gradient_decls() shape already proven
+// on brand-strip/post-grid/social-icons/form/gallery/before-after/
+// option-picker/tabs; style.scss carries the matching
+// background-image:var(--sgs-connector-colour-gradient,none) line next to
+// each existing background-color:var(--sgs-connector-colour) rule.
+$wrapper_style_parts = array_merge(
+	$wrapper_style_parts,
+	sgs_custom_property_gradient_decls( 'sgs-connector-colour', $connector_colour, $connector_colour_gradient )
+);
 if ( $date_colour ) {
 	$wrapper_style_parts[] = '--sgs-date-colour:' . sgs_colour_value( $date_colour );
 }
@@ -538,6 +559,18 @@ if ( $row_stripes ) {
 	// literal colour on both would fight a sectioned page for no gain.
 	$wrapper_style_parts[] = '--sgs-timeline-stripe-a:' . ( $stripe_a ? sgs_colour_value( $stripe_a ) : 'transparent' );
 	$wrapper_style_parts[] = '--sgs-timeline-stripe-b:' . ( $stripe_b ? sgs_colour_value( $stripe_b ) : 'transparent' );
+	// Gradient siblings — no flat/'transparent' fallback semantics to preserve
+	// here (unlike the two lines above), so a plain sgs_css_gradient_value()
+	// resolve + conditional emit is correct: an unset/invalid gradient emits
+	// nothing and style.scss's own var(…, none) fallback covers it.
+	$resolved_stripe_a_gradient = sgs_css_gradient_value( $stripe_a_gradient );
+	if ( '' !== $resolved_stripe_a_gradient ) {
+		$wrapper_style_parts[] = '--sgs-timeline-stripe-a-gradient:' . $resolved_stripe_a_gradient;
+	}
+	$resolved_stripe_b_gradient = sgs_css_gradient_value( $stripe_b_gradient );
+	if ( '' !== $resolved_stripe_b_gradient ) {
+		$wrapper_style_parts[] = '--sgs-timeline-stripe-b-gradient:' . $resolved_stripe_b_gradient;
+	}
 }
 // NO-INLINE (Spec 32 FR-32-4 as amended 2026-07-18 / D345): these are
 // custom-property VALUES, and an inline `style="--sgs-…"` is FORBIDDEN on the

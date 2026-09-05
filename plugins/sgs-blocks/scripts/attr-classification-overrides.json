@@ -3021,6 +3021,22 @@
         "css_element": "entry-even"
       },
       "_why": "2026-09-05. See rowStripeColourA's entry (added alongside this one) -- same alternating-row disambiguation, opposite parity."
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "rowStripeColourAGradient",
+      "fields": {
+        "css_element": "entry-odd"
+      },
+      "_why": "2026-09-06. Gradient sibling of rowStripeColourA (colour-conformance closeout) -- same alternating-row css_element ambiguity as its flat counterpart above, caught live by the same db-consistency-run NEW-violation gate the moment the sibling attr was added. Both A/B gradient attrs resolve to background-image with no distinguishing element otherwise."
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "rowStripeColourBGradient",
+      "fields": {
+        "css_element": "entry-even"
+      },
+      "_why": "2026-09-06. See rowStripeColourAGradient's entry (added alongside this one) -- same alternating-row disambiguation, opposite parity."
     }
   ]
 }

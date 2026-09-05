@@ -416,6 +416,10 @@
 		transform: translateX(-50%);
 		width: var(--sgs-connector-width);
 		background-color: var(--sgs-connector-colour);
+		// connectorColourGradient sibling (2026-09-06, colour-conformance
+		// closeout) — the dashed/dotted variants below already override with a
+		// full `background:` shorthand, so this is naturally superseded there.
+		background-image: var(--sgs-connector-colour-gradient, none);
 	}
 
 	// Single column: line sits on the left edge.
@@ -719,6 +723,8 @@
 		right: 0;
 		height: var(--sgs-connector-width);
 		background-color: var(--sgs-connector-colour);
+		// connectorColourGradient sibling — see the vertical connector rule above.
+		background-image: var(--sgs-connector-colour-gradient, none);
 	}
 
 	// The row itself. The entries are this element's children, so the flex
@@ -845,6 +851,8 @@
 		inset: 0;
 		border-radius: 50%;
 		background-color: var(--sgs-connector-colour);
+		// connectorColourGradient sibling — see the connector-line rules above.
+		background-image: var(--sgs-connector-colour-gradient, none);
 		border: 3px solid var(--wp--preset--color--surface, #fff);
 		box-sizing: border-box;
 	}
@@ -906,6 +914,8 @@
 	height: 32px;
 	border-radius: 50%;
 	background-color: var(--sgs-connector-colour);
+	// connectorColourGradient sibling — see the connector-line rules above.
+	background-image: var(--sgs-connector-colour-gradient, none);
 	margin: -8px;
 
 	svg {
@@ -1455,10 +1465,12 @@
 .sgs-timeline--row-stripes {
 	.sgs-timeline__entry:nth-child(odd) {
 		background-color: var(--sgs-timeline-stripe-a, transparent);
+		background-image: var(--sgs-timeline-stripe-a-gradient, none);
 	}
 
 	.sgs-timeline__entry:nth-child(even) {
 		background-color: var(--sgs-timeline-stripe-b, transparent);
+		background-image: var(--sgs-timeline-stripe-b-gradient, none);
 	}
 
 	// Bands butt against each other, so the entries need their own breathing

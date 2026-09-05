@@ -110,9 +110,10 @@
 					"clusters": [ "fill" ],
 					"attrMap": {
 						"css:background-color": "connectorColour",
+						"css:background-image": "connectorColourGradient",
 						"css:stroke": "connectorFillColour"
 					},
-					"_note": "connectorColour drives the `--sgs-connector-colour` custom property, painted as `background-color` on the connector line + node dot (style.scss:64, 84-96, 236, 244-256, 316, 334) — a scoped CSS-var mechanism, not a WP-native background. No prefix declared (connectorColour does not follow the `{prefix}Colour` convention for an element named `connector`) — resolved via explicit attrMap only. FR-38-35: connectorFillColour drives `--sgs-timeline-fill-colour`, painted as `stroke` on the progress-connector SVG path — a DIFFERENT css property on the same element, so no routing-determinism collision with connectorColour's background-color claim."
+					"_note": "connectorColour drives the `--sgs-connector-colour` custom property, painted as `background-color` on the connector line + node dot (style.scss:64, 84-96, 236, 244-256, 316, 334) — a scoped CSS-var mechanism, not a WP-native background. No prefix declared (connectorColour does not follow the `{prefix}Colour` convention for an element named `connector`) — resolved via explicit attrMap only. FR-38-35: connectorFillColour drives `--sgs-timeline-fill-colour`, painted as `stroke` on the progress-connector SVG path — a DIFFERENT css property on the same element, so no routing-determinism collision with connectorColour's background-color claim. connectorColourGradient (2026-09-06, colour-conformance closeout) is the `--sgs-connector-colour-gradient` sibling, same `sgs_custom_property_gradient_decls()` shape already proven on brand-strip/post-grid/social-icons/form/gallery/before-after/option-picker/tabs — style.scss's solid connector-line + node-dot rules gain a matching `background-image:var(--sgs-connector-colour-gradient,none)` line; the dashed/dotted connector-style variants already override with a full `background:` shorthand, so the gradient sibling is naturally superseded there with no extra guard needed."
 				},
 				"date": {
 					"label": "Entry date",
@@ -203,6 +204,11 @@
 			"type": "string",
 			"default": "border"
 		},
+		"connectorColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the connector line + node dot background via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over connectorColour."
+		},
 		"connectorProgressFill": {
 			"type": "boolean",
 			"default": false
@@ -272,9 +278,19 @@
 			"type": "string",
 			"default": ""
 		},
+		"rowStripeColourAGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the odd-row background band via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over rowStripeColourA. No attrMap entry — rowStripeColourA/B both target the entry element's background-color via mutually exclusive :nth-child(odd)/:nth-child(even) selectors, not the declared states vocabulary, so claiming css:background-color for either would misrepresent ownership (see the entry element note in supports.sgs.elements)."
+		},
 		"rowStripeColourB": {
 			"type": "string",
 			"default": "surface-alt"
+		},
+		"rowStripeColourBGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the even-row background band via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over rowStripeColourB. No attrMap entry — see rowStripeColourAGradient's description."
 		},
 		"paddingTablet": {
 			"type": "object",

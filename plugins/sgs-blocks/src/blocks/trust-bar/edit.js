@@ -308,6 +308,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		badgeSize,
 		iconCircleSize,
 		iconCircleBackground,
+		iconCircleBackgroundGradient,
 		iconColour,
 		iconColourHover,
 		iconColourGradient,
@@ -354,6 +355,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	}, [ items, rawItems, setAttributes ] );
 
 	const circleBgValue  = colourVar( iconCircleBackground ) || '#ffffff';
+	// iconCircleBackgroundGradient (2026-09-06) — mirrors render.php's
+	// --sgs-trust-badge-circle-bg-gradient sibling; style.css's matching
+	// background-image line makes this win over circleBgValue when set.
+	const circleBgGradientValue = iconCircleBackgroundGradient || undefined;
 	const iconColourValue = colourVar( iconColour ) || 'currentColor';
 	const textColourValue = colourVar( textColour ) || undefined;
 	// D636 — sibling gradient attribute preview (mirrors sgs/counter's
@@ -481,6 +486,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				'--sgs-trust-bar-gap': gapCssValue( gap ),
 				'--sgs-trust-badge-circle-size': iconCircleSize !== 44 ? `${ iconCircleSize }px` : undefined,
 				'--sgs-trust-badge-circle-bg': circleBgValue,
+				'--sgs-trust-badge-circle-bg-gradient': circleBgGradientValue,
 				'--sgs-trust-badge-icon-colour': iconColourValue,
 				'--sgs-trust-badge-text-colour': textColourValue,
 				'--sgs-trust-badge-circle-radius': circleRadiusValue,
@@ -664,7 +670,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					badgeStyle === 'icon-circle' && fillRow( {
 						key: 'icon-circle-background',
 						label: __( 'Icon circle background', 'sgs-blocks' ),
-						attrs: { base: 'iconCircleBackground' },
+						// iconCircleBackgroundGradient (2026-09-06) — gradient
+						// sibling, resolved via helpers-tokens.php
+						// sgs_custom_property_gradient_decls() on the PHP side.
+						attrs: { base: 'iconCircleBackground', gradient: 'iconCircleBackgroundGradient' },
 						attributes,
 						setAttributes,
 					} ),

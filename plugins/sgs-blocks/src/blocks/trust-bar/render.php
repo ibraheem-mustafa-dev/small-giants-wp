@@ -45,6 +45,9 @@ $label_colour_gradient = $attributes['labelColourGradient'] ?? '';
 // --- icon-circle attributes ---------------------------------------------------
 $icon_circle_size = absint( $attributes['iconCircleSize'] ?? 44 );
 $icon_circle_bg   = $attributes['iconCircleBackground'] ?? 'surface';
+// iconCircleBackgroundGradient (2026-09-06, colour-conformance closeout) —
+// gradient sibling, resolved below alongside $circle_bg_value.
+$icon_circle_bg_gradient = $attributes['iconCircleBackgroundGradient'] ?? '';
 $icon_colour      = $attributes['iconColour'] ?? 'primary-dark';
 // D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above,
 // but only paints the outline (default) badge's `stroke` — a 'filled' badge's
@@ -93,7 +96,8 @@ $icon_circle_size = max( 36, min( 64, $icon_circle_size ) );
 $badge_image_size = max( 24, min( 160, $badge_image_size ) );
 
 // --- Resolve colour values ----------------------------------------------------
-$circle_bg_value   = sgs_colour_value( $icon_circle_bg );
+$circle_bg_value            = sgs_colour_value( $icon_circle_bg );
+$circle_bg_gradient_value   = sgs_css_gradient_value( $icon_circle_bg_gradient );
 $icon_colour_value = sgs_colour_value( $icon_colour );
 $text_colour_value = sgs_colour_value( $text_colour );
 // D636 — sibling gradient attribute wins when set+valid (mirrors sgs/counter's
@@ -121,6 +125,12 @@ if ( 'icon-circle' === $badge_style ) {
 	// Falls back to surface-alt (#F1F0EC) in CSS — visually distinct from the
 	// surface (#FAF9F6) page/section background.
 	$styles[] = '--sgs-trust-badge-circle-bg: ' . ( $circle_bg_value ? $circle_bg_value : 'var(--wp--preset--color--surface-alt)' );
+	// iconCircleBackgroundGradient (2026-09-06) — sibling wins over the flat
+	// background above at paint time via style.css's background-image line;
+	// only emitted when a valid gradient is set.
+	if ( $circle_bg_gradient_value ) {
+		$styles[] = '--sgs-trust-badge-circle-bg-gradient: ' . $circle_bg_gradient_value;
+	}
 	// Icon colour: always emit so the SVG stroke reliably uses the operator value.
 	$styles[] = '--sgs-trust-badge-icon-colour: ' . ( $icon_colour_value ? $icon_colour_value : 'var(--wp--preset--color--primary-dark)' );
 	// Label (text) colour: emit when resolved.

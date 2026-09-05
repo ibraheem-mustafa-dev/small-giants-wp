@@ -120,6 +120,21 @@ $group_border_resting_value    = '' !== $group_border_resting_raw ? sgs_colour_v
 $group_border_resting_gradient = sgs_css_gradient_value( $attributes['groupBorderColourGradient'] ?? '' );
 $accent_image_slug  = isset( $attributes['accentBackgroundImage'] ) ? sanitize_html_class( (string) $attributes['accentBackgroundImage'] ) : 'accent';
 $panel_bg_raw      = isset( $attributes['panelBg'] ) ? (string) $attributes['panelBg'] : '';
+// panelBg/iconBackground gradient siblings (2026-09-06, colour-conformance
+// closeout) — neither attribute is a plain flat-value-to-custom-property
+// assignment (panelBg has a PHP-computed color-mix() default when empty;
+// iconBackground is a slug that resolves into the DERIVED "soft" 10%-tint
+// custom property, not a direct paint), so sgs_custom_property_gradient_decls()
+// does not fit either shape outright. Both gradients are resolved here via
+// the same sgs_css_gradient_value() primitive every other gradient attr in
+// this file already uses (see $border_colour_gradient below), then declared
+// as their own custom-property SIBLING next to the existing flat custom
+// property at the point each is actually emitted (§2) — a background-image
+// consumer is added next to every background-color consumer of that same
+// custom property (§4 + style.css), matching the option-picker/tabs recipe
+// at the FINAL emission point rather than at the raw attribute.
+$panel_bg_gradient = sgs_css_gradient_value( $attributes['panelBgGradient'] ?? '' );
+$icon_bg_gradient  = sgs_css_gradient_value( $attributes['iconBackgroundGradient'] ?? '' );
 $border_colour_raw = isset( $attributes['borderColour'] ) ? (string) $attributes['borderColour'] : '';
 $border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 $border_radius     = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['borderRadius'] ?? '20px' ) : '20px';
@@ -253,8 +268,16 @@ $css .= $root_sel . '{'
 	. '--sgs-mm-panel-bg:' . $panel_bg_value . ';'
 	. '--sgs-mm-card:rgba(255,255,255,.6);'
 	. '--sgs-mm-panel-border:' . $panel_border_value . ';'
+	// panelBgGradient/iconBackgroundGradient siblings (2026-09-06) — declared
+	// only when resolved, matching sgs_custom_property_gradient_decls()'s own
+	// no-op-when-empty contract; the consuming background-image declarations
+	// below (and in style.css) always emit unconditionally with a `none`
+	// fallback, so an unset gradient paints nothing extra.
+	. ( '' !== $panel_bg_gradient ? '--sgs-mm-panel-bg-gradient:' . $panel_bg_gradient . ';' : '' )
+	. ( '' !== $icon_bg_gradient ? '--sgs-mm-soft-gradient:' . $icon_bg_gradient . ';' : '' )
 	. 'color:var(--sgs-mm-text);'
 	. 'background-color:var(--sgs-mm-panel-bg);'
+	. 'background-image:var(--sgs-mm-panel-bg-gradient, none);'
 	. '}';
 
 // NEW resting-state group-tile border custom property (2026-08-28) — only
@@ -291,7 +314,12 @@ $dark_props = '--sgs-mm-text:#f3f2ee;'
 	. '--sgs-mm-card:rgba(255,255,255,.04);'
 	. '--sgs-mm-panel-border:rgba(255,255,255,.11);'
 	. 'color:var(--sgs-mm-text);'
-	. 'background-color:var(--sgs-mm-panel-bg);';
+	. 'background-color:var(--sgs-mm-panel-bg);'
+	// panelBgGradient sibling (2026-09-06) — --sgs-mm-panel-bg-gradient is NOT
+	// redeclared here, so an operator-set gradient (declared once on $root_sel
+	// above) still cascades into the forced/auto dark scheme exactly like the
+	// pre-existing accent/soft custom properties above it do.
+	. 'background-image:var(--sgs-mm-panel-bg-gradient, none);';
 
 // Forced per-panel dark (operator explicitly picked `dark` regardless of site mode).
 $css .= $root_sel . '[data-mega-scheme="dark"]{' . $dark_props . '}';
@@ -408,13 +436,13 @@ if ( function_exists( 'sgs_emit_responsive_css' ) ) {
 $css .= $style_col . $rel_content . '{display:flex;flex-wrap:wrap;}';
 $css .= $style_col . $rel_group . ',' . $style_col . $rel_card_grid . '{flex:1 1 200px;min-width:0;}';
 $css .= $style_col . $rel_item . '{display:flex;align-items:flex-start;gap:13px;padding:11px 12px;border-radius:13px;}';
-$css .= $style_col . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);' . $icon_colour_decl . ';}';
+$css .= $style_col . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);background-image:var(--sgs-mm-soft-gradient, none);' . $icon_colour_decl . ';}';
 
 // -- cards -----------------------------------------------------------------
 $css .= $style_crd . $rel_content . '{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;}';
 $css .= $style_crd . $rel_group . '{padding:17px;border-radius:15px;border:1px solid var(--sgs-mm-panel-border);border-color:var(--sgs-mm-group-border-resting, var(--sgs-mm-panel-border));background-color:var(--sgs-mm-card);}';
 $css .= $style_crd . $rel_item . '{display:flex;align-items:flex-start;gap:13px;padding:0;border-radius:0;}';
-$css .= $style_crd . $rel_icon . '{width:36px;height:36px;border-radius:10px;background-color:var(--sgs-mm-soft);' . $icon_colour_decl . ';}';
+$css .= $style_crd . $rel_icon . '{width:36px;height:36px;border-radius:10px;background-color:var(--sgs-mm-soft);background-image:var(--sgs-mm-soft-gradient, none);' . $icon_colour_decl . ';}';
 
 // Resting-state border GRADIENT (2026-08-28) — masked ::before ring, scoped
 // to the resting (non-hover) `.sgs-mega-group` tile, independent of the
@@ -476,7 +504,7 @@ if ( '' !== $accent_border_gradient ) {
 // -- minimal -------------------------------------------------------------
 $css .= $style_min . $rel_content . '{display:flex;flex-direction:column;gap:2px;}';
 $css .= $style_min . $rel_item . '{display:flex;align-items:center;justify-content:space-between;padding:15px 14px;border-radius:14px;}';
-$css .= $style_min . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);' . $icon_colour_decl . ';}';
+$css .= $style_min . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);background-image:var(--sgs-mm-soft-gradient, none);' . $icon_colour_decl . ';}';
 
 // Mandatory gradient-fallback companion (D636) — @supports not(background-clip:text)
 // rule for browsers lacking it. A no-op ('') when $icon_colour_effective is a flat

@@ -18,6 +18,7 @@ import {
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
+	GradientCapableColourControl,
 	IconPicker,
 	ResponsiveBoxControl,
 	SgsColourPanel,
@@ -495,6 +496,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		headingLevel,
 		connectorStyle,
 		connectorColour,
+		connectorColourGradient,
 		connectorProgressFill,
 		connectorFillColour,
 		dateColour,
@@ -510,7 +512,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		datePosition,
 		rowStripes,
 		rowStripeColourA,
+		rowStripeColourAGradient,
 		rowStripeColourB,
+		rowStripeColourBGradient,
 		paddingTablet,
 		paddingMobile,
 		marginTablet,
@@ -568,6 +572,11 @@ export default function Edit( { attributes, setAttributes } ) {
 			'--sgs-connector-colour': connectorColour
 				? `var(--wp--preset--color--${ connectorColour })`
 				: undefined,
+			// connectorColourGradient sibling (2026-09-06, colour-conformance
+			// closeout) — a raw CSS gradient string, mirrored unwrapped like
+			// every other {attr}Gradient custom-property value (tabs/
+			// option-picker precedent).
+			'--sgs-connector-colour-gradient': connectorColourGradient || undefined,
 			'--sgs-timeline-media-width': milestoneMediaWidth || undefined,
 			// Mirrors render.php: an EMPTY stripe A resolves to `transparent`,
 			// so odd rows keep the page/section background and only even rows
@@ -578,10 +587,16 @@ export default function Edit( { attributes, setAttributes } ) {
 						? `var(--wp--preset--color--${ rowStripeColourA })`
 						: 'transparent' )
 				: undefined,
+			'--sgs-timeline-stripe-a-gradient': rowStripes
+				? ( rowStripeColourAGradient || undefined )
+				: undefined,
 			'--sgs-timeline-stripe-b': rowStripes
 				? ( rowStripeColourB
 						? `var(--wp--preset--color--${ rowStripeColourB })`
 						: 'transparent' )
+				: undefined,
+			'--sgs-timeline-stripe-b-gradient': rowStripes
+				? ( rowStripeColourBGradient || undefined )
 				: undefined,
 			'--sgs-date-colour': dateColour
 				? `var(--wp--preset--color--${ dateColour })`
@@ -696,6 +711,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								{
 									key: 'rowStripeA',
 									label: __( 'Row colour A (odd rows)', 'sgs-blocks' ),
+									gradientCapable: true,
 									states: [
 										{
 											key: 'normal',
@@ -704,12 +720,16 @@ export default function Edit( { attributes, setAttributes } ) {
 											onChange: ( val ) =>
 												setAttributes( { rowStripeColourA: val ?? '' } ),
 											linked: true,
+											gradientValue: rowStripeColourAGradient,
+											onGradientChange: ( val ) =>
+												setAttributes( { rowStripeColourAGradient: val ?? '' } ),
 										},
 									],
 								},
 								{
 									key: 'rowStripeB',
 									label: __( 'Row colour B (even rows)', 'sgs-blocks' ),
+									gradientCapable: true,
 									states: [
 										{
 											key: 'normal',
@@ -718,6 +738,9 @@ export default function Edit( { attributes, setAttributes } ) {
 											onChange: ( val ) =>
 												setAttributes( { rowStripeColourB: val ?? '' } ),
 											linked: true,
+											gradientValue: rowStripeColourBGradient,
+											onGradientChange: ( val ) =>
+												setAttributes( { rowStripeColourBGradient: val ?? '' } ),
 										},
 									],
 								},
@@ -860,7 +883,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					     TIER 1 panel; "connector" is a declared element whose
 					     attrMap claims both of these). Same row shape, same
 					     attributes, just relocated. */ }
-					<DesignTokenPicker
+					<GradientCapableColourControl
 						label={ __( 'Connector colour', 'sgs-blocks' ) }
 						states={ [
 							{
@@ -869,6 +892,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: connectorColour,
 								onChange: ( val ) => setAttributes( { connectorColour: val ?? '' } ),
 								linked: true,
+								gradientValue: connectorColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { connectorColourGradient: val ?? '' } ),
 							},
 						] }
 					/>
