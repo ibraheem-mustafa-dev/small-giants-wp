@@ -13,12 +13,6 @@ existing `backgroundPaintPreview()`; a new `svg-gradient-preview.js` for icon/st
 scoped `<style>` mirrors where the real paint target is a CHILD block's element rather than the
 parent's own JSX. Only 4 exemption-shaped lines across the whole commit. Ceiling ratcheted 128 -> 0.
 
-⚠ **The phase-3 colour architecture shipped WITHOUT the design gate** this track's plan doc demanded
-in bold ("⛔ Do NOT start building… CLAUDE.md rule 7 requires a design gate and Bean's approval
-first"), across ~34 blocks. The outcome reads sound from the diff — shared helpers extracted rather
-than per-block hacks, each attribute root-caused against `render.php` rather than assumed from its
-name — but the gate was skipped, and that is worth knowing before the pattern is cited as precedent.
-
 **THE FINDING WORTH KEEPING — a positive control that could no longer pass.** The gate's own R3-a
 resolver-widening regression test was FAILING while the gate itself reported a clean 0. Cause: the
 test proved the widening worked by asserting `bgSvgContent` appeared in the FINDINGS list, while its
@@ -45,8 +39,12 @@ fail with the original message.
 Docs reconciled to the closure rather than left stale: the LEDGER track compressed to a closed-track
 entry, Spec 02 and `plugins/sgs-blocks/CLAUDE.md` repointed off the consumed plan doc onto the
 durable "Editor-canvas mirrors" section, and the plan doc itself deleted in the same commit (a
-prompt is an instruction, not a record). `sgs/nav-drawer`'s variant-discriminator collision remains
-open as Bean's design call and is now costing other sessions a scoped bypass each.
+prompt is an instruction, not a record).
+
+Two items this entry originally carried as open were resolved elsewhere while it was being written
+and are recorded as closed rather than left as false open threads: the phase-3 colour architecture
+DID get its design gate (run in a separate session), and `sgs/nav-drawer`'s variant-discriminator
+collision was being fixed concurrently.
 
 ## D966 [ROUTINE] — Four colour/DB detectors were lying in both directions; fixing them unmasked real defects, and an explicit declaration still could not RETRACT a heuristic guess
 

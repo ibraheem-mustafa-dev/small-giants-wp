@@ -287,10 +287,6 @@ CHILD block's element. Ceiling ratcheted to 0/0. Plan doc consumed and deleted.
 **Durable output:** Spec 02 item 0 (a shared mechanism is mirrorable once only if it OWNS ITS
 SELECTOR); DONE-checklist 7b; `plugins/sgs-blocks/CLAUDE.md` "Editor-canvas mirrors" + four traps.
 
-**Open, Bean's call:** `sgs/nav-drawer`'s variant-discriminator collision — deliberately NOT
-closed: `variantPreset` gates zero conditional CSS by design, so fabricating a discriminator would
-make `detect_variant` pick the wrong variant on a real clone. Costs other sessions a bypass each.
-
 ## ▶ COLOUR TRACK — the "remaining 8 hard rows" prompt CLOSED 2026-09-05 (D964). Detail: `.claude/plans/2026-09-03-golden-colour-staged-rollout.md` + D964.
 
 Sessions 7-10 closed the hover-guard, built the contrast guard, hardened `fix.js`, shipped the
