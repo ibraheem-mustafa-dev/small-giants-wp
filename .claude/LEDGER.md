@@ -286,6 +286,13 @@ SELECTOR); DONE-checklist 7b; `plugins/sgs-blocks/CLAUDE.md` "Editor-canvas mirr
 
 ## ▶ COLOUR TRACK — the "remaining 8 hard rows" prompt CLOSED 2026-09-05 (D964). Detail: `.claude/plans/2026-09-03-golden-colour-staged-rollout.md` + D964.
 
+**NEW live thread (2026-09-05, same day, later session):** the already-consumed prompt file was
+handed to a fresh session anyway (this section said "consumed/historical" but the file itself
+was never deleted — fixed, `git rm`'d). That session verified the "still open" list above against
+the live tree (still accurate) and, per Bean's direction, is building a UNIFIED `survey.js` that
+absorbs `fix.js`'s job (find + categorise + fix as one tool, shape-batched not per-block) rather
+than hand-editing each remaining row. Full plan: `.claude/plans/2026-09-05-colour-conformance-shape-batch-triad.md`.
+
 Sessions 7-10 closed the hover-guard, built the contrast guard, hardened `fix.js`, shipped the
 first real `--apply` run. Session 11 root-caused + hardened `sgs_text_decls()`, closed 4 rows,
 handed off 8. This session (2026-09-05) closed all 7 of those real remaining rows (2 were
