@@ -118,6 +118,15 @@ export default function Edit( { attributes, setAttributes } ) {
 		previewStyle.borderColor = asideBorderColour
 			? resolveColourToken( asideBorderColour, palette )
 			: 'var(--sgs-mm-panel-border, rgba(0,0,0,.12))';
+		// CHECK A: asideBorderColourGradient had no canvas mirror — render.php:113-121
+		// paints it as a masked ::before ring (D636 border builder), winning over
+		// the flat border-color above. A plain inline style can't reproduce the
+		// mask, so this approximates it via border-image (same documented
+		// approximation used elsewhere this session), only when the border is
+		// actually painting (borderWidthPreview truthy, matching render.php's gate).
+		if ( asideBorderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( asideBorderColourGradient ) ) {
+			previewStyle.borderImage = `${ asideBorderColourGradient } 1`;
+		}
 	}
 	const paddingPreview = boxShorthand( asidePadding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {

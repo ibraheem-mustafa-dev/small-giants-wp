@@ -272,6 +272,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							source="lucide"
 							name={ iconName }
 							size={ iconSize }
+							gradient={ iconColourGradient }
 						/>
 					</span>
 					<span

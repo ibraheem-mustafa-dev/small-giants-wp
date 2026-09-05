@@ -581,6 +581,133 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'cardBgColourGradient',
 	'iconBackgroundGradient',
 	'iconBackgroundHoverGradient',
+	// Phase-3/4 close-out (2026-09-05, Bean-directed — reach 0). Client-set
+	// hover VALUES, verified individually this session (each grep'd against its
+	// own render.php, not assumed from the name): iconColourHover
+	// (icon-list/notice-banner, sgs_hover_state_rules), priceColourHover
+	// (pricing-table, own emission), descriptionColourHover (process-steps,
+	// sgs_hover_state_rules), roleColourHover (team-member + testimonial),
+	// summaryColourHover/nameColourHover/orgColourHover (testimonial, array-fed
+	// hover rule builder), tileBorderColourHover(Gradient)/
+	// fileLabelBorderColourHover(Gradient)/fileLabelBackgroundColourHover(Gradient)
+	// (form, mapping-table-driven hover rule builder), closeColourBackgroundHover
+	// (Gradient)/closeColourTextHover(Gradient) (modal — consumed via
+	// sgs_button_element_style_css()'s dynamic prefix+suffix key concatenation,
+	// which a literal-name grep of render.php misses; confirmed by reading the
+	// helper and its call site, not by the grep coming back empty). All same
+	// class as the existing hover-value entries above — the editor canvas never
+	// simulates `:hover`/`:focus`.
+	'iconColourHover',
+	'priceColourHover',
+	'descriptionColourHover',
+	'roleColourHover',
+	'summaryColourHover',
+	'nameColourHover',
+	'orgColourHover',
+	'tileBorderColourHover',
+	'tileBorderColourHoverGradient',
+	'fileLabelBorderColourHover',
+	'fileLabelBorderColourHoverGradient',
+	'fileLabelBackgroundColourHover',
+	'fileLabelBackgroundColourHoverGradient',
+	'closeColourBackgroundHover',
+	'closeColourBackgroundHoverGradient',
+	'closeColourTextHover',
+	'closeColourTextHoverGradient',
+	// Motion-timing (2026-09-05) — `sgs/hero` and `sgs/text` both feed these
+	// into a CSS `transition:` DURATION/EASING declaration only (verified:
+	// text/render.php:409/562 build `transition:prop {duration}ms {easing}`
+	// strings, nothing else consumes them) — a state-CHANGE timing curve with
+	// no static rendered signature a canvas capture could ever show. Same
+	// doctrine as the existing motion-timing entries above.
+	'transitionDuration',
+	'transitionEasing',
+	// Structural state unreachable on a static canvas (2026-09-05) — each
+	// verified individually, not assumed from the attribute shape:
+	// `focusRingColour` (product-search) only emits a `:focus-visible` outline
+	// rule; `backgroundColourScrolled`/`backgroundColourScrolledGradient`/
+	// `textColourScrolled` (site-header) are gated on the REAL frontend
+	// `.is-header-scrolled` class a scroll-listener in view.js adds after the
+	// page has already rendered — confirmed by edit.js's own comment on the
+	// same attributes; `scrollEffect` (timeline) drives `data-sgs-fx`, read
+	// only by view.js's scroll listener, with no static CSS signature anywhere.
+	'focusRingColour',
+	'backgroundColourScrolled',
+	'backgroundColourScrolledGradient',
+	'textColourScrolled',
+	'scrollEffect',
+	// `sgs/hero`'s generic grid/flex/stack layout attrs (2026-09-05, root-caused
+	// during this session's Phase 2 work, exempted now rather than faked — see
+	// Phase 2 commit daddbbb1's message for `justifyItems`/`alignContent`/
+	// `gridAutoRows`). Verified: hero/render.php never reads `layout`,
+	// `justifyContent`, `flexDirection`, `flexWrap`, or `gridTemplateRows`
+	// directly, and never sets its own `layout` attribute to 'grid'/'flex'/
+	// 'stack' anywhere — hero's split-media grid is instead forced by an
+	// unconditional `display:grid` rule keyed on `$is_split`
+	// (render.php:445-446), completely bypassing the shared wrapper's generic
+	// layout branch that would otherwise consume these seven attributes. They
+	// are genuinely dead on the frontend TODAY, in every hero variant — this is
+	// a real bug (hero's split-grid path never engages the wrapper's grid
+	// branch), tracked separately, not an editor-canvas gap this check can fix.
+	// ⚠ NAME-KEYED — `justifyItems`/`alignContent`/`gridAutoRows` are shared
+	// names other blocks use for LIVE findings; safe today because no other
+	// block has a finding under these names after Phase 2 closed
+	// cta-section/gallery/trust-bar's, but re-verify before ever reusing this
+	// exemption reasoning for a new block.
+	'justifyContent',
+	'flexDirection',
+	'flexWrap',
+	'gridTemplateRows',
+	'justifyItems',
+	'alignContent',
+	'gridAutoRows',
+	// `sgs/hero.splitMediaDecorative` (2026-09-05) — confirmed a11y-only by
+	// render.php's own comment: blanks `alt` and sets `aria-hidden` on the
+	// split-media wrapper, a state never exposed to assistive tech any other
+	// way and with zero CSS/visual signature on any variant. Same shape as
+	// `thumbnailDecorative` above — not a desync, a false positive.
+	'splitMediaDecorative',
+	// `sgs/icon-list.dividers` (2026-09-05) — render.php adds the
+	// `.sgs-icon-list--dividers` class, but no CSS rule anywhere in the
+	// codebase (style.css or elsewhere) consumes it — dead on the FRONTEND,
+	// not just the editor. Real bug (missing divider CSS), tracked separately;
+	// faking a canvas preview for an effect the frontend never paints would be
+	// the same inverted-CHECK-A mistake as hero's grid attrs above.
+	'dividers',
+	// `sgs/form`'s "Previous button" colour family (2026-09-05) — confirmed
+	// ZERO references anywhere in form/render.php (the Previous button markup
+	// itself exists at ~line 465, but this colour is never applied to it) —
+	// genuinely dead on the frontend today, not an editor-mirror gap. Real bug
+	// (the Previous button's background colour control does nothing), tracked
+	// separately; not faked here.
+	'prevColourBackground',
+	'prevColourBackgroundHover',
+	'prevColourBackgroundGradient',
+	'prevColourBackgroundHoverGradient',
+	// `sgs/cart`'s mini-cart panel colours (2026-09-05) — `panelBg`/
+	// `panelTextColour` paint a native `<dialog>` (FR-36-10) built server-side
+	// and opened only by a frontend click; `edit.js` renders no panel preview
+	// markup on the canvas at all today. Unlike the dead-attribute cases above,
+	// this ISN'T a bug — the dialog genuinely only exists post-interaction —
+	// but it is equally unshowable without a separate feature (force-mounting
+	// the dialog open in the editor for preview purposes), which is a real,
+	// separately-scoped piece of work, not a same-shaped colour-mirror fix.
+	// (`iconColourGradient` on this block is NOT included here — that paints
+	// the cart TRIGGER icon, which the canvas always shows, so it gets the
+	// normal colour-mirror fix.)
+	'panelBg',
+	'panelTextColour',
+	// `sgs/form-field-tiles.selectedStyle` (2026-09-05) — render.php emits a
+	// `sgs-form-field--tiles-style-{border|background|checkmark}` class
+	// (~line 302), but a repo-wide grep found ZERO CSS anywhere that consumes
+	// `tiles-style-*` — the actual selected-state styling (border/background/
+	// checkmark) is applied identically via `.sgs-form-tile--selected`/
+	// `:has(input:checked)` regardless of this attribute's value. There is no
+	// real per-variant visual difference on the frontend today for the canvas
+	// to mirror — building an illustrative preview would invent behaviour
+	// that doesn't exist. Real bug (wire real per-variant CSS, or retire the
+	// control), tracked separately, not faked here.
+	'selectedStyle',
 ] );
 
 // WP-native block-supports attribute names, consumed automatically by
@@ -4639,7 +4766,30 @@ function main() {
 	// backgroundAttachment on a live sgs/hero (split variant) block both
 	// updated the actual editor-canvas DOM inline style, read via
 	// getComputedStyle, not just re-measured by this script.
-	const CHECK_A_OPEN_BACKLOG = 128;
+	// LOWERED 128 -> 0 (2026-09-05, Bean-directed same-session close-out).
+	// Phase 3 (colour/gradient family, ~43 findings resolved via exemption —
+	// verified hover/focus/motion-timing/scroll-state/dead-attribute per item,
+	// not assumed from name) + Phase 4 (long tail) closed the remaining 84 via
+	// 10 parallel dispatches, each required to read block.json + render.php
+	// before wiring anything and to flag (not fake) a genuinely dead attribute.
+	// Two dead-attribute families surfaced and were exempted with reasoning,
+	// same standard as Phase 2's hero grid attrs: sgs/form's entire
+	// `prevColourBackground*` (Previous-button colour never reaches
+	// render.php) and sgs/form-field-tiles' `selectedStyle` (emits a class no
+	// CSS anywhere consumes) — both real bugs, tracked separately, not
+	// papered over. sgs/container's `gridItemBorderGradient`/
+	// `gridItemTextColourGradient` (the two attrs a prior custom-property-only
+	// pass had left as an open, documented gap) were closed via a
+	// `clientId`-scoped `<style>` tag — the same escape hatch this session's
+	// `sgs/form` child-block colour fix used, since a masked-ring
+	// border/background-clip:text gradient on a CHILD element can't be
+	// expressed as a plain inline style or a simple custom property.
+	// sgs/site-footer's `textColour`/`textColourGradient` were wired together
+	// (not just the flagged `textColourGradient` alone) after discovering
+	// `textColour` only LOOKED wired — it was read inside a WCAG contrast-check
+	// `useEffect`, never actually painted, a false-wired signal this check's
+	// name-reference heuristic cannot see through.
+	const CHECK_A_OPEN_BACKLOG = 0;
 	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
 
 	if ( isJson ) {

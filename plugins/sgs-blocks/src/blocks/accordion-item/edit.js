@@ -4,13 +4,14 @@ import {
 	useInnerBlocksProps,
 	RichText,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { colourVar } from '../../utils';
+import { colourVar, textPaintPreview } from '../../utils';
 import { SgsColourPanel, fillRow,
 	SgsBorderControl,
 	resolveColourToken,
@@ -37,6 +38,13 @@ const CHEVRON_SVG = (
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { title, isOpen, backgroundColour, backgroundColourGradient, textColour, textColourGradient } = attributes;
+
+	// D288/D636 pattern (mirrors sgs/container): resolve the wrapper's textColour/
+	// textColourGradient pair to a live canvas preview — render.php applies this
+	// pair to $root_sel (the whole `.sgs-accordion-item` wrapper, per block.json's
+	// `wrapper` element attrMap css:color/css:background-image), so it belongs on
+	// the wrapper's own blockProps style, inherited by header/content beneath it.
+	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	// Position of this item among its accordion siblings — mirrors sgs/tab's
 	// index derivation, needed to compare against the parent's `defaultOpen`
@@ -76,7 +84,10 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		.filter( Boolean )
 		.join( ' ' );
 
-	const blockProps = useBlockProps( { className } );
+	const blockProps = useBlockProps( {
+		className,
+		style: textPaintPreview( textColour, textColourGradient, colourPalette ),
+	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
 		{

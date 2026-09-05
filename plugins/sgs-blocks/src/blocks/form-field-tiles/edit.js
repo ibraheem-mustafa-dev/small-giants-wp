@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	TextControl,
@@ -14,7 +14,7 @@ import { IconPicker, IconPreview, SgsColourPanel, fillRow,
 	resolveColourToken,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { resolveResponsiveTier } from '../../utils';
+import { resolveResponsiveTier, textPaintPreview } from '../../utils';
 
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
@@ -70,7 +70,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		`sgs-form-field--${ width }`,
 	].join( ' ' );
 
-	const blockProps = useBlockProps( { className } );
+	// CHECK A finding: textColour/textColourGradient are written by the
+	// "Text colour" row above and consumed by render.php on `$sgs_ft_sel`
+	// (`.{uid}.sgs-form-field--tiles` — the SAME root element `blockProps`
+	// renders onto), but nothing applied them to the canvas. `color` is a
+	// naturally-inheriting CSS property, so setting it on this root also
+	// covers the tile labels below, which set no colour of their own.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	const wrapperTextStyle = textPaintPreview( textColour, textColourGradient, colourPalette );
+
+	const blockProps = useBlockProps( { className, style: wrapperTextStyle } );
 
 	const updateTile = ( index, key, value ) => {
 		const newTiles = [ ...tiles ];

@@ -98,8 +98,57 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		backgroundColor: resolveColourToken( progressBarColour, palette ) || undefined,
 	};
 
+	// GROUND-TRUTH: source=file, confirmed against render.php:311-373 +
+	// helpers-colour-variants.php's sgs_border_states_css()/sgs_fill_states_css()
+	// this session. RESTING state only — the Hover-suffixed siblings are
+	// already canvas-exempted. tileBorderColour(Gradient) paints
+	// `.sgs-form-tile` and fileLabelBorderColour(Gradient)/
+	// fileLabelBackgroundColour(Gradient) paint `.sgs-form-field__file-label` —
+	// BOTH elements are rendered by CHILD blocks (sgs/form-field-tiles /
+	// sgs/form-field-file) nested inside this block's own InnerBlocks tree, not
+	// by sgs/form's own JSX. A plain inline `style` prop on this block's own
+	// markup cannot reach a child block's DOM, so this mirrors render.php's
+	// `.{uid} .sgs-form-tile{…}` scoped rule with a `clientId`-scoped `<style>`
+	// tag instead — same shape as the frontend's own scoped `<style>` block,
+	// just keyed to the editor's per-instance identity rather than the
+	// render-time uid hash. Border-gradient mirroring is the same
+	// `border-image` APPROXIMATION `borderPaintPreview()` documents (the real
+	// frontend paints a masked `::before` ring via `sgs_border_gradient_css()`,
+	// which a static `<style>` string can't reproduce faithfully).
+	const FORM_PREVIEW_GRADIENT_RE = /^(repeating-)?(linear|radial|conic)-gradient\(/i;
+	const formPreviewScope = `sgs-form-editor-${ clientId }`;
+
+	const tileBorderPreviewDecl =
+		tileBorderColourGradient && FORM_PREVIEW_GRADIENT_RE.test( tileBorderColourGradient )
+			? `border-image:${ tileBorderColourGradient } 1;`
+			: resolveColourToken( tileBorderColour, palette )
+				? `border-color:${ resolveColourToken( tileBorderColour, palette ) };`
+				: '';
+
+	const fileLabelBorderPreviewDecl =
+		fileLabelBorderColourGradient && FORM_PREVIEW_GRADIENT_RE.test( fileLabelBorderColourGradient )
+			? `border-image:${ fileLabelBorderColourGradient } 1;`
+			: resolveColourToken( fileLabelBorderColour, palette )
+				? `border-color:${ resolveColourToken( fileLabelBorderColour, palette ) };`
+				: '';
+
+	const fileLabelBackgroundPreviewDecl =
+		fileLabelBackgroundColourGradient && FORM_PREVIEW_GRADIENT_RE.test( fileLabelBackgroundColourGradient )
+			? `background-image:${ fileLabelBackgroundColourGradient };`
+			: resolveColourToken( fileLabelBackgroundColour, palette )
+				? `background-color:${ resolveColourToken( fileLabelBackgroundColour, palette ) };`
+				: '';
+
+	const formPreviewCss = [
+		tileBorderPreviewDecl && `.${ formPreviewScope } .sgs-form-tile{${ tileBorderPreviewDecl }}`,
+		( fileLabelBorderPreviewDecl || fileLabelBackgroundPreviewDecl ) &&
+			`.${ formPreviewScope } .sgs-form-field__file-label{${ fileLabelBorderPreviewDecl }${ fileLabelBackgroundPreviewDecl }}`,
+	]
+		.filter( Boolean )
+		.join( '' );
+
 	const blockProps = useBlockProps( {
-		className: 'sgs-form',
+		className: `sgs-form ${ formPreviewScope }`,
 	} );
 
 	// Base roster of blocks a form's own children may ever sensibly be — unlike
@@ -595,6 +644,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			/>
 
 			<div { ...blockProps }>
+				{ formPreviewCss && <style>{ formPreviewCss }</style> }
 				<div { ...innerBlocksProps } />
 				{ /* Editor-canvas-only submit button preview — render.php mirror.
 					There is no real <form> in the editor canvas, so without this

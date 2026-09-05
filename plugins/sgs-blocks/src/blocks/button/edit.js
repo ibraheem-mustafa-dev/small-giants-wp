@@ -36,6 +36,7 @@ import {
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { LinkPopoverContent } from '../../components';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
+import { backgroundPaintPreview, textPaintPreview } from '../../utils';
 
 const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Before label', 'sgs-blocks' ), value: 'before' },
@@ -274,8 +275,48 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 
 	const previewStyle = {};
-	if ( colourText ) previewStyle.color = resolveColourToken( colourText, palette );
-	if ( colourBackground ) previewStyle.backgroundColor = resolveColourToken( colourBackground, palette );
+
+	// colourTextGradient/colourBackgroundGradient real mechanism (render.php,
+	// D636 + the button-specific "Real text gradient" precondition,
+	// CLAUDE.md): a gradient BACKGROUND is a `--sgs-btn-bg-image` custom-
+	// property value consumed by style.css — the same technique
+	// `backgroundPaintPreview()` already mirrors. A gradient TEXT colour needs
+	// `background-clip:text` (`textPaintPreview()`), but `.sgs-button` paints
+	// its OWN background on the exact same selector a text colour targets —
+	// clipping would erase the button's fill. The frontend solves this by
+	// moving the background onto a `::after` layer ONLY when a text gradient
+	// is actually set; this mirrors that with a real sibling DOM layer (React
+	// has no way to target `::after` via inline style) rather than the
+	// generic backgroundPaintPreview merge.
+	const hasValidTextGradient = !! ( colourTextGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( colourTextGradient ) );
+	const bgPaintPreview = backgroundPaintPreview( colourBackground, colourBackgroundGradient, palette );
+	let backgroundLayerStyle = null;
+
+	if ( hasValidTextGradient ) {
+		// Neutralise the element's own background (moves to a sibling layer)
+		// and establish the stacking context the layer needs — mirrors
+		// render.php's `position:relative;isolation:isolate;background-color:
+		// transparent;background-image:none` on the strengthened selector.
+		previewStyle.position = 'relative';
+		previewStyle.isolation = 'isolate';
+		previewStyle.backgroundColor = 'transparent';
+		previewStyle.backgroundImage = 'none';
+		if ( bgPaintPreview.backgroundColor || bgPaintPreview.backgroundImage ) {
+			backgroundLayerStyle = {
+				position: 'absolute',
+				inset: 0,
+				zIndex: -1,
+				borderRadius: 'inherit',
+				pointerEvents: 'none',
+				...bgPaintPreview,
+			};
+		}
+		Object.assign( previewStyle, textPaintPreview( colourText, colourTextGradient, palette ) );
+	} else {
+		Object.assign( previewStyle, bgPaintPreview );
+		if ( colourText ) previewStyle.color = resolveColourToken( colourText, palette );
+	}
+
 	if ( borderColour ) previewStyle.borderColor = resolveColourToken( borderColour, palette );
 	// A gradient border renders frontend as a masked ::before ring, which cannot
 	// be reproduced in a plain inline style — approximate it with the gradient as
@@ -1048,6 +1089,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			   The label is now RichText on-canvas (matching core/button) instead of a
 			   sidebar TextControl. */ }
 			<span { ...blockProps }>
+				{ backgroundLayerStyle && (
+					<span aria-hidden="true" style={ backgroundLayerStyle } />
+				) }
 				{ hasIcon && iconPosition === 'before' && iconPlaceholder }
 				{ iconPosition !== 'only' && (
 					<RichText

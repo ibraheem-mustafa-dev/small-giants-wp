@@ -14,7 +14,7 @@
  * object + tiers), root width/spacing/border, and typography controls.
  */
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	TextControl,
@@ -37,7 +37,7 @@ import {
 	SgsBorderControl,
 	MediaElementPanel,
 } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle, borderPaintPreview } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /* ── Options ─────────────────────────────────────────────────────────────── */
@@ -307,6 +307,21 @@ export default function Edit( { attributes, setAttributes } ) {
 		colourVar
 	);
 
+	// CHECK A: pillBorderColourGradient / pillSelectedBorderColourGradient have
+	// no existing canvas mirror — the flat pillBorderColour/pillSelectedBorderColour
+	// siblings already paint live via the --sgs-op-border/--sgs-op-sel-border
+	// custom properties set on the root by buildRootPreviewStyle() above, which
+	// style.css's `.sgs-option-picker__pill`/`:checked ~ .pill` border rules
+	// already consume — so only the GRADIENT branch is needed here (colour arg
+	// passed as '' to avoid a duplicate/conflicting borderColor declaration).
+	// Mirrors render.php's masked-ring approximation used elsewhere this
+	// session: a real gradient border is a masked ::before ring server-side,
+	// which a plain inline style can't reproduce — border-image is the same
+	// documented approximation.
+	const [ optionPickerPalette ] = useSettings( 'color.palette' );
+	const pillBorderGradientPreview = borderPaintPreview( '', pillBorderColourGradient, optionPickerPalette );
+	const pillSelectedBorderGradientPreview = borderPaintPreview( '', pillSelectedBorderColourGradient, optionPickerPalette );
+
 	/* ── Canvas preview pills ── */
 	const renderPills = () => {
 		if ( optionItems.length === 0 ) {
@@ -336,6 +351,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						style={ {
 							...( pillPaddingPreview ? { padding: pillPaddingPreview } : {} ),
 							...pillTextPreviewStyle,
+							...pillBorderGradientPreview,
+							...( isSelected ? pillSelectedBorderGradientPreview : {} ),
 						} }
 					>
 						{ item.label || item.key || `Option ${ index + 1 }` }

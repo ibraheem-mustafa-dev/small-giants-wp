@@ -541,6 +541,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		orientation === 'vertical' && contentLayout === 'single-column' && datePosition === 'own-column'
 			? 'sgs-timeline--date-gutter'
 			: '',
+		// Task 3 (2026-08-30) — 'full-height' milestones. Was missing from this
+		// preview class list entirely, so the min-height CSS rule
+		// (`.sgs-timeline--milestone-full-height .sgs-timeline__entry`,
+		// style.scss) could never match on the canvas even once the custom
+		// property below was set — the class is render.php's real gate, the
+		// custom property is unconditional (CHECK A).
+		'full-height' === milestoneSize ? 'sgs-timeline--milestone-full-height' : '',
 		// ⛔ `--reveal-connector` is mirrored but `is-js` is NOT. The hidden
 		// state is gated on both, so omitting `is-js` here keeps every entry
 		// VISIBLE on the canvas — an editor that hides milestones until a
@@ -582,6 +589,16 @@ export default function Edit( { attributes, setAttributes } ) {
 			'--sgs-timeline-fill-colour': connectorFillColour
 				? `var(--wp--preset--color--${ connectorFillColour })`
 				: undefined,
+			// Task 3 (2026-08-30) — milestoneMinHeight/entryGap. Mirrors
+			// render.php exactly: BOTH custom-property values are emitted
+			// unconditionally (unset -> undefined -> no declaration, matching
+			// render.php's own `'' !== $value` guard), because render.php's
+			// real gate on milestoneMinHeight is the CSS SELECTOR
+			// (`.sgs-timeline--milestone-full-height .sgs-timeline__entry`),
+			// not the custom property itself — see the class added to
+			// `previewClasses` above.
+			'--sgs-timeline-milestone-min-height': milestoneMinHeight || undefined,
+			'--sgs-timeline-entry-gap': entryGap || undefined,
 			...buildRootPreviewStyle( attributes ),
 		},
 	} );

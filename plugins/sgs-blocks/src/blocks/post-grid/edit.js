@@ -13,7 +13,7 @@
  * InnerBlocks slot.
  */
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { useEntityRecords } from '@wordpress/core-data';
 import {
 	PanelBody,
@@ -30,7 +30,12 @@ import ShadowControl from '../../components/ShadowControl';
 import SgsBooleanField from '../../components/SgsBooleanField';
 import SgsMultiSelectField from '../../components/SgsMultiSelectField';
 import ResponsiveOverride from '../../components/ResponsiveOverride';
-import { colourVar, resolveResponsiveTier, resolveTextColourPreviewStyle } from '../../utils';
+import {
+	colourVar,
+	resolveResponsiveTier,
+	resolveTextColourPreviewStyle,
+	resolveShadowPreviewComposed,
+} from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { MEDIA_SIZING_RATIO_OPTIONS,
 	SgsBorderControl,
@@ -141,7 +146,7 @@ function formatDate( dateString ) {
  * @param {Object} props.post       WP post record from useEntityRecords.
  * @param {Object} props.attributes Block attributes.
  */
-function PreviewCard( { post, attributes } ) {
+function PreviewCard( { post, attributes, palette } ) {
 	const {
 		cardStyle,
 		showImage,
@@ -161,6 +166,7 @@ function PreviewCard( { post, attributes } ) {
 		metaColourGradient,
 		categoryBadgeColour,
 		categoryBadgeColourGradient,
+		categoryBadgeBgColour,
 		readMoreColour,
 		readMoreColourGradient,
 		cardBgColour,
@@ -178,6 +184,14 @@ function PreviewCard( { post, attributes } ) {
 	const metaStyle  = resolveTextColourPreviewStyle( metaColour, metaColourGradient, colourVar );
 	const badgeStyle = resolveTextColourPreviewStyle( categoryBadgeColour, categoryBadgeColourGradient, colourVar );
 	const rmStyle    = resolveTextColourPreviewStyle( readMoreColour, readMoreColourGradient, colourVar );
+
+	// categoryBadgeBgColour is a FLAT fill colour with no gradient sibling
+	// (block.json — only categoryBadgeColour, the TEXT colour, has one) and
+	// only paints `.sgs-post-grid__badge` (card/overlay cardStyle) — style.css
+	// gives `.sgs-post-grid__category` (flat/minimal) no background-color rule
+	// at all, so the plain category label must not receive this style.
+	const badgeBg = categoryBadgeBgColour ? resolveColourToken( categoryBadgeBgColour, palette ) : undefined;
+	const badgeFillStyle = badgeBg ? { ...badgeStyle, backgroundColor: badgeBg } : badgeStyle;
 
 	const isOverlay = cardStyle === 'overlay';
 
@@ -201,7 +215,7 @@ function PreviewCard( { post, attributes } ) {
 					</div>
 
 					{ showCategory && firstCat && ( cardStyle === 'card' || isOverlay ) && (
-						<span className="sgs-post-grid__badge" style={ badgeStyle }>
+						<span className="sgs-post-grid__badge" style={ badgeFillStyle }>
 							{ firstCat.name }
 						</span>
 					) }
@@ -260,6 +274,10 @@ function PreviewCard( { post, attributes } ) {
 // -------------------------------------------------------------------------
 
 export default function Edit( { attributes, setAttributes } ) {
+	// categoryBadgeBgColour canvas mirror (CHECK A) — resolveColourToken needs
+	// the live theme palette to turn a stored slug into a real CSS colour.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+
 	const {
 		postType,
 		postsPerPage,
@@ -406,6 +424,15 @@ export default function Edit( { attributes, setAttributes } ) {
 	const columnsTabletTier = resolveResponsiveTier( columns, 'tablet' )?.value || 2;
 	const columnsMobileTier = resolveResponsiveTier( columns, 'mobile' )?.value || 1;
 
+	// Editor-canvas parity for post-grid's resting card shadow. render.php
+	// composes shape (`shadow`) + colour (`shadowColour`) via
+	// sgs_shadow_value_composed() into ONE `--sgs-card-shadow` custom property
+	// on the block wrapper, inherited by every `.sgs-post-grid__card` child —
+	// it is NOT computed per card, so it belongs on the block root style here,
+	// not inside PreviewCard. An unset shadow leaves style.css's own
+	// `--sgs-card-shadow` default (line 30) untouched, matching render.php.
+	const shadowPreview = resolveShadowPreviewComposed( shadow, shadowColour );
+
 	// Wrapper inline styles.
 	// gap is now a raw CSS string (e.g. "30px") set by ContainerWrapperControls.
 	const inlineStyles = {
@@ -413,6 +440,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-columns-tablet':  columnsTabletTier,
 		'--sgs-columns-mobile':  columnsMobileTier,
 		'--sgs-gap':             gap || '30px',
+		...( shadowPreview ? { '--sgs-card-shadow': shadowPreview } : {} ),
 	};
 
 	const blockProps = useBlockProps( {
@@ -1304,6 +1332,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								key={ post.id }
 								post={ post }
 								attributes={ attributes }
+								palette={ colourPalette }
 							/>
 						) ) }
 					</div>

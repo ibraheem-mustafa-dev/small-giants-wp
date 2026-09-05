@@ -153,6 +153,26 @@ function paddingFromBox( box ) {
 	return `${ top || '0' } ${ right || '0' } ${ bottom || '0' } ${ left || '0' }`;
 }
 
+/**
+ * Build a CSS border-width shorthand from a { top, right, bottom, left } box
+ * object — each side falls back to '1px' independently, mirroring
+ * render.php's `$border_width_top = '' !== $border_width_top ? … : '1px';`
+ * (B4, 2026-09-04) so a fresh instance (which never wrote this attr) shows
+ * the exact same 1px-everywhere hairline in the canvas that it renders on
+ * the published page. Always returns a value (never undefined) — matches
+ * render.php's `$has_border_width` being unconditionally true by
+ * construction.
+ *
+ * @param {Object} box Box object.
+ * @return {string} CSS border-width shorthand value.
+ */
+function borderWidthShorthand( box ) {
+	const b = box && typeof box === 'object' ? box : {};
+	return [ b.top, b.right, b.bottom, b.left ]
+		.map( ( side ) => side || '1px' )
+		.join( ' ' );
+}
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		variant,
@@ -226,10 +246,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		// A gradient border renders frontend as a masked ::before ring
 		// (sgs_border_gradient_css() in render.php), which cannot be reproduced in
 		// a plain inline style — approximate it with the gradient as a border-image,
-		// same as every other border-migrated block's canvas preview. style.css's
-		// `.sgs-mega-panel` rule already sets `border:1px solid var(--sgs-mm-panel-border)`,
-		// so this paints into that existing 1px border area rather than needing its
-		// own width/style — this block exposes no border-width/style control.
+		// same as every other border-migrated block's canvas preview. Paints into
+		// the real border area set below (borderWidth/borderStyle/borderColor —
+		// this block DOES have its own width/style control via SgsBorderControl,
+		// B4 2026-09-04; the "no width/style control" claim that used to live
+		// here was stale and is corrected by that same migration's own attrs).
 		borderImage:
 			borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient )
 				? `${ borderColourGradient } 1`
@@ -242,6 +263,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-mm-group-border-resting': groupBorderColour
 			? colourVar( groupBorderColour ) || groupBorderColour
 			: undefined,
+		// CHECK A: groupBorderColourGradient had no canvas mirror — render.php
+		// paints it as a masked ::before ring on the resting `.sgs-mega-group`
+		// tile (cards style only), winning over the flat resting colour above.
+		// style.css's `--sgs-mm-group-border-image` consumer (added alongside
+		// this) is a border-image approximation, scoped so it is a no-op on the
+		// frontend (that custom property is never set by render.php).
+		'--sgs-mm-group-border-image':
+			groupBorderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( groupBorderColourGradient )
+				? `${ groupBorderColourGradient } 1`
+				: undefined,
 		'--sgs-mm-group-gap': groupGap?.desktop || undefined,
 		'--sgs-mm-aside-w': asideWidth || undefined,
 		'--sgs-mm-aside-sep-width': asideSeparator?.width || undefined,
@@ -254,6 +285,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		// property, not a custom-prop indirection.
 		padding: paddingFromBox( panelPadding?.desktop ),
 		borderRadius: borderRadius || undefined,
+		// CHECK A: borderWidth/borderStyle had no canvas mirror at all (only
+		// borderColour was referenced, via --sgs-mm-panel-border above) — the
+		// panel rendered with no visible border in the editor regardless of
+		// these two controls. Mirrors render.php:344-356 exactly: width always
+		// paints (each side falls back to 1px, B4), style/colour ride the same
+		// declaration set, colour reusing the --sgs-mm-panel-border value
+		// already resolved above so an unset borderColour falls back
+		// identically in both places.
+		borderWidth: borderWidthShorthand( borderWidth ),
+		borderStyle: borderStyle || 'solid',
+		borderColor: 'var(--sgs-mm-panel-border)',
 		backdropFilter: bgBlur ? 'saturate(1.5) blur(24px)' : undefined,
 	};
 

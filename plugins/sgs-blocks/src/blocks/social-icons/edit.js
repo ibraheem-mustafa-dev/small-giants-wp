@@ -10,7 +10,7 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken, SgsColourPanel } from '../../components';
-import { spacingVar } from '../../utils';
+import { spacingVar, borderPaintPreview } from '../../utils';
 
 // Site Info mode pulls from this fixed set of networks (same 8 slugs the
 // sgs/business-info 'socials' case reads from Sgs_Site_Info — Appearance >
@@ -209,6 +209,21 @@ export default function Edit( { attributes, setAttributes } ) {
 	// here (not a fixed box) means a real SVG at iconSize always fits inside
 	// a box floored at 44px.
 	const itemSize = Math.max( 44, iconSize + ( 'plain' === iconStyle ? 0 : 16 ) );
+
+	// iconBorderColourGradient real mechanism (render.php, D636): a masked
+	// `::before` ring via `sgs_border_gradient_css()`, scoped to
+	// `.sgs-social-icons--outlined .sgs-social-icons__item` — the gradient
+	// border only ever paints on the OUTLINED style variant; plain/filled/pill
+	// have no border to gradient at all. `borderPaintPreview()`'s
+	// `border-image` is the same documented approximation `sgs/container`
+	// already uses for a masked-ring border (real technique needs a
+	// `::before` pseudo-element a plain inline style cannot reach) — applied
+	// only when the style variant actually has a visible border, mirroring
+	// the frontend's selector gate exactly.
+	const itemBorderGradientPreview = 'outlined' === iconStyle
+		? borderPaintPreview( iconBorderColour, iconBorderColourGradient, palette )
+		: {};
+	const itemBorderImage = itemBorderGradientPreview.borderImage;
 
 	const blockProps = useBlockProps( {
 		className: `sgs-social-icons sgs-social-icons--${ iconStyle }`,
@@ -600,10 +615,25 @@ export default function Edit( { attributes, setAttributes } ) {
 								color: 'brand' === colourMode
 									? ( PLATFORM_BRAND_COLOURS[ platform ] || PLATFORM_BRAND_COLOURS.custom )
 									: undefined,
+								borderImage: itemBorderImage,
 							} }
 						>
 							<span className="sgs-social-icons__icon" aria-hidden="true">
-								<IconPreview source="lucide" name={ PLATFORM_ICONS[ platform ] || 'link' } size={ iconSize } />
+								{ /* iconGlyphColourGradient real mechanism (render.php,
+								   D636/D644): `sgs_svg_stroke_gradient()` builds an SVG
+								   `stroke:url(#id)` declaration + `<linearGradient>` def —
+								   NOT a background-image/currentColor technique. IconPreview
+								   itself now accepts a `gradient` prop and applies this exact
+								   technique (`withSvgStrokeGradient()`,
+								   src/utils/svg-gradient-preview.js) via its own
+								   loadLucide()/withInlineFillStroke() path — pass it through
+								   rather than reimplementing it here. */ }
+								<IconPreview
+									source="lucide"
+									name={ PLATFORM_ICONS[ platform ] || 'link' }
+									size={ iconSize }
+									gradient={ iconGlyphColourGradient }
+								/>
 							</span>
 						</span>
 					) )
@@ -620,13 +650,19 @@ export default function Edit( { attributes, setAttributes } ) {
 								color: 'brand' === colourMode
 									? ( PLATFORM_BRAND_COLOURS[ icon.platform ] || PLATFORM_BRAND_COLOURS.custom )
 									: undefined,
+								borderImage: itemBorderImage,
 							} }
 						>
 							<span className="sgs-social-icons__icon" aria-hidden="true">
 								{ 'custom' === icon.platform && icon.customIconUrl ? (
 									<img src={ icon.customIconUrl } alt="" width={ iconSize } height={ iconSize } />
 								) : (
-									<IconPreview source="lucide" name={ PLATFORM_ICONS[ icon.platform ] || 'link' } size={ iconSize } />
+									<IconPreview
+										source="lucide"
+										name={ PLATFORM_ICONS[ icon.platform ] || 'link' }
+										size={ iconSize }
+										gradient={ iconGlyphColourGradient }
+									/>
 								) }
 							</span>
 						</span>

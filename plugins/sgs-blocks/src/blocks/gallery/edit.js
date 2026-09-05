@@ -531,6 +531,57 @@ export default function Edit( { attributes, setAttributes } ) {
 		gap: /^\d+$/.test( String( gapDesktop ) ) ? gapDesktop + 'px' : gapDesktop || '16px',
 	};
 
+	// Carousel controls canvas mirror (CHECK A) — render.php emits real
+	// `.sgs-gallery__carousel-prev`/`-next` buttons + a `.sgs-gallery__carousel-dots`
+	// container as SIBLINGS of `.sgs-gallery__grid`, gated on carouselShowArrows/
+	// carouselShowDots respectively (only when layout === 'carousel'). The dots
+	// container is empty on the frontend (view.js populates it at runtime) — a
+	// fixed small number of placeholder dots is enough to prove the toggle adds/
+	// removes the element; it does not need to track the real slide count.
+	const carouselControlsPreview = 'carousel' === layout ? (
+		<>
+			{ carouselShowArrows && (
+				<>
+					<button
+						type="button"
+						className="sgs-gallery__carousel-prev"
+						aria-label={ __( 'Previous image', 'sgs-blocks' ) }
+						tabIndex={ -1 }
+					>
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+							<polyline points="15 18 9 12 15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+						</svg>
+					</button>
+					<button
+						type="button"
+						className="sgs-gallery__carousel-next"
+						aria-label={ __( 'Next image', 'sgs-blocks' ) }
+						tabIndex={ -1 }
+					>
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+							<polyline points="9 18 15 12 9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+						</svg>
+					</button>
+				</>
+			) }
+			{ carouselShowDots && (
+				<div
+					className="sgs-gallery__carousel-dots"
+					role="tablist"
+					aria-label={ __( 'Gallery navigation', 'sgs-blocks' ) }
+				>
+					{ [ 0, 1, 2, 3 ].map( ( dotIndex ) => (
+						<span
+							key={ dotIndex }
+							className={ 'sgs-gallery__dot' + ( 0 === dotIndex ? ' sgs-gallery__dot--active' : '' ) }
+							aria-hidden="true"
+						/>
+					) ) }
+				</div>
+			) }
+		</>
+	) : null;
+
 	return (
 		<>
 			{ /* D619 — ONE grouped, SGS-OWNED colour panel, rendered FIRST so
@@ -1262,6 +1313,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								} ) }
 							</div>
 						) }
+						{ carouselControlsPreview }
 					</div>
 				</div>
 			) : (
@@ -1352,6 +1404,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						} ) }
 					</div>
 				) }
+				{ carouselControlsPreview }
 			</div>
 		) }
 		</>

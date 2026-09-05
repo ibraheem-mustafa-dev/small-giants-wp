@@ -8,6 +8,7 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import { ResponsiveBoxControl, SgsColourPanel, DesignTokenPicker } from '../../components';
+import { parseSvgGradient, SvgGradientDefs } from '../../utils';
 
 // Box-object interface contract §1: a 4-side box is an object with named
 // keys, each an already-unit-bearing CSS length string or absent (unset
@@ -57,8 +58,35 @@ const DISPLAY_MODE_OPTIONS = [
 	{ label: __( 'Stars + value + count (e.g. 4.8 (127 reviews))', 'sgs-blocks' ), value: 'stars-with-value-and-count' },
 ];
 
-function StarSVG( { filled, half, size, colour, emptyColour } ) {
-	const fill = filled ? colour : ( half ? `url(#sgs-star-half)` : emptyColour );
+// starColourGradient/emptyColourGradient (D636/D644, mirrored from
+// render.php's `sgs_svg_stroke_gradient( ..., 'fill' )` call) paint a
+// *fill*-based SVG shape, NOT a CSS background/text gradient — `fill` cannot
+// hold a CSS gradient string, so the frontend builds a real SVG
+// `<linearGradient>`/`<radialGradient>` def and points the star's fill
+// attribute at `url(#id)`. This mirrors that exact technique (parseSvgGradient
+// + SvgGradientDefs, `src/utils/svg-gradient-preview.js`) rather than the
+// generic textPaintPreview/backgroundPaintPreview helpers, which paint via
+// `background-image`/`color` — properties an SVG `fill` attribute has no use
+// for. `injectStarDefs`/`injectEmptyDefs` mirror render.php's own
+// $star_fill_defs_injected/$empty_fill_defs_injected flags — the def only
+// needs to exist ONCE in the document; every other star referencing the same
+// gradient id resolves to it regardless of which <svg> it lives in.
+function StarSVG( {
+	filled,
+	half,
+	size,
+	colour,
+	emptyColour,
+	starGradient,
+	emptyGradient,
+	starGradId,
+	emptyGradId,
+	injectStarDefs,
+	injectEmptyDefs,
+} ) {
+	const fill = filled
+		? ( starGradient ? `url(#${ starGradId })` : colour )
+		: ( half ? `url(#sgs-star-half)` : ( emptyGradient ? `url(#${ emptyGradId })` : emptyColour ) );
 	return (
 		<svg width={ size } height={ size } viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 			{ half && (
@@ -69,12 +97,18 @@ function StarSVG( { filled, half, size, colour, emptyColour } ) {
 					</linearGradient>
 				</defs>
 			) }
+			{ ! half && filled && injectStarDefs && starGradient && (
+				<defs><SvgGradientDefs id={ starGradId } gradient={ starGradient } /></defs>
+			) }
+			{ ! half && ! filled && injectEmptyDefs && emptyGradient && (
+				<defs><SvgGradientDefs id={ emptyGradId } gradient={ emptyGradient } /></defs>
+			) }
 			<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill={ fill } />
 		</svg>
 	);
 }
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		rating,
 		maxRating,
@@ -117,10 +151,29 @@ export default function Edit( { attributes, setAttributes } ) {
 		.filter( Boolean );
 	const isTpOfficial = sgsStyleClasses.includes( 'is-style-trustpilot-official' );
 
+	// Parsed once per render — mirrors render.php computing $star_fill_grad/
+	// $empty_fill_grad once, before the loop, rather than re-parsing per star.
+	const starGradient = parseSvgGradient( starColourGradient );
+	const emptyGradient = parseSvgGradient( emptyColourGradient );
+	const starGradId = `${ clientId }-star-grad`;
+	const emptyGradId = `${ clientId }-empty-grad`;
+
 	const stars = [];
+	let starDefsInjected = false;
+	let emptyDefsInjected = false;
 	for ( let i = 1; i <= maxRating; i++ ) {
 		const filled = i <= Math.floor( rating );
 		const half = ! filled && i === Math.ceil( rating ) && rating % 1 >= 0.25;
+		// Mirrors render.php's $star_fill_defs_injected/$empty_fill_defs_injected
+		// flags — the gradient def only needs to exist ONCE in the document.
+		const injectStarDefs = filled && ! half && ! starDefsInjected;
+		const injectEmptyDefs = ! filled && ! half && ! emptyDefsInjected;
+		if ( injectStarDefs ) {
+			starDefsInjected = true;
+		}
+		if ( injectEmptyDefs ) {
+			emptyDefsInjected = true;
+		}
 		stars.push(
 			<StarSVG
 				key={ i }
@@ -129,6 +182,12 @@ export default function Edit( { attributes, setAttributes } ) {
 				size={ starSize }
 				colour={ starColour }
 				emptyColour={ emptyColour }
+				starGradient={ starGradient }
+				emptyGradient={ emptyGradient }
+				starGradId={ starGradId }
+				emptyGradId={ emptyGradId }
+				injectStarDefs={ injectStarDefs }
+				injectEmptyDefs={ injectEmptyDefs }
 			/>
 		);
 	}

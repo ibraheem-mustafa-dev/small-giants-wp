@@ -3,6 +3,7 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -41,6 +42,8 @@ import {
 	resolveShadowPreview,
 	colourVar,
 	resolveBackgroundPaintPreviewStyle,
+	textPaintPreview,
+	backgroundPaintPreview,
 } from '../../utils';
 // No-inline migration: hero no longer uses the default
 // <ContainerWrapperControls> aggregator — its unconditional "Content band" /
@@ -353,6 +356,11 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 
 	const isSplit = variant === 'split';
 
+	// CHECK A (2026-09-05) — colour palette for textColour/textColourGradient
+	// and mediaBackground/mediaBackgroundGradient canvas previews below, same
+	// hook sgs/container's edit.js uses for the identical purpose.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+
 	// Wave 6 — resolve the split-media SOURCE from the `source` atom's own
 	// Id/Url pair ONLY (the picker in HeroSplitMediaSourceSection writes
 	// there). No legacy `splitImage`/`splitVideo`/`splitSvg` fallback —
@@ -450,6 +458,13 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			backgroundColour,
 			backgroundColourGradient
 		),
+		// CHECK A (2026-09-05) — textColour/textColourGradient paint the
+		// root `.{uid}` selector (render.php:384-390, sgs_resolve_text_colour_or_gradient()
+		// + sgs_text_colour_decl()), not the content column — mirrors that here
+		// so InnerBlocks text inherits the same `color`/gradient-clip preview
+		// the frontend renders. hoverColour siblings stay unmirrored, matching
+		// every other hover-only pair in this file (hover has no canvas state).
+		...textPaintPreview( textColour, textColourGradient, colourPalette ),
 	};
 	if ( ! isSplit && backgroundImage?.url ) {
 		wrapperStyle.backgroundImage = `url(${ backgroundImage.url })`;
@@ -621,7 +636,23 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			blockSlug: 'sgs/hero',
 			atoms: [ 'overlay' ],
 		} ),
+		// CHECK A (2026-09-05) — mediaBackground/mediaBackgroundGradient paint
+		// `.sgs-hero__media` (render.php:819-826), and this style object is
+		// ONLY ever applied to the JSX node rendered when isSplit (the media
+		// wrapper markup itself is entirely inside render.php's `if ($is_split)`
+		// branch — the wrapper does not exist for the standard variant), so no
+		// extra isSplit gate is needed here.
+		...backgroundPaintPreview( mediaBackground, mediaBackgroundGradient, colourPalette ),
 	};
+	// mediaPadding/mediaPaddingTablet/mediaPaddingMobile — outer padding on
+	// `.sgs-hero__media` (render.php:799-810, sgs_box_object_shorthand()).
+	// Desktop tier only, matching every other box preview in this file
+	// (borderWidthPreview, bandPaddingPreview, splitMediaBorderWidthPreview
+	// above all resolve the desktop/base tier only).
+	const mediaPaddingPreview = boxShorthand( mediaPadding, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( mediaPaddingPreview ) {
+		mediaWrapperStyle.padding = mediaPaddingPreview;
+	}
 	if ( isMediaFirstDesktop ) {
 		mediaWrapperStyle.order = 1;
 	}

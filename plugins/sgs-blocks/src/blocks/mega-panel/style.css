@@ -278,6 +278,21 @@
 	   after the shorthand wins at equal specificity (source order). */
 	border-color: var( --sgs-mm-group-border-resting, var( --sgs-mm-panel-border, color-mix( in srgb, var( --wp--preset--color--text ) 12%, transparent ) ) );
 	background-color: var( --sgs-mm-card );
+	/* CHECK A editor-canvas mirror for groupBorderColourGradient (2026-09-05).
+	   The FRONTEND renders this gradient as a masked ::before ring via
+	   render.php's sgs_border_gradient_css() call (§7, scoped to
+	   $group_border_resting_gradient) — a technique this shared stylesheet
+	   selector cannot reproduce without duplicating that PHP mask logic in
+	   CSS. `--sgs-mm-group-border-image` is ONLY ever set by edit.js's canvas
+	   preview (an approximation via border-image, same documented approach
+	   used elsewhere this session) — render.php never declares it, so this
+	   declaration is a guaranteed no-op on the frontend (`none 1`, a valid,
+	   effect-free border-image value) and only paints in the editor canvas.
+	   Longhand after border-color, so it composes rather than competes with
+	   the flat-colour declaration above (an unset gradient never overrides
+	   the resolved flat colour, since `border-image:none` has no visual
+	   effect and border-color still governs the rendered edge). */
+	border-image: var( --sgs-mm-group-border-image, none ) 1;
 }
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-icon-list__item {
 	display: flex;

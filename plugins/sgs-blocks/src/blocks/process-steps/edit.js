@@ -196,10 +196,22 @@ export default function Edit( { attributes, setAttributes } ) {
 		wrapperPreviewStyle.borderRadius = borderRadiusPreview;
 	}
 
+	// Wrapper text colour/gradient — CHECK A finding: textColour/textColourGradient
+	// are written by the "Text & fill" panel below and consumed by render.php
+	// (sgs_resolve_text_colour_or_gradient()/sgs_text_colour_decl() on $root_sel),
+	// but nothing applied them to the canvas. Mirrors the existing
+	// titleStyle/descStyle pattern immediately below using the SAME
+	// `resolveTextColourPreviewStyle()` + `colourVar` combination already
+	// established in this file, rather than introducing the palette-based
+	// `textPaintPreview()` sibling used elsewhere — one resolver convention
+	// per file.
+	const wrapperTextStyle = resolveTextColourPreviewStyle( textColour, textColourGradient, colourVar );
+
 	const blockProps = useBlockProps( {
 		className,
 		style: {
 			...wrapperPreviewStyle,
+			...wrapperTextStyle,
 			'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
 			'--sgs-transition-easing': transitionEasing || undefined,
 		},

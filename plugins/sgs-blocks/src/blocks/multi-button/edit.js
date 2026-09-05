@@ -20,7 +20,7 @@ import {
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
-import { backgroundPreview, spacingPreview, svgBackgroundPreview } from '../../utils';
+import { backgroundPreview, spacingPreview, svgBackgroundPreview, boxShorthand } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	PanelBody,
@@ -223,6 +223,44 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		...bgPreview.style,
 		...svgPreview.style,
 		...spacePreview,
+		// CHECK A finding: textColour is written by the SgsColourPanel below
+		// and consumed by render.php's $mb_color_args -> wp_style_engine_get_styles
+		// on `$root_sel` (i.e. this same wrapper element) but was never applied
+		// to the canvas. No gradient sibling exists for this attribute on this
+		// block. `color` is a naturally-inheriting CSS property, so setting it
+		// here on the wrapper also matches the frontend's cascade to any
+		// sgs/button child that leaves its own text colour unset.
+		color: resolveColourToken( textColour, colourPalette ) || undefined,
+		// CHECK A finding — child-button GROUP DEFAULTS (A2, D638 §4/§5). These
+		// are written by the "Button group defaults" panel and consumed by
+		// render.php as `--sgs-mb-btn-<prop>-default` CUSTOM PROPERTIES on this
+		// same wrapper element (see the comment above `$mb_child_defaults` in
+		// render.php) — button/style.css's own `--sgs-btn-*` vars read them as a
+		// fallback tier. Setting the SAME custom-property names here is purely
+		// additive: CSS custom properties inherit through the DOM regardless of
+		// block boundaries, so the already-rendered child sgs/button InnerBlocks
+		// in the editor canvas pick these up automatically via the existing
+		// `var(--sgs-mb-btn-*-default)` fallback in button/style.css — no
+		// child-block edit needed. Only the 6 flagged attrs are wired here
+		// (childBtnBackground/childBtnTextColour were not part of this finding).
+		...( childBtnBorderColour && {
+			'--sgs-mb-btn-border-default': resolveColourToken( childBtnBorderColour, colourPalette ) || childBtnBorderColour,
+		} ),
+		...( boxShorthand( childBtnBorderWidth ) && {
+			'--sgs-mb-btn-border-width-default': boxShorthand( childBtnBorderWidth ),
+		} ),
+		...( childBtnBorderStyle && {
+			'--sgs-mb-btn-border-style-default': childBtnBorderStyle,
+		} ),
+		...( childBtnBorderRadius && {
+			'--sgs-mb-btn-radius-default': childBtnBorderRadius,
+		} ),
+		...( childBtnFontSize && {
+			'--sgs-mb-btn-font-size-default': childBtnFontSize,
+		} ),
+		...( childBtnFontWeight && {
+			'--sgs-mb-btn-font-weight-default': String( childBtnFontWeight ),
+		} ),
 	};
 
 	// A button group's children are always sgs/button (that IS the block's

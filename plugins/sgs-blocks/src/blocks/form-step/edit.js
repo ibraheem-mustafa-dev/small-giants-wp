@@ -3,6 +3,7 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import { PanelBody, TextControl } from '@wordpress/components';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
@@ -11,6 +12,7 @@ import { SgsColourPanel, fillRow,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
+import { textPaintPreview } from '../../utils';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const { label, backgroundColour, backgroundColourGradient, textColour, textColourGradient } = attributes;
@@ -23,9 +25,15 @@ export default function Edit( { attributes, setAttributes } ) {
 			? attributes.backgroundColour
 			: '';
 
+	// D288/D636 pattern (mirrors sgs/container): render.php applies textColour/
+	// textColourGradient to $sgs_fs_sel — the block's own root `wrapper` element
+	// (block.json attrMap css:color/css:background-image) — so the preview
+	// belongs on blockProps.style.
+	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-form-step',
+		style: textPaintPreview( textColour, textColourGradient, colourPalette ),
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(

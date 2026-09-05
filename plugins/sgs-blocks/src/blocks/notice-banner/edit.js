@@ -517,7 +517,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						aria-hidden="true"
 						style={ iconColour ? { color: colourVar( iconColour ) } : undefined }
 					>
-						<IconPreview source={ resolved.source } name={ resolved.name } size={ 20 } />
+						<IconPreview source={ resolved.source } name={ resolved.name } size={ 20 } gradient={ iconColourGradient } />
 					</span>
 				) }
 				<div { ...innerBlocksProps } />

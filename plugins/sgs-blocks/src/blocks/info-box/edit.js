@@ -90,8 +90,19 @@ function boxShorthand( box ) {
  * @returns {Object} React inline-style object.
  */
 function buildPreviewStyle( attributes ) {
-	const { style, width, maxWidth, backgroundColour, backgroundColourGradient, textColour, borderColourGradient } = attributes;
+	const { style, width, maxWidth, backgroundColour, backgroundColourGradient, textColour, borderColourGradient, textAlign } = attributes;
 	const preview = {};
+
+	// Mirrors render.php's `$info_box_text_align` resolution exactly — the
+	// native `style.typography.textAlign` (WP's "Align text" control) wins
+	// over the top-level `textAlign` attribute (the cloning converter's
+	// fallback), applied to the block ROOT so InnerBlocks children inherit it
+	// (`supports.typography.textAlign.__experimentalSkipSerialization: true`
+	// means WP's own auto-apply is deliberately off — this is the only path).
+	const infoBoxTextAlign = style?.typography?.textAlign ?? ( textAlign ?? '' );
+	if ( [ 'left', 'center', 'right' ].includes( infoBoxTextAlign ) ) {
+		preview.textAlign = infoBoxTextAlign;
+	}
 
 	// Background/text colour moved OFF native style.color.* to block-private
 	// attrs mounted in SgsColourPanel (D744) — supports.color.background/

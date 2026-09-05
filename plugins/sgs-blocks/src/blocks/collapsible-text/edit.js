@@ -11,6 +11,7 @@ import {
 	useBlockProps,
 	InspectorControls,
 	RichText,
+	useSettings,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -18,6 +19,7 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, fillRow } from '../../components';
+import { textPaintPreview } from '../../utils';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const { text, collapsible, collapsedLines, style, paddingTablet, paddingMobile, marginTablet, marginMobile, backgroundColour, textColour, textColourGradient } = attributes;
@@ -25,6 +27,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( {
 		className: 'sgs-collapsible-text',
 	} );
+
+	// D288/D636 pattern (mirrors sgs/container): render.php scopes textColour/
+	// textColourGradient to `.sgs-collapsible-text__body` (block.json's `body`
+	// element attrMap css:color/css:background-image), not the root wrapper —
+	// so the preview belongs on the RichText element below, not on blockProps.
+	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	return (
 		<>
@@ -154,14 +162,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					]
 						.filter( Boolean )
 						.join( ' ' ) }
-					style={
-						collapsible
-							? {
-									'--sgs-collapsible-text-collapsed-lines':
-										collapsedLines,
-							  }
-							: undefined
-					}
+					style={ {
+						...( collapsible && {
+							'--sgs-collapsible-text-collapsed-lines':
+								collapsedLines,
+						} ),
+						...textPaintPreview( textColour, textColourGradient, colourPalette ),
+					} }
 					multiline="p"
 					value={ text }
 					onChange={ ( val ) => setAttributes( { text: val } ) }

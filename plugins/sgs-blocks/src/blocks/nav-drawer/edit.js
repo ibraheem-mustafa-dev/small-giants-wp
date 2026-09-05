@@ -207,6 +207,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		alignItems: ALIGN_ITEMS[ drawerAlign ] || 'flex-start',
 		gap: drawerGap?.desktop || undefined,
 		padding: paddingFromBox( drawerPadding?.desktop ),
+		// CHECK A finding: drawerTextColour/drawerTextColourGradient are written
+		// by the "Drawer container" panel's GradientCapableColourControl below
+		// and consumed by render.php on `.sgs-nav-drawer__body` (the SAME
+		// element `innerBlocksProps` renders this style onto — see
+		// `$body_sel`/`sgs_text_colour_decl( $drawer_text_effective )`), but
+		// nothing applied them to the canvas. Same resolver already used for
+		// the close-icon preview two lines below.
+		...resolveTextColourPreviewStyle( drawerTextColour, drawerTextColourGradient, ( v ) => resolveColourToken( v, palette ) ),
 	};
 
 	// Spec 35 item 18 — mirrors render.php's aria-describedby logic so the

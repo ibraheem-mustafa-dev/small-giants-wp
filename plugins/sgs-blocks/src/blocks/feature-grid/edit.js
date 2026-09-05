@@ -3,6 +3,7 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import {
@@ -14,7 +15,7 @@ import { ResponsiveOverride, SgsColourPanel, fillRow, SgsLengthControl,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
-import { resolveResponsiveTier } from '../../utils';
+import { resolveResponsiveTier, textPaintPreview } from '../../utils';
 
 const LAYOUT_MODE_OPTIONS = [
 	{
@@ -140,10 +141,19 @@ export default function Edit( { attributes, setAttributes } ) {
 			? attributes.backgroundColour
 			: '';
 
+	// D288/D636 pattern (mirrors sgs/container): render.php applies textColour/
+	// textColourGradient to $root_sel — the block's own root `grid` element
+	// (block.json's `wrapper`-flagged `grid` element attrMap css:color/
+	// css:background-image) — so the preview belongs on blockProps.style,
+	// merged alongside the existing grid-layout preview.
+	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	const blockProps = useBlockProps( {
 		className: `sgs-feature-grid sgs-feature-grid--${ layoutMode }`,
-		style: buildGridStyle( attributes ),
+		style: {
+			...buildGridStyle( attributes ),
+			...textPaintPreview( textColour, textColourGradient, colourPalette ),
+		},
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {

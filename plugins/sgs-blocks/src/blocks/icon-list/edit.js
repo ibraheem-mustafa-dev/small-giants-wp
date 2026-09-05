@@ -289,7 +289,7 @@ export default function Edit({ attributes, setAttributes }) {
             style={iconStyle}
             aria-hidden="true"
           >
-            <IconPreview source={resolved.source} name={resolved.name} size={20} />
+            <IconPreview source={resolved.source} name={resolved.name} size={20} gradient={iconColourGradient} />
           </span>
         )}
         <span className="sgs-icon-list__text" style={textStyle}>

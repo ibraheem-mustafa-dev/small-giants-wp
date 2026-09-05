@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, useInnerBlocksProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, useInnerBlocksProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { TextControl, PanelBody } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
@@ -8,6 +8,7 @@ import { SgsColourPanel, fillRow,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
+import { textPaintPreview } from '../../utils';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const { label, textColour, textColourGradient, backgroundColour, backgroundColourGradient } = attributes;
@@ -86,12 +87,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		[ clientId, tabIndex ]
 	);
 
+	// D288/D636 pattern (mirrors sgs/container): render.php applies textColour/
+	// textColourGradient to $root_sel — the block's own root `wrapper` element
+	// (block.json attrMap css:color/css:background-image) — so the preview
+	// belongs on blockProps.style, merged with the existing active/hidden toggle.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+
 	const blockProps = useBlockProps( {
 		className: [
 			'sgs-tab',
 			isActive ? 'sgs-tab--active' : 'sgs-tab--hidden',
 		].join( ' ' ),
-		style: { display: isActive ? undefined : 'none' },
+		style: {
+			display: isActive ? undefined : 'none',
+			...textPaintPreview( textColour, textColourGradient, colourPalette ),
+		},
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(

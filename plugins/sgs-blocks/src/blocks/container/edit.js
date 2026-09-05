@@ -12,8 +12,8 @@ import {
   BoxControl,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
-import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, resolveColourToken, SgsBorderControl } from "../../components";
-import { resolveShadowPreview, resolveResponsiveTier, backgroundPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview } from "../../utils";
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl } from "../../components";
+import { resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, borderPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, colourVar } from "../../utils";
 import {
   LayoutPanel,
   WidthPanel,
@@ -84,30 +84,6 @@ const TAG_NAME_OPTIONS = [
   { label: __( "Main (page landmark)", "sgs-blocks" ), value: "main" },
 ];
 
-/**
- * Same resolution rule as `backgroundPaintPreview()`, but for TEXT colour —
- * mirrors `sgs_text_colour_decl()`: a gradient renders via
- * `background-image` + `background-clip:text` + `color:transparent` (the
- * gradient-text technique), a flat colour renders via `color`.
- *
- * @param {string} colour   Flat colour attribute value (slug or CSS colour).
- * @param {string} gradient Sibling gradient attribute value.
- * @param {Array}  palette  Active theme colour palette.
- * @return {Object} A partial style object — {} when both inputs are empty.
- */
-function textPaintPreview( colour, gradient, palette ) {
-	if ( gradient ) {
-		return {
-			backgroundImage: gradient,
-			WebkitBackgroundClip: 'text',
-			backgroundClip: 'text',
-			color: 'transparent',
-		};
-	}
-	const resolved = resolveColourToken( colour, palette );
-	return resolved ? { color: resolved } : {};
-}
-
 // Mirrors sgs/icon and sgs/info-box, which hoist the identical list. "" is the
 // INHERIT option deliberately: an unset container emits no text-align, so the
 // value cascades from its own parent — that inheritance is the whole reason
@@ -121,7 +97,7 @@ const TEXT_ALIGN_OPTIONS = [
   { label: __( "Justify", "sgs-blocks" ), value: "justify" },
 ];
 
-export default function Edit({ attributes, setAttributes, name }) {
+export default function Edit({ attributes, setAttributes, name, clientId }) {
   const {
     layout,
     gap,
@@ -153,6 +129,12 @@ export default function Edit({ attributes, setAttributes, name }) {
     borderColourHoverGradient,
     borderWidth,
     borderStyle,
+    gridItemBackground,
+    gridItemBackgroundGradient,
+    gridItemShadow,
+    gridItemShadowColour,
+    gridItemBorderGradient,
+    gridItemTextColourGradient,
   } = attributes;
 
   // D288/D636: colours are stored as theme-token SLUGS or a custom hex, and
@@ -255,13 +237,7 @@ export default function Edit({ attributes, setAttributes, name }) {
     const borderWidthPreview = boxShorthand( borderWidth );
     if ( borderWidthPreview ) style.borderWidth = borderWidthPreview;
     style.borderStyle = borderStyle;
-    if ( borderColour ) style.borderColor = resolveColourToken( borderColour, colourPalette );
-    // A gradient border renders frontend as a masked ::before ring, which cannot
-    // be reproduced in a plain inline style — approximate it with the gradient as
-    // a border-image so the canvas at least shows that a gradient is applied.
-    if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
-      style.borderImage = `${ borderColourGradient } 1`;
-    }
+    Object.assign( style, borderPaintPreview( borderColour, borderColourGradient, colourPalette ) );
   }
 
   // Grid/flex/stack layout preview — shared with every other block routed through
@@ -280,6 +256,76 @@ export default function Edit({ attributes, setAttributes, name }) {
     flexWrap,
     justifyContent,
   } );
+
+  // CHECK A finding — grid-item defaults (SB-1), gradient/shadow-colour subset
+  // only. `GridItemDefaultsPanel` writes these onto THIS container (the grid
+  // parent); `SGS_Container_Wrapper::render()` consumes them as `--sgs-gi-*`
+  // CUSTOM PROPERTIES on the parent, inherited by any DIRECT CHILD carrying
+  // `.sgs-container` via the unscoped global rule in style.css
+  // (`.sgs-container--grid > .sgs-container{ background:var(--sgs-gi-bg); …;
+  // box-shadow:var(--sgs-gi-shadow); }`). Setting the SAME two custom
+  // properties here on this wrapper is purely additive and reaches nested
+  // sgs/container children automatically via ordinary CSS inheritance — no
+  // per-child edit needed, matching the multi-button childBtn* mechanism.
+  //
+  // Only `gridItemBackgroundGradient` and `gridItemShadowColour` are wired
+  // here (the two CHECK A findings this custom-property mechanism can
+  // actually express):
+  //  - `--sgs-gi-bg` feeds the `background` SHORTHAND, which accepts either a
+  //    colour or a gradient function — so preferring the gradient over the
+  //    flat colour (mirrors `sgs_background_paint_decl()`'s precedence)
+  //    reaches the exact same custom property the flat `gridItemBackground`
+  //    already targets. No new mechanism required.
+  //  - `--sgs-gi-shadow` already carries a COMPOSED shape+colour value
+  //    server-side (`sgs_shadow_value_composed()`); `resolveShadowPreviewComposed()`
+  //    is its existing JS mirror (`src/utils/tokens.js`), so this needed no new
+  //    resolver either.
+  //
+  // `gridItemBorderGradient` and `gridItemTextColourGradient` cannot be
+  // expressed through the existing `--sgs-gi-border` (a `border` shorthand
+  // var, which cannot hold a gradient) or `--sgs-gi-color` (a `color` var,
+  // which cannot hold a gradient) custom properties — the real frontend
+  // renders those via a masked `::before` ring (border) and
+  // `background-clip:text` (text) on a per-instance SCOPED rule
+  // (class-sgs-container-wrapper.php ~2147-2201), which a plain inline style
+  // cannot reach on a CHILD element either way. Closed 2026-09-05 via a
+  // `clientId`-scoped `<style>` tag (same escape hatch this session's
+  // `sgs/form` fix used for its own child-block colour mirrors) rather than a
+  // fake custom property, which would have silently emitted invalid CSS.
+  //  - Border gradient: approximated via `border-image` (the SAME
+  //    approximation `borderPaintPreview()` already uses for this block's own
+  //    ROOT border gradient — not a pixel-faithful masked ring, but
+  //    consistent with this codebase's established canvas-preview
+  //    convention).
+  //  - Text gradient: the real `background-clip:text` technique directly, no
+  //    `@supports` fallback (this is an editor preview in a real evergreen
+  //    browser, not static CSS for unknown public visitors — same reasoning
+  //    `textPaintPreview()`'s own docblock documents).
+  //  - Selector uses a DESCENDANT combinator (`[data-block="clientId"] .sgs-container`)
+  //    rather than PHP's direct-child selector, because WP's block-list
+  //    wrapper DOM sits between a parent block's element and a child block's
+  //    element in the editor — an approximation, not pixel-faithful, but the
+  //    canvas at least shows a gradient is applied instead of nothing.
+  let gridItemScopedCss = "";
+  if ( layout === "grid" ) {
+    const giBg = gridItemBackgroundGradient || colourVar( gridItemBackground );
+    if ( giBg ) {
+      style[ "--sgs-gi-bg" ] = giBg;
+    }
+    const giShadow = resolveShadowPreviewComposed( gridItemShadow, gridItemShadowColour );
+    if ( giShadow ) {
+      style[ "--sgs-gi-shadow" ] = giShadow;
+    }
+    if ( clientId ) {
+      const giSel = `[data-block="${ clientId }"] .sgs-container`;
+      if ( gridItemBorderGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( gridItemBorderGradient ) ) {
+        gridItemScopedCss += `${ giSel }{border-image:${ gridItemBorderGradient } 1;}`;
+      }
+      if ( gridItemTextColourGradient ) {
+        gridItemScopedCss += `${ giSel }{background-image:${ gridItemTextColourGradient };-webkit-background-clip:text;background-clip:text;color:transparent;}`;
+      }
+    }
+  }
 
   // Editor preview: when a literal maxWidth is set, apply it as inline max-width.
   // Breakout (alignwide / alignfull) is driven by WP-native align attr — no inline style needed.
@@ -719,6 +765,7 @@ export default function Edit({ attributes, setAttributes, name }) {
       { hasBandProps ? (
         <div { ...blockProps }>
           { svgLayer }
+          { gridItemScopedCss && <style>{ gridItemScopedCss }</style> }
           <div { ...innerBlocksProps } />
         </div>
       ) : (
@@ -728,6 +775,7 @@ export default function Edit({ attributes, setAttributes, name }) {
         // silently discard).
         <div { ...innerBlocksProps }>
           { svgLayer }
+          { gridItemScopedCss && <style>{ gridItemScopedCss }</style> }
           { innerBlocksProps.children }
         </div>
       ) }

@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	SelectControl,
@@ -11,7 +11,7 @@ import { SgsColourPanel, ResponsiveBoxControl, ResponsiveBorderRadiusControl,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
-import { colourVar } from '../../utils';
+import { colourVar, textPaintPreview } from '../../utils';
 
 const CARD_STYLES = [
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
@@ -126,6 +126,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		className,
 		style: buildPreviewStyle( attributes ),
 	} );
+
+	// numberColour/numberColourGradient + labelColour/labelColourGradient real
+	// mechanism (render.php): a flat colour is a `--sgs-countdown-*-colour`
+	// custom property consumed by `.sgs-countdown__number`/`__label{color:var(...)}`
+	// in style.css; a gradient wins over the flat value via a direct scoped
+	// `background-image + background-clip:text` rule on the same selector —
+	// exactly the textPaintPreview() technique already shared with
+	// sgs/container's own text-colour mirror.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	const numberPreview = textPaintPreview( numberColour, numberColourGradient, colourPalette );
+	const labelPreview = textPaintPreview( labelColour, labelColourGradient, colourPalette );
 
 	const units = [];
 	if ( showDays ) units.push( { value: '00', label: __( 'Days', 'sgs-blocks' ) } );
@@ -363,8 +374,8 @@ export default function Edit( { attributes, setAttributes } ) {
 				<div className="sgs-countdown__grid">
 					{ units.map( ( unit, i ) => (
 						<div key={ i } className="sgs-countdown__unit">
-							<span className="sgs-countdown__number">{ unit.value }</span>
-							<span className="sgs-countdown__label">{ unit.label }</span>
+							<span className="sgs-countdown__number" style={ numberPreview }>{ unit.value }</span>
+							<span className="sgs-countdown__label" style={ labelPreview }>{ unit.label }</span>
 						</div>
 					) ) }
 				</div>

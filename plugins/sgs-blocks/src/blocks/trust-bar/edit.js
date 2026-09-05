@@ -17,7 +17,7 @@ import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, Respons
 	resolveColourToken,
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview, spacingPreview, svgBackgroundPreview, generateItemKey, withStableItemKeys, resolveTextColourPreviewStyle } from '../../utils';
+import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview, backgroundPaintPreview, textPaintPreview, spacingPreview, svgBackgroundPreview, generateItemKey, withStableItemKeys, resolveTextColourPreviewStyle } from '../../utils';
 // trust-bar does not use the default <ContainerWrapperControls> aggregator —
 // its "Content band" / "Responsive spacing" panels write to flat attrs
 // (contentBandPaddingTop, paddingTopTablet, …) this block does not declare;
@@ -118,7 +118,7 @@ const AUTO_SCROLL_SPEED_OPTIONS = [
 // ─── Editor sub-components ────────────────────────────────────────────────────
 
 /** Circle wrapper with the actual selected icon for editor preview. */
-function EditorIconCircle( { size, circleBg, iconColour, iconSlug, borderRadius, boxShadow, filled, fillColour } ) {
+function EditorIconCircle( { size, circleBg, iconColour, iconGradient, iconSlug, borderRadius, boxShadow, filled, fillColour } ) {
 	// The filled class picks up the fill exemption from style.css (loaded in the
 	// editor iframe), so the preview matches the frontend. fillColour drives the
 	// same custom-fill var render.php sets.
@@ -147,6 +147,7 @@ function EditorIconCircle( { size, circleBg, iconColour, iconSlug, borderRadius,
 				source="lucide"
 				name={ iconSlug || 'check' }
 				size={ Math.round( size * 0.45 ) }
+				gradient={ iconGradient }
 			/>
 		</span>
 	);
@@ -365,6 +366,17 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// canvas — the shared mirror (src/utils/background-preview.js, 2026-08-26)
 	// fixes that the same way sgs/container already did.
 	const [ colourPalette ] = useSettings( 'color.palette' );
+	// Root wrapper background/text paint — mirrors render.php's
+	// `sgs_background_paint_decl( $root_background_colour, $root_background_colour_gradient )`
+	// (backgroundColour/backgroundColourGradient → root `.sgs-trust-bar` background)
+	// and `sgs_resolve_text_colour_or_gradient( $text_colour, $root_text_colour_gradient )`
+	// + `sgs_text_colour_decl()` (textColour/textColourGradient → root `color`).
+	// Distinct from the icon-circle badge's own `--sgs-trust-badge-text-colour`
+	// (flat-only, applied inline on `.sgs-trust-bar__label` below) — an inline
+	// style there always wins over this inherited root colour, so both mechanisms
+	// coexist exactly as they do on the frontend.
+	const rootBgPaint = backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette );
+	const rootTextPaint = textPaintPreview( textColour, textColourGradient, colourPalette );
 	// Decorative SVG background layer — editor mirror (2026-09-05). Sibling of
 	// backgroundPreview() below, deliberately NOT folded into it: that helper
 	// paints via `--sgs-ed-bg-*` custom properties on a ::before, whereas the
@@ -459,6 +471,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	const blockProps = useBlockProps( {
 		className: blockClassName,
 		style: {
+			...rootBgPaint,
+			...rootTextPaint,
 			...bgPreview.style,
 			...svgPreview.style,
 			...spacePreview,
@@ -1225,6 +1239,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 											size={ iconCircleSize }
 											circleBg={ circleBgValue }
 											iconColour={ iconColourValue }
+											iconGradient={ iconColourGradient }
 											iconSlug={ item.icon || 'check' }
 											borderRadius={ iconCircleBorderRadius !== '50%' ? iconCircleBorderRadius : undefined }
 											boxShadow={ circleShadowValue }

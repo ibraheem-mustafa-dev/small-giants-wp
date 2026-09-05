@@ -66,6 +66,72 @@ export function backgroundPaintPreview( colour, gradient, palette ) {
 }
 
 /**
+ * Shared editor-canvas mirror of a TEXT colour/gradient pair — extracted
+ * 2026-09-05 from `sgs/container`'s `edit.js` (the ONLY block that had built
+ * this mirror, previously local + unexported at lines ~98-109) into ONE
+ * shared module so every other block carrying a `*Colour`/`*ColourGradient`
+ * text-paint pair can show the same live preview instead of a flat canvas for
+ * a setting that IS painting on the published page.
+ *
+ * Mirrors `sgs_text_colour_decl()`: a gradient renders via `background-image`
+ * + `background-clip:text` + `color:transparent` (the gradient-text
+ * technique), a flat colour renders via `color`. The frontend emitter also
+ * carries an `@supports not (background-clip:text)` fallback for older
+ * browsers — deliberately NOT reproduced here: this is an EDITOR preview
+ * rendering directly in a real evergreen browser (Chrome/Edge/Firefox
+ * current, WP admin's supported matrix), not static CSS generated for
+ * unknown public-site visitors, so the fallback has nothing to guard against
+ * in this context.
+ *
+ * @param {string} colour   Flat colour attribute value (slug or CSS colour).
+ * @param {string} gradient Sibling gradient attribute value.
+ * @param {Array}  palette  Active theme colour palette.
+ * @return {Object} A partial style object — {} when both inputs are empty.
+ */
+export function textPaintPreview( colour, gradient, palette ) {
+	if ( gradient ) {
+		return {
+			backgroundImage: gradient,
+			WebkitBackgroundClip: 'text',
+			backgroundClip: 'text',
+			color: 'transparent',
+		};
+	}
+	const resolved = resolveColourToken( colour, palette );
+	return resolved ? { color: resolved } : {};
+}
+
+/**
+ * Shared editor-canvas mirror of a BORDER colour/gradient pair — extracted
+ * 2026-09-05 from `sgs/container`'s `edit.js` (the ONLY block that had built
+ * this mirror, previously inline at lines ~254-264) into ONE shared module.
+ *
+ * A flat `borderColour` resolves directly to `border-color`. A gradient
+ * border is APPROXIMATED via `border-image` — the real frontend renders a
+ * gradient border as a masked `::before` ring (a technique a plain inline
+ * style cannot reproduce), so this is deliberately an approximation that at
+ * least shows a gradient is applied, not a pixel-faithful mirror. Only
+ * applied when the value matches a real CSS gradient function, so a
+ * non-gradient value (or an unset one) never emits a nonsense border-image.
+ *
+ * @param {string} colour   Flat border colour attribute value.
+ * @param {string} gradient Sibling border gradient attribute value.
+ * @param {Array}  palette  Active theme colour palette.
+ * @return {Object} A partial style object — {} when both inputs are empty.
+ */
+export function borderPaintPreview( colour, gradient, palette ) {
+	const style = {};
+	if ( colour ) {
+		const resolved = resolveColourToken( colour, palette );
+		if ( resolved ) style.borderColor = resolved;
+	}
+	if ( gradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( gradient ) ) {
+		style.borderImage = `${ gradient } 1`;
+	}
+	return style;
+}
+
+/**
  * Resolve an OVERLAY layer (colour/gradient/opacity/blend-mode) to a
  * paintable canvas preview — mirrors `sgs_overlay_decls()` (helpers-tokens.php)
  * exactly, the single shared owner `class-sgs-container-wrapper.php` and

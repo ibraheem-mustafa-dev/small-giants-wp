@@ -3,6 +3,7 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 // WS-4: shared sgs/container wrapper editor controls (layout kind).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
@@ -19,7 +20,7 @@ import { SgsColourPanel,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
-import { colourVar } from '../../utils';
+import { colourVar, textPaintPreview, borderPaintPreview } from '../../utils';
 
 const TEMPLATE = [
 	[ 'sgs/tab', { label: __( 'Tab 1', 'sgs-blocks' ) } ],
@@ -68,6 +69,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} = attributes;
 
 	const [ activeEditorTab, setActiveEditorTab ] = useState( 0 );
+	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	// Read inner block (tab) labels from the store so the nav stays in sync.
 	const tabLabels = useSelect(
@@ -133,10 +135,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// block.json — this composite already restricts children to its own
 	// structural child block (`sgs/tab`) below; a generic preset would only
 	// conflict with that fixed relationship.
+	// panelBorderColourGradient (D636) real mechanism: render.php scopes a
+	// masked `::before` ring (`sgs_border_gradient_css()`) to `.sgs-tabs__panel`
+	// — the same technique `borderPaintPreview()` already approximates via
+	// `border-image` for `sgs/container` (documented deliberate approximation:
+	// the real masked ring needs a `::before` pseudo-element a plain inline
+	// style cannot reach). The editor never renders individual `.sgs-tabs__panel`
+	// divs per tab (only the ONE visible panel's InnerBlocks, direct children of
+	// `.sgs-tabs__panels`), so the preview applies to that wrapper instead — the
+	// only panel-shaped element the canvas actually has.
+	const panelBorderPreview = borderPaintPreview( panelBorderColour, panelBorderColourGradient, colourPalette );
+
 	const innerBlocksProps = useInnerBlocksProps(
 		{
 			className: 'sgs-tabs__panels',
 			'data-active-tab': activeEditorTab,
+			style: panelBorderPreview.borderImage ? { borderImage: panelBorderPreview.borderImage } : undefined,
 		},
 		{
 			allowedBlocks: [ 'sgs/tab' ],
@@ -399,23 +413,36 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					aria-label={ __( 'Content tabs', 'sgs-blocks' ) }
 					aria-orientation={ orientation }
 				>
-					{ tabLabels.map( ( label, index ) => (
-						<Button
-							key={ index }
-							className={ [
-								'sgs-tabs__tab',
-								index === activeEditorTab
-									? 'sgs-tabs__tab--active'
-									: '',
-							]
-								.filter( Boolean )
-								.join( ' ' ) }
-							aria-selected={ index === activeEditorTab }
-							onClick={ () => setActiveEditorTab( index ) }
-						>
-							{ label }
-						</Button>
-					) ) }
+					{ tabLabels.map( ( label, index ) => {
+						const isActive = index === activeEditorTab;
+						// tabTextColourGradient (D948-follow-up) real mechanism:
+						// render.php's `sgs_resolve_text_colour_or_gradient()` +
+						// `sgs_text_colour_decl()` — a genuine background-clip:text
+						// gradient, scoped ONLY to `:not([aria-selected='true'])`
+						// (resting tabs). textPaintPreview() is the exact same
+						// technique already used by sgs/container's own text-colour
+						// mirror, so it applies unmodified here; the active tab is
+						// deliberately excluded, matching the frontend selector.
+						const textPreview = ! isActive
+							? textPaintPreview( tabTextColour, tabTextColourGradient, colourPalette )
+							: {};
+						return (
+							<Button
+								key={ index }
+								className={ [
+									'sgs-tabs__tab',
+									isActive ? 'sgs-tabs__tab--active' : '',
+								]
+									.filter( Boolean )
+									.join( ' ' ) }
+								style={ textPreview }
+								aria-selected={ isActive }
+								onClick={ () => setActiveEditorTab( index ) }
+							>
+								{ label }
+							</Button>
+						);
+					} ) }
 				</div>
 
 				{ /* Tab panels — only active tab's InnerBlocks are visible */ }

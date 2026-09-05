@@ -14,7 +14,7 @@ import {
 } from '@wordpress/components';
 import { resolveColourToken, DesignTokenPicker } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { resolveTextColourPreviewStyle } from '../../utils';
+import { resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle } from '../../utils';
 
 const MAX_WIDTH_OPTIONS = [
 	{ label: __( 'Small (480px)', 'sgs-blocks' ), value: 'small' },
@@ -361,6 +361,68 @@ export default function Edit( { attributes, setAttributes } ) {
 						style={ { fontSize: '0.8125rem', color: '#6b6b6b' } }
 					>
 						{ __( 'Overlay preview', 'sgs-blocks' ) }
+					</span>
+				</div>
+
+				{ /* GROUND-TRUTH: source=file, confirmed against render.php:110-122 +
+				   helpers-button-style.php:79-313 this session. The close button
+				   (`.sgs-modal__close`) only exists inside the real `<dialog>`,
+				   which — like the overlay above — the editor canvas never opens.
+				   render.php calls `sgs_button_element_style_css( $attributes,
+				   'close', …, $bg_layer = true, $bg_layer_positioned = true )`:
+				   closeColourBackground(Gradient) paints a `::after` layer BEHIND
+				   the button (never the base selector), while
+				   closeColourText(Gradient) paints the base selector directly
+				   (safe because $bg_layer moved the fill off it) — the exact
+				   mechanism the icon's `stroke="currentColor"` depends on. A
+				   plain inline `style` prop cannot target a `::after` pseudo
+				   -element, so this preview uses two nested elements instead of
+				   one to keep the two paints from colliding on the same style
+				   object: the outer swatch carries the BACKGROUND paint (mirrors
+				   the ::after layer), the inner icon wrapper carries the TEXT
+				   paint via the same `resolveTextColourPreviewStyle()` helper
+				   `triggerButtonStyle` above already uses — including the
+				   gradient branch's `color:transparent`, which correctly mirrors
+				   the real frontend making the icon invisible when a gradient
+				   text colour is set (this is what render.php actually paints,
+				   not a bug this preview should hide). */ }
+				<div
+					className="sgs-modal__close-preview-row"
+					style={ { display: 'flex', alignItems: 'center', gap: '8px' } }
+				>
+					<span
+						className="sgs-modal__close-preview-swatch"
+						style={ {
+							display: 'inline-flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+							width: '28px',
+							height: '28px',
+							flexShrink: 0,
+							borderRadius: '50%',
+							border: '1px solid #e5e5e5',
+							...resolveBackgroundPaintPreviewStyle( closeColourBackground, closeColourBackgroundGradient ),
+						} }
+						aria-hidden="true"
+					>
+						<span
+							style={ resolveTextColourPreviewStyle(
+								closeColourText,
+								closeColourTextGradient,
+								( v ) => resolveColourToken( v, palette )
+							) }
+						>
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+								<line x1="18" y1="6" x2="6" y2="18"></line>
+								<line x1="6" y1="6" x2="18" y2="18"></line>
+							</svg>
+						</span>
+					</span>
+					<span
+						className="sgs-modal__close-preview-label"
+						style={ { fontSize: '0.8125rem', color: '#6b6b6b' } }
+					>
+						{ __( 'Close button preview', 'sgs-blocks' ) }
 					</span>
 				</div>
 

@@ -162,6 +162,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			backgroundShape !== 'none' && backgroundPadding
 				? shapePaddingCssValue( backgroundPadding )
 				: undefined,
+		// Mirrors render.php's `$root_decls[] = 'text-align:' . $text_align`
+		// (emitted only when set, so inheritance works when empty — same here).
+		textAlign: textAlign || undefined,
 	};
 
 	// Base padding/margin preview — WP-native style.spacing.* objects
@@ -454,6 +457,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						source={ iconSource }
 						name={ currentIconName( attributes ) }
 						size={ iconSize }
+						gradient={ iconColourGradient }
 					/>
 				</span>
 			</div>

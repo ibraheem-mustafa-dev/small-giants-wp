@@ -6,14 +6,16 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
 import {
 	ResponsiveBoxControl,
 	ResponsiveOverride,
 	SgsColourPanel,
+	resolveColourToken,
 } from '../../components';
 import MediaElementPanel from '../../components/MediaElementPanel';
+import { borderPaintPreview } from '../../utils';
 
 // NumberControl is experimental — fall back gracefully to TextControl if absent.
 let NumberControl;
@@ -54,6 +56,29 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( {
 		className: 'sgs-product-search',
 	} );
+
+	// CHECK A: inputBorderColour paints `.sgs-product-search__input` directly
+	// (style.css:37 — border, var(--sgs-ps-input-border, fallback)). No
+	// gradient sibling attribute exists on this block, so only the flat-colour
+	// branch of the shared helper ever fires.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	const inputPreviewStyle = borderPaintPreview( inputBorderColour, '', colourPalette );
+
+	// CHECK A: listboxBackgroundColour paints `.sgs-product-search__results`
+	// (style.css:86 — var(--sgs-ps-listbox-bg, fallback)); matchHighlightColour
+	// paints `.sgs-product-search__result-title mark` (style.css:160). Neither
+	// element ever exists in render.php's static markup — view.js builds the
+	// listbox + result rows only after a live REST search fires — so the
+	// static editor mock below is the only way either colour can be seen on
+	// canvas without wiring real search logic into the editor.
+	const listboxBgPreview = resolveColourToken(
+		listboxBackgroundColour,
+		colourPalette
+	);
+	const markBgPreview = resolveColourToken(
+		matchHighlightColour,
+		colourPalette
+	);
 
 	const resolvedPlaceholder =
 		placeholder || __( 'Search products…', 'sgs-blocks' );
@@ -438,6 +463,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								type="search"
 								className="sgs-product-search__input"
 								disabled
+								style={ inputPreviewStyle }
 								placeholder={ resolvedPlaceholder }
 							/>
 							<button
@@ -470,6 +496,56 @@ export default function Edit( { attributes, setAttributes } ) {
 								</svg>
 							</button>
 						</div>
+						{ /* CHECK A mock — a static stand-in for the live results
+						   listbox view.js builds at runtime on a real keystroke.
+						   Permanently shown (the editor cannot simulate typing);
+						   markup mirrors render.php's `<ul role="listbox">` +
+						   view.js's per-row `result-info`/`result-title`/`<mark>`
+						   structure exactly, using placeholder copy, so
+						   listboxBackgroundColour and matchHighlightColour are
+						   both visible on canvas. */ }
+						<ul
+							className="sgs-product-search__results"
+							role="listbox"
+							aria-label={ __(
+								'Product suggestions',
+								'sgs-blocks'
+							) }
+							style={ {
+								position: 'static',
+								marginTop: '0.25rem',
+								...( listboxBgPreview
+									? { background: listboxBgPreview }
+									: {} ),
+							} }
+						>
+							<li role="option">
+								<div className="sgs-product-search__result-info">
+									<span className="sgs-product-search__result-title">
+										<mark
+											style={
+												markBgPreview
+													? { background: markBgPreview }
+													: undefined
+											}
+										>
+											Ex
+										</mark>
+										ample Product
+									</span>
+								</div>
+							</li>
+							<li role="option">
+								<div className="sgs-product-search__result-info">
+									<span className="sgs-product-search__result-title">
+										{ __(
+											'Another Result',
+											'sgs-blocks'
+										) }
+									</span>
+								</div>
+							</li>
+						</ul>
 						<p className="sgs-product-search__editor-hint">
 							{ __(
 								'Live product search — works on the published site.',

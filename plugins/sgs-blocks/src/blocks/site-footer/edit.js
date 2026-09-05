@@ -27,7 +27,7 @@ import { ResponsiveBoxControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiv
 	resolveColourToken,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { backgroundPreview, spacingPreview, svgBackgroundPreview } from '../../utils';
+import { backgroundPreview, spacingPreview, svgBackgroundPreview, textPaintPreview } from '../../utils';
 import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from '../../utils/wcag-contrast';
 
 const ALLOWED_BLOCKS = [ 'sgs/site-footer-row' ];
@@ -233,11 +233,21 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		flexWrap: effectiveFlexWrapPreview,
 	};
 
+	// Text colour/gradient canvas preview (CHECK A finding 2026-09-05) —
+	// `textColour` LOOKED wired (it's read inside the WCAG contrast-check
+	// useEffect further down), but that's a contrast comparison, not real
+	// canvas paint — neither it nor `textColourGradient` was ever applied to
+	// `blockProps.style`. `textPaintPreview()` handles both the flat and
+	// gradient cases in one call (gradient-text technique when set, plain
+	// `color` otherwise), same shared helper used across this session's other
+	// text-colour fixes.
+	const textPreview = textPaintPreview( attributes.textColour, attributes.textColourGradient, colourPalette );
+
 	const blockProps = useBlockProps( {
 		className: [ 'sgs-site-footer', bgPreview.className, ...svgPreview.className ]
 			.filter( Boolean )
 			.join( ' ' ),
-		style: { ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...layoutPreview },
+		style: { ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...layoutPreview, ...textPreview },
 	} );
 	const refEl = useRef( null );
 

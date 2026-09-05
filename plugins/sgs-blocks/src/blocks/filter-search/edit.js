@@ -8,9 +8,10 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody, TextControl, Notice } from '@wordpress/components';
 import { ResponsiveBoxControl, SgsColourPanel } from '../../components';
+import { borderPaintPreview, textPaintPreview } from '../../utils';
 
 // Guard the experimental NumberControl import — it may not exist on older WP
 // versions. Falls back to a plain text input (type=number) via TextControl.
@@ -19,6 +20,17 @@ const { __experimentalNumberControl: NumberControl } = wp?.components ?? {};
 
 export default function Edit( { attributes, setAttributes } ) {
 	const { attributeId, threshold, placeholder, style, marginTablet, marginMobile, inputBorderColour, inputBorderColourGradient, focusRingColour, textColour } = attributes;
+
+	// D636/CHECK A: inputBorderColour/inputBorderColourGradient/textColour paint
+	// `.sgs-filter-search__input` directly on the frontend (style.css:9-20 —
+	// border-color and color, both with var() fallbacks) — there is no wrapper
+	// custom-property indirection to mirror, so the same resolved values are
+	// applied straight to the preview <input>'s inline style below.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	const inputPreviewStyle = {
+		...borderPaintPreview( inputBorderColour, inputBorderColourGradient, colourPalette ),
+		...textPaintPreview( textColour, '', colourPalette ),
+	};
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-filter-search sgs-filter-search--editor-preview',
@@ -183,6 +195,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<input
 					type="search"
 					className="sgs-filter-search__input"
+					style={ inputPreviewStyle }
 					placeholder={ placeholder || __( 'Type to filter…', 'sgs-blocks' ) }
 					disabled
 					aria-label={ __( 'Filter search preview (inactive in editor)', 'sgs-blocks' ) }
