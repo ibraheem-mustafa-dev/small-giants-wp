@@ -544,17 +544,26 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
              if m.lower() in _tier_by_lower),
             None,
         )
-        # ALL own-family modifiers (not just the breakpoint subset) are also
-        # handed to the resolver as `modifiers` — a NON-tier modifier
-        # (`--featured`/`--trial`) is the signal that disambiguates a
-        # same-tier content-attr alias tie via the block's own `variant_slots`
-        # declaration (Task 3, 2026-09-05: the featuredTag/trialTag defect —
-        # see `content_attr_for_element`'s docstring). Passing the tier
-        # modifier through too is harmless: a breakpoint suffix never matches
-        # a `variant_slots.variant_value`, so it never wins a tiebreak.
+        # NON-tier own-family modifiers are handed to the resolver as
+        # `modifiers` — a modifier like `--featured`/`--trial` is the signal
+        # that disambiguates a same-tier content-attr alias tie via the
+        # block's own `variant_slots` declaration (Task 3, 2026-09-05: the
+        # featuredTag/trialTag defect — see `content_attr_for_element`'s
+        # docstring). Breakpoint-tier modifiers (mobile/tablet/desktop) are
+        # excluded here via `_tier_by_lower` — the same DB-sourced vocabulary
+        # `_device_tier` above reads — rather than relying on the empirical
+        # fact that no block TODAY names a `variant_slots.variant_value`
+        # `mobile`/`tablet`/`desktop`. That fact holds now but is not
+        # structurally guaranteed against a future block declaring a variant
+        # with one of those names, at which point an element's own device-
+        # tier modifier would silently win a content-routing tiebreak it has
+        # no business winning. Reviewer finding, 2026-09-05.
+        _non_tier_modifiers = tuple(
+            m for m in _element_modifiers if m.lower() not in _tier_by_lower
+        )
         hit = db_lookup.content_attr_for_element(
             rec.slug, element, tier=_device_tier,
-            modifiers=tuple(_element_modifiers),
+            modifiers=_non_tier_modifiers,
         )
         if hit is None:
             # `hit is None` has THREE causes inside content_attr_for_element:
