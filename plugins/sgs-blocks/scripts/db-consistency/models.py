@@ -77,3 +77,19 @@ def motion_fx_reseed_key(effect: str, kind: str) -> str:
 def motion_fx_qualifying_key(block: str, kind: str) -> str:
     """Check #10 (Spec 38 fx qualifying-blocks map staleness) stable dedup key."""
     return f"fxqualify:{kind}:{block}"
+
+
+def dead_composition_signal_key(block: str) -> str:
+    """Check #10 (Dead Composition Discriminator) stable dedup key.
+
+    NOTE ON NUMBERING: motion_fx_qualifying_key above is ALSO commented
+    "Check #10" — that check (check_fx_qualifying_blocks_stale.py) is loaded
+    and run by run.py's main() but was never added to run.py's _CHECK_LABELS/
+    _CHECK_ORDER dicts, so its docstring number was aspirational and never
+    actually collided with a registered label. This check (key
+    "dead_composition_signal") is the one that IS registered as "Check #10 —
+    Dead Composition Discriminator" in run.py. Flagged, not fixed here — out
+    of scope for the variant-composition-fingerprinting plan (see the
+    2026-09-05 task-7 report for the discovery).
+    """
+    return f"deadcomp:{block}"

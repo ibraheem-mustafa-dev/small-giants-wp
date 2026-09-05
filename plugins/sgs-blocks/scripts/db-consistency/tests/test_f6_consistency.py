@@ -88,6 +88,7 @@ def _bootstrap_db_consistency():
     _load("check_variant_reseed")
     _load("check_orphan_roles")
     _load("check_tier_composition")
+    _load("check_dead_composition_signal")
 
 
 _bootstrap_db_consistency()
@@ -95,11 +96,13 @@ _bootstrap_db_consistency()
 from db_consistency.models import (  # noqa: E402
     Violation, routing_key, composition_key, variant_key,
     variant_reseed_key, orphan_role_key, tier_composition_key,
+    dead_composition_signal_key,
 )
 from db_consistency import (  # noqa: E402
     check_routing, check_composition, check_variants,
     check_overrides_drift, check_variant_reseed,
     check_orphan_roles, check_tier_composition,
+    check_dead_composition_signal,
 )
 from db_consistency.resolver_bridge import (  # noqa: E402
     lift_producible_attrs,
@@ -142,6 +145,8 @@ def _make_minimal_db(
     block_composition: list[tuple] | None = None,  # (block_slug, has_inner_blocks) or (..., composition_role, container_kind)
     roles: list[tuple] | None = None,  # (role_name,)
     variant_enum: list[tuple] | None = None,  # (block_slug, attr_name, enum_values_json)
+    block_capabilities: list[tuple] | None = None,  # (block_slug, capability)
+    emit_shape_attrs: list[tuple] | None = None,  # (block_slug, attr_name) -> emit_shape='child'
 ) -> sqlite3.Connection:
     """Create a minimal in-memory SQLite DB for unit tests.
 
@@ -157,6 +162,11 @@ def _make_minimal_db(
     variant_composition_slots rows are 3-tuples (block_slug, variant_value,
     unique_child_slug) — the InnerBlocks-composition discriminator half of
     check #3's FULL signature (2026-09-05 update).
+    block_capabilities rows are 2-tuples (block_slug, capability) — check
+    #10's second content-extraction path ('array-content-lift').
+    emit_shape_attrs rows are 2-tuples (block_slug, attr_name) — each gets
+    emit_shape='child' on its block_attributes row, check #10's third
+    content-extraction path.
     """
     conn = sqlite3.connect(":memory:")
     conn.execute(
@@ -165,7 +175,12 @@ def _make_minimal_db(
     )
     conn.execute(
         "CREATE TABLE block_attributes "
-        "(block_slug TEXT, attr_name TEXT, role TEXT, canonical_slot TEXT, enum_values TEXT)"
+        "(block_slug TEXT, attr_name TEXT, role TEXT, canonical_slot TEXT, "
+        "enum_values TEXT, emit_shape TEXT)"
+    )
+    conn.execute(
+        "CREATE TABLE block_capabilities "
+        "(block_slug TEXT, capability TEXT)"
     )
     conn.execute(
         "CREATE TABLE blocks "
@@ -234,6 +249,16 @@ def _make_minimal_db(
         conn.executemany(
             "INSERT INTO block_attributes (block_slug, attr_name, enum_values) VALUES (?,?,?)",
             variant_enum,
+        )
+    if block_capabilities:
+        conn.executemany(
+            "INSERT INTO block_capabilities (block_slug, capability) VALUES (?,?)",
+            block_capabilities,
+        )
+    if emit_shape_attrs:
+        conn.executemany(
+            "INSERT INTO block_attributes (block_slug, attr_name, emit_shape) VALUES (?,?,'child')",
+            emit_shape_attrs,
         )
     conn.commit()
     return conn
@@ -1382,3 +1407,165 @@ class TestNewModelKeys:
 
     def test_tier_composition_key_format(self):
         assert tier_composition_key("sgs/hero") == "tiercomp:sgs/hero"
+
+    def test_dead_composition_signal_key_format(self):
+        assert dead_composition_signal_key("sgs/counter") == "deadcomp:sgs/counter"
+
+
+# ===========================================================================
+# 11. Check #10 — dead composition discriminator (variant-composition-
+#     fingerprinting plan, Task 7 — the "protect the future" structural guard)
+# ===========================================================================
+
+class TestCheck10LiveDB:
+    """Check #10 on the real, live DB — real negative control."""
+
+    @_skip_no_db
+    def test_check10_zero_violations_today(self, live_conn):
+        """After Task 5/6's nav-drawer fix, check #10 must return no violations —
+        the only block with variant_composition_slots rows (sgs/nav-drawer) now
+        has a real content-extraction path (derive_delegates_content()==1)."""
+        violations = check_dead_composition_signal.run(live_conn)
+        assert violations == [], (
+            f"Expected 0 dead-composition-signal violations on the live DB, got "
+            f"{len(violations)}: " + "\n".join(v.detail for v in violations)
+        )
+
+    @_skip_no_db
+    def test_check10_nav_drawer_has_real_extraction_path(self, live_conn):
+        """Ground the negative control: sgs/nav-drawer DOES have composition rows
+        AND DOES have a real extraction path today (Task 5 fixed the has_inner.py
+        regex) — this is the specific case the whole plan exists to fix, so the
+        test asserts the fix landed, not just that the check stayed quiet."""
+        rows = live_conn.execute(
+            "SELECT DISTINCT variant_value FROM variant_composition_slots "
+            "WHERE block_slug = 'sgs/nav-drawer'"
+        ).fetchall()
+        assert rows, (
+            "sgs/nav-drawer has no variant_composition_slots rows — the check "
+            "would trivially pass with nothing to inspect."
+        )
+        assert check_dead_composition_signal.derive_delegates_content("sgs/nav-drawer") == 1, (
+            "sgs/nav-drawer's derive_delegates_content() must be 1 (Task 5's "
+            "has_inner.py regex widening) for check #10 to correctly stay quiet."
+        )
+
+
+class TestCheck10PlantedViolation:
+    """Synthetic positive + negative controls — proves check #10 can both fire
+    and stay quiet, per this project's 'a check with no positive control passes
+    against a dead feature' doctrine. Uses a fake block slug with no real
+    src/blocks/ directory, so derive_delegates_content() fails CLOSED to 0 for
+    it (no source on disk to derive from) without needing to mock anything."""
+
+    def test_check10_flags_block_with_no_extraction_path(self):
+        """POSITIVE CONTROL: a block with a real variant_composition_slots row
+        and NONE of the three content-extraction paths must be flagged. This
+        is the exact shape of the original nav-drawer bug this check exists to
+        catch automatically for any future block."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            variant_composition_slots=[
+                ("sgs/fake-dead-block", "fake-variant", "sgs/card-grid"),
+            ],
+        )
+        violations = check_dead_composition_signal.run(conn)
+        conn.close()
+
+        assert len(violations) == 1, (
+            f"Expected 1 violation for a block with a composition discriminator "
+            f"and no extraction path, got {len(violations)}"
+        )
+        v = violations[0]
+        assert v.block == "sgs/fake-dead-block"
+        assert v.check == "dead_composition_signal"
+        assert "fake-variant" in v.detail
+        assert v.key == dead_composition_signal_key("sgs/fake-dead-block")
+
+    def test_check10_passes_block_with_array_content_lift_capability(self):
+        """NEGATIVE CONTROL (a): an 'array-content-lift' block_capabilities row
+        is enough on its own to clear the block, even with no real source dir."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            variant_composition_slots=[
+                ("sgs/fake-lift-block", "fake-variant", "sgs/card-grid"),
+            ],
+            block_capabilities=[
+                ("sgs/fake-lift-block", "array-content-lift"),
+            ],
+        )
+        violations = check_dead_composition_signal.run(conn)
+        conn.close()
+
+        assert violations == [], (
+            f"Expected 0 violations when an array-content-lift capability row "
+            f"exists, got {len(violations)}: " + "\n".join(v.detail for v in violations)
+        )
+
+    def test_check10_passes_block_with_emit_shape_child_attr(self):
+        """NEGATIVE CONTROL (b): a block_attributes row with emit_shape='child'
+        is enough on its own to clear the block."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            variant_composition_slots=[
+                ("sgs/fake-child-block", "fake-variant", "sgs/card-grid"),
+            ],
+            emit_shape_attrs=[
+                ("sgs/fake-child-block", "childItems"),
+            ],
+        )
+        violations = check_dead_composition_signal.run(conn)
+        conn.close()
+
+        assert violations == [], (
+            f"Expected 0 violations when an emit_shape='child' attribute exists, "
+            f"got {len(violations)}: " + "\n".join(v.detail for v in violations)
+        )
+
+    def test_check10_passes_block_with_real_delegates_content(self):
+        """NEGATIVE CONTROL (c): a REAL block that genuinely delegates content
+        (sgs/nav-drawer, post Task-5 fix) is not flagged even via the synthetic
+        in-memory DB path — proves path (a) alone is sufficient, using the real
+        derive_delegates_content() against real source on disk, not a mock."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            variant_composition_slots=[
+                ("sgs/nav-drawer", "split-zone-serif", "sgs/card-grid"),
+            ],
+        )
+        violations = check_dead_composition_signal.run(conn)
+        conn.close()
+
+        assert violations == [], (
+            f"Expected 0 violations for sgs/nav-drawer (real delegates_content==1 "
+            f"post Task-5 fix), got {len(violations)}: "
+            + "\n".join(v.detail for v in violations)
+        )
+
+    def test_check10_reports_all_affected_variants_for_one_block(self):
+        """A block with TWO dead-discriminator variants gets ONE violation
+        naming both — not two separate violations (block-level key, per the
+        module's design: one Violation per block, listing every affected
+        variant)."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            variant_composition_slots=[
+                ("sgs/fake-multi-block", "variant-a", "sgs/card-grid"),
+                ("sgs/fake-multi-block", "variant-b", "sgs/icon-list"),
+            ],
+        )
+        violations = check_dead_composition_signal.run(conn)
+        conn.close()
+
+        assert len(violations) == 1, (
+            f"Expected exactly 1 violation (one per block) for a block with 2 "
+            f"dead-discriminator variants, got {len(violations)}"
+        )
+        v = violations[0]
+        assert "variant-a" in v.detail and "variant-b" in v.detail
+        assert v.key == dead_composition_signal_key("sgs/fake-multi-block")
