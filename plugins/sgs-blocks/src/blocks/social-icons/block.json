@@ -31,10 +31,6 @@
 			"padding": true,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"textAlign": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"collection": true,
 			"imageControls": false,
@@ -63,12 +59,15 @@
 					"attrMap": {
 						"css:color": "native:color.text",
 						"css:background-color": "native:color.background",
-						"css:text-align": "native:typography.textAlign",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:gap": "gap"
 					},
-					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-social-icons — display:flex is hardcoded CSS, no attribute, so no `layer` is declared and the 12 arrangement members are honestly never asked about). No `layout` box-model attrs beyond padding/margin/gap exist (no width/height/max-width/border/box-shadow control) — honest gaps."
+					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-social-icons — display:flex is hardcoded CSS, no attribute, so no `layer` is declared and the 12 arrangement members are honestly never asked about). No `layout` box-model attrs beyond padding/margin/gap exist (no width/height/max-width/border/box-shadow control) — honest gaps. Typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight). The old native `textAlign` capability (`css:text-align`) was dropped, not replaced: this root is `display:flex` (style.css) with no inline/block content of its own, so `text-align` was inert dead CSS on every real instance — confirmed by reading style.css, not assumed."
 				},
 				"icon": {
 					"label": "Icon",
@@ -231,6 +230,30 @@
 		"gap": {
 			"type": "string",
 			"default": "20"
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		},
 		"paddingTablet": {
 			"type": "object",

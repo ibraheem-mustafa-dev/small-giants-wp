@@ -189,69 +189,22 @@ if ( isset( $attributes['borderRadius'] ) ) {
 $border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
 $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
 
-// Typography (custom mode only).
-// fontFamily: plain string, no responsive tiers — matches TypographyControls'
-// showFontFamily picker shape (theme.json fontFamilies preset's raw CSS
-// value, not a slug). Sanitised with the same allowlist the shared
-// sgs_typography_css_rule() helper uses (G4, helpers-typography.php) so a
-// family LIST ("Open Sans", sans-serif) survives while anything that could
-// escape the declaration is stripped. sgs/button hand-rolls its own
-// $base_decls array rather than calling that helper (its typography is a
-// tier-object system built around sgs_responsive_css_rule()), so this is a
-// one-line wire-up rather than a shared-helper call — the control has
-// existed since the block's typo attribute set was declared but had no
-// renderer.
-$font_family     = isset( $attributes['fontFamily'] ) ? sgs_font_family_sanitise( $attributes['fontFamily'] ) : '';
-$font_weight     = isset( $attributes['fontWeight'] ) ? sanitize_text_field( $attributes['fontWeight'] ) : '';
-$font_style_attr = isset( $attributes['fontStyle'] ) ? sgs_css_keyword_sanitise( $attributes['fontStyle'] ) : 'normal';
-$text_transform  = isset( $attributes['textTransform'] ) ? sgs_css_keyword_sanitise( $attributes['textTransform'] ) : '';
-$text_decoration = isset( $attributes['textDecoration'] ) ? sgs_css_keyword_sanitise( $attributes['textDecoration'] ) : '';
-// fontSize is a TIER OBJECT (Spec 35) — same shape as
-// lineHeight/letterSpacing below; the old …Tablet/…Mobile sibling attrs are
-// no longer declared by block.json.
-$font_size_obj  = sgs_responsive_normalise_object( $attributes['fontSize'] ?? null );
-$font_size      = null !== $font_size_obj['desktop'] ? (float) $font_size_obj['desktop'] : null;
-$font_size_tab  = null !== $font_size_obj['tablet'] ? (float) $font_size_obj['tablet'] : null;
-$font_size_mob  = null !== $font_size_obj['mobile'] ? (float) $font_size_obj['mobile'] : null;
-$font_size_unit = isset( $attributes['fontSizeUnit'] ) ? sanitize_text_field( $attributes['fontSizeUnit'] ) : 'px';
-// lineHeight / letterSpacing are TIER OBJECT (Spec 35)
-// — each ONE attr holding {desktop,tablet,mobile}; the old …Tablet/…Mobile
-// sibling attrs are not declared by block.json. The *Unit attrs were
-// NOT part of this migration and stay flat/shared across tiers.
-$line_height_obj  = sgs_responsive_normalise_object( $attributes['lineHeight'] ?? null );
-$line_height      = null !== $line_height_obj['desktop'] ? (float) $line_height_obj['desktop'] : null;
-$line_height_tab  = null !== $line_height_obj['tablet'] ? (float) $line_height_obj['tablet'] : null;
-$line_height_mob  = null !== $line_height_obj['mobile'] ? (float) $line_height_obj['mobile'] : null;
-$line_height_unit = isset( $attributes['lineHeightUnit'] ) ? sanitize_text_field( $attributes['lineHeightUnit'] ) : 'em';
-// Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
-$line_height_unit    = ( 'unitless' === $line_height_unit ) ? '' : $line_height_unit;
-$letter_spacing_obj  = sgs_responsive_normalise_object( $attributes['letterSpacing'] ?? null );
-$letter_spacing      = null !== $letter_spacing_obj['desktop'] ? (float) $letter_spacing_obj['desktop'] : null;
-$letter_spacing_tab  = null !== $letter_spacing_obj['tablet'] ? (float) $letter_spacing_obj['tablet'] : null;
-$letter_spacing_mob  = null !== $letter_spacing_obj['mobile'] ? (float) $letter_spacing_obj['mobile'] : null;
-$letter_spacing_unit = isset( $attributes['letterSpacingUnit'] ) ? sanitize_text_field( $attributes['letterSpacingUnit'] ) : 'px';
+// Typography (custom mode only) — D971/D972 full-replacement track: emitted
+// via the shared sgs_typography_css_rule() helper (root prefix '') rather
+// than hand-rolled here. See step 4 below for the actual call.
 
-// sgs_responsive_css_rule() (used below for the font-size/line-height/
-// letter-spacing rule AND the icon-size rule) reads its prop_map attrs as
-// FLAT sibling keys straight off an $attributes-shaped array — it has no
-// knowledge of the new tier-object shape. Feed it a synthetic array that
-// carries the already-normalised tier values under the OLD flat key names
-// it expects, so its call sites below need no change of their own.
+// sgs_responsive_css_rule() (used below for the icon-size rule only —
+// typography no longer uses it) reads its prop_map attrs as FLAT sibling
+// keys straight off an $attributes-shaped array — it has no knowledge of the
+// new tier-object shape. Feed it a synthetic array that carries the
+// already-normalised icon-size tier values under the OLD flat key names it
+// expects, so its call site below needs no change of its own.
 $tier_object_synthetic_attrs = array_merge(
 	$attributes,
 	array(
-		'fontSize'            => $font_size,
-		'fontSizeTablet'      => $font_size_tab,
-		'fontSizeMobile'      => $font_size_mob,
-		'lineHeight'          => $line_height,
-		'lineHeightTablet'    => $line_height_tab,
-		'lineHeightMobile'    => $line_height_mob,
-		'letterSpacing'       => $letter_spacing,
-		'letterSpacingTablet' => $letter_spacing_tab,
-		'letterSpacingMobile' => $letter_spacing_mob,
-		'iconSize'            => $icon_size,
-		'iconSizeTablet'      => $icon_size_tab,
-		'iconSizeMobile'      => $icon_size_mob,
+		'iconSize'       => $icon_size,
+		'iconSizeTablet' => $icon_size_tab,
+		'iconSizeMobile' => $icon_size_mob,
 	)
 );
 
@@ -399,21 +352,6 @@ $border_style_has_width = $has_border_width || in_array( $inherit_style, array( 
 if ( $border_style && 'solid' !== $border_style && $border_style_has_width ) {
 	$base_decls[] = 'border-style:' . $border_style;
 }
-if ( '' !== $font_family ) {
-	$base_decls[] = 'font-family:' . $font_family;
-}
-if ( $font_weight ) {
-	$base_decls[] = 'font-weight:' . intval( $font_weight );
-}
-if ( $font_style_attr && 'normal' !== $font_style_attr ) {
-	$base_decls[] = 'font-style:' . $font_style_attr;
-}
-if ( $text_transform ) {
-	$base_decls[] = 'text-transform:' . $text_transform;
-}
-if ( $text_decoration ) {
-	$base_decls[] = 'text-decoration:' . $text_decoration;
-}
 if ( '' !== $box_shadow ) {
 	$base_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
 }
@@ -463,36 +401,12 @@ if ( $icon_col_hov ) {
 	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", 'color:' . sgs_colour_value( $icon_col_hov ), ':focus-visible', ' .sgs-button__icon' );
 }
 
-// Typography + border-radius — base + tablet + mobile on the SAME
-// selector (Pattern A). Always emitted — every button is attribute-driven,
-// there is no separate preset-locked mode any more.
-$scoped_css_parts[] = sgs_responsive_css_rule(
-	$tier_object_synthetic_attrs,
-	array(
-		array(
-			'attr'         => 'fontSize',
-			'css'          => 'font-size',
-			'unit_default' => $font_size_unit,
-			'tablet_attr'  => 'fontSizeTablet',
-			'mobile_attr'  => 'fontSizeMobile',
-		),
-		array(
-			'attr'         => 'lineHeight',
-			'css'          => 'line-height',
-			'unit_default' => $line_height_unit,
-			'tablet_attr'  => 'lineHeightTablet',
-			'mobile_attr'  => 'lineHeightMobile',
-		),
-		array(
-			'attr'         => 'letterSpacing',
-			'css'          => 'letter-spacing',
-			'unit_default' => $letter_spacing_unit,
-			'tablet_attr'  => 'letterSpacingTablet',
-			'mobile_attr'  => 'letterSpacingMobile',
-		),
-	),
-	".{$uid}.sgs-button"
-);
+// Typography — base + tablet + mobile on the SAME selector (Pattern A),
+// via the shared sgs_typography_css_rule() helper (D971/D972 full-replacement
+// track; root prefix '' since this is a single-target block). Always
+// emitted — every button is attribute-driven, there is no separate
+// preset-locked mode any more.
+$scoped_css_parts[] = sgs_typography_css_rule( $attributes, '', ".{$uid}.sgs-button" );
 
 // Base padding/margin/border-radius — Box-object interface contract (b): the
 // block declares __experimentalSkipSerialization on spacing + border.radius

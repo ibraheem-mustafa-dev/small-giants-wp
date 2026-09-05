@@ -28,6 +28,7 @@ import {
 	SgsColourPanel,
 	SgsBorderControl,
 	resolveColourToken,
+	TypographyControls,
 } from '../../components';
 import {
 	HeroSplitMediaSourceSection,
@@ -1023,6 +1024,25 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			{/* ── Styles tab — appearance: colour, spacing, borders, shadows,
 			   layout/grid geometry, hover/effects. ── */}
 			<InspectorControls group="styles">
+				{/* Typography — replaces the old WP-native supports.typography
+				    (fontSize/lineHeight/letterSpacing/textTransform/fontWeight/
+				    fontStyle) with the shared TypographyControls component +
+				    sgs_typography_css_rule() render.php helper (D971/D972
+				    full-replacement track). Root prefix "" — the wrapper element,
+				    matching block.json's corrected `selectors.typography` (the
+				    root `.wp-block-sgs-hero`, not the never-emitted
+				    `.sgs-hero__headline`). showLetterSpacing/showTransform are
+				    enabled because the native support being replaced actually
+				    declared and rendered both. */}
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+						showLetterSpacing
+						showTransform
+					/>
+				</PanelBody>
 				{/* ── 2. Container / Entire Block ── */}
 				{ /* Converted to ToolsPanel/ToolsPanelItem (Spec 35 T4.1 tail, audit-inspector-conformance
 				     dense-panel-candidate — 14 control-like elements). hasValue/onDeselect check against

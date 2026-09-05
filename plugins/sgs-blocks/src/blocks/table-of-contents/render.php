@@ -212,15 +212,6 @@ if ( ! empty( $style_spacing['margin'] ) ) {
 // pattern: WP core's own sanitisation, never hand-rolled).
 $native_border = ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) ? $attributes['style']['border'] : array();
 
-$style_typography = ( isset( $attributes['style']['typography'] ) && is_array( $attributes['style']['typography'] ) ) ? $attributes['style']['typography'] : array();
-$typography_args  = array();
-if ( ! empty( $style_typography['fontSize'] ) ) {
-	$typography_args['fontSize'] = $style_typography['fontSize'];
-}
-if ( ! empty( $style_typography['lineHeight'] ) ) {
-	$typography_args['lineHeight'] = $style_typography['lineHeight'];
-}
-
 $root_style_args = array();
 if ( $color_args ) {
 	$root_style_args['color'] = $color_args;
@@ -230,9 +221,6 @@ if ( $spacing_args ) {
 }
 if ( $native_border ) {
 	$root_style_args['border'] = $native_border;
-}
-if ( $typography_args ) {
-	$root_style_args['typography'] = $typography_args;
 }
 
 if ( ! empty( $root_style_args ) ) {
@@ -244,6 +232,12 @@ if ( ! empty( $root_style_args ) ) {
 		$scoped_css[] = $root_out['css'];
 	}
 }
+
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
+// supports.typography (fontSize + lineHeight only) with the framework's own
+// helper, which also now offers fontWeight/fontStyle.
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
 
 // --- Responsive padding/margin tiers — SGS custom box objects, hand-built
 // shorthand, scoped @media on the SAME selector (contract §B2: tablet

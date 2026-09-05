@@ -180,11 +180,15 @@ if ( isset( $style_border['radius'] ) ) {
 // shared colour-variant helpers at step 12 below (same proven pattern as
 // sgs/product-card + sgs/accordion-item + sgs/quote, commit `2eebbe55`). Capability
 // MOVES rather than disappearing — the client also gains hover states it never had.
-$style_font_size = isset( $attributes['style']['typography']['fontSize'] ) ? (string) $attributes['style']['typography']['fontSize'] : '';
+// fontSize/fontWeight/fontStyle/lineHeight are now emitted via the shared
+// sgs_typography_css_rule() helper at step 12 (D971/D972 full-replacement
+// track) — the native style.typography.fontSize read is removed along with
+// the fontSize sub-flag on block.json's supports.typography.
 
-// Native text-align support — WP core does NOT reliably apply the
-// has-text-align-* class for a DYNAMIC block via get_block_wrapper_attributes()
-// (STOP-44 pattern), so it is added explicitly.
+// Text-align — block-private attribute (D971/D972 full-replacement track:
+// no real native supports.typography sub-capability remains). WP core does
+// NOT reliably apply the has-text-align-* class for a DYNAMIC block via
+// get_block_wrapper_attributes() (STOP-44 pattern), so it is added explicitly.
 $text_align          = $attributes['textAlign'] ?? '';
 $allowed_text_aligns = array( 'left', 'center', 'right', 'justify' );
 $has_text_align      = in_array( $text_align, $allowed_text_aligns, true );
@@ -502,13 +506,10 @@ if ( ! empty( $border_args ) ) {
 // the step-4 comment above. Background/text colour are now emitted separately at
 // step 12b below via the shared colour-variant helpers.
 
-$typography_args = array();
-if ( '' !== $style_font_size ) {
-	$typography_args['fontSize'] = $style_font_size;
-}
-if ( ! empty( $typography_args ) ) {
-	$base_style_engine_args['typography'] = $typography_args;
-}
+// $typography_args (native style.typography.fontSize) is REMOVED here — the
+// fontSize sub-flag was dropped from block.json's supports.typography;
+// fontSize/fontWeight/fontStyle/lineHeight now emit via
+// sgs_typography_css_rule() below instead (D971/D972 full-replacement track).
 
 if ( ! empty( $base_style_engine_args ) ) {
 	$base_scoped_styles = wp_style_engine_get_styles(
@@ -518,6 +519,17 @@ if ( ! empty( $base_style_engine_args ) ) {
 	if ( ! empty( $base_scoped_styles['css'] ) ) {
 		$scoped_css[] = $base_scoped_styles['css'];
 	}
+}
+
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
+// supports.typography fontSize with the framework's own helper, which also
+// now offers fontWeight/fontStyle/lineHeight. textAlign stays native (a
+// separate, unrelated capability — applied via the has-text-align-* class
+// added at step 14).
+$sgs_tm_typography_css = sgs_typography_css_rule( $attributes, '', $root_sel );
+if ( '' !== $sgs_tm_typography_css ) {
+	$scoped_css[] = $sgs_tm_typography_css;
 }
 
 // --- 12b. Background + text colour (block-private, replaces the native

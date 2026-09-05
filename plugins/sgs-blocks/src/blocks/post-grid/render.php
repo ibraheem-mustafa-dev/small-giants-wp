@@ -535,24 +535,13 @@ if ( ! empty( $post_grid_style_engine_args ) ) {
 	}
 }
 
-// Typography — declared selector (block.json selectors.typography) targets
-// .sgs-post-grid__title, so scope the rule there rather than $root_sel.
-$typography_args = array();
-if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
-	$typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
-}
-if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
-	$typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
-}
-if ( ! empty( $typography_args ) ) {
-	$typography_scoped = wp_style_engine_get_styles(
-		array( 'typography' => $typography_args ),
-		array( 'selector' => $root_sel . ' .sgs-post-grid__title' )
-	);
-	if ( ! empty( $typography_scoped['css'] ) ) {
-		$responsive_css .= $typography_scoped['css'];
-	}
-}
+// Typography — migrated off WP-native supports.typography onto the shared
+// sgs_typography_css_rule() helper (D971/D972 full-replacement track). The
+// native support's actual target was .sgs-post-grid__title (block.json used
+// to declare selectors.typography for it, not the block root), so this reads
+// the 'title'-prefixed attrs and scopes the rule at the same selector the
+// native support used.
+$responsive_css .= sgs_typography_css_rule( $attributes, 'title', $root_sel . ' .sgs-post-grid__title' );
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add them

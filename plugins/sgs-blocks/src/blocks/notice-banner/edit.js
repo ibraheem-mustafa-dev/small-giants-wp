@@ -20,6 +20,7 @@ import {
 	textRow,
 	SgsBorderControl,
 	resolveColourToken,
+	TypographyControls,
 } from '../../components';
 import { colourVar } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -33,6 +34,17 @@ const LENGTH_UNITS = [
 	{ value: 'rem', label: 'rem' },
 	{ value: 'em', label: 'em' },
 	{ value: '%', label: '%' },
+];
+
+// Block-private text-align (replaces the retired native
+// supports.typography.textAlign — D971/D972 full-replacement track; mirrors
+// sgs/text's canonical bare-attribute pattern).
+const TEXT_ALIGN_OPTIONS = [
+	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
+	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
 ];
 
 const DISPLAY_MODE_OPTIONS = [
@@ -157,6 +169,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		maxWidth,
 		backgroundColour,
 		backgroundColourGradient,
+		textAlign,
 	} = attributes;
 
 	const isAnnouncement = 'announcement' === displayMode;
@@ -426,6 +439,34 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
+				{ /* Typography — replaces the old WP-native supports.typography
+				   (fontSize/lineHeight/fontStyle/textAlign) with the shared
+				   TypographyControls component + sgs_typography_css_rule()
+				   render.php helper (D971/D972 full-replacement track). Root
+				   prefix "" — this block's text is a child sgs/text
+				   InnerBlock (FR-22-6), so this paints an INHERITABLE default
+				   on the wrapper (HC2's explicit native-typography carve-out),
+				   never a per-element override on the child. textAlign is a
+				   block-private bare attribute (mirrors sgs/text's canonical
+				   pattern) rather than native — the full-replacement rule
+				   (rule 45) flags ANY declared supports.typography sub-key,
+				   so textAlign moved off the native mechanism too, driving
+				   the same has-text-align-* class render.php already emits. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Text align', 'sgs-blocks' ) }
+						value={ textAlign }
+						options={ TEXT_ALIGN_OPTIONS }
+						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+					/>
+				</PanelBody>
 				{ /* NO-INLINE + NO-WRAPPER (2026-07-10): content-KIND, box+width only —
 				     dropped SGS_Container_Wrapper (D294) in favour of block-private
 				     scoped output (matches sgs/quote). Padding/margin route to the

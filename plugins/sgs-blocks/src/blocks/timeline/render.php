@@ -219,24 +219,12 @@ $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_clas
 // WP `shadow` support value (skip-serialised).
 $style_shadow = isset( $attributes['style']['shadow'] ) ? (string) $attributes['style']['shadow'] : '';
 
-// WP `typography` support values (skip-serialised) — pass the whole filtered
-// set to the style engine at once (base only; this block has no responsive
-// typography tiers).
-$style_typography_raw = isset( $attributes['style']['typography'] ) && is_array( $attributes['style']['typography'] ) ? $attributes['style']['typography'] : array();
-$style_typography     = array();
-foreach ( array( 'fontSize', 'lineHeight', 'letterSpacing', 'textTransform', 'fontWeight', 'fontStyle' ) as $typography_key ) {
-	if ( isset( $style_typography_raw[ $typography_key ] ) && '' !== $style_typography_raw[ $typography_key ] ) {
-		$style_typography[ $typography_key ] = $style_typography_raw[ $typography_key ];
-	}
-}
-
-// `textAlign` is NOT nested under style.typography — WP's typography.textAlign
-// support injects it as a TOP-LEVEL $attributes['textAlign'] string (mirrors
-// sgs/notice-banner + sgs/countdown-timer). block.json maps css:text-align to
-// the `title` element (`.sgs-timeline__title`), so it is scoped there, not
-// the root <ol> (DB-first element manifest, R-31-1).
-$text_align_raw = $attributes['textAlign'] ?? '';
-$text_align     = in_array( $text_align_raw, array( 'left', 'center', 'right' ), true ) ? $text_align_raw : '';
+// Entry-title typography (fontSize/lineHeight/fontWeight/fontStyle) is no
+// longer a WP-native `style.typography` skip-serialised object — migrated to
+// the shared `sgs_typography_css_rule()` helper (D971/D972 full-replacement
+// track), called against $title_sel below alongside the other scoped-CSS
+// assembly. letterSpacing/textTransform/textAlign had no shared-component
+// equivalent and are dropped as honest gaps (mirrors sgs/accordion).
 
 // Base padding/margin — WP-native style.spacing.* objects (skip-serialised).
 $base_padding_obj = array();
@@ -391,23 +379,12 @@ if ( ! empty( $base_style_engine_args ) ) {
 	}
 }
 
-// --- Typography — routed to `.sgs-timeline__title` (matches the declared
-// selectors.typography in block.json), not the root. ---
-if ( ! empty( $style_typography ) ) {
-	$typography_scoped_styles = wp_style_engine_get_styles(
-		array( 'typography' => $style_typography ),
-		array( 'selector' => $title_sel )
-	);
-	if ( ! empty( $typography_scoped_styles['css'] ) ) {
-		$scoped_css[] = $typography_scoped_styles['css'];
-	}
-}
-
-// --- text-align — not a style-engine `typography` key (hand-built, mirrors
-// sgs/countdown-timer + sgs/icon-list), scoped to the title selector. ---
-if ( '' !== $text_align ) {
-	$scoped_css[] = "{$title_sel}{text-align:{$text_align};}";
-}
+// --- Typography — shared helper, routed to `.sgs-timeline__title` (matches
+// the pre-migration `selectors.typography` in block.json), not the root.
+// D971/D972 full-replacement track: fontSize/lineHeight/fontWeight/fontStyle
+// only — letterSpacing/textTransform/textAlign have no shared-component
+// equivalent and are dropped as honest gaps (mirrors sgs/accordion). ---
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'title', $title_sel );
 
 // --- Responsive padding/margin/border-radius tiers — box objects, hand-built
 // shorthand, scoped @media on the root selector (contract §B2: tablet

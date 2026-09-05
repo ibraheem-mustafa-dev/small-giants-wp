@@ -9,7 +9,7 @@ import {
 	Flex,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken, SgsColourPanel } from '../../components';
+import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken, SgsColourPanel, TypographyControls } from '../../components';
 import { spacingVar, borderPaintPreview } from '../../utils';
 
 // Site Info mode pulls from this fixed set of networks (same 8 slugs the
@@ -558,6 +558,23 @@ export default function Edit( { attributes, setAttributes } ) {
 					</Button>
 				</PanelBody>
 				) }
+
+				{ /* Typography — replaces the old WP-native supports.typography
+				   (textAlign only, and dead in practice: this root is display:flex
+				   with no inline/block content, so text-align never painted
+				   anything) with the shared TypographyControls component +
+				   sgs_typography_css_rule() render.php helper (D971/D972
+				   full-replacement track). Root prefix "" — the block has no
+				   rendered text label (aria-label only), so the root is the only
+				   sensible typography target, matching the previous native
+				   fontSize/lineHeight scope. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+					/>
+				</PanelBody>
 
 				{ /* ── Spacing panel ── Box-object interface contract §B/§E: padding/
 				   margin base routes to WP-native style.spacing.* (skip-serialised,

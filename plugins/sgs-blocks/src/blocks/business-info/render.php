@@ -528,18 +528,6 @@ $style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (stri
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
-// --- WP-native typography support (skip-serialised) — same auto-inline
-// problem as color/spacing: get_block_wrapper_attributes() would otherwise
-// inline style.typography.* straight onto the wrapper. Read the base
-// style.typography.* object and fold it into the same scoped
-// wp_style_engine_get_styles() call used for color/spacing below (contract
-// §A/§B — mirrors sgs/heading + sgs/label). Only fontSize + fontFamily are
-// declared in block.json supports.typography, so only those keys can ever
-// be present.
-$style_typography = isset( $attributes['style']['typography'] ) && is_array( $attributes['style']['typography'] )
-	? $attributes['style']['typography']
-	: array();
-
 $base_style_engine_args = array();
 
 $base_spacing = array();
@@ -564,10 +552,6 @@ if ( ! empty( $color_args ) ) {
 	$base_style_engine_args['color'] = $color_args;
 }
 
-if ( ! empty( $style_typography ) ) {
-	$base_style_engine_args['typography'] = $style_typography;
-}
-
 if ( ! empty( $base_style_engine_args ) ) {
 	$base_scoped_styles = wp_style_engine_get_styles(
 		$base_style_engine_args,
@@ -576,6 +560,17 @@ if ( ! empty( $base_style_engine_args ) ) {
 	if ( ! empty( $base_scoped_styles['css'] ) ) {
 		$scoped_css[] = $base_scoped_styles['css'];
 	}
+}
+
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
+// supports.typography (fontSize + fontFamily only) with the framework's own
+// helper, which also now offers fontWeight/fontStyle/lineHeight. Scope is
+// unchanged — $root_sel is the same whole-wrapper selector the native support
+// was applied to above.
+$typography_css = sgs_typography_css_rule( $attributes, '', $root_sel );
+if ( '' !== $typography_css ) {
+	$scoped_css[] = $typography_css;
 }
 
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,

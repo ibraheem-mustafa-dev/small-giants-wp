@@ -28,16 +28,6 @@
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"letterSpacing": true,
-			"textTransform": true,
-			"fontWeight": true,
-			"fontStyle": true,
-			"__experimentalSkipSerialization": true
-		},
 		"spacing": {
 			"margin": true,
 			"padding": true,
@@ -116,13 +106,10 @@
 					"prefix": "title",
 					"attrMap": {
 						"css:color": "titleColour",
-						"css:font-size": "native:typography.fontSize",
-						"css:line-height": "native:typography.lineHeight",
-						"css:font-weight": "native:typography.fontWeight",
-						"css:font-style": "native:typography.fontStyle",
-						"css:letter-spacing": "native:typography.letterSpacing",
-						"css:text-transform": "native:typography.textTransform",
-						"css:text-align": "native:typography.textAlign",
+						"css:font-size": "titleFontSize",
+						"css:line-height": "titleLineHeight",
+						"css:font-weight": "titleFontWeight",
+						"css:font-style": "titleFontStyle",
 						"tag": "headingLevel",
 						"css:background-image": "titleColourGradient"
 					},
@@ -133,7 +120,7 @@
 							}
 						}
 					},
-					"_note": "block.json declares `selectors.typography: '.sgs-process-steps__title'`, so the root's native typography paints the step TITLE. titleColour is a separate design-token colour attr (resolves via default convention `title`+`Colour`). `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:413, `.sgs-process-steps__title`) but doesn't match the `title` prefix convention on its own."
+					"_note": "Typography migrated off WP-native supports.typography onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), prefix 'title' (titleFontSize/titleFontWeight/titleFontStyle/titleLineHeight) — replaces the old native:typography.* attrMap entries and the block-level `selectors.typography` declaration (both removed). No letterSpacing/textTransform/textAlign control is offered, so those remain honest gaps (previously native-typography-only). titleColour is a separate design-token colour attr (resolves via default convention `title`+`Colour`). `attrMap.tag` (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php, `.sgs-process-steps__title`) but doesn't match the `title` prefix convention on its own."
 				},
 				"number": {
 					"label": "Step number badge",
@@ -208,8 +195,7 @@
 		}
 	},
 	"selectors": {
-		"root": ".sgs-process-steps",
-		"typography": ".sgs-process-steps__title"
+		"root": ".sgs-process-steps"
 	},
 	"attributes": {
 		"steps": {
@@ -288,6 +274,30 @@
 		"titleColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"titleFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"titleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"titleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"titleFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"titleLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"titleLineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		},
 		"descriptionColour": {
 			"type": "string",

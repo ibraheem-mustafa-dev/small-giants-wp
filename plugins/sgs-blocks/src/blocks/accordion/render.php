@@ -197,24 +197,11 @@ if ( 'none' !== $border_style ) {
 	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
 }
 
-// Typography (fontSize + lineHeight only, per block.json supports) — applies
-// to the accordion root itself (no declared typography selector).
-$typography_args = array();
-if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
-	$typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
-}
-if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
-	$typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
-}
-if ( ! empty( $typography_args ) ) {
-	$typography_scoped = wp_style_engine_get_styles(
-		array( 'typography' => $typography_args ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $typography_scoped['css'] ) ) {
-		$responsive_css .= $typography_scoped['css'];
-	}
-}
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
+// supports.typography (fontSize + lineHeight only) with the framework's own
+// helper, which also now offers fontWeight/fontStyle.
+$responsive_css .= sgs_typography_css_rule( $attributes, '', $root_sel );
 
 // ─── Inner HTML = $content (the accordion items) ────────────────────────────
 // The accordion wrapper classes travel via extra_classes; the toggle attrs

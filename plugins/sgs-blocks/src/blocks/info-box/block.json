@@ -27,16 +27,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"letterSpacing": true,
-			"textTransform": true,
-			"fontWeight": true,
-			"fontStyle": true,
-			"__experimentalSkipSerialization": true
-		},
 		"spacing": {
 			"margin": true,
 			"padding": true,
@@ -233,6 +223,30 @@
 		"maxWidth": {
 			"type": "string",
 			"default": ""
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		},
 		"paddingTablet": {
 			"type": "object",

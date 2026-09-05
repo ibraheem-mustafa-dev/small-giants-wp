@@ -12,7 +12,7 @@ import {
   BoxControl,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
-import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl } from "../../components";
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, TypographyControls } from "../../components";
 import { resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, borderPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, colourVar } from "../../utils";
 import {
   LayoutPanel,
@@ -510,6 +510,19 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
             },
           ] }
         />
+        {/* Typography — replaces the old WP-native supports.typography
+            (fontSize/lineHeight/textAlign/letterSpacing/textTransform/
+            fontWeight/fontStyle only) with the shared TypographyControls
+            component + sgs_typography_css_rule() render.php helper
+            (D971/D972 full-replacement track, mirrors sgs/accordion). Root
+            prefix "" since this control targets the wrapper element. */}
+        <PanelBody title={ __( "Typography", "sgs-blocks" ) } initialOpen={ false }>
+          <TypographyControls
+            attributes={ attributes }
+            setAttributes={ setAttributes }
+            prefix=""
+          />
+        </PanelBody>
         <BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
       </InspectorControls>
 

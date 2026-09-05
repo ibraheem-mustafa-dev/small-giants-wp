@@ -163,9 +163,6 @@ $style_color_text = isset( $attributes['textColour'] ) ? (string) $attributes['t
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
-$style_font_size   = isset( $attributes['style']['typography']['fontSize'] ) ? (string) $attributes['style']['typography']['fontSize'] : '';
-$style_line_height = isset( $attributes['style']['typography']['lineHeight'] ) ? (string) $attributes['style']['typography']['lineHeight'] : '';
-
 $base_padding_obj = array();
 if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
 	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
@@ -245,17 +242,6 @@ if ( '' !== $sgs_pf_fill_css ) {
 	$scoped_css[] = $sgs_pf_fill_css;
 }
 
-$typography_args = array();
-if ( '' !== $style_font_size ) {
-	$typography_args['fontSize'] = $style_font_size;
-}
-if ( '' !== $style_line_height ) {
-	$typography_args['lineHeight'] = $style_line_height;
-}
-if ( ! empty( $typography_args ) ) {
-	$base_style_engine_args['typography'] = $typography_args;
-}
-
 if ( ! empty( $base_style_engine_args ) ) {
 	$base_scoped_styles = wp_style_engine_get_styles(
 		$base_style_engine_args,
@@ -281,6 +267,15 @@ if ( '' !== $text_colour_effective ) {
 		$scoped_css[] = "{$root_sel}{{$text_colour_decl};}";
 	}
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_effective );
+}
+
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
+// supports.typography (fontSize + lineHeight only) with the framework's own
+// helper, which also now offers fontWeight/fontStyle.
+$sgs_pf_typography_css = sgs_typography_css_rule( $attributes, '', $root_sel );
+if ( '' !== $sgs_pf_typography_css ) {
+	$scoped_css[] = $sgs_pf_typography_css;
 }
 
 // --- Width (base only — outer maxWidth). ---

@@ -28,16 +28,6 @@
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"letterSpacing": true,
-			"textTransform": true,
-			"fontWeight": true,
-			"fontStyle": true,
-			"__experimentalSkipSerialization": true
-		},
 		"spacing": {
 			"margin": true,
 			"padding": true,
@@ -92,17 +82,15 @@
 					"label": "Entry title",
 					"order": 2,
 					"clusters": [ "text" ],
+					"prefix": "title",
 					"attrMap": {
-						"css:font-size": "native:typography.fontSize",
-						"css:line-height": "native:typography.lineHeight",
-						"css:font-weight": "native:typography.fontWeight",
-						"css:font-style": "native:typography.fontStyle",
-						"css:letter-spacing": "native:typography.letterSpacing",
-						"css:text-transform": "native:typography.textTransform",
-						"css:text-align": "native:typography.textAlign",
+						"css:font-size": "titleFontSize",
+						"css:line-height": "titleLineHeight",
+						"css:font-weight": "titleFontWeight",
+						"css:font-style": "titleFontStyle",
 						"tag": "headingLevel"
 					},
-					"_note": "block.json declares `selectors.typography: '.sgs-timeline__title'`, so the root's native typography support paints the entry TITLE, not the wrapper — declared on its own element to reflect where it actually renders. No independent title colour control exists (colour is the shared wrapper `color.text`) — honest gap. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:463) and this element has no `prefix` declared, so it needs an explicit map."
+					"_note": "Typography full-replacement migration (D971/D972, 2026-09-06) — the WP-native `supports.typography` support (fontSize/lineHeight/fontWeight/fontStyle) that used to paint this element via the declared `selectors.typography: '.sgs-timeline__title'` is REMOVED; replaced by the shared `TypographyControls` component (edit.js) + `sgs_typography_css_rule()` helper (render.php), scoped to `.sgs-timeline__title` exactly as the old native selector was. `letterSpacing`/`textTransform`/`textAlign` were also native sub-flags on this block's old `supports.typography` and have NO shared-component equivalent (mirrors sgs/accordion's own declared gaps for letterSpacing/textTransform/fontFamily) — dropped as honest gaps, not carried forward. No independent title colour control exists (colour is the shared wrapper `color.text`) — pre-existing honest gap. `attrMap.tag` — `headingLevel` sets the rendered tag on this element (render.php) and this element has an explicit `prefix`, but `tag` is not a CSS property so it still needs its own map entry."
 				},
 				"connector": {
 					"label": "Connector line / node",
@@ -220,6 +208,30 @@
 		"dateColour": {
 			"type": "string",
 			"default": "accent"
+		},
+		"titleFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"titleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"titleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"titleFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"titleLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"titleLineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		},
 		"scrollEffect": {
 			"type": "string",

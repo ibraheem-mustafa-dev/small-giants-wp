@@ -44,6 +44,7 @@ import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverFiel
 	SgsBorderControl,
 	resolveColourToken,
 	DesignTokenPicker,
+	TypographyControls,
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -101,6 +102,14 @@ const PLATFORM_OPTIONS = [
 	{ label: __( 'Snapchat', 'sgs-blocks' ),     value: 'snapchat' },
 	{ label: __( 'Telegram', 'sgs-blocks' ),     value: 'telegram' },
 	{ label: __( 'Discord', 'sgs-blocks' ),      value: 'discord' },
+];
+
+const TEXT_ALIGN_OPTIONS = [
+	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
+	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
 ];
 
 const LENGTH_UNITS = [
@@ -227,9 +236,11 @@ function buildWrapperStyle( attributes ) {
 		wrapperStyle.backgroundColor = resolveTeamMemberColourPreview( backgroundColour );
 	}
 
-	if ( style?.typography?.fontSize ) {
-		wrapperStyle.fontSize = style.typography.fontSize;
-	}
+	// fontSize preview removed (D971/D972 typography full-replacement) — native
+	// style.typography.fontSize no longer exists (the fontSize sub-flag was
+	// removed from block.json's supports.typography); the new tier-object
+	// `fontSize` attr has no canvas preview yet, matching sgs/accordion's
+	// identical no-preview precedent for this same migration.
 
 	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( radiusPreview ) {
@@ -302,6 +313,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		maxWidth,
 		nameColourHover,
 		roleColourHover,
+		textAlign,
 	} = attributes;
 
 	// Contrast check for border — warn if border fails WCAG 3:1 contrast
@@ -772,6 +784,32 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
+
+				{ /* Typography — FULLY replaces the old WP-native supports.typography
+				   (fontSize + textAlign) with the shared TypographyControls
+				   component + sgs_typography_css_rule() render.php helper
+				   (D971/D972 full-replacement track, Bean-locked 2026-09-05: no
+				   real native supports.typography sub-capability may remain on
+				   any block). Root prefix "" since the card root is the single
+				   typography target. textAlign is now a plain block-private
+				   attribute — TypographyControls has no alignment picker, so a
+				   dedicated SelectControl is mounted alongside it; render.php's
+				   existing has-text-align-* class mechanism is unchanged. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+					/>
+					<SelectControl
+						label={ __( 'Text alignment', 'sgs-blocks' ) }
+						value={ textAlign || '' }
+						options={ TEXT_ALIGN_OPTIONS }
+						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
 
 				{ /* Box-object interface contract §B/§E: padding/margin base routes
 				   to WP-native style.spacing.* (skip-serialised → scoped, not

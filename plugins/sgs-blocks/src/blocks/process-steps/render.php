@@ -144,8 +144,8 @@ if ( isset( $attributes['borderRadius'] ) ) {
 $border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
 $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
 
-// WP `typography` / `shadow` support values (skip-serialised in block.json →
-// NOT auto-inlined). Passed wholesale to the style engine below — the engine
+// WP `shadow` support value (skip-serialised in block.json → NOT
+// auto-inlined). Passed wholesale to the style engine below — the engine
 // safely ignores any sub-key it doesn't recognise.
 //
 // D-pending (QC-council-validated, 2026-09-04): wrapper text/background
@@ -157,9 +157,11 @@ $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null 
 // "Colour EMISSION helpers" — sgs_resolve_text_colour_or_gradient() /
 // sgs_text_colour_decl() / sgs_text_colour_gradient_fallback_rule() for
 // text; sgs_fill_decls() / sgs_block_background_layer_css() for background).
-// Only the typography/shadow sub-keys stay in the wholesale call below.
-$style_typography_args = isset( $attributes['style']['typography'] ) && is_array( $attributes['style']['typography'] ) ? $attributes['style']['typography'] : array();
-$style_shadow          = isset( $attributes['style']['shadow'] ) ? (string) $attributes['style']['shadow'] : '';
+//
+// Typography (title element) moved off this wholesale native-support call
+// onto the shared `sgs_typography_css_rule()` helper (D971/D972
+// full-replacement track) — see section 4 where $title_scope is defined.
+$style_shadow = isset( $attributes['style']['shadow'] ) ? (string) $attributes['style']['shadow'] : '';
 $preset_text_slug      = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug        = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
@@ -366,10 +368,6 @@ if ( null !== $base_border_radius ) {
 	$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
 }
 
-if ( ! empty( $style_typography_args ) ) {
-	$base_style_engine_args['typography'] = $style_typography_args;
-}
-
 if ( '' !== $style_shadow ) {
 	$base_style_engine_args['shadow'] = $style_shadow;
 }
@@ -428,6 +426,12 @@ if ( $mobile_box_decls ) {
 $num_scope   = $root_sel . ' .sgs-process-steps__number';
 $title_scope = $root_sel . ' .sgs-process-steps__title';
 $desc_scope  = $root_sel . ' .sgs-process-steps__description';
+
+// Step title typography — shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track), replacing the old WP-native
+// supports.typography + `selectors.typography` declaration (both removed
+// from block.json). Prefix "title" matches the title element's own attrMap.
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'title', $title_scope );
 
 $num_decls = array();
 if ( $number_colour ) {

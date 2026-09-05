@@ -427,26 +427,18 @@ if ( ! empty( $pt_style_engine_args ) ) {
 	}
 }
 
-// Typography — declared selector (block.json selectors.typography) is
-// ".sgs-pricing-table__title"; the rendered element uses the canonical
-// __name class (style.css keeps __title as a back-compat alias), so both
-// are targeted here to match that existing dual-selector convention.
-$pt_typography_args = array();
-if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
-	$pt_typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
-}
-if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
-	$pt_typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
-}
-if ( ! empty( $pt_typography_args ) ) {
-	$pt_typography_scoped = wp_style_engine_get_styles(
-		array( 'typography' => $pt_typography_args ),
-		array( 'selector' => $root_sel . ' .sgs-pricing-table__name, ' . $root_sel . ' .sgs-pricing-table__title' )
-	);
-	if ( ! empty( $pt_typography_scoped['css'] ) ) {
-		$responsive_css .= $pt_typography_scoped['css'];
-	}
-}
+// Typography — prefix 'title', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
+// supports.typography (fontSize + lineHeight only), which the Block Selectors
+// API redirected onto the SAME target selector this now emits directly — the
+// rendered element uses the canonical __name class (style.css keeps __title
+// as a back-compat alias), so both are still targeted, matching the prior
+// dual-selector convention.
+$responsive_css .= sgs_typography_css_rule(
+	$attributes,
+	'title',
+	$root_sel . ' .sgs-pricing-table__name, ' . $root_sel . ' .sgs-pricing-table__title'
+);
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add

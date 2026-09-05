@@ -20,6 +20,7 @@ import { backgroundPreview, svgBackgroundPreview, applyGridLayoutPreview } from 
 import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox,
 	SgsBorderControl,
 	resolveColourToken,
+	TypographyControls,
 } from '../../components';
 // No-inline migration (2026-07-09): cta-section no longer uses the default
 // <ContainerWrapperControls> aggregator wholesale — its ResponsiveSpacingPanel /
@@ -74,6 +75,16 @@ const LAYOUT_OPTIONS = [
 	{ label: __( 'Centred', 'sgs-blocks' ), value: 'centred' },
 	{ label: __( 'Left-aligned', 'sgs-blocks' ), value: 'left' },
 	{ label: __( 'Split', 'sgs-blocks' ), value: 'split' },
+];
+
+// Mirrors sgs/heading's TEXT_ALIGN_OPTIONS — the bare `textAlign` attribute
+// replaces the retired native "Align text" toolbar control (D971/D972).
+const TEXT_ALIGN_OPTIONS = [
+	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
+	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
 ];
 
 // Mirrors sgs/team-member's EASING_OPTIONS (built 2026-09-03) — kept as a
@@ -533,6 +544,37 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				{ /* Background (image/video/svg tabs + ken-burns/parallax) — root-level
 					appearance, kept first in the Styles tab (mirrors sgs/container). */ }
 				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
+
+				{ /* Typography (D971/D972 full-replacement track, oracle: sgs/accordion) —
+					root prefix '' (fontSize/fontWeight/fontStyle/lineHeight/letterSpacing/
+					textTransform), emitted server-side by sgs_typography_css_rule() onto the
+					block ROOT selector (see render.php's typography comment). The bare
+					`textAlign` attribute replaces the retired native "Align text" toolbar
+					control (rule 45-typography-full-replacement flags ANY real native
+					typography sub-flag, including textAlign) — mirrors sgs/heading's plain
+					SelectControl pattern rather than a toolbar button. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+						showSize={ true }
+						showWeight={ true }
+						showStyle={ true }
+						showLineHeight={ true }
+						showLetterSpacing={ true }
+						showTransform={ true }
+						showResponsive={ true }
+					/>
+					<SelectControl
+						label={ __( 'Text align', 'sgs-blocks' ) }
+						value={ attributes.textAlign || '' }
+						options={ TEXT_ALIGN_OPTIONS }
+						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
 
 				<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) }>
 					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />

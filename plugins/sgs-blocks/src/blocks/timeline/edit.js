@@ -23,6 +23,7 @@ import {
 	ResponsiveBoxControl,
 	SgsColourPanel,
 	SgsBorderControl,
+	TypographyControls,
 } from '../../components';
 import { colourVar } from '../../utils';
 import { sanitiseSvg } from '../../utils';
@@ -285,14 +286,12 @@ function buildRootPreviewStyle( attributes ) {
 		previewStyle.margin = marginPreview;
 	}
 
-	const typography = style?.typography ?? {};
-	if ( typography.fontSize ) previewStyle.fontSize = typography.fontSize;
-	if ( typography.lineHeight ) previewStyle.lineHeight = typography.lineHeight;
-	if ( typography.textAlign ) previewStyle.textAlign = typography.textAlign;
-	if ( typography.letterSpacing ) previewStyle.letterSpacing = typography.letterSpacing;
-	if ( typography.textTransform ) previewStyle.textTransform = typography.textTransform;
-	if ( typography.fontWeight ) previewStyle.fontWeight = typography.fontWeight;
-	if ( typography.fontStyle ) previewStyle.fontStyle = typography.fontStyle;
+	// Typography (fontSize/lineHeight/fontWeight/fontStyle) is no longer a
+	// skip-serialised WP-native `style.typography` object on this block —
+	// migrated to the shared TypographyControls/sgs_typography_css_rule()
+	// mechanism (D971/D972), which paints `.sgs-timeline__title` directly and
+	// has no root-level canvas preview reconstruction of its own (mirrors
+	// sgs/accordion — this helper only ever reconstructs WRAPPER-level style).
 
 	return previewStyle;
 }
@@ -1080,6 +1079,20 @@ export default function Edit( { attributes, setAttributes } ) {
 				   style.border.radius (base) + borderRadiusTablet/Mobile
 				   tiers. */}
 				<InspectorControls group="styles">
+				{/* Typography — replaces the old WP-native supports.typography
+				    (fontSize/lineHeight/fontWeight/fontStyle only) with the shared
+				    TypographyControls component + sgs_typography_css_rule()
+				    render.php helper (D971/D972 full-replacement track). Prefix
+				    "title" matches the `title` element's own `attrMap` (block.json)
+				    and the selector this paints — `.sgs-timeline__title` — mirroring
+				    the pre-migration `selectors.typography` declaration exactly. */}
+				<PanelBody title={ __( 'Entry title typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="title"
+					/>
+				</PanelBody>
 				<PanelBody title={ __( 'Padding, margin & border', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }

@@ -167,20 +167,14 @@ $style_border = isset( $style_obj['border'] ) && is_array( $style_obj['border'] 
 // colour helpers (helpers-colour-variants.php / helpers-tokens.php).
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 
-// Typography support values.
-$style_font_size   = isset( $style_obj['typography']['fontSize'] ) ? (string) $style_obj['typography']['fontSize'] : '';
-$style_line_height = isset( $style_obj['typography']['lineHeight'] ) ? (string) $style_obj['typography']['lineHeight'] : '';
-
-// typography.textAlign is NOT a style-engine key — WP core applies it as a
-// `has-text-align-{value}` CLASS from the `textAlign` attribute, but does not
-// reliably merge that class into get_block_wrapper_attributes() for a dynamic
-// block (verified pattern: class-sgs-container-wrapper.php's identical fix for
-// container-equivalent composites) — emit it explicitly.
-// Reads `style.typography.textAlign` (the native control's target) first; the
-// top-level `textAlign` is kept as a fallback because the cloning converter
-// writes that key.
-$text_align = $attributes['style']['typography']['textAlign']
-	?? ( $attributes['textAlign'] ?? '' );
+// textAlign is now a block-private bare attribute (D971/D972 full-replacement
+// track — mirrors sgs/text's canonical pattern; the old native
+// supports.typography.textAlign was removed from block.json). Rendered as a
+// `has-text-align-{value}` CLASS, not a style-engine declaration — WP core's
+// own convention, does not reliably merge into get_block_wrapper_attributes()
+// for a dynamic block (verified pattern: class-sgs-container-wrapper.php's
+// identical fix for container-equivalent composites) — emit it explicitly.
+$text_align = $attributes['textAlign'] ?? '';
 if ( ! in_array( $text_align, array( 'left', 'center', 'right' ), true ) ) {
 	$text_align = '';
 }
@@ -299,17 +293,6 @@ if ( ! empty( $style_border ) ) {
 	$base_style_engine_args['border'] = $style_border;
 }
 
-$typography_args = array();
-if ( '' !== $style_font_size ) {
-	$typography_args['fontSize'] = $style_font_size;
-}
-if ( '' !== $style_line_height ) {
-	$typography_args['lineHeight'] = $style_line_height;
-}
-if ( ! empty( $typography_args ) ) {
-	$base_style_engine_args['typography'] = $typography_args;
-}
-
 if ( ! empty( $base_style_engine_args ) ) {
 	$base_scoped_styles = wp_style_engine_get_styles(
 		$base_style_engine_args,
@@ -319,6 +302,14 @@ if ( ! empty( $base_style_engine_args ) ) {
 		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
+
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
+// supports.typography fontSize/lineHeight/fontStyle (removed from block.json),
+// which also now offers fontWeight. Painted on the ROOT selector so it
+// inherits into the InnerBlocks sgs/text child (HC2's native-typography
+// wrapper-inheritance carve-out) rather than a per-element override.
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
 
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME root selector (contract §B/§B2: tablet

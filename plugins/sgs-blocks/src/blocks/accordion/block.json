@@ -29,11 +29,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"__experimentalSkipSerialization": true
-		},
 		"spacing": {
 			"margin": true,
 			"padding": true,
@@ -66,8 +61,10 @@
 					"attrMap": {
 						"css:color": "native:color.text",
 						"css:background-color": "native:color.background",
-						"css:font-size": "native:typography.fontSize",
-						"css:line-height": "native:typography.lineHeight",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:border-width": "borderWidth",
@@ -77,7 +74,7 @@
 						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth"
 					},
-					"_note": "Mirrors sgs/container's wrapper/grid split — this block.json declares only fontSize+lineHeight (no letterSpacing/textTransform/fontWeight/fontStyle/textAlign/fontFamily) and no width/height/box-shadow/aspect-ratio attrs, so the remaining text+layout BOX members are honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element, not this one — same double-check pattern container's wrapper uses."
+					"_note": "Mirrors sgs/container's wrapper/grid split — typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight); no letterSpacing/textTransform/textAlign/fontFamily control is offered, and no width/height/box-shadow/aspect-ratio attrs exist, so those remain honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element, not this one — same double-check pattern container's wrapper uses."
 				},
 				"inner": {
 					"label": "Inner (grid / flex layout)",
@@ -191,6 +188,30 @@
 		"borderRadiusMobile": {
 			"type": "object",
 			"default": {}
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		},
 		"headerColour": {
 			"type": "string"

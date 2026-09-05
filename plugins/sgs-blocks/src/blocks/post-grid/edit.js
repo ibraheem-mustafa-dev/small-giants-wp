@@ -41,6 +41,7 @@ import { MEDIA_SIZING_RATIO_OPTIONS,
 	SgsBorderControl,
 	resolveColourToken,
 	DesignTokenPicker,
+	TypographyControls,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import MediaElementPanel from '../../components/MediaElementPanel';
@@ -1279,6 +1280,21 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
+				{ /* Typography — replaces the old WP-native supports.typography
+				    (fontSize/lineHeight only, targeted at .sgs-post-grid__title via
+				    block.json selectors.typography) with the shared TypographyControls
+				    component + sgs_typography_css_rule() render.php helper (D971/D972
+				    full-replacement track). Prefix "title" since the native support's
+				    actual target was the post title, not the block root — defaults
+				    also now expose weight/style, which native typography never offered
+				    here. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="title"
+					/>
+				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
