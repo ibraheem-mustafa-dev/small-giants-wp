@@ -7,7 +7,7 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import { SgsColourPanel, ResponsiveBoxControl, TypographyControls } from '../../components';
-import { colourVar } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 
 const SEPARATOR_OPTIONS = [
 	{ label: '/', value: '/' },
@@ -64,6 +64,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		separatorColour,
 		separatorColourGradient,
 		currentColour,
+		currentColourGradient,
 		paddingTablet,
 		paddingMobile,
 		marginTablet,
@@ -121,12 +122,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'current',
 						label: __( 'Current page colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: currentColour,
 								onChange: ( val ) => setAttributes( { currentColour: val ?? '' } ),
+								gradientValue: currentColourGradient,
+								onGradientChange: ( val ) => setAttributes( { currentColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -230,7 +234,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						<a href="#">{ __( 'Parent Page', 'sgs-blocks' ) }</a>
 						<span className="sgs-breadcrumbs__separator" aria-hidden="true">{ separator }</span>
 					</li>
-					<li className="sgs-breadcrumbs__item sgs-breadcrumbs__item--current" aria-current="page">
+					<li
+						className="sgs-breadcrumbs__item sgs-breadcrumbs__item--current"
+						aria-current="page"
+						style={ resolveTextColourPreviewStyle( currentColour, currentColourGradient, colourVar ) }
+					>
 						{ __( 'Current Page', 'sgs-blocks' ) }
 					</li>
 				</ol>

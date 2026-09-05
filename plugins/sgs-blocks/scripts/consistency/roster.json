@@ -155,8 +155,8 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": false,
-        "media": false,
+        "link": true,
+        "media": true,
         "animation": false
       },
       "qualifies": {
