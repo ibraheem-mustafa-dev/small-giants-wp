@@ -222,6 +222,7 @@
 	width: var( --sgs-before-after-divider-width, 3px );
 	transform: translateX( -50% );
 	background-color: var( --sgs-before-after-divider-colour, #fff );
+	background-image: var(--sgs-before-after-divider-colour-gradient, none);
 	box-shadow: 0 0 0 1px rgba( 0, 0, 0, 0.15 );
 }
 
@@ -264,6 +265,14 @@
 	/* Fallback is the CSS default look; render.php only sets this custom
 	 * property's VALUE when handleIconColour is actually configured. */
 	stroke: var( --sgs-before-after-handle-icon-colour, #1e1e1e );
+	/* Explicit size (2026-09-05, IconPicker migration) — the resolved icon
+	 * markup now comes from sgs_get_lucide_icon()/sgs_get_wp_icon(), both of
+	 * which emit width="24" height="24" presentation attributes; CSS
+	 * width/height on an inline <svg> overrides those, so every icon
+	 * (including the previous hand-rolled 16x16 chevrons default) renders at
+	 * the SAME size this handle always used — no visual regression. */
+	width: 16px;
+	height: 16px;
 }
 
 /* --- The native range input IS the accessible + no-JS-safe divider control.

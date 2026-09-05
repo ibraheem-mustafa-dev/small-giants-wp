@@ -100,6 +100,7 @@
 					],
 					"attrMap": {
 						"css:background-color": "dividerColour",
+						"css:background-image": "dividerColourGradient",
 						"css:width": "dividerWidth"
 					},
 					"_note": "The visible divider stroke rendered inside the divider assembly (`.wp-block-sgs-before-after__divider-line`, render.php line 558) — a child of the `divider` element's positioning wrapper, NOT the same node. dividerColour/dividerWidth were previously misattributed as orphans under `divider` by simple prefix-string matching (both names literally start with 'divider'); this explicit attrMap claims them on their real owning element instead, clearing both from the conformance style-defect count. css:width is used for the line's thickness (DB records the underlying CSS as a height+width shorthand); no dedicated stroke-thickness member exists in the taxonomy, so css:width/layout is the nearest honest mapping. Found live 2026-08-15: DB tagged 2 attrs css_element='divider-line', undeclared until now."
@@ -113,9 +114,11 @@
 					"prefix": "",
 					"attrMap": {
 						"css:background-color": "handleColour",
-						"css:background-image": "handleColourGradient"
+						"css:background-image": "handleColourGradient",
+						"css:stroke": "handleIconColour",
+						"css:stroke-gradient": "handleIconColourGradient"
 					},
-					"_note": "The draggable divider handle/grip (`.wp-block-sgs-before-after__handle`, render.php line 559). handleColour paints its background. handleIconColour styles the icon's SVG stroke — a property with no cluster-member analogue anywhere in cluster-member-sets.json (no css:stroke member exists in the current taxonomy), so it is deliberately left unclustered rather than force-fit into background-color. `prefix: \"\"` opts this element out of orphan-candidate scanning so handleIconColour is reported honestly as an accepted gap (adding a css:stroke member is a framework-level taxonomy change, out of scope for a single block's manifest). Found live 2026-08-15: DB tagged 2 attrs css_element='handle', undeclared until now."
+					"_note": "The draggable divider handle/grip (`.wp-block-sgs-before-after__handle`, render.php line 559). handleColour paints its background. handleIconColour styles the icon's SVG stroke — a property with no cluster-member analogue anywhere in cluster-member-sets.json (no css:stroke member exists in the current taxonomy), so it is deliberately left unclustered rather than force-fit into background-color. `prefix: \"\"` opts this element out of orphan-candidate scanning so handleIconColour is reported honestly as an accepted gap (adding a css:stroke member is a framework-level taxonomy change, out of scope for a single block's manifest). Found live 2026-08-15: DB tagged 2 attrs css_element='handle', undeclared until now. 2026-09-05 (svg-paint-gradient end-shape): handleIconColourGradient added as the FIRST svg-paint-gradient row in the framework — resolved via sgs_svg_stroke_gradient() (same mechanism as sgs/icon's iconColourGradient), never the background-image custom-property-gradient pattern used elsewhere on this same block, because a stroke gradient needs a real SVG <linearGradient>/<radialGradient> def, not a CSS background paint. css:stroke/css:stroke-gradient entries added here rather than to cluster-member-sets.json (still no framework-wide stroke-gradient vocabulary member — same scope boundary as the note above)."
 				}
 			}
 		},
@@ -394,6 +397,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"dividerColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over dividerColour."
+		},
 		"dividerWidth": {
 			"type": "number",
 			"default": 3
@@ -409,6 +417,25 @@
 		"handleIconColour": {
 			"type": "string",
 			"default": ""
+		},
+		"handleIconColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the handle icon's SVG stroke via a real <linearGradient>/<radialGradient> def (sgs_svg_stroke_gradient(), same mechanism as sgs/icon's iconColourGradient) rather than the background-image custom-property pattern used elsewhere on this block (D636 gradient rollout, extended 2026-09-05 — the ONLY svg-paint-gradient row in the framework at the time this was added). Non-empty wins over handleIconColour at paint time."
+		},
+		"handleIconSource": {
+			"type": "string",
+			"default": "lucide",
+			"enum": [
+				"lucide",
+				"wp-icon"
+			],
+			"description": "IconPicker source for the draggable handle's icon glyph (2026-09-05 migration off the hand-rolled two-polyline SVG onto the shared Lucide+IconPicker mechanism, matching sgs/icon's iconSource/iconName pair). Restricted to the two inline-SVG sources (lucide/wp-icon) — dashicon (font glyph) and emoji (text glyph) have no SVG stroke for a gradient to paint, unlike sgs/icon which supports all four sources for its FLAT colour. Defaults to 'lucide' + handleIconName='chevrons-left-right' so every existing instance renders visually unchanged."
+		},
+		"handleIconName": {
+			"type": "string",
+			"default": "chevrons-left-right",
+			"description": "Lucide/wp-icon/dashicon slug for the handle icon. Default 'chevrons-left-right' matches the previously hand-rolled two-polyline chevron SVG exactly — no visual regression on un-migrated instances."
 		},
 		"height": {
 			"type": "object",
