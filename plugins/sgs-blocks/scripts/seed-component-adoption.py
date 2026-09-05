@@ -42,7 +42,10 @@ from pathlib import Path
 SCRIPTS = Path(__file__).resolve().parent
 SCANNER = SCRIPTS / "scan-component-adoption.js"
 
-VALID_FAMILIES = {"editor-component", "util", "render-helper", "injector", "wrapper"}
+VALID_FAMILIES = {
+    "editor-component", "util", "render-helper", "injector", "wrapper",
+    "render-helper-function",
+}
 
 
 def resolve_db() -> Path:
@@ -108,7 +111,11 @@ def ensure_schema(conn: sqlite3.Connection) -> None:
 
 def legacy_type(family: str) -> str:
     """Keep the pre-existing CHECK-constrained column satisfied and meaningful."""
-    return {"editor-component": "editor", "util": "util"}.get(family, "extension")
+    return {
+        "editor-component": "editor",
+        "util": "util",
+        "render-helper-function": "helper-function",
+    }.get(family, "extension")
 
 
 def main() -> int:

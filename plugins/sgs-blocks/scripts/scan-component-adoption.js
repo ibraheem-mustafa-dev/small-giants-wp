@@ -453,6 +453,50 @@ if ( fs.existsSync( wrapperFile ) ) {
 }
 
 // ---------------------------------------------------------------------------
+// 6. PHP helper FUNCTIONS (family='render-helper-function') — merged in from
+//    generate-helper-catalogue.py's own --json mode, NOT re-extracted here.
+//
+// WHY: seed-component-adoption.py's own header is explicit that detection
+// lives in THIS scanner, never in the Python writer — a second Python-side
+// extraction would be a second mechanism, and two mechanisms are how two
+// numbers start disagreeing. But the per-FUNCTION PHP docblock/signature
+// extraction (`_php_functions()`) already lives in
+// generate-helper-catalogue.py, built for the dev-setup.md doc table. Rather
+// than re-implementing THAT parsing a third time here, this scanner shells
+// out to it (mirroring, in reverse, how seed-component-adoption.py already
+// shells out to THIS scanner) and merges its rows into this scanner's own
+// output — so seed-component-adoption.py keeps trusting exactly one thing
+// (`scan-component-adoption.js --json`), while the PHP-function extraction
+// itself still lives in exactly one place.
+//
+// Real per-function adoption counting is out of scope here — the rows arrive
+// with adopters:0/adopter_list:[] already, and are passed through unchanged.
+// ---------------------------------------------------------------------------
+const { execFileSync } = require( 'child_process' );
+const HELPER_CATALOGUE = path.join( SCRIPTS, 'generate-helper-catalogue.py' );
+if ( fs.existsSync( HELPER_CATALOGUE ) ) {
+	let out;
+	try {
+		out = execFileSync( 'python', [ HELPER_CATALOGUE, '--json' ], {
+			encoding: 'utf8',
+			maxBuffer: 1024 * 1024 * 16,
+		} );
+	} catch ( e ) {
+		console.error( '[adoption] FATAL: generate-helper-catalogue.py --json failed:\n' +
+			( e.stderr || e.message ) );
+		process.exit( 2 );
+	}
+	let phpRows;
+	try {
+		phpRows = JSON.parse( out );
+	} catch ( e ) {
+		console.error( '[adoption] FATAL: generate-helper-catalogue.py --json did not return valid JSON.' );
+		process.exit( 2 );
+	}
+	for ( const r of phpRows ) add( r );
+}
+
+// ---------------------------------------------------------------------------
 // Output
 // ---------------------------------------------------------------------------
 // `name` is the table's PRIMARY KEY. A duplicate would be silently swallowed by

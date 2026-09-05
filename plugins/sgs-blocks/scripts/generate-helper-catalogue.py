@@ -29,6 +29,7 @@ one — it looks authoritative and is wrong.
 from __future__ import annotations
 
 import importlib.util as _ilu
+import json
 import re
 import sys
 from pathlib import Path
@@ -261,6 +262,42 @@ def build_php_section() -> list[str]:
     return out
 
 
+def build_php_json_rows() -> list[dict]:
+    """PHP helper-FUNCTION rows only, shaped to match scan-component-adoption.js's
+    own `--json` row schema exactly (`name`, `family`, `file_path`, `functionality`,
+    `adopters`, `adopter_list`) — see that script's `add()` call sites. Consumed by
+    `scan-component-adoption.js` itself (which shells out to this script with
+    `--json` and merges the result into its own `rows` before printing), so
+    `seed-component-adoption.py` keeps trusting ONE mechanism
+    (`scan-component-adoption.js --json`) even though the PHP-function extraction
+    lives here. Real per-function adoption counting is out of scope for this
+    row shape — `adopters`/`adopter_list` are sane defaults (0 / []), not
+    invented data.
+
+    JS component/atom rows are deliberately NOT emitted here — those are
+    scan-component-adoption.js's own job (family='editor-component'/'util') and
+    duplicating that extraction here would be the second mechanism this whole
+    file's docstring warns against for the sibling tooling catalogue.
+    """
+    rows: list[dict] = []
+    for f in sorted(HELPERS_DIR.glob(HELPERS_GLOB)):
+        rel_path = f.relative_to(REPO).as_posix()
+        for fn in _php_functions(f):
+            purpose = fn["purpose"]
+            functionality = "" if purpose == "**UNDOCUMENTED**" else purpose
+            rows.append(
+                {
+                    "name": fn["name"],
+                    "family": "render-helper-function",
+                    "file_path": rel_path,
+                    "functionality": functionality,
+                    "adopters": 0,
+                    "adopter_list": [],
+                }
+            )
+    return rows
+
+
 # ---------------------------------------------------------------------------
 # JS components + atoms
 # ---------------------------------------------------------------------------
@@ -399,6 +436,13 @@ def build() -> str:
 
 
 def main() -> int:
+    if "--json" in sys.argv:
+        # Additive output mode alongside the existing default/--check markdown
+        # modes — does not touch dev-setup.md at all. PHP helper-FUNCTION rows
+        # only; see build_php_json_rows()'s own docstring for why JS rows are
+        # excluded.
+        sys.stdout.write(json.dumps(build_php_json_rows()))
+        return 0
     check = "--check" in sys.argv
     doc = DOC.read_text(encoding="utf-8", newline="")
     nl = "\r\n" if "\r\n" in doc else "\n"
