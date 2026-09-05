@@ -1,6 +1,6 @@
 'use strict';
 
-const { extract, evalLiteral, findVariationsArray } = require( './extract-variation-values.js' );
+const { extract, evalLiteral, findVariationsArray } = require( '../../../scripts/variant-value-extractor/extract-variation-values.js' );
 const fs = require( 'fs' );
 const path = require( 'path' );
 const os = require( 'os' );
