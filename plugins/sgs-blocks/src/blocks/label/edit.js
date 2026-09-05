@@ -7,7 +7,6 @@ import {
 import {
 	PanelBody,
 	SelectControl,
-	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl } from '../../components';
@@ -334,6 +333,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								showWeight={ false }
 								showStyle={ false }
 								showLineHeight={ false }
+								showDecoration={ true }
 								showResponsive={ true }
 							/>
 						</ToolsPanelItem>
@@ -424,22 +424,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</ToolsPanelItem>
 
-						<ToolsPanelItem
-							label={ __( 'Text decoration', 'sgs-blocks' ) }
-							hasValue={ () => !! textDecoration }
-							onDeselect={ () => setAttributes( { textDecoration: '' } ) }
-						>
-							<TextControl
-								label={ __( 'Text decoration', 'sgs-blocks' ) }
-								value={ textDecoration }
-								onChange={ ( val ) =>
-									setAttributes( { textDecoration: val } )
-								}
-								placeholder={ __( 'none', 'sgs-blocks' ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
+						{ /* Text decoration now lives inside the TypographyControls mount
+						   above (showDecoration) — a restricted 4-value dropdown matching
+						   the shared sgs_typography_css_rule() helper's allowlist, not the
+						   previous free-text control (D971/D972 full-replacement track). */ }
 						<ToolsPanelItem
 							label={ __( 'Font style', 'sgs-blocks' ) }
 							hasValue={ () => !! fontStyle }

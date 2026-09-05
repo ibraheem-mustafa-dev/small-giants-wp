@@ -103,19 +103,11 @@ $is_subheading = ( 'subheading' === $heading_role );
 $rendered_tag  = $is_subheading ? $sub_tag : $level;
 
 // Typography attrs.
-$font_family    = $attributes['fontFamily'] ?? '';
-$font_size_unit = $attributes['fontSizeUnit'] ?? 'px';
-// No '700' fallback (D338): that duplicated theme.json's styles.elements.heading
-// fontWeight and forced an emit that beat it, so a client could never change heading
-// weight. Empty => the emitter below writes no declaration => the theme wins.
-// Enforced by scripts/check-hardcoded-render-defaults.js F3b (block.json
-// default-value divergence scan) — --check.
-$font_weight         = $attributes['fontWeight'] ?? '';
-$line_height         = isset( $attributes['lineHeight'] ) ? $attributes['lineHeight'] : null;
-$line_height_unit    = $attributes['lineHeightUnit'] ?? 'em';
-$letter_spacing      = isset( $attributes['letterSpacing'] ) ? $attributes['letterSpacing'] : null;
-$letter_spacing_unit = $attributes['letterSpacingUnit'] ?? 'em';
-$text_transform      = isset( $attributes['textTransform'] ) ? $attributes['textTransform'] : '';
+// D971/D972 full-replacement track: fontFamily/fontWeight/fontStyle/
+// lineHeight/letterSpacing/textTransform/textDecoration/fontSize are now
+// emitted via the shared sgs_typography_css_rule() helper (step 3 below) —
+// no local variables needed for them any more. textColour stays hand-rolled
+// (gradient-capable, outside the shared helper's scope).
 // '' = inherit (D343). NEVER default this to a colour: the scoped rule it emits
 // is (0,2,0) and beats the theme's own `h1..h6 { color: … }` (0,0,1), so a
 // default here silently disables the client's heading colour on every heading.
@@ -126,8 +118,6 @@ $text_colour = $attributes['textColour'] ?? '';
 // backgroundOverlayColour/overlayGradient: TWO attributes, gradient wins
 // when set+valid, textColour is untouched.
 $text_colour_gradient = $attributes['textColourGradient'] ?? '';
-$font_style           = isset( $attributes['fontStyle'] ) ? sanitize_text_field( $attributes['fontStyle'] ) : '';
-$text_decoration      = isset( $attributes['textDecoration'] ) ? sanitize_text_field( $attributes['textDecoration'] ) : '';
 
 // Wrapper-level attrs. Box-object interface contract §B: padding/margin are box
 // objects — base from WP-native style.spacing.* (skip-serialised, read in step
@@ -281,47 +271,6 @@ if ( '' !== $text_colour_effective ) {
 		$text_decls[] = $text_colour_decl;
 	}
 }
-if ( $font_weight ) {
-	$font_weight_safe = preg_replace( '/[^a-zA-Z0-9]/', '', (string) $font_weight );
-	if ( '' !== $font_weight_safe ) {
-		$text_decls[] = 'font-weight:' . $font_weight_safe;
-	}
-}
-if ( null !== $line_height && '' !== $line_height ) {
-	// A converter-lifted unitless line-height stores lineHeightUnit="unitless"
-	// so the ratio survives serialisation — emit the bare number.
-	$lh_unit      = ( 'unitless' === $line_height_unit ) ? '' : preg_replace( '/[^a-z%]/i', '', (string) $line_height_unit );
-	$text_decls[] = 'line-height:' . floatval( $line_height ) . $lh_unit;
-}
-if ( null !== $letter_spacing && '' !== $letter_spacing ) {
-	$ls_unit      = preg_replace( '/[^a-z%]/i', '', (string) $letter_spacing_unit );
-	$text_decls[] = 'letter-spacing:' . floatval( $letter_spacing ) . $ls_unit;
-}
-if ( '' !== $text_transform ) {
-	$text_transform_safe = sgs_css_keyword_sanitise( $text_transform );
-	if ( '' !== $text_transform_safe ) {
-		$text_decls[] = 'text-transform:' . $text_transform_safe;
-	}
-}
-if ( $font_family ) {
-	// Allow font-name chars (letters, digits, spaces, commas, quotes, hyphen);
-	// strip ;{}():% so a font-family value can't break out into a new rule.
-	$font_family_safe = preg_replace( '/[^a-zA-Z0-9 ,"\'\-]/', '', (string) $font_family );
-	if ( '' !== $font_family_safe ) {
-		$text_decls[] = 'font-family:' . $font_family_safe;
-	}
-}
-
-$allowed_font_styles = array( 'normal', 'italic' );
-if ( '' !== $font_style && in_array( $font_style, $allowed_font_styles, true ) ) {
-	$text_decls[] = 'font-style:' . $font_style;
-}
-
-$allowed_decorations = array( 'none', 'underline', 'line-through' );
-if ( '' !== $text_decoration && in_array( $text_decoration, $allowed_decorations, true ) ) {
-	$text_decls[] = 'text-decoration:' . $text_decoration;
-}
-
 // text-wrap (D305): the theme applies `text-wrap: balance` to all headings
 // (core-blocks-critical.css `h1..h6`, a deliberate enhancement for AUTHORED
 // content). A CLONED heading must instead render the DRAFT's effective wrap —
@@ -445,70 +394,14 @@ if ( '' !== $text_colour_fallback_rule ) {
 	$scoped_css[] = $text_colour_fallback_rule;
 }
 
-// fontSize is a TIER OBJECT when authored as a number (Spec 35 migration,
-// 2026-08-11) — {desktop,tablet,mobile}; the old …Tablet/…Mobile sibling
-// attrs are no longer declared by block.json. A STRING fontSize (a theme
-// preset slug) is untouched by this — sgs_responsive_normalise_object()
-// on a string is not this migration's concern, and the preset-slug branch
-// below reads $attributes['fontSize'] directly, unaffected by this block.
-// is_numeric() on the raw value below correctly gates BOTH shapes: a preset
-// slug string is non-numeric (skipped here, handled below), and the object
-// case is handled by feeding the normalised desktop/tablet/mobile scalars
-// through under the OLD flat key names sgs_responsive_css_rule() expects —
-// same pattern as button/render.php's $tier_object_synthetic_attrs.
-// Normalised UNCONDITIONALLY, exactly as text/render.php does it: the helper
-// already routes every shape correctly — a tier object keeps its tiers, an
-// empty `{}` (an untouched object attr, the COMMON case) returns all-null so
-// nothing is emitted, and a plain preset-slug string becomes the desktop
-// value. Normalising unconditionally is what lets the preset-slug branch below
-// read the normalised tier rather than the raw attribute — see its own ⛔ note
-// for why reading raw is a defect.
-$heading_font_size_obj = sgs_responsive_normalise_object( $attributes['fontSize'] ?? null );
-
-// --- Root font-size — base + tablet + mobile on the SAME selector (Pattern A)
-// so the narrower tier wins by cascade order, never inline. ---
-$scoped_css[] = sgs_responsive_css_rule(
-	array_merge(
-		$attributes,
-		array(
-			'fontSize'       => $heading_font_size_obj['desktop'],
-			'fontSizeTablet' => $heading_font_size_obj['tablet'],
-			'fontSizeMobile' => $heading_font_size_obj['mobile'],
-		)
-	),
-	array(
-		array(
-			'attr'         => 'fontSize',
-			'css'          => 'font-size',
-			'unit_default' => $font_size_unit,
-			'tablet_attr'  => 'fontSizeTablet',
-			'mobile_attr'  => 'fontSizeMobile',
-			'cast'         => 'int',
-		),
-	),
-	$root_sel
-);
-
-// A STRING fontSize is a theme preset slug (core-block parity: `"fontSize":"small"`).
-// The numeric emitter above skips non-numerics, so resolve it via
-// sgs_font_size_value() → var(--wp--preset--font-size--{slug}) on the same selector.
-// Mirrors the canonical legacy-string branch in helpers-typography.php.
-// ⛔ Reads the NORMALISED desktop tier, never the raw attribute. Once fontSize
-// became an object, `(string) $attributes['fontSize']` PHP-coerced it to the
-// literal "Array" and emitted `font-size:var(--wp--preset--font-size--array)` —
-// an undefined custom property, so the declaration is invalid at
-// computed-value time and the heading silently drops to its inherited size.
-// Measured live on the canary: 5 heading instances (D574). Same bug class as
-// D569/D570 and as the `max-width:Array` defect recorded in
-// sgs_responsive_normalise_object() itself.
-$heading_preset_source = $heading_font_size_obj['desktop'];
-if ( null !== $heading_preset_source && '' !== $heading_preset_source
-	&& ! is_numeric( $heading_preset_source ) ) {
-	$preset_font_size = sgs_font_size_value( (string) $heading_preset_source );
-	if ( '' !== $preset_font_size ) {
-		$scoped_css[] = "{$root_sel}{font-size:{$preset_font_size};}";
-	}
-}
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Covers fontSize (numeric
+// tiered OR a theme preset-slug string in the desktop tier — the helper's
+// font-size transform resolves a slug via sgs_font_size_value() exactly as
+// the old hand-rolled preset-slug branch here did, closing the D574 bug
+// class the same way) plus fontWeight/fontStyle/lineHeight/letterSpacing/
+// textTransform/textDecoration/fontFamily.
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
 
 // --- Root box/visual declarations (scoped) ---
 if ( $wrapper_decls ) {
