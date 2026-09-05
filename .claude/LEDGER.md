@@ -312,10 +312,10 @@ the reseed reset list, unmasking `product-card.tagTextColour`. Variant detection
 preset blocks — `nav-drawer` 0/7→5/7, capability blocks intact. ⚠ A shared-DB write and the
 code reading it MUST land together (blocked 2 peers). Gates 91/91. Detail: D966.
 
-**Still open, carried forward:** `sgs/quote.attributionColourHover` (BUILT-BUT-SELF-REFUSED — `fix.js` correctly
-declines, `quote.js` has multiple ambiguous destructure blocks, needs a human pick);
-`sgs_text_states_css()` (built session 11, NOT yet adopted by any of the
-already-fixed blocks — a follow-up consolidation, not urgent); the remaining genuinely-hard
+**Still open** (re-verified 2026-09-05): the old `quote.attributionColourHover` "needs a human
+pick" note is RETIRED as stale — that attr never existed and `fix --check` is clean after a
+peer's rule-41 restructure (`3548f7c85`). ⚠ NEW, unexamined: a `sgs/quote` row whose attr won't
+resolve. `sgs_text_states_css()` (0 callers); the remaining genuinely-hard
 custom-property-architecture rows this session's 7-row closure did NOT cover (`mega-panel`'s
 OTHER rows besides `iconColour`, `social-icons`, `form.progressBarColour`, `product-card`'s 4
 title/desc/price rows, `tabs`' OTHER 2 rows besides `tabTextColour`); `option-picker.pillBgColour`
