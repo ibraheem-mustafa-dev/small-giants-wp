@@ -2839,6 +2839,61 @@ function checkLiveDataPlaceholderExemption( phpSrc, editJsSrc ) {
  * @param {Set<string>} [providesContextAttrs] Attribute names sourcing a providesContext key (default empty).
  * @return {Array<Object>} Findings.
  */
+/**
+ * R3-a widening, extracted 2026-09-05 so the self-test can assert it directly.
+ *
+ * Resolves every capitalised JSX tag in `src` to the file that DEFINES it and
+ * folds that component's destructured/written attribute sets into the caller's
+ * sets, MUTATING them in place. Behaviour is byte-identical to the inline block
+ * this replaced.
+ *
+ * WHY IT IS A NAMED FUNCTION NOW. The R3-a regression test used to prove the
+ * widening worked by asserting `bgSvgContent` appeared in the FINDINGS list —
+ * even though its own comment said the findings list was NOT what it was
+ * proving ("whether or not it ends up in the findings list depends on exemption
+ * signals"). The moment `bgSvgContent` was legitimately FIXED (container now
+ * previews it, 2026-09-05), the finding correctly disappeared and the test
+ * became unpassable — a positive control that can never pass, on a green gate.
+ * That is the shape someone "fixes" by deleting the control, which would lose
+ * the only guard proving shared-component attrs are still resolved at all.
+ * Exposing the widening lets the test assert RECOGNITION, which is what it
+ * always meant to assert and which stays true regardless of whether the
+ * attribute is currently a finding.
+ *
+ * @param {string}      src          edit.js source.
+ * @param {Set<string>} destructured Mutated: gains shared components' destructured attrs.
+ * @param {Set<string>} written      Mutated: gains shared components' setAttributes writes.
+ * @return {{destructured: Set<string>, written: Set<string>}} The same sets, for convenience.
+ */
+function foldSharedComponentAttrSets( src, destructured, written ) {
+	const jsxTagNames = new Set();
+	JSX_TAG_RE.lastIndex = 0;
+	let tagMatch;
+	while ( ( tagMatch = JSX_TAG_RE.exec( src ) ) !== null ) {
+		jsxTagNames.add( tagMatch[ 1 ] );
+	}
+	for ( const tagName of jsxTagNames ) {
+		const componentFile = COMPONENT_FILE_MAP.get( tagName );
+		if ( ! componentFile ) {
+			continue;
+		}
+		const componentSrc = readIfExists( componentFile );
+		if ( ! componentSrc ) {
+			continue;
+		}
+		const componentAst = safeParse( componentSrc );
+		if ( componentAst ) {
+			for ( const n of collectDestructuredFromAttributes( componentAst ) ) {
+				destructured.add( n );
+			}
+		}
+		for ( const n of collectSetAttributesWrites( componentSrc ) ) {
+			written.add( n );
+		}
+	}
+	return { destructured, written };
+}
+
 function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContextAttrs ) {
 	providesContextAttrs = providesContextAttrs || new Set();
 	const editJsPath = path.join( dir, 'edit.js' );
@@ -2877,31 +2932,7 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 	// InspectorControls content in the parent, so its own internal usage of
 	// the attribute doesn't prove the EDITOR CANVAS shows the attribute's
 	// effect (the exact distinction this check exists to make).
-	const jsxTagNames = new Set();
-	JSX_TAG_RE.lastIndex = 0;
-	let tagMatch;
-	while ( ( tagMatch = JSX_TAG_RE.exec( src ) ) !== null ) {
-		jsxTagNames.add( tagMatch[ 1 ] );
-	}
-	for ( const tagName of jsxTagNames ) {
-		const componentFile = COMPONENT_FILE_MAP.get( tagName );
-		if ( ! componentFile ) {
-			continue;
-		}
-		const componentSrc = readIfExists( componentFile );
-		if ( ! componentSrc ) {
-			continue;
-		}
-		const componentAst = safeParse( componentSrc );
-		if ( componentAst ) {
-			for ( const n of collectDestructuredFromAttributes( componentAst ) ) {
-				destructured.add( n );
-			}
-		}
-		for ( const n of collectSetAttributesWrites( componentSrc ) ) {
-			written.add( n );
-		}
-	}
+	foldSharedComponentAttrSets( src, destructured, written );
 
 	// Exemption-signal plumbing (2026-08-13 refinement — see file header).
 	const phpSrc = readIfExists( path.join( dir, 'render.php' ) );
@@ -4401,19 +4432,30 @@ function runSelfTest() {
 		? collectDestructuredFromAttributes( containerEditAst )
 		: new Set();
 	const oldNarrowWritten = collectSetAttributesWrites( containerEditSrc );
-	const widenedMeta = readDeclaredAttrs( containerDir );
-	const widenedFindings = widenedMeta
-		? checkEditorCanvasDesync( widenedMeta.name, containerDir, widenedMeta.attrs, widenedMeta.providesContextAttrs )
-		: [];
 	// The widened corpus must at minimum RECOGNISE bgSvgContent as destructured
-	// + written (whether or not it ends up in the findings list depends on
-	// exemption signals, which is not what this test is proving).
+	// + written. It must NOT be asserted via the findings list: whether an
+	// attribute ends up a FINDING depends on exemption signals and on whether it
+	// has since been fixed, neither of which is what this test proves.
+	//
+	// FIXED 2026-09-05. This previously read
+	// `widenedFindings.some( f => f.attr === 'bgSvgContent' )`, contradicting the
+	// comment directly above it. When `bgSvgContent` was legitimately fixed
+	// (container/edit.js now previews it via svgBackgroundPreview()), the finding
+	// correctly vanished and this positive control became UNPASSABLE — red
+	// self-test, green gate, and the obvious "fix" is to delete the control and
+	// lose the only proof that shared-component attrs are resolved at all.
+	// It now asserts RECOGNITION via the extracted foldSharedComponentAttrSets(),
+	// which stays true whether or not the attribute is currently a finding.
+	const widenedDestructured = new Set( oldNarrowDestructured );
+	const widenedWritten = new Set( oldNarrowWritten );
+	foldSharedComponentAttrSets( containerEditSrc, widenedDestructured, widenedWritten );
 	const bgSvgVisibleOld = oldNarrowDestructured.has( 'bgSvgContent' ) && oldNarrowWritten.has( 'bgSvgContent' );
-	const bgSvgFlaggedNew = widenedFindings.some( ( f ) => f.attr === 'bgSvgContent' );
+	const bgSvgFlaggedNew = widenedDestructured.has( 'bgSvgContent' ) && widenedWritten.has( 'bgSvgContent' );
 	if ( ! bgSvgVisibleOld && bgSvgFlaggedNew ) {
 		log(
-			"PASS — Test I (negative control): the old edit.js-only corpus does NOT see 'bgSvgContent' " +
-				"(it lives in BackgroundPanel.js, only mounted via JSX); the resolver-widened scan flags it."
+			"PASS — Test I: the old edit.js-only corpus does NOT see 'bgSvgContent' (it lives in " +
+				"BackgroundPanel.js, mounted only via JSX); the resolver-widened corpus RECOGNISES it " +
+				"as destructured + written."
 		);
 	} else {
 		log(
