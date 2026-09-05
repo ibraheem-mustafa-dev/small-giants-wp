@@ -227,22 +227,9 @@ slug should read as more important than the others — this is an index, not a r
    Trust-bar's own case is fixed (structural image controls double as its recogniser; the F6 gate
    is now a universal ambiguity rule — 2+ variants sharing an identical/empty signature =
    violation, one zero-signature fallback allowed) and unit-verified, but live-clone verification
-   was never done. **Nav-drawer's own defect (the sub-item this residual pointed at) is NOW
-   ACTUALLY RESOLVED (D974, 2026-09-06) — correcting this entry's earlier premature claim.**
-   D969's composition-tiebreaker signal (2026-09-05) alone did NOT close this — the worktree's own
-   honest exit report confirmed `two-column-editorial` still returned `None` afterwards, because
-   its two candidate discriminators were both unusable from a real clone (`itemFontSize` seeded
-   flat against a tiered schema; `listColumns` had zero CSS routing). D974 fixed both for real
-   (tiered `itemFontSize` in `variations.js` + a DB-driven grid column-count route in
-   `converter/resolvers/grid.py`) and confirmed live via `detect_variant()` returning
-   `"two-column-editorial"` for a real-clone-shaped fixture, with a negative control proving the
-   old broken shape still fails closed. **The universal audit is also now substantively covered**,
-   not by a manual walkthrough but by the automated F6 gate itself running clean (0 violations)
-   across every block with `variant_attr` set, plus two proactive checks — "Check #10 — Dead
-   Composition Discriminator" and "Check #12 — order-dependent role-resolution guard" (D974; 15
-   pre-existing findings fully closed, not re-baselined) — that catch this defect class and its
-   sibling (silent role-resolution guessing) the moment any future block introduces either.
-   Residual scope narrows to just: trust-bar's own live-clone verification, never done.
+   was never done. Nav-drawer's own defect is genuinely closed (D974 — corrects the earlier claim
+   that D969 alone had resolved it; see decisions.md). **Residual scope narrows to just:
+   trust-bar's own live-clone verification, never done.**
 
 3. **P-QUOTE-PATH2-SELF-NESTING** — the Path-2 self-nesting bug (an unrecognised child element
    resolving to its own parent block's slug, letting a block self-nest) is CODE RESOLVED and
