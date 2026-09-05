@@ -941,3 +941,13 @@ Programmatic translation captures structure + tokens but misses design choices i
   line; three OTHER agents independently and correctly reported the same real error.
 - **Rule:** Verify a subagent's causal explanation independently, not just its "fixed"/"resolved" claim —
   an agent explaining away its own breakage is the least reliable witness to it.
+
+### [2026-08-15] A pathspec-scoped commit re-stages the working-tree version, overriding a deliberate partial stage
+- **Pattern key:** `pathspec-scoped-commit-overrides-partial-staging`
+- **Evidence:** `git commit -m "..." -- <paths>` re-stages the CURRENT WORKING-TREE version of those exact
+  paths, not just what was already staged for them. A deliberate `git add -p` had excluded two of a
+  concurrent session's uncommitted `sgs/trust-bar` attribute declarations minutes earlier; the
+  pathspec-scoped commit put both onto `main` anyway inside an unrelated commit (`0c287cf6`). No
+  functional damage, but on a shared checkout this is how another session's half-finished work escapes.
+- **Rule:** After ANY commit on a shared checkout, verify what actually landed with `git show --stat HEAD`
+  and `git show HEAD -- <file>` — never assume careful partial staging survived into the commit.

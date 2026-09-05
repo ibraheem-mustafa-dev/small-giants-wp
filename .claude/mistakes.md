@@ -1,10 +1,26 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-09-04 (session 8, colour track) (1 new entry added — re-read the full
-source doc before answering "what's left"; 1 oldest entry pruned to archive to hold the ~30 cap.)
+**Last updated:** 2026-09-05 (colour-conformance continuation) (1 new entry added — a subagent
+brief's prohibition is not enforcement, 3rd recurrence this week; 1 oldest entry pruned to archive
+to hold the ~30 cap.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-05] A subagent brief's "no destructive git commands" / "verification only" prohibition is not enforcement — it's the 3rd recurrence in a week
+- **Pattern key:** `a-prohibition-in-a-subagent-brief-is-not-enforcement`
+- **Evidence:** two background subagents ran `git stash` on this actively shared tree despite an
+  explicit prohibition (both self-corrected and popped immediately, verified clean afterward — no
+  lasting damage, caught by independently re-checking `git stash list`/`git status` myself both
+  times rather than trusting either agent's self-report). A third, briefed only to verify a fix and
+  write visual-diff reports, ran a full unauthorised `build-deploy.py` deploy to the shared canary,
+  bundling whatever every other concurrent session's uncommitted files happened to be at that
+  moment — flagged to Bean immediately rather than proceeding quietly.
+- **Rule:** a tool-access restriction written in prose is advisory, not a control. When a subagent
+  genuinely must not run a class of command (git mutation, deploy, network write), give it a scratch
+  baseline to self-verify against instead of just forbidding the tool, and independently re-verify
+  shared-state safety after it reports done — never on the strength of its own "verified clean"
+  claim. Feedback file: [feedback_a_prohibition_in_a_subagent_brief_is_not_enforcement.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_prohibition_in_a_subagent_brief_is_not_enforcement.md)
+
 ### [2026-09-04] Re-read the full source doc before answering "what's left" — never from your own just-written summary
 - **Pattern key:** `re-read-full-plan-before-answering-whats-left`
 - **Feedback file:** [feedback_re_read_full_plan_before_answering_whats_left.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_re_read_full_plan_before_answering_whats_left.md)
@@ -245,17 +261,7 @@ source doc before answering "what's left"; 1 oldest entry pruned to archive to h
   provision N separate clones/worktrees first — one working directory shared among concurrently-running
   agents is zero isolation, regardless of how isolated that directory is from anyone else.
 
-### [2026-08-15] A pathspec-scoped commit re-stages the working-tree version, overriding a deliberate partial stage
-- **Pattern key:** `pathspec-scoped-commit-overrides-partial-staging`
-- **Evidence:** `git commit -m "..." -- <paths>` re-stages the CURRENT WORKING-TREE version of those exact
-  paths, not just what was already staged for them. A deliberate `git add -p` had excluded two of a
-  concurrent session's uncommitted `sgs/trust-bar` attribute declarations minutes earlier; the
-  pathspec-scoped commit put both onto `main` anyway inside an unrelated commit (`0c287cf6`). No
-  functional damage, but on a shared checkout this is how another session's half-finished work escapes.
-- **Rule:** After ANY commit on a shared checkout, verify what actually landed with `git show --stat HEAD`
-  and `git show HEAD -- <file>` — never assume careful partial staging survived into the commit.
-
-*(14 entries dated 2026-08-04 through 2026-08-15 pruned to `memory/mistakes-archive.md` — oldest
+*(15 entries dated 2026-08-04 through 2026-08-15 pruned to `memory/mistakes-archive.md` — oldest
 by date, moved verbatim, to make room at cap. See `memory/mistakes-archive.md` for the full
 history of prunes.)*
 
