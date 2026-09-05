@@ -1520,7 +1520,26 @@ $hero_helper_attrs   = $attributes;
 $sgs_hero_null_attrs = array(
 	'bgVideo',
 	'bgVideoMobile',
-	'bgSvgContent',
+	// ⛔ `bgSvgContent` was REMOVED from this list on 2026-09-05. It had no
+	// counterpart to guard against. The C3 double-emit guard exists because hero
+	// builds its own copy of a layer the wrapper would otherwise also paint —
+	// $video_html (:1029), $bg_img_html (:1116), $overlay_html (:1240). There is
+	// no hero-built SVG layer: `svg_html` appears ZERO times in this file, and
+	// `bgSvg` appears in exactly one file under includes/ (the container
+	// wrapper), so nothing else painted it either. The comment above says hero
+	// renders its own "svg" — that refers to the SPLIT-MEDIA SVG family
+	// (splitImageSvg / $sgs_hero_resolve_split_svg, :159-177), which is a
+	// different family on a different element and is unaffected by this.
+	//
+	// Nulling it meant the wrapper's `$has_bg_svg = ! empty( $bg_svg_content )`
+	// gate (class-sgs-container-wrapper.php:975) was permanently false, so the
+	// seven bgSvg* attributes hero declares in block.json — and offers a client
+	// in the Background panel — rendered NOTHING, on the page or in the editor.
+	// A client could set a decorative background SVG, its position, opacity,
+	// min-height, text-shadow, animation and speed, and see no effect anywhere.
+	// Restoring it makes hero paint this layer exactly as the other eight
+	// wrapper-adopting blocks do, per the composite-mirror rule.
+	//
 	// minHeight is a TIER OBJECT (Spec 35 pass 3b) — nulling the one attr
 	// nulls all three tiers; the old minHeightTablet/minHeightMobile entries
 	// no longer exist as real attribute keys.

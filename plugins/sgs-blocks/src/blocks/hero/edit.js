@@ -56,7 +56,7 @@ import {
 	ShapeDividersPanel,
 } from '../container/components/ContainerWrapperControls';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { sanitiseSvg } from '../../utils';
+import { sanitiseSvg, svgBackgroundPreview } from '../../utils';
 
 // ── Phase 1 constant options ─────────────────────────────────────────────────
 // BORDER_STYLE_OPTIONS (the local 4-option none/solid/dashed/dotted list) was removed
@@ -384,7 +384,28 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// de-specified to (0,0,0), so an inline paint is sufficient on its own:
 	// no `has-background` class and no editor.css change are needed, and adding
 	// either would be a second overlapping fix for an already-fixed cause.
+	// Decorative SVG background layer — editor mirror. Legitimate as of
+	// 2026-09-05: render.php no longer nulls `bgSvgContent` before the wrapper
+	// call, so the shared wrapper now paints this layer on hero exactly as it
+	// does on the other eight adopting blocks. Before that it painted nothing,
+	// and mirroring it here would have made the canvas show an SVG the page
+	// would never render.
+	//
+	// Attributes enumerated explicitly, not passed wholesale: CHECK A resolves
+	// an attribute as canvas-reflected only when its NAME appears outside the
+	// Inspector panels.
+	const svgPreview = svgBackgroundPreview( {
+		bgSvgContent: attributes.bgSvgContent,
+		bgSvgPosition: attributes.bgSvgPosition,
+		bgSvgAnimation: attributes.bgSvgAnimation,
+		bgSvgAnimationSpeed: attributes.bgSvgAnimationSpeed,
+		bgSvgOpacity: attributes.bgSvgOpacity,
+		bgSvgMinHeight: attributes.bgSvgMinHeight,
+		bgSvgTextShadow: attributes.bgSvgTextShadow,
+	} );
+
 	const wrapperStyle = {
+		...svgPreview.style,
 		...resolveBackgroundPaintPreviewStyle(
 			backgroundColour,
 			backgroundColourGradient
@@ -621,14 +642,29 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			? backgroundColour
 			: '';
 
+	// NOTE the SPREAD on svgPreview.className — it returns a string ARRAY, and
+	// passing it unspread to .join(' ') stringifies it with COMMAS, silently
+	// killing all four SVG classes. Same trap fixed on container 2026-09-05.
 	const className = [
 		'sgs-hero',
 		`sgs-hero--${ variant }`,
 		`sgs-hero--align-${ alignment }`,
 		hasBackgroundPaint ? 'has-background' : null,
+		...svgPreview.className,
 	]
 		.filter( Boolean )
 		.join( ' ' );
+
+	// Mirrors class-sgs-container-wrapper.php:2794-2798. `pointer-events:none`
+	// is editor-only insurance so the decorative layer cannot swallow a click.
+	const svgLayer = svgPreview.hasSvg ? (
+		<div
+			className="sgs-container__svg-bg"
+			aria-hidden="true"
+			style={ { pointerEvents: 'none' } }
+			dangerouslySetInnerHTML={ { __html: svgPreview.markup } }
+		/>
+	) : null;
 
 	const blockProps = useBlockProps( { className, style: wrapperStyle } );
 
@@ -1832,6 +1868,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ svgLayer }
 				{ /* Mirrors hero/render.php's overlay gate + gradient/solid branch
 				   (D5 + the 2026-08-11 gradient-render bug fix) — a colour or
 				   gradient with no background media now renders too, and the
