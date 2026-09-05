@@ -219,3 +219,92 @@ function sgs_svg_inject_defs( string $svg_markup, string $defs ): string {
 		1
 	);
 }
+
+/**
+ * Icon gradient composer — the ONE call site every icon-source-aware block
+ * (`sgs/icon`, and eventually icon-list/notice-banner/trust-bar/social-icons/
+ * button/cart/google-reviews/accordion-item/business-info/star-rating, all of
+ * which share `IconPicker`'s 4-source contract) should make instead of
+ * hand-rolling the branch itself.
+ *
+ * Built 2026-09-06 after `sgs/icon`'s OWN gradient control — the reference
+ * every other block copied — was found to silently no-op for 2 of its 4
+ * icon sources. It always called `sgs_svg_stroke_gradient()` and injected the
+ * result into an `<svg>` tag, but `dashicon`/`emoji` sources render a plain
+ * `<span>` (a webfont glyph and a literal Unicode character respectively,
+ * never an SVG) — `sgs_svg_inject_defs()` had nothing to inject into, so the
+ * gradient picker showed in the editor for every source while only visibly
+ * doing anything for `lucide`/`wp-icon`.
+ *
+ * The fix is NOT to remove sources from the picker — a font glyph and an
+ * emoji character are both genuinely PAINTED VIA `color:`, exactly like any
+ * other text node, so `background-clip:text` (the same mechanism
+ * `sgs_text_colour_decl()`/`sgs_text_colour_gradient_fallback_rule()` already
+ * use for every other text-gradient row in the framework) works on them for
+ * real. This function is the single place that decides which of the two
+ * genuinely different techniques applies, so every consuming block gets both
+ * — and any future icon source only needs a branch added HERE, not in every
+ * block that uses it.
+ *
+ * @param string $icon_source  One of IconPicker's 4 source keys: 'lucide',
+ *                             'wp-icon' (both real SVG — stroke-gradient
+ *                             path), 'dashicon', 'emoji' (both font/text
+ *                             glyphs — text-gradient path). Any other value
+ *                             fails soft (empty result), same posture as
+ *                             `sgs_svg_stroke_gradient()` on an invalid input.
+ * @param string $gradient_css Raw gradient attribute value.
+ * @param string $unique_id    Unique DOM id for the SVG case's `<defs>` (unused, safe to pass '', for the text case).
+ * @param string $selector     The exact selector painting this icon for the
+ *                             CURRENTLY ACTIVE source — e.g. `.sgs-icon__svg svg`
+ *                             for lucide/wp-icon, `.sgs-icon__dashicon` /
+ *                             `.sgs-icon__emoji` for the font/text sources.
+ *                             The caller already branches on `$icon_source`
+ *                             to render the icon itself, so it always knows
+ *                             the right selector for whichever case is live.
+ * @return array{defs:string,css:string,fallback_rule:string} `defs` — inject
+ *         into the icon's own `<svg>` markup via `sgs_svg_inject_defs()`
+ *         (always '' for the text-glyph sources, which have no SVG to inject
+ *         into). `css` — a bare declaration list (no braces), safe to
+ *         interpolate directly into `"{$selector}{" . $css . ';}'` exactly
+ *         like `sgs_svg_stroke_gradient()`'s own `css` field. `fallback_rule`
+ *         — a COMPLETE, ALREADY-SCOPED `@supports not (...)` rule, append
+ *         verbatim to `$scoped_css[]` (never interpolate into a selector
+ *         template) — always '' for the SVG sources, which need no fallback.
+ */
+function sgs_icon_gradient_css( string $icon_source, string $gradient_css, string $unique_id, string $selector ): array {
+	$empty = array(
+		'defs'          => '',
+		'css'           => '',
+		'fallback_rule' => '',
+	);
+
+	if ( '' === trim( $gradient_css ) ) {
+		return $empty;
+	}
+
+	if ( in_array( $icon_source, array( 'lucide', 'wp-icon' ), true ) ) {
+		$stroke = sgs_svg_stroke_gradient( $gradient_css, $unique_id, 'stroke' );
+		if ( '' === $stroke['css'] ) {
+			return $empty;
+		}
+		return array(
+			'defs'          => $stroke['defs'],
+			'css'           => $stroke['css'],
+			'fallback_rule' => '',
+		);
+	}
+
+	if ( in_array( $icon_source, array( 'dashicon', 'emoji' ), true ) ) {
+		$decl = sgs_text_colour_decl( $gradient_css );
+		if ( '' === $decl ) {
+			return $empty;
+		}
+		return array(
+			'defs'          => '',
+			'css'           => $decl,
+			'fallback_rule' => sgs_text_colour_gradient_fallback_rule( $selector, $gradient_css ),
+		);
+	}
+
+	return $empty;
+}
