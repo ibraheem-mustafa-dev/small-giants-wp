@@ -121,11 +121,23 @@ def lift_scalar_content(node: Tag, slug: str, media_map: dict) -> dict:
       - role in {'text-content','content'} with attr_type 'string'  → text lift
         OR role == 'rating' with attr_type 'number'                 → star lift
         OR role == 'image-object' with attr_type 'object'           → media lift
+        OR role == 'numeric-content' with attr_type 'number'        → decimal
+           score lift (e.g. ratingScale — a continuous score, NOT a star
+           count and NOT an enum pick; added 2026-09-05, Task 4)
+        OR role == 'presence-boolean' with attr_type 'boolean'       → True
+           purely because the selector matched an element (e.g. `verified`;
+           added 2026-09-05, Task 4)
+        OR role == 'css-modifier' with attr_type 'string'            → the
+           BEM --modifier suffix on the MATCHED element itself (e.g.
+           ratingType 'stars'|'scale' off `.sgs-testimonial__rating--scale`;
+           pre-existing role, newly wired into this gate 2026-09-05, Task 4 —
+           needed so a lifted ratingScale actually renders, since render.php
+           gates its numeric-score branch on ratingType === 'scale')
       - any other role/type combination is skipped (no key emitted).
 
     showRating coupling: if the block declares a ``showRating`` boolean attr and
-    a ratingStars-style number attr was lifted with value > 0, set showRating
-    True (DB-attr-driven, no slug literal).
+    a ratingStars-style number attr OR a numeric-content score was lifted with
+    value > 0, set showRating True (DB-attr-driven, no slug literal).
 
     Args:
         node:      The resolved block's root Tag node (draft DOM subtree).
@@ -170,7 +182,31 @@ def lift_scalar_content(node: Tag, slug: str, media_map: dict) -> dict:
         # not an InnerBlock. R-31-1 (DB-driven via role column) / R-31-9 (universal
         # — fires for any G3 block with a scalar image attr). 2026-06-13.
         is_media_object = role == "image-object" and attr_type == "object"
-        if not (is_text or is_rating or is_media_object):
+        # numeric-content: a genuinely numeric (decimal-capable) scalar read
+        # from element text — e.g. sgs/testimonial.ratingScale, a continuous
+        # 0-100 review score. Distinct from is_rating (hardcoded 0..5 star
+        # count). Added 2026-09-05 (Task 4) — new role, so widening this gate
+        # to accept it cannot change behaviour for any pre-existing attr.
+        is_numeric = role == "numeric-content" and attr_type == "number"
+        # presence-boolean: True purely because the matched element EXISTS —
+        # e.g. sgs/testimonial.verified (a review-source verified badge, a
+        # real draft-side signal, unlike an editor-only 'boolean-visibility'
+        # preference toggle which correctly stays excluded). Added 2026-09-05
+        # (Task 4) — likewise a brand-new role, so no pre-existing attr's
+        # behaviour changes.
+        is_presence = role == "presence-boolean" and attr_type == "boolean"
+        # css-modifier: a string enum whose value IS the BEM --modifier suffix
+        # on the SAME matched content element — e.g. sgs/testimonial.ratingType
+        # ('stars'|'scale'), read off `.sgs-testimonial__rating--scale`. This
+        # role already existed in field_extractors.py (used by array_content's
+        # per-item extraction) but had never been wired into this scalar gate;
+        # zero pre-existing block_attributes rows carry it (verified 2026-09-05),
+        # so widening the gate changes no existing block's behaviour. Added
+        # alongside the numeric-content fix (Task 4): without it, a lifted
+        # ratingScale renders nothing on the frontend, because render.php's
+        # numeric-score branch is itself gated on ratingType === 'scale'.
+        is_css_modifier = role == "css-modifier" and attr_type == "string"
+        if not (is_text or is_rating or is_media_object or is_numeric or is_presence or is_css_modifier):
             continue
 
         # A derived_selector is one OR MORE comma-separated BEM class selectors
@@ -208,6 +244,34 @@ def lift_scalar_content(node: Tag, slug: str, media_map: dict) -> dict:
             value = extract_field_value(element, "image-object", media_map)
             if value is not None:
                 lifted[attr_name] = value
+        elif is_numeric:
+            # Delegate to shared field_extractors — "numeric-content" = a
+            # genuinely numeric (decimal-capable) score, e.g. a continuous
+            # 0-100 review score. Couples into the SAME showRating gate as
+            # is_rating below: render.php gates the whole rating node on
+            # showRating regardless of which rating TYPE carries the value
+            # (sgs/testimonial.ratingType='stars'|'scale'), so a lifted
+            # numeric score must flip showRating exactly like a lifted star
+            # count does, or the value populates the attr but never renders.
+            score = extract_field_value(element, "numeric-content", media_map)
+            if score is not None:
+                lifted[attr_name] = score
+                if score > 0:
+                    lifted_rating_positive = True
+        elif is_presence:
+            # Delegate to shared field_extractors — "presence-boolean" is
+            # always True once a selector match reached this branch at all
+            # (a non-match already `continue`d above via the no-op floor).
+            lifted[attr_name] = extract_field_value(element, "presence-boolean", media_map)
+        elif is_css_modifier:
+            # Delegate to shared field_extractors — the BEM --modifier suffix
+            # on the matched element itself. No modifier present (e.g. the
+            # classic-card stars container carries no `--` suffix) → None →
+            # no key emitted, so the attr's own default (e.g. ratingType's
+            # 'stars') applies exactly as before this gate existed.
+            modifier = extract_field_value(element, "css-modifier", media_map)
+            if modifier:
+                lifted[attr_name] = modifier
         else:  # is_rating
             # Delegate to shared field_extractors — "rating" = STAR-count role.
             stars = extract_field_value(element, "rating", media_map)
