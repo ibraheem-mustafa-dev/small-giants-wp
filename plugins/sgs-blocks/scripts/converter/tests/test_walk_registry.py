@@ -150,7 +150,7 @@ def test_null_emit_shape_content_attr_is_loud_content_gap(monkeypatch):
 
     monkeypatch.setattr(
         db_lookup, "content_attr_for_element",
-        lambda slug, element, tier=None: ("fakeAttr", None, "text-content", "string"),
+        lambda slug, element, tier=None, modifiers=(): ("fakeAttr", None, "text-content", "string"),
     )
     monkeypatch.setattr(db_lookup, "capabilities_for", lambda slug: frozenset())
     monkeypatch.setattr(db_lookup, "block_attrs", lambda slug: {})

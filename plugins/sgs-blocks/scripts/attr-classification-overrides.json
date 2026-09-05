@@ -572,6 +572,13 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "featuredTag",
+      "fields": {
+        "derived_selector": ".sgs-product-card__tag--featured"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "tagBackgroundColour",
       "fields": {
         "canonical_slot": "label",

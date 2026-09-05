@@ -6619,15 +6619,59 @@ def nested_attr_named(
     return None
 
 
+def _variant_modifier_tiebreak(
+    block_slug: str,
+    candidates: list[tuple[str, str | None, str | None, str | None]],
+    modifiers: tuple[str, ...],
+) -> tuple[str, str | None, str | None, str | None] | None:
+    """Disambiguate a same-tier `content_attr_for_element` alias tie using
+    `variant_slots` (FR-31-20) — GENERAL, not product-card-specific.
+
+    `candidates` are same-match-tier content-attr rows that all alias one
+    draft BEM element token (e.g. `featuredTag`/`trialTag` both alias 'tag').
+    `modifiers` are the BEM modifiers the draft's ACTUAL element carries
+    (e.g. `('featured',)`). A candidate wins when its `attr_name` is the
+    `unique_slot` `variant_slots` declares for a `variant_value` matching one
+    of `modifiers` case-insensitively — i.e. the block's own DB-declared
+    variant-discrimination fact says "this attr is what names the
+    `--featured` variant", which is exactly the disambiguating signal the
+    draft's modifier supplies. Returns None (no change) when zero or 2+
+    candidates match — an unresolved ambiguity is never guessed at; the
+    caller keeps its existing first-by-rowid default.
+
+    R-31-1: reads `variant_slots` only, no per-block/per-attr literal.
+    """
+    if not modifiers:
+        return None
+    mods_lower = {m.lower() for m in modifiers if m}
+    if not mods_lower:
+        return None
+    slot_to_variants: dict[str, set[str]] = {}
+    for variant_value, slots in _variant_slots_map(block_slug):
+        for slot_name, _slot_value in slots:
+            if slot_name:
+                slot_to_variants.setdefault(slot_name, set()).add(
+                    str(variant_value).lower()
+                )
+    matches = [
+        row for row in candidates
+        if mods_lower & slot_to_variants.get(row[0], set())
+    ]
+    if len(matches) == 1:
+        return matches[0]
+    return None  # 0 or 2+ matches — genuinely ambiguous, do not guess
+
+
 def content_attr_for_element(
-    block_slug: str, bem_element: str, tier: str | None = None
+    block_slug: str, bem_element: str, tier: str | None = None,
+    modifiers: tuple[str, ...] = (),
 ) -> tuple[str, str | None, str | None, str | None] | None:
     """Resolve a draft BEM __element token to `block_slug`'s content attr.
 
     Spec 31 §13.3 FR-31-2.6: the per-attr content walk resolves each draft
     element to the composite's own typed attr by MATCH STRENGTH, not DB row
-    order. Ranking (lower match-tier wins; first DB row breaks a same-tier
-    tie):
+    order. Ranking (lower match-tier wins; a same-tier tie is broken by
+    ``modifiers`` — see below — before falling back to the first DB row):
 
       Match-tier 0 (direct/exact): the attr's `canonical_slot` == element
               token, OR the attr's own `attr_name` == element token.
@@ -6635,9 +6679,26 @@ def content_attr_for_element(
               the element-scope `slots` row named by the attr's
               `canonical_slot`.
 
-    Only content-bearing roles enter (FR-31-2.2 positive allowlist:
-    'text-content', 'identity', 'image-object', 'content', 'rating') — styling
-    and behaviour attrs never resolve as a content destination.
+    ``modifiers`` (added — general BEM-modifier disambiguation, Task 3
+    2026-09-05): when a same-tier alias match is AMBIGUOUS (2+ candidate
+    attrs share the tier, e.g. `sgs/product-card`'s `featuredTag` and
+    `trialTag` both alias element token 'tag' via `canonical_slot='label'`),
+    a rowid tie-break silently always picks the same winner regardless of
+    which variant the draft actually authored — proven live: a
+    `--featured`-modified tag's text landed in `trialTag` every time,
+    because `trialTag` has the lower rowid. This is NOT a product-card
+    special case — it is a GENERAL BEM-modifier routing gap: the caller (the
+    content walker) already extracts every own-family modifier an element
+    carries (device-tier modifiers reuse the SAME mechanism below); passing
+    them through here lets a same-tier ambiguity resolve via the block's
+    OWN `variant_slots` declaration (FR-31-20) — the DB fact that already
+    states which attr is the discriminating slot for which variant value —
+    rather than an arbitrary DB row order. Resolution: among the tied
+    candidates, an attr_name that is `variant_slots.unique_slot` for a
+    `variant_value` matching one of ``modifiers`` (case-insensitive) wins.
+    If zero or 2+ candidates match, behaviour is UNCHANGED (first-by-rowid)
+    — this only narrows an existing ambiguity, never invents a new one.
+    R-31-1: DB-only (`variant_slots`), no per-block/per-slug literal.
 
     ``tier`` (added — content-router device-tier axis, mirrors the CSS
     router's `modifier_suffixes(kind='breakpoint')` vocabulary so content and
@@ -6680,6 +6741,12 @@ def content_attr_for_element(
                      `modifier_suffixes(kind='breakpoint')`. None = no tier
                      requested (byte-identical to the pre-tier behaviour,
                      modulo the rule-1 exclusion correction above).
+        modifiers:   Every own-family BEM modifier token this draft element
+                     carries (e.g. `('featured',)` from
+                     `sgs-product-card__tag--featured`), in no particular
+                     order. Used ONLY to break a same-tier alias tie via
+                     `variant_slots` (see above) — an empty tuple (default)
+                     reproduces the pre-existing behaviour exactly.
 
     Returns:
         (attr_name, emit_shape, role, attr_type) for the best match, or None.
@@ -6789,19 +6856,35 @@ def content_attr_for_element(
 
     best: tuple[str, str | None, str | None, str | None] | None = None
     best_tier: int | None = None
+    # ALL rows at the current best tier, rowid-ordered — needed so a same-tier
+    # ambiguity can be disambiguated by `modifiers` below rather than only ever
+    # seeing the first (rowid-winning) candidate. Tier-0 still breaks the loop
+    # immediately (unchanged): an exact name/canonical_slot match is definitional,
+    # not an alias-tier ambiguity, so it is never a candidate for modifier
+    # disambiguation.
+    tier_candidates: list[tuple[str, str | None, str | None, str | None]] = []
     for attr_name, canonical_slot, emit_shape, role, attr_type in base_rows:
         if (canonical_slot == bem_element or attr_name == bem_element
                 or attr_name.replace("-", "").lower() == _norm_el):
-            match_tier = 0
+            best = (attr_name, emit_shape, role, attr_type)
+            best_tier = 0
+            break  # rows are rowid-ordered; the first tier-0 hit is final.
         elif bem_element in slot_aliases.get(canonical_slot or "", ()):
             match_tier = 1
-        else:
-            continue
-        if best_tier is None or match_tier < best_tier:
-            best = (attr_name, emit_shape, role, attr_type)
-            best_tier = match_tier
-        if best_tier == 0:
-            break  # rows are rowid-ordered; the first tier-0 hit is final.
+            if best_tier is None or match_tier < best_tier:
+                best_tier = match_tier
+                tier_candidates = [(attr_name, emit_shape, role, attr_type)]
+            elif match_tier == best_tier:
+                tier_candidates.append((attr_name, emit_shape, role, attr_type))
+
+    if best is None and tier_candidates:
+        best = tier_candidates[0]  # unchanged default: first-by-rowid
+        if len(tier_candidates) > 1 and modifiers:
+            _disambiguated = _variant_modifier_tiebreak(
+                block_slug, tier_candidates, modifiers
+            )
+            if _disambiguated is not None:
+                best = _disambiguated
 
     if best is None:
         _trace("db_lookup_miss", lookup="content_attr_for_element",
