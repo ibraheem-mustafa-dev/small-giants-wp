@@ -371,13 +371,31 @@ function readStyleCss( blockDir ) {
 	return '';
 }
 
-function recommendEndShape( { blockDir, blockJson, attr, row, mechanism, current, styleCss } ) {
+function recommendEndShape( { blockDir, blockJson, attr, row, mechanism, current, styleCss, dbBlockRows } ) {
 	if ( isCanvasOnly( blockDir, attr ) ) {
 		return { shape: END_SHAPES.CANVAS_NOT_CSS.key, reason: 'attribute consumed as a canvas fillStyle/strokeStyle in view.js — no CSS gradient path exists', evidence: blockDir + '/view.js' };
 	}
 
 	if ( mechanism === 'svg-stroke' || mechanism === 'stroke' ) {
 		return { shape: END_SHAPES.SVG_PAINT_GRADIENT.key, reason: 'DB mechanism is svg-stroke', evidence: 'block_attributes.mechanism' };
+	}
+
+	// A base attr can map to css:color (mechanism 'text') while its OWN
+	// gradient sibling maps to a completely different mechanism, css:stroke —
+	// the icon/SVG gradient shape (D636/D644): the flat colour paints via
+	// `color:`/currentColor on an inline SVG, but the GRADIENT is applied via
+	// sgs_svg_stroke_gradient()/sgs_svg_inject_defs(), never background-clip:
+	// text. Checking only the base attr's mechanism missed this — fixed
+	// 2026-09-06 after it wrongly recommended text-gradient for
+	// accordion.iconColour/cart.iconColour/social-icons.iconGlyphColourHover,
+	// all three of which already had a working svg-paint-gradient
+	// implementation their own block.json _note documents by name.
+	if ( dbBlockRows ) {
+		const gradAttr = attr + 'Gradient';
+		const gradDbRow = dbBlockRows[ gradAttr ] || dbBlockRows[ attr + 'HoverGradient' ];
+		if ( gradDbRow && ( gradDbRow.css_property === 'stroke' || gradDbRow.css_property === 'svg-stroke' ) ) {
+			return { shape: END_SHAPES.SVG_PAINT_GRADIENT.key, reason: 'base attr maps to css:color (mechanism=text) but its own gradient sibling (' + gradAttr + ') maps to css:stroke — an icon/SVG gradient shape, not text', evidence: 'block_attributes.css_property for ' + gradAttr };
+		}
 	}
 
 	if ( mechanism === 'border' ) {
@@ -446,7 +464,7 @@ function main() {
 
 			const current = detectCurrentShape( php, row.attr );
 			const recommended = mechanism
-				? recommendEndShape( { blockDir: dir, blockJson, attr: row.attr, row, mechanism, current, styleCss } )
+				? recommendEndShape( { blockDir: dir, blockJson, attr: row.attr, row, mechanism, current, styleCss, dbBlockRows: db[ slug ] } )
 				: { shape: 'unclassified', reason: 'no css_property resolved in DB for this attr — schema gap, not a shape question', evidence: null };
 
 			results.push( {
