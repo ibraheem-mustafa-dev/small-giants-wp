@@ -210,6 +210,31 @@ function findAttributeReads( text ) {
 	return found;
 }
 
+/**
+ * Detects variables assigned from calls to svgBackgroundPreview(). Returns
+ * a Set of variable names whose .markup property is safe for
+ * dangerouslySetInnerHTML because they come from a delegate that sanitises
+ * internally (like sgs_tier_media_render() on the PHP side).
+ *
+ * Pattern: `const varName = svgBackgroundPreview(...)` or
+ * `let varName = svgBackgroundPreview(...)` or
+ * `var varName = svgBackgroundPreview(...)`.
+ *
+ * @param {string} text JS file text
+ * @return {Set<string>} Variable names (e.g., 'svgPreview')
+ */
+function findSvgBackgroundPreviewVars( text ) {
+	const found = new Set();
+	// Capture: const/let/var VARNAME = svgBackgroundPreview(...)
+	// The opening paren is required to distinguish the call from a bare mention
+	const re = /(?:const|let|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*svgBackgroundPreview\s*\(/g;
+	let m;
+	while ( ( m = re.exec( text ) ) !== null ) {
+		found.add( m[ 1 ] );
+	}
+	return found;
+}
+
 // Bounded window of source starting at each REAL `dangerouslySetInnerHTML`
 // JSX-attribute match — long enough to cover the whole `{ { __html: EXPR }
 // }` object literal for every real shape in this tree (the longest,
@@ -260,9 +285,24 @@ module.exports = {
 		const editText = ctx.stripped( editFile );
 		if ( editText ) {
 			const loci = findDangerousHtmlLoci( editText );
+			// Detect variables assigned from svgBackgroundPreview() — these
+			// delegate sanitisation internally, so their .markup property is safe
+			const svgPreviewVars = findSvgBackgroundPreviewVars( editText );
 			loci.forEach( ( locus, i ) => {
 				if ( ! /svg/i.test( locus ) ) return; // not SVG-shaped, out of scope
 				if ( locus.indexOf( 'sanitiseSvg(' ) !== -1 ) return; // already wrapped
+
+				// Check for delegate pattern: { __html: varName.markup } where
+				// varName is assigned from svgBackgroundPreview(...)
+				// Regex: capture varName from pattern like "{ __html: varName.markup }"
+				// or variants with whitespace. The .markup suffix is the key
+				// indicator of the svgBackgroundPreview delegate return shape.
+				const delegateMatch = locus.match( /\{\s*__html\s*:\s*([A-Za-z_][A-Za-z0-9_]*)\s*\.\s*markup\s*\}/ );
+				if ( delegateMatch && svgPreviewVars.has( delegateMatch[ 1 ] ) ) {
+					// This is { __html: varName.markup } where varName is from
+					// svgBackgroundPreview() — the markup is already sanitised
+					return;
+				}
 
 				findings.push(
 					makeFinding( {
@@ -345,6 +385,7 @@ module.exports = {
 			'before-after-silent',
 			'sanitised-both-silent',
 			'no-svg-block-silent',
+			'svg-background-preview-silent',
 		],
 	},
 };

@@ -1,0 +1,13 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/container",
+	"title": "Container",
+	"category": "layout",
+	"attributes": {
+		"bgSvgContent": {
+			"type": "string",
+			"default": ""
+		}
+	}
+}
