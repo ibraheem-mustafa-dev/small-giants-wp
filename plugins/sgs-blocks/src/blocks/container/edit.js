@@ -12,7 +12,7 @@ import {
   BoxControl,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
-import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, TypographyControls } from "../../components";
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, TypographyControls, SgsBoxControl } from "../../components";
 import { resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, borderPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, colourVar } from "../../utils";
 import {
   LayoutPanel,
@@ -601,46 +601,50 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
             split. Mirrors the D548 `sgs/gallery` precedent (its own base tier
             is likewise owned, not native). */}
         <PanelBody title={ __( "Padding & margin", "sgs-blocks" ) } initialOpen={ false }>
-          {/* presets={true} — C16 pilot (2026-08-27). sgs/container is the ONE
-              block piloting spacing presets on the shared SgsBoxControl before
-              the other 50 mounts see them (default stays OFF everywhere else).
+          {/* padding/margin are now TIER-of-BOXES object attrs — ONE attribute
+              holding {desktop,tablet,mobile}, each tier a {top,right,bottom,left}
+              box (Phase 2 tier-object migration, 2026-09-06) — matching the
+              shape already shipped on sgs/site-header-row / sgs/site-footer-row /
+              sgs/gallery (Spec 37 FR-37-16). Uses ResponsiveOverride, which reads
+              and writes the object directly, NOT the flat-sibling
+              ResponsiveBoxControl. Do NOT revert to an attrMap of
+              {base:'padding', tablet:'paddingTablet', mobile:'paddingMobile'} —
+              those two siblings are no longer declared by block.json, and
+              WordPress SILENTLY DISCARDS an attribute a block does not declare
+              (D338).
+              presets — C16 pilot (2026-08-27). sgs/container is the ONE block
+              piloting spacing presets on the shared SgsBoxControl before the
+              other mounts see them (default stays OFF everywhere else).
               See .claude/scratch/2026-08-27-c16-spacing-presets-design.md §7. */}
-          <ResponsiveBoxControl
-            label={ __( "Padding", "sgs-blocks" ) }
-            presets
-            values={ {
-              base: attributes.padding ?? {},
-              tablet: attributes.paddingTablet ?? {},
-              mobile: attributes.paddingMobile ?? {},
-            } }
-            onChange={ ( tier, next ) => {
-              /* Breakpoint -> attr map, not a ternary. This is the CANONICAL
-                 idiom in this codebase and check-control-ux.js recognises it
-                 explicitly (its "COMPLIANT IDIOM EXEMPTION", ~:330): a variant
-                 appearing as the VALUE of a `tablet:`/`mobile:` key is the
-                 wrapped-and-delegated shape, whereas a bare computed ternary
-                 reads to the gate as an unwrapped direct write and fails the
-                 build with RESPONSIVE-FAMILY-WITHOUT-SWITCHER. It is also
-                 simply less code: one setAttributes, no branch. */
-              const attrFor = { base: "padding", tablet: "paddingTablet", mobile: "paddingMobile" };
-              setAttributes( { [ attrFor[ tier ] ]: next } );
-            } }
-          />
+          <ResponsiveOverride
+            value={ attributes.padding }
+            onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+          >
+            { ( { ownValue, setOwnValue } ) => (
+              <SgsBoxControl
+                label={ __( "Padding", "sgs-blocks" ) }
+                values={ ownValue && typeof ownValue === "object" ? ownValue : {} }
+                units={ BOX_UNITS }
+                presets
+                onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+              />
+            ) }
+          </ResponsiveOverride>
           <hr style={ { margin: "16px 0" } } />
-          <ResponsiveBoxControl
-            label={ __( "Margin", "sgs-blocks" ) }
-            presets
-            values={ {
-              base: attributes.margin ?? {},
-              tablet: attributes.marginTablet ?? {},
-              mobile: attributes.marginMobile ?? {},
-            } }
-            onChange={ ( tier, next ) => {
-              /* Same canonical breakpoint -> attr map as Padding above. */
-              const attrFor = { base: "margin", tablet: "marginTablet", mobile: "marginMobile" };
-              setAttributes( { [ attrFor[ tier ] ]: next } );
-            } }
-          />
+          <ResponsiveOverride
+            value={ attributes.margin }
+            onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+          >
+            { ( { ownValue, setOwnValue } ) => (
+              <SgsBoxControl
+                label={ __( "Margin", "sgs-blocks" ) }
+                values={ ownValue && typeof ownValue === "object" ? ownValue : {} }
+                units={ BOX_UNITS }
+                presets
+                onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+              />
+            ) }
+          </ResponsiveOverride>
         </PanelBody>
 
         {/* Content band (Layer 2 __inner) padding — per-area object attr (contract §2),

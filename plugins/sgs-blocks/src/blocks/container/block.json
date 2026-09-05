@@ -35,12 +35,10 @@
 			],
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"contentBandPadding": [
 					"contentBandPadding"
@@ -604,12 +602,17 @@
 		},
 		"padding": {
 			"type": "object",
-			"default": {},
-			"description": "Base (desktop) padding, owned outright (no supports.spacing — D555 box-object migration). NO DEFAULT: the horizontal gutter is supplied by WordPress core's own .has-global-padding, which the shared wrapper applies whenever the container renders a content band (class-sgs-container-wrapper.php, search has-global-padding). A 24px default lived here from f9f4368b until 2026-08-21 and was REVERTED: a per-instance default has no nesting reset, so it compounded to 72px on a 3-deep nest and left a 48px-wide footer container with zero content. Core's mechanism carries the nesting reset; a hand-rolled copy cannot. Do NOT reintroduce a default here."
+			"default": {
+				"desktop": {}
+			},
+			"description": "TIER-of-BOXES: {desktop,tablet,mobile}, each tier a {top,right,bottom,left} box (Phase 2 tier-object migration, 2026-09-06 — matches the shape already shipped on sgs/site-header-row/sgs/site-footer-row/sgs/gallery). Owned outright (no supports.spacing — D555 box-object migration). NO DESKTOP DEFAULT: the horizontal gutter is supplied by WordPress core's own .has-global-padding, which the shared wrapper applies whenever the container renders a content band (class-sgs-container-wrapper.php, search has-global-padding). A 24px default lived here from f9f4368b until 2026-08-21 and was REVERTED: a per-instance default has no nesting reset, so it compounded to 72px on a 3-deep nest and left a 48px-wide footer container with zero content. Core's mechanism carries the nesting reset; a hand-rolled copy cannot. Do NOT reintroduce a default here."
 		},
 		"margin": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			},
+			"description": "TIER-of-BOXES: {desktop,tablet,mobile}, each tier a {top,right,bottom,left} box (Phase 2 tier-object migration, 2026-09-06)."
 		},
 		"borderColour": {
 			"type": "string",
@@ -662,22 +665,6 @@
 				"outset"
 			],
 			"description": "Wrapper root border style. Empty/none = no border rendered regardless of colour/width — matches sgs/product-card's 'none' sentinel."
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"contentBandPadding": {
 			"type": "object",
