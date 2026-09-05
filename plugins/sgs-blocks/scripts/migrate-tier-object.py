@@ -234,12 +234,42 @@ def _base_attr_key(attrs: dict, prop: str):
 # decorative-image/media/responsive-logo/before-after/hero, and does NOT match any of
 # columns/textAlign/backgroundOverlayOpacity/showOn/videoAutoplay/videoControls/
 # videoLazyLoad/videoLoop/videoMuted/videoPlaysInline/splitMediaObjectPosition/
-# splitMediaType/splitMediaWidth/splitImageAlt — the negative control this fix requires.
+# splitMediaType/splitMediaWidth — the negative control this fix requires.
 _FILE_REFERENCE_SUFFIXES = ('Id', 'Url', 'Content')
 
 
 def _is_file_reference_attr(prop: str) -> bool:
     return prop.endswith(_FILE_REFERENCE_SUFFIXES)
+
+
+# C19 companion-field fix (2026-09-06, tier-object migration Phase 2). The suffix test
+# above protects `splitImageUrl`/`splitImageId` themselves, but missed the mistake that
+# actually shipped: `splitImageAlt` doesn't end in Id/Url/Content, so it fell through to
+# FLAT and got folded — wrong, because it's alt text describing whichever image is
+# rendering at that tier, not an independent value of its own (see hero/render.php's
+# `$sgs_hero_resolve_split_image()`, which reads `splitImageAlt<suffix>` alongside
+# `splitImageUrl<suffix>`/`splitImageId<suffix>` as one unit per tier).
+#
+# Structural detection, not a second hardcoded attr list (R-31-1): a companion field
+# shares a PascalCase name STEM with a real, declared file-reference attribute on the
+# same block (`splitImageAlt` stems from `splitImageUrl`'s "splitImage"), with a capital
+# letter immediately after the stem so a coincidental substring match (e.g. an unrelated
+# "imageQualityHint" attr merely containing "image") can't false-positive.
+def _companion_media_stem(attrs: dict, prop: str) -> bool:
+    """True if `prop` travels alongside an already-declared file-reference attribute
+    on the same block — same name stem, PascalCase word boundary."""
+    for other in attrs:
+        if other == prop or not _is_file_reference_attr(other):
+            continue
+        for suffix in _FILE_REFERENCE_SUFFIXES:
+            if other.endswith(suffix):
+                stem = other[: -len(suffix)]
+                break
+        else:
+            continue
+        if stem and prop.startswith(stem) and len(prop) > len(stem) and prop[len(stem)].isupper():
+            return True
+    return False
 
 
 def classify(attrs: dict, prop: str):
@@ -261,7 +291,7 @@ def classify(attrs: dict, prop: str):
         return 'BLENDED', sibs
     if not sibs:
         return 'ABSENT', []
-    if _is_file_reference_attr(prop):
+    if _is_file_reference_attr(prop) or _companion_media_stem(attrs, prop):
         # C19-protected: would otherwise classify FLAT (scalar base + scalar siblings),
         # but every MIGRATABLE filter in this script checks kind in ('FLAT', 'BLENDED')
         # only, so this kind is excluded from every --survey/--fix/--check operation by
@@ -1939,6 +1969,38 @@ def self_test() -> int:
           'from migration, not silently dropped from the report)',
           set(_sibs_media) == {'imageIdTablet', 'imageIdMobile'})
 
+    # --- companion-field fix (2026-09-06): a field that travels WITH a file-reference
+    # attr, but doesn't itself end in Id/Url/Content, must also be exempted — this is the
+    # exact shape that let `splitImageAlt` get folded by mistake in the prior session.
+    _companion_attrs = {
+        'splitImageUrl': {'type': 'string', 'default': ''},
+        'splitImageAlt': {'type': 'string', 'default': ''},
+        'splitImageAltTablet': {'type': 'string', 'default': ''},
+        'splitImageAltMobile': {'type': 'string', 'default': ''},
+    }
+    _kind_companion, _ = classify(_companion_attrs, 'splitImageAlt')
+    check('positive: "splitImageAlt" (shares the "splitImage" stem with the declared '
+          f'file-reference attr "splitImageUrl") classifies ART_DIRECTED_MEDIA '
+          f'(got {_kind_companion!r}), never FLAT — this is the real splitImageAlt '
+          'mistake this fix exists to close',
+          _kind_companion == 'ART_DIRECTED_MEDIA')
+
+    # --- negative control: a coincidental substring match with NO capital-letter word
+    # boundary must NOT be treated as a companion (proves the stem test isn't a bare
+    # `.startswith()`, which would false-positive on any prop merely containing the stem)
+    _boundary_attrs = {
+        'imageId': {'type': 'integer', 'default': 0},
+        'images': {'type': 'string', 'default': ''},
+        'imagesTablet': {'type': 'string', 'default': ''},
+        'imagesMobile': {'type': 'string', 'default': ''},
+    }
+    _kind_boundary, _ = classify(_boundary_attrs, 'images')
+    check('negative control: "images" (a coincidental lowercase-continuation substring '
+          f'of "imageId", not a real companion) still classifies FLAT (got '
+          f'{_kind_boundary!r}) — the companion test requires a PascalCase word boundary, '
+          'not a bare substring match',
+          _kind_boundary == 'FLAT')
+
     _opacity_attrs = {
         'backgroundOverlayOpacity': {'type': 'number', 'default': 1},
         'backgroundOverlayOpacityTablet': {'type': 'number', 'default': 1},
@@ -1964,6 +2026,7 @@ def self_test() -> int:
         ('responsive-logo', 'logoId'), ('responsive-logo', 'logoUrl'),
         ('before-after', 'beforeImageId'), ('before-after', 'afterImageUrl'),
         ('hero', 'splitImageId'), ('hero', 'splitSvgContent'),
+        ('hero', 'splitImageAlt'),
     ]
     for _slug, _prop in _real_media_cases:
         _bj = BLOCKS_DIR / _slug / 'block.json'
