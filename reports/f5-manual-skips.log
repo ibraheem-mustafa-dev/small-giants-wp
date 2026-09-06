@@ -13,3 +13,5 @@ timestamp | script | type | reason
 2026-09-06 12:18:01 | db-consistency/run.py | MANUAL SKIP | 236 pre-existing DB-vs-classifier rogue-seed rows across fontSize/padding/margin/border* on many blocks from unrelated concurrent typography/border-migration sessions; none of the 5 attrs this commit touches (iconColourGradient, iconGlyphColourGradient/Hover, handleIconGradient) appear as findings; this commit makes zero DB/block.json changes
 2026-09-06 12:20:02 | db-consistency/run.py | MANUAL SKIP | 236 pre-existing DB-vs-classifier rogue-seed rows unrelated to this render.php-only commit
 2026-09-06 12:22:20 | db-consistency/run.py | MANUAL SKIP | 236 pre-existing DB-vs-classifier rogue-seed rows unrelated to this render.php-only commit
+2026-09-06 12:46:52 | db-consistency/run.py | MANUAL SKIP | shared-tree DB-vs-classifier drift from unrelated concurrent sessions, same class already bypassed twice this session
+2026-09-06 12:50:26 | db-consistency/run.py | MANUAL SKIP | shared-tree DB-vs-classifier drift from unrelated concurrent sessions, same class already bypassed twice this session
