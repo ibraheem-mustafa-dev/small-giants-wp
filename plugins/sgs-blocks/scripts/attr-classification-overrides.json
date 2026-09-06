@@ -3182,6 +3182,22 @@
         "css_state": "hover"
       },
       "_why": "2026-09-06. See rowStripeColourAHoverGradient's entry (added alongside this one) -- same alternating-row disambiguation, opposite parity."
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "textColumns",
+      "fields": {
+        "role": "typography"
+      },
+      "_why": "2026-09-06, Bean-directed. Was heuristically classified 'layout' (column-count IS a layout-family CSS property in isolation), but this is a typography-panel control -- it lives in TypographyControls.js alongside fontSize/lineHeight/textAlign, not in any layout/spacing panel, and check-element-manifest-conformance.js's orphan-classification treats an attr's ROLE as what determines which panel/cluster it belongs with. Reclassified to match its actual home."
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "textIndent",
+      "fields": {
+        "role": "typography"
+      },
+      "_why": "2026-09-06, Bean-directed. Had no role at all (unclassified) -- text-indent is a typography-panel control, same reasoning as textColumns immediately above, and belongs with the rest of sgs/text's typography attributes (fontSize/lineHeight/textAlign/textWrap/textColumns)."
     }
   ]
 }

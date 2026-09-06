@@ -444,12 +444,11 @@ export default function Edit( { attributes, setAttributes } ) {
 					 * exists to catch, and it cannot see a writer that lives
 					 * inside a config object rather than literal JSX.
 					 *
-					 * ⚠ fontFamily is DECLARED by this block and consumed by
-					 * both render.php (via sgs_typography_css_rule) and the
-					 * canvas preview (buildTextStyle), but showFontFamily is
-					 * deliberately NOT switched on here — that is a pre-existing
-					 * gap being reported to Bean rather than silently widened
-					 * inside a redesign task.
+					 * fontFamily is DECLARED by this block and consumed by both
+					 * render.php (via sgs_typography_css_rule) and the canvas
+					 * preview (buildTextStyle) — showFontFamily switched ON
+					 * 2026-09-06 to close the parity gap with sgs/text, which
+					 * already exposes this control.
 					 */ }
 					<TypographyControls
 						attributes={ attributes }
@@ -457,6 +456,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						prefix=""
 						showSize={ true }
 						fontSizePresets={ true }
+						showFontFamily={ true }
 						showWeight={ true }
 						showStyle={ true }
 						showLineHeight={ true }

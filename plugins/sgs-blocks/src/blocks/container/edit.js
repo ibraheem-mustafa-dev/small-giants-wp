@@ -696,6 +696,31 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
               />
             ) }
           </ResponsiveOverride>
+          {/* contentBandMargin — same tier-object shape as contentBandPadding
+              immediately above, same ResponsiveOverride wiring. Completes a
+              wire-up that was previously write-only: the Universal Cloning
+              Pipeline's content_band.py resolver already writes real values
+              here for the "sole passthrough child" fold case (Defect 3,
+              qc-council-validated 2026-09-04), but until now nothing in the
+              editor or the wrapper's CSS emission ever read this attribute —
+              a converted page's fold-margin was silently inert on both the
+              canvas and the live frontend. Bean-directed completion,
+              2026-09-06: mirrors Band padding's control exactly. */}
+          <ResponsiveOverride
+            value={ attributes.contentBandMargin }
+            onChange={ ( obj ) => setAttributes( { contentBandMargin: obj } ) }
+          >
+            { ( { ownValue, setOwnValue } ) => (
+              <BoxControl
+                label={ __( "Band margin", "sgs-blocks" ) }
+                values={ ownValue && typeof ownValue === "object" ? ownValue : {} }
+                units={ BOX_UNITS }
+                splitOnAxis={ false }
+                onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+              	__next40pxDefaultSize
+              />
+            ) }
+          </ResponsiveOverride>
         </PanelBody>
 
         {/* Grid item defaults — only shown when layout is grid. */}

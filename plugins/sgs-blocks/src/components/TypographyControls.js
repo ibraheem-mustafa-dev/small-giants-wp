@@ -23,7 +23,11 @@
  *                    with no suffix.
  *   - Letter space → core <LetterSpacingControl>.
  *   - Decoration   → core <TextDecorationControl> (icon ToggleGroup).
- *   - Letter case  → core <TextTransformControl> (icon ToggleGroup).
+ *   - Letter case  → FAITHFUL PARTIAL REBUILD of core's TextTransformControl
+ *                    (icon ToggleGroup) — 3 tiles, not core's 4 (2026-09-06,
+ *                    Bean-directed: the None tile was dropped so this row fits
+ *                    beside Decoration; 'none' stays reachable via a reset
+ *                    button next to the label). See its render site.
  *   - Text align   → FAITHFUL REIMPLEMENTATION of core's TextAlignmentControl.
  *                    Core's is a PRIVATE API (`private-apis.js` only, needs
  *                    `unlock()`), so it cannot be imported; it is rebuilt from
@@ -65,10 +69,21 @@
  */
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
-import { BaseControl, Flex, FlexItem, RangeControl, SelectControl } from '@wordpress/components';
+import { useSettings } from '@wordpress/block-editor';
+import { BaseControl, Button, Flex, FlexItem, RangeControl, SelectControl } from '@wordpress/components';
 // The same four icons core's own TextAlignmentControl imports — see the
 // reimplementation note at its render site for why it is rebuilt, not imported.
-import { alignLeft, alignCenter, alignRight, alignJustify } from '@wordpress/icons';
+// formatUppercase/Lowercase/Capitalize are the same three icons core's own
+// TextTransformControl uses for those tiles — see the letter-case rebuild note.
+import {
+	alignLeft,
+	alignCenter,
+	alignRight,
+	alignJustify,
+	formatUppercase,
+	formatLowercase,
+	formatCapitalize,
+} from '@wordpress/icons';
 import ResponsiveControl from './ResponsiveControl';
 import ResponsiveOverride from './ResponsiveOverride';
 import {
@@ -85,16 +100,17 @@ import {
 	FontSizePicker,
 	LineHeightControl,
 	LetterSpacingControl,
-	TextTransformControl,
 	TextDecorationControl,
 	FontAppearanceControl,
 	FontFamilyControl,
 	WritingModeControl,
 } from './primitives';
 import { makeResponsive } from '../utils/responsive';
-// ⛔ `flattenPresetSetting` and `useSettings` are deliberately NOT imported.
-// The real core controls read the theme's font-size and font-family presets
-// themselves; see the note at the top of TypographyControlsFields.
+import { flattenPresetSetting } from '../utils/presetSettings';
+// `flattenPresetSetting` + `useSettings` ARE imported, for `FontFamilyControl`
+// only — see the note at the top of TypographyControlsFields. `FontSizePicker`
+// still needs neither; it sources `fontSizes` itself via a settings-aware
+// block-editor wrapper that overrides anything we pass.
 
 /**
  * Multi-target switcher threshold (Bean-approved design, 2026-09-05).
@@ -175,6 +191,20 @@ export const SGS_TEXT_TRANSFORM_OPTIONS = [
 	{ label: __( 'UPPERCASE', 'sgs-blocks' ), value: 'uppercase' },
 	{ label: __( 'lowercase', 'sgs-blocks' ), value: 'lowercase' },
 	{ label: __( 'Capitalise', 'sgs-blocks' ), value: 'capitalize' },
+];
+
+/**
+ * Letter-case TILE options for the icon ToggleGroupControl (2026-09-06,
+ * Bean-directed) — deliberately 3 entries, not core TextTransformControl's 4.
+ * 'None' is dropped as a tile: it stays the underlying default value, just
+ * reachable via the reset button next to the control's label instead of a
+ * tile, so this row + the Decoration row's 3 tiles fit one line (6 total).
+ * See the render site for the full rationale.
+ */
+export const SGS_TEXT_TRANSFORM_TILE_OPTIONS = [
+	{ label: __( 'UPPERCASE', 'sgs-blocks' ), value: 'uppercase', icon: formatUppercase },
+	{ label: __( 'lowercase', 'sgs-blocks' ), value: 'lowercase', icon: formatLowercase },
+	{ label: __( 'Capitalise', 'sgs-blocks' ), value: 'capitalize', icon: formatCapitalize },
 ];
 
 /**
@@ -483,20 +513,26 @@ function TypographyControlsFields( {
 	// do not know exists — and the row-pairing below already recovers the
 	// vertical space the disclosure was introduced to save.
 
-	// ⛔ NO useSettings() calls and NO flattenPresetSetting() here any more.
+	// `FontSizePicker` still needs no local settings read: the block-editor
+	// wrapper force-overrides `fontSizes`/`disableCustomFontSizes` from its own
+	// `useSettings` call AFTER spreading our props, so anything we passed would
+	// be discarded regardless.
 	//
-	// This component used to read `typography.fontFamilies` and
-	// `typography.fontSizes` itself and hand-build option arrays from them.
-	// Both real core controls source those settings THEMSELVES —
-	// `FontFamilyControl` falls back to `useSettings( 'typography.fontFamilies' )`
-	// when `fontFamilies` is omitted, and the block-editor `FontSizePicker`
-	// wrapper force-overrides `fontSizes`/`disableCustomFontSizes` from settings
-	// after spreading our props, so anything we passed would be discarded.
-	//
-	// This also retires the origin-keyed-object crash that
-	// `flattenPresetSetting()` existed to guard here (an object, not an array,
-	// so `.map` threw and unmounted the inspector — measured on the canary
-	// 2026-08-19): core's own controls handle that shape internally.
+	// `FontFamilyControl` is different, and this is the crash this block
+	// re-introduced 2026-09-06: passing no `fontFamilies` makes it fall back to
+	// reading `useSettings( 'typography.fontFamilies' )` INTERNALLY, inside a
+	// WP-core component this file cannot patch. That setting resolves to
+	// WordPress's raw origin-keyed object (`{ theme: [...], custom: [...] }`),
+	// not a flat array, on this theme/WP version — the exact
+	// `flattenPresetSetting()` existed to guard (measured live on the canary
+	// 2026-08-19; see that helper's own docblock). The theory that "core's own
+	// controls handle that shape internally" was wrong for THIS control — it
+	// crashed `sgs/text`'s Styles tab with `.map is not a function` the moment
+	// `showFontFamily` was switched on for a second block. Reading the setting
+	// HERE and flattening it before handing it to `FontFamilyControl` (below)
+	// removes the dependency on that internal fallback entirely.
+	const [ fontFamiliesRaw ] = useSettings( 'typography.fontFamilies' );
+	const fontFamilies = flattenPresetSetting( fontFamiliesRaw );
 
 	// Each property's tier shape is read from the CURRENTLY STORED value, not
 	// hardcoded per-block — the tier-object migration runs property-by-property,
@@ -749,7 +785,9 @@ function TypographyControlsFields( {
 	if ( showSize && showResponsive && fontSizeIsTiered ) {
 		fontSizeField = (
 			<ResponsiveOverride
-				label={ __( 'Font size', 'sgs-blocks' ) }
+				// No `label` here: FontSizePicker (rendered inside, via
+				// renderFontSizeRow()) already brings its own "FONT SIZE"
+				// header — a label here would just duplicate it.
 				value={ fontSizeRaw }
 				onChange={ ( obj ) => setAttributes( { [ k.fontSize ]: obj } ) }
 			>
@@ -764,7 +802,9 @@ function TypographyControlsFields( {
 		);
 	} else if ( showSize && showResponsive && ! fontSizeIsTiered ) {
 		fontSizeField = (
-			<ResponsiveControl label={ __( 'Font size', 'sgs-blocks' ) }>
+			// No `label` here either — same reason as the ResponsiveOverride
+			// branch above: FontSizePicker owns its own "FONT SIZE" header.
+			<ResponsiveControl>
 				{ ( breakpoint ) =>
 					renderFontSizeRow( {
 						value: attributes[ fontSizeAttrMap[ breakpoint ] ],
@@ -796,15 +836,18 @@ function TypographyControlsFields( {
 			     label wrapper: adding one would double the heading. */ }
 			{ fontSizeField }
 
-			{ /* ── Font family ── THE REAL core control. It sources the theme's
-			     font families itself via useSettings when `fontFamilies` is
-			     omitted, renders `Default` as its own empty option, and matches
-			     `value` against the fontFamily CSS STRING (its `option.key`) —
-			     which is exactly what this attribute stores, per the PHP
-			     helper's own docblock ("the raw CSS font-family VALUE, not a
-			     slug"). It returns null by itself when the theme defines none. */ }
+			{ /* ── Font family ── THE REAL core control, given an explicit,
+			     already-flattened `fontFamilies` array (see the crash note
+			     above `fontFamiliesRaw` for why this is no longer left to the
+			     control's own internal `useSettings` fallback). Renders
+			     `Default` as its own empty option, and matches `value` against
+			     the fontFamily CSS STRING (its `option.key`) — which is exactly
+			     what this attribute stores, per the PHP helper's own docblock
+			     ("the raw CSS font-family VALUE, not a slug"). Returns null by
+			     itself when `fontFamilies` is empty. */ }
 			{ showFontFamily && (
 				<FontFamilyControl
+					fontFamilies={ fontFamilies }
 					value={ attributes[ k.fontFamily ] || '' }
 					onChange={ ( val ) =>
 						setAttributes( { [ k.fontFamily ]: val || undefined } )
@@ -1084,24 +1127,31 @@ function TypographyControlsFields( {
 										parsed === undefined || isNaN( parsed ) ? undefined : parsed,
 								} );
 							} }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 				</VStack>
 			) }
 
-			{ /* ── Decoration + Letter case ── THE REAL core controls: icon
-			     ToggleGroupControls, not dropdowns. Each owns its own option
-			     list, icons and labels ("Decoration" / "Letter case"), so SGS
-			     declares none of them.
+			{ /* ── Decoration + Letter case ── Decoration is THE REAL core
+			     control (icon ToggleGroupControl, brings its own "Decoration"
+			     label + 3 options: None/Underline/Line-through).
 
-			     ⚠ These have NO "Default" option and that is CORRECT, not an
-			     omission: core makes them `isDeselectable`, so clicking the
-			     already-selected option returns to unset and emits `undefined`.
-			     Their `None` option is the real CSS keyword `none`, a DIFFERENT
-			     state from unset. We normalise the deselect `undefined` to ''
-			     because our attributes are declared `"type": "string"` with a
-			     '' default — writing undefined would leave the previous stored
-			     value in place rather than clearing it. */ }
+			     Letter case is a FAITHFUL PARTIAL REBUILD of core's
+			     TextTransformControl, not an import — 2026-09-06, Bean-directed.
+			     Core's real version ships 4 tiles (None/UPPERCASE/lowercase/
+			     Capitalise); combined with Decoration's 3 that's 7 icon tiles
+			     in one row, wider than the sidebar. Fix: drop the None tile.
+			     'none' stays the underlying default/reachable value — a client
+			     who picked a casing reaches it again via the small reset button
+			     next to the label, not a 4th tile. 3+3 = 6 tiles, fits.
+
+			     ⚠ 'none' is the real CSS keyword `none`, a DIFFERENT state from
+			     unset (''), same distinction core's own control draws — this
+			     rebuild keeps that: the tile group only ever writes uppercase/
+			     lowercase/capitalize, and the reset button is the only thing
+			     that writes 'none' explicitly. */ }
 			{ ( showDecoration || showTransform ) && (
 				<Flex gap={ 2 } align="flex-start">
 					{ showDecoration && (
@@ -1116,22 +1166,68 @@ function TypographyControlsFields( {
 					) }
 					{ showTransform && (
 						<FlexItem isBlock>
-							<TextTransformControl
-								value={ attributes[ k.textTransform ] || undefined }
-								onChange={ ( val ) =>
-									setAttributes( { [ k.textTransform ]: val ?? '' } )
+							<Flex justify="space-between" align="center">
+								<FlexItem>
+									<BaseControl.VisualLabel>
+										{ __( 'Letter case', 'sgs-blocks' ) }
+									</BaseControl.VisualLabel>
+								</FlexItem>
+								{ !! attributes[ k.textTransform ]
+									&& 'none' !== attributes[ k.textTransform ] && (
+									<FlexItem>
+										<Button
+											variant="tertiary"
+											size="small"
+											onClick={ () =>
+												setAttributes( { [ k.textTransform ]: 'none' } )
+											}
+										>
+											{ __( 'Reset', 'sgs-blocks' ) }
+										</Button>
+									</FlexItem>
+								) }
+							</Flex>
+							<ToggleGroupControl
+								label={ __( 'Letter case', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={
+									SGS_TEXT_TRANSFORM_TILE_OPTIONS.some(
+										( option ) => option.value === attributes[ k.textTransform ]
+									)
+										? attributes[ k.textTransform ]
+										: undefined
 								}
-							/>
+								onChange={ ( val ) =>
+									setAttributes( { [ k.textTransform ]: val ?? 'none' } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							>
+								{ SGS_TEXT_TRANSFORM_TILE_OPTIONS.map( ( option ) => (
+									<ToggleGroupControlOptionIcon
+										key={ option.value }
+										value={ option.value }
+										icon={ option.icon }
+										label={ option.label }
+									/>
+								) ) }
+							</ToggleGroupControl>
 						</FlexItem>
 					) }
 				</Flex>
 			) }
 
-			{ /* ── Orientation (writing-mode) ── THE REAL core control,
+			{ /* ── Orientation + Text alignment ── combined onto one row
+			     (2026-09-06, Bean-directed): Orientation (2 options) + Text
+			     alignment (4 options) = 6 icon tiles, the same row-width budget
+			     the Decoration + Letter case row above fits at 3+3. Previously
+			     two separate full-width rows; same Flex/FlexItem template.
+
+			     Orientation is THE REAL core control,
 			     `__experimentalWritingModeControl`, public and a drop-in. Its
-			     own label is "Orientation" (the OPTIONS are Horizontal /
-			     Vertical, icon-only), and it owns its `isDeselectable` +
-			     deselect-to-undefined handling internally.
+			     own label is "Orientation" (OPTIONS: Horizontal/Vertical,
+			     icon-only), and it owns its `isDeselectable` + deselect-to-
+			     undefined handling internally.
 
 			     ⚠ Its vertical VALUE is direction-dependent — core emits
 			     'vertical-lr' under isRTL() and 'vertical-rl' otherwise — so
@@ -1139,22 +1235,7 @@ function TypographyControlsFields( {
 			     Applies to heading AND text: core declares
 			     __experimentalWritingMode on both blocks.
 
-			     Core renders this at position 10, between Decoration (9) and
-			     Letter case (11). SGS pairs Decoration + Letter case on ONE row
-			     (the row-pairing convention), which is indivisible, so this
-			     sits immediately AFTER that pair instead of between its two
-			     halves — one position later than core, the only ordering
-			     deviation in the panel. */ }
-			{ showWritingMode && (
-				<WritingModeControl
-					value={ attributes[ k.writingMode ] || undefined }
-					onChange={ ( val ) =>
-						setAttributes( { [ k.writingMode ]: val ?? '' } )
-					}
-				/>
-			) }
-
-			{ /* ── Text alignment ── a FAITHFUL REIMPLEMENTATION of core's
+			     Text alignment is a FAITHFUL REIMPLEMENTATION of core's
 			     TextAlignmentControl, not an approximation.
 
 			     ⛔ Core's own component CANNOT be imported: it is registered
@@ -1176,31 +1257,47 @@ function TypographyControlsFields( {
 			     inside `BlockControls`, it takes `alignmentControls` with
 			     `{ icon, title, align }` keys, and it offers no `justify`. It
 			     is a different control for a different surface. */ }
-			{ showTextAlign && (
-				<ToggleGroupControl
-					isDeselectable
-					label={ __( 'Text alignment', 'sgs-blocks' ) }
-					value={ attributes[ k.textAlign ] || undefined }
-					onChange={ ( val ) =>
-						setAttributes( {
-							[ k.textAlign ]:
-								val === ( attributes[ k.textAlign ] || undefined )
-									? ''
-									: val ?? '',
-						} )
-					}
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				>
-					{ SGS_TEXT_ALIGN_OPTIONS.map( ( option ) => (
-						<ToggleGroupControlOptionIcon
-							key={ option.value }
-							value={ option.value }
-							icon={ option.icon }
-							label={ option.label }
-						/>
-					) ) }
-				</ToggleGroupControl>
+			{ ( showWritingMode || showTextAlign ) && (
+				<Flex gap={ 2 } align="flex-start">
+					{ showWritingMode && (
+						<FlexItem isBlock>
+							<WritingModeControl
+								value={ attributes[ k.writingMode ] || undefined }
+								onChange={ ( val ) =>
+									setAttributes( { [ k.writingMode ]: val ?? '' } )
+								}
+							/>
+						</FlexItem>
+					) }
+					{ showTextAlign && (
+						<FlexItem isBlock>
+							<ToggleGroupControl
+								isDeselectable
+								label={ __( 'Text alignment', 'sgs-blocks' ) }
+								value={ attributes[ k.textAlign ] || undefined }
+								onChange={ ( val ) =>
+									setAttributes( {
+										[ k.textAlign ]:
+											val === ( attributes[ k.textAlign ] || undefined )
+												? ''
+												: val ?? '',
+									} )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							>
+								{ SGS_TEXT_ALIGN_OPTIONS.map( ( option ) => (
+									<ToggleGroupControlOptionIcon
+										key={ option.value }
+										value={ option.value }
+										icon={ option.icon }
+										label={ option.label }
+									/>
+								) ) }
+							</ToggleGroupControl>
+						</FlexItem>
+					) }
+				</Flex>
 			) }
 
 			{ /* ═══ BELOW THIS LINE: controls with NO WordPress-native

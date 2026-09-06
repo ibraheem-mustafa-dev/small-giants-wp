@@ -76,6 +76,8 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
+const os = require( 'os' );
+const { execFileSync } = require( 'child_process' );
 
 const ROOT = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -114,7 +116,45 @@ const STYLE_ROLES = new Set( [
 	'number-css-percent',
 ] );
 
+const GENERATE_ROLE_MAP_SCRIPT = path.join( __dirname, 'generate-attr-role-map.py' );
+// Same two candidate paths generate-attr-role-map.py itself resolves DB_PATH/
+// FALLBACK_DB_PATH from (that script is the single source of truth for this
+// list; duplicated here only because this file can't `require` a .py module).
+const SGS_FRAMEWORK_DB_CANDIDATES = [
+	path.join( os.homedir(), '.claude', 'skills', 'sgs-wp-engine', 'sgs-framework.db' ),
+	path.join( __dirname, 'data', 'sgs-framework.db' ),
+];
+
+/**
+ * Regenerate attr-role-map.json from sgs-framework.db before this gate reads
+ * it — ONLY when a real (non-empty) copy of that DB is reachable on this
+ * machine (2026-09-06, Bean-directed: "don't make me run this by hand every
+ * time"). The DB lives OUTSIDE the repo tree at a user-machine path, with a
+ * deliberately-empty 0-byte vendored fallback (generate-attr-role-map.py's own
+ * comment) — an environment without either (e.g. CI) is not made to depend on
+ * this regeneration at all; it silently falls through to the existing
+ * stale-map DETECTION path below (`orphan_role_map_stale`), unchanged. This is
+ * a convenience for local runs, not a new hard dependency for every run.
+ */
+function maybeRegenerateAttrRoleMap() {
+	const hasUsableDb = SGS_FRAMEWORK_DB_CANDIDATES.some( ( dbPath ) => {
+		try {
+			return fs.statSync( dbPath ).size > 0;
+		} catch {
+			return false;
+		}
+	} );
+	if ( ! hasUsableDb ) return;
+	try {
+		execFileSync( 'python', [ GENERATE_ROLE_MAP_SCRIPT ], { cwd: __dirname, stdio: 'ignore' } );
+	} catch {
+		// Best-effort only — a failed regeneration falls through to whatever
+		// attr-role-map.json already has on disk, same as before this existed.
+	}
+}
+
 function loadAttrRoleMap() {
+	maybeRegenerateAttrRoleMap();
 	const parsed = loadJson( ATTR_ROLE_MAP_PATH, null );
 	return parsed && parsed.roles ? parsed.roles : {};
 }
