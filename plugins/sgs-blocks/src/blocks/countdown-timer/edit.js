@@ -178,6 +178,14 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( showMinutes ) units.push( { value: '00', label: __( 'Minutes', 'sgs-blocks' ) } );
 	if ( showSeconds ) units.push( { value: '00', label: __( 'Seconds', 'sgs-blocks' ) } );
 
+	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
+	// against the block's own background. When the background is a gradient,
+	// the flat backgroundColour is not rendered, so skip the check in that case.
+	const countdownTimerContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
 	return (
 		<>
 			{ /* D618/D609 — ONE grouped, SGS-OWNED colour panel (own PanelBody,
@@ -433,6 +441,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ countdownTimerContrastAgainst }
 						radiusValues={ {
 								base: attributes.borderRadius?.desktop ?? {},
 								tablet: attributes.borderRadius?.tablet ?? {},

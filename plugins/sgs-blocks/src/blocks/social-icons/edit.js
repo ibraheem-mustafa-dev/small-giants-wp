@@ -168,6 +168,22 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( marginPreview ) {
 		previewStyle.margin = marginPreview;
 	}
+	if ( wrapperBorderStyle && wrapperBorderStyle !== 'none' ) {
+		const wbw = boxShorthand( wrapperBorderWidth );
+		if ( wbw ) previewStyle.borderWidth = wbw;
+		previewStyle.borderStyle = wrapperBorderStyle;
+		if ( wrapperBorderColour ) {
+			previewStyle.borderColor = /^#|^rgb|^hsl/.test( wrapperBorderColour ) ? wrapperBorderColour : resolveColourToken( wrapperBorderColour, palette );
+		}
+		if ( wrapperBorderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( wrapperBorderColourGradient ) ) {
+			previewStyle.borderImage = `${ wrapperBorderColourGradient } 1`;
+		}
+	}
+	const wrapperRadiusBox = attributes.borderRadius?.desktop;
+	if ( wrapperRadiusBox && ( wrapperRadiusBox.topLeft || wrapperRadiusBox.topRight || wrapperRadiusBox.bottomRight || wrapperRadiusBox.bottomLeft ) ) {
+		previewStyle.borderRadius = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ]
+			.map( ( k ) => wrapperRadiusBox[ k ] || '0' ).join( ' ' );
+	}
 	if ( gap ) {
 		previewStyle.gap = spacingVar( gap );
 	}
@@ -631,13 +647,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							  onGradientChange: ( val ) => setAttributes( { wrapperBorderColourHoverGradient: val ?? '' } ) },
 						] }
 						radiusValues={ {
-							base: attributes.wrapperBorderRadius?.desktop ?? {},
-							tablet: attributes.wrapperBorderRadius?.tablet ?? {},
-							mobile: attributes.wrapperBorderRadius?.mobile ?? {},
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
 						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { wrapperBorderRadius: { ...attributes.wrapperBorderRadius, [ key ]: next } } );
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

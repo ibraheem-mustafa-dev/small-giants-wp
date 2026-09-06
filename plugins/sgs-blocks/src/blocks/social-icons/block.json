@@ -68,7 +68,7 @@
 						"css:border-width": "wrapperBorderWidth",
 						"css:border-style": "wrapperBorderStyle",
 						"css:border-color": "wrapperBorderColour",
-						"css:border-radius": "wrapperBorderRadius",
+						"css:border-radius": "borderRadius",
 						"css:border-color-gradient": "wrapperBorderColourGradient"
 					},
 					"states": {
@@ -314,19 +314,11 @@
 			"type": "object",
 			"default": {}
 		},
-		"wrapperBorderRadius": {
+		"borderRadius": {
 			"type": "object",
 			"default": {
 				"desktop": {}
 			}
-		},
-		"wrapperBorderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"wrapperBorderRadiusMobile": {
-			"type": "object",
-			"default": {}
 		}
 	},
 	"editorScript": "file:./index.js",

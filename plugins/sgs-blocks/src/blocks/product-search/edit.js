@@ -49,8 +49,29 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderWidth,
 	} = attributes;
 
+	// Editor-canvas mirror of the wrapper border block (width/style/colour+
+	// gradient/radius) — render.php emits these on the block's own top-level
+	// selector even though it isn't wrapper-qualified (see this file's own
+	// border-colour rows below); the canvas preview approximates the same
+	// visual on the root element regardless of the exact frontend selector.
+	const borderPreviewStyle = {};
+	if ( borderStyle && borderStyle !== 'none' ) {
+		const bw = [ 'top', 'right', 'bottom', 'left' ];
+		if ( borderWidth && bw.some( ( k ) => borderWidth[ k ] ) ) {
+			borderPreviewStyle.borderWidth = bw.map( ( k ) => borderWidth[ k ] || '0' ).join( ' ' );
+		}
+		borderPreviewStyle.borderStyle = borderStyle;
+		if ( borderColour ) {
+			borderPreviewStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour ) ? borderColour : `var(--wp--preset--color--${ borderColour })`;
+		}
+		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+			borderPreviewStyle.borderImage = `${ borderColourGradient } 1`;
+		}
+	}
+
 	const blockProps = useBlockProps( {
 		className: 'sgs-product-search',
+		style: borderPreviewStyle,
 	} );
 
 	// CHECK A: inputBorderColour paints `.sgs-product-search__input` directly

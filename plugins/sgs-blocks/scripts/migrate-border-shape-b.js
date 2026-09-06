@@ -2589,7 +2589,18 @@ function check() {
 			// equally-real consumption path the literal regex below cannot
 			// see, not a half-migrated block.
 			const viaMediaAtom = /SGS_Media_Element::style\(/.test( php ) && /'box-shape'/.test( php );
-			if ( ! viaMediaAtom && ! /\$attributes\['border(Width|Style|Colour|Radius)'\]/.test( php ) ) {
+			// A `wrapper`-prefixed private border (2026-09-06, sgs/social-icons) —
+			// needed because this block ALSO has a per-item `iconBorderColour`
+			// family, so the wrapper-level control needed a distinct name to avoid
+			// colliding with it. Its width/style/colour attrs are read through
+			// `sgs_border_states_css()`'s attribute-NAME map (a string value, not a
+			// literal `$attributes['borderX']` access), and radius through
+			// `sgs_border_radius_tiers( $attributes )` — both genuinely consume the
+			// block.json-declared attrs, this regex just can't see through either
+			// indirection. Same class of gap as viaMediaAtom above, not a new one.
+			const viaWrapperPrefix = /'wrapperBorder(Width|Style|Colour)'/.test( php )
+				&& /sgs_border_radius_tiers\(\s*\$attributes\s*\)/.test( php );
+			if ( ! viaMediaAtom && ! viaWrapperPrefix && ! /\$attributes\['border(Width|Style|Colour|Radius)'\]/.test( php ) ) {
 				problems.push(
 					`sgs/${ slug }: declares private border attrs but render.php never reads them — ` +
 						'the control writes an attribute nothing paints (half-migrated)'

@@ -11,6 +11,29 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { SgsColourPanel, ResponsiveBoxControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
+import { boxShorthand } from '../../utils/spacing-preview';
+
+/** Editor-canvas mirror of render.php's border block — width/style/colour(+gradient)/radius. */
+function buildBorderPreviewStyle( { borderStyle, borderWidth, borderColour, borderColourGradient, borderRadius } ) {
+	const preview = {};
+	if ( borderStyle && borderStyle !== 'none' ) {
+		const borderWidthPreview = boxShorthand( borderWidth );
+		if ( borderWidthPreview ) preview.borderWidth = borderWidthPreview;
+		preview.borderStyle = borderStyle;
+		if ( borderColour ) {
+			preview.borderColor = /^#|^rgb|^hsl/.test( borderColour ) ? borderColour : `var(--wp--preset--color--${ borderColour })`;
+		}
+		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+			preview.borderImage = `${ borderColourGradient } 1`;
+		}
+	}
+	const radiusBox = borderRadius?.desktop;
+	if ( radiusBox && ( radiusBox.topLeft || radiusBox.topRight || radiusBox.bottomRight || radiusBox.bottomLeft ) ) {
+		preview.borderRadius = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ]
+			.map( ( k ) => radiusBox[ k ] || '0' ).join( ' ' );
+	}
+	return preview;
+}
 
 // Shared with isReactive below so the two can't drift apart.
 const REACTIVE_STYLES = [ 'spectrum', 'radial', 'oscilloscope', 'gradient-pulse' ];
@@ -78,6 +101,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			// genuine solid-fill background-image rules in style.css consume
 			// it; --sgs-audio-accent above is untouched.
 			...( accentColourGradient ? { '--sgs-audio-accent-gradient': accentColourGradient } : {} ),
+			...buildBorderPreviewStyle( attributes ),
 		},
 	} );
 	const hasAudio = audioUrl || audioId;

@@ -319,7 +319,7 @@ if ( '' !== $wrapper_border_colour_css ) {
 	$scoped_css[] = $wrapper_border_colour_css;
 }
 
-$wrapper_border_radius_tiers      = sgs_border_radius_tiers( $attributes, $attributes['wrapperBorderRadiusTablet'] ?? null, $attributes['wrapperBorderRadiusMobile'] ?? null );
+$wrapper_border_radius_tiers      = sgs_border_radius_tiers( $attributes );
 $wrapper_border_radius_base       = $wrapper_border_radius_tiers['base'];
 $wrapper_border_radius_tablet_obj = $wrapper_border_radius_tiers['tablet'];
 $wrapper_border_radius_mobile_obj = $wrapper_border_radius_tiers['mobile'];

@@ -640,6 +640,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		} );
 	};
 
+	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
+	// against the block's own background. When the background is a gradient,
+	// the flat backgroundColour is not rendered, so skip the check in that case.
+	const timelineContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
 	return (
 		<>
 			<SgsColourPanel
@@ -1125,6 +1133,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onColourGradientChange={ ( val ) =>
 									setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ timelineContrastAgainst }
 						radiusValues={ {
 								base: attributes.borderRadius?.desktop ?? {},
 								tablet: attributes.borderRadius?.tablet ?? {},

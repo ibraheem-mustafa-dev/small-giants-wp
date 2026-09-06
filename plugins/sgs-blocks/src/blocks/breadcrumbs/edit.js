@@ -30,7 +30,7 @@ function boxShorthand( box, keys ) {
 
 /** Build the root's inline preview style for the editor canvas (mirrors render.php's scoped root declarations). */
 function buildRootStyle( attributes ) {
-	const { padding, margin, linkColour, separatorColour, currentColour } = attributes;
+	const { padding, margin, linkColour, separatorColour, currentColour, borderStyle, borderWidth, borderColour, borderColourGradient, borderRadius } = attributes;
 	const rootStyle = {
 		'--sgs-breadcrumbs-link-colour': colourVar( linkColour ) || undefined,
 		'--sgs-breadcrumbs-separator-colour': colourVar( separatorColour ) || undefined,
@@ -47,6 +47,22 @@ function buildRootStyle( attributes ) {
 	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		rootStyle.margin = marginPreview;
+	}
+
+	if ( borderStyle && borderStyle !== 'none' ) {
+		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+		if ( borderWidthPreview ) rootStyle.borderWidth = borderWidthPreview;
+		rootStyle.borderStyle = borderStyle;
+		if ( borderColour ) {
+			rootStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour ) ? borderColour : colourVar( borderColour );
+		}
+		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+			rootStyle.borderImage = `${ borderColourGradient } 1`;
+		}
+	}
+	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	if ( radiusPreview ) {
+		rootStyle.borderRadius = radiusPreview;
 	}
 
 	return Object.fromEntries(

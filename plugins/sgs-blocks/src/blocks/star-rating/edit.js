@@ -32,7 +32,7 @@ function boxShorthand( box ) {
 
 /** Build the wrapper's editor-preview style (mirrors render.php's scoped base declarations). */
 function buildWrapperStyle( attributes, colourPalette ) {
-	const { padding, margin, textColour, textColourGradient, backgroundColour, backgroundColourGradient } = attributes;
+	const { padding, margin, textColour, textColourGradient, backgroundColour, backgroundColourGradient, borderStyle, borderWidth, borderColour, borderColourGradient, borderRadius } = attributes;
 	const wrapperStyle = {};
 
 	const paddingPreview = boxShorthand( padding?.desktop );
@@ -45,6 +45,26 @@ function buildWrapperStyle( attributes, colourPalette ) {
 	}
 	Object.assign( wrapperStyle, textPaintPreview( textColour, textColourGradient, colourPalette ) );
 	Object.assign( wrapperStyle, backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette ) );
+
+	if ( borderStyle && borderStyle !== 'none' ) {
+		const borderWidthPreview = boxShorthand( borderWidth );
+		if ( borderWidthPreview ) {
+			wrapperStyle.borderWidth = borderWidthPreview;
+		}
+		wrapperStyle.borderStyle = borderStyle;
+		if ( borderColour ) {
+			wrapperStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour ) ? borderColour : `var(--wp--preset--color--${ borderColour })`;
+		}
+		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+			wrapperStyle.borderImage = `${ borderColourGradient } 1`;
+		}
+	}
+	const radiusBox = borderRadius?.desktop;
+	if ( radiusBox && ( radiusBox.topLeft || radiusBox.topRight || radiusBox.bottomRight || radiusBox.bottomLeft ) ) {
+		wrapperStyle.borderRadius = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ]
+			.map( ( k ) => radiusBox[ k ] || '0' ).join( ' ' );
+	}
+
 	return wrapperStyle;
 }
 
@@ -197,6 +217,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const showValue = displayMode === 'stars-with-value' || displayMode === 'stars-with-value-and-count';
 	const showCount = displayMode === 'stars-with-value-and-count';
+
+	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
+	// against the block's own background. When the background is a gradient,
+	// the flat backgroundColour is not rendered, so skip the check in that case.
+	const starRatingContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
 
 	return (
 		<>
@@ -361,6 +389,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							  gradientValue: borderColourHoverGradient,
 							  onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ) },
 						] }
+						contrastAgainst={ starRatingContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius?.desktop ?? {},
 							tablet: attributes.borderRadius?.tablet ?? {},
