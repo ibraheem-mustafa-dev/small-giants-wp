@@ -1230,3 +1230,5 @@
 2026-09-06 21:12:29 | whatsapp-cta | MANUAL SKIP | merging origin/main into a colour-conformance feature branch -- every changed block's content already exists on main, already reviewed there
 2026-09-06 21:13:05 | inspector-scan | MANUAL SKIP | pure catch-up merge, roster.json regenerated fresh (83/83)
 2026-09-06 23:11:09 | inspector-scan | MANUAL SKIP | roster.json regenerated fresh (83/83) as part of this same commit
+2026-09-06 23:36:51 | accordion-item | MANUAL SKIP | block.json metadata-only: added usesContext keys for context values already consumed by render.php (lines 47-54, 77-108). No visual/rendering change.
+2026-09-06 23:37:52 | accordion-item | MANUAL SKIP | block.json metadata-only: added usesContext keys for context values already consumed by render.php. No visual/rendering change.
