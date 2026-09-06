@@ -939,18 +939,37 @@ function sgs_block_background_layer_css( string $selector, string $paint_decl, s
  * A NO-OP (returns `[]`) when both inputs are empty, matching this file's
  * other paint helpers.
  *
- * @param string $var_name Custom-property name, WITHOUT the leading `--` and
- *                          WITHOUT a `-gradient` suffix (e.g. `sgs-tile-bg`).
- * @param string $flat     The resolved flat colour attribute value.
- * @param string $gradient The resolved gradient attribute value (raw —
- *                          validated internally via `sgs_css_gradient_value()`).
+ * ⭐ OPTIONAL HOVER PAIR (2026-09-06) — `$hover_flat`/`$hover_gradient` fold a
+ * hover state into the SAME call, emitting `--{var}-hover` /
+ * `--{var}-hover-gradient` alongside the resting pair. This is the EXACT
+ * naming convention `sgs/social-icons` and `sgs/option-picker` already used
+ * by calling this function TWICE by hand (`'sgs-social-bg'` +
+ * `'sgs-social-bg-hover'`) — folding it in removes that duplication for any
+ * NEW/migrated caller without touching either of those two working call
+ * sites. Unlike the icon-gradient primitive (`sgs_icon_gradient_css()`),
+ * there was never a structural reason for this one to stay single-state: it
+ * returns bare declaration strings with no unique-id/defs-injection side
+ * effect and builds no selector itself (the block's own static `style.css`
+ * already owns the `:hover` selector and reads `var(--x-hover, ...)`), so
+ * one call safely does both states. Omit both hover args (or leave them
+ * `''`) for the old 3-arg resting-only behaviour — fully backward compatible.
+ *
+ * @param string $var_name       Custom-property name, WITHOUT the leading
+ *                                 `--` and WITHOUT a `-gradient`/`-hover`
+ *                                 suffix (e.g. `sgs-tile-bg`).
+ * @param string $flat           The resolved flat colour attribute value.
+ * @param string $gradient       The resolved gradient attribute value (raw —
+ *                                 validated internally via
+ *                                 `sgs_css_gradient_value()`).
+ * @param string $hover_flat     Optional hover-state flat colour value.
+ * @param string $hover_gradient Optional hover-state gradient value (raw).
  * @return string[] Declarations (`--name:value`, no trailing `;`) to merge
  *                   into the caller's own custom-property array — the exact
  *                   same array the flat value already feeds
  *                   (`$css_vars[]`/`$root_var_decls[]`/`$wrapper_style_parts[]`
  *                   depending on the block).
  */
-function sgs_custom_property_gradient_decls( string $var_name, string $flat, string $gradient ): array {
+function sgs_custom_property_gradient_decls( string $var_name, string $flat, string $gradient, string $hover_flat = '', string $hover_gradient = '' ): array {
 	$decls = array();
 	if ( '' !== $flat ) {
 		$decls[] = '--' . $var_name . ':' . sgs_colour_value( $flat );
@@ -958,6 +977,13 @@ function sgs_custom_property_gradient_decls( string $var_name, string $flat, str
 	$resolved_gradient = sgs_css_gradient_value( $gradient );
 	if ( '' !== $resolved_gradient ) {
 		$decls[] = '--' . $var_name . '-gradient:' . $resolved_gradient;
+	}
+	if ( '' !== $hover_flat ) {
+		$decls[] = '--' . $var_name . '-hover:' . sgs_colour_value( $hover_flat );
+	}
+	$resolved_hover_gradient = sgs_css_gradient_value( $hover_gradient );
+	if ( '' !== $resolved_hover_gradient ) {
+		$decls[] = '--' . $var_name . '-hover-gradient:' . $resolved_hover_gradient;
 	}
 	return $decls;
 }
