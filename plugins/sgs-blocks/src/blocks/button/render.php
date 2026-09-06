@@ -655,7 +655,7 @@ if ( '' !== $preset_bg_slug ) {
 $icon_colour_gradient       = isset( $attributes['iconColourGradient'] ) ? $attributes['iconColourGradient'] : '';
 $icon_colour_hover_gradient = isset( $attributes['iconColourHoverGradient'] ) ? $attributes['iconColourHoverGradient'] : '';
 $sgs_button_icon_grad_sel   = ".{$uid}.sgs-button .sgs-button__icon svg";
-$sgs_button_stroke_grad     = sgs_icon_gradient_states_css( 'lucide', $icon_colour_gradient, $icon_colour_hover_gradient, $uid . '-ig', $sgs_button_icon_grad_sel, ".{$uid}.sgs-button", ' .sgs-button__icon svg' );
+$sgs_button_stroke_grad     = sgs_icon_gradient_states_css( 'lucide', $icon_colour_gradient, $icon_colour_hover_gradient, $uid, $sgs_button_icon_grad_sel, ".{$uid}.sgs-button", ' .sgs-button__icon svg' );
 
 $icon_html = '';
 if ( $icon ) {

@@ -382,7 +382,7 @@ if ( '' !== $title_colour_effective ) {
 // together via sgs_icon_gradient_states_css() (2026-09-06 close-out) —
 // lucide-only badge glyphs, so the icon source is hardcoded here.
 $tb_icon_grad_sel  = $uid_scope . ' .sgs-trust-bar__circle svg';
-$tb_stroke_grad    = sgs_icon_gradient_states_css( 'lucide', $icon_colour_gradient, $icon_colour_hover_gradient, $uid . '-ig', $tb_icon_grad_sel );
+$tb_stroke_grad    = sgs_icon_gradient_states_css( 'lucide', $icon_colour_gradient, $icon_colour_hover_gradient, $uid, $tb_icon_grad_sel );
 if ( $tb_stroke_grad['css'] ) {
 	$tb_extra_scoped_css .= implode( '', $tb_stroke_grad['css'] );
 }
