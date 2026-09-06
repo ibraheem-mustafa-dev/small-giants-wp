@@ -168,6 +168,7 @@ function PreviewCard( { post, attributes, palette } ) {
 		categoryBadgeColour,
 		categoryBadgeColourGradient,
 		categoryBadgeBgColour,
+		categoryBadgeBgColourGradient,
 		categoryBadgeBgColourHover,
 		categoryBadgeBgColourHoverGradient,
 		readMoreColour,
@@ -188,13 +189,17 @@ function PreviewCard( { post, attributes, palette } ) {
 	const badgeStyle = resolveTextColourPreviewStyle( categoryBadgeColour, categoryBadgeColourGradient, colourVar );
 	const rmStyle    = resolveTextColourPreviewStyle( readMoreColour, readMoreColourGradient, colourVar );
 
-	// categoryBadgeBgColour is a FLAT fill colour with no gradient sibling
-	// (block.json — only categoryBadgeColour, the TEXT colour, has one) and
-	// only paints `.sgs-post-grid__badge` (card/overlay cardStyle) — style.css
+	// categoryBadgeBgColour + categoryBadgeBgColourGradient form a 2-state
+	// (resting + hover) x 2-form (flat + gradient) system. The resting state
+	// paints `.sgs-post-grid__badge` (card/overlay cardStyle) — style.css
 	// gives `.sgs-post-grid__category` (flat/minimal) no background-color rule
 	// at all, so the plain category label must not receive this style.
-	const badgeBg = categoryBadgeBgColour ? resolveColourToken( categoryBadgeBgColour, palette ) : undefined;
-	const badgeFillStyle = badgeBg ? { ...badgeStyle, backgroundColor: badgeBg } : badgeStyle;
+	// Editor preview mirrors the render.php logic: emits the gradient if
+	// present (as background-image), otherwise falls back to the flat colour.
+	const badgeBg = categoryBadgeBgColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( categoryBadgeBgColourGradient )
+		? { backgroundImage: categoryBadgeBgColourGradient, backgroundColor: 'transparent' }
+		: categoryBadgeBgColour ? { backgroundColor: resolveColourToken( categoryBadgeBgColour, palette ) } : {};
+	const badgeFillStyle = { ...badgeStyle, ...badgeBg };
 
 	const isOverlay = cardStyle === 'overlay';
 
@@ -591,28 +596,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						key: 'category-badge-bg',
 						label: __( 'Category badge background', 'sgs-blocks' ),
 						gradientCapable: true,
-						// block.json declares NO categoryBadgeBgColourGradient — the
-						// resting state is FLAT-only (PreviewCard's own comment,
-						// above, confirms this: "categoryBadgeBgColour is a FLAT
-						// fill colour with no gradient sibling"). Only the hover
-						// state has a real gradient sibling
-						// (categoryBadgeBgColourHoverGradient). Referencing the
-						// non-existent categoryBadgeBgColourGradient here was a
-						// check-undefined-refs finding before this fix — removed.
-						// `gradientCapable` is ROW-level (SgsColourPanel.js:123),
-						// so the "normal" state below still needs a real
-						// onGradientChange — GradientCapableColourControl.js:268
-						// calls it UNCONDITIONALLY on every solid-colour pick,
-						// even for a state with no gradient sibling — a no-op
-						// keeps that call safe without writing to any attribute.
+						// Resting + hover background, flat + gradient siblings.
+						// categoryBadgeBgColour/categoryBadgeBgColourGradient
+						// pair the resting state (normal); categoryBadgeBgColourHover/
+						// categoryBadgeBgColourHoverGradient pair the hover state.
+						// Both states follow the same 2-form pattern (colour + gradient).
+						// Gradient wins if present; mirrors render.php logic via
+						// sgs_custom_property_gradient_decls().
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: categoryBadgeBgColour,
 								onChange: ( val ) => setAttributes( { categoryBadgeBgColour: val ?? '' } ),
+								gradientValue: categoryBadgeBgColourGradient,
+								onGradientChange: ( val ) => setAttributes( { categoryBadgeBgColourGradient: val ?? '' } ),
 								linked: true,
-								onGradientChange: () => {},
 							},
 							{
 								key: 'hover',

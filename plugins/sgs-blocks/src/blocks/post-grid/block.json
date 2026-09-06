@@ -460,6 +460,11 @@
 			"type": "string",
 			"default": "primary"
 		},
+		"categoryBadgeBgColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the category badge background with a masked gradient instead of a flat colour (D636 gradient rollout). Non-empty wins over categoryBadgeBgColour."
+		},
 		"categoryBadgeBgColourHover": {
 			"type": "string",
 			"default": ""
