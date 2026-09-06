@@ -23,10 +23,16 @@
  * bottom,left}` (base only, matches sgs/quote's pattern), paired with the
  * scalar `borderColour`/`borderStyle` attrs.
  *
- * Per-item icon/text colour (iconColour/textColour) emits ONCE into the
- * scoped `<style>` targeting `.{uid} .sgs-icon-list__icon` /
- * `.{uid} .sgs-icon-list__text`, never inline on the repeated elements —
- * the value is shared across the array, not truly per-item.
+ * Icon/text colour: the block-level `iconColour`/`textColour` emit ONCE into
+ * the scoped `<style>` targeting `.{uid} .sgs-icon-list__icon` /
+ * `.{uid} .sgs-icon-list__text` as the DEFAULT every item inherits. Each item
+ * MAY override its own `iconColour`/`iconColourGradient` (2026-09-06) — those
+ * overrides, and ALL gradient resolution, are emitted per-item inside the
+ * render loop (step 7), `:nth-child(N)`-scoped, because the correct gradient
+ * TECHNIQUE (SVG stroke vs text background-clip) depends on that item's own
+ * icon source, which can differ item-to-item in the same list — a single
+ * shared gradient rule cannot resolve that (this was `svg-paint-gradient`'s
+ * one open KNOWN_DIFFERENT_SHAPE row; see migrate-icon-gradient-css.js).
  *
  * @since 2026-05-?? Initial icon-list render.
  * @since 2026-07-10 No-inline migration (box-object attrs + scoped output).
@@ -341,20 +347,16 @@ if ( function_exists( 'sgs_typography_css_rule' ) ) {
 	}
 }
 
-// --- Per-item icon/text colour — emitted ONCE, scoped, never inline on the
-// repeated <li> elements. ---
+// --- Block-level DEFAULT icon/text colour — emitted ONCE, scoped, never
+// inline on the repeated <li> elements. Every item inherits this unless it
+// declares its own iconColour/iconColourGradient (step 7 below). Flat colour
+// only here — gradient is resolved per-item in step 7, because the correct
+// technique depends on each item's own icon source (2026-09-06). ---
 if ( $icon_colour ) {
 	$scoped_css[] = "{$icon_sel}{color:" . sgs_colour_value( $icon_colour ) . ';}';
 	if ( '' !== ( $attributes['iconColourHover'] ?? '' ) ) {
 		$scoped_css[] = sgs_hover_state_rules( $icon_sel, 'color:' . sgs_colour_value( $attributes['iconColourHover'] ), ':focus-visible' );
 	}
-}
-// D636/D644 icon/SVG gradient — one rule paints every item's icon (mirrors the
-// single icon_colour rule above; a gradient def is injected once into the
-// FIRST rendered item's SVG below so no duplicate #id exists in the DOM).
-$sgs_icon_list_stroke_grad = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
-if ( '' !== $sgs_icon_list_stroke_grad['css'] ) {
-	$scoped_css[] = "{$icon_sel} svg{" . $sgs_icon_list_stroke_grad['css'] . ';}';
 }
 // Text colour (flat-or-gradient, resting + hover) — scoped to the item text
 // element, never the root <ul>, matching the block's declared css:color slot.
@@ -597,10 +599,14 @@ if ( $uses_dashicon ) {
 // ---------------------------------------------------------------------------
 
 $render_marker_icon = in_array( $marker_type, array( 'icon', 'emoji' ), true );
-// D636/D644 — the gradient <defs> only needs to exist ONCE in the DOM
-// (`url(#id)` resolves document-wide); injected into the first rendered
-// item's <svg> only, to avoid a duplicate #id across the repeater.
-$sgs_icon_list_defs_injected = false;
+// Per-item colour/gradient (2026-09-06) — each item resolves its OWN colour
+// and gradient (falling back to the block-level default when unset), and its
+// OWN icon source decides the gradient TECHNIQUE via sgs_icon_gradient_css().
+// Unlike flat colour (currentColor inheritance works identically regardless
+// of source), a gradient def gets a per-item unique id, so no dedupe/inject-
+// once logic is needed — every item that resolves a non-empty gradient gets
+// its own <defs> and its own :nth-child(N)-scoped rule.
+$sgs_icon_list_item_idx = 0;
 
 // $resolved_items (step 0/3 above) is the SAME shape for both sources —
 // typed items keep their optional iconSource/iconName/newTab keys, menu
@@ -608,6 +614,7 @@ $sgs_icon_list_defs_injected = false;
 // through this one loop (real <li><a> for menu-bound lists, per FR-36-26a).
 $items_html = '';
 foreach ( $resolved_items as $item ) {
+	++$sgs_icon_list_item_idx;
 	$marker_html = '';
 	if ( $render_marker_icon ) {
 		// Resolve the item's icon source + name (migrating legacy {icon: slug} items).
@@ -622,9 +629,24 @@ foreach ( $resolved_items as $item ) {
 			$item_name   = $default_icon;
 		}
 		$svg = $render_icon( $item_source, $item_name );
-		if ( ! $sgs_icon_list_defs_injected && '' !== $sgs_icon_list_stroke_grad['defs'] ) {
-			$svg                          = sgs_svg_inject_defs( $svg, $sgs_icon_list_stroke_grad['defs'] );
-			$sgs_icon_list_defs_injected = true;
+
+		// Per-item colour override + per-item gradient resolution.
+		$item_has_own_colour  = isset( $item['iconColour'] ) && '' !== $item['iconColour'];
+		$item_icon_colour     = $item_has_own_colour ? $item['iconColour'] : $icon_colour;
+		$item_icon_gradient   = ( isset( $item['iconColourGradient'] ) && '' !== $item['iconColourGradient'] )
+			? $item['iconColourGradient']
+			: $icon_colour_gradient;
+		$item_sel             = "{$root_sel} .sgs-icon-list__item:nth-child({$sgs_icon_list_item_idx}) .sgs-icon-list__icon";
+		$item_grad_selector   = in_array( $item_source, array( 'dashicon', 'emoji' ), true ) ? $item_sel : "{$item_sel} svg";
+		$item_grad            = sgs_icon_gradient_css( $item_source, $item_icon_gradient, $uid . '-ig-' . $sgs_icon_list_item_idx, $item_grad_selector );
+		if ( '' !== $item_grad['css'] ) {
+			$svg          = sgs_svg_inject_defs( $svg, $item_grad['defs'] );
+			$scoped_css[] = "{$item_grad_selector}{" . $item_grad['css'] . ';}';
+			if ( '' !== $item_grad['fallback_rule'] ) {
+				$scoped_css[] = $item_grad['fallback_rule'];
+			}
+		} elseif ( $item_has_own_colour ) {
+			$scoped_css[] = "{$item_sel}{color:" . sgs_colour_value( $item_icon_colour ) . ';}';
 		}
 		$marker_html = sgs_list_marker_render( $marker_type, $svg );
 	}

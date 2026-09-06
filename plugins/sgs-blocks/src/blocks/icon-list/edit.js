@@ -18,6 +18,7 @@ import {
   fillRow,
   textRow,
   SgsBorderControl,
+  GradientCapableColourControl,
 } from "../../components";
 import { colourVar, spacingVar } from "../../utils";
 import { ToggleGroupControl, ToggleGroupControlOption } from "../../components/primitives";
@@ -130,6 +131,15 @@ function ItemEditor({ item, fallback, onChange, onRemove }) {
         onChange={(val) => onChange({ ...item, text: val })}
         __nextHasNoMarginBottom
       	__next40pxDefaultSize
+      />
+      <GradientCapableColourControl
+        label={__("Icon colour (this item)", "sgs-blocks")}
+        value={item.iconColour || ""}
+        onChange={(val) => onChange({ ...item, iconColour: val ?? "" })}
+        gradientValue={item.iconColourGradient || ""}
+        onGradientChange={(val) => onChange({ ...item, iconColourGradient: val ?? "" })}
+        linked
+        clearable
       />
       <Button
         variant="secondary"
