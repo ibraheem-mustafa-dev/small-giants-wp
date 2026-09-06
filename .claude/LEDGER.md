@@ -192,6 +192,20 @@ judgement-heavy); Task 4 (live-verify the card-grid switcher); Task 5 (deploy th
 TOC underline fix, `93dacf0d4`). No collision with the separate tier-object migration (disjoint
 attribute namespaces, checked directly). Task 6 (orphaned stash) is CLOSED — see State Snapshot.
 
+## ▶ TIER-OBJECT PHASE 3 (padding/margin/borderRadius) — Groups 0-1 CLOSED + build-verified 2026-09-06. Full detail: `.claude/prompts/2026-09-06-tier-object-phase-3-remaining-work.md`.
+
+Groups 0-1 migrated + verified via a full `npm run build` (node_modules had been broken; fixed
+this session via `npm install` + `composer install`). **Lesson: a schema-fold codemod's own
+`--check` passing is NOT the definition of done** — only the real build/gate chain caught what it
+missed: ~150 dead-destructure findings (`check-undeclared-attrs.py`), a duplicate-shaped control
+the exact-shape matcher didn't recognise (`check-undefined-refs.js`), a var-used-before-assignment
+in 4 `render.php` files (PHPStan via `check-render-undefined-vars.py`), and a hand-reformat pass
+that briefly corrupted 2 files (caught by reading the diff, not the tool's own success report). All
+fixed live this session; gate chain now clean for the padding/margin/borderRadius work touched.
+**Still open:** `check-undeclared-attrs.py` still flags a dead `style` destructure across ~22
+blocks — traced to a DIFFERENT, concurrent migration (native `supports.color`/`supports.typography`
+removal), deliberately left for that migration's owner rather than guessed at.
+
 ## ▶ CHECK A EDITOR-CANVAS TRACK — CLOSED. 210 -> 0. Detail: D965 (phase 1 + standards) + D967 (positive-control fix).
 
 Phase 1 (35 findings, shared `svgBackgroundPreview()`) + phases 2-4 (remaining 128, a concurrent
