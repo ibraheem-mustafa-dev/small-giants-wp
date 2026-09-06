@@ -73,3 +73,4 @@ timestamp | script | type | reason
 2026-09-06 19:56:00 | db-consistency/run.py | MANUAL SKIP | 156 pre-existing rogue css_property seeds across ~40 blocks (borderRadiusTablet/borderRadiusMobile on sgs/heading+sgs/text included) from a concurrent border-radius/tier-object migration reseed -- confirmed via db-consistency/run.py --report that every flagged attr is border-radius or unrelated background/gradient, never font-size/line-height/letter-spacing/text-wrap/text-columns/text-indent/writing-mode, the only attrs this diff touches
 2026-09-06 21:13:09 | db-consistency/run.py | MANUAL SKIP | pre-existing @babel/parser module-not-found on extract-variation-values.js, unrelated to this merge
 2026-09-06 21:18:47 | db-consistency/run.py | MANUAL SKIP | pre-existing @babel/parser gap
+2026-09-06 23:11:13 | db-consistency/run.py | MANUAL SKIP | pre-existing @babel/parser gap, unrelated
