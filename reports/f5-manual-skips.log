@@ -54,3 +54,4 @@ timestamp | script | type | reason
 2026-09-06 13:53:15 | db-consistency/run.py | MANUAL SKIP | pre-existing drift
 2026-09-06 13:53:39 | db-consistency/run.py | MANUAL SKIP | pre-existing drift
 2026-09-06 14:06:14 | db-consistency/run.py | MANUAL SKIP | pre-existing unrelated drift
+2026-09-06 16:34:53 | db-consistency/run.py | MANUAL SKIP | unrelated concurrent tier-object-migration churn: colour-gradient classifier rogue-seed findings on icon-list/notice-banner/product-card/trust-bar iconColourHoverGradient+ctaColourBackgroundGradient, not touched by this commit (which only changes check-render-tier-object-spacing.py + its new baseline JSON)

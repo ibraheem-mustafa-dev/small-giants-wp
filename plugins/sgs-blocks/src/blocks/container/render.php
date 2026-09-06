@@ -19,6 +19,9 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/shape-dividers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
+// Normalise borderRadius from flat/tier-object shape to tier-keyed structure.
+$sgs_radius_tiers = sgs_responsive_normalise_object( $attributes['borderRadius'] ?? null );
+
 // sgs_sanitize_grid_template() and sgs_container_gap_value() live in render-helpers.php.
 // SGS_Container_Wrapper::render() handles the full wrapper + responsive-CSS assembly.
 // $attributes passed VERBATIM to the wrapper — uid is md5(wp_json_encode($attributes).anchor);
@@ -95,8 +98,8 @@ if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundC
 // more. Only border-RADIUS stays on the native style.border path (a
 // corner-shape control, not a colour/paint decision), resolved here exactly
 // as sgs/product-card's own radius-only extraction (render.php ~L352-375).
-if ( isset( $attributes['borderRadius'] ) ) {
-	$sgs_container_radius_raw = $attributes['borderRadius'];
+if ( null !== $sgs_radius_tiers['desktop'] ) {
+	$sgs_container_radius_raw = $sgs_radius_tiers['desktop'];
 	if ( is_string( $sgs_container_radius_raw ) && '' !== $sgs_container_radius_raw ) {
 		$sgs_container_style_engine_input['border']['radius'] = sgs_css_length_value( $sgs_container_radius_raw );
 	} elseif ( is_array( $sgs_container_radius_raw ) ) {
@@ -130,8 +133,8 @@ if ( ! empty( $sgs_container_style_engine_input ) ) {
 // block below (mint the uid only if nothing above already needed one; APPEND
 // to $sgs_container_supports_css, never overwrite it — the block above may
 // already have written the base colour/radius/typography CSS into it).
-$sgs_container_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-$sgs_container_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$sgs_container_radius_tablet_obj = is_array( $sgs_radius_tiers['tablet'] ) ? $sgs_radius_tiers['tablet'] : array();
+$sgs_container_radius_mobile_obj = is_array( $sgs_radius_tiers['mobile'] ) ? $sgs_radius_tiers['mobile'] : array();
 $sgs_container_radius_tab_val    = sgs_corner_object_shorthand( $sgs_container_radius_tablet_obj );
 $sgs_container_radius_mob_val    = sgs_corner_object_shorthand( $sgs_container_radius_mobile_obj );
 if ( null !== $sgs_container_radius_tab_val || null !== $sgs_container_radius_mob_val ) {
