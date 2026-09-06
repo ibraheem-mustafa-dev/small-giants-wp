@@ -713,6 +713,19 @@ function TypographyControlsFields( {
 }
 
 /**
+ * Unit-companion keys never carry meaning on their own — `block.json` gives
+ * every one of them a non-empty default (`'px'`) so `<UnitControl>` has
+ * something to display, independent of whether the paired numeric field is
+ * set. Included in `targetHasCustomValues`'s scan, that default alone always
+ * satisfies "has a set value", making the indicator fire unconditionally on
+ * every target — live-verified 2026-09-06 on a freshly inserted `sgs/card-grid`
+ * (both "Title" and "Subtitle" showed the modified suffix with every
+ * typography attribute genuinely empty). Excluded here so only a key that can
+ * actually signal customisation is checked.
+ */
+const SGS_TYPOGRAPHY_UNIT_COMPANION_KEYS = [ 'fontSizeUnit', 'lineHeightUnit', 'letterSpacingUnit' ];
+
+/**
  * Does the given target prefix carry at least one non-default typography
  * value? Drives the switcher's modified-indicator (Bean-requested UX guard,
  * 2026-09-05) — without it a client who customises target B, switches to
@@ -720,9 +733,10 @@ function TypographyControlsFields( {
  * rather than "B is customised, A is untouched".
  *
  * Checks every attribute key this component reads/writes for the prefix
- * (`typographyAttrKeys`), tiered-object-aware (a `{desktop:'',tablet:18,…}`
- * object counts as modified because SOME tier is set, even though its own
- * `desktop` slot is empty).
+ * (`typographyAttrKeys`), minus the unit-companion keys (see
+ * `SGS_TYPOGRAPHY_UNIT_COMPANION_KEYS`), tiered-object-aware (a
+ * `{desktop:'',tablet:18,…}` object counts as modified because SOME tier is
+ * set, even though its own `desktop` slot is empty).
  *
  * @param {Object} attributes Block attributes.
  * @param {string} prefix     Attribute prefix for the target.
@@ -730,7 +744,10 @@ function TypographyControlsFields( {
  */
 function targetHasCustomValues( attributes, prefix ) {
 	const keys = typographyAttrKeys( prefix );
-	return Object.values( keys ).some( ( attrKey ) => {
+	return Object.entries( keys ).some( ( [ keyName, attrKey ] ) => {
+		if ( SGS_TYPOGRAPHY_UNIT_COMPANION_KEYS.includes( keyName ) ) {
+			return false;
+		}
 		const val = attributes[ attrKey ];
 		if ( val === undefined || val === null || '' === val ) {
 			return false;
