@@ -2,13 +2,16 @@
 doc_type: prompt
 title: Colour conformance — group by paint target, one POC per group
 created: 2026-09-06
-updated: 2026-09-06 (later session) — corrected two recurring misreadings
-  from the original version below (see "Corrections" section) and closed
-  the ICON/SVG surface's rollout scope down to its real remaining work
-  after ground-truth verification. Original body preserved below the
-  corrections, only the stale counts/claims it made are struck through
-  and corrected inline — per this project's D101 carry-forward rule,
-  history is superseded-and-appended, not deleted.
+updated: 2026-09-06 (third session) — ICON/SVG surface CLOSED and pushed to
+  main; a real 2-state hover-gradient helper gap found and fixed
+  (sgs_custom_property_gradient_decls() now folds hover into one call); the
+  FILL surface's real internal shape breakdown worked out (5 distinct
+  cases, not the 2 the census's raw shape-keys suggest) and ready to
+  execute next session. See "Session state" and "FILL surface — the real
+  plan" below, which supersede the "Groups still open" §1/§2 entries and
+  the old Correction 4 ICON scope note. Per D101, nothing below is deleted,
+  only superseded — read "Session state" first, it tells you what's
+  already done.
 governs: plugins/sgs-blocks/scripts/colour-codemod/
 supersedes: 2026-09-06-colour-conformance-end-shape-method.md (consumed the
   night this doc was first written — svg-paint-gradient CLOSED at the time,
@@ -19,6 +22,63 @@ retention: delete once consumed
 # Session start: colour conformance, paint-target grouping
 
 Read `CLAUDE.md` in full, then this prompt in full, before touching any code.
+
+## Session state as of 2026-09-06 (read this first)
+
+**ICON/SVG surface is CLOSED and on `main`** (commits `548cdcc31` through
+`5bcaef38e`, all pushed). Real bugs fixed: `notice-banner` (dashicon/emoji
+gradient selector didn't branch on source — the actual live bug), `icon-list`
+(per-item colour+gradient+hover added, since list items can each have a
+different icon source), `trust-bar` (hover-gradient attribute never existed).
+`button` migrated for consistency (also fixed a real touch-guard bug — its
+hover rule bypassed `sgs_hover_state_rules()`). `cart`/`accordion-item`/
+`before-after` swapped to the shared composer for consistency (no bug).
+Deliberately NOT touched: `business-info` (already correct, ancestor+suffix
+hover shape — migrating it would be pure regression risk for zero gain),
+`google-reviews`/`star-rating` (fixed SVG shape-fill, no `iconSource`
+concept — see FILL surface Case D below, these two also got miscategorised
+into the FILL census). New shared helper: `sgs_icon_gradient_states_css()`
+(`includes/helpers-svg-gradient.php`) — resolves BOTH states in one call,
+supports both hover-trigger shapes (self-hover and ancestor+suffix).
+
+**A second shared-helper gap was found and fixed the same way:**
+`sgs_custom_property_gradient_decls()` (`includes/helpers-tokens.php`) only
+ever took one state per call — callers needing hover had to call it twice
+with a `-hover`-suffixed var name (proven pattern: `social-icons`,
+`option-picker`). Unlike the icon helper, there was no structural reason for
+this (no unique-id/defs-injection side effect) — extended with 2 optional
+trailing params (`$hover_flat`, `$hover_gradient`), fully backward
+compatible, verified via isolated harness. Pushed to `main` (`5bcaef38e`).
+**This directly changes the FILL surface plan below — read it before
+assuming the old Correction-era framing still applies.**
+
+**Live-verification method proven this session, use it again:** a throwaway
+worktree off `origin/main` (`git worktree add ../<name> origin/main`),
+cherry-pick just the commits you need (skip anything superseded — check
+`grep -c "function <name>"` on the target file first, several fixes were
+independently duplicated by concurrent sessions this week), junction
+`node_modules`, build manually (see "Manual build" below if `npm run build`
+fails on someone else's unrelated debt), deploy with
+`--skip-build --skip-gate-full`, create a probe page via
+`wp post create <file> --post_type=page --post_status=publish --porcelain`
+over SSH, verify live via Playwright (including actual `browser_hover()` on
+the real element — computed-style-only checks miss selector-targeting bugs,
+which is exactly how the notice-banner bug was caught), then delete the
+probe page and the worktree. **Do not `cp` a whole file between checkouts
+to make a one-line fix** — different branches can have diverged content
+around your target line (this session accidentally reverted a concurrent
+tier-object migration doing exactly that; caught by an unexpectedly large
+`git diff --stat` before it was pushed, but it cost a hard reset + redo).
+Always use Edit for a targeted single-line change, even under time pressure.
+
+**Manual build (when `npm run build` fails on someone else's unrelated
+debt):** run `prebuild`'s codegen steps by hand, skipping only the final
+`run-gates.py --tier fast` call, then `npx wp-scripts build
+--experimental-modules --webpack-copy-php` directly, then run `postbuild`'s
+steps by hand. Confirmed safe/necessary twice this session — the shared
+tree's fast-tier gate chain was red on unrelated blocks both times
+(border-radius helper migration debt, then a `sgs/heading` stored-content
+type-mismatch), never on the blocks actually being worked.
 
 ## Corrections (read first — these are standing rules now, not one-off notes)
 
@@ -115,25 +175,94 @@ node classify-end-shape.js --list <shape-key>
 node classify-end-shape.js --json
 ```
 
+## FILL surface — the real plan (worked out 2026-09-06, supersedes §1/§2 below)
+
+⛔ **Do not run `migrate-fill-custom-property-gradient.js` blind, and do not
+treat `fill-base-hover-flat` as one uniform shape.** Both census buckets
+(36 + 21 = 57 rows total, re-run the census — these are a snapshot) contain
+**5 genuinely different cases** — confirmed by reading the census's own
+`current:` annotations plus direct reads of the two anomalous rows. Per-row
+census output (re-run `--list fill-custom-property-gradient` /
+`--list fill-base-hover-flat` for the live list):
+
+- **Case A+B — bare-or-incomplete custom property, needs gradient and/or
+  hover added (~26 rows, MERGED into one operation this session — see
+  "Session state" above).** These rows currently show `(current: unknown,
+  incomplete)` or `(current: bare-custom-property-no-gradient, incomplete)`
+  with gap `gradient-trio` (needs gradient only) or `gradient-trio+hover-
+  state` (needs gradient AND hover). Since
+  `sgs_custom_property_gradient_decls()` now takes an optional hover pair in
+  ONE call, this is a single mechanical transform regardless of which gap a
+  row has — extend `migrate-fill-custom-property-gradient.js`'s
+  `TARGET_ROWS` to cover them. ⚠ `business-info.linkHoverBackgroundImage`'s
+  entry is STALE — renamed to `attributionHoverColour`/
+  `attributionHoverColourFallback` on 2026-09-05 (D643) — fix or drop it
+  before trusting the negative control it was meant to prove. Rows seen this
+  session (re-verify, may have shifted): `accordion.headerBackground`,
+  `audio.accentColour`/`spectrumColour`, `before-after.boxShadowColour`,
+  `brand-strip.tileShadowColour`, `business-info.attributionHoverColour`,
+  `button.boxShadowColour`, `card-grid.cardShadowColour`,
+  `cta-section.backgroundColour`/`shadowColour`, `gallery.captionBgColour`,
+  `info-box.shadowHoverColour`, `media.boxShadowColour`,
+  `mega-aside.asideBg`, `mega-panel.panelBg`/`iconBackground`/
+  `accentBackgroundImage`, `multi-button.childBtnBackground`,
+  `nav-drawer.drawerBg`, `nav-menu.featuredBg`/`submenuBg`,
+  `post-grid.categoryBadgeBgColour`, `product-card.tagBackgroundColour`/
+  `pickerPillBgColour`, `product-search.listboxBackgroundColour`/
+  `resultHoverBackgroundColour`/`matchHighlightColour`,
+  `quote.boxShadowColour`, `team-member.cardShadowColour`,
+  `testimonial.shadowHoverColour`, `timeline.rowStripeColourA`/`B`,
+  `trust-bar.iconCircleShadowColour`/`badgeImageShadowColour`/
+  `iconCircleBackground`, `whatsapp-cta.backgroundColour`, plus most of
+  `fill-base-hover-flat`'s rows tagged `(current: fill-custom-property-
+  gradient)` in its own list (they already have gradient, just need hover
+  added via the same call) — `before-after.dividerColour`/`handleColour`,
+  `form.progressBarColour`, `gallery.overlayColourHover`,
+  `modal.overlayColour`, `social-icons.iconBackgroundHover`,
+  `tabs.panelBgColour`, `timeline.connectorColour`/`connectorFillColour`.
+
+- **Case C — hand-rolled scoped CSS, needs migrating onto the shared helper
+  (~9 rows, census-tagged `(current: own-scoped-style-override)`).**
+  `before-after.labelBackgroundColour`, `cart.badgeColour`/`panelBg`,
+  `form.submitBackground`, `label.backgroundColour`,
+  `modal.triggerBackground`/`modalBackground`, `nav-menu.indicatorColour`,
+  `pricing-table.toggleLabelHoverColour`. These already emit a WORKING
+  scoped `<style>` rule directly, no custom-property mechanism involved —
+  replacing it with `sgs_fill_states_css()` is a genuine helper-ADOPTION
+  migration (delete hand-rolled CSS, replace with the shared call), a
+  different transform shape from Case A+B. Hand-verify 2-3 first to confirm
+  the exact selector/attribute names before deciding whether a codemod is
+  worth building for the rest (per THE-MIGRATION-METHOD's 3-block
+  threshold — these are 9 blocks, so a codemod is warranted, but the shape
+  needs proving on a couple first since "own-scoped-style-override" is
+  vague enough to hide real per-block variation).
+
+- **Case D — MISCLASSIFIED, exclude from FILL entirely (2 rows):**
+  `star-rating.starColour`/`emptyColour`. Verified live in code
+  (`star-rating/render.php`) — these paint an inline SVG's `fill` via
+  `sgs_colour_value()` with their own gradient-attribute siblings, exactly
+  the same shape `google-reviews` already handles correctly via
+  `sgs_svg_stroke_gradient(..., 'fill')`. This is an ICON/SVG-surface row,
+  not a FILL(background) row — the census's shape-key bucketing is wrong
+  for these two specifically. Route them to the icon-surface work instead
+  (small, separate follow-up, mechanism already exists) — do NOT run the
+  FILL codemod on them.
+
+- **Case E — attribute gap on an already-correct helper (1 row):**
+  `product-card.ctaColourBackground`. Verified in code — already calls
+  `sgs_button_element_style_css()` (which genuinely supports fill gradient,
+  per the precedent registry) at two call sites (render.php:591, :702). The
+  census's "missing gradient" finding is almost certainly a missing
+  `ctaColourBackgroundGradient` attribute DECLARATION in block.json, not a
+  missing mechanism — check block.json first before assuming a fresh build
+  is needed.
+
+**Recommended order:** Case D (5 min, immediate close) → Case E (5 min,
+check-then-maybe-one-line-fix) → Case A+B (the bulk, one codemod extension)
+→ Case C last (hand-verify first, codemod only if the pattern holds across
+2-3 real reads).
+
 ## Groups still open, ranked by expected ease (counts are a snapshot — re-run)
-
-**1. FILL surface — `fill-custom-property-gradient` (~36 rows) — codemod
-already hardened, ready to run at scope.**
-`migrate-fill-custom-property-gradient.js` had two detector bugs fixed the
-night this doc was written (missing-fallback-default regex, a
-`DesignTokenPicker` row-shape it couldn't see). ⚠ Its hardcoded
-`TARGET_ROWS` list currently only covers 7 of the ~36 rows in this
-shape-key — it needs its scope widened before it can close the category,
-not just re-run as-is. Also: `business-info.linkHoverBackgroundImage` was
-renamed to `attributionHoverColour`/`attributionHoverColourFallback` on
-2026-09-05 (D643) — that `TARGET_ROWS` entry is now stale and will silently
-refuse rather than fix; update or drop it before relying on the negative
-control it was meant to prove.
-
-**2. FILL surface — `fill-base-hover-flat` (~21 rows) —
-`sgs_fill_decls()`/`sgs_fill_states_css()`, an established, uniform
-pattern.** Pick one row, confirm the helper call matches its real selector
-and DOM, then batch the rest via codemod once past 3 blocks (Correction 3).
 
 **3. TEXT surface — `text-gradient` (~33 rows).** Many already have the
 full `sgs_resolve_text_colour_or_gradient()` trio and need only a hover
@@ -157,14 +286,13 @@ border uses a masked `::before` ring construct. Any block that already owns
 `::before` for something else needs that checked first. Single mechanism,
 fully self-contained — a good standalone session unit.
 
-**6. ICON surface — `svg-paint-gradient` — see Correction 4 for the
-corrected scope.** Real bug: `icon-list`, `notice-banner` (2 blocks, full
-branching composer needed — mirror `sgs/icon`'s POC). Consistency-only
-swaps: `cart`/`accordion-item`/`before-after` base state,
-`social-icons` both states, `trust-bar`, `button`, `business-info` — 7
-blocks, mechanical `sgs_icon_gradient_css('lucide', ...)` swap. Combined
-that's 9 blocks/call-sites — build the codemod (Correction 3), do not
-hand-edit them one at a time as happened the first time.
+**6. ICON surface — CLOSED 2026-09-06, on `main`.** See "Session state" at
+the top of this doc for exactly what shipped. Do not re-open this surface
+without a fresh census showing new rows — it was fully worked through this
+session, including the two shared-helper gaps that made the work possible
+(`sgs_icon_gradient_states_css()`, and `sgs_custom_property_gradient_decls()`'s
+new optional hover pair, which also unblocks the FILL surface — see that
+section above).
 
 **7. `per-item-loop` — check current count, was 2 rows
 (`gallery.captionBgColour`, `trust-bar.badgeImageShadowColour`), may now be
