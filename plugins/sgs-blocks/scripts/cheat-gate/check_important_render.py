@@ -61,34 +61,82 @@ def _faithful_properties(conn: sqlite3.Connection) -> frozenset[str]:
     return frozenset(r[0].lower() for r in rows)
 
 
-def _enclosing_selector(text: str, decl_start: int) -> str:
-    """Return the CSS selector of the rule containing the declaration at decl_start.
+def _brace_stack_at(text: str, pos: int) -> list[str]:
+    """Return the stack of enclosing rule headers (selectors / at-rule preludes) at
+    `pos`, outermost first, innermost last.
 
-    Back-scans to the `{` opening this rule, then to the previous `}`/`{` to slice out
-    the selector text. Good enough for flagging variant/state scope (not a full parser)."""
-    open_brace = text.rfind("{", 0, decl_start)
-    if open_brace == -1:
-        return ""
-    prev = max(text.rfind("}", 0, open_brace), text.rfind("{", 0, open_brace))
-    return text[prev + 1:open_brace].strip()
+    Walks forward from the start of `text` tracking `{`/`}` depth and recording the
+    header text immediately preceding each `{`. Not a full CSS parser (doesn't handle
+    braces inside strings/comments — none occur in this codebase's stylesheets), but
+    unlike a single back-scan to the nearest `{`, this captures every ANCESTOR block
+    (e.g. an outer `@media`/`@container` wrapping the immediate selector), which the
+    scope check needs."""
+    stack: list[str] = []
+    header_start = 0
+    limit = min(pos, len(text))
+    i = 0
+    while i < limit:
+        ch = text[i]
+        if ch == "{":
+            stack.append(text[header_start:i].strip())
+            header_start = i + 1
+        elif ch == "}":
+            if stack:
+                stack.pop()
+            header_start = i + 1
+        i += 1
+    return stack
 
 
-def _is_variant_scoped(selector: str) -> bool:
-    """A !important on a VARIANT/STATE selector overrides a variant-specific render (e.g.
-    the wrapper's OWN inline animation style for `--ken-burns`/`--parallax`, or a `:hover`
-    state) — NOT the base faithful transfer, so it is not a converter cheat. Detected by a
-    BEM modifier (`--`) or a pseudo-class/state (`:`) in the enclosing selector. A BASE
-    selector (`.sgs-container`, `.sgs-x__y`) has neither → a real base-transfer override.
-    (D249 accuracy fix — STOP-31 class: scope the gate to the real cheat context.)"""
-    return "--" in selector or ":" in selector
+def _is_context_scoped(selector_stack: list[str]) -> bool:
+    """A !important is exempt when it overrides a real STATE or CONTEXT — not a raw
+    specificity fight against faithfully-transferred base CSS — so it is not a converter
+    cheat. Four recognised shapes (D249 original + 2026-09-06 generalisation):
+
+      1. A BEM modifier (`--`) or pseudo-class/state (`:`) in the IMMEDIATE selector
+         (e.g. `:hover`, `--ken-burns`) — the wrapper's own variant/state render.
+      2. An attribute-state selector (`[attr=...]`, e.g. `[aria-invalid="true"]`) in
+         the immediate selector — a real validation-state override, same principle
+         as #1 just expressed via an attribute rather than a pseudo-class.
+      3. An enclosing `@media (prefers-reduced-motion: reduce)` block ANYWHERE in the
+         ancestor chain — the WCAG 2.1 SC 2.3.3 motion override. Legitimate
+         regardless of the immediate selector's own shape (a plain class selector
+         nested inside this at-rule is still a context override, not a base-transfer
+         fight).
+      4. An enclosing `@container` block anywhere in the ancestor chain — a
+         container-query narrow-width override, the same context-override principle
+         expressed via a container query instead of a media query.
+
+    A BASE selector with no ancestor at-rule (`.sgs-container`, `.sgs-x__y` sitting
+    directly at the stylesheet's top level) has none of the above → a real
+    base-transfer override, still flagged."""
+    if not selector_stack:
+        return False
+
+    immediate = selector_stack[-1]
+    if "--" in immediate or ":" in immediate or "[" in immediate:
+        return True
+
+    for header in selector_stack[:-1]:
+        h = header.lower()
+        # `in`, not `startswith` — a header often carries a preceding CSS comment
+        # (e.g. `/* Reduced motion */\n@media (...)`) captured by the same back-scan,
+        # so the at-rule keyword rarely sits at position 0 of the header string.
+        if "@media" in h and "prefers-reduced-motion" in h:
+            return True
+        if "@container" in h:
+            return True
+
+    return False
 
 
 def _scan_file_for_important(path: Path) -> list[str]:
     """Return CSS property names (lowercased) that use !important on a BASE selector.
 
-    For .css files, a !important whose enclosing selector is variant/state-scoped is
-    SKIPPED (not a base-transfer override). The PHP wrapper is scanned flat (it builds
-    inline styles, not CSS rules with selectors)."""
+    For .css files, a !important whose enclosing selector/context is state- or
+    context-scoped (see `_is_context_scoped`) is SKIPPED (not a base-transfer
+    override). The PHP wrapper is scanned flat (it builds inline styles, not CSS
+    rules with selectors)."""
     try:
         text = path.read_text(encoding="utf-8", errors="replace")
     except OSError:
@@ -96,8 +144,8 @@ def _scan_file_for_important(path: Path) -> list[str]:
     is_css = path.suffix.lower() == ".css"
     props: list[str] = []
     for m in _IMPORTANT_DECL_RE.finditer(text):
-        if is_css and _is_variant_scoped(_enclosing_selector(text, m.start())):
-            continue  # variant/state-scoped — overrides a variant render, not the transfer
+        if is_css and _is_context_scoped(_brace_stack_at(text, m.start())):
+            continue  # state/context-scoped — overrides a variant render, not the transfer
         props.append(m.group(1).lower())
     return props
 
