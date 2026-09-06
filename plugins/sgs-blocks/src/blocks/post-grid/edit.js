@@ -323,6 +323,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		categoryBadgeColour,
 		categoryBadgeColourGradient,
 		categoryBadgeBgColour,
+		categoryBadgeBgColourGradient,
 		categoryBadgeBgColourHover,
 		categoryBadgeBgColourHoverGradient,
 		readMoreColour,

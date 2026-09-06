@@ -201,7 +201,8 @@
 					"attrMap": {
 						"css:color": "categoryBadgeColour",
 						"css:color-gradient": "categoryBadgeColourGradient",
-						"css:background-color": "categoryBadgeBgColour"
+						"css:background-color": "categoryBadgeBgColour",
+						"css:background-image": "categoryBadgeBgColourGradient"
 					},
 					"states": {
 						"hover": {

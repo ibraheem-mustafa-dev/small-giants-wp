@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 6414,
+    "row_count": 6415,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -4014,6 +4014,7 @@
     "sgs/post-grid::carouselSpeed": "behaviour",
     "sgs/post-grid::categories": "technical",
     "sgs/post-grid::categoryBadgeBgColour": "color",
+    "sgs/post-grid::categoryBadgeBgColourGradient": "colour-gradient",
     "sgs/post-grid::categoryBadgeBgColourHover": "color",
     "sgs/post-grid::categoryBadgeBgColourHoverGradient": "colour-gradient",
     "sgs/post-grid::categoryBadgeColour": "color",

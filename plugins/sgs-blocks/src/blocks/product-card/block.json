@@ -200,7 +200,8 @@
 					"attrMap": {
 						"css:background-color": "tagBackgroundColour",
 						"css:width": "tagFullWidth",
-						"css:background-image": "tagTextColourGradient"
+						"css:background-image": "tagBackgroundColourGradient",
+						"css:color-gradient": "tagTextColourGradient"
 					},
 					"states": {
 						"hover": {
