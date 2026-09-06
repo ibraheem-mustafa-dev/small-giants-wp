@@ -276,7 +276,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 $icon_svg = sgs_get_lucide_icon( $icon_name );
 // D636/D644 icon/SVG gradient — non-empty gradient wins over iconColour's
 // flat currentColor paint (helpers-svg-gradient.php).
-$sgs_cart_stroke_grad = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
+$sgs_cart_stroke_grad = sgs_icon_gradient_css( 'lucide', $icon_colour_gradient, $uid . '-ig', "{$sel} .sgs-cart__icon svg" );
 if ( '' !== $sgs_cart_stroke_grad['defs'] ) {
 	$icon_svg     = sgs_svg_inject_defs( $icon_svg, $sgs_cart_stroke_grad['defs'] );
 	$scoped_css[] = "{$sel} .sgs-cart__icon svg{" . $sgs_cart_stroke_grad['css'] . ';}';

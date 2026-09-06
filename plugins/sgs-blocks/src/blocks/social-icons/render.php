@@ -283,8 +283,8 @@ if ( '' !== $icon_border_gradient ) {
 // (mirrors the single --sgs-social-glyph* custom properties above; a
 // gradient def is injected once into the FIRST rendered item's SVG below so
 // no duplicate #id exists in the DOM).
-$sgs_social_stroke_grad       = sgs_svg_stroke_gradient( $icon_glyph_colour_gradient, $uid . '-ig' );
-$sgs_social_stroke_grad_hover = sgs_svg_stroke_gradient( $icon_glyph_colour_hover_gradient, $uid . '-igh' );
+$sgs_social_stroke_grad       = sgs_icon_gradient_css( 'lucide', $icon_glyph_colour_gradient, $uid . '-ig', "{$root_sel} .sgs-social-icons__item svg" );
+$sgs_social_stroke_grad_hover = sgs_icon_gradient_css( 'lucide', $icon_glyph_colour_hover_gradient, $uid . '-igh', "{$root_sel} .sgs-social-icons__item:hover svg" );
 if ( '' !== $sgs_social_stroke_grad['css'] ) {
 	$scoped_css[] = "{$root_sel} .sgs-social-icons__item svg{" . $sgs_social_stroke_grad['css'] . ';}';
 }

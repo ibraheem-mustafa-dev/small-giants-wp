@@ -87,7 +87,7 @@ if ( $icon_col ) {
 
 // D636/D644 icon/SVG gradient — non-empty wins over icon_col's flat
 // currentColor paint above (helpers-svg-gradient.php).
-$sgs_ai_stroke_grad = sgs_svg_stroke_gradient( $icon_col_gradient, $uid . '-ig' );
+$sgs_ai_stroke_grad = sgs_icon_gradient_css( 'lucide', $icon_col_gradient, $uid . '-ig', '' );
 if ( '' !== $sgs_ai_stroke_grad['css'] ) {
 	$responsive_css .= $root_sel . ' .sgs-accordion-item__icon-open svg,' . $root_sel . ' .sgs-accordion-item__icon-close svg{' . $sgs_ai_stroke_grad['css'] . '}';
 }
