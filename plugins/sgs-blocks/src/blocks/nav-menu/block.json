@@ -31,6 +31,16 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"colourExemptions": {
+				"indicator": {
+					"rule": "states",
+					"reason": "style.css declares .sgs-nav-menu__indicator { pointer-events: none; } — the element is structurally unhoverable, the browser passes all pointer events through to whatever is underneath. Already correctly painted with a real gradient attribute wired. Confirmed 2026-09-06 (colour-conformance FILL audit)."
+				},
+				"submenu-bg": {
+					"rule": "states",
+					"reason": "The submenu panel's visibility is a binary open/closed disclosure toggled by the trigger, not by pointer position over the panel itself — once open, the pointer is always over some interactive CHILD (each with its own hover colour), never a hoverable moment on the panel background itself. Confirmed 2026-09-06 (colour-conformance FILL audit)."
+				}
+			},
 			"containerKind": "layout",
 			"collection": true,
 			"headerEssential": true,
@@ -156,19 +166,23 @@
 					],
 					"prefix": "featured",
 					"attrMap": {
-						"css:color-gradient": "featuredColourGradient"
+						"css:color": "featuredColour",
+						"css:color-gradient": "featuredColourGradient",
+						"css:background-color": "featuredBg",
+						"css:background-image": "featuredBgGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "featuredColourHover",
 								"css:background-color": "featuredBgHover",
+								"css:background-image": "featuredBgHoverGradient",
 								"css:border-radius": "featuredRadiusHover",
 								"css:font-weight": "featuredFontWeightHover"
 							}
 						}
 					},
-					"_note": "render.php:431-459. featuredFontWeightHover is a genuine hover-state weight change (only emitted when it differs from resting), declared under `text` cluster's css:font-weight member. featuredColourGradient added 2026-09-04 (mirrors burgerColourGradient's shape) -- explicit attrMap since css:color-gradient is not resolved by the default {prefix}Suffix convention, same reason burgerColourGradient needed one. Resting LABEL form only; PILL form and the submenu-inheritance custom property stay flat (see render.php comments)."
+					"_note": "render.php:431-459. featuredFontWeightHover is a genuine hover-state weight change (only emitted when it differs from resting), declared under `text` cluster's css:font-weight member. featuredColourGradient added 2026-09-04 (mirrors burgerColourGradient's shape) -- explicit attrMap since css:color-gradient is not resolved by the default {prefix}Suffix convention, same reason burgerColourGradient needed one. Resting LABEL form only; PILL form and the submenu-inheritance custom property stay flat (see render.php comments). featuredBgGradient/featuredBgHoverGradient added 2026-09-06 (D958, Bean-directed preset-to-gradient upgrade) -- non-empty wins over the resolved featuredBg/featuredBgHover slug+hex; when active the pill foreground skips WCAG contrast-against-background maths (no single hex to test) and uses the operator's own flat colour instead (see render.php). The submenu-inheritance custom property stays hex-only, same scope boundary as featuredColourGradient above."
 				},
 				"burger": {
 					"label": "Burger toggle",
@@ -385,6 +399,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"featuredBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the featured item's PILL-form background (background-image custom-property-gradient pattern, D958 upgrade from slug-only). Non-empty wins over the resolved featuredBg slug/hex. When active, the pill's foreground SKIPS the WCAG contrast-against-background computation (sgs_wcag_preferred_text_colour_for_bg() needs ONE background hex; a gradient has none) and uses the operator's own FLAT featuredColour/featuredColourHover choice instead -- never the gradient-capable text resolve, which would collide with this same background-image on the same selector (see render.php comment at the featured-item paint block, and featuredColourGradient's note above for the identical precedent on the flat-hex pill form). The submenu-inherited featured item (--sgs-nm-featured-bg custom property) is NOT extended to carry this gradient -- same documented scope boundary as featuredColourGradient's submenu gap above."
+		},
 		"featuredColourHover": {
 			"type": "string",
 			"default": ""
@@ -392,6 +411,11 @@
 		"featuredBgHover": {
 			"type": "string",
 			"default": ""
+		},
+		"featuredBgHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the featured item's PILL-form :hover/:focus-visible background (mirrors featuredBgGradient, D958). Non-empty wins over the resolved featuredBgHover slug/hex. Same WCAG-skip rationale as featuredBgGradient: the hover foreground uses the operator's own flat featuredColourHover (falling back to featuredColour) rather than computing WCAG contrast against a gradient."
 		},
 		"featuredRadius": {
 			"type": "number",

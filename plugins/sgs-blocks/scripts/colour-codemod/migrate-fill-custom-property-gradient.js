@@ -69,6 +69,60 @@ const KNOWN_DIFFERENT_SHAPE = {
 	'cta-section.backgroundColour': 'slug-derivation via sanitize_html_class() before any colour resolution (render.php:409, $cta_preset_bg_slug) — same shape as mega-panel.accentBackgroundImage/nav-menu.featuredBg above, not this script\'s shape',
 	'product-card.pickerPillBgColour': 'FORWARD-ATTRIBUTE shape, not this script\'s — product-card never paints this itself, it forwards into a nested render_block(\'sgs/option-picker\') attrs array. sgs/option-picker already has the full pillBgColourGradient mechanism (2026-09-05); the missing piece was product-card declaring + forwarding the sibling attr, hand-fixed directly 2026-09-06 (block.json + render.php $picker_style_attrs + edit.js), not via this codemod.',
 	'product-card.ctaColourBackground': 'Case E (FILL plan, 2026-09-06) — already painted by sgs_button_element_style_css(), which was silently missing the ctaColourBackgroundGradient/ctaColourBackgroundHoverGradient attribute DECLARATIONS (the helper already reads them). Hand-fixed directly, not this codemod\'s shape (no custom-property indirection involved at all).',
+
+	'star-rating.starColour': 'Case D (FILL plan, 2026-09-06) — MISCLASSIFIED, this is the ICON/SVG surface: paints an inline SVG fill via sgs_svg_stroke_gradient(..., \'fill\') with its own gradient sibling, the exact shape sgs/google-reviews already handles correctly. Not this script\'s shape.',
+	'star-rating.emptyColour': 'Case D — see star-rating.starColour.',
+
+	// --- 2026-09-06 full-audit findings (every remaining FILL row read by hand) ---
+
+	'accordion.headerBackground': 'slug-derivation, same family as cta-section.backgroundColour above — consumed by sgs/accordion-item (block-context relay, $header_bg_slug = $sgs_css_slug($header_bg)) into var(--wp--preset--color--{slug}), never sgs_colour_value(). A preset-slug selector cannot hold a gradient.',
+	'nav-drawer.drawerBg': 'slug-derivation via sanitize_html_class() + sgs_resolve_palette_hex() (WCAG-computed foreground pairing depends on resolving a real hex from the slug) — same family as nav-menu.featuredBg.',
+	'info-box.shadowHoverColour': 'this attr IS a shadow HOVER value itself (sgs_shadow_value_composed($hover_shadow, $sgs_hover_shadow_colour)) — box-shadow family (cannot hold a gradient) AND already the hover-state colour, so it does not additionally need "a hover of its own hover". Same shape as testimonial.shadowHoverColour.',
+	'testimonial.shadowHoverColour': 'same box-shadow-hover-is-already-the-hover-value reason as info-box.shadowHoverColour.',
+	'gallery.overlayColourHover': 'CLASSIFIER FALSE POSITIVE — this is a genuine hover-ONLY attribute by design (block.json\'s own noBaseByDesign marker on the img-wrap element\'s states.hover entry, added 2026-08-15/2026-09-05): the overlay only exists on hover, so there is no resting counterpart to pair it with and none should exist. survey.js\'s needsHover check (statesCount<2) does not know about noBaseByDesign and flags a "gap" that is actually a finished, deliberate design.',
+	'social-icons.iconBackgroundHover': 'CLASSIFIER FALSE POSITIVE — edit.js branches on colourMode (\'theme\' vs a preset style) via a ternary; the \'theme\' branch already has a real 2-state icon-bg row (normal+hover, fully wired), the OTHER branch has its own deliberately hover-only row (icon-bg-hover) because in that mode the resting background comes from a CSS preset class, not a custom attribute. resolveArrayLike()\'s ConditionalExpression handling concatenates BOTH ternary branches as if they coexisted, so the intentionally-hover-only alternate-mode row gets misread as a 1-state gap on a block that already has full 2-state coverage in its primary mode.',
+	'pricing-table.toggleLabelHoverColour': 'hover-only attribute by design — no toggleLabelColour resting sibling exists anywhere in the block, same shape as gallery.overlayColourHover (just undeclared via noBaseByDesign rather than documented).',
+
+	// Decorative / non-interactive fill targets — hovering them has no product
+	// meaning (no click/hover affordance exists or should exist on the
+	// element), confirmed by reading each render.php + style.css for an
+	// existing :hover rule targeting that SAME element. needsHover=true is a
+	// real classifier signal (the row genuinely has <2 states) but NOT
+	// automatically a gap to fill — see the FILL prompt doc's "decorative vs
+	// interactive" write-up for the full reasoning and the 4 rows (audio.
+	// accentColour, whatsapp-cta.backgroundColour, multi-button.
+	// childBtnBackground, before-after.handleColour) where the SAME signal
+	// WAS a real gap because the element is genuinely interactive.
+	'before-after.dividerColour': 'the divider LINE itself has no independent hover interaction — only the handle (a sibling attribute, already fixed) is dragged/hovered.',
+	'form.progressBarColour': 'a static progress-fill bar, not a click/hover target.',
+	'modal.overlayColour': 'the full-screen backdrop — not a hover target.',
+	'tabs.panelBgColour': 'the tab CONTENT panel background (.sgs-tabs__panel) — a static content area, not the clickable tab button.',
+	'timeline.connectorColour': 'the decorative connecting line between timeline items.',
+	'timeline.connectorFillColour': 'the decorative progress-fill of the connector line.',
+	'timeline.rowStripeColourA': 'a decorative alternating-row background stripe.',
+	'timeline.rowStripeColourB': 'same as rowStripeColourA.',
+	'trust-bar.iconCircleBackground': 'a decorative icon-badge circle — no click/hover CSS exists anywhere near it.',
+	'post-grid.categoryBadgeBgColour': 'a decorative category label on a post card, not a separate click/hover target from the card itself.',
+	'product-card.tagBackgroundColour': 'a decorative "trial" tag/badge (.sgs-product-card__tag--trial), same reasoning as post-grid\'s category badge.',
+	'nav-menu.submenuBg': 'the submenu DROPDOWN PANEL background — revealed by hovering the parent nav item, but the panel itself is not the hover target; the individual submenu items (which have their own separate colour attrs) are.',
+	'mega-aside.asideBg': 'a content aside panel (feature/preview/cta format) with no <a>/URL/click handler anywhere in render.php — purely a layout variant, not a clickable card.',
+	'mega-panel.panelBg': 'the megamenu dropdown PANEL background — same non-hoverable-panel reasoning as nav-menu.submenuBg (a `.sgs-mega-group:hover` rule exists for the per-GROUP card style, a different element from `panel`).',
+	'mega-panel.iconBackground': 'the icon-chip inside each mega-group card — sits inside an already-hoverable `.sgs-mega-group`, but the group\'s own hover treatment (transform/border/shadow) never touches the icon fill; a genuine candidate for a future enhancement, not built this session (ambiguous product call, not a clear-cut interactive-element gap like the 4 rows that were built).',
+
+	// Case C (own-scoped-style-override) rows — a genuinely different transform
+	// shape (adopt sgs_fill_states_css() onto hand-rolled scoped CSS, not "add
+	// a Gradient sibling"), tracked separately in the FILL prompt doc. Listed
+	// here too so `--survey`/`--check` never mistake them for this script's
+	// shape.
+	'before-after.labelBackgroundColour': 'Case C — own-scoped-style-override, needs sgs_fill_states_css() adoption, not this script\'s shape.',
+	'cart.badgeColour': 'Case C — see before-after.labelBackgroundColour.',
+	'cart.panelBg': 'Case C — see before-after.labelBackgroundColour.',
+	'form.submitBackground': 'Case C — see before-after.labelBackgroundColour.',
+	'label.backgroundColour': 'Case C — see before-after.labelBackgroundColour.',
+	'modal.triggerBackground': 'Case C — see before-after.labelBackgroundColour.',
+	'modal.modalBackground': 'Case C — see before-after.labelBackgroundColour.',
+	'nav-menu.indicatorColour': 'Case C — see before-after.labelBackgroundColour.',
+	'gallery.captionBgColour': 'Case C — moved OFF the custom-property mechanism 2026-09-04 onto a scoped rule (shares .sgs-gallery__caption with captionColour, a text-gradient background-clip:text collision otherwise) — needs sgs_fill_states_css() adoption, not this script\'s shape.',
 };
 
 // ---------------------------------------------------------------------------

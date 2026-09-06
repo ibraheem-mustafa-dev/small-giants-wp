@@ -30,20 +30,27 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-$phone_number    = $attributes['phoneNumber'] ?? '';
-$message         = $attributes['message'] ?? '';
-$variant         = $attributes['variant'] ?? 'floating';
-$label           = $attributes['label'] ?? '';
-$show_on_obj     = sgs_responsive_normalise_object( $attributes['showOn'] ?? null );
-$show_on_mobile  = $show_on_obj['mobile'] ?? true;
-$show_on_desktop = $show_on_obj['desktop'] ?? true;
+$phone_number          = $attributes['phoneNumber'] ?? '';
+$message               = $attributes['message'] ?? '';
+$variant               = $attributes['variant'] ?? 'floating';
+$label                 = $attributes['label'] ?? '';
+$show_on_obj           = sgs_responsive_normalise_object( $attributes['showOn'] ?? null );
+$show_on_mobile        = $show_on_obj['mobile'] ?? true;
+$show_on_desktop       = $show_on_obj['desktop'] ?? true;
 $label_colour_raw      = (string) ( $attributes['labelColour'] ?? '' );
 $label_colour_gradient = $attributes['labelColourGradient'] ?? '';
 // D636 — sibling gradient attribute wins when set+valid (mirrors sgs/counter's
 // numberColour/labelColour wiring, helpers-tokens.php:1086,1124,1166).
 $label_colour_effective = sgs_resolve_text_colour_or_gradient( $label_colour_raw, $label_colour_gradient );
-$bg_colour             = sgs_colour_value( $attributes['backgroundColour'] ?? 'whatsapp' );
-$anchor          = isset( $attributes['anchor'] ) ? sanitize_html_class( $attributes['anchor'] ) : '';
+$bg_colour              = sgs_colour_value( $attributes['backgroundColour'] ?? 'whatsapp' );
+$bg_gradient            = sgs_css_gradient_value( $attributes['backgroundColourGradient'] ?? '' );
+// backgroundColourHover (2026-09-06, FILL closeout) — the button's :hover rule
+// previously only animated opacity/transform (style.css), no colour change
+// existed. Empty means "no override" — the hover rule below falls back to the
+// resting background-colour/gradient, matching the frontend's own precedent.
+$bg_colour_hover   = '' !== (string) ( $attributes['backgroundColourHover'] ?? '' ) ? sgs_colour_value( $attributes['backgroundColourHover'] ) : '';
+$bg_gradient_hover = sgs_css_gradient_value( $attributes['backgroundColourHoverGradient'] ?? '' );
+$anchor            = isset( $attributes['anchor'] ) ? sanitize_html_class( $attributes['anchor'] ) : '';
 
 // Do not render if no phone number is set.
 if ( ! $phone_number ) {
@@ -141,6 +148,29 @@ $scoped_css = array();
 $btn_decls = array();
 if ( $bg_colour ) {
 	$btn_decls[] = 'background-color:' . $bg_colour;
+}
+if ( '' !== $bg_gradient ) {
+	$btn_decls[] = 'background-image:' . $bg_gradient;
+}
+// backgroundColourHover/backgroundColourHoverGradient (2026-09-06, FILL
+// closeout) — a real gap: the button's :hover rule (style.css) previously only
+// animated opacity/transform. Falls back to the resting colour/gradient when
+// unset, touch-guarded via sgs_hover_state_rules() (same mechanism as the
+// icon-gradient rollout earlier this week — a tap must not stick a hover
+// colour on a touchscreen).
+$btn_hover_decls = array();
+if ( '' !== $bg_colour_hover ) {
+	$btn_hover_decls[] = 'background-color:' . $bg_colour_hover;
+}
+if ( '' !== $bg_gradient_hover ) {
+	$btn_hover_decls[] = 'background-image:' . $bg_gradient_hover;
+} elseif ( '' !== $bg_colour_hover && '' !== $bg_gradient ) {
+	// Hover colour set, no hover gradient — keep the RESTING gradient painting
+	// on top rather than letting a plain hover colour silently blank it out.
+	$btn_hover_decls[] = 'background-image:' . $bg_gradient;
+}
+if ( $btn_hover_decls ) {
+	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $btn_hover_decls ) );
 }
 if ( $btn_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $btn_decls ) . ';}';

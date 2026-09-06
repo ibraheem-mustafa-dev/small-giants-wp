@@ -78,8 +78,15 @@ $has_video_bg = $resolved_media && ( $resolved_media['type'] ?? 'image' ) === 'v
 $stats        = $attributes['stats'] ?? array();
 
 $hover_background_colour = $attributes['backgroundColourHover'] ?? '';
-$hover_text_colour       = $attributes['textColourHover'] ?? '';
-$hover_border_colour     = $attributes['borderColourHover'] ?? '';
+// Gradient sibling of backgroundColourHover (Bean-requested colour+gradient
+// upgrade) — a non-empty, valid gradient wins over the flat hover colour via
+// the shared sgs_background_paint_decl() resolver, below. Unset stays unset:
+// when this attribute is empty the resolver falls straight through to the
+// existing sgs_colour_value( $hover_background_colour ) path, byte-identical
+// to the previous behaviour.
+$hover_background_gradient = $attributes['backgroundColourHoverGradient'] ?? '';
+$hover_text_colour         = $attributes['textColourHover'] ?? '';
+$hover_border_colour       = $attributes['borderColourHover'] ?? '';
 // D636 border-colour gradient sibling — resolved here, emitted via
 // sgs_border_gradient_css() masked ::before further down; border-color can
 // never legally hold a gradient value, so this never feeds --sgs-hover-border
@@ -211,8 +218,14 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 // exist) rather than pushed onto $wrapper_styles as --sgs-hover-* custom
 // properties. Bean-locked: no hardcoded fallback colour — unset stays unset.
 $hover_decls = array();
-if ( $hover_background_colour ) {
-	$hover_decls[] = 'background-color:' . sgs_colour_value( $hover_background_colour );
+// sgs_background_paint_decl() resolves the gradient-vs-flat-colour win — a
+// non-empty, valid backgroundColourHoverGradient wins as `background-image`;
+// otherwise this returns the identical `background-color:X` declaration the
+// bare sgs_colour_value() call produced before, so an unset gradient keeps
+// this instance byte-identical.
+$hover_background_decl = sgs_background_paint_decl( $hover_background_colour, $hover_background_gradient );
+if ( '' !== $hover_background_decl ) {
+	$hover_decls[] = $hover_background_decl;
 }
 // Hover text routed through the SHARED resolver so a gradient sibling WINS over the flat
 // value, and the background-clip:text form comes from the same emitter sgs/hero and
@@ -407,11 +420,20 @@ $responsive_css .= sgs_typography_css_rule( $attributes, '', $root_sel );
 // resolve visually.
 $cta_preset_text_slug = isset( $attributes['textColour'] ) ? sanitize_html_class( $attributes['textColour'] ) : '';
 $cta_preset_bg_slug   = isset( $attributes['backgroundColour'] ) ? sanitize_html_class( $attributes['backgroundColour'] ) : '';
+// backgroundColourGradient (Bean-requested colour+gradient upgrade) — a
+// non-empty, valid gradient WINS over the slug-resolved background entirely:
+// it bypasses the has-{slug}-background-color preset-class mechanism below
+// and paints background-image directly on the block's own scoped root rule
+// instead. Unset stays unset — the slug/class path is untouched byte-for-byte
+// when this attribute is empty.
+$cta_background_gradient = sgs_css_gradient_value( $attributes['backgroundColourGradient'] ?? '' );
 if ( '' !== $cta_preset_text_slug ) {
 	$classes[] = 'has-text-color';
 	$classes[] = 'has-' . $cta_preset_text_slug . '-color';
 }
-if ( '' !== $cta_preset_bg_slug ) {
+if ( '' !== $cta_background_gradient ) {
+	$responsive_css .= $root_sel . '{background-image:' . $cta_background_gradient . ';}';
+} elseif ( '' !== $cta_preset_bg_slug ) {
 	$classes[] = 'has-background';
 	$classes[] = 'has-' . $cta_preset_bg_slug . '-background-color';
 }

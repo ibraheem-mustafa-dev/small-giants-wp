@@ -309,6 +309,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		iconCircleSize,
 		iconCircleBackground,
 		iconCircleBackgroundGradient,
+		iconCircleBackgroundHover,
+		iconCircleBackgroundHoverGradient,
 		iconColour,
 		iconColourHover,
 		iconColourGradient,
@@ -658,26 +660,37 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							},
 						],
 					},
-					// ── Consolidated in 2026-08-30 (duplicate-control fix) ──
-					// Was a bespoke DesignTokenPicker in Styles > Appearance
-					// (icon-circle variant). Genuine BACKGROUND paint ->
-					// fillRow (sgs_background_paint_decl() on the PHP side).
-					// No hover/gradient siblings existed on the original
-					// control, so fillRow renders a single 'normal' state —
-					// byte-identical capability, now with linked:true (the
-					// canonical helper always links; the original bespoke
-					// picker never set it, so this is a deliberate upgrade,
-					// not a regression).
-					badgeStyle === 'icon-circle' && fillRow( {
+					// ── Icon circle background (colour-conformance 2026-09-06) ──
+					// Hover-state colour control added to close out the FILL
+					// surface. Paints via background-color + background-image
+					// custom properties on .sgs-trust-bar__circle (both resting
+					// and :hover/:focus-visible states). Mirrors the iconColour
+					// row below (same SgsColourPanel with 'normal' + 'hover'
+					// states), not the previous fillRow solo state.
+					badgeStyle === 'icon-circle' && {
 						key: 'icon-circle-background',
 						label: __( 'Icon circle background', 'sgs-blocks' ),
-						// iconCircleBackgroundGradient (2026-09-06) — gradient
-						// sibling, resolved via helpers-tokens.php
-						// sgs_custom_property_gradient_decls() on the PHP side.
-						attrs: { base: 'iconCircleBackground', gradient: 'iconCircleBackgroundGradient' },
-						attributes,
-						setAttributes,
-					} ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: iconCircleBackground,
+								onChange: ( val ) => setAttributes( { iconCircleBackground: val } ),
+								gradientValue: iconCircleBackgroundGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconCircleBackgroundGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: iconCircleBackgroundHover,
+								onChange: ( val ) => setAttributes( { iconCircleBackgroundHover: val } ),
+								gradientValue: iconCircleBackgroundHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconCircleBackgroundHoverGradient: val ?? '' } ),
+							},
+						],
+					},
 					// ── Icon colour deliberately NOT expressed through
 					// fillRow/textRow. This paints via CSS `color` (consumed
 					// as currentColor by the SVG icon's stroke), which is

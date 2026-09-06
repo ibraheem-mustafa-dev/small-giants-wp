@@ -47,6 +47,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		labelColour,
 		labelColourGradient,
 		backgroundColour,
+		backgroundColourGradient,
+		backgroundColourHover,
+		backgroundColourHoverGradient,
 		paddingTablet,
 		paddingMobile,
 		marginTablet,
@@ -69,6 +72,16 @@ export default function Edit( { attributes, setAttributes } ) {
 	const rootStyle = {
 		...resolveTextColourPreviewStyle( labelColour, labelColourGradient, colourVar ),
 		backgroundColor: colourVar( backgroundColour ) || undefined,
+		// Resting fill-gradient preview (2026-09-06, FILL closeout) — mirrors
+		// render.php's background-image sibling. Hover has no canvas preview:
+		// the frontend rule is server-rendered scoped CSS with hardcoded
+		// values (sgs_hover_state_rules()), not a custom property the canvas
+		// inline style could replicate, and mouse-hover in the editor iframe
+		// is a lesser concern than the always-visible resting state.
+		...( backgroundColourGradient &&
+		/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( backgroundColourGradient )
+			? { backgroundImage: backgroundColourGradient }
+			: {} ),
 	};
 	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
@@ -123,6 +136,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -130,6 +144,20 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: backgroundColour,
 								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
 								linked: true,
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) =>
+									setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: backgroundColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

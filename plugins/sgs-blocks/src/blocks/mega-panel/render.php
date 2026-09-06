@@ -119,6 +119,18 @@ $group_border_resting_raw      = isset( $attributes['groupBorderColour'] ) ? (st
 $group_border_resting_value    = '' !== $group_border_resting_raw ? sgs_colour_value( $group_border_resting_raw ) : '';
 $group_border_resting_gradient = sgs_css_gradient_value( $attributes['groupBorderColourGradient'] ?? '' );
 $accent_image_slug  = isset( $attributes['accentBackgroundImage'] ) ? sanitize_html_class( (string) $attributes['accentBackgroundImage'] ) : 'accent';
+// accentBackgroundImageGradient (2026-09-06, colour-conformance closeout §3):
+// a gradient sibling for accentBackgroundImage. accentBackgroundImage feeds
+// ONLY a colour STOP inside the aside spotlight glow's radial-gradient (via
+// the derived --sgs-mm-soft-image 10% tint, style.css's `[data-spotlight]::before`
+// rule) — a gradient cannot be meaningfully passed through that same
+// color-mix()-derived stop the way a solid colour can, so when this is set it
+// BYPASSES the derivation entirely and replaces the WHOLE background-image on
+// that same selector with the raw gradient (see $css below for the consuming
+// custom property; style.css wraps its background-image in
+// `var(--sgs-mm-accent-image-gradient, <existing radial-gradient>)` so an
+// unset value renders the exact pre-existing chain unchanged).
+$accent_image_gradient = sgs_css_gradient_value( $attributes['accentBackgroundImageGradient'] ?? '' );
 $panel_bg_raw      = isset( $attributes['panelBg'] ) ? (string) $attributes['panelBg'] : '';
 // panelBg/iconBackground gradient siblings (2026-09-06, colour-conformance
 // closeout) — neither attribute is a plain flat-value-to-custom-property
@@ -135,6 +147,32 @@ $panel_bg_raw      = isset( $attributes['panelBg'] ) ? (string) $attributes['pan
 // at the FINAL emission point rather than at the raw attribute.
 $panel_bg_gradient = sgs_css_gradient_value( $attributes['panelBgGradient'] ?? '' );
 $icon_bg_gradient  = sgs_css_gradient_value( $attributes['iconBackgroundGradient'] ?? '' );
+
+// panelBg has DELIBERATELY NOT been given a hover pair (2026-09-06 colour-
+// conformance closeout, hover-controls task). `panelBg` paints the WHOLE
+// dropdown SHELL — the panel is a disclosure surface whose visibility is
+// already toggled by its trigger button/JS (CF-10's own doc-block, `sgs/
+// nav-menu`'s mega-item trigger), not an element a visitor points at and
+// hovers as a discrete interaction the way a card or a nav link is. There is
+// no genuine `:hover` moment on the panel root itself once it is open — the
+// pointer is over one of its CHILDREN (a group tile, an icon, a link), each
+// of which already has (or, for iconBackground below, now gains) its own
+// hover control. Inventing a panel-level hover here would have no real
+// trigger to attach it to, so none was added — same standard as a submenu
+// panel with no natural hover surface.
+//
+// iconBackground DOES get a hover pair: the icon chip sits inside
+// `.sgs-mega-group`, which already has a REAL hover trigger on the `cards`
+// style (the lift/shadow rule at §4 below) — so the icon's hover colour is
+// wired to fire off that SAME ancestor hover, `.sgs-mega-group:hover
+// .sgs-icon-list__icon` (columns/minimal styles paint no hover feedback on
+// `.sgs-mega-group` at all, so the hover pair is scoped to `cards` only,
+// where the ancestor trigger genuinely exists). When set, it REPLACES the
+// derived --sgs-mm-soft tint entirely for the hover state (painted raw,
+// never re-derived through color-mix()) — matching the same design choice
+// used for accentBackgroundImageGradient above.
+$icon_bg_hover_raw      = isset( $attributes['iconBackgroundHover'] ) ? (string) $attributes['iconBackgroundHover'] : '';
+$icon_bg_hover_gradient = sgs_css_gradient_value( $attributes['iconBackgroundGradientHover'] ?? '' );
 $border_colour_raw = isset( $attributes['borderColour'] ) ? (string) $attributes['borderColour'] : '';
 $border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 $border_radius     = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['borderRadius'] ?? '20px' ) : '20px';
@@ -275,6 +313,18 @@ $css .= $root_sel . '{'
 	// fallback, so an unset gradient paints nothing extra.
 	. ( '' !== $panel_bg_gradient ? '--sgs-mm-panel-bg-gradient:' . $panel_bg_gradient . ';' : '' )
 	. ( '' !== $icon_bg_gradient ? '--sgs-mm-soft-gradient:' . $icon_bg_gradient . ';' : '' )
+	// iconBackgroundHover/iconBackgroundGradientHover (2026-09-06) — declared
+	// only when the operator has set one, consumed by the §4 cards-style hover
+	// rule below (and its style.css editor-canvas mirror) via a var(...)
+	// fallback chain, so an unset value is behaviour-neutral by construction.
+	. ( '' !== $icon_bg_hover_raw ? '--sgs-mm-icon-hover-bg:' . sgs_colour_value( $icon_bg_hover_raw ) . ';' : '' )
+	. ( '' !== $icon_bg_hover_gradient ? '--sgs-mm-icon-hover-bg-gradient:' . $icon_bg_hover_gradient . ';' : '' )
+	// accentBackgroundImageGradient (2026-09-06) — declared only when resolved;
+	// style.css's spotlight `::before` rule wraps its whole background-image in
+	// var(--sgs-mm-accent-image-gradient, <existing radial-gradient>), so this
+	// bypasses the color-mix()-derived soft-image tint entirely when set and is
+	// a complete no-op when unset.
+	. ( '' !== $accent_image_gradient ? '--sgs-mm-accent-image-gradient:' . $accent_image_gradient . ';' : '' )
 	. 'color:var(--sgs-mm-text);'
 	. 'background-color:var(--sgs-mm-panel-bg);'
 	. 'background-image:var(--sgs-mm-panel-bg-gradient, none);'
@@ -471,6 +521,24 @@ $css .= '@media (prefers-reduced-motion: reduce){'
 	. $style_crd . $rel_group . '::after{transition:none;}'
 	. $style_crd . $rel_group . ':hover,' . $style_crd . $rel_group . ':focus-within{transform:none;}'
 	. '}';
+
+// iconBackground/iconBackgroundGradient HOVER siblings (2026-09-06 colour-
+// conformance closeout, hover-controls task). Fires off the SAME ancestor
+// hover trigger as the lift/shadow rule directly above — `.sgs-mega-group`
+// on the `cards` style only, the one style where that ancestor has a real
+// hover treatment. `sgs_hover_state_rules()`'s 4-arg suffix form is used for
+// the ANCESTOR-hover shape (`{ancestor}:hover {descendant}`), matching the
+// documented precedent for this exact call shape (plugins/sgs-blocks/CLAUDE.md
+// "Known precedent-function registry"). The var(...) fallback chain resolves
+// to the identical resting-state values when neither hover attr is set, so
+// this emission is a behaviour-neutral no-op by construction until an
+// operator picks a hover colour/gradient.
+$css .= sgs_hover_state_rules(
+	$style_crd . $rel_group,
+	'background-color:var(--sgs-mm-icon-hover-bg, var(--sgs-mm-soft));background-image:var(--sgs-mm-icon-hover-bg-gradient, var(--sgs-mm-soft-gradient, none));',
+	':focus-within',
+	' .sgs-icon-list__icon'
+);
 
 // Accent border gradient (D636 border builder) — masked ::before ring, scoped
 // to ONLY the hover/focus-within state (mirrors groupBorderColour above,

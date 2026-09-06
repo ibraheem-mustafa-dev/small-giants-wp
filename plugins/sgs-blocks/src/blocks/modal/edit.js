@@ -57,11 +57,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		triggerColour,
 		triggerColourGradient,
 		triggerBackground,
+		triggerBackgroundHover,
 		maxWidth,
 		closeOnOverlay,
 		modalBackground,
 		overlayColour,
 		overlayColourGradient,
+		overlayColourHover,
+		overlayColourHoverGradient,
 		overlayOpacity,
 		closeColourBackground,
 		closeColourBackgroundHover,
@@ -179,6 +182,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { triggerBackground: val ?? '' } ),
 								gradientValue: attributes.triggerBackgroundGradient,
 								onGradientChange: ( val ) => setAttributes( { triggerBackgroundGradient: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: triggerBackgroundHover,
+								onChange: ( val ) => setAttributes( { triggerBackgroundHover: val ?? '' } ),
+								gradientValue: attributes.triggerBackgroundHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { triggerBackgroundHoverGradient: val ?? '' } ),
 								linked: true,
 							},
 						] }
@@ -301,6 +313,17 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: overlayColourGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { overlayColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: overlayColourHover,
+								onChange: ( val ) =>
+									setAttributes( { overlayColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: overlayColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { overlayColourHoverGradient: val ?? '' } ),
 							},
 						] }
 						enableAlpha={ false }

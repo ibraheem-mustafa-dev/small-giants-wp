@@ -50,11 +50,14 @@ $aside_format    = isset( $attributes['asideFormat'] ) && in_array( $attributes[
 	? (string) $attributes['asideFormat']
 	: 'feature';
 
-$aside_bg_raw            = isset( $attributes['asideBg'] ) ? (string) $attributes['asideBg'] : '';
-$aside_border_colour_raw = isset( $attributes['asideBorderColour'] ) ? (string) $attributes['asideBorderColour'] : '';
+$aside_bg_raw                = isset( $attributes['asideBg'] ) ? (string) $attributes['asideBg'] : '';
+$aside_bg_gradient_raw       = isset( $attributes['asideBgGradient'] ) ? (string) $attributes['asideBgGradient'] : '';
+$aside_bg_hover_raw          = isset( $attributes['asideBgHover'] ) ? (string) $attributes['asideBgHover'] : '';
+$aside_bg_hover_gradient_raw = isset( $attributes['asideBgHoverGradient'] ) ? (string) $attributes['asideBgHoverGradient'] : '';
+$aside_border_colour_raw     = isset( $attributes['asideBorderColour'] ) ? (string) $attributes['asideBorderColour'] : '';
 // D636 border-colour gradient — sibling attribute, wins over $aside_border_colour_raw when set.
 $aside_border_colour_gradient = sgs_css_gradient_value( isset( $attributes['asideBorderColourGradient'] ) ? $attributes['asideBorderColourGradient'] : '' );
-$aside_radius            = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['asideRadius'] ?? '' ) : '';
+$aside_radius                 = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['asideRadius'] ?? '' ) : '';
 // Box-object interface contract §1/§2: asideBorderWidth is an SGS custom
 // OBJECT attr { top, right, bottom, left } — no tiers (mirrors sgs/button's
 // base-only borderWidth). box_family = 'asideBorderWidth' (a per-area family,
@@ -82,9 +85,22 @@ $css = '';
 // change when that lands).
 // ---------------------------------------------------------------------------
 
-$aside_bg_value = '' !== $aside_bg_raw ? sgs_colour_value( $aside_bg_raw ) : '';
-if ( '' !== $aside_bg_value ) {
-	$css .= $root_sel . '{background-color:' . $aside_bg_value . ';}';
+// Background colour + gradient (with hover sibling, 2026-09-06 FILL closeout).
+// sgs_custom_property_gradient_decls() emits --sgs-mega-aside-bg,
+// --sgs-mega-aside-bg-gradient for resting state, plus -hover/-hover-gradient
+// variants. style.css reads these via var() with fallback chains so an unset
+// attribute renders byte-identically to before this change.
+if ( function_exists( 'sgs_custom_property_gradient_decls' ) && '' !== $aside_bg_raw ) {
+	$bg_var_decls = sgs_custom_property_gradient_decls(
+		'sgs-mega-aside-bg',
+		$aside_bg_raw,
+		$aside_bg_gradient_raw,
+		$aside_bg_hover_raw,
+		$aside_bg_hover_gradient_raw
+	);
+	foreach ( $bg_var_decls as $var_decl ) {
+		$css .= $root_sel . '{' . $var_decl . ';}';
+	}
 }
 
 if ( '' !== $aside_radius ) {

@@ -168,6 +168,8 @@ function PreviewCard( { post, attributes, palette } ) {
 		categoryBadgeColour,
 		categoryBadgeColourGradient,
 		categoryBadgeBgColour,
+		categoryBadgeBgColourHover,
+		categoryBadgeBgColourHoverGradient,
 		readMoreColour,
 		readMoreColourGradient,
 		cardBgColour,
@@ -557,12 +559,24 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'category-badge-bg',
 						label: __( 'Category badge background', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: categoryBadgeBgColour,
 								onChange: ( val ) => setAttributes( { categoryBadgeBgColour: val ?? '' } ),
+								gradientValue: categoryBadgeBgColourGradient,
+								onGradientChange: ( val ) => setAttributes( { categoryBadgeBgColourGradient: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: categoryBadgeBgColourHover,
+								onChange: ( val ) => setAttributes( { categoryBadgeBgColourHover: val ?? '' } ),
+								gradientValue: categoryBadgeBgColourHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { categoryBadgeBgColourHoverGradient: val ?? '' } ),
 								linked: true,
 							},
 						],

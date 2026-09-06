@@ -61,7 +61,15 @@
 						"css:background-color": "accentColour",
 						"css:background-image": "accentColourGradient"
 					},
-					"_note": "accentColour is the player-brand colour (play button fill, seek thumb, progress arc — CSS var --sgs-audio-accent, style.css:61/86/94/103/107/174, all `background`/`background-image` uses). Mapped to css:background-color via explicit attrMap (Spec 35 vocabulary fix) rather than left as an honest zero-cluster orphan. GRADIENT SIBLING (2026-09-06, colour-conformance closeout): accentColourGradient added via css:background-image, but style.css only wires background-image:var(--sgs-audio-accent-gradient,none) onto the 3 GENUINE solid `background: var(--sgs-audio-accent...)` paints (play button style.css:61, seek-thumb ::-webkit-slider-thumb :94, seek-thumb ::-moz-range-thumb :103) — deliberately SKIPPED on 3 sites reusing the same --sgs-audio-accent var in a way a flat background-image override would break: the composed progress-track linear-gradient (:86), the composed radial glow gradient (:174, accent is a colour-mix ingredient inside an existing gradient formula), and the focus outline (:107, outline-color cannot take background-image at all). view.js also reads --sgs-audio-accent directly as a canvas fillStyle (waveform bars) and an SVG stroke (radial ring/arc) — unaffected, since the gradient sibling is a SEPARATE custom property only consumed by the 3 new background-image declarations, not a change to --sgs-audio-accent itself."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "accentColourHover",
+								"css:background-image": "accentColourHoverGradient"
+							}
+						}
+					},
+					"_note": "accentColour is the player-brand colour (play button fill, seek thumb, progress arc — CSS var --sgs-audio-accent, style.css:61/86/94/103/107/174, all `background`/`background-image` uses). Mapped to css:background-color via explicit attrMap (Spec 35 vocabulary fix) rather than left as an honest zero-cluster orphan. GRADIENT SIBLING (2026-09-06, colour-conformance closeout): accentColourGradient added via css:background-image, but style.css only wires background-image:var(--sgs-audio-accent-gradient,none) onto the 3 GENUINE solid `background: var(--sgs-audio-accent...)` paints (play button style.css:61, seek-thumb ::-webkit-slider-thumb :94, seek-thumb ::-moz-range-thumb :103) — deliberately SKIPPED on 3 sites reusing the same --sgs-audio-accent var in a way a flat background-image override would break: the composed progress-track linear-gradient (:86), the composed radial glow gradient (:174, accent is a colour-mix ingredient inside an existing gradient formula), and the focus outline (:107, outline-color cannot take background-image at all). view.js also reads --sgs-audio-accent directly as a canvas fillStyle (waveform bars) and an SVG stroke (radial ring/arc) — unaffected, since the gradient sibling is a SEPARATE custom property only consumed by the 3 new background-image declarations, not a change to --sgs-audio-accent itself. HOVER SIBLING (2026-09-06, FILL closeout): accentColourHover/accentColourHoverGradient scoped ONLY to the play button's own :hover rule (style.css .sgs-audio__play:hover) — the ONE genuinely hoverable target this element paints (a real <button>); the seek-thumb/progress-track/glow/outline/canvas consumers are deliberately left untouched, same discipline as the resting gradient sibling above."
 				},
 				"spectrum": {
 					"label": "Spectrum colour",
@@ -159,6 +167,16 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the play button / seek-thumb accent background via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over accentColour on those 3 sites only; the composed progress-track/glow gradients and the focus outline keep reading accentColour flat."
+		},
+		"accentColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Play button background colour on :hover (style.css .sgs-audio__play:hover, colour-conformance FILL closeout 2026-09-06). The play button's :hover rule previously only animated transform:scale — no colour change existed. Falls back to accentColour, then the theme default, when unset."
+		},
+		"accentColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the play button's :hover background via background-image. Non-empty wins over accentColourHover; falls back to accentColourGradient, then none."
 		},
 		"spectrumColour": {
 			"type": "string",

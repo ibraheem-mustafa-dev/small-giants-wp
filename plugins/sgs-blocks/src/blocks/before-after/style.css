@@ -235,6 +235,24 @@
 	transform: translateY( -50% );
 }
 
+/*
+ * Divider-line hover (colour-conformance FILL closeout, 2026-09-06). The line
+ * itself is `aria-hidden` and sits under `pointer-events: none` (its `.divider`
+ * ancestor), so it never receives a direct `:hover`/`:focus-visible` from a
+ * real pointer — the `.__range` input on top (z-index 5) captures every
+ * pointer/keyboard event. Same ancestor-hover chain already proven live for
+ * the handle's scale transform below, applied here to the line's own
+ * background instead of a transform. Fallback chain mirrors the handle
+ * background-hover rule: unset falls through to the resting colour, then the
+ * CSS default, so a divider with nothing configured stays byte-identical.
+ */
+.wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line,
+.wp-block-sgs-before-after__range:focus-visible ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line,
+.wp-block-sgs-before-after__range:focus ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line {
+	background-color: var( --sgs-before-after-divider-colour-hover, var( --sgs-before-after-divider-colour, #fff ) );
+	background-image: var( --sgs-before-after-divider-colour-hover-gradient, var( --sgs-before-after-divider-colour-gradient, none ) );
+}
+
 .wp-block-sgs-before-after__handle {
 	position: absolute;
 	top: 50%;
@@ -281,6 +299,16 @@
 	 * only sets --sgs-before-after-handle-icon-colour-hover when
 	 * handleIconColourHover is actually configured. */
 	stroke: var( --sgs-before-after-handle-icon-colour-hover, var( --sgs-before-after-handle-icon-colour, #1e1e1e ) );
+}
+
+.wp-block-sgs-before-after__handle:hover,
+.wp-block-sgs-before-after__handle:focus-visible {
+	/* Handle background hover/focus (colour-conformance FILL closeout,
+	 * 2026-09-06) — same fallback-chain shape as the icon stroke rule above:
+	 * unset falls through to the resting colour, then the CSS default, so a
+	 * handle with nothing configured stays byte-identical. */
+	background-color: var( --sgs-before-after-handle-colour-hover, var( --sgs-before-after-handle-colour, #fff ) );
+	background-image: var( --sgs-before-after-handle-colour-hover-gradient, var( --sgs-before-after-handle-colour-gradient, none ) );
 }
 
 /* --- The native range input IS the accessible + no-JS-safe divider control.

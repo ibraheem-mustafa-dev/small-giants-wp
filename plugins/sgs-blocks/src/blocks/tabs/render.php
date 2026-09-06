@@ -99,7 +99,7 @@ foreach ( $colour_props as $attr => $prop ) {
 // background-image:var(--sgs-tab-bg[/panel]-gradient,none) line next to the
 // existing background-color/background rule.
 $css_vars = array_merge( $css_vars, sgs_custom_property_gradient_decls( 'sgs-tab-bg', $attributes['tabBgColour'] ?? '', $attributes['tabBgColourGradient'] ?? '' ) );
-$css_vars = array_merge( $css_vars, sgs_custom_property_gradient_decls( 'sgs-panel-bg', $attributes['panelBgColour'] ?? '', $attributes['panelBgColourGradient'] ?? '' ) );
+$css_vars = array_merge( $css_vars, sgs_custom_property_gradient_decls( 'sgs-panel-bg', $attributes['panelBgColour'] ?? '', $attributes['panelBgColourGradient'] ?? '', (string) ( $attributes['panelBgColourHover'] ?? '' ), (string) ( $attributes['panelBgColourHoverGradient'] ?? '' ) ) );
 
 $css_vars[] = '--sgs-transition-duration:' . $transition . 'ms';
 

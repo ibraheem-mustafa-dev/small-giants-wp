@@ -54,9 +54,11 @@ $submit_colour     = $attributes['submitColour'] ?? '';
 // D636 text-colour gradient sibling (778879732 rollout finish, 2026-09-04) —
 // non-empty wins over submitColour at render time.
 $submit_colour_gradient = $attributes['submitColourGradient'] ?? '';
-$submit_background = $attributes['submitBackground'] ?? '';
-$submit_background_gradient = sgs_css_gradient_value( $attributes['submitBackgroundGradient'] ?? '' );
-$progress_colour   = $attributes['progressBarColour'] ?? 'primary';
+// submitBackground/submitBackgroundGradient/submitBackgroundHover/
+// submitBackgroundHoverGradient are read further down via sgs_fill_decls()
+// (Case C fill-helper adoption, 2026-09-06) — no standalone vars needed here,
+// that helper reads the raw attribute names straight off $attributes.
+$progress_colour          = $attributes['progressBarColour'] ?? 'primary';
 $progress_colour_gradient = $attributes['progressBarColourGradient'] ?? '';
 
 // Count form steps from inner blocks (not rendered content).
@@ -206,7 +208,25 @@ if ( '' !== $sgs_form_preset_bg ) {
 // below and the mandatory @supports fallback further down. A gradient wins
 // over the flat submitColour when set+valid.
 $submit_colour_effective = sgs_resolve_text_colour_or_gradient( $submit_colour, $submit_colour_gradient );
-if ( '' !== $submit_colour_effective || $submit_background || $submit_background_gradient ) {
+// Case C fill-helper adoption (2026-09-06): the background paint used to be
+// hand-built inline (a single sgs_background_paint_decl() call folded into
+// $sgs_form_submit_decls). This selector SHARES its rule with the text decl
+// above, so per the colour EMISSION helper decision table this is
+// sgs_fill_decls() (declarations, not finished CSS) composed into one rule —
+// never sgs_fill_states_css(), which would own its own separate rule and
+// risk a cascade-order fight with the D942 transparent-cancellation decl
+// below. sgs_fill_decls() reads the raw attribute names directly off
+// $attributes, so no standalone $submit_background* vars are needed here.
+$submit_fill_decls = sgs_fill_decls(
+	$attributes,
+	array(
+		'base'           => 'submitBackground',
+		'hover'          => 'submitBackgroundHover',
+		'gradient'       => 'submitBackgroundGradient',
+		'hover_gradient' => 'submitBackgroundHoverGradient',
+	)
+);
+if ( '' !== $submit_colour_effective || $submit_fill_decls['normal'] || $submit_fill_decls['hover'] ) {
 	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
 		// The uid is hoisted above; this now registers the CLASS exactly once. It
 		// used to key on empty($sgs_form_uid), which the hoist made permanently
@@ -223,7 +243,7 @@ if ( '' !== $submit_colour_effective || $submit_background || $submit_background
 		if ( '' !== $submit_colour_decl ) {
 			$sgs_form_submit_decls[] = $submit_colour_decl;
 		}
-		if ( ! $submit_background && ! $submit_background_gradient ) {
+		if ( ! $submit_fill_decls['normal'] ) {
 			// D942 recipe item 2: the style-variant class default
 			// (`:where(.sgs-form__button--primary)`, form/style.css) paints a
 			// `background-color` on this same selector. This scoped rule
@@ -234,25 +254,29 @@ if ( '' !== $submit_colour_effective || $submit_background || $submit_background
 			// otherwise be clipped by the class's inherited fill, and would
 			// otherwise collide with a genuine operator-set submitBackground).
 			// Only when the operator hasn't set an explicit `submitBackground`
-			// — that already wins this same rule below and must not be
-			// cancelled. NOTE: if an operator sets BOTH submitColourGradient
-			// AND submitBackground/submitBackgroundGradient, both write to
-			// `background-image` on this one rule below — the later decl in
-			// $sgs_form_submit_decls wins (submitColour is pushed first, so
-			// the background paint wins that combination; the gradient text
-			// clip is then visually inert). Documented trade-off, not a bug:
-			// no CSS mechanism lets one element's background paint two
-			// different gradients on the same property.
+			// (normal-state fill decls empty) — that already wins this same
+			// rule below and must not be cancelled. NOTE: if an operator sets
+			// BOTH submitColourGradient AND submitBackground/
+			// submitBackgroundGradient, both write to `background-image` on
+			// this one rule below — the later decl in $sgs_form_submit_decls
+			// wins (submitColour is pushed first, so the background paint
+			// wins that combination; the gradient text clip is then visually
+			// inert). Documented trade-off, not a bug: no CSS mechanism lets
+			// one element's background paint two different gradients on the
+			// same property.
 			$sgs_form_submit_decls[] = 'background-color:transparent';
 		}
 	}
-	if ( $submit_background || $submit_background_gradient ) {
-		// Both gates must include the gradient var, not just the flat colour —
-		// a gradient-only instance previously emitted zero CSS at all (same
-		// defect class as modal's triggerBackgroundGradient, found live 2026-09-03).
-		$sgs_form_submit_decls[] = sgs_background_paint_decl( $submit_background, $submit_background_gradient );
-	}
-	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__button--submit{' . implode( ';', $sgs_form_submit_decls ) . '}';
+	// Both gates must include the gradient var, not just the flat colour —
+	// a gradient-only instance previously emitted zero CSS at all (same
+	// defect class as modal's triggerBackgroundGradient, found live 2026-09-03).
+	// sgs_fill_decls() already applies that same rule internally.
+	$sgs_form_submit_decls  = array_merge( $sgs_form_submit_decls, $submit_fill_decls['normal'] );
+	$sgs_form_supports_css .= sgs_emit_state_colour_css(
+		'.' . $sgs_form_uid . ' .sgs-form__button--submit',
+		$sgs_form_submit_decls,
+		$submit_fill_decls['hover']
+	);
 	// Mandatory companion (self-no-ops on a flat colour): a browser lacking
 	// background-clip:text support would otherwise get a bare `color:` value
 	// holding a gradient string, dropped silently.
@@ -267,9 +291,20 @@ if ( '' !== $submit_colour_effective || $submit_background || $submit_background
 // SAME uid as the color/border/typography/submit-button supports above
 // (minted eagerly here when none of those already needed one) so everything
 // lands in ONE scoped <style>. progressBarColourGradient sibling (2026-09-04)
-// — the gradient wins when set; flat colour acts as fallback.
+// — the gradient wins when set; flat colour acts as fallback. HOVER SIBLING
+// (2026-09-06, hover-sibling closeout) — the same 5-arg call now also emits
+// -hover/-hover-gradient custom-property siblings, consumed by a new
+// .sgs-form__progress-bar:hover/:focus-visible rule in style.css. Unset
+// hover attrs mean the two extra decls are simply never appended, so an
+// untouched form stays byte-identical.
 $progress_colour_decls = function_exists( 'sgs_custom_property_gradient_decls' )
-	? sgs_custom_property_gradient_decls( 'sgs-progress-colour', (string) $progress_colour, $progress_colour_gradient )
+	? sgs_custom_property_gradient_decls(
+		'sgs-progress-colour',
+		(string) $progress_colour,
+		(string) $progress_colour_gradient,
+		(string) ( $attributes['progressBarColourHover'] ?? '' ),
+		(string) ( $attributes['progressBarColourHoverGradient'] ?? '' )
+	)
 	: array();
 if ( ! empty( $progress_colour_decls ) ) {
 	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {

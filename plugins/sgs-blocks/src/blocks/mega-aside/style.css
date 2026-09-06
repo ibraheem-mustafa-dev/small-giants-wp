@@ -43,6 +43,15 @@
 	border-radius: 12px;
 }
 
+/* Aside background hover/focus (FILL closeout, 2026-09-06) — fallback chain:
+   hover var → resting var → CSS default. Unset hover renders byte-identically
+   to before this change. */
+.sgs-mega-aside:hover,
+.sgs-mega-aside:focus-within {
+	background-color: var( --sgs-mega-aside-bg-hover, var( --sgs-mega-aside-bg, transparent ) );
+	background-image: var( --sgs-mega-aside-bg-hover-gradient, var( --sgs-mega-aside-bg-gradient, none ) );
+}
+
 /* cta format: compact pill + description + CTA — media + heading hidden. */
 .sgs-mega-aside[data-aside-format="cta"] > .wp-block-sgs-media,
 .sgs-mega-aside[data-aside-format="cta"] > .wp-block-sgs-heading {

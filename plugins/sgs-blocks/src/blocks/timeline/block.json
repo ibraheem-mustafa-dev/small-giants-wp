@@ -100,7 +100,15 @@
 						"css:background-color": "connectorColour",
 						"css:background-image": "connectorColourGradient"
 					},
-					"_note": "connectorColour drives the `--sgs-connector-colour` custom property, painted as `background-color` on the connector line + node dot (style.scss:64, 84-96, 236, 244-256, 316, 334) — a scoped CSS-var mechanism, not a WP-native background. No prefix declared (connectorColour does not follow the `{prefix}Colour` convention for an element named `connector`) — resolved via explicit attrMap only. connectorColourGradient (2026-09-06, colour-conformance closeout) is the `--sgs-connector-colour-gradient` sibling, same `sgs_custom_property_gradient_decls()` shape already proven on brand-strip/post-grid/social-icons/form/gallery/before-after/option-picker/tabs — style.scss's solid connector-line + node-dot rules gain a matching `background-image:var(--sgs-connector-colour-gradient,none)` line; the dashed/dotted connector-style variants already override with a full `background:` shorthand, so the gradient sibling is naturally superseded there with no extra guard needed. ⚠ connectorFillColour used to carry a `\"css:stroke\"` entry HERE, claiming it painted an SVG path — corrected 2026-09-05/06 after reading style.scss in full: zero `stroke:` consumers exist for `--sgs-timeline-fill-colour` anywhere in the file. Its real attrMap entry moved to the new `progress` element below, both because the manifest fact was wrong (no stroke, real property is background-color/border-color/box-shadow/gradient-stop) AND because keeping it here would have collided as a literal duplicate JSON key against this element's own `css:background-color`/`css:background-image` (connectorColour/connectorColourGradient) — JSON objects silently drop the earlier of two identical keys on parse, which would have orphaned connectorColour's routing."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "connectorColourHover",
+								"css:background-image": "connectorColourHoverGradient"
+							}
+						}
+					},
+					"_note": "connectorColour drives the `--sgs-connector-colour` custom property, painted as `background-color` on the connector line + node dot (style.scss:64, 84-96, 236, 244-256, 316, 334) — a scoped CSS-var mechanism, not a WP-native background. No prefix declared (connectorColour does not follow the `{prefix}Colour` convention for an element named `connector`) — resolved via explicit attrMap only. connectorColourGradient (2026-09-06, colour-conformance closeout) is the `--sgs-connector-colour-gradient` sibling, same `sgs_custom_property_gradient_decls()` shape already proven on brand-strip/post-grid/social-icons/form/gallery/before-after/option-picker/tabs — style.scss's solid connector-line + node-dot rules gain a matching `background-image:var(--sgs-connector-colour-gradient,none)` line; the dashed/dotted connector-style variants already override with a full `background:` shorthand, so the gradient sibling is naturally superseded there with no extra guard needed. connectorColourHover/HoverGradient (2026-09-06, colour-conformance FILL closeout) are the `--sgs-connector-colour-hover`/`-hover-gradient` siblings, same `sgs_custom_property_gradient_decls()` 5-arg form proven on before-after's `handleColour`; style.scss adds a `:hover, :focus-visible` pair on each of the 4 plain background-colour consumers (vertical line, horizontal line, node dot, node icon), fallback-chaining hover -> resting -> CSS default. The dashed/dotted variants remain naturally superseded on hover exactly as on rest — no extra guard needed. ⚠ connectorFillColour used to carry a `\"css:stroke\"` entry HERE, claiming it painted an SVG path — corrected 2026-09-05/06 after reading style.scss in full: zero `stroke:` consumers exist for `--sgs-timeline-fill-colour` anywhere in the file. Its real attrMap entry moved to the new `progress` element below, both because the manifest fact was wrong (no stroke, real property is background-color/border-color/box-shadow/gradient-stop) AND because keeping it here would have collided as a literal duplicate JSON key against this element's own `css:background-color`/`css:background-image` (connectorColour/connectorColourGradient) — JSON objects silently drop the earlier of two identical keys on parse, which would have orphaned connectorColour's routing."
 				},
 				"progress": {
 					"label": "Progress fill",
@@ -110,7 +118,15 @@
 						"css:background-color": "connectorFillColour",
 						"css:background-image": "connectorFillColourGradient"
 					},
-					"_note": "connectorFillColour drives `--sgs-timeline-fill-colour`, the scroll-driven progress overlay colour — a DIFFERENT set of DOM nodes from the resting `connector` element's line/dot: `.sgs-timeline__progress-fill`/`-glow` (background-color, style.scss:89), the progress head `::after` (radial-gradient + box-shadow, :120-126), `.sgs-timeline__spark` (radial-gradient + box-shadow, :248-255), `.sgs-timeline__node.is-reached::before` and `.is-reached .sgs-timeline__node-icon` (background-color, :875,890), and the carousel-mode `.is-reached` entry border (`border-top-color`, :1671). Deliberately its own element rather than folded into `connector` — see the note on `connector` above for why a shared attrMap object there is a JSON key collision, not just a naming choice. Only the plain `background-color:` lines (:89, :875, :890) are in scope for the fill-custom-property-gradient migration; the composed gradient-stop/box-shadow/border-color consumers are left untouched as before."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "connectorFillColourHover",
+								"css:background-image": "connectorFillColourHoverGradient"
+							}
+						}
+					},
+					"_note": "connectorFillColour drives `--sgs-timeline-fill-colour`, the scroll-driven progress overlay colour — a DIFFERENT set of DOM nodes from the resting `connector` element's line/dot: `.sgs-timeline__progress-fill`/`-glow` (background-color, style.scss:89), the progress head `::after` (radial-gradient + box-shadow, :120-126), `.sgs-timeline__spark` (radial-gradient + box-shadow, :248-255), `.sgs-timeline__node.is-reached::before` and `.is-reached .sgs-timeline__node-icon` (background-color, :875,890), and the carousel-mode `.is-reached` entry border (`border-top-color`, :1671). Deliberately its own element rather than folded into `connector` — see the note on `connector` above for why a shared attrMap object there is a JSON key collision, not just a naming choice. Only the plain `background-color:` lines (:89, :875, :890) are in scope for the fill-custom-property-gradient migration; the composed gradient-stop/box-shadow/border-color consumers are left untouched as before. connectorFillColourHover/HoverGradient (2026-09-06, colour-conformance FILL closeout) follow the same scope: `.sgs-timeline__progress-fill` cannot receive pointer events directly (its `.sgs-timeline__progress` ancestor is `pointer-events:none`), so its hover rule is keyed on `.sgs-timeline:hover`/`:focus-within` instead of self-hover; the `.is-reached` dot and node-icon ARE self-hoverable and use the same pattern as `connector` above."
 				},
 				"date": {
 					"label": "Entry date",
@@ -206,6 +222,16 @@
 			"default": "",
 			"description": "CSS gradient string painting the connector line + node dot background via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over connectorColour."
 		},
+		"connectorColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Connector line/node background colour on :hover/:focus-visible (colour-conformance FILL closeout 2026-09-06). Falls back to connectorColour, then the CSS default, when unset."
+		},
+		"connectorColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the connector's :hover/:focus-visible background. Non-empty wins over connectorColourHover; falls back to connectorColourGradient, then none."
+		},
 		"connectorProgressFill": {
 			"type": "boolean",
 			"default": false
@@ -218,6 +244,16 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over connectorFillColour."
+		},
+		"connectorFillColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Progress-fill background colour on :hover/:focus-within (colour-conformance FILL closeout 2026-09-06) — hovering anywhere on the timeline, since the progress-fill layer itself sits under a pointer-events:none ancestor. Falls back to connectorFillColour, then the CSS default, when unset."
+		},
+		"connectorFillColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the progress-fill's hover background. Non-empty wins over connectorFillColourHover; falls back to connectorFillColourGradient, then none."
 		},
 		"dateColour": {
 			"type": "string",
@@ -309,6 +345,16 @@
 			"default": "",
 			"description": "CSS gradient string painting the odd-row background band via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over rowStripeColourA. No attrMap entry — rowStripeColourA/B both target the entry element's background-color via mutually exclusive :nth-child(odd)/:nth-child(even) selectors, not the declared states vocabulary, so claiming css:background-color for either would misrepresent ownership (see the entry element note in supports.sgs.elements)."
 		},
+		"rowStripeColourAHover": {
+			"type": "string",
+			"default": "",
+			"description": "Odd-row background colour on that row's own :hover/:focus-within (colour-conformance FILL closeout 2026-09-06). Falls back to rowStripeColourA, then transparent, when unset. No attrMap entry — see rowStripeColourAGradient's description."
+		},
+		"rowStripeColourAHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the odd row's hover background. Non-empty wins over rowStripeColourAHover; falls back to rowStripeColourAGradient, then none. No attrMap entry — see rowStripeColourAGradient's description."
+		},
 		"rowStripeColourB": {
 			"type": "string",
 			"default": "surface-alt"
@@ -317,6 +363,16 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the even-row background band via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over rowStripeColourB. No attrMap entry — see rowStripeColourAGradient's description."
+		},
+		"rowStripeColourBHover": {
+			"type": "string",
+			"default": "",
+			"description": "Even-row background colour on that row's own :hover/:focus-within (colour-conformance FILL closeout 2026-09-06). Falls back to rowStripeColourB, then transparent, when unset. No attrMap entry — see rowStripeColourAGradient's description."
+		},
+		"rowStripeColourBHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the even row's hover background. Non-empty wins over rowStripeColourBHover; falls back to rowStripeColourBGradient, then none. No attrMap entry — see rowStripeColourAGradient's description."
 		},
 		"paddingTablet": {
 			"type": "object",

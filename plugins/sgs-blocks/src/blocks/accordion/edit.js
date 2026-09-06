@@ -51,6 +51,9 @@ export default function Edit({ attributes, setAttributes }) {
     faqSchema,
     headerColour,
     headerBackground,
+    headerBackgroundGradient,
+    headerBackgroundHover,
+    headerBackgroundHoverGradient,
     iconColour,
     iconColourGradient,
     iconColourHover,
@@ -134,12 +137,26 @@ export default function Edit({ attributes, setAttributes }) {
           {
             key: "headerBackground",
             label: __("Header background colour", "sgs-blocks"),
+            gradientCapable: true,
             states: [
               {
                 key: "normal",
                 label: __("Normal", "sgs-blocks"),
                 value: headerBackground,
                 onChange: (val) => setAttributes({ headerBackground: val }),
+                gradientValue: headerBackgroundGradient,
+                onGradientChange: (val) =>
+                  setAttributes({ headerBackgroundGradient: val ?? "" }),
+              },
+              {
+                key: "hover",
+                label: __("Hover", "sgs-blocks"),
+                value: headerBackgroundHover,
+                onChange: (val) =>
+                  setAttributes({ headerBackgroundHover: val ?? "" }),
+                gradientValue: headerBackgroundHoverGradient,
+                onGradientChange: (val) =>
+                  setAttributes({ headerBackgroundHoverGradient: val ?? "" }),
               },
             ],
           },

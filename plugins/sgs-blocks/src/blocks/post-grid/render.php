@@ -241,29 +241,31 @@ $uid = sanitize_html_class( 'sgs-post-grid-' . substr( md5( wp_json_encode( $att
 // Params array passed to render_card() — mirrors REST endpoint params.
 // -------------------------------------------------------------------------
 $card_params = array(
-	'cardStyle'                   => $card_style,
-	'showImage'                   => (bool) ( $attributes['showImage'] ?? true ),
-	'showTitle'                   => (bool) ( $attributes['showTitle'] ?? true ),
-	'showExcerpt'                 => (bool) ( $attributes['showExcerpt'] ?? true ),
-	'showDate'                    => (bool) ( $attributes['showDate'] ?? true ),
-	'showAuthor'                  => (bool) ( $attributes['showAuthor'] ?? false ),
-	'showCategory'                => (bool) ( $attributes['showCategory'] ?? true ),
-	'showReadMore'                => (bool) ( $attributes['showReadMore'] ?? true ),
-	'readMoreText'                => sanitize_text_field( $attributes['readMoreText'] ?? __( 'Read more', 'sgs-blocks' ) ),
-	'excerptLength'               => absint( $attributes['excerptLength'] ?? 20 ),
-	'imageSize'                   => sanitize_key( $attributes['imageSize'] ?? 'medium_large' ),
-	'aspectRatio'                 => $aspect_ratio,
-	'titleColour'                 => $attributes['titleColour'] ?? 'primary',
-	'excerptColour'               => $attributes['excerptColour'] ?? 'text',
-	'metaColour'                  => $attributes['metaColour'] ?? 'text-muted',
-	'categoryBadgeColour'         => $attributes['categoryBadgeColour'] ?? 'text-inverse',
-	'categoryBadgeColourGradient' => (string) ( $attributes['categoryBadgeColourGradient'] ?? '' ),
-	'categoryBadgeBgColour'       => $attributes['categoryBadgeBgColour'] ?? 'primary',
-	'readMoreColour'              => $attributes['readMoreColour'] ?? 'primary',
+	'cardStyle'                          => $card_style,
+	'showImage'                          => (bool) ( $attributes['showImage'] ?? true ),
+	'showTitle'                          => (bool) ( $attributes['showTitle'] ?? true ),
+	'showExcerpt'                        => (bool) ( $attributes['showExcerpt'] ?? true ),
+	'showDate'                           => (bool) ( $attributes['showDate'] ?? true ),
+	'showAuthor'                         => (bool) ( $attributes['showAuthor'] ?? false ),
+	'showCategory'                       => (bool) ( $attributes['showCategory'] ?? true ),
+	'showReadMore'                       => (bool) ( $attributes['showReadMore'] ?? true ),
+	'readMoreText'                       => sanitize_text_field( $attributes['readMoreText'] ?? __( 'Read more', 'sgs-blocks' ) ),
+	'excerptLength'                      => absint( $attributes['excerptLength'] ?? 20 ),
+	'imageSize'                          => sanitize_key( $attributes['imageSize'] ?? 'medium_large' ),
+	'aspectRatio'                        => $aspect_ratio,
+	'titleColour'                        => $attributes['titleColour'] ?? 'primary',
+	'excerptColour'                      => $attributes['excerptColour'] ?? 'text',
+	'metaColour'                         => $attributes['metaColour'] ?? 'text-muted',
+	'categoryBadgeColour'                => $attributes['categoryBadgeColour'] ?? 'text-inverse',
+	'categoryBadgeColourGradient'        => (string) ( $attributes['categoryBadgeColourGradient'] ?? '' ),
+	'categoryBadgeBgColour'              => $attributes['categoryBadgeBgColour'] ?? 'primary',
+	'categoryBadgeBgColourHover'         => (string) ( $attributes['categoryBadgeBgColourHover'] ?? '' ),
+	'categoryBadgeBgColourHoverGradient' => (string) ( $attributes['categoryBadgeBgColourHoverGradient'] ?? '' ),
+	'readMoreColour'                     => $attributes['readMoreColour'] ?? 'primary',
 	// 37-media-no-handroll: threaded through to render_card() so the
 	// featured-image <img> can carry the media-atom marker class — see the
 	// $sgs_pg_uid comment in class-post-grid-rest.php.
-	'uid'                         => $uid,
+	'uid'                                => $uid,
 );
 
 // -------------------------------------------------------------------------

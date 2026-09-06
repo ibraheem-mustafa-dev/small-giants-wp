@@ -258,11 +258,13 @@ if ( '' !== $box_css ) {
 }
 
 // --- Block background — painted on a `::after` layer, never the root
-// itself (this block has no gradient background attribute, only a flat
-// colour, and no hover state). See sgs_block_background_layer_css(). ---
+// itself (this block has no hover state). See sgs_block_background_layer_css().
+// backgroundColourGradient (colour-conformance FILL closeout, 2026-09-06) —
+// the mechanism already supported a gradient arg; only the attribute was
+// missing. ---
 $background_layer_css = sgs_block_background_layer_css(
 	$root_sel,
-	sgs_background_paint_decl( $background_colour, '' )
+	sgs_background_paint_decl( $background_colour, (string) ( $attributes['backgroundColourGradient'] ?? '' ) )
 );
 if ( '' !== $background_layer_css ) {
 	$scoped_css[] = $background_layer_css;

@@ -38,13 +38,16 @@ $sgs_css_slug = static function ( $value ) {
 
 // CSS-keyword sanitiser — border-style free text.
 // CSS-length sanitiser — border-width / radius string values.
-$sgs_title  = $attributes['title'] ?? '';
-$is_open    = ! empty( $attributes['isOpen'] );
-$style      = $block->context['sgs/accordionStyle'] ?? 'bordered';
-$icon_pos   = $block->context['sgs/accordionIconPosition'] ?? 'right';
-$header_col = $block->context['sgs/accordionHeaderColour'] ?? '';
-$header_bg  = $block->context['sgs/accordionHeaderBackground'] ?? '';
-$icon_col   = $block->context['sgs/accordionIconColour'] ?? '';
+$sgs_title                = $attributes['title'] ?? '';
+$is_open                  = ! empty( $attributes['isOpen'] );
+$style                    = $block->context['sgs/accordionStyle'] ?? 'bordered';
+$icon_pos                 = $block->context['sgs/accordionIconPosition'] ?? 'right';
+$header_col               = $block->context['sgs/accordionHeaderColour'] ?? '';
+$header_bg                = $block->context['sgs/accordionHeaderBackground'] ?? '';
+$header_bg_gradient       = $block->context['sgs/accordionHeaderBackgroundGradient'] ?? '';
+$header_bg_hover          = $block->context['sgs/accordionHeaderBackgroundHover'] ?? '';
+$header_bg_hover_gradient = $block->context['sgs/accordionHeaderBackgroundHoverGradient'] ?? '';
+$icon_col                 = $block->context['sgs/accordionIconColour'] ?? '';
 // D636/D644 icon/SVG gradient sibling — non-empty wins over icon_col above.
 $icon_col_gradient       = $block->context['sgs/accordionIconColourGradient'] ?? '';
 $icon_col_hover          = $block->context['sgs/accordionIconColourHover'] ?? '';
@@ -67,7 +70,14 @@ if ( $header_col ) {
 		$header_decls[] = 'color:var(--wp--preset--color--' . $header_slug . ')';
 	}
 }
-if ( $header_bg ) {
+// headerBackgroundGradient (colour-conformance preset-upgrade, 2026-09-06) —
+// bypasses the preset-slug mechanism entirely when set (a gradient cannot be
+// a swatch name). Unset behaviour (slug -> var(--wp--preset--color--{slug}))
+// is completely unchanged.
+$header_bg_gradient_value = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( $header_bg_gradient ) : '';
+if ( '' !== $header_bg_gradient_value ) {
+	$header_decls[] = 'background-image:' . $header_bg_gradient_value;
+} elseif ( $header_bg ) {
 	$header_bg_slug = $sgs_css_slug( $header_bg );
 	if ( '' !== $header_bg_slug ) {
 		$header_decls[] = 'background-color:var(--wp--preset--color--' . $header_bg_slug . ')';
@@ -75,6 +85,26 @@ if ( $header_bg ) {
 }
 if ( $header_decls ) {
 	$responsive_css .= $root_sel . ' .sgs-accordion-item__header{' . implode( ';', $header_decls ) . '}';
+}
+
+// headerBackgroundHover/HoverGradient (colour-conformance FILL closeout,
+// 2026-09-06) — the header row already has a real :hover rule in style.css
+// with hardcoded theme-default colours; this scoped rule overrides it only
+// when the operator sets a value, via the same touch-safe hover guard the
+// icon hover below already uses.
+$header_hover_decls = array();
+if ( '' !== $header_bg_hover ) {
+	$header_hover_slug = $sgs_css_slug( $header_bg_hover );
+	if ( '' !== $header_hover_slug ) {
+		$header_hover_decls[] = 'background-color:var(--wp--preset--color--' . $header_hover_slug . ')';
+	}
+}
+$header_bg_hover_gradient_value = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( $header_bg_hover_gradient ) : '';
+if ( '' !== $header_bg_hover_gradient_value ) {
+	$header_hover_decls[] = 'background-image:' . $header_bg_hover_gradient_value;
+}
+if ( $header_hover_decls ) {
+	$responsive_css .= sgs_hover_state_rules( $root_sel . ' .sgs-accordion-item__header', implode( ';', $header_hover_decls ) );
 }
 
 // Icon colour — was inline `style="…"` on both icon spans, now a scoped rule.

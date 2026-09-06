@@ -35,6 +35,12 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"colourExemptions": {
+				"toggle-label-hover": {
+					"rule": "states",
+					"reason": "toggleLabelHoverColour is HOVER-ONLY by design — no toggleLabelColour resting sibling exists anywhere in this block. Same shape as sgs/gallery's overlayColourHover (noBaseByDesign, just undeclared via that marker here). Confirmed 2026-09-06 (colour-conformance FILL audit)."
+				}
+			},
 			"boxFamilies": {
 				"borderRadius": [
 					"borderRadiusTablet",

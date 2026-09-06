@@ -17,6 +17,12 @@
 	"icon": "columns",
 	"supports": {
 		"sgs": {
+			"colourExemptions": {
+				"labelBackground": {
+					"rule": "states",
+					"reason": "The before/after caption label overlay is aria-hidden with pointer-events:none — no :hover CSS targets it anywhere. Already correctly painted via sgs_block_background_layer_css()/sgs_background_paint_decl() with a real gradient attribute wired. Confirmed 2026-09-06 (colour-conformance FILL audit)."
+				}
+			},
 			"_comment_mediaElements": "Wave 5b. Replaces the old universal imageControls extension's single shared sgsObjectFit/sgsObjectPosition pair (which set BOTH the before and after slots identically) with two independently-scoped media elements, one per slot.",
 			"mediaElements": [
 				{
@@ -102,7 +108,15 @@
 						"css:background-image": "dividerColourGradient",
 						"css:width": "dividerWidth"
 					},
-					"_note": "The visible divider stroke rendered inside the divider assembly (`.wp-block-sgs-before-after__divider-line`, render.php line 558) — a child of the `divider` element's positioning wrapper, NOT the same node. dividerColour/dividerWidth were previously misattributed as orphans under `divider` by simple prefix-string matching (both names literally start with 'divider'); this explicit attrMap claims them on their real owning element instead, clearing both from the conformance style-defect count. css:width is used for the line's thickness (DB records the underlying CSS as a height+width shorthand); no dedicated stroke-thickness member exists in the taxonomy, so css:width/layout is the nearest honest mapping. Found live 2026-08-15: DB tagged 2 attrs css_element='divider-line', undeclared until now."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "dividerColourHover",
+								"css:background-image": "dividerColourHoverGradient"
+							}
+						}
+					},
+					"_note": "The visible divider stroke rendered inside the divider assembly (`.wp-block-sgs-before-after__divider-line`, render.php line 558) — a child of the `divider` element's positioning wrapper, NOT the same node. dividerColour/dividerWidth were previously misattributed as orphans under `divider` by simple prefix-string matching (both names literally start with 'divider'); this explicit attrMap claims them on their real owning element instead, clearing both from the conformance style-defect count. css:width is used for the line's thickness (DB records the underlying CSS as a height+width shorthand); no dedicated stroke-thickness member exists in the taxonomy, so css:width/layout is the nearest honest mapping. Found live 2026-08-15: DB tagged 2 attrs css_element='divider-line', undeclared until now. dividerColourHover/dividerColourHoverGradient (2026-09-06, FILL closeout) added the divider line's own hover state — mirrors the handle's hover-state shape on the sibling `handle` element below."
 				},
 				"handle": {
 					"label": "Handle",
@@ -120,6 +134,8 @@
 					"states": {
 						"hover": {
 							"attrMap": {
+								"css:background-color": "handleColourHover",
+								"css:background-image": "handleColourHoverGradient",
 								"css:stroke": "handleIconColourHover",
 								"css:stroke-gradient": "handleIconColourHoverGradient"
 							}
@@ -407,6 +423,16 @@
 			"default": "",
 			"description": "CSS gradient string painting via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over dividerColour."
 		},
+		"dividerColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Divider-line background colour on :hover/:focus-visible (colour-conformance FILL closeout 2026-09-06) — mirrors handleColourHover's shape. The divider line has no interaction of its own, so the trigger is the same range-hover ancestor chain style.css already uses for the handle's scale transform. Falls back to dividerColour, then the CSS default, when unset."
+		},
+		"dividerColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the divider-line's :hover background. Non-empty wins over dividerColourHover; falls back to dividerColourGradient, then none."
+		},
 		"dividerWidth": {
 			"type": "number",
 			"default": 3
@@ -418,6 +444,16 @@
 		"handleColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"handleColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Handle background colour on :hover/:focus-visible (colour-conformance FILL closeout 2026-09-06) — the handle's icon already had a hover stroke override; its own background never did. Falls back to handleColour, then the CSS default, when unset."
+		},
+		"handleColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the handle's :hover background. Non-empty wins over handleColourHover; falls back to handleColourGradient, then none."
 		},
 		"handleIconColour": {
 			"type": "string",

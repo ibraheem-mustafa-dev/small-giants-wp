@@ -80,6 +80,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		asideFormat,
 		asideBg,
+		asideBgGradient,
+		asideBgHover,
+		asideBgHoverGradient,
 		asidePadding,
 		asideRadius,
 		asideBorderColour,
@@ -107,6 +110,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	const previewStyle = {};
 	if ( asideBg ) {
 		previewStyle.backgroundColor = resolveColourToken( asideBg, palette );
+	}
+	if ( asideBgGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( asideBgGradient ) ) {
+		previewStyle.backgroundImage = asideBgGradient;
 	}
 	if ( asideRadius ) {
 		previewStyle.borderRadius = asideRadius;
@@ -169,6 +175,19 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: asideBg,
 								onChange: ( val ) => setAttributes( { asideBg: val ?? '' } ),
 								linked: true,
+								gradientValue: asideBgGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { asideBgGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: asideBgHover,
+								onChange: ( val ) => setAttributes( { asideBgHover: val ?? '' } ),
+								linked: true,
+								gradientValue: asideBgHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { asideBgHoverGradient: val ?? '' } ),
 							},
 						],
 					},

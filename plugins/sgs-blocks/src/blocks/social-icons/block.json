@@ -32,6 +32,12 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"colourExemptions": {
+				"icon-bg-hover": {
+					"rule": "states",
+					"reason": "CLASSIFIER FALSE POSITIVE — edit.js branches on colourMode via a ternary; the 'theme' branch already has a real 2-state icon-bg row (normal+hover, fully wired), and this row is the OTHER branch's own deliberately hover-only row for a different display mode where the resting background comes from a CSS preset class, not a custom attribute. The census's ConditionalExpression handling concatenates both ternary branches as if they coexisted. Confirmed 2026-09-06 (colour-conformance FILL audit) — this block's colour coverage is already complete."
+				}
+			},
 			"collection": true,
 			"imageControls": false,
 			"_imageControlsNote": "Deliberate opt-out (FR-36-21). The universal image-controls extension (object-position/max-width/height) targets ONE block-level image; this block's optional custom-SVG upload is a PER-ITEM glyph inside a repeater (mirrors sgs/icon's own imageControls:false). Size is governed by the existing iconSize control instead.",

@@ -143,6 +143,8 @@
 					"states": {
 						"hover": {
 							"attrMap": {
+								"css:background-color": "iconCircleBackgroundHover",
+								"css:background-image": "iconCircleBackgroundHoverGradient",
 								"css:color": "iconColourHover",
 								"css:stroke": "iconColourHoverGradient"
 							}
@@ -408,6 +410,16 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the icon-circle badge background via a --sgs-trust-badge-circle-bg-gradient custom-property sibling (helpers-tokens.php sgs_custom_property_gradient_decls shape). Non-empty wins over iconCircleBackground (icon-circle variant only)."
+		},
+		"iconCircleBackgroundHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state background colour for the icon-circle badge."
+		},
+		"iconCircleBackgroundHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of iconCircleBackgroundHover. Non-empty wins over iconCircleBackgroundHover at render time."
 		},
 		"iconColour": {
 			"type": "string",

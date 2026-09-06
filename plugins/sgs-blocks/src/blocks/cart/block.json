@@ -37,6 +37,16 @@
 			"iconPicker": true,
 			"headerEssential": true,
 			"imageControls": false,
+			"colourExemptions": {
+				"badgeBackground": {
+					"rule": "states",
+					"reason": "The cart-icon badge is a status indicator nested inside .sgs-cart__trigger, not itself a click target — no :hover CSS targets it anywhere in style.css. Confirmed 2026-09-06 (colour-conformance FILL audit)."
+				},
+				"panelBackground": {
+					"rule": "states",
+					"reason": "The flyout/drawer panel surface is not a click target — its child close/view/checkout buttons carry their own separate colour attributes. No :hover CSS targets the panel background anywhere. Confirmed 2026-09-06 (colour-conformance FILL audit)."
+				}
+			},
 			"_comment_mediaElements": "Rule 37-media-no-handroll fix. The mini-cart item thumbnail (WooCommerce product image, hydrated client-side by panel-render.js/item-row-template.js from the Store API) now routes its object-fit through the shared media-element atom layer instead of a style.css literal. This is a NEW client control — no pre-existing object-fit picker on this block. render.php (always PHP-rendered, even before JS hydration) emits the atom's --sgs-media-object-fit custom property scoped to the block wrapper; item-row-template.js appends the shared .sgs-media-el marker class to the thumbnail <img> it builds at runtime — the custom property inherits down regardless of when that element is added to the DOM. style.css no longer hardcodes object-fit on .sgs-cart__item-thumb, relying on assets/css/media-atoms/object-fit.css's cover fallback (identical default).",
 			"mediaElements": [
 				{ "prefix": "", "context": "element", "atoms": [ "object-fit" ] }

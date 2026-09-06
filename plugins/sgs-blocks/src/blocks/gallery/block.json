@@ -35,6 +35,16 @@
 		},
 		"interactivity": true,
 		"sgs": {
+			"colourExemptions": {
+				"overlay": {
+					"rule": "states",
+					"reason": "overlayColourHover is HOVER-ONLY by design (see the img-wrap element's own noBaseByDesign marker, 2026-08-15/2026-09-05) — the hover-reveal overlay only exists on hover, so there is no resting counterpart to pair it with and none should exist. The census's statesCount<2 check does not know about noBaseByDesign. Confirmed 2026-09-06 (colour-conformance FILL audit)."
+				},
+				"caption-background-colour": {
+					"rule": "states",
+					"reason": "Already correctly painted via a hand-built ::after layer reproducing sgs_block_background_layer_css()'s paint semantics (the shared helper can't be called directly here — it unconditionally injects position:relative, which would break the caption's own position:absolute, per render.php's own comment). Gradient sibling already shipped 2026-09-04. Hover: the item's own hover-lift/reveal treatment already exists at the .sgs-gallery__item level (a different mechanism); no established precedent in this codebase adds a colour-specific hover to a caption background. Confirmed 2026-09-06 (colour-conformance FILL audit, verified via dispatched agent read)."
+				}
+			},
 			"collection": true,
 			"imageControls": true,
 			"imageControlsExplicit": true,

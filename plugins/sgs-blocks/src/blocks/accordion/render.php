@@ -29,6 +29,9 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
+// Normalise borderRadius from flat/tier-object shape to tier-keyed structure.
+$sgs_radius_tiers = sgs_responsive_normalise_object( $attributes['borderRadius'] ?? null );
+
 // CSS-keyword sanitiser — free-text style/border values concatenated into raw
 // CSS declarations (border-style). Strips everything except letters + hyphen
 // (contract §D). Mirrors sgs/hero + sgs/quote.
@@ -67,8 +70,8 @@ if ( ! empty( $color_args ) ) {
 // B, 2026-08-30; radius joined 2026-08-30 target-shape correction) — emitted
 // below, not through native supports.
 $border_args = array();
-if ( isset( $attributes['borderRadius'] ) ) {
-	$radius_raw = $attributes['borderRadius'];
+if ( null !== $sgs_radius_tiers['desktop'] ) {
+	$radius_raw = $sgs_radius_tiers['desktop'];
 	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
 		$border_args['radius'] = sgs_css_length_value( $radius_raw );
 	} elseif ( is_array( $radius_raw ) ) {
@@ -98,8 +101,8 @@ if ( ! empty( $style_engine_args ) ) {
 }
 
 // Border-radius tablet/mobile tiers (base handled above via the style engine).
-$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$border_radius_tablet_obj = is_array( $sgs_radius_tiers['tablet'] ) ? $sgs_radius_tiers['tablet'] : array();
+$border_radius_mobile_obj = is_array( $sgs_radius_tiers['mobile'] ) ? $sgs_radius_tiers['mobile'] : array();
 $radius_tab_val           = sgs_corner_object_shorthand( $border_radius_tablet_obj );
 $radius_mob_val           = sgs_corner_object_shorthand( $border_radius_mobile_obj );
 

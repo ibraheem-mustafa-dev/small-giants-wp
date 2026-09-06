@@ -138,6 +138,22 @@
 	opacity: var(--sgs-modal-backdrop-opacity);
 }
 
+/*
+ * Backdrop hover (2026-09-06, colour-conformance closeout, Case Task-1).
+ * The backdrop is a real click-to-close target (view.js's closeOnOverlay
+ * handler), so it is genuinely interactive, not purely decorative — hence
+ * `overlayColourHover`/`overlayColourHoverGradient` exist as attributes. This
+ * rarely reads as an obvious "hover effect" (the backdrop fills the whole
+ * viewport outside the dialog panel, so the pointer is over it whenever it
+ * isn't over the dialog content), but the mechanism is real. `::backdrop:hover`
+ * is valid CSS in Chromium and Firefox. Fallback chain: hover -> resting ->
+ * (resting's own fallback, set on .sgs-modal above).
+ */
+.sgs-modal__dialog::backdrop:hover {
+	background-color: var(--sgs-modal-backdrop-colour-hover, var(--sgs-modal-backdrop-colour));
+	background-image: var(--sgs-modal-backdrop-colour-hover-gradient, var(--sgs-modal-backdrop-colour-gradient, none));
+}
+
 /* Starting state for backdrop animation */
 @starting-style {
 	.sgs-modal__dialog[open]::backdrop {

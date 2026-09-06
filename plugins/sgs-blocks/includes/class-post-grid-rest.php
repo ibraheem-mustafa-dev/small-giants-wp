@@ -310,19 +310,29 @@ class Post_Grid_REST {
 		// in render.php (survey.js's `paints-via-colour-valued-custom-property`
 		// refusal reason -- a `var(--x, ...)` fed into a fixed `color:`
 		// declaration cannot switch to `background-image` for a gradient).
-		// categoryBadgeColour/categoryBadgeBgColour are UNAFFECTED (not part of
-		// this rollout) and keep the custom-property route.
-		$map = [
-			'categoryBadgeColour'   => '--sgs-pg-badge-colour',
-			'categoryBadgeBgColour' => '--sgs-pg-badge-bg',
-		];
-
+		// categoryBadgeColour keeps the custom-property route for resting state.
+		// categoryBadgeBgColour moved to sgs_custom_property_gradient_decls() to
+		// support hover variants (categoryBadgeBgColourHover +
+		// categoryBadgeBgColourHoverGradient), emitted as --sgs-pg-badge-bg,
+		// --sgs-pg-badge-bg-hover, --sgs-pg-badge-bg-gradient,
+		// --sgs-pg-badge-bg-hover-gradient. Fallback chain in style.css allows
+		// unset hover to be byte-identical to before.
 		$card_vars = [];
-		foreach ( $map as $param_key => $css_var ) {
-			if ( ! empty( $params[ $param_key ] ) ) {
-				$card_vars[] = $css_var . ':' . sgs_colour_value( $params[ $param_key ] );
-			}
+
+		// Badge text colour (resting only).
+		if ( ! empty( $params['categoryBadgeColour'] ) ) {
+			$card_vars[] = '--sgs-pg-badge-colour:' . sgs_colour_value( $params['categoryBadgeColour'] );
 		}
+
+		// Badge background colour (with hover support).
+		$badge_bg_decls = sgs_custom_property_gradient_decls(
+			'sgs-pg-badge-bg',
+			! empty( $params['categoryBadgeBgColour'] ) ? (string) $params['categoryBadgeBgColour'] : '',
+			(string) ( $params['categoryBadgeBgColourGradient'] ?? '' ),
+			(string) ( $params['categoryBadgeBgColourHover'] ?? '' ),
+			(string) ( $params['categoryBadgeBgColourHoverGradient'] ?? '' )
+		);
+		$card_vars = array_merge( $card_vars, $badge_bg_decls );
 
 		$aspect_ratio = isset( $params['aspectRatio'] ) ? sanitize_text_field( $params['aspectRatio'] ) : '16/10';
 		$card_vars[]  = '--sgs-pg-aspect:' . $aspect_ratio;

@@ -92,11 +92,13 @@ if ( '' === $resolved_mime ) {
 
 // Brand colours — default to theme tokens; operator overrides win. Resolve to a
 // CSS value (custom property or literal) so the visualiser draws in the client's brand.
-$accent_raw          = isset( $attributes['accentColour'] ) ? (string) $attributes['accentColour'] : '';
-$accent_gradient_raw = isset( $attributes['accentColourGradient'] ) ? (string) $attributes['accentColourGradient'] : '';
-$spectrum_raw        = isset( $attributes['spectrumColour'] ) ? (string) $attributes['spectrumColour'] : '';
-$accent_val          = '' !== $accent_raw ? sgs_colour_value( $accent_raw ) : 'var(--wp--preset--color--primary, #c9821f)';
-$spectrum_val        = '' !== $spectrum_raw ? sgs_colour_value( $spectrum_raw ) : 'var(--wp--preset--color--secondary, #1c9a93)';
+$accent_raw                = isset( $attributes['accentColour'] ) ? (string) $attributes['accentColour'] : '';
+$accent_gradient_raw       = isset( $attributes['accentColourGradient'] ) ? (string) $attributes['accentColourGradient'] : '';
+$accent_hover_raw          = isset( $attributes['accentColourHover'] ) ? (string) $attributes['accentColourHover'] : '';
+$accent_hover_gradient_raw = isset( $attributes['accentColourHoverGradient'] ) ? (string) $attributes['accentColourHoverGradient'] : '';
+$spectrum_raw              = isset( $attributes['spectrumColour'] ) ? (string) $attributes['spectrumColour'] : '';
+$accent_val                = '' !== $accent_raw ? sgs_colour_value( $accent_raw ) : 'var(--wp--preset--color--primary, #c9821f)';
+$spectrum_val              = '' !== $spectrum_raw ? sgs_colour_value( $spectrum_raw ) : 'var(--wp--preset--color--secondary, #1c9a93)';
 // accentColourGradient (2026-09-06, colour-conformance closeout) — a SEPARATE
 // custom property, --sgs-audio-accent-gradient, consumed ONLY by the 3
 // genuine solid-fill background-image siblings added in style.css (play
@@ -105,6 +107,13 @@ $spectrum_val        = '' !== $spectrum_raw ? sgs_colour_value( $spectrum_raw ) 
 // canvas fillStyle / SVG stroke reads of --sgs-audio-accent all keep resolving
 // the flat value exactly as before (see block.json's accent element _note).
 $accent_gradient_val = sgs_css_gradient_value( $accent_gradient_raw );
+// accentColourHover (2026-09-06, FILL closeout) — scoped ONLY to the play
+// button's own :hover rule (style.css .sgs-audio__play:hover), the ONE
+// genuinely hoverable target this element paints. Empty means "no override",
+// so style.css's own var() fallback chain (hover -> resting -> theme default)
+// applies unchanged.
+$accent_hover_val          = '' !== $accent_hover_raw ? sgs_colour_value( $accent_hover_raw ) : '';
+$accent_hover_gradient_val = sgs_css_gradient_value( $accent_hover_gradient_raw );
 
 // A no-controls audio with no autoplay is unreachable — force controls unless autoplay is on.
 $show_native_controls = ( $controls || ! $autoplay );
@@ -220,8 +229,10 @@ if ( $mobile_decls ) {
 // the padding/margin above. view.js/CSS read these via getComputedStyle(),
 // which resolves the cascade identically whether the var comes from an
 // inline attribute or a stylesheet rule, so no runtime behaviour changes. ---
-$accent_gradient_decl = '' !== $accent_gradient_val ? '--sgs-audio-accent-gradient:' . esc_attr( $accent_gradient_val ) . ';' : '';
-$scoped_css[]         = "{$root_sel}{--sgs-audio-accent:" . esc_attr( $accent_val ) . ';--sgs-audio-spectrum:' . esc_attr( $spectrum_val ) . ';' . $accent_gradient_decl . '}';
+$accent_gradient_decl       = '' !== $accent_gradient_val ? '--sgs-audio-accent-gradient:' . esc_attr( $accent_gradient_val ) . ';' : '';
+$accent_hover_decl          = '' !== $accent_hover_val ? '--sgs-audio-accent-hover:' . esc_attr( $accent_hover_val ) . ';' : '';
+$accent_hover_gradient_decl = '' !== $accent_hover_gradient_val ? '--sgs-audio-accent-hover-gradient:' . esc_attr( $accent_hover_gradient_val ) . ';' : '';
+$scoped_css[]               = "{$root_sel}{--sgs-audio-accent:" . esc_attr( $accent_val ) . ';--sgs-audio-spectrum:' . esc_attr( $spectrum_val ) . ';' . $accent_gradient_decl . $accent_hover_decl . $accent_hover_gradient_decl . '}';
 
 // Wrapper: SGS-BEM root + uid + style modifier + data hooks. Zero inline
 // `style` — everything (spacing + brand vars) lives in the scoped <style>

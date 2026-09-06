@@ -473,9 +473,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		fxDraggable,
 		dividerColour,
 		dividerColourGradient,
+		dividerColourHover,
+		dividerColourHoverGradient,
 		dividerWidth,
 		handleColour,
 		handleColourGradient,
+		handleColourHover,
+		handleColourHoverGradient,
 		handleIconColour,
 		handleIconColourGradient,
 		handleIconColourHover,
@@ -696,6 +700,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: dividerColourGradient,
 								onGradientChange: ( val ) => setAttributes( { dividerColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: dividerColourHover,
+								onChange: ( val ) => setAttributes( { dividerColourHover: val } ),
+								gradientValue: dividerColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { dividerColourHoverGradient: val ?? '' } ),
+							},
 						] }
 					/>
 					<RangeControl
@@ -726,6 +739,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { handleColour: val } ),
 								gradientValue: handleColourGradient,
 								onGradientChange: ( val ) => setAttributes( { handleColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: handleColourHover,
+								onChange: ( val ) => setAttributes( { handleColourHover: val } ),
+								gradientValue: handleColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { handleColourHoverGradient: val ?? '' } ),
 							},
 						] }
 					/>

@@ -3037,6 +3037,42 @@
         "css_element": "entry-even"
       },
       "_why": "2026-09-06. See rowStripeColourAGradient's entry (added alongside this one) -- same alternating-row disambiguation, opposite parity."
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "rowStripeColourAHover",
+      "fields": {
+        "css_element": "entry-odd",
+        "css_state": "hover"
+      },
+      "_why": "2026-09-06 (FILL closeout, hover sibling of rowStripeColourA). Same alternating-row css_element ambiguity as the resting flat attr above, PLUS a resting-vs-hover collision on the SAME element once css_element was set -- css_state:hover disambiguates from the resting rowStripeColourA the same way pricing-table.toggleLabelHoverColour's entry above does. Caught live by db-consistency-run's NEW-violation gate."
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "rowStripeColourBHover",
+      "fields": {
+        "css_element": "entry-even",
+        "css_state": "hover"
+      },
+      "_why": "2026-09-06. See rowStripeColourAHover's entry (added alongside this one) -- same alternating-row disambiguation, opposite parity."
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "rowStripeColourAHoverGradient",
+      "fields": {
+        "css_element": "entry-odd",
+        "css_state": "hover"
+      },
+      "_why": "2026-09-06. Hover-gradient sibling of rowStripeColourA -- same alternating-row css_element ambiguity plus resting-vs-hover collision, this time on background-image, caught by the same gate."
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "rowStripeColourBHoverGradient",
+      "fields": {
+        "css_element": "entry-even",
+        "css_state": "hover"
+      },
+      "_why": "2026-09-06. See rowStripeColourAHoverGradient's entry (added alongside this one) -- same alternating-row disambiguation, opposite parity."
     }
   ]
 }

@@ -268,10 +268,22 @@ $root_var_decls = array();
 // not gated on an override check.
 $root_var_decls[] = '--sgs-before-after-divider-width:' . round( $divider_width, 2 ) . 'px';
 
-if ( $divider_colour ) {
-	$divider_colour_gradient = $attributes['dividerColourGradient'] ?? '';
-	$root_var_decls          = array_merge( $root_var_decls, sgs_custom_property_gradient_decls( 'sgs-before-after-divider-colour', $divider_colour, $divider_colour_gradient ) );
-}
+// Divider-line hover sibling (2026-09-06, FILL closeout) — same 5-arg call
+// shape as the handle-colour block below. The divider line is
+// aria-hidden/pointer-events:none with no interaction of its own, so
+// style.css's new hover rule triggers off the same range-hover ancestor
+// chain already proven for the handle's scale transform, not a direct
+// :hover on this element.
+$root_var_decls = array_merge(
+	$root_var_decls,
+	sgs_custom_property_gradient_decls(
+		'sgs-before-after-divider-colour',
+		(string) $divider_colour,
+		(string) ( $attributes['dividerColourGradient'] ?? '' ),
+		(string) ( $attributes['dividerColourHover'] ?? '' ),
+		(string) ( $attributes['dividerColourHoverGradient'] ?? '' )
+	)
+);
 // Gradient sibling (2026-09-04): --sgs-before-after-handle-colour has no
 // stable selector of its own (a draggable handle, styled purely via the
 // custom property style.css already reads), so sgs_block_background_layer_css()/
@@ -281,12 +293,19 @@ if ( $divider_colour ) {
 // gains ONE new sibling line, background-image:var(--...-gradient,none),
 // which composites over it — an unset gradient is fully invisible, so the
 // flat colour is byte-identical to before this change.
+// HOVER SIBLING (2026-09-06, FILL closeout) — the handle is genuinely
+// interactive (draggable; its own SVG icon already has a :hover stroke
+// override), but its background colour never had one. Same 5-arg call now
+// also emits -hover/-hover-gradient vars, consumed by a new
+// .wp-block-sgs-before-after__handle:hover/:focus-visible rule in style.css.
 $root_var_decls = array_merge(
 	$root_var_decls,
 	sgs_custom_property_gradient_decls(
 		'sgs-before-after-handle-colour',
 		(string) $handle_colour,
-		(string) ( $attributes['handleColourGradient'] ?? '' )
+		(string) ( $attributes['handleColourGradient'] ?? '' ),
+		(string) ( $attributes['handleColourHover'] ?? '' ),
+		(string) ( $attributes['handleColourHoverGradient'] ?? '' )
 	)
 );
 // Handle icon stroke gradient (2026-09-05, svg-paint-gradient end-shape — the

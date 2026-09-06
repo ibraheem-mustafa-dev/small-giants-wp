@@ -90,6 +90,17 @@
 	background-image: var(--sgs-timeline-fill-colour-gradient, none);
 }
 
+// connectorFillColourHover/HoverGradient (colour-conformance FILL closeout,
+// 2026-09-06) — `.sgs-timeline__progress` (the ancestor `<li>`) is
+// `pointer-events: none`, so this layer can never receive its OWN `:hover`;
+// keyed on the block root instead, matching hovering-the-timeline the way the
+// connector-line rules above do.
+.sgs-timeline:hover .sgs-timeline__progress-fill,
+.sgs-timeline:focus-within .sgs-timeline__progress-fill {
+	background-color: var(--sgs-timeline-fill-colour-hover, var(--sgs-timeline-fill-colour));
+	background-image: var(--sgs-timeline-fill-colour-hover-gradient, var(--sgs-timeline-fill-colour-gradient, none));
+}
+
 .sgs-timeline__progress-glow {
 	@extend %sgs-progress-masked;
 	// ⛔ The blur radius is set ONCE and never animated. Animating `filter` or a
@@ -423,6 +434,17 @@
 		background-image: var(--sgs-connector-colour-gradient, none);
 	}
 
+	// connectorColourHover/HoverGradient (colour-conformance FILL closeout,
+	// 2026-09-06) — fallback chain hover -> resting -> default, same shape as
+	// before-after's handleColour. Naturally superseded on the dashed/dotted
+	// variants below exactly as the resting rule is (their `background:`
+	// shorthand wins on both states, equal specificity + later source order).
+	&:hover::before,
+	&:focus-visible::before {
+		background-color: var(--sgs-connector-colour-hover, var(--sgs-connector-colour));
+		background-image: var(--sgs-connector-colour-hover-gradient, var(--sgs-connector-colour-gradient, none));
+	}
+
 	// Single column: line sits on the left edge.
 	&.sgs-timeline--content-single-column::before {
 		left: var(--sgs-timeline-rail-offset, var(--sgs-node-size));
@@ -728,6 +750,13 @@
 		background-image: var(--sgs-connector-colour-gradient, none);
 	}
 
+	// connectorColourHover/HoverGradient — see the vertical connector rule above.
+	&:hover::before,
+	&:focus-visible::before {
+		background-color: var(--sgs-connector-colour-hover, var(--sgs-connector-colour));
+		background-image: var(--sgs-connector-colour-hover-gradient, var(--sgs-connector-colour-gradient, none));
+	}
+
 	// The row itself. The entries are this element's children, so the flex
 	// context and the native horizontal scroller belong here.
 	.sgs-timeline__list {
@@ -858,6 +887,14 @@
 		box-sizing: border-box;
 	}
 
+	// connectorColourHover/HoverGradient — see the connector-line rules above.
+	// Excluded from `.is-reached` (below), which owns its own fill-colour hover.
+	&:hover:not(.is-reached)::before,
+	&:focus-visible:not(.is-reached)::before {
+		background-color: var(--sgs-connector-colour-hover, var(--sgs-connector-colour));
+		background-image: var(--sgs-connector-colour-hover-gradient, var(--sgs-connector-colour-gradient, none));
+	}
+
 	// A milestone the reader has already passed keeps the fill colour, so the
 	// journey reads as built rather than merely drawn. Set by view.js's
 	// milestone observer, which runs on BOTH drivers (native + rAF) — a
@@ -877,6 +914,16 @@
 		background-image: var(--sgs-timeline-fill-colour-gradient, none);
 	}
 
+	// connectorFillColourHover/HoverGradient (colour-conformance FILL closeout,
+	// 2026-09-06) — the reached dot IS directly hoverable (unlike the
+	// pointer-events:none progress-fill layer below), so this uses self-hover
+	// rather than the ancestor-hover pattern.
+	&.is-reached:hover::before,
+	&.is-reached:focus-visible::before {
+		background-color: var(--sgs-timeline-fill-colour-hover, var(--sgs-timeline-fill-colour));
+		background-image: var(--sgs-timeline-fill-colour-hover-gradient, var(--sgs-timeline-fill-colour-gradient, none));
+	}
+
 	// When a Lucide icon is present, hide the default circle.
 	&:has(.sgs-timeline__node-icon)::before {
 		display: none;
@@ -891,6 +938,15 @@
 	&.is-reached .sgs-timeline__node-icon {
 		background-color: var(--sgs-timeline-fill-colour);
 		background-image: var(--sgs-timeline-fill-colour-gradient, none);
+	}
+
+	// connectorFillColourHover/HoverGradient — see the reached-dot rule above.
+	// The icon itself is directly hoverable (default pointer-events), so this
+	// too uses self-hover rather than the ancestor-hover pattern.
+	&.is-reached .sgs-timeline__node-icon:hover,
+	&.is-reached .sgs-timeline__node-icon:focus-visible {
+		background-color: var(--sgs-timeline-fill-colour-hover, var(--sgs-timeline-fill-colour));
+		background-image: var(--sgs-timeline-fill-colour-hover-gradient, var(--sgs-timeline-fill-colour-gradient, none));
 	}
 }
 
@@ -920,6 +976,18 @@
 	// connectorColourGradient sibling — see the connector-line rules above.
 	background-image: var(--sgs-connector-colour-gradient, none);
 	margin: -8px;
+}
+
+// connectorColourHover/HoverGradient — see the connector-line rules above. The
+// `.is-reached` rule above is always more specific (2 ancestor classes) so it
+// wins regardless of source order — no `:not()` guard needed here.
+.sgs-timeline__node-icon:hover,
+.sgs-timeline__node-icon:focus-visible {
+	background-color: var(--sgs-connector-colour-hover, var(--sgs-connector-colour));
+	background-image: var(--sgs-connector-colour-hover-gradient, var(--sgs-connector-colour-gradient, none));
+}
+
+.sgs-timeline__node-icon {
 
 	svg {
 		width: 16px;
@@ -1474,6 +1542,22 @@
 	.sgs-timeline__entry:nth-child(even) {
 		background-color: var(--sgs-timeline-stripe-b, transparent);
 		background-image: var(--sgs-timeline-stripe-b-gradient, none);
+	}
+
+	// rowStripeColourA/BHover(Gradient) (colour-conformance FILL closeout,
+	// 2026-09-06) — each row IS its own real `<li>`, directly hoverable, unlike
+	// the connector/fill layers above; `:focus-within` (not `:focus-visible`)
+	// because the row itself never receives focus, only content inside it can.
+	.sgs-timeline__entry:nth-child(odd):hover,
+	.sgs-timeline__entry:nth-child(odd):focus-within {
+		background-color: var(--sgs-timeline-stripe-a-hover, var(--sgs-timeline-stripe-a, transparent));
+		background-image: var(--sgs-timeline-stripe-a-hover-gradient, var(--sgs-timeline-stripe-a-gradient, none));
+	}
+
+	.sgs-timeline__entry:nth-child(even):hover,
+	.sgs-timeline__entry:nth-child(even):focus-within {
+		background-color: var(--sgs-timeline-stripe-b-hover, var(--sgs-timeline-stripe-b, transparent));
+		background-image: var(--sgs-timeline-stripe-b-hover-gradient, var(--sgs-timeline-stripe-b-gradient, none));
 	}
 
 	// Bands butt against each other, so the entries need their own breathing
