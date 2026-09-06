@@ -69,7 +69,7 @@ TABLES: dict[str, tuple[str, list[str], str]] = {
     "slots": (
         "slots.json",
         ["slot_name", "scope", "aliases", "standalone_block", "notes",
-         "standalone_block_default_attrs"],
+         "standalone_block_default_attrs", "resolves_whole_instance"],
         "rows",
     ),
     "excluded_properties": (
@@ -230,14 +230,15 @@ SELF_TEST_DDL = {
     "slots":
         "CREATE TABLE slots (slot_name TEXT NOT NULL, scope TEXT NOT NULL, aliases TEXT, "
         "standalone_block TEXT, notes TEXT, created_at TEXT, "
-        "standalone_block_default_attrs TEXT, PRIMARY KEY (slot_name, scope))",
+        "standalone_block_default_attrs TEXT, resolves_whole_instance TEXT, "
+        "PRIMARY KEY (slot_name, scope))",
     "excluded_properties":
         "CREATE TABLE excluded_properties (css_property TEXT NOT NULL, reason TEXT NOT NULL, "
         "decided_by TEXT NOT NULL, date TEXT NOT NULL, UNIQUE(css_property))",
 }
 SELF_TEST_ROWS = {
     "property_suffixes": ("zzzTest", "color", "zzz-prop", 1, "palette", None, None),
-    "slots": ("zzz-slot", "element", '["zzz"]', "sgs/text", "n", None),
+    "slots": ("zzz-slot", "element", '["zzz"]', "sgs/text", "n", None, None),
     "excluded_properties": ("zzz-prop", "r", "d", "2026-01-01"),
 }
 

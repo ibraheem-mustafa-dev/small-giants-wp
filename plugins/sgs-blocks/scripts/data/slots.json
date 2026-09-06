@@ -9,7 +9,8 @@
     "aliases",
     "standalone_block",
     "notes",
-    "standalone_block_default_attrs"
+    "standalone_block_default_attrs",
+    "resolves_whole_instance"
   ],
   "rows": [
     [
@@ -18,6 +19,7 @@
       "[\"aggregate-text\", \"card-title\", \"headline\", \"name\", \"review-header\", \"reviewer-name\", \"title\", \"productName\"]",
       "sgs/heading",
       "Primary heading",
+      null,
       null
     ],
     [
@@ -26,6 +28,7 @@
       "[\"sub\", \"subHeadline\", \"subTitle\", \"subheadline\", \"subtitle\"]",
       "sgs/text",
       "Sub-heading",
+      null,
       null
     ],
     [
@@ -34,6 +37,7 @@
       "[\"badge-label\", \"badge-text\", \"discount-badge\", \"discount-label\", \"eyebrow\", \"featuredTag\", \"inner-label\", \"kicker\", \"node-icon\", \"pill\", \"ribbon-label\", \"sale-badge\", \"savings-label\", \"slot-label\", \"tag\", \"trialTag\", \"value-badge\"]",
       "sgs/label",
       "Pre-heading label",
+      null,
       null
     ],
     [
@@ -42,6 +46,7 @@
       "[\"author\", \"bio\", \"consent-text\", \"content-preview\", \"copy\", \"description\", \"excerpt\", \"inner-label\", \"intro\", \"label-control\", \"message\", \"messages\", \"review-content\", \"verified\", \"verified-text\"]",
       "sgs/text",
       "Paragraph body",
+      null,
       null
     ],
     [
@@ -50,6 +55,7 @@
       "[\"background\", \"backgroundImage\", \"bg-image\", \"bg-img\", \"bg-media\", \"bgImage\", \"heroImage\"]",
       "sgs/media",
       "Split from the polymorphic backgroundMedia/media slots (Task B). Each media kind needs its own generated derived_selector, because the selector is a pure function of the slot and the converter routes on it alone.",
+      null,
       null
     ],
     [
@@ -58,6 +64,7 @@
       "[\"bgSvg\", \"svg-bg\"]",
       "sgs/media",
       "Split from the polymorphic backgroundMedia/media slots (Task B). Each media kind needs its own generated derived_selector, because the selector is a pure function of the slot and the converter routes on it alone.",
+      null,
       null
     ],
     [
@@ -66,6 +73,7 @@
       "[\"backgroundVideo\", \"bg-video\", \"bgVideo\", \"video-bg\"]",
       "sgs/media",
       "Split from the polymorphic backgroundMedia/media slots (Task B). Each media kind needs its own generated derived_selector, because the selector is a pure function of the slot and the converter routes on it alone.",
+      null,
       null
     ],
     [
@@ -74,6 +82,7 @@
       "[\"badge-img\", \"decorMedia\", \"image\", \"image-wrap\", \"img\", \"img-wrap\", \"media\", \"memberMedia\", \"photo\", \"picture\", \"side-image\", \"side-img\", \"sideImage\", \"slot-img\", \"split-image\", \"split-image--bleed\", \"split-image--desktop\", \"split-image--mobile\", \"splitMedia\", \"splitimage\", \"thumb\", \"thumb-img\"]",
       "sgs/media",
       "Split from the polymorphic backgroundMedia/media slots (Task B). Each media kind needs its own generated derived_selector, because the selector is a pure function of the slot and the converter routes on it alone. The bare token \"media\" is carried here from the retired polymorphic slot: it was the SLOT NAME, and the resolver matches canonical_slot == bem_element, so the token resolved via the slot name itself. Dropping it silently broke every draft authoring __media (caught by test_walk_leg2_image_with_alt_lifts_both_url_and_alt). It resolves to IMAGE because that is the dominant meaning of a bare media token; a video draft should author __video or __background-video.",
+      null,
       null
     ],
     [
@@ -82,6 +91,7 @@
       "[\"poster\", \"posterMedia\", \"thumbnail\", \"videoPoster\"]",
       "sgs/media",
       "Split from the polymorphic backgroundMedia/media slots (Task B). Each media kind needs its own generated derived_selector, because the selector is a pure function of the slot and the converter routes on it alone.",
+      null,
       null
     ],
     [
@@ -90,6 +100,7 @@
       "[\"embed\", \"video\", \"videoUrl\"]",
       "sgs/media",
       "Split from the polymorphic backgroundMedia/media slots (Task B). Each media kind needs its own generated derived_selector, because the selector is a pure function of the slot and the converter routes on it alone.",
+      null,
       null
     ],
     [
@@ -98,6 +109,7 @@
       "[]",
       null,
       "Image alt text",
+      null,
       null
     ],
     [
@@ -106,6 +118,7 @@
       "[\"lightbox-caption\"]",
       "sgs/text",
       "Image caption",
+      null,
       null
     ],
     [
@@ -114,6 +127,7 @@
       "[\"btn\", \"cta\", \"cta-inputs\", \"load-more\", \"readmore\"]",
       "sgs/button",
       "Primary CTA / button",
+      null,
       null
     ],
     [
@@ -122,7 +136,8 @@
       "[\"button-secondary\", \"secondary-button\", \"buttonSecondary\", \"secondaryButton\", \"ctaSecondary\", \"cta-secondary\", \"secondaryCta\", \"secondary-cta\"]",
       "sgs/button",
       "Theme-wide button preset -> sgs/button with inheritStyle=secondary (follows the theme.json/style-variation preset CSS). Added 2026-06-03 (Bean). Slot-default-attrs mechanism.",
-      "{\"inheritStyle\": \"secondary\"}"
+      "{\"inheritStyle\": \"secondary\"}",
+      null
     ],
     [
       "link",
@@ -130,6 +145,7 @@
       "[\"anchor\", \"count-link\", \"href\", \"image-link\", \"social-link\", \"url\"]",
       "sgs/button",
       "Link target URL",
+      null,
       null
     ],
     [
@@ -138,6 +154,7 @@
       "[\"arrow\", \"arrows\", \"badges\", \"dot\", \"dots\", \"features\", \"filter\", \"filters\", \"list\", \"menu\", \"option\", \"set\", \"social-link\", \"thumbs\"]",
       "sgs/info-box",
       "Repeating list of items",
+      null,
       null
     ],
     [
@@ -146,6 +163,7 @@
       "[]",
       null,
       "Form-field selection options",
+      null,
       null
     ],
     [
@@ -154,6 +172,7 @@
       "[\"pill\"]",
       null,
       "Decorative badge / pill [2026-06-03 Bean 2B: badge is the trust-bar grid-item (container), not a leaf label; standalone_block NULLed so __badge resolves to sgs/container. pill alias moved to label row to preserve pack-size pill->label.]",
+      null,
       null
     ],
     [
@@ -162,6 +181,7 @@
       "[\"authorImage\", \"avatar-img\", \"avatar-initials\", \"avatarMedia\", \"portrait\", \"profile\"]",
       "sgs/media",
       "Person portrait",
+      null,
       null
     ],
     [
@@ -170,6 +190,7 @@
       "[\"badge-number\", \"check\", \"feature-icon\", \"feature-icon--check\", \"feature-icon--cross\", \"glyph\", \"iconPosition\", \"iconSize\", \"iconValue\", \"symbol\", \"verified-icon\"]",
       "sgs/icon",
       "Iconography",
+      null,
       null
     ],
     [
@@ -178,6 +199,7 @@
       "[\"card-date\", \"datetime\", \"day\", \"period\", \"time\", \"timestamp\"]",
       "sgs/text",
       "Date",
+      null,
       null
     ],
     [
@@ -186,6 +208,7 @@
       "[\"amount\", \"cost\", \"price-wrapper\", \"savings-badge\"]",
       "sgs/text",
       "Price",
+      null,
       null
     ],
     [
@@ -194,6 +217,7 @@
       "[\"aggregate\", \"card-stars\", \"header-stars\", \"score\", \"stars\"]",
       "sgs/star-rating",
       "Star rating",
+      null,
       null
     ],
     [
@@ -202,6 +226,7 @@
       "[\"card-sep\", \"divider\", \"line\", \"rule\", \"shape\", \"wave\"]",
       "sgs/divider",
       "Visual divider",
+      null,
       null
     ],
     [
@@ -210,6 +235,7 @@
       "[\"hoverState\"]",
       null,
       "Hover-state slot (state modifier acting as slot)",
+      null,
       null
     ],
     [
@@ -218,6 +244,7 @@
       "[\"motion\", \"css-transition\"]",
       null,
       "CSS transition motion concept",
+      null,
       null
     ],
     [
@@ -226,6 +253,7 @@
       "[\"motion\", \"sgsAnimation\", \"stagger\", \"staggerDelay\"]",
       null,
       "Animation motion concept (incl. sgsAnimation)",
+      null,
       null
     ],
     [
@@ -234,6 +262,7 @@
       "[\"columns\"]",
       null,
       "Grid/flex column slot",
+      null,
       null
     ],
     [
@@ -242,6 +271,7 @@
       "[\"padding\"]",
       null,
       "Padding layout primitive slot",
+      null,
       null
     ],
     [
@@ -250,6 +280,7 @@
       "[\"margin\"]",
       null,
       "Margin layout primitive slot",
+      null,
       null
     ],
     [
@@ -258,6 +289,7 @@
       "[\"blockGap\"]",
       null,
       "Gap layout primitive slot",
+      null,
       null
     ],
     [
@@ -266,6 +298,7 @@
       "[]",
       null,
       "Width layout primitive slot",
+      null,
       null
     ],
     [
@@ -274,6 +307,7 @@
       "[\"borderRadius\", \"borderColor\", \"borderColour\", \"borderWidth\", \"borderStyle\"]",
       null,
       "Border-properties container slot",
+      null,
       null
     ],
     [
@@ -282,6 +316,7 @@
       "[\"style\"]",
       null,
       "Variant/style enum slot",
+      null,
       null
     ],
     [
@@ -290,6 +325,7 @@
       "[\"layoutType\"]",
       null,
       "Layout-mode slot",
+      null,
       null
     ],
     [
@@ -298,6 +334,7 @@
       "[]",
       null,
       "Shadow-properties slot",
+      null,
       null
     ],
     [
@@ -306,6 +343,7 @@
       "[\"dialog\", \"lightbox\", \"lightbox-body\", \"lightbox-caption\", \"lightbox-close\", \"lightbox-counter\", \"lightbox-img\", \"lightbox-next\", \"lightbox-prev\", \"overlay-bio\"]",
       null,
       "Overlay-properties slot",
+      null,
       null
     ],
     [
@@ -314,6 +352,7 @@
       "[\"aggregate\", \"badge-number\", \"count\", \"count-link\", \"numeric\", \"stat\", \"stats\"]",
       "sgs/counter",
       "Numeric-display slot",
+      null,
       null
     ],
     [
@@ -322,6 +361,7 @@
       "[\"aspect\"]",
       null,
       "Aspect-ratio slot",
+      null,
       null
     ],
     [
@@ -330,6 +370,7 @@
       "[\"minHeight\", \"minWidth\"]",
       null,
       "Min-dimension slot (peeled stem)",
+      null,
       null
     ],
     [
@@ -338,6 +379,7 @@
       "[\"maxHeight\", \"maxWidth\"]",
       null,
       "Max-dimension slot",
+      null,
       null
     ],
     [
@@ -346,6 +388,7 @@
       "[\"rotate\"]",
       null,
       "Rotation transform slot",
+      null,
       null
     ],
     [
@@ -354,6 +397,7 @@
       "[]",
       null,
       "X-axis position slot",
+      null,
       null
     ],
     [
@@ -362,6 +406,7 @@
       "[]",
       null,
       "Y-axis position slot",
+      null,
       null
     ],
     [
@@ -370,6 +415,7 @@
       "[]",
       null,
       "ARIA label slot (a11y)",
+      null,
       null
     ],
     [
@@ -378,6 +424,7 @@
       "[]",
       null,
       "Opacity slot",
+      null,
       null
     ],
     [
@@ -386,6 +433,7 @@
       "[]",
       null,
       "Autoplay boolean slot",
+      null,
       null
     ],
     [
@@ -394,6 +442,7 @@
       "[]",
       null,
       "Autoplay-speed slot",
+      null,
       null
     ],
     [
@@ -402,6 +451,7 @@
       "[]",
       null,
       "Show-dots boolean slot",
+      null,
       null
     ],
     [
@@ -410,6 +460,7 @@
       "[]",
       null,
       "Show-arrows boolean slot",
+      null,
       null
     ],
     [
@@ -418,6 +469,7 @@
       "[]",
       null,
       "Show-date boolean slot",
+      null,
       null
     ],
     [
@@ -426,6 +478,7 @@
       "[\"body-row\", \"grid\", \"group\", \"row\"]",
       null,
       "Split-layout slot",
+      null,
       null
     ],
     [
@@ -434,6 +487,7 @@
       "[\"panel-hint\", \"panel-note\", \"panels\", \"preview\", \"preview-container\"]",
       "sgs/info-box",
       "Panel-container slot",
+      null,
       null
     ],
     [
@@ -442,6 +496,7 @@
       "[]",
       null,
       "Drawer-container slot",
+      null,
       null
     ],
     [
@@ -450,6 +505,7 @@
       "[\"card-body\", \"card-header\", \"cardStyle\", \"entry\", \"item\", \"item-btn\", \"item-link\", \"node\", \"plan\", \"plan-meta\", \"review-row\", \"slide\", \"stage\", \"stat\"]",
       "sgs/info-box",
       "Card-container slot",
+      null,
       null
     ],
     [
@@ -458,6 +514,7 @@
       "[\"imageAltText\"]",
       null,
       "Image alt-text slot (a11y)",
+      null,
       null
     ],
     [
@@ -466,6 +523,7 @@
       "[]",
       null,
       "Letter-spacing slot",
+      null,
       null
     ],
     [
@@ -474,6 +532,7 @@
       "[\"hideOnMobile\", \"hideOnTablet\", \"hideOnDesktop\"]",
       null,
       "Responsive-hide control slot",
+      null,
       null
     ],
     [
@@ -482,6 +541,7 @@
       "[\"openInNewTab\", \"target\"]",
       null,
       "Link-target control slot",
+      null,
       null
     ],
     [
@@ -490,6 +550,7 @@
       "[]",
       null,
       "Focus-ring outline (a11y) â€” width / colour / offset / opacity",
+      null,
       null
     ],
     [
@@ -498,6 +559,7 @@
       "[]",
       null,
       "Backdrop / scrim â€” modal / popup / drawer overlay",
+      null,
       null
     ],
     [
@@ -506,6 +568,7 @@
       "[]",
       null,
       "z-index stacking order",
+      null,
       null
     ],
     [
@@ -514,6 +577,7 @@
       "[]",
       null,
       "Accent colour for interactive states (link underline, focus, hover)",
+      null,
       null
     ],
     [
@@ -522,6 +586,7 @@
       "[]",
       null,
       "Scroll-parallax intensity / behaviour",
+      null,
       null
     ],
     [
@@ -530,6 +595,7 @@
       "[]",
       null,
       "Responsive breakpoint threshold (px)",
+      null,
       null
     ],
     [
@@ -538,6 +604,7 @@
       "[]",
       null,
       "CSS overflow control",
+      null,
       null
     ],
     [
@@ -546,6 +613,7 @@
       "[]",
       null,
       "Mirror / scaleX(-1) transform toggle",
+      null,
       null
     ],
     [
@@ -554,6 +622,7 @@
       "[]",
       null,
       "Defer asset load until viewport intersection",
+      null,
       null
     ],
     [
@@ -562,6 +631,7 @@
       "[]",
       null,
       "Media loop boolean",
+      null,
       null
     ],
     [
@@ -570,6 +640,7 @@
       "[]",
       null,
       "Video / audio mute boolean",
+      null,
       null
     ],
     [
@@ -578,6 +649,7 @@
       "[]",
       null,
       "Discriminator: image / video / svg / lottie",
+      null,
       null
     ],
     [
@@ -586,6 +658,7 @@
       "[]",
       null,
       "Source discriminator: upload / youtube / vimeo / url",
+      null,
       null
     ],
     [
@@ -594,6 +667,7 @@
       "[]",
       null,
       "HTML tag selector (section / div / article)",
+      null,
       null
     ],
     [
@@ -602,6 +676,7 @@
       "[]",
       null,
       "Vertical alignment within container",
+      null,
       null
     ],
     [
@@ -610,6 +685,7 @@
       "[\"queryArgs\", \"wpQuery\"]",
       null,
       "WP_Query / Query Loop descriptor",
+      null,
       null
     ],
     [
@@ -618,6 +694,7 @@
       "[\"google-logo\", \"header-logo\", \"header-logo-link\", \"logoImage\", \"logoMaxWidth\"]",
       "sgs/responsive-logo",
       "Logo container slot",
+      null,
       null
     ],
     [
@@ -626,6 +703,7 @@
       "[]",
       null,
       "Square dimension (button size, icon size, close size)",
+      null,
       null
     ],
     [
@@ -634,6 +712,7 @@
       "[]",
       null,
       "Position slot â€” CSS position keyword or coordinate object",
+      null,
       null
     ],
     [
@@ -642,6 +721,7 @@
       "[\"headerBackground\", \"headerColour\"]",
       null,
       "accordion item header (distinct from page heading)",
+      null,
       null
     ],
     [
@@ -650,6 +730,7 @@
       "[\"featureColour\"]",
       null,
       "pricing tier feature list item",
+      null,
       null
     ],
     [
@@ -658,6 +739,7 @@
       "[\"barColour\", \"progress-bar\", \"progress-step\", \"progress-step-label\", \"progress-step-number\", \"progress-steps\", \"progress-wrapper\", \"progressBar\", \"track\"]",
       null,
       "progress bar visual element",
+      null,
       null
     ],
     [
@@ -666,7 +748,8 @@
       "[\"starColour\", \"emptyStar\"]",
       "sgs/star-rating",
       "star rating visual element (filled or empty variant)",
-      null
+      null,
+      "true"
     ],
     [
       "tab",
@@ -674,6 +757,7 @@
       "[\"billing-toggle\", \"filter\", \"tabActive\", \"tabActiveIndicator\", \"tabBg\", \"tabText\", \"toggle-input\", \"toggle-label\", \"toggle-track\"]",
       "sgs/tab",
       "tab UI primitive (label + active + indicator variants)",
+      null,
       null
     ],
     [
@@ -682,6 +766,7 @@
       "[\"blockquote\", \"pullquote\", \"quote\", \"quoteBody\", \"quoteText\"]",
       "sgs/quote",
       "testimonial quote body",
+      null,
       null
     ],
     [
@@ -690,6 +775,7 @@
       "[\"authorRole\", \"card-meta\", \"category\", \"jobTitle\", \"speakerRole\"]",
       "sgs/label",
       "testimonial speaker role / job title",
+      null,
       null
     ],
     [
@@ -698,6 +784,7 @@
       "[]",
       null,
       "Per-instance form field content (fieldName, placeholder, helpText, required, conditional*). Not a designable visual slot â€” content lives on each form instance, not in the block-attribute design vocabulary.",
+      null,
       null
     ],
     [
@@ -706,7 +793,8 @@
       "[\"review-row\", \"review-item\", \"review-card\"]",
       "sgs/testimonial",
       "Single review entry (distinct from review-content body text)",
-      null
+      null,
+      "true"
     ],
     [
       "social",
@@ -714,6 +802,7 @@
       "[\"social-link\", \"social-icon\", \"social-item\"]",
       "sgs/social-icons",
       "Social media link / icon container",
+      null,
       null
     ],
     [
@@ -722,6 +811,7 @@
       "[\"navigation\", \"menu-nav\"]",
       null,
       "Navigation container slot",
+      null,
       null
     ],
     [
@@ -730,6 +820,7 @@
       "[\"progress-bar\", \"progressBar\", \"progress-fill\"]",
       null,
       "Progress indicator â€” fill level or step tracker",
+      null,
       null
     ],
     [
@@ -738,6 +829,7 @@
       "[\"progress-step\", \"wizard-step\", \"stage-item\"]",
       "sgs/process-steps",
       "Individual step in a multi-step sequence",
+      null,
       null
     ],
     [
@@ -746,6 +838,7 @@
       "[\"slot-placeholder\", \"slot-upload\", \"slot-preview\", \"slot-actions\", \"slot-label\", \"slot-img\"]",
       null,
       "Media-manager slot container (admin UI)",
+      null,
       null
     ],
     [
@@ -754,6 +847,7 @@
       "[\"price-ribbon\", \"plan-ribbon\"]",
       null,
       "Decorative ribbon overlay on a card/panel",
+      null,
       null
     ],
     [
@@ -762,6 +856,7 @@
       "[]",
       "sgs/hero",
       "Universal hero section",
+      null,
       null
     ],
     [
@@ -770,6 +865,7 @@
       "[]",
       "sgs/cta-section",
       "Call-to-action section",
+      null,
       null
     ],
     [
@@ -778,6 +874,7 @@
       "[]",
       "sgs/cta-section",
       "Alternative kebab for CTA",
+      null,
       null
     ],
     [
@@ -786,6 +883,7 @@
       "[]",
       "sgs/container",
       "WP core layout block; SGS canonical section-level replacement per Decision 3 (decisions.md:1238); added 2026-05-23 to make the fallback-to-sgs/container architecturally honest",
+      null,
       null
     ],
     [
@@ -794,13 +892,15 @@
       "[]",
       "sgs/testimonial",
       null,
-      null
+      null,
+      "true"
     ],
     [
       "testimonial-slider",
       "element",
       "[]",
       "sgs/testimonial-slider",
+      null,
       null,
       null
     ],
@@ -810,6 +910,7 @@
       "[]",
       null,
       "XS-3 2026-05-30: passthrough â€” walker folds CSS into parent block className; no separate emit",
+      null,
       null
     ],
     [
@@ -818,6 +919,7 @@
       null,
       "sgs/notice-banner",
       "Disclaimer/legal callout text rendered as a notice box (bg+border+padding). Added fresh 2026-06-03 (Task 1 BEM routing fix) â€” Bean-directed -> sgs/notice-banner.",
+      null,
       null
     ],
     [
@@ -826,7 +928,8 @@
       "[\"ctas\", \"buttons\", \"cta-group\", \"button-group\", \"ctaGroup\", \"buttonGroup\"]",
       "sgs/multi-button",
       "CTA-group / button-group wrapper -> sgs/multi-button (mirrors core/buttons>core/button). Added 2026-06-03 P-9; plural ctas/buttons moved here from the singular button slot.",
-      null
+      null,
+      "true"
     ],
     [
       "button-primary",
@@ -834,7 +937,8 @@
       "[\"button-primary\", \"primary-button\", \"buttonPrimary\", \"primaryButton\", \"ctaPrimary\", \"cta-primary\", \"primaryCta\", \"primary-cta\"]",
       "sgs/button",
       "Theme-wide button preset -> sgs/button with inheritStyle=primary (follows the theme.json/style-variation preset CSS). Added 2026-06-03 (Bean). Slot-default-attrs mechanism.",
-      "{\"inheritStyle\": \"primary\"}"
+      "{\"inheritStyle\": \"primary\"}",
+      null
     ],
     [
       "button-outline",
@@ -842,7 +946,8 @@
       "[\"button-outline\", \"outline-button\", \"buttonOutline\", \"outlineButton\", \"ctaOutline\", \"cta-outline\", \"outlineCta\", \"ghost-button\", \"ghostButton\", \"button-ghost\"]",
       "sgs/button",
       "Theme-wide button preset -> sgs/button with inheritStyle=outline (follows the theme.json/style-variation preset CSS). Added 2026-06-03 (Bean). Slot-default-attrs mechanism.",
-      "{\"inheritStyle\": \"outline\"}"
+      "{\"inheritStyle\": \"outline\"}",
+      null
     ],
     [
       "option-picker",
@@ -850,7 +955,8 @@
       "[\"pill-group\", \"pills\", \"option-group\", \"variant-group\", \"pack-group\", \"flavour-group\", \"size-group\"]",
       "sgs/option-picker",
       "Exclusive radio-group pill chooser â€” emits sgs/option-picker with optionItems array (FR-24-15)",
-      "{\"pillStyle\": \"filled\", \"typeKey\": \"\"}"
+      "{\"pillStyle\": \"filled\", \"typeKey\": \"\"}",
+      null
     ],
     [
       "content",
@@ -858,6 +964,7 @@
       "[]",
       null,
       "Content-cap sub-area label â€” the constrained content-width box inside a block's outer box. canonical_slot value for contentWidth*/contentPadding* layout attrs (metadata only; EMPTY aliases by design â€” never matched against draft wrapper classes; see 2026-05-24 inner/body-row removal note).",
+      null,
       null
     ],
     [
@@ -866,6 +973,7 @@
       "[]",
       "sgs/accordion-item",
       "Single expandable panel inside sgs/accordion â€” emits sgs/accordion-item with title attr from __heading child (Gate A 2026-06-10)",
+      null,
       null
     ],
     [
@@ -874,6 +982,7 @@
       "[\"author\"]",
       null,
       "Attribution/author scalar content slot â€” content_attr_for_element alias-tier ONLY (standalone_block intentionally NULL so resolve_slug_from_bem/_slot_alias_to_standalone never routes it to a standalone child block). Universal: any block's content-bearing attr may declare canonical_slot='attribution' to accept an 'author'-classed draft element as its own scalar value. Added 2026-07-25 fixing the sgs/quote 3-block cloning bug.",
+      null,
       null
     ]
   ]

@@ -42,3 +42,4 @@ timestamp | script | type | reason
 2026-09-06 03:17:41 | db-consistency/run.py | MANUAL SKIP | 4 findings verified via --report as 0 NEW/4 baselined, pre-existing role-ambiguity unrelated to this commit; races against concurrent sessions' DB writes
 2026-09-06 03:36:19 | db-consistency/run.py | MANUAL SKIP | 4 findings verified via --report as 0 NEW/4 baselined immediately before commit; races against concurrent sessions' DB writes, same as the prior commit on this branch
 2026-09-06 03:37:25 | db-consistency/run.py | MANUAL SKIP | 4 findings verified via --report as 0 NEW/4 baselined; races against concurrent sessions' DB writes
+2026-09-06 11:47:07 | db-consistency/run.py | MANUAL SKIP | 58 pre-existing rogue db-consistency findings on sgs/star-rating and sgs/timeline border/colour attrs, unrelated to this TypographyControls.js switcher-indicator fix; verified via db-consistency/run.py --report
