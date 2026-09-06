@@ -2011,14 +2011,6 @@
       }
     },
     {
-      "slug": "sgs/heading",
-      "attr": "textWrap",
-      "fields": {
-        "css_property": "text-wrap",
-        "css_element": "wrapper"
-      }
-    },
-    {
       "slug": "sgs/hero",
       "attr": "alignContent",
       "fields": {
@@ -9698,6 +9690,14 @@
     },
     {
       "slug": "sgs/heading",
+      "attr": "textWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
       "attr": "transitionDuration",
       "fields": {
         "css_property": "transition-duration",
@@ -9709,6 +9709,14 @@
       "attr": "transitionEasing",
       "fields": {
         "css_property": "transition-timing-function",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "writingMode",
+      "fields": {
+        "css_property": "writing-mode",
         "css_element": "wrapper"
       }
     },
@@ -14789,6 +14797,30 @@
     },
     {
       "slug": "sgs/text",
+      "attr": "textColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "textIndent",
+      "fields": {
+        "css_property": "text-indent",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "textWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
       "attr": "transitionDuration",
       "fields": {
         "css_property": "transition-duration",
@@ -14800,6 +14832,14 @@
       "attr": "transitionEasing",
       "fields": {
         "css_property": "transition-timing-function",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "writingMode",
+      "fields": {
+        "css_property": "writing-mode",
         "css_element": "wrapper"
       }
     },

@@ -513,7 +513,17 @@ function main() {
 
 			const needsHover = row.statesCount < 2;
 			const statesExempt = needsHover && isStatesExempt( blockJson, row.rowKey, row.attr );
-			const needsGradient = ! row.hasGradient;
+			// Root-cause fix (2026-09-06, colour-conformance audit): `box-shadow`
+			// cannot legally hold a CSS gradient — `box-shadow: linear-gradient(...)`
+			// is invalid CSS. survey.js's OWN needsGradient computation already
+			// excludes the 'shadow' mechanism for exactly this reason; this sibling
+			// script had drifted and never picked up the same exclusion, so every
+			// shadow-colour row in the tree was silently mis-flagged as a FILL
+			// gradient gap it can never actually satisfy. Confirmed live: `mechanism`
+			// resolves to 'shadow' correctly (MECHANISM_BY_CSS_PROPERTY maps
+			// box-shadow-color -> shadow), only the needsGradient gate was missing
+			// the check.
+			const needsGradient = ! row.hasGradient && ! mechanisms.includes( 'shadow' );
 			const gradientExempt = needsGradient && isGradientExempt( blockJson, row.rowKey );
 
 			if ( ( ! needsHover || statesExempt ) && ( ! needsGradient || gradientExempt ) ) {

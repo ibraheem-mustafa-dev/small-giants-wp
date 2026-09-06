@@ -75,7 +75,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 11,
+        "paintDeclarations": 12,
         "replacedCoreSupports": [
           "anchor",
           "spacing"
@@ -97,7 +97,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 10,
+        "paintDeclarations": 12,
         "replacedCoreSupports": []
       }
     },
@@ -425,7 +425,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 52,
+        "paintDeclarations": 53,
         "replacedCoreSupports": [
           "anchor",
           "color",
@@ -974,7 +974,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 0,
+        "paintDeclarations": 1,
         "replacedCoreSupports": []
       }
     },
@@ -1012,7 +1012,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 14,
+        "paintDeclarations": 13,
         "replacedCoreSupports": []
       }
     },
@@ -1031,7 +1031,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 18,
+        "paintDeclarations": 19,
         "replacedCoreSupports": []
       }
     },
@@ -1177,7 +1177,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 40,
+        "paintDeclarations": 41,
         "replacedCoreSupports": [
           "anchor",
           "border",
@@ -1557,7 +1557,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 15,
+        "paintDeclarations": 16,
         "replacedCoreSupports": [
           "anchor",
           "color",
@@ -1684,7 +1684,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 7,
+        "paintDeclarations": 8,
         "replacedCoreSupports": []
       }
     },
