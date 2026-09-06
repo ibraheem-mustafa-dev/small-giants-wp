@@ -19,6 +19,10 @@
         "anchor": true,
         "html": false,
         "sgs": {
+            "_comment_mediaElements": "Wave 6 (2026-09-02). This block never had object-fit/focal-point/overlay controls before — adopting three atoms only, unprefixed (this block has one media slot). box-shape is DELIBERATELY NOT declared: border-radius/sizing-mode is a genuinely NEW capability this block never exposed, and adding it is out of scope for this preserve-existing-behaviour migration (flagged as a judgement call, not silently dropped). maxWidthPercent stays a bare percentage number via registry.js's own `reads` mapping (box-shape.reads['sgs/decorative-image'].maxWidthPercent) — untouched, unrenamed, since box-shape is not adopted here.",
+            "mediaElements": [
+                { "prefix": "", "context": "element", "atoms": [ "object-fit", "focal-point", "overlay" ] }
+            ],
             "fx": {
                 "motionSurface": true,
                 "_comment_motionSurface": "Spec 38 §2, MotionPath row: 'Exposure surface: Inspector on `sgs/decorative-image`' — cited by name as that effect's primary target, and §10's reduced-motion table separately names this block's existing reduced-motion arm as the reference implementation MotionPath's own Suppress behaviour matches. This block has no text/section/svg/svg-subtree/track/item-set signal of its own (it renders a raster <img> or video, absolutely positioned — no RichText, no containerKind, no bgSvgContent, no scrollable overflow, no filter pairing), so `generate-fx-qualifying-blocks.py`'s normal requires-based route resolves zero provisions for it. `motion-path`/`scrub` both have `requires='none'` (broadly available wherever a panel already exists) but cannot, by themselves, CREATE a panel anywhere — that rule is what stops every sgs/* block acquiring a panel from `scrub` alone. This flag is the block's own declaration that it is a legitimate host regardless, read by `_block_provisions()` alongside `draggable`/`pairedFilter` and satisfying the panel gate the same way a real requires-match would. Mirrors `providesNatively` above (a fact the block owns) for the opposite direction: that excludes an effect this block already has natively; this includes a block that has no requires-derivable structural provision but is still spec-named as a legitimate fx target."
@@ -78,6 +82,11 @@
             "type": "string",
             "default": "",
             "role": "content"
+        },
+        "imageDecorative": {
+            "type": "boolean",
+            "default": true,
+            "_comment": "Spec 35 item 18 / {element}Decorative convention (matches sgs/media's imageDecorative). Default true because this block IS the decorative-image primitive by design (absolute-positioned floating graphic, no InnerBlocks, permanently aria-hidden+role=presentation in render.php) — the toggle exists for the rare case an operator wants to expose imageAlt as a real accessible name instead of leaving it silent."
         },
         "positionX": {
 			"type": "object",

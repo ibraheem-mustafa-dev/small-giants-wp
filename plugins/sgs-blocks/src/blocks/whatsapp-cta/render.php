@@ -2,12 +2,7 @@
 /**
  * Server-side render for the SGS WhatsApp CTA block.
  *
- * NO-INLINE (LOCKED per-block no-inline migration contract, 2026-07-10):
- * the rendered subtree carries ZERO inline CSS property declarations. Button
- * colour/background and every wrapper box/border declaration are emitted
- * into the block's own scoped `.{uid}` <style> tag. WP styling supports
- * (spacing / __experimentalBorder) declare `__experimentalSkipSerialization`
- * in block.json so get_block_wrapper_attributes() never auto-inlines them.
+ * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
  * (`color` support is declared false/false — inert; skip-serialised too for
  * forward-compat, but no native colour is ever emitted by it.)
  *
@@ -33,17 +28,52 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-$phone_number    = $attributes['phoneNumber'] ?? '';
-$message         = $attributes['message'] ?? '';
-$variant         = $attributes['variant'] ?? 'floating';
-$label           = $attributes['label'] ?? '';
-$show_on_mobile  = $attributes['showOnMobile'] ?? true;
-$show_on_desktop = $attributes['showOnDesktop'] ?? true;
-$label_colour    = sgs_colour_value( $attributes['labelColour'] ?? '' );
-$bg_colour       = sgs_colour_value( $attributes['backgroundColour'] ?? 'whatsapp' );
-$anchor          = isset( $attributes['anchor'] ) ? sanitize_html_class( $attributes['anchor'] ) : '';
+$phone_number          = $attributes['phoneNumber'] ?? '';
+$message               = $attributes['message'] ?? '';
+$variant               = $attributes['variant'] ?? 'floating';
+$label                 = $attributes['label'] ?? '';
+$show_on_obj           = sgs_responsive_normalise_object( $attributes['showOn'] ?? null );
+$show_on_mobile        = $show_on_obj['mobile'] ?? true;
+$show_on_desktop       = $show_on_obj['desktop'] ?? true;
+$label_colour_raw      = (string) ( $attributes['labelColour'] ?? '' );
+$label_colour_gradient = $attributes['labelColourGradient'] ?? '';
+// D636 — sibling gradient attribute wins when set+valid (mirrors sgs/counter's
+// numberColour/labelColour wiring, helpers-tokens.php:1086,1124,1166).
+$label_colour_effective = sgs_resolve_text_colour_or_gradient( $label_colour_raw, $label_colour_gradient );
+$bg_colour              = sgs_colour_value( $attributes['backgroundColour'] ?? 'whatsapp' );
+$bg_gradient            = sgs_css_gradient_value( $attributes['backgroundColourGradient'] ?? '' );
+// backgroundColourHover (2026-09-06, FILL closeout) — the button's :hover rule
+// previously only animated opacity/transform (style.css), no colour change
+// existed. Empty means "no override" — the hover rule below falls back to the
+// resting background-colour/gradient, matching the frontend's own precedent.
+$bg_colour_hover   = '' !== (string) ( $attributes['backgroundColourHover'] ?? '' ) ? sgs_colour_value( $attributes['backgroundColourHover'] ) : '';
+$bg_gradient_hover = sgs_css_gradient_value( $attributes['backgroundColourHoverGradient'] ?? '' );
+$anchor            = isset( $attributes['anchor'] ) ? sanitize_html_class( $attributes['anchor'] ) : '';
 
 // Do not render if no phone number is set.
 if ( ! $phone_number ) {
@@ -66,47 +96,21 @@ if ( $encoded_message ) {
 // CSS-length sanitiser — strips everything except digits, dot, %, and unit
 // letters so an object-attr side/corner value can never break out of its
 // declaration.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // Box-model shorthand: top right bottom left.
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
 // CSS border-radius shorthand order is top-left top-right bottom-right bottom-left.
-$sgs_corner_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$tl = $sgs_css_length( $box['topLeft'] ?? '' );
-	$tr = $sgs_css_length( $box['topRight'] ?? '' );
-	$br = $sgs_css_length( $box['bottomRight'] ?? '' );
-	$bl = $sgs_css_length( $box['bottomLeft'] ?? '' );
-	if ( '' === $tl && '' === $tr && '' === $br && '' === $bl ) {
-		return null;
-	}
-	return ( '' !== $tl ? $tl : '0' ) . ' ' . ( '' !== $tr ? $tr : '0' ) . ' ' . ( '' !== $br ? $br : '0' ) . ' ' . ( '' !== $bl ? $bl : '0' );
-};
-
 // Base padding/margin — WP-native style.spacing.* objects (skip-serialised in
 // block.json), passed straight to the style engine which formats + sanitises.
 $base_padding_obj = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	foreach ( $sgs_tor_padding_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_padding_obj[ $spacing_side ] = $spacing_value;
 		}
 	}
 }
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	foreach ( $sgs_tor_margin_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_margin_obj[ $spacing_side ] = $spacing_value;
 		}
@@ -124,7 +128,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? $sgs_css_length( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -136,10 +140,10 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 }
 
 // Responsive tiers — SGS custom object attrs.
-$padding_tablet_obj       = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj       = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj        = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj        = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj       = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj       = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj        = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj        = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 $border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
 $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
 
@@ -163,57 +167,91 @@ $root_sel = '.' . $uid . '.wp-block-sgs-whatsapp-cta';
 
 $scoped_css = array();
 
-// --- Button colour/background (scoped — previously an inline style attr). ---
+// --- Button colour/background (scoped). ---
 $btn_decls = array();
-if ( $label_colour ) {
-	$btn_decls[] = 'color:' . $label_colour;
-}
 if ( $bg_colour ) {
 	$btn_decls[] = 'background-color:' . $bg_colour;
+}
+if ( '' !== $bg_gradient ) {
+	$btn_decls[] = 'background-image:' . $bg_gradient;
+}
+// backgroundColourHover/backgroundColourHoverGradient (2026-09-06, FILL
+// closeout) — a real gap: the button's :hover rule (style.css) previously only
+// animated opacity/transform. Falls back to the resting colour/gradient when
+// unset, touch-guarded via sgs_hover_state_rules() (same mechanism as the
+// icon-gradient rollout earlier this week — a tap must not stick a hover
+// colour on a touchscreen).
+$btn_hover_decls = array();
+if ( '' !== $bg_colour_hover ) {
+	$btn_hover_decls[] = 'background-color:' . $bg_colour_hover;
+}
+if ( '' !== $bg_gradient_hover ) {
+	$btn_hover_decls[] = 'background-image:' . $bg_gradient_hover;
+} elseif ( '' !== $bg_colour_hover && '' !== $bg_gradient ) {
+	// Hover colour set, no hover gradient — keep the RESTING gradient painting
+	// on top rather than letting a plain hover colour silently blank it out.
+	$btn_hover_decls[] = 'background-image:' . $bg_gradient;
+}
+if ( $btn_hover_decls ) {
+	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $btn_hover_decls ) );
 }
 if ( $btn_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $btn_decls ) . ';}';
 }
 
+// --- Label (text) colour — separate rule, D636 gradient-capable. Scoped to
+// the label SPAN itself, not the root <a> (D948 fix, 2026-09-04): `color`
+// inherits from the root to the child span, but `background-image`/
+// `background-clip` do not, so a gradient set on $root_sel left the visible
+// label text with inherited color:transparent and no gradient behind it —
+// invisible, live-verified on the sandybrown canary. ---
+if ( '' !== $label_colour_effective ) {
+	$label_colour_sel  = '.' . $uid . ' .sgs-whatsapp-cta__label';
+	$label_colour_decl = sgs_text_colour_decl( $label_colour_effective );
+	if ( '' !== $label_colour_decl ) {
+		$scoped_css[] = "{$label_colour_sel}{{$label_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_colour_sel, $label_colour_effective );
+}
+
 // --- Base spacing + border-radius via the stable core style engine (skip-
 // serialised in block.json — exactly how WP core outputs `layout` support). ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_style_engine_args = array();
 
-	$base_spacing = array();
-	if ( ! empty( $base_padding_obj ) ) {
-		$base_spacing['padding'] = $base_padding_obj;
-	}
-	if ( ! empty( $base_margin_obj ) ) {
-		$base_spacing['margin'] = $base_margin_obj;
-	}
-	if ( ! empty( $base_spacing ) ) {
-		$base_style_engine_args['spacing'] = $base_spacing;
-	}
+$base_style_engine_args = array();
 
-	if ( null !== $base_border_radius ) {
-		$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
-	}
+$base_spacing = array();
+if ( ! empty( $base_padding_obj ) ) {
+	$base_spacing['padding'] = $base_padding_obj;
+}
+if ( ! empty( $base_margin_obj ) ) {
+	$base_spacing['margin'] = $base_margin_obj;
+}
+if ( ! empty( $base_spacing ) ) {
+	$base_style_engine_args['spacing'] = $base_spacing;
+}
 
-	if ( ! empty( $base_style_engine_args ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			$base_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
+if ( null !== $base_border_radius ) {
+	$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
+}
+
+if ( ! empty( $base_style_engine_args ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		$base_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
 
 // --- Responsive padding/margin/border-radius tiers — hand-built shorthand,
 // scoped @media on the SAME root selector (tablet ≤1023px, mobile ≤767px). ---
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
-$radius_tab_val  = $sgs_corner_shorthand( $border_radius_tablet_obj );
-$radius_mob_val  = $sgs_corner_shorthand( $border_radius_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
+$radius_tab_val  = sgs_corner_object_shorthand( $border_radius_tablet_obj );
+$radius_mob_val  = sgs_corner_object_shorthand( $border_radius_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -320,7 +358,7 @@ $whatsapp_svg .= '</svg>';
 if ( $scoped_css ) {
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (matches sgs/heading + SGS_Container_Wrapper).
-	// Every value reaching $scoped_css is pre-sanitised ($sgs_css_length,
+	// Every value reaching $scoped_css is pre-sanitised (sgs_css_length_value(),
 	// allowlists/enums, sgs_colour_value(), wp_style_engine_get_styles(),
 	// sgs_typography_css_rule()), so no un-sanitised value survives here.
 	echo '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style>

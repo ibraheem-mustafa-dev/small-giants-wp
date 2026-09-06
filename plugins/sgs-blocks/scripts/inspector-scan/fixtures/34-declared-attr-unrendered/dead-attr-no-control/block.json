@@ -1,0 +1,1 @@
+{ "name": "sgs/dead-attr-no-control", "attributes": { "deadAttr": { "type": "string", "default": "" } } }

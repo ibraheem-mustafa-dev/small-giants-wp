@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	TextControl,
@@ -9,14 +9,23 @@ import {
 	Button,
 } from '@wordpress/components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { IconPicker, IconPreview, SgsColourPanel } from '../../components';
+import { IconPicker, IconPreview, SgsColourPanel, fillRow,
+	SgsBorderControl,
+	resolveColourToken,
+} from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { resolveResponsiveTier } from '../../utils';
+import { resolveResponsiveTier, textPaintPreview } from '../../utils';
 
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
 	{ label: __( 'Half width', 'sgs-blocks' ), value: 'half' },
 	{ label: __( 'One third', 'sgs-blocks' ), value: 'third' },
+];
+
+const SELECTED_STYLE_OPTIONS = [
+	{ label: __( 'Checkmark', 'sgs-blocks' ), value: 'checkmark' },
+	{ label: __( 'Border', 'sgs-blocks' ), value: 'border' },
+	{ label: __( 'Background', 'sgs-blocks' ), value: 'background' },
 ];
 
 export default function Edit( { attributes, setAttributes } ) {
@@ -29,10 +38,22 @@ export default function Edit( { attributes, setAttributes } ) {
 		width,
 		tiles,
 		multiSelect,
+		selectedStyle,
 		columns,
 		backgroundColour,
+		backgroundColourGradient,
 		textColour,
+		textColourGradient,
 	} = attributes;
+
+	// Contrast check for border — warn if border fails WCAG contrast against
+	// the block's own background. When there's no background set or a gradient
+	// is active, skip the check entirely.
+	const formFieldTilesContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
 
 	// columns is a TIER OBJECT (Spec 35 pass 4) — this control only ever edits
 	// the desktop tier (there is no per-tier UI here); resolve it for both the
@@ -49,7 +70,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		`sgs-form-field--${ width }`,
 	].join( ' ' );
 
-	const blockProps = useBlockProps( { className } );
+	// CHECK A finding: textColour/textColourGradient are written by the
+	// "Text colour" row above and consumed by render.php on `$sgs_ft_sel`
+	// (`.{uid}.sgs-form-field--tiles` — the SAME root element `blockProps`
+	// renders onto), but nothing applied them to the canvas. `color` is a
+	// naturally-inheriting CSS property, so setting it on this root also
+	// covers the tile labels below, which set no colour of their own.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	const wrapperTextStyle = textPaintPreview( textColour, textColourGradient, colourPalette );
+
+	const blockProps = useBlockProps( { className, style: wrapperTextStyle } );
 
 	const updateTile = ( index, key, value ) => {
 		const newTiles = [ ...tiles ];
@@ -78,23 +108,22 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: backgroundColour,
-								onChange: ( val ) =>
-									setAttributes( { backgroundColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -103,6 +132,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) =>
 									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -124,6 +156,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								multiSelect: false,
 								columns: { desktop: 3, tablet: 2, mobile: 1 },
 								width: 'full',
+								selectedStyle: 'checkmark',
 							} )
 						}
 					>
@@ -236,6 +269,24 @@ export default function Edit( { attributes, setAttributes } ) {
 								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Selected tile style', 'sgs-blocks' ) }
+							hasValue={ () => selectedStyle !== 'checkmark' }
+							onDeselect={ () =>
+								setAttributes( { selectedStyle: 'checkmark' } )
+							}
+						>
+							<SelectControl
+								label={ __( 'Selected tile style', 'sgs-blocks' ) }
+								value={ selectedStyle }
+								options={ SELECTED_STYLE_OPTIONS }
+								onChange={ ( val ) =>
+									setAttributes( { selectedStyle: val } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
 					</ToolsPanel>
 
 				{ /* Container wrapper (WS-4 mirror) */ }
@@ -306,6 +357,31 @@ export default function Edit( { attributes, setAttributes } ) {
 					<Button isPrimary onClick={ addTile }>
 						{ __( 'Add Tile', 'sgs-blocks' ) }
 					</Button>
+				</PanelBody>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						contrastAgainst={ formFieldTilesContrastAgainst }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
+					/>
 				</PanelBody>
 			</InspectorControls>
 

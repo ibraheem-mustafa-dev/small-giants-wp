@@ -1,47 +1,66 @@
+<!-- <main> is an 800px prose band, so post-content needs no width cap of its own. -->
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
-<!-- wp:sgs/container {"tagName":"main","anchor":"main","contentWidth":{"desktop":"800px"}} -->
+<!-- BYLINE SEPARATORS ARE CSS, NOT CONTENT (2026-08-23). They used to be three
+     hardcoded sgs/text "·" blocks between the fields. Measured live: post-author
+     renders NO ELEMENT AT ALL on these posts, so two separators ended up adjacent
+     and the byline read "July 31, 2026 · · Uncategorized". A separator authored as
+     content assumes its neighbour renders; when the neighbour is conditional, the
+     separator is orphaned and nothing detects it.
+     `.sgs-byline > * + *::before` puts the separator on the FOLLOWING sibling, so a
+     field that renders nothing takes its separator with it. Self-healing by
+     construction. ⛔ Do not reintroduce separator blocks as content. -->
+
+<!-- HEADING LEVEL (S6-7). core/comments-title was set to level 2 to close the h1->h3
+     skip — measured live, that was INERT: WordPress omits comments-title entirely when a
+     post has no approved comments, and the reply form's own "Leave a Reply" is a
+     hardcoded <h3> in core's comment_form(). So the outline still read H1 > H3.
+     This heading always renders, which is what actually closes the skip. -->
+<!-- wp:sgs/container {"tagName":"main","anchor":"main","contentWidth":{"desktop":"800px"},"flexWrap":"wrap"} -->
 
 	<!-- wp:sgs/breadcrumbs /-->
 
-	<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|40"}}},"contentWidth":{"desktop":"normal"}} -->
+	<!-- wp:sgs/container {"tagName":"div","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|40"},"flexWrap":"wrap"} -->
 
 		<!-- wp:post-title {"level":1} /-->
 
-		<!-- wp:sgs/container {"tagName":"div","layout":"flex","flexWrap":"wrap","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"fontSize":"small","textColor":"text-muted"} -->
+		<!-- wp:sgs/container {"tagName":"div","className":"sgs-byline","layout":"flex","flexWrap":"wrap","fontSize":{"desktop":"small"},"textColour":"text-muted"} -->
 			<!-- wp:post-date /-->
-			<!-- wp:sgs/text {"text":"·"} /-->
 			<!-- wp:post-author {"showAvatar":false,"showBio":false,"byline":"By"} /-->
-			<!-- wp:sgs/text {"text":"·"} /-->
 			<!-- wp:post-terms {"term":"category"} /-->
+			<!-- wp:post-time-to-read /-->
 		<!-- /wp:sgs/container -->
 
 	<!-- /wp:sgs/container -->
 
 	<!-- wp:post-featured-image {"align":"wide","style":{"border":{"radius":"8px"},"spacing":{"margin":{"bottom":"var:preset|spacing|50"}}}} /-->
 
-	<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+	<!-- wp:post-content /-->
 
-	<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}},"border":{"top":{"color":"var:preset|color|surface-alt","width":"1px"}}},"layout":"flex","justifyContent":"space-between","flexWrap":"wrap","fontSize":"small"} -->
+	<!-- wp:sgs/container {"tagName":"div","style":{"border":{"top":{"color":"var:preset|color|surface-alt","width":"1px"}}},"layout":"flex","justifyContent":"space-between","flexWrap":"wrap","fontSize":{"desktop":"small"},"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}} -->
 		<!-- wp:post-terms {"term":"post_tag","prefix":"Tags: "} /-->
 	<!-- /wp:sgs/container -->
 
-	<!-- wp:post-navigation-link {"type":"previous","label":"Previous Post","arrow":"arrow"} /-->
-	<!-- wp:post-navigation-link {"label":"Next Post","arrow":"arrow"} /-->
+	<!-- wp:sgs/container {"tagName":"div","layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|40"},"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}} -->
+		<!-- wp:post-navigation-link {"type":"previous","label":"Previous","showTitle":true,"arrow":"arrow"} /-->
+		<!-- wp:post-navigation-link {"label":"Next","showTitle":true,"arrow":"arrow"} /-->
+	<!-- /wp:sgs/container -->
 
 	<!-- wp:spacer {"height":"var:preset|spacing|50"} -->
 	<div style="height:var(--wp--preset--spacing--50)" aria-hidden="true" class="wp-block-spacer"></div>
 	<!-- /wp:spacer -->
 
+	<!-- wp:sgs/heading {"content":"Comments","level":"h2","fontSize":{"desktop":"x-large"},"margin":{"bottom":"var:preset|spacing|30"}} /-->
+
 	<!-- wp:comments -->
 	<div class="wp-block-comments">
-		<!-- wp:comments-title /-->
+		<!-- wp:comments-title {"level":2} /-->
 		<!-- wp:comment-template -->
 			<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"40px 1fr","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|30"}} -->
 				<!-- wp:sgs/container -->
 					<!-- wp:avatar {"size":40} /-->
 				<!-- /wp:sgs/container -->
-				<!-- wp:sgs/container -->
+				<!-- wp:sgs/container {"flexWrap":"wrap"} -->
 					<!-- wp:comment-author-name /-->
 					<!-- wp:comment-date {"fontSize":"small"} /-->
 					<!-- wp:comment-content /-->

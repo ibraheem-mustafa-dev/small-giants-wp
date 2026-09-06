@@ -369,7 +369,7 @@ fi
 # Runs wp-blocks health + wp-docs hook validate + wp-hook-graph validate.
 # Always exits 0 (--soft) so it NEVER blocks a commit. Output is informational.
 STAGED_PIPELINE=$(git diff --cached --name-only --diff-filter=ACM | grep -E \
-    'plugins/sgs-blocks/scripts/(orchestrator|converter_v2|sgs-clone-orchestrator|wp-pre-merge-gate)|plugins/sgs-blocks/src/blocks/' || true)
+    'plugins/sgs-blocks/scripts/(orchestrator|sgs-clone-orchestrator|wp-pre-merge-gate)|plugins/sgs-blocks/src/blocks/' || true)
 if [ -n "$STAGED_PIPELINE" ]; then
     echo "SGS: Running wp-* pre-merge gate (advisory)..."
     python "$REPO_ROOT/plugins/sgs-blocks/scripts/wp-pre-merge-gate.py" --soft 2>&1 \
@@ -378,12 +378,20 @@ fi
 
 
 # ─── Gate A — converter golden-fixture conformance (D178) ────────────────────
-# Runs whenever staged files touch converter_v2/ to catch "good docs + undelivered
+# Runs whenever staged files touch converter/ to catch "good docs + undelivered
 # code" regressions. Non-zero exit blocks the commit with a clear message.
 # Re-baseline: REGEN=1 git commit ... OR run tests with --regen-golden and
 # commit the new goldens with a cited reason.
+#
+# TRIGGER REPOINTED 2026-08-24: this watched
+# `plugins/sgs-blocks/scripts/orchestrator/converter_v2/`, a directory DELETED at
+# D276 (2026-07-05, c8690345). The gate therefore could not fire for seven weeks
+# while its harness stayed alive and its goldens went stale. It now watches the
+# live modular engine at `plugins/sgs-blocks/scripts/converter/`. The dead
+# `converter_v2` alternative was dropped from the 5.3.5 regex above at the same
+# time; `orchestrator` there is still live and was left alone.
 STAGED_CONVERTER=$(git diff --cached --name-only --diff-filter=ACM | grep -E \
-    'plugins/sgs-blocks/scripts/orchestrator/converter_v2/' || true)
+    'plugins/sgs-blocks/scripts/converter/' || true)
 if [ -n "$STAGED_CONVERTER" ]; then
     echo "SGS Gate A: running converter golden-fixture conformance harness..."
     # Portability fix (D564): this line hardcoded /c/Python313/python.exe. On any
@@ -423,5 +431,65 @@ if [ -n "$STAGED_CONVERTER" ]; then
         fi
     fi
 fi
+
+# ─── Gate 31 — inspector-scan on staged EDITOR surfaces ──────────────────────
+# There is no CI on this repo: .github/workflows/ does not exist, and until this
+# gate the entire inspector-scan rule set (7 gate rules + 14 advisory, incl. the
+# golden-colour conformance rule) ran ONLY when somebody typed `npm run build`.
+# A detector nothing triggers is a detector nobody has.
+#
+# Scope is deliberately narrow — a block's edit.js or a shared editor component
+# is exactly the surface every inspector rule reads. Staging a .md, a render.php
+# or a style.css does NOT trigger it.
+STAGED_INSPECTOR=$(git diff --cached --name-only --diff-filter=ACM | grep -E     'plugins/sgs-blocks/src/(blocks/[^/]+/edit\.js|components/.*\.js)$' || true)
+if [ -n "$STAGED_INSPECTOR" ]; then
+    if [ -n "${SGS_INSPECTOR_GATE_SKIP:-}" ]; then
+        # Same discipline as the visual gate: a bypass MUST carry a reason and
+        # MUST be logged. A silent skip is how a gate quietly stops existing.
+        if [ -z "${SGS_INSPECTOR_GATE_REASON:-}" ]; then
+            echo "   ✗ SGS_INSPECTOR_GATE_SKIP set but SGS_INSPECTOR_GATE_REASON is empty — refusing silent bypass"
+            SGS_EXIT=1
+        else
+            echo "   ⚠ inspector-scan: MANUAL SKIP — $SGS_INSPECTOR_GATE_REASON"
+            mkdir -p "$REPO_ROOT/reports/visual-diff"
+            printf '%s | inspector-scan | MANUAL SKIP | %s
+' "$(date '+%Y-%m-%d %H:%M:%S')" "$SGS_INSPECTOR_GATE_REASON"                 >> "$REPO_ROOT/reports/visual-diff/manual-skips.log"
+        fi
+    else
+        # Resolve node the same way Gate A resolves python (D564): a hardcoded
+        # interpreter path made "missing interpreter" and "real regression"
+        # indistinguishable, because $? then came from a failed lookup.
+        if command -v node >/dev/null 2>&1; then INSPECTOR_NODE=node
+        elif command -v node.exe >/dev/null 2>&1; then INSPECTOR_NODE=node.exe
+        else INSPECTOR_NODE=""; fi
+        if [ -z "$INSPECTOR_NODE" ]; then
+            echo "   inspector-scan SKIPPED — no node on PATH (install node to enforce)."
+        else
+            echo "SGS: Running inspector-scan (staged editor surface)..."
+            INSPECTOR_OUT=$(mktemp)
+            # Redirect FIRST, then read $?. After a pipe, $? is the LAST command's
+            # status, not the scan's — that exact mistake has shipped here before.
+            "$INSPECTOR_NODE" "$REPO_ROOT/plugins/sgs-blocks/scripts/inspector-scan/run.js" --check > "$INSPECTOR_OUT" 2>&1
+            INSPECTOR_EXIT=$?
+            if [ "$INSPECTOR_EXIT" -ne 0 ]; then
+                sed 's/^/  /' "$INSPECTOR_OUT"
+                echo ""
+                echo "COMMIT BLOCKED by inspector-scan — a gate rule flagged, or an advisory"
+                echo "   rule grew past its openBacklog (the ratchet: debt may not increase)."
+                echo "   Fix the finding, or — if the growth is intended and justified —"
+                echo "   raise that rule's openBacklog in rules.json with a stated reason."
+                echo "   --no-verify is NOT the answer: it also discards gitleaks, cheat-gate,"
+                echo "   F5 and F6, which are unrelated. Use the scoped bypass instead —"
+                echo "   set both SGS_INSPECTOR_GATE_SKIP=1 and SGS_INSPECTOR_GATE_REASON."
+                echo ""
+                SGS_EXIT=1
+            else
+                tail -4 "$INSPECTOR_OUT" | sed 's/^/  /'
+            fi
+            rm -f "$INSPECTOR_OUT"
+        fi
+    fi
+fi
+
 
 exit $SGS_EXIT

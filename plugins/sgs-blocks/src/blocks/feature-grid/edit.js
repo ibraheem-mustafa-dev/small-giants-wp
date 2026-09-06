@@ -3,6 +3,7 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import {
@@ -10,9 +11,11 @@ import {
 	SelectControl,
 	RangeControl,
 } from '@wordpress/components';
-import { ResponsiveOverride, SgsColourPanel } from '../../components';
-import { UnitControl } from '../../components/primitives';
-import { resolveResponsiveTier } from '../../utils';
+import { ResponsiveOverride, SgsColourPanel, fillRow, SgsLengthControl,
+	SgsBorderControl,
+	resolveColourToken,
+} from '../../components';
+import { resolveResponsiveTier, textPaintPreview } from '../../utils';
 
 const LAYOUT_MODE_OPTIONS = [
 	{
@@ -125,12 +128,32 @@ export default function Edit( { attributes, setAttributes } ) {
 		alignItems,
 		justifyItems,
 		backgroundColour,
+		backgroundColourGradient,
 		textColour,
+		textColourGradient,
 	} = attributes;
+
+	// Contrast check for border — warn if border fails WCAG contrast against
+	// the block's own background. When there's no background set or a gradient
+	// is active, skip the check entirely.
+	const featureGridContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
+	// D288/D636 pattern (mirrors sgs/container): render.php applies textColour/
+	// textColourGradient to $root_sel — the block's own root `grid` element
+	// (block.json's `wrapper`-flagged `grid` element attrMap css:color/
+	// css:background-image) — so the preview belongs on blockProps.style,
+	// merged alongside the existing grid-layout preview.
+	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	const blockProps = useBlockProps( {
 		className: `sgs-feature-grid sgs-feature-grid--${ layoutMode }`,
-		style: buildGridStyle( attributes ),
+		style: {
+			...buildGridStyle( attributes ),
+			...textPaintPreview( textColour, textColourGradient, colourPalette ),
+		},
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
@@ -144,23 +167,22 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: backgroundColour,
-								onChange: ( val ) =>
-									setAttributes( { backgroundColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -169,13 +191,26 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) =>
 									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourGradient: val ?? '' } ),
 							},
 						],
 					},
 				] }
 			/>
 			<InspectorControls>
-				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
+				{ /* showLayout={false}: this block owns its OWN layout selector
+				     (layoutMode, below) — every one of its three render.php branches
+				     (auto-flex / fixed-columns / explicit-grid-template) always emits
+				     display:grid, so the generic Stack/Flex/Grid dropdown never
+				     offered a real choice. render.php:156 force-sets attributes.layout
+				     to 'grid' whenever an explicit template is present, silently
+				     discarding whatever this dropdown showed — root-caused via
+				     /systematic-debugging 2026-08-20; card-grid, the sibling using
+				     the same kind="layout" pattern, never exposes this dropdown
+				     conflict because it has no competing bespoke selector. */ }
+				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" showLayout={ false } />
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Layout mode', 'sgs-blocks' ) }
@@ -199,8 +234,15 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 
+					{ /* SgsLengthControl adoption (Gate B, presets={false}) — split-scalar
+					   case: minItemWidth (number) + minItemWidthUnit (string) are two
+					   separate stored attrs composed into one display string, same
+					   shape as label/edit.js's composeUnit pattern. Safe: SgsLengthControl's
+					   presets=false branch forwards the raw UnitControl string unchanged
+					   to onChange, so the split-and-setAttributes logic below is
+					   untouched — see Branch 2 report. */ }
 					{ 'auto-flex' === layoutMode && (
-						<UnitControl
+						<SgsLengthControl
 							label={ __( 'Min item width', 'sgs-blocks' ) }
 							value={ `${ minItemWidth }${ minItemWidthUnit || 'px' }` }
 							units={ [
@@ -213,8 +255,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								const num  = parseFloat( val ) || 120;
 								setAttributes( { minItemWidth: num, minItemWidthUnit: unit } );
 							} }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
+							presets={ false }
 						/>
 					) }
 
@@ -261,6 +302,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				<PanelBody
 					title={ __( 'Alignment', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -295,6 +340,31 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+				</PanelBody>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						contrastAgainst={ featureGridContrastAgainst }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>

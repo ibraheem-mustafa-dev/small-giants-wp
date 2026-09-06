@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "sgs/unsanitised-dangerously-set-mustflag",
+	"title": "Fixture: unsanitised dangerouslySetInnerHTML (must flag)",
+	"category": "sgs-content",
+	"attributes": {
+		"rawSvgMarkup": { "type": "string", "default": "" }
+	}
+}

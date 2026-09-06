@@ -41,6 +41,22 @@
 			"scroll"
 		]
 	},
+	"generative-background": {
+		"in_picker": true,
+		"owns_scroll_transform": false,
+		"pins": false,
+		"triggers": [
+			"load"
+		]
+	},
+	"grid-dots": {
+		"in_picker": true,
+		"owns_scroll_transform": false,
+		"pins": false,
+		"triggers": [
+			"hover"
+		]
+	},
 	"horizontal-panel": {
 		"in_picker": true,
 		"owns_scroll_transform": true,
@@ -55,6 +71,14 @@
 		"pins": false,
 		"triggers": [
 			"scroll"
+		]
+	},
+	"magnet": {
+		"in_picker": true,
+		"owns_scroll_transform": false,
+		"pins": false,
+		"triggers": [
+			"hover"
 		]
 	},
 	"morph": {
@@ -81,6 +105,14 @@
 		"pins": false,
 		"triggers": [
 			"load"
+		]
+	},
+	"particles": {
+		"in_picker": true,
+		"owns_scroll_transform": false,
+		"pins": false,
+		"triggers": [
+			"hover"
 		]
 	},
 	"pin-scrub": {
@@ -127,6 +159,22 @@
 			"scroll",
 			"load",
 			"hover"
+		]
+	},
+	"surface-treatment": {
+		"in_picker": true,
+		"owns_scroll_transform": false,
+		"pins": false,
+		"triggers": [
+			"load"
+		]
+	},
+	"wave-gradient": {
+		"in_picker": true,
+		"owns_scroll_transform": false,
+		"pins": false,
+		"triggers": [
+			"load"
 		]
 	}
 }

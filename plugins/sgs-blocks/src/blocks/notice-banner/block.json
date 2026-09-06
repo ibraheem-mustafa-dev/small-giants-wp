@@ -26,40 +26,24 @@
 		"color": {
 			"background": false,
 			"text": false,
-			"gradients": true,
-			"__experimentalSkipSerialization": true
-		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"fontStyle": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
 			"iconPicker": true,
 			"is_section_root": true,
-			"enabledExtensions": [ "blockLink" ],
+			"enabledExtensions": [
+				"blockLink"
+			],
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -67,34 +51,64 @@
 					"label": "Banner",
 					"layer": "CONTENT",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:color": "native:color.text",
-						"css:background-color": "native:color.background",
-						"css:font-size": "native:typography.fontSize",
-						"css:line-height": "native:typography.lineHeight",
-						"css:font-style": "native:typography.fontStyle",
-						"css:text-align": "native:typography.textAlign",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
-						"css:max-width": "maxWidth"
+						"css:color": "textColour",
+						"css:background-color": "backgroundColour",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
+						"css:text-align": "textAlign",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:max-width": "maxWidth",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:color-gradient": "textColourGradient",
+						"css:border-color-gradient": "borderColourGradient"
 					},
-					"_note": "NO-WRAPPER, content-KIND (D294, render.php:9-21) — dropped SGS_Container_Wrapper, block-private; every declaration scoped to the block's own `.{uid}` style (render.php:200-278). Layer CONTENT names the structural role (this block has no GRID layer)."
+					"_note": "NO-WRAPPER, content-KIND (D294, render.php:9-21) — dropped SGS_Container_Wrapper, block-private; every declaration scoped to the block's own `.{uid}` style (render.php:200-278). Layer CONTENT names the structural role (this block has no GRID layer).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient",
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					}
 				},
 				"icon": {
 					"label": "Icon",
 					"order": 2,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"prefix": "icon",
 					"attrMap": {
+						"css:color": "iconColour",
 						"css:stroke": "iconColourGradient"
 					},
-					"_note": "iconColour resolves via the default {prefix}{suffix} convention (Colour suffix). Emitted as a scoped rule `.{uid} .sgs-notice-banner__icon{color:...}` (render.php:203-207), not inline. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "iconColourHover",
+								"css:stroke": "iconColourHoverGradient"
+							}
+						}
+					},
+					"_note": "iconColour/iconColourHover explicitly mapped (base + states.hover) since 2026-09-04 (D956) -- both used to resolve via the default {prefix}{suffix} convention, which routed them to the SAME (css:color, element=icon, state=NULL) slot with no way to tell them apart, a real routing-determinism ambiguity (F6 Check #1/#8). Emitted as scoped rules (`.{uid} .sgs-notice-banner__icon{color:...}` base, a touch-guarded :hover + unguarded :focus-visible pair for the Hover attr via sgs_hover_state_rules()), not inline -- gated on iconColour being set. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
 				}
 			}
 		}
@@ -104,6 +118,18 @@
 		"typography": ".sgs-notice-banner"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"icon": {
 			"type": "string",
 			"default": "info"
@@ -142,6 +168,43 @@
 			"default": "",
 			"description": "CSS gradient string painting the icon's stroke instead of a flat colour. Non-empty wins over iconColour at render time (D636/D644)."
 		},
+		"iconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of iconColourGradient. Non-empty wins over iconColourHover at render time."
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"displayMode": {
 			"type": "string",
 			"default": "inline",
@@ -170,21 +233,78 @@
 				"permanent"
 			]
 		},
-		"paddingTablet": {
+		"borderWidth": {
 			"type": "object",
 			"default": {}
 		},
-		"paddingMobile": {
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"iconColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"fontSize": {
 			"type": "object",
 			"default": {}
 		},
-		"marginTablet": {
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
 			"type": "object",
 			"default": {}
 		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"textAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

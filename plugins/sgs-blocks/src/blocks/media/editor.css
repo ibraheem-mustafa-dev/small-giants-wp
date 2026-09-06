@@ -2,3 +2,11 @@
 .wp-block-sgs-media .components-placeholder {
 	min-height: 200px;
 }
+
+/* Media size & crop panel (C19) — a control an earlier choice has made
+   irrelevant is DIMMED, never hidden and never `disabled` (that would drop
+   it from the tab order). See MediaSizingPanel.js's own docblock. */
+.sgs-media-sizing-panel__row--inert {
+	opacity: 0.5;
+}
+

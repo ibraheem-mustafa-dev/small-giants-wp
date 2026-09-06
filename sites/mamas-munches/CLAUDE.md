@@ -1,9 +1,15 @@
 # Mama's Munches — Client Site
 
-**Status:** Brand discovery captured from live site + Bean answers (2026-04-30) — ready for design phase
+**Status (2026-08-28):** Built and live on the SGS framework — the canary at
+`sandybrown-nightingale-600381.hostingersite.com` runs the real WooCommerce catalogue (6
+products, 175 pages) through `sgs-theme` + `sgs-blocks`, not Astra. All twelve page templates
+were reviewed live and pass (D854). Current build status, open bugs, and design decisions live
+in `.claude/decisions.md` (search "Mama's" or the D-range 830-854) and `.claude/LEDGER.md`'s
+Mama's Clone Track section — this file is brand/product reference, not a build-status doc; do
+not treat the sections below as current build state.
 **Track:** B (revenue) — P5.B1 in master plan
-**Master-plan blocker:** SGS Ecommerce Plugin Phase 1 (catalogue + product page + Stripe one-off checkout). Brand + design can ship in parallel.
-**Live site:** https://mamasmunches.com/
+**Public/marketing site:** https://mamasmunches.com/ (the original Astra site this rebuild is
+replacing — brand facts below were captured from it)
 **Owner email:** Zainab@mamasmunches.com
 **Instagram:** [@mamasmunches](https://www.instagram.com/mamasmunches/) — high-quality product media here, pull next session
 **Tally form (current ordering):** https://tally.so/r/xXMQLk — manual flavour confirmation by Zainab; not sustainable
@@ -118,6 +124,12 @@ This is a real revenue blocker — target users (mums) browse on phones late eve
 | `/product/lactation-cookies-8-pack/` | Single product page |
 
 ## What's missing on the current site (for SGS rebuild)
+
+The list below describes the OLD Astra site and still sets the requirements bar. Confirmed
+already built on the SGS rebuild as of 2026-08-28: real Trustpilot sync, a working footer with
+real contact/hours content, WooCommerce cart and product pages. Confirmed still missing on the
+rebuild: real ingredient-education copy, allergen labelling, and the footer's "Quick Links" list
+(fixed 2026-08-28 with placeholder link text — needs real URLs).
 
 - ❌ Privacy Policy / T&Cs / Shipping pages (linked but `href="#"` placeholders)
 - ❌ Quick Links footer ("Know More About Us", "Visit Store", "Let's Connect" all `href="#"`)

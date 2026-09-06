@@ -11,6 +11,29 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
@@ -59,9 +82,8 @@ $url           = $has_url ? esc_url( $effective_url ) : '#';
 $link_target   = isset( $attributes['linkTarget'] ) ? esc_attr( $attributes['linkTarget'] ) : '_self';
 $rel           = isset( $attributes['rel'] ) ? esc_attr( $attributes['rel'] ) : '';
 $download      = ! empty( $attributes['download'] );
-// User-facing HTML-element chooser removed (2026-07-05) — the converter never
-// emitted this attr. The tag is auto-derived: a non-empty URL renders <a>,
-// otherwise <button>, preserving link-vs-button semantics without a setting.
+// The tag is auto-derived: a non-empty URL renders <a>, otherwise <button>,
+// preserving link-vs-button semantics without a setting.
 $tag_name   = $has_url ? 'a' : 'button';
 $is_submit  = ! empty( $attributes['isSubmit'] );
 $aria_label = isset( $attributes['ariaLabel'] ) && $attributes['ariaLabel'] ? esc_attr( $attributes['ariaLabel'] ) : esc_attr( $label );
@@ -76,9 +98,8 @@ $has_explicit_aria = isset( $attributes['ariaLabel'] ) && '' !== trim( (string) 
 // Icon.
 $icon          = isset( $attributes['icon'] ) ? sanitize_text_field( $attributes['icon'] ) : '';
 $icon_position = isset( $attributes['iconPosition'] ) ? sanitize_text_field( $attributes['iconPosition'] ) : 'after';
-// iconSize is a TIER OBJECT (Spec 35 migration, 2026-08-11) — one attr holding
-// {desktop,tablet,mobile}; the iconSizeTablet/iconSizeMobile sibling attrs are
-// no longer declared by block.json, so reading them directly would read nothing.
+// iconSize is a TIER OBJECT (Spec 35) — one attr holding {desktop,tablet,mobile}.
+// ⛔ There are no iconSizeTablet/iconSizeMobile attrs; reading them reads nothing.
 $icon_size_obj = sgs_responsive_normalise_object( $attributes['iconSize'] ?? null );
 $icon_size     = null !== $icon_size_obj['desktop'] ? absint( $icon_size_obj['desktop'] ) : null;
 $icon_size_tab = null !== $icon_size_obj['tablet'] ? absint( $icon_size_obj['tablet'] ) : null;
@@ -91,10 +112,9 @@ $icon_title    = isset( $attributes['iconTitle'] ) ? esc_html( $attributes['icon
 $label_collapse = isset( $attributes['labelCollapse'] ) ? (string) $attributes['labelCollapse'] : 'none';
 
 // Width.
-// widthType / customWidth / customWidthUnit are TIER OBJECTS (Spec 35
-// migration, 2026-08-11) — each ONE attr holding {desktop,tablet,mobile}; the
-// old …Tablet/…Mobile sibling attrs are no longer declared by block.json.
-// '' (tablet/mobile) = inherit desktop, matching the pre-migration sentinel.
+// widthType / customWidth / customWidthUnit are TIER OBJECTS (Spec 35) — each ONE
+// attr holding {desktop,tablet,mobile}. '' on tablet/mobile = inherit desktop.
+// ⛔ There are no …Tablet/…Mobile sibling attrs; reading them reads nothing.
 $width_type_obj        = sgs_responsive_normalise_object( $attributes['widthType'] ?? null );
 $width_type            = null !== $width_type_obj['desktop'] ? sanitize_text_field( $width_type_obj['desktop'] ) : 'fit';
 $custom_width_obj      = sgs_responsive_normalise_object( $attributes['customWidth'] ?? null );
@@ -111,7 +131,7 @@ $custom_width_tab   = null !== $custom_width_obj['tablet'] ? absint( $custom_wid
 $custom_width_mob   = null !== $custom_width_obj['mobile'] ? absint( $custom_width_obj['mobile'] ) : null;
 $custom_width_tab_u = '%' === ( $custom_width_unit_obj['tablet'] ?? '' ) ? '%' : 'px';
 $custom_width_mob_u = '%' === ( $custom_width_unit_obj['mobile'] ?? '' ) ? '%' : 'px';
-// minHeight is a TIER OBJECT (Spec 35 migration, 2026-08-11) — {desktop,
+// minHeight is a TIER OBJECT (Spec 35) — {desktop,
 // tablet,mobile}; the old …Tablet/…Mobile sibling attrs are no longer
 // declared by block.json. minHeightUnit/minHeightTabletUnit/minHeightMobileUnit
 // are a SEPARATE, still-flat family (each tier's own unit) — untouched here,
@@ -125,19 +145,11 @@ $min_height_mob = null !== $min_height_obj['mobile'] ? absint( $min_height_obj['
 // §1): a CSS-length sanitiser for object-attr side/corner values — strips
 // everything except digits, dot, %, and unit letters so a value can never
 // break out of its declaration. Mirrors sgs/container's wrapper sanitiser.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations (border-style / font-style / text-transform / text-decoration).
 // Strips everything except letters + hyphen, so ;{}():digits can never break out
 // of the declaration into a new CSS rule. A Contributor-authored malicious value
 // (e.g. "solid;}body{display:none") is reduced to safe keyword chars.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 $allowed_units = array( 'px', 'em', 'rem', '%' );
 
 // Min-height units — validated after $allowed_units is declared.
@@ -154,124 +166,77 @@ $min_height_mob_u = in_array( $min_height_mob_u, $allowed_units, true ) ? $min_h
 // paddingTablet/paddingMobile + marginTablet/marginMobile OBJECT attrs
 // { top, right, bottom, left } (a missing key = that side unset).
 $base_spacing_padding = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	foreach ( $sgs_tor_padding_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_spacing_padding[ $spacing_side ] = $spacing_value;
 		}
 	}
 }
 $base_spacing_margin = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	foreach ( $sgs_tor_margin_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_spacing_margin[ $spacing_side ] = $spacing_value;
 		}
 	}
 }
 
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
 // Base border-radius — WP-native style.border.radius (string = uniform, or an
 // object with topLeft/topRight/bottomLeft/bottomRight keys). Tiers are the
 // borderRadiusTablet/borderRadiusMobile OBJECT attrs (contract §2).
-$base_border_radius = null;
-if ( isset( $attributes['style']['border']['radius'] ) ) {
-	$radius_raw = $attributes['style']['border']['radius'];
-	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-		$base_border_radius = $radius_raw;
-	} elseif ( is_array( $radius_raw ) ) {
-		$radius_clean   = array();
-		$has_any_corner = false;
-		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? $sgs_css_length( $radius_raw[ $corner ] ) : '';
-			if ( '' !== $radius_clean[ $corner ] ) {
-				$has_any_corner = true;
-			}
-		}
-		if ( $has_any_corner ) {
-			$base_border_radius = $radius_clean;
-		}
-	}
-}
-$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$radius_tiers            = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$base_border_radius       = $radius_tiers['base'];
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+$border_radius_mobile_obj = $radius_tiers['mobile'];
 
-// Typography (custom mode only).
-$font_weight     = isset( $attributes['fontWeight'] ) ? sanitize_text_field( $attributes['fontWeight'] ) : '';
-$font_style_attr = isset( $attributes['fontStyle'] ) ? $sgs_css_keyword( $attributes['fontStyle'] ) : 'normal';
-$text_transform  = isset( $attributes['textTransform'] ) ? $sgs_css_keyword( $attributes['textTransform'] ) : '';
-$text_decoration = isset( $attributes['textDecoration'] ) ? $sgs_css_keyword( $attributes['textDecoration'] ) : '';
-// fontSize is a TIER OBJECT (Spec 35 migration, 2026-08-11) — same shape as
-// lineHeight/letterSpacing below; the old …Tablet/…Mobile sibling attrs are
-// no longer declared by block.json.
-$font_size_obj  = sgs_responsive_normalise_object( $attributes['fontSize'] ?? null );
-$font_size      = null !== $font_size_obj['desktop'] ? (float) $font_size_obj['desktop'] : null;
-$font_size_tab  = null !== $font_size_obj['tablet'] ? (float) $font_size_obj['tablet'] : null;
-$font_size_mob  = null !== $font_size_obj['mobile'] ? (float) $font_size_obj['mobile'] : null;
-$font_size_unit = isset( $attributes['fontSizeUnit'] ) ? sanitize_text_field( $attributes['fontSizeUnit'] ) : 'px';
-// lineHeight / letterSpacing are TIER OBJECTS (Spec 35 migration, 2026-08-11)
-// — each ONE attr holding {desktop,tablet,mobile}; the old …Tablet/…Mobile
-// sibling attrs are no longer declared by block.json. The *Unit attrs were
-// NOT part of this migration and stay flat/shared across tiers.
-$line_height_obj  = sgs_responsive_normalise_object( $attributes['lineHeight'] ?? null );
-$line_height      = null !== $line_height_obj['desktop'] ? (float) $line_height_obj['desktop'] : null;
-$line_height_tab  = null !== $line_height_obj['tablet'] ? (float) $line_height_obj['tablet'] : null;
-$line_height_mob  = null !== $line_height_obj['mobile'] ? (float) $line_height_obj['mobile'] : null;
-$line_height_unit = isset( $attributes['lineHeightUnit'] ) ? sanitize_text_field( $attributes['lineHeightUnit'] ) : 'em';
-// Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
-$line_height_unit    = ( 'unitless' === $line_height_unit ) ? '' : $line_height_unit;
-$letter_spacing_obj  = sgs_responsive_normalise_object( $attributes['letterSpacing'] ?? null );
-$letter_spacing      = null !== $letter_spacing_obj['desktop'] ? (float) $letter_spacing_obj['desktop'] : null;
-$letter_spacing_tab  = null !== $letter_spacing_obj['tablet'] ? (float) $letter_spacing_obj['tablet'] : null;
-$letter_spacing_mob  = null !== $letter_spacing_obj['mobile'] ? (float) $letter_spacing_obj['mobile'] : null;
-$letter_spacing_unit = isset( $attributes['letterSpacingUnit'] ) ? sanitize_text_field( $attributes['letterSpacingUnit'] ) : 'px';
+// Typography (custom mode only) — D971/D972 full-replacement track: emitted
+// via the shared sgs_typography_css_rule() helper (root prefix '') rather
+// than hand-rolled here. See step 4 below for the actual call.
 
-// sgs_responsive_css_rule() (used below for the font-size/line-height/
-// letter-spacing rule AND the icon-size rule) reads its prop_map attrs as
-// FLAT sibling keys straight off an $attributes-shaped array — it has no
-// knowledge of the new tier-object shape. Feed it a synthetic array that
-// carries the already-normalised tier values under the OLD flat key names
-// it expects, so its call sites below need no change of their own.
+// sgs_responsive_css_rule() (used below for the icon-size rule only —
+// typography no longer uses it) reads its prop_map attrs as FLAT sibling
+// keys straight off an $attributes-shaped array — it has no knowledge of the
+// new tier-object shape. Feed it a synthetic array that carries the
+// already-normalised icon-size tier values under the OLD flat key names it
+// expects, so its call site below needs no change of its own.
 $tier_object_synthetic_attrs = array_merge(
 	$attributes,
 	array(
-		'fontSize'            => $font_size,
-		'fontSizeTablet'      => $font_size_tab,
-		'fontSizeMobile'      => $font_size_mob,
-		'lineHeight'          => $line_height,
-		'lineHeightTablet'    => $line_height_tab,
-		'lineHeightMobile'    => $line_height_mob,
-		'letterSpacing'       => $letter_spacing,
-		'letterSpacingTablet' => $letter_spacing_tab,
-		'letterSpacingMobile' => $letter_spacing_mob,
-		'iconSize'            => $icon_size,
-		'iconSizeTablet'      => $icon_size_tab,
-		'iconSizeMobile'      => $icon_size_mob,
+		'iconSize'       => $icon_size,
+		'iconSizeTablet' => $icon_size_tab,
+		'iconSizeMobile' => $icon_size_mob,
 	)
 );
 
 // Colours (custom mode only).
 $colour_text              = isset( $attributes['colourText'] ) ? $attributes['colourText'] : '';
 $colour_text_hover        = isset( $attributes['colourTextHover'] ) ? $attributes['colourTextHover'] : '';
+// D636-family sibling attrs — resolved further down (step 8) alongside the
+// border-colour gradient, once $uid exists for the scoped selector. Read
+// here purely to keep every attribute extraction in one place (step 1).
+$colour_text_gradient       = isset( $attributes['colourTextGradient'] ) ? (string) $attributes['colourTextGradient'] : '';
+$colour_text_hover_gradient = isset( $attributes['colourTextHoverGradient'] ) ? (string) $attributes['colourTextHoverGradient'] : '';
 $colour_bg                = isset( $attributes['colourBackground'] ) ? $attributes['colourBackground'] : '';
 $colour_bg_gradient       = isset( $attributes['colourBackgroundGradient'] ) ? $attributes['colourBackgroundGradient'] : '';
 $colour_bg_hover          = isset( $attributes['colourBackgroundHover'] ) ? $attributes['colourBackgroundHover'] : '';
 $colour_bg_hover_gradient = isset( $attributes['colourBackgroundHoverGradient'] ) ? $attributes['colourBackgroundHoverGradient'] : '';
-$colour_border            = isset( $attributes['colourBorder'] ) ? $attributes['colourBorder'] : '';
-$colour_border_hover      = isset( $attributes['colourBorderHover'] ) ? $attributes['colourBorderHover'] : '';
+$colour_border            = isset( $attributes['borderColour'] ) ? $attributes['borderColour'] : '';
+$colour_border_hover      = isset( $attributes['borderColourHover'] ) ? $attributes['borderColourHover'] : '';
 // D636 border-colour gradient siblings — resolved here, emitted as a masked
 // ::before border (sgs_border_gradient_css) further down; border-color cannot
 // legally hold a gradient itself, so these do NOT feed the --sgs-btn-border*
 // custom properties above.
-$colour_border_gradient       = isset( $attributes['colourBorderGradient'] ) ? sgs_css_gradient_value( $attributes['colourBorderGradient'] ) : '';
-$colour_border_hover_gradient = isset( $attributes['colourBorderHoverGradient'] ) ? sgs_css_gradient_value( $attributes['colourBorderHoverGradient'] ) : '';
+$colour_border_gradient       = isset( $attributes['borderColourGradient'] ) ? sgs_css_gradient_value( $attributes['borderColourGradient'] ) : '';
+$colour_border_hover_gradient = isset( $attributes['borderColourHoverGradient'] ) ? sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ) : '';
 
-// WP-native `color` support (skip-serialised — Spec 32 no-inline contract):
-// get_block_wrapper_attributes() no longer auto-inlines these, but
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
 // $attributes['style']['color'] / textColor / backgroundColor are still
 // populated by core when an operator (or a clone) sets a colour via the
 // native Styles panel. Custom hex/rgb values are emitted into the block's
@@ -293,12 +258,12 @@ $text_decoration_hover = isset( $attributes['textDecorationHover'] ) ? sanitize_
 // Border (custom mode only). Box-object interface contract §1/§2: borderWidth
 // is an SGS custom OBJECT attr { top, right, bottom, left } — no WP-native
 // border-width support, no tiers (matches the pre-existing base-only contract).
-$border_style     = isset( $attributes['borderStyle'] ) ? $sgs_css_keyword( $attributes['borderStyle'] ) : 'solid';
+$border_style     = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
 $border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top = $sgs_css_length( $border_width_obj['top'] ?? '' );
-$border_width_rgt = $sgs_css_length( $border_width_obj['right'] ?? '' );
-$border_width_bot = $sgs_css_length( $border_width_obj['bottom'] ?? '' );
-$border_width_lft = $sgs_css_length( $border_width_obj['left'] ?? '' );
+$border_width_top = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_rgt = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bot = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_lft = sgs_css_length_value( $border_width_obj['left'] ?? '' );
 $has_border_width = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
 
 // Box shadow — SHAPE-only string attrs (D621/D622 colour-architecture
@@ -382,20 +347,16 @@ if ( $has_border_width ) {
 	$bwl          = '' !== $border_width_lft ? $border_width_lft : '0';
 	$base_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
 }
-if ( $border_style && 'solid' !== $border_style ) {
+// G5 (border-style-without-width): a style override only paints safely when
+// a real border-width exists SOMEWHERE for it to pair with — either the
+// operator's own borderWidth attr ($has_border_width), or the preset class's
+// own border-width:2px (now declared per-preset in style.css, not on the
+// base rule — see the 2026-08-27 defect-2 fix above). Without this gate a
+// custom/preset-less button with a style override but no width would fall
+// through to the browser's initial ~3px `medium`.
+$border_style_has_width = $has_border_width || in_array( $inherit_style, array( 'primary', 'secondary', 'outline' ), true );
+if ( $border_style && 'solid' !== $border_style && $border_style_has_width ) {
 	$base_decls[] = 'border-style:' . $border_style;
-}
-if ( $font_weight ) {
-	$base_decls[] = 'font-weight:' . intval( $font_weight );
-}
-if ( $font_style_attr && 'normal' !== $font_style_attr ) {
-	$base_decls[] = 'font-style:' . $font_style_attr;
-}
-if ( $text_transform ) {
-	$base_decls[] = 'text-transform:' . $text_transform;
-}
-if ( $text_decoration ) {
-	$base_decls[] = 'text-decoration:' . $text_decoration;
 }
 if ( '' !== $box_shadow ) {
 	$base_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
@@ -416,11 +377,11 @@ if ( $base_decls ) {
 // Transition — applied on the element always (preset AND custom).
 $scoped_css_parts[] = ".{$uid}.sgs-button{transition:all {$transition_duration}ms {$transition_easing};}";
 
-// Hover scale (skip if exactly 1.0 — no-op).
+// Hover scale (skip if exactly 1.0 — no-op). Touch-safe: guarded via
+// sgs_hover_state_rules() so a tap doesn't stick the scale on touchscreens.
 if ( abs( $hover_scale - 1.0 ) > 0.001 ) {
 	$scale_val          = round( $hover_scale, 3 );
-	$scoped_css_parts[] = ".{$uid}.sgs-button:hover{transform:scale({$scale_val});}";
-	$scoped_css_parts[] = ".{$uid}.sgs-button:focus-visible{transform:scale({$scale_val});}";
+	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:scale({$scale_val})" );
 }
 
 // Hover: colour hovers are CLASS-driven (Spec 32) via the --sgs-btn-*-hover vars
@@ -438,44 +399,20 @@ if ( '' !== $box_shadow_hover ) {
 }
 
 if ( $hover_rules ) {
-	$scoped_css_parts[] = ".{$uid}.sgs-button:hover,.{$uid}.sgs-button:focus-visible{" . implode( ';', $hover_rules ) . ';}';
+	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", implode( ';', $hover_rules ) );
 }
 
 // Icon hover colour.
 if ( $icon_col_hov ) {
-	$scoped_css_parts[] = ".{$uid}.sgs-button:hover .sgs-button__icon,.{$uid}.sgs-button:focus-visible .sgs-button__icon{color:" . sgs_colour_value( $icon_col_hov ) . ';}';
+	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", 'color:' . sgs_colour_value( $icon_col_hov ), ':focus-visible', ' .sgs-button__icon' );
 }
 
-// Typography + border-radius — base + tablet + mobile on the SAME
-// selector (Pattern A). Always emitted — every button is attribute-driven,
-// there is no separate preset-locked mode any more.
-$scoped_css_parts[] = sgs_responsive_css_rule(
-	$tier_object_synthetic_attrs,
-	array(
-		array(
-			'attr'         => 'fontSize',
-			'css'          => 'font-size',
-			'unit_default' => $font_size_unit,
-			'tablet_attr'  => 'fontSizeTablet',
-			'mobile_attr'  => 'fontSizeMobile',
-		),
-		array(
-			'attr'         => 'lineHeight',
-			'css'          => 'line-height',
-			'unit_default' => $line_height_unit,
-			'tablet_attr'  => 'lineHeightTablet',
-			'mobile_attr'  => 'lineHeightMobile',
-		),
-		array(
-			'attr'         => 'letterSpacing',
-			'css'          => 'letter-spacing',
-			'unit_default' => $letter_spacing_unit,
-			'tablet_attr'  => 'letterSpacingTablet',
-			'mobile_attr'  => 'letterSpacingMobile',
-		),
-	),
-	".{$uid}.sgs-button"
-);
+// Typography — base + tablet + mobile on the SAME selector (Pattern A),
+// via the shared sgs_typography_css_rule() helper (D971/D972 full-replacement
+// track; root prefix '' since this is a single-target block). Always
+// emitted — every button is attribute-driven, there is no separate
+// preset-locked mode any more.
+$scoped_css_parts[] = sgs_typography_css_rule( $attributes, '', ".{$uid}.sgs-button" );
 
 // Base padding/margin/border-radius — Box-object interface contract (b): the
 // block declares __experimentalSkipSerialization on spacing + border.radius
@@ -483,49 +420,48 @@ $scoped_css_parts[] = sgs_responsive_css_rule(
 // populated, so emit as ONE scoped #uid rule via wp_style_engine_get_styles()
 // (the stable core API WP core itself uses for `layout` support) instead of
 // inline — mirrors sgs/container's wrapper pattern exactly.
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_style_engine_args = array();
-	if ( ! empty( $base_spacing_padding ) || ! empty( $base_spacing_margin ) ) {
-		$base_style_engine_args['spacing'] = array();
-		if ( ! empty( $base_spacing_padding ) ) {
-			$base_style_engine_args['spacing']['padding'] = $base_spacing_padding;
-		}
-		if ( ! empty( $base_spacing_margin ) ) {
-			$base_style_engine_args['spacing']['margin'] = $base_spacing_margin;
-		}
-	}
-	if ( null !== $base_border_radius ) {
-		$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
-	}
-	if ( ! empty( $base_style_engine_args ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			$base_style_engine_args,
-			array( 'selector' => ".{$uid}.sgs-button" )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css_parts[] = $base_scoped_styles['css'];
-		}
-	}
 
-	// WP-native `color` support (skip-serialised) — a custom hex/rgb value set
-	// via the Styles panel is emitted scoped instead of auto-inlined. Preset
-	// slug values (textColor/backgroundColor) never reach $attributes['style'];
-	// those get the has-* classes in step 5 instead.
-	if ( '' !== $style_colour_text || '' !== $style_colour_bg ) {
-		$colour_style_engine_args = array( 'color' => array() );
-		if ( '' !== $style_colour_text ) {
-			$colour_style_engine_args['color']['text'] = $style_colour_text;
-		}
-		if ( '' !== $style_colour_bg ) {
-			$colour_style_engine_args['color']['background'] = $style_colour_bg;
-		}
-		$colour_scoped_styles = wp_style_engine_get_styles(
-			$colour_style_engine_args,
-			array( 'selector' => ".{$uid}.sgs-button" )
-		);
-		if ( ! empty( $colour_scoped_styles['css'] ) ) {
-			$scoped_css_parts[] = $colour_scoped_styles['css'];
-		}
+$base_style_engine_args = array();
+if ( ! empty( $base_spacing_padding ) || ! empty( $base_spacing_margin ) ) {
+	$base_style_engine_args['spacing'] = array();
+	if ( ! empty( $base_spacing_padding ) ) {
+		$base_style_engine_args['spacing']['padding'] = $base_spacing_padding;
+	}
+	if ( ! empty( $base_spacing_margin ) ) {
+		$base_style_engine_args['spacing']['margin'] = $base_spacing_margin;
+	}
+}
+if ( null !== $base_border_radius ) {
+	$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
+}
+if ( ! empty( $base_style_engine_args ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		$base_style_engine_args,
+		array( 'selector' => ".{$uid}.sgs-button" )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css_parts[] = $base_scoped_styles['css'];
+	}
+}
+
+// WP-native `color` support (skip-serialised) — a custom hex/rgb value set
+// via the Styles panel is emitted scoped instead of auto-inlined. Preset
+// slug values (textColor/backgroundColor) never reach $attributes['style'];
+// those get the has-* classes in step 5 instead.
+if ( '' !== $style_colour_text || '' !== $style_colour_bg ) {
+	$colour_style_engine_args = array( 'color' => array() );
+	if ( '' !== $style_colour_text ) {
+		$colour_style_engine_args['color']['text'] = $style_colour_text;
+	}
+	if ( '' !== $style_colour_bg ) {
+		$colour_style_engine_args['color']['background'] = $style_colour_bg;
+	}
+	$colour_scoped_styles = wp_style_engine_get_styles(
+		$colour_style_engine_args,
+		array( 'selector' => ".{$uid}.sgs-button" )
+	);
+	if ( ! empty( $colour_scoped_styles['css'] ) ) {
+		$scoped_css_parts[] = $colour_scoped_styles['css'];
 	}
 }
 
@@ -533,36 +469,14 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // shorthand (contract §2/§4). Tablet (≤1023px) then mobile (≤767px) on the
 // SAME id-scoped selector as the base rule above, so plain source-order
 // cascade (no !important needed) lets the narrower tier win.
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
 // CSS border-radius shorthand order is top-left top-right bottom-right
 // bottom-left (NOT the box-model top/right/bottom/left order).
-$sgs_corner_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$tl = $sgs_css_length( $box['topLeft'] ?? '' );
-	$tr = $sgs_css_length( $box['topRight'] ?? '' );
-	$br = $sgs_css_length( $box['bottomRight'] ?? '' );
-	$bl = $sgs_css_length( $box['bottomLeft'] ?? '' );
-	if ( '' === $tl && '' === $tr && '' === $br && '' === $bl ) {
-		return null;
-	}
-	return ( '' !== $tl ? $tl : '0' ) . ' ' . ( '' !== $tr ? $tr : '0' ) . ' ' . ( '' !== $br ? $br : '0' ) . ' ' . ( '' !== $bl ? $bl : '0' );
-};
-
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
-$radius_tab_val  = $sgs_corner_shorthand( $border_radius_tablet_obj );
-$radius_mob_val  = $sgs_corner_shorthand( $border_radius_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
+$radius_tab_val  = sgs_corner_object_shorthand( $border_radius_tablet_obj );
+$radius_mob_val  = sgs_corner_object_shorthand( $border_radius_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -618,22 +532,39 @@ if ( $icon ) {
 // tier has its OWN unit attribute (minHeightUnit / minHeightTabletUnit /
 // minHeightMobileUnit) — the general helper assumes one shared unit per
 // property family, so min-height is built by hand here rather than forced
-// through it. Because the base value now lives in this same-selector <style>
-// rule (not inline on the element), the tier overrides no longer need
-// !important to win (the "F4 pattern" !important workaround is retired).
-$min_height_decls = array();
-if ( $min_height ) {
-	$min_height_decls[] = ".{$uid}.sgs-button{min-height:{$min_height}{$min_height_unit};}";
-}
+// through it. Because the base value lives in this same-selector <style>
+// rule (not inline on the element), the tier overrides do not need
+// !important to win.
+//
+// The base tier is now ALWAYS emitted (falling back to style.css's own
+// 48px default when no explicit minHeight is set) rather than only when
+// $min_height was truthy. Root cause (2026-08-27, found live on the Mama's
+// Munches canary clone — "Read the full story" + "Find out more" both
+// computed min-height:0px): sgs/container's shrink-to-fit backstop
+// (class-sgs-container-wrapper.php, `>*{min-width:0;min-height:0}` on its
+// flex/grid direct children) matches at (0,2,0) specificity — TWO classes
+// (.uid>.inner>*) — which beats this block's own base `.sgs-button{min-
+// height:48px}` rule in style.css at (0,1,0).
+//
+// ⛔ CORRECTED 2026-08-27 (same day, caught by a live re-check before this
+// "fix" shipped): emitting the SAME (0,2,0)-specificity selector here
+// (`.{$uid}.sgs-button`) does NOT reliably resolve the tie. The claim that
+// "this block's own <style> always renders after its parent container's"
+// was measured FALSE live — the browser's own CSSOM confirmed the
+// container's (0,2,0) rule can appear LATER than this one, so on an equal
+// specificity tie the container still wins and min-height still computes
+// to 0. The selector below repeats the uid class (`.{$uid}.{$uid}`) to
+// reach (0,3,0) — strictly higher than the container's (0,2,0) — so this
+// wins regardless of source order, not by a source-order assumption.
+$min_height_base  = null !== $min_height ? $min_height : 48;
+$min_height_decls = array( ".{$uid}.{$uid}.sgs-button{min-height:{$min_height_base}{$min_height_unit};}" );
 if ( null !== $min_height_tab ) {
-	$min_height_decls[] = "@media(max-width:1023px){.{$uid}.sgs-button{min-height:{$min_height_tab}{$min_height_tab_u};}}";
+	$min_height_decls[] = "@media(max-width:1023px){.{$uid}.{$uid}.sgs-button{min-height:{$min_height_tab}{$min_height_tab_u};}}";
 }
 if ( null !== $min_height_mob ) {
-	$min_height_decls[] = "@media(max-width:767px){.{$uid}.sgs-button{min-height:{$min_height_mob}{$min_height_mob_u};}}";
+	$min_height_decls[] = "@media(max-width:767px){.{$uid}.{$uid}.sgs-button{min-height:{$min_height_mob}{$min_height_mob_u};}}";
 }
-if ( $min_height_decls ) {
-	$scoped_css_parts[] = implode( '', $min_height_decls );
-}
+$scoped_css_parts[] = implode( '', $min_height_decls );
 
 // Width — base + tablet + mobile on the SAME selector (Pattern A). Each tier's
 // width derives from its own widthType enum: full → 100%, custom → value+unit,
@@ -715,16 +646,22 @@ if ( '' !== $preset_bg_slug ) {
 
 // D636/D644 icon/SVG gradient siblings — non-empty wins over the flat
 // iconColour/iconColourHover above at paint time (helpers-svg-gradient.php).
-$icon_colour_gradient         = isset( $attributes['iconColourGradient'] ) ? $attributes['iconColourGradient'] : '';
-$icon_colour_hover_gradient   = isset( $attributes['iconColourHoverGradient'] ) ? $attributes['iconColourHoverGradient'] : '';
-$sgs_button_stroke_grad       = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
-$sgs_button_stroke_grad_hover = sgs_svg_stroke_gradient( $icon_colour_hover_gradient, $uid . '-igh' );
+// Both states resolved together via sgs_icon_gradient_states_css()
+// (2026-09-06 close-out) — lucide-only icon, so source is hardcoded. Hover
+// trigger is the ANCESTOR (the whole button), matching $icon_col_hov's own
+// flat-colour hover shape below — this replaces a hand-written
+// ":hover,:focus-visible" compound selector that duplicated the ancestor
+// shape without going through the touch-safe sgs_hover_state_rules() path.
+$icon_colour_gradient       = isset( $attributes['iconColourGradient'] ) ? $attributes['iconColourGradient'] : '';
+$icon_colour_hover_gradient = isset( $attributes['iconColourHoverGradient'] ) ? $attributes['iconColourHoverGradient'] : '';
+$sgs_button_icon_grad_sel   = ".{$uid}.sgs-button .sgs-button__icon svg";
+$sgs_button_stroke_grad     = sgs_icon_gradient_states_css( 'lucide', $icon_colour_gradient, $icon_colour_hover_gradient, $uid, $sgs_button_icon_grad_sel, ".{$uid}.sgs-button", ' .sgs-button__icon svg' );
 
 $icon_html = '';
 if ( $icon ) {
 	$icon_svg = sgs_get_lucide_icon( $icon );
-	$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_button_stroke_grad['defs'] );
-	$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_button_stroke_grad_hover['defs'] );
+	$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_button_stroke_grad['defs_base'] );
+	$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_button_stroke_grad['defs_hover'] );
 
 	if ( $icon_svg ) {
 		// For icon-only: inject a <title> into the SVG for screen readers.
@@ -738,9 +675,10 @@ if ( $icon ) {
 			);
 		}
 
-		// Icon size + resting colour are CLIENT controls, but they must NOT
-		// serialise as inline property declarations (no-inline contract,
-		// Spec 32). Route them to the block's own scoped <style> (emitted at
+		// Icon size + resting colour are CLIENT controls. NO-INLINE: this
+		// block emits zero inline style property declarations. Contract +
+		// mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+		// --check. Route them to the block's own scoped <style> (emitted at
 		// step-4 below), mirroring the hover-icon-colour rule above. When no
 		// explicit size is set, style.css's `.sgs-button__icon svg{width:1em}`
 		// default already applies — so the size path emits nothing.
@@ -750,14 +688,19 @@ if ( $icon ) {
 		if ( $icon_colour ) {
 			$scoped_css_parts[] = ".{$uid}.sgs-button .sgs-button__icon{color:" . sgs_colour_value( $icon_colour ) . ';}';
 		}
-		if ( '' !== $sgs_button_stroke_grad['css'] ) {
-			$scoped_css_parts[] = ".{$uid}.sgs-button .sgs-button__icon svg{" . $sgs_button_stroke_grad['css'] . ';}';
-		}
-		if ( '' !== $sgs_button_stroke_grad_hover['css'] ) {
-			$scoped_css_parts[] = ".{$uid}.sgs-button:hover .sgs-button__icon svg,.{$uid}.sgs-button:focus-visible .sgs-button__icon svg{" . $sgs_button_stroke_grad_hover['css'] . ';}';
+		if ( $sgs_button_stroke_grad['css'] ) {
+			$scoped_css_parts = array_merge( $scoped_css_parts, $sgs_button_stroke_grad['css'] );
 		}
 
 		// wp_kses with SVG allowance for the icon.
+		// Deliberately narrower than the shared sgs_svg_kses_allowed_tags()
+		// (includes/helpers-svg-kses.php): icons here are static Lucide glyphs
+		// (path/circle/rect/line/polyline/polygon/ellipse/g/title), never gradient-
+		// filled, filtered, masked, referenced (<use>/<symbol>), or animated. This
+		// list excludes the shared helper's defs/use/symbol/text/tspan/textpath/
+		// image/clippath/mask/marker/pattern/*gradient/stop/filter + filter-primitive
+		// tags/desc/metadata/animate/a. If a future icon set needs any of those,
+		// diff against sgs_svg_kses_allowed_tags() again rather than widening ad hoc.
 		$allowed_svg = array(
 			'svg'      => array(
 				'class'           => true,
@@ -901,8 +844,7 @@ $safe_inherit_style = in_array( $inherit_style, $allowed_presets, true ) ? $inhe
 // button's own identity class + inline styles merge into the block-wrapper attrs
 // so the element is the DIRECT flex child of sgs/multi-button. This lets a column
 // flex `align-items:stretch` stretch the button itself (full-width mobile stack)
-// instead of a dead wrapper div. Full-width is now the `sgs-button--full` modifier
-// (was `sgs-button-wrapper--full`).
+// instead of a dead wrapper div. Full-width is the `sgs-button--full` modifier.
 $full_modifier = ( 'full' === $width_type ) ? ' sgs-button--full' : '';
 $merged_class  = trim( $btn_class_str . $full_modifier );
 // $merged_style carries ONLY custom-property VALUES ($inline_styles from step
@@ -933,6 +875,94 @@ if ( '' !== $colour_border_gradient ) {
 	);
 }
 
+// --- Text-colour gradient (colourTextGradient/colourTextHoverGradient) —
+// D636 sibling recipe: the gradient wins over the flat colourText/
+// colourTextHover when set+valid. UNLIKE every other gradient on this
+// block, text needs a precondition check first (CLAUDE.md "Real text
+// gradient" — plugins/sgs-blocks/CLAUDE.md): `.sgs-button`'s base rule +
+// all three presets (style.css) paint the button's OWN background on the
+// EXACT SAME selector a text colour targets, and `background-clip:text`
+// (which sgs_text_colour_decl() emits for a gradient) clips whatever
+// background that selector paints to the glyph shapes — it would erase the
+// button's own fill.
+//
+// So the background is moved onto a `.{uid}.sgs-button::after` layer, but
+// ONLY for THIS INSTANCE and ONLY when a text gradient is actually valid —
+// gated on sgs_css_gradient_value() returning non-empty, not merely on the
+// attribute being set. Every other button on every site keeps rendering
+// through the shared class-driven rules in style.css completely untouched
+// (this whole block is byte-identical no-op for a flat-colour button).
+//
+// Hand-built rather than a call to sgs_block_background_layer_css(): that
+// helper takes an already-resolved paint declaration, but sgs/button's
+// background is CLASS-driven through a --sgs-btn-bg*/--sgs-btn-bg-image*
+// var() chain (Spec 32 FR-32-2 — three presets + a per-instance override +
+// an sgs/multi-button group default; see style.css's own file-header
+// comment) that this file never resolves to a literal value. Moving that
+// SAME var() chain from `.sgs-button`'s own background-* onto
+// `.{uid}.sgs-button::after`'s background-* — and neutralising it on the
+// element itself — reproduces the identical resolved paint through the
+// exact same vars, so whichever preset/override would have won still wins.
+//
+// Specificity: the doubled `.{uid}.{uid}.sgs-button` selector (0,3,0) is used
+// for the RESTING override rather than the usual single `.{uid}.sgs-button`
+// (0,2,0) — style.css's shared `.sgs-button:hover,.sgs-button:focus-visible`
+// rule is ALSO (0,2,0), so a single-uid resting rule would only beat it by
+// document order, which this file's own min-height comment (step 4) records
+// as measured FALSE in some bundling scenarios. The doubled selector beats
+// (0,2,0) unconditionally, matching that precedent (Pattern A elsewhere in
+// this file already uses the same trick for the same reason).
+$text_gradient_value       = sgs_css_gradient_value( $colour_text_gradient );
+$text_gradient_hover_value = sgs_css_gradient_value( $colour_text_hover_gradient );
+
+if ( '' !== $text_gradient_value || '' !== $text_gradient_hover_value ) {
+	$btn_sel        = ".{$uid}.sgs-button";
+	$btn_sel_strong = ".{$uid}.{$uid}.sgs-button";
+
+	// Neutralise the element's own background (it now paints on ::after) and
+	// establish the stacking context the negative z-index layer needs.
+	$scoped_css_parts[] = "{$btn_sel_strong}{position:relative;isolation:isolate;background-color:transparent;background-image:none;}";
+	$scoped_css_parts[] = "{$btn_sel}::after{content:\"\";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background-color:var(--sgs-btn-bg, var(--sgs-mb-btn-bg-default, transparent));background-image:var(--sgs-btn-bg-image, none);}";
+	// Hover/focus repaint the ::after layer with the SAME hover var chain the
+	// shared stylesheet would otherwise have applied to the element itself.
+	$scoped_css_parts[] = sgs_hover_state_rules(
+		$btn_sel,
+		'background-color:var(--sgs-btn-bg-hover, var(--sgs-btn-bg, var(--sgs-mb-btn-bg-default, transparent)));background-image:var(--sgs-btn-bg-hover-image, var(--sgs-btn-bg-image, none))',
+		':focus-visible',
+		'::after'
+	);
+
+	if ( '' !== $text_gradient_value ) {
+		$text_gradient_decl = sgs_text_colour_decl( $text_gradient_value );
+		if ( '' !== $text_gradient_decl ) {
+			$scoped_css_parts[] = "{$btn_sel_strong}{{$text_gradient_decl};}";
+		}
+		// MANDATORY companion (helpers-tokens.php docblock) — old-browser
+		// fallback for a gradient text colour; targets the exact same
+		// selector the decl above was emitted onto.
+		$scoped_css_parts[] = sgs_text_colour_gradient_fallback_rule( $btn_sel_strong, $text_gradient_value );
+	}
+
+	if ( '' !== $text_gradient_hover_value ) {
+		$text_gradient_hover_decl = sgs_text_colour_decl( $text_gradient_hover_value );
+		if ( '' !== $text_gradient_hover_decl ) {
+			$scoped_css_parts[] = sgs_hover_state_rules( $btn_sel, $text_gradient_hover_decl . ';', ':focus-visible' );
+		}
+		// Hover-state fallback — same touch-safe wrapping as sgs/heading's own
+		// hover-gradient fallback (D636 precedent): the guarded :hover branch
+		// goes through sgs_hover_media_wrap() + SGS_HOVER_NOT_TOUCH (the
+		// @supports rule can't be injected into by sgs_hover_guarded_rule()
+		// itself, since it isn't a plain selector/decl pair), and the
+		// keyboard-reachable :focus-visible branch is unguarded.
+		$text_gradient_hover_fallback = sgs_hover_media_wrap(
+			sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $btn_sel . ':hover', $text_gradient_hover_value )
+		) . sgs_text_colour_gradient_fallback_rule( $btn_sel . ':focus-visible', $text_gradient_hover_value );
+		if ( '' !== $text_gradient_hover_fallback ) {
+			$scoped_css_parts[] = $text_gradient_hover_fallback;
+		}
+	}
+}
+
 $wrapper_attr = get_block_wrapper_attributes(
 	array(
 		'id'          => $uid,
@@ -953,23 +983,25 @@ $allowed_css_tags = array(
 	'style' => array(),
 );
 if ( $scoped_css_parts ) {
-	// Class-level compound selector, matching the seven other scoped rules in this file.
-	// It was previously `#{$uid} .sgs-button` — ID-scoped AND a DESCENDANT combinator, while
-	// the uid and the class sit on the SAME element, so it matched zero elements and
-	// prefers-reduced-motion was silently ignored (measured live on the canary 2026-08-17:
-	// `#id .sgs-button` = 0 matches, `#id.sgs-button` = 1). ID scoping also breaks Spec 32
-	// §6.1(b)/D303, which requires class level so the client's sgsCustomCss residual can win.
+	// Class-level compound selector (`.{$uid}.sgs-button`), matching the seven other
+	// scoped rules in this file. The uid and the class sit on the SAME element, so an
+	// ID selector (`#{$uid} .sgs-button`) would be a descendant combinator and match
+	// zero elements. Class level is also required by Spec 32 §6.1(b)/D303, so the
+	// client's sgsCustomCss residual can win.
 	$raw_css = implode( '', $scoped_css_parts )
 		. "@media(prefers-reduced-motion:reduce){.{$uid}.sgs-button{transition:none !important;transform:none !important;}}";
 	// wp_strip_all_tags (not esc_html) matches the proven SGS_Container_Wrapper
 	// pattern: it blocks a </style> breakout while leaving CSS combinators like
 	// `>` intact (esc_html would turn `>` into &gt; and break any descendant rule).
-	// Every value reaching $raw_css is pre-sanitised ($sgs_css_length / $sgs_css_keyword
+	// Every value reaching $raw_css is pre-sanitised (sgs_css_length_value() / sgs_css_keyword_sanitise()
 	// / wp_style_engine_get_styles), so no un-sanitised value survives to here.
 	echo '<style>' . wp_strip_all_tags( $raw_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style>
 }
 
 // Allowed tags for icon SVG + label output.
+// The SVG portion below is a second, independent local allowlist — same deliberate
+// narrowing rationale as $allowed_svg above (static Lucide icons only), not a
+// duplicate to be merged away. Keep both in sync if the icon set's needs change.
 $allowed_inner = array_merge(
 	wp_kses_allowed_html( 'post' ),
 	array(

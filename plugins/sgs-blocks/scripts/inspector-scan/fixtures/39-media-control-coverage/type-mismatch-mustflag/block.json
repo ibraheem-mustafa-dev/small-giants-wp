@@ -1,0 +1,29 @@
+{
+	"name": "sgs/type-mismatch-mustflag",
+	"supports": {
+		"sgs": {
+			"mediaElements": [
+				{ "prefix": "", "context": "element", "atoms": [ "link" ] }
+			]
+		}
+	},
+	"attributes": {
+		"mediaType": {
+			"type": "string",
+			"default": "image",
+			"enum": [ "image", "video", "svg" ]
+		},
+		"linkUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"linkOpensNewTab": {
+			"type": "boolean",
+			"default": false
+		},
+		"linkRel": {
+			"type": "string",
+			"default": ""
+		}
+	}
+}

@@ -2,6 +2,20 @@
   "_doc": "attr-classification-overrides.json — the hand-authored, reseed-durable OVERRIDE layer for block_attributes classification corrections (role/derived_selector/css_property/css_element/css_state/css_tier/box_family/etc). Lifted verbatim from sgs-update-v2.py ATTR_CLASSIFICATION_OVERRIDES (Bean request, 2026-07-21). This is the single source of truth Bean asked for — sgs-update-v2.py now READS this file rather than declaring the dict inline. Applied AFTER the derived classifier layer (css-property-classifications.json) as Stage 1 sub-step C, so an override here wins on any field conflict with the derived layer. Records here exist to correct genuine mis-derivations OR to record cases where what the code DOES and what it MEANS differ (e.g. sgs/tabs tabIndicatorColour delivers via box-shadow but is a COLOUR value type) — never to correct plain accuracy bugs in the classifier, which should be fixed at the classifier itself. Two entries added 2026-07-21 for the value-type-vs-delivery-property fix: sgs/tabs tabIndicatorColour/tabActiveIndicatorColour resolve via the classifier chain-walk to box-shadow (render.php:84-100 colour_props array -> style.css:120 inset box-shadow underline) — accurate but unusable for a consumer picking a control type. The manifest (tabs/block.json supports.sgs.elements.tab.attrMap) already declares these as css:border-color (its own documented rationale: the active variant renders via [aria-selected='true'], not CSS :active, and drives the underline/box-shadow INDICATOR colour). css_property overridden here to border-color to match that already-established, coordinator-approved manifest vocabulary — a colour-family property a consumer control-picker can route to a colour picker, not a shadow control. 18 entries added 2026-07-22 (Spec 31 coupled UN-EXCLUDE + HOVER-LIFT): scaleHover (10 blocks, excl. sgs/post-grid whose scaleHover is a per-item css_element=card derived-selector attr with a multi-property css_property, out of this base-domain resolver channel) / grayscaleHover (4 blocks) / imageZoomHover (4 blocks incl. sgs/post-grid, whose imageZoomHover IS root-scoped) now carry css_property=transform|filter + css_state=hover — these attrs have NO un-suffixed base sibling (the effect only ever exists as a hover interaction), so the new converter.db.db_lookup.attr_for_state_property direct-lookup channel resolves them by (css_property, css_state) rather than the base+Hover-suffix-append convention tabIndicatorColour-style pairs use. 1 entry added 2026-08-02 (property_suffixes Rating/Speed suffix-role fix, migrations/2026-08-01-rating-speed-suffix-role.py): the property_suffixes 'Rating' suffix was reclassified from the wrong 'number-css-px' to the common case 'behaviour' (it is right for 3 of the 4 attrs it matches: sgs/star-rating.maxRating, sgs/google-reviews.minRating, sgs/testimonial.showRating are all configuration, not content). sgs/star-rating.rating is the one genuine exception — the star/numeric rating VALUE ITSELF, a content-bearing display value matching the existing 'rating' role's own exemplar (sgs/testimonial.ratingStars, registered by migrations/2026-06-21-register-rating-role.py). Declared here as a single-attr override rather than bending the suffix rule to fit the minority case, per this layer's job (Layer 3, applied LAST, wins over the suffix-derived role on any conflict) — see check_css_property_reseed.py's docstring for the layering contract.",
   "entries": [
     {
+      "slug": "sgs/mega-panel",
+      "attr": "accentBackgroundImage",
+      "fields": {
+        "role": "color"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "linkHoverBackgroundImage",
+      "fields": {
+        "role": "color"
+      }
+    },
+    {
       "slug": "sgs/heading",
       "attr": "level",
       "fields": {
@@ -241,7 +255,8 @@
       "slug": "sgs/quote",
       "attr": "attributionFontFamily",
       "fields": {
-        "derived_selector": ".sgs-quote__attribution"
+        "derived_selector": ".sgs-quote__attribution",
+        "css_element": "attribution"
       }
     },
     {
@@ -557,6 +572,13 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "featuredTag",
+      "fields": {
+        "derived_selector": ".sgs-product-card__tag--featured"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "tagBackgroundColour",
       "fields": {
         "canonical_slot": "label",
@@ -568,8 +590,11 @@
       "attr": "tagTextColour",
       "fields": {
         "canonical_slot": "label",
-        "derived_selector": ".sgs-product-card__tag--trial"
-      }
+        "derived_selector": ".sgs-product-card__tag--trial",
+        "css_property": "color",
+        "css_element": "tag"
+      },
+      "_why": "2026-09-05. UNMASKED by adding css_property to sgs-update-v2.py Stage 1C reset list: a STALE DB value had been masking the fact that the classifier cannot derive this row, and this entry declared canonical_slot/derived_selector but never css_property. Verified against product-card/render.php:625-635 - tagTextColour genuinely paints color on .{uid}.sgs-product-card__tag--trial via sgs_text_colour_decl(). The emission scanner cannot trace it because the value takes TWO helper hops into a variable (sgs_resolve_text_colour_or_gradient() -> $effective -> sgs_text_colour_decl()) and the selector is likewise built into a variable first, so no literal property/selector pair sits in one statement for the shape-matcher to find. Declares the color/tag pair the derived layer previously carried by accident."
     },
     {
       "slug": "sgs/product-card",
@@ -955,8 +980,10 @@
       "slug": "sgs/icon",
       "attr": "iconSource",
       "fields": {
-        "derived_selector": ".sgs-icon__glyph, [data-icon-source]"
-      }
+        "derived_selector": ".sgs-icon__glyph, [data-icon-source]",
+        "canonical_slot": "icon"
+      },
+      "_why": "canonical_slot added 2026-09-06 (Check#12 roleguess fix). The element-scope 'icon' slot resolves to standalone_block sgs/icon, but sgs/icon carries 6 content-bearing candidates across 6 different roles (dashiconName/emojiChar/iconName/iconSource/linkTarget/wpIconName) with none owning canonical_slot='icon', so a draft child's bare __icon token fell to insertion-order guessing. iconSource (role='identity') is the block's own GENERIC icon-source field -- it already resolves via the SAME icon-slug priority chain (data-icon/data-lucide/inline-svg/BEM-modifier) as the format-specific fields, per roles.json's own 'identity' role docs -- so it is the correct sole owner of the generic 'icon' concept; the format-specific fields (dashiconName etc.) are populated separately by resolve_icon_kind()'s own dispatch, not by this slot match."
     },
     {
       "slug": "sgs/icon",
@@ -1011,18 +1038,10 @@
       "slug": "sgs/notice-banner",
       "attr": "text",
       "fields": {
-        "derived_selector": ".sgs-notice-banner__text"
-      }
-    },
-    {
-      "slug": "sgs/responsive-logo",
-      "attr": "alt",
-      "fields": {
-        "derived_selector": ".sgs-responsive-logo__image, img",
-        "role": "image-alt",
-        "alt_companion_attr": "logoUrl",
-        "_note": "2026-08-05: sgs/responsive-logo now mirrors how every other SGS image block declares an image. `logoUrl` (attr_type='string') was added beside the existing `logoId` (number) — the sgs/media imageUrl+imageId shape, ID-wins-URL-fallback — so `alt` finally has a string sibling to name as its companion. walk.py:295 gates alt capture on `role == 'image-object' AND attr_type == 'string'`, which three bare attachment IDs could never satisfy; that is why `alt` was routed through the interim `authored-alt-text` category. RETIREMENT CONDITION MET: `authored-alt-text` existed for this one block and can now be retired. Note the LEDGER previously recorded the prefix->suffix RENAME as the retirement condition — that was wrong, and verified wrong post-rename: renaming changed no attr_type, so image-alt stayed non-viable. It is THIS change, the attr-shape mirror, that retires it."
-      }
+        "derived_selector": ".sgs-notice-banner__text",
+        "canonical_slot": "disclaimer"
+      },
+      "_why": "canonical_slot merged in 2026-09-06 (Check#12 roleguess fix): this attr previously carried canonical_slot='text' (a self-referential default from the attribute's own name), but the incoming slot literal for this block's registered purpose is 'disclaimer' (slots.json: 'Disclaimer/legal callout text... -> sgs/notice-banner'), which had no exact match anywhere, so it fell to guessing among {iconName, iconSource, text}. Safe to re-point: attr_name_for_slot_or_alias's pass-2 attr-name fallback still resolves a literal '__text' token to this same attribute even after the change, so nothing regresses."
     },
     {
       "slug": "sgs/responsive-logo",
@@ -1205,22 +1224,31 @@
       "slug": "sgs/product-card",
       "attr": "pickerPillBgColour",
       "fields": {
-        "derived_selector": ".sgs-product-card__pill"
-      }
+        "derived_selector": ".sgs-product-card__pill",
+        "css_property": "background-color",
+        "css_element": "pill"
+      },
+      "_why": "2026-09-05 root-cause fix (colour-conformance census 9-row REFUSED:no-css_property gap, D962-adjacent). This attr is collected by sgs/product-card/render.php into $picker_style_attrs under a RENAMED key ('picker{X}Colour' -> '{x}Colour') and forwarded via render_block('sgs/option-picker', ...) -- the actual CSS emission happens inside option-picker's own render.php/style.css under the renamed key, which sgs/option-picker's OWN block_attributes row for that renamed key already correctly resolves (verified live via sgs-db.py). extract-signatures.py scans one block's render.php + style.css at a time and never follows a render_block() forward across a key rename, so this attr's real target was invisible to it. Value mirrors option-picker's own already-correct row for the same renamed attribute exactly."
     },
     {
       "slug": "sgs/product-card",
       "attr": "pickerPillTextColour",
       "fields": {
-        "derived_selector": ".sgs-product-card__pill"
-      }
+        "derived_selector": ".sgs-product-card__pill",
+        "css_property": "color",
+        "css_element": "pill"
+      },
+      "_why": "2026-09-05 root-cause fix (colour-conformance census 9-row REFUSED:no-css_property gap, D962-adjacent). This attr is collected by sgs/product-card/render.php into $picker_style_attrs under a RENAMED key ('picker{X}Colour' -> '{x}Colour') and forwarded via render_block('sgs/option-picker', ...) -- the actual CSS emission happens inside option-picker's own render.php/style.css under the renamed key, which sgs/option-picker's OWN block_attributes row for that renamed key already correctly resolves (verified live via sgs-db.py). extract-signatures.py scans one block's render.php + style.css at a time and never follows a render_block() forward across a key rename, so this attr's real target was invisible to it. Value mirrors option-picker's own already-correct row for the same renamed attribute exactly."
     },
     {
       "slug": "sgs/product-card",
       "attr": "pickerPillBorderColour",
       "fields": {
-        "derived_selector": ".sgs-product-card__pill"
-      }
+        "derived_selector": ".sgs-product-card__pill",
+        "css_property": "border-color",
+        "css_element": "pill"
+      },
+      "_why": "2026-09-05 root-cause fix (colour-conformance census 9-row REFUSED:no-css_property gap, D962-adjacent). This attr is collected by sgs/product-card/render.php into $picker_style_attrs under a RENAMED key ('picker{X}Colour' -> '{x}Colour') and forwarded via render_block('sgs/option-picker', ...) -- the actual CSS emission happens inside option-picker's own render.php/style.css under the renamed key, which sgs/option-picker's OWN block_attributes row for that renamed key already correctly resolves (verified live via sgs-db.py). extract-signatures.py scans one block's render.php + style.css at a time and never follows a render_block() forward across a key rename, so this attr's real target was invisible to it. Value mirrors option-picker's own already-correct row for the same renamed attribute exactly."
     },
     {
       "slug": "sgs/product-card",
@@ -1255,6 +1283,16 @@
       "attr": "pickerPillSelectedBorderRadius",
       "fields": {
         "derived_selector": ".sgs-product-card__pill--active"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "navBg",
+      "fields": {
+        "css_property": "background-color",
+        "css_layer": "OUTER",
+        "role": "color",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1525,22 +1563,6 @@
       }
     },
     {
-      "_why": "a11y-text role, seeded for DOCUMENTATION not routing (Bean, 2026-08-04). structural check: binds into an aria-* attribute",
-      "slug": "sgs/cart",
-      "attr": "ariaLabel",
-      "fields": {
-        "role": "a11y-text"
-      }
-    },
-    {
-      "_why": "a11y-text role, seeded for DOCUMENTATION not routing (Bean, 2026-08-04). MANUAL verification: tabs/render.php:218-219 assigns it to $aria_label. The structural check MISSED this - PHP spells the variable aria_label (underscore) while HTML spells the attribute aria-label (hyphen), and the marker only matched the hyphen. Blind spot recorded.",
-      "slug": "sgs/tabs",
-      "attr": "blockLabel",
-      "fields": {
-        "role": "a11y-text"
-      }
-    },
-    {
       "slug": "sgs/responsive-logo",
       "attr": "logoUrl",
       "fields": {
@@ -1742,7 +1764,8 @@
       "attr": "bgKenBurns",
       "fields": {
         "role": "css-gate",
-        "css_property": "animation"
+        "css_property": "animation",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1750,7 +1773,8 @@
       "attr": "bgKenBurns",
       "fields": {
         "role": "css-gate",
-        "css_property": "animation"
+        "css_property": "animation",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1758,7 +1782,8 @@
       "attr": "bgKenBurns",
       "fields": {
         "role": "css-gate",
-        "css_property": "animation"
+        "css_property": "animation",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1766,7 +1791,8 @@
       "attr": "bgKenBurns",
       "fields": {
         "role": "css-gate",
-        "css_property": "animation"
+        "css_property": "animation",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1774,7 +1800,8 @@
       "attr": "bgKenBurns",
       "fields": {
         "role": "css-gate",
-        "css_property": "animation"
+        "css_property": "animation",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1782,7 +1809,8 @@
       "attr": "bgKenBurns",
       "fields": {
         "role": "css-gate",
-        "css_property": "animation"
+        "css_property": "animation",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2327,8 +2355,10 @@
       "slug": "sgs/option-picker",
       "attr": "optionItems",
       "fields": {
-        "role": "content"
-      }
+        "role": "content",
+        "canonical_slot": "option-picker"
+      },
+      "_why": "canonical_slot added 2026-09-06 (Check#12 roleguess fix): the literal slot 'option-picker' has no exact canonical_slot match on sgs/option-picker, so content lift fell to insertion-order guessing among {label, optionItems}. optionItems is the array-content field _lift_item() actually fills -- label is a separate, already-correct 'label' slot owner and is unaffected."
     },
     {
       "slug": "sgs/gallery",
@@ -2523,8 +2553,44 @@
       "slug": "sgs/testimonial",
       "attr": "ratingStars",
       "fields": {
-        "role": "rating"
-      }
+        "role": "rating",
+        "derived_selector": ".sgs-testimonial__stars"
+      },
+      "_why": "2026-09-05 Task 4 (testimonial classic-card/rating-led content-loss audit). derived_selector was NULL, so lift_scalar_content's first gate (scalar_content.py:158-160) skipped this attr before role was even consulted -- no draft, however faithfully shaped, could ever populate it. render.php:717 confirms the star-rating container carries BOTH classes together: `class=\"sgs-testimonial__rating sgs-testimonial__stars\"` -- `.sgs-testimonial__stars` is used (not the shared `.sgs-testimonial__rating`) so this attr's selector never also matches the UNRELATED numeric-scale container (`.sgs-testimonial__rating.sgs-testimonial__rating--scale`, rating-led variant), which carries no star aria-label/glyphs at all."
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "sourcePlatform",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__source"
+      },
+      "_why": "2026-09-05 Task 4 (testimonial rating-led content-loss audit). derived_selector was NULL -- same missing-selector defect class as ratingStars above, blocking the attr at the data layer regardless of draft markup. role='text-content'/attr_type='string' already correctly matches lift_scalar_content's is_text gate; only the selector was missing. render.php:730 confirms the real emitted class: `<span class=\"sgs-testimonial__source\">`."
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "ratingScale",
+      "fields": {
+        "role": "numeric-content",
+        "derived_selector": ".sgs-testimonial__score"
+      },
+      "_why": "2026-09-05 Task 4 (testimonial rating-led content-loss audit). role was 'select-from-enum', which lift_scalar_content's gate correctly excludes (an enum pick is not this attr's shape) -- but the role itself was the mis-derivation, not the gate: render.php:103-104 clamps this to a CONTINUOUS 0-100 float (`max(0, min(100, (float)$attributes['ratingScale']))`), e.g. '9.2 / 10' -- not a fixed choice set. Reusing the existing 'rating' role (its docstring says 'star/numeric') was considered and REJECTED: its sole consumer, extract_star_count() (converter/services/lift_helpers.py:112-126), hardcodes an aria-label-digit-or-glyph-count read clamped to 0..5 -- silently WRONG (not merely absent) for a 0-100 score, and this element carries no aria-label/star glyphs at all. A new role 'numeric-content' was added instead (data/roles.json, converter/services/field_extractors.py, converter/resolvers/scalar_content.py) -- zero pre-existing attrs carried it, so widening the gate to accept it changes no other block's behaviour. derived_selector narrowed from the shared '.sgs-testimonial__rating' (also matches the UNRELATED star container in classic-card, and would swallow the trailing '/ 10' text if read from the outer div) to '.sgs-testimonial__score', the exact span render.php:686 emits the numeric value into."
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "ratingType",
+      "fields": {
+        "role": "css-modifier"
+      },
+      "_why": "2026-09-05 Task 4 (testimonial rating-led content-loss audit) -- found while fixing ratingScale, not itself in the original 4-field root-cause list, but necessary for the ratingScale fix to have any visible effect: render.php:679 gates the numeric-score render branch on `'scale' === $rating_type`, and ratingType defaults to 'stars' (render.php:98) with no prior mechanism to ever set it to 'scale' from draft content. role was 'select-from-enum' (excluded by the same gate as ratingScale, for the same reason -- there is no enum PICKER here, the value is read off the draft, not chosen). The correct shape is 'css-modifier': render.php:685 emits the modifier class `sgs-testimonial__rating--scale` on the SAME element ratingScale's derived_selector's ancestor `.sgs-testimonial__rating` matches, so the value is recoverable as a BEM --modifier suffix. 'css-modifier' already existed as a role in field_extractors.py (used by array_content's per-item extraction) but had never been wired into lift_scalar_content's gate -- zero pre-existing block_attributes rows carried it, so widening the gate is a genuinely new, zero-blast-radius capability, not a change to existing behaviour. derived_selector is UNCHANGED ('.sgs-testimonial__rating', already correct) -- for classic-card's star container this element carries no `--` modifier, so extraction correctly returns None (no key emitted) and the attr's own 'stars' default applies exactly as before."
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "verified",
+      "fields": {
+        "role": "presence-boolean",
+        "derived_selector": ".sgs-testimonial__verified"
+      },
+      "_why": "2026-09-05 Task 4 (testimonial rating-led content-loss audit). TWO independent defects stacked on this one row. (1) Wrong selector: derived_selector was '.sgs-testimonial__text', which does not exist anywhere in render.php -- the real emitted badge is `<span class=\"sgs-testimonial__verified\">` (render.php:727). (2) Wrong role: 'boolean-visibility' -- but that role's own contract (data/roles.json) states 'a draft's HTML/CSS carries no signal a boolean toggle could be lifted from, so the absence of a resolver is expected, not a gap'. That claim is FALSE for this attr: the badge's mere presence in the draft IS a real, unambiguous signal (unlike avatarDecorative/orgLogoDecorative, genuine editor-only preference toggles with no draft signal, correctly left on 'boolean-visibility'). A new role 'presence-boolean' was added (data/roles.json, field_extractors.py, scalar_content.py) rather than repurposing 'boolean-visibility' itself, because that role is explicitly documented and relied upon elsewhere as 'no consumer, deliberately excluded from the content walk' -- widening IT would have silently started content-lifting every other attr that (correctly) carries that role. 'presence-boolean' is brand new (zero pre-existing rows), so this fix cannot change any other block's behaviour."
     },
     {
       "slug": "sgs/trustpilot-reviews",
@@ -2611,6 +2677,26 @@
       }
     },
     {
+      "slug": "sgs/team-member",
+      "attr": "photoTablet",
+      "fields": {
+        "css_property": null,
+        "css_tier": null,
+        "css_layer": null
+      },
+      "_why": "MIS-DERIVED css_property cleared 2026-08-29. photoTablet is an OBJECT-typed media attribute (a WP media object: url/id/alt), not a CSS length — its own base sibling `photo` correctly carries css_property=NULL, so the row was self-inconsistent. ROOT CAUSE, proven not guessed: the derived layer (behavioural-analyser/css-property-classifications.json) claims css_property='max-width' + css_tier='tablet' because render.php:264 emits `sprintf('<source media=\"(max-width:1023px)\" srcset=\"%s\"', ...)` — the classifier read the media-query CONDITION inside an HTML <source> element's `media` ATTRIBUTE as if it were a CSS property emission. The breakpoints prove the mechanism beyond doubt: photoTablet took tier `tablet` from `max-width:1023px` and photoMobile took tier `mobile` from `max-width:767px` (render.php:261), which are exactly this project's tablet/mobile device-tier breakpoints. The tiers are rendered as <picture><source media> alternates (render.php:255-266), i.e. an art-direction source swap; nothing here emits a max-width DECLARATION, and style.css contains no max-width rule for the photo at all. Class checked comprehensively: the fingerprint (css_property='max-width' AND css_tier IS NOT NULL) returns exactly these two rows across the whole DB, and of the three files emitting `<source media=` only this block's inline sprintf trips it (sgs/responsive-logo and includes/helpers-media.php route through the shared helper). Overridden rather than fixed at the classifier because the classifier fix — teaching the behavioural analyser that a `media` attribute is not a CSS emission — is a shared-analyser change with real blast radius for a 2-row defect; the root cause is recorded here so that fix can be made deliberately later."
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "photoMobile",
+      "fields": {
+        "css_property": null,
+        "css_tier": null,
+        "css_layer": null
+      },
+      "_why": "MIS-DERIVED css_property cleared 2026-08-29 — the mobile twin of the sgs/team-member.photoTablet entry directly above; see that entry for the full root cause. Here the derived layer claims css_property='max-width' + css_tier='mobile', read out of `<source media=\"(max-width:767px)\">` at render.php:261. NOTE for anyone carrying forward the 2026-08-29 handoff prompt: that prompt stated `photoMobile` NO LONGER EXISTS in the DB, removed by the 2026-08-28 ghost-row prune. That is FALSE — re-verified against the live DB on 2026-08-29, both rows are present and both were mis-derived identically."
+    },
+    {
       "slug": "sgs/cta-section",
       "attr": "textAlign",
       "fields": {
@@ -2648,7 +2734,8 @@
       "fields": {
         "css_property": "box-shadow-color",
         "css_element": "wrapper",
-        "derived_selector": ".sgs-cta-section__shadow"
+        "derived_selector": ".sgs-cta-section__shadow",
+        "css_layer": "OUTER"
       },
       "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
     },
@@ -2745,11 +2832,11 @@
       "attr": "boxShadowColour",
       "fields": {
         "css_property": "box-shadow-color",
-        "css_element": "frame",
+        "css_element": "wrapper",
         "css_layer": "OUTER",
         "derived_selector": ".wp-block-sgs-before-after"
       },
-      "_why": "2026-08-16 same shadow colour-architecture redesign (D621/D622) as the 9 companion overrides above (see sgs/card-grid.cardShadowColour for the full explanation) — sgs/before-after's boxShadow was migrated from a raw-CSS TextControl onto the shared ShadowControl (shape) + SgsColourPanel (boxShadowColour) pair, composed via sgs_shadow_value_composed() at render.php line ~195. Element is 'frame' (block.json's own isWrapper:true element for this content-KIND block), scoped to the block's root class since the frame IS the block wrapper — no separate BEM sub-element exists for it. css_layer:OUTER added after the F6 reseed-survival check reported the DB's derived value as ('box-shadow-color','OUTER') — matches the sgs/team-member.cardShadowColour sibling override above, which also carries css_layer:OUTER."
+      "_why": "2026-08-16 same shadow colour-architecture redesign (D621/D622) as the 9 companion overrides above (see sgs/card-grid.cardShadowColour for the full explanation) — sgs/before-after's boxShadow was migrated from a raw-CSS TextControl onto the shared ShadowControl (shape) + SgsColourPanel (boxShadowColour) pair, composed via sgs_shadow_value_composed() at render.php line ~195. This block's OWN block.json names its isWrapper root element 'frame' (not 'wrapper') — that is the semantically correct element label, and 'frame' IS the block wrapper (no separate BEM sub-element exists for it). css_element is set to 'wrapper' here, NOT 'frame', because db_lookup.py's OUTER-layer root-element recognition (_outer_element_clause / _OUTER_ROOT_ELEMENTS, plugins/sgs-blocks/scripts/converter/db/db_lookup.py) is CURRENTLY a closed literal list ('', root, self, wrapper) that cannot yet recognise a per-block custom wrapper-element name — 'frame' silently gapped this attr's OUTER-layer resolution until this override was corrected 2026-08-27. This is a pragmatic compatibility label, not this block's true element name (which remains 'frame' in block.json); it should be reverted to 'frame' if/when that vocabulary becomes DB/block.json-driven instead of a fixed list (tracked: 32 blocks in the roster have the same latent gap — info-box, product-card, card-grid, button, and others — none fixed by this override). css_layer:OUTER added after the F6 reseed-survival check reported the DB's derived value as ('box-shadow-color','OUTER') — matches the sgs/team-member.cardShadowColour sibling override above, which also carries css_layer:OUTER."
     },
     {
       "slug": "sgs/post-grid",
@@ -2760,6 +2847,15 @@
         "css_state": "hover"
       },
       "_why": "2026-08-16 shadow colour-architecture migration — sgs/post-grid's shadowHover moved off its preset-only SelectControl onto ShadowControl (Spec 35 Part F banned-anti-pattern fix), following the SAME D621/D622 pattern as the other shadow-colour companion-attr overrides in this file (see sgs/card-grid.cardShadowColour for the full explanation of why the static extractor mis-derives this attr without the override). css_element='card' matches this block's own block.json element key for the post card (elements.card, prefix 'card') — the shape sibling shadowHover is now declared in that element's states.hover.attrMap as 'css:box-shadow', so this colour override mirrors its css_element/css_state so cloning scopes both to the same element."
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "shadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "card"
+      },
+      "_why": "2026-08-20 — companion override for the new resting `shadow` attribute (added to close a STATE_WITHOUT_BASE conformance gap: the client could style shadowHover but had no resting shadow). Same D621/D622 shadow colour-architecture pattern as the shadowHoverColour override directly above — the static extractor mis-derives a shadow-colour attr without an explicit override, same as every other companion entry in this file. css_element='card' matches this block's own block.json element key for the post card (elements.card, prefix 'card'), where the shape sibling `shadow` is now declared on the BASE attrMap as 'css:box-shadow' (no css_state, unlike the hover companion above, since this is the resting state)."
     },
     {
       "slug": "sgs/media",
@@ -2813,6 +2909,279 @@
         "css_state": "hover"
       },
       "_why": "2026-08-16 sgs/quote D632 residual closed — same class as sgs/quote.boxShadowColour above; hover-state companion of boxShadowHover (declared in block.json's box element states.hover.attrMap as 'css:box-shadow')."
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "borderWidth",
+      "fields": {
+        "css_layer": "OUTER"
+      },
+      "_why": "2026-08-23 — AmbiguousLayerAttrError: (sgs/product-card, CONTENT, border-width) declared TWO candidate attrs, 'borderWidth' and 'ctaBorderWidth'. Both were derived with css_layer NULL, so the resolver saw one (layer, property) slot with two owners and refused to pick, failing 5 converter tests. Their css_element values already distinguish them correctly — borderWidth is 'wrapper' (the card's own outer box), ctaBorderWidth is 'cta' (the button inside it) — but the resolver keys on (layer, property), not element, so the element difference never reached it. Declaring borderWidth as OUTER puts each attr in its own layer and leaves ctaBorderWidth as the sole CONTENT owner of border-width. Same shape as the sgs/team-member.cardShadowColour and sgs/before-after.boxShadowColour overrides above, which resolved the identical error class. Surfaced by the 2026-08-22 reseed rather than introduced by it: both classification rows date from 20ea88fe."
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "borderStyle",
+      "fields": {
+        "css_layer": "OUTER"
+      },
+      "_why": "2026-08-23 — same AmbiguousLayerAttrError class as the sgs/product-card.borderWidth override above. The card's OWN outer box and the CTA button inside it both declare this CSS property with css_layer NULL, so the resolver saw one (layer, property) slot with two owners and refused to pick. Their css_element already distinguishes them ('wrapper' vs 'cta') but the resolver keys on (layer, property), not element. Declaring the WRAPPER attr as OUTER leaves the cta* attr the sole CONTENT owner. Scoped deliberately to the two-member wrapper-vs-cta groups — the many-element groups (color, font-size) share a property across title/price/description/tag and have NOT errored, so their resolution path is different and is left untouched rather than changed on a guess."
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "borderColour",
+      "fields": {
+        "css_layer": "OUTER"
+      },
+      "_why": "2026-08-23 — same AmbiguousLayerAttrError class as the sgs/product-card.borderWidth override above. The card's OWN outer box and the CTA button inside it both declare this CSS property with css_layer NULL, so the resolver saw one (layer, property) slot with two owners and refused to pick. Their css_element already distinguishes them ('wrapper' vs 'cta') but the resolver keys on (layer, property), not element. Declaring the WRAPPER attr as OUTER leaves the cta* attr the sole CONTENT owner. Scoped deliberately to the two-member wrapper-vs-cta groups — the many-element groups (color, font-size) share a property across title/price/description/tag and have NOT errored, so their resolution path is different and is left untouched rather than changed on a guess."
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_layer": "OUTER"
+      },
+      "_why": "2026-08-23 — same AmbiguousLayerAttrError class as the sgs/product-card.borderWidth override above. The card's OWN outer box and the CTA button inside it both declare this CSS property with css_layer NULL, so the resolver saw one (layer, property) slot with two owners and refused to pick. Their css_element already distinguishes them ('wrapper' vs 'cta') but the resolver keys on (layer, property), not element. Declaring the WRAPPER attr as OUTER leaves the cta* attr the sole CONTENT owner. Scoped deliberately to the two-member wrapper-vs-cta groups — the many-element groups (color, font-size) share a property across title/price/description/tag and have NOT errored, so their resolution path is different and is left untouched rather than changed on a guess."
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "title"
+      },
+      "_why": "Declares the DB row db-consistency check #8 flagged as a rogue seed. It was neither rogue nor stray: until 2026-08-26 sgs_typography_css_rule() had no font-family branch, so sgs/product-card emitted the title font-family block-privately and the derived classifier had no standard route to declare. G4 gave the shared helper that branch and deleted the block-private emission in the same commit, which makes titleFontFamily -> font-family a true standard-route mapping. css_element is \"title\" to match its five siblings (titleColour / titleFontSize / titleFontStyle / titleFontWeight / titleLineHeight), every one of which already resolves to that element — titleFontFamily was the lone NULL among them, which is the footprint of the removed workaround rather than a seeding error."
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "columns",
+      "fields": {
+        "css_property": "--sgs-card-grid-columns",
+        "css_layer": "GRID"
+      },
+      "_why": "2026-08-28 routing-collision fix. `columns` does NOT paint grid-template-columns: render.php:477 emits the CUSTOM PROPERTY `--sgs-card-grid-columns` (plus -tablet/-mobile), which style.css:5-7 then feeds into `grid-template-columns: repeat(var(--sgs-card-grid-columns,3),1fr)`. The standard derivation assigned `grid-template-columns` from the property_suffixes row `Columns -> grid-template-columns`, which is correct for a track-list attr and wrong for a COUNT. That mis-derivation made `columns` contend with `gridTemplateColumns` (declared in the `grid` element's own attrMap) for the SAME routing slot: db-consistency Check #1 reported amb:sgs/card-grid:grid-template-columns:wrapper_css:wrapper:None:None, where the resolver silently picks by rowid. css_element cannot separate them here -- unlike sgs/post-grid (columns=inner, gridTemplateColumns=wrapper, two real nodes), card-grid puts `sgs-card-grid` AND the uid class on ONE element (render.php:456-462), so both genuinely resolve to the same node. Naming the custom property is the truthful disambiguation, and it is what this file's _doc calls a code-DOES vs code-MEANS record (cf. sgs/tabs tabIndicatorColour). Safe for the converter, which already models custom properties: services/l2_qualify.py:198 and services/fold_helpers.py:358 both branch on startswith('--'). Effect: gridTemplateColumns becomes the sole owner of grid-template-columns -- correct, because it is also the one that WINS in the browser (equal specificity, wrapper's inline <style id=uid> emitted after the lifted style.css) and the only one able to express asymmetric tracks a clone may carry."
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "order",
+      "fields": {
+        "css_element": "wrapper"
+      },
+      "_why": "2026-08-28 NULL css_element fix (§6). Genuine Cause C — order is scoped via a non-standard per-instance MD5-hash scope class (sgs-media-{hash}) rather than the usual .{uid} pattern, but the classification shape is identical: bare root selector, no BEM element token. css_property is already correctly derived as 'order' (verified against block_attributes before writing this entry) — only css_element was missing. 'wrapper' per the isWrapper:true convention documented on this same block's own 'media' element (block.json _note_css_element_resolves_to_wrapper)."
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "surfaceOpacity",
+      "fields": {
+        "css_element": "dialog"
+      },
+      "_why": "2026-08-28 NULL css_element fix (§6). Fallback-mechanism-only attr — modifies a sibling attr's value via color-mix() rather than owning its own attrMap key, so the classifier never resolved an element. css_property is already correctly derived as 'background-color' (verified against block_attributes before writing this entry) — only css_element was missing. 'dialog' is the block's own declared root element (block.json supports.sgs.elements.dialog, also named in its top-level elements array)."
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "anchor",
+      "fields": {
+        "css_element": "dialog"
+      },
+      "_why": "2026-08-28 NULL css_element fix (§6). Fallback-mechanism-only attr — an enum driving a multi-property geometry function, not a clean 1:1 attrMap shape. css_property is already correctly derived as 'max-width' (verified against block_attributes before writing this entry) — only css_element was missing. 'dialog' is the block's own declared root element (block.json supports.sgs.elements.dialog)."
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "backgroundMedia",
+      "fields": {
+        "css_element": "decorative"
+      },
+      "_why": "2026-08-28 NULL css_element fix (§6). The proposal doc flagged this row as needing the element key CONFIRMED before writing, not assumed as 'wrapper'. Read cta-section/block.json directly: its 'decorative' element (order 9) is explicitly documented as covering 'Background image/video (backgroundImage*/backgroundMedia/bgVideo*)... governed by dedicated controls outside the Text/Fill/Layout style clusters' — NOT the 'wrapper' element, which is a separate manifest entry scoped to fill/layout/animation clusters (background-color, padding, margin, border, max-width, min-height, box-shadow, parallax/duration, text colour). css_property is already correctly derived as 'background-image' (verified against block_attributes before writing this entry) — only css_element was missing."
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMediaObjectPositionTablet",
+      "fields": {
+        "css_element": "split-media"
+      },
+      "_why": "2026-08-28 NULL css_element fix (§6). Fallback-mechanism-only attr — the desktop sibling (splitMediaObjectPosition) already claims the attrMap key on this element, so the tablet tier falls through the classifier unresolved (narrow resolver gap, worked around here rather than debugged further). css_property is already correctly derived as 'object-position' (verified against block_attributes before writing this entry) — only css_element was missing. 'split-media' is the element declared 2026-08-15 for this same block (see sgs/hero splitImageMobileObjectPosition history in this file's header comment / CLAUDE.md) to close an earlier css_element drift orphan on the same family."
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitBackground",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "submit-button"
+      },
+      "_why": "2026-09-03 rogue-seed fix. submitBackground resolves via the submit-button element's bare {prefix}{suffix} default convention (no attrMap entry) — extract-signatures.py's classifier only ever records attrMap/states-declared attrs (see its own _record() docstring), so a pure-convention attr can never appear in css-property-classifications.json regardless of how many times it is regenerated, even though block_attributes correctly carries css_property='background-color' via a separate resolver path. Declared here so db-consistency's rogue-seed check recognises the value as understood rather than unexplained drift. Not a classifier bug to fix — the classifier's own scope is attrMap-only by design."
+    },
+    {
+      "slug": "sgs/modal",
+      "attr": "triggerBackground",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "trigger"
+      },
+      "_why": "2026-09-03 rogue-seed fix. Same shape as sgs/form.submitBackground immediately above — triggerBackground resolves via the trigger element's bare {prefix}{suffix} default convention (no attrMap entry), which extract-signatures.py's classifier never records regardless of regeneration. Declared here so db-consistency's rogue-seed check recognises the value as understood rather than unexplained drift."
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerLabelColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "label"
+      },
+      "_why": "2026-09-05 root-cause fix (colour-conformance census 9-row REFUSED:no-css_property gap, D962-adjacent). This attr is collected by sgs/product-card/render.php into $picker_style_attrs under a RENAMED key ('picker{X}Colour' -> '{x}Colour') and forwarded via render_block('sgs/option-picker', ...) -- the actual CSS emission happens inside option-picker's own render.php/style.css under the renamed key, which sgs/option-picker's OWN block_attributes row for that renamed key already correctly resolves (verified live via sgs-db.py). extract-signatures.py scans one block's render.php + style.css at a time and never follows a render_block() forward across a key rename, so this attr's real target was invisible to it. Value mirrors option-picker's own already-correct row for the same renamed attribute exactly."
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "childBtnBackground",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "child-button"
+      },
+      "_why": "2026-09-05 root-cause fix (colour-conformance census 9-row REFUSED:no-css_property gap, D962-adjacent). sgs/multi-button/render.php emits this as a '--sgs-mb-btn-{bg|color}-default' CUSTOM PROPERTY on ITS OWN wrapper, but that custom property is only ever CONSUMED (resolved to a real CSS property) inside sgs/button/style.css -- a DIFFERENT block's stylesheet (the second fallback tier of --sgs-btn-bg / --sgs-btn-color, verified live at button/style.css:71-72,119-120). extract-signatures.py's _custom_props_consumed() reads only the CURRENT block's own style.css, so a cross-block custom-property hand-off is structurally invisible to it. Value matches sgs/button's own already-correct colourBackground/colourText rows (same custom-property chain, same wrapper element). CORRECTED same-day (2026-09-05): the first css_element choice ('wrapper'/None) collided with a sibling attr on the identical (property, writer_path, element, state, tier) routing tuple, caught live by db-consistency-run's NEW-violation gate (order 19) -- 'the live resolver silently picks the first by rowid order'. Corrected to a distinguishing css_element that is honest about the real target: these attrs paint a target this block's OWN 'wrapper'/'entry' element does not resolve to."
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "childBtnTextColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "child-button"
+      },
+      "_why": "2026-09-05 root-cause fix (colour-conformance census 9-row REFUSED:no-css_property gap, D962-adjacent). sgs/multi-button/render.php emits this as a '--sgs-mb-btn-{bg|color}-default' CUSTOM PROPERTY on ITS OWN wrapper, but that custom property is only ever CONSUMED (resolved to a real CSS property) inside sgs/button/style.css -- a DIFFERENT block's stylesheet (the second fallback tier of --sgs-btn-bg / --sgs-btn-color, verified live at button/style.css:71-72,119-120). extract-signatures.py's _custom_props_consumed() reads only the CURRENT block's own style.css, so a cross-block custom-property hand-off is structurally invisible to it. Value matches sgs/button's own already-correct colourBackground/colourText rows (same custom-property chain, same wrapper element). CORRECTED same-day (2026-09-05): the first css_element choice ('wrapper'/None) collided with a sibling attr on the identical (property, writer_path, element, state, tier) routing tuple, caught live by db-consistency-run's NEW-violation gate (order 19) -- 'the live resolver silently picks the first by rowid order'. Corrected to a distinguishing css_element that is honest about the real target: these attrs paint a target this block's OWN 'wrapper'/'entry' element does not resolve to."
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "toggleLabelHoverColour",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "toggle-label",
+        "css_state": "hover"
+      },
+      "_why": "2026-09-05 root-cause fix (colour-conformance census 9-row REFUSED:no-css_property gap, D962-adjacent). render.php builds this declaration via sgs_background_paint_decl($toggle_label_hover_colour, $toggle_label_hover_colour_gradient) -- a real shared helper (includes/helpers-tokens.php:829) that always returns a 'background-color:...' or 'background-image:...' declaration -- then passes the RETURNED STRING into sgs_emit_state_colour_css() on .sgs-pricing-table__toggle-label. extract-signatures.py's Shape D helper registry (_HELPER_SUFFIX_PROPS) only recognises PREFIX+SELECTOR-shaped helpers (helper(attrs, 'prefix', selector)); sgs_background_paint_decl is a VALUE-in/decl-out helper with a different calling convention entirely, so it was never registered and its output was invisible to the classifier. background-color (not -image) matches this codebase's established Colour/ColourGradient sibling-pair convention (verified live: colourBackgroundHover=background-color, colourBackgroundHoverGradient=background-image, same pattern on button/product-card/form/google-reviews/modal) -- the flat colour attr always resolves to the -color form, its Gradient sibling to the -image form."
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "rowStripeColourA",
+      "fields": {
+        "css_element": "entry-odd"
+      },
+      "_why": "2026-09-05. rowStripeColourA/rowStripeColourB both correctly resolve to css_property=background-color via the classifier (style.scss fallback fix), but both target .sgs-timeline__entry with no distinguishing element -- they paint ALTERNATE rows (:nth-child(odd)/:nth-child(even), style.scss:1455-1462), not the same slot, so leaving both css_element NULL creates a genuine ambiguous-routing collision (caught live by db-consistency-run's NEW-violation gate). entry-odd/entry-even name the real distinguishing selector."
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "rowStripeColourB",
+      "fields": {
+        "css_element": "entry-even"
+      },
+      "_why": "2026-09-05. See rowStripeColourA's entry (added alongside this one) -- same alternating-row disambiguation, opposite parity."
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "rowStripeColourAGradient",
+      "fields": {
+        "css_element": "entry-odd"
+      },
+      "_why": "2026-09-06. Gradient sibling of rowStripeColourA (colour-conformance closeout) -- same alternating-row css_element ambiguity as its flat counterpart above, caught live by the same db-consistency-run NEW-violation gate the moment the sibling attr was added. Both A/B gradient attrs resolve to background-image with no distinguishing element otherwise."
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "rowStripeColourBGradient",
+      "fields": {
+        "css_element": "entry-even"
+      },
+      "_why": "2026-09-06. See rowStripeColourAGradient's entry (added alongside this one) -- same alternating-row disambiguation, opposite parity."
+    },
+    {
+      "_why": "Check#12 roleguess: svgContent/svgContentMobile/svgContentTablet carry no canonical_slot at all, unlike their imageUrl*/videoUrl* siblings which already correctly mirror each other ('image'/'video'). There is no plain 'svg' row in slots.json (only 'background-svg') -- sgs/media's mediaType enum treats svg as a first-class peer of image/video, so the gap is the missing slot row, not a misclassification. New plain 'svg' slot added to slots.json alongside this fix. canonical_slot_aliases added 2026-09-06 (Check#12 Build 2 widening, same class as imageUrl/videoUrl below): 'background-svg' is the same SVG element under the art-direction background-media naming split (slots.json Task B) and previously fell through to insertion-order guessing among sgs/media's 6-role content-bearing set.",
+      "slug": "sgs/media",
+      "attr": "svgContent",
+      "fields": {
+        "canonical_slot": "svg",
+        "canonical_slot_aliases": "[\"background-svg\"]"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "svgContentTablet",
+      "fields": { "canonical_slot": "svg" }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "svgContentMobile",
+      "fields": { "canonical_slot": "svg" }
+    },
+    {
+      "_why": "Check#12 roleguess: sgs/button.label has no canonical_slot at all, so any of button/button-outline/button-primary/buttonSecondary falls to insertion-order guessing among {iconTitle, label, linkTarget, url}. label is the button's visible text and the only plausible target of the four; url/linkTarget are link-href, iconTitle is icon-only text. canonical_slot='button' covers the base variant slot; canonical_slot_aliases (Check#12 Build 2 multi-value mechanism) additionally names the 3 sibling style-variant slots -- button-outline/button-primary/buttonSecondary -- so all 4 button slots resolve to this same attr via the exact-match/CONFIRMED path rather than any fallback guess. The attr-name fallback (pass 2 in attr_name_for_slot_or_alias) still catches a literal '__label' token regardless.",
+      "slug": "sgs/button",
+      "attr": "label",
+      "fields": {
+        "canonical_slot": "button",
+        "canonical_slot_aliases": "[\"button-outline\", \"button-primary\", \"buttonSecondary\"]"
+      }
+    },
+    {
+      "_why": "bgVideoMobile/bgVideoTablet are art-direction tier siblings of bgVideo, which already correctly carries canonical_slot='background-video'. The siblings were left unset, so a tier-specific bg-video BEM token on this block falls to guessing instead of matching its own tier.",
+      "slug": "sgs/multi-button",
+      "attr": "bgVideoTablet",
+      "fields": { "canonical_slot": "background-video" }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "bgVideoMobile",
+      "fields": { "canonical_slot": "background-video" }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "bgSvgContent",
+      "fields": { "canonical_slot": "background-svg" }
+    },
+    {
+      "_why": "Check#12 Build 2 (canonical_slot multi-value widening, 2026-09-06). sgs/media.imageUrl's canonical_slot='image' already resolves the plain 'image' slot; the 'avatar' and 'background-image' slots are the same physical <img> element under a different draft naming convention and previously fell through to insertion-order guessing among imageUrl/videoUrl/svgContent/thumbnail (role='image-object' vs 'content' vs 'svg'). canonical_slot_aliases names both as extra slots this attr also answers to -- the exact-match/CONFIRMED path in both attr_name_for_slot_or_alias and _slot_extraction_role now resolves them directly rather than guessing.",
+      "slug": "sgs/media",
+      "attr": "imageUrl",
+      "fields": {
+        "canonical_slot_aliases": "[\"avatar\", \"background-image\"]"
+      }
+    },
+    {
+      "_why": "Check#12 Build 2 (canonical_slot multi-value widening, 2026-09-06). Same shape as sgs/media.imageUrl immediately above: videoUrl's canonical_slot='video' already resolves the plain 'video' slot; 'background-video' is the same video element under the art-direction background-media naming split (slots.json Task B) and previously fell through to insertion-order guessing.",
+      "slug": "sgs/media",
+      "attr": "videoUrl",
+      "fields": {
+        "canonical_slot_aliases": "[\"background-video\"]"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "rowStripeColourAHover",
+      "fields": {
+        "css_element": "entry-odd",
+        "css_state": "hover"
+      },
+      "_why": "2026-09-06 (FILL closeout, hover sibling of rowStripeColourA). Same alternating-row css_element ambiguity as the resting flat attr above, PLUS a resting-vs-hover collision on the SAME element once css_element was set -- css_state:hover disambiguates from the resting rowStripeColourA the same way pricing-table.toggleLabelHoverColour's entry above does. Caught live by db-consistency-run's NEW-violation gate."
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "rowStripeColourBHover",
+      "fields": {
+        "css_element": "entry-even",
+        "css_state": "hover"
+      },
+      "_why": "2026-09-06. See rowStripeColourAHover's entry (added alongside this one) -- same alternating-row disambiguation, opposite parity."
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "rowStripeColourAHoverGradient",
+      "fields": {
+        "css_element": "entry-odd",
+        "css_state": "hover"
+      },
+      "_why": "2026-09-06. Hover-gradient sibling of rowStripeColourA -- same alternating-row css_element ambiguity plus resting-vs-hover collision, this time on background-image, caught by the same gate."
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "rowStripeColourBHoverGradient",
+      "fields": {
+        "css_element": "entry-even",
+        "css_state": "hover"
+      },
+      "_why": "2026-09-06. See rowStripeColourAHoverGradient's entry (added alongside this one) -- same alternating-row disambiguation, opposite parity."
     }
   ]
 }

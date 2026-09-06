@@ -45,11 +45,14 @@ def owner():
 
 
 def test_band_max_width_still_lands_content_width(owner):
+    # sgs/container.contentWidth is a MIGRATED tier-object attr (Spec 35 /
+    # D802-class fix extended to CONTENT, this fix) — the Base value lands in
+    # the object's 'desktop' key.
     band = _band('<div class="sgs-thing__inner"><p>x</p></div>')
     css = {".sgs-thing__inner": {"max-width": "1100px", "margin": "0 auto"}}
     attrs: dict = {}
     fold_band_css(band, owner, attrs, css)
-    assert attrs.get("contentWidth") == "1100px", attrs
+    assert attrs.get("contentWidth") == {"desktop": "1100px"}, attrs
 
 
 def test_band_padding_background_textalign_transfer(owner):
@@ -108,14 +111,16 @@ def test_gap3_props_fold_through_the_arrangement_channel(owner):
     # display -> the layout TRIGGER attr (the §2.3 channel, validated enum).
     assert attrs.get("layout") == "grid", attrs
     # grid tracks -> the grid resolver's attrs, incl. the repeat(N) column count.
-    assert attrs.get("gridTemplateColumns") == "repeat(4, 1fr)", attrs
-    assert attrs.get("columns") == 4, attrs
+    # sgs/container.gridTemplateColumns/.columns/.contentWidth are all MIGRATED
+    # tier-object attrs (Spec 35 / D802-class fix extended to GRID+CONTENT).
+    assert attrs.get("gridTemplateColumns") == {"desktop": "repeat(4, 1fr)"}, attrs
+    assert attrs.get("columns") == {"desktop": 4}, attrs
     # Neither is now an unexplained EXCLUDED drop...
     excluded = {g.property for g in gaps if g.origin is GapOrigin.EXCLUDED}
     assert not ({"display", "grid-template-columns"} & excluded), gaps
     # ...and the width still folds alongside — pinning the arrangement pass to
     # the GRID layer is what stops it stealing the band's CONTENT destinations.
-    assert attrs.get("contentWidth") == "1100px", attrs
+    assert attrs.get("contentWidth") == {"desktop": "1100px"}, attrs
 
 
 def test_gap3_props_stay_excluded_when_the_owner_has_no_destination(owner):
@@ -142,4 +147,4 @@ def test_bemless_band_folds_identically(owner):
     css = {".inner-shell": {"max-width": "720px", "margin": "0 auto"}}
     attrs: dict = {}
     fold_band_css(band, owner, attrs, css)
-    assert attrs.get("contentWidth") == "720px", attrs
+    assert attrs.get("contentWidth") == {"desktop": "720px"}, attrs

@@ -1,0 +1,8 @@
+/*
+ * caption — no CSS. Caption text/tag are HTML content and structure, never
+ * stylesheet values (this atom's own `css()`/`sgs_media_atom_caption_css()`
+ * both always return an empty array). This partial exists purely so
+ * `generate-media-stylesheet.mjs`'s per-atom ownership convention holds —
+ * every atom owns a partial, even an empty one — and so a future reader
+ * finds this atom's file here rather than concluding it was skipped.
+ */

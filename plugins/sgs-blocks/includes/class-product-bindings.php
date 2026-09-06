@@ -42,11 +42,6 @@ final class Product_Bindings {
 	 * allowing WordPress to inject them into the `get_value_callback`.
 	 */
 	public static function register_source(): void {
-		if ( ! \function_exists( 'register_block_bindings_source' ) ) {
-			// Block Bindings API requires WP 6.5+. Silent no-op on older installs.
-			return;
-		}
-
 		\register_block_bindings_source(
 			'sgs-product/field',
 			array(

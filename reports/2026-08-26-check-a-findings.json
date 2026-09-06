@@ -1,0 +1,1425 @@
+{
+  "editorCanvasDesync": {
+    "netNew": [
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/button",
+        "attr": "textDecorationHover",
+        "reason": "'textDecorationHover' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "borderColour",
+        "reason": "'borderColour' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "borderColourGradient",
+        "reason": "'borderColourGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "borderColourHover",
+        "reason": "'borderColourHover' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "borderColourHoverGradient",
+        "reason": "'borderColourHoverGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "borderWidth",
+        "reason": "'borderWidth' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "borderStyle",
+        "reason": "'borderStyle' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "bgSvgContent",
+        "reason": "'bgSvgContent' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "bgSvgPosition",
+        "reason": "'bgSvgPosition' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "bgSvgAnimation",
+        "reason": "'bgSvgAnimation' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "bgSvgAnimationSpeed",
+        "reason": "'bgSvgAnimationSpeed' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "bgSvgOpacity",
+        "reason": "'bgSvgOpacity' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "bgSvgTextShadow",
+        "reason": "'bgSvgTextShadow' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "bgSvgMinHeight",
+        "reason": "'bgSvgMinHeight' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "gridItemBackgroundHover",
+        "reason": "'gridItemBackgroundHover' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "gridItemBackgroundGradient",
+        "reason": "'gridItemBackgroundGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "gridItemBackgroundHoverGradient",
+        "reason": "'gridItemBackgroundHoverGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "gridItemBorderGradient",
+        "reason": "'gridItemBorderGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "gridItemBorderGradientHover",
+        "reason": "'gridItemBorderGradientHover' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "gridItemShadowColour",
+        "reason": "'gridItemShadowColour' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "gridItemTextColourHover",
+        "reason": "'gridItemTextColourHover' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "gridItemTextColourGradient",
+        "reason": "'gridItemTextColourGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/container",
+        "attr": "gridItemTextColourHoverGradient",
+        "reason": "'gridItemTextColourHoverGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "backgroundRepeat",
+        "reason": "'backgroundRepeat' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "backgroundAttachment",
+        "reason": "'backgroundAttachment' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "bgVideo",
+        "reason": "'bgVideo' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "bgParallax",
+        "reason": "'bgParallax' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "bgKenBurns",
+        "reason": "'bgKenBurns' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "bgAnimationDuration",
+        "reason": "'bgAnimationDuration' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "bgSvgContent",
+        "reason": "'bgSvgContent' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "bgSvgPosition",
+        "reason": "'bgSvgPosition' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "bgSvgAnimation",
+        "reason": "'bgSvgAnimation' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "bgSvgAnimationSpeed",
+        "reason": "'bgSvgAnimationSpeed' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "backgroundOverlayBlendMode",
+        "reason": "'backgroundOverlayBlendMode' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "bgSvgOpacity",
+        "reason": "'bgSvgOpacity' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "bgSvgTextShadow",
+        "reason": "'bgSvgTextShadow' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "bgSvgMinHeight",
+        "reason": "'bgSvgMinHeight' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "alignItems",
+        "reason": "'alignItems' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "justifyItems",
+        "reason": "'justifyItems' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "alignContent",
+        "reason": "'alignContent' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "gridAutoRows",
+        "reason": "'gridAutoRows' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "gridItemPadding",
+        "reason": "'gridItemPadding' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "gridItemBackground",
+        "reason": "'gridItemBackground' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "gridItemBackgroundHover",
+        "reason": "'gridItemBackgroundHover' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "gridItemBackgroundGradient",
+        "reason": "'gridItemBackgroundGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "gridItemBackgroundHoverGradient",
+        "reason": "'gridItemBackgroundHoverGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "gridItemBorderRadius",
+        "reason": "'gridItemBorderRadius' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "gridItemBorder",
+        "reason": "'gridItemBorder' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "gridItemBorderGradient",
+        "reason": "'gridItemBorderGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "gridItemBorderGradientHover",
+        "reason": "'gridItemBorderGradientHover' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "gridItemShadow",
+        "reason": "'gridItemShadow' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "gridItemShadowColour",
+        "reason": "'gridItemShadowColour' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "gridItemTextColour",
+        "reason": "'gridItemTextColour' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "gridItemTextColourHover",
+        "reason": "'gridItemTextColourHover' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "gridItemTextColourGradient",
+        "reason": "'gridItemTextColourGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/cta-section",
+        "attr": "gridItemTextColourHoverGradient",
+        "reason": "'gridItemTextColourHoverGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/gallery",
+        "attr": "alignItems",
+        "reason": "'alignItems' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/gallery",
+        "attr": "justifyItems",
+        "reason": "'justifyItems' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/gallery",
+        "attr": "alignContent",
+        "reason": "'alignContent' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/gallery",
+        "attr": "gridAutoRows",
+        "reason": "'gridAutoRows' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/gallery",
+        "attr": "padding",
+        "reason": "'padding' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/gallery",
+        "attr": "margin",
+        "reason": "'margin' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/gallery",
+        "attr": "maxWidth",
+        "reason": "'maxWidth' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/gallery",
+        "attr": "contentWidth",
+        "reason": "'contentWidth' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/hero",
+        "attr": "splitMediaBorderColourGradient",
+        "reason": "'splitMediaBorderColourGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/hero",
+        "attr": "borderColourGradient",
+        "reason": "'borderColourGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/hero",
+        "attr": "backgroundRepeat",
+        "reason": "'backgroundRepeat' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/hero",
+        "attr": "backgroundAttachment",
+        "reason": "'backgroundAttachment' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/hero",
+        "attr": "bgParallax",
+        "reason": "'bgParallax' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/hero",
+        "attr": "bgKenBurns",
+        "reason": "'bgKenBurns' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/hero",
+        "attr": "bgAnimationDuration",
+        "reason": "'bgAnimationDuration' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/hero",
+        "attr": "bgSvgContent",
+        "reason": "'bgSvgContent' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/hero",
+        "attr": "bgSvgPosition",
+        "reason": "'bgSvgPosition' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/hero",
+        "attr": "bgSvgAnimation",
+        "reason": "'bgSvgAnimation' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/hero",
+        "attr": "bgSvgAnimationSpeed",
+        "reason": "'bgSvgAnimationSpeed' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/hero",
+        "attr": "bgSvgOpacity",
+        "reason": "'bgSvgOpacity' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/hero",
+        "attr": "bgSvgTextShadow",
+        "reason": "'bgSvgTextShadow' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/hero",
+        "attr": "bgSvgMinHeight",
+        "reason": "'bgSvgMinHeight' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/icon",
+        "attr": "textAlign",
+        "reason": "'textAlign' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/info-box",
+        "attr": "textAlign",
+        "reason": "'textAlign' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/info-box",
+        "attr": "borderColourGradient",
+        "reason": "'borderColourGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "childBtnBackground",
+        "reason": "'childBtnBackground' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "childBtnTextColour",
+        "reason": "'childBtnTextColour' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "childBtnBorderColour",
+        "reason": "'childBtnBorderColour' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "childBtnBorderRadius",
+        "reason": "'childBtnBorderRadius' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "childBtnFontSize",
+        "reason": "'childBtnFontSize' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "childBtnFontWeight",
+        "reason": "'childBtnFontWeight' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "backgroundImage",
+        "reason": "'backgroundImage' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "backgroundSize",
+        "reason": "'backgroundSize' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "backgroundPosition",
+        "reason": "'backgroundPosition' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "backgroundRepeat",
+        "reason": "'backgroundRepeat' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "backgroundAttachment",
+        "reason": "'backgroundAttachment' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "bgVideo",
+        "reason": "'bgVideo' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "bgParallax",
+        "reason": "'bgParallax' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "bgKenBurns",
+        "reason": "'bgKenBurns' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "bgAnimationDuration",
+        "reason": "'bgAnimationDuration' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "bgSvgContent",
+        "reason": "'bgSvgContent' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "bgSvgPosition",
+        "reason": "'bgSvgPosition' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "bgSvgAnimation",
+        "reason": "'bgSvgAnimation' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "bgSvgAnimationSpeed",
+        "reason": "'bgSvgAnimationSpeed' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "backgroundOverlayBlendMode",
+        "reason": "'backgroundOverlayBlendMode' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "bgSvgOpacity",
+        "reason": "'bgSvgOpacity' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "bgSvgTextShadow",
+        "reason": "'bgSvgTextShadow' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/multi-button",
+        "attr": "bgSvgMinHeight",
+        "reason": "'bgSvgMinHeight' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/nav-drawer",
+        "attr": "ariaLabel",
+        "reason": "'ariaLabel' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/physics-canvas",
+        "attr": "backgroundImage",
+        "reason": "'backgroundImage' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/physics-canvas",
+        "attr": "backgroundSize",
+        "reason": "'backgroundSize' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/physics-canvas",
+        "attr": "backgroundPosition",
+        "reason": "'backgroundPosition' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/physics-canvas",
+        "attr": "backgroundRepeat",
+        "reason": "'backgroundRepeat' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/physics-canvas",
+        "attr": "backgroundAttachment",
+        "reason": "'backgroundAttachment' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/physics-canvas",
+        "attr": "bgVideo",
+        "reason": "'bgVideo' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/physics-canvas",
+        "attr": "bgParallax",
+        "reason": "'bgParallax' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/physics-canvas",
+        "attr": "bgKenBurns",
+        "reason": "'bgKenBurns' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/physics-canvas",
+        "attr": "bgAnimationDuration",
+        "reason": "'bgAnimationDuration' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/physics-canvas",
+        "attr": "bgSvgContent",
+        "reason": "'bgSvgContent' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/physics-canvas",
+        "attr": "bgSvgPosition",
+        "reason": "'bgSvgPosition' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/physics-canvas",
+        "attr": "bgSvgAnimation",
+        "reason": "'bgSvgAnimation' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/physics-canvas",
+        "attr": "bgSvgAnimationSpeed",
+        "reason": "'bgSvgAnimationSpeed' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/physics-canvas",
+        "attr": "backgroundOverlayBlendMode",
+        "reason": "'backgroundOverlayBlendMode' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/physics-canvas",
+        "attr": "bgSvgOpacity",
+        "reason": "'bgSvgOpacity' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/physics-canvas",
+        "attr": "bgSvgTextShadow",
+        "reason": "'bgSvgTextShadow' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/physics-canvas",
+        "attr": "bgSvgMinHeight",
+        "reason": "'bgSvgMinHeight' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer",
+        "attr": "backgroundImage",
+        "reason": "'backgroundImage' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer",
+        "attr": "backgroundSize",
+        "reason": "'backgroundSize' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer",
+        "attr": "backgroundPosition",
+        "reason": "'backgroundPosition' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer",
+        "attr": "backgroundRepeat",
+        "reason": "'backgroundRepeat' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer",
+        "attr": "backgroundAttachment",
+        "reason": "'backgroundAttachment' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer",
+        "attr": "bgVideo",
+        "reason": "'bgVideo' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer",
+        "attr": "bgParallax",
+        "reason": "'bgParallax' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer",
+        "attr": "bgKenBurns",
+        "reason": "'bgKenBurns' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer",
+        "attr": "bgAnimationDuration",
+        "reason": "'bgAnimationDuration' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer",
+        "attr": "bgSvgContent",
+        "reason": "'bgSvgContent' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer",
+        "attr": "bgSvgPosition",
+        "reason": "'bgSvgPosition' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer",
+        "attr": "bgSvgAnimation",
+        "reason": "'bgSvgAnimation' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer",
+        "attr": "bgSvgAnimationSpeed",
+        "reason": "'bgSvgAnimationSpeed' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer",
+        "attr": "backgroundOverlayBlendMode",
+        "reason": "'backgroundOverlayBlendMode' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer",
+        "attr": "bgSvgOpacity",
+        "reason": "'bgSvgOpacity' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer",
+        "attr": "bgSvgTextShadow",
+        "reason": "'bgSvgTextShadow' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer",
+        "attr": "bgSvgMinHeight",
+        "reason": "'bgSvgMinHeight' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer-row",
+        "attr": "margin",
+        "reason": "'margin' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer-row",
+        "attr": "maxWidth",
+        "reason": "'maxWidth' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer-row",
+        "attr": "contentWidth",
+        "reason": "'contentWidth' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer-row",
+        "attr": "rowTransparent",
+        "reason": "'rowTransparent' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer-row",
+        "attr": "rowHideOnScroll",
+        "reason": "'rowHideOnScroll' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer-row",
+        "attr": "rowShrink",
+        "reason": "'rowShrink' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-footer-row",
+        "attr": "rowShrinkHideTarget",
+        "reason": "'rowShrinkHideTarget' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "headerTransparentDirection",
+        "reason": "'headerTransparentDirection' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "backgroundImage",
+        "reason": "'backgroundImage' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "backgroundSize",
+        "reason": "'backgroundSize' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "backgroundPosition",
+        "reason": "'backgroundPosition' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "backgroundRepeat",
+        "reason": "'backgroundRepeat' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "backgroundAttachment",
+        "reason": "'backgroundAttachment' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "bgVideo",
+        "reason": "'bgVideo' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "bgParallax",
+        "reason": "'bgParallax' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "bgKenBurns",
+        "reason": "'bgKenBurns' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "bgAnimationDuration",
+        "reason": "'bgAnimationDuration' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "bgSvgContent",
+        "reason": "'bgSvgContent' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "bgSvgPosition",
+        "reason": "'bgSvgPosition' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "bgSvgAnimation",
+        "reason": "'bgSvgAnimation' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "bgSvgAnimationSpeed",
+        "reason": "'bgSvgAnimationSpeed' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "backgroundOverlayBlendMode",
+        "reason": "'backgroundOverlayBlendMode' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "bgSvgOpacity",
+        "reason": "'bgSvgOpacity' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "bgSvgTextShadow",
+        "reason": "'bgSvgTextShadow' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "bgSvgMinHeight",
+        "reason": "'bgSvgMinHeight' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header-row",
+        "attr": "margin",
+        "reason": "'margin' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header-row",
+        "attr": "maxWidth",
+        "reason": "'maxWidth' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header-row",
+        "attr": "contentWidth",
+        "reason": "'contentWidth' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header-row",
+        "attr": "rowTransparent",
+        "reason": "'rowTransparent' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header-row",
+        "attr": "rowHideOnScroll",
+        "reason": "'rowHideOnScroll' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header-row",
+        "attr": "rowShrink",
+        "reason": "'rowShrink' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header-row",
+        "attr": "rowShrinkHideTarget",
+        "reason": "'rowShrinkHideTarget' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "iconColourGradient",
+        "reason": "'iconColourGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "backgroundImage",
+        "reason": "'backgroundImage' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "backgroundSize",
+        "reason": "'backgroundSize' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "backgroundPosition",
+        "reason": "'backgroundPosition' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "backgroundRepeat",
+        "reason": "'backgroundRepeat' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "backgroundAttachment",
+        "reason": "'backgroundAttachment' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "bgVideo",
+        "reason": "'bgVideo' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "bgParallax",
+        "reason": "'bgParallax' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "bgKenBurns",
+        "reason": "'bgKenBurns' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "bgAnimationDuration",
+        "reason": "'bgAnimationDuration' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "bgSvgContent",
+        "reason": "'bgSvgContent' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "bgSvgPosition",
+        "reason": "'bgSvgPosition' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "bgSvgAnimation",
+        "reason": "'bgSvgAnimation' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "bgSvgAnimationSpeed",
+        "reason": "'bgSvgAnimationSpeed' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "backgroundOverlayBlendMode",
+        "reason": "'backgroundOverlayBlendMode' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "bgSvgOpacity",
+        "reason": "'bgSvgOpacity' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "bgSvgTextShadow",
+        "reason": "'bgSvgTextShadow' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "bgSvgMinHeight",
+        "reason": "'bgSvgMinHeight' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "alignItems",
+        "reason": "'alignItems' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "justifyItems",
+        "reason": "'justifyItems' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "alignContent",
+        "reason": "'alignContent' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "gridAutoRows",
+        "reason": "'gridAutoRows' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "gridItemPadding",
+        "reason": "'gridItemPadding' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "gridItemBackground",
+        "reason": "'gridItemBackground' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "gridItemBackgroundHover",
+        "reason": "'gridItemBackgroundHover' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "gridItemBackgroundGradient",
+        "reason": "'gridItemBackgroundGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "gridItemBackgroundHoverGradient",
+        "reason": "'gridItemBackgroundHoverGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "gridItemBorderRadius",
+        "reason": "'gridItemBorderRadius' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "gridItemBorder",
+        "reason": "'gridItemBorder' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "gridItemBorderGradient",
+        "reason": "'gridItemBorderGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "gridItemBorderGradientHover",
+        "reason": "'gridItemBorderGradientHover' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "gridItemShadow",
+        "reason": "'gridItemShadow' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "gridItemShadowColour",
+        "reason": "'gridItemShadowColour' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "gridItemTextColour",
+        "reason": "'gridItemTextColour' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "gridItemTextColourHover",
+        "reason": "'gridItemTextColourHover' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "gridItemTextColourGradient",
+        "reason": "'gridItemTextColourGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "gridItemTextColourHoverGradient",
+        "reason": "'gridItemTextColourHoverGradient' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      }
+    ],
+    "accepted": [
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/decorative-image",
+        "attr": "fadeOnScroll",
+        "reason": "'fadeOnScroll' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/decorative-image",
+        "attr": "pathDrawOnScroll",
+        "reason": "'pathDrawOnScroll' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/form",
+        "attr": "successMessage",
+        "reason": "'successMessage' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/form",
+        "attr": "successRedirect",
+        "reason": "'successRedirect' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/form",
+        "attr": "honeypot",
+        "reason": "'honeypot' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/form-field-address",
+        "attr": "fieldName",
+        "reason": "'fieldName' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/form-field-date",
+        "attr": "fieldName",
+        "reason": "'fieldName' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/form-field-email",
+        "attr": "fieldName",
+        "reason": "'fieldName' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/form-field-file",
+        "attr": "allowedTypes",
+        "reason": "'allowedTypes' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/form-field-number",
+        "attr": "fieldName",
+        "reason": "'fieldName' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/form-field-phone",
+        "attr": "fieldName",
+        "reason": "'fieldName' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/form-field-select",
+        "attr": "fieldName",
+        "reason": "'fieldName' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/form-field-text",
+        "attr": "fieldName",
+        "reason": "'fieldName' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/icon-list",
+        "attr": "renderLandmark",
+        "reason": "'renderLandmark' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/image-sequence",
+        "attr": "thumbnailAlt",
+        "reason": "'thumbnailAlt' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/image-sequence",
+        "attr": "fxStart",
+        "reason": "'fxStart' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/image-sequence",
+        "attr": "fxEnd",
+        "reason": "'fxEnd' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/image-sequence",
+        "attr": "fxScrub",
+        "reason": "'fxScrub' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/image-sequence",
+        "attr": "fxPin",
+        "reason": "'fxPin' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/nav-drawer",
+        "attr": "animateFrom",
+        "reason": "'animateFrom' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "headerShrink",
+        "reason": "'headerShrink' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/site-header",
+        "attr": "headerHideOnScroll",
+        "reason": "'headerHideOnScroll' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/tabs",
+        "attr": "blockLabel",
+        "reason": "'blockLabel' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/timeline",
+        "attr": "revealOnScroll",
+        "reason": "'revealOnScroll' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/timeline",
+        "attr": "revealStagger",
+        "reason": "'revealStagger' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/trust-bar",
+        "attr": "autoScroll",
+        "reason": "'autoScroll' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      },
+      {
+        "check": "editor-canvas-desync",
+        "block": "sgs/whatsapp-cta",
+        "attr": "message",
+        "reason": "'message' is destructured from attributes and written by a control (setAttributes/update) in edit.js, but never referenced anywhere in the file outside its own InspectorControls/BlockControls binding — the control writes the attribute but nothing outside the control panel itself (editor canvas preview, computed className, derived variable) reads it back, so the editor canvas never shows its effect"
+      }
+    ],
+    "blocking": false
+  },
+  "invalidKeywordPassthrough": {
+    "netNew": [],
+    "accepted": [],
+    "blocking": true
+  },
+  "blockCount": 83
+}

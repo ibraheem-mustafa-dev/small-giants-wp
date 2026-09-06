@@ -9,9 +9,9 @@
  */
 ?>
 
-<!-- wp:sgs/container {"tagName":"div","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"primary-dark","contentWidth":{"desktop":"normal"},"fx":"scrub","fxStart":"top 85%","fxEnd":"top center","fxScrub":0.3,"fxEase":"power1.out"} -->
+<!-- wp:sgs/container {"tagName":"div","backgroundColour":"primary-dark","contentWidth":{"desktop":"normal"},"fx":"scrub","fxStart":"top 85%","fxEnd":"top center","fxScrub":0.3,"fxEase":"power1.out","padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"templateLock":"contentOnly"} -->
 
-	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr 1fr","mobile":"1fr"},"align":"wide"} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr 1fr","mobile":"1fr"}} -->
 
 		<!-- wp:sgs/container -->
 			<!-- wp:sgs/counter {"number":150,"suffix":"+","label":"Projects Completed","numberColour":"surface","labelColour":"text-inverse"} /-->

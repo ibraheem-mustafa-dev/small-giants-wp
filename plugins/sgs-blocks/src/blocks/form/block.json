@@ -28,34 +28,18 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"interactivity": true,
 		"sgs": {
 			"containerKind": "layout",
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -63,21 +47,28 @@
 					"label": "Wrapper",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "native:color.text",
 						"css:background-color": "native:color.background",
-						"css:font-size": "native:typography.fontSize",
-						"css:line-height": "native:typography.lineHeight",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
-						"css:width": "contentWidth"
+						"css:width": "contentWidth",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "WS-4 composite-mirror — outer wrapper emitted by SGS_Container_Wrapper('layout', render.php:366-382), inheriting sgs/container's full LAYOUT-scope capabilities. color/typography/border are block-private, scoped via render.php:131-198 (mirrors sgs/container's render.php pattern)."
 				},
@@ -85,7 +76,9 @@
 					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 2,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
@@ -103,30 +96,79 @@
 				"submit-button": {
 					"label": "Submit button",
 					"order": 3,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"prefix": "submit",
-					"_note": "submitColour/submitBackground resolve via the default {prefix}{suffix} convention (Colour/Background suffixes). Rendered as a scoped rule on `.uid .sgs-form__button--submit` (render.php:211-228, contract §A) — not inline."
+					"attrMap": {
+						"css:background-image": "submitBackgroundGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "submitBackgroundHover",
+								"css:background-image": "submitBackgroundHoverGradient"
+							}
+						}
+					},
+					"_note": "submitColour/submitBackground resolve via the default {prefix}{suffix} convention (Colour/Background suffixes). Rendered as a scoped rule on `.uid .sgs-form__button--submit` (render.php:211-228, contract §A) — not inline. submitBackgroundGradient's attrMap entry added 2026-09-03 (the default convention has no Gradient-suffix awareness, so the gradient sibling floated as an unclaimed orphan). submitBackgroundHover/submitBackgroundHoverGradient (Case C fill-helper adoption, 2026-09-06) migrated the hand-rolled background-color:transparent-cancellation paint onto sgs_fill_decls()/sgs_emit_state_colour_css() so a hover sibling came free -- explicit hover attrMap because, same as the normal state's gradient, the default convention has no Hover-suffix awareness."
+				},
+				"prev-button": {
+					"label": "Previous-step button",
+					"order": 3,
+					"clusters": [
+						"fill"
+					],
+					"prefix": "prev",
+					"attrMap": {
+						"css:background-color": "prevColourBackground",
+						"css:background-image": "prevColourBackgroundGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "prevColourBackgroundHover",
+								"css:background-image": "prevColourBackgroundHoverGradient"
+							}
+						}
+					},
+					"_note": "The multi-step form's Previous button (.sgs-form__button--prev), distinct from submit-button. Added 2026-09-03 alongside the hover-colour + gradient migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'prev', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation."
 				},
 				"progress-bar": {
 					"label": "Progress bar",
 					"order": 4,
-					"clusters": [ "fill" ],
+					"clusters": [
+						"fill"
+					],
 					"prefix": "progressBar",
 					"attrMap": {
-						"css:background-color": "progressBarColour"
+						"css:background-color": "progressBarColour",
+						"css:background-image": "progressBarColourGradient"
 					},
-					"_note": "progressBarColour drives the `--sgs-progress-colour` custom-property value (render.php:230-235) — a colour setting, not a real background-color declaration, so mapped explicitly rather than via the default Bg/Background suffixes."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "progressBarColourHover",
+								"css:background-image": "progressBarColourHoverGradient"
+							}
+						}
+					},
+					"_note": "progressBarColour drives the `--sgs-progress-colour` custom-property value; progressBarColourGradient drives the `--sgs-progress-colour-gradient` sibling (2026-09-04). Both are custom-property-fed (not real declarations), so mapped explicitly. The gradient wins when set (render.php line 290 uses sgs_custom_property_gradient_decls). progressBarColourHover/progressBarColourHoverGradient (2026-09-06, hover-sibling closeout) feed the -hover/-hover-gradient custom-property siblings via the SAME 5-arg sgs_custom_property_gradient_decls() call, consumed by a new :hover/:focus-visible rule in style.css."
 				},
 				"focus-ring": {
 					"label": "Focus ring",
 					"order": 5,
-					"clusters": [],
+					"clusters": [
+						"layout",
+						"fill"
+					],
 					"prefix": "formFocusRing",
 					"attrMap": {
-						"css:outline-width": "formFocusRingWidth",
 						"css:outline-offset": "formFocusRingOffset",
 						"css:border-color": "formFocusRingColour",
-						"css:opacity": "formFocusRingOpacity"
+						"css:outline-width": "formFocusRingWidth",
+						"css:box-shadow-color": "formFocusRingOpacity"
 					},
 					"_note": "formFocusRingColour/Width/Opacity/Offset (render.php:82-86,237-243) drive :focus-visible custom-property values on form inputs — a distinct focus-ring control surface outside the Text/Fill/Layout/Position/Motion clusters (no 'outline colour'/'ring width' member exists), so this element declares no CLUSTER members and its attributes surface as ORPHANs (FR-35-4), same treatment as sgs/button's icon element. It DOES declare an explicit attrMap (2026-08-02): these four drive custom-property VALUES rather than being real declarations, so each is mapped to the property it semantically controls — the same treatment progressBarColour gets above, and for the same reason. Opacity is mapped to `css:opacity`, NOT to `css:box-shadow`: style.css:211-217 composes TWO --sgs-* vars (colour + opacity) into ONE box-shadow via color-mix, so no single attr owns that property, and declaring this one as the box-shadow would assert something untrue. Without the attrMap the emission tracer resolved formFocusRingOpacity to box-shadow with css_element NULL, which the F6 reseed-survival check correctly flagged as an undeclared sub-element paint that would misroute on a clone."
 				}
@@ -134,6 +176,18 @@
 		}
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"formId": {
 			"type": "string",
 			"default": ""
@@ -171,13 +225,107 @@
 			"type": "string",
 			"default": "text-inverse"
 		},
+		"submitColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the submit button's text (background-clip:text) instead of a flat colour. Non-empty wins over submitColour at render time (D636/778879732 gradient rollout finish, 2026-09-04). Not mapped in submit-button's attrMap: css:background-image is already claimed by submitBackgroundGradient on this same element (JSON keys are unique) — render.php resolves the runtime collision via the D942 background-color:transparent cancellation, but if an operator sets BOTH this AND submitBackground/submitBackgroundGradient simultaneously, the background paint wins (documented trade-off, see render.php comment)."
+		},
 		"submitBackground": {
 			"type": "string",
 			"default": "primary"
 		},
+		"submitBackgroundHover": {
+			"type": "string",
+			"default": "",
+			"description": "Submit button background colour on :hover/:focus-visible (Case C fill-helper adoption, 2026-09-06). Falls back to submitBackground, then the style variant class default, when unset."
+		},
+		"submitBackgroundHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the submit button's :hover/:focus-visible background. Non-empty wins over submitBackgroundHover; falls back to submitBackgroundGradient, then submitBackground, then none."
+		},
 		"progressBarColour": {
 			"type": "string",
 			"default": "primary"
+		},
+		"progressBarColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the progress bar with a gradient instead of a flat colour. Non-empty wins over progressBarColour at render time."
+		},
+		"progressBarColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Progress bar fill colour on :hover/:focus-visible (hover-sibling closeout, 2026-09-06). Falls back to progressBarColour, then the CSS default, when unset."
+		},
+		"progressBarColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the progress bar's :hover/:focus-visible fill. Non-empty wins over progressBarColourHover; falls back to progressBarColourGradient, then none."
+		},
+		"prevColourBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"prevColourBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"prevColourBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"prevColourBackgroundHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"tileBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileBorderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"tileBorderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"tileBorderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelBorderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelBorderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelBorderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelBackgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelBackgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelBackgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"requireLogin": {
 			"type": "boolean",
@@ -205,7 +353,14 @@
 		},
 		"layout": {
 			"type": "string",
-			"default": ""
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
+			"default": "stack",
+			"description": "Composite-mirror review (P2-2, container's layout-default fix): sgs/form routes through SGS_Container_Wrapper::render() the same way sgs/container does, so an untouched form would otherwise inherit container's new 'flex'/row default and lay its fields out side-by-side. Form fields are unambiguously vertical, so this block declares its own explicit 'stack' default rather than sharing the primitive's."
 		},
 		"alignItems": {
 			"type": "string",
@@ -213,7 +368,11 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 2,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"gridTemplateColumns": {
 			"type": "object",
@@ -224,22 +383,6 @@
 			"default": {}
 		},
 		"maxWidth": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
 			"type": "object",
 			"default": {}
 		},
@@ -289,9 +432,8 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": "",
+			"default": "wrap",
 			"enum": [
-				"",
 				"wrap",
 				"nowrap"
 			]
@@ -308,14 +450,67 @@
 				"space-around"
 			]
 		},
-		"templateMode": {
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
 			"type": "string",
-			"default": "free",
 			"enum": [
-				"free",
-				"grid-section",
-				"card-grid"
-			]
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"submitBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		}
 	},
 	"providesContext": {

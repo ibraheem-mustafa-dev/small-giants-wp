@@ -9,6 +9,15 @@
 	position: relative;
 }
 
+/* Inline-bar mode only — icon/overlay/cmdk roots are just a small trigger
+   button and already cap their own popover/dialog surfaces (__panel /
+   __dialog below), so they're excluded here. Without this, the inline bar's
+   __input (flex: 1) has no width ceiling and stretches to eat the full
+   content band (matches the existing 320px/480px/600px sibling caps below). */
+.sgs-product-search:not(.sgs-product-search--icon):not(.sgs-product-search--overlay):not(.sgs-product-search--cmdk) {
+	max-width: min( 680px, 100% );
+}
+
 .sgs-product-search__form {
 	display: flex;
 	flex-direction: column;
@@ -93,13 +102,19 @@
 	padding: 0.5rem 0.75rem;
 	color: inherit;
 	cursor: pointer;
+	border-left: 3px solid transparent;
 	animation: sgs-ps-result-fade-in 180ms ease-out backwards;
 	animation-delay: calc( var( --sgs-ps-stagger-index, 0 ) * 30ms );
 }
 
+/* Rule 43 (WCAG 1.4.1): hover/active state must not rely on colour alone —
+ * verified by eye this was a flat background swap with no shape difference,
+ * so a left accent bar (same convention as the buybox/product-card value
+ * ladder rows) is the non-colour signal. */
 .sgs-product-search__results [role="option"]:hover,
 .sgs-product-search__results [role="option"].is-active {
 	background: var( --sgs-ps-result-hover-bg, var( --wp--preset--color--surface-alt, #f5f7f7 ) );
+	border-left-color: var( --wp--preset--color--primary, #0F7E80 );
 }
 
 @keyframes sgs-ps-result-fade-in {
@@ -116,7 +131,11 @@
 .sgs-product-search__results [role="option"] img {
 	width: 40px;
 	height: 40px;
-	object-fit: cover;
+	/* object-fit removed 2026-09-03 (37-media-no-handroll remediation) — the
+	   shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}`
+	   atom stylesheet (assets/css/media-atoms/object-fit.css) now paints the
+	   identical `cover` default; view.js adds the marker classes to each
+	   thumbnail <img> it builds (see view.js + render.php). */
 	flex-shrink: 0;
 	border-radius: 4px;
 }

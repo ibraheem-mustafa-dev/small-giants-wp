@@ -25,6 +25,10 @@
 		],
 		"inserter": false,
 		"sgs": {
+			"_comment_mediaElements": "Adopts the shared object-fit atom for its CSS DEFAULT ONLY — no editor control is mounted (edit.js deliberately does not import MediaElementPanel/ObjectFitField for this block). The 'thumbnail' element note below already documents WHY: fx-image-sequence.js's drawCover() always scales+crops every canvas frame as a centred cover-fit with zero configurability, so an operator-set fit that disagreed with the canvas would produce a guaranteed flash/mismatch the instant JS took over — worse than no control. Declaring `mediaElements` here (rather than leaving the object-fit hardcoded in style.css) closes detector rule 37-media-no-handroll by having the thumbnail <img> and canvas carry the shared `.sgs-media-el` marker and read the shared stylesheet's `object-fit: var(--sgs-media-object-fit, cover)` default — byte-identical resting behaviour to the old hardcode, just sourced from the shared layer instead of duplicated locally.",
+			"mediaElements": [
+				{ "prefix": "", "context": "element", "atoms": [ "object-fit" ] }
+			],
 			"elements": {
 				"wrapper": {
 					"label": "Block wrapper",
@@ -80,6 +84,10 @@
 		"thumbnailAlt": {
 			"type": "string",
 			"default": ""
+		},
+		"thumbnailDecorative": {
+			"type": "boolean",
+			"default": false
 		},
 		"aspectRatio": {
 			"type": "string",

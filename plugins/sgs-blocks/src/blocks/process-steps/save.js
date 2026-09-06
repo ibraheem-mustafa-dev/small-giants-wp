@@ -1,6 +1,6 @@
 /**
  * Dynamic block — server-rendered via render.php.
- * The static save output is preserved in deprecated.js (v4, v3, v2, v1)
+ * The static save output is NOT preserved - all deprecations were deleted at D271
  * so existing posts continue to validate without "Invalid block" errors.
  */
 export default function Save() {

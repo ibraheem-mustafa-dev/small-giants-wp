@@ -1,0 +1,5866 @@
+{
+  "_meta": {
+    "generated_by": "audit-script-cull-candidates.py",
+    "caveat": "CANDIDATE SIGNALS, NEVER VERDICTS. This tool cannot see that a script is named as a mandatory gate in a spec, or that its --check guards a completed migration. Cross-reference the reachability audit and the revival register before acting on anything here."
+  },
+  "totals": {
+    "scripts": 604,
+    "tests": 118,
+    "broken": 0,
+    "no_entry_point": 268
+  },
+  "size_distribution": {
+    "p50": 241,
+    "p75": 428,
+    "p90": 889,
+    "p99": 2358,
+    "max": 6806
+  },
+  "broken_scripts": [],
+  "duplicate_pairs": [
+    {
+      "a": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/row_pairing.py",
+      "b": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/stack_pairing.py",
+      "similarity": 0.607
+    },
+    {
+      "a": "plugins/sgs-blocks/scripts/migrate-core-blocks/capture-page.js",
+      "b": "plugins/sgs-blocks/scripts/migrate-core-blocks/capture-preset-gap.js",
+      "similarity": 0.562
+    },
+    {
+      "a": "plugins/sgs-blocks/scripts/inspector-scan/rules/07-preset-only-shadow.js",
+      "b": "plugins/sgs-blocks/scripts/inspector-scan/rules/08-raw-url-link.js",
+      "similarity": 0.45
+    }
+  ],
+  "subject_families": {
+    "attr": [
+      "plugins/sgs-blocks/scripts/check-dead-pattern-attrs.py",
+      "plugins/sgs-blocks/scripts/check-undeclared-attrs.py",
+      "plugins/sgs-blocks/scripts/colour-codemod/scan-undeclared-setattributes.js",
+      "plugins/sgs-blocks/scripts/converter/gates/check_content_attr_collisions.py",
+      "plugins/sgs-blocks/scripts/converter/services/attr_resolve.py",
+      "plugins/sgs-blocks/scripts/converter/tests/test_content_attr_resolver.py",
+      "plugins/sgs-blocks/scripts/converter/tests/test_tag_identity_attrs.py",
+      "plugins/sgs-blocks/scripts/fanout-overlay-sibling-attrs.py",
+      "plugins/sgs-blocks/scripts/fingerprint-builder/audit-attr-vocabulary-v2.py",
+      "plugins/sgs-blocks/scripts/generate-attr-role-map.py",
+      "plugins/sgs-blocks/scripts/generate-extension-attributes.js",
+      "plugins/sgs-blocks/scripts/inspector-scan/rules/34-declared-attr-unrendered.js",
+      "plugins/sgs-blocks/scripts/migrate-theme-attr-rename.py",
+      "plugins/sgs-blocks/scripts/oracle/attribution_ground_truth.py",
+      "plugins/sgs-blocks/scripts/oracle/decompose_unattributed.py",
+      "plugins/sgs-blocks/scripts/orchestrator/attribute-staged-apply.py",
+      "plugins/sgs-blocks/scripts/orchestrator/stage_attribute_promotion.py",
+      "plugins/sgs-blocks/scripts/orchestrator/test_attribute_staged_apply.py",
+      "plugins/sgs-blocks/scripts/orchestrator/test_stage_attribute_promotion.py",
+      "plugins/sgs-blocks/scripts/recogniser/attribute-gap-writer.py",
+      "plugins/sgs-blocks/scripts/recogniser/test_attribute_gap_writer.py",
+      "scripts/apply-block-attrs-batch.js",
+      "scripts/wp-update-block-attrs.js"
+    ],
+    "colour": [
+      "plugins/sgs-blocks/scripts/census-colour-paint-route.py",
+      "plugins/sgs-blocks/scripts/consistency/report-colour-alpha.py",
+      "plugins/sgs-blocks/scripts/converter/tests/test_disclaimer_box_colour_border.py",
+      "plugins/sgs-blocks/scripts/converter/tests/test_draft_var_colour_resolution.py",
+      "plugins/sgs-blocks/scripts/inspector-scan/export-colour-css-property.py",
+      "plugins/sgs-blocks/scripts/inspector-scan/rules/04-colour-alpha.js",
+      "plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js",
+      "plugins/sgs-blocks/scripts/qa/capture-native-colour-ui.js",
+      "plugins/sgs-blocks/scripts/qa/check-colour-editor-roundtrip.js",
+      "plugins/sgs-blocks/scripts/qa/probe-native-colour-ui-close.js",
+      "plugins/sgs-blocks/scripts/surveys/survey-background-colour-support.py",
+      "plugins/sgs-blocks/scripts/surveys/survey-colour-controls.py",
+      "plugins/sgs-blocks/scripts/surveys/survey-colour-coverage.py",
+      "plugins/sgs-blocks/scripts/theme-extractor/colour.py",
+      "scripts/colour-parity-audit.js"
+    ],
+    "role": [
+      "plugins/sgs-blocks/scripts/audit-declared-vs-seeded-roles.py",
+      "plugins/sgs-blocks/scripts/behavioural-analyser/backfill-coarse-roles.py",
+      "plugins/sgs-blocks/scripts/content-role-detect/fingerprint_content_roles.py",
+      "plugins/sgs-blocks/scripts/converter/tests/test_link_content_role.py",
+      "plugins/sgs-blocks/scripts/converter/tests/test_max_suffix_role_fix.py",
+      "plugins/sgs-blocks/scripts/converter/tests/test_role_detection_inline.py",
+      "plugins/sgs-blocks/scripts/converter/tests/test_subheading_routes_to_heading_role.py",
+      "plugins/sgs-blocks/scripts/db-consistency/check_orphan_roles.py",
+      "plugins/sgs-blocks/scripts/generate-attr-role-map.py",
+      "plugins/sgs-blocks/scripts/migrations/2026-06-26-testimonial-media-role-selector.py",
+      "plugins/sgs-blocks/scripts/migrations/2026-08-13-register-core-role-and-seed-native-wp.py",
+      "plugins/sgs-blocks/scripts/migrations/2026-08-13-role-remediation-part2-overrides.py",
+      "plugins/sgs-blocks/scripts/seed-composition-roles.py",
+      "plugins/sgs-blocks/scripts/theme-extractor/roles.py"
+    ],
+    "render": [
+      "plugins/sgs-blocks/scripts/cheat-gate/check_important_render.py",
+      "plugins/sgs-blocks/scripts/check-editor-render-parity.js",
+      "plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js",
+      "plugins/sgs-blocks/scripts/check-render-undefined-vars.py",
+      "plugins/sgs-blocks/scripts/converter/services/render_emits.py",
+      "plugins/sgs-blocks/scripts/inspector-scan/rules/21-render-without-control.js",
+      "plugins/sgs-blocks/scripts/inspector-scan/rules/34-declared-attr-unrendered.js",
+      "plugins/sgs-blocks/scripts/migrate-render-closures.py",
+      "plugins/sgs-blocks/scripts/oracle/render_oracle.py",
+      "scripts/render-mobile-override-audit.js"
+    ],
+    "motion": [
+      "plugins/sgs-blocks/scripts/check-motion-bundle-budget.py",
+      "plugins/sgs-blocks/scripts/db-consistency/check_motion_fx_reseed.py",
+      "plugins/sgs-blocks/scripts/inspector-scan/rules/17-reduced-motion-gate.js",
+      "plugins/sgs-blocks/scripts/motion-qa/probe-motion-path-repeat.mjs",
+      "plugins/sgs-blocks/scripts/motion-qa/probe-reduced-motion.mjs",
+      "plugins/sgs-blocks/scripts/orchestrator/stage_attribute_promotion.py",
+      "plugins/sgs-blocks/scripts/orchestrator/test_stage_attribute_promotion.py",
+      "plugins/sgs-blocks/scripts/run-motion-fx-generators.js",
+      "plugins/sgs-blocks/scripts/seed-motion-fx-registry.py"
+    ],
+    "coverage": [
+      "plugins/sgs-blocks/scripts/consistency/check-cluster-coverage.py",
+      "plugins/sgs-blocks/scripts/converter/coverage_report.py",
+      "plugins/sgs-blocks/scripts/converter/tests/test_coverage_gate.py",
+      "plugins/sgs-blocks/scripts/coverage-matrix/generate-coverage-matrix.py",
+      "plugins/sgs-blocks/scripts/coverage-matrix/tests/test_coverage_matrix.py",
+      "plugins/sgs-blocks/scripts/ledger/coverage_check.py",
+      "plugins/sgs-blocks/scripts/ledger/tests/test_coverage_check.py",
+      "plugins/sgs-blocks/scripts/surveys/survey-colour-coverage.py"
+    ],
+    "fx": [
+      "plugins/sgs-blocks/scripts/check-fx-list-drift.py",
+      "plugins/sgs-blocks/scripts/db-consistency/check_fx_qualifying_blocks_stale.py",
+      "plugins/sgs-blocks/scripts/db-consistency/check_motion_fx_reseed.py",
+      "plugins/sgs-blocks/scripts/generate-fx-effects-php.py",
+      "plugins/sgs-blocks/scripts/generate-fx-qualifying-blocks.py",
+      "plugins/sgs-blocks/scripts/run-motion-fx-generators.js",
+      "plugins/sgs-blocks/scripts/seed-motion-fx-registry.py"
+    ],
+    "token": [
+      "plugins/sgs-blocks/scripts/check-preset-token-naming.py",
+      "plugins/sgs-blocks/scripts/check-token-rename-neutral.py",
+      "plugins/sgs-blocks/scripts/check-unresolvable-token-refs.py",
+      "plugins/sgs-blocks/scripts/converter/services/token_resolution_check.py",
+      "plugins/sgs-blocks/scripts/converter/services/token_snap.py",
+      "plugins/sgs-blocks/scripts/lints/token-lint.py",
+      "plugins/sgs-blocks/scripts/theme-extractor/token_map.py"
+    ],
+    "parity": [
+      "plugins/sgs-blocks/scripts/audit-feature-parity.py",
+      "plugins/sgs-blocks/scripts/check-editor-render-parity.js",
+      "plugins/sgs-blocks/scripts/parity/computed-parity.js",
+      "plugins/sgs-blocks/scripts/surveys/check-control-parity-live.js",
+      "plugins/sgs-blocks/scripts/surveys/survey-control-parity.py",
+      "scripts/colour-parity-audit.js"
+    ],
+    "variant": [
+      "plugins/sgs-blocks/scripts/check-single-instance-invariants.py",
+      "plugins/sgs-blocks/scripts/converter/services/variant_detect.py",
+      "plugins/sgs-blocks/scripts/converter/tests/test_variant_detect.py",
+      "plugins/sgs-blocks/scripts/db-consistency/check_variant_reseed.py",
+      "plugins/sgs-blocks/scripts/db-consistency/check_variants.py",
+      "plugins/sgs-blocks/scripts/nav-qa/sweep-drawer-variants.mjs"
+    ],
+    "element": [
+      "plugins/sgs-blocks/scripts/check-element-manifest-conformance.js",
+      "plugins/sgs-blocks/scripts/converter/tests/test_per_element_state_lift.py",
+      "plugins/sgs-blocks/scripts/nav-qa/elementfrompoint-sweep.mjs",
+      "plugins/sgs-blocks/scripts/oracle/element_probe.py",
+      "plugins/sgs-blocks/scripts/surveys/audit-css-element-drift.py"
+    ],
+    "typography": [
+      "plugins/sgs-blocks/scripts/converter/resolvers/typography.py",
+      "plugins/sgs-blocks/scripts/inspector-scan/rules/33-ineffective-typography-selector.js",
+      "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/typography_common.py",
+      "plugins/sgs-blocks/scripts/surveys/survey-typography-controls.py",
+      "plugins/sgs-blocks/scripts/theme-extractor/typography.py"
+    ],
+    "responsive": [
+      "plugins/sgs-blocks/scripts/inspector-scan/rules/26-responsive-duplicate.js",
+      "plugins/sgs-blocks/scripts/lint-responsive-controls.py",
+      "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-columns-responsive.js",
+      "plugins/sgs-blocks/scripts/surveys/survey-responsive-shape.py",
+      "scripts/wc-pages-responsive-audit.js"
+    ],
+    "inline": [
+      "plugins/sgs-blocks/scripts/audit-inline-styling.js",
+      "plugins/sgs-blocks/scripts/converter/tests/test_role_detection_inline.py",
+      "plugins/sgs-blocks/scripts/no-inline/check-no-inline.py",
+      "plugins/sgs-blocks/scripts/no-inline-land-verify.js"
+    ],
+    "container": [
+      "plugins/sgs-blocks/scripts/check-empty-inspector-containers.js",
+      "plugins/sgs-blocks/scripts/converter/tests/test_container_default.py",
+      "plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py"
+    ],
+    "shadow": [
+      "plugins/sgs-blocks/scripts/colour-codemod/migrate-shadow-mounts.js",
+      "plugins/sgs-blocks/scripts/converter/tests/test_outer_box_background_shadow.py",
+      "plugins/sgs-blocks/scripts/inspector-scan/rules/07-preset-only-shadow.js"
+    ]
+  },
+  "largest": [
+    {
+      "script": "plugins/sgs-blocks/scripts/sgs-update-v2.py",
+      "lines": 6806,
+      "code_tokens": 12602,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/db/db_lookup.py",
+      "lines": 5963,
+      "code_tokens": 8000,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py",
+      "lines": 4863,
+      "code_tokens": 9655,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-editor-render-parity.js",
+      "lines": 3656,
+      "code_tokens": 5673,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/behavioural-analyser/extract-signatures.py",
+      "lines": 3492,
+      "code_tokens": 5929,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py",
+      "lines": 3252,
+      "code_tokens": 8178,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/lints/token-lint.py",
+      "lines": 2358,
+      "code_tokens": 4565,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-dead-controls.js",
+      "lines": 2259,
+      "code_tokens": 2500,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js",
+      "lines": 2183,
+      "code_tokens": 3504,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/colour-codemod/fix.js",
+      "lines": 2099,
+      "code_tokens": 6050,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-wave-c.mjs",
+      "lines": 1878,
+      "code_tokens": 3877,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/tests/test_oracle.py",
+      "lines": 1809,
+      "code_tokens": 3314,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/build-tier-fixture-page.py",
+      "lines": 1730,
+      "code_tokens": 3826,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-tier-object.py",
+      "lines": 1575,
+      "code_tokens": 3622,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/ledger/declare_input.py",
+      "lines": 1410,
+      "code_tokens": 2995,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py",
+      "lines": 1396,
+      "code_tokens": 3033,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-step13-pin-focus.mjs",
+      "lines": 1381,
+      "code_tokens": 2803,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/build-deploy.py",
+      "lines": 1333,
+      "code_tokens": 3765,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/tests/test_f6_consistency.py",
+      "lines": 1322,
+      "code_tokens": 2806,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-block-file-consistency.py",
+      "lines": 1320,
+      "code_tokens": 2376,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_extraction.py",
+      "lines": 1290,
+      "code_tokens": 2870,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-step14-scrub-focus.mjs",
+      "lines": 1283,
+      "code_tokens": 3237,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-inspector-surface.js",
+      "lines": 1253,
+      "code_tokens": 3322,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-shared-panel-schema.js",
+      "lines": 1252,
+      "code_tokens": 2232,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/seed-motion-fx-registry.py",
+      "lines": 1246,
+      "code_tokens": 1050,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    }
+  ],
+  "scripts": [
+    {
+      "script": ".claude/hooks/decisions-sweep-auto.py",
+      "lines": 240,
+      "code_tokens": 520,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": ".claude/hooks/drift-check-dispatcher.py",
+      "lines": 226,
+      "code_tokens": 524,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": ".claude/hooks/f5-commit-gate.py",
+      "lines": 347,
+      "code_tokens": 803,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": ".claude/hooks/git-path-scope-guard.py",
+      "lines": 75,
+      "code_tokens": 157,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": ".claude/hooks/handoff-preflight.py",
+      "lines": 917,
+      "code_tokens": 2243,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": ".claude/hooks/ledger-rotate.py",
+      "lines": 236,
+      "code_tokens": 561,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": ".claude/hooks/memory-cap-guard.py",
+      "lines": 56,
+      "code_tokens": 123,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": ".claude/hooks/no-header-footer-block.py",
+      "lines": 77,
+      "code_tokens": 167,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": ".claude/hooks/spec-drift-commit-gate.py",
+      "lines": 179,
+      "code_tokens": 431,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": ".claude/scripts/build-archive-index.py",
+      "lines": 88,
+      "code_tokens": 183,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": ".claude/scripts/sweep-decisions.py",
+      "lines": 278,
+      "code_tokens": 615,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/assert-comment-only-diff.py",
+      "lines": 100,
+      "code_tokens": 154,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-block-file-consistency.py",
+      "lines": 1320,
+      "code_tokens": 2376,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-block-uniformity.py",
+      "lines": 335,
+      "code_tokens": 591,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-declared-vs-seeded-roles.py",
+      "lines": 448,
+      "code_tokens": 1136,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-feature-parity.py",
+      "lines": 414,
+      "code_tokens": 1156,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-inline-styling.js",
+      "lines": 1109,
+      "code_tokens": 2415,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-post-content-blocks.py",
+      "lines": 380,
+      "code_tokens": 822,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-scoped-selector-live.js",
+      "lines": 229,
+      "code_tokens": 620,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-script-cull-candidates.py",
+      "lines": 318,
+      "code_tokens": 508,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-script-reachability.py",
+      "lines": 422,
+      "code_tokens": 842,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-shrink-to-fit.js",
+      "lines": 347,
+      "code_tokens": 836,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py",
+      "lines": 4863,
+      "code_tokens": 9655,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/behavioural-analyser/backfill-coarse-roles.py",
+      "lines": 131,
+      "code_tokens": 326,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/behavioural-analyser/backfill-from-json-catalogue.py",
+      "lines": 147,
+      "code_tokens": 358,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/behavioural-analyser/extract-signatures.py",
+      "lines": 3492,
+      "code_tokens": 5929,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/build-deploy.py",
+      "lines": 1333,
+      "code_tokens": 3765,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/build-font-collection.py",
+      "lines": 310,
+      "code_tokens": 532,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/build-tier-fixture-page.py",
+      "lines": 1730,
+      "code_tokens": 3826,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/capture-tier-fixture.py",
+      "lines": 779,
+      "code_tokens": 1224,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/census-colour-paint-route.py",
+      "lines": 131,
+      "code_tokens": 247,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/__init__.py",
+      "lines": 10,
+      "code_tokens": 0,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/check_bound_emit.py",
+      "lines": 139,
+      "code_tokens": 390,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/check_converter_source.py",
+      "lines": 224,
+      "code_tokens": 669,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/check_d2_when_d1.py",
+      "lines": 213,
+      "code_tokens": 370,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/check_hardcoded_dicts.py",
+      "lines": 355,
+      "code_tokens": 732,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/check_important_render.py",
+      "lines": 193,
+      "code_tokens": 370,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/check_parallel_bp.py",
+      "lines": 275,
+      "code_tokens": 535,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/check_sentinel.py",
+      "lines": 245,
+      "code_tokens": 546,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/check_slug_literals.py",
+      "lines": 358,
+      "code_tokens": 648,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/models.py",
+      "lines": 90,
+      "code_tokens": 121,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/run.py",
+      "lines": 377,
+      "code_tokens": 821,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/tests/__init__.py",
+      "lines": 2,
+      "code_tokens": 0,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/tests/test_cheat_gate.py",
+      "lines": 951,
+      "code_tokens": 1926,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/tests/test_check_d2_when_d1_repair.py",
+      "lines": 126,
+      "code_tokens": 237,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-atomic-slug-literals.py",
+      "lines": 151,
+      "code_tokens": 295,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-block-asset-targets.js",
+      "lines": 229,
+      "code_tokens": 388,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-blockjson-metadata-only.py",
+      "lines": 236,
+      "code_tokens": 421,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-box-family-guard.py",
+      "lines": 532,
+      "code_tokens": 1253,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-control-ux.js",
+      "lines": 720,
+      "code_tokens": 1212,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-dead-api-calls.py",
+      "lines": 579,
+      "code_tokens": 1394,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-dead-controls.js",
+      "lines": 2259,
+      "code_tokens": 2500,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-dead-pattern-attrs.py",
+      "lines": 617,
+      "code_tokens": 1288,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-device-toggle.js",
+      "lines": 580,
+      "code_tokens": 1634,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-duplicate-controls.js",
+      "lines": 1039,
+      "code_tokens": 2128,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-editor-canvas-css.py",
+      "lines": 251,
+      "code_tokens": 517,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-editor-only.py",
+      "lines": 699,
+      "code_tokens": 1339,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-editor-render-parity.js",
+      "lines": 3656,
+      "code_tokens": 5673,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-element-manifest-conformance.js",
+      "lines": 838,
+      "code_tokens": 1632,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-empty-inspector-containers.js",
+      "lines": 307,
+      "code_tokens": 607,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-fx-list-drift.py",
+      "lines": 1060,
+      "code_tokens": 2997,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js",
+      "lines": 2183,
+      "code_tokens": 3504,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-id-scoped-emits.js",
+      "lines": 416,
+      "code_tokens": 651,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-inert-controls.py",
+      "lines": 537,
+      "code_tokens": 953,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-interaction-only-css.py",
+      "lines": 525,
+      "code_tokens": 997,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-jsonld-flags.py",
+      "lines": 393,
+      "code_tokens": 918,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-ksort-before-hash.py",
+      "lines": 206,
+      "code_tokens": 499,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-markup-neutral.py",
+      "lines": 330,
+      "code_tokens": 698,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-motion-bundle-budget.py",
+      "lines": 758,
+      "code_tokens": 1844,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-no-core-blocks.py",
+      "lines": 98,
+      "code_tokens": 167,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-palette-slug-refs.py",
+      "lines": 191,
+      "code_tokens": 626,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-preset-token-naming.py",
+      "lines": 464,
+      "code_tokens": 1104,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-product-search-guards.js",
+      "lines": 143,
+      "code_tokens": 304,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-render-undefined-vars.py",
+      "lines": 277,
+      "code_tokens": 676,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-shader-sources.py",
+      "lines": 516,
+      "code_tokens": 1256,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-shared-css-state-rules.js",
+      "lines": 626,
+      "code_tokens": 981,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-shared-panel-schema.js",
+      "lines": 1252,
+      "code_tokens": 2232,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-simple-surface-cap.js",
+      "lines": 998,
+      "code_tokens": 1708,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-single-instance-invariants.py",
+      "lines": 411,
+      "code_tokens": 1117,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-text-gradient-companion.js",
+      "lines": 515,
+      "code_tokens": 886,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-tier-object-cast.py",
+      "lines": 335,
+      "code_tokens": 824,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-tier-storage-shape.py",
+      "lines": 219,
+      "code_tokens": 438,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-token-rename-neutral.py",
+      "lines": 166,
+      "code_tokens": 491,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-undeclared-attrs.py",
+      "lines": 622,
+      "code_tokens": 1061,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-undefined-refs.js",
+      "lines": 306,
+      "code_tokens": 583,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-undefined-refs.selftest.js",
+      "lines": 233,
+      "code_tokens": 449,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-universal-fit.js",
+      "lines": 960,
+      "code_tokens": 1893,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-unresolvable-token-refs.py",
+      "lines": 360,
+      "code_tokens": 955,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-wrapper-capability-preconditions.js",
+      "lines": 429,
+      "code_tokens": 751,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/colour-codemod/adopt.js",
+      "lines": 1010,
+      "code_tokens": 3110,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/colour-codemod/fix.js",
+      "lines": 2099,
+      "code_tokens": 6050,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/colour-codemod/migrate-shadow-mounts.js",
+      "lines": 232,
+      "code_tokens": 463,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/colour-codemod/scan-undeclared-setattributes.js",
+      "lines": 121,
+      "code_tokens": 271,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/colour-codemod/survey.js",
+      "lines": 403,
+      "code_tokens": 782,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/consistency/build-roster.py",
+      "lines": 384,
+      "code_tokens": 934,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/consistency/build-setting-types.py",
+      "lines": 227,
+      "code_tokens": 578,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/consistency/check-box-flat.py",
+      "lines": 428,
+      "code_tokens": 953,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/consistency/check-cluster-coverage.py",
+      "lines": 256,
+      "code_tokens": 664,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/consistency/check-reclassified-keys.py",
+      "lines": 423,
+      "code_tokens": 1201,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/consistency/reclassify.py",
+      "lines": 571,
+      "code_tokens": 2016,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/consistency/report-colour-alpha.py",
+      "lines": 202,
+      "code_tokens": 385,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/consistency/run-consistency-gates.py",
+      "lines": 179,
+      "code_tokens": 392,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/classify_detector1.py",
+      "lines": 559,
+      "code_tokens": 1054,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector2_editjs_controls.py",
+      "lines": 346,
+      "code_tokens": 552,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector3_i18n_default.py",
+      "lines": 150,
+      "code_tokens": 242,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector4_referenced_not_output.py",
+      "lines": 411,
+      "code_tokens": 718,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector5_image_alt_companion.py",
+      "lines": 887,
+      "code_tokens": 1861,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector6_native_support_and_style_emission.py",
+      "lines": 1009,
+      "code_tokens": 1965,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/fingerprint_content_roles.py",
+      "lines": 1148,
+      "code_tokens": 2168,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/__init__.py",
+      "lines": 21,
+      "code_tokens": 0,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/context.py",
+      "lines": 173,
+      "code_tokens": 144,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/coverage_report.py",
+      "lines": 164,
+      "code_tokens": 428,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/db/__init__.py",
+      "lines": 12,
+      "code_tokens": 0,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/db/db_lookup.py",
+      "lines": 5963,
+      "code_tokens": 8000,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/dispatch_table.py",
+      "lines": 167,
+      "code_tokens": 163,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/entry.py",
+      "lines": 443,
+      "code_tokens": 506,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/gates/__init__.py",
+      "lines": 7,
+      "code_tokens": 0,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/gates/check_content_attr_collisions.py",
+      "lines": 513,
+      "code_tokens": 1189,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/gates/check_preset_absence_no_slug_literal.py",
+      "lines": 70,
+      "code_tokens": 126,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/gates/check_raw_sqlite.py",
+      "lines": 192,
+      "code_tokens": 476,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/gates/import_ban.py",
+      "lines": 224,
+      "code_tokens": 458,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/gates/no_slug_literal.py",
+      "lines": 471,
+      "code_tokens": 1142,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/models.py",
+      "lines": 102,
+      "code_tokens": 87,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/orchestrator.py",
+      "lines": 358,
+      "code_tokens": 693,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/recognition.py",
+      "lines": 318,
+      "code_tokens": 485,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/__init__.py",
+      "lines": 70,
+      "code_tokens": 92,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/array_content.py",
+      "lines": 484,
+      "code_tokens": 799,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/content_band.py",
+      "lines": 310,
+      "code_tokens": 687,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/grid.py",
+      "lines": 322,
+      "code_tokens": 793,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/outer_box.py",
+      "lines": 517,
+      "code_tokens": 809,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/preset_absence.py",
+      "lines": 210,
+      "code_tokens": 331,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/scalar_content.py",
+      "lines": 245,
+      "code_tokens": 342,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/scalar_media.py",
+      "lines": 28,
+      "code_tokens": 4,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/styling_content.py",
+      "lines": 502,
+      "code_tokens": 641,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/typography.py",
+      "lines": 177,
+      "code_tokens": 386,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/__init__.py",
+      "lines": 10,
+      "code_tokens": 0,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/arrangement.py",
+      "lines": 165,
+      "code_tokens": 263,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/assembly.py",
+      "lines": 485,
+      "code_tokens": 640,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/attr_resolve.py",
+      "lines": 71,
+      "code_tokens": 61,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/border_side.py",
+      "lines": 90,
+      "code_tokens": 124,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/button_group.py",
+      "lines": 106,
+      "code_tokens": 72,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/content_gap_collector.py",
+      "lines": 208,
+      "code_tokens": 266,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/content_select.py",
+      "lines": 149,
+      "code_tokens": 201,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/css_parse.py",
+      "lines": 77,
+      "code_tokens": 138,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/css_pass.py",
+      "lines": 262,
+      "code_tokens": 308,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/draft_oracle.py",
+      "lines": 40,
+      "code_tokens": 37,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/extraction.py",
+      "lines": 1198,
+      "code_tokens": 1944,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/field_extractors.py",
+      "lines": 467,
+      "code_tokens": 594,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/fold_helpers.py",
+      "lines": 748,
+      "code_tokens": 1204,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/gap_writer.py",
+      "lines": 32,
+      "code_tokens": 43,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/has_inner.py",
+      "lines": 140,
+      "code_tokens": 223,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/icon_resolver.py",
+      "lines": 392,
+      "code_tokens": 511,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/l2_qualify.py",
+      "lines": 412,
+      "code_tokens": 721,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/layer_detect.py",
+      "lines": 41,
+      "code_tokens": 44,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/lift_helpers.py",
+      "lines": 171,
+      "code_tokens": 211,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/pseudo_overlay.py",
+      "lines": 430,
+      "code_tokens": 452,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/recognise_helpers.py",
+      "lines": 75,
+      "code_tokens": 114,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/render_emits.py",
+      "lines": 134,
+      "code_tokens": 281,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/root_supports.py",
+      "lines": 677,
+      "code_tokens": 1123,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/section_passes.py",
+      "lines": 143,
+      "code_tokens": 246,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/state_value_lift.py",
+      "lines": 205,
+      "code_tokens": 262,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/styling_helpers.py",
+      "lines": 1054,
+      "code_tokens": 1605,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/text_leaf.py",
+      "lines": 103,
+      "code_tokens": 112,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/tier_suffix.py",
+      "lines": 70,
+      "code_tokens": 80,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/token_resolution_check.py",
+      "lines": 415,
+      "code_tokens": 726,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/token_snap.py",
+      "lines": 21,
+      "code_tokens": 30,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/validate.py",
+      "lines": 85,
+      "code_tokens": 144,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/value_serialise.py",
+      "lines": 19,
+      "code_tokens": 17,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/variant_detect.py",
+      "lines": 82,
+      "code_tokens": 104,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/__init__.py",
+      "lines": 1,
+      "code_tokens": 0,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_arrangement.py",
+      "lines": 271,
+      "code_tokens": 558,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_array_content.py",
+      "lines": 252,
+      "code_tokens": 572,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_art_direction_live_path.py",
+      "lines": 225,
+      "code_tokens": 493,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_band_fold.py",
+      "lines": 154,
+      "code_tokens": 292,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_bare_tag_lift.py",
+      "lines": 109,
+      "code_tokens": 209,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_bem_tie_loud.py",
+      "lines": 49,
+      "code_tokens": 104,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_border_side.py",
+      "lines": 139,
+      "code_tokens": 307,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_button_preset_seed.py",
+      "lines": 151,
+      "code_tokens": 247,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_conservation_seam.py",
+      "lines": 140,
+      "code_tokens": 343,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_container_default.py",
+      "lines": 216,
+      "code_tokens": 573,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_content_attr_resolver.py",
+      "lines": 335,
+      "code_tokens": 890,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_content_gap_collector.py",
+      "lines": 262,
+      "code_tokens": 619,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_coverage_gate.py",
+      "lines": 37,
+      "code_tokens": 67,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_css_pass_partition.py",
+      "lines": 231,
+      "code_tokens": 448,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_css_resolvers.py",
+      "lines": 198,
+      "code_tokens": 843,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_destination_contract.py",
+      "lines": 357,
+      "code_tokens": 854,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_disclaimer_box_colour_border.py",
+      "lines": 119,
+      "code_tokens": 220,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_dispatch_table.py",
+      "lines": 135,
+      "code_tokens": 266,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_draft_var_colour_resolution.py",
+      "lines": 111,
+      "code_tokens": 163,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_extraction.py",
+      "lines": 1290,
+      "code_tokens": 2870,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_family_modifier_scan.py",
+      "lines": 139,
+      "code_tokens": 270,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_field_extractors.py",
+      "lines": 367,
+      "code_tokens": 733,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_fold_band_cascade.py",
+      "lines": 146,
+      "code_tokens": 323,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_fold_gap_trace.py",
+      "lines": 98,
+      "code_tokens": 215,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_foreign_identity_lift.py",
+      "lines": 354,
+      "code_tokens": 826,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_has_inner_derive.py",
+      "lines": 56,
+      "code_tokens": 91,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_hover_state_lift.py",
+      "lines": 74,
+      "code_tokens": 168,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_image_alt_companion.py",
+      "lines": 131,
+      "code_tokens": 271,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_import_ban.py",
+      "lines": 151,
+      "code_tokens": 305,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_inherit_style_modifier.py",
+      "lines": 62,
+      "code_tokens": 95,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_l4_area_wiring.py",
+      "lines": 98,
+      "code_tokens": 263,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_link_content_role.py",
+      "lines": 437,
+      "code_tokens": 1058,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_max_suffix_role_fix.py",
+      "lines": 194,
+      "code_tokens": 426,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_metamorphic_real_draft.py",
+      "lines": 289,
+      "code_tokens": 441,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_metamorphic_universality.py",
+      "lines": 250,
+      "code_tokens": 555,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_minwidth_cross_device_tier.py",
+      "lines": 237,
+      "code_tokens": 524,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_no_slug_literal.py",
+      "lines": 174,
+      "code_tokens": 323,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_nowidth_media_residual.py",
+      "lines": 81,
+      "code_tokens": 114,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_outer_box.py",
+      "lines": 207,
+      "code_tokens": 361,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_outer_box_background_shadow.py",
+      "lines": 324,
+      "code_tokens": 657,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_outer_box_step12_properties.py",
+      "lines": 262,
+      "code_tokens": 764,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_per_element_state_lift.py",
+      "lines": 97,
+      "code_tokens": 234,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_preset_absence.py",
+      "lines": 367,
+      "code_tokens": 493,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_pseudo_overlay_lift.py",
+      "lines": 414,
+      "code_tokens": 734,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_raw_sqlite_gate.py",
+      "lines": 96,
+      "code_tokens": 192,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_recognition.py",
+      "lines": 105,
+      "code_tokens": 306,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_residual_css_passthrough.py",
+      "lines": 139,
+      "code_tokens": 292,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_role_detection_inline.py",
+      "lines": 138,
+      "code_tokens": 340,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_root_supports.py",
+      "lines": 506,
+      "code_tokens": 1101,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_self_nest_guard.py",
+      "lines": 106,
+      "code_tokens": 208,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_single_item_array_warning.py",
+      "lines": 174,
+      "code_tokens": 272,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_slot_vocab_reviewer_name.py",
+      "lines": 125,
+      "code_tokens": 265,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_state_value_lift.py",
+      "lines": 296,
+      "code_tokens": 541,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_styling_content.py",
+      "lines": 102,
+      "code_tokens": 173,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_subheading_routes_to_heading_role.py",
+      "lines": 221,
+      "code_tokens": 379,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_tag_identity_attrs.py",
+      "lines": 264,
+      "code_tokens": 401,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_testimonial_scalar_lift_fields.py",
+      "lines": 220,
+      "code_tokens": 389,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_unrouted_fails.py",
+      "lines": 41,
+      "code_tokens": 81,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_variant_detect.py",
+      "lines": 97,
+      "code_tokens": 257,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/tests/test_walk_registry.py",
+      "lines": 222,
+      "code_tokens": 515,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/walk.py",
+      "lines": 758,
+      "code_tokens": 1150,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/copy-built-styles.js",
+      "lines": 64,
+      "code_tokens": 121,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/coverage-matrix/classifier.py",
+      "lines": 250,
+      "code_tokens": 466,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/coverage-matrix/db_queries.py",
+      "lines": 317,
+      "code_tokens": 557,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/coverage-matrix/generate-coverage-matrix.py",
+      "lines": 333,
+      "code_tokens": 771,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/coverage-matrix/models.py",
+      "lines": 132,
+      "code_tokens": 209,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/coverage-matrix/tests/test_coverage_matrix.py",
+      "lines": 366,
+      "code_tokens": 948,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/__init__.py",
+      "lines": 9,
+      "code_tokens": 0,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_composition.py",
+      "lines": 276,
+      "code_tokens": 570,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_css_property_reseed.py",
+      "lines": 357,
+      "code_tokens": 897,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_fx_qualifying_blocks_stale.py",
+      "lines": 240,
+      "code_tokens": 561,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_motion_fx_reseed.py",
+      "lines": 341,
+      "code_tokens": 828,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_orphan_roles.py",
+      "lines": 64,
+      "code_tokens": 133,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_overrides_drift.py",
+      "lines": 38,
+      "code_tokens": 27,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_routing.py",
+      "lines": 91,
+      "code_tokens": 187,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_tier_composition.py",
+      "lines": 74,
+      "code_tokens": 131,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_variant_reseed.py",
+      "lines": 155,
+      "code_tokens": 334,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_variants.py",
+      "lines": 197,
+      "code_tokens": 409,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/models.py",
+      "lines": 80,
+      "code_tokens": 123,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/resolver_bridge.py",
+      "lines": 218,
+      "code_tokens": 386,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/run.py",
+      "lines": 297,
+      "code_tokens": 644,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/tests/__init__.py",
+      "lines": 5,
+      "code_tokens": 0,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/tests/test_f6_consistency.py",
+      "lines": 1322,
+      "code_tokens": 2806,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/capture_seed_data.py",
+      "lines": 331,
+      "code_tokens": 1076,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/check_schema_drift.py",
+      "lines": 429,
+      "code_tokens": 1137,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/check_value_identity.py",
+      "lines": 334,
+      "code_tokens": 919,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/migrate.py",
+      "lines": 550,
+      "code_tokens": 1554,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/rebuild_compare.py",
+      "lines": 203,
+      "code_tokens": 578,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/refresh_wp_reference.py",
+      "lines": 297,
+      "code_tokens": 661,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/retire_table.py",
+      "lines": 311,
+      "code_tokens": 903,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/sandbox.py",
+      "lines": 335,
+      "code_tokens": 854,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/seed_history.py",
+      "lines": 541,
+      "code_tokens": 1424,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/wp_reference_archive.py",
+      "lines": 226,
+      "code_tokens": 522,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/drift-validator/validate.py",
+      "lines": 234,
+      "code_tokens": 498,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/excluded-gate/__init__.py",
+      "lines": 6,
+      "code_tokens": 0,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/excluded-gate/db_check.py",
+      "lines": 134,
+      "code_tokens": 236,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/excluded-gate/models.py",
+      "lines": 54,
+      "code_tokens": 59,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/excluded-gate/run.py",
+      "lines": 410,
+      "code_tokens": 888,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/excluded-gate/scanner.py",
+      "lines": 397,
+      "code_tokens": 677,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/excluded-gate/tests/__init__.py",
+      "lines": 2,
+      "code_tokens": 0,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/excluded-gate/tests/test_excluded_gate.py",
+      "lines": 665,
+      "code_tokens": 1272,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/extract-button-presets.py",
+      "lines": 207,
+      "code_tokens": 615,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/extract-comment-narrative.py",
+      "lines": 224,
+      "code_tokens": 582,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/fanout-overlay-sibling-attrs.py",
+      "lines": 417,
+      "code_tokens": 849,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/fingerprint-builder/audit-attr-vocabulary-v2.py",
+      "lines": 220,
+      "code_tokens": 630,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/gap-detection/detect.py",
+      "lines": 191,
+      "code_tokens": 320,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-attr-role-map.py",
+      "lines": 84,
+      "code_tokens": 156,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-block-reference.py",
+      "lines": 355,
+      "code_tokens": 931,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-db-catalogue.py",
+      "lines": 292,
+      "code_tokens": 2346,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-extension-attributes.js",
+      "lines": 171,
+      "code_tokens": 238,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-fx-effects-php.py",
+      "lines": 309,
+      "code_tokens": 663,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-fx-qualifying-blocks.py",
+      "lines": 1009,
+      "code_tokens": 990,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-icons.js",
+      "lines": 196,
+      "code_tokens": 374,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-markup-examples.py",
+      "lines": 387,
+      "code_tokens": 1220,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-tooling-catalogue.py",
+      "lines": 642,
+      "code_tokens": 922,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/image-sequence-prep.py",
+      "lines": 569,
+      "code_tokens": 1148,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/baseline.js",
+      "lines": 151,
+      "code_tokens": 365,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/components.js",
+      "lines": 352,
+      "code_tokens": 538,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/extensions.js",
+      "lines": 48,
+      "code_tokens": 48,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/finding.js",
+      "lines": 103,
+      "code_tokens": 146,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/golden.js",
+      "lines": 886,
+      "code_tokens": 1360,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/report.js",
+      "lines": 107,
+      "code_tokens": 326,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/roster.js",
+      "lines": 197,
+      "code_tokens": 406,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/selftest.js",
+      "lines": 322,
+      "code_tokens": 702,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/sources.js",
+      "lines": 205,
+      "code_tokens": 363,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/export-colour-css-property.py",
+      "lines": 75,
+      "code_tokens": 130,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/01-tab-group.js",
+      "lines": 113,
+      "code_tokens": 300,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/03-dense-panel-candidate.js",
+      "lines": 127,
+      "code_tokens": 217,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/04-colour-alpha.js",
+      "lines": 118,
+      "code_tokens": 194,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/07-preset-only-shadow.js",
+      "lines": 121,
+      "code_tokens": 262,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/08-raw-url-link.js",
+      "lines": 127,
+      "code_tokens": 269,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/14-media-upload-check.js",
+      "lines": 89,
+      "code_tokens": 155,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/17-reduced-motion-gate.js",
+      "lines": 184,
+      "code_tokens": 418,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/18-decorative-image-aria.js",
+      "lines": 95,
+      "code_tokens": 238,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/20-pattern-template-lock.js",
+      "lines": 94,
+      "code_tokens": 168,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/21-render-without-control.js",
+      "lines": 634,
+      "code_tokens": 784,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/22-placement-rule-surfaces.js",
+      "lines": 186,
+      "code_tokens": 496,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/23-content-width-needs-inner-band.js",
+      "lines": 257,
+      "code_tokens": 432,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/24-raw-canonical-component.js",
+      "lines": 228,
+      "code_tokens": 306,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/25-no-own-device-switcher.js",
+      "lines": 432,
+      "code_tokens": 731,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/26-responsive-duplicate.js",
+      "lines": 497,
+      "code_tokens": 1021,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/27-superseded-link-control.js",
+      "lines": 200,
+      "code_tokens": 405,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/28-fix-durability.js",
+      "lines": 164,
+      "code_tokens": 353,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/29-duplicate-visible-label.js",
+      "lines": 383,
+      "code_tokens": 706,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/30-raw-box-control.js",
+      "lines": 226,
+      "code_tokens": 422,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js",
+      "lines": 1167,
+      "code_tokens": 2383,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/33-ineffective-typography-selector.js",
+      "lines": 440,
+      "code_tokens": 860,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/34-declared-attr-unrendered.js",
+      "lines": 350,
+      "code_tokens": 518,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/run.js",
+      "lines": 420,
+      "code_tokens": 1133,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/ledger/__init__.py",
+      "lines": 11,
+      "code_tokens": 17,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/ledger/content_gap_check.py",
+      "lines": 517,
+      "code_tokens": 1067,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/ledger/coverage_check.py",
+      "lines": 1103,
+      "code_tokens": 1964,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/ledger/declare_input.py",
+      "lines": 1410,
+      "code_tokens": 2995,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/ledger/models.py",
+      "lines": 115,
+      "code_tokens": 126,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/ledger/tests/__init__.py",
+      "lines": 2,
+      "code_tokens": 0,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/ledger/tests/test_content_gap_check.py",
+      "lines": 434,
+      "code_tokens": 1000,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/ledger/tests/test_coverage_check.py",
+      "lines": 906,
+      "code_tokens": 1945,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/ledger/tests/test_declare_input.py",
+      "lines": 1128,
+      "code_tokens": 3180,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/lint-responsive-controls.py",
+      "lines": 494,
+      "code_tokens": 915,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/lints/__init__.py",
+      "lines": 1,
+      "code_tokens": 0,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/lints/bem-lint.py",
+      "lines": 499,
+      "code_tokens": 782,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/lints/draft-vocab-lint.py",
+      "lines": 316,
+      "code_tokens": 976,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/lints/lint-spec-drift.py",
+      "lines": 260,
+      "code_tokens": 688,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/lints/lint-theme-css-hardcodes.py",
+      "lines": 293,
+      "code_tokens": 614,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/lints/token-lint.py",
+      "lines": 2358,
+      "code_tokens": 4565,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/make-visual-diff-reports.py",
+      "lines": 1188,
+      "code_tokens": 2903,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/block_parser.py",
+      "lines": 163,
+      "code_tokens": 283,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/build_register.py",
+      "lines": 239,
+      "code_tokens": 667,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/capture-page.js",
+      "lines": 33,
+      "code_tokens": 98,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/capture-preset-gap.js",
+      "lines": 27,
+      "code_tokens": 85,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/contract.py",
+      "lines": 31,
+      "code_tokens": 29,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/driver.py",
+      "lines": 346,
+      "code_tokens": 995,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/lint-page.py",
+      "lines": 261,
+      "code_tokens": 599,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/migrate-details-to-accordion.py",
+      "lines": 141,
+      "code_tokens": 367,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/__init__.py",
+      "lines": 1,
+      "code_tokens": 0,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/button_pairing.py",
+      "lines": 368,
+      "code_tokens": 1037,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/buttons_pairing.py",
+      "lines": 190,
+      "code_tokens": 530,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/column_pairing.py",
+      "lines": 82,
+      "code_tokens": 220,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/columns_pairing.py",
+      "lines": 138,
+      "code_tokens": 326,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/cover_pairing.py",
+      "lines": 427,
+      "code_tokens": 954,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/group_pairing.py",
+      "lines": 135,
+      "code_tokens": 345,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/heading_pairing.py",
+      "lines": 101,
+      "code_tokens": 346,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/image_pairing.py",
+      "lines": 152,
+      "code_tokens": 427,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/latest_posts_pairing.py",
+      "lines": 314,
+      "code_tokens": 950,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/paragraph_pairing.py",
+      "lines": 127,
+      "code_tokens": 378,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/post_template_pairing.py",
+      "lines": 74,
+      "code_tokens": 79,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/query_pairing.py",
+      "lines": 125,
+      "code_tokens": 135,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/row_pairing.py",
+      "lines": 83,
+      "code_tokens": 139,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/separator_pairing.py",
+      "lines": 217,
+      "code_tokens": 657,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/site_logo_pairing.py",
+      "lines": 186,
+      "code_tokens": 386,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/stack_pairing.py",
+      "lines": 77,
+      "code_tokens": 139,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/typography_common.py",
+      "lines": 118,
+      "code_tokens": 247,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-accordion.js",
+      "lines": 54,
+      "code_tokens": 187,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-button-equivalence.js",
+      "lines": 81,
+      "code_tokens": 171,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-columns-responsive.js",
+      "lines": 42,
+      "code_tokens": 130,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-cw-cause.js",
+      "lines": 62,
+      "code_tokens": 187,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-group-layout.js",
+      "lines": 46,
+      "code_tokens": 140,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-heading-cascade.js",
+      "lines": 61,
+      "code_tokens": 152,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-image-pairing.js",
+      "lines": 75,
+      "code_tokens": 201,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-multibutton-margin.js",
+      "lines": 36,
+      "code_tokens": 89,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-overflow.js",
+      "lines": 41,
+      "code_tokens": 94,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-page8-media.js",
+      "lines": 29,
+      "code_tokens": 66,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-preset-gap.js",
+      "lines": 41,
+      "code_tokens": 75,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-text-equivalence.js",
+      "lines": 81,
+      "code_tokens": 179,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/publish-pattern-pair.py",
+      "lines": 92,
+      "code_tokens": 217,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/upgrade-button-presets.py",
+      "lines": 105,
+      "code_tokens": 265,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-gallery-object-model.js",
+      "lines": 276,
+      "code_tokens": 648,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-length-sanitiser.py",
+      "lines": 319,
+      "code_tokens": 781,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-overlay-tier-axis.py",
+      "lines": 132,
+      "code_tokens": 348,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-render-closures.py",
+      "lines": 249,
+      "code_tokens": 582,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-theme-attr-rename.py",
+      "lines": 363,
+      "code_tokens": 1046,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-theme-native-spacing.py",
+      "lines": 243,
+      "code_tokens": 606,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-theme-tier-scalars.py",
+      "lines": 331,
+      "code_tokens": 891,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-tier-object.py",
+      "lines": 1575,
+      "code_tokens": 3622,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrations/2026-06-13-testimonial-selector-fingerprint-override.py",
+      "lines": 73,
+      "code_tokens": 79,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrations/2026-06-26-testimonial-media-role-selector.py",
+      "lines": 74,
+      "code_tokens": 94,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrations/2026-08-13-register-core-role-and-seed-native-wp.py",
+      "lines": 75,
+      "code_tokens": 114,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrations/2026-08-13-role-remediation-part2-overrides.py",
+      "lines": 244,
+      "code_tokens": 884,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrations/2026-08-24-drop-fossil-columns.py",
+      "lines": 100,
+      "code_tokens": 147,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-carousel-loop.mjs",
+      "lines": 744,
+      "code_tokens": 1861,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-cursor-field.mjs",
+      "lines": 284,
+      "code_tokens": 643,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-editor-css-warnings.mjs",
+      "lines": 90,
+      "code_tokens": 264,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-first-paint.mjs",
+      "lines": 137,
+      "code_tokens": 293,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-good-by-default.mjs",
+      "lines": 248,
+      "code_tokens": 539,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-horizontal-panel-focus.mjs",
+      "lines": 538,
+      "code_tokens": 1476,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-horizontal-panel.js",
+      "lines": 159,
+      "code_tokens": 313,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-morph-geometry.mjs",
+      "lines": 162,
+      "code_tokens": 331,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-motion-path-repeat.mjs",
+      "lines": 159,
+      "code_tokens": 362,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-reduced-motion.mjs",
+      "lines": 145,
+      "code_tokens": 337,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-step13-pin-focus.mjs",
+      "lines": 1381,
+      "code_tokens": 2803,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-step14-scrub-focus.mjs",
+      "lines": 1283,
+      "code_tokens": 3237,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-stepn-image-sequence-pin.mjs",
+      "lines": 502,
+      "code_tokens": 1244,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-tier-w-surface.mjs",
+      "lines": 902,
+      "code_tokens": 2070,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-wave-c-editor.mjs",
+      "lines": 150,
+      "code_tokens": 389,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-wave-c.mjs",
+      "lines": 1878,
+      "code_tokens": 3877,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/run-live-probes.mjs",
+      "lines": 87,
+      "code_tokens": 224,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/axe-run.mjs",
+      "lines": 353,
+      "code_tokens": 787,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/build-poc-fixtures.py",
+      "lines": 416,
+      "code_tokens": 1049,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/crawl-assert.mjs",
+      "lines": 397,
+      "code_tokens": 948,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/elementfrompoint-sweep.mjs",
+      "lines": 344,
+      "code_tokens": 767,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/lib/openness-guard.mjs",
+      "lines": 499,
+      "code_tokens": 1020,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/logical-props-lint.py",
+      "lines": 425,
+      "code_tokens": 992,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/palette-contrast-sweep.mjs",
+      "lines": 524,
+      "code_tokens": 1127,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/shoot-drawer-pairs.mjs",
+      "lines": 317,
+      "code_tokens": 908,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/sweep-drawer-variants.mjs",
+      "lines": 592,
+      "code_tokens": 1455,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/no-inline/check-no-inline.py",
+      "lines": 404,
+      "code_tokens": 890,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/no-inline/check-stranded-guards.py",
+      "lines": 333,
+      "code_tokens": 797,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/no-inline/detect.py",
+      "lines": 349,
+      "code_tokens": 781,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/no-inline-land-verify.js",
+      "lines": 191,
+      "code_tokens": 513,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/__init__.py",
+      "lines": 45,
+      "code_tokens": 31,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/attribution_ground_truth.py",
+      "lines": 453,
+      "code_tokens": 1060,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/batch_runner.py",
+      "lines": 1061,
+      "code_tokens": 1825,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/capture.py",
+      "lines": 113,
+      "code_tokens": 102,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/decompose_unattributed.py",
+      "lines": 300,
+      "code_tokens": 577,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/element_probe.py",
+      "lines": 242,
+      "code_tokens": 303,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/golden_expectations.py",
+      "lines": 323,
+      "code_tokens": 538,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/guards.py",
+      "lines": 241,
+      "code_tokens": 378,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/metamorphic.py",
+      "lines": 547,
+      "code_tokens": 832,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/models.py",
+      "lines": 397,
+      "code_tokens": 359,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/provision_fixture_canaries.py",
+      "lines": 201,
+      "code_tokens": 461,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/render_oracle.py",
+      "lines": 278,
+      "code_tokens": 622,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/run_canary_proof.py",
+      "lines": 138,
+      "code_tokens": 383,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/tests/__init__.py",
+      "lines": 2,
+      "code_tokens": 0,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/tests/conftest.py",
+      "lines": 62,
+      "code_tokens": 65,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/tests/test_batch_runner.py",
+      "lines": 742,
+      "code_tokens": 1784,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/tests/test_golden_expectations.py",
+      "lines": 232,
+      "code_tokens": 504,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/tests/test_oracle.py",
+      "lines": 1809,
+      "code_tokens": 3314,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/verdict.py",
+      "lines": 580,
+      "code_tokens": 790,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/atomic-block-scaffold.py",
+      "lines": 555,
+      "code_tokens": 979,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/attribute-staged-apply.py",
+      "lines": 228,
+      "code_tokens": 572,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/autonomy_gate.py",
+      "lines": 613,
+      "code_tokens": 1068,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/check_flat_tier_regression.py",
+      "lines": 1060,
+      "code_tokens": 2158,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/check_no_mirror.py",
+      "lines": 889,
+      "code_tokens": 1733,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/critical-fix-verification.py",
+      "lines": 278,
+      "code_tokens": 663,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/css_router.py",
+      "lines": 978,
+      "code_tokens": 1462,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/expected_rules.py",
+      "lines": 229,
+      "code_tokens": 439,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/functionality-bulk-apply.py",
+      "lines": 218,
+      "code_tokens": 518,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/lingua_franca.py",
+      "lines": 343,
+      "code_tokens": 663,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/media-sideload.py",
+      "lines": 427,
+      "code_tokens": 927,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/mutex.py",
+      "lines": 167,
+      "code_tokens": 405,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/orchestrator_main.py",
+      "lines": 201,
+      "code_tokens": 489,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/pipeline-stage-gate.py",
+      "lines": 184,
+      "code_tokens": 233,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/preflight_chain.py",
+      "lines": 240,
+      "code_tokens": 542,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/register_patterns.py",
+      "lines": 597,
+      "code_tokens": 1199,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/stage1_boundary_hook.py",
+      "lines": 221,
+      "code_tokens": 479,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/stage_attribute_promotion.py",
+      "lines": 944,
+      "code_tokens": 1981,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/staged_merge.py",
+      "lines": 208,
+      "code_tokens": 561,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/staged_output.py",
+      "lines": 199,
+      "code_tokens": 469,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py",
+      "lines": 160,
+      "code_tokens": 318,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_atomic_block_scaffold.py",
+      "lines": 199,
+      "code_tokens": 621,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_attribute_staged_apply.py",
+      "lines": 160,
+      "code_tokens": 515,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_autonomy_gate.py",
+      "lines": 590,
+      "code_tokens": 1658,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_check_no_mirror_baseline.py",
+      "lines": 433,
+      "code_tokens": 1047,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_critical_fix_verification.py",
+      "lines": 152,
+      "code_tokens": 472,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_css_router.py",
+      "lines": 949,
+      "code_tokens": 2441,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_functionality_bulk_apply.py",
+      "lines": 155,
+      "code_tokens": 481,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_lingua_franca.py",
+      "lines": 135,
+      "code_tokens": 422,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_media_sideload.py",
+      "lines": 164,
+      "code_tokens": 440,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_mutex.py",
+      "lines": 121,
+      "code_tokens": 345,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_orchestrator_main.py",
+      "lines": 226,
+      "code_tokens": 622,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_preflight_chain.py",
+      "lines": 180,
+      "code_tokens": 593,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_register_patterns.py",
+      "lines": 783,
+      "code_tokens": 1704,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_stage1_boundary_hook.py",
+      "lines": 135,
+      "code_tokens": 377,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_stage_attribute_promotion.py",
+      "lines": 585,
+      "code_tokens": 1531,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_staged_merge.py",
+      "lines": 178,
+      "code_tokens": 566,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_staged_output.py",
+      "lines": 116,
+      "code_tokens": 381,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_validate_stage_artifact.py",
+      "lines": 111,
+      "code_tokens": 342,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/test_wp_integration.py",
+      "lines": 163,
+      "code_tokens": 514,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/trace.py",
+      "lines": 323,
+      "code_tokens": 574,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/upload_and_patch.py",
+      "lines": 405,
+      "code_tokens": 1118,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/validate-stage-artifact.py",
+      "lines": 150,
+      "code_tokens": 413,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/visual_qa_capture.py",
+      "lines": 48,
+      "code_tokens": 58,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/wp_integration.py",
+      "lines": 267,
+      "code_tokens": 520,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/parity/computed-parity.js",
+      "lines": 993,
+      "code_tokens": 3279,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/parity/extract-css-diff.js",
+      "lines": 535,
+      "code_tokens": 1276,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/pattern-classify.py",
+      "lines": 625,
+      "code_tokens": 1242,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/pattern-fingerprint.py",
+      "lines": 514,
+      "code_tokens": 873,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/pattern-register.py",
+      "lines": 899,
+      "code_tokens": 1991,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/placement-reach.py",
+      "lines": 422,
+      "code_tokens": 1117,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/playwright-fetch.js",
+      "lines": 37,
+      "code_tokens": 65,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/prove-selftest-can-fail.py",
+      "lines": 116,
+      "code_tokens": 292,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/push-theme-snapshot.py",
+      "lines": 910,
+      "code_tokens": 2556,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/qa/capture-native-colour-ui.js",
+      "lines": 143,
+      "code_tokens": 429,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/qa/capture-ncui-final3.js",
+      "lines": 216,
+      "code_tokens": 574,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/qa/capture-ncui-remainder.js",
+      "lines": 162,
+      "code_tokens": 538,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/qa/capture-ncui-templateparts.js",
+      "lines": 173,
+      "code_tokens": 440,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/qa/check-colour-editor-roundtrip.js",
+      "lines": 500,
+      "code_tokens": 1232,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/qa/probe-native-colour-ui-close.js",
+      "lines": 198,
+      "code_tokens": 461,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/qa/probe-row-gradient.js",
+      "lines": 184,
+      "code_tokens": 462,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/__init__.py",
+      "lines": 13,
+      "code_tokens": 0,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/attribute-gap-writer.py",
+      "lines": 174,
+      "code_tokens": 371,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/bucket-c-classifier.py",
+      "lines": 241,
+      "code_tokens": 466,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/confidence-matrix.py",
+      "lines": 483,
+      "code_tokens": 836,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/functionality-gap-detector.py",
+      "lines": 311,
+      "code_tokens": 660,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/gap-review-report.py",
+      "lines": 177,
+      "code_tokens": 498,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py",
+      "lines": 1157,
+      "code_tokens": 1895,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py",
+      "lines": 531,
+      "code_tokens": 1049,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/simple_html_review_report.py",
+      "lines": 224,
+      "code_tokens": 523,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/test_attribute_gap_writer.py",
+      "lines": 142,
+      "code_tokens": 333,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/test_bucket_c_classifier.py",
+      "lines": 103,
+      "code_tokens": 237,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/test_confidence_threshold.py",
+      "lines": 145,
+      "code_tokens": 271,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/test_functionality_gap_detector.py",
+      "lines": 131,
+      "code_tokens": 384,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/test_gap_review_report.py",
+      "lines": 128,
+      "code_tokens": 315,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/test_leftover_bucket_router.py",
+      "lines": 218,
+      "code_tokens": 474,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/test_per_section_convention_voter.py",
+      "lines": 107,
+      "code_tokens": 246,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/remove-vacuous-style-engine-guard.py",
+      "lines": 388,
+      "code_tokens": 822,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/row-fit-sweep.mjs",
+      "lines": 856,
+      "code_tokens": 2090,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/run-motion-fx-generators.js",
+      "lines": 96,
+      "code_tokens": 115,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/scan-component-adoption.js",
+      "lines": 490,
+      "code_tokens": 1090,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/seed-component-adoption.py",
+      "lines": 193,
+      "code_tokens": 485,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/seed-composition-roles.py",
+      "lines": 426,
+      "code_tokens": 544,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/seed-motion-fx-registry.py",
+      "lines": 1246,
+      "code_tokens": 1050,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py",
+      "lines": 3252,
+      "code_tokens": 8178,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/sgs-update-v2.py",
+      "lines": 6806,
+      "code_tokens": 12602,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/shared_utils.py",
+      "lines": 38,
+      "code_tokens": 44,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/audit-css-element-drift.py",
+      "lines": 250,
+      "code_tokens": 564,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/check-control-parity-live.js",
+      "lines": 282,
+      "code_tokens": 546,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/check-image-controls-support.py",
+      "lines": 454,
+      "code_tokens": 1121,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/compare-reach-depth.py",
+      "lines": 276,
+      "code_tokens": 594,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/extract-native-contracts.py",
+      "lines": 463,
+      "code_tokens": 786,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/lib/control-detection.js",
+      "lines": 333,
+      "code_tokens": 337,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/lib/php-kind-consumption.js",
+      "lines": 626,
+      "code_tokens": 705,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/lib/wrapper-capability-selftest.js",
+      "lines": 350,
+      "code_tokens": 918,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-background-colour-support.py",
+      "lines": 392,
+      "code_tokens": 1008,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-box-controls.py",
+      "lines": 1012,
+      "code_tokens": 2147,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-colour-controls.py",
+      "lines": 840,
+      "code_tokens": 1778,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-colour-coverage.py",
+      "lines": 1087,
+      "code_tokens": 2223,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-control-gaps.py",
+      "lines": 275,
+      "code_tokens": 578,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-control-mounts.py",
+      "lines": 193,
+      "code_tokens": 468,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-control-parity.py",
+      "lines": 745,
+      "code_tokens": 1229,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-dead-css.py",
+      "lines": 601,
+      "code_tokens": 1283,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-experimental-imports.js",
+      "lines": 622,
+      "code_tokens": 1607,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-extension-usage.py",
+      "lines": 335,
+      "code_tokens": 768,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-golden-conformance.js",
+      "lines": 1233,
+      "code_tokens": 2393,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-inspector-surface.js",
+      "lines": 1253,
+      "code_tokens": 3322,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-length-controls.py",
+      "lines": 788,
+      "code_tokens": 1638,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-native-supports.py",
+      "lines": 1125,
+      "code_tokens": 2437,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-responsive-shape.py",
+      "lines": 238,
+      "code_tokens": 551,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-typography-controls.py",
+      "lines": 907,
+      "code_tokens": 1980,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-wrapper-capability.js",
+      "lines": 494,
+      "code_tokens": 939,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/sync-business-info.py",
+      "lines": 260,
+      "code_tokens": 649,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py",
+      "lines": 1396,
+      "code_tokens": 3033,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/tests/__init__.py",
+      "lines": 1,
+      "code_tokens": 0,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/tests/seed_conformance_goldens.py",
+      "lines": 322,
+      "code_tokens": 697,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/tests/test_allowed_blocks_scrape.py",
+      "lines": 382,
+      "code_tokens": 693,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/tests/test_converter_conformance.py",
+      "lines": 606,
+      "code_tokens": 1167,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/tests/test_naming_lint.py",
+      "lines": 338,
+      "code_tokens": 635,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/tests/test_orchestrator_failed_status.py",
+      "lines": 212,
+      "code_tokens": 404,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/tests/test_orchestrator_non_bem_halt.py",
+      "lines": 370,
+      "code_tokens": 750,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/tests/test_reseed_classification_reset.py",
+      "lines": 184,
+      "code_tokens": 372,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/tests/test_spec_15_phase_1.py",
+      "lines": 604,
+      "code_tokens": 1137,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/tests/test_stage_3_db_canonical.py",
+      "lines": 386,
+      "code_tokens": 925,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/colour.py",
+      "lines": 133,
+      "code_tokens": 243,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/derive.py",
+      "lines": 75,
+      "code_tokens": 242,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/extract.py",
+      "lines": 418,
+      "code_tokens": 1250,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/measure.js",
+      "lines": 273,
+      "code_tokens": 643,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/palette.py",
+      "lines": 252,
+      "code_tokens": 653,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/presets.py",
+      "lines": 160,
+      "code_tokens": 376,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/roles.py",
+      "lines": 154,
+      "code_tokens": 320,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/schema_validate.py",
+      "lines": 79,
+      "code_tokens": 118,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/tests/test_extractor.py",
+      "lines": 303,
+      "code_tokens": 834,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/token_map.py",
+      "lines": 127,
+      "code_tokens": 258,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/typography.py",
+      "lines": 152,
+      "code_tokens": 389,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/uimax-tools/enrich-db.py",
+      "lines": 970,
+      "code_tokens": 2134,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/uimax-tools/seed-block-compositions.py",
+      "lines": 226,
+      "code_tokens": 498,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/uimax-tools/seed-slot-synonyms.py",
+      "lines": 952,
+      "code_tokens": 1701,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uimax-sync.py",
+      "lines": 386,
+      "code_tokens": 924,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/uimax-tools/test_uimax_write_validator.py",
+      "lines": 179,
+      "code_tokens": 369,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/uimax-tools/uimax-write-validator.py",
+      "lines": 183,
+      "code_tokens": 331,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/uimax-tools/uimax_write.py",
+      "lines": 127,
+      "code_tokens": 248,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/value-matcher/inheritance.py",
+      "lines": 313,
+      "code_tokens": 435,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/value-matcher/match.py",
+      "lines": 675,
+      "code_tokens": 1011,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/visual-report-sha.py",
+      "lines": 100,
+      "code_tokens": 214,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/wp-pre-merge-gate.py",
+      "lines": 203,
+      "code_tokens": 513,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "scripts/apply-block-attrs-batch.js",
+      "lines": 280,
+      "code_tokens": 881,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "scripts/brand-palette-sampler.py",
+      "lines": 230,
+      "code_tokens": 618,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "scripts/colour-parity-audit.js",
+      "lines": 199,
+      "code_tokens": 715,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "scripts/css-pattern-audit.js",
+      "lines": 483,
+      "code_tokens": 1311,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "scripts/font-source-audit.js",
+      "lines": 137,
+      "code_tokens": 297,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "scripts/global-styles-reset.js",
+      "lines": 374,
+      "code_tokens": 1002,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "scripts/lib/oldshape-mappings.js",
+      "lines": 405,
+      "code_tokens": 1126,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "scripts/lint-naming-conventions.py",
+      "lines": 509,
+      "code_tokens": 917,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "scripts/lint-patterns-for-personal-data.py",
+      "lines": 177,
+      "code_tokens": 234,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "scripts/qc-anti-cheat.py",
+      "lines": 266,
+      "code_tokens": 597,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "scripts/qc-correctness-regression.py",
+      "lines": 371,
+      "code_tokens": 755,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "scripts/qc_anti_cheat_checks.py",
+      "lines": 233,
+      "code_tokens": 623,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": false
+    },
+    {
+      "script": "scripts/render-mobile-override-audit.js",
+      "lines": 229,
+      "code_tokens": 575,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "scripts/sgs-block-grep.py",
+      "lines": 365,
+      "code_tokens": 763,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "scripts/tests/test_lint_patterns.py",
+      "lines": 202,
+      "code_tokens": 311,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": true
+    },
+    {
+      "script": "scripts/tests/test_qc_anti_cheat.py",
+      "lines": 252,
+      "code_tokens": 486,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": false,
+      "is_test": true
+    },
+    {
+      "script": "scripts/verify-restored-page.js",
+      "lines": 86,
+      "code_tokens": 297,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "scripts/wc-pages-responsive-audit.js",
+      "lines": 132,
+      "code_tokens": 393,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "scripts/wp-migrate-oldshape-blocks.js",
+      "lines": 360,
+      "code_tokens": 1418,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    },
+    {
+      "script": "scripts/wp-update-block-attrs.js",
+      "lines": 386,
+      "code_tokens": 1180,
+      "parses": true,
+      "parse_error": "",
+      "has_entry_point": true,
+      "is_test": false
+    }
+  ]
+}

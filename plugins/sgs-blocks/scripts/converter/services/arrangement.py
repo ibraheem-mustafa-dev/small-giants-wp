@@ -58,7 +58,7 @@ def carries_arrangement(node: Any, css_rules: dict | None) -> bool:
     return False
 
 
-def layout_attrs(node: Any, css_rules: dict | None) -> dict:
+def layout_attrs(node: Any, css_rules: dict | None, block_slug: "str | None" = None) -> dict:
     """§2.3 ARRANGEMENT -> the container's layout trigger attrs.
 
     A container-equivalent block renders ``display:grid``/``display:flex`` ONLY when its
@@ -74,6 +74,19 @@ def layout_attrs(node: Any, css_rules: dict | None) -> dict:
     makes the container a grid). Universal (R-31-9); the caller DB-gates emission on the
     block actually declaring a ``layout`` attr, so a non-container block never gets a dead
     attr.
+
+    ``block_slug`` (Spec 35 tier shape, D802-class fix extended to this dict-merge
+    path): when given, and the resolved block's ``flexDirection`` is a migrated
+    tier-object attr (``db_lookup.tier_object_base``), the value is wrapped as
+    ``{"desktop": <dir>}`` instead of the bare string — measured live on
+    sgs/multi-button, whose ``flexDirection`` emitted a flat ``"row"`` scalar
+    (check_flat_tier_regression.py). This function has no per-declaration tier
+    context of its own (it reads whichever tier's CSS first matches, base-first)
+    so every value it derives here is treated as the DESKTOP/base tier — the
+    same "Base" convention every other resolver uses for the un-suffixed value.
+    ``None`` (the default) preserves the flat, pre-fix behaviour for every
+    existing caller that has not been updated to pass a slug — a defensive,
+    backward-safe default rather than a required-argument break.
     """
     if not isinstance(node, Tag):
         return {}
@@ -92,14 +105,23 @@ def layout_attrs(node: Any, css_rules: dict | None) -> dict:
 
     base, bp = collect_css_decls_for_element(node, css_rules or {})
     picked = _pick(base)
-    if picked:
-        return picked
-    for tier_decls in (bp or {}).values():
-        if isinstance(tier_decls, dict):
-            picked = _pick(tier_decls)
-            if picked:
-                return picked
-    return {}
+    if not picked:
+        for tier_decls in (bp or {}).values():
+            if isinstance(tier_decls, dict):
+                picked = _pick(tier_decls)
+                if picked:
+                    break
+    if not picked:
+        return {}
+
+    if (
+        block_slug is not None
+        and "flexDirection" in picked
+        and db_lookup.tier_object_base(block_slug, "flexDirection")
+    ):
+        picked = dict(picked)
+        picked["flexDirection"] = {"desktop": picked["flexDirection"]}
+    return picked
 
 
 def lift_uniform_grid_item_css(

@@ -28,32 +28,39 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 // This block calls sgs_responsive_css_rule() (below) and sgs_svg_kses_allowed_tags()
 // (SVG animation path). Neither is autoloaded — the plugin bootstrap loads only
 // includes/forms/field-render-helpers.php — so both resolve ONLY through
 // render-helpers.php, which is the documented single entry point for every shared
-// helper (see its own docblock). This file was the ONLY render.php in the plugin
-// calling a shared sgs_* helper without requiring it (swept 2026-07-27: 1 of 81),
-// which made it a fatal "Call to undefined function" whenever this block rendered
-// without some OTHER block having loaded the helper first.
-//
-// It survived because the failure is ORDER-DEPENDENT, not deterministic: on a page
-// where any sibling block rendered first, the helper was already in memory and the
-// logo rendered fine. Rendered alone — a REST GET of a header CPT, or a page whose
-// header is the first SGS block — it fataled to a white screen. Live-proven on the
-// canary: 6/6 isolated renders of this block returned HTTP 500, while four
-// pre-existing header/footer posts returned 200 because none contained a logo.
-// The immutable default header (FR-37-4) DOES contain one, so clearing the active
-// header could have white-screened the site.
+// helper (see its own docblock).
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
 // Security sanitisers (no-inline contract §D) — mirrors sgs/label/render.php.
 // ---------------------------------------------------------------------------
-
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
 
 // ── Attribute extraction ──────────────────────────────────────────────────────
 
@@ -66,6 +73,18 @@ $width            = isset( $attributes['width'] ) ? absint( $attributes['width']
 $link_to_home     = isset( $attributes['linkToHome'] ) ? (bool) $attributes['linkToHome'] : true;
 $alt              = isset( $attributes['alt'] ) ? sanitize_text_field( $attributes['alt'] ) : '';
 $align            = isset( $attributes['align'] ) ? sanitize_key( $attributes['align'] ) : 'left';
+$logo_decorative  = ! empty( $attributes['logoDecorative'] );
+
+// Border (Block Customisation Standard — wrapper-level border control).
+// Box-object interface contract §1/§2: borderWidth is an SGS custom OBJECT
+// attr { top, right, bottom, left }, no tiers.
+$border_style_raw = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
+$border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_rgt = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bot = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_lft = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
 
 // Validate animationStyle against allowed values.
 $allowed_animation_styles = array( 'none', 'draw-on-load', 'hover-redraw', 'scroll-trigger' );
@@ -143,6 +162,15 @@ if ( '' === $alt ) {
 	);
 }
 
+// Decorative override (WCAG 2.1 AA 1.1.1, FR-detector-18) — blanks the alt and
+// hides the <img> from assistive tech. Safe on THIS block even when linked:
+// the wrapping <a>'s accessible name comes from $link_aria_label below (set
+// independently of the image), not from the <img alt>, so a linked-home logo
+// keeps its "Go to [Site] homepage" announcement either way. Never strips the
+// link itself — that stays an operator decision (linkToHome).
+$img_alt         = $logo_decorative ? '' : $alt;
+$img_aria_hidden = $logo_decorative ? ' aria-hidden="true"' : '';
+
 // The wrapping <a>'s accessible name is driven DISTINCTLY from the <img alt>
 // (FR-36-22): the image alt describes WHAT the graphic depicts, the link's
 // aria-label describes WHERE it goes. Reusing one string for both risks a
@@ -165,32 +193,76 @@ if ( 'draw-on-load' === $animation_style ) {
 }
 
 // ── No-inline scoped box CSS (padding/margin, base + tablet/mobile tiers) ────
-// uid is a CLASS (matches sgs/heading/sgs/container/sgs/label scoped pattern);
-// the root's ONLY inline declaration remains the pre-existing var-only
-// `--logo-width` custom property (allowed by the no-inline contract — CSS
-// custom-property VALUES are not property declarations).
+// uid is a CLASS (matches sgs/heading/sgs/container/sgs/label scoped pattern).
+// The root carries NO inline declaration at all: `--logo-width` moved into the
+// scoped uid-class rule below at D345 (see the emit a few lines down, and the
+// note near the end of this file).
 
-$uid      = 'sgs-rl-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-$sel      = '.' . $uid . '.wp-block-sgs-responsive-logo';
-
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
+$uid = 'sgs-rl-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sel = '.' . $uid . '.wp-block-sgs-responsive-logo';
 
 $scoped_css = array();
 
-// --- Logo width custom property — was previously the block's sole inline
-// `style="--logo-width:Npx"` declaration on the wrapper (D345: inline `--var`
-// is now forbidden, no exception for custom-property values). Moved into the
-// same scoped uid-class rule as every other declaration on this block. ---
+// --- Logo width custom property (D345: inline `--var` is forbidden, no
+// exception for custom-property values). Lives in the same scoped uid-class
+// rule as every other declaration on this block. ---
 $scoped_css[] = $sel . '{--logo-width:' . absint( $width ) . 'px}';
+
+// --- Border — width/style on the wrapper, colour (flat or gradient, base +
+// hover) via the shared sgs_border_states_css() helper, radius via the
+// shared sgs_border_radius_tiers() + core style engine (base) plus
+// hand-built shorthand tiers (tablet/mobile). Mirrors sgs/button + sgs/quote. ---
+$border_base_decls = array();
+if ( $has_border_width ) {
+	$bwt                 = '' !== $border_width_top ? $border_width_top : '0';
+	$bwr                 = '' !== $border_width_rgt ? $border_width_rgt : '0';
+	$bwb                 = '' !== $border_width_bot ? $border_width_bot : '0';
+	$bwl                 = '' !== $border_width_lft ? $border_width_lft : '0';
+	$border_base_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
+	if ( $border_style_raw && 'solid' !== $border_style_raw ) {
+		$border_base_decls[] = 'border-style:' . $border_style_raw;
+	}
+}
+if ( $border_base_decls ) {
+	$scoped_css[] = "{$sel}{" . implode( ';', $border_base_decls ) . ';}';
+}
+
+$border_colour_css = sgs_border_states_css(
+	$sel,
+	$attributes,
+	array(
+		'base'           => 'borderColour',
+		'hover'          => 'borderColourHover',
+		'gradient'       => 'borderColourGradient',
+		'hover_gradient' => 'borderColourHoverGradient',
+		'width'          => $has_border_width && '' !== $border_width_top ? $border_width_top : '1px',
+	)
+);
+if ( '' !== $border_colour_css ) {
+	$scoped_css[] = $border_colour_css;
+}
+
+$border_radius_tiers      = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_base       = $border_radius_tiers['base'];
+$border_radius_tablet_obj = $border_radius_tiers['tablet'];
+$border_radius_mobile_obj = $border_radius_tiers['mobile'];
+if ( null !== $border_radius_base ) {
+	$border_radius_scoped = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_base ) ),
+		array( 'selector' => $sel )
+	);
+	if ( ! empty( $border_radius_scoped['css'] ) ) {
+		$scoped_css[] = $border_radius_scoped['css'];
+	}
+}
+$border_radius_tab_val = sgs_corner_object_shorthand( $border_radius_tablet_obj );
+$border_radius_mob_val = sgs_corner_object_shorthand( $border_radius_mobile_obj );
+if ( null !== $border_radius_tab_val ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$sel}{border-radius:{$border_radius_tab_val};}}";
+}
+if ( null !== $border_radius_mob_val ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$sel}{border-radius:{$border_radius_mob_val};}}";
+}
 
 // --- Explicit left-alignment default (FR-36-22 basics) — NN/g: a left-aligned
 // logo returns visitors home 6x more reliably than other placements. Only
@@ -275,44 +347,43 @@ $scoped_css[] = sgs_responsive_css_rule(
 
 // --- Base padding/margin — WP-native style.spacing (skip-serialised) emitted
 // scoped via the stable core style engine. ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_padding_obj = ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) )
-		? $attributes['style']['spacing']['padding']
-		: array();
-	$base_margin_obj  = ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) )
-		? $attributes['style']['spacing']['margin']
-		: array();
 
-	if ( ! empty( $base_padding_obj ) || ! empty( $base_margin_obj ) ) {
-		$spacing_args = array();
-		if ( ! empty( $base_padding_obj ) ) {
-			$spacing_args['padding'] = $base_padding_obj;
-		}
-		if ( ! empty( $base_margin_obj ) ) {
-			$spacing_args['margin'] = $base_margin_obj;
-		}
-		$base_scoped_styles = wp_style_engine_get_styles(
-			array( 'spacing' => $spacing_args ),
-			array( 'selector' => $sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
+$base_padding_obj = ( ! empty( $sgs_tor_padding_desktop ) )
+	? $sgs_tor_padding_desktop
+	: array();
+$base_margin_obj  = ( ! empty( $sgs_tor_margin_desktop ) )
+	? $sgs_tor_margin_desktop
+	: array();
+
+if ( ! empty( $base_padding_obj ) || ! empty( $base_margin_obj ) ) {
+	$spacing_args = array();
+	if ( ! empty( $base_padding_obj ) ) {
+		$spacing_args['padding'] = $base_padding_obj;
+	}
+	if ( ! empty( $base_margin_obj ) ) {
+		$spacing_args['margin'] = $base_margin_obj;
+	}
+	$base_scoped_styles = wp_style_engine_get_styles(
+		array( 'spacing' => $spacing_args ),
+		array( 'selector' => $sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
 
 // --- Responsive padding/margin tiers — SGS custom object attrs, hand-built
 // shorthand, scoped @media on the SAME selector (contract §B2: tablet
 // max-width:1023px, mobile max-width:767px). ---
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 
 $tablet_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -407,7 +478,7 @@ if ( $has_svg_animation && $svg_html ) {
 		'scroll-trigger' => 'scroll',
 		'hover-redraw'   => 'hover',
 	);
-	$fx_trigger = $fx_trigger_by_style[ $animation_style ] ?? 'load';
+	$fx_trigger          = $fx_trigger_by_style[ $animation_style ] ?? 'load';
 
 	printf(
 		'<span class="sgs-responsive-logo__svg" aria-hidden="true" data-sgs-fx="draw" data-sgs-fx-trigger="%s">',
@@ -422,13 +493,14 @@ if ( $has_svg_animation && $svg_html ) {
 		'<picture class="sgs-responsive-logo__picture sgs-responsive-logo__picture--fallback">' .
 		'<source media="(max-width: 767px)" srcset="%1$s">' .
 		'<source media="(max-width: 1023px)" srcset="%2$s">' .
-		'<img class="sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager">' .
+		'<img class="sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager"%6$s>' .
 		'</picture>',
 		esc_url( $effective_mobile_url ),
 		esc_url( $effective_tablet_url ),
 		esc_url( $desktop_url ),
-		esc_attr( $alt ),
-		absint( $width )
+		esc_attr( $img_alt ),
+		absint( $width ),
+		$img_aria_hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
 	);
 } else {
 	// Standard mode: the compact/alternate logo replaces the desktop logo per
@@ -447,25 +519,27 @@ if ( $has_svg_animation && $svg_html ) {
 		printf(
 			'<picture class="sgs-responsive-logo__picture">' .
 			'<source media="(max-width: %5$dpx)" srcset="%1$s">' .
-			'<img class="sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async">' .
+			'<img class="sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async"%6$s>' .
 			'</picture>',
 			esc_url( $compact_url ),
 			esc_url( $desktop_url ),
-			esc_attr( $alt ),
+			esc_attr( $img_alt ),
 			absint( $width ),
-			absint( $custom_px )
+			absint( $custom_px ),
+			$img_aria_hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
 		);
 	} elseif ( 'tablet' === $switch_mode && $has_alt ) {
 		// The compact logo covers the whole tablet + mobile band (<=1023px viewport).
 		printf(
 			'<picture class="sgs-responsive-logo__picture">' .
 			'<source media="(max-width: 1023px)" srcset="%1$s">' .
-			'<img class="sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async">' .
+			'<img class="sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async"%5$s>' .
 			'</picture>',
 			esc_url( $compact_url ),
 			esc_url( $desktop_url ),
-			esc_attr( $alt ),
-			absint( $width )
+			esc_attr( $img_alt ),
+			absint( $width ),
+			$img_aria_hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
 		);
 	} else {
 		// mobile (default): compact at <=767px; a distinct tablet logo (if set) fills
@@ -474,13 +548,14 @@ if ( $has_svg_animation && $svg_html ) {
 			'<picture class="sgs-responsive-logo__picture">' .
 			'<source media="(max-width: 767px)" srcset="%1$s">' .
 			'<source media="(max-width: 1023px)" srcset="%2$s">' .
-			'<img class="sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager" decoding="async">' .
+			'<img class="sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager" decoding="async"%6$s>' .
 			'</picture>',
 			esc_url( $effective_mobile_url ),
 			esc_url( $effective_tablet_url ),
 			esc_url( $desktop_url ),
-			esc_attr( $alt ),
-			absint( $width )
+			esc_attr( $img_alt ),
+			absint( $width ),
+			$img_aria_hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
 		);
 	}
 }
@@ -494,7 +569,7 @@ $inner_html = ob_get_clean();
 // ── Scoped CSS output (no-inline contract §A) ────────────────────────────────
 // wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving CSS
 // combinators intact. Every value reaching $scoped_css is pre-sanitised
-// ($sgs_css_length / wp_style_engine_get_styles), so no un-sanitised value
+// (sgs_css_length_value() / wp_style_engine_get_styles), so no un-sanitised value
 // survives here.
 
 if ( $scoped_css ) :

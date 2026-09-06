@@ -93,6 +93,44 @@
  * ≤ its cap; 1 when any block is over cap, any target file is missing, or
  * any target file fails to parse. --self-test exits 1 if its own fixture
  * assertions do not match the expected PASS/FAIL outcome.
+ *
+ * ✅ COMPOSITE COMPONENTS ARE EXPANDED (fixed 2026-08-19 — this section used to
+ * describe the limitation as open and prescribed the WRONG fix; both corrected).
+ * When a block mounts a shared PANEL, the mount is resolved and this script's own
+ * row visitor runs over the component's body, so the figure reflects the controls
+ * a client actually gets. Resolution goes through the ONE shared component
+ * resolver (inspector-scan/core/components.js), so this script cannot disagree
+ * with the inspector rules about where a component lives.
+ *
+ * ⛔ The fix previously prescribed here — "resolve the mount and count its
+ * isShownByDefault items" — WAS WRONG and would have made things worse. Measured
+ * 2026-08-19: SgsColourPanel and ResponsiveBoxControls each have ZERO
+ * ToolsPanelItem and ZERO isShownByDefault, because both render a <PanelBody> of
+ * plain controls. Counting isShownByDefault scores a VISIBLE colour panel as
+ * contributing nothing. Detect a control by what it DOES, not by which primitive
+ * renders it — the row visitor already reconciles ToolsPanelItem disclosure,
+ * collapsed PanelBody and bare controls, which is exactly what a per-primitive
+ * count throws away.
+ *
+ * ⛔ ONLY PANEL-SHAPED COMPONENTS EXPAND. One that renders no PanelBody/
+ * ToolsPanel/ToolsPanelItem is a control primitive — one labelled row — and
+ * descending into it is wrong. Proven by building it the wrong way first:
+ * expanding everything surfaced ResponsiveOverride's per-tier reset <Button>
+ * (ResponsiveOverride.js:148) as five "rows" on sgs/site-header-row, and
+ * excluding <Button> globally to compensate then collapsed sgs/site-footer to
+ * ZERO default-visible controls. Both attempts reverted.
+ *
+ * ⚠ It moves figures in BOTH directions; neither may be assumed. Measured
+ * before -> after: site-header 5 -> 4, site-footer 3 -> 2, site-header-row
+ * 6 -> 8, site-footer-row 7 -> 8. The earlier claim that
+ * RowScrollBehaviourControls made the count "UNDER by 2" was backwards: its
+ * three toggles sit inside <PanelBody initialOpen={ false }> ("Row behaviour
+ * (Advanced)"), which this script's own rule treats as progressive disclosure,
+ * so it contributes ZERO default-visible rows and the mount was OVER by one.
+ * Both directions are pinned by self-test fixtures.
+ *
+ * ⚠ sgs/site-header and sgs/site-footer DID move (-1 each). Any human ruling
+ * made against their previous numbers should be re-read against these.
  */
 
 'use strict';
@@ -101,6 +139,7 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const parser = require( '@babel/parser' );
 const traverse = require( '@babel/traverse' ).default;
+const { resolveComponentFiles } = require( './inspector-scan/core/components' );
 
 const ROOT = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -115,6 +154,16 @@ const DEFAULT_TARGETS = [
 	{
 		blockSlug: 'sgs/site-footer',
 		file: path.join( BLOCKS_DIR, 'site-footer', 'edit.js' ),
+		cap: DEFAULT_CAP,
+	},
+	{
+		blockSlug: 'sgs/site-header-row',
+		file: path.join( BLOCKS_DIR, 'site-header-row', 'edit.js' ),
+		cap: DEFAULT_CAP,
+	},
+	{
+		blockSlug: 'sgs/site-footer-row',
+		file: path.join( BLOCKS_DIR, 'site-footer-row', 'edit.js' ),
 		cap: DEFAULT_CAP,
 	},
 ];
@@ -134,6 +183,13 @@ const PARSER_OPTIONS = {
 // Structural wrappers that are never a "row" themselves — the walk descends
 // through them looking for real rows. Kept small + justified (mirrors the
 // house style of check-duplicate-controls.js's own curated allowlists).
+// Components that render INFORMATION, not an editable setting. FR-37-27 counts
+// "one labelled inspector row = one control" — a warning banner is neither a
+// row the operator can set nor a control they can lose. Counting one inflated
+// sgs/site-footer's default-visible surface by a whole row (its contrast
+// <Notice> at edit.js:307 is conditional and non-dismissible).
+const NON_CONTROL_NAMES = new Set( [ 'Notice', 'Tip', 'ExternalLink' ] );
+
 const PASSTHROUGH_NAMES = new Set( [
 	'InspectorControls',
 	'ToolsPanel',
@@ -228,7 +284,112 @@ function resolveGroupBucket( attributes ) {
  * `<InspectorControls>` subtree) that finds every "row" per the counting
  * rules and pushes it to `rows`.
  */
-function makeRowVisitor( rows ) {
+// ---------------------------------------------------------------------------
+// COMPOSITE EXPANSION (2026-08-19)
+// ---------------------------------------------------------------------------
+// A block that mounts a shared PANEL used to be credited with exactly ONE row,
+// however many controls that panel really gives the client. This resolves the
+// mount and runs THIS SAME row visitor over its body instead.
+//
+// ⛔ THE FIX IS THE VISITOR, NOT AN isShownByDefault COUNT. This file's header
+// used to prescribe "resolve the mount and count its isShownByDefault items".
+// That is wrong and would have made things worse: measured 2026-08-19,
+// `SgsColourPanel` and `ResponsiveBoxControls` each have ZERO ToolsPanelItem and
+// ZERO isShownByDefault — both render a `<PanelBody>` of plain controls — so an
+// isShownByDefault count scores a VISIBLE colour panel as contributing nothing.
+// The row visitor already reconciles all three shapes (a ToolsPanelItem with its
+// disclosure flag, a collapsed PanelBody, and bare controls), which is exactly
+// what a per-primitive count throws away.
+//
+// ⛔ ONLY PANEL-SHAPED COMPONENTS EXPAND. A component that renders no
+// PanelBody/ToolsPanel/ToolsPanelItem is a CONTROL PRIMITIVE — one labelled row
+// — and descending into it is wrong. Proven by building it the wrong way first:
+// expanding every resolvable component surfaced `ResponsiveOverride`'s per-tier
+// reset <Button> (ResponsiveOverride.js:148) as five separate "rows" on
+// sgs/site-header-row. Excluding <Button> globally to compensate then collapsed
+// sgs/site-footer to ZERO default-visible controls — a detector claiming a block
+// with a live inspector has no controls. Both attempts were reverted. The real
+// discriminator is what the component CONTAINS, not which primitive it uses.
+//
+// ⚠ Expanding moves figures in BOTH directions, so neither may be assumed.
+// `RowScrollBehaviourControls` was cited as "renders THREE isShownByDefault
+// toggles, so the mount is UNDER by 2" — but those three sit inside
+// `<PanelBody initialOpen={false}>` ("Row behaviour (Advanced)"), which this
+// script's own rule treats as progressive disclosure. Through the visitor it
+// contributes ZERO default-visible rows: the mount was OVER by 1, the opposite
+// of the predicted direction.
+//
+// Resolution uses the ONE shared component resolver (inspector-scan/core/
+// components.js) so this script and the inspector rules cannot disagree about
+// where a component lives.
+const MAX_COMPOSITE_DEPTH = 2;
+const PANEL_SHAPE_RE = /<(PanelBody|ToolsPanel|ToolsPanelItem)\b/;
+let COMPONENT_FILES = null;
+const COMPOSITE_AST = new Map();
+const UNRESOLVED_COMPOSITES = new Set();
+
+function componentFiles() {
+	if ( ! COMPONENT_FILES ) COMPONENT_FILES = resolveComponentFiles();
+	return COMPONENT_FILES;
+}
+
+/**
+ * Rows a mounted PANEL composite really contributes.
+ *
+ * @return {Array|null} rows (possibly EMPTY — a genuine zero, e.g. everything
+ *   behind a collapsed panel), or null when the component is not panel-shaped,
+ *   cannot be resolved, or cannot be parsed. null means the caller keeps the
+ *   existing "one row per mount" behaviour.
+ */
+function compositeRows( name, depth, forcedHidden ) {
+	if ( depth >= MAX_COMPOSITE_DEPTH ) return null;
+	const file = componentFiles().get( name );
+	if ( ! file ) return null;
+
+	if ( ! COMPOSITE_AST.has( file ) ) {
+		let entry = null;
+		try {
+			const src = fs.readFileSync( file, 'utf8' );
+			// Panel-shaped test on the SOURCE: a component containing no panel and
+			// no ToolsPanelItem is a single control, not a container of rows.
+			entry = PANEL_SHAPE_RE.test( src )
+				? { ast: parser.parse( src, PARSER_OPTIONS ) }
+				: { ast: null, notPanel: true };
+		} catch ( e ) {
+			entry = { ast: null };
+		}
+		COMPOSITE_AST.set( file, entry );
+	}
+	const entry = COMPOSITE_AST.get( file );
+	if ( ! entry || ! entry.ast ) {
+		if ( entry && ! entry.notPanel ) UNRESOLVED_COMPOSITES.add( name );
+		return null;
+	}
+
+	// Scope to the named export's OWN body — a file may declare several
+	// components (ContainerWrapperControls.js is the standing example), and
+	// traversing the whole file would credit a block with a sibling's controls.
+	let target = null;
+	traverse( entry.ast, {
+		FunctionDeclaration( fnPath ) {
+			if ( fnPath.node.id && fnPath.node.id.name === name ) target = fnPath;
+		},
+		VariableDeclarator( vPath ) {
+			if ( vPath.node.id && vPath.node.id.name === name ) target = vPath;
+		},
+	} );
+	if ( ! target ) {
+		UNRESOLVED_COMPOSITES.add( name );
+		return null;
+	}
+
+	const rows = [];
+	target.traverse( makeRowVisitor( rows, forcedHidden, depth + 1 ) );
+	for ( const r of rows ) r.via = r.via || name;
+	return rows;
+}
+
+function makeRowVisitor( rows, forcedHidden, depth = 0 ) {
 	return {
 		JSXElement( elPath ) {
 			const opening = elPath.node.openingElement;
@@ -247,11 +408,29 @@ function makeRowVisitor( rows ) {
 				rows.push( {
 					kind: 'ToolsPanelItem',
 					label,
-					defaultVisible,
+					defaultVisible: forcedHidden ? false : defaultVisible,
 					dynamic: shown === 'dynamic',
 					line: elPath.node.loc ? elPath.node.loc.start.line : 0,
 				} );
 				elPath.skip(); // the control(s) inside are part of THIS row, not separate rows.
+				return;
+			}
+
+			if ( NON_CONTROL_NAMES.has( name ) ) {
+				elPath.skip(); // information, not a control — never a row.
+				return;
+			}
+
+			// A <PanelBody initialOpen={ false }> is CLOSED on load. Everything
+			// inside it is reached only by the operator clicking the accordion —
+			// that is progressive disclosure, and it is the oldest such mechanism
+			// in the block editor. The module header's claim that a bare control
+			// in a PanelBody 'is unconditionally shown' holds only for an OPEN
+			// panel; for a collapsed one it is simply false, and counting its
+			// contents as default-visible over-reported sgs/site-footer by 3 rows.
+			if ( name === 'PanelBody' && resolveBooleanAttr( opening.attributes, 'initialOpen' ) === false ) {
+				elPath.traverse( makeRowVisitor( rows, true, depth ) );
+				elPath.skip();
 				return;
 			}
 
@@ -271,12 +450,21 @@ function makeRowVisitor( rows ) {
 			// do not descend into it (its own internals, if any, belong to this
 			// one labelled row, not separate rows; the "one labelled inspector
 			// row = one control" rule).
+			// A PANEL-shaped composite contributes what it really renders; a
+			// control primitive stays one row (null). [] is a genuine zero.
+			const expanded = compositeRows( name, depth, forcedHidden );
+			if ( expanded ) {
+				for ( const r of expanded ) rows.push( r );
+				elPath.skip();
+				return;
+			}
+
 			const label = resolveStringAttr( opening.attributes, 'label' ) || name;
 			rows.push( {
 				kind: 'bare',
 				label,
 				component: name,
-				defaultVisible: true,
+				defaultVisible: ! forcedHidden,
 				dynamic: false,
 				line: elPath.node.loc ? elPath.node.loc.start.line : 0,
 			} );
@@ -567,6 +755,70 @@ export default function Edit( { attributes, setAttributes } ) {
 `;
 
 function runSelfTest() {
+// Added 2026-08-18 with the collapsed-PanelBody / Notice counting fix. Both
+// were real over-counts on the live tree: sgs/site-footer read 7 default-
+// visible rows when the true figure is 3.
+const SELF_TEST_COLLAPSED_FIXTURE = `
+import { InspectorControls } from '@wordpress/block-editor';
+import { PanelBody, ToggleControl } from '@wordpress/components';
+export default function Edit() {
+	return (
+		<InspectorControls>
+			<PanelBody title="Open">
+				<ToggleControl label="Visible one" />
+			</PanelBody>
+			<PanelBody title="Closed" initialOpen={ false }>
+				<ToggleControl label="Hidden A" />
+				<ToggleControl label="Hidden B" />
+				<ToggleControl label="Hidden C" />
+			</PanelBody>
+		</InspectorControls>
+	);
+}
+`;
+
+// Composite expansion, BOTH directions (2026-08-19). Both mount a REAL shared
+// panel and resolve against the REAL src tree — same reasoning as the inspector
+// rules' shared-component fixtures: a fixture-local stub would prove the code
+// runs, not that it reads the framework the client actually gets.
+const SELF_TEST_PANEL_EXPAND_FIXTURE = `
+export default function Edit() {
+	return (
+		<InspectorControls>
+			<ResponsiveBoxControls attributes={ a } setAttributes={ s } />
+		</InspectorControls>
+	);
+}
+`;
+
+// The negative direction: a panel whose rows are ALL behind
+// `<PanelBody initialOpen={ false }>` contributes ZERO, not one-per-mount and
+// not three. This is the case whose direction was predicted backwards.
+const SELF_TEST_PANEL_COLLAPSED_FIXTURE = `
+export default function Edit() {
+	return (
+		<InspectorControls>
+			<RowScrollBehaviourControls attributes={ a } setAttributes={ s } />
+		</InspectorControls>
+	);
+}
+`;
+
+const SELF_TEST_NOTICE_FIXTURE = `
+import { InspectorControls } from '@wordpress/block-editor';
+import { PanelBody, Notice, ToggleControl } from '@wordpress/components';
+export default function Edit() {
+	return (
+		<InspectorControls>
+			<Notice status="warning" isDismissible={ false }>Contrast is low</Notice>
+			<PanelBody title="Settings">
+				<ToggleControl label="The only real control" />
+			</PanelBody>
+		</InspectorControls>
+	);
+}
+`;
+
 	const cases = [
 		{
 			name: 'PASS fixture (2 default-visible, cap 3)',
@@ -586,6 +838,44 @@ function runSelfTest() {
 			src: SELF_TEST_BARE_FIXTURE,
 			expectPass: true,
 			expectCount: 1,
+		},
+		{
+			// A closed accordion IS progressive disclosure. Counting its contents
+			// as default-visible over-reported site-footer by 3 rows.
+			name: 'Collapsed PanelBody fixture (3 controls behind initialOpen={false}, only 1 open)',
+			src: SELF_TEST_COLLAPSED_FIXTURE,
+			expectPass: true,
+			expectCount: 1,
+		},
+		{
+			// A warning banner is not a setting the operator can lose.
+			name: 'Notice fixture (a message must not count as a control row)',
+			src: SELF_TEST_NOTICE_FIXTURE,
+			expectPass: true,
+			expectCount: 1,
+		},
+		{
+			// POSITIVE control for composite expansion: mounting ResponsiveBoxControls
+			// must count the FOUR rows it really renders, not the one mount. Before
+			// 2026-08-19 this scored 1. It also pins the isShownByDefault trap — that
+			// component has ZERO ToolsPanelItem and ZERO isShownByDefault, so the
+			// previously-prescribed "count its isShownByDefault items" fix would score
+			// it 0 and this fixture would fail.
+			name: 'Panel-composite expands (ResponsiveBoxControls renders 4 default rows)',
+			src: SELF_TEST_PANEL_EXPAND_FIXTURE,
+			expectPass: false,
+			expectCount: 4,
+		},
+		{
+			// NEGATIVE control, and the direction that was predicted backwards:
+			// RowScrollBehaviourControls' three toggles all sit inside
+			// `<PanelBody initialOpen={ false }>`, so they are progressive
+			// disclosure and contribute ZERO default-visible rows — the mount was
+			// OVER by one, not UNDER by two.
+			name: 'Collapsed panel-composite contributes ZERO (RowScrollBehaviourControls)',
+			src: SELF_TEST_PANEL_COLLAPSED_FIXTURE,
+			expectPass: true,
+			expectCount: 0,
 		},
 	];
 

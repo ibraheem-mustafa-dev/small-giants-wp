@@ -246,20 +246,31 @@
 	min-width: 0;
 }
 
-/* Image media type */
+/* Image media type — DEAD CSS, kept as-is except the two object-fit lines
+   (Bean-directed 2026-09-03): `.sgs-info-box__image` is never applied to any
+   rendered element. Media in this block is InnerBlocks child content only
+   (sgs/icon / sgs/media children — see render.php's own header comment,
+   "legacy media attrs mediaType/image/icon/boxMedia/mediaEmoji predate the
+   FR-22-6 InnerBlocks migration ... were REMOVED from block.json"), and a
+   repo-wide search finds zero occurrences of this class outside this file.
+   The object-fit declarations were removed to clear inspector-scan rule
+   37-media-no-handroll's static text scan (which flags file content
+   regardless of live-DOM reachability) — wiring a client-facing objectFit
+   control per the media-atom system was deliberately NOT done, since that
+   would create a control that governs nothing (no element ever receives
+   this class). The rest of the dead ruleset is left untouched — out of
+   scope for this fix. */
 .sgs-info-box__image {
 	display: block;
 	width: 100%;
 	border-radius: var(--wp--custom--border-radius--small, 4px);
 	margin-bottom: var(--wp--preset--spacing--30);
-	object-fit: cover;
 }
 
 .sgs-info-box--media-left .sgs-info-box__image,
 .sgs-info-box--media-right .sgs-info-box__image {
 	width: 80px;
 	height: 80px;
-	object-fit: cover;
 	margin-bottom: 0;
 	flex-shrink: 0;
 }

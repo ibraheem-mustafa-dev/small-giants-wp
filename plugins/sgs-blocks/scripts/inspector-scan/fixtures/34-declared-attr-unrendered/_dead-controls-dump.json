@@ -1,0 +1,74 @@
+[
+	{
+		"block": "sgs/dead-attr-no-control",
+		"attr": "deadAttr",
+		"renderConsumed": false,
+		"controlPresent": false,
+		"renderVia": "none",
+		"exempt": false,
+		"exemptReason": null
+	},
+	{
+		"block": "sgs/dead-control-real-bug",
+		"attr": "deadControlledAttr",
+		"renderConsumed": false,
+		"controlPresent": true,
+		"renderVia": "none",
+		"exempt": false,
+		"exemptReason": null
+	},
+	{
+		"block": "sgs/rendered-literal",
+		"attr": "renderedAttr",
+		"renderConsumed": true,
+		"controlPresent": true,
+		"renderVia": "literal",
+		"exempt": false,
+		"exemptReason": null
+	},
+	{
+		"block": "sgs/rendered-via-prefixed-helper",
+		"attr": "nameFontSize",
+		"renderConsumed": true,
+		"controlPresent": false,
+		"renderVia": "prefixed-helper",
+		"exempt": false,
+		"exemptReason": null
+	},
+	{
+		"block": "sgs/exempt-system-attr",
+		"attr": "sgsAnimation",
+		"renderConsumed": false,
+		"controlPresent": false,
+		"renderVia": "none",
+		"exempt": true,
+		"exemptReason": "system-attr"
+	},
+	{
+		"block": "sgs/exempt-editor-only",
+		"attr": "templateMode",
+		"renderConsumed": false,
+		"controlPresent": false,
+		"renderVia": "none",
+		"exempt": true,
+		"exemptReason": "editor-only"
+	},
+	{
+		"block": "sgs/exempt-key-noise",
+		"attr": "id",
+		"renderConsumed": false,
+		"controlPresent": false,
+		"renderVia": "none",
+		"exempt": true,
+		"exemptReason": "key-noise"
+	},
+	{
+		"block": "sgs/exempt-core-supports",
+		"attr": "anchor",
+		"renderConsumed": false,
+		"controlPresent": false,
+		"renderVia": "none",
+		"exempt": true,
+		"exemptReason": "core-supports"
+	}
+]

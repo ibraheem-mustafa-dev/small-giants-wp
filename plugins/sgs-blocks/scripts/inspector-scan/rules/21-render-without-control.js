@@ -65,20 +65,65 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
+const { resolveComponentFiles } = require( '../core/components' );
 
 // Attribute keys that are documentation, not attributes. House convention,
 // mirrored from check-dead-controls.js:342-352 (WordPress would register these
 // as real schema fields with no consumer — 11 such keys exist library-wide).
 const DOC_ATTR_RE = /^(_comment|_note)/;
 
-// Extension-injected attributes. `inspector-scan` structurally CANNOT see
-// src/blocks/extensions/ (no extensionsDir in run.js buildCtx; core/roster.js:58-70
-// admits only directories containing a block.json), so an extension's controls
-// are invisible to this rule and every `sgs*` attr would false-positive. This is
-// the documented BLOCKED extension surface, not a judgement about these attrs —
-// they are excluded until that plumbing lands, and the exclusion is reported in
-// the run summary rather than being silent.
-const SYSTEM_ATTR_RE = /^sgs[A-Z_]/;
+// ── EXTENSION-OWNED attributes ──────────────────────────────────────────────
+// `inspector-scan` structurally CANNOT see src/blocks/extensions/ (no
+// extensionsDir in run.js buildCtx; core/roster.js:58-70 admits only
+// directories containing a block.json), so an extension's controls are
+// invisible to this rule and any extension attr would false-positive. This is
+// the documented BLOCKED extension surface, not a judgement about these attrs.
+//
+// ⛔ THIS WAS A NAME-SHAPE TEST AND THAT WAS A BUG (fixed 2026-08-28).
+// It read `/^sgs[A-Z_]/` — "does the NAME look system-ish?" — which is exactly
+// the failure mode this rule's own header warns against ("Detect by what a
+// control DOES, not what it is called... every gate keyed to a component name
+// has a blind spot by construction"). The exclusion had that blind spot too:
+//
+//   The whole `fx` motion family is extension-owned, and NOT ONE of those
+//   names matches `^sgs[A-Z_]` — the family is `fx`, `fxTrigger`,
+//   `fxGridDotColour`, … So the escape hatch missed, twice over, the very
+//   surface it was written to cover.
+//
+// The consequence was a CATCH-22 with no passing state. Declare an extension
+// attr on a block and THIS rule fires (no control visible). Leave it
+// undeclared and `check-undeclared-attrs.py` fires (`undeclared_render_ref`,
+// "render.php reads an attribute block.json does not declare"). Neither state
+// satisfies both gates, so the only way out was a permanent suppression —
+// `scripts/block-file-consistency-baseline.json:147-153` carries exactly that
+// for `sgs/decorative-image`'s `fx`, and its own reasoning text names this
+// regex as the cause.
+//
+// THE PREDICATE IS NOW OWNERSHIP, READ FROM SOURCE. `collectAttributes()` is
+// the parser `generate-extension-attributes.js` already uses to build
+// `includes/extension-attributes.generated.php` — the server-side mirror of
+// every attribute the extensions register. Reusing it (rather than copying its
+// regex here) means there is ONE definition of "extension-owned" in the tree;
+// a second copy would drift the first time the convention changed, which is
+// the same single-source discipline `coreSupportedAttrs()` above follows by
+// reading each block's own `supports`.
+//
+// FAILS TOWARD A FALSE POSITIVE, never a false negative — this rule's stated
+// doctrine. If the extensions directory cannot be read, the set is EMPTY, so
+// nothing is excluded and genuine extension attrs merely become noisy. The
+// alternative (excluding on failure) would silently hide real dead controls.
+let EXTENSION_ATTR_CACHE = null;
+function extensionOwnedAttrs() {
+	if ( EXTENSION_ATTR_CACHE ) return EXTENSION_ATTR_CACHE;
+	try {
+		// eslint-disable-next-line global-require
+		const { collectAttributes } = require( '../../generate-extension-attributes' );
+		EXTENSION_ATTR_CACHE = new Set( collectAttributes().keys() );
+	} catch ( e ) {
+		EXTENSION_ATTR_CACHE = new Set();
+	}
+	return EXTENSION_ATTR_CACHE;
+}
 
 // ── The WORDPRESS-CORE control surface ──────────────────────────────────────
 // A SECOND structurally-invisible control surface, sibling to the extension
@@ -172,6 +217,86 @@ function coreSupportedAttrs( supports ) {
 	return out;
 }
 
+// ── HELPER-DERIVED attribute names ──────────────────────────────────────────
+// A THIRD structurally-invisible control surface, sibling to the core-supports
+// surface above. `shadowAttrKeys()`, `gradientOverlayAttrKeys()` and
+// `typographyAttrKeys()` (src/components/{ShadowControl,GradientOverlayControl,
+// TypographyControls}.js) COMPUTE their returned attribute names at call-time
+// (`base + 'Colour'`) rather than writing them out as literal strings this
+// static scanner can read.
+//
+// MEASURED (D810, 2026-08-26): adopting `gradientOverlayAttrKeys()` on
+// sgs/hero took this rule from 82 -> 84 flagged, the two new findings being
+// `mediaOverlayGradient` and `mediaBackgroundGradient` — exactly the derived
+// keys, both real client-reachable controls the rule could no longer see.
+// Bean-approved fix (D810's own close-out): teach the rule to expand these
+// three call sites rather than leave adoption of a name helper permanently
+// blind to it.
+//
+// This is NOT a name-keyed allowlist of blocks or attributes — the same
+// discipline as `coreSupportedAttrs()` above. It reads the call site's OWN
+// LITERAL first argument (the exact mechanism `shadowAttrKeys( 'boxShadow',
+// { hoverColour: true } )` already uses at ShadowControl.js:129) and derives
+// names with the IDENTICAL formula the real helper uses
+// (ShadowControl.js:76-91, GradientOverlayControl.js:109-120,
+// TypographyControls.js:146-179) — provably exact, not a guessed convention.
+// A call whose base/prefix argument is not a literal string (a variable, e.g.
+// TypographyControls.js:279's own internal `typographyAttrKeys( prefix )`)
+// yields no derivation for that call, so the rule fails toward a false
+// positive there, never a false negative — this rule's own doctrine.
+//
+// `solid` is DELIBERATELY NOT derived for gradientOverlayAttrKeys() — see
+// GradientOverlayControl.js:100-103 and D810: `solid` is `<base>` twice in
+// some overlay families and `<base>Colour` once in others, not a uniform
+// derivation, so every call site is required to write it out literally
+// (`attrNames.solid` or the `{ solid: '...' }` override) and this rule keeps
+// resolving/flagging it exactly as it does today — untouched by this function.
+const SHADOW_KEYS_RE = /\bshadowAttrKeys\(\s*['"]([^'"]+)['"]\s*(?:,\s*(\{[^}]*\}))?\s*\)/g;
+const GRADIENT_KEYS_RE = /\bgradientOverlayAttrKeys\(\s*['"]([^'"]+)['"]/g;
+const TYPOGRAPHY_KEYS_RE = /\btypographyAttrKeys\(\s*(?:['"]([^'"]*)['"]|[^)'"]+)\s*\)/g;
+
+// Mirrors typographyAttrKeys()'s own PascalCase suffix list exactly
+// (TypographyControls.js:158-179) — kept as a literal list here rather than
+// re-deriving it, for the same reason coreSupportedAttrs()'s core-API mapping
+// above is a literal list: it is a fixed, verified-against-source contract,
+// not a pattern to infer.
+const TYPOGRAPHY_SUFFIXES = [
+	'FontFamily', 'FontSize', 'FontSizeUnit', 'FontSizeTablet', 'FontSizeMobile',
+	'FontWeight', 'FontStyle', 'LineHeight', 'LineHeightUnit', 'TextDecoration',
+	'TextTransform', 'LetterSpacing', 'LetterSpacingUnit',
+	'FontWeightHover', 'TextDecorationHover', 'TextTransformHover',
+];
+
+function helperDerivedAttrs( corpus ) {
+	const out = new Set();
+
+	let m;
+	SHADOW_KEYS_RE.lastIndex = 0;
+	while ( ( m = SHADOW_KEYS_RE.exec( corpus ) ) ) {
+		const base = m[ 1 ];
+		const opts = m[ 2 ] || '';
+		out.add( base + 'Colour' );
+		if ( /\bhover\s*:\s*true\b/.test( opts ) ) out.add( base + 'Hover' );
+		if ( /\bhoverColour\s*:\s*true\b/.test( opts ) ) out.add( base + 'ColourHover' );
+	}
+
+	GRADIENT_KEYS_RE.lastIndex = 0;
+	while ( ( m = GRADIENT_KEYS_RE.exec( corpus ) ) ) {
+		out.add( m[ 1 ] + 'Gradient' );
+	}
+
+	TYPOGRAPHY_KEYS_RE.lastIndex = 0;
+	while ( ( m = TYPOGRAPHY_KEYS_RE.exec( corpus ) ) ) {
+		const prefix = m[ 1 ]; // undefined when the call's argument wasn't a literal string
+		if ( prefix === undefined ) continue;
+		for ( const suffix of TYPOGRAPHY_SUFFIXES ) {
+			out.add( prefix ? prefix + suffix : suffix.charAt( 0 ).toLowerCase() + suffix.slice( 1 ) );
+		}
+	}
+
+	return out;
+}
+
 // Files that constitute a block's own RENDER surface — what the framework paints.
 const OWN_RENDER_FILES = [ 'render.php', 'view.js', 'save.js', 'style.css' ];
 
@@ -189,6 +314,13 @@ const SUFFIX_SHAPES = [
 	// PHP:  sgs_typography_attr( $prefix, 'LineHeightTablet' )
 	// JS:   typographyAttrName( prefix, 'FontSizeTablet' )
 	/\(\s*[\w$.[\]]+\s*,\s*['"]([A-Z][A-Za-z0-9_]*)['"]\s*\)/g,
+	// JS:   mediaStoredAttrName( blockSlug, prefix, 'ObjectFit' ) — the same
+	// trailing-literal shape as the two-arg pattern above, one fixed arg
+	// further out. Every media atom's control() builds its attribute name
+	// this way (src/components/media/atoms/*.control.js), so without this
+	// shape every media-atom attribute false-positives as uncontrolled —
+	// this is Trap A (see the file header) recurring for a 3-arg helper.
+	/\(\s*[\w$.[\]]+\s*,\s*[\w$.[\]]+\s*,\s*['"]([A-Z][A-Za-z0-9_]*)['"]\s*\)/g,
 	// JS:   `${ base }Tablet`   /   attributes[ `${ side }MediaType` ]
 	/\$\{[^}]*\}\s*([A-Z][A-Za-z0-9_]*)/g,
 ];
@@ -204,6 +336,73 @@ function lcFirst( s ) {
 	return s.charAt( 0 ).toLowerCase() + s.slice( 1 );
 }
 
+// ── LOCAL WRAPPER indirection (P-RULE21-ONE-ARG-LITERAL-RESIDUAL) ──────────
+// A local arrow-function wrapper forwarding its own single parameter as the
+// LAST argument of a call already matching one of SUFFIX_SHAPES' own 2-/3-arg
+// trailing-literal shapes (e.g.
+// `const key = ( base ) => mediaStoredAttrName( blockSlug, prefix, base )`,
+// `src/components/media/atoms/video-behaviour.control.js:129`) hides a real
+// derived attribute name from every shape above — the literal never sits
+// directly against the builder call. It sits one hop away, at the wrapper's
+// own call site (`key( 'VideoLoop' )`), or at the wrapper's CALLER's call
+// site one hop further still (`pairPickerRow({ ..., idBase: 'VideoId', ... })`
+// + `name( idBase + suffix )` inside it, `source.control.js:48,53-54`).
+//
+// A GENERIC "any 1-arg call with a literal" pattern was rejected for exactly
+// this residual — it also matches `__( 'text' )` and over-suppresses the
+// whole tree (the same over-suppression this rule's own header already
+// walked into once with Trap A/B). The gate here is structural, not
+// name-shaped: only a call whose CALLEE is proven, from THIS SAME corpus, to
+// be a thin pass-through wrapper around an already-recognised builder shape
+// qualifies. `__` never satisfies that — it is imported, never locally
+// defined as `const __ = ( x ) => someBuilder( ..., x )`.
+const WRAPPER_DEF_RE = /\bconst\s+(\w+)\s*=\s*\(\s*(\w+)\s*\)\s*=>\s*[\w$.[\]]+\(\s*(?:[\w$.[\]]+\s*,\s*)+\2\s*\)/g;
+
+// The framework's fixed device-tier suffix vocabulary (mirrors
+// TYPOGRAPHY_SUFFIXES above — a literal list because it is a verified,
+// project-wide contract, not a pattern to infer per corpus).
+const TIER_SUFFIXES = [ '', 'Tablet', 'Mobile' ];
+
+function localWrapperDerivedSuffixes( corpus ) {
+	const out = new Set();
+	const wrapperNames = new Set();
+
+	let m;
+	WRAPPER_DEF_RE.lastIndex = 0;
+	while ( ( m = WRAPPER_DEF_RE.exec( corpus ) ) ) wrapperNames.add( m[ 1 ] );
+
+	for ( const wrapper of wrapperNames ) {
+		// Direct literal call: key( 'VideoLoop' )
+		const literalRe = new RegExp( `\\b${ wrapper }\\(\\s*['"]([A-Z][A-Za-z0-9_]*)['"]\\s*\\)`, 'g' );
+		let lm;
+		while ( ( lm = literalRe.exec( corpus ) ) ) out.add( lm[ 1 ] );
+
+		// Literal + tier-suffix-variable concatenation: name( 'VideoAlt' + suffix )
+		const literalConcatRe = new RegExp( `\\b${ wrapper }\\(\\s*['"]([A-Z][A-Za-z0-9_]*)['"]\\s*\\+\\s*\\w+\\s*\\)`, 'g' );
+		let lcm;
+		while ( ( lcm = literalConcatRe.exec( corpus ) ) ) {
+			for ( const tier of TIER_SUFFIXES ) out.add( lcm[ 1 ] + tier );
+		}
+
+		// One-hop-further concatenation call: name( idBase + suffix ) — the
+		// base half's literal values live at ITS OWN call sites, as an
+		// object-literal property of the same name (the destructuring
+		// convention every call site here follows, e.g. `idBase: 'VideoId'`).
+		const concatRe = new RegExp( `\\b${ wrapper }\\(\\s*(\\w+)\\s*\\+\\s*(\\w+)\\s*\\)`, 'g' );
+		let cm;
+		while ( ( cm = concatRe.exec( corpus ) ) ) {
+			const baseVar = cm[ 1 ];
+			const baseRe = new RegExp( `\\b${ baseVar }\\s*:\\s*['"]([A-Z][A-Za-z0-9_]*)['"]`, 'g' );
+			let bm;
+			while ( ( bm = baseRe.exec( corpus ) ) ) {
+				for ( const tier of TIER_SUFFIXES ) out.add( bm[ 1 ] + tier );
+			}
+		}
+	}
+
+	return out;
+}
+
 /**
  * Collects every dynamically-constructed key fragment in a corpus.
  * Returns { suffixes: Set<PascalCase>, prefixes: Set<camelCase> }.
@@ -216,6 +415,7 @@ function dynamicPartsOf( corpus ) {
 		let m;
 		while ( ( m = re.exec( corpus ) ) ) suffixes.add( m[ 1 ] );
 	}
+	for ( const s of localWrapperDerivedSuffixes( corpus ) ) suffixes.add( s );
 	for ( const re of PREFIX_SHAPES ) {
 		re.lastIndex = 0;
 		let m;
@@ -251,8 +451,141 @@ function resolves( attr, corpus, parts ) {
 	return false;
 }
 
+/**
+ * Is `attr` reachable through the block's VARIATION SWITCHER rather than an
+ * inspector control?
+ *
+ * WHY (D792-era close-out, Bean's call 2026-08-26). `sgs/nav-drawer.variantPreset`
+ * was a REAL finding — every variation was `scope: [ 'inserter' ]`, so the look
+ * was chosen once at insertion and could never be changed afterwards. Adding
+ * `'transform'` to each scope gave the native block-toolbar switcher, and every
+ * variation already carried `isActive: [ 'variantPreset' ]`, which is what the
+ * switcher needs. The client CAN now change it — with zero custom UI.
+ *
+ * This rule asks whether an INSPECTOR control resolves the attribute, so it kept
+ * reporting the finding after the fix. That is a false positive, and by this
+ * project's own doctrine a false positive is a detector bug, never baseline
+ * fodder — so the rule learns the surface instead.
+ *
+ * ⛔ BOTH signals are required, and that is the whole precision argument. A
+ * `transform` scope with no `isActive` gives a switcher that cannot tell which
+ * variation is active; an `isActive` with no `transform` scope is inserter-only,
+ * which is exactly the ORIGINAL defect. Either alone must still flag — see the
+ * `variation-inserter-only-still-flags` fixture, which is the negative control
+ * proving this exemption does not overmatch.
+ *
+ * ⚠ KNOWN LIMIT, stated rather than hidden: the two signals are matched across
+ * the whole file, not paired within one variation object. A file mixing a
+ * transform-scoped variation with an inserter-only one that alone carries the
+ * `isActive` would be exempted wrongly. `sgs/nav-drawer` is currently the ONLY
+ * block in the framework with a `variations.js`, so the population is one and
+ * uniform; tighten to per-object pairing if a second block ever disagrees.
+ */
+function resolvedByVariationSwitcher( ctx, block, attr ) {
+	const file = path.join( ctx.blocksDir, block.tail, 'variations.js' );
+	const src = readIfExists( ctx, file );
+	if ( ! src ) return false;
+
+	// Some variation is reachable from the block toolbar after insertion.
+	if ( ! /\bscope\s*:\s*\[[^\]]*['"]transform['"]/.test( src ) ) return false;
+
+	// ...and the switcher can tell which variation this attribute selects.
+	const isActive = src.match( /\bisActive\s*:\s*\[[^\]]*\]/g ) || [];
+	return isActive.some( ( block_ ) => new RegExp( `\\b${ attr }\\b` ).test( block_ ) );
+}
+
 function readIfExists( ctx, file ) {
 	return fs.existsSync( file ) ? ctx.stripped( file ) || '' : '';
+}
+
+/**
+ * The IMPORT-BOUND sibling of `localRefsIn()` above — same dispatcher-table
+ * problem, one level further out.
+ *
+ * ⛔ WHY THIS EXISTS (2026-09-02). `MediaElementPanel.js`'s `ATOM_CONTROLS`
+ * map is STRUCTURALLY IDENTICAL to `ContainerWrapperControls.js`'s
+ * `KIND_PANELS` — `const control = ATOM_CONTROLS[ id ]; … control( props )` is
+ * the same "invoked from a table, not rendered as a JSX tag" shape
+ * `localRefsIn()` was built to resolve. But `KIND_PANELS`'s VALUES are
+ * inline arrow functions rendering SAME-FILE JSX components
+ * (`<WidthPanel>`, `<BackgroundPanel>`, …), which the existing
+ * tag-matching recursion in `controlCorpus()` already follows once
+ * `localRefsIn()` surfaces `KIND_PANELS` itself as a same-file reference.
+ * `ATOM_CONTROLS`'s VALUES are IMPORTED bindings — `sourceControl`,
+ * `objectFitControl`, … — one per atom's own `*.control.js` file
+ * (`src/components/media/atoms/object-fit.control.js` etc.). An
+ * `import { control as objectFitControl } from './media/atoms/object-fit.control.js'`
+ * is invisible to `localRefsIn()`'s DECL regex (`function|const|let|class`
+ * only), so the table's values dead-ended: `MediaElementPanel.js`'s OWN text
+ * reaches the corpus fine (it is itself a JSX tag, `<MediaElementPanel`,
+ * resolved by the normal component-tag recursion), but the literal
+ * PascalCase suffixes each atom's `control()` builds via
+ * `mediaStoredAttrName( blockSlug, prefix, 'ObjectFit' )` (`'ObjectFit'`,
+ * `'Colour'`, `'Opacity'`, …) live only in the imported `.control.js`
+ * files, never in `MediaElementPanel.js` itself.
+ *
+ * MEASURED: this single shape produced 74 of rule 21's 128 findings before
+ * this fix — every sgs/media attribute (45) and every sgs/hero split-media
+ * attribute (29), the exact two blocks this rule's own header already
+ * documented as false positives pending this mechanism.
+ *
+ * Bounded the same way `localRefsIn()` is bounded, and for the same reason:
+ * only imports the SCOPED region actually references (never the whole
+ * file's import list) are followed, and only RELATIVE imports resolve (a
+ * bare `@wordpress/…` specifier has no local file to read). A dispatch
+ * table shaped differently than this — imports feeding something other than
+ * a plain identifier-keyed call — still fails toward a false positive here,
+ * never a false negative, matching this rule's own doctrine.
+ *
+ * @param {string} source File source to scan for `import { … as X } from '…'`
+ *                         statements.
+ * @param {string} scoped The isolated region (an export body, or a local
+ *                         declaration's own body via `exportBody()`) whose
+ *                         references decide which imports are followed.
+ * @param {string} dir    Absolute directory `source` lives in, so a relative
+ *                         import specifier resolves to a real file.
+ * @return {string[]} Absolute file paths of the imported modules referenced.
+ */
+function importedRefsIn( source, scoped, dir ) {
+	const IMPORT_RE = /import\s*\{([^}]*)\}\s*from\s*['"]([^'"]+)['"]/g;
+	const word = ( n ) => new RegExp( /\b/.source + n + /\b/.source );
+	const out = [];
+	let m;
+	IMPORT_RE.lastIndex = 0;
+	while ( ( m = IMPORT_RE.exec( source ) ) ) {
+		const specifiers = m[ 1 ];
+		const from = m[ 2 ];
+		// Only a RELATIVE import resolves to a real file this rule can read —
+		// a bare package specifier ('@wordpress/components') has none.
+		if ( ! from.startsWith( '.' ) ) continue;
+
+		for ( const spec of specifiers.split( ',' ) ) {
+			const trimmed = spec.trim();
+			if ( ! trimmed ) continue;
+			// `{ control as sourceControl }` -> the LOCAL binding name is what
+			// the scoped region actually references, never the exported name.
+			const asMatch = trimmed.match( /\bas\s+([A-Za-z_$][\w$]*)\s*$/ );
+			const local = asMatch ? asMatch[ 1 ] : trimmed.split( /\s+/ ).pop();
+			if ( ! local || ! word( local ).test( scoped ) ) continue;
+
+			// A BARREL import ('../../../components', no extension) resolves to a
+			// DIRECTORY, not a file — e.g. WidthPanel.js's own
+			// `import { ResponsiveControl, … } from '../../../components'`. This
+			// rule only ever wants a single leaf file's own literal attribute
+			// suffixes (the shape ATOM_CONTROLS's *.control.js values are), so a
+			// directory resolution is deliberately SKIPPED rather than expanded
+			// to its index.js — pulling in a whole barrel's text risks the exact
+			// over-match this rule's own doctrine fails away from. Fails toward a
+			// false positive (a real control missed) here, never a false
+			// negative reached by accident.
+			const resolved = path.resolve( dir, from );
+			const withExt = fs.existsSync( resolved ) && fs.statSync( resolved ).isFile()
+				? resolved
+				: resolved + '.js';
+			if ( fs.existsSync( withExt ) && fs.statSync( withExt ).isFile() ) out.push( withExt );
+		}
+	}
+	return out;
 }
 
 /**
@@ -287,66 +620,40 @@ const REAL_SRC = path.resolve( __dirname, '..', '..', '..', 'src' );
 let COMPONENT_FILE_CACHE = null;
 function allControlComponentFiles() {
 	if ( COMPONENT_FILE_CACHE ) return COMPONENT_FILE_CACHE;
-	const map = new Map();
-
-	// MEASURED 2026-08-08 (second correction): keying only by FILENAME still left
-	// 611 findings, with the whole container/grid family intact even on
-	// `sgs/container` itself. Cause: `ContainerWrapperControls.js` is a single
-	// 57KB file that also declares and EXPORTS the individual panels
-	// (`LayoutPanel`, `WidthPanel`, `BackgroundPanel`, `GridAreaPanel`, …).
-	// Blocks import those named exports and render `<LayoutPanel`, never
-	// `<ContainerWrapperControls` (confirmed: src/blocks/container/edit.js:20
-	// imports FROM that path with no such tag anywhere). A filename-keyed map
-	// has no `LayoutPanel` entry, so the file's attribute vocabulary — which
-	// does contain `gapTablet` (:475), `flexDirection` (:503,511),
-	// `gridTemplateRows*` (:431-433) — was never joined to the block.
+	// PROMOTED to core/components.js resolveComponentFiles() on 2026-08-19 (C0).
+	// The private copy that lived here indexed exported names + filename and took
+	// FIRST-WINS in readdir order. The 2026-08-17 wrapper-panel split made that
+	// wrong: `ContainerWrapperControls.js` became a 268-line facade that
+	// RE-EXPORTS the six panels and sorts alphabetically before them, so it
+	// claimed `LayoutPanel`/`WidthPanel`/`WrapperColourPanel`/… while the
+	// attribute vocabulary those names carry had MOVED OUT of it (measured:
+	// gapTablet 0 vs 2, flexDirection 0 vs 2, gridTemplateRows 0 vs 6,
+	// justifyItems 0 vs 3 against LayoutPanel.js). This rule therefore resolved
+	// `<LayoutPanel` to a file containing none of the controls it asked about and
+	// reported those attributes as uncontrolled — false POSITIVES, which are a
+	// detector bug and never baseline fodder. The shared resolver fixes it by
+	// PRECEDENCE: a file that DECLARES a name beats one that only re-exports it.
 	//
-	// So index every name a file EXPORTS, plus its filename. This is still
-	// "detect by what it does": a block is credited with a component's
-	// attribute vocabulary because its JSX renders a name that component file
-	// exports, cross-referenced against that file's own source.
-	const EXPORT_DECL_RE =
-		/export\s+(?:default\s+)?(?:function|const|let|class)\s+([A-Z]\w*)/g;
-	const EXPORT_LIST_RE = /export\s*\{([^}]*)\}/g;
-
-	const addDir = ( dir ) => {
-		if ( ! fs.existsSync( dir ) ) return;
-		for ( const f of fs.readdirSync( dir ) ) {
-			if ( ! f.endsWith( '.js' ) || f === 'index.js' ) continue;
-			const full = path.join( dir, f );
-			const names = new Set( [ path.basename( f, '.js' ) ] );
-			let src = '';
-			try {
-				src = fs.readFileSync( full, 'utf8' );
-			} catch ( e ) {
-				src = '';
-			}
-			EXPORT_DECL_RE.lastIndex = 0;
-			let m;
-			while ( ( m = EXPORT_DECL_RE.exec( src ) ) ) names.add( m[ 1 ] );
-			EXPORT_LIST_RE.lastIndex = 0;
-			while ( ( m = EXPORT_LIST_RE.exec( src ) ) ) {
-				for ( const raw of m[ 1 ].split( ',' ) ) {
-					const n = raw.trim().split( /\s+as\s+/ ).pop().trim();
-					if ( /^[A-Z]\w*$/.test( n ) ) names.add( n );
-				}
-			}
-			for ( const n of names ) if ( ! map.has( n ) ) map.set( n, full );
-		}
-	};
-
-	// Framework-wide shared components.
-	addDir( path.join( REAL_SRC, 'components' ) );
-	// Block-local shared components (src/blocks/<block>/components/*.js).
-	const blocksRoot = path.join( REAL_SRC, 'blocks' );
-	if ( fs.existsSync( blocksRoot ) ) {
-		for ( const b of fs.readdirSync( blocksRoot ) ) {
-			addDir( path.join( blocksRoot, b, 'components' ) );
-		}
-	}
-
-	COMPONENT_FILE_CACHE = map;
-	return map;
+	// It also widens the corpus to src/blocks/extensions/. discover() and its
+	// exportsMap are deliberately UNTOUCHED, so rules 01 and 18 do not move.
+	//
+	// ── src/components/media/ (2026-09-02) ──────────────────────────────────
+	// `resolveComponentFiles()`'s own `addDir()` reads ONE directory's `.js`
+	// files, non-recursively — `src/components/media/` is a SUBDIRECTORY of
+	// `src/components/`, so `MediaPanelLayout.js` / `HeroSplitMediaPanelLayout.js`
+	// / `DecorativeImagePanelLayout.js` / `ProductCardImagePanelLayout.js` were
+	// never indexed at all, for any rule. MEASURED: this is why the ATOM_CONTROLS
+	// fix (importedRefsIn(), above) alone did not move sgs/media's or sgs/hero's
+	// findings — `sgs/media`'s edit.js renders `<MediaPanelLayout`, not
+	// `<MediaElementPanel` directly, so the JSX-tag recursion dead-ended at the
+	// FIRST hop, before ATOM_CONTROLS was ever reached.
+	//
+	// Passed via `resolveComponentFiles()`'s own `extraDirs` parameter — the
+	// exact escape hatch this promotion already ships, so this is widening the
+	// CALL, not the shared function. `discover()`'s own call (used by rules 01
+	// and 18) is untouched, so their populations do not move.
+	COMPONENT_FILE_CACHE = resolveComponentFiles( [ path.join( REAL_SRC, 'components', 'media' ) ] );
+	return COMPONENT_FILE_CACHE;
 }
 
 /**
@@ -438,6 +745,49 @@ function exportBody( source, name ) {
 	return null;
 }
 
+/**
+ * The same-file top-level declarations an isolated export body REFERENCES.
+ *
+ * ⛔ WHY THIS EXISTS (2026-08-27). `exportBody()` above isolates one export so
+ * recursion cannot leak across a façade's siblings — that scoping is load-bearing
+ * and is NOT being relaxed. But it assumes an export reaches its children by
+ * RENDERING them as JSX. A TABLE-DRIVEN DISPATCHER does not:
+ *
+ *   const panels = KIND_PANELS[ kind ] ?? KIND_PANELS.section;
+ *   return <InspectorControls>{ panels.map( ( renderPanel ) => renderPanel( … ) ) }</InspectorControls>;
+ *
+ * The only tags in that body are <InspectorControls> and <Fragment>. The panels
+ * are INVOKED, not rendered, so a tag-only frontier dead-ends and every attribute
+ * they own is reported as having no control.
+ *
+ * MEASURED on the live tree the day this was written: that single shape produced
+ * **139 of rule 21's 211 FLAGGED findings**, across the 16 blocks mounting
+ * `ContainerWrapperControls`. Every one was a FALSE POSITIVE — the controls are
+ * reachable in the editor today (`kind="layout"` → `KIND_PANELS.layout` →
+ * `<WidthPanel>` → `contentWidth`). A false positive is a detector bug, never
+ * baseline fodder.
+ *
+ * The fix is deliberately NARROW: follow only declarations the isolated body
+ * actually names, and only within the SAME file. It does NOT fall back to the
+ * whole file — a per-file attempt was measured trading 20 false positives for 10
+ * false negatives, and a false negative hides a real defect forever.
+ *
+ * Guarded by fixture `control-via-dispatcher-table`, written and watched FAILING
+ * before this function existed.
+ */
+function localRefsIn( source, scoped, selfName ) {
+	const DECL = /^(?:export\s+(?:default\s+)?)?(?:function|const|let|class)\s+([A-Za-z_$][\w$]*)/gm;
+	const word = ( n ) => new RegExp( /\b/.source + n + /\b/.source );
+	const out = [];
+	for ( const m of source.matchAll( DECL ) ) {
+		const name = m[ 1 ];
+		if ( name === selfName ) continue;
+		if ( ! word( name ).test( scoped ) ) continue;
+		out.push( name );
+	}
+	return out;
+}
+
 function controlCorpus( ctx, block ) {
 	const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
 	const own = readIfExists( ctx, editFile );
@@ -508,7 +858,54 @@ function controlCorpus( ctx, block ) {
 
 				// But only THIS export's own body decides what recurses.
 				const scoped = exportBody( body, name );
-				if ( scoped ) next.push( scoped );
+				if ( scoped ) {
+					next.push( scoped );
+					// A dispatcher reaches its panels by CALLING them rather than
+					// rendering them, so the tag frontier alone dead-ends. Follow the
+					// same-file declarations this body actually names. See localRefsIn().
+					const regionsToScan = [ scoped ];
+					for ( const local of localRefsIn( body, scoped, name ) ) {
+						const localBody = exportBody( body, local );
+						if ( localBody ) {
+							next.push( localBody );
+							regionsToScan.push( localBody );
+						}
+					}
+					// A SIBLING dispatcher shape: the table's values are IMPORTED
+					// bindings (MediaElementPanel.js's ATOM_CONTROLS -> each atom's
+					// own *.control.js file) rather than same-file JSX components.
+					// Scan both this export's own body AND every local body just
+					// resolved above (ATOM_CONTROLS itself is one such local ref) —
+					// see importedRefsIn().
+					for ( const region of regionsToScan ) {
+						for ( const importedFile of importedRefsIn( body, region, path.dirname( file ) ) ) {
+							const importedSrc = readIfExists( ctx, importedFile );
+							if ( ! importedSrc ) continue;
+							text += '\n' + importedSrc;
+
+							// ONE FURTHER HOP, same scoping discipline one level
+							// deeper. MEASURED: `link.control.js` and `caption.control.js`
+							// do NOT build their attribute names inline (unlike
+							// `object-fit.control.js`) — they call `attrKeys()`/
+							// equivalent imported from a SIBLING *.js LOGIC module
+							// (`link.js`), which is where the literal
+							// `mediaStoredAttrName( blockSlug, prefix, 'LinkUrl' )`
+							// calls actually live. Without this hop, linkUrl/
+							// linkOpensNewTab/linkRel/captionTag stayed false
+							// positives even after ATOM_CONTROLS resolution, because
+							// the literal suffixes are one import further out than
+							// MediaElementPanel.js's own dispatch table reaches.
+							// Scoped to the imported file's own 'control' export body
+							// — never a whole-file fallback — matching localRefsIn()'s
+							// stated discipline just above.
+							const importedScoped = exportBody( importedSrc, 'control' ) || importedSrc;
+							for ( const nestedFile of importedRefsIn( importedSrc, importedScoped, path.dirname( importedFile ) ) ) {
+								const nestedSrc = readIfExists( ctx, nestedFile );
+								if ( nestedSrc ) text += '\n' + nestedSrc;
+							}
+						}
+					}
+				}
 			}
 		}
 		frontier = next;
@@ -612,13 +1009,26 @@ module.exports = {
 		// Read from the block's OWN declared supports, so the exclusion is a
 		// per-block opt-in rather than a global attribute-name allowlist.
 		const coreControlled = coreSupportedAttrs( blockJson.data.supports );
+		// Read from the block's OWN call sites to shadowAttrKeys()/
+		// gradientOverlayAttrKeys()/typographyAttrKeys() — same per-block
+		// opt-in discipline, see the block comment above helperDerivedAttrs().
+		const helperControlled = helperDerivedAttrs( control.text );
+
+		// Read from the extensions' OWN source, via the same parser that builds
+		// the server-side mirror — an ownership fact, not a name-shape guess.
+		const extensionOwned = extensionOwnedAttrs();
 
 		const findings = [];
 		for ( const attr of Object.keys( blockJson.data.attributes || {} ) ) {
 			if ( DOC_ATTR_RE.test( attr ) ) continue;
-			if ( SYSTEM_ATTR_RE.test( attr ) ) continue; // extension surface — structurally invisible here
+			if ( extensionOwned.has( attr ) ) continue; // extension surface — structurally invisible here
 			if ( coreControlled.has( attr ) ) continue; // WordPress core surface — likewise invisible here
+			if ( helperControlled.has( attr ) ) continue; // resolved via a name-derivation helper call site
 			if ( resolves( attr, control.text, controlParts ) ) continue; // reachable by the client
+			// ...or reachable via the native block-toolbar variation switcher,
+			// which is a client-facing control surface this rule cannot see by
+			// reading edit.js alone. See resolvedByVariationSwitcher().
+			if ( resolvedByVariationSwitcher( ctx, block, attr ) ) continue;
 			if ( ! resolves( attr, render, renderParts ) ) continue; // not rendered -> CHECK 4's territory
 
 			findings.push(
@@ -658,9 +1068,37 @@ module.exports = {
 			// textAlign is a real support key that registers NO named attribute,
 			// so it must still flag while its sibling fontSize is excluded.
 			'textalign-support-still-flags',
+			// NEGATIVE CONTROL for the variation-switcher exemption. `isActive`
+			// is present but every scope is `inserter` only — the original
+			// nav-drawer defect, where the look is chosen once at insertion and
+			// can never be changed. If this stops flagging, the exemption has
+			// widened to "any variations.js mentioning the attribute".
+			'variation-inserter-only-still-flags',
+			// OVERMATCH GUARDS for helperDerivedAttrs() (D810 fix). Each call
+			// passes a VARIABLE, not a literal string, as the base/prefix
+			// argument, so the derivation formula is genuinely unknown to this
+			// static scanner and the declared attribute must still flag. If the
+			// exemption ever widened from "the call site's own literal
+			// argument" to "any matching helper call anywhere nearby", these
+			// three stop flagging incorrectly.
+			'shadow-helper-dynamic-base-still-flags',
+			'gradient-helper-solid-colour-still-flags',
+			'typography-helper-dynamic-prefix-still-flags',
+			// OVERMATCH GUARD for the extension-ownership exclusion. Both attrs
+			// are shaped like extension attrs and registered by NO extension, so
+			// both must still flag. `sgsNotARegisteredAttr` additionally matches
+			// the OLD `/^sgs[A-Z_]/` regex — it was silently excluded before, so
+			// this fixture also proves the over-broad half of that bug is closed.
+			// If the ownership lookup ever reverts to a prefix test, this fails.
+			'extension-lookalike-still-flags',
 		],
 		mustNotFlag: [
 			'rendered-with-control',
+			// A `transform`-scoped variation carrying `isActive` IS a
+			// client-reachable control — the native block-toolbar switcher —
+			// even though no inspector control exists. See
+			// resolvedByVariationSwitcher().
+			'control-via-variation-transform',
 			'control-via-dynamic-key',
 			'declared-but-not-rendered',
 			'control-via-shared-component',
@@ -669,6 +1107,27 @@ module.exports = {
 			// levels down (<BackgroundPanel> -> <GradientOverlayControl>) and a
 			// one-level resolver reports five false defects here.
 			'control-via-nested-shared-component',
+			// Guards DISPATCHER-TABLE resolution: the facade invokes its panels from
+			// KIND_PANELS rather than rendering them as JSX tags, so a tag-only
+			// recursion dead-ends and reports a false defect. 139 of 211 live findings.
+			'control-via-dispatcher-table',
+			// NEGATIVE CONTROLS for helperDerivedAttrs() (D810 fix). Each
+			// derived key never appears literally anywhere in its fixture --
+			// it exists only as the value shadowAttrKeys()/
+			// gradientOverlayAttrKeys()/typographyAttrKeys() compute at call
+			// time from the call site's own literal argument. This is the
+			// exact shape that blinded the rule on sgs/hero (D810:
+			// mediaOverlayGradient / mediaBackgroundGradient, 82 -> 84).
+			'shadow-helper-derived',
+			'gradient-helper-derived',
+			'typography-helper-derived',
+			// The extension surface, excluded by OWNERSHIP rather than by name
+			// shape. `fx` and `fxGridDotColour` match no `sgs*` pattern at all,
+			// which is exactly why the old regex missed the whole motion family
+			// and put every declaring block in a catch-22 with
+			// check-undeclared-attrs.py. Paired with
+			// `extension-lookalike-still-flags` above.
+			'extension-owned-attr',
 		],
 	},
 };

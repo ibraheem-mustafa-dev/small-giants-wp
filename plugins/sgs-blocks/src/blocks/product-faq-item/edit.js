@@ -7,8 +7,11 @@ import {
 } from '@wordpress/block-editor';
 import { PanelBody, ToggleControl } from '@wordpress/components';
 import { useState } from '@wordpress/element';
-import { SgsColourPanel } from '../../components';
-import { colourVar } from '../../utils';
+import { SgsColourPanel, fillRow,
+	SgsBorderControl,
+	resolveColourToken,
+} from '../../components';
+import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 
 const CHEVRON_SVG = (
 	<svg
@@ -43,37 +46,63 @@ function boxShorthand( box, keys ) {
 // them in the editor canvas either — reproduce a desktop-only preview here
 // (matches sgs/quote + sgs/brand-strip's editor preview pattern).
 function buildWrapperStyle( attributes ) {
-	const { style, backgroundColour, textColour } = attributes;
+	const {
+		backgroundColour,
+		backgroundColourGradient,
+		textColour,
+		textColourGradient,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		borderColourGradient,
+		borderRadius,
+	} = attributes;
 	const wrapperStyle = {};
 
 	// D635-pattern migration: background/text preview now reads the flat
 	// backgroundColour/textColour attrs (SgsColourPanel) instead of
 	// style.color.background/.text (supports.color.background/.text are now
 	// false). Mirrors sgs/quote's buildWrapperStyle.
-	if ( textColour ) {
-		wrapperStyle.color = /^#|^rgb|^hsl/.test( textColour )
-			? textColour
-			: colourVar( textColour );
-	}
+	// D636 gap-closure — textColourGradient sibling wins when set+valid,
+	// switching the preview to the background-clip:text shape (matches
+	// render.php's sgs_resolve_text_colour_or_gradient()/sgs_text_colour_decl()).
+	Object.assign(
+		wrapperStyle,
+		resolveTextColourPreviewStyle( textColour, textColourGradient, ( val ) =>
+			/^#|^rgb|^hsl/.test( val ) ? val : colourVar( val )
+		)
+	);
 	if ( backgroundColour ) {
 		wrapperStyle.backgroundColor = /^#|^rgb|^hsl/.test( backgroundColour )
 			? backgroundColour
 			: colourVar( backgroundColour );
 	}
-	if ( style?.color?.gradient ) {
-		wrapperStyle.backgroundImage = style.color.gradient;
+	if ( backgroundColourGradient ) {
+		wrapperStyle.backgroundImage = backgroundColourGradient;
 	}
 
-	if ( style?.border?.width ) {
-		wrapperStyle.borderWidth = style.border.width;
+	// border* are block-private attrs (SgsBorderControl, D876/D881 standard) —
+	// not WP-native style.border.* (undeclared in block.json, silently
+	// discarded by WordPress — check-undeclared-attrs finding).
+	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( borderStyle && 'none' !== borderStyle ) {
+		if ( borderWidthPreview ) {
+			wrapperStyle.borderWidth = borderWidthPreview;
+		}
+		wrapperStyle.borderStyle = borderStyle;
+		if ( borderColour ) {
+			wrapperStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour )
+				? borderColour
+				: colourVar( borderColour );
+		}
+		// A gradient border renders frontend as a masked ::before ring, which cannot
+		// be reproduced in a plain inline style — approximate it with the gradient as
+		// a border-image so the canvas at least shows that a gradient is applied.
+		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+			wrapperStyle.borderImage = `${ borderColourGradient } 1`;
+		}
 	}
-	if ( style?.border?.style ) {
-		wrapperStyle.borderStyle = style.border.style;
-	}
-	if ( style?.border?.color ) {
-		wrapperStyle.borderColor = style.border.color;
-	}
-	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	const radiusPreview = boxShorthand( borderRadius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( radiusPreview ) {
 		wrapperStyle.borderRadius = radiusPreview;
 	}
@@ -82,7 +111,7 @@ function buildWrapperStyle( attributes ) {
 }
 
 export default function Edit( { attributes, setAttributes, context } ) {
-	const { question, isOpen, backgroundColour, textColour } = attributes;
+	const { question, isOpen, textColour, textColourGradient, backgroundColour, backgroundColourGradient } = attributes;
 	// Editor-canvas desync fix (CHECK A, 2026-08-13): this used to hardcode
 	// useState( true ) with a comment justifying it as "always editable" —
 	// which meant the `isOpen` ("Open by default") toggle had ZERO visible
@@ -129,32 +158,43 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		</span>
 	);
 
+	// Contrast check for border colour — warn if border fails WCAG AA contrast
+	// against the item's own background. When the background is a gradient,
+	// comparing against the flat colour would compare against a surface that
+	// isn't rendered — skip the check entirely in that case.
+	const faqItemContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
+
 	return (
 		<>
 			{ /* D635-pattern migration: native Text/Background colour panel replaced
 			    by flat backgroundColour/textColour attrs surfaced via the shared
 			    SgsColourPanel (matches testimonial-slider/process-steps/quote/
-			    heading/card-grid/text). No hover-colour attrs exist on this block,
-			    so each row has a single 'normal' state only. */ }
+			    heading/card-grid/text). Background row is now the FILL variant
+			    (fillRow) — gradient + hover moved off the native panel
+			    (supports.color.gradients was true, competing with this SGS panel)
+			    onto block-private backgroundColour{Hover,Gradient,HoverGradient}
+			    attrs, so capability is moved rather than lost. */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: backgroundColour,
-								onChange: ( val ) =>
-									setAttributes( { backgroundColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -163,6 +203,9 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onChange: ( val ) =>
 									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -179,6 +222,31 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						checked={ isOpen }
 						onChange={ ( val ) => setAttributes( { isOpen: val } ) }
 						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						contrastAgainst={ faqItemContrastAgainst }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>

@@ -1,0 +1,4 @@
+.sgs-tab__button--active {
+	color: var( --wp--preset--color--primary );
+	background-color: var( --wp--preset--color--primary-10 );
+}

@@ -1,0 +1,3 @@
+Census artefacts land here — `--survey --json > reports/migrations/<name>-census.json`,
+committed alongside the migration (THE-MIGRATION-METHOD.md Step 7). The census is what
+makes a migration reviewable; a count printed to a closed terminal is not evidence.

@@ -1,0 +1,2024 @@
+[
+  {
+    "slug": "sgs/accordion",
+    "base_slug": "accordion",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "lineHeight"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "both delegates AND self-applies",
+        "block_json_line": 32
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": false,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "delegates to SGS_Container_Wrapper::render()",
+        "block_json_line": 37
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 20
+      }
+    }
+  },
+  {
+    "slug": "sgs/audio",
+    "base_slug": "audio",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 28
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 24
+      }
+    }
+  },
+  {
+    "slug": "sgs/brand-strip",
+    "base_slug": "brand-strip",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 172
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 160
+      }
+    }
+  },
+  {
+    "slug": "sgs/breadcrumbs",
+    "base_slug": "breadcrumbs",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 31
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 35
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 18
+      }
+    }
+  },
+  {
+    "slug": "sgs/business-info",
+    "base_slug": "business-info",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontFamily",
+          "fontSize"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 198
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 203
+      }
+    }
+  },
+  {
+    "slug": "sgs/button",
+    "base_slug": "button",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 28
+      }
+    }
+  },
+  {
+    "slug": "sgs/buybox",
+    "base_slug": "buybox",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 30
+      }
+    }
+  },
+  {
+    "slug": "sgs/card-grid",
+    "base_slug": "card-grid",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "fontStyle",
+          "fontWeight",
+          "letterSpacing",
+          "lineHeight",
+          "textAlign",
+          "textTransform"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "both delegates AND self-applies",
+        "block_json_line": 32
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": false,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "delegates to SGS_Container_Wrapper::render()",
+        "block_json_line": 42
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 20
+      }
+    }
+  },
+  {
+    "slug": "sgs/cart",
+    "base_slug": "cart",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 31
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 20
+      }
+    }
+  },
+  {
+    "slug": "sgs/collapsible-text",
+    "base_slug": "collapsible-text",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "textAlign"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 40
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 35
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 23
+      }
+    }
+  },
+  {
+    "slug": "sgs/container",
+    "base_slug": "container",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "fontStyle",
+          "fontWeight",
+          "letterSpacing",
+          "lineHeight",
+          "textAlign",
+          "textTransform"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "both delegates AND self-applies",
+        "block_json_line": 26
+      }
+    }
+  },
+  {
+    "slug": "sgs/countdown-timer",
+    "base_slug": "countdown-timer",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "textAlign"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 31
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 36
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 19
+      }
+    }
+  },
+  {
+    "slug": "sgs/counter",
+    "base_slug": "counter",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "lineHeight",
+          "textAlign"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 101
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 107
+      }
+    }
+  },
+  {
+    "slug": "sgs/cta-section",
+    "base_slug": "cta-section",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "fontStyle",
+          "fontWeight",
+          "letterSpacing",
+          "lineHeight",
+          "textAlign",
+          "textTransform"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "both delegates AND self-applies",
+        "block_json_line": 190
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": false,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "delegates to SGS_Container_Wrapper::render()",
+        "block_json_line": 200
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 178
+      }
+    }
+  },
+  {
+    "slug": "sgs/feature-grid",
+    "base_slug": "feature-grid",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": false,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "delegates to SGS_Container_Wrapper::render()",
+        "block_json_line": 30
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 20
+      }
+    }
+  },
+  {
+    "slug": "sgs/filter-search",
+    "base_slug": "filter-search",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 25
+      }
+    }
+  },
+  {
+    "slug": "sgs/form",
+    "base_slug": "form",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "lineHeight"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "both delegates AND self-applies",
+        "block_json_line": 31
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": false,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "delegates to SGS_Container_Wrapper::render()",
+        "block_json_line": 36
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 19
+      }
+    }
+  },
+  {
+    "slug": "sgs/form-step",
+    "base_slug": "form-step",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "blockGap",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": false,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "delegates to SGS_Container_Wrapper::render()",
+        "block_json_line": 21
+      }
+    }
+  },
+  {
+    "slug": "sgs/gallery",
+    "base_slug": "gallery",
+    "is_static": false,
+    "families": {
+      "filter": {
+        "declared_subkeys": [
+          "duotone"
+        ],
+        "skip_mode": "none",
+        "skip_detail": null,
+        "self_applies": false,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "WP core resolves block.json selectors.filter.duotone DIRECTLY (wp_get_block_css_selector() -> WP_Duotone::get_selector()) \u2014 duotone has never been an inline-style support; WP_Duotone::render_duotone_support() always emits a scoped <style> block via wp_footer, independent of __experimentalSkipSerialization. Declared here as '.sgs-gallery__img', a non-root inner selector \u2014 already correctly routed, no render.php involvement needed.",
+        "block_json_line": 33
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 21
+      }
+    }
+  },
+  {
+    "slug": "sgs/google-reviews",
+    "base_slug": "google-reviews",
+    "is_static": false,
+    "families": {
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 172
+      }
+    }
+  },
+  {
+    "slug": "sgs/heading",
+    "base_slug": "heading",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 29
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 19
+      }
+    }
+  },
+  {
+    "slug": "sgs/hero",
+    "base_slug": "hero",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "fontStyle",
+          "fontWeight",
+          "letterSpacing",
+          "lineHeight",
+          "textAlign",
+          "textTransform"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": false,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "delegates to SGS_Container_Wrapper::render()",
+        "block_json_line": 32
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 19
+      }
+    }
+  },
+  {
+    "slug": "sgs/icon",
+    "base_slug": "icon",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 33
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 21
+      }
+    }
+  },
+  {
+    "slug": "sgs/icon-list",
+    "base_slug": "icon-list",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "lineHeight",
+          "textAlign"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 30
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 36
+      }
+    }
+  },
+  {
+    "slug": "sgs/image-sequence",
+    "base_slug": "image-sequence",
+    "is_static": false,
+    "families": {
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 22
+      }
+    }
+  },
+  {
+    "slug": "sgs/info-box",
+    "base_slug": "info-box",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "fontStyle",
+          "fontWeight",
+          "letterSpacing",
+          "lineHeight",
+          "textAlign",
+          "textTransform"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 30
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 40
+      }
+    }
+  },
+  {
+    "slug": "sgs/label",
+    "base_slug": "label",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 30
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 21
+      }
+    }
+  },
+  {
+    "slug": "sgs/media",
+    "base_slug": "media",
+    "is_static": false,
+    "families": {
+      "filter": {
+        "declared_subkeys": [
+          "duotone"
+        ],
+        "skip_mode": "none",
+        "skip_detail": null,
+        "self_applies": false,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "WP core resolves block.json selectors.filter.duotone DIRECTLY (wp_get_block_css_selector() -> WP_Duotone::get_selector()) \u2014 duotone has never been an inline-style support; WP_Duotone::render_duotone_support() always emits a scoped <style> block via wp_footer, independent of __experimentalSkipSerialization. Declared here as '.sgs-media__img, .sgs-media__video', a non-root inner selector \u2014 already correctly routed, no render.php involvement needed.",
+        "block_json_line": 79
+      }
+    }
+  },
+  {
+    "slug": "sgs/nav-menu",
+    "base_slug": "nav-menu",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 206
+      }
+    }
+  },
+  {
+    "slug": "sgs/notice-banner",
+    "base_slug": "notice-banner",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "fontStyle",
+          "lineHeight",
+          "textAlign"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 32
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 39
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 20
+      }
+    }
+  },
+  {
+    "slug": "sgs/option-picker",
+    "base_slug": "option-picker",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 33
+      }
+    }
+  },
+  {
+    "slug": "sgs/physics-canvas",
+    "base_slug": "physics-canvas",
+    "is_static": false,
+    "families": {
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 20
+      }
+    }
+  },
+  {
+    "slug": "sgs/post-grid",
+    "base_slug": "post-grid",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "lineHeight"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "both delegates AND self-applies",
+        "block_json_line": 35
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": false,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "delegates to SGS_Container_Wrapper::render()",
+        "block_json_line": 40
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 23
+      }
+    }
+  },
+  {
+    "slug": "sgs/pricing-table",
+    "base_slug": "pricing-table",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "lineHeight"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "both delegates AND self-applies",
+        "block_json_line": 32
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": false,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "delegates to SGS_Container_Wrapper::render()",
+        "block_json_line": 37
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 20
+      }
+    }
+  },
+  {
+    "slug": "sgs/process-steps",
+    "base_slug": "process-steps",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "fontStyle",
+          "fontWeight",
+          "letterSpacing",
+          "lineHeight",
+          "textAlign",
+          "textTransform"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 31
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 41
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 19
+      }
+    }
+  },
+  {
+    "slug": "sgs/product-card",
+    "base_slug": "product-card",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "both delegates AND self-applies",
+        "block_json_line": 214
+      }
+    }
+  },
+  {
+    "slug": "sgs/product-faq",
+    "base_slug": "product-faq",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "lineHeight"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 32
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 37
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 20
+      }
+    }
+  },
+  {
+    "slug": "sgs/product-search",
+    "base_slug": "product-search",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 21
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 26
+      }
+    }
+  },
+  {
+    "slug": "sgs/quote",
+    "base_slug": "quote",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "lineHeight"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 107
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 112
+      }
+    }
+  },
+  {
+    "slug": "sgs/responsive-logo",
+    "base_slug": "responsive-logo",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 28
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 20
+      }
+    }
+  },
+  {
+    "slug": "sgs/separator",
+    "base_slug": "separator",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 71
+      }
+    }
+  },
+  {
+    "slug": "sgs/site-footer",
+    "base_slug": "site-footer",
+    "is_static": false,
+    "families": {
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 22
+      }
+    }
+  },
+  {
+    "slug": "sgs/site-header",
+    "base_slug": "site-header",
+    "is_static": false,
+    "families": {
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 22
+      }
+    }
+  },
+  {
+    "slug": "sgs/social-icons",
+    "base_slug": "social-icons",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "textAlign"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 34
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 29
+      }
+    }
+  },
+  {
+    "slug": "sgs/star-rating",
+    "base_slug": "star-rating",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 27
+      }
+    }
+  },
+  {
+    "slug": "sgs/table-of-contents",
+    "base_slug": "table-of-contents",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "lineHeight"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 31
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 36
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 19
+      }
+    }
+  },
+  {
+    "slug": "sgs/tabs",
+    "base_slug": "tabs",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": false,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "delegates to SGS_Container_Wrapper::render()",
+        "block_json_line": 31
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 19
+      }
+    }
+  },
+  {
+    "slug": "sgs/team-member",
+    "base_slug": "team-member",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "textAlign"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 28
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 33
+      }
+    }
+  },
+  {
+    "slug": "sgs/testimonial",
+    "base_slug": "testimonial",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "fontStyle",
+          "fontWeight",
+          "letterSpacing",
+          "lineHeight",
+          "textAlign",
+          "textTransform"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 30
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 40
+      }
+    }
+  },
+  {
+    "slug": "sgs/testimonial-slider",
+    "base_slug": "testimonial-slider",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "fontStyle",
+          "fontWeight",
+          "letterSpacing",
+          "lineHeight",
+          "textAlign",
+          "textTransform"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "both delegates AND self-applies",
+        "block_json_line": 115
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": false,
+        "delegates_to_wrapper": true,
+        "has_wrapper_attrs_call": false,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "delegates to SGS_Container_Wrapper::render()",
+        "block_json_line": 125
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 103
+      }
+    }
+  },
+  {
+    "slug": "sgs/text",
+    "base_slug": "text",
+    "is_static": false,
+    "families": {
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 26
+      }
+    }
+  },
+  {
+    "slug": "sgs/timeline",
+    "base_slug": "timeline",
+    "is_static": false,
+    "families": {
+      "typography": {
+        "declared_subkeys": [
+          "fontSize",
+          "fontStyle",
+          "fontWeight",
+          "letterSpacing",
+          "lineHeight",
+          "textAlign",
+          "textTransform"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 31
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 41
+      },
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 19
+      }
+    }
+  },
+  {
+    "slug": "sgs/trust-bar",
+    "base_slug": "trust-bar",
+    "is_static": false,
+    "families": {
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 205
+      }
+    }
+  },
+  {
+    "slug": "sgs/trustpilot-reviews",
+    "base_slug": "trustpilot-reviews",
+    "is_static": false,
+    "families": {
+      "align": {
+        "declared_subkeys": null,
+        "skip_mode": "n/a",
+        "skip_detail": null,
+        "self_applies": null,
+        "delegates_to_wrapper": null,
+        "has_wrapper_attrs_call": null,
+        "inner_routing_evidence": false,
+        "is_static": false,
+        "classification": "ROOT-OK",
+        "mechanism": "native WP class/child-selector application, not part of the skip-serialization model \u2014 always root by construction",
+        "block_json_line": 19
+      }
+    }
+  },
+  {
+    "slug": "sgs/whatsapp-cta",
+    "base_slug": "whatsapp-cta",
+    "is_static": false,
+    "families": {
+      "__experimentalBorder": {
+        "declared_subkeys": [
+          "radius"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 69
+      },
+      "spacing": {
+        "declared_subkeys": [
+          "margin",
+          "padding"
+        ],
+        "skip_mode": "all",
+        "skip_detail": null,
+        "self_applies": true,
+        "delegates_to_wrapper": false,
+        "has_wrapper_attrs_call": true,
+        "inner_routing_evidence": true,
+        "is_static": false,
+        "classification": "SKIP-SELFAPPLIED",
+        "mechanism": "self-applies via wp_style_engine_get_styles()/SGS helper",
+        "block_json_line": 64
+      }
+    }
+  }
+]

@@ -20,56 +20,71 @@
     ],
     "keyed_on": "count, NOT mere presence — adding a 3rd `css:stroke` row to setting-types.json trips the gate even though the (file, key) pair is already accepted.",
     "seeded": "2026-08-06, from a live run of check-reclassified-keys.py against this tree.",
-    "do_not": "Do NOT add a line here to silence a genuine regeneration. Fix the upstream artefact, or carry the ruling forward in whatever regenerates the golden master."
+    "do_not": "Do NOT add a line here to silence a genuine regeneration. Fix the upstream artefact, or carry the ruling forward in whatever regenerates the golden master.",
+    "dispositionVocabulary": [
+      "by-design",
+      "accepted-debt",
+      "detector-limitation",
+      "blocked"
+    ],
+    "dispositionVocabularyNote": "Closed vocabulary: by-design (correct, will never need fixing) / accepted-debt (real gap, consciously deferred) / detector-limitation (the checker itself is wrong — flags a rule violation per THE-MIGRATION-METHOD.md:455, not a normal outcome) / blocked (waiting on something external). See .claude/parking.md P-BASELINE-DISPOSITION-VOCABULARY / .claude/LEDGER.md."
   },
   "accepted": [
     {
       "file": "setting-registry-css.json",
       "key": "css:background-image",
       "count": 1,
-      "reason": "Phase-1 row predates the ruling that css:background-image is a background OVERLAY (GradientPicker + alpha); the real background image is a separate media picker. Never rewritten upstream."
+      "reason": "Phase-1 row predates the ruling that css:background-image is a background OVERLAY (GradientPicker + alpha); the real background image is a separate media picker. Never rewritten upstream.",
+      "disposition": "by-design"
     },
     {
       "file": "setting-registry-css.json",
       "key": "css:background-position",
       "count": 1,
-      "reason": "Phase-1 row predates the ruling that css:background-position is not exposed today (verify-if-dead, then FocalPointPicker or delete). Never rewritten upstream."
+      "reason": "Phase-1 row predates the ruling that css:background-position is not exposed today (verify-if-dead, then FocalPointPicker or delete). Never rewritten upstream.",
+      "disposition": "by-design"
     },
     {
       "file": "setting-registry-css.json",
       "key": "css:font-family",
       "count": 1,
-      "reason": "Phase-1 row predates the ruling that css:font-family is a curated font picker on DISPLAY blocks only (heading/quote/button). Never rewritten upstream."
+      "reason": "Phase-1 row predates the ruling that css:font-family is a curated font picker on DISPLAY blocks only (heading/quote/button). Never rewritten upstream.",
+      "disposition": "by-design"
     },
     {
       "file": "setting-registry-css.json",
       "key": "css:stroke",
       "count": 1,
-      "reason": "Phase-1 row predates the ruling that accentStroke is a decoration toggle, not a colour. Never rewritten upstream."
+      "reason": "Phase-1 row predates the ruling that accentStroke is a decoration toggle, not a colour. Never rewritten upstream.",
+      "disposition": "by-design"
     },
     {
       "file": "setting-types.json",
       "key": "css:background-image",
-      "count": 2,
-      "reason": "Two Phase-1 type rows predate the background-overlay ruling. Never rewritten upstream."
+      "count": 1,
+      "reason": "Phase-1 type row predates the background-overlay ruling. Never rewritten upstream. LOWERED 2 -> 1 (2026-09-02, uniformity sweep): one of the two original rows is gone from setting-types.json upstream — the gate itself reported this as an obsolete baseline line (drift fixed upstream, not a regression), so the count is lowered per its own fix instruction rather than re-added.",
+      "disposition": "by-design"
     },
     {
       "file": "setting-types.json",
       "key": "css:background-position",
       "count": 1,
-      "reason": "Phase-1 type row predates the not-exposed-today ruling. Never rewritten upstream."
+      "reason": "Phase-1 type row predates the not-exposed-today ruling. Never rewritten upstream.",
+      "disposition": "by-design"
     },
     {
       "file": "setting-types.json",
       "key": "css:font-family",
       "count": 1,
-      "reason": "Phase-1 type row predates the curated-display-blocks-only ruling. Never rewritten upstream."
+      "reason": "Phase-1 type row predates the curated-display-blocks-only ruling. Never rewritten upstream.",
+      "disposition": "by-design"
     },
     {
       "file": "setting-types.json",
       "key": "css:stroke",
       "count": 2,
-      "reason": "Two Phase-1 type rows predate the decoration-toggle ruling. Never rewritten upstream."
+      "reason": "Two Phase-1 type rows predate the decoration-toggle ruling. Never rewritten upstream.",
+      "disposition": "by-design"
     }
   ]
 }

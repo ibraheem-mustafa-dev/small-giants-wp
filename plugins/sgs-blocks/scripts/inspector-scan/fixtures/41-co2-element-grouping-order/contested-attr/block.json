@@ -1,0 +1,6 @@
+{
+	"name": "sgs/contested-attr",
+	"attributes": {
+		"sharedAttr": { "type": "string" }
+	}
+}

@@ -39,7 +39,8 @@ Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
                                so a version-bump is visible before any operator-gated --apply.
  11. motion_fx_artefact_regen — regenerate the Spec 38 motion-fx shipped artefacts
                                (generated-fx-effects.php + generated-fx-effect-meta.json +
-                               generated-fx-qualifying-blocks.php + .json) from fx_effects
+                               generated-fx-qualifying-blocks.json — the .php mirror of the
+                               last one was DELETED as dead code at 1ac16ec9) from fx_effects
                                (DB, finalised by Stage 1's tail step) + block.json/edit.js/
                                style.css (files). Runs last so it always reads the DB
                                state this SAME invocation produced. See D432 follow-up,
@@ -94,7 +95,15 @@ SGS_DB = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.d
 # Walk up: scripts/ → sgs-blocks/ → plugins/ → repo root
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
-WP_VERSION_DEFAULT = "7.0"
+# BUMP THIS ON EVERY WP UPGRADE. Stage 2 writes schema_metadata.wp_version_indexed
+# from --wp-version, which DEFAULTS to this constant, so a stale value here is
+# silently RE-ASSERTED as correct on every full /sgs-update run - it does not
+# merely go stale once. Measured 2026-08-24 (D765): this said "7.0" while the
+# canary had been on 7.1 since 2026-08-20 (`wp core version` = 7.1, verified
+# over SSH, not read from a doc). stage_8_drift_gate DOES detect the mismatch
+# and only print()s it; its own TODO to wire that into a deploy hook is still
+# unactioned, and grep confirms nothing outside this file calls it.
+WP_VERSION_DEFAULT = "7.1"
 
 # Files excluded from indexed_files scan
 EXCLUDED_DIRS = {"node_modules", "build", "vendor", ".git", "__pycache__"}
@@ -489,6 +498,579 @@ def _canonical_attr_type(raw) -> str:
     return raw
 
 
+# --- is_responsive ground truth (D968) ---
+#
+# `block_attributes.is_responsive` answers "can this attribute's value differ
+# per device?" Five shapes, in detection order:
+#
+#   1. FLAT TIER SIBLINGS — a base attr plus declared `{base}Tablet`/
+#      `{base}Mobile` rows (e.g. `paddingTablet`/`paddingMobile`). All three
+#      get flagged 1, including per-device ASSET siblings (`videoUrl`/
+#      `videoUrlTablet`) — an art-directed image genuinely differs per
+#      device.
+#   2. TIER-OBJECT (render/wrapper evidence) — a single object-typed attr
+#      unpacked into {desktop, tablet, mobile} internally, proven by a regex
+#      over `sgs_responsive_normalise_object(...)` call sites
+#      (`_TIER_OBJECT_EVIDENCE_RE` below, two call shapes) or by
+#      `wrapper_tier_attrs` when the block routes through
+#      `SGS_Container_Wrapper`. 1. Example: `sgs/container.minHeight`.
+#   3. TIER-OF-BOXES (render evidence overrides a box-shaped NAME) — an attr
+#      named like Spec 35's closed box set (padding/margin/borderWidth/
+#      borderRadius) but PROVEN per-tier by evidence anyway. 1. Example:
+#      `sgs/container.gridItemPadding` — `class-sgs-container-wrapper.php:
+#      3092-3138`'s own comment states it is "NOT genuinely per-SIDE" and its
+#      transform "serialises a whole TIER's box/corner object", and
+#      `:3121` feeds it to `sgs_emit_responsive_css()` with no `'box'` key,
+#      so a flat `{top,right,bottom,left}` value is unrenderable by
+#      construction. Evidence is ADDITIVE ONLY here — it can turn a
+#      name-doctrine-0 into a correct 1, never suppress a name-doctrine-1
+#      back to 0 — so a dynamic-key tier attr (shape 2's typography family,
+#      whose literal name never appears anywhere to grep) can never be
+#      hidden by evidence staying silent elsewhere. Every override PRINTS an
+#      explanatory line during reseed so it stays auditable.
+#   4. RECORD — object-typed, no tier sibling, no box name, no evidence, but
+#      a fixed structural shape ('properties' schema or a non-tier/non-box
+#      'default') proves it is NOT a cascading value. 0. Example:
+#      `shapeDividerTopScale` `{x,y}` (`_is_record_object_attr`).
+#   5. ASSET — object-typed, no tier sibling, no box name, no evidence, no
+#      record shape, but the final camelCase word names a per-device media
+#      slot (image/video/media/logo/svg/poster/url/id). 0. Example:
+#      `testimonial.orgLogo` `{id,url,alt}` (`_is_asset_like_attr`).
+#
+#   Anything object-typed that reaches none of shapes 2-5 is a tier by
+#   elimination against Spec 35's CLOSED, NAMED box set
+#   (`_is_box_family_base_name()` below) — 1 if not box-named, 0 if it is.
+#
+# `wrapper_tier_attrs` is gated on `supports.sgs.containerKind`: only a block
+# that declares it gets the wrapper's evidence. That gate is NARROWER than
+# actual wrapper routing (~40 blocks reference `SGS_Container_Wrapper`, only
+# 20 declare `containerKind`) — currently outcome-neutral (verified against
+# the corpus, not assumed; see D968).
+#
+# Full round-by-round evidence + review history: D968 in decisions.md.
+_CONTAINER_WRAPPER_PHP_PATH = (
+    Path(__file__).resolve().parent.parent / "includes" / "class-sgs-container-wrapper.php"
+)
+
+# Two call shapes, both real render evidence that an object attr's value is
+# unpacked per-tier — see the module comment above for why a single-shape
+# regex silently missed submenuPadding/drawerGap/drawerPadding/listColumns/
+# gridItemPadding/gridItemBorderRadius despite each carrying literal evidence.
+_TIER_OBJECT_EVIDENCE_RE = re.compile(
+    r"sgs_responsive_normalise_object\(\s*\$attributes\[\s*['\"]([A-Za-z0-9_]+)['\"]\s*\]"
+    r"|'value'\s*=>\s*\$attributes\[\s*['\"]([A-Za-z0-9_]+)['\"]\s*\]"
+)
+
+# Spec 35's CLOSED, NAMED box set (survey-responsive-shape.py's `BOX_BASES`) —
+# used ONLY as the fallback when no render evidence exists either way (the
+# dynamic-key typography family). Bare name or a capitalised suffix counts as
+# a "prefixed variant" (`cardPadding`, `ctaBorderRadius`, `tagPadding`).
+_BOX_FAMILY_BASES = ("padding", "margin", "borderWidth", "borderRadius")
+
+
+def _is_box_family_base_name(attr_name: str) -> bool:
+    """Box test, valid ONLY for BASE names, and ONLY inside
+    `_compute_is_responsive`'s no-evidence fallback branch — NOT a
+    general-purpose "is this a box attribute?" test. True when `attr_name`
+    IS one of Spec 35's closed box bases, or a prefixed variant of one (name
+    ends with the base, capitalised). Deliberately NOT consulted when render
+    evidence exists (see the module comment above `_CONTAINER_WRAPPER_PHP_PATH`).
+
+    ⚠ BLIND TO TIER SUFFIXES BY CONSTRUCTION, DELIBERATELY LEFT AS-IS
+    (task-review I3, 2nd pass): this test is BLIND to a `Tablet`/`Mobile` tier suffix —
+    `"paddingTablet".endswith("Padding")` is `False`, so a tier sibling of a
+    box base is classified NON-box by this function. On a block where the
+    base (`padding`) is native `supports.spacing` rather than a declared
+    attr (e.g. `sgs/info-box`), mechanism 1b in `_compute_is_responsive`
+    can't find the base in `attrs` either, so `paddingTablet` falls through
+    to mechanism 2's box-doctrine fallback and reaches `1` ONLY because THIS
+    function's suffix-blindness makes it look non-box. The answer (1) is
+    right; the reasoning path is fragile — a future "tidy" of this function
+    to strip the tier suffix first would flip it to a wrong 0 (no mechanism
+    1 coverage, no render evidence, and now correctly-but-uselessly
+    box-by-name). Deliberately NOT changed here: extending mechanism 1 to
+    "own" a tier sibling whose base isn't itself a declared attr is a wider
+    behaviour change than this review-closure pass can verify against the
+    whole corpus. Pinned instead by a dedicated self-test fixture
+    (`_self_test_is_responsive`, "info-box padding-tablet-without-declared-
+    base" case) so a future refactor that flips this gets caught immediately.
+    """
+    for base in _BOX_FAMILY_BASES:
+        suffix = base[0].upper() + base[1:]
+        if attr_name == base or attr_name.endswith(suffix):
+            return True
+    return False
+
+
+# ASSET shape — the fifth doctrine category, ported from
+# `scripts/surveys/survey-responsive-shape.py`'s `ASSET_HINTS` (task review,
+# 3rd pass). A single-object media SLOT (`{id,url,alt,type}`, `sgs_render_media()`
+# consumes it whole) is a different RESOURCE per device, not a cascading
+# value — `sgs/testimonial.orgLogo`/`.workMedia`, `sgs/cta-section.
+# backgroundMedia`, `sgs/decorative-image.decorMedia`, `sgs/nav-drawer.
+# backgroundImage` all have no Tablet/Mobile siblings, no render evidence of
+# per-tier unpacking (nothing calls `sgs_responsive_normalise_object()` or the
+# `'value' => $attributes[...]` shape on them — they go straight into
+# `sgs_render_media()` as a single opaque object), and an empty/null
+# `default` that `_is_record_object_attr` correctly declines to call a
+# record. Left unclassified, all five fell into "tier by elimination" and
+# read a wrong 1 — a REGRESSION versus the pre-2026-09-05 state, where they
+# correctly read 0 (by coincidence, not by design: the old one-line check
+# only ever looked for a Tablet/Mobile sibling, which these attrs never had).
+#
+# ⚠ Tokenised on the FINAL camelCase word ONLY, not `any(hint in words)` like
+# the survey script — the survey is a human-triaged census where an
+# over-inclusive hint is fine (a person reads every finding); this is a
+# closed-loop seeder branch where over-inclusion silently reclassifies a real
+# cascading value. `splitMediaHeight`/`splitMediaMinHeight`/
+# `splitMediaMaxWidth`/`splitMediaMaxHeight` (sgs/hero, all object-typed, no
+# siblings, no evidence) each contain the word "media" but ARE genuine
+# cascading tier values (their own render evidence proves it elsewhere in the
+# corpus for the sibling attrs in this family) — the attribute's name is
+# built as `{assetAttr}{StylingProperty}`, so only testing the LAST word
+# (Height/Width, not Media) tells "is this attribute itself an asset" apart
+# from "is this a styling property OF an asset". Whole-word matching (not
+# substring) reuses the same word-splitter as the survey script for the same
+# reason it documents: a naive substring check matched "id" inside "hideOn".
+_ASSET_HINT_WORDS = frozenset(
+    {"image", "video", "media", "thumbnail", "logo", "svg", "poster", "url", "id"}
+)
+_CAMEL_WORD_RE = re.compile(r"[A-Z]?[a-z0-9]+|[A-Z]+(?![a-z])")
+
+
+def _camel_words(name: str) -> list:
+    """Split a camelCase attribute name into lower-cased whole words. Mirrors
+    `survey-responsive-shape.py`'s `camel_words()` byte-for-byte (word-boundary
+    matching is mandatory, not a nicety — see that function's own docstring
+    for the "id" inside "hideOn" false-positive it was built to prevent)."""
+    return [w.lower() for w in _CAMEL_WORD_RE.findall(name)]
+
+
+def _is_asset_like_attr(attr_name: str) -> bool:
+    """True when `attr_name`'s FINAL camelCase word names a per-device asset
+    (image/video/media/logo/svg/poster/url/id) — i.e. the attribute itself
+    IS an asset slot, not a styling property of one. See the module comment
+    above `_ASSET_HINT_WORDS` for why this is last-word-only, not
+    any-word, unlike the survey script it is ported from.
+    """
+    words = _camel_words(attr_name)
+    return bool(words) and words[-1] in _ASSET_HINT_WORDS
+
+
+# Device-tier and box-side vocabularies, shared by `_is_record_object_attr`
+# below (task-review C1). An object attr's `default` intersecting NEITHER
+# set — while the object itself is not a plain empty `{}` — proves it is a
+# fixed-shape RECORD (a small config struct), not a tier object and not a
+# box object. Distinct from `_BOX_FAMILY_BASES` (a NAME doctrine); this is a
+# SHAPE doctrine over the attr's own declared `default`/`properties`.
+_TIER_KEY_NAMES = frozenset({"desktop", "tablet", "mobile"})
+_BOX_SIDE_KEY_NAMES = frozenset({"top", "right", "bottom", "left"})
+
+
+def _is_record_object_attr(attr_def) -> bool:
+    """True when an object-typed attr's OWN declaration proves it is a
+    fixed-shape RECORD (a small config struct with named, non-tier,
+    non-box fields) rather than a tier object or a box object — a FOURTH
+    shape the doctrine's tier-by-elimination fallback previously missed
+    entirely (task-review C1, 2nd pass). Two independent proofs, either
+    sufficient:
+
+    1. The attr declares a top-level `"properties"` schema — an explicit
+       field-by-field record (e.g. `sgs/mega-panel.asideSeparator`'s
+       `{"style":..., "colour":..., "width":...}`). Deliberately scoped to
+       TOP LEVEL only: every other `"properties"` hit in the corpus lives
+       inside an `items` schema for an ARRAY attr, which never reaches this
+       function (the caller gates on `attr_type == 'object'`).
+    2. `default` is a non-empty object whose keys intersect NEITHER the
+       device-tier vocabulary NOR the box-side vocabulary — e.g.
+       `shapeDividerTopScale`'s `{"x": 100, "y": 100}` 2-axis scale. An
+       empty `{}` default (the overwhelming majority of object attrs) is
+       NOT a record by this rule — it carries no shape information either
+       way and stays in the tier-by-elimination fallback.
+
+    Verified against the live corpus before shipping: exactly 11 rows match
+    (`shapeDividerTopScale`/`shapeDividerBottomScale` on 5 blocks,
+    `asideSeparator` on `sgs/mega-panel`), zero more, zero fewer — both
+    rules independently converge on the same 11, and a full-corpus scan of
+    every object-typed attr's `default` found no other non-empty dict whose
+    keys avoid both vocabularies.
+    """
+    if not isinstance(attr_def, dict):
+        return False
+    _props = attr_def.get("properties")
+    if isinstance(_props, dict) and _props:
+        return True
+    _default = attr_def.get("default")
+    if isinstance(_default, dict) and _default:
+        _keys = set(_default.keys())
+        if not (_keys & _TIER_KEY_NAMES) and not (_keys & _BOX_SIDE_KEY_NAMES):
+            return True
+    return False
+
+
+def _tier_object_attrs_from_php(path: Path) -> set:
+    """Attr names with literal render evidence of per-tier unpacking (either
+    call shape — see `_TIER_OBJECT_EVIDENCE_RE`) in one PHP file. Returns an
+    empty set (never raises) when the file is absent or unreadable, so a
+    missing render.php just means "no evidence found there", not a crash.
+    Callers that require the file to exist (the shared wrapper, below) add
+    their own hard assertion — this function alone cannot distinguish
+    "genuinely no render.php" (fine) from "the ONE shared wrapper file
+    vanished" (a real breakage) since both look identical from here.
+    """
+    if not path.is_file():
+        return set()
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return set()
+    found = set()
+    for m in _TIER_OBJECT_EVIDENCE_RE.finditer(text):
+        name = m.group(1) or m.group(2)
+        if name:
+            found.add(name)
+    return found
+
+
+# Loaded once per process — the shared wrapper file does not change per-block.
+_WRAPPER_TIER_OBJECT_ATTRS = _tier_object_attrs_from_php(_CONTAINER_WRAPPER_PHP_PATH)
+
+# MINOR (task-review 2nd pass): both `raise RuntimeError` calls below fire at
+# MODULE IMPORT TIME, not inside a stage function — a missing/broken wrapper
+# file breaks every stage this module is imported for (not just is_responsive
+# seeding), including a plain `--stage N` for any N. Deliberate, not an
+# oversight: this file is the render-evidence source for every wrapper-routed
+# composite block's tier-object attrs, so a broken evidence channel is real
+# breakage worth surfacing loudly regardless of which stage happens to be
+# running, rather than only when Stage 1 specifically touches it.
+#
+# FAIL-HARD, not fail-silent (task review "Also fix"): `_tier_object_attrs_from_php`
+# returns `set()` for BOTH "file missing" and "file present but no evidence",
+# which is exactly right for a per-block render.php (most blocks have none)
+# but wrong for this ONE shared file — if it goes missing or gets renamed,
+# every wrapper-routed block's tier-object attrs silently drop to 0 and the
+# seeder reports it as ordinary drift, not breakage ("a disabled rule returns
+# 0, same as a clean tree" — this repo's own recorded rule).
+#
+# Two independent positive controls, one per alternation BRANCH of
+# `_TIER_OBJECT_EVIDENCE_RE` (task-review I2, 2nd pass) — a single control
+# on the union result only proves "at least one branch still matches
+# something"; it does NOT prove branch 2 specifically still works. `minHeight`
+# is reachable ONLY via branch 1 (`sgs_responsive_normalise_object($attributes
+# ['minHeight']...)`, class-sgs-container-wrapper.php ~:499) — if branch 2
+# (`'value' => $attributes[...]`) silently stopped matching, `gridItemPadding`
+# /`gridItemBorderRadius`/`padding`/`margin`/`maxWidth`/`gap`/`shadow` and the
+# whole `gridItem*` family would drop to 0 and this control would still pass.
+# `gridItemPadding` is reachable ONLY via branch 2 (class-sgs-container-
+# wrapper.php ~:3123, `'value' => $attributes['gridItemPadding']`), checked
+# against branch 2 IN ISOLATION below (not the combined regex), so a broken
+# branch 2 fails here even while branch 1 still works fine.
+if not _CONTAINER_WRAPPER_PHP_PATH.is_file():
+    raise RuntimeError(
+        f"is_responsive mechanism 2 positive control failed: shared wrapper "
+        f"file not found at {_CONTAINER_WRAPPER_PHP_PATH}. This file is the "
+        f"render-evidence source for every wrapper-routed composite block's "
+        f"tier-object attrs (minHeight/contentWidth/contentBandPadding/"
+        f"gridItemPadding/...). A missing/renamed file must fail the reseed, "
+        f"not silently seed those attrs as non-responsive."
+    )
+if "minHeight" not in _WRAPPER_TIER_OBJECT_ATTRS:
+    raise RuntimeError(
+        "is_responsive mechanism 2 positive control failed (branch 1): "
+        f"scanning {_CONTAINER_WRAPPER_PHP_PATH} found no evidence for "
+        "'minHeight', a name known to be present there today via the "
+        "sgs_responsive_normalise_object(...) call shape. Either the file's "
+        "content changed unexpectedly or branch 1 of "
+        "_TIER_OBJECT_EVIDENCE_RE stopped matching — both mean mechanism 2's "
+        "wrapper-evidence channel is silently blind. Fix the regex/file "
+        "before reseeding, do not let this pass silently."
+    )
+if "gridItemPadding" not in _WRAPPER_TIER_OBJECT_ATTRS:
+    raise RuntimeError(
+        "is_responsive mechanism 2 positive control failed (branch 2): "
+        f"scanning {_CONTAINER_WRAPPER_PHP_PATH} via the LIVE "
+        "_TIER_OBJECT_EVIDENCE_RE found no evidence for 'gridItemPadding' — "
+        "reachable ONLY via the `'value' => $attributes[...]` call shape "
+        "(class-sgs-container-wrapper.php ~:3123), never via branch 1's "
+        "`sgs_responsive_normalise_object(...)` shape. Either the file's "
+        "content changed unexpectedly or branch 2 of "
+        "_TIER_OBJECT_EVIDENCE_RE stopped matching — this control exists "
+        "specifically because the minHeight control above cannot detect "
+        "this failure on its own (minHeight alone would still pass with "
+        "branch 2 fully dead, since it never depends on branch 2). Checked "
+        "against the SAME `_WRAPPER_TIER_OBJECT_ATTRS` the seeder actually "
+        "uses — not a duplicate regex — so this fails whenever the real "
+        "extraction breaks, not just when a copy of its pattern would. Fix "
+        "the regex/file before reseeding."
+    )
+
+
+def _compute_is_responsive(
+    attr_name: str,
+    attr_type: str,
+    attr_def: dict,
+    attrs: dict,
+    render_tier_attrs: set,
+    wrapper_tier_attrs: set,
+) -> int:
+    """Ground truth: does this attribute's value vary by device? `attr_def`
+    is this attribute's own declaration (already bound by the caller's loop
+    over `attrs.items()` — pass it directly rather than re-deriving it via
+    `attrs.get(attr_name)`). `attrs` is still needed separately: mechanisms
+    1a/1b check for OTHER keys (this attr's Tablet/Mobile siblings, or the
+    base this attr is a sibling of) in the full attribute set. See the
+    module-level comment above `_CONTAINER_WRAPPER_PHP_PATH` for the two
+    mechanisms this checks, the two render-evidence call shapes, and why a
+    name-only doctrine is used only as a fallback, never a suppressor, for
+    mechanism 2. Mechanism 2's fallback also refuses a fourth shape — a
+    fixed-shape RECORD, proven by the attr's own declaration, never a tier
+    by elimination — see `_is_record_object_attr` (task-review C1, 2nd pass)
+    — and a fifth shape — a single-object media ASSET slot, whose FINAL
+    camelCase word names it as such — see `_is_asset_like_attr` (task-review,
+    3rd pass, closing a regression the 2nd pass's own doc comment claimed was
+    already covered but was not).
+
+    `wrapper_tier_attrs` is `_WRAPPER_TIER_OBJECT_ATTRS` when the CALLING
+    block actually routes through `SGS_Container_Wrapper` (declares
+    `supports.sgs.containerKind`), else an empty set — the wrapper's evidence
+    only applies to a block that is proven to use it (task review "Also fix":
+    the old unconditional application let `sgs/brand-strip`'s unrelated
+    `columns` attr inherit wrapper evidence it never earns from routing,
+    though brand-strip happens to also carry its own render evidence
+    independently so this specific attr's VALUE was never wrong — the gating
+    is a correctness fix for the general case, not a value fix for this one).
+    """
+    # Mechanism 1a — this attr IS a base with a declared Tablet/Mobile sibling.
+    if f"{attr_name}Tablet" in attrs or f"{attr_name}Mobile" in attrs:
+        return 1
+    # Mechanism 1b — this attr IS a Tablet/Mobile sibling of a declared base.
+    _m = re.match(r"^(.+?)(?:Tablet|Mobile)$", attr_name)
+    if _m and _m.group(1) in attrs:
+        return 1
+    # Mechanism 2 — a tier-object. Gated on attr_type == 'object' throughout:
+    # neither evidence channel nor the box-doctrine fallback may ever fire for
+    # a 'number'/'string' attr of the same name on an unrelated block (e.g.
+    # core/gallery's scalar `columns`).
+    if attr_type == "object":
+        has_evidence = attr_name in render_tier_attrs or attr_name in wrapper_tier_attrs
+        is_box_by_name = _is_box_family_base_name(attr_name)
+        if has_evidence:
+            if is_box_by_name:
+                # Real evidence overrides a box-shaped NAME — see the module
+                # comment's "evidence beats the name doctrine" paragraph.
+                # Printed (not just returned) so the override is auditable
+                # during every reseed, not a silent divergence from the
+                # literal name-only fix-shape.
+                print(
+                    f"  NOTE is_responsive: '{attr_name}' is box-family BY NAME "
+                    f"but has literal render evidence of per-tier unpacking — "
+                    f"classified as tier (1), not box (0)."
+                )
+            return 1
+        if not is_box_by_name:
+            # No evidence either way (the dynamic-key typography family) —
+            # BEFORE falling to "tier by elimination", refuse a FOURTH shape
+            # the doctrine's binary tier/box choice cannot express: a
+            # fixed-shape RECORD (task-review C1, 2nd pass). A record has no
+            # tier sibling, is never box-named, and can never be reached by
+            # evidence (nothing unpacks it per-device) — so without this
+            # check every record in the corpus fell into "tier by
+            # elimination" and read a wrong 1
+            # (shapeDividerTopScale/BottomScale on 5 blocks,
+            # sgs/mega-panel.asideSeparator — 11 rows, verified against the
+            # live corpus before shipping, see `_is_record_object_attr`'s
+            # own docstring for the count proof).
+            if _is_record_object_attr(attr_def):
+                print(
+                    f"  NOTE is_responsive: '{attr_name}' is object-typed with "
+                    f"no tier sibling, no box name, and no render evidence, "
+                    f"but its own declaration ('properties' schema or a "
+                    f"non-tier/non-box 'default' shape) proves it is a fixed-"
+                    f"shape RECORD, not a tier by elimination — classified "
+                    f"non-responsive (0)."
+                )
+                return 0
+            # ASSET shape (task review, 3rd pass) — BEFORE falling to "tier
+            # by elimination", refuse a fifth shape the doctrine's binary
+            # tier/box choice cannot express: a single-object media SLOT
+            # whose FINAL word names an asset (see `_is_asset_like_attr`'s
+            # own docstring + the module comment above `_ASSET_HINT_WORDS`).
+            # Without this check every such slot in the corpus fell into
+            # "tier by elimination" and read a wrong 1 (orgLogo/workMedia on
+            # sgs/testimonial, backgroundMedia on sgs/cta-section, decorMedia
+            # on sgs/decorative-image, backgroundImage on sgs/nav-drawer —
+            # verified against the live corpus before shipping, see the
+            # dispatch's confirmed-wrong-1s table).
+            if _is_asset_like_attr(attr_name):
+                print(
+                    f"  NOTE is_responsive: '{attr_name}' is object-typed with "
+                    f"no tier sibling, no box name, no render evidence, and no "
+                    f"record shape, but its FINAL camelCase word names a "
+                    f"per-device ASSET (image/video/media/logo/svg/poster/url/"
+                    f"id) rather than a cascading value — classified "
+                    f"non-responsive (0)."
+                )
+                return 0
+            # Doctrine fallback: anything object-typed outside the closed
+            # box set, not a proven record, and not a proven asset slot is a
+            # tier by elimination.
+            return 1
+    return 0
+
+
+def _self_test_is_responsive() -> int:
+    """Prove `_compute_is_responsive()` fires on every mechanism it claims to
+    (task review "MINOR" ask), including the negative control every detector
+    needs (`a-check-with-no-positive-control-passes-against-a-dead-feature`).
+    No DB connection, no filesystem writes — pure function, isolated fixtures.
+
+    13 assertions total: 12 fixture cases (including 2 dedicated negative
+    controls — `borderWidth` for the box doctrine, `splitMediaHeight` for the
+    3rd-pass asset overmatch check) plus the standalone `align` negative
+    control appended after the loop. Task-review 2nd pass added the 2
+    fourth-shape record cases, the I3 pin, and the containerKind-gate
+    fixture; task-review 3rd pass added the fifth-shape (`orgLogo`) case and
+    its overmatch negative control (`splitMediaHeight`) — see each case's
+    own label for which finding it closes.
+    """
+    cases = [
+        (
+            "tier object — dynamic key, zero render evidence "
+            "(sgs/product-card.titleFontSize's real shape)",
+            "titleFontSize", "object", {"titleFontSize": {"type": "object"}},
+            set(), set(), 1,
+        ),
+        (
+            "tier object — wrapper evidence (sgs/container.minHeight's real shape)",
+            "minHeight", "object", {"minHeight": {"type": "object"}},
+            set(), {"minHeight"}, 1,
+        ),
+        (
+            "flat tier sibling pair — base",
+            "gap", "string",
+            {"gap": {"type": "string"}, "gapTablet": {"type": "string"},
+             "gapMobile": {"type": "string"}},
+            set(), set(), 1,
+        ),
+        (
+            "flat tier sibling pair — sibling itself",
+            "gapTablet", "string",
+            {"gap": {"type": "string"}, "gapTablet": {"type": "string"},
+             "gapMobile": {"type": "string"}},
+            set(), set(), 1,
+        ),
+        (
+            "box object, no siblings, no evidence — must stay 0",
+            "borderWidth", "object", {"borderWidth": {"type": "object"}},
+            set(), set(), 0,
+        ),
+        (
+            "box-shaped NAME but PROVEN tier by render evidence — evidence "
+            "wins over the name doctrine (sgs/container.gridItemPadding's "
+            "real shape, class-sgs-container-wrapper.php:3121-3128)",
+            "gridItemPadding", "object", {"gridItemPadding": {"type": "object"}},
+            {"gridItemPadding"}, set(), 1,
+        ),
+        (
+            "FOURTH SHAPE — record proven by a top-level 'properties' schema, "
+            "no tier/box name, no evidence (sgs/mega-panel.asideSeparator's "
+            "real shape: {\"style\":..., \"colour\":..., \"width\":...}) — "
+            "must NOT fall to tier-by-elimination (task-review C1)",
+            "asideSeparator", "object",
+            {
+                "asideSeparator": {
+                    "type": "object",
+                    "default": {"style": "line"},
+                    "properties": {
+                        "style": {"type": "string"},
+                        "colour": {"type": "string"},
+                        "width": {"type": "string"},
+                    },
+                }
+            },
+            set(), set(), 0,
+        ),
+        (
+            "FOURTH SHAPE — record proven by a non-tier/non-box 'default' "
+            "shape, no 'properties' schema (sgs/container.shapeDividerTopScale's "
+            "real shape: {\"x\":100,\"y\":100}, a 2-axis scale) — must NOT "
+            "fall to tier-by-elimination (task-review C1)",
+            "shapeDividerTopScale", "object",
+            {"shapeDividerTopScale": {"type": "object", "default": {"x": 100, "y": 100}}},
+            set(), set(), 0,
+        ),
+        (
+            "I3 PIN — box-family base is NATIVE supports.spacing, never a "
+            "declared attr, so mechanism 1b can't find it; the Tablet sibling "
+            "reaches the FALLBACK and gets the RIGHT answer (1) via "
+            "_is_box_family_base_name's suffix-blindness, not via real tier-sibling "
+            "coverage (sgs/info-box.paddingTablet's real shape — see the "
+            "warning above _is_box_family_base_name's definition, task-review I3). "
+            "A future 'fix' that strips the Tablet/Mobile suffix before the "
+            "box-name test would flip this to a WRONG 0 — this case exists to "
+            "catch that regression, not to endorse the current reasoning path.",
+            "paddingTablet", "object", {"paddingTablet": {"type": "object"}},
+            set(), set(), 1,
+        ),
+        (
+            "containerKind gate — a NON-wrapper-routed block's OWN render "
+            "evidence still fires correctly even though wrapper_tier_attrs is "
+            "empty for it (sgs/brand-strip.columns's real shape — the block "
+            "never declares supports.sgs.containerKind, so the caller passes "
+            "wrapper_tier_attrs=set() for it; this proves the gating change "
+            "doesn't accidentally starve a block of its OWN evidence, task-"
+            "review 'Also fix' / MINOR)",
+            "columns", "object", {"columns": {"type": "object"}},
+            {"columns"}, set(), 1,
+        ),
+        (
+            "FIFTH SHAPE — asset slot, final word 'Logo', no tier sibling, no "
+            "box name, no evidence, default null (sgs/testimonial.orgLogo's "
+            "real shape) — must NOT fall to tier-by-elimination (task review, "
+            "3rd pass; this exact attr was a confirmed-wrong-1 regression)",
+            "orgLogo", "object", {"orgLogo": {"type": "object", "default": None}},
+            set(), set(), 0,
+        ),
+        (
+            "OVERMATCH NEGATIVE CONTROL — contains the asset word 'Media' but "
+            "is NOT itself an asset slot; final word 'Height' is a styling "
+            "property OF an asset, not the asset (sgs/hero.splitMediaHeight's "
+            "real shape) — proves last-word-only matching, not any(word), "
+            "task review 3rd pass",
+            "splitMediaHeight", "object", {"splitMediaHeight": {"type": "object"}},
+            set(), set(), 1,
+        ),
+    ]
+    passed = failed = 0
+    for label, attr_name, attr_type, attrs, render_evid, wrapper_evid, want in cases:
+        got = _compute_is_responsive(
+            attr_name, attr_type, attrs.get(attr_name), attrs, render_evid, wrapper_evid
+        )
+        if got == want:
+            print(f"  PASS {label}: is_responsive={got}")
+            passed += 1
+        else:
+            print(f"  FAIL {label}: got {got}, want {want}")
+            failed += 1
+
+    # NEGATIVE CONTROL — a plain scalar with no siblings and no evidence must
+    # produce 0. A self-test with only positive cases cannot tell "the
+    # predicate works" from "the predicate always returns 1".
+    neg_attrs = {"align": {"type": "string"}}
+    neg_got = _compute_is_responsive(
+        "align", "string", neg_attrs.get("align"), neg_attrs, set(), set()
+    )
+    if neg_got == 0:
+        print(f"  PASS negative control: plain scalar, no siblings/evidence -> {neg_got}")
+        passed += 1
+    else:
+        print(f"  FAIL negative control: plain scalar, no siblings/evidence -> {neg_got}, want 0")
+        failed += 1
+
+    print(f"\nSelf-test: {passed} passed, {failed} failed")
+    return 1 if failed else 0
+
+
 # ---------------------------------------------------------------------------
 # Stage 1 — SGS codebase scan
 # PORTED FROM: ~/.agents/skills/sgs-wp-engine/scripts/update-db.py
@@ -569,6 +1151,12 @@ def _index_sgs_block_files(
     # update run can populate blocks.variant_attr + variant_slots without
     # depending on the converter module being imported. Guarded ALTER +
     # CREATE IF NOT EXISTS — safe on every run.
+    #
+    # ADDITIVE (2026-09-05, VALUE-aware variant discrimination): variant_slots
+    # gains a nullable `slot_value` column — NULL for capability variants
+    # (unchanged, name-only discrimination), populated for preset variants
+    # (a block with `variations.js`, e.g. sgs/nav-drawer) with the literal
+    # value that name discriminates BY. See the per-block population below.
     blocks_cols = {row[1] for row in c.execute("PRAGMA table_info(blocks)").fetchall()}
     if "variant_attr" not in blocks_cols:
         c.execute("ALTER TABLE blocks ADD COLUMN variant_attr TEXT")
@@ -580,6 +1168,58 @@ def _index_sgs_block_files(
           unique_slot   TEXT NOT NULL,
           created_at    TEXT DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (block_slug, variant_value, unique_slot)
+        )
+        """
+    )
+    variant_slots_cols = {row[1] for row in c.execute("PRAGMA table_info(variant_slots)").fetchall()}
+    if "slot_value" not in variant_slots_cols:
+        c.execute("ALTER TABLE variant_slots ADD COLUMN slot_value TEXT")
+
+    # --- variant_composition_slots schema (Task 2, InnerBlocks-composition ---
+    # fingerprinting, 2026-09-05). Sibling table to variant_slots above, but
+    # for CHILD BLOCK SLUGS rather than attribute (name, value) pairs: a
+    # variant's discriminating InnerBlocks composition (e.g. sgs/nav-drawer's
+    # `split-zone-serif` uniquely nests `sgs/card-grid`; `two-column-editorial`
+    # nests nothing unique). Populated by /sgs-update Stage 1 from Task 1's
+    # JS extractor (`variant-value-extractor/extract-variation-values.js`)
+    # reading each variant's `innerBlockSlugs`. Deliberately duplicated here
+    # AND in converter/db/db_lookup.py's own schema-ensure — same reasoning
+    # as variant_slots's duplication (see that table's migration comment in
+    # db_lookup.py): a one-off writer script (this one) and the converter
+    # package don't share a schema-migration import.
+    c.execute(
+        """
+        CREATE TABLE IF NOT EXISTS variant_composition_slots (
+            block_slug TEXT NOT NULL,
+            variant_value TEXT NOT NULL,
+            unique_child_slug TEXT NOT NULL,
+            PRIMARY KEY (block_slug, variant_value, unique_child_slug)
+        )
+        """
+    )
+
+    # --- variant_composition_attr_slots schema (child-ATTRIBUTE-VALUE ---
+    # composition fingerprinting, 2026-09-06). THIRD sibling: where
+    # variant_slots keys on the PARENT's own (attr, value) pairs and
+    # variant_composition_slots on a uniquely-nested CHILD SLUG, this keys on a
+    # nested child's OWN attribute value — the signal for two variants that
+    # nest the identical set of child block types and differ only in how one of
+    # those children is configured (sgs/nav-drawer's `two-column-editorial` vs
+    # `floating-capped-card`, both {sgs/nav-menu, sgs/button}, separated by the
+    # nav-menu's `listColumns`). Populated by Stage 1 from the same JS
+    # extractor, reading each variant's per-child `attributes`. Duplicated here
+    # AND in converter/db/db_lookup.py for the same reason as both tables
+    # above; see that file's migration comment for why this is a separate
+    # table rather than two nullable columns on variant_composition_slots.
+    c.execute(
+        """
+        CREATE TABLE IF NOT EXISTS variant_composition_attr_slots (
+            block_slug TEXT NOT NULL,
+            variant_value TEXT NOT NULL,
+            child_slug TEXT NOT NULL,
+            child_attr_name TEXT NOT NULL,
+            child_attr_value TEXT NOT NULL,
+            PRIMARY KEY (block_slug, variant_value, child_slug, child_attr_name, child_attr_value)
         )
         """
     )
@@ -646,6 +1286,12 @@ def _index_sgs_block_files(
         category = data.get("category", "sgs-blocks")
         description = data.get("description", "")
         has_render = (block_dir / "render.php").exists()
+        # Render evidence for is_responsive mechanism 2 (tier-object detection)
+        # — see the module-level comment above `_compute_is_responsive`. Read
+        # once per block; empty set when there is no render.php.
+        _render_tier_attrs = (
+            _tier_object_attrs_from_php(block_dir / "render.php") if has_render else set()
+        )
         has_view = any(
             (block_dir / fn).exists()
             for fn in ("view.js", "view.ts", "view.jsx", "view.tsx")
@@ -688,6 +1334,18 @@ def _index_sgs_block_files(
             replaces = None
         attrs = data.get("attributes", {})
         supports = data.get("supports", {})
+        # Wrapper evidence is only trustworthy for a block PROVEN to route
+        # through SGS_Container_Wrapper (task review "Also fix" —
+        # _WRAPPER_TIER_OBJECT_ATTRS is name-keyed and was applied
+        # unconditionally to every block, including sgs/brand-strip's
+        # unrelated `columns`, which never mentions the wrapper). Routing is
+        # declared via `supports.sgs.containerKind` (Spec 31 §13.6's
+        # composite-mirror propagation route), matching every other place in
+        # this codebase that gates wrapper-derived behaviour.
+        _routes_through_wrapper = bool(
+            isinstance(supports.get("sgs"), dict) and supports["sgs"].get("containerKind")
+        )
+        _wrapper_tier_attrs = _WRAPPER_TIER_OBJECT_ATTRS if _routes_through_wrapper else set()
 
         if dry_run:
             # In dry-run: count what EXISTS vs what WOULD be inserted / updated
@@ -719,8 +1377,8 @@ def _index_sgs_block_files(
                 attr_type = _canonical_attr_type(attr_def.get("type", "string"))
                 default = attr_def.get("default")
                 enum_vals = attr_def.get("enum")
-                is_responsive = (
-                    1 if f"{attr_name}Tablet" in attrs or f"{attr_name}Mobile" in attrs else 0
+                is_responsive = _compute_is_responsive(
+                    attr_name, attr_type, attr_def, attrs, _render_tier_attrs, _wrapper_tier_attrs
                 )
                 scraped_attr = (
                     attr_type,
@@ -853,26 +1511,128 @@ def _index_sgs_block_files(
                 (desired_variant_attr, slug),
             )
         # Repopulate variant_slots for this block (delete-then-insert = idempotent;
-        # reflects the current block.json on every run). A variant's discriminating
-        # slots = its slots minus the union of every sibling variant's slots, so
-        # shared attrs (e.g. minHeight) never act as a discriminator.
+        # reflects the current block.json / variations.js on every run).
+        #
+        # Two DISTINCT mechanisms, chosen per-block (ADDITIVE, 2026-09-05):
+        #
+        #   NAME-ONLY (capability variants — hero, trust-bar, testimonial,
+        #   product-card; unchanged): a variant's discriminating slots = its
+        #   attribute NAMES minus the union of every sibling variant's names.
+        #   Correct when the variant genuinely enables a different attribute.
+        #
+        #   VALUE-AWARE (preset variants — a block with `variations.js`, e.g.
+        #   sgs/nav-drawer): every variant shares the same attribute NAMES, so
+        #   name-only set-difference collapses to empty. Instead discriminate
+        #   on (attribute name, literal value) PAIRS, extracted from
+        #   `variations.js` (never block.json, which carries names only) via
+        #   `_extract_variation_attribute_values`. A pair unique to one
+        #   variant is a valid discriminator even though its NAME is shared.
+        #
+        # UNIVERSAL EXCLUSION (both paths): the block's own variant-selector
+        # attribute (`variant_attr_name`) is never itself a candidate
+        # discriminator — it is exactly what detection exists to DERIVE, and
+        # the cloning converter's extracted `populated_attrs` never contains
+        # it (it comes from CSS/DOM extraction, not the block's own stored
+        # selector). For capability blocks this changes nothing (verified:
+        # none of hero/trust-bar/testimonial/product-card list their own
+        # variant_attr inside any variant's slot list, so it was already
+        # excluded by the name-diff). For a value-aware block it is essential
+        # — `variantPreset` is set to a distinct string per nav-drawer
+        # variant, which would otherwise "discriminate" every variant via an
+        # attribute the pipeline can never observe.
         c.execute("DELETE FROM variant_slots WHERE block_slug = ?", (slug,))
-        if variants_map:
+        value_aware_variants = _extract_variation_attribute_values(block_dir)
+        if value_aware_variants:
+            per_variant_pairs: dict[str, set] = {}
+            for v_name, v_attrs in value_aware_variants.items():
+                if not isinstance(v_attrs, dict):
+                    continue
+                per_variant_pairs[v_name] = {
+                    (attr, _canon_slot_value(val))
+                    for attr, val in v_attrs.items()
+                    if attr != variant_attr_name
+                }
+            for v_name, own_pairs in per_variant_pairs.items():
+                sibling_pairs: set = set()
+                for other_name, other_pairs in per_variant_pairs.items():
+                    if other_name != v_name:
+                        sibling_pairs.update(other_pairs)
+                for attr, canon_val in sorted(own_pairs - sibling_pairs):
+                    c.execute(
+                        "INSERT OR IGNORE INTO variant_slots "
+                        "(block_slug, variant_value, unique_slot, slot_value) VALUES (?, ?, ?, ?)",
+                        (slug, v_name, attr, canon_val),
+                    )
+        elif variants_map:
             for v_value, v_slots in variants_map.items():
                 if not isinstance(v_slots, list):
                     continue
+                own_slots = {s for s in v_slots if s != variant_attr_name}
                 sibling_slots: set = set()
                 for other_value, other_slots in variants_map.items():
                     if other_value == v_value or not isinstance(other_slots, list):
                         continue
-                    sibling_slots.update(other_slots)
-                discriminating = [s for s in v_slots if s not in sibling_slots]
+                    sibling_slots.update(s for s in other_slots if s != variant_attr_name)
+                discriminating = [s for s in own_slots if s not in sibling_slots]
                 for slot in discriminating:
                     c.execute(
                         "INSERT OR IGNORE INTO variant_slots "
-                        "(block_slug, variant_value, unique_slot) VALUES (?, ?, ?)",
+                        "(block_slug, variant_value, unique_slot, slot_value) VALUES (?, ?, ?, NULL)",
                         (slug, v_value, slot),
                     )
+
+        # --- variant_composition_slots population (Task 2, InnerBlocks-
+        # composition fingerprinting, 2026-09-05) ---
+        # THIRD population pass, sibling to the two `variant_slots` branches
+        # above. Where those score a variant by its ATTRIBUTE (name, value)
+        # pairs, this scores it by which CHILD BLOCK SLUGS its `variations.js`
+        # nests — e.g. sgs/nav-drawer's `split-zone-serif` uniquely nests
+        # `sgs/card-grid` among its siblings, a signal invisible to the
+        # attribute-based passes above (all 7 nav-drawer variants nest
+        # `sgs/nav-menu`, so that slug alone discriminates nothing).
+        # Set-difference methodology is IDENTICAL to the value-aware
+        # attribute-pairs branch above: each variant's discriminating child
+        # slugs = its own slug SET minus the UNION of every sibling variant's
+        # slug set. Set semantics — a child slug repeated within one variant's
+        # own list doesn't matter; what matters is whether ANY sibling
+        # variant's list also contains that slug at all.
+        #
+        # Soft-optional enrichment, never a hard /sgs-update failure: a
+        # missing `variations.js`, missing `node`, parse error, or non-JSON
+        # extractor output all fall back to "no composition rows for this
+        # block" via `_extract_variation_composition_slugs` returning None —
+        # exactly the same soft-fail-to-None contract as
+        # `_extract_variation_attribute_values` above.
+        c.execute("DELETE FROM variant_composition_slots WHERE block_slug = ?", (slug,))
+        composition_variants = _extract_variation_composition_slugs(block_dir)
+        if composition_variants:
+            per_variant_child_sets: dict[str, set] = {
+                v_name: set(v_slugs)
+                for v_name, v_slugs in composition_variants.items()
+                if isinstance(v_slugs, list)
+            }
+            for v_name, own_children in per_variant_child_sets.items():
+                sibling_children: set = set()
+                for other_name, other_children in per_variant_child_sets.items():
+                    if other_name != v_name:
+                        sibling_children.update(other_children)
+                for child_slug in sorted(own_children - sibling_children):
+                    c.execute(
+                        "INSERT OR IGNORE INTO variant_composition_slots "
+                        "(block_slug, variant_value, unique_child_slug) VALUES (?, ?, ?)",
+                        (slug, v_name, child_slug),
+                    )
+
+        # --- variant_composition_attr_slots population (child-ATTRIBUTE-VALUE
+        # composition fingerprinting, 2026-09-06) ---
+        # FOURTH population pass. The slug-set signal above can only separate
+        # variants whose nested child SLUG SETS differ; this one separates two
+        # variants nesting the identical set of child block types by a nested
+        # child's own attribute VALUE. Factored into its own function (like
+        # `_populate_preset_implications` below) so the derivation is
+        # independently callable and testable rather than inline-only. Same
+        # soft-fail contract as every extractor-backed pass here.
+        _populate_variant_composition_attr_slots(c, slug, block_dir)
 
         # --- preset_implications AUTO-DERIVE (Build #3 Option B, 2026-07-24) ---
         # See _populate_preset_implications docstring. No-op for the ~95% of
@@ -1067,8 +1827,8 @@ def _index_sgs_block_files(
             attr_type = _canonical_attr_type(attr_def.get("type", "string"))
             default = attr_def.get("default")
             enum_vals = attr_def.get("enum")
-            is_responsive = (
-                1 if f"{attr_name}Tablet" in attrs or f"{attr_name}Mobile" in attrs else 0
+            is_responsive = _compute_is_responsive(
+                attr_name, attr_type, attr_def, attrs, _render_tier_attrs, _wrapper_tier_attrs
             )
             default_json = json.dumps(default) if default is not None else None
             enum_json = json.dumps(enum_vals) if enum_vals else None
@@ -1438,6 +2198,46 @@ def _run_css_property_classifier_seed(conn: sqlite3.Connection) -> None:
             )
     except Exception as exc:  # noqa: BLE001
         print(f"Stage 1 tail (css-property classifier seed): WARN {exc}")
+
+
+def _run_component_adoption_seed(conn) -> None:
+    """Run seed-component-adoption.py as a Stage 1 tail step (2026-08-24, D763).
+
+    Rebuilds `components` as the unification ADOPTION LEDGER — every shared
+    editor component, util, PHP render helper, render_block injector and the
+    shared wrapper, each with the COUNT of blocks that actually reach it.
+
+    Wired here rather than left as a manual command deliberately. The table it
+    replaces had ZERO in-repo readers and ZERO in-repo writers: its 13 rows came
+    from an out-of-repo populate-db.py, which is exactly why every description
+    was a placeholder. A registry that needs someone to remember to run it is the
+    problem it exists to solve.
+
+    Idempotent (full replace). Subprocess, like the Stage 6/7/10 calls, so it
+    cannot import-side-effect this module. WARN-not-fail: a scanner problem must
+    not take down an entire /sgs-update run, and no downstream consumer would be
+    corrupted by a stale adoption row.
+    """
+    script = Path(__file__).resolve().parent / "seed-component-adoption.py"
+    if not script.exists():
+        print("Stage 1 tail (component adoption): WARN script missing — ledger NOT refreshed")
+        return
+    try:
+        result = subprocess.run(
+            [sys.executable, str(script), "--apply"],
+            capture_output=True, text=True, timeout=300,
+            encoding="utf-8", errors="replace",
+        )
+        if result.returncode == 0:
+            tail = [ln for ln in (result.stdout or "").strip().splitlines() if ln.strip()]
+            print(f"Stage 1 tail (component adoption): {tail[-1] if tail else 'completed'}")
+        else:
+            print(
+                f"Stage 1 tail (component adoption): WARN exit={result.returncode}; "
+                f"{(result.stderr or '').strip()[:300]}"
+            )
+    except Exception as exc:
+        print(f"Stage 1 tail (component adoption): WARN {exc}")
 
 
 def _run_motion_fx_registry_seed(conn: sqlite3.Connection) -> None:
@@ -2119,6 +2919,431 @@ def _choose_neutral_value(value_signals: dict) -> "str | None":
     return neutrals[0]
 
 
+_VARIATIONS_VALUE_EXTRACTOR = (
+    Path(__file__).resolve().parent / "variant-value-extractor" / "extract-variation-values.js"
+)
+
+
+def _canon_slot_value(value) -> str:
+    """Canonical string form of a variant discriminator's value.
+
+    MUST behave identically to `converter/db/db_lookup.py::_canon_slot_value`
+    — one writes `variant_slots.slot_value`, the other reads it back to score
+    a candidate against the draft's extracted attrs. A duplicated 3-line pure
+    function (not a lookup dict — R-31-1 doesn't apply) is simpler and safer
+    than plumbing a shared import between a one-off writer script and the
+    converter package.
+    """
+    try:
+        return json.dumps(value, sort_keys=True, separators=(",", ":"))
+    except (TypeError, ValueError):
+        return repr(value)
+
+
+def _extract_variation_attribute_values(block_dir: Path) -> "dict | None":
+    """Run `extract-variation-values.js` against `block_dir/variations.js`.
+
+    Returns `{variant_name: {attr_name: value, ...}, ...}` (plain JSON values,
+    already excluding any attribute the extractor could not statically
+    evaluate — see that script's docstring), or `None` when the block has no
+    `variations.js`, or the extraction failed (missing `node`, parse error,
+    non-JSON output). A `None` return means "seed this block exactly as
+    before" (name-only) — this is a soft-optional enrichment, never a hard
+    dependency for `/sgs-update` to complete.
+    """
+    variations_path = block_dir / "variations.js"
+    if not variations_path.exists():
+        return None
+    if not _VARIATIONS_VALUE_EXTRACTOR.exists():
+        print(
+            f"Stage 1 (variant-values): WARN extractor script missing at "
+            f"{_VARIATIONS_VALUE_EXTRACTOR} — falling back to name-only for {block_dir.name}"
+        )
+        return None
+    try:
+        proc = subprocess.run(
+            ["node", str(_VARIATIONS_VALUE_EXTRACTOR), str(variations_path)],
+            capture_output=True, text=True, timeout=30, check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        print(f"Stage 1 (variant-values): WARN failed to run extractor for {block_dir.name}: {exc}")
+        return None
+    if proc.returncode != 0:
+        print(
+            f"Stage 1 (variant-values): WARN extractor exited {proc.returncode} for "
+            f"{block_dir.name}: {(proc.stderr or '').strip()}"
+        )
+        return None
+    try:
+        payload = json.loads(proc.stdout)
+    except ValueError as exc:
+        print(f"Stage 1 (variant-values): WARN extractor emitted non-JSON for {block_dir.name}: {exc}")
+        return None
+    variants = payload.get("variants") if isinstance(payload, dict) else None
+    if not isinstance(variants, dict):
+        return None
+    return {
+        v_name: v_data.get("attributes", {})
+        for v_name, v_data in variants.items()
+        if isinstance(v_data, dict)
+    }
+
+
+def _extract_variation_composition_slugs(block_dir: Path) -> "dict | None":
+    """Run `extract-variation-values.js` against `block_dir/variations.js` and
+    return each variant's `innerBlockSlugs` list.
+
+    Mirrors `_extract_variation_attribute_values` exactly — same extractor,
+    same subprocess invocation (timeout, args), same soft-fail-to-None on a
+    missing `variations.js`, missing extractor script, missing `node`, a
+    non-zero exit, or non-JSON stdout — but reads the extractor's
+    `innerBlockSlugs` field per variant instead of `attributes`.
+    `unresolvedInnerBlocks` (a per-variant count, not a slug) is intentionally
+    not surfaced here — an unresolved child contributes nothing to either the
+    variant's own slug set or the sibling union, so it cannot manufacture a
+    false discriminator; it is simply invisible to this table, exactly like an
+    absent InnerBlocks entry.
+
+    Returns `{variant_name: [child_block_slug, ...], ...}`, or `None` when the
+    block has no `variations.js` or extraction failed. A `None` return means
+    "no composition fingerprint for this block" — this is a soft-optional
+    enrichment, never a hard dependency for `/sgs-update` to complete.
+    """
+    variations_path = block_dir / "variations.js"
+    if not variations_path.exists():
+        return None
+    if not _VARIATIONS_VALUE_EXTRACTOR.exists():
+        print(
+            f"Stage 1 (variant-composition): WARN extractor script missing at "
+            f"{_VARIATIONS_VALUE_EXTRACTOR} — skipping composition fingerprint for {block_dir.name}"
+        )
+        return None
+    try:
+        proc = subprocess.run(
+            ["node", str(_VARIATIONS_VALUE_EXTRACTOR), str(variations_path)],
+            capture_output=True, text=True, timeout=30, check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        print(f"Stage 1 (variant-composition): WARN failed to run extractor for {block_dir.name}: {exc}")
+        return None
+    if proc.returncode != 0:
+        print(
+            f"Stage 1 (variant-composition): WARN extractor exited {proc.returncode} for "
+            f"{block_dir.name}: {(proc.stderr or '').strip()}"
+        )
+        return None
+    try:
+        payload = json.loads(proc.stdout)
+    except ValueError as exc:
+        print(f"Stage 1 (variant-composition): WARN extractor emitted non-JSON for {block_dir.name}: {exc}")
+        return None
+    variants = payload.get("variants") if isinstance(payload, dict) else None
+    if not isinstance(variants, dict):
+        return None
+    return {
+        v_name: v_data.get("innerBlockSlugs", [])
+        for v_name, v_data in variants.items()
+        if isinstance(v_data, dict)
+    }
+
+
+def _extract_variation_composition_attrs(block_dir: Path) -> "dict | None":
+    """Run `extract-variation-values.js` and return each variant's CHILD blocks
+    with their own declared attributes.
+
+    Mirrors `_extract_variation_composition_slugs` exactly — same extractor,
+    same subprocess invocation, same soft-fail-to-None on a missing
+    `variations.js`, missing extractor script, missing `node`, a non-zero exit,
+    or non-JSON stdout — but reads the extractor's `innerBlocks` field (each
+    entry `{slug, attributes, nonLiteralAttrs}`) rather than the flat
+    `innerBlockSlugs` list.
+
+    `nonLiteralAttrs` is intentionally not surfaced: an attribute the extractor
+    could not statically evaluate (an `__( … )` i18n call, an identifier)
+    contributes to neither the variant's own triple set nor the sibling union,
+    so it cannot manufacture a false discriminator — it is simply invisible to
+    this table, exactly like an absent attribute.
+
+    Returns `{variant_name: [{'slug': str, 'attributes': dict}, ...], ...}`, or
+    `None`. A `None` return means "no child-attribute fingerprint for this
+    block" — soft-optional enrichment, never a hard `/sgs-update` dependency.
+    """
+    variations_path = block_dir / "variations.js"
+    if not variations_path.exists():
+        return None
+    if not _VARIATIONS_VALUE_EXTRACTOR.exists():
+        print(
+            f"Stage 1 (variant-composition-attrs): WARN extractor script missing at "
+            f"{_VARIATIONS_VALUE_EXTRACTOR} — skipping child-attribute fingerprint "
+            f"for {block_dir.name}"
+        )
+        return None
+    try:
+        proc = subprocess.run(
+            ["node", str(_VARIATIONS_VALUE_EXTRACTOR), str(variations_path)],
+            capture_output=True, text=True, timeout=30, check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        print(
+            f"Stage 1 (variant-composition-attrs): WARN failed to run extractor for "
+            f"{block_dir.name}: {exc}"
+        )
+        return None
+    if proc.returncode != 0:
+        print(
+            f"Stage 1 (variant-composition-attrs): WARN extractor exited {proc.returncode} "
+            f"for {block_dir.name}: {(proc.stderr or '').strip()}"
+        )
+        return None
+    try:
+        payload = json.loads(proc.stdout)
+    except ValueError as exc:
+        print(
+            f"Stage 1 (variant-composition-attrs): WARN extractor emitted non-JSON for "
+            f"{block_dir.name}: {exc}"
+        )
+        return None
+    variants = payload.get("variants") if isinstance(payload, dict) else None
+    if not isinstance(variants, dict):
+        return None
+    return {
+        v_name: v_data.get("innerBlocks", [])
+        for v_name, v_data in variants.items()
+        if isinstance(v_data, dict)
+    }
+
+
+def _child_attr_has_css_routing(c, child_slug: str, attr_name: str) -> bool:
+    """Can the converter ever EXTRACT this child attribute from a draft's CSS?
+
+    True only when the child block declares the attribute AND that attribute
+    carries Front-1 declarative CSS routing — `css_property` or `css_element`
+    populated on its `block_attributes` row (Spec 31 §3.A/§4). Both NULL means
+    no draft CSS declaration can ever resolve to it, so a clone can never
+    populate it and any discriminator built on it is inert.
+
+    ROUTING IS ONLY HALF THE QUESTION. A routed attribute can still be
+    unmatchable if the SHAPE the converter writes differs from the shape the
+    triple stores — see `_child_attr_value_shape_matches` below, which is the
+    other half. Both must hold; `_child_attr_is_observable` is the combined
+    predicate and the one callers should use.
+
+    The SAME pair of predicates is the rule of db-consistency Check #11
+    (`check_inert_composition_attr.py`). Keep the two in step: this one
+    prevents the inert row, that one catches it if it appears by another route.
+    """
+    return c.execute(
+        "SELECT 1 FROM block_attributes "
+        "WHERE block_slug = ? AND attr_name = ? "
+        "AND (css_property IS NOT NULL OR css_element IS NOT NULL) "
+        "LIMIT 1",
+        (child_slug, attr_name),
+    ).fetchone() is not None
+
+
+# TIER-SHAPED object attrs (Spec 35 Phase 1.4) — `{desktop,tablet,mobile}`.
+# Mirrors `converter/db/db_lookup.py::_TIER_SIBLING_SUFFIX_RE`; a name that IS
+# a tier sibling is never a tier BASE.
+_TIER_SIBLING_SUFFIX_RE = re.compile(r"(Tablet|Mobile|Desktop)$")
+
+
+def _child_attr_is_tier_object(c, child_slug: str, attr_name: str) -> bool:
+    """SQL mirror of `converter/db/db_lookup.py::tier_object_base`.
+
+    THE AUTHORITY IS `db_lookup.tier_object_base` — this is a duplicate for the
+    same reason `_canon_slot_value` and `_child_attr_has_css_routing` are
+    duplicated here: this one-off writer script shares no import with the
+    converter package, and `converter/db/db_lookup.py` runs six schema-migration
+    functions against the shared live DB as an IMPORT SIDE EFFECT, so importing
+    it from a writer stage is not an option. Four conditions, identical to the
+    original and in the same order; if that function's conditions change, change
+    these in the same commit.
+    """
+    if _TIER_SIBLING_SUFFIX_RE.search(attr_name):
+        return False
+    row = c.execute(
+        "SELECT attr_type, box_family FROM block_attributes "
+        "WHERE block_slug = ? AND attr_name = ?",
+        (child_slug, attr_name),
+    ).fetchone()
+    if not row or row[0] != "object" or row[1]:
+        return False
+    sibling = c.execute(
+        "SELECT 1 FROM block_attributes "
+        "WHERE block_slug = ? AND attr_name IN (?, ?) LIMIT 1",
+        (child_slug, attr_name + "Tablet", attr_name + "Mobile"),
+    ).fetchone()
+    return sibling is None
+
+
+def _child_attr_value_shape_matches(c, child_slug: str, attr_name: str, canon_value: str) -> bool:
+    """Could a real clone's extraction ever WRITE this exact canonical value?
+
+    THE SECOND HALF OF OBSERVABILITY (2026-09-06, review of `fe387139a`).
+    `_child_attr_has_css_routing` asks whether the converter can reach the
+    attribute at all. This asks whether the value it would write can ever
+    canonically EQUAL the seeded one — because `_composition_attr_score`
+    compares them with a single exact string equality, so a shape mismatch
+    scores 0 forever, exactly like an unrouted attribute.
+
+    THE MEASURED CASE. `sgs/nav-drawer`'s `two-column-editorial` was seeded
+    `sgs/nav-menu.itemFontSize = 64` (a flat scalar, copied verbatim out of
+    `variations.js`). `itemFontSize` is a TIER-SHAPED object attr, and
+    `converter/resolvers/styling_content.py` gates every write on
+    `db_lookup.tier_object_base(...)` and accumulates into
+    `lifted[attr][tier_key]` — so a real clone writes `{"desktop": 64}`,
+    canonicalising to `{"desktop":64}`, which can never equal `64`. The row
+    existed, the seeder accepted it, the whole test suite was green, and the
+    variant was still undetectable end to end. This is the project's own
+    `object-typed-attr-coerces-flat-to-default` lesson arriving through the
+    discriminator table instead of through `post_content`.
+
+    THE RULE, deliberately narrow: when the child attribute is a tier-object
+    BASE, a seeded value that is not itself a JSON OBJECT is refused. A
+    tier-shaped seeded value (`{"desktop":2,"mobile":1}`) is accepted — the
+    extraction can genuinely produce that shape when the draft declares the
+    matching breakpoints. Every non-tier attribute is accepted unchanged, so
+    flat-typed discriminators (`itemFontWeight`, a `string`) are untouched.
+
+    SCOPE LIMIT, stated rather than implied: this proves ONE incompatibility —
+    the one that is derivable from the DB alone and that has a measured victim.
+    It does not attempt to predict the converter's value NORMALISATION (a
+    `font-size` of `64` may be written as `"64px"`), which depends on the
+    draft's own CSS text and cannot be decided from the schema. A row passing
+    this check is not thereby proven matchable, only not proven UNmatchable.
+    """
+    if not _child_attr_is_tier_object(c, child_slug, attr_name):
+        return True
+    try:
+        return isinstance(json.loads(canon_value), dict)
+    except (TypeError, ValueError):
+        # `_canon_slot_value`'s `repr()` fallback — not JSON, so not the
+        # `{desktop,tablet,mobile}` object a tier write produces.
+        return False
+
+
+def _child_attr_is_observable(c, child_slug: str, attr_name: str, canon_value: str) -> bool:
+    """Can a real clone ever produce this triple? Routing AND value shape.
+
+    The single predicate the seeder gates on and db-consistency Check #11
+    re-asserts. Either half failing makes the row INERT — it scores 0 on every
+    clone forever while still counting toward the block's discriminating
+    signature in Check #3, which therefore stops reporting a real collision.
+    """
+    return (
+        _child_attr_has_css_routing(c, child_slug, attr_name)
+        and _child_attr_value_shape_matches(c, child_slug, attr_name, canon_value)
+    )
+
+
+def _populate_variant_composition_attr_slots(c, slug: str, block_dir: Path) -> int:
+    """Repopulate `variant_composition_attr_slots` for ONE block.
+
+    THIRD population pass, sibling to the two `variant_slots` branches and the
+    `variant_composition_slots` pass in Stage 1. Where those score a variant by
+    its own attribute (name, value) pairs, or by which child block SLUGS its
+    `variations.js` nests, this scores it by a nested child's OWN attribute
+    VALUE — the only remaining signal when two variants nest the identical set
+    of child block types (measured: `sgs/nav-drawer`'s `two-column-editorial`
+    and `floating-capped-card` both nest exactly {sgs/nav-menu, sgs/button},
+    and only `two-column-editorial`'s nav-menu carries item-typography values
+    unique to it).
+
+    Set-difference methodology is IDENTICAL to both siblings: each variant's
+    discriminating triples = its own `(child_slug, attr_name, canonical_value)`
+    SET minus the UNION of every sibling variant's triple set. A triple shared
+    with any sibling discriminates nothing and is dropped — which is why the
+    `gap: '4px'` every nav-drawer variant's nav-menu carries produces no rows.
+
+    OBSERVABILITY FILTER (`_child_attr_is_observable`, 2026-09-06). The set
+    difference decides what DISCRIMINATES; this filter decides what the
+    converter can ever OBSERVE, and it has TWO halves because a row can be
+    inert in two different ways:
+
+      (a) NO CSS ROUTING — `css_property`/`css_element` both NULL, so no draft
+          CSS declaration can ever resolve to the attribute at all.
+      (b) UNWRITABLE VALUE SHAPE — the attribute is routed, but the value the
+          converter would write can never canonically equal the seeded one.
+          The measured case: a TIER-SHAPED object attr is always written as
+          `{"desktop": V}`, so a flat `V` copied out of `variations.js` scores
+          0 forever against `_composition_attr_score`'s exact string equality.
+          Half (b) was added after half (a) shipped and left
+          `two-column-editorial` still undetectable end to end.
+
+    Either way, seeding the triple would create a row that silently suppresses
+    a Check #3 ambiguity report while resolving nothing — exactly the "green
+    gate over a dead feature" shape this project keeps hitting. Such triples
+    are SKIPPED and REPORTED by name WITH THE REASON, never silently dropped.
+    The filter runs AFTER the set difference so discrimination semantics are
+    byte-identical to before; only inert rows disappear.
+
+    Delete-then-insert = idempotent; reflects the current `variations.js` on
+    every run. Returns the number of rows written (0 when the block has no
+    `variations.js`, no extractable child attributes, nothing unique, or
+    nothing unique that is also CSS-routable).
+
+    R-31-1: no block, child slug or attribute name appears anywhere here.
+    """
+    c.execute("DELETE FROM variant_composition_attr_slots WHERE block_slug = ?", (slug,))
+    composition_attrs = _extract_variation_composition_attrs(block_dir)
+    if not composition_attrs:
+        return 0
+
+    per_variant_triples: dict[str, set] = {}
+    for v_name, children in composition_attrs.items():
+        if not isinstance(children, list):
+            continue
+        triples: set = set()
+        for child in children:
+            if not isinstance(child, dict):
+                continue
+            child_slug = child.get("slug")
+            child_attrs = child.get("attributes")
+            if not isinstance(child_slug, str) or not isinstance(child_attrs, dict):
+                continue
+            for attr_name, attr_value in child_attrs.items():
+                triples.add((child_slug, attr_name, _canon_slot_value(attr_value)))
+        per_variant_triples[v_name] = triples
+
+    written = 0
+    skipped: list = []
+    for v_name, own_triples in per_variant_triples.items():
+        sibling_triples: set = set()
+        for other_name, other_triples in per_variant_triples.items():
+            if other_name != v_name:
+                sibling_triples.update(other_triples)
+        for child_slug, attr_name, canon_val in sorted(own_triples - sibling_triples):
+            if not _child_attr_is_observable(c, child_slug, attr_name, canon_val):
+                reason = (
+                    "no CSS routing"
+                    if not _child_attr_has_css_routing(c, child_slug, attr_name)
+                    else "value shape a clone can never write (tier-object attr, flat value)"
+                )
+                skipped.append((v_name, child_slug, attr_name, canon_val, reason))
+                continue
+            c.execute(
+                "INSERT OR IGNORE INTO variant_composition_attr_slots "
+                "(block_slug, variant_value, child_slug, child_attr_name, child_attr_value) "
+                "VALUES (?, ?, ?, ?, ?)",
+                (slug, v_name, child_slug, attr_name, canon_val),
+            )
+            written += 1
+    if skipped:
+        # A NAMED gap, never a silent drop: each of these genuinely
+        # discriminates its variant in variations.js but cannot be seen by the
+        # converter, because the child block's attribute has no CSS routing.
+        # The remedy is to give that attribute a routing declaration (its
+        # block.json element manifest attrMap), then re-run this stage.
+        print(
+            f"  [variant_composition_attr_slots] {slug}: "
+            f"{len(skipped)} discriminating child attribute(s) SKIPPED — a clone "
+            f"could never produce them:"
+        )
+        for v_name, child_slug, attr_name, canon_val, reason in sorted(skipped):
+            print(f"      {v_name} -> {child_slug}.{attr_name} = {canon_val}  [{reason}]")
+    return written
+
+
 def _populate_preset_implications(
     c, slug: str, block_dir: Path, sgs_supports: dict, declared_attrs: set
 ) -> None:
@@ -2312,6 +3537,159 @@ def _load_css_property_classifications(path: Path = _CSS_PROPERTY_CLASSIFICATION
     return out
 
 
+_FX_QUALIFYING_BLOCKS_JSON = (
+    Path(__file__).resolve().parent.parent
+    / "src" / "blocks" / "extensions" / "generated-fx-qualifying-blocks.json"
+)
+
+
+def _load_fx_qualifying_block_slugs(path: Path = _FX_QUALIFYING_BLOCKS_JSON) -> set[str]:
+    """Return the set of block slugs `fx.js`'s own `shouldHaveFx()` treats as
+    fx-capable — i.e. every key of `generated-fx-qualifying-blocks.json` that
+    maps to at least one effect (D432/FR-38-22 investigation, 2026-09-04).
+
+    This is the SAME artefact `fx.js` imports (`qualifyingBlocks`) to decide
+    which blocks get the `fx*` attributes added via its `registerBlockType`
+    filter — reusing it here (rather than re-deriving eligibility from
+    `supports.sgs.enabledExtensions`, which fx capability does not use at all)
+    keeps ONE source of truth for "is this block fx-capable" (R-31-1).
+    Soft-optional: a missing/unreadable file degrades to "seed nothing this
+    run" rather than hard-failing an unrelated /sgs-update.
+    """
+    if not path.exists():
+        return set()
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return {slug for slug, effects in data.items() if effects}
+    except Exception as exc:  # noqa: BLE001
+        print(f"Stage 1 (fx-attr-rows): WARN failed to read {path.name}: {exc}")
+        return set()
+
+
+_DB_LOOKUP_PY = Path(__file__).resolve().parent / "converter" / "db" / "db_lookup.py"
+
+
+def _load_fx_attr_roster(path: Path = _DB_LOOKUP_PY) -> dict[str, dict[str, str]]:
+    """Import `fx_attr_roster()` from `converter/db/db_lookup.py` (same
+    importlib pattern as `_load_fx_attr_css_property_map` above, targeting a
+    different sibling module) — the FULL fx* attribute roster (name -> real
+    JS type + data-attribute name), sourced from `includes/fx-attributes.php`
+    FX_ATTR_MAP + `includes/extension-attributes.generated.php`. Replaces
+    the narrower `FX_ATTR_CSS_PROPERTY` map (29 of ~79 names) as THIS
+    function's eligibility source — that map still exists and is still used
+    unchanged for its own purpose (the fx: css_property classification
+    layer, `_collect_fx_attr_namespace_overrides`).
+
+    Soft-optional: a missing/unreadable module degrades to an empty roster
+    rather than hard-failing an unrelated /sgs-update run.
+    """
+    if not path.exists():
+        return {}
+    try:
+        import importlib.util as _ilu
+
+        spec = _ilu.spec_from_file_location("sgs_converter_db_lookup", str(path))
+        mod = _ilu.module_from_spec(spec)  # type: ignore[arg-type]
+        spec.loader.exec_module(mod)  # type: ignore[union-attr]
+        roster_fn = getattr(mod, "fx_attr_roster", None)
+        return roster_fn() if callable(roster_fn) else {}
+    except Exception as exc:  # noqa: BLE001
+        print(f"Stage 1 (fx-attr-rows): WARN failed to import fx_attr_roster: {exc}")
+        return {}
+
+
+def _seed_missing_fx_attr_rows(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
+    """Stage 1 sub-step B2.6 — INSERT missing `block_attributes` rows for the
+    `fx*` attribute set on every fx-capable block (FR-38-22 cloning-lift
+    investigation, 2026-09-04).
+
+    THE GAP THIS CLOSES: `fx*` attrs (`fxTrigger`, `fxPath`, `fxShape`, …) are
+    added to a block's registered schema entirely client-side, via `fx.js`'s
+    `registerBlockType` filter — they appear in NO block.json. Stage 1's
+    normal attribute discovery only reads block.json, so these attrs never
+    got a `block_attributes` row at all (confirmed: `_apply_attr_classification_
+    overrides`'s layer 2.5, `_collect_fx_attr_namespace_overrides`, only
+    classifies rows that ALREADY exist — it has printed "MISSING ROW" for
+    every one of these names since D432, and nothing ever created the row).
+    Without a row, the cloning walker's `block_attrs(slug)` lookup can never
+    see these attrs, so `lift_behavioural_attrs` can never lift them from a
+    draft — this was the actual, previously-undiagnosed reason `fx*` attrs
+    vanish on clone (FR-38-22).
+
+    Deliberately minimal, additive-only INSERT — sets only the columns the
+    converter's read path actually consumes (`db_lookup.block_attrs()`:
+    attr_name/attr_type/role/canonical_slot/derived_selector) plus `source`.
+    Leaves `css_property` NULL on insert; the EXISTING layer 2.5 step
+    (`_collect_fx_attr_namespace_overrides`, called right after this from
+    `_apply_attr_classification_overrides`) then classifies it in the SAME
+    run, so there is still exactly one writer of `css_property` — this step
+    only ever creates the row, never sets that column itself.
+
+    ⛔ CORRECTED 2026-09-04 (adversarial-council, same day as the original
+    build): this function originally iterated `FX_ATTR_CSS_PROPERTY` (29
+    names — the css_property classification map, never the attribute
+    roster) and hardcoded `attr_type='string'` for every row. Both were
+    wrong: `fx.js` registers ~79 `fx*` attributes, not 29 — every attr
+    outside that 29-name map (the whole magnet/particle/generative-
+    background/grid-dot/wave family) had the EXACT bug this function exists
+    to fix, unfixed; and `'string'` for every row meant a real
+    `type:'boolean'`/`type:'number'` attr (e.g. `fxDisableTablet`,
+    `fxScrub`) round-trips as the literal string `"true"`/`"0.6"`, which a
+    strict PHP `true === $value` check (as `includes/fx-attributes.php`
+    genuinely uses) never matches — a client's "don't run this on mobile"
+    setting would silently not apply. Now sources both the full name list
+    AND each attr's real type from `db_lookup.fx_attr_roster()` (see that
+    function's docstring) — two already-maintained, build-generated
+    artefacts, not hand-derived here.
+
+    ⛔ `source='sgs-fx'`, DELIBERATELY NOT `'sgs'` (D951-adversarial-council
+    fix, 2026-09-04). These rows have no block.json to be validated against —
+    that is the whole point of this function existing. Stage 9's ghost-row
+    prune (`_prune_orphans_on_conn`, category (c)) deletes any
+    `block_attributes` row with `source='sgs'` whose `attr_name` is absent
+    from its block's live block.json `attributes` — unconditionally, no
+    dry-run/conservative escape for this category. Seeding with `source='sgs'`
+    was caught (adversarial-council, before this line existed) as a
+    same-session self-destruct: every row this function inserts would be
+    deleted again the very next full `/sgs-update` run, silently reverting
+    FR-38-22. `source='sgs-fx'` is invisible to that query's `WHERE
+    ba.source = 'sgs'` filter by construction. No other block_attributes
+    query anywhere in this file or in db_lookup.py filters on `source` (only
+    the `blocks` table's own rows use `source='sgs'` as a filter elsewhere) —
+    verified by grep before choosing this fix, not assumed.
+
+    Returns {"fx_attr_rows_inserted": int, "fx_attr_rows_blocks": int}.
+    """
+    c = conn.cursor()
+    roster = _load_fx_attr_roster()
+    slugs = _load_fx_qualifying_block_slugs()
+    inserted = 0
+    touched_blocks: set[str] = set()
+    for slug in sorted(slugs):
+        for attr_name, attr_info in roster.items():
+            exists = c.execute(
+                "SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
+                (slug, attr_name),
+            ).fetchone()
+            if exists:
+                continue
+            inserted += 1
+            touched_blocks.add(slug)
+            if not dry_run:
+                # attr_type from the real JS declaration (string/number/
+                # boolean/array), not hardcoded — see docstring correction.
+                c.execute(
+                    "INSERT INTO block_attributes "
+                    "(block_slug, attr_name, attr_type, role, source) "
+                    "VALUES (?, ?, ?, 'behaviour', 'sgs-fx')",
+                    (slug, attr_name, attr_info.get("type", "string")),
+                )
+    return {
+        "fx_attr_rows_inserted": inserted,
+        "fx_attr_rows_blocks": len(touched_blocks),
+    }
+
+
 def _apply_attr_classification_overrides(
     conn: sqlite3.Connection,
     blocks_dir: Path,
@@ -2405,16 +3783,42 @@ def _apply_attr_classification_overrides(
     # run — i.e. already stale, uncovered by the narrower object_tier_fossils cleanup
     # below (that cleanup requires attr_type='object'; nav-menu.gap is 'string').
     #
-    # css_property and css_state got the SAME live diagnostic and came back with ZERO
-    # stale rows today — ownership is equally clean (verified: the one migration that
-    # writes css_property directly, `migrations/2026-08-13-role-remediation-part2-
+    # css_property got the SAME live diagnostic and came back with ZERO stale rows
+    # today — ownership is clean (verified: the one migration that writes
+    # css_property directly, `migrations/2026-08-13-role-remediation-part2-
     # overrides.py`, writes BOTH the live DB AND attr-classification-overrides.json,
-    # so it stays reseed-durable), but with no PROVEN current drift to fix, they are
-    # deliberately left un-reset here (prove-the-cause-before-fix) — re-run the
-    # diagnostic after future reseeds if a stale css_property/css_state is ever
-    # reported.
+    # so it stays reseed-durable), so it is deliberately left un-reset here
+    # (prove-the-cause-before-fix) — re-run the diagnostic after future reseeds if
+    # a stale css_property is ever reported.
+    #
+    # css_state WAS included in that same "no proven drift" claim (2026-08-xx) —
+    # PROVEN FALSE 2026-09-03 (qc-council, this session): `sgs/option-picker.
+    # pillBgColour` (a resting/base attribute, no `states` entry of its own)
+    # carried a stale `css_state='hover'` that survived every reseed since before
+    # this loop existed, because this column was never in the reset list, so the
+    # per-row additive UPDATE below — which only sets the columns present in that
+    # row's own `fields` dict — silently preserved whatever value was already
+    # sitting there. The classifier itself was already correct (its own JSON
+    # output for `pillBgColour` carries no `css_state` key at all); the DB simply
+    # never caught up. Root cause traced to a plausible origin: option-picker's
+    # bespoke nested-CSS-variable-fallback pattern (`var(--sgs-op-bg-hover,
+    # var(--sgs-op-bg, ...)))`) is the exact shape the 2026-07-21 `_top_level_vars()`
+    # fix (extract-signatures.py) was built to stop mis-attributing state on —
+    # that fix corrected the classifier going forward but never touched the
+    # already-stored DB value. `css_layer`/`css_element`/`css_tier` never had this
+    # failure mode because they were ALREADY in the reset list.
     if not dry_run:
-        for _reset_col in ("css_layer", "css_element", "css_tier"):
+        # `css_property` ADDED to the reset list 2026-09-05. The comment above
+        # predicted this exact report: it was "deliberately left un-reset ...
+        # re-run the diagnostic after future reseeds if a stale css_property is
+        # ever reported". It was — three F6 routing-determinism findings
+        # (sgs/hero, sgs/responsive-logo) survived a corrected classifier because
+        # the per-row additive UPDATE below only sets columns present in that
+        # row's own `fields`, so an attr the classifier NO LONGER classifies kept
+        # whatever stale property was already stored. The classifier had been
+        # fixed to evict those attrs (slot-level manifest precedence); the DB
+        # simply never caught up — the identical failure mode `css_state` had.
+        for _reset_col in ("css_layer", "css_element", "css_tier", "css_state", "css_property"):
             if _reset_col in existing_cols:
                 c.execute(f"UPDATE block_attributes SET {_reset_col} = NULL")
     for (slug, attr), fields in combined.items():
@@ -2814,6 +4218,16 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         # twice to converge. JSON-only, no DB mutation, so it is safe this early.
         _run_css_property_classifier_seed(conn)
 
+        # --- Stage 1 sub-step B2.6: create missing fx* block_attributes rows ---
+        # (FR-38-22 cloning-lift fix, 2026-09-04. MUST run BEFORE sub-step C so
+        #  its existing layer-2.5 fx:* classification also reaches the rows
+        #  this step just created, in the SAME run.)
+        fx_row_counts = _seed_missing_fx_attr_rows(conn, dry_run=False)
+        print(
+            f"Stage 1 (fx-attr-rows): inserted={fx_row_counts['fx_attr_rows_inserted']} "
+            f"row(s) across {fx_row_counts['fx_attr_rows_blocks']} block(s)."
+        )
+
         # --- Stage 1 sub-step C: apply per-attr classification overrides ---
         # (AFTER canonical assignment so overrides are the final writer, and AFTER
         #  sub-step B2 so the derived layer it reads is THIS run's, not the last one's.)
@@ -2856,6 +4270,12 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         #     above so the fx:* namespace is already correct before this step's
         #     own tables (fx_effects/animation_tokens) are reconciled. ---
         _run_motion_fx_registry_seed(conn)
+
+        # --- Stage 1 tail: rebuild the `components` unification adoption ledger
+        #     (D763, 2026-08-24). Runs last because it shells out to the Node
+        #     scanner, which reads block.json/edit.js/render.php off DISK rather
+        #     than through this connection — nothing above it needs its output. ---
+        _run_component_adoption_seed(conn)
 
         # Update schema_metadata.indexed_blocks_count
         count_row = c.execute(
@@ -2909,6 +4329,12 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
             f"allowed_blocks_populated={ab_populated} (already stored), "
             f"allowed_blocks_updated={ab_updated} (would drift), "
             f"allowed_blocks_dynamic_skipped={ab_dynamic_skipped}."
+        )
+        fx_row_counts = _seed_missing_fx_attr_rows(conn, dry_run=True)
+        print(
+            f"Stage 1 (fx-attr-rows) [dry-run]: would insert="
+            f"{fx_row_counts['fx_attr_rows_inserted']} row(s) across "
+            f"{fx_row_counts['fx_attr_rows_blocks']} block(s)."
         )
         _apply_attr_classification_overrides(conn, blocks_dir, dry_run=True)
 
@@ -2967,8 +4393,43 @@ import html as _html_module
 import html.parser as _html_parser
 import os
 import re
+import ssl as _ssl
 import urllib.error
 import urllib.request
+
+_SSL_CTX: "_ssl.SSLContext | None" = None
+
+
+def _ssl_context() -> "_ssl.SSLContext":
+    """Verifying SSL context that trusts certifi's CA bundle, not the platform store.
+
+    WHY (2026-08-22). Stage 2's live scrape failed on FIVE upstream sources with
+    ``CERTIFICATE_VERIFY_FAILED: certificate has expired``, and the natural reading —
+    that WordPress.org's certificate had lapsed — is wrong. Measured:
+
+      * the leaf cert is VALID (``developer.wordpress.org``, Let's Encrypt, notAfter
+        Oct 23 2026 — checked while it was failing on Aug 22);
+      * upgrading ``certifi`` 2026.01.04 -> 2026.07.22 did NOT fix it;
+      * the same host verifies fine against ``certifi.where()`` and fails against
+        ``ssl.create_default_context()`` in the same process, back to back.
+
+    So the expired certificate is a ROOT in the WINDOWS trust store, which
+    ``create_default_context()`` loads on this platform. Pinning to certifi is the
+    standard fix (it is what ``requests`` does by default) and keeps verification
+    fully ON — this is NOT ``CERT_NONE`` and must never be relaxed into one.
+
+    Falls back to the platform default if certifi is absent, so the script still runs
+    on a machine without it rather than failing closed on an optional dependency.
+    """
+    global _SSL_CTX
+    if _SSL_CTX is None:
+        try:
+            import certifi
+
+            _SSL_CTX = _ssl.create_default_context(cafile=certifi.where())
+        except Exception:
+            _SSL_CTX = _ssl.create_default_context()
+    return _SSL_CTX
 
 
 def _github_api_get(url: str, github_token: str | None = None) -> dict | list | None:
@@ -2982,7 +4443,7 @@ def _github_api_get(url: str, github_token: str | None = None) -> dict | list | 
     if github_token:
         req.add_header("Authorization", f"token {github_token}")
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
+        with urllib.request.urlopen(req, timeout=30, context=_ssl_context()) as resp:
             raw = resp.read().decode("utf-8", errors="replace")
             return json.loads(raw)
     except urllib.error.HTTPError as exc:
@@ -3008,7 +4469,7 @@ def _http_fetch(url: str) -> str:
         "User-Agent",
         "Mozilla/5.0 (compatible; sgs-update-v2/1.0; +https://smallgiants.studio)",
     )
-    with urllib.request.urlopen(req, timeout=30) as resp:
+    with urllib.request.urlopen(req, timeout=30, context=_ssl_context()) as resp:
         charset = "utf-8"
         ct = resp.headers.get_content_charset()
         if ct:
@@ -5519,12 +6980,14 @@ def stage_11_motion_fx_artefact_regen(dry_run: bool = False) -> dict:
     `block_attributes.css_property` column, but explicitly deferred this half:
     the DB-authoring-source -> shipped-PHP/JSON regeneration step
     (`generated-fx-effects.php`, `generated-fx-effect-meta.json`,
-    `generated-fx-qualifying-blocks.php`, `generated-fx-qualifying-blocks.json`)
+    `generated-fx-qualifying-blocks.php`, `generated-fx-qualifying-blocks.json`
+    at the time — the `.php` mirror was later DELETED as dead code at 1ac16ec9,
+    so only the JSON twin is generated now)
     had NO automated writer at all. `npm run build`'s
     `run-motion-fx-generators.js` only ever invoked both generators with
     `--check` (verify, never write) — so a DB change or a block.json/edit.js/
-    style.css change could silently drift the four committed artefacts until a
-    developer remembered to run the generators by hand.
+    style.css change could silently drift the (then four, now three) committed
+    artefacts until a developer remembered to run the generators by hand.
 
     This stage is that missing writer. It runs the two generator scripts with
     NO `--check` flag (their write mode), exactly mirroring Stage 6/7's
@@ -6574,6 +8037,15 @@ def main() -> None:
         help="Stage 13 only: prove the export stage can fail (test mode, do not use operationally).",
     )
     parser.add_argument(
+        "--self-test-is-responsive",
+        action="store_true",
+        help=(
+            "Test _compute_is_responsive() in isolation (no DB, no filesystem "
+            "writes) against 13 assertions including 3 dedicated negative "
+            "controls. Exits immediately with 0/1, does not run any stage."
+        ),
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Compute row counts without writing to DB or files",
@@ -6608,6 +8080,9 @@ def main() -> None:
         ),
     )
     args = parser.parse_args()
+
+    if args.self_test_is_responsive:
+        raise SystemExit(_self_test_is_responsive())
 
     print(f"sgs-update-v2.py — repo: {REPO_ROOT}")
     print(f"sgs-framework.db: {SGS_DB}")

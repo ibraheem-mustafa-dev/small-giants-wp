@@ -2,26 +2,35 @@
 	"sgs/before-after": [
 		"carousel-loop",
 		"draggable",
+		"magnet",
 		"morph",
 		"motion-path",
-		"scrub"
+		"particles",
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/button": [
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"
 	],
 	"sgs/buybox": [
 		"carousel-loop",
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scrub"
 	],
 	"sgs/collapsible-text": [
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"
@@ -29,15 +38,22 @@
 	"sgs/container": [
 		"cursor-field",
 		"draw",
+		"generative-background",
+		"grid-dots",
 		"horizontal-panel",
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"pin-scrub",
-		"scrub"
+		"scrub",
+		"wave-gradient"
 	],
 	"sgs/counter": [
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"
@@ -45,32 +61,49 @@
 	"sgs/cta-section": [
 		"cursor-field",
 		"draw",
+		"generative-background",
+		"grid-dots",
 		"horizontal-panel",
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"pin-scrub",
-		"scrub"
+		"scrub",
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/decorative-image": [
+		"magnet",
 		"morph",
 		"motion-path",
-		"scrub"
+		"particles",
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/gallery": [
 		"carousel-loop",
+		"magnet",
 		"morph",
 		"motion-path",
-		"scrub"
+		"particles",
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/google-reviews": [
 		"carousel-loop",
+		"magnet",
 		"morph",
 		"motion-path",
-		"scrub"
+		"particles",
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/heading": [
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"
@@ -78,35 +111,53 @@
 	"sgs/hero": [
 		"cursor-field",
 		"draw",
+		"generative-background",
+		"grid-dots",
 		"horizontal-panel",
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"pin-scrub",
-		"scrub"
+		"scrub",
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/icon": [
 		"draw",
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scrub"
 	],
 	"sgs/image-sequence": [
 		"image-sequence",
+		"magnet",
 		"morph",
 		"motion-path",
-		"scrub"
+		"particles",
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/info-box": [
 		"cursor-field",
+		"generative-background",
+		"grid-dots",
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
-		"split-reveal"
+		"split-reveal",
+		"wave-gradient"
 	],
 	"sgs/label": [
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"
@@ -114,83 +165,124 @@
 	"sgs/multi-button": [
 		"cursor-field",
 		"draw",
+		"generative-background",
+		"grid-dots",
+		"magnet",
 		"morph",
 		"motion-path",
-		"scrub"
+		"particles",
+		"scrub",
+		"wave-gradient"
 	],
 	"sgs/physics-canvas": [
 		"cursor-field",
 		"draw",
+		"generative-background",
+		"grid-dots",
 		"horizontal-panel",
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"pin-scrub",
-		"scrub"
+		"scrub",
+		"wave-gradient"
 	],
 	"sgs/post-grid": [
 		"carousel-loop",
+		"magnet",
 		"morph",
 		"motion-path",
-		"scrub"
+		"particles",
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/pricing-table": [
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"
 	],
 	"sgs/product-card": [
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
-		"split-reveal"
+		"split-reveal",
+		"surface-treatment"
 	],
 	"sgs/product-faq": [
 		"cursor-field",
+		"generative-background",
+		"grid-dots",
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
-		"split-reveal"
+		"split-reveal",
+		"wave-gradient"
 	],
 	"sgs/quote": [
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"
 	],
 	"sgs/responsive-logo": [
+		"magnet",
 		"morph",
 		"motion-path",
-		"scrub"
+		"particles",
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/separator": [
 		"draw",
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scrub"
 	],
 	"sgs/team-member": [
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
-		"split-reveal"
+		"split-reveal",
+		"surface-treatment"
 	],
 	"sgs/testimonial": [
 		"cursor-field",
+		"generative-background",
+		"grid-dots",
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
-		"split-reveal"
+		"split-reveal",
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/text": [
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"
@@ -198,32 +290,45 @@
 	"sgs/timeline": [
 		"carousel-loop",
 		"draggable",
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
-		"scrub",
-		"split-reveal"
+		"split-reveal",
+		"surface-treatment"
 	],
 	"sgs/trust-bar": [
 		"cursor-field",
 		"draw",
+		"generative-background",
+		"grid-dots",
 		"horizontal-panel",
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"pin-scrub",
 		"scramble",
 		"scrub",
-		"split-reveal"
+		"split-reveal",
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/trustpilot-reviews": [
 		"carousel-loop",
+		"magnet",
 		"morph",
 		"motion-path",
-		"scrub"
+		"particles",
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/whatsapp-cta": [
+		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"

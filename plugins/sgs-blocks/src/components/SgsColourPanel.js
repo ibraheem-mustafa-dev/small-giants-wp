@@ -22,23 +22,35 @@
  * the SAME native "Color" ToolsPanel — exactly the confusion D609's
  * amendment was written to remove, just relocated rather than fixed.
  *
- * This component is now a fully SGS-OWNED panel, wrapped in its own
- * `PanelBody` titled "Colour", pinned FIRST in the block's inspector so it
- * renders at the top — per Bean's standing rule (2026-08-14): "all of the
- * blocks should have the colour section at the top with all of their
- * colours in that panel", aside from special exceptions. Consumers must
- * render `<SgsColourPanel>` before any other same-group `<InspectorControls>`
- * block in their `edit()` return, since WordPress concatenates same-group
- * Fills in mount order.
+ * This component is a fully SGS-OWNED panel, wrapped in its own `PanelBody`
+ * titled "Colour", rendering every row its caller passes in `rows`. Consumers
+ * must render `<SgsColourPanel>` before any other same-group
+ * `<InspectorControls>` block in their `edit()` return, since WordPress
+ * concatenates same-group Fills in mount order.
+ *
+ * ⚠ CORRECTED 2026-08-19 — the 2026-08-14 quote this paragraph used to lean
+ * on ("all of the blocks should have the colour section at the top with all
+ * of their colours in that panel") was Bean's ROW-EXISTENCE-level reaction to
+ * the D609 rebuild (colours must not be scattered per-element as bare rows);
+ * it is NOT the framework's current colour-PLACEMENT ruling. That ruling is
+ * D622 (Spec 35 PART O §1 field 4b, 2026-08-15, one day later): colour
+ * placement follows the SAME D533/D537 resolver as every other property
+ * family — an element-scoped colour belongs in ITS OWN element's TIER 1
+ * panel, and only a colour NO element claims falls to a shared
+ * property-family panel. "Pinned first, holds every colour on the block"
+ * is not a rule this component enforces or a rule the spec still states;
+ * every call site today mounts this component exactly once per block, so
+ * that placement question belongs to each caller's `rows` array, not to
+ * this file. Do not re-add "pinned first / all colours here" language
+ * without re-reading field 4b first.
  *
  * ⚠ TAB: `group="styles"` (D621, 2026-08-15) — Bean corrected D618's
  * original placement (default/Settings group): "the background panel which
  * has media uploads belongs in styles" — Styles holds root CSS and visuals,
  * and this framework never uses native colour supports (only their look),
  * so D618's "reserve Styles for genuine native supports" premise was wrong.
- * D621 was ruled but never actually implemented in code until now — verify
- * this file's `InspectorControls` group prop directly before trusting any
- * doc's claim that the tab move already shipped.
+ * D621 governs WHICH TAB only; D622 (above) governs WHICH PANEL — the two
+ * are separate rulings, not one settled together.
  *
  * `supports.color` STAYS declared (the `scripts/audit-block-uniformity.py`
  * `supports_color_missing` gate is a pipeline/DB-contract signal requiring
@@ -71,12 +83,20 @@
  *                             (`background-clip: text`). Its states carry two
  *                             ADDITIONAL fields on top of the normal
  *                             `value`/`onChange`/`linked` shape —
- *                             `gradientValue`/`gradientOnChange`, the
+ *                             `gradientValue`/`onGradientChange`, the
  *                             SIBLING `{attr}Gradient` attribute's pair
  *                             (mirrors `sgs/container`'s shipped
  *                             `backgroundOverlayColour`/`overlayGradient`
  *                             precedent — two attributes, not one shared
- *                             slot). Every existing row (no `gradientCapable`)
+ *                             slot). `onGradientChange` is the canonical
+ *                             name across BOTH gradient-capable mechanisms
+ *                             (D5) and now the ONLY one: the legacy
+ *                             `gradientOnChange` spelling and the
+ *                             compatibility alias that briefly accepted it
+ *                             are both gone, so a state entry using the old
+ *                             key silently does nothing. Write
+ *                             `onGradientChange`.
+ *                             Every existing row (no `gradientCapable`)
  *                             is unaffected.
  */
 import { __ } from '@wordpress/i18n';
@@ -108,6 +128,14 @@ export default function SgsColourPanel( { rows } ) {
 							key={ row.key }
 							label={ row.label }
 							states={ row.states }
+								borderStyle={ row.borderStyle }
+								onBorderStyleChange={ row.onBorderStyleChange }
+							{ ...( row.gradientCapable
+								? {
+										contrastAgainst: row.contrastAgainst,
+										contrastLabel: row.contrastLabel,
+								  }
+								: {} ) }
 						/>
 					);
 				} ) }

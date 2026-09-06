@@ -125,19 +125,13 @@
 }
 
 /*
- * hover-effects.php emits --sgs-hover-bg/text/border/scale/shadow as CSS
- * custom properties inside a scoped `<style>` rule keyed to `.sgs-hover-{uid}`
- * (Spec 32 no-inline contract, FR-32-11) — it NEVER writes a `style=""`
- * attribute. The `[style*="--sgs-hover-*"]` attribute gates below could never
- * match, so background/text/border-colour, scale and shadow hover effects
- * were INERT on the frontend for every block using `sgs-has-hover`. Un-gated
- * to match what PHP actually emits, using the same unconditional
+ * hover-effects.php emits --sgs-hover-scale/shadow as CSS custom properties
+ * inside a scoped `<style>` rule keyed to `.sgs-hover-{uid}` (Spec 32
+ * no-inline contract, FR-32-11) — it NEVER writes a `style=""` attribute.
+ * An attribute gate (`[style*="--sgs-hover-*"]`) could never match, so these
+ * rules are UN-GATED on that attribute, using the same unconditional
  * var(--x, fallback) pattern already used above for the image-controls
- * rules — merged into one rule for bg/text/border/shadow since removing the
- * gate makes their selector lists identical (stylelint no-duplicate-selectors).
- * Scale keeps its own rule, gated on the REAL `.sgs-has-hover-scale` class
- * (added by PHP only when a scale value is actually set) rather than a
- * fallback, so it carries no behaviour-change risk.
+ * rules.
  *
  * ⛔ EACH PROPERTY IS GATED ON ITS OWN CLASS — do NOT collapse these into one
  * `.sgs-has-hover:hover` rule with var() fallbacks. That was tried and is a
@@ -146,31 +140,23 @@
  *   `.sgs-has-hover` is added when ANY ONE hover effect is set — it is a
  *   per-BLOCK flag, not per-property (hover-effects.php's early bail only
  *   excludes blocks with ZERO hover intent). So a block that set only a hover
- *   SCALE would also receive `background-color:transparent` and
- *   `box-shadow:none` on hover, visibly fading a resting background or
- *   stripping a resting shadow it never asked to change.
+ *   SCALE would also receive `box-shadow:none` on hover, visibly stripping a
+ *   resting shadow it never asked to change.
  *
  * CSS cannot express "declare this only if the custom property exists" —
  * `var()` ALWAYS declares, and no fallback value means "don't declare me". So
- * the gate has to come from the CLASS LIST. `sgs-has-hover-scale` already did
- * exactly this; `sgs-has-hover-bg/text/border/shadow` (hover-effects.php,
- * added 2026-08-10) extend the same proven pattern to the rest. Each class is
- * emitted under the SAME condition as its custom property, so a rule can only
- * apply where the operator genuinely set that value — and the fallbacks below
- * are therefore unreachable safety nets, not silent behaviour.
+ * the gate has to come from the CLASS LIST. Each class is emitted under the
+ * SAME condition as its custom property, so a rule can only apply where the
+ * operator (or a block's own hover default) genuinely set that value — and
+ * the fallbacks below are therefore unreachable safety nets, not silent
+ * behaviour.
+ *
+ * `.sgs-has-hover-bg/text/border` were REMOVED 2026-08-20: the
+ * sgsHoverBgColour/TextColour/BorderColour attrs behind them were dead —
+ * gated behind the 'hover' opt-in extension that zero blocks declare, and
+ * duplicative of each block's own element-owned backgroundColourHover/
+ * textColourHover/borderColourHover controls. See hover-effects.js.
  */
-.sgs-has-hover-bg:hover {
-	background-color: var(--sgs-hover-bg, transparent);
-}
-
-.sgs-has-hover-text:hover {
-	color: var(--sgs-hover-text, inherit);
-}
-
-.sgs-has-hover-border:hover {
-	border-color: var(--sgs-hover-border, currentcolor);
-}
-
 .sgs-has-hover-shadow:hover {
 	box-shadow: var(--sgs-hover-shadow, none);
 }
@@ -215,34 +201,29 @@
 	}
 }
 
-/* ===== Hover Image Zoom ===== */
-
-@media (prefers-reduced-motion: no-preference) {
-	.sgs-hover-image-zoom {
-		overflow: hidden;
-	}
-
-	.sgs-hover-image-zoom img {
-		transition: transform 0.5s ease;
-	}
-
-	.sgs-hover-image-zoom:hover img {
-		transform: scale(1.1);
-	}
-}
-
-/* ===== Hover Grayscale ===== */
-
-@media (prefers-reduced-motion: no-preference) {
-	.sgs-hover-grayscale {
-		filter: grayscale(100%);
-		transition: filter 0.5s;
-	}
-
-	.sgs-hover-grayscale:hover {
-		filter: grayscale(0);
-	}
-}
+/* ===== Hover Image Zoom / Hover Grayscale — RULES DELETED 2026-08-26 =====
+ *
+ * This block previously styled `.sgs-hover-image-zoom` and `.sgs-hover-grayscale`.
+ * NOTHING HAS EVER EMITTED EITHER CLASS. `hover-effects.php` emits
+ * `sgs-has-img-zoom` and `sgs-has-grayscale` — different names — so these 27 lines
+ * were dead from the day they were written (verified: zero emitters in `includes/`
+ * or `src/`, both names).
+ *
+ * ⛔ DO NOT "FIX" THIS BY RENAMING THEM TO THE EMITTED NAMES. That was proposed and
+ * refused. Both rules target the ROOT and cascade to every descendant image
+ * (`.sgs-hover-image-zoom:hover img`), while the blocks that actually implement
+ * these effects scope them to a repeated ITEM:
+ *   img-zoom   → card-grid, team-member
+ *   grayscale  → card-grid, gallery, info-box, team-member
+ * Renaming would make BOTH fire — manufacturing a second copy of the root-vs-item
+ * double-application bug this same commit fixes in `card-grid/style.css`.
+ *
+ * Consequence, recorded honestly rather than hidden: the panel's "Zoom image on
+ * hover" and "Grayscale to colour" toggles do something ONLY on the blocks listed
+ * above. Elsewhere they are inert switches. Giving them universal reach needs
+ * per-block scoping (each block declaring where its image lives), NOT a root rule —
+ * that is a separate, scoped change, deliberately not attempted here.
+ */
 
 /* ===== Underline Slide-in ===== */
 
@@ -309,10 +290,16 @@
 @media (prefers-reduced-motion: no-preference) {
 	/* Underline slide-in on links (#115) */
 	/* Targets navigation links and generic text links within content */
+	/* Rule 43 (WCAG 1.4.1) fix, 2026-09-05: excludes .sgs-toc__link, the same way
+	 * .wp-block-button__link is already excluded — sgs/table-of-contents manages
+	 * its own hover/active-state treatment (opacity dim, no slide-underline) and
+	 * needs its --active rule's text-decoration:underline to win; this rule's
+	 * higher specificity (.entry-content li a:not(...)) was silently stripping
+	 * that state signal whenever the TOC renders inside page/post content. */
 	.wp-block-navigation-item__content,
 	.sgs-text-link,
 	.entry-content p a,
-	.entry-content li a:not(.wp-block-button__link) {
+	.entry-content li a:not(.wp-block-button__link):not(.sgs-toc__link) {
 		position: relative;
 		text-decoration: none;
 	}
@@ -320,7 +307,7 @@
 	.wp-block-navigation-item__content::after,
 	.sgs-text-link::after,
 	.entry-content p a::after,
-	.entry-content li a:not(.wp-block-button__link)::after {
+	.entry-content li a:not(.wp-block-button__link):not(.sgs-toc__link)::after {
 		content: '';
 		position: absolute;
 		width: 100%;
@@ -336,7 +323,7 @@
 	.wp-block-navigation-item__content:hover::after,
 	.sgs-text-link:hover::after,
 	.entry-content p a:hover::after,
-	.entry-content li a:not(.wp-block-button__link):hover::after {
+	.entry-content li a:not(.wp-block-button__link):not(.sgs-toc__link):hover::after {
 		transform: scaleX(1);
 		transform-origin: bottom left;
 	}
@@ -479,59 +466,24 @@
 }
 
 /* ── Parallax extension ─────────────────────────────────────────────────── */
+/* 'Background parallax' (the .sgs-parallax-background rules that used to
+ * live here) was RETIRED 2026-08-19 — its editor toggle was dead UI (see
+ * src/blocks/extensions/parallax.js's docblock). BackgroundPanel's own
+ * bgKenBurns/bgParallax pair (container/components/BackgroundPanel.js) is
+ * the real, working background-motion mechanism; this extension now covers
+ * element parallax only. */
 
 /* Respect reduced motion — disable all parallax effects */
 @media (prefers-reduced-motion: reduce) {
-	.sgs-parallax-background,
 	.sgs-parallax-element {
 		animation: none !important;
-		background-attachment: scroll !important;
 		transform: none !important;
-	}
-}
-
-/*
- * Background parallax
- * Desktop: background-attachment: fixed gives a simple parallax feel with
- * zero JS. iOS Safari does not support background-attachment: fixed inside
- * scrollable containers — the @supports block below provides the SDA upgrade.
- */
-.sgs-parallax-background {
-	background-attachment: fixed;
-	background-position: center;
-	background-size: cover;
-}
-
-/* iOS / mobile: disable fixed background (it freezes on iOS Safari) */
-@media (max-width: 1023px) {
-	.sgs-parallax-background {
-		background-attachment: scroll;
 	}
 }
 
 /* Modern browsers: CSS Scroll-Driven Animations (Chrome 115+, Firefox 135+) */
 @supports (animation-timeline: scroll()) {
 	@media (prefers-reduced-motion: no-preference) {
-		.sgs-parallax-background {
-			/* Override fixed-attachment with proper scroll-driven parallax */
-			background-attachment: scroll;
-			animation: sgs-parallax-bg linear both;
-			animation-timeline: scroll(root);
-		}
-
-		@keyframes sgs-parallax-bg {
-			from {
-				background-position-y: calc(
-					50% + var(--sgs-parallax-strength, 30) * 0.5px
-				);
-			}
-			to {
-				background-position-y: calc(
-					50% - var(--sgs-parallax-strength, 30) * 0.5px
-				);
-			}
-		}
-
 		.sgs-parallax-element {
 			animation: sgs-parallax-element linear both;
 			animation-timeline: scroll(root);
@@ -645,4 +597,65 @@
 	font-size: 12px;
 	line-height: 1.5;
 	color: #757575;
+}
+
+/* ===== Shared BackgroundPanel editor-canvas preview (2026-08-26) =====
+ *
+ * Every block that mounts the shared `BackgroundPanel` control
+ * (`src/blocks/container/components/ContainerWrapperControls.js` —
+ * sgs/container, sgs/multi-button, sgs/physics-canvas, sgs/site-footer,
+ * sgs/site-header, sgs/trust-bar; sgs/hero has its own equivalent copy,
+ * out of scope here) writes background image/video, overlay, ken-burns and
+ * parallax attributes that `SGS_Container_Wrapper::render()` paints on the
+ * FRONTEND. Until this pass only sgs/container built a JS+CSS mirror so the
+ * EDITOR CANVAS showed the same thing — CHECK A finding group
+ * "BackgroundPanel canvas-preview gap"
+ * (reports/2026-08-26-check-a-triage-group-b.md, root-cause group 1).
+ *
+ * `src/utils/background-preview.js`'s `backgroundPreview()` is the ONE JS
+ * mirror every adopting block now calls; it writes the `--sgs-ed-bg-*` /
+ * `--sgs-ed-overlay-*` custom properties consumed below and applies the
+ * `.sgs-ed-has-bg-media` / `.sgs-ed-has-overlay` marker classes these rules
+ * are gated on, so a block instance with no background image/overlay set
+ * never grows an empty pseudo-element.
+ *
+ * This stylesheet is the SHARED editor extension stylesheet — loaded into
+ * the editor canvas IFRAME via `enqueue_block_assets` (iframe-aware; see
+ * `includes/class-sgs-blocks.php::enqueue_editor_extension_styles()`), which
+ * is why these rules live here rather than being duplicated into six
+ * per-block `editor.css` files. It is ALSO loaded on the frontend under the
+ * `sgs-extensions` handle — harmless there, since only `edit.js` ever
+ * applies these marker classes, never `render.php`.
+ */
+.sgs-ed-has-bg-media {
+	position: relative;
+}
+
+.sgs-ed-has-bg-media::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background-image: var( --sgs-ed-bg-image );
+	background-size: var( --sgs-ed-bg-size, cover );
+	background-position: var( --sgs-ed-bg-position, center center );
+	background-repeat: var( --sgs-ed-bg-repeat, no-repeat );
+	background-attachment: var( --sgs-ed-bg-attachment, scroll );
+}
+
+.sgs-ed-has-overlay {
+	position: relative;
+}
+
+.sgs-ed-has-overlay::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background-image: var( --sgs-ed-overlay-image, none );
+	background-color: var( --sgs-ed-overlay-colour, transparent );
+	opacity: var( --sgs-ed-overlay-opacity, 1 );
+	mix-blend-mode: var( --sgs-ed-overlay-blend, normal );
 }

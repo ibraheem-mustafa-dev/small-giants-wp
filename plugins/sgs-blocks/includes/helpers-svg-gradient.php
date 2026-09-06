@@ -42,14 +42,19 @@ defined( 'ABSPATH' ) || exit;
  *                              "{$uid}-icon-grad" / "{$uid}-icon-grad-h").
  *                              Sanitised to [A-Za-z0-9-] here; an id that
  *                              sanitises to '' fails closed.
+ * @param string $target       SVG paint property to target — 'stroke' (default,
+ *                              stroke-based icons) or 'fill' (fill-based SVG
+ *                              shapes, e.g. star ratings). Any other value
+ *                              falls back to 'stroke'.
  * @return array{defs:string,css:string} 'defs' = the <defs>…</defs> markup to
  *         inject into the icon's own <svg> (empty string when the gradient is
- *         empty/invalid/unsupported-type); 'css' = the `stroke:url(#id)`
+ *         empty/invalid/unsupported-type); 'css' = the `{$target}:url(#id)`
  *         declaration to scope onto the icon's SVG selector (empty alongside
  *         an empty 'defs' — never emit one without the other).
  */
-function sgs_svg_stroke_gradient( string $gradient_css, string $id ): array {
-	$empty = array(
+function sgs_svg_stroke_gradient( string $gradient_css, string $id, string $target = 'stroke' ): array {
+	$target = in_array( $target, array( 'stroke', 'fill' ), true ) ? $target : 'stroke';
+	$empty  = array(
 		'defs' => '',
 		'css'  => '',
 	);
@@ -177,7 +182,7 @@ function sgs_svg_stroke_gradient( string $gradient_css, string $id ): array {
 
 	return array(
 		'defs' => $defs,
-		'css'  => 'stroke:url(#' . $id . ')',
+		'css'  => $target . ':url(#' . $id . ')',
 	);
 }
 
@@ -212,5 +217,184 @@ function sgs_svg_inject_defs( string $svg_markup, string $defs ): string {
 		},
 		$svg_markup,
 		1
+	);
+}
+
+/**
+ * Icon gradient composer — the ONE call site every icon-source-aware block
+ * (`sgs/icon`, and eventually icon-list/notice-banner/trust-bar/social-icons/
+ * button/cart/google-reviews/accordion-item/business-info/star-rating, all of
+ * which share `IconPicker`'s 4-source contract) should make instead of
+ * hand-rolling the branch itself.
+ *
+ * Built 2026-09-06 after `sgs/icon`'s OWN gradient control — the reference
+ * every other block copied — was found to silently no-op for 2 of its 4
+ * icon sources. It always called `sgs_svg_stroke_gradient()` and injected the
+ * result into an `<svg>` tag, but `dashicon`/`emoji` sources render a plain
+ * `<span>` (a webfont glyph and a literal Unicode character respectively,
+ * never an SVG) — `sgs_svg_inject_defs()` had nothing to inject into, so the
+ * gradient picker showed in the editor for every source while only visibly
+ * doing anything for `lucide`/`wp-icon`.
+ *
+ * The fix is NOT to remove sources from the picker — a font glyph and an
+ * emoji character are both genuinely PAINTED VIA `color:`, exactly like any
+ * other text node, so `background-clip:text` (the same mechanism
+ * `sgs_text_colour_decl()`/`sgs_text_colour_gradient_fallback_rule()` already
+ * use for every other text-gradient row in the framework) works on them for
+ * real. This function is the single place that decides which of the two
+ * genuinely different techniques applies, so every consuming block gets both
+ * — and any future icon source only needs a branch added HERE, not in every
+ * block that uses it.
+ *
+ * @param string $icon_source  One of IconPicker's 4 source keys: 'lucide',
+ *                             'wp-icon' (both real SVG — stroke-gradient
+ *                             path), 'dashicon', 'emoji' (both font/text
+ *                             glyphs — text-gradient path). Any other value
+ *                             fails soft (empty result), same posture as
+ *                             `sgs_svg_stroke_gradient()` on an invalid input.
+ * @param string $gradient_css Raw gradient attribute value.
+ * @param string $unique_id    Unique DOM id for the SVG case's `<defs>` (unused, safe to pass '', for the text case).
+ * @param string $selector     The exact selector painting this icon for the
+ *                             CURRENTLY ACTIVE source — e.g. `.sgs-icon__svg svg`
+ *                             for lucide/wp-icon, `.sgs-icon__dashicon` /
+ *                             `.sgs-icon__emoji` for the font/text sources.
+ *                             The caller already branches on `$icon_source`
+ *                             to render the icon itself, so it always knows
+ *                             the right selector for whichever case is live.
+ * @return array{defs:string,css:string,fallback_rule:string} `defs` — inject
+ *         into the icon's own `<svg>` markup via `sgs_svg_inject_defs()`
+ *         (always '' for the text-glyph sources, which have no SVG to inject
+ *         into). `css` — a bare declaration list (no braces), safe to
+ *         interpolate directly into `"{$selector}{" . $css . ';}'` exactly
+ *         like `sgs_svg_stroke_gradient()`'s own `css` field. `fallback_rule`
+ *         — a COMPLETE, ALREADY-SCOPED `@supports not (...)` rule, append
+ *         verbatim to `$scoped_css[]` (never interpolate into a selector
+ *         template) — always '' for the SVG sources, which need no fallback.
+ */
+function sgs_icon_gradient_css( string $icon_source, string $gradient_css, string $unique_id, string $selector ): array {
+	$empty = array(
+		'defs'          => '',
+		'css'           => '',
+		'fallback_rule' => '',
+	);
+
+	if ( '' === trim( $gradient_css ) ) {
+		return $empty;
+	}
+
+	if ( in_array( $icon_source, array( 'lucide', 'wp-icon' ), true ) ) {
+		$stroke = sgs_svg_stroke_gradient( $gradient_css, $unique_id, 'stroke' );
+		if ( '' === $stroke['css'] ) {
+			return $empty;
+		}
+		return array(
+			'defs'          => $stroke['defs'],
+			'css'           => $stroke['css'],
+			'fallback_rule' => '',
+		);
+	}
+
+	if ( in_array( $icon_source, array( 'dashicon', 'emoji' ), true ) ) {
+		$decl = sgs_text_colour_decl( $gradient_css );
+		if ( '' === $decl ) {
+			return $empty;
+		}
+		return array(
+			'defs'          => '',
+			'css'           => $decl,
+			'fallback_rule' => sgs_text_colour_gradient_fallback_rule( $selector, $gradient_css ),
+		);
+	}
+
+	return $empty;
+}
+
+/**
+ * Resolve BOTH resting + hover icon gradient state in one call and return
+ * ready-to-append scoped-CSS rules plus each state's <defs> markup.
+ *
+ * Built 2026-09-06 after `sgs/notice-banner` shipped a REAL bug: its render.php
+ * only ever called `sgs_icon_gradient_css()` once (resting state) because the
+ * hover-gradient sibling attribute did not exist on the block at all — a gap
+ * that could recur on any future icon-hosting block, since the base
+ * `sgs_icon_gradient_css()` primitive resolves ONE state per call by design
+ * (each state needs its own unique defs-id) and nothing forced a caller to
+ * remember the second call. This wrapper makes "only wired the base state"
+ * structurally harder: one call, both states, matching the shape every other
+ * SGS colour mechanism (`sgs_fill_states_css()`, `sgs_text_states_css()`,
+ * `sgs_border_states_css()`) already uses.
+ *
+ * Supports BOTH hover-trigger shapes already in use across icon-hosting
+ * blocks — pass `$hover_trigger`/`$hover_suffix` to pick:
+ *   - SELF-HOVER (default, both args empty): the painted element itself is
+ *     also the `:hover` trigger (icon-list, trust-bar — decorative icons
+ *     with no natural interactive ancestor).
+ *   - ANCESTOR+SUFFIX: a distinct ancestor is the trigger, with the painted
+ *     selector's tail passed as `$hover_suffix` (`sgs/button`'s
+ *     `.{uid}.sgs-button` ancestor + ` .sgs-button__icon svg` suffix —
+ *     matching its OWN flat-colour hover, which already uses this shape;
+ *     `sgs/cart`'s `.sgs-cart__trigger`, `sgs/accordion-item`'s
+ *     `.sgs-accordion-item__header` are the same shape but those two blocks
+ *     are NOT migrated onto this helper, to avoid touching proven working
+ *     code for a purely cosmetic consistency gain).
+ * Caught live during the button migration (2026-09-06): the resting-state
+ * hand-written selector already used the ancestor+suffix shape to match its
+ * own flat-colour hover, and a first pass at this helper defaulted to
+ * self-hover only — silently changing the hover TRIGGER from "anywhere on
+ * the button" to "only the icon glyph itself". Always check the block's OWN
+ * flat-colour hover shape before assuming self-hover.
+ *
+ * @param string $icon_source    lucide | wp-icon | dashicon | emoji.
+ * @param string $base_gradient  Resting-state gradient attribute value.
+ * @param string $hover_gradient Hover-state gradient attribute value.
+ * @param string $uid_base       Unique id PREFIX for this icon instance — the
+ *                                 function appends '-ig'/'-igh' itself so the
+ *                                 two states never collide on one #id.
+ * @param string $selector       The icon's own painted-element selector (the
+ *                                 SAME shape `sgs_icon_gradient_css()` expects
+ *                                 — caller branches this on `$icon_source`
+ *                                 itself: the wrapper span for dashicon/emoji,
+ *                                 the child `<svg>` for lucide/wp-icon).
+ * @param string $hover_trigger  Ancestor selector the `:hover`/focus pseudo
+ *                                 attaches to. Empty (default) = self-hover,
+ *                                 i.e. `$selector` is also the trigger.
+ * @param string $hover_suffix   Appended after the trigger + pseudo (the
+ *                                 `sgs_hover_state_rules()` 4th arg) — only
+ *                                 meaningful when `$hover_trigger` is set.
+ * @param string $hover_focus    Companion focus pseudo-class, default
+ *                                 ':focus-visible' (matches every other
+ *                                 caller of `sgs_hover_state_rules()`).
+ * @return array{css:string[],defs_base:string,defs_hover:string} `css` is
+ *         0-4 entries ready for `array_push($scoped_css, ...$result['css'])`
+ *         — resting rule, resting fallback, hover rule, hover fallback, each
+ *         present only when that state resolved to something real.
+ *         `defs_base`/`defs_hover` are each state's `<defs>` markup, empty
+ *         for a flat colour or a text-glyph source — inject the non-empty
+ *         one(s) into the icon's own `<svg>` via `sgs_svg_inject_defs()`.
+ */
+function sgs_icon_gradient_states_css( string $icon_source, string $base_gradient, string $hover_gradient, string $uid_base, string $selector, string $hover_trigger = '', string $hover_suffix = '', string $hover_focus = ':focus-visible' ): array {
+	$css  = array();
+	$base = sgs_icon_gradient_css( $icon_source, $base_gradient, $uid_base . '-ig', $selector );
+	if ( '' !== $base['css'] ) {
+		$css[] = "{$selector}{" . $base['css'] . ';}';
+		if ( '' !== $base['fallback_rule'] ) {
+			$css[] = $base['fallback_rule'];
+		}
+	}
+
+	$hover = sgs_icon_gradient_css( $icon_source, $hover_gradient, $uid_base . '-igh', $selector );
+	if ( '' !== $hover['css'] ) {
+		$css[] = '' !== $hover_trigger
+			? sgs_hover_state_rules( $hover_trigger, $hover['css'], $hover_focus, $hover_suffix )
+			: sgs_hover_state_rules( $selector, $hover['css'], $hover_focus );
+		if ( '' !== $hover['fallback_rule'] ) {
+			$css[] = $hover['fallback_rule'];
+		}
+	}
+
+	return array(
+		'css'        => $css,
+		'defs_base'  => $base['defs'],
+		'defs_hover' => $hover['defs'],
 	);
 }

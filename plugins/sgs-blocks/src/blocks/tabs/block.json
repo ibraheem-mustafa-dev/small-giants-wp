@@ -33,13 +33,6 @@
 			"padding": true,
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"collection": true,
 			"elements": {
@@ -47,18 +40,23 @@
 					"label": "Wrapper",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "native:color.text",
 						"css:background-color": "native:color.background",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
-						"css:max-width": "maxWidth"
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:max-width": "maxWidth",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "block.json declares no `typography` support at all on this block — every text-cluster member beyond colour is an honest gap. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element."
 				},
@@ -66,7 +64,9 @@
 					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 2,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
@@ -84,16 +84,23 @@
 				"tab": {
 					"label": "Tab (resting state)",
 					"order": 3,
-					"clusters": [ "text", "fill", "layout", "motion" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout",
+						"motion"
+					],
 					"attrMap": {
 						"css:color": "tabTextColour",
+						"css:color-gradient": "tabTextColourGradient",
 						"css:background-color": "tabBgColour",
+						"css:background-image": "tabBgColourGradient",
 						"css:border-color": "tabIndicatorColour",
 						"css:border-color-gradient": "tabIndicatorColourGradient",
 						"css:transition-duration": "transitionDuration"
 					},
 					"states": {
-						"selected": {
+						"current": {
 							"attrMap": {
 								"css:color": "tabActiveTextColour",
 								"css:background-color": "tabActiveBgColour",
@@ -112,14 +119,31 @@
 				"panel": {
 					"label": "Tab panel",
 					"order": 4,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"attrMap": {
 						"css:background-color": "panelBgColour",
+						"css:background-image": "panelBgColourGradient",
 						"css:border-color": "panelBorderColour",
 						"css:border-color-gradient": "panelBorderColourGradient"
 					},
-					"_note": "Only background + border-colour are independently controlled for the panel — the remaining fill/layout members are honest gaps."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "panelBgColourHover",
+								"css:background-image": "panelBgColourHoverGradient"
+							}
+						}
+					},
+					"_note": "Only background + border-colour are independently controlled for the panel — the remaining fill/layout members are honest gaps. Hover state added FR-colour-conformance-closeout."
 				}
+			},
+			"boxFamilies": {
+				"borderRadius": [
+					"borderRadius"
+				]
 			}
 		}
 	},
@@ -162,12 +186,22 @@
 			"type": "string",
 			"default": "text-muted"
 		},
+		"tabTextColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting tab label text instead of a flat colour. Non-empty wins over tabTextColour at render time."
+		},
 		"tabActiveTextColour": {
 			"type": "string",
 			"default": "primary"
 		},
 		"tabBgColour": {
 			"type": "string"
+		},
+		"tabBgColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting tab background via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over tabBgColour."
 		},
 		"tabActiveBgColour": {
 			"type": "string"
@@ -195,9 +229,23 @@
 		"panelBgColour": {
 			"type": "string"
 		},
+		"panelBgColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the panel background via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over panelBgColour."
+		},
+		"panelBgColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"panelBgColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the panel background on hover via background-image. Non-empty wins over panelBgColourHover."
+		},
 		"panelBorderColour": {
 			"type": "string",
-			"default": "border-subtle"
+			"default": "border"
 		},
 		"panelBorderColourGradient": {
 			"type": "string",
@@ -218,6 +266,12 @@
 		},
 		"layout": {
 			"type": "string",
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
 			"default": ""
 		},
 		"alignItems": {
@@ -265,7 +319,11 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 2,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"flexDirection": {
 			"type": "string",
@@ -278,9 +336,8 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": "",
+			"default": "wrap",
 			"enum": [
-				"",
 				"wrap",
 				"nowrap"
 			]
@@ -296,6 +353,40 @@
 				"space-between",
 				"space-around"
 			]
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"providesContext": {

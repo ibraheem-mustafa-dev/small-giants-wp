@@ -17,8 +17,31 @@
 	"textdomain": "sgs-blocks",
 	"supports": {
 		"sgs": {
+			"enabledExtensions": [
+				"hover"
+			],
+			"hoverDefaults": {
+				"scalePreset": "1.02",
+				"shadow": "raised",
+				"imageZoom": false,
+				"focusRing": true
+			},
+			"hoverExcludeControls": [
+				"imageZoom",
+				"grayscale"
+			],
 			"collection": true,
 			"imageControls": false,
+			"_comment_mediaElements": "Rule 37-media-no-handroll fix. The reviewer avatar photo (pulled live from the Google Places API, rendered by this block's own render.php loop) now routes its object-fit through the shared media-element atom layer instead of a style.css literal. This is a NEW client control -- no pre-existing object-fit picker on this block. render.php emits the atom's --sgs-media-object-fit custom property scoped to the block wrapper ($gr_uid) and appends the shared .sgs-media-el marker class to each avatar <img>; style.css no longer hardcodes object-fit on .sgs-google-reviews__avatar img, relying on assets/css/media-atoms/object-fit.css's cover fallback (identical default).",
+			"mediaElements": [
+				{
+					"prefix": "",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
+			],
 			"presetSelectors": [
 				"cardStyle"
 			],
@@ -38,14 +61,15 @@
 					"attrMap": {
 						"css:color": "native:color.text",
 						"css:background-color": "native:color.background",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"anim:preset": "sgsAnimation",
 						"anim:duration": "sgsAnimationDuration",
 						"anim:easing": "sgsAnimationEasing",
-						"css:max-width": "maxWidth"
+						"css:max-width": "maxWidth",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "Root, rendered by SGS_Container_Wrapper (container_kind=layout, wraps sgs/container — WS-4). Empty-string prefix lets the default {suffix} convention resolve the bare universal-container attrs case-insensitively: maxWidth, gap(+Tablet/Mobile), gridTemplateColumns/Rows(+Tablet/Mobile), gridAutoRows, flexDirection, flexWrap, alignItems, alignContent, justifyContent, justifyItems all resolve this way — no attrMap needed for those. Honest gaps: no display/order/overflow/width/height/max-height/min-height/box-shadow/aspect-ratio attribute exists on this block; no padding/margin attribute or native support is declared (spacing support absent); opacity/overlay/background-attachment/-position/-repeat/object-fit/object-position have no control (this block has no image element); anim:stagger/parallax/trigger have no matching attrs (no staggerDelay/parallax/scroll-trigger control here) — honest gaps, not orphans. starColour/cardStyle/theme/variant are variant/preset selectors, not style-cluster members — deliberately undeclared (no prefix claims them, so they surface neither as gap nor orphan)."
 				},
@@ -69,6 +93,85 @@
 						"css:flex-wrap": "flexWrap"
 					},
 					"_note": "Mirrors sgs/container's `inner` element (block.json). Added 2026-08-05 (Bean): gaps are GRID-element properties — they sit between a block's internal pieces, inside both the OUTER layer and the content-width layer, so they belong to neither. Before this, gap/gapTablet/gapMobile on this block resolved to NO css_property at all: the shared SGS_Container_Wrapper renders them (class-sgs-container-wrapper.php:166-169) but the emission scanner only reads each block's OWN render.php/style.css, and this block declared no explicit attrMap to fall back on. The prefix convention could not have covered it either — with an empty prefix the candidate is built as prefix + PascalCase suffix (\"\" + \"Gap\" = \"Gap\"), which never matches the real lowercase attribute name. That is the same limitation sgs/container's own inner `_note` documents. Explicit mapping is the established fix, not a workaround."
+				},
+				"star": {
+					"label": "Star icon",
+					"order": 3,
+					"layer": "OUTER",
+					"clusters": [
+						"fill"
+					],
+					"attrMap": {
+						"css:fill": "starColour",
+						"css:fill-gradient": "starColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:fill": "starColourHover"
+							}
+						}
+					},
+					"_note": "The rating-stars SVG (sgs_render_stars_svg(), render.php:341-390) — full/half-fill stars carry an enum-modifier class on the wrapper (sgs-google-reviews--star-{slug}, render.php:222) that style.css keys off (.sgs-google-reviews--star-{slug} .sgs-google-reviews__star--full{fill:...}, style.css:168-176). starColour's PRIMARY, visible effect is this SVG fill — earlier classification derived background-color instead, because the same attribute ALSO feeds --sgs-gr-star-colour (render.php:230-232), a custom property with a SECOND, low-visibility consumer: .sgs-google-reviews__breakdown-fill (style.css:120, the ratings-breakdown bars, hidden unless showBreakdown is on) and .sgs-google-reviews__dot.is-active::before (style.css:579, the slider pagination dot). Same one-attribute-drives-two-unrelated-CSS-properties-on-two-unrelated-elements shape as product-search's `input` element note for inputBorderColour — declared on the primary, named node (the star SVG); the background-color consumer rides the same underlying value rather than getting a second manifest entry. Palette-coverage gap (style.css only recognises 2 legacy enum values against the full open-palette control) is a separate, unfixed client-facing bug — not addressed by this classification fix."
+				},
+				"arrow": {
+					"label": "Slider arrow",
+					"order": 4,
+					"layer": "OUTER",
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "arrow",
+					"attrMap": {
+						"css:background-color": "arrowColourBackground",
+						"css:background-image": "arrowColourBackgroundGradient",
+						"css:color": "arrowColourText",
+						"css:color-gradient": "arrowColourTextGradient",
+						"css:border-color": "arrowColourBorder",
+						"css:border-color-gradient": "arrowColourBorderGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "arrowColourBackgroundHover",
+								"css:background-image": "arrowColourBackgroundHoverGradient",
+								"css:color": "arrowColourTextHover",
+								"css:color-gradient": "arrowColourTextHoverGradient",
+								"css:border-color": "arrowColourBorderHover",
+								"css:border-color-gradient": "arrowColourBorderHoverGradient"
+							}
+						}
+					},
+					"_note": "The prev/next slider-arrow button (.sgs-google-reviews__arrow). Added 2026-09-03 alongside the hover-colour + gradient migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'arrow', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation. arrowColourTextGradient/arrowColourTextHoverGradient added 2026-09-04 (helpers-button-style.php D942/D956 gate) -- keyed css:color-gradient, distinct from the fill's css:background-image, since render.php now passes bg_layer=true (with bg_layer_positioned=true, as .sgs-google-reviews__arrow already carries its own position:absolute in style.css) so this element's background paints on a separate ::after layer instead of this selector, freeing the text for a gradient sibling."
+				},
+				"write-review": {
+					"label": "Write-review button",
+					"order": 5,
+					"layer": "OUTER",
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"prefix": "writeReview",
+					"attrMap": {
+						"css:background-color": "writeReviewColourBackground",
+						"css:background-image": "writeReviewColourBackgroundGradient",
+						"css:color": "writeReviewColourText",
+						"css:color-gradient": "writeReviewColourTextGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "writeReviewColourBackgroundHover",
+								"css:background-image": "writeReviewColourBackgroundHoverGradient",
+								"css:color": "writeReviewColourTextHover",
+								"css:color-gradient": "writeReviewColourTextHoverGradient"
+							}
+						}
+					},
+					"_note": "The 'Write a review' CTA button (.sgs-google-reviews__write-review). Added 2026-09-03 alongside the hover-colour + gradient migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'writeReview', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation. writeReviewColourTextGradient/writeReviewColourTextHoverGradient added 2026-09-04 (helpers-button-style.php D942/D956 gate) -- keyed css:color-gradient, distinct from the fill's css:background-image, since render.php now passes bg_layer=true so this element's background paints on a separate ::after layer instead of this selector, freeing the text for a gradient sibling (same recipe as sgs/modal's closeColourTextGradient)."
 				}
 			},
 			"fx": {
@@ -76,6 +179,11 @@
 					"draggable"
 				],
 				"_comment_providesNatively": "Spec 38 FR-38-13 / §7. This block owns drag-to-scroll through its OWN inspector toggle, which targets the DESCENDANT element that actually scrolls. The generic 'Scroll & effects' picker stamps data-sgs-fx onto the block ROOT, which is not the scroller here — so offering `draggable` there too would give the client TWO controls for ONE capability, and the picker's one would silently do nothing. Declaring it here removes the dud picker entry via generate-fx-qualifying-blocks.py without removing the capability, exactly as sgs/responsive-logo does for `draw`. Ruled 2026-07-31 after the roster derivation surfaced it on five blocks at once (gallery had it latently already). NOTE sgs/timeline deliberately does NOT carry this: its scroller IS the block root, so the picker lands correctly there."
+			},
+			"boxFamilies": {
+				"borderRadius": [
+					"borderRadius"
+				]
 			}
 		},
 		"align": [
@@ -90,13 +198,6 @@
 			"background": false,
 			"text": false,
 			"gradients": false,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
 			"__experimentalSkipSerialization": true
 		}
 	},
@@ -122,7 +223,11 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 3,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"maxReviews": {
 			"type": "number",
@@ -195,6 +300,14 @@
 			"type": "string",
 			"default": "accent"
 		},
+		"starColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"starColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"autoplay": {
 			"type": "boolean",
 			"default": false
@@ -245,6 +358,12 @@
 		},
 		"layout": {
 			"type": "string",
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
 			"default": ""
 		},
 		"gridTemplateColumns": {
@@ -265,7 +384,7 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": ""
+			"default": "wrap"
 		},
 		"justifyContent": {
 			"type": "string",
@@ -286,6 +405,148 @@
 		"gap": {
 			"type": "object",
 			"default": {}
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"writeReviewColourBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"writeReviewColourBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"writeReviewColourBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the write-review button's fill instead of a flat colour (delegates to sgs_background_paint_decl()). Non-empty wins over writeReviewColourBackground."
+		},
+		"writeReviewColourBackgroundHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of writeReviewColourBackgroundGradient."
+		},
+		"writeReviewColourText": {
+			"type": "string",
+			"default": ""
+		},
+		"writeReviewColourTextHover": {
+			"type": "string",
+			"default": ""
+		},
+		"writeReviewColourTextGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the 'Write a review' button's text with a background-clip:text mechanism instead of a flat colour (D942/D956 mechanism, sgs_button_element_style_css() bg_layer=true moves the background paint onto a ::after layer to free this selector for the gradient). Non-empty wins over writeReviewColourText."
+		},
+		"writeReviewColourTextHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of writeReviewColourTextGradient."
+		},
+		"arrowColourBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"arrowColourBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"arrowColourBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the slider arrow's fill instead of a flat colour (delegates to sgs_background_paint_decl()). Non-empty wins over arrowColourBackground."
+		},
+		"arrowColourBackgroundHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of arrowColourBackgroundGradient."
+		},
+		"arrowColourText": {
+			"type": "string",
+			"default": ""
+		},
+		"arrowColourTextHover": {
+			"type": "string",
+			"default": ""
+		},
+		"arrowColourTextGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the slider arrow's text with a background-clip:text mechanism instead of a flat colour (D942/D956 mechanism, sgs_button_element_style_css() bg_layer=true moves the background paint onto a ::after layer to free this selector for the gradient). Non-empty wins over arrowColourText."
+		},
+		"arrowColourTextHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of arrowColourTextGradient."
+		},
+		"arrowColourBorder": {
+			"type": "string",
+			"default": ""
+		},
+		"arrowColourBorderHover": {
+			"type": "string",
+			"default": ""
+		},
+		"arrowColourBorderGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the slider arrow's border with a masked ring instead of a flat colour (D636 mechanism, already supported by sgs_button_element_style_css()). Non-empty wins over arrowColourBorder."
+		},
+		"arrowColourBorderHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of arrowColourBorderGradient."
+		},
+		"dotColour": {
+			"type": "string",
+			"default": ""
+		},
+		"dotColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"dotColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the slider pagination dot's fill instead of a flat colour (delegates to sgs_background_paint_decl()). Non-empty wins over dotColour."
+		},
+		"dotColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of dotColourGradient."
 		}
 	},
 	"editorScript": "file:./index.js",

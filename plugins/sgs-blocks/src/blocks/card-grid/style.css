@@ -47,6 +47,15 @@
 	aspect-ratio: var(--sgs-card-grid-aspect, 16/10);
 }
 
+/* `.sgs-card-grid__image` is the EDITOR-CANVAS preview class only (edit.js
+   hand-builds its own <img>/<video> here, not sgs_render_media() — unlike
+   sgs/gallery this block's editor canvas is not a ServerSideRender mirror of
+   render.php). The FRONTEND element never carries this class — its object-fit
+   is governed by render.php's higher-specificity
+   `.sgs-card-grid__image-wrap img/video` rule (rule 37-media-no-handroll fix:
+   now the shared .sgs-media-el atom marker, see render.php). `object-fit:cover`
+   stays here as the editor canvas's own default so removing the frontend
+   hardcode does not regress the canvas preview. */
 .sgs-card-grid__image {
 	width: 100%;
 	height: 100%;
@@ -165,20 +174,12 @@
 	color: var(--wp--preset--color--primary);
 }
 
-/* ===== Custom Hover States (editor-configurable) ===== */
-
-.sgs-card-grid__item:hover {
-	background-color: var(--sgs-hover-bg, transparent);
-	background-image: var(--sgs-hover-bg-image, none);
-}
-
-.sgs-card-grid__item:hover {
-	color: var(--sgs-hover-text, inherit);
-}
-
-.sgs-card-grid__item:hover {
-	border-color: var(--sgs-hover-border, transparent);
-}
+/* Custom hover COLOURS are no longer declared here. render.php emits them as
+   real declarations on this instance's own scoped selector via
+   sgs_emit_state_colour_css(), so there is nothing for a static rule to read
+   back. The old `var(--sgs-hover-*, <fallback>)` indirection is deleted along
+   with its fallbacks; unset now means no hover colour, matching every other
+   SGS block. --sgs-hover-scale / --sgs-hover-shadow below are UNAFFECTED. */
 
 /* ===== Hover Effects ===== */
 
@@ -240,6 +241,20 @@
 	.sgs-card-grid.sgs-has-hover-scale .sgs-card-grid__item {
 		transition: transform var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out),
 		            box-shadow var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
+	}
+
+	/* ⛔ THIS BLOCK OWNS ITS HOVER TARGET — the generic ROOT rule must stand down.
+	   `extensions.css:164` is an unqualified `.sgs-has-hover-scale:hover`, and
+	   `render.php:636` puts that class on THIS BLOCK'S ROOT from the block's own
+	   control. So without the neutraliser below, setting Scale Hover scaled the
+	   WHOLE GRID (on hover of any gap between cards) as well as the hovered card.
+	   ⚠ That was LIVE with the universal hover panel switched OFF — it is a shared
+	   CLASS NAMESPACE collision, not a panel bug, so deleting this block's own attr
+	   would not have fixed it. Found 2026-08-26 by the hover council.
+	   Specificity (0,3,0) beats the generic (0,2,0) deterministically — no
+	   `!important`, and no dependence on stylesheet load order. */
+	.sgs-card-grid.sgs-has-hover-scale:hover {
+		transform: none;
 	}
 
 	.sgs-card-grid.sgs-has-hover-scale .sgs-card-grid__item:hover {
@@ -430,6 +445,10 @@ a.sgs-card-grid__item:focus-visible {
 .sgs-card-grid__page-btn[aria-current="page"] {
 	background-color: var( --wp--preset--color--primary, #1a3a5c );
 	color: var( --wp--preset--color--text-inverse, #fff );
+	/* Rule 43 (WCAG 1.4.1): current-page state must not rely on colour alone —
+	 * the resting border is already 2px solid primary, so bump to 3px as the
+	 * non-colour signal. */
+	border-width: 3px;
 }
 
 /* The empty state is also a direct grid child — span the full row so the

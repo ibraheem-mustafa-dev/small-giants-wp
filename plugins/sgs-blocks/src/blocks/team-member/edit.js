@@ -20,12 +20,13 @@
  * (render.php), so nothing here is persisted to post_content.
  *
  * Padding/margin are edited via ResponsiveBoxControl (box-object interface
- * contract): base routes to WP-native style.spacing.padding/margin, tablet/
+ * contract): base routes to WP-native padding/margin, tablet/
  * mobile route to the paddingTablet/paddingMobile/marginTablet/marginMobile
- * object attrs. Border width/colour/style/radius stay on WP's native
- * automatic Styles-tab panels (no custom UI needed — team-member declares
- * FULL native __experimentalBorder support, unlike quote's mixed custom+
- * native border).
+ * object attrs. Border width/colour/style/radius are BLOCK-PRIVATE
+ * (borderWidth/borderStyle/borderColour/borderRadius, via SgsBorderControl
+ * below) — CORRECTED 2026-09-06: this comment previously claimed team-member
+ * declares FULL native `__experimentalBorder` support; block.json declares no
+ * such support at all, so WP-native `style.border` was never populated.
  */
 import { __ } from '@wordpress/i18n';
 import {
@@ -37,12 +38,13 @@ import {
 	PanelBody,
 	SelectControl,
 	ToggleControl,
+	RangeControl,
 	Button,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField, SgsColourPanel } from '../../components';
+import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar, resolveShadowPreviewComposed } from '../../utils';
-import { UnitControl } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { colourVar, resolveShadowPreviewComposed, resolveTextColourPreviewStyle } from '../../utils';
 
 const CARD_STYLES = [
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
@@ -55,6 +57,14 @@ const PHOTO_SHAPES = [
 	{ label: __( 'Circle', 'sgs-blocks' ), value: 'circle' },
 	{ label: __( 'Rounded', 'sgs-blocks' ), value: 'rounded' },
 	{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
+];
+
+const EASING_OPTIONS = [
+	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
+	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
 ];
 
 // D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
@@ -88,6 +98,14 @@ const PLATFORM_OPTIONS = [
 	{ label: __( 'Snapchat', 'sgs-blocks' ),     value: 'snapchat' },
 	{ label: __( 'Telegram', 'sgs-blocks' ),     value: 'telegram' },
 	{ label: __( 'Discord', 'sgs-blocks' ),      value: 'discord' },
+];
+
+const TEXT_ALIGN_OPTIONS = [
+	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
+	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
 ];
 
 const LENGTH_UNITS = [
@@ -168,7 +186,19 @@ function boxShorthand( box, keys ) {
 // Editor preview style builder — desktop styles only; responsive tiers +
 // nameColour/roleColour scoped rules render via PHP.
 function buildWrapperStyle( attributes ) {
-	const { style, textColor, backgroundColor, maxWidth, cardShadow, cardShadowColour } = attributes;
+	const { padding, margin,
+		maxWidth,
+		cardShadow,
+		cardShadowColour,
+		backgroundColour,
+		backgroundColourGradient,
+		textColour,
+		textColourGradient,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		borderRadius,
+	} = attributes;
 	const wrapperStyle = {};
 
 	// Resting-state card shadow (FR-35-5 Task 4c) — render.php emits this as a
@@ -180,41 +210,61 @@ function buildWrapperStyle( attributes ) {
 		wrapperStyle[ '--sgs-card-shadow' ] = resolveShadowPreviewComposed( cardShadow, cardShadowColour );
 	}
 
-	const textPreview = style?.color?.text || ( textColor ? colourVar( textColor ) : '' );
-	if ( textPreview ) {
-		wrapperStyle.color = textPreview;
-	}
-	const bgPreview = style?.color?.background || ( backgroundColor ? colourVar( backgroundColor ) : '' );
-	if ( bgPreview ) {
-		wrapperStyle.backgroundColor = bgPreview;
-	}
-	if ( style?.color?.gradient ) {
-		wrapperStyle.backgroundImage = style.color.gradient;
+	// Text + background colour preview (block-private, flat-or-gradient) —
+	// replaces the removed native style.color.text/background/gradient read.
+	// block.json's supports.color sub-flags are now all false, so WordPress no
+	// longer writes textColor/backgroundColor/style.color.gradient at all;
+	// the block-private backgroundColour*/textColour* attrs (set via
+	// SgsColourPanel's fillRow/textRow) are the single source now. Mirrors
+	// sgs/product-card's editor-preview resolver (resting state only — a
+	// static preview style object cannot represent a `:hover` pseudo-state).
+	const resolveTeamMemberColourPreview = ( value ) => {
+		if ( ! value ) {
+			return undefined;
+		}
+		const v = String( value ).trim();
+		return /^(var\(|#|rgb|hsl)/i.test( v ) ? v : colourVar( v );
+	};
+	Object.assign(
+		wrapperStyle,
+		resolveTextColourPreviewStyle( textColour, textColourGradient, resolveTeamMemberColourPreview )
+	);
+	if ( backgroundColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( backgroundColourGradient ) ) {
+		wrapperStyle.backgroundImage = backgroundColourGradient;
+	} else if ( backgroundColour ) {
+		wrapperStyle.backgroundColor = resolveTeamMemberColourPreview( backgroundColour );
 	}
 
-	if ( style?.typography?.fontSize ) {
-		wrapperStyle.fontSize = style.typography.fontSize;
-	}
+	// fontSize preview removed (D971/D972 typography full-replacement) — native
+	// style.typography.fontSize no longer exists (the fontSize sub-flag was
+	// removed from block.json's supports.typography); the new tier-object
+	// `fontSize` attr has no canvas preview yet, matching sgs/accordion's
+	// identical no-preview precedent for this same migration.
 
-	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	// Border is the block's own borderWidth/borderStyle/borderColour/
+	// borderRadius attrs (SgsBorderControl below) — block.json declares no
+	// `__experimentalBorder` support at all, so WP-native `style.border` is
+	// never populated.
+	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( radiusPreview ) {
 		wrapperStyle.borderRadius = radiusPreview;
 	}
-	if ( style?.border?.width ) {
-		wrapperStyle.borderWidth = style.border.width;
-	}
-	if ( style?.border?.style ) {
-		wrapperStyle.borderStyle = style.border.style;
-	}
-	if ( style?.border?.color ) {
-		wrapperStyle.borderColor = style.border.color;
+	if ( borderStyle && borderStyle !== 'none' ) {
+		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+		if ( borderWidthPreview ) {
+			wrapperStyle.borderWidth = borderWidthPreview;
+		}
+		wrapperStyle.borderStyle = borderStyle;
+		if ( borderColour ) {
+			wrapperStyle.borderColor = borderColour;
+		}
 	}
 
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}
@@ -229,7 +279,6 @@ function buildWrapperStyle( attributes ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		style,
 		photo,
 		// photoTablet / photoMobile are deliberately NOT destructured — the
 		// responsive family is read through `photoForTier()` off `attributes`
@@ -240,22 +289,46 @@ export default function Edit( { attributes, setAttributes } ) {
 		role,
 		bio,
 		nameColour,
+		nameColourGradient,
 		roleColour,
+		roleColourGradient,
+		backgroundColour,
+		backgroundColourGradient,
 		cardStyle,
 		photoShape,
+		photoDecorative,
 		overlayHover,
 		cardShadow,
 		cardShadowColour,
 		shadowHover,
 		shadowHoverColour,
+		scaleHover,
+		imageZoomHover,
+		grayscaleHover,
+		transitionDuration,
+		transitionEasing,
 		displayMode,
 		socialLinks,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		maxWidth,
+		nameColourHover,
+		roleColourHover,
+		textAlign,
 	} = attributes;
+
+	// Contrast check for border — warn if border fails WCAG 3:1 contrast
+	// against the block's own background. When the block has no background
+	// set, there's no static background to compare against, so the check is
+	// skipped. Follows the text.js pattern.
+	//
+	// `contrastAgainst` only accepts a FLAT colour/token — it is not itself
+	// gradient-aware. When `backgroundColourGradient` is set, the gradient (not
+	// the flat `backgroundColour`) is what actually paints, so comparing against
+	// the flat colour would compare against a surface that isn't rendered — skip
+	// the check entirely in that case rather than feed the raw gradient string in.
+	const teamMemberContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
 
 	const isCompact = 'compact' === displayMode;
 
@@ -301,10 +374,15 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( { socialLinks: [ ...socialLinks, { platform: 'website', url: '', opensInNewTab: true, rel: '' } ] } );
 	};
 
+	// Mirrors render.php's own allowlist exactly so the editor canvas shows
+	// the same class the frontend emits.
+	const canvasTextAlign = [ 'left', 'center', 'right', 'justify' ].includes( textAlign ) ? textAlign : '';
+
 	const className = [
 		'sgs-team-member',
 		`sgs-team-member--${ cardStyle }`,
 		isCompact && 'sgs-team-member--compact',
+		canvasTextAlign && `has-text-align-${ canvasTextAlign }`,
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -323,22 +401,34 @@ export default function Edit( { attributes, setAttributes } ) {
 			   nameColour and roleColour are plain single-state colours. */ }
 			<SgsColourPanel
 				rows={ [
-					{
-						key: 'nameColour',
-						label: __( 'Name colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: nameColour,
-								onChange: ( val ) => setAttributes( { nameColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+					fillRow( {
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						attrs: {
+							base: 'textColour',
+							hover: 'textColourHover',
+							gradient: 'textColourGradient',
+							hoverGradient: 'textColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'roleColour',
 						label: __( 'Role colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -346,7 +436,16 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: roleColour,
 								onChange: ( val ) => setAttributes( { roleColour: val ?? '' } ),
 								linked: true,
+								gradientValue: roleColourGradient,
+								onGradientChange: ( val ) => setAttributes( { roleColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: roleColourHover,
+								onChange: ( val ) => setAttributes( { roleColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					cardShadow && {
@@ -372,87 +471,264 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Card Settings', 'sgs-blocks' ) }>
-					<SelectControl
+				{ /* S7 pilot (2026-09-02, uniformity sweep): converted from a plain
+				   PanelBody to a ToolsPanel — the four SelectControls are core
+				   block config and stay always-visible (isShownByDefault); the
+				   hover-overlay toggle and the two shadow controls are genuinely
+				   optional style embellishments and are hideable/resettable per
+				   WP's native ToolsPanel pattern (same shape as brand-strip's
+				   Tile panel). One pilot block before scripting the other 14 —
+				   Bean reviews this one first. */ }
+				<ToolsPanel
+					label={ __( 'Card Settings', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							headingLevel: 'h3',
+							displayMode: 'full',
+							cardStyle: 'elevated',
+							photoShape: 'circle',
+							overlayHover: false,
+							cardShadow: '',
+							cardShadowColour: null,
+							shadowHover: '',
+							shadowHoverColour: null,
+							scaleHover: '',
+							imageZoomHover: false,
+							grayscaleHover: false,
+							transitionDuration: '300',
+							transitionEasing: 'ease-in-out',
+						} )
+					}
+				>
+					<ToolsPanelItem
 						label={ __( 'Heading level', 'sgs-blocks' ) }
-						value={ headingLevel || 'h3' }
-						options={ HEADING_LEVEL_OPTIONS }
-						onChange={ ( val ) => setAttributes( { headingLevel: val } ) }
-						help={ __(
-							'Pick the level that fits your page outline — usually H3 under a page-level H2.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Display mode', 'sgs-blocks' ) }
-						help={ __(
-							'Compact shows photo, name and role only — ideal for dense team grids.',
-							'sgs-blocks'
-						) }
-						value={ displayMode }
-						options={ DISPLAY_MODES }
-						onChange={ ( val ) => setAttributes( { displayMode: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Card style', 'sgs-blocks' ) }
-						value={ cardStyle }
-						options={ CARD_STYLES }
-						onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Photo shape', 'sgs-blocks' ) }
-						value={ photoShape }
-						options={ PHOTO_SHAPES }
-						onChange={ ( val ) => setAttributes( { photoShape: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ ! isCompact && (
-						<ToggleControl
-							label={ __( 'Hover overlay (bio)', 'sgs-blocks' ) }
-							help={ __( 'Reveals the bio as a slide-up overlay on the photo when hovered or focused. On touch devices, tap the photo to toggle.', 'sgs-blocks' ) }
-							checked={ overlayHover }
-							onChange={ ( val ) => setAttributes( { overlayHover: val } ) }
+						hasValue={ () => ( headingLevel || 'h3' ) !== 'h3' }
+						onDeselect={ () => setAttributes( { headingLevel: 'h3' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Heading level', 'sgs-blocks' ) }
+							value={ headingLevel || 'h3' }
+							options={ HEADING_LEVEL_OPTIONS }
+							onChange={ ( val ) => setAttributes( { headingLevel: val } ) }
+							help={ __(
+								'Pick the level that fits your page outline — usually H3 under a page-level H2.',
+								'sgs-blocks'
+							) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
+					</ToolsPanelItem>
+					{ /* Moved in from the shared SgsColourPanel (D622 — an
+					     element-scoped colour belongs in its own element's
+					     TIER 1 panel; "name" is a declared element whose
+					     attrMap claims nameColour). */ }
+					<ToolsPanelItem
+						label={ __( 'Name colour', 'sgs-blocks' ) }
+						hasValue={ () => !! nameColour || !! nameColourHover }
+						onDeselect={ () =>
+							setAttributes( { nameColour: '', nameColourGradient: '', nameColourHover: '' } )
+						}
+						isShownByDefault
+					>
+						<DesignTokenPicker
+							label={ __( 'Name colour', 'sgs-blocks' ) }
+							states={ [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: nameColour,
+									onChange: ( val ) => setAttributes( { nameColour: val ?? '' } ),
+									linked: true,
+									gradientValue: nameColourGradient,
+									onGradientChange: ( val ) => setAttributes( { nameColourGradient: val ?? '' } ),
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: nameColourHover,
+									onChange: ( val ) => setAttributes( { nameColourHover: val ?? '' } ),
+									linked: true,
+								},
+							] }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Display mode', 'sgs-blocks' ) }
+						hasValue={ () => displayMode !== 'full' }
+						onDeselect={ () => setAttributes( { displayMode: 'full' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Display mode', 'sgs-blocks' ) }
+							help={ __(
+								'Compact shows photo, name and role only — ideal for dense team grids.',
+								'sgs-blocks'
+							) }
+							value={ displayMode }
+							options={ DISPLAY_MODES }
+							onChange={ ( val ) => setAttributes( { displayMode: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Card style', 'sgs-blocks' ) }
+						hasValue={ () => cardStyle !== 'elevated' }
+						onDeselect={ () => setAttributes( { cardStyle: 'elevated' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Card style', 'sgs-blocks' ) }
+							value={ cardStyle }
+							options={ CARD_STYLES }
+							onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Photo shape', 'sgs-blocks' ) }
+						hasValue={ () => photoShape !== 'circle' }
+						onDeselect={ () => setAttributes( { photoShape: 'circle' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Photo shape', 'sgs-blocks' ) }
+							value={ photoShape }
+							options={ PHOTO_SHAPES }
+							onChange={ ( val ) => setAttributes( { photoShape: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					{ ! isCompact && (
+						<ToolsPanelItem
+							label={ __( 'Hover overlay (bio)', 'sgs-blocks' ) }
+							hasValue={ () => overlayHover !== false }
+							onDeselect={ () => setAttributes( { overlayHover: false } ) }
+						>
+							<ToggleControl
+								label={ __( 'Hover overlay (bio)', 'sgs-blocks' ) }
+								help={ __( 'Reveals the bio as a slide-up overlay on the photo when hovered or focused. On touch devices, tap the photo to toggle.', 'sgs-blocks' ) }
+								checked={ overlayHover }
+								onChange={ ( val ) => setAttributes( { overlayHover: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
 					) }
 					{ /* FR-35-5 Task 4c (2026-07-21) — resting-state shadow, pairs with
 					   the existing hover-only shadowHover. Empty = inherit the theme
 					   token exactly as before (Bean's Option A, same shape as
 					   card-grid's cardShadow). */ }
-					<ShadowControl
+					<ToolsPanelItem
 						label={ __( 'Shadow', 'sgs-blocks' ) }
-						value={ cardShadow }
-						onChange={ ( val ) => setAttributes( { cardShadow: val } ) }
-						colour={ cardShadowColour }
-						onColourChange={ ( val ) => setAttributes( { cardShadowColour: val } ) }
-					/>
+						hasValue={ () => !! cardShadow || !! cardShadowColour }
+						onDeselect={ () => setAttributes( { cardShadow: '', cardShadowColour: null } ) }
+					>
+						<ShadowControl
+							label={ __( 'Shadow', 'sgs-blocks' ) }
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ {
+								base: 'cardShadow',
+								colour: 'cardShadowColour',
+							} }
+						/>
+					</ToolsPanelItem>
 					{ /* shadowHover — declared + read by render.php but restricted to a
 					   fixed subtle/raised/floating/glow preset ALLOWLIST with no editor
 					   control at all (same bug class as card-grid's pre-fix shadowHover).
 					   Fixed straight onto the target shape (D621/D622). */ }
-					<ShadowControl
+					<ToolsPanelItem
 						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
-						value={ shadowHover }
-						onChange={ ( val ) => setAttributes( { shadowHover: val } ) }
-						colour={ shadowHoverColour }
-						onColourChange={ ( val ) => setAttributes( { shadowHoverColour: val } ) }
-					/>
-				</PanelBody>
+						hasValue={ () => !! shadowHover || !! shadowHoverColour }
+						onDeselect={ () => setAttributes( { shadowHover: '', shadowHoverColour: null } ) }
+					>
+						<ShadowControl
+							label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ {
+								base: 'shadowHover',
+								colour: 'shadowHoverColour',
+							} }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Hover scale', 'sgs-blocks' ) }
+						hasValue={ () => !! scaleHover }
+						onDeselect={ () => setAttributes( { scaleHover: '' } ) }
+					>
+						<RangeControl
+							label={ __( 'Hover scale', 'sgs-blocks' ) }
+							value={ parseFloat( scaleHover ) || 1 }
+							onChange={ ( val ) => setAttributes( { scaleHover: String( val ) } ) }
+							min={ 1 }
+							max={ 1.1 }
+							step={ 0.01 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
+						hasValue={ () => imageZoomHover !== false }
+						onDeselect={ () => setAttributes( { imageZoomHover: false } ) }
+					>
+						<ToggleControl
+							label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
+							help={ __( 'Zooms the photo inside the card on hover.', 'sgs-blocks' ) }
+							checked={ imageZoomHover }
+							onChange={ ( val ) => setAttributes( { imageZoomHover: val } ) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
+						hasValue={ () => grayscaleHover !== false }
+						onDeselect={ () => setAttributes( { grayscaleHover: false } ) }
+					>
+						<ToggleControl
+							label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
+							help={ __( 'Desaturates the photo at rest; restores full colour on hover.', 'sgs-blocks' ) }
+							checked={ grayscaleHover }
+							onChange={ ( val ) => setAttributes( { grayscaleHover: val } ) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+						hasValue={ () => transitionDuration !== '300' }
+						onDeselect={ () => setAttributes( { transitionDuration: '300' } ) }
+					>
+						<RangeControl
+							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+							value={ parseInt( transitionDuration, 10 ) || 300 }
+							onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
+							min={ 0 }
+							max={ 1000 }
+							step={ 50 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Transition easing', 'sgs-blocks' ) }
+						hasValue={ () => transitionEasing !== 'ease-in-out' }
+						onDeselect={ () => setAttributes( { transitionEasing: 'ease-in-out' } ) }
+					>
+						<SelectControl
+							label={ __( 'Transition easing', 'sgs-blocks' ) }
+							value={ transitionEasing }
+							options={ EASING_OPTIONS }
+							onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+				</ToolsPanel>
 
-				{ /* Responsive photo family. Uses the SHARED <ResponsiveControl>
-				   rather than one loose picker per tier: the prebuild oldshape
-				   audit rejects a responsive family edited without it, and the
-				   shared switcher also drives WordPress's native device preview,
-				   so choosing a tablet photo resizes the canvas and shows it.
-				   Three stacked pickers cannot do that and give the client three
-				   things to understand instead of one. */ }
 				<PanelBody title={ __( 'Photo', 'sgs-blocks' ) } initialOpen={ false }>
 					<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
 						{ __( 'Optional — set a different photo per device. Leave a tier blank to inherit the one above it.', 'sgs-blocks' ) }
@@ -469,58 +745,20 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) }
 					</ResponsiveControl>
-				</PanelBody>
-
-				{ /* Box-object interface contract §B/§E: padding/margin base routes
-				   to WP-native style.spacing.* (skip-serialised → scoped, not
-				   inline); tiers are the paddingTablet/paddingMobile +
-				   marginTablet/marginMobile object attrs. Border width/colour/
-				   style/radius stay on WP's native automatic Styles panels. */ }
-				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-				</PanelBody>
-
-				{ /* Width — outer maxWidth (kept-scalar, base only — matches the
-				   pre-existing contract for this block). */ }
-				<PanelBody title={ __( 'Width', 'sgs-blocks' ) } initialOpen={ false }>
-					<UnitControl
-						label={ __( 'Max-width', 'sgs-blocks' ) }
-						value={ maxWidth || '' }
-						units={ LENGTH_UNITS }
-						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
-						help={ __( 'Leave blank for no cap.', 'sgs-blocks' ) }
+					<ToggleControl
+						label={ __( 'Decorative photo', 'sgs-blocks' ) }
+						help={ __( 'Only use this for a purely decorative graphic, such as a placeholder silhouette before a real photo is uploaded. Most photos identify the person and should keep their alt text.', 'sgs-blocks' ) }
+						checked={ !! photoDecorative }
+						onChange={ ( val ) => setAttributes( { photoDecorative: val } ) }
 						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
+					{ /* 37-media-no-handroll remediation (2026-09-03, CORRECTED via
+					     /qc-council same day): NO new control here. The photo's crop
+					     mode is bridged onto the pre-existing 'Object fit' dropdown
+					     the legacy image-controls extension already renders (writes
+					     sgsObjectFit) — mounting a second MediaElementPanel gave the
+					     client two identically-labelled controls. See block.json's
+					     _comment_mediaElements for the full correction. */ }
 				</PanelBody>
 
 				{ ! isCompact && (
@@ -548,6 +786,123 @@ export default function Edit( { attributes, setAttributes } ) {
 				) }
 			</InspectorControls>
 
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+
+				{ /* Typography — FULLY replaces the old WP-native supports.typography
+				   (fontSize + textAlign) with the shared TypographyControls
+				   component + sgs_typography_css_rule() render.php helper
+				   (D971/D972 full-replacement track, Bean-locked 2026-09-05: no
+				   real native supports.typography sub-capability may remain on
+				   any block). Root prefix "" since the card root is the single
+				   typography target. textAlign is now a plain block-private
+				   attribute — TypographyControls has no alignment picker, so a
+				   dedicated control is mounted alongside it; render.php's
+				   existing has-text-align-* class mechanism is unchanged.
+				   D812 (2026-08-26): a 5-option enum with longest rendered
+				   label <=12 chars ("Justify", 7 chars) renders as
+				   ToggleGroupControl, not SelectControl. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+					/>
+					<ToggleGroupControl
+						label={ __( 'Text alignment', 'sgs-blocks' ) }
+						value={ textAlign || '' }
+						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						{ TEXT_ALIGN_OPTIONS.map( ( option ) => (
+							<ToggleGroupControlOption
+								key={ option.value }
+								value={ option.value }
+								label={ option.label }
+							/>
+						) ) }
+					</ToggleGroupControl>
+				</PanelBody>
+
+				{ /* padding/margin are each a single block-owned tier-object attr
+				   { desktop, tablet, mobile }, written via ResponsiveOverride +
+				   SgsBoxControl; read by SGS_Container_Wrapper's tier-object
+				   emission path. Border width/colour/style/radius are
+				   block-private (borderWidth/borderStyle/borderColour/
+				   borderRadius via the SgsBorderControl panel below). */ }
+				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+				</PanelBody>
+
+				{ /* Width — outer maxWidth (kept-scalar, base only — matches the
+				   pre-existing contract for this block). */ }
+				<PanelBody title={ __( 'Width', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsLengthControl
+						presets={ false }
+						label={ __( 'Max-width', 'sgs-blocks' ) }
+						value={ maxWidth || '' }
+						units={ LENGTH_UNITS }
+						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
+						help={ __( 'Leave blank for no cap.', 'sgs-blocks' ) }
+					/>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						contrastAgainst={ teamMemberContrastAgainst }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
 			<div { ...blockProps }>
 				<div className={ `sgs-team-member__photo sgs-team-member__photo--${ photoShape }` }>
 					<MediaPicker
@@ -565,7 +920,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					value={ name }
 					onChange={ ( val ) => setAttributes( { name: val } ) }
 					placeholder={ __( 'Name', 'sgs-blocks' ) }
-					style={ { color: colourVar( nameColour ) || undefined } }
+					style={ resolveTextColourPreviewStyle( nameColour, nameColourGradient, colourVar ) }
 				/>
 				<RichText
 					tagName="p"
@@ -573,7 +928,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					value={ role }
 					onChange={ ( val ) => setAttributes( { role: val } ) }
 					placeholder={ __( 'Role / Title', 'sgs-blocks' ) }
-					style={ { color: colourVar( roleColour ) || undefined } }
+					style={ resolveTextColourPreviewStyle( roleColour, roleColourGradient, colourVar ) }
 				/>
 				{ ! isCompact && (
 					<RichText

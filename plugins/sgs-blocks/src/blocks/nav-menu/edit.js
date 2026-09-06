@@ -33,13 +33,8 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
-import {
-	TypographyControls,
-	ResponsiveBoxControl,
-	ResponsiveControl,
-	SgsColourPanel,
-} from '../../components';
-import { BoxControl, ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { TypographyControls, ResponsiveBoxControl, ResponsiveControl, SgsColourPanel, SgsLengthControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
  * Burger Menu scope presets (Bean 2026-07-28 — no bare px values in the UI).
@@ -156,9 +151,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		listColumns,
 		navBg,
 		navColour,
+		navColourGradient,
 		navBgHover,
 		itemColour,
+		itemColourGradient,
 		itemBg,
+		itemBgGradient,
 		itemColourHover,
 		itemBgHover,
 		itemRadius,
@@ -169,6 +167,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		underlineThickness,
 		underlineOffset,
 		featuredColour,
+		featuredColourGradient,
 		featuredBg,
 		featuredColourHover,
 		featuredBgHover,
@@ -177,6 +176,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		featuredFontWeight,
 		featuredFontWeightHover,
 		burgerColour,
+		burgerColourGradient,
 		burgerBg,
 		burgerHoverColour,
 		burgerSize,
@@ -188,9 +188,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		submenuCloseGrace,
 		submenuBg,
 		submenuColour,
+		submenuColourGradient,
 		submenuMinWidth,
 		submenuRadius,
 		submenuPadding,
+		navColourHover,
+		burgerColourHover,
+		submenuColourHover,
 	} = attributes;
 
 	// Burger Menu 'Custom' reveal — UI-only state (the stored value is collapsePoint).
@@ -283,11 +287,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				);
 			const keyOf = ( item ) => `id:${ item.object_id ?? item.id }`;
 			/*
-			 * Children are INCLUDED. This used to `.filter( item => ! item.parent )`,
-			 * which meant a client could never tick a nested item as featured even
-			 * though render.php marks one happily — the capability existed with no
-			 * way to reach it. Walked parent-first so each child's identifier is
-			 * path-qualified against a parent that has already been resolved.
+			 * Children are INCLUDED — a client can tick a nested item as featured,
+			 * matching what render.php already marks. Walked parent-first so each
+			 * child's identifier is path-qualified against a parent that has
+			 * already been resolved.
 			 */
 			const byParent = new Map();
 			all.forEach( ( item ) => {
@@ -459,10 +462,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const blockProps = useBlockProps();
 
 	// D618/D609 — ONE grouped, SGS-OWNED colour panel (own PanelBody, mounted
-	// FIRST so it sits at the top of the Styles tab). Replaces every scattered
-	// DesignTokenPicker/StateToggleControl colour control that used to live in
-	// the Nav container / Items / Underline / Featured / Burger / Effects /
-	// Dropdown panels below. Every state below carries `linked: true` (D619).
+	// FIRST so it sits at the top of the Styles tab). Every state below carries
+	// `linked: true` (D619).
 	//
 	// itemColourHover/itemBgHover/itemRadiusHover: GROUND-TRUTH checked against
 	// render.php (2026-08-15 rebuild) — `$hover_targets` (line ~953) is now
@@ -497,6 +498,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: navBg,
 					onChange: ( val ) => setAttributes( { navBg: val ?? '' } ),
+					gradientValue: attributes.navBgGradient,
+					onGradientChange: ( val ) => setAttributes( { navBgGradient: val ?? '' } ),
 					linked: true,
 				},
 				{
@@ -511,6 +514,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{
 			key: 'nav-text',
 			label: __( 'Nav text colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -518,12 +522,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: navColour,
 					onChange: ( val ) => setAttributes( { navColour: val ?? '' } ),
 					linked: true,
+					gradientValue: navColourGradient,
+					onGradientChange: ( val ) => setAttributes( { navColourGradient: val ?? '' } ),
 				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: navColourHover,
+					onChange: ( val ) => setAttributes( { navColourHover: val ?? '' } ),
+					linked: true,
+					},
 			],
 		},
 		{
 			key: 'item-text',
 			label: __( 'Item text colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -531,6 +545,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: itemColour,
 					onChange: ( val ) => setAttributes( { itemColour: val ?? '' } ),
 					linked: true,
+					gradientValue: itemColourGradient,
+					onGradientChange: ( val ) => setAttributes( { itemColourGradient: val ?? '' } ),
 				},
 				{
 					key: 'hover',
@@ -544,6 +560,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{
 			key: 'item-bg',
 			label: __( 'Item background', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -551,6 +568,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: itemBg,
 					onChange: ( val ) => setAttributes( { itemBg: val ?? '' } ),
 					linked: true,
+					gradientValue: itemBgGradient,
+					onGradientChange: ( val ) => setAttributes( { itemBgGradient: val ?? '' } ),
 				},
 				{
 					key: 'hover',
@@ -570,6 +589,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: underlineColour,
 					onChange: ( val ) => setAttributes( { underlineColour: val ?? '' } ),
+					gradientValue: attributes.underlineColourGradient,
+					onGradientChange: ( val ) => setAttributes( { underlineColourGradient: val ?? '' } ),
 					linked: true,
 				},
 				{
@@ -584,12 +605,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{
 			key: 'featured-text',
 			label: __( 'Featured text colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: featuredColour,
 					onChange: ( val ) => setAttributes( { featuredColour: val ?? '' } ),
+					gradientValue: featuredColourGradient,
+					onGradientChange: ( val ) => setAttributes( { featuredColourGradient: val ?? '' } ),
 					linked: true,
 				},
 				{
@@ -610,6 +634,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: featuredBg,
 					onChange: ( val ) => setAttributes( { featuredBg: val ?? '' } ),
+					gradientValue: attributes.featuredBgGradient,
+					onGradientChange: ( val ) => setAttributes( { featuredBgGradient: val ?? '' } ),
 					linked: true,
 				},
 				{
@@ -617,6 +643,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					label: __( 'Hover', 'sgs-blocks' ),
 					value: featuredBgHover,
 					onChange: ( val ) => setAttributes( { featuredBgHover: val ?? '' } ),
+					gradientValue: attributes.featuredBgHoverGradient,
+					onGradientChange: ( val ) => setAttributes( { featuredBgHoverGradient: val ?? '' } ),
 					linked: true,
 				},
 			],
@@ -624,12 +652,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{
 			key: 'burger-icon',
 			label: __( 'Burger icon colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: burgerColour,
 					onChange: ( val ) => setAttributes( { burgerColour: val ?? '' } ),
+					gradientValue: burgerColourGradient,
+					onGradientChange: ( val ) => setAttributes( { burgerColourGradient: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: burgerColourHover,
+					onChange: ( val ) => setAttributes( { burgerColourHover: val ?? '' } ),
 					linked: true,
 				},
 			],
@@ -643,6 +681,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: burgerBg,
 					onChange: ( val ) => setAttributes( { burgerBg: val ?? '' } ),
+					gradientValue: attributes.burgerBgGradient,
+					onGradientChange: ( val ) => setAttributes( { burgerBgGradient: val ?? '' } ),
 					linked: true,
 				},
 				{
@@ -663,6 +703,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: indicatorColour,
 					onChange: ( val ) => setAttributes( { indicatorColour: val ?? '' } ),
+					gradientValue: attributes.indicatorColourGradient,
+					onGradientChange: ( val ) => setAttributes( { indicatorColourGradient: val ?? '' } ),
 					linked: true,
 				},
 			],
@@ -683,12 +725,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{
 			key: 'submenu-text',
 			label: __( 'Dropdown link colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: submenuColour,
 					onChange: ( val ) => setAttributes( { submenuColour: val ?? '' } ),
+					gradientValue: submenuColourGradient,
+					onGradientChange: ( val ) => setAttributes( { submenuColourGradient: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: submenuColourHover,
+					onChange: ( val ) => setAttributes( { submenuColourHover: val ?? '' } ),
 					linked: true,
 				},
 			],
@@ -859,7 +911,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 					{ ( showCustomCollapse ||
 						burgerScopeOf( collapsePoint ) === 'custom' ) && (
-						<UnitControl
+						<SgsLengthControl
 							label={ __( 'Switch to burger below', 'sgs-blocks' ) }
 							value={ `${ collapsePoint }px` }
 							units={ [ { value: 'px', label: 'px', default: 768 } ] }
@@ -869,7 +921,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									setAttributes( { collapsePoint: n } );
 								}
 							} }
-							__next40pxDefaultSize
+							presets={ false }
 						/>
 					) }
 
@@ -1081,8 +1133,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					resetAll={ () =>
 						setAttributes( {
 							gap: '8px',
-							paddingTablet: {},
-							paddingMobile: {},
+							padding: {},
 						} )
 					}
 				>
@@ -1092,13 +1143,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onDeselect={ () => setAttributes( { gap: '8px' } ) }
 						isShownByDefault
 					>
-						<UnitControl
+						<SgsLengthControl
 							label={ __( 'Item gap', 'sgs-blocks' ) }
 							value={ gap }
 							onChange={ ( val ) =>
 								setAttributes( { gap: val || '8px' } )
 							}
-							__next40pxDefaultSize
+							presets={ false }
 						/>
 					</ToolsPanelItem>
 					{ /*
@@ -1113,49 +1164,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					 */ }
 					<ToolsPanelItem
 						hasValue={ () =>
-							Object.keys( attributes.paddingTablet || {} )
-								.length > 0 ||
-							Object.keys( attributes.paddingMobile || {} )
-								.length > 0
+							Object.keys( attributes.padding ?? {} ).length > 0
 						}
 						label={ __( 'Padding', 'sgs-blocks' ) }
 						onDeselect={ () =>
-							setAttributes( {
-								paddingTablet: {},
-								paddingMobile: {},
-							} )
+							setAttributes( { padding: {} } )
 						}
 						isShownByDefault
 					>
-						<ResponsiveBoxControl
-							label={ __( 'Padding', 'sgs-blocks' ) }
-							values={ {
-								base: attributes.style?.spacing?.padding ?? {},
-								tablet: attributes.paddingTablet ?? {},
-								mobile: attributes.paddingMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								if ( 'base' === tier ) {
-									setAttributes( {
-										style: {
-											...attributes.style,
-											spacing: {
-												...attributes.style?.spacing,
-												padding: next,
-											},
-										},
-									} );
-								} else {
-									setAttributes( {
-										[ `padding${
-											'tablet' === tier
-												? 'Tablet'
-												: 'Mobile'
-										}` ]: next,
-									} );
-								}
-							} }
-						/>
+						<ResponsiveOverride
+							value={ attributes.padding }
+							onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<SgsBoxControl
+									label={ __( 'Padding', 'sgs-blocks' ) }
+									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+									units={ BOX_UNITS }
+									presets
+									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								/>
+							) }
+						</ResponsiveOverride>
 					</ToolsPanelItem>
 				</ToolsPanel>
 
@@ -1191,7 +1221,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { submenuMinWidth: '' } )
 						}
 					>
-						<UnitControl
+						<SgsLengthControl
 							label={ __( 'Minimum width', 'sgs-blocks' ) }
 							value={ submenuMinWidth }
 							onChange={ ( val ) =>
@@ -1201,7 +1231,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								'Stops a dropdown shrinking to the width of its shortest link.',
 								'sgs-blocks'
 							) }
-							__next40pxDefaultSize
+							presets={ false }
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
@@ -1211,49 +1241,48 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { submenuRadius: '' } )
 						}
 					>
-						<UnitControl
+						<SgsLengthControl
 							label={ __( 'Corner radius', 'sgs-blocks' ) }
 							value={ submenuRadius }
 							onChange={ ( val ) =>
 								setAttributes( { submenuRadius: val || '' } )
 							}
-							__next40pxDefaultSize
+							presets={ false }
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
 						hasValue={ () =>
-							!! submenuPadding &&
-							Object.keys( submenuPadding ).length > 0
+							Object.keys( submenuPadding?.desktop || {} )
+								.length > 0 ||
+							Object.keys( submenuPadding?.tablet || {} )
+								.length > 0 ||
+							Object.keys( submenuPadding?.mobile || {} )
+								.length > 0
 						}
 						label={ __( 'Inner spacing', 'sgs-blocks' ) }
 						onDeselect={ () =>
 							setAttributes( { submenuPadding: {} } )
 						}
 					>
-						{ /*
-						   WP's NATIVE BoxControl, not ResponsiveBoxControl.
-						   ResponsiveBoxControl stores a tier-shaped
-						   { base, tablet, mobile } object and calls
-						   onChange( tier, next ) — feeding that to a renderer
-						   expecting a flat { top, right, bottom, left } drops
-						   the whole value silently, with nothing to see in the
-						   editor or the markup. A dropdown's inner spacing is
-						   not device-tiered, so the flat shape is correct here
-						   and matches sgs_box_object_shorthand() in render.php.
-						*/ }
-						<BoxControl
+						{ /* Migrated 2026-08-19 to a responsive tier object,
+						   matching nav-drawer's drawerPadding shape. */ }
+						<ResponsiveBoxControl
 							label={ __( 'Inner spacing', 'sgs-blocks' ) }
-							values={ submenuPadding || {} }
-							units={ [
-								{ value: 'px', label: 'px', default: 0 },
-								{ value: 'rem', label: 'rem', default: 0 },
-								{ value: 'em', label: 'em', default: 0 },
-							] }
-							splitOnAxis={ false }
-							onChange={ ( val ) =>
-								setAttributes( { submenuPadding: val || {} } )
-							}
-							__next40pxDefaultSize
+							presets
+							values={ {
+								base: submenuPadding?.desktop ?? {},
+								tablet: submenuPadding?.tablet ?? {},
+								mobile: submenuPadding?.mobile ?? {},
+							} }
+							onChange={ ( tier, next ) => {
+								const key = tier === 'base' ? 'desktop' : tier;
+								setAttributes( {
+									submenuPadding: {
+										...submenuPadding,
+										[ key ]: next,
+									},
+								} );
+							} }
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
@@ -1303,16 +1332,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{ /* Colours (text/background, Normal + Hover) moved to the
 					   top-level SgsColourPanel (D618/D609). Radius is not a
 					   colour, so it stays here as a plain Normal/Hover pair. */ }
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Corner radius', 'sgs-blocks' ) }
 						value={ `${ itemRadius }px` }
 						units={ [ { value: 'px', label: 'px', default: 8 } ] }
 						onChange={ ( val ) =>
 							setAttributes( { itemRadius: parseFloat( val ) || 0 } )
 						}
-						__next40pxDefaultSize
+						presets={ false }
 					/>
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Corner radius on hover', 'sgs-blocks' ) }
 						value={ `${ itemRadiusHover ?? itemRadius }px` }
 						units={ [ { value: 'px', label: 'px', default: 8 } ] }
@@ -1323,7 +1352,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'Leave matching Normal for a pill that keeps its shape on hover.',
 							'sgs-blocks'
 						) }
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 
 					<TypographyControls
@@ -1387,7 +1416,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						   SgsColourPanel (D618/D609) — only shown there when
 						   Hover style is 'underline', mirroring this panel's
 						   own visibility gate. */ }
-						<UnitControl
+						<SgsLengthControl
 							label={ __( 'Thickness', 'sgs-blocks' ) }
 							value={ `${ underlineThickness }px` }
 							units={ [
@@ -1399,9 +1428,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										parseFloat( val ) || 2,
 								} )
 							}
-							__next40pxDefaultSize
+							presets={ false }
 						/>
-						<UnitControl
+						<SgsLengthControl
 							label={ __( 'Distance below text', 'sgs-blocks' ) }
 							value={ `${ underlineOffset }px` }
 							units={ [
@@ -1412,7 +1441,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									underlineOffset: parseFloat( val ) || 6,
 								} )
 							}
-							__next40pxDefaultSize
+							presets={ false }
 						/>
 						<p className="sgs-nav-menu__inspector-note">
 							{ __(
@@ -1428,23 +1457,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					   top-level SgsColourPanel (D618/D609). Radius and font
 					   weight are not colours, so they stay here as plain
 					   Normal/Hover pairs. */ }
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Corner radius', 'sgs-blocks' ) }
 						value={ `${ featuredRadius }px` }
 						units={ [ { value: 'px', label: 'px', default: 8 } ] }
 						onChange={ ( val ) =>
 							setAttributes( { featuredRadius: parseFloat( val ) || 0 } )
 						}
-						__next40pxDefaultSize
+						presets={ false }
 					/>
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Corner radius on hover', 'sgs-blocks' ) }
 						value={ `${ featuredRadiusHover ?? featuredRadius }px` }
 						units={ [ { value: 'px', label: 'px', default: 8 } ] }
 						onChange={ ( val ) =>
 							setAttributes( { featuredRadiusHover: parseFloat( val ) || 0 } )
 						}
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 					<SelectControl
 						label={ __( 'Font weight', 'sgs-blocks' ) }
@@ -1485,7 +1514,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<PanelBody title={ __( 'Burger', 'sgs-blocks' ) } initialOpen={ false }>
 					{ /* Icon colour + background (Normal + Hover) moved to
 					   the top-level SgsColourPanel (D618/D609). */ }
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Button size', 'sgs-blocks' ) }
 						value={ burgerSize }
 						units={ [ { value: 'px', label: 'px', default: 44 } ] }
@@ -1496,7 +1525,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'44px minimum for a comfortable touch target (WCAG 2.2 AA).',
 							'sgs-blocks'
 						) }
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 				</PanelBody>
 			</InspectorControls>

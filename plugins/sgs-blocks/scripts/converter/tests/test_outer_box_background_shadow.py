@@ -7,10 +7,22 @@ GROUND-TRUTH: spec=31 §3.A source=db
   attr_for_layer_property('sgs/container', 'OUTER', 'background-attachment') = 'backgroundAttachment'
   attr_for_layer_property('sgs/container', 'OUTER', 'box-shadow') = 'shadow'
     (role=color Shadow row wins over role=visual BoxShadow row by rowid ordering)
-  design_tokens shadow presets (token_type='size', slug LIKE 'shadow-%'):
-    shadow-sm  default_value='0 1px 3px rgba(0,0,0,0.08)'   → slug 'sm'
-    shadow-md  default_value='0 4px 12px rgba(0,0,0,0.1)'   → slug 'md'
-    shadow-lg  default_value='0 8px 30px rgba(0,0,0,0.12)'  → slug 'lg'
+  design_tokens shadow presets (token_type='shadow', slug LIKE 'shadow-%'; corrected
+  2026-08-24 from a mistyped 'size' via .claude/reports/2026-08-24-design-tokens-shadow-fix.sql
+  — the design_tokens CHECK constraint declares 'shadow' as its own token_type):
+
+NOTE (2026-08-24, D765): these assertions used to expect the slugs sm / md / lg.
+Those design_tokens rows were ORPHANS — absent from theme/sgs-theme/theme.json,
+left over from an older naming scheme — and they shared byte-identical CSS values
+with the live subtle / raised / floating presets. While both existed the resolver
+picked the orphan, so the converter emitted e.g. shadow="md": a slug that resolves
+to NOTHING in the current theme. Deleting the orphan rows fixed that, and these
+tests were updated to the slugs that actually exist. The rows were not merely
+dead; they were actively wrong.
+
+    shadow-subtle  default_value='0 1px 3px rgba(0,0,0,0.08)'   → slug 'subtle'
+    shadow-raised  default_value='0 4px 12px rgba(0,0,0,0.1)'   → slug 'raised'
+    shadow-floating  default_value='0 8px 30px rgba(0,0,0,0.12)'  → slug 'floating'
     shadow-glow default_value='0 0 20px rgba(248,122,31,0.3)' → slug 'glow'
   backgroundSize enum_values='["cover", "contain", "auto"]'; is_responsive=0
   backgroundAttachment enum_values='["scroll", "fixed"]'; is_responsive=0
@@ -28,7 +40,7 @@ import pytest
 
 from converter.context import Ctx, Decl
 from converter.models import GapOrigin, Write
-from converter.orchestrator import process_element
+from converter.dispatch_spine import process_element
 from converter.db.db_lookup import SGS_DB
 
 
@@ -172,37 +184,37 @@ def test_background_attachment_invalid_value_gaps(conn):
 # ---------------------------------------------------------------------------
 
 def test_box_shadow_md_preset_writes_slug_md(conn):
-    """'0 4px 12px rgba(0,0,0,0.1)' matches shadow-md preset → Write(attr='shadow', value='md').
+    """'0 4px 12px rgba(0,0,0,0.1)' matches shadow-raised preset → Write(attr='shadow', value='raised').
 
-    GROUND-TRUTH: design_tokens slug='shadow-md' default_value='0 4px 12px rgba(0,0,0,0.1)'
-    token_type='size'. Strip 'shadow-' prefix → slug 'md'.
+    GROUND-TRUTH: design_tokens slug='shadow-raised' default_value='0 4px 12px rgba(0,0,0,0.1)'
+    token_type='shadow'. Strip 'shadow-' prefix → slug 'raised'.
     """
     result = process_element(
         _ctx(conn),
         [Decl("box-shadow", "0 4px 12px rgba(0,0,0,0.1)", "Base")],
     )
     attrs = result.attrs()
-    assert attrs.get("shadow") == "md", (
-        f"Expected shadow='md' for box-shadow matching shadow-md preset; got {attrs}"
+    assert attrs.get("shadow") == "raised", (
+        f"Expected shadow='raised' for box-shadow matching shadow-raised preset; got {attrs}"
     )
 
 
 def test_box_shadow_sm_preset_writes_slug_sm(conn):
-    """'0 1px 3px rgba(0,0,0,0.08)' matches shadow-sm preset → slug 'sm'."""
+    """'0 1px 3px rgba(0,0,0,0.08)' matches shadow-subtle preset → slug 'subtle'."""
     result = process_element(
         _ctx(conn),
         [Decl("box-shadow", "0 1px 3px rgba(0,0,0,0.08)", "Base")],
     )
-    assert result.attrs().get("shadow") == "sm"
+    assert result.attrs().get("shadow") == "subtle"
 
 
 def test_box_shadow_lg_preset_writes_slug_lg(conn):
-    """'0 8px 30px rgba(0,0,0,0.12)' matches shadow-lg preset → slug 'lg'."""
+    """'0 8px 30px rgba(0,0,0,0.12)' matches shadow-floating preset → slug 'floating'."""
     result = process_element(
         _ctx(conn),
         [Decl("box-shadow", "0 8px 30px rgba(0,0,0,0.12)", "Base")],
     )
-    assert result.attrs().get("shadow") == "lg"
+    assert result.attrs().get("shadow") == "floating"
 
 
 def test_box_shadow_glow_preset_writes_slug_glow(conn):
@@ -224,7 +236,7 @@ def test_box_shadow_whitespace_normalised_matches_preset(conn):
         _ctx(conn),
         [Decl("box-shadow", "0  4px  12px  rgba(0,0,0,0.1)", "Base")],
     )
-    assert result.attrs().get("shadow") == "md"
+    assert result.attrs().get("shadow") == "raised"
 
 
 def test_box_shadow_no_preset_match_gaps_no_destination(conn):
@@ -259,7 +271,7 @@ def test_box_shadow_no_preset_match_never_emits_raw_value(conn):
     shadow_write = result.attrs().get("shadow")
     assert shadow_write is None, (
         f"outer_box must NEVER emit a raw CSS value to the shadow attr (got {shadow_write!r}); "
-        f"only preset slugs ('sm'/'md'/'lg'/'glow') are valid"
+        f"only preset slugs ('subtle'/'raised'/'floating'/'glow') are valid"
     )
 
 
@@ -308,4 +320,4 @@ def test_multi_background_shadow_conservation(conn):
     assert attrs.get("backgroundPosition") == "center"
     assert attrs.get("backgroundRepeat") == "no-repeat"
     assert attrs.get("backgroundAttachment") == "fixed"
-    assert attrs.get("shadow") == "md"
+    assert attrs.get("shadow") == "raised"

@@ -1,23 +1,22 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName -- dynamic block render template; helper class below is rendered inline, its namespace lives in the block slug.
 /**
- * SGS Nav Menu (sgs/nav-menu) — server-side render.
+ * SGS Nav Menu (sgs/nav-menu) — server-side render. (D270)
  *
- * REBUILD (Spec 36 Phase 1 Wave 2, Step 6 — D270 same-slug rebuild, no
- * deprecation). This is the site's VISIBLE menu: a FLAT horizontal bar of
- * real <a href> links on desktop; below `collapsePoint` it becomes a burger
- * that opens `sgs/nav-drawer` through the shared `store('sgs/nav')`
- * Interactivity store (src/shared/nav-interactivity/store.js). No
- * submenus/dropdowns/mega this phase — a submenu/mega-menu item collapses to
- * its OWN single top-level link.
+ * This is the site's VISIBLE menu: a FLAT horizontal bar of real <a href>
+ * links on desktop; below `collapsePoint` it becomes a burger that opens
+ * `sgs/nav-drawer` through the shared `store('sgs/nav')` Interactivity store
+ * (src/shared/nav-interactivity/store.js). Submenus (one level deep,
+ * MAX_SUBMENU_DEPTH = 1) and mega panels ARE rendered — dropdown roots,
+ * sub-toggles and `sgs_mega_render_panel_content()` panels, all driven by the
+ * shared `sgs/mega` interactivity store.
  *
  * Menu source: the shared SGS_Nav_Menu_Source resolver (one-source rule,
- * Spec 36 FR-36-1) — the SAME resolver the drawer content uses. (sgs/adaptive-nav,
- * the block this comment used to name as the other consumer, was retired/deleted
- * at FR-37-21/D362, 2026-07-22 — this block is its replacement.)
+ * Spec 36 FR-36-1) — the SAME resolver the drawer content uses.
  *
- * NO-INLINE (Spec 32): the rendered subtree carries ZERO inline CSS property
- * declarations. Colour / hover / typography / featured styling are emitted
- * into this block's own scoped <style> (custom-property VALUES / var()
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check. Colour / hover / typography / featured styling are emitted into
+ * this block's own scoped <style> (custom-property VALUES / var()
  * references only ride inline, and only inside the wrapper's own mechanism).
  *
  * `aria-current="page"` is intentionally NOT computed here — the stack sits
@@ -33,6 +32,29 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-typography.php';
@@ -340,28 +362,14 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 						// two nav-menus bound to the SAME menu can't collide (axe
 						// duplicate-id-aria). $uid already carries the sgs-nav-menu- prefix.
 						$panel_dom_id = $this->uid . '-mega-' . (int) $item['object_id'];
-						$mega_ctx     = function_exists( 'wp_interactivity_data_wp_context' )
-							? wp_interactivity_data_wp_context(
-								array(
-									'isOpen'      => false,
-									'megaId'      => (string) (int) $item['object_id'],
-									'intentDelay' => 300,
-									'closeGrace'  => 170,
-								)
+						$mega_ctx     = wp_interactivity_data_wp_context(
+							array(
+								'isOpen'      => false,
+								'megaId'      => (string) (int) $item['object_id'],
+								'intentDelay' => 300,
+								'closeGrace'  => 170,
 							)
-							: sprintf(
-								"data-wp-context='%s'",
-								esc_attr(
-									wp_json_encode(
-										array(
-											'isOpen'      => false,
-											'megaId'      => (string) (int) $item['object_id'],
-											'intentDelay' => 300,
-											'closeGrace'  => 170,
-										)
-									)
-								)
-							);
+						);
 						$caret = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-down' ) : '';
 						$html .= sprintf(
 							'<li class="%1$s sgs-nav-menu__item--mega">'
@@ -372,7 +380,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 							. '<div id="%3$s" class="sgs-nav-menu__mega-panel-wrap" data-sgs-mega-panel data-wp-on--keydown="actions.panelKeydown">%6$s</div>'
 							. '</div></li>',
 							esc_attr( $li_class ),
-							$mega_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes; the fallback branch esc_attr()s the JSON.
+							$mega_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes.
 							esc_attr( $panel_dom_id ),
 							esc_html( $item['label'] ),
 							$caret, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
@@ -438,28 +446,14 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 					 */
 					if ( '' !== $child_html ) {
 						$sub_dom_id = $this->uid . '-sub-' . substr( md5( $item['identifier'] ), 0, 8 );
-						$sub_ctx    = function_exists( 'wp_interactivity_data_wp_context' )
-							? wp_interactivity_data_wp_context(
-								array(
-									'isOpen'      => false,
-									'megaId'      => $sub_dom_id,
-									'intentDelay' => 300,
-									'closeGrace'  => $this->submenu['close_grace'],
-								)
+						$sub_ctx    = wp_interactivity_data_wp_context(
+							array(
+								'isOpen'      => false,
+								'megaId'      => $sub_dom_id,
+								'intentDelay' => 300,
+								'closeGrace'  => $this->submenu['close_grace'],
 							)
-							: sprintf(
-								"data-wp-context='%s'",
-								esc_attr(
-									wp_json_encode(
-										array(
-											'isOpen'      => false,
-											'megaId'      => $sub_dom_id,
-											'intentDelay' => 300,
-											'closeGrace'  => $this->submenu['close_grace'],
-										)
-									)
-								)
-							);
+						);
 						$sub_caret  = '';
 						if ( $this->submenu['caret'] && function_exists( 'sgs_get_lucide_icon' ) ) {
 							$sub_caret = '<span class="sgs-nav-menu__caret" aria-hidden="true">'
@@ -506,7 +500,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 							. '</div></li>',
 							esc_attr( $li_class ),
 							esc_attr( $this->submenu['align'] ),
-							$sub_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes; the fallback branch esc_attr()s the JSON.
+							$sub_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes.
 							$trigger_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from esc_url/esc_attr/esc_html parts.
 							esc_attr( $sub_dom_id ),
 							$child_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from esc_url/esc_attr/esc_html parts.
@@ -666,13 +660,6 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 }
 
 // CSS-keyword / length sanitisers — free-text attrs concatenated into raw CSS.
-$sgs_nm_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-$sgs_nm_css_length  = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // ── 1. Deterministic content-addressed uid (CSS scope). ────────────────────
 // STOP-NO-KSORT: $attributes passed verbatim into the uid hash + the wrapper.
 $anchor_val = isset( $block->parsed_block['attrs']['anchor'] ) ? (string) $block->parsed_block['attrs']['anchor'] : '';
@@ -749,52 +736,48 @@ if ( class_exists( '\\SGS\\Blocks\\Sgs_Drawer_Render' ) ) {
 	\SGS\Blocks\Sgs_Drawer_Render::note_burger( $drawer_ref );
 }
 
-$burger_context = wp_json_encode(
+$burger_icon = sgs_get_lucide_icon( 'menu' );
+
+// wp_interactivity_data_wp_context() is the WP-canonical compact single-quoted
+// emitter (avoids the &quot; bloat get_block_wrapper_attributes() would add) —
+// mirrors the SGS_Container_Wrapper opts doc for `extra_attr_html`.
+$burger_context_attr = wp_interactivity_data_wp_context(
 	array(
 		'isOpen'    => false,
 		'drawerRef' => $drawer_ref,
 	)
 );
 
-$burger_icon = sgs_get_lucide_icon( 'menu' );
-
-// wp_interactivity_data_wp_context() is the WP-canonical compact single-quoted
-// emitter (avoids the &quot; bloat get_block_wrapper_attributes() would add) —
-// mirrors the SGS_Container_Wrapper opts doc for `extra_attr_html`.
-$burger_context_attr = function_exists( 'wp_interactivity_data_wp_context' )
-	? wp_interactivity_data_wp_context(
-		array(
-			'isOpen'    => false,
-			'drawerRef' => $drawer_ref,
-		)
-	)
-	: sprintf( "data-wp-context='%s'", esc_attr( $burger_context ) );
-
 $toggle_html = sprintf(
 	'<div class="sgs-nav-menu__toggle-wrap" data-wp-interactive="sgs/nav" %s data-wp-init="callbacks.pruneDanglingAriaControls">' .
 	'<button type="button" class="sgs-nav-menu__burger" data-wp-on--click="actions.toggleDrawer" data-wp-bind--aria-expanded="state.isOpen" aria-controls="%s" aria-label="%s">%s</button>' .
 	'</div>',
-	$burger_context_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes; the fallback branch above esc_attr()s the JSON.
+	$burger_context_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes.
 	esc_attr( $drawer_ref ),
 	esc_attr__( 'Open menu', 'sgs-blocks' ),
 	$burger_icon // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
 );
 
 // ── The <nav> landmark label (FR-36-10 / FR-36-11) ──────────────────────────
-// The landmark ITSELF is the wrapper element: SGS_Container_Wrapper is called
-// below with `'tag' => 'nav'`, so this block's root IS a <nav>. It always has
-// been. This label rides onto it via `extra_attrs` — see the wrapper call.
+// The landmark ITSELF is this block's root: the final `printf()` at the end of
+// this file emits `<nav %s>` directly via get_block_wrapper_attributes(), so the
+// root IS a <nav>. This label rides onto it through $nav_root_attrs.
+// ⚠ Corrected 2026-08-21: this previously said SGS_Container_Wrapper renders the
+// tag. That stopped being true at D539, when the block moved to a block-private
+// root (see the require note at the top — the wrapper file is deliberately NOT
+// required). The warning below still stands; only the mechanism named changed.
 //
 // ⚠ HISTORY, so this is not "fixed" a third time. On 2026-07-23 a change added
 // a SECOND, inner <nav class="sgs-nav-menu__nav"> here and moved the label onto
 // it, on the stated grounds that the block "emitted NO <nav> element at all" and
 // that the wrapper was "a roleless <div>". Both premises were false. They came
 // from `grep -c "<nav" nav-menu/render.php`, which returns 0 because the <nav>
-// is emitted by class-sgs-container-wrapper.php — a different file the grep
-// never read (STOP-A-GREP-PATTERN-THAT-CANNOT-MATCH-PROVES-NOTHING). Live on the
+// was at that time emitted by class-sgs-container-wrapper.php — a different file
+// the grep never read (STOP-A-GREP-PATTERN-THAT-CANNOT-MATCH-PROVES-NOTHING). Live on the
 // canary that change produced <nav> nested inside <nav> around the SAME links,
 // with the OUTER one unnamed, and axe still reported `landmark-unique`. Reverted
-// 2026-07-23. Before changing the landmark structure again, read the wrapper.
+// 2026-07-23. Before changing the landmark structure again, read the printf()
+// at the end of this file — that is what emits the landmark now.
 //
 // The label falls back through: operator `navLabel` → the resolved MENU'S OWN
 // NAME → 'Primary'. Preferring the menu name means two nav instances bound to
@@ -803,7 +786,7 @@ $toggle_html = sprintf(
 // `navLabel` to default to '' in block.json — a non-empty default makes the
 // menu-name branch below unreachable dead code (it was, until 2026-07-23).
 $nav_label = trim( (string) ( $attributes['navLabel'] ?? '' ) );
-if ( '' === $nav_label && $ref > 0 && function_exists( 'wp_get_nav_menu_object' ) ) {
+if ( '' === $nav_label && $ref > 0 ) {
 	$nav_menu_obj = wp_get_nav_menu_object( $ref );
 	if ( $nav_menu_obj && ! empty( $nav_menu_obj->name ) ) {
 		// Strip a trailing "menu"/"navigation"/"nav" from the DERIVED name only.
@@ -842,6 +825,7 @@ $indicator_style          = isset( $attributes['indicatorStyle'] ) && in_array( 
 	? (string) $attributes['indicatorStyle']
 	: 'none';
 $indicator_colour  = isset( $attributes['indicatorColour'] ) ? (string) $attributes['indicatorColour'] : '';
+$indicator_colour_gradient = sgs_css_gradient_value( $attributes['indicatorColourGradient'] ?? '' );
 $magnet_enabled    = ! empty( $attributes['itemMagnetEnabled'] );
 $bar_data_attrs    = '';
 $bar_data_attrs   .= 'pill' === $indicator_style ? ' data-sgs-nav-indicator' : '';
@@ -873,10 +857,7 @@ $link_sel = $uid_sel . ' .sgs-nav-menu__link';
 $css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );
 
 /*
- * 4a-ii. Nav CONTAINER appearance (2026-07-28 — Bean-directed; the block had
- * NO fill controls at all, only per-item ones, so a bar could never sit on
- * its own surface. Audit: `supports` declared spacing only, and the element
- * manifest's `wrapper` mapped padding/margin/max-width and nothing else).
+ * 4a-ii. Nav CONTAINER appearance.
  *
  * Every value is emitted ONLY when the operator has set it, so an untouched
  * nav is byte-identical to before. `$uid_sel` targets the <nav> root itself
@@ -887,22 +868,32 @@ $css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );
  * on the drawer's copy styles ONLY the drawer — no per-context plumbing.
  */
 $nav_bg       = isset( $attributes['navBg'] ) ? (string) $attributes['navBg'] : '';
+$nav_bg_gradient = sgs_css_gradient_value( $attributes['navBgGradient'] ?? '' );
 $nav_colour   = isset( $attributes['navColour'] ) ? (string) $attributes['navColour'] : '';
+// D956 -- sibling gradient wins when set+valid. Safe unconditionally: navBg
+// already lives on a SEPARATE `::after` layer below, never $uid_sel itself.
+$nav_colour_gradient  = isset( $attributes['navColourGradient'] ) ? (string) $attributes['navColourGradient'] : '';
+$nav_colour_effective = sgs_resolve_text_colour_or_gradient( $nav_colour, $nav_colour_gradient );
 $nav_bg_hover = isset( $attributes['navBgHover'] ) ? (string) $attributes['navBgHover'] : '';
 
-$nav_decls = '';
-if ( '' !== $nav_bg ) {
-	$nav_decls .= 'background-color:' . sgs_colour_value( $nav_bg ) . ';';
+// bg_layer=true equivalent (D940 batch): background moves onto a `::after`
+// layer so `navColour` is free of a same-selector background for a future
+// navColourGradient sibling. $uid_sel is not positioned in style.css, so the
+// full helper (position:relative + isolation:isolate) is safe here.
+$nav_bg_decl       = sgs_background_paint_decl( $nav_bg, $nav_bg_gradient );
+$nav_bg_hover_decl = '' !== $nav_bg_hover ? 'background-color:' . sgs_colour_value( $nav_bg_hover ) : '';
+if ( '' !== $nav_bg_decl || '' !== $nav_bg_hover_decl ) {
+	$css .= sgs_block_background_layer_css( $uid_sel, $nav_bg_decl, $nav_bg_hover_decl );
 }
-if ( '' !== $nav_colour ) {
-	$nav_decls .= 'color:' . sgs_colour_value( $nav_colour ) . ';';
+if ( '' !== $nav_colour_effective ) {
+	$nav_colour_decl = sgs_text_colour_decl( $nav_colour_effective );
+	if ( '' !== $nav_colour_decl ) {
+		$css .= $uid_sel . '{' . $nav_colour_decl . ';}';
+	}
+	$css .= sgs_text_colour_gradient_fallback_rule( $uid_sel, $nav_colour_effective );
 }
-if ( '' !== $nav_decls ) {
-	$css .= $uid_sel . '{' . $nav_decls . '}';
-}
-
-if ( '' !== $nav_bg_hover ) {
-	$css .= $uid_sel . ':hover{background-color:' . sgs_colour_value( $nav_bg_hover ) . ';}';
+if ( '' !== ( $attributes['navColourHover'] ?? '' ) ) {
+	$css .= sgs_hover_state_rules( "{$uid_sel}", "color:" . sgs_colour_value( $attributes['navColourHover'] ), ':focus-visible' );
 }
 
 // 4b. Item colours (resting). Base is `inherit` in style.css; an unset slug
@@ -912,8 +903,17 @@ if ( '' !== $nav_bg_hover ) {
 // against hover BACKGROUND in one toggle, so an operator could never set a
 // hover text colour at all — it was auto-computed and unreachable.
 $item_colour = isset( $attributes['itemColour'] ) ? (string) $attributes['itemColour'] : '';
-$item_bg     = isset( $attributes['itemBg'] ) ? sanitize_html_class( $attributes['itemBg'] ) : '';
-$item_bg_hex = '' !== $item_bg ? sgs_resolve_palette_hex( $item_bg, '' ) : '';
+// D956 -- sibling gradient wins when set+valid. Safe unconditionally: itemBg
+// (below) paints on a `::before` layer, never $link_sel itself (D942 recipe
+// item 1's own comment at the itemBg block explains why ::after was unusable
+// here). Hover ($item_fg_hover) is NOT wired to gradient: 'pill' hoverStyle
+// auto-computes the text colour for WCAG contrast against itemBgHover, which
+// a client-chosen gradient can't meaningfully replace -- separate decision.
+$item_colour_gradient  = isset( $attributes['itemColourGradient'] ) ? (string) $attributes['itemColourGradient'] : '';
+$item_colour_effective = sgs_resolve_text_colour_or_gradient( $item_colour, $item_colour_gradient );
+$item_bg          = isset( $attributes['itemBg'] ) ? sanitize_html_class( $attributes['itemBg'] ) : '';
+$item_bg_hex      = '' !== $item_bg ? sgs_resolve_palette_hex( $item_bg, '' ) : '';
+$item_bg_gradient = sgs_css_gradient_value( $attributes['itemBgGradient'] ?? '' );
 
 /*
  * Shape + motion come from ATTRIBUTES and theme TOKENS, never literals. The
@@ -931,11 +931,35 @@ $item_radius_hover = isset( $attributes['itemRadiusHover'] ) && null !== $attrib
 	? (float) $attributes['itemRadiusHover']
 	: $item_radius;
 
-if ( '' !== $item_colour ) {
-	$css .= $link_sel . '{color:' . sgs_colour_value( $item_colour ) . ';}';
+if ( '' !== $item_colour_effective ) {
+	$item_colour_decl = sgs_text_colour_decl( $item_colour_effective );
+	if ( '' !== $item_colour_decl ) {
+		$css .= $link_sel . '{' . $item_colour_decl . ';}';
+	}
+	$css .= sgs_text_colour_gradient_fallback_rule( $link_sel, $item_colour_effective );
 }
-if ( '' !== $item_bg_hex ) {
-	$css .= $link_sel . '{background-color:' . esc_attr( $item_bg_hex ) . ';border-radius:' . esc_attr( (string) $item_radius ) . 'px;}';
+if ( '' !== $item_bg_hex || '' !== $item_bg_gradient ) {
+	/*
+	 * D942 recipe item 1 (`itemColour`): `itemColour`'s `color:` and
+	 * `itemBg`'s `background-color:` used to paint the SAME selector
+	 * ($link_sel) — a same-selector text/background collision that would
+	 * block a future `itemColourGradient` sibling from using
+	 * `background-clip:text` (it clips the element's whole background
+	 * paint area, not just this declaration). The usual fix is
+	 * `sgs_block_background_layer_css()`, which moves the paint onto a
+	 * `::after` layer, but `$link_sel` already legitimately owns
+	 * `::after` for the hoverStyle='underline' bar below — two
+	 * pseudo-elements cannot share one selector. `::before` is confirmed
+	 * unused anywhere else in this block's own CSS, so the background
+	 * moves there instead (same shape, hand-composed for the free slot).
+	 * Applies regardless of hoverStyle, same as the resting paint it
+	 * replaces. `itemBgGradient` (below) is the sibling gradient wired
+	 * 2026-09-04 — the second argument was previously a literal `null`
+	 * placeholder.
+	 */
+	$item_bg_before_decl = sgs_background_paint_decl( $item_bg_hex, $item_bg_gradient );
+	$css                .= $link_sel . '{position:relative;isolation:isolate;border-radius:' . esc_attr( (string) $item_radius ) . 'px;}';
+	$css                .= $link_sel . '::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . $item_bg_before_decl . ';}';
 }
 
 // 4c. Hover / focus-visible / current-page state. [aria-current="page"] is set
@@ -993,11 +1017,10 @@ if ( 'pill' === $hover_style && '' !== $item_bg_hover_hex ) {
 	 * UNDERLINE — a real ::after bar, and the fallback for every other case so
 	 * there is never zero visible feedback (WCAG 1.4.1 / 2.4.7).
 	 *
-	 * NOT `text-decoration:underline`, which was the pre-2026-07-20 fallback:
-	 * that hugs the baseline, breaks around descenders, spans only the glyphs
-	 * (so every item's line is a different length), and cannot animate. A
-	 * positioned bar spans the link box consistently and grows in from the
-	 * left. Bean reported it as "quite an ugly look"; the mechanism confirmed it.
+	 * NOT `text-decoration:underline`: that hugs the baseline, breaks around
+	 * descenders, spans only the glyphs (so every item's line is a different
+	 * length), and cannot animate. A positioned bar spans the link box
+	 * consistently and grows in from the left.
 	 */
 	$u_thickness = isset( $attributes['underlineThickness'] ) ? (float) $attributes['underlineThickness'] : 2;
 	$u_offset    = isset( $attributes['underlineOffset'] ) ? (float) $attributes['underlineOffset'] : 6;
@@ -1007,6 +1030,21 @@ if ( 'pill' === $hover_style && '' !== $item_bg_hover_hex ) {
 	$u_colour_h  = isset( $attributes['underlineColourHover'] ) && '' !== $attributes['underlineColourHover']
 		? sgs_colour_value( (string) $attributes['underlineColourHover'] )
 		: $u_colour;
+
+	/*
+	 * Gradient sibling (D948 rollout). The ::after bar is a standalone
+	 * decorative element — no other declaration paints this selector's
+	 * background — so this is a safe direct swap, no ::after-layer split
+	 * needed (contrast the itemBg/navBg cases where a text colour or a
+	 * second background shares the element). Non-empty underlineColourGradient
+	 * wins over the flat underlineColour; when both are empty the pre-existing
+	 * 'currentColor' fallback is preserved.
+	 */
+	$underline_colour_gradient = sgs_css_gradient_value( $attributes['underlineColourGradient'] ?? '' );
+	$u_paint_decl              = sgs_background_paint_decl( (string) ( $attributes['underlineColour'] ?? '' ), $underline_colour_gradient );
+	if ( '' === $u_paint_decl ) {
+		$u_paint_decl = 'background-color:' . $u_colour;
+	}
 
 	/*
 	 * A pseudo-element suffix must be applied to EACH selector in the list, not
@@ -1026,10 +1064,10 @@ if ( 'pill' === $hover_style && '' !== $item_bg_hover_hex ) {
 	);
 
 	$css .= $link_sel . '{position:relative;}';
-	$css .= $link_sel . '::after{content:"";position:absolute;left:0;right:0;bottom:-' . esc_attr( (string) $u_offset ) . 'px;height:' . esc_attr( (string) $u_thickness ) . 'px;background-color:' . $u_colour . ';transform:scaleX(0);transform-origin:left center;transition:transform ' . $transition_fast . ',background-color ' . $transition_fast . ';pointer-events:none;}';
-	$css .= $hover_after_sel . '{transform:scaleX(1);background-color:' . $u_colour_h . ';}';
+	$css .= $link_sel . '::after{content:"";position:absolute;left:0;right:0;bottom:-' . esc_attr( (string) $u_offset ) . 'px;height:' . esc_attr( (string) $u_thickness ) . 'px;' . $u_paint_decl . ';transform:scaleX(0);transform-origin:left center;transition:transform ' . $transition_fast . ',background-color ' . $transition_fast . ';pointer-events:none;}';
+	$css .= sgs_hover_state_rules( $link_sel, 'transform:scaleX(1);background-color:' . $u_colour_h, ':focus-visible', '::after' );
 	if ( '' !== $item_fg_hover ) {
-		$css .= $hover_sel . '{color:' . sgs_colour_value( $item_fg_hover ) . ';}';
+		$css .= sgs_hover_state_rules( $link_sel, 'color:' . sgs_colour_value( $item_fg_hover ), ':focus-visible' );
 	}
 	// Motion is decoration here — the bar's presence carries the meaning.
 	$css .= '@media (prefers-reduced-motion:reduce){' . $link_sel . '::after{transition:none;}}';
@@ -1054,12 +1092,22 @@ if ( 'pill' === $hover_style && '' !== $item_bg_hover_hex ) {
  * text #3a2e26 on primary #e68a95 = 5.28:1 PASS, so the draft's own pairing is
  * adopted verbatim — the fidelity fix and the a11y fix are the same fix.
  */
-$featured_sel     = $uid_sel . ' .sgs-nav-menu__item--featured .sgs-nav-menu__link';
-$featured_colour  = isset( $attributes['featuredColour'] ) && '' !== $attributes['featuredColour']
+$featured_sel      = $uid_sel . ' .sgs-nav-menu__item--featured .sgs-nav-menu__link';
+$featured_colour   = isset( $attributes['featuredColour'] ) && '' !== $attributes['featuredColour']
 	? (string) $attributes['featuredColour']
 	: 'accent';
-$featured_bg_slug = isset( $attributes['featuredBg'] ) ? sanitize_html_class( $attributes['featuredBg'] ) : '';
-$featured_bg_hex  = '' !== $featured_bg_slug ? sgs_resolve_palette_hex( $featured_bg_slug, '' ) : '';
+// featuredColourGradient is the gradient sibling (mirrors burgerColourGradient,
+// D956 rollout) -- resting LABEL form only (no featured_bg). Gradient wins when
+// set+valid.
+$featured_colour_gradient  = isset( $attributes['featuredColourGradient'] ) ? (string) $attributes['featuredColourGradient'] : '';
+$featured_colour_effective = sgs_resolve_text_colour_or_gradient( $featured_colour, $featured_colour_gradient );
+$featured_bg_slug  = isset( $attributes['featuredBg'] ) ? sanitize_html_class( $attributes['featuredBg'] ) : '';
+$featured_bg_hex   = '' !== $featured_bg_slug ? sgs_resolve_palette_hex( $featured_bg_slug, '' ) : '';
+// D958 -- Bean-directed preset-to-gradient upgrade. Gradient wins over the
+// resolved slug/hex when set+valid; the slug mechanism above is untouched
+// when this is unset, so an existing site renders byte-identical.
+$featured_bg_gradient = sgs_css_gradient_value( $attributes['featuredBgGradient'] ?? '' );
+$featured_bg_active   = ( '' !== $featured_bg_hex ) || ( '' !== $featured_bg_gradient );
 
 $featured_radius       = isset( $attributes['featuredRadius'] ) ? (float) $attributes['featuredRadius'] : 8;
 $featured_radius_hover = isset( $attributes['featuredRadiusHover'] ) && null !== $attributes['featuredRadiusHover']
@@ -1071,12 +1119,34 @@ $featured_weight_hover = isset( $attributes['featuredFontWeightHover'] ) && null
 	: $featured_weight;
 
 $featured_fg = '';
-if ( '' !== $featured_bg_hex ) {
-	$preferred_fg = sgs_resolve_palette_hex( $featured_colour, '' );
-	$featured_fg  = sgs_wcag_preferred_text_colour_for_bg( $featured_bg_hex, $preferred_fg );
-	$css         .= $featured_sel . '{background-color:' . esc_attr( $featured_bg_hex ) . ';color:' . esc_attr( $featured_fg ) . ';font-weight:' . esc_attr( (string) $featured_weight ) . ';border-radius:' . esc_attr( (string) $featured_radius ) . 'px;}';
+if ( $featured_bg_active ) {
+	$featured_bg_paint = sgs_background_paint_decl( $featured_bg_hex, $featured_bg_gradient );
+	if ( '' !== $featured_bg_gradient ) {
+		// A gradient has no single colour to run WCAG contrast maths against
+		// (sgs_wcag_preferred_text_colour_for_bg() takes ONE background hex)
+		// -- skip the computation and use the operator's own FLAT
+		// featuredColour choice instead. Deliberately NOT
+		// $featured_colour_effective (the gradient-capable resolve): a text
+		// gradient paints via background-image+background-clip:text on this
+		// SAME selector, which would collide with the pill's own
+		// background-image gradient set here -- the identical precondition
+		// failure already documented for the flat-hex pill form
+		// (featuredColourGradient's block.json note, textSharesElementWithBackground()).
+		$featured_fg = sgs_colour_value( $featured_colour );
+	} else {
+		$preferred_fg = sgs_resolve_palette_hex( $featured_colour, '' );
+		$featured_fg  = sgs_wcag_preferred_text_colour_for_bg( $featured_bg_hex, $preferred_fg );
+	}
+	$css .= $featured_sel . '{' . $featured_bg_paint
+		. ( '' !== $featured_fg ? ';color:' . esc_attr( $featured_fg ) : '' )
+		. ';font-weight:' . esc_attr( (string) $featured_weight )
+		. ';border-radius:' . esc_attr( (string) $featured_radius ) . 'px;}';
 } else {
-	$css .= $featured_sel . '{color:' . sgs_colour_value( $featured_colour ) . ';font-weight:' . esc_attr( (string) $featured_weight ) . ';}';
+	$featured_colour_decl = sgs_text_colour_decl( $featured_colour_effective );
+	if ( '' !== $featured_colour_decl ) {
+		$css .= $featured_sel . '{' . $featured_colour_decl . ';font-weight:' . esc_attr( (string) $featured_weight ) . ';}';
+	}
+	$css .= sgs_text_colour_gradient_fallback_rule( $featured_sel, $featured_colour_effective );
 }
 
 /*
@@ -1100,6 +1170,19 @@ if ( '' !== $featured_bg_hex ) {
 } elseif ( '' !== $featured_colour ) {
 	// LABEL form — no background was chosen, so the submenu row stays
 	// transparent rather than inventing a pill the bar itself does not have.
+	//
+	// Deliberately flat-only (featuredColourGradient is NOT read here). The
+	// consumer of --sgs-nm-featured-colour, render.php's
+	// `.sgs-nav-menu__subitem--featured .sgs-nav-menu__sublink` rule, paints
+	// BOTH `color:var(--sgs-nm-featured-colour,…)` AND
+	// `background:var(--sgs-nm-featured-bg,…)` on the SAME selector, so
+	// background-clip:text would clip that background paint too --
+	// textSharesElementWithBackground() precondition failure (see
+	// CLAUDE.md "Colour EMISSION helpers" + submenuColourGradient's block.json
+	// note for the identical precedent on this same file's sublink element).
+	// Fixing this needs the submenu featured background moved onto its own
+	// ::after layer (sgs_block_background_layer_css()) first -- out of scope
+	// for this pass.
 	$sgs_nm_featured_vars .= '--sgs-nm-featured-colour:' . sgs_colour_value( $featured_colour ) . ';'
 		. '--sgs-nm-featured-bg:transparent;';
 }
@@ -1108,11 +1191,9 @@ $css .= $uid_sel . '{' . $sgs_nm_featured_vars . '}';
 /*
  * 4d-ii. Featured HOVER state. The featured item is the one nav item an
  * operator most wants to stand out (it is usually the "Order now" / "Book"
- * call to action), and before 2026-07-20 it had no hover state at all — it
- * inherited the generic item hover, which fought its own pill. It now carries
- * its own Normal|Hover pair for both text and background, resolved by the same
- * contrast helper as the resting state so the operator's colour wins whenever
- * it is readable.
+ * call to action). It carries its own Normal|Hover pair for both text and
+ * background, resolved by the same contrast helper as the resting state so
+ * the operator's colour wins whenever it is readable.
  */
 $featured_hover_sel    = implode(
 	',',
@@ -1124,24 +1205,42 @@ $featured_hover_sel    = implode(
 $featured_bg_hover     = isset( $attributes['featuredBgHover'] ) ? sanitize_html_class( $attributes['featuredBgHover'] ) : '';
 $featured_bg_hover_hex = '' !== $featured_bg_hover ? sgs_resolve_palette_hex( $featured_bg_hover, '' ) : '';
 $featured_fg_hover     = isset( $attributes['featuredColourHover'] ) ? (string) $attributes['featuredColourHover'] : '';
+// D958 -- gradient sibling, mirrors featuredBgGradient above. Gradient wins
+// over the resolved featuredBgHover slug/hex when set+valid.
+$featured_bg_hover_gradient = sgs_css_gradient_value( $attributes['featuredBgHoverGradient'] ?? '' );
+$featured_bg_hover_active   = ( '' !== $featured_bg_hover_hex ) || ( '' !== $featured_bg_hover_gradient );
 
-if ( '' !== $featured_bg_hover_hex ) {
-	$preferred_hover = '' !== $featured_fg_hover ? sgs_resolve_palette_hex( $featured_fg_hover, '' ) : '';
-	$featured_fg_h   = '' !== $preferred_hover
-		? sgs_wcag_preferred_text_colour_for_bg( $featured_bg_hover_hex, $preferred_hover )
-		: sgs_wcag_text_colour_for_bg( $featured_bg_hover_hex );
-	$css            .= $featured_hover_sel . '{background-color:' . esc_attr( $featured_bg_hover_hex ) . ';color:' . esc_attr( $featured_fg_h ) . ';transition:background-color ' . $transition_fast . ',color ' . $transition_fast . ';}';
+if ( $featured_bg_hover_active ) {
+	$featured_bg_hover_paint = sgs_background_paint_decl( $featured_bg_hover_hex, $featured_bg_hover_gradient );
+	if ( '' !== $featured_bg_hover_gradient ) {
+		// Same WCAG-skip rationale as the resting pill above -- a gradient
+		// has no single hex to contrast-check. Use the operator's own flat
+		// featuredColourHover choice, falling back to the resting flat
+		// featuredColour, rather than computing WCAG contrast against a
+		// gradient.
+		$featured_fg_h = sgs_colour_value( '' !== $featured_fg_hover ? $featured_fg_hover : $featured_colour );
+	} else {
+		$preferred_hover = '' !== $featured_fg_hover ? sgs_resolve_palette_hex( $featured_fg_hover, '' ) : '';
+		$featured_fg_h   = '' !== $preferred_hover
+			? sgs_wcag_preferred_text_colour_for_bg( $featured_bg_hover_hex, $preferred_hover )
+			: sgs_wcag_text_colour_for_bg( $featured_bg_hover_hex );
+	}
+	$css .= sgs_hover_state_rules(
+		$featured_sel,
+		$featured_bg_hover_paint . ( '' !== $featured_fg_h ? ';color:' . esc_attr( $featured_fg_h ) : '' ) . ';transition:background-color ' . $transition_fast . ',color ' . $transition_fast,
+		':focus-visible'
+	);
 } elseif ( '' !== $featured_fg_hover ) {
-	$css .= $featured_hover_sel . '{color:' . sgs_colour_value( $featured_fg_hover ) . ';transition:color ' . $transition_fast . ';}';
+	$css .= sgs_hover_state_rules( $featured_sel, 'color:' . sgs_colour_value( $featured_fg_hover ) . ';transition:color ' . $transition_fast, ':focus-visible' );
 }
 
 // Featured pill SHAPE on hover — emitted only when it differs from the resting
 // shape, so an unset hover control adds no rule at all rather than a no-op one.
 if ( $featured_radius_hover !== $featured_radius ) {
-	$css .= $featured_hover_sel . '{border-radius:' . esc_attr( (string) $featured_radius_hover ) . 'px;transition:border-radius ' . $transition_fast . ';}';
+	$css .= sgs_hover_state_rules( $featured_sel, 'border-radius:' . esc_attr( (string) $featured_radius_hover ) . 'px;transition:border-radius ' . $transition_fast, ':focus-visible' );
 }
 if ( $featured_weight_hover !== $featured_weight ) {
-	$css .= $featured_hover_sel . '{font-weight:' . esc_attr( (string) $featured_weight_hover ) . ';}';
+	$css .= sgs_hover_state_rules( $featured_sel, 'font-weight:' . esc_attr( (string) $featured_weight_hover ), ':focus-visible' );
 }
 
 // The featured item owns its own treatment — suppress the generic item
@@ -1149,9 +1248,20 @@ if ( $featured_weight_hover !== $featured_weight ) {
 $css .= $featured_sel . '::after{content:none;}';
 
 // 4e. Burger colour / resting background / hover / size.
-$burger_colour = isset( $attributes['burgerColour'] ) ? (string) $attributes['burgerColour'] : '';
-if ( '' !== $burger_colour ) {
-	$css .= $uid_sel . ' .sgs-nav-menu__burger{color:' . sgs_colour_value( $burger_colour ) . ';}';
+// D956 — burgerColourGradient is the gradient sibling (778879732 rollout,
+// Phase 3); gradient wins when set+valid.
+$burger_colour           = isset( $attributes['burgerColour'] ) ? (string) $attributes['burgerColour'] : '';
+$burger_colour_gradient  = isset( $attributes['burgerColourGradient'] ) ? (string) $attributes['burgerColourGradient'] : '';
+$burger_colour_effective = sgs_resolve_text_colour_or_gradient( $burger_colour, $burger_colour_gradient );
+if ( '' !== $burger_colour_effective ) {
+	$burger_colour_decl = sgs_text_colour_decl( $burger_colour_effective );
+	if ( '' !== $burger_colour_decl ) {
+		$css .= $uid_sel . ' .sgs-nav-menu__burger{' . $burger_colour_decl . ';}';
+	}
+	$css .= sgs_text_colour_gradient_fallback_rule( $uid_sel . ' .sgs-nav-menu__burger', $burger_colour_effective );
+}
+if ( '' !== ( $attributes['burgerColourHover'] ?? '' ) ) {
+	$css .= sgs_hover_state_rules( "{$uid_sel} .sgs-nav-menu__burger", "color:" . sgs_colour_value( $attributes['burgerColourHover'] ), ':focus-visible' );
 }
 
 /*
@@ -1162,14 +1272,15 @@ if ( '' !== $burger_colour ) {
  * byte-identical default when this is left unset.
  */
 $burger_bg = isset( $attributes['burgerBg'] ) ? (string) $attributes['burgerBg'] : '';
+$burger_bg_gradient = sgs_css_gradient_value( $attributes['burgerBgGradient'] ?? '' );
 if ( '' !== $burger_bg ) {
-	$css .= $uid_sel . ' .sgs-nav-menu__burger{background-color:' . sgs_colour_value( $burger_bg ) . ';}';
+	$css .= $uid_sel . ' .sgs-nav-menu__burger{' . sgs_background_paint_decl( $burger_bg, $burger_bg_gradient ) . ';}';
 }
 $burger_hover_slug = isset( $attributes['burgerHoverColour'] ) ? (string) $attributes['burgerHoverColour'] : '';
 if ( '' !== $burger_hover_slug ) {
-	$css .= $uid_sel . ' .sgs-nav-menu__burger:hover,' . $uid_sel . ' .sgs-nav-menu__burger:focus-visible{background-color:' . sgs_colour_value( $burger_hover_slug ) . ';}';
+	$css .= sgs_hover_state_rules( $uid_sel . ' .sgs-nav-menu__burger', 'background-color:' . sgs_colour_value( $burger_hover_slug ), ':focus-visible' );
 }
-$burger_size = $sgs_nm_css_length( $attributes['burgerSize'] ?? '44px' );
+$burger_size = sgs_css_length_value( $attributes['burgerSize'] ?? '44px' );
 if ( '' !== $burger_size ) {
 	$css .= $uid_sel . ' .sgs-nav-menu__burger{width:' . $burger_size . ';height:' . $burger_size . ';min-width:' . $burger_size . ';min-height:' . $burger_size . ';}';
 }
@@ -1205,15 +1316,13 @@ $css .= $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"] .sgs-nav-
 $css .= '@media (prefers-reduced-motion: reduce){' . $uid_sel . ' .sgs-nav-menu__caret{transition:none;}}';
 
 /*
- * Panel anchoring (fixed 2026-07-28, Bean design-gated — Gate-3 finding).
- * The wrap previously anchored to `.sgs-nav-menu__mega` (the <li>-level
- * hover bridge, position:relative), so the panel shrink-to-fit against the
- * MENU ITEM's width and rendered as a ~100px vertical sliver on the live
- * page. The draft designs (sites/Mega-menu design + Indus Foods Mega Menu
- * Design, both at "position:absolute;top:100%;left:0;right:0" on the header
- * container with an 1120px-capped centred panel) anchor a wide centred band
- * instead. Our sanctioned anchor is the BAR (`.sgs-nav-menu__bar` is already
- * position:relative in style.css for the indicator pill), so the wrap now
+ * Panel anchoring (Bean design-gated — Gate-3 finding). The wrap anchors to
+ * the BAR (`.sgs-nav-menu__bar` is already position:relative in style.css
+ * for the indicator pill), not to the <li>-level hover bridge, so the panel
+ * can exceed a single menu item's width. The draft designs (sites/Mega-menu
+ * design + Indus Foods Mega Menu Design, both at
+ * "position:absolute;top:100%;left:0;right:0" on the header container with
+ * an 1120px-capped centred panel) anchor a wide centred band, so the wrap
  * centres on the bar and may exceed the bar's width up to the draft's
  * 1120px cap with the draft's 28px side gutters. MEGA-ONLY by construction:
  * plain (non-mega) dropdowns, when built, must anchor left-aligned under
@@ -1264,17 +1373,8 @@ foreach (
 		'--sgs-nm-submenu-bg'        => '' !== (string) ( $attributes['submenuBg'] ?? '' )
 			? sgs_colour_value( (string) $attributes['submenuBg'] )
 			: '',
-		'--sgs-nm-submenu-colour'    => '' !== (string) ( $attributes['submenuColour'] ?? '' )
-			? sgs_colour_value( (string) $attributes['submenuColour'] )
-			: '',
-		'--sgs-nm-submenu-min-width' => $sgs_nm_css_length( $attributes['submenuMinWidth'] ?? '' ),
-		'--sgs-nm-submenu-radius'    => $sgs_nm_css_length( $attributes['submenuRadius'] ?? '' ),
-		// Object-shaped {top,right,bottom,left} per the Spec 32 box contract —
-		// resolved by the shared helper, never a hand-rolled side regex (which
-		// is exactly what check-box-family-guard.py exists to reject).
-		'--sgs-nm-submenu-padding'   => is_array( $attributes['submenuPadding'] ?? null )
-			? (string) ( sgs_box_object_shorthand( $attributes['submenuPadding'] ) ?? '' )
-			: '',
+		'--sgs-nm-submenu-min-width' => sgs_css_length_value( $attributes['submenuMinWidth'] ?? '' ),
+		'--sgs-nm-submenu-radius'    => sgs_css_length_value( $attributes['submenuRadius'] ?? '' ),
 	) as $sgs_nm_var => $sgs_nm_val
 ) {
 	if ( '' !== $sgs_nm_val ) {
@@ -1342,12 +1442,36 @@ $css .= $uid_sel . ' [data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-me
  * short literal after each token is a last-resort safety net for a theme that
  * defines no palette at all, NOT a design value.
  */
-$css .= $uid_sel . ' .sgs-nav-menu__submenu{list-style:none;margin:0;padding:var(--sgs-nm-submenu-padding, 8px 0);'
+$css .= $uid_sel . ' .sgs-nav-menu__submenu{list-style:none;margin:0;padding:8px 0;'
 	. 'min-width:var(--sgs-nm-submenu-min-width, 200px);'
 	. 'background:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface, #fff)));'
 	. 'border:1px solid var(--wp--preset--color--border, transparent);'
 	. 'border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));'
 	. 'box-shadow:var(--wp--preset--shadow--raised, 0 4px 12px rgba(0,0,0,.1));}';
+
+/*
+ * submenuPadding — object box model {desktop:{top,right,bottom,left},
+ * tablet:{…}, mobile:{…}}, migrated 2026-08-19 from a flat box object to
+ * match nav-drawer's drawerPadding shape. Emitted as a tier-aware override
+ * of the base rule above via the shared responsive-object helper (same
+ * selector, same specificity, later in source order — so an unset tier
+ * leaves the `8px 0` fallback in place rather than a custom property that
+ * silently drops the value when read as the wrong shape).
+ */
+if ( function_exists( 'sgs_emit_responsive_css' ) && is_array( $attributes['submenuPadding'] ?? null ) ) {
+	$css .= sgs_emit_responsive_css(
+		$uid_sel . ' .sgs-nav-menu__submenu',
+		array(
+			array(
+				'value'        => $attributes['submenuPadding'],
+				'css'          => 'padding',
+				'box'          => true,
+				'unit_default' => 'px',
+			),
+		)
+	);
+}
+
 $css .= $uid_sel . ' .sgs-nav-menu__subitem{margin:0;}';
 
 /*
@@ -1379,8 +1503,23 @@ $css .= $uid_sel . ' .sgs-nav-menu__subitem{margin:0;}';
 $css .= $uid_sel . ' .sgs-nav-menu__sublink{display:flex;align-items:center;min-height:44px;padding:0 16px;'
 	. 'text-decoration:none;white-space:nowrap;'
 	. 'color:var(--wp--preset--color--primary, currentColor);}';
-if ( '' !== (string) ( $attributes['submenuColour'] ?? '' ) ) {
-	$css .= $uid_sel . ' .sgs-nav-menu__sublink{color:var(--sgs-nm-submenu-colour);}';
+// D956 — submenuColourGradient is the gradient sibling (778879732 rollout,
+// Phase 3); routed as a direct decl (not the custom-property chain above)
+// because a `var(--x, …)` fed into a fixed `color:` declaration cannot
+// switch to `background-image` for a gradient.
+$submenu_colour_effective = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['submenuColour'] ?? '' ),
+	(string) ( $attributes['submenuColourGradient'] ?? '' )
+);
+if ( '' !== $submenu_colour_effective ) {
+	$submenu_colour_decl = sgs_text_colour_decl( $submenu_colour_effective );
+	if ( '' !== $submenu_colour_decl ) {
+		$css .= $uid_sel . ' .sgs-nav-menu__sublink{' . $submenu_colour_decl . ';}';
+	}
+	$css .= sgs_text_colour_gradient_fallback_rule( $uid_sel . ' .sgs-nav-menu__sublink', $submenu_colour_effective );
+}
+if ( '' !== ( $attributes['submenuColourHover'] ?? '' ) ) {
+	$css .= sgs_hover_state_rules( "{$uid_sel} .sgs-nav-menu__sublink", "color:" . sgs_colour_value( $attributes['submenuColourHover'] ), ':focus-visible' );
 }
 
 /*
@@ -1388,7 +1527,7 @@ if ( '' !== (string) ( $attributes['submenuColour'] ?? '' ) ) {
  * brand-coloured ring. `currentColor` was wrong here — it resolves to the near
  * black of body text, which is what Bean saw as a "black underline".
  */
-$css .= $uid_sel . ' .sgs-nav-menu__sublink:hover{background:var(--wp--preset--color--surface, rgba(0,0,0,.04));}';
+$css .= sgs_hover_guarded_rule( $uid_sel . ' .sgs-nav-menu__sublink:hover', 'background:var(--wp--preset--color--surface, rgba(0,0,0,.04))' );
 
 /*
  * CURRENT-PAGE and FEATURED states for submenu items (Bean, 2026-07-31).
@@ -1415,9 +1554,11 @@ $css .= $uid_sel . ' .sgs-nav-menu__subitem--featured .sgs-nav-menu__sublink{'
 	. 'font-weight:var(--sgs-nm-featured-weight, 600);'
 	. 'border-radius:var(--sgs-nm-featured-radius, 4px);'
 	. 'margin:4px 8px;}';
-$css .= $uid_sel . ' .sgs-nav-menu__subitem--featured .sgs-nav-menu__sublink:hover{'
-	. 'color:var(--sgs-nm-featured-colour-hover, var(--sgs-nm-featured-colour, var(--wp--preset--color--text-inverse, currentColor)));'
-	. 'background:var(--sgs-nm-featured-bg-hover, var(--wp--preset--color--primary-dark, transparent));}';
+$css .= sgs_hover_guarded_rule(
+	$uid_sel . ' .sgs-nav-menu__subitem--featured .sgs-nav-menu__sublink:hover',
+	'color:var(--sgs-nm-featured-colour-hover, var(--sgs-nm-featured-colour, var(--wp--preset--color--text-inverse, currentColor)));'
+	. 'background:var(--sgs-nm-featured-bg-hover, var(--wp--preset--color--primary-dark, transparent))'
+);
 $css .= $uid_sel . ' .sgs-nav-menu__sublink:focus-visible{outline:2px solid var(--wp--preset--color--primary, currentColor);outline-offset:-2px;}';
 
 /*
@@ -1435,8 +1576,7 @@ $css .= $uid_sel . ' .sgs-nav-menu__subtoggle:focus-visible{outline:2px solid cu
  */
 
 /*
- * IN-DRAWER SUBMENU — real nested accordion/drill-down markup (rebuilt again,
- * this session, for the "wired but inert" submenuModel fix).
+ * IN-DRAWER SUBMENU — real nested accordion/drill-down markup.
  *
  * `.sgs-nav-menu__submenu-root` / `-wrap` no longer render inside a drawer at
  * all — `render_items_drawer()` above emits `.sgs-nav-menu__accordion(-row)`
@@ -1464,9 +1604,10 @@ $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__subtoggle{color:inherit
 $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__item + .sgs-nav-menu__item,'
 	. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__subitem'
 	. '{border-top:1px solid color-mix(in srgb, currentColor 15%, transparent);}';
-$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__link:hover,'
-	. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink:hover'
-	. '{background:color-mix(in srgb, currentColor 12%, transparent);}';
+$css .= sgs_hover_guarded_rule(
+	'.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__link:hover,.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink:hover',
+	'background:color-mix(in srgb, currentColor 12%, transparent)'
+);
 
 /*
  * CURRENT-PAGE gets its OWN persistent treatment, distinct from hover — see the
@@ -1485,23 +1626,17 @@ $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__link[aria-current="page
  * panel — so `.sgs-nav-menu__mega-panel-wrap` never appears inside a drawer's
  * OWN nav-menu instance and needs no in-drawer override here. (FR-36-5's
  * "the same panel renders inside the drawer" mega-in-drawer capability
- * remains a declared future item, not built by this session.)
+ * remains a declared future item, not yet built.)
  */
 
 /*
- * In-drawer width discipline (Bean, 2026-07-28): a vertical drawer menu must
- * FILL the space available, never shrink-wrap to its longest label. Measured
- * before this rule: the whole vertical list hugged to ~95px (the drawer body
- * is align-items:flex-start, and the nav root + bar + items all sized to
- * content), so the in-drawer mega panel inherited a 95px column and its text
- * CLIPPED. The full width exists to stop child content — mega panels above
- * all — being cut off, and to give items proper touch-target size. That is
- * the whole of its rationale.
+ * In-drawer width discipline: a vertical drawer menu must FILL the space
+ * available, never shrink-wrap to its longest label. The full width exists
+ * to stop child content — mega panels above all — being cut off, and to
+ * give items proper touch-target size. That is the whole of its rationale.
  *
- * It says NOTHING about where the LABEL should sit (corrected 2026-08-07: an
- * earlier version of this comment claimed left was a decided "natural reading
- * edge" — it was not; nothing had been decided). Where labels sit depends on
- * the drawer's design and how much of the screen it covers, so it is the
+ * It says NOTHING about where the LABEL should sit. Where labels sit depends
+ * on the drawer's design and how much of the screen it covers, so it is the
  * OPERATOR's pick, made once on the drawer (nav-drawer's "Content alignment"
  * control) and inherited here. Because the box stays full-width by design,
  * align-items can move nothing — only text-align moves the label, which is
@@ -1580,7 +1715,7 @@ $css .= $uid_sel . ' .sgs-nav-menu__mega-viewall{display:inline-block;margin-top
  * token default) is attribute-driven, so it belongs in the scoped <style>.
  */
 if ( 'pill' === $indicator_style && '' !== $indicator_colour ) {
-	$css .= $uid_sel . ' .sgs-nav-menu__indicator{background-color:' . sgs_colour_value( $indicator_colour ) . ';}';
+	$css .= $uid_sel . ' .sgs-nav-menu__indicator{' . sgs_background_paint_decl( $indicator_colour, $indicator_colour_gradient ) . ';}';
 }
 
 // 4g-bis. ROOT BOX — max-width + native spacing + responsive padding tiers.
@@ -1609,8 +1744,10 @@ if ( 'pill' === $indicator_style && '' !== $indicator_colour ) {
 $root_box_css = '';
 
 $nav_base_spacing = array();
-foreach ( array( 'padding', 'margin' ) as $spacing_prop ) {
-	$raw_sides = $attributes['style']['spacing'][ $spacing_prop ] ?? null;
+foreach ( array(
+	'padding' => $sgs_tor_padding_desktop,
+	'margin'  => $sgs_tor_margin_desktop,
+) as $spacing_prop => $raw_sides ) {
 	if ( ! is_array( $raw_sides ) ) {
 		continue;
 	}
@@ -1624,7 +1761,7 @@ foreach ( array( 'padding', 'margin' ) as $spacing_prop ) {
 		$nav_base_spacing[ $spacing_prop ] = $sides;
 	}
 }
-if ( $nav_base_spacing && function_exists( 'wp_style_engine_get_styles' ) ) {
+if ( $nav_base_spacing ) {
 	// The style engine resolves preset tokens (var:preset|spacing|40) that a raw
 	// string concat would emit verbatim and the browser would drop.
 	$nav_spacing_styles = wp_style_engine_get_styles( array( 'spacing' => $nav_base_spacing ) );
@@ -1638,11 +1775,11 @@ if ( $nav_base_spacing && function_exists( 'wp_style_engine_get_styles' ) ) {
 // so the rendered breakpoints do not move — this is the locked 768/1024 device
 // standard, NOT an arbitrary visual breakpoint.
 foreach ( array(
-	array( 'paddingTablet', '(max-width:1023px)' ),
-	array( 'paddingMobile', '(max-width:767px)' ),
+	array( $sgs_tor_padding_tiers['tablet'] ?? null, '(max-width:1023px)' ),
+	array( $sgs_tor_padding_tiers['mobile'] ?? null, '(max-width:767px)' ),
 ) as $nav_tier ) {
-	list( $tier_attr, $tier_mq ) = $nav_tier;
-	$tier_box = is_array( $attributes[ $tier_attr ] ?? null ) ? $attributes[ $tier_attr ] : array();
+	list( $tier_box_raw, $tier_mq ) = $nav_tier;
+	$tier_box = is_array( $tier_box_raw ) ? $tier_box_raw : array();
 	if ( ! $tier_box ) {
 		continue;
 	}
@@ -1663,7 +1800,7 @@ foreach ( array(
 // exists at any width — and a flex gap between one item paints nothing. The
 // control has therefore been inert for its whole life while looking wired: it
 // had a label, a value and a reset, and changed the page not at all.
-$nav_gap = isset( $attributes['gap'] ) ? sgs_css_length_sanitise( (string) $attributes['gap'] ) : '';
+$nav_gap = isset( $attributes['gap'] ) ? sgs_css_length_value( (string) $attributes['gap'] ) : '';
 if ( '' !== $nav_gap ) {
 	$root_box_css .= $uid_sel . ' .sgs-nav-menu__bar{gap:' . $nav_gap . ';}';
 }

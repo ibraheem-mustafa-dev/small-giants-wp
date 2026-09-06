@@ -24,42 +24,80 @@
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
 				"wrapper": {
 					"label": "Wrapper",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:color": "native:color.text",
-						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin"
+						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
+						"css:background-color": "backgroundColour",
+						"css:background-image": "backgroundColourGradient",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:border-color-gradient": "borderColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color": "borderColourHover",
+								"css:border-color-gradient": "borderColourHoverGradient"
+							}
+						}
 					},
 					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-star-rating — display:flex hardcoded, no attribute, so no `layer`/arrangement members). No width/height/max-width/border/box-shadow/gap attribute exists on this block — honest gaps. Content-KIND, block-private (D294)."
 				},
 				"star": {
 					"label": "Star",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "star",
-					"_note": "SVG glyph fill (render.php:227/244, sgs_colour_value($attributes['starColour'])) — default convention star+Colour=starColour resolves css:color. emptyColour is a real but separate scalar (the unfilled-star fill) with no member of its own — an honest orphan mirroring sgs/icon-list's iconSize pattern. No font-size/weight/line-height surface — an SVG star has no typography."
+					"_note": "SVG glyph fill (render.php:227/244, sgs_colour_value($attributes['starColour'])) — starColour is mapped EXPLICITLY to css:fill above. The prefix convention would resolve it to css:color, which is FALSE — this block never emits a CSS `color` declaration for the star; render.php:227/244 writes fill=\"...\" as an SVG presentation attribute (see this file's header, render.php:7-8). The convention is a guess, and /sgs-update deliberately refuses to seed css_property from it (extract-signatures.py:2502), so before this mapping the DB held NULL and every DB-reading consumer (survey.js, rule 31, the cloning pipeline) was blind to it. emptyColour is a real but separate scalar (the unfilled-star fill) with no member of its own — an honest orphan mirroring sgs/icon-list's iconSize pattern. No font-size/weight/line-height surface — an SVG star has no typography.",
+					"attrMap": {
+						"css:fill": "starColour",
+						"css:fill-gradient": "starColourGradient"
+					}
+				},
+				"star-empty": {
+					"label": "Star (unfilled)",
+					"order": 3,
+					"clusters": [
+						"fill"
+					],
+					"prefix": "",
+					"_note_prefix": "prefix \"\" is the documented explicit opt-out from orphan-scanning (findOrphans: `if ( prefix === '' ) continue`), same as sgs/business-info's `link` element. Required here because emptyColour IS claimed — by the explicit css:fill attrMap entry below — but the gate cannot see that claim: css:fill is declared appliesToLayers:[\"OUTER\"] in cluster-member-sets.json (its suffixes are ShapeDividerTop/BottomColour), so memberAppliesToElement() skips it on a leaf element and it is never enumerated, never added to claimedAttrs. Without this opt-out the scan reports a style-defect orphan for an attribute that is correctly mapped — a FALSE POSITIVE, not an unaddressed control. Verified: /sgs-update Stage 1 reads attrMap directly (not via cluster enumeration) and derives css_property=fill, css_element=star-empty. RESIDUAL: whether css:fill should be widened from an OUTER shape-divider member to a general SVG-glyph paint member is a shared-vocabulary decision, deliberately not taken here.",
+					"attrMap": {
+						"css:fill": "emptyColour",
+						"css:fill-gradient": "emptyColourGradient"
+					},
+					"_note": "The UNFILLED star glyph — a separate <svg><path fill=\"…\"> written by the same loop (render.php:222 `$fill = $empty_colour;`, and the second <stop> of the half-star linearGradient at render.php:217). Its own element rather than a member of `star` because one element cannot carry two `css:fill` mappings and emptyColour paints a genuinely different node from starColour. NEITHER node carries a CSS class — `fill` is written as a per-instance SVG PRESENTATION ATTRIBUTE, not a CSS rule — so this entry declares ownership of the VALUE exactly as `star` does; it is not a CSS-selector claim. prefix \"empty\" matches the attribute's real name. The attribute is deliberately NOT renamed to starEmptyColour: attribute names are the caller's, and WP silently discards an undeclared attr (D338), so a rename that missed one authoring would be invisible until a client's colour vanished."
 				}
 			}
 		}
@@ -83,6 +121,18 @@
 		}
 	],
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"rating": {
 			"type": "number",
 			"default": 5
@@ -99,9 +149,33 @@
 			"type": "string",
 			"default": "accent"
 		},
+		"starColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"emptyColour": {
 			"type": "string",
-			"default": "border-subtle"
+			"default": "border"
+		},
+		"emptyColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"label": {
 			"type": "string",
@@ -133,21 +207,46 @@
 				"stars-with-value-and-count"
 			]
 		},
-		"paddingTablet": {
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderWidth": {
 			"type": "object",
 			"default": {}
 		},
-		"paddingMobile": {
+		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"editorScript": "file:./index.js",

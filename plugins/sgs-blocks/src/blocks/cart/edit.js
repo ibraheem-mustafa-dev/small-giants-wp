@@ -3,6 +3,7 @@ import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, Notice } from '@wordpress/components';
 import { IconPreview, ResponsiveBoxControl, SgsColourPanel } from '../../components';
 import { colourVar } from '../../utils';
+import MediaElementPanel from '../../components/MediaElementPanel';
 import PanelSettingsControls from './PanelSettingsControls';
 import TriggerSettingsControls from './TriggerSettingsControls';
 
@@ -28,8 +29,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconSize,
 		iconColour,
 		iconColourGradient,
+		iconColourHover,
+		iconColourHoverGradient,
 		badgeColour,
+		badgeColourGradient,
 		badgeTextColour,
+		badgeTextColourGradient,
 		ariaLabel,
 		showZero,
 		hideWhenEmpty,
@@ -44,7 +49,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		autoOpenOnAdd,
 		hideOnCartCheckoutPages,
 		panelBg,
+		panelBgGradient,
 		panelTextColour,
+		panelTextColourGradient,
 	} = attributes;
 
 	const hasPanel = 'link' !== ( displayMode || 'link' );
@@ -85,11 +92,22 @@ export default function Edit( { attributes, setAttributes } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { iconColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: iconColourHover,
+								onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: iconColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconColourHoverGradient: val ?? '' } ),
+							},
 						],
 					},
 					{
 						key: 'badgeBackground',
 						label: __( 'Badge background', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -97,12 +115,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: badgeColour,
 								onChange: ( val ) => setAttributes( { badgeColour: val ?? '' } ),
 								linked: true,
+								gradientValue: badgeColourGradient,
+								onGradientChange: ( val ) => setAttributes( { badgeColourGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'badgeText',
 						label: __( 'Badge text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -110,12 +131,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: badgeTextColour,
 								onChange: ( val ) => setAttributes( { badgeTextColour: val ?? '' } ),
 								linked: true,
+								gradientValue: badgeTextColourGradient,
+								onGradientChange: ( val ) => setAttributes( { badgeTextColourGradient: val ?? '' } ),
 							},
 						],
 					},
 					hasPanel && {
 						key: 'panelBackground',
 						label: __( 'Panel background', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -123,12 +147,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: panelBg,
 								onChange: ( val ) => setAttributes( { panelBg: val ?? '' } ),
 								linked: true,
+								gradientValue: panelBgGradient,
+								onGradientChange: ( val ) => setAttributes( { panelBgGradient: val ?? '' } ),
 							},
 						],
 					},
 					hasPanel && {
 						key: 'panelText',
 						label: __( 'Panel text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -136,6 +163,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: panelTextColour,
 								onChange: ( val ) => setAttributes( { panelTextColour: val ?? '' } ),
 								linked: true,
+								gradientValue: panelTextColourGradient,
+								onGradientChange: ( val ) => setAttributes( { panelTextColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -181,6 +210,21 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				{ hasPanel && (
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						blockSlug="sgs/cart"
+						insertion="root"
+						atoms={ [ 'object-fit' ] }
+						mediaType="image"
+						title={ __( 'Item thumbnail', 'sgs-blocks' ) }
+					/>
+				) }
 
 				<PanelBody
 					title={ __( 'Spacing', 'sgs-blocks' ) }
@@ -188,6 +232,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					<ResponsiveBoxControl
 						label={ __( 'Margin', 'sgs-blocks' ) }
+						presets
 						values={ {
 							base: blockStyle?.spacing?.margin ?? {},
 							tablet: marginTablet ?? {},
@@ -239,6 +284,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							source="lucide"
 							name={ iconName }
 							size={ iconSize }
+							gradient={ iconColourGradient }
 						/>
 					</span>
 					<span

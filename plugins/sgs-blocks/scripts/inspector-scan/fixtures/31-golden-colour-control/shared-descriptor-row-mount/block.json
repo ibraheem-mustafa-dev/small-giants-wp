@@ -1,0 +1,12 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/shared-descriptor-row-mount",
+	"title": "Fixture: mounts the SHARED FixtureSharedDescriptorRowPanel — its row is built via fillRow() and mounted as states={ row.states } (2 states, gradient on both) and must NOT flag, proving the descriptor-resolution fix applies to scanSharedOwnerRows() as well as the per-block walk",
+	"category": "sgs",
+	"attributes": {
+		"fixtureSharedDescriptorColour": { "type": "string", "default": "" },
+		"fixtureSharedDescriptorColourHover": { "type": "string", "default": "" },
+		"fixtureSharedDescriptorColourGradient": { "type": "string", "default": "" },
+		"fixtureSharedDescriptorColourHoverGradient": { "type": "string", "default": "" }
+	}
+}

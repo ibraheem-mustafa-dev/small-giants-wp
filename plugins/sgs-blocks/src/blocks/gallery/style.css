@@ -173,6 +173,13 @@
 
 .sgs-gallery__dot--active {
 	background: var( --wp--preset--color--primary, #0F7E80 );
+	/* Rule 43 (WCAG 1.4.1): active dot must not rely on colour alone — resting
+	 * dots paint at 10x10px, so the active dot grows to 14x14px as the
+	 * non-colour signal (genuine flat colour swap otherwise: 43-colour-only-
+	 * state-indicator flagged this as ambiguous "background", verified by eye
+	 * to be a flat swap with no shape difference). */
+	width: 14px;
+	height: 14px;
 }
 
 /* ==========================================================================
@@ -204,6 +211,10 @@
 	position:   absolute;
 	inset:      0;
 	background: var( --sgs-hover-overlay, transparent );
+	/* Gradient sibling (2026-09-04) — must come AFTER the background:
+	 * shorthand above (which also sets background-image), composites over
+	 * it; unset falls back to "none" so the flat colour is untouched. */
+	background-image: var( --sgs-hover-overlay-gradient, none );
 	opacity:    0;
 	transition: opacity var( --sgs-transition-duration ) var( --sgs-transition-easing );
 	pointer-events: none;
@@ -214,12 +225,15 @@
 	opacity: 0.4;
 }
 
-/* The image itself */
+/* The image itself. object-fit is deliberately NOT declared here (rule
+ * 37-media-no-handroll fix) — the grid <img> also carries the `.sgs-media-el`
+ * marker class (render.php), so assets/css/media-atoms/object-fit.css's
+ * `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` rule owns it,
+ * defaulting to the same `cover` this rule used to hardcode. */
 .sgs-gallery__img {
 	display:    block;
 	width:      100%;
 	height:     auto;
-	object-fit: cover;
 	transition: transform var( --sgs-transition-duration ) var( --sgs-transition-easing );
 }
 
@@ -279,6 +293,19 @@
 	animation-delay: calc(var(--sgs-stagger, 0ms) * var(--sgs-item-index, 0));
 }
 
+/* ⛔ PREVENTATIVE — this block owns its hover target, so the generic ROOT rule
+   must stand down. Unlike card-grid this is NOT live today: gallery's render.php
+   never emits `sgs-has-hover-scale`, so `extensions.css:164` cannot currently
+   match. But the item rule below is UNCONDITIONAL (it just falls back to
+   `scale(1)` when the var is unset), so the moment the universal hover panel is
+   switched on for this block the panel would set the var AND put the class on the
+   root — scaling the whole tile grid on gap-hover as well as the hovered tile.
+   Neutralised now so that decision cannot silently reintroduce card-grid's bug.
+   Specificity (0,2,0) beats the generic (0,1,0). Added 2026-08-26, hover council. */
+.sgs-gallery.sgs-has-hover-scale:hover {
+	transform: none;
+}
+
 .sgs-gallery__item:hover {
 	transform: scale( var( --sgs-hover-scale, 1 ) );
 }
@@ -317,8 +344,11 @@
 	align-items: flex-end;
 	padding:     0 12px 10px;
 	margin:      0;
-	background:  var( --sgs-caption-bg );
-	color:       var( --sgs-caption-colour );
+	/* background/color moved to a render.php-emitted ::after layer + direct
+	 * text rule (2026-09-04) so a captionColour text gradient's
+	 * background-clip:text cannot clip the caption's own fill — this
+	 * element is `position:absolute` already, so no position rule is
+	 * added here. */
 	font-size:   0.875rem;
 	line-height: 1.4;
 	text-align:  center;
@@ -363,13 +393,29 @@
    - Caption: hidden in tile state, fades in inside lightbox, fast
    ========================================================================== */
 
+/* A native <dialog> opened with showModal() (D806), so it lives in the TOP
+   LAYER and no ancestor stacking context can trap it. The old `z-index:100000`
+   is GONE, not lowered: it was inert — `.entry-content` seals every page's
+   content in a `z-index:1` context, so the sticky header's `z-index:100` won
+   regardless of how large this number grew.
+   The block below resets the UA's own dialog defaults (auto margins, a border,
+   a content-sized box) back to a full-viewport overlay. Closed-state hiding is
+   the platform's job now: `dialog:not([open])` is `display:none` in the UA
+   sheet, which is why no `display:none` is authored here — authoring one would
+   hide the dialog even when open. */
 .sgs-gallery__lightbox {
 	position:        fixed;
 	inset:           0;
-	z-index:         100000;
+	margin:          0;
+	max-width:       none;
+	max-height:      none;
+	width:           100%;
+	height:          100%;
+	border:          0;
+	color:           inherit;
+	overflow:        hidden;
 	/* Backdrop: primary-dark at 90% opacity per spec */
 	background:      color-mix( in srgb, var( --wp--preset--color--primary-dark, #0A5B5D ) 90%, transparent );
-	display:         none; /* shown via --open class */
 	align-items:     center;
 	justify-content: center;
 	padding:         20px;
@@ -377,6 +423,11 @@
 	transition: opacity var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--ease-out, cubic-bezier(0.16, 1, 0.3, 1) );
 }
 
+/* Keyed on the NATIVE [open] attribute, which showModal() sets, rather than on
+   the Interactivity class alone — the two cannot then disagree about whether
+   the dialog is showing. The class is retained as a second selector so any
+   consumer still keying on it keeps working. */
+.sgs-gallery__lightbox[ open ],
 .sgs-gallery__lightbox--open {
 	display: flex;
 }
@@ -478,6 +529,11 @@ body.sgs-gallery-lightbox-open {
 	display:    block;
 	max-width:  90vw;
 	max-height: 80vh;
+	/* Lightbox full-view treatment — intentionally NOT client-controlled. The
+	 * lightbox exists to show the whole image uncropped; a client-set
+	 * object-fit here (e.g. cover) would defeat that purpose. Deliberately
+	 * excluded from the media-element atom layer wired onto the grid
+	 * thumbnail (`.sgs-gallery__img` above) — see render.php. */
 	object-fit: contain;
 	border-radius: 4px;
 	opacity: 0;

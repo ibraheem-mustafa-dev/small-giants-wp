@@ -34,7 +34,16 @@ NUL
 # WordPress
 *.log
 !reports/visual-diff/manual-skips.log
+!reports/f5-manual-skips.log
 wp-content/uploads/
+
+# flexWrap migration working cache (migrate-container-flexwrap-and-stack-candidates.py)
+# Each posts-dump-*.json is a FULL copy of every post's content on the canary
+# (~500 KB a run, 2.1 MB after one session). They are a regenerable cache — the
+# script rebuilds them with --pull — and an untracked file is invisible to a
+# git-based dirty gate while still being visible to tar, so leaving them loose
+# is the shape of a real past incident here.
+reports/flexwrap-migration/
 
 # Firecrawl scraping artefacts
 .firecrawl/
@@ -47,6 +56,7 @@ wp-content/uploads/
 # Client asset archives
 sites/indus-foods/assets.zip
 lighthouse-report.json
+plugins/sgs-blocks/scripts/colour-codemod/end-shape-report.json
 .playwright-mcp/
 
 # Site review screenshots (session artefacts, not source code)
@@ -144,3 +154,13 @@ sites/*.zip
 .superpowers/
 plugins/sgs-blocks/scripts/.coverage
 plugins/sgs-blocks/scripts/parity/__fluid_selftest_fixtures__/
+
+# Third-party reference checkouts and scratch output that live inside the plugin
+# dir but are NOT part of it. Untracked files are INVISIBLE to build-deploy.py's
+# dirty gate (it reads `git status` tracked files) yet VISIBLE to tar, so without
+# this they ship to the canary. Proven 2026-08-27 with a controlled tar test:
+# `--exclude=plugins/sgs-blocks/src` is path-anchored and does NOT match
+# `plugins/sgs-blocks/stackable/src`, so 278MB of a competitor's GPL tree would
+# have been uploaded into the live plugin directory, web-accessible.
+plugins/sgs-blocks/stackable/
+plugins/sgs-blocks/now.tmp.json

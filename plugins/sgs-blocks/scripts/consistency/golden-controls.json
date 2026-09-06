@@ -1,0 +1,1282 @@
+{
+  "_meta": {
+    "purpose": "THE GOLDEN CONTROL SCHEMA — the canonical shape every SGS inspector control must have, expressed as DATA so one file drives enforcement (inspector-scan) and, later, generation. Answers 'does this control match its canonical shape?', not merely 'does a control exist?'.",
+    "source": "Spec 35 PART O (the control-type contract) + Bean rulings 2026-08-19. Every figure below was produced by running a command against the tree on 2026-08-19; none is inherited from prose.",
+    "version": 1,
+    "encoded": [
+      "colour",
+      "link",
+      "enum",
+      "length-unit",
+      "box-4value",
+      "state",
+      "media",
+      "boolean",
+      "free-text",
+      "icon",
+      "shadow",
+      "responsive-wrapper",
+      "border",
+      "typography"
+    ],
+    "notEncoded": "NONE of Part O's 14 contracts remain unencoded as of 2026-08-19 (this session added 13 rows — the 12 requested types + typography, which has no Part O contract of its own but is MANDATORY per plugins/sgs-blocks/CLAUDE.md R-22-13 — PLUS a 14th, 'link', which the task brief that produced this batch claimed was already done. It was NOT: this file's controls{} held only 'colour' at session start, and the OLD version of this exact notEncoded string listed link among the 12 still missing. Corrected here rather than left silently wrong; the pre-existing 'colour' row is the only one genuinely unchanged this session). The earlier objection recorded here — 'a schema covering 13 types on day one is 12 untested claims' — is DELIBERATELY OVERRIDDEN this session, on Bean's explicit instruction, because every added row now carries the command that produced each figure it states (measured2026_08_19 blocks throughout controls.*), so a claim here is falsifiable by re-running the cited command, not asserted from memory. Where a figure could not be independently re-measured this session (most Spec 35 spec-cited scope/conformance numbers, which require the out-of-repo DB this file's own whyRosterNotDb note already explains this repo cannot reach), each row says so explicitly rather than presenting a spec citation as a fresh measurement. CORRECTION recorded here (2026-08-19): the task briefing that produced this batch described 'plugins/sgs-blocks/scripts/inspector-scan/core/golden.js — the shared engine that consumes these rows' with a docblock stating 'a new control type is a schema row rather than new code'. THAT FILE DOES NOT EXIST. The only file that currently reads golden-controls.json is inspector-scan/rules/31-golden-colour-control.js, which is COLOUR-SPECIFIC hand-written logic, not a generic schema-driven engine. None of the 12 new rows in this file are enforced by any running rule yet — they are schema-only, ready for a future generic engine (or 12 future colour-31-style per-type rule files) to consume. Do not assume any of these rows are gating anything until a rule file that reads them exists.",
+    "stateVocabulary": {
+      "source": "THIS FILE. Corrected 2026-08-19 — an earlier draft deferred to scripts/consistency/cluster-member-sets.json -> states and called it the single source. IT IS NOT: every consumer of that file (check-element-manifest-conformance.js, check-cluster-coverage.py, placement-reach.py, extract-signatures.py) reads only its `clusters` and `order` keys. Its `states` block has ZERO readers — documentation sitting inside a data file, which is not a source of truth because nothing would notice it drifting.",
+      "real": {
+        "hover": {
+          "cssRealisation": ":hover, :focus-visible",
+          "dbRows": 115
+        },
+        "current": {
+          "cssRealisation": "[aria-selected=\"true\"], [aria-current], .is-active",
+          "dbRows": 13,
+          "note": "Unifies the tabs case AND the nav case in one state. RENAMED from `selected` 2026-08-19 (D676 ruled it, D678 landed it) — code layer, classifier, 4 block.json manifests, the derived cache, and a /sgs-update reseed. Live DB verified: current 13, selected 0."
+        },
+        "scrolled": {
+          "cssRealisation": ".is-header-scrolled",
+          "dbRows": 0,
+          "admitted": "2026-08-19, Bean-approved",
+          "why": "Structurally identical to `current`: a class toggled at RUNTIME by view.js on the header element, painted by CSS in sgs/site-header/render.php. Not notional — the mechanism shipped long before the state was named, as the transparent-until-scrolled behaviour. Naming it lets the header background be ONE two-swatch colour row (at rest / once scrolled) instead of two single-state rows, which is both simpler for the client and what the 2-state minimum asks for.",
+          "dbRowsNote": "MEASURED 0 on 2026-08-19 (live query: NULL 2787, hover 115, current 13). It is 0 because css_state is DERIVED and the reseed that would populate it has NOT been run — a /sgs-update reseed is a SHARED-DB action and another session is live on this repo. Expect 2 after that reseed (site-header backgroundColourScrolled + textColourScrolled). Re-measure rather than trusting this line."
+        }
+      },
+      "notional": {
+        "states": [
+          "focus",
+          "pressed",
+          "disabled"
+        ],
+        "why": "Defined in cluster-member-sets.json's unread `states` block; ZERO rows in block_attributes.css_state (measured 2026-08-19: only NULL 2311, hover 113, selected 16). Treat as aspirational, never as an existing constraint."
+      },
+      "renameResolved": "DONE 2026-08-19. `selected` -> `current`. The original argument for `current` was WEAK (it claimed `active` would collide with a `pressed` state; `pressed` exists only in cluster-member-sets.json's unread block with zero DB rows). The decisive reasons were that `:active` is a real CSS pseudo-class we may still want, and `current` matches `aria-current` — the selector breadcrumbs already emits. Cost was a 9-step derived-column migration ending in a shared-DB reseed, since css_state is DERIVED and a direct UPDATE would be undone by the next reseed."
+    },
+    "regenerate": "HAND-MAINTAINED. Unlike roster.json this is a contract, not a derivation — it states what SHOULD be true, so it cannot be generated from the tree it governs."
+  },
+  "controls": {
+    "colour": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §1 (canonical) + §1 field 9 (the state + shape rule)",
+      "recipes": {
+        "_note": "Source: .claude/plans/2026-08-22-colour-control-bundles-BRIEF.md 'The five members of the colour-control family' table (Bean-ruled 2026-08-22). This is the SINGLE contract both the rule-31 detector and every migration agent read for 'what does a conformant row/control look like' — so two agents cannot interpret the recipe differently. Only 0-rule-31-findings-for-that-row is CHECKABLE (enforced by a rule); rowShape/livesAs here are migration GUIDANCE, not gates (see phase-colour-conformance.md P-6).",
+        "fill": {
+          "livesAs": "SgsColourPanel row",
+          "paintHelper": "sgs_background_paint_decl()",
+          "rowShape": "states[] + per-state gradient",
+          "requiredSiblings": "{attr}Gradient per state"
+        },
+        "text": {
+          "livesAs": "SgsColourPanel row",
+          "paintHelper": "sgs_text_colour_decl() + sgs_text_colour_gradient_fallback_rule()",
+          "rowShape": "states[] + per-state gradient, plus gradientCapable: true (needs background-clip:text)",
+          "requiredSiblings": "{attr}Gradient per state"
+        },
+        "border": {
+          "livesAs": "SgsColourPanel row",
+          "paintHelper": "sgs_border_gradient_css()",
+          "rowShape": "states[] + per-state gradient",
+          "requiredSiblings": "{attr}Gradient per state",
+          "helperAdoption": "The row-builder helper src/components/colour-variants/borderRow.js WAS DELETED at commit dd2989ec2 and is NOT exported from src/components/index.js. This entry previously described it as a live file with zero adopters, which was false. Border colour is owned by SgsBorderControl (44 adopters), not by a colour row. colour-codemod/adopt.js refuses border rows with REFUSED:border-helper-missing rather than emitting a call to a deleted module, and its self-test asserts every name it can emit is exported from the barrel. Fill and text siblings (fillRow.js, textRow.js) DO exist and ARE adopted. Re-verified 2026-09-03."
+        },
+        "overlay": {
+          "livesAs": "SIBLING control (in BackgroundPanel) — NOT a SgsColourPanel row (Bean-ruled 2026-08-22: 'still a variation of the colour control which makes it a sibling control')",
+          "paintHelper": "sgs_overlay_decls() — fill applied to a scrim element",
+          "rowShape": "same states[] shape as the panel rows, alpha OFF, own row presentation + help text",
+          "requiredSiblings": "{attr}Gradient per state, plus backgroundOverlayOpacity{,Tablet,Mobile} and backgroundOverlayBlendMode"
+        },
+        "shadow": {
+          "livesAs": "SgsColourPanel row",
+          "paintHelper": "colour only — no gradient helper exists BY DESIGN (box-shadow takes a colour; a gradient there is invalid CSS)",
+          "rowShape": "states[], NO gradient path — gradient-EXEMPT by mechanism, not by per-block declaration",
+          "requiredSiblings": "none"
+        }
+      },
+      "canonical": {
+        "panel": {
+          "component": "SgsColourPanel",
+          "path": "src/components/SgsColourPanel.js",
+          "api": "rows={[{ key, label, states, gradientCapable }]}",
+          "adoption": "65 of 83 blocks (re-measured 2026-08-30; the earlier '60 of 83' figure was stale — command: grep -l \"<SgsColourPanel\" plugins/sgs-blocks/src/blocks/*/edit.js | wc -l)",
+          "note": "The grouped panel. Named in Part O §1 field 1 (2026-08-19) and its placement/omission rule is now field 9e/9f (added 2026-08-30) — see controls.colour.placement below for the machine-readable form."
+        },
+        "row": {
+          "component": "DesignTokenPicker",
+          "path": "src/components/DesignTokenPicker.js",
+          "api": "states={[{ key, label, value, onChange, linked?, gradientValue?, onGradientChange? }]}",
+          "⚠ notTheSpecsNamedComponent": "Part O §6 STATE/HOVER names StateToggleControl as the canonical state component and calls it 'verified adoptable today' with a live nav-menu mount. FALSE, and Spec 35:736 says so itself: StateToggleControl has 0 JSX mounts across src/blocks (measured 2026-08-19); its only references are two comments recording where it USED to live (brand-strip/edit.js:316, nav-menu/edit.js:463) plus its own file. The working mechanism is SgsColourPanel rows -> DesignTokenPicker states, which is what this schema encodes.",
+          "note": "Renders a popover; a TabPanel appears when states.length > 1 (DesignTokenPicker.js:205, :400-416); a per-state Solid/Gradient ToggleGroupControl appears when the state carries onGradientChange (:289-317). Part O §1 field 9's '⚠ NOT YET BUILT — no state axis and no popover' is STALE as of 2026-08-19: all three exist."
+        },
+        "textGradientRow": {
+          "component": "GradientCapableColourControl",
+          "independentlySufficient": false,
+          "independentlySufficientWhy": "Reached ONLY through a SgsColourPanel row declaring gradientCapable:true, never mounted directly — so reaching it proves the panel is already there and it can never independently prove conformance.",
+          "path": "src/components/GradientCapableColourControl.js",
+          "whenToUse": "TEXT gradients only — they need background-clip:text, a genuinely different CSS mechanism from a background/border gradient.",
+          "reachedVia": "a SgsColourPanel row declaring gradientCapable: true. Never mounted directly."
+        },
+        "wholeBlockOverlay": {
+          "component": "GradientOverlayControl",
+          "independentlySufficient": false,
+          "independentlySufficientWhy": "Single-state by construction, a whole-block overlay rather than the block's colour panel. sgs/site-footer reaches it via BackgroundPanel while still having NO SgsColourPanel — scoring that CONFORMANT hid a real violation (measured 2026-08-20).",
+          "path": "src/components/GradientOverlayControl.js",
+          "constraint": "NO LONGER SINGLE-STATE (corrected 2026-08-22, D738). It now takes a normal + hover pair and renders them as TABS INSIDE ONE POPOVER via DesignTokenPicker's states array, so a row needing hover CAN use it. The previous text was accurate when written and was load-bearing: it predicted, in advance, the exact failure that then happened — a dispatch scoped to BackgroundPanel.js could not lift the constraint, so hover shipped as a SECOND ROW instead of a tab. Hover is emitted only when the caller's attrNames carries solidHover/gradientHover, so callers passing a custom map without them (the two shape-divider rows, hero media/content backgrounds) keep one state and no tabs. ⛔ Build its states as LITERAL array entries, never a .map() over a spec list: rule 31 resolves the state count STATICALLY and cannot evaluate a runtime predicate. A first fix used .filter().map(), rendered both states correctly, and made the rule report 'carries 1 state' — the code improved while the gate went blind, which is worse than the honest finding it replaced."
+        }
+      },
+      "bannedLookalikes": {
+        "_note": "ALL FOUR ARE AT ZERO LIVE INSTANCES as of 2026-08-19 (verified in src/blocks/*/edit.js). These are REGRESSION GUARDS, not a backlog. Part O §1's named violator sgs/star-rating was fixed — it now mounts SgsColourPanel (star-rating/edit.js:134), so §1 field 6's '49/50 conform, star-rating violates' is stale.",
+        "jsxComponents": [
+          "ColorPalette",
+          "ColorGradientControl",
+          "GradientPicker",
+          "PanelColorGradientSettings"
+        ],
+        "patterns": [
+          {
+            "shape": "<TextControl type=\"color\" />",
+            "why": "a raw browser colour input bypasses the theme token palette entirely",
+            "liveInstances": 0
+          }
+        ],
+        "matchRule": "EXACT JSX-identifier match via Set membership, never substring. `MyColorPaletteButton` tokenises to a different identifier and must not flag. Any tag regex uses \\b — multi-line JSX puts `<Component` at end-of-line and `[\\s/>]` returns a false absence."
+      },
+      "nativeUi": {
+        "_note": "Bean's addition 2026-08-19: core's own colour UI is a fingerprint to detect and replace. It does NOT arrive via JSX — there are ZERO raw ColorPalette/PanelColorSettings mounts in any of the 83 edit.js files. It arrives through block.json supports.color, from which WordPress renders its own panel in the Styles tab.",
+        "detectVia": "block.json supports.color — any sub-flag set true",
+        "conformantShape": "declared with every sub-flag false (keeps __experimentalSkipSerialization while suppressing core's UI)",
+        "measured2026_08_19": {
+          "declareSupportsColor": 53,
+          "atLeastOneFlagTrue": 26,
+          "allFlagsFalse": 27,
+          "doublePainted": 23,
+          "coreOnlyNoSgsPanel": [
+            "buybox",
+            "site-footer",
+            "site-header"
+          ]
+        },
+        "sequencingConstraint": "Part O Cross-cutting A: the three-tab bar lands AFTER native-supports retirement, because while a block declares native color, core renders its own Styles tab regardless of what SGS does. DETECT NOW; retire per that existing plan, never ad hoc.",
+        "doNotDuplicate": "Rule 24 (24-raw-canonical-component) already gates the JSX half. It never opens block.json, so this fingerprint does not overlap it."
+      },
+      "states": {
+        "minimum": 2,
+        "minimumMeans": "normal + hover. Bean ruling 2026-08-19: every colour row carries at least two states by default.",
+        "derivation": {
+          "rule": "A row's required state set = ['normal'] + the states DECLARED on its element in block.json supports.sgs.elements.<el>.states.",
+          "why": "This needs no new vocabulary and no hardcoded 'is this a nav block' roster — the manifest already declares states per element, and Spec 35 FR-35-5 requires states be DECLARED, never parsed from attribute names (tabActiveTextColour renders as [aria-selected=\"true\"], NOT :active; pauseOnHover/grayscaleHover contain 'Hover' but are booleans).",
+          "measured2026_08_19": {
+            "elementsDeclaringAnyState": 25,
+            "hover": 23,
+            "selected": 3,
+            "selectedElements": [
+              "option-picker.pill",
+              "table-of-contents.link",
+              "tabs.tab"
+            ]
+          }
+        },
+        "shapeRule": {
+          "specRef": "PART O §1 field 9",
+          "9a": "ONE CONTROL SHAPE EVERYWHERE — a thin row carrying its swatches, showing how many states are pickable, picker in a popover.",
+          "9b": "STATES LIVE INSIDE THE CONTROL — a tab toggle within the popover; never sibling controls, never a second panel.",
+          "9c": "A COLOUR IS NEVER AN OPTIONAL ToolsPanelItem — not behind the '+' menu, not hideable per instance."
+        },
+        "referenceImplementations": {
+          "twoState": "sgs/button — edit.js:381-470, one SgsColourPanel, 5 rows, all 2-state, 3 of 5 gradient-capable. The best 2-state+gradient example in the tree.",
+          "threeState": "sgs/tabs — edit.js:176-199, tab-bg with normal/hover/active. The ONLY 3-state colour row in the entire library (measured 2026-08-19)."
+        },
+        "measuredGap2026_08_19": {
+          "colourRowsTotal": "~226",
+          "singleState": "174 (83%)",
+          "twoOrMore": "~52 (23%)",
+          "threeState": 1
+        },
+        "exemption": {
+          "shape": "block.json supports.sgs.colourExemptions.<rowKey> = { \"rule\": \"states\", \"reason\": \"<why this element has no hover state>\" }",
+          "whenValid": "ONLY when the row paints an element that CANNOT be hovered — a drawer panel, a section background, body text. A hover state there would be a control the client can set and never see.",
+          "neverValid": "NEVER to record that a block has not wired hover yet. Bean's ruling 2026-08-22: an exemption may not remove a capability the block already has. sgs/button's text row is the named case — it declares colourText AND colourTextHover and had a real hover text colour under WP-native colour support; it must never become states-exempt.",
+          "enforcedStructurally": "The neverValid clause is NOT left to the prose. rule 31 REFUSES a states exemption whenever the block already declares a matching `<attr>Hover` attribute: if that attribute exists, the element demonstrably can carry a hover state, so the row is unwired rather than un-hoverable. A boilerplate reason is refused separately by hasRealReason().",
+          "negativeControls": "Proven three ways 2026-08-22 on sgs/whatsapp-cta: real reason + no hover attr -> ALLOWED (finding suppressed); same reason + a declared labelColourHover -> REFUSED; boilerplate reason -> REFUSED."
+        }
+      },
+      "gradient": {
+        "required": true,
+        "requiredMeans": "Bean ruling 2026-08-19: UNIVERSAL, WITH DECLARED EXEMPTIONS. Every colour row must offer a gradient path unless its block.json declares an exemption with a reason. An absent gradient is a finding; a justified one is data.",
+        "mechanisms": [
+          {
+            "case": "background / border / icon colour",
+            "how": "a per-state gradient toggle inside DesignTokenPicker — the state carries gradientValue + onGradientChange, backed by a sibling {attr}Gradient string attribute"
+          },
+          {
+            "case": "text colour",
+            "how": "GradientCapableColourControl via a row declaring gradientCapable: true — text gradients need background-clip:text"
+          }
+        ],
+        "exemption": {
+          "declareAt": "block.json supports.sgs.colourExemptions",
+          "shape": {
+            "<rowKey>": {
+              "rule": "gradient",
+              "reason": "<why this row has no valid gradient form>"
+            }
+          },
+          "expectedFirstExemption": "shadow colour — a box-shadow colour has no gradient form; a gradient control there would produce invalid CSS",
+          "rule": "A reason string is REQUIRED and must not be boilerplate. An exemption without a real reason is itself a finding — same discipline as inspector-scan baselines (core/baseline.js hasRealReason)."
+        },
+        "blockedOnNothing": "The gradient picker crashed every block until 2026-08-19 (fixed in daeec438 + 3fa0ebbd). The parked universal rollout is P-GRADIENT-UNIVERSAL-ROLLOUT.",
+        "⚠ unverifiedSurface": "Because the crash masked it, NO gradient row in the library has ever been seen working. Treat 'it has a gradient toggle' as UNPROVEN until looked at in the live editor.",
+        "measuredGap2026_08_19": {
+          "gradientCapableRows": "45 of ~226 (22%)"
+        },
+        "exemptByMechanism": {
+          "case": "A TEXT row whose element ALSO paints a background.",
+          "why": "A text gradient is background-image plus background-clip:text, and background-clip clips the element's WHOLE background painting area to the glyph shapes — background-COLOUR included. On an element carrying its own background, a gradient would clip that fill to the letters and destroy it.",
+          "statedOnce": "Read from the element manifest by rule 31 (textSharesElementWithBackground): an element whose attrMap maps both a css:color* and a css:background* member IS the shared element. No block roster is hardcoded and no per-block entry has to be written and kept honest — the same shape as the shadow exemption (S-3).",
+          "consequence": "sgs/button's per-block colourExemptions.text entry was REMOVED 2026-08-22: with the mechanism stating the fact, that entry was a second owner, and if the two ever disagreed the per-block one would silently win. Verified neutral — removing it left rule 31 at 355 with zero sgs/button findings.",
+          "notALimitOfCSS": "This is a DOM-shape constraint, not a CSS law. An element with an inner text node can carry both. sgs/button is exempt because D288 makes the <a> itself the block root, leaving no inner element; sgs/nav-drawer is NOT exempt because it paints text on .sgs-nav-drawer__body while the background sits on the dialog root."
+        }
+      },
+      "qualifiesWhen": {
+        "_why": "scope.eligible is DESCRIPTIVE and therefore SELF-FULFILLING: build-roster.py:106 computes surfaces.colour as `\"color\" in supports or an attribute named colour/color`, i.e. it is true exactly when the block ALREADY has colour. A block with none is excluded from this contract and can never be reported as MISSING a colour panel — only blocks that have some colour and got the shape wrong are visible. This predicate answers the other question: SHOULD this block have one? Added 2026-08-19.",
+        "_engineIsGeneric_predicateIsPerFamily": "The engine evaluating this is shared; the evidence is not. Colour qualifies on painted surfaces; typography on rendered text; spacing on a box element; layout on multiple children; shadow on a card-like surface; link on an <a> or URL attribute. Each control type declares its own qualifiesWhen here rather than the engine growing a branch per family.",
+        "paintsOwnSurface": {
+          "source": "the block's own style.css",
+          "match": "a CSS declaration of background, background-color, border-color or color",
+          "cssProperties": [
+            "background",
+            "background-color",
+            "border-color",
+            "color"
+          ],
+          "cssPropertiesNote": "Added 2026-08-20. Bare CSS property names, matched literally against the block's own style.css by survey-golden-conformance.js's ownPaintRegex(). Until this field existed colour was the ONLY styling type still resolving through that function's hardcoded-regex fallback — backwards for the type that is meant to be the reference implementation for the other twelve. ⛔ The fallback's `[^-\\w]` guard is NOT optional and was reproduced as a `(?<![-\\w])` lookbehind in the same commit BEFORE this field was added: without it a bare `color` alternative also matches inside `--brand-color:` and `-webkit-text-fill-color:`, and qualifiesFor() reads the MATCH COUNT rather than a boolean, so the inflation would propagate into the census. Verified by the gate that governs this change: survey-golden-conformance.js --json is byte-identical before and after, diffed against .claude/reports/2026-08-20-colour-golden-raw/golden-conformance.json.",
+          "means": "there is a surface for a colour control to govern"
+        },
+        "paintedByAncestor": {
+          "_note": "⚠ MEASURED 2026-08-19, and it changes WHERE the control belongs, not whether it exists. Every sgs/form-field-* block declares 4 elements (label/input/help/error) and paints ZERO of them; sgs/form paints all 52. So the field blocks qualify for colour COLLECTIVELY, and the control belongs on the ANCESTOR with children inheriting — the group-default pattern sgs/multi-button already proves (--sgs-mb-btn-*-default, D640). A predicate that only looked at the block's own stylesheet would wrongly report 13 form blocks as NOT-APPLICABLE.",
+          "source": "declared supports.sgs.elements with zero own paint declarations",
+          "means": "qualifies, but the control's home is the ancestor that paints it"
+        },
+        "featureParity": {
+          "source": "roster.json blocks[].replaces",
+          "means": "an SGS block replacing a core block must meet or exceed it (standing rule sgs-block-feature-parity-with-replaced-core), so if the replaced core block has colour supports this one qualifies"
+        },
+        "verdicts": "QUALIFIES + has a canonical panel = CONFORMANT. QUALIFIES + none = MISSING (real work). Does NOT qualify = NOT-APPLICABLE (not a backlog item, and must never be counted as one)."
+      },
+      "scope": {
+        "eligible": "roster.json blocks where surfaces.colour === true",
+        "eligibleCount2026_08_19": 65,
+        "rosterPath": "scripts/consistency/roster.json",
+        "whyRosterNotDb": "roster.json is in-repo, DB-derived, regenerated in prebuild and staleness-gated. The canonical DB lives OUTSIDE the repo and two 0-byte decoys sit inside it — a relative resolve lands on an empty file and passes clean forever.",
+        "nullSurfacesRule": "A block on disk but ABSENT from roster.json gets surfaces: null (core/roster.js:170,182), and reading .colour off it throws. An advisory rule that throws is SKIPPED, not failed (run.js:189-201) — it goes dark and green. Treat null surfaces as UNKNOWN, NOT CLEAN: emit an informational finding. Self-test cannot catch this (fixtures always get {}, never null)."
+      },
+      "placement": {
+        "_note": "Added 2026-08-30. Answers 'where does this control go?', not 'what shape is it?' (that half is controls.colour.states.shapeRule above). specRef: .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §1 fields 9e/9f.",
+        "onePanelPerBlock": {
+          "rule": "SgsColourPanel is mounted AT MOST ONCE per block. Every colour row that block declares — however many elements those rows belong to — renders inside that one panel instance.",
+          "measured2026_08_30": "Verified across all 65 adopting blocks: 0 blocks mount it 0 times having imported it, 65 mount it exactly once, 0 mount it 2+ times.",
+          "command": "for f in $(grep -l \"<SgsColourPanel\" plugins/sgs-blocks/src/blocks/*/edit.js); do grep -c \"<SgsColourPanel\" \"$f\"; done | sort | uniq -c"
+        },
+        "omissionNotDisabling": {
+          "rule": "A row that does not apply to the block's current variant/config is OMITTED from the `rows` array passed to SgsColourPanel — never rendered disabled, never CSS-hidden.",
+          "mechanism": "SgsColourPanel.js:109 — `(rows || []).filter(Boolean)`. A falsy array entry (e.g. `condition && {...}`) drops silently before render.",
+          "referenceImplementation": "sgs/icon-list, edit.js:328 — icon-colour row omitted unless the marker renders an icon/emoji glyph; border-colour row omitted unless a border style is selected. Cites D609 9c in its own inline comment.",
+          "relationToField9c": "Extends field 9c ('a colour is never an optional ToolsPanelItem, never hideable behind a +') from an APPLICABLE-colour disclosure ban to an INAPPLICABLE-colour existence ban — the row must not be in the array at all, not merely undisclosed."
+        },
+        "elementPanelException": {
+          "component": "SgsBorderControl",
+          "why": "The one purpose-built composite that renders a colour inside an ELEMENT's own panel instead of the shared SgsColourPanel — it pairs border colour with width/style/radius on shared popover lines (Spec 35 §14, D881).",
+          "howItDiffers": "SgsBorderControl owns its colour rendering internally. It does not call SgsColourPanel and does not use the rows={[...]} shape — so it neither competes with nor counts against the one-panel-per-block rule above.",
+          "generalMechanismStatus": "NOT BUILT. SgsColourPanel hardcodes its own InspectorControls group=\"styles\" + PanelBody title=\"Colour\" (SgsColourPanel.js:116-121), and zero blocks render a colour control directly inside an element panel outside SgsBorderControl. A second element-panel colour composite requires a design gate before any block adopts it — do not extend this pattern ad hoc per block."
+        }
+      }
+    },
+    "enum": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §3 (ENUM / MODE)",
+      "canonical": {
+        "component": "SelectControl",
+        "path": "(@wordpress/components — no local SGS file; the contract is the DECLARED block.json enum it's bound to, not a shared SGS wrapper)",
+        "nativeContract": "REQUIRED: onChange (Job 1 extract-native-contracts.py, select-control.md). value/options are optional per the README but structurally load-bearing.",
+        "adoption": "REACH 75 of 83 blocks (measured 2026-08-19, survey-control-reach.py) — direct 70, +5 via the conditional-visibility.js extension surface",
+        "alt": {
+          "component": "ToggleGroupControl",
+          "adoption": "REACH 64 of 83 (measured 2026-08-19) — direct 7, +57 via the responsive-device-toggle.js extension surface (the GLOBAL device toggle, not a per-block enum mount)",
+          "note": "Spec 35 §3.1: 'short option sets' — no written threshold, so a rule cannot yet gate SelectControl-vs-ToggleGroupControl choice, only that the CHOSEN one's options match the declared enum."
+        },
+        "note": "No shared SGS wrapper component exists for this type (Spec 35 §3.1: 'no shared component'). The canonical SHAPE is: SelectControl/ToggleGroupControl options === the block.json declared enum, exactly."
+      },
+      "bannedLookalikes": {
+        "_note": "Spec 35 §3.3: (a) a shared aggregator (e.g. LayoutPanel) offering options OUTSIDE the consuming block's own declared enum; (b) a PHP-enforced closed set with NO block.json enum at all (free-text box, no validation). Neither is a JSX-identifier ban like colour's — this type's violation is a VALUE-SET mismatch, not a banned component.",
+        "jsxComponents": [],
+        "patterns": [
+          {
+            "shape": "a shared control's hardcoded option list diverging from the consuming block's declared enum",
+            "why": "Spec 35 §3.6 names 3 live defects on ONE shared control: sgs/testimonial-slider (enum full|split vs picker stack|flex|grid — ZERO overlap), sgs/post-grid (enum grid|list|masonry|carousel, only grid overlaps), sgs/feature-grid (render.php:131 hardcodes layout='grid' before calling the wrapper — the control is live, visible and inert)",
+            "liveInstances": "3 confirmed + 9 further blocks with kind=\"layout\" and no enum at all + 13 attrs across 8 blocks PHP-enforced with no declared enum (spec-cited, not independently re-measured this session)"
+          },
+          {
+            "shape": "PHP-enforced closed set with no block.json enum",
+            "why": "free-text box accepting any string, no validation",
+            "liveInstances": "13 attrs / 8 blocks per Spec 35 §3.6 (spec-cited, not independently re-run this session)"
+          }
+        ],
+        "matchRule": "This type's ban is a SET-DIFFERENCE check (rendered options vs declared enum), not a Set-membership JSX-identifier check like colour's bannedLookalikes.jsxComponents — recorded here so a future rule author does not force this type into colour's shape."
+      },
+      "nativeUi": {
+        "_note": "No core supports.* flag maps to an arbitrary enum (WP has no generic 'enum' supports capability) — this type has no native-UI competitor to detect."
+      },
+      "shapeRule": {
+        "specRef": "PART O §3 fields 2, 6",
+        "rule1": "value bound to the attr; options array's value set must equal the block.json declared enum SET EXACTLY (not a superset, not a subset)",
+        "rule2": "a shared aggregator (LayoutPanel-style) must build its options FROM the consuming block's own enum, never a fixed list (Spec 35 §3.8, open Rule-7 design gate — NOT yet built)"
+      },
+      "exemption": {
+        "declareAt": "block.json supports.sgs — no dedicated exemption key exists yet for this type",
+        "shape": "NOT YET DEFINED — Spec 35 §3 records no exemption mechanism; unlike colour's colourExemptions, an enum either has a declared block.json enum or it doesn't. Recorded as an open gap rather than invented.",
+        "rule": "A future exemption key must still carry a non-boilerplate reason, per the same discipline as colour."
+      },
+      "scope": {
+        "eligible": "roster.json has NO dedicated 'enum' surface flag (only styling/colour/link/media/animation exist) — scope instead comes from Spec 35 §3.5: 284 rows with a declared block.json enum; 1,372 string rows are the wider search space, not the violator count (spec-cited figures, not independently re-measured this session).",
+        "rosterPath": "scripts/consistency/roster.json (surfaces object does not cover this type — see nullSurfacesRule discipline in controls.colour.scope, same caveat applies)"
+      },
+      "measured2026_08_19": {
+        "selectControlReach": {
+          "value": 75,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "toggleGroupControlReach": {
+          "value": 64,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)",
+          "note": "inflated by the global device toggle extension surface (57 of the 64) — the per-block enum-mount count is 7"
+        },
+        "declaredEnumsBlockJson": {
+          "value": 272,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-mounts.py . (BLOCK.JSON DERIVED section)"
+        },
+        "nativeControlContract": {
+          "command": "python plugins/sgs-blocks/scripts/surveys/extract-native-contracts.py .claude/scratch/goldens-agent/native-contracts",
+          "required": [
+            "onChange"
+          ],
+          "source": "select-control.md"
+        }
+      }
+    },
+    "length-unit": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §4 (LENGTH / UNIT)",
+      "canonical": {
+        "component": "ResponsiveControl",
+        "path": "src/components/ResponsiveControl.js",
+        "wraps": "UnitControl (@wordpress/components) with a REAL units array — never px-only",
+        "nativeContract": "UnitControl README (unit-control.md) declares NO required props at all (all optional) — value/onChange/units are all 'Required: No'. The REQUIREDNESS is structural (SGS's own rule, not WordPress's): a units array with only px is a banned lookalike per §4.3, even though the native component doesn't enforce it.",
+        "adoption": "REACH 51 of 83 blocks for UnitControl (measured 2026-08-19); ResponsiveControl itself REACH 64 of 83 (shared with the responsive-wrapper type below — it is the SAME primitive, this row is the length-specific USE of it)",
+        "altForObjectCascade": {
+          "component": "ResponsiveOverride",
+          "path": "src/components/ResponsiveOverride.js",
+          "when": "the attr family is object-typed ({desktop,tablet,mobile}) rather than flat scalar+Tablet+Mobile siblings — per Spec 35 §12's binding STORAGE-SHAPE pairing table",
+          "adoption": "REACH 44 of 83 (measured 2026-08-19)"
+        }
+      },
+      "bannedLookalikes": {
+        "_note": "Spec 35 §4.3, all three RESOLVED as of 2026-08-11 (D561) — 0 live violations. Kept as regression guards, exactly like colour's zero-instance set.",
+        "jsxComponents": [],
+        "patterns": [
+          {
+            "shape": "raw-px RangeControl standing in for a length control",
+            "why": "0 live violations found (the only RangeControl hits in the shadow builder's sliders are correct, not a length-unit case)",
+            "liveInstances": 0
+          },
+          {
+            "shape": "TextControl standing in for UnitControl",
+            "why": "accepts invalid CSS, e.g. sgs/card-grid.cardRadius's old help text 'e.g. 8px' — FIXED 2026-08-11 (D561)",
+            "liveInstances": 0
+          }
+        ],
+        "matchRule": "Same Set-membership discipline as colour: exact JSX identifier, never substring."
+      },
+      "nativeUi": {
+        "_note": "block.json supports.spacing is the native twin for padding/margin lengths — measured 2026-08-19 (python one-liner reading every src/blocks/*/block.json): 50 of 83 blocks DECLARE supports.spacing, and ALL 50 have at least one sub-flag TRUE (0 all-false, unlike colour's clean allFalse convention). This is a genuine open gap this row surfaces: unlike colour (27 of 53 clean), every spacing-declaring block currently competes with core's own Styles-tab spacing UI.",
+        "detectVia": "block.json supports.spacing — any sub-flag set true",
+        "conformantShape": "NOT YET ACHIEVED for this type — colour's 'declare with all sub-flags false' pattern has no length-unit precedent in the tree today (measured: 0 of 50)",
+        "measured2026_08_19": {
+          "declaresSupportsSpacing": 50,
+          "atLeastOneFlagTrue": 50,
+          "allFlagsFalse": 0
+        }
+      },
+      "shapeRule": {
+        "specRef": "PART O §4 fields 2, 3",
+        "rule1": "real units array, never px-only",
+        "rule2": "responsive wrapping REQUIRED when the attr family declares Tablet/Mobile siblings",
+        "rule3": "label association REQUIRED — Spec 35 §4 cross-references the RESPONSIVE WRAPPER FAMILY's own defect (ResponsiveControl:150-170 renders an unassociated label span); this type inherits that open defect, it does not own a separate one"
+      },
+      "exemption": {
+        "declareAt": "block.json — no dedicated exemption key; a length that is genuinely non-responsive (no Tablet/Mobile siblings by design) is not an exemption, it is simply outside scope (Spec 35 §4.5)",
+        "rule": "Not applicable in the colour sense — this type has no per-row opt-out mechanism, only an in/out-of-scope determination via the presence of tier siblings."
+      },
+      "scope": {
+        "eligible": "roster.json has no dedicated length-unit surface — Spec 35 §4.5: is_responsive=1 AND css_property IN (length set) -> 36 blocks (spec-cited DB query, not independently re-run this session — the DB lives outside this repo per colour row's own whyRosterNotDb note)",
+        "rosterPath": "scripts/consistency/roster.json (no matching surface key)"
+      },
+      "measured2026_08_19": {
+        "unitControlReach": {
+          "value": 51,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "responsiveControlReach": {
+          "value": 64,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "responsiveOverrideReach": {
+          "value": 44,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "supportsSpacing": {
+          "value": 50,
+          "command": "python one-liner over src/blocks/*/block.json reading supports.spacing (see nativeUi block above for the exact script)"
+        },
+        "nativeControlContract": {
+          "command": "python plugins/sgs-blocks/scripts/surveys/extract-native-contracts.py .claude/scratch/goldens-agent/native-contracts",
+          "required": [],
+          "note": "UnitControl declares zero required props in its own README — was one of the 7 silently-broken components fixed in Job 1 of this session (the heading format was the combined `### `propName`: `Type`` shape, which the original parser's bare-heading-only regex could not match at all)",
+          "source": "unit-control.md"
+        }
+      }
+    },
+    "box-4value": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §5 (4-VALUE BOX)",
+      "canonical": {
+        "sides": {
+          "component": "ResponsiveBoxControl",
+          "path": "src/components/ResponsiveBoxControl.js",
+          "adoption": "REACH 48 of 83 (measured 2026-08-19) — direct 48, +0 hidden (no extension-surface reach for this one)"
+        },
+        "corners": {
+          "component": "ResponsiveBorderRadiusControl",
+          "path": "src/components/ResponsiveBoxControl.js:162-196 (same file, exported sibling — per Spec 35 §14.8)",
+          "adoption": "REACH 36 of 83 (measured 2026-08-19) — direct 17, +19 hidden via a shared panel wrapper the per-block scan cannot see"
+        },
+        "objectCascade": {
+          "component": "ResponsiveBoxControls",
+          "path": "src/components/ResponsiveBoxControls.js",
+          "note": "PLURAL — one letter apart from ResponsiveBoxControl, ZERO shared code (Spec 35 §12.8). For object-cascade rows only.",
+          "adoption": "REACH 3 of 83 (measured 2026-08-19, direct == reach)"
+        }
+      },
+      "bannedLookalikes": {
+        "_note": "Spec 35 §5.3: per-side scalar attrs instead of an object — migration COMPLETE, 0 remaining (kept as a regression guard, same discipline as colour's zero-instance set).",
+        "jsxComponents": [],
+        "patterns": [
+          {
+            "shape": "four separate per-side scalar UnitControls instead of one ResponsiveBoxControl",
+            "why": "migration COMPLETE per Spec 35 §5.3 — 0 remaining",
+            "liveInstances": 0
+          },
+          {
+            "shape": "regex side-token grouping in the converter",
+            "why": "already gated converter-side only — Spec 35 §5.3 flags that nothing guards EDITOR code for the equivalent pattern",
+            "liveInstances": "not independently measured this session — spec-cited as an open editor-side gap"
+          }
+        ],
+        "matchRule": "Exact JSX-identifier Set membership, never substring — ResponsiveBoxControl vs ResponsiveBoxControls must be matched as two DISTINCT identifiers, not via a shared prefix regex (the exact trap the spec's field 8 names)."
+      },
+      "nativeUi": {
+        "_note": "Shares the supports.spacing native twin with LENGTH-UNIT above (border-radius has no core supports.border equivalent declared anywhere in this tree — measured 0 of 83 declare supports.border). Do not duplicate the length-unit row's measurement; this note exists so a reader checking box-4value alone isn't left assuming no native competitor exists.",
+        "detectVia": "block.json supports.spacing (padding/margin sides) — border/radius has no native competitor (0 of 83 blocks declare supports.border)",
+        "measured2026_08_19": {
+          "declaresSupportsSpacing": 50,
+          "declaresSupportsBorder": 0
+        }
+      },
+      "shapeRule": {
+        "specRef": "PART O §5 fields 2, 6",
+        "rule1": "values per tier, onChange(tier, next), real units array",
+        "rule2": "must NOT rely on box_family alone for detection — it under-populates (Spec 35 §5.7); a code-derived cross-check on the attr's object shape is required",
+        "knownDefect": "sgs/physics-canvas declares 6 responsive box attrs, passes them to SGS_Container_Wrapper which renders them, and its edit.js contains the string 'padding' zero times (Spec 35 §5.6) — recorded here as a live example of the box_family-alone detection trap, not independently re-verified this session"
+      },
+      "exemption": {
+        "declareAt": "block.json — no dedicated exemption key recorded in Spec 35 §5",
+        "rule": "Not applicable — same as length-unit, no per-row opt-out mechanism exists yet for this type."
+      },
+      "scope": {
+        "eligible": "roster.json has no dedicated box-4value surface — Spec 35 §5.5: reconciled to 51 blocks (46 DB-classified UNION 48 grep-matched, 43 overlap) — spec-cited, not independently re-run this session",
+        "rosterPath": "scripts/consistency/roster.json (no matching surface key)"
+      },
+      "measured2026_08_19": {
+        "responsiveBoxControlReach": {
+          "value": 48,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "responsiveBorderRadiusControlReach": {
+          "value": 36,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "responsiveBoxControlsReach": {
+          "value": 3,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "nativeControlContract": {
+          "note": "BoxControl (@wordpress/components, the RAW primitive ResponsiveBoxControl wraps) declares 0 required props per its own README — command: python plugins/sgs-blocks/scripts/surveys/extract-native-contracts.py .claude/scratch/goldens-agent/native-contracts, source box-control.md (this component's README already parsed correctly under the ORIGINAL Job 1 regex — it was never one of the 7 broken)."
+        }
+      }
+    },
+    "state": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §6 (STATE / HOVER)",
+      "canonical": {
+        "component": "SgsColourPanel rows -> DesignTokenPicker's states prop",
+        "path": "src/components/SgsColourPanel.js -> src/components/DesignTokenPicker.js",
+        "note": "IDENTICAL mechanism to controls.colour.canonical.row above — this row exists because Part O §6 gives STATE its own numbered contract even though the working implementation is colour's. Recorded here rather than only under colour so a reader searching 'state' finds the real answer instead of the dead StateToggleControl.",
+        "adoption": "SEE controls.colour.states.derivation.measured2026_08_19 — 25 of 307 declared elements carry any state"
+      },
+      "knownStaleTrap_1": {
+        "claim": "Spec 35 §6.1 (STRUCK, kept for historical record) named src/components/StateToggleControl.js as canonical, citing a live nav-menu mount at edit.js:1407-1545.",
+        "reality": "StateToggleControl has 0 JSX mounts across src/blocks (measured 2026-08-19, survey-control-mounts.py's ZERO MOUNTS ANYWHERE line confirms this independently of the spec's own 2026-08-19 correction). Its only references are two comments recording where it USED to live (brand-strip/edit.js:316, nav-menu/edit.js:463) plus its own file and components/index.js's export. DEAD CODE — do not cite it as canonical in any golden row.",
+        "verifiedVia": "python plugins/sgs-blocks/scripts/surveys/survey-control-mounts.py . (run from plugins/sgs-blocks)"
+      },
+      "knownStaleTrap_2_scrolled": {
+        "claim": "controls.colour.stateVocabulary.real (this same file) records scrolled as admitted 2026-08-19 with dbRowsNote 'expect 2 after a reseed, currently 0 because the reseed has not run (shared-DB, blocked by a co-active session)'.",
+        "reMeasured2026_08_19": "survey-control-mounts.py's BLOCK.JSON DERIVED section (a live re-scan, independent of the DB) shows elements declaring any state = 25 with breakdown {hover: 22, current: 3, scrolled: 1} — scrolled now shows 1 (sgs/site-header.wrapper, per this file's own stateVocabulary.real.scrolled entry), confirming the mechanism shipped even though the DB-side css_state reseed the earlier note was waiting on may still be pending. Do not treat the DB dbRows:0 figure as current without re-querying — this block.json-level scan already shows movement.",
+        "verifiedVia": "python plugins/sgs-blocks/scripts/surveys/survey-control-mounts.py . (run from plugins/sgs-blocks)"
+      },
+      "bannedLookalikes": {
+        "_note": "Spec 35 §6.3.",
+        "jsxComponents": [],
+        "patterns": [
+          {
+            "shape": "a separate 'Hover' panel instead of the state living inside the same control group as its base value",
+            "why": "Spec 35 §6.3/§6.4 — 7 blocks, post-grid's is 145 lines from its base panel",
+            "liveInstances": "7 blocks (spec-cited, not independently re-measured this session)"
+          },
+          {
+            "shape": "adjacent 'X' and 'X (hover)' sibling controls instead of one control with a state axis",
+            "why": "Spec 35 §6.3",
+            "liveInstances": "3 blocks (spec-cited)"
+          },
+          {
+            "shape": "a *Hover attr with no control at all",
+            "why": "Spec 35 §6.3 — the render-but-no-control class this whole schema exists to catch",
+            "liveInstances": "8 blocks, ~27 attrs (spec-cited)"
+          },
+          {
+            "shape": "preset-only reachability",
+            "why": "Spec 35 §6.3 names sgs/product-card",
+            "liveInstances": "1 block (spec-cited)"
+          }
+        ],
+        "matchRule": "This type's bans are STRUCTURAL (panel placement / control adjacency), not JSX-identifier Set membership — recorded here so a rule author does not try to force a jsxComponents ban list where none of the four violations are a banned component."
+      },
+      "nativeUi": {
+        "_note": "No core supports.* flag maps to pseudo-state UI in the sidebar — not applicable."
+      },
+      "shapeRule": {
+        "specRef": "PART O §6 fields 2, 4",
+        "rule1": "one toggle per logical attr GROUP, not per attribute; the render-prop must cover every paired attr in both states",
+        "rule2": "the state value sits INSIDE the same control group as its base value — matches how theme.json nests pseudo-states under the element"
+      },
+      "exemption": {
+        "declareAt": "N/A — Spec 35 §6 records no exemption mechanism for this type; a colour row's minimum-2-states rule (controls.colour.states.minimum) is the closest analogue and lives under colour, not here.",
+        "rule": "Not applicable to this row directly — see controls.colour.gradient.exemption for the sibling mechanism this type shares its underlying component with."
+      },
+      "scope": {
+        "eligible": "roster.json has no dedicated state surface — Spec 35 §6.5: attr_name LIKE '%Hover%' OR css_state IN ('hover','current','scrolled'), excluding sgs/mega-panel.accent (mistagged) -> 23 blocks, 3 conform (spec-cited)",
+        "rosterPath": "scripts/consistency/roster.json (no matching surface key)"
+      },
+      "measured2026_08_19": {
+        "elementsDeclaringAnyState": {
+          "value": 25,
+          "breakdown": {
+            "hover": 22,
+            "current": 3,
+            "scrolled": 1
+          },
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-mounts.py . (run from plugins/sgs-blocks)"
+        },
+        "stateToggleControlMounts": {
+          "value": 0,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-mounts.py . (run from plugins/sgs-blocks)",
+          "note": "confirms Spec 35's own 2026-08-19 self-correction independently"
+        }
+      }
+    },
+    "media": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §7 (MEDIA)",
+      "canonical": {
+        "component": "MediaPicker",
+        "path": "src/components/MediaPicker.js",
+        "warning": "NOT barrel-exported (Spec 35 §7.1) — all consumers import by path, not from components/index.js. A future golden.js engine checking imports must account for this.",
+        "adoption": "REACH 8 of 83 (measured 2026-08-19, direct == reach — no extension-surface reach for this one)",
+        "bulk": {
+          "component": "MediaGalleryPicker",
+          "path": "src/components/MediaGalleryPicker.js",
+          "adoption": "REACH 1 of 83 (measured 2026-08-19)"
+        },
+        "nativeContract": "MediaUpload (the raw @wordpress/block-editor primitive MediaPicker wraps) — REACH 36 of 83 (10 direct + 26 via extension surfaces: fx.js, image-controls.js)"
+      },
+      "bannedLookalikes": {
+        "_note": "Spec 35 §7.3.",
+        "jsxComponents": [],
+        "patterns": [
+          {
+            "shape": "per-tier duplicate media pickers instead of one ResponsiveControl-wrapped picker",
+            "why": "sgs/responsive-logo/edit.js:281-305 renders THREE always-visible logo slots (Spec 35 §7.3) — the D521 art-direction-tier rollout's one named exception (per plugins/sgs-blocks/CLAUDE.md's Responsive Logo row, predates D521 by two days)",
+            "liveInstances": 1
+          }
+        ],
+        "matchRule": "Exact JSX-identifier Set membership for MediaPicker/MediaGalleryPicker vs a hand-rolled MediaUpload+MediaUploadCheck pair standing in for either."
+      },
+      "nativeUi": {
+        "_note": "block.json supports.sgs.imageControls is SGS's OWN extension flag (not a core WP supports.* flag) — 15 of 83 declare it, 7 have it set true (measured 2026-08-19, survey-control-mounts.py BLOCK.JSON DERIVED section). This is not a competing native-UI panel in the colour/spacing sense; recorded for completeness since it is the nearest analogue.",
+        "measured2026_08_19": {
+          "declaresImageControls": 15,
+          "setTrue": 7
+        }
+      },
+      "shapeRule": {
+        "specRef": "PART O §7 fields 2, 3",
+        "rule1": "MediaUpload always inside MediaUploadCheck (0 violations measured per Spec 35 §7.2 — keep the gate)",
+        "rule2": "alt text required; the D5 tier rules (art-direction per-device media, Spec 35's own D5 cross-reference) apply",
+        "rule3": "a reused picker sub-control (e.g. ImagePickerRow) renders an optional child only when that invocation supplies BOTH value and onChange — the 'ImagePickerRow lesson' named in the spec"
+      },
+      "exemption": {
+        "declareAt": "N/A — Spec 35 §7 records no exemption mechanism for this type.",
+        "rule": "Not applicable."
+      },
+      "scope": {
+        "eligible": "roster.json surfaces.media === true",
+        "eligibleCount2026_08_19": 33,
+        "rosterPath": "scripts/consistency/roster.json",
+        "note": "Spec 35 §7.5 flags that the 15 blocks declaring supports.sgs.imageControls are a CONFORMANCE SUBSET of this pool, not the pool itself — do not scope this type by imageControls."
+      },
+      "measured2026_08_19": {
+        "mediaPickerReach": {
+          "value": 8,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "mediaGalleryPickerReach": {
+          "value": 1,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "mediaUploadReach": {
+          "value": 36,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "rosterSurfacesMedia": {
+          "value": 33,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-mounts.py . (run from plugins/sgs-blocks) (ROSTER SURFACES section)"
+        },
+        "nativeControlContract": {
+          "note": "FocalPointPicker (a MEDIA sub-control) REQUIRES url, value, onChange per its own README — one of the components extract-native-contracts.py parsed correctly on the ORIGINAL regex (not one of the 7 broken ones).",
+          "source": "focal-point-picker.md",
+          "command": "python plugins/sgs-blocks/scripts/surveys/extract-native-contracts.py .claude/scratch/goldens-agent/native-contracts"
+        }
+      }
+    },
+    "boolean": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §8 (BOOLEAN)",
+      "canonical": {
+        "component": "ToggleControl",
+        "use": "enable/disable — 160 of 163 controlled boolean rows per Spec 35 §8.1",
+        "adoption": "REACH 71 of 83 (measured 2026-08-19) — direct 55, +16 via extension surfaces (conditional-visibility.js, fx.js, hover-effects.js, parallax.js)",
+        "alt1": {
+          "component": "ToggleGroupControl",
+          "when": "the states are NAMED ALTERNATIVES, not a plain on/off — e.g. overlayGradient -> 'Solid / Gradient' is CORRECT per Spec 35 §8.1, not a violation",
+          "adoption": "REACH 64 of 83 (shared figure with the ENUM row above — same component, different use)"
+        },
+        "alt2": {
+          "component": "CheckboxControl",
+          "when": "a boolean scoped to ONE ITEM in a repeated list only — all 8 uses verified correct per Spec 35 §8.1",
+          "adoption": "REACH 6 of 83 (measured 2026-08-19) — direct 5, +1 hidden"
+        }
+      },
+      "bannedLookalikes": {
+        "_note": "Spec 35 §8.3.",
+        "jsxComponents": [],
+        "patterns": [
+          {
+            "shape": "a 2-option SelectControl driving a boolean",
+            "why": "Spec 35 §8.3",
+            "liveInstances": "3 DB rows (spec-cited)"
+          },
+          {
+            "shape": "a RadioControl with two options",
+            "why": "Spec 35 §8.3 — the spec itself corrects an earlier 'ZERO' claim as FALSE; the real figure is 1 (heading/edit.js:281)",
+            "liveInstances": 1
+          },
+          {
+            "shape": "literal 'On/Off' toggle groups",
+            "why": "Spec 35 §8.3",
+            "liveInstances": 0
+          }
+        ],
+        "matchRule": "Exact JSX-identifier Set membership."
+      },
+      "nativeUi": {
+        "_note": "No dedicated core supports.* flag for an arbitrary boolean — not applicable (distinct from colour/spacing/typography, which each have a real native competitor)."
+      },
+      "shapeRule": {
+        "specRef": "PART O §8 fields 2, 4",
+        "rule1": "label required; __nextHasNoMarginBottom on the instance (measured at 133 of 162 in the spec's own text, not independently re-run this session)",
+        "rule2": "placement — element-scoped booleans go in that element's TIER 1 panel; root-scoped booleans that STYLE NOTHING (autoplay, showDots, required) take the pinned-first Settings panel; all other root-scoped booleans resolve to their TIER 2 property-family panel via cluster-member-sets.json"
+      },
+      "exemption": {
+        "declareAt": "N/A — Spec 35 §8 records no exemption mechanism.",
+        "rule": "Whether a 2-option ToggleGroupControl reads as enable/disable (banned) or as named alternatives (correct) is explicitly a LABEL JUDGEMENT per Spec 35 §8.8, not an AST fact — any future rule here is advisory-only, never a hard gate, by the spec's own ruling."
+      },
+      "scope": {
+        "eligible": "roster.json has no dedicated boolean surface — Spec 35 §8.5: 252 boolean rows (spec-cited DB figure, not independently re-run this session)",
+        "rosterPath": "scripts/consistency/roster.json (no matching surface key)"
+      },
+      "measured2026_08_19": {
+        "toggleControlReach": {
+          "value": 71,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "toggleGroupControlReach": {
+          "value": 64,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "checkboxControlReach": {
+          "value": 6,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "nativeControlContract": {
+          "note": "ToggleControl's own README parsed correctly on the ORIGINAL regex (not one of the 7 broken components) — Required props: none (both value/onChange are optional per the README text; requiredness here is an SGS convention, not a WordPress one).",
+          "source": "toggle-control.md"
+        }
+      }
+    },
+    "free-text": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §9 (FREE TEXT / BARE NUMBER)",
+      "canonical": {
+        "component": "TextControl",
+        "use": "short single-line config",
+        "adoption": "REACH 69 of 83 (measured 2026-08-19) — direct 64, +5 hidden",
+        "nativeContract": "TextControl REQUIRES value + onChange per Job 1's extract-native-contracts.py (text-control.md) — this component's README was NOT one of the 7 broken; it already parsed correctly.",
+        "alt1": {
+          "component": "TextareaControl",
+          "use": "long-form",
+          "adoption": "REACH 30 of 83 (measured 2026-08-19) — direct 10, +20 via custom-css.js extension surface",
+          "nativeContract": "REQUIRES value + onChange per Job 1's fix (textarea-control.md was one of the 7 originally-broken components — its heading shape is the combined `#### `propName`: `Type`` format the original regex could not match)"
+        },
+        "alt2": {
+          "component": "NumberControl",
+          "use": "unbounded or precision-typed numbers",
+          "adoption": "REACH 4 of 83 (measured 2026-08-19, direct == reach)"
+        },
+        "alt3": {
+          "component": "RangeControl",
+          "use": "coarse BOUNDED values",
+          "adoption": "REACH 49 of 83 (measured 2026-08-19) — direct 41, +8 hidden",
+          "nativeContract": "RangeControl declares NO required props at all per its own README — one of the 7 originally-broken components (same combined-heading format); confirmed genuinely all-optional after the fix, not a parser miss."
+        },
+        "rule": "A number WITH a CSS unit is a LENGTH (see the length-unit row above), NOT a bare number — the discriminator between this type and length-unit is the presence of a unit."
+      },
+      "bannedLookalikes": {
+        "_note": "Spec 35 §9.3.",
+        "jsxComponents": [],
+        "patterns": [
+          {
+            "shape": "free text where a closed set exists",
+            "why": "belongs to ENUM instead — Spec 35 §9.3",
+            "liveInstances": "not separately counted; folded into the ENUM row's scope"
+          },
+          {
+            "shape": "free text driving a colour",
+            "why": "sgs/star-rating (Spec 35 §9.3) — a direct breach of the colour type's own canonical shape",
+            "liveInstances": 1
+          },
+          {
+            "shape": "free text driving typography",
+            "why": "7 rows (Spec 35 §9.3) — a direct breach of the mandatory TypographyControls rule (plugins/sgs-blocks/CLAUDE.md, R-22-13)",
+            "liveInstances": 7
+          },
+          {
+            "shape": "product-card.ctaFontSize as a bare unitless NumberControl",
+            "why": "Spec 35 §9.3 names this specific instance as a direct breach of the mandatory TypographyControls rule",
+            "liveInstances": 1
+          }
+        ],
+        "matchRule": "Exact JSX-identifier Set membership for the control component; the VIOLATION is which ATTRIBUTE it is bound to (a colour-role or typography-role attr), which needs the same role/css_property cross-reference §9.7 names, not a bare component-name ban."
+      },
+      "nativeUi": {
+        "_note": "No core supports.* flag maps to arbitrary free text — not applicable."
+      },
+      "shapeRule": {
+        "specRef": "PART O §9 fields 2, 4",
+        "rule1": "__next40pxDefaultSize — measured at 2 of 199 TextControls and 1 of 8 NumberControls in the spec's own text (not independently re-run this session)",
+        "rule2": "placement — element-scoped free text goes in that element's TIER 1 panel (content and appearance numbers share ONE panel, not opposite tabs); root-scoped resolves via cluster-member-sets.json unless it styles nothing (e.g. tagName), which takes the pinned Settings panel"
+      },
+      "exemption": {
+        "declareAt": "N/A — Spec 35 §9 records no exemption mechanism.",
+        "rule": "Not applicable."
+      },
+      "scope": {
+        "eligible": "roster.json has no dedicated free-text surface — Spec 35 §9.5: 1,654 string rows, 432 number/integer rows (spec-cited, not independently re-run this session)",
+        "rosterPath": "scripts/consistency/roster.json (no matching surface key)"
+      },
+      "measured2026_08_19": {
+        "textControlReach": {
+          "value": 69,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "textareaControlReach": {
+          "value": 30,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "numberControlReach": {
+          "value": 4,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "rangeControlReach": {
+          "value": 49,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "nativeControlContract": {
+          "command": "python plugins/sgs-blocks/scripts/surveys/extract-native-contracts.py .claude/scratch/goldens-agent/native-contracts",
+          "textControlRequired": [
+            "value",
+            "onChange"
+          ],
+          "textareaControlRequired": [
+            "value",
+            "onChange"
+          ],
+          "rangeControlRequired": [],
+          "note": "textarea-control.md and range-control.md were 2 of the 7 components whose Required props Job 1 recovered this session — both use the combined heading-with-type format."
+        }
+      }
+    },
+    "icon": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §10 (ICON)",
+      "canonical": {
+        "component": "IconPicker",
+        "path": "src/components/IconPicker/IconPicker.js",
+        "note": "No competitor exists per Spec 35 §10.1.",
+        "adoption": "REACH 12 of 83 (measured 2026-08-19, direct == reach)"
+      },
+      "bannedLookalikes": {
+        "_note": "Spec 35 §10.3.",
+        "jsxComponents": [],
+        "patterns": [
+          {
+            "shape": "a SelectControl over a hardcoded icon-name list",
+            "why": "Spec 35 §10.3",
+            "liveInstances": "not independently re-measured this session"
+          },
+          {
+            "shape": "a TextControl taking a raw icon slug",
+            "why": "Spec 35 §10.3",
+            "liveInstances": "not independently re-measured this session"
+          },
+          {
+            "shape": "an emoji/character field standing in for an icon",
+            "why": "Spec 35 §10.3",
+            "liveInstances": "not independently re-measured this session"
+          },
+          {
+            "shape": "a per-item icon picker inside a repeater that is NOT IconPicker",
+            "why": "Spec 35 §10.3 explicitly clears form-field-tiles and pricing-table — both mount the real component, listed so a future repeater cannot claim novelty",
+            "liveInstances": 0
+          }
+        ],
+        "matchRule": "Exact JSX-identifier Set membership."
+      },
+      "nativeUi": {
+        "_note": "No core supports.* flag maps to icon selection — not applicable."
+      },
+      "shapeRule": {
+        "specRef": "PART O §10 fields 2, 6",
+        "rule1": "label, value, onChange required; id REQUIRED and MISSING at IconPicker.js:335 per Spec 35 §10.2 — the same BaseControl-without-id defect the spec names for COLOUR and LINK too",
+        "rule2": "conformance is 0 of 13, not 9 of 9 as an earlier version of this doc carried — every mount passes the component-adoption check but fails the id requirement (Spec 35 §10.6)"
+      },
+      "exemption": {
+        "declareAt": "N/A — Spec 35 §10 records no exemption mechanism.",
+        "rule": "Not applicable."
+      },
+      "scope": {
+        "eligible": "roster.json has no dedicated icon surface — Spec 35 §10.5: block_capabilities capability icon-picker (13 blocks / 15 sites), declared via supports.sgs.iconPicker. Never scope by role LIKE 'icon-%' — that role family is the CONVERTER's icon-source discriminator (D525 separated the two deliberately).",
+        "rosterPath": "scripts/consistency/roster.json (no matching surface key)",
+        "warning": "the census must scan PAST edit.js — sgs/cart mounts the picker from TriggerSettingsControls.js; a per-block edit.js-only scan reports 12 and looks complete but misses this one (Spec 35 §10.5)."
+      },
+      "measured2026_08_19": {
+        "iconPickerReach": {
+          "value": 12,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "iconPickerIdRequirement": {
+          "conformant": 0,
+          "of": 13,
+          "note": "spec-cited (Spec 35 §10.6), not independently re-verified this session — recorded here rather than silently repeated as if freshly measured"
+        }
+      }
+    },
+    "shadow": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §11 (SHADOW)",
+      "canonical": {
+        "component": "ShadowControl",
+        "path": "src/components/ShadowControl.js",
+        "storageShape": "a single CSS STRING (X/Y/blur/spread/colour+alpha/inset) — NOT an object; sgs/button's hand-rolled object-shape builder is a banned lookalike for exactly this reason",
+        "adoption": "REACH 30 of 83 (measured 2026-08-19) — direct 15, +15 hidden"
+      },
+      "bannedLookalikes": {
+        "_note": "Spec 35 §11.3 — this type's list IS the whole contract, because the spec's own words say rule 07 (the existing static scanner) sees exactly ONE of these five shapes.",
+        "jsxComponents": [],
+        "patterns": [
+          {
+            "shape": "a preset SelectControl (None/Small/Medium) writing a shadow attr",
+            "why": "the only shape the existing rule-07 scanner inspects",
+            "liveInstances": "the shape reaches 67 blocks through extensions/hover-effects.js alone (Spec 35 §11.3) — invisible to any per-block scan"
+          },
+          {
+            "shape": "a bare TextControl asking for raw CSS",
+            "why": "sgs/quote:699 and sgs/media:685 — media's help text literally reads 'A raw CSS box-shadow value, e.g. 0 6px 24px rgba(0,0,0,0.15)', a direct breach of the framework's own non-negotiable that no setting may require touching code",
+            "liveInstances": 2
+          },
+          {
+            "shape": "a hand-rolled builder storing an OBJECT where ShadowControl stores a STRING",
+            "why": "sgs/button, ~80 duplicated lines, incompatible shape",
+            "liveInstances": 1
+          },
+          {
+            "shape": "no control at all",
+            "why": "sgs/heading and sgs/text declare boxShadow/boxShadowHover, RENDER them, and expose NOTHING — rule 07 cannot see this class by construction (it only scans for controls that exist, not attrs with no control)",
+            "liveInstances": "2 blocks x 2 attrs = 4 exact defects"
+          }
+        ],
+        "matchRule": "Exact JSX-identifier Set membership for the component ban (preset SelectControl / raw TextControl); the object-vs-string shape ban and the no-control class both need a different detection method entirely (attr-render-without-control), which Spec 35 §11.7 names as still unbuilt."
+      },
+      "nativeUi": {
+        "_note": "No core supports.* flag maps to box-shadow — not applicable (0 of 83 blocks declare supports.border, the nearest candidate, and shadow has no supports.* flag of its own in WordPress core)."
+      },
+      "shapeRule": {
+        "specRef": "PART O §11 fields 2, 7",
+        "rule1": "label, value, onChange required; id REQUIRED and MISSING at ShadowControl.js:126 — the same BaseControl-without-id defect as COLOUR and ICON",
+        "rule2": "detection needs FIVE buckets (compliant / preset-select / raw-text / duplicate-builder / no-control), not a boolean pass/fail — Spec 35 §11.7"
+      },
+      "exemption": {
+        "declareAt": "N/A — Spec 35 §11 records no exemption mechanism.",
+        "rule": "Not applicable."
+      },
+      "scope": {
+        "eligible": "roster.json has no dedicated shadow surface — Spec 35 §11.5: css_property LIKE '%shadow%' across block_attributes PLUS the extension surface -> real footprint 17 blocks (rule 07's own static scan reports only 1, per the spec's own contrast)",
+        "rosterPath": "scripts/consistency/roster.json (no matching surface key)"
+      },
+      "measured2026_08_19": {
+        "shadowControlReach": {
+          "value": 30,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "idRequirementLine": {
+          "file": "src/components/ShadowControl.js",
+          "line": 126,
+          "note": "spec-cited, not independently re-read this session"
+        }
+      }
+    },
+    "responsive-wrapper": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §12 (THE RESPONSIVE WRAPPER FAMILY)",
+      "canonical": {
+        "tierPrimitive": {
+          "component": "ResponsiveControl",
+          "path": "src/components/ResponsiveControl.js",
+          "storageShape": "flat per-tier attrs (base + Tablet + Mobile siblings)",
+          "adoption": "REACH 64 of 83 (measured 2026-08-19) — direct 12, +52 hidden"
+        },
+        "objectPrimitive": {
+          "component": "ResponsiveOverride",
+          "path": "src/components/ResponsiveOverride.js",
+          "storageShape": "one object-typed attr {desktop,tablet,mobile}",
+          "adoption": "REACH 44 of 83 (measured 2026-08-19) — direct 23, +21 hidden"
+        },
+        "bindingRule": "THE PAIRING IS BINDING — Spec 35 §12.3 table: scalar-base-with-siblings -> ResponsiveControl ONLY; object-base-no-siblings -> ResponsiveOverride ONLY. A mismatch is destructive and SILENT in both directions (D563, 2026-08-11 — broke live on 19 blocks via ContainerWrapperControls.js when gap migrated shape and the shared control kept writing the old sibling attrs, which WordPress silently discarded, D338).",
+        "gate": "lint-responsive-controls.py — a WIRED prebuild gate naming exactly these two primitives (council S6). Any reshape proposal must change that gate in the same commit or the build fails."
+      },
+      "bannedLookalikes": {
+        "_note": "Spec 35 §12.3.",
+        "jsxComponents": [
+          "DeviceTabs"
+        ],
+        "patterns": [
+          {
+            "shape": "per-tier duplicate controls rendered side by side instead of one wrapped control",
+            "why": "responsive-logo/edit.js:281-305 renders three always-visible logo slots — same instance the MEDIA row's bannedLookalikes also names",
+            "liveInstances": 1
+          },
+          {
+            "shape": "a bespoke DeviceTabs mount",
+            "why": "DEAD component (0 callers, Spec 35 §13 table) — the tier is now chosen ONCE in the global device toggle (responsive-device-toggle.js); inspector-scan rule 25 already flags any reintroduction",
+            "liveInstances": 0
+          },
+          {
+            "shape": "a third breakpoint constant",
+            "why": "the 768/1024 lock — carried obligation 11 in Spec 35's cross-cutting section",
+            "liveInstances": "not independently re-measured this session"
+          },
+          {
+            "shape": "blending ResponsiveControl with ResponsiveOverride on ONE attr family",
+            "why": "the exact D563 defect class — a mismatch is destructive and silent, not merely a style inconsistency",
+            "liveInstances": "0 remaining as of D563's fix, per the spec's own text — not independently re-verified this session"
+          }
+        ],
+        "matchRule": "DeviceTabs is banned as an exact JSX identifier (Set membership). The ban stands, but its previous justification was false: this entry claimed DeviceTabs is STILL exported from components/index.js. It is not - DeviceTabs.js does not exist and the barrel has no such export (verified 2026-09-03). The ban is now a pure regression guard against reintroduction, same discipline as colour's zero-instance guards."
+      },
+      "nativeUi": {
+        "_note": "This type wraps other types (length-unit, box-4value, colour tiers, etc.) rather than owning a native competitor of its own — see the wrapped type's own nativeUi row."
+      },
+      "shapeRule": {
+        "specRef": "PART O §12 fields 2, 6",
+        "rule1": "a per-tier value/onChange(tier, next) pair; the wrapped control supplies its own units",
+        "rule2": "label association REQUIRED and MISSING on BOTH primitives — ResponsiveControl:150-170 and ResponsiveOverride:78-83 render an unassociated label span. These two account for 30 of the 42 unnamed controls tree-wide (Spec 35 §12.2).",
+        "rule3": "the cascade resolver underneath (resolveTier(), client+PHP) is genuinely unified — do NOT 'fix' that; what is real is THREE incompatible storage shapes (flat per-tier, dominant; one nested object per FR-37-16; flat boolean-or-null tiers) — Spec 35 §12.6"
+      },
+      "exemption": {
+        "declareAt": "N/A — this type has no per-row exemption; the binding pairing rule (field above) has no opt-out.",
+        "rule": "Not applicable."
+      },
+      "scope": {
+        "eligible": "roster.json has no dedicated responsive-wrapper surface — Spec 35 §12.5: block_attributes.is_responsive=1 -> 45 blocks, PLUS any attr family declaring Tablet/Mobile siblings the column has not caught. Two known traps: literal-name matching MISSES brand-strip (tier keys built dynamically in PHP) and FALSE-POSITIVES on fontSizeTablet (built by computed key in JS) — nearly 54 false findings between them.",
+        "rosterPath": "scripts/consistency/roster.json (no matching surface key)"
+      },
+      "measured2026_08_19": {
+        "responsiveControlReach": {
+          "value": 64,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "responsiveOverrideReach": {
+          "value": 44,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "deviceTabsMounts": {
+          "value": 0,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-mounts.py . (run from plugins/sgs-blocks)",
+          "note": "confirmed dead via the ZERO MOUNTS ANYWHERE line"
+        }
+      }
+    },
+    "border": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §14 (BORDER)",
+      "canonical": {
+        "radius": {
+          "component": "ResponsiveBorderRadiusControl",
+          "path": "src/components/ResponsiveBoxControl.js:162-196",
+          "adoption": "REACH 36 of 83 (measured 2026-08-19) — shared figure with the box-4value row above (same component, this is the border-specific use)"
+        },
+        "widthStyleColour": {
+          "component": "a COMPOSED builder — UnitControl (width, real units array) + SelectControl (style) + a token-aware colour picker",
+          "note": "Radius is a SEPARATE control from width/style — Spec 35 §14.1's condition, not an implementation detail.",
+          "correction2026_08_11_D566": "Spec 35 §14.1 used to name core's BorderBoxControl as canonical. That component has NEVER EXISTED in this tree. Resolved by evidence, not by building it — the only live demand (gridItemBorder) is now the composed builder above."
+        },
+        "coreComponentDeliberatelyNotAdopted": {
+          "component": "__experimentalBorderBoxControl (core, @wordpress/components)",
+          "why": "works in a {color,style,width} OBJECT while the SGS attribute stores a CSS shorthand STRING; adopting it would force a stored-content migration on every live instance for no user-visible gain",
+          "nativeContract": "Job 1 fetched this component's types.ts fallback (no README on trunk) — REQUIRED: onChange, value; OPTIONAL: popoverPlacement, popoverOffset (per border-box-control.types.ts, BorderBoxControlProps). Recorded here even though SGS deliberately does not adopt it, since a future reviewer asking 'why not just use core's own?' needs the real contract, not a guess."
+        }
+      },
+      "bannedLookalikes": {
+        "_note": "Spec 35 §14.3.",
+        "jsxComponents": [],
+        "patterns": [
+          {
+            "shape": "a None/Thin/Thick preset SelectControl standing in for a real width/style/colour builder",
+            "why": "the exact shape condition 7 (SHADOW) banned, dropped for border until this fold-in",
+            "liveInstances": "not independently re-measured this session"
+          },
+          {
+            "shape": "per-side scalar attrs instead of an object",
+            "why": "migration COMPLETE — 0 remaining, keep the gate (Spec 35 §14.3/§14.6)",
+            "liveInstances": 0
+          },
+          {
+            "shape": "a TextControl taking a raw CSS border shorthand",
+            "why": "0 remaining as of 2026-08-11 (D566) — the last one was gridItemBorder, now the composed builder",
+            "liveInstances": 0
+          },
+          {
+            "shape": "radius folded into the width control",
+            "why": "radius is a SEPARATE control by design (field 1)",
+            "liveInstances": "not independently re-measured this session"
+          }
+        ],
+        "matchRule": "Exact JSX-identifier Set membership."
+      },
+      "nativeUi": {
+        "_note": "0 of 83 blocks declare supports.border (measured 2026-08-19, same python scan as the length-unit/box-4value rows) — no native competitor exists for this type in the current tree.",
+        "measured2026_08_19": {
+          "declaresSupportsBorder": 0
+        }
+      },
+      "shapeRule": {
+        "specRef": "PART O §14 fields 2, 8",
+        "rule1": "per-side values, a real units array, alpha on the colour, a label",
+        "rule2": "RADIUS is already responsive and built — 12 blocks declare ...borderRadius{Tablet,Mobile}, 17 mounts in production (Spec 35 §14.8, ANSWERED not open)",
+        "rule3": "WIDTH/STYLE/COLOUR are DELIBERATELY desktop-only in practice — 0 of 83 block.json files declare a Tablet/Mobile sibling for borderWidth or border{Style,Colour,Color}. This is a DEMAND ruling (Bean, D560), not a capability ruling — the wrapper is already tier-plumbed, so reversing costs only block-side attrs. Promotion trigger: the first block/stored-instance/draft-clone that actually carries a per-device border width."
+      },
+      "exemption": {
+        "declareAt": "N/A — Spec 35 §14 records no exemption mechanism.",
+        "rule": "Not applicable."
+      },
+      "scope": {
+        "eligible": "roster.json has no dedicated border surface — Spec 35 §14.5: box_family IN ('borderWidth', ...) UNION css_property LIKE 'border%'. box_family alone under-scopes a scalar radius (card-grid.cardRadius, nav-menu.itemRadius, mega-aside.asideRadius are correctly NULL there and must be caught by the css_property leg.",
+        "rosterPath": "scripts/consistency/roster.json (no matching surface key)"
+      },
+      "measured2026_08_19": {
+        "responsiveBorderRadiusControlReach": {
+          "value": 36,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "declaresSupportsBorder": {
+          "value": 0,
+          "command": "python one-liner over src/blocks/*/block.json (see nativeUi block above)"
+        },
+        "nativeControlContract": {
+          "command": "gh api repos/WordPress/gutenberg/contents/packages/components/src/border-box-control/types.ts --jq '.content' | base64 -d, then python plugins/sgs-blocks/scripts/surveys/extract-native-contracts.py",
+          "required": [
+            "onChange",
+            "value"
+          ],
+          "source": "border-box-control.types.ts (no README exists on trunk — Job 1's Format D types.ts fallback)"
+        }
+      }
+    },
+    "typography": {
+      "specRef": "NO Part O contract exists for this type in .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md — included here because plugins/sgs-blocks/CLAUDE.md's 'Block Customisation Standard' section mandates it explicitly: 'TYPOGRAPHY — use the SHARED component, never bespoke font controls (MANDATORY, Bean R-22-13 2026-06-11)'.",
+      "canonical": {
+        "component": "TypographyControls",
+        "path": "src/components/TypographyControls.js",
+        "phpHelper": "sgs_typography_css_rule( $attributes, $prefix, $selector ) — includes/helpers-typography.php, auto-loaded via render-helpers.php",
+        "shape": "font size = ResponsiveControl wrapping a UnitControl (integrated number+unit, never a RangeControl + separate SelectControl dropdown); weight+style = SelectControl dropdowns; line-height = UnitControl (empty-string unit = unitless).",
+        "correction2026_08_10": "plugins/sgs-blocks/CLAUDE.md itself carries a self-correction: the device tier is chosen ONCE in the global toggle (responsive-device-toggle.js), NOT via a per-control device-icon switcher — ResponsiveControl no longer renders any switcher of its own. Repeating this here so a golden row built from an older reading of that file does not reintroduce the stale expectation.",
+        "adoption": "REACH 16 of 83 (measured 2026-08-19, direct == reach — no extension-surface reach for this one)",
+        "adoptedBlocks": "text/heading/button/label/quote (canonical) + counter/whatsapp-cta/mobile-nav/option-picker/trust-bar/product-card (migrated 2026-06-11) per plugins/sgs-blocks/CLAUDE.md — not independently re-verified per-block this session, the REACH=16 figure stands as the measured total"
+      },
+      "bannedLookalikes": {
+        "_note": "plugins/sgs-blocks/CLAUDE.md's R-22-13 rule + Spec 35 §9.3's cross-reference (7 rows of free text driving typography, plus product-card.ctaFontSize as a bare unitless NumberControl).",
+        "jsxComponents": [],
+        "patterns": [
+          {
+            "shape": "a hand-rolled TextControl/SelectControl font-size",
+            "why": "plugins/sgs-blocks/CLAUDE.md: 'this path produced the inconsistent stacked-RangeControl + unit-dropdown controls this rule exists to kill'",
+            "liveInstances": "not independently re-measured this session"
+          },
+          {
+            "shape": "per-block --x-font-size CSS custom properties instead of the shared uid-scoped <style> emitter",
+            "why": "plugins/sgs-blocks/CLAUDE.md explicitly bans this pattern",
+            "liveInstances": "not independently re-measured this session"
+          },
+          {
+            "shape": "free text driving typography",
+            "why": "Spec 35 §9.3 — 7 rows",
+            "liveInstances": 7
+          },
+          {
+            "shape": "product-card.ctaFontSize as a bare unitless NumberControl",
+            "why": "Spec 35 §9.3 names this exact instance as a direct breach",
+            "liveInstances": 1
+          }
+        ],
+        "matchRule": "Exact JSX-identifier Set membership for the shared-component ban; the free-text/bare-number violations need the same role/css_property cross-reference the FREE-TEXT row's matchRule names."
+      },
+      "nativeUi": {
+        "_note": "block.json supports.typography is the native twin — measured 2026-08-19 (same python scan as length-unit's supports.spacing): 25 of 83 blocks DECLARE supports.typography, and ALL 25 have at least one sub-flag TRUE (0 all-false). Same open gap as length-unit's supports.spacing finding: unlike colour's clean allFalse convention, every typography-declaring block currently competes with core's own Styles-tab typography UI.",
+        "detectVia": "block.json supports.typography — any sub-flag set true",
+        "conformantShape": "NOT YET ACHIEVED for this type — 0 of 25 currently declare with all sub-flags false",
+        "measured2026_08_19": {
+          "declaresSupportsTypography": 25,
+          "atLeastOneFlagTrue": 25,
+          "allFlagsFalse": 0
+        }
+      },
+      "shapeRule": {
+        "specRef": "plugins/sgs-blocks/CLAUDE.md 'Block Customisation Standard' section (R-22-13)",
+        "rule1": "attr shape per element: {prefix}FontSize (number) + {prefix}FontSizeUnit/Tablet/Mobile + {prefix}FontWeight/FontStyle + {prefix}LineHeight/Unit",
+        "rule2": "the helper emits a per-instance uid-scoped <style> (base + tablet + mobile) and honours a legacy STRING fontSize verbatim for back-compat",
+        "rule3": "font size REQUIRED to be the integrated UnitControl shape (number+unit in one control), never a RangeControl + separate SelectControl — this is the specific stacked-control anti-pattern the rule exists to kill"
+      },
+      "exemption": {
+        "declareAt": "N/A — no exemption mechanism recorded for this type in either governing doc.",
+        "rule": "Not applicable — R-22-13 is stated as MANDATORY with no carve-out clause in plugins/sgs-blocks/CLAUDE.md."
+      },
+      "scope": {
+        "eligible": "roster.json has no dedicated typography surface — the nearest proxy is supports.typography (25 blocks) measured above, which is a NATIVE-UI-COMPETITOR count, not a TypographyControls-eligibility count (a block can need per-element typography without declaring the native supports flag at all, e.g. via a dedicated child element's own font-size attrs). Scope is therefore UNRESOLVED for this type — recorded as an honest gap, not guessed.",
+        "rosterPath": "scripts/consistency/roster.json (no matching surface key)"
+      },
+      "measured2026_08_19": {
+        "typographyControlsReach": {
+          "value": 16,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "supportsTypography": {
+          "value": 25,
+          "command": "python one-liner over src/blocks/*/block.json (see nativeUi block above)"
+        }
+      }
+    },
+    "link": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §2 (LINK) — SUPERSEDED 2026-08-13, this row reflects the CURRENT ruling, not the struck original",
+      "canonical": {
+        "component": "LinkPopoverControl.js",
+        "path": "src/components/LinkPopoverControl.js",
+        "exports": {
+          "LinkPopoverContent": "the <Popover> primitive — mount when a block needs MULTIPLE triggers sharing one popover instance (e.g. sgs/button's toolbar button + sidebar row)",
+          "LinkPopoverField": "self-contained trigger-row + popover in one component — the common single-trigger case"
+        },
+        "adoption": "LinkPopoverField REACH 10 of 83 (measured 2026-08-19, direct == reach); LinkPopoverContent 1 direct mount (not separately tracked by survey-control-reach.py)",
+        "supersessionNote": "Bean ruled 2026-08-13: SgsLinkControl's INLINE mount is retired as the canonical shape (kept only as a legacy shim for repeater-item consumers not yet migrated). Root-caused core LinkControl's 350px floor overflowing a ~248px inline panel + staged settings toggles with no blur/close commit, by moving onto core's own designed home (a popover with a real Submit interaction, matching core/button)."
+      },
+      "knownStaleTrap_link_backlog": {
+        "claim": "Spec 35 §2.6 (dated 2026-08-13) names 7 blocks still on SgsLinkControl's inline mount: brand-strip, card-grid, form, pricing-table, social-icons, team-member, trust-bar.",
+        "reMeasured2026_08_19": "survey-control-mounts.py's ZERO MOUNTS ANYWHERE line reports SgsLinkControl at 0 mounts tree-wide — a DIFFERENT figure from the spec's 7-block backlog. Recorded as an open discrepancy, NOT resolved here: either the 7-block migration completed since the spec text was last edited, or (more likely, per the D523 repeater-item blind spot this same spec documents elsewhere) the survey script's per-file scan cannot see repeater-item mounts the same way it cannot see pricing-table's item editor. Do not trust either figure over the other without opening the 7 named files directly — flagged, not guessed.",
+        "verifiedVia": "python plugins/sgs-blocks/scripts/surveys/survey-control-mounts.py . (run from plugins/sgs-blocks)"
+      },
+      "bannedLookalikes": {
+        "_note": "Spec 35 §2.3.",
+        "jsxComponents": [
+          "URLInput"
+        ],
+        "patterns": [
+          {
+            "shape": "<TextControl type=\"url\" />",
+            "why": "bypasses the link resolution + popover UX entirely",
+            "liveInstances": "not independently re-measured this session"
+          },
+          {
+            "shape": "SgsLinkControl's inline mount for any NEW consumer",
+            "why": "existing repeater-item consumers are a migration backlog, not a new violation (see knownStaleTrap_link_backlog above)",
+            "liveInstances": "see knownStaleTrap_link_backlog"
+          }
+        ],
+        "matchRule": "Exact JSX-identifier Set membership, never substring — confirmed URLInput sits at 0 live mounts tree-wide per the ZERO MOUNTS ANYWHERE line (measured 2026-08-19), kept as a regression guard."
+      },
+      "nativeUi": {
+        "_note": "No core supports.* flag maps to link fields — not applicable."
+      },
+      "shapeRule": {
+        "specRef": "PART O §2 fields 2, 8",
+        "rule1": "LinkPopoverField requires label, value, onChange. Two value shapes: object {url, linkId, linkKind, linkTarget, rel, download} (default) or bare string (searchOnly).",
+        "rule2": "targetMode ('enum' 4-value _self/_blank/_parent/_top, or 'boolean' open-in-new-tab) must match which shape the consumer's OWN schema declares — do not default to 'enum' for a boolean-typed schema attr, the exact 'flat value on an object attr' coercion-trap class of bug this file's own colour row and length-unit row both warn about elsewhere.",
+        "rule3": "enableInternalResolution opts a consumer INTO linkId/linkKind render-time ID resolution, off by default (only sgs/button's render.php resolves them today per the spec's own text)"
+      },
+      "exemption": {
+        "declareAt": "N/A — Spec 35 §2 records no exemption mechanism.",
+        "rule": "Not applicable."
+      },
+      "scope": {
+        "eligible": "roster.json surfaces.link === true",
+        "eligibleCount2026_08_19": 17,
+        "rosterPath": "scripts/consistency/roster.json",
+        "note": "Spec 35 §2.5 additionally names a 67-block extension-surface reach via hover-effects.js's block-link, invisible to any block-scoped axis — roster.json's surfaces.link=17 count is the top-level-attr pool only, not this extension reach."
+      },
+      "measured2026_08_19": {
+        "linkPopoverFieldReach": {
+          "value": 10,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks)"
+        },
+        "sgsLinkControlMounts": {
+          "value": 0,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-mounts.py . (run from plugins/sgs-blocks)",
+          "note": "conflicts with Spec 35 §2.6's 7-block backlog claim — see knownStaleTrap_link_backlog"
+        },
+        "rosterSurfacesLink": {
+          "value": 17,
+          "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-mounts.py . (run from plugins/sgs-blocks) (ROSTER SURFACES section)"
+        }
+      }
+    }
+  }
+}

@@ -20,87 +20,138 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"background": true,
-			"text": true,
-			"gradients": true,
-			"__experimentalSkipSerialization": true
-		},
-		"typography": {
-			"fontSize": true,
-			"textAlign": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
+			"background": false,
+			"text": false,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
 			"imageControls": true,
 			"imageControlsExplicit": true,
+			"_comment_mediaElements": "37-media-no-handroll remediation (2026-09-03, CORRECTED same day via /qc-council). NOT a new client control: prefix 'sgs' resolves (sgs_media_element_attr) to the SAME 'sgsObjectFit' attribute imageControlsExplicit's legacy image-controls extension already injects and already exposes an 'Object fit' dropdown for -- the original unprefixed entry here created a SECOND, dead 'Object fit' dropdown (QC-council finding: two identically-labelled controls in the same inspector) and, worse, left the legacy sgs_media_position_css() call in render.php free to emit a literal object-fit declaration from any PRE-EXISTING sgsObjectFit value on the SAME selector the atom now paints -- a live double-emission risk for any team-member instance saved before this fix, not just a cosmetic duplicate. render.php now clears sgsObjectFit before that call (mirrors sgs/gallery's identical fix) so only object-position emits from the legacy path, and the atom owns object-fit exclusively via this SAME attribute. style.css's hardcoded object-fit:cover was removed; the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` atom stylesheet paints the identical default.",
+			"mediaElements": [
+				{
+					"prefix": "sgs",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
+			],
 			"scalarContentLift": true,
-			"presetSelectors": [ "cardStyle" ],
-			"enabledExtensions": [ "blockLink" ],
+			"presetSelectors": [
+				"cardStyle"
+			],
+			"enabledExtensions": [
+				"blockLink",
+				"hover"
+			],
+			"hoverDefaults": {
+				"scalePreset": "1.02",
+				"shadow": "raised",
+				"imageZoom": true,
+				"focusRing": true
+			},
 			"elements": {
 				"card": {
 					"label": "Card",
 					"order": 1,
-					"clusters": [ "layout", "fill", "text", "motion" ],
+					"clusters": [
+						"layout",
+						"fill",
+						"text",
+						"motion"
+					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:max-width": "maxWidth",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
-						"css:background-color": "native:color.background",
-						"css:color": "native:color.text",
-						"css:font-size": "native:typography.fontSize",
-						"css:text-align": "native:typography.textAlign",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:background-color": "backgroundColour",
+						"css:color": "textColour",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
+						"css:text-align": "textAlign",
 						"css:transition-duration": "transitionDuration",
 						"css:transition-timing-function": "transitionEasing",
-						"css:box-shadow": "cardShadow"
+						"css:box-shadow": "cardShadow",
+						"css:box-shadow-color": "cardShadowColour",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:color-gradient": "textColourGradient",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:box-shadow": "shadowHover"
+								"css:box-shadow": "shadowHover",
+								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient",
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
 							}
 						}
 					},
-					"_note": "D294 content-KIND, no-wrapper (render.php:5-47) — the root <div> IS the block, no SGS_Container_Wrapper call (dropped 2026-07-10). FR-35-5 Task 4c fix (2026-07-21, Bean's Option A): the card now has a RESTING-state `cardShadow` attr (render.php:118,247-256; style.css –sgs-card-shadow fallback) alongside the existing hover-only `shadowHover` (render.php:239-243), so shadowHover is STATE_OK not STATE_WITHOUT_BASE — same fix shape as card-grid's cardShadow (Task 4). An empty cardShadow control means the card inherits the theme token exactly as before. `scaleHover` (transform:scale on hover) has no matching cluster member (no css:transform exists in the vocabulary) — an honest ORPHAN, not a gap. line-height/letter-spacing/font-weight/font-style/text-transform/text-decoration/font-family are honest gaps — the card root only supports fontSize+textAlign natively (typography supports = {fontSize:true, textAlign:true} only)."
+					"_note": "D294 content-KIND, no-wrapper (render.php:5-47) — the root <div> IS the block, no SGS_Container_Wrapper call (dropped 2026-07-10). FR-35-5 Task 4c fix (2026-07-21, Bean's Option A): the card now has a RESTING-state `cardShadow` attr (render.php:118,247-256; style.css –sgs-card-shadow fallback) alongside the existing hover-only `shadowHover` (render.php:239-243), so shadowHover is STATE_OK not STATE_WITHOUT_BASE — same fix shape as card-grid's cardShadow (Task 4). An empty cardShadow control means the card inherits the theme token exactly as before. `scaleHover` (transform:scale on hover) has no matching cluster member (no css:transform exists in the vocabulary) — an honest ORPHAN, not a gap. Typography FULLY migrated off native WP support (Bean-locked architecture decision, 2026-09-05, D971/D972 full-replacement track) — root prefix '' (fontSize/fontWeight/fontStyle/lineHeight via TypographyControls + sgs_typography_css_rule(); textAlign is now a plain block-private attribute rendered via the block's own has-text-align-* class mechanism, no longer WP-native supports.typography.textAlign). letter-spacing/text-transform/text-decoration/font-family are supported by the shared helper but have no editor control on this block yet — honest gaps."
 				},
 				"image": {
 					"label": "Photo",
 					"order": 2,
 					"clusters": [],
-					"_note": "Renamed from 'photo' 2026-08-15 (element-manifest drift fix) — imageZoomHover resolves to css_element='image' via the cross-block classification override (scripts/attr-classification-overrides.json), the SAME vocabulary token already declared by sgs/card-grid, sgs/gallery and sgs/post-grid for this identical hover-effect pattern. The real rendered class is `.sgs-team-member__photo` (render.php:295) — the label stays 'Photo' (client-facing, unchanged) even though the manifest KEY is now 'image', matching the sibling-block vocabulary. Governed by the universal image-controls extension (supports.sgs.imageControls) plus photoShape/overlayHover/grayscaleHover/imageZoomHover behaviour toggles — none are Text/Fill/Layout style-cluster members."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:filter": "grayscaleHover"
+							}
+						}
+					},
+					"_note": "Renamed from 'photo' 2026-08-15 (element-manifest drift fix) — imageZoomHover resolves to css_element='image' via the cross-block classification override (scripts/attr-classification-overrides.json), the SAME vocabulary token already declared by sgs/card-grid, sgs/gallery and sgs/post-grid for this identical hover-effect pattern. The real rendered class is `.sgs-team-member__photo` (render.php:295) — the label stays 'Photo' (client-facing, unchanged) even though the manifest KEY is now 'image', matching the sibling-block vocabulary. Governed by the universal image-controls extension (supports.sgs.imageControls) plus photoShape/overlayHover/grayscaleHover/imageZoomHover behaviour toggles — none are Text/Fill/Layout style-cluster members. `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
 				},
 				"name": {
 					"label": "Name",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "name",
 					"attrMap": {
-						"tag": "headingLevel"
+						"tag": "headingLevel",
+						"css:background-image": "nameColourGradient"
 					},
-					"_note": "css:color resolves via the default convention (nameColour). No nameFontSize/nameFontWeight/etc attrs exist — honest gaps; only the card-root fontSize (typography.fontSize) governs name/role/bio text size uniformly. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:320, `.sgs-team-member__name`) but doesn't match the `name` prefix convention on its own."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "nameColourHover"
+							}
+						}
+					},
+					"_note_hover": "nameColourHover (2026-09-05) -- render.php:637-639 emits sgs_hover_state_rules( $name_colour_sel, 'color:...', ':focus-visible' ), where $name_colour_sel = $root_sel . ' .sgs-team-member__name' (render.php:627). That is the NAME element's OWN :hover/:focus-visible, not the card root's, so css_element=name / css_state=hover is what render.php actually does. Declared explicitly because the `name` prefix convention resolves css:color to the RESTING nameColour only -- it cannot reach a state, so without this entry the derived DB left css_element/css_state NULL and nameColourHover collided with roleColourHover on the identical (color, NULL, NULL) routing slot.",
+					"_note": "css:color resolves via the default convention (nameColour). No nameFontSize/nameFontWeight/etc attrs exist — honest gaps; only the card-root fontSize (typography.fontSize) governs name/role/bio text size uniformly. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:320, `.sgs-team-member__name`) but doesn't match the `name` prefix convention on its own. `nameColourGradient` (2026-09-03) is the text-colour gradient sibling to nameColour, same background-clip:text mechanism as sgs/counter's numberColourGradient."
 				},
 				"role": {
 					"label": "Role",
 					"order": 4,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "role",
-					"_note": "css:color resolves via the default convention (roleColour, default 'text-muted'). No per-element font-size/weight — honest gaps."
+					"attrMap": {
+						"css:background-image": "roleColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "roleColourHover"
+							}
+						}
+					},
+					"_note_hover": "roleColourHover (2026-09-05) -- render.php:648-650 emits sgs_hover_state_rules( $role_colour_sel, 'color:...', ':focus-visible' ), where $role_colour_sel = $root_sel . ' .sgs-team-member__role' (render.php:628). The ROLE element's own :hover/:focus-visible, exactly mirroring nameColourHover above. Same reason for the explicit declaration: the `role` prefix convention only reaches the resting roleColour, leaving the hover attribute at (color, NULL, NULL) and colliding with nameColourHover.",
+					"_note": "css:color resolves via the default convention (roleColour, default 'text-muted'). No per-element font-size/weight — honest gaps. `roleColourGradient` (2026-09-03) is the text-colour gradient sibling to roleColour, same background-clip:text mechanism."
 				},
 				"bio": {
 					"label": "Bio",
@@ -117,21 +168,33 @@
 			},
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			}
 		}
 	},
 	"selectors": {
-		"root": ".wp-block-sgs-team-member",
-		"typography": ".sgs-team-member__name"
+		"root": ".wp-block-sgs-team-member"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"photo": {
 			"type": "object"
 		},
@@ -141,6 +204,11 @@
 		"photoMobile": {
 			"type": "object"
 		},
+		"photoDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "Marks the photo as purely decorative (empty alt + aria-hidden) — for edge cases such as a placeholder silhouette graphic. Most team photos identify the person and should keep their alt text."
+		},
 		"name": {
 			"type": "string",
 			"default": "",
@@ -148,7 +216,14 @@
 		},
 		"headingLevel": {
 			"type": "string",
-			"enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
+			"enum": [
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"p"
+			],
 			"default": "h3"
 		},
 		"role": {
@@ -167,13 +242,53 @@
 				"type": "object"
 			}
 		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"nameColour": {
 			"type": "string",
 			"default": "primary"
 		},
+		"nameColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"roleColour": {
 			"type": "string",
 			"default": "text-muted"
+		},
+		"roleColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"cardStyle": {
 			"type": "string",
@@ -249,21 +364,82 @@
 			"type": "string",
 			"default": ""
 		},
-		"paddingTablet": {
+		"borderWidth": {
 			"type": "object",
 			"default": {}
 		},
-		"paddingMobile": {
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"nameColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"roleColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"fontSize": {
 			"type": "object",
 			"default": {}
 		},
-		"marginTablet": {
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
 			"type": "object",
 			"default": {}
 		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"textAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

@@ -21,15 +21,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // CSS length/unit sanitiser — for free-text style-engine values concatenated
 // into raw CSS declarations inside this block's scoped <style> tag. Mirrors
 // sgs/hero's proven sanitiser (contract §D).
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS-keyword sanitiser — for free-text attrs (border-style) — letters + hyphen only.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 $layout_mode = isset( $attributes['layoutMode'] ) ? esc_attr( $attributes['layoutMode'] ) : 'fixed-columns';
 // `columns` is a TIER OBJECT (Spec 35 pass 4) — the old columnsDesktop/columnsTablet/
 // columnsMobile flat trio is retired; resolve each tier from the object instead,
@@ -183,77 +175,60 @@ if ( $use_auto_flex ) {
 }";
 }
 
-// ── WP-native color / border supports — no-inline contract (§A). ──────────────
-// block.json declares color/spacing/__experimentalBorder ALL with
-// __experimentalSkipSerialization:true, so get_block_wrapper_attributes() (called
-// inside SGS_Container_Wrapper::render() below) never auto-inlines them. Read the
-// resolved values from $attributes['style'] here and emit them into this block's
-// OWN scoped <style>, reusing the same ID hook the grid engine already builds
-// (.$uid.sgs-feature-grid) rather than minting a second uid. Spacing (padding/
-// margin) is a SEPARATE mechanism the shared wrapper already handles scoped
-// internally — not duplicated here.
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// Read the resolved values from $attributes['style'] here and emit them into
+// this block's OWN scoped <style>, reusing the same ID hook the grid engine
+// already builds (.$uid.sgs-feature-grid) rather than minting a second uid.
+// Spacing (padding/margin) is a SEPARATE mechanism the shared wrapper
+// already handles scoped internally — not duplicated here.
 $root_sel = '.' . $uid . '.sgs-feature-grid';
 // D303: $uid is ALSO a class (the wrapper applies it as an id via extra_attrs) so the
 // class-scoped `.{$uid}.sgs-feature-grid` colour/border rules match this element.
 $classes = array( 'sgs-feature-grid', $mode_class, $uid );
 
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$fg_style_engine_args = array();
-
-	$fg_color_args = array();
-	if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-		$fg_color_args['text'] = (string) $attributes['textColour'];
+// D636 — sibling gradient attribute wins when set+valid.
+$fg_text_colour           = isset( $attributes['textColour'] ) ? (string) $attributes['textColour'] : '';
+$fg_text_colour_gradient  = isset( $attributes['textColourGradient'] ) ? (string) $attributes['textColourGradient'] : '';
+$fg_text_colour_effective = sgs_resolve_text_colour_or_gradient( $fg_text_colour, $fg_text_colour_gradient );
+if ( '' !== $fg_text_colour_effective ) {
+	$fg_text_colour_decl = sgs_text_colour_decl( $fg_text_colour_effective );
+	if ( '' !== $fg_text_colour_decl ) {
+		$css .= "{$root_sel}{{$fg_text_colour_decl};}";
 	}
-	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-		$fg_color_args['background'] = (string) $attributes['backgroundColour'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$fg_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $fg_color_args ) ) {
-		$fg_style_engine_args['color'] = $fg_color_args;
-	}
-
-	$fg_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$fg_border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$fg_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$fg_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$fg_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $fg_radius_raw ) && '' !== $fg_radius_raw ) {
-			$fg_border_args['radius'] = $sgs_css_length( $fg_radius_raw );
-		} elseif ( is_array( $fg_radius_raw ) ) {
-			$fg_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $fg_corner ) {
-				if ( ! empty( $fg_radius_raw[ $fg_corner ] ) ) {
-					$fg_radius_clean[ $fg_corner ] = $sgs_css_length( $fg_radius_raw[ $fg_corner ] );
-				}
-			}
-			if ( ! empty( $fg_radius_clean ) ) {
-				$fg_border_args['radius'] = $fg_radius_clean;
-			}
-		}
-	}
-	if ( ! empty( $fg_border_args ) ) {
-		$fg_style_engine_args['border'] = $fg_border_args;
-	}
-
-	if ( ! empty( $fg_style_engine_args ) ) {
-		$fg_scoped_styles = wp_style_engine_get_styles(
-			$fg_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $fg_scoped_styles['css'] ) ) {
-			$css .= $fg_scoped_styles['css'];
-		}
-	}
+	// MANDATORY companion, not optional: a gradient reaches the browser as
+	// background-clip:text, and without this @supports fallback a browser
+	// lacking that support gets a bare `color:` holding a gradient string,
+	// which it drops silently. No-op for a flat colour.
+	$css .= sgs_text_colour_gradient_fallback_rule( $root_sel, $fg_text_colour_effective );
 }
+
+// Background (colour + gradient, resting + hover) is owned by the shared fill
+// emitter, NOT by the style engine and NOT by supports.color.gradients.
+//
+// supports.color.gradients was `true` here, so CORE rendered its own gradient
+// panel in the Styles tab, competing with the SGS colour panel — the client saw
+// two and could not tell which won. Switching the flag off alone would have
+// REMOVED the only gradient control this block had, because the sole gradient
+// read was $attributes['style']['color']['gradient'] (core's own storage). The
+// flag flip is therefore PAIRED with a block-private backgroundColourGradient
+// exposed through fillRow(), so capability is moved rather than lost.
+$fg_fill_css = sgs_fill_states_css(
+	$root_sel,
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+if ( '' !== $fg_fill_css ) {
+	$css .= $fg_fill_css;
+}
+
+// (native border_args removed by the Shape-B migration -- width/style/colour
+// are block-private attrs now, emitted below)
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add them
@@ -267,6 +242,94 @@ if ( '' !== $fg_preset_text_slug ) {
 if ( '' !== $fg_preset_bg_slug ) {
 	$classes[] = 'has-background';
 	$classes[] = 'has-' . $fg_preset_bg_slug . '-background-color';
+}
+
+
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+} else {
+	// G5 corollary: "none" must be an explicit override too, not a
+	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
+	// class default) would otherwise keep painting even though the
+	// operator picked "no border". Cause-agnostic: harmless when no
+	// such default exists, a real fix when one does.
+	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$css .= $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = $radius_tiers['mobile'];
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
 }
 
 if ( '' !== $css ) {

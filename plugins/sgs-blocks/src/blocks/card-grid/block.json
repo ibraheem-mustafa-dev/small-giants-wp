@@ -47,22 +47,32 @@
 		"shadow": {
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"collection": true,
 			"scalarStylingLift": true,
 			"imageControls": true,
 			"imageControlsExplicit": true,
+			"_comment_mediaElements": "Rule 37-media-no-handroll fix. Card-image object-fit now routes through the shared media-element atom layer instead of a style.css literal. NOT a new client control: prefix 'sgs' resolves (sgs_media_element_attr) to the SAME 'sgsObjectFit' attribute the legacy universal image-controls extension (imageControls/imageControlsExplicit above) already injects and already exposes an 'Object Fit' dropdown for in the inspector -- adding a second ObjectFitField here would give the client two controls for one property. render.php reads that existing value through SGS_Media_Element::style() and marks each card's <img>/<video> with the atom's scope class; style.css no longer hardcodes object-fit on .sgs-card-grid__image, relying on assets/css/media-atoms/object-fit.css's cover fallback (identical default). Mirrors sgs/gallery's identical fix.",
+			"mediaElements": [
+				{
+					"prefix": "sgs",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
+			],
 			"arrayContentLift": true,
-			"presetSelectors": [ "effectHover" ],
+			"presetSelectors": [
+				"effectHover"
+			],
 			"boxFamilies": {
-				"cardBorderWidth": [ "cardBorderWidth" ]
+				"cardBorderWidth": [
+					"cardBorderWidth"
+				],
+				"borderRadius": [
+					"borderRadius"
+				]
 			},
 			"elements": {
 				"grid": {
@@ -70,17 +80,20 @@
 					"layer": "OUTER",
 					"_layer_note": "This element is BOTH the block root and the grid definition. layer_detect.py's MF-3 guard makes the root OUTER regardless of its own display:grid, so OUTER is correct here — the layout cluster carries the grid/arrangement properties, disambiguated by this element being the grid.",
 					"order": 1,
-					"clusters": [ "layout", "animation" ],
+					"clusters": [
+						"layout",
+						"animation"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:gap": "gap",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:grid-template-columns": "gridTemplateColumns",
 						"css:grid-template-rows": "gridTemplateRows",
 						"css:grid-auto-rows": "gridAutoRows",
@@ -93,7 +106,8 @@
 						"anim:preset": "sgsAnimation",
 						"anim:duration": "sgsAnimationDuration",
 						"anim:easing": "sgsAnimationEasing",
-						"anim:stagger": "staggerDelay"
+						"anim:stagger": "staggerDelay",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) + per-card staggerDelay resolve via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). anim:parallax/anim:trigger are honest gaps — this block has no bgParallax/scroll-trigger attributes."
 				},
@@ -127,7 +141,14 @@
 					"label": "Card image",
 					"order": 3,
 					"clusters": [],
-					"_note": "Split from 'card-media' 2026-08-15 (element-manifest drift fix) — imageZoomHover/grayscaleHover resolve to css_element='image' via the cross-block classification override (scripts/attr-classification-overrides.json), the SAME vocabulary token already declared by sgs/gallery, sgs/post-grid and sgs/team-member for this identical hover-effect pattern. This element now names the actual `<img>`/`<video>` rendered by sgs_render_media(), not its wrapper (see 'image-wrap' below for that). Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio/effectHover, not the Text/Fill/Layout style clusters. (overlayStyle removed 2026-08-06 — abandoned attribute, D338-cleared.)"
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:filter": "grayscaleHover"
+							}
+						}
+					},
+					"_note": "Split from 'card-media' 2026-08-15 (element-manifest drift fix) — imageZoomHover/grayscaleHover resolve to css_element='image' via the cross-block classification override (scripts/attr-classification-overrides.json), the SAME vocabulary token already declared by sgs/gallery, sgs/post-grid and sgs/team-member for this identical hover-effect pattern. This element now names the actual `<img>`/`<video>` rendered by sgs_render_media(), not its wrapper (see 'image-wrap' below for that). Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio/effectHover, not the Text/Fill/Layout style clusters. (overlayStyle removed 2026-08-06 — abandoned attribute, D338-cleared.) `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle in style.css, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
 				},
 				"image-wrap": {
 					"label": "Image wrapper",
@@ -139,19 +160,41 @@
 				"title": {
 					"label": "Card title",
 					"order": 5,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "title",
 					"attrMap": {
-						"tag": "headingLevel"
+						"tag": "headingLevel",
+						"css:background-image": "titleColourGradient"
 					},
-					"_note": "Renamed from 'card-title' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__title` (render.php:702,713), not `.sgs-card-grid__card-title`. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:759, `.sgs-card-grid__title`) but doesn't match the `title` prefix convention, so it needs an explicit map for check-hardcoded-render-defaults.js's E12 gate to resolve it to THIS element."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "titleColourHover"
+							}
+						}
+					},
+					"_note": "Renamed from 'card-title' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__title` (render.php:702,713), not `.sgs-card-grid__card-title`. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:759, `.sgs-card-grid__title`) but doesn't match the `title` prefix convention, so it needs an explicit map for check-hardcoded-render-defaults.js's E12 gate to resolve it to THIS element. `titleColourGradient` (2026-09-03) is the text-colour gradient sibling to titleColour, same background-clip:text mechanism as sgs/counter's numberColourGradient. `states.hover.attrMap` added 2026-09-03 — without it titleColourHover's css_property resolved via CSS-scan with no state signal, tripping check-hover-state-classification.py."
 				},
 				"subtitle": {
 					"label": "Card subtitle",
 					"order": 6,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "subtitle",
-					"_note": "Renamed from 'card-subtitle' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__subtitle` (render.php:705,716), not `.sgs-card-grid__card-subtitle`."
+					"attrMap": {
+						"css:background-image": "subtitleColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "subtitleColourHover"
+							}
+						}
+					},
+					"_note": "Renamed from 'card-subtitle' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__subtitle` (render.php:705,716), not `.sgs-card-grid__card-subtitle`. `subtitleColourGradient` (2026-09-03) is the text-colour gradient sibling to subtitleColour, same background-clip:text mechanism. `states.hover.attrMap` added 2026-09-03 — without it subtitleColourHover's css_property resolved via CSS-scan with no state signal, tripping check-hover-state-classification.py."
 				},
 				"badge": {
 					"label": "Card badge",
@@ -173,7 +216,14 @@
 		},
 		"headingLevel": {
 			"type": "string",
-			"enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
+			"enum": [
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"p"
+			],
 			"default": "h3"
 		},
 		"_comment_items_media": "Migrated 2026-05-05 â€” each item gains a unified `media` slot (image OR video). Legacy `image` retained on items for deprecation back-compat. New instances should write `media` via MediaPicker.",
@@ -193,6 +243,7 @@
 					},
 					"media": {
 						"type": "string",
+						"role": "image-object",
 						"_note": "TWO shapes are accepted and both render. edit.js writes the OBJECT form { url, type, alt, ... } consumed by sgs_render_media(); a BARE URL STRING (what this declared type describes, and what the mega starter patterns use) is normalised to that object in render.php. Before 2026-07-29 the string form silently rendered NOTHING — sgs_render_media() bails on a non-array (helpers-media.php:168) — which cost both mega starter patterns all 8 card images through a green build. Do not 'tidy' the string branch away."
 					},
 					"badge": {
@@ -210,22 +261,53 @@
 					},
 					"badgeVariant": {
 						"type": "string"
+					},
+					"decorative": {
+						"type": "boolean",
+						"default": false,
+						"description": "When true, this card image is purely decorative — rendered with an empty alt attribute and aria-hidden on its wrapper so screen readers skip it (WCAG 2.1 AA 1.1.1). Manual/query modes only; wc-product/cpt-collection cards pull an informative product photo the client does not author."
+					},
+					"_key": {
+						"type": "string",
+						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit/focal-point CSS so a crop value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed."
+					},
+					"objectFit": {
+						"type": "string",
+						"enum": [
+							"cover",
+							"contain",
+							"fill"
+						],
+						"default": "cover"
+					},
+					"focalPoint": {
+						"type": "object",
+						"default": {
+							"x": 0.5,
+							"y": 0.5
+						}
 					}
 				}
 			}
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 3,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"gap": {
 			"type": "object",
-			"default": {"desktop": "1rem"},
+			"default": {
+				"desktop": "1rem"
+			},
 			"_comment": "Was the bare number \"30\", which the old flat path read as WordPress spacing-scale SLUG 30 = 1rem (theme.json settings.spacing.spacingSizes). A bare number now means px (Bean-ruled 2026-08-10), so the value is stated explicitly to render EXACTLY as before rather than jumping to 30px."
 		},
 		"aspectRatio": {
 			"type": "string",
-			"default": "16/10"
+			"default": "16 / 9"
 		},
 		"effectHover": {
 			"type": "string",
@@ -235,9 +317,17 @@
 			"type": "string",
 			"default": "primary"
 		},
+		"titleColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"subtitleColour": {
 			"type": "string",
 			"default": "text"
+		},
+		"subtitleColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"titleFontSize": {
 			"type": "object",
@@ -531,6 +621,12 @@
 		},
 		"layout": {
 			"type": "string",
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
 			"default": ""
 		},
 		"gridTemplateColumns": {
@@ -551,7 +647,7 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": ""
+			"default": "wrap"
 		},
 		"justifyContent": {
 			"type": "string",
@@ -566,6 +662,48 @@
 			"default": ""
 		},
 		"alignItems": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"titleColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"subtitleColourHover": {
 			"type": "string",
 			"default": ""
 		}

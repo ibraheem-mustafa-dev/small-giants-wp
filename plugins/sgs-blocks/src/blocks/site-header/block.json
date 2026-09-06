@@ -23,24 +23,13 @@
 			"full"
 		],
 		"color": {
-			"background": true,
-			"text": true,
-			"gradients": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
+			"background": false,
+			"text": false,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"_comment_overlayNotAdopted": "backgroundOverlayColour/Opacity/OpacityTablet/OpacityMobile/ColourHover/BlendMode are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- same settled reasoning as sgs/container (see its block.json for the full note, 2026-09-03, Bean-directed). Detector rule 37-media-no-handroll's bare `background`/`bg`-prefix discriminator excludes this whole family from supports.sgs.mediaElements by design.",
 			"containerKind": "section",
 			"enabledExtensions": [
 				"width",
@@ -50,15 +39,24 @@
 				"fx"
 			],
 			"boxFamilies": {
-				"contentBandPadding": [ "contentBandPadding" ],
+				"contentBandPadding": [
+					"contentBandPadding"
+				],
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
+			},
+			"colourExemptions": {
+				"text": {
+					"rule": "gradient",
+					"reason": "A text gradient needs background-clip:text, which hijacks the element's own background box. On the header WRAPPER that would destroy the header background this same block paints. The mechanism is only valid on a leaf text element; this row colours the whole bar."
+				}
 			},
 			"elements": {
 				"wrapper": {
@@ -73,23 +71,35 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:color": "native:color.text",
-						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:color": "textColour",
+						"css:background-color": "backgroundColour",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
 						"css:box-shadow": "shadow",
+						"css:box-shadow-color": "shadowColour",
 						"css:background-attachment": "backgroundAttachment",
 						"css:background-position": "backgroundPosition",
 						"css:background-repeat": "backgroundRepeat",
 						"css:background-size": "backgroundSize",
 						"anim:parallax": "bgParallax",
-						"anim:duration": "bgAnimationDuration"
+						"anim:duration": "bgAnimationDuration",
+						"css:border-color-gradient": "borderColourGradient"
+					},
+					"states": {
+						"scrolled": {
+							"attrMap": {
+								"css:color": "textColourScrolled",
+								"css:background-color": "backgroundColourScrolled",
+								"css:background-color-gradient": "backgroundColourScrolledGradient"
+							}
+						}
 					},
 					"_note": "The rendered <header>/<div> element (containerKind=section, rendered through SGS_Container_Wrapper per the composite-mirror rule R-31-9). Colour/spacing/border ride the native supports, all serialised SCOPED via __experimentalSkipSerialization (Spec 32). The typography members are honest GAPs: this block declares no `supports.typography` and no font-* attributes. anim:preset/easing/stagger/trigger are honest GAPs too (no sgsAnimation*/stagger attributes); bgKenBurns is a Ken-Burns preset toggle with no animation-cluster member, so it stays unmapped exactly as on sgs/container."
 				},
@@ -136,29 +146,27 @@
 		"sgs/site-header-row"
 	],
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"maxWidth": {
 			"type": "object",
 			"default": {}
 		},
 		"contentWidth": {
 			"type": "object",
-			"default": {"desktop": "full"}
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": "full"
+			}
 		},
 		"headerSticky": {
 			"type": "object",
@@ -177,26 +185,39 @@
 			"default": {}
 		},
 		"contrastSafe": {
-			"type": "string",
-			"default": "none",
-			"enum": [
-				"none",
-				"scrim",
-				"shadow",
-				"force-solid"
-			]
+			"type": "object",
+			"default": {}
 		},
-		"alignContent": {
+		"backgroundColour": {
 			"type": "string",
-			"default": "stretch",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourScrolled": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourScrolledGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourScrolled": {
+			"type": "string",
+			"default": ""
+		},
+		"headerTransparentDirection": {
+			"type": "string",
+			"default": "transparent-first",
 			"enum": [
-				"stretch",
-				"start",
-				"center",
-				"end",
-				"space-between",
-				"space-around",
-				"space-evenly"
+				"transparent-first",
+				"solid-first"
 			]
 		},
 		"backgroundAttachment": {
@@ -218,6 +239,12 @@
 		},
 		"backgroundOverlayColour": {
 			"type": "string"
+		},
+		"backgroundOverlayOpacity": {
+			"type": "object",
+			"default": {
+				"desktop": 30
+			}
 		},
 		"backgroundPosition": {
 			"type": "string",
@@ -306,47 +333,11 @@
 		"bgVideoMobile": {
 			"type": "object"
 		},
-		"columns": {
-			"type": "object",
-			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
-		},
 		"contentBandPadding": {
 			"type": "object",
-			"default": { "desktop": {} }
-		},
-		"flexDirection": {
-			"type": "string",
-			"default": "",
-			"enum": [
-				"",
-				"row",
-				"row-reverse",
-				"column",
-				"column-reverse"
-			]
-		},
-		"flexWrap": {
-			"type": "string",
-			"default": "",
-			"enum": [
-				"",
-				"wrap",
-				"nowrap",
-				"wrap-reverse"
-			]
-		},
-		"justifyContent": {
-			"type": "string",
-			"default": "",
-			"enum": [
-				"",
-				"flex-start",
-				"center",
-				"flex-end",
-				"space-between",
-				"space-around",
-				"space-evenly"
-			]
+			"default": {
+				"desktop": {}
+			}
 		},
 		"minHeight": {
 			"type": "object",
@@ -356,68 +347,75 @@
 			"type": "string",
 			"default": ""
 		},
+		"backgroundOverlayColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundOverlayBlendMode": {
+			"type": "string",
+			"default": "normal",
+			"enum": [
+				"normal",
+				"multiply",
+				"screen",
+				"overlay",
+				"darken",
+				"lighten",
+				"color-dodge",
+				"color-burn",
+				"soft-light",
+				"hard-light",
+				"difference",
+				"exclusion"
+			]
+		},
 		"shadow": {
 			"type": "string"
 		},
-		"shapeDividerBottom": {
+		"shadowColour": {
+			"type": "string"
+		},
+		"shadowColourHover": {
 			"type": "string",
 			"default": ""
 		},
-		"shapeDividerBottomColour": {
-			"type": "string",
-			"default": ""
-		},
-		"shapeDividerBottomColourGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"shapeDividerBottomFlip": {
-			"type": "boolean",
-			"default": false
-		},
-		"shapeDividerBottomScale": {
+		"borderWidth": {
 			"type": "object",
-			"default": { "x": 100, "y": 100 }
+			"default": {}
 		},
-		"shapeDividerBottomInvert": {
-			"type": "boolean",
-			"default": false
-		},
-		"shapeDividerTop": {
-			"type": "string",
-			"default": ""
-		},
-		"shapeDividerTopColour": {
-			"type": "string",
-			"default": ""
-		},
-		"shapeDividerTopColourGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"shapeDividerTopFlip": {
-			"type": "boolean",
-			"default": false
-		},
-		"shapeDividerTopScale": {
-			"type": "object",
-			"default": { "x": 100, "y": 100 }
-		},
-		"shapeDividerTopInvert": {
-			"type": "boolean",
-			"default": false
-		},
-		"tagName": {
+		"borderStyle": {
 			"type": "string",
 			"enum": [
-				"header",
-				"div"
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
 			],
-			"default": "header"
+			"default": "solid"
 		},
-		"alignItems": {
+		"borderColour": {
 			"type": "string",
 			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"render": "file:./render.php",

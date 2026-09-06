@@ -1,0 +1,9 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/no-box-control",
+	"title": "Fixture: a block with no box control of any kind (must NOT flag)",
+	"category": "sgs",
+	"attributes": {
+		"label": { "type": "string", "default": "" }
+	}
+}

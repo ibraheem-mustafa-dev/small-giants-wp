@@ -1,0 +1,10 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/declared-attr-no-mediaelements",
+	"title": "Fixture: a media-family attribute declared with no supports.sgs.mediaElements (must flag, condition 1)",
+	"category": "sgs",
+	"attributes": {
+		"splitMediaObjectFit": { "type": "string", "default": "cover" },
+		"unrelatedAttr": { "type": "string", "default": "" }
+	}
+}

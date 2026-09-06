@@ -1,0 +1,4 @@
+{
+  "_fixture_purpose": "COMMENT-SAFETY CONTROL for check_attr_schema_conformance.py. The block's own content (a 'label' string VALUE, matching sgs/hero's real declared content attribute) contains text describing this very bug ('variant: bogus-value', 'sgsBogusMadeUpAttrForTask3') as plain authored copy — e.g. a case-study heading about the incident. The block's actual JSON ATTRS are clean: 'variant' is 'standard' (a real enum member) and no undeclared attribute key exists. A detector keying on substring text rather than real JSON keys/values would false-positive here; this fixture proves it does not.",
+  "block_markup": "<!-- wp:sgs/hero {\"variant\":\"standard\",\"label\":\"We fixed the variant: bogus-value and sgsBogusMadeUpAttrForTask3 incident\"} -->\n<section class=\"wp-block-sgs-hero\"></section>\n<!-- /wp:sgs/hero -->"
+}

@@ -12,16 +12,65 @@ import {
 	SelectControl,
 	RangeControl,
 	TextControl,
+	BoxControl,
 } from '@wordpress/components';
 import {
+	ColumnShapePicker,
 	ResponsiveOverride,
 	SpacingControl,
-	ResponsiveBoxControls,
 	RowQuickInsertAppender,
 	RowScrollBehaviourControls,
-	SgsColourPanel,
+	fillRow,
+	textRow,
+	SgsBorderControl,
+	resolveColourToken,
+	DesignTokenPicker,
+	GradientCapableColourControl,
 } from '../../components';
-import { resolveResponsiveTier } from '../../utils';
+import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { resolveResponsiveTier, boxShorthand, resolveContentWidthPreview, contentBandPreview } from '../../utils';
+
+// TIER 2 (THE PLACEMENT RULE, Spec 35 Part O) — `row` is the block's
+// isWrapper element with clusters [text, fill, layout], so its controls
+// resolve to property-family panels rather than one catch-all. These two
+// constants are local, deliberate DUPLICATES of the ones inside the shared
+// `ResponsiveBoxControls` component: that component is mounted by 6 OTHER
+// blocks (gallery/cta-section/trust-bar/hero/container/physics-canvas) and
+// editing it would change their inspector layout as a side effect of this
+// fix, which is out of scope. Padding/margin/max-width move into `row`'s own
+// Layout panel here; `contentWidth` moves into `content-band`'s own TIER 1
+// panel below — both inline, not through the shared component.
+const LENGTH_UNITS = [
+	{ value: 'px', label: 'px', default: 0 },
+	{ value: 'rem', label: 'rem', default: 0 },
+	{ value: 'em', label: 'em', default: 0 },
+	{ value: '%', label: '%', default: 0 },
+	{ value: 'vw', label: 'vw', default: 0 },
+];
+
+const CONTENT_WIDTH_OPTIONS = [
+	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
+	{ label: __( 'Normal (content width)', 'sgs-blocks' ), value: 'normal' },
+	{ label: __( 'Wide', 'sgs-blocks' ), value: 'wide' },
+];
+
+/**
+ * Collapse an all-empty BoxControl object to '' so the tier is cleared
+ * (-> inherit) rather than storing an empty `{}` that would still count as
+ * an override. Mirrors ResponsiveBoxControls.js's own `normaliseBox()`.
+ *
+ * @param {Object|undefined} box BoxControl value.
+ * @return {Object|string} The box object, or '' when every side is empty.
+ */
+const normaliseBox = ( box ) => {
+	if ( ! box || typeof box !== 'object' ) {
+		return '';
+	}
+	const hasAny = Object.values( box ).some(
+		( v ) => v !== undefined && v !== null && v !== ''
+	);
+	return hasAny ? box : '';
+};
 
 // Promoted common header elements (Spec 37 §3.5 / FR-37-34). Steering, not
 // gating: the row still accepts ANY block via the normal inserter — this list
@@ -63,12 +112,9 @@ const HEADER_PROMOTED_SLUGS = [
 	...new Set( HEADER_PROMOTED.map( ( item ) => item.slug ) ),
 ];
 
-// No allowedBlocks restriction BY DEFAULT: site-header-row is a
-// container-equivalent (like sgs/container in free mode) — it accepts ANY
-// block, not a curated palette. The row's job is layout, not gatekeeping
-// content. templateMode (below) lets an operator opt INTO a curated palette,
-// mirroring sgs/container's own templateMode exactly — see
-// TEMPLATE_MODE_ALLOWED / TEMPLATE_MODE_OPTIONS.
+// No allowedBlocks restriction: site-header-row is a container-equivalent
+// (like sgs/container) — it accepts ANY block, not a curated palette. The
+// row's job is layout, not gatekeeping content.
 
 // Row layout maps to the shared wrapper's `layout` attr. Cluster = a wrapping
 // flex row (unlike items: logo + nav + cart); Columns = an equal-width grid of
@@ -86,36 +132,6 @@ const DISTRIBUTION_OPTIONS = [
 	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
 	{ label: __( 'Right', 'sgs-blocks' ), value: 'flex-end' },
 	{ label: __( 'Spread apart', 'sgs-blocks' ), value: 'space-between' },
-];
-
-// QB-3: allowedBlocks per templateMode — mirrors sgs/container's exact
-// pattern (container/edit.js). "free" (default) imposes no restrictions;
-// these lists are adjusted for what actually belongs in a header row rather
-// than container's generic content-section lists — the promoted elements
-// above (logo, nav, search, cart, account/CTA buttons, business info) are
-// what a header row actually holds, so "grid-section" mode curates around
-// those instead of container's heading/text/media set.
-const TEMPLATE_MODE_ALLOWED = {
-	'grid-section': [
-		'sgs/responsive-logo',
-		'sgs/nav-menu',
-		'sgs/product-search',
-		'sgs/cart',
-		'sgs/button',
-		'sgs/multi-button',
-		'sgs/business-info',
-		'sgs/container',
-	],
-	'card-grid': [
-		'sgs/business-info',
-		'sgs/container',
-	],
-};
-
-const TEMPLATE_MODE_OPTIONS = [
-	{ label: __( 'Free (no restrictions)', 'sgs-blocks' ), value: 'free' },
-	{ label: __( 'Grid section', 'sgs-blocks' ), value: 'grid-section' },
-	{ label: __( 'Card grid', 'sgs-blocks' ), value: 'card-grid' },
 ];
 
 const ROW_LABELS = {
@@ -180,15 +196,11 @@ const ALIGN_CONTENT_OPTIONS = [
 	{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
 ];
 
-// The gridTemplateColumns bridge that used to live here is GONE (Spec 35 pass
-// 3a, 2026-08-11): the attr IS the {desktop,tablet,mobile} object now, so
-// ResponsiveOverride reads and writes it directly and there is nothing to
-// bridge. Keeping a bridge would have re-created the D563 defect in reverse —
-// writing three flat attrs that no block.json declares any more.
+// gridTemplateColumns is the {desktop,tablet,mobile} object (Spec 35 pass 3a)
+// — ResponsiveOverride reads and writes it directly. ⛔ Do NOT add a bridge to
+// three flat attrs: block.json no longer declares them (D563).
 
-// The gridTemplateRows bridge that used to live here is GONE (Spec 35 pass
-// 3b, 2026-08-11) — same reasoning as gridTemplateColumns above: the attr IS
-// the {desktop,tablet,mobile} object now, nothing left to bridge.
+// gridTemplateRows — same shape, same reasoning as gridTemplateColumns above.
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
@@ -204,9 +216,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		gridAutoRows,
 		gridTemplateColumns,
 		gridTemplateRows,
-		backgroundColour,
 		textColour,
-		templateMode = 'free',
+		textColourGradient,
+		padding,
+		margin,
+		maxWidth,
+		contentWidth,
 	} = attributes;
 
 	const isGrid = 'grid' === layout;
@@ -215,8 +230,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Local UI state — never persisted, never rendered on the front end.
 	const [ previewShrunk, setPreviewShrunk ] = useState( false );
 
-	// The editor preview previously ignored the row's padding entirely, so an
-	// operator could not see their own spacing OR what shrink would do to it.
 	// Mirror the desktop tier here (the tier the editor canvas represents), and
 	// halve top/bottom while previewing — the same 0.5 ratio render.php emits.
 	const previewPad =
@@ -294,81 +307,520 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				// hardcoded editor-only fallback.
 				alignItems: alignItems || 'stretch',
 				...( flexDirection ? { flexDirection } : {} ),
-				// Matches block.json's gap default. This previously fell back to
-				// `clamp(0.5rem, 2vw, 1.5rem)` while block.json said `16px`, so
-				// the editor preview and the front end disagreed by up to 8px.
+				// Matches block.json's gap default.
 				gap: ( gap && gap.desktop ) || '16px',
 				justifyContent: justifyContent || 'flex-start',
 		  };
+
+	// Margin (CHECK A) — a TIER OBJECT (Spec 37 FR-37-16), each tier itself a
+	// {top,right,bottom,left} box — UNLIKE sgs/container's `margin`, which is a
+	// flat box with separate marginTablet/marginMobile sibling attrs. This
+	// block declares no such siblings (block.json boxFamilies.margin: ['margin']
+	// only), so it resolves via resolveResponsiveTier() + boxShorthand()
+	// directly, not resolveBoxTierPreview() (that helper expects 3 separate
+	// attrs). Fixed to the 'desktop' tier — the same convention every other
+	// resolveResponsiveTier() call in this file already uses (columnsDesktop,
+	// gridTemplateColumnsValue), none of which track the live device switcher.
+	const marginPreview = boxShorthand( resolveResponsiveTier( margin, 'desktop' )?.value );
+
+	// Max width (CHECK A) — a TIER OBJECT holding a plain CSS length per tier
+	// (not a box), same shape as `gap`/`columns` above.
+	const maxWidthPreview = resolveResponsiveTier( maxWidth, 'desktop' )?.value;
+
+	const style = { ...previewStyle, ...paddingPreview };
+	if ( marginPreview ) style.margin = marginPreview;
+	if ( maxWidthPreview ) style.maxWidth = maxWidthPreview;
+
+	// Content band (CHECK A) — mirrors sgs/container's Layer 2 mirror exactly
+	// via the shared contentBandPreview()/resolveContentWidthPreview() utils.
+	// This block has NO `contentBandPadding` attribute (block.json declares
+	// none), so band padding is always {} — only `contentWidth` can open a
+	// band. Default contentWidth is {desktop:'full'}, which resolves to '' (no
+	// cap) via resolveContentWidthPreview(), so hasBandProps stays false and
+	// the canvas renders a single layer exactly as today until the operator
+	// explicitly sets Content width away from Full — matches
+	// class-sgs-container-wrapper.php's documented default-full-no-band
+	// behaviour for this block.
+	const bandMaxWidth = resolveContentWidthPreview(
+		resolveResponsiveTier( contentWidth, 'desktop' )?.value
+	);
+	const { hasBandProps, bandStyle } = contentBandPreview( {
+		contentWidth: bandMaxWidth,
+		bandPadding: {},
+		style,
+		layout,
+	} );
 
 	const blockProps = useBlockProps( {
 		className: `sgs-site-header-row${
 			rowSlot ? ` sgs-site-header-row--${ rowSlot }` : ''
 		}`,
-		style: { ...previewStyle, ...paddingPreview },
+		style,
 	} );
 
-	// QB-3: allowedBlocks per templateMode — only restrict when the operator
-	// explicitly opts into a structured mode. "free" (default) imposes no
-	// restrictions, mirroring sgs/container's own templateMode.
-	const allowedBlocks = templateMode !== 'free'
-		? TEMPLATE_MODE_ALLOWED[ templateMode ] ?? undefined
-		: undefined;
+	// The children belong to the BAND when one renders, and to the root when
+	// one does not — useInnerBlocksProps is called exactly once either way,
+	// branching the ARGUMENT (mirrors sgs/container/edit.js).
+	const innerBlocksProps = useInnerBlocksProps(
+		hasBandProps ? { className: 'sgs-container__inner', style: bandStyle } : blockProps,
+		{
+			templateLock: false,
+			orientation: 'horizontal',
+			renderAppender: hasInnerBlocks
+				? undefined
+				: () => (
+						<RowQuickInsertAppender
+							clientId={ clientId }
+							promoted={ HEADER_PROMOTED }
+							label={ __( 'Add a header element', 'sgs-blocks' ) }
+							instructions={ __(
+								'Choose a common header element below, or use the block inserter (+) for anything else.',
+								'sgs-blocks'
+							) }
+						/>
+				  ),
+			prioritizedInserterBlocks: HEADER_PROMOTED_SLUGS,
+		}
+	);
 
-	const innerBlocksProps = useInnerBlocksProps( blockProps, {
-		templateLock: false,
-		orientation: 'horizontal',
-		allowedBlocks,
-		renderAppender: hasInnerBlocks
-			? undefined
-			: () => (
-					<RowQuickInsertAppender
-						clientId={ clientId }
-						promoted={ HEADER_PROMOTED }
-						label={ __( 'Add a header element', 'sgs-blocks' ) }
-						instructions={ __(
-							'Choose a common header element below, or use the block inserter (+) for anything else.',
-							'sgs-blocks'
-						) }
-					/>
-			  ),
-		prioritizedInserterBlocks: HEADER_PROMOTED_SLUGS,
+	// Pilot WCAG contrast check on the Text row (D-pending, gap-candidate
+	// register task). The row's own `backgroundColour` is the effective
+	// background the text sits on when set; when the row leaves it blank the
+	// row paints no background of its own, so the parent `sgs/site-header`'s
+	// background shows through instead — the real thing the text is read
+	// against. Read the nearest `sgs/site-header` ancestor's `backgroundColour`
+	// for that fallback rather than assuming the row always has its own.
+	const parentHeaderBackgroundColour = useSelect(
+		( select ) => {
+			const { getBlockParentsByBlockName, getBlockAttributes } =
+				select( blockEditorStore );
+			const parents = getBlockParentsByBlockName(
+				clientId,
+				'sgs/site-header'
+			);
+			if ( ! parents.length ) {
+				return '';
+			}
+			return (
+				getBlockAttributes( parents[ 0 ] )?.backgroundColour || ''
+			);
+		},
+		[ clientId ]
+	);
+	// Only the parent header's background is a valid comparison target — it is
+	// only actually visible behind this row's text when the row paints no
+	// background of its own. When the row DOES have its own background/
+	// gradient, that (not the parent's) is what's behind the text, and this
+	// pilot doesn't check the row's own pairing — skip the check rather than
+	// comparing against a colour that isn't what's actually rendered (Bean,
+	// 2026-09-04).
+	const rowHasOwnBackground = Boolean(
+		attributes.backgroundColour || attributes.backgroundColourGradient
+	);
+	const textContrastAgainst = rowHasOwnBackground
+		? ''
+		: parentHeaderBackgroundColour;
+
+	// TIER 2 property-family rows for `row` (isWrapper) — Text / Fill, each in
+	// its own panel (THE PLACEMENT RULE, Spec 35 Part O). Built via the same
+	// row-descriptor helpers SgsColourPanel itself consumes, so the row SHAPE
+	// (D609: swatch + popover + in-popover state tabs) is identical — only the
+	// panel TITLE differs (Text / Fill, not a shared "Colour" catch-all).
+	const textRowDescriptor = textRow( {
+		key: 'text',
+		label: __( 'Row text colour', 'sgs-blocks' ),
+		attrs: {
+			base: 'textColour',
+			gradient: 'textColourGradient',
+		},
+		attributes,
+		setAttributes,
 	} );
+	const TextRowControl = textRowDescriptor.gradientCapable
+		? GradientCapableColourControl
+		: DesignTokenPicker;
+
+	const fillRowDescriptor = fillRow( {
+		key: 'background',
+		label: __( 'Row background', 'sgs-blocks' ),
+		attrs: {
+			base: 'backgroundColour',
+			hover: 'backgroundColourHover',
+			gradient: 'backgroundColourGradient',
+			hoverGradient: 'backgroundColourHoverGradient',
+		},
+		attributes,
+		setAttributes,
+	} );
+
+	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
+	// against the block's own background. When the background is a gradient,
+	// the flat backgroundColour is not rendered, so skip the check in that case.
+	const siteHeaderRowContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
 
 	return (
 		<>
-			<SgsColourPanel
-				rows={ [
-					{
-						key: 'background',
-						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: backgroundColour,
-								onChange: ( val ) =>
-									setAttributes( { backgroundColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'text',
-						label: __( 'Text colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: textColour,
-								onChange: ( val ) =>
-									setAttributes( { textColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-				] }
-			/>
+			<InspectorControls group="styles">
+				<PanelBody
+					title={ __( 'Text', 'sgs-blocks' ) }
+					initialOpen
+					className="sgs-colour-panel"
+				>
+					<TextRowControl
+						label={ textRowDescriptor.label }
+						states={ textRowDescriptor.states }
+						{ ...( TextRowControl === GradientCapableColourControl
+							? { contrastAgainst: textContrastAgainst }
+							: {} ) }
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Fill', 'sgs-blocks' ) }
+					initialOpen
+					className="sgs-colour-panel"
+				>
+					<DesignTokenPicker
+						label={ fillRowDescriptor.label }
+						states={ fillRowDescriptor.states }
+					/>
+				</PanelBody>
+
+				{ /* Layout — merges the former "Alignment & grid" ToolsPanel, the
+				   unpanelled ResponsiveBoxControls mount (padding/margin/max-width —
+				   `row`'s OWN box attrs; `contentWidth` belongs to `content-band` and
+				   moves to that element's own panel below), and the "Border"
+				   PanelBody into ONE `row` Layout panel (Spec 35 Part O, D537). */ }
+				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+					<ToolsPanel
+						label={ __( 'Alignment & grid', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								alignItems: 'center',
+								flexDirection: '',
+								justifyItems: 'stretch',
+								alignContent: 'stretch',
+								gridTemplateColumns: {},
+								gridTemplateRows: {},
+								gridAutoRows: '',
+							} )
+						}
+					>
+						<ToolsPanelItem
+							label={ __( 'Align items', 'sgs-blocks' ) }
+							hasValue={ () => alignItems !== 'center' }
+							onDeselect={ () => setAttributes( { alignItems: 'center' } ) }
+							isShownByDefault
+						>
+							<SelectControl
+								label={ __( 'Align items', 'sgs-blocks' ) }
+								value={ alignItems || 'center' }
+								options={ VERTICAL_ALIGN_OPTIONS }
+								onChange={ ( val ) =>
+									setAttributes( { alignItems: val } )
+								}
+								help={ __(
+									'How elements of different heights (e.g. a logo next to a shorter nav) line up across the row.',
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						{ ! isGrid && (
+							<ToolsPanelItem
+								label={ __( 'Flex direction', 'sgs-blocks' ) }
+								hasValue={ () => flexDirection !== '' }
+								onDeselect={ () => setAttributes( { flexDirection: '' } ) }
+							>
+								<SelectControl
+									label={ __( 'Flex direction', 'sgs-blocks' ) }
+									value={ flexDirection || '' }
+									options={ FLEX_DIRECTION_OPTIONS }
+									onChange={ ( val ) =>
+										setAttributes( { flexDirection: val } )
+									}
+									help={ __(
+										'Reverses or stacks the row’s elements instead of the normal left-to-right order.',
+										'sgs-blocks'
+									) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
+						) }
+						{ isGrid && (
+							<>
+								<ToolsPanelItem
+									label={ __( 'Justify items', 'sgs-blocks' ) }
+									hasValue={ () => justifyItems !== 'stretch' }
+									onDeselect={ () => setAttributes( { justifyItems: 'stretch' } ) }
+								>
+									<SelectControl
+										label={ __( 'Justify items', 'sgs-blocks' ) }
+										value={ justifyItems || 'stretch' }
+										options={ JUSTIFY_ITEMS_OPTIONS }
+										onChange={ ( val ) =>
+											setAttributes( { justifyItems: val } )
+										}
+										help={ __(
+											'How each element sits inside its own column when narrower than the column.',
+											'sgs-blocks'
+										) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Align content', 'sgs-blocks' ) }
+									hasValue={ () => alignContent !== 'stretch' }
+									onDeselect={ () => setAttributes( { alignContent: 'stretch' } ) }
+								>
+									<SelectControl
+										label={ __( 'Align content', 'sgs-blocks' ) }
+										value={ alignContent || 'stretch' }
+										options={ ALIGN_CONTENT_OPTIONS }
+										onChange={ ( val ) =>
+											setAttributes( { alignContent: val } )
+										}
+										help={ __(
+											'Spacing between grid rows when this row has more than one row of elements.',
+											'sgs-blocks'
+										) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+								{ /* FR-37-42 — optional SECOND step after the count,
+								     same as site-footer-row's mount. Writes the
+								     existing `gridTemplateColumns` object attribute;
+								     the active shape is DERIVED from the stored
+								     value, never separately stored, so a hand-edited
+								     value shows no selection rather than lying
+								     (FR-37-28). No raw TextControl alongside it —
+								     two controls writing the same attr is the
+								     silent-data-loss trap LayoutPanel's own
+								     `showLayout` docblock warns about, so the
+								     picker REPLACES the advanced text override
+								     rather than sitting next to it. */ }
+								<ToolsPanelItem
+									label={ __( 'Column shape', 'sgs-blocks' ) }
+									hasValue={ () => !! gridTemplateColumnsValue && Object.keys( gridTemplateColumnsValue ).length > 0 }
+									onDeselect={ () => setAttributes( { gridTemplateColumns: {} } ) }
+								>
+									<ResponsiveOverride
+										label={ __(
+											'Column shape',
+											'sgs-blocks'
+										) }
+										value={ gridTemplateColumnsValue }
+										onChange={ onGridTemplateColumnsChange }
+									>
+										{ ( {
+											ownValue,
+											effectiveValue,
+											inherited,
+											setOwnValue,
+											tier,
+										} ) => (
+											<ColumnShapePicker
+												// The shape list depends on how many
+												// columns this tier actually shows, so
+												// read the count for the SAME tier
+												// rather than the desktop one — a
+												// 4-column desktop and a 2-column
+												// tablet offer different shapes.
+												count={
+													( columns && columns[ tier ] ) ||
+													( columns && columns.desktop ) ||
+													3
+												}
+												value={
+													( inherited
+														? effectiveValue
+														: ownValue ) || ''
+												}
+												onChange={ ( track ) =>
+													setOwnValue( track || undefined )
+												}
+												// No `label` here on purpose: the
+												// wrapping <ResponsiveOverride> already
+												// renders the visible one, and two
+												// copies is a real defect
+												// (inspector-scan rule 29). Same
+												// reasoning as site-footer-row's mount.
+											/>
+										) }
+									</ResponsiveOverride>
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Row template', 'sgs-blocks' ) }
+									hasValue={ () => !! gridTemplateRowsValue && Object.keys( gridTemplateRowsValue ).length > 0 }
+									onDeselect={ () => setAttributes( { gridTemplateRows: {} } ) }
+								>
+									<ResponsiveOverride
+										label={ __( 'Row template', 'sgs-blocks' ) }
+										value={ gridTemplateRowsValue }
+										onChange={ onGridTemplateRowsChange }
+									>
+										{ ( {
+											ownValue,
+											effectiveValue,
+											inherited,
+											setOwnValue,
+										} ) => (
+											<TextControl
+												value={ ownValue }
+												onChange={ setOwnValue }
+												placeholder={
+													inherited ? effectiveValue : ''
+												}
+												help={ __(
+													"CSS grid-template-rows, e.g. 'auto 1fr'. Leave blank for the browser default.",
+													'sgs-blocks'
+												) }
+												__nextHasNoMarginBottom
+												__next40pxDefaultSize
+											/>
+										) }
+									</ResponsiveOverride>
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Auto rows', 'sgs-blocks' ) }
+									hasValue={ () => gridAutoRows !== '' }
+									onDeselect={ () => setAttributes( { gridAutoRows: '' } ) }
+								>
+									<TextControl
+										label={ __( 'Auto rows', 'sgs-blocks' ) }
+										value={ gridAutoRows || '' }
+										onChange={ ( val ) =>
+											setAttributes( { gridAutoRows: val } )
+										}
+										help={ __(
+											"Sets grid-auto-rows, e.g. '1fr' for equal-height rows or 'minmax(100px,auto)'.",
+											'sgs-blocks'
+										) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+							</>
+						) }
+					</ToolsPanel>
+
+					{ /* Padding/margin/max-width — `row`'s own box attrs (Spec 37
+					   FR-37-16 object model). Inlined here rather than through the
+					   shared `ResponsiveBoxControls` component so this Layout-panel
+					   merge stays scoped to this block only. */ }
+					<ResponsiveOverride
+						value={ padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<BoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ LENGTH_UNITS }
+								onChange={ ( next ) => setOwnValue( normaliseBox( next ) ) }
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
+
+					<ResponsiveOverride
+						value={ margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<BoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ LENGTH_UNITS }
+								onChange={ ( next ) => setOwnValue( normaliseBox( next ) ) }
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
+
+					<ResponsiveOverride
+						label={ __( 'Max width', 'sgs-blocks' ) }
+						value={ maxWidth }
+						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<UnitControl
+								label={ __( 'Max width', 'sgs-blocks' ) }
+								hideLabelFromVision
+								units={ LENGTH_UNITS }
+								value={ ownValue || '' }
+								placeholder={ inherited ? effectiveValue : '' }
+								onChange={ ( v ) => setOwnValue( v || '' ) }
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
+
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						contrastAgainst={ siteHeaderRowContrastAgainst }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
+					/>
+				</PanelBody>
+
+				{ /* TIER 1 — the `content-band` element's own panel (Spec 35 Part
+				   O). `contentWidth` used to live inside the shared
+				   ResponsiveBoxControls mount alongside `row`'s own padding/
+				   margin/max-width, which put a content-band control inside a
+				   row-scoped panel. It gets its own small panel here instead. */ }
+				<PanelBody title={ __( 'Content band', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveOverride
+						label={ __( 'Content width', 'sgs-blocks' ) }
+						value={ contentWidth }
+						onChange={ ( obj ) => setAttributes( { contentWidth: obj } ) }
+					>
+						{ ( { tier, ownValue, setOwnValue } ) => (
+							<SelectControl
+								label={ __( 'Content width', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ ownValue || '' }
+								options={
+									tier === 'desktop'
+										? CONTENT_WIDTH_OPTIONS
+										: [
+												{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+												...CONTENT_WIDTH_OPTIONS,
+										  ]
+								}
+								onChange={ ( v ) => setOwnValue( v ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
+				</PanelBody>
+			</InspectorControls>
+
 			<InspectorControls>
 				<PanelBody title={ __( 'Header row', 'sgs-blocks' ) }>
 					{ rowSlot && (
@@ -462,166 +914,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
-				{/* QB-3: Template mode — allowed children restriction, mirrors
-				  sgs/container's own "Template mode" panel exactly. */}
-				<PanelBody
-					title={ __( 'Template mode', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<SelectControl
-						label={ __( 'Allowed children', 'sgs-blocks' ) }
-						value={ templateMode }
-						options={ TEMPLATE_MODE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { templateMode: val } )
-						}
-						help={ __(
-							'Grid section and Card grid restrict which block types can be inserted directly inside this row. Free (default) imposes no restrictions.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
-				<PanelBody
-					title={ __( 'Alignment & grid', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<SelectControl
-						label={ __( 'Vertical alignment', 'sgs-blocks' ) }
-						value={ alignItems || 'center' }
-						options={ VERTICAL_ALIGN_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { alignItems: val } )
-						}
-						help={ __(
-							'How elements of different heights (e.g. a logo next to a shorter nav) line up across the row.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ ! isGrid && (
-						<SelectControl
-							label={ __( 'Flex direction', 'sgs-blocks' ) }
-							value={ flexDirection || '' }
-							options={ FLEX_DIRECTION_OPTIONS }
-							onChange={ ( val ) =>
-								setAttributes( { flexDirection: val } )
-							}
-							help={ __(
-								'Reverses or stacks the row’s elements instead of the normal left-to-right order.',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
-					{ isGrid && (
-						<>
-							<SelectControl
-								label={ __( 'Justify items', 'sgs-blocks' ) }
-								value={ justifyItems || 'stretch' }
-								options={ JUSTIFY_ITEMS_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes( { justifyItems: val } )
-								}
-								help={ __(
-									'How each element sits inside its own column when narrower than the column.',
-									'sgs-blocks'
-								) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<SelectControl
-								label={ __( 'Align content', 'sgs-blocks' ) }
-								value={ alignContent || 'stretch' }
-								options={ ALIGN_CONTENT_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes( { alignContent: val } )
-								}
-								help={ __(
-									'Spacing between grid rows when this row has more than one row of elements.',
-									'sgs-blocks'
-								) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<ResponsiveOverride
-								label={ __(
-									'Custom column template',
-									'sgs-blocks'
-								) }
-								value={ gridTemplateColumnsValue }
-								onChange={ onGridTemplateColumnsChange }
-							>
-								{ ( {
-									ownValue,
-									effectiveValue,
-									inherited,
-									setOwnValue,
-								} ) => (
-									<TextControl
-										value={ ownValue }
-										onChange={ setOwnValue }
-										placeholder={
-											inherited ? effectiveValue : ''
-										}
-										help={ __(
-											"Advanced override — CSS grid-template-columns, e.g. '5fr 3fr'. Leave blank to use the Columns count above.",
-											'sgs-blocks'
-										) }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
-									/>
-								) }
-							</ResponsiveOverride>
-							<ResponsiveOverride
-								label={ __( 'Row template', 'sgs-blocks' ) }
-								value={ gridTemplateRowsValue }
-								onChange={ onGridTemplateRowsChange }
-							>
-								{ ( {
-									ownValue,
-									effectiveValue,
-									inherited,
-									setOwnValue,
-								} ) => (
-									<TextControl
-										value={ ownValue }
-										onChange={ setOwnValue }
-										placeholder={
-											inherited ? effectiveValue : ''
-										}
-										help={ __(
-											"CSS grid-template-rows, e.g. 'auto 1fr'. Leave blank for the browser default.",
-											'sgs-blocks'
-										) }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
-									/>
-								) }
-							</ResponsiveOverride>
-							<TextControl
-								label={ __( 'Auto rows', 'sgs-blocks' ) }
-								value={ gridAutoRows || '' }
-								onChange={ ( val ) =>
-									setAttributes( { gridAutoRows: val } )
-								}
-								help={ __(
-									"Sets grid-auto-rows, e.g. '1fr' for equal-height rows or 'minmax(100px,auto)'.",
-									'sgs-blocks'
-								) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</>
-					) }
-				</PanelBody>
-				<ResponsiveBoxControls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-				/>
+
+				{ /* Alignment & grid, padding/margin/max-width, and Border now live
+				   in the merged `row` Layout panel (group="styles") above. */ }
 				<RowScrollBehaviourControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
@@ -631,7 +926,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				/>
 			</InspectorControls>
 
-			<div { ...innerBlocksProps } />
+			{ hasBandProps ? (
+				<div { ...blockProps }>
+					<div { ...innerBlocksProps } />
+				</div>
+			) : (
+				<div { ...innerBlocksProps } />
+			) }
 		</>
 	);
 }

@@ -52,9 +52,9 @@ simply absent from the schema for ~96% of them.
 `--check` exits 1 on any finding (for prebuild once the backlog is clear).
 `--self-test` proves the gate can fail, with a positive AND negative control.
 
-PROMOTION TRIGGER (named up front, per the programme rule that no gate sits advisory
-indefinitely): wire into `prebuild` the moment migration pass 1 (`gap`) lands and the
-finding count reaches 0. Until then it runs on demand and reports the known backlog of 3.
+PROMOTION: wired into `prebuild` (package.json line 7) since pass 1 (`gap`, D563)
+landed and cleared two baseline entries. Final entry remains (sgs/site-footer-row
+gridTemplateColumns → pass 3 trigger): once ZERO, the baseline will be fully empty.
 """
 
 import json

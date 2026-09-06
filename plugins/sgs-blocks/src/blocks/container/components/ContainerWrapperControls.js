@@ -35,11 +35,11 @@
 
 /**
  * ─── SPLIT 2026-08-17 (Bean-requested) ──────────────────────────────────────
- * The six shared panels that used to live in this file now have one file each,
+ * The shared panels that used to live in this file now have one file each,
  * alongside this one:
  *
  *   WidthPanel.js · LayoutPanel.js · BackgroundPanel.js
- *   WrapperColourPanel.js · ShapeDividersPanel.js · GridItemDefaultsPanel.js
+ *   ShapeDividersPanel.js · GridItemDefaultsPanel.js
  *
  * WHY: holding six independently-mountable panels in one module made the split
  * invisible to inspection. An audit in this repo measured the decomposition by
@@ -50,19 +50,23 @@
  *    at the EXPORT/MOUNT level: blocks compose the panels they need.
  *
  * This file remains the AGGREGATE for blocks that want the whole set by `kind`,
- * and RE-EXPORTS all six panels so the existing ~30 import sites keep working
- * unchanged. New code may import a panel directly from its own file.
+ * and RE-EXPORTS the panels so existing import sites keep working unchanged.
+ * New code may import a panel directly from its own file.
+ *
+ * `WrapperColourPanel` was removed 2026-08-22: a fresh enumeration found zero
+ * real consumers of the import/re-export (only comment-line mentions elsewhere),
+ * so the earlier "~30 legacy import sites" estimate that kept it as a
+ * neutralised no-op component was wrong. The file itself is deleted.
  */
 
 import { __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody } from '@wordpress/components';
+import { PanelBody, SelectControl } from '@wordpress/components';
 
 import { WidthPanel } from './WidthPanel';
 import { LayoutPanel } from './LayoutPanel';
 import { BackgroundPanel } from './BackgroundPanel';
-import { WrapperColourPanel } from './WrapperColourPanel';
 import { ShapeDividersPanel } from './ShapeDividersPanel';
 import { GridItemDefaultsPanel } from './GridItemDefaultsPanel';
 
@@ -71,7 +75,6 @@ export {
 	WidthPanel,
 	LayoutPanel,
 	BackgroundPanel,
-	WrapperColourPanel,
 	ShapeDividersPanel,
 	GridItemDefaultsPanel,
 };

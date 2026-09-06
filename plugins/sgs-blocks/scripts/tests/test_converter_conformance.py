@@ -163,8 +163,78 @@ def _all_block_slugs_in(markup: str) -> list[str]:
 
 def _collect_golden_ids() -> list[str]:
     """Return sorted golden_ids for every *.golden.json under GOLDEN_DIR (D278
-    re-seed) — 31 fixture-derived + 9 real-draft-section-derived."""
+    re-seed). Count is DERIVED from what is on disk, never asserted here - an
+    earlier docstring said "31 fixture-derived + 9 real-draft" while the tree
+    held 30 fixtures and 39 goldens."""
     return sorted(p.name[: -len(".golden.json")] for p in _GOLDEN_DIR.glob("*.golden.json"))
+
+
+_QUARANTINE_PATH = _FIXTURE_DIR / "quarantine.json"
+
+
+def _load_quarantine() -> dict:
+    """Load the strict-xfail quarantine manifest (2026-08-24).
+
+    The 37 ids listed there are STALE, not regressed - see the manifest's own
+    _meta.why. Re-seeding them needs a LANDED deploy proof that D554-C makes
+    unavailable until Spec 39's converter rework lands.
+
+    FAILS CLOSED. A missing or unreadable manifest raises rather than silently
+    quarantining nothing - a quarantine that quietly empties itself would turn
+    37 known failures into 37 surprise failures with no explanation attached.
+    """
+    if not _QUARANTINE_PATH.exists():
+        raise RuntimeError(
+            f"quarantine manifest missing at {_QUARANTINE_PATH}. It is required: "
+            "without it the 37 known-stale goldens fail with no recorded reason. "
+            "Restore it from git rather than deleting the reference to it."
+        )
+    doc = json.loads(_QUARANTINE_PATH.read_text(encoding="utf-8"))
+    ids = doc.get("quarantined_golden_ids")
+    if not isinstance(ids, list):
+        raise RuntimeError(
+            f"{_QUARANTINE_PATH} has no 'quarantined_golden_ids' list - refusing to "
+            "run with an unreadable quarantine rather than guessing it is empty."
+        )
+    return doc
+
+
+def _golden_params() -> list:
+    """One pytest param per golden, with quarantined ids marked xfail(strict).
+
+    strict=True is load-bearing: if a quarantined golden starts PASSING, the
+    suite fails. An unexpected pass means the emit contract moved again and the
+    manifest is out of date - exactly the drift that let Gate A rot for seven
+    weeks while looking alive.
+    """
+    doc = _load_quarantine()
+    quarantined = set(doc["quarantined_golden_ids"])
+    known = set(_collect_golden_ids())
+
+    # A quarantined id that no longer exists on disk is a stale manifest entry.
+    # Surface it loudly - a manifest nobody reconciles is how a roster rots.
+    orphans = sorted(quarantined - known)
+    if orphans:
+        raise RuntimeError(
+            "quarantine.json lists golden ids that no longer exist on disk: "
+            + ", ".join(orphans)
+            + ". Reconcile the manifest before running."
+        )
+
+    reason = (
+        "STALE golden, not a regression (quarantined 2026-08-24). Goldens seeded "
+        "2026-07-25; FR-31-16 changed the emit contract 2026-08-04 while Gate A's "
+        "trigger pointed at a directory deleted at D276. Re-seed needs a LANDED "
+        "proof, which D554-C makes unavailable until Spec 39's converter rework "
+        "lands. See tests/fixtures/conformance/quarantine.json."
+    )
+    params = []
+    for gid in _collect_golden_ids():
+        if gid in quarantined:
+            params.append(pytest.param(gid, marks=pytest.mark.xfail(strict=True, reason=reason)))
+        else:
+            params.append(pytest.param(gid))
+    return params
 
 
 _REAL_DRAFT_SECTIONS_CACHE: dict[str, tuple["Tag", str]] | None = None
@@ -200,7 +270,7 @@ def _reproduce_golden_result(golden_id: str) -> dict:
 # Parametrised conformance tests — one per golden (D278 byte-exact re-seed)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("golden_id", _collect_golden_ids())
+@pytest.mark.parametrize("golden_id", _golden_params())
 def test_golden_conformance(golden_id: str) -> None:
     """Re-run the engine for golden_id and BYTE-COMPARE status/block_name/
     selector/block_markup against the D278-seeded golden
@@ -532,4 +602,14 @@ class TestDispatchDeterminism:
         # No flat attr exists for these (block, property) pairs — the dispatch
         # must return None so root-supports handles them via style.*.
         assert db.attr_for_property("sgs/container", "padding-top") is None
-        assert db.attr_for_property("sgs/hero", "font-size") is None
+        # ⛔ CORRECTED 2026-09-06 — the `sgs/hero.font-size` case here was a real
+        # NEGATIVE fixture until the typography-full-replacement track
+        # (60329dfc6) gave sgs/hero a real, DB-mapped `fontSize` attribute
+        # (`typography`, `fontSize`, `number_px`) as part of its own,
+        # independent migration. "No destination exists for hero font-size" is
+        # simply no longer true — see test_typography_owns_leaf_text_props
+        # above, which already asserts the POSITIVE case for the same
+        # dispatch family on a sibling block. Removed rather than asserted
+        # False, since asserting the wrong thing on purpose is worse than one
+        # fewer negative example; test_typography_owns_leaf_text_props still
+        # covers this dispatch path's positive case.

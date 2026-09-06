@@ -9,10 +9,14 @@ import {
 import {
 	PanelBody,
 	SelectControl,
+	RangeControl,
+	ToggleControl,
+	TextControl,
 } from '@wordpress/components';
 import { createBlock } from '@wordpress/blocks';
-import { ResponsiveBoxControl, SgsColourPanel, ShadowControl } from '../../components';
-import { UnitControl } from '../../components/primitives';
+import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { colourVar } from '../../utils';
 
 /**
  * FR-22-6 migration: all card content (icon/media, heading, subtitle,
@@ -27,10 +31,16 @@ import { UnitControl } from '../../components/primitives';
  *   - Spacing (padding / margin — base via WP-native Dimensions panel,
  *     tablet/mobile via the paddingTablet/paddingMobile/marginTablet/
  *     marginMobile object attrs)
- *   - Border / Colour / Typography / Shadow are native WP supports — their
- *     editor UI is rendered automatically by the Styles inspector tab and
- *     needs no custom control here (`__experimentalSkipSerialization` only
- *     affects the RENDERED/SAVED output, not editor-UI availability).
+ *   - Border / Typography / Shadow are native WP supports — their editor UI
+ *     is rendered automatically by the Styles inspector tab and needs no
+ *     custom control here (`__experimentalSkipSerialization` only affects
+ *     the RENDERED/SAVED output, not editor-UI availability). Border's
+ *     RESTING solid colour stays native; only its gradient sibling + the
+ *     hover state are custom.
+ *   - Colour (background / text / link) is D744 block-private — moved off
+ *     the competing native Styles-tab panel (supports.color.* all false)
+ *     onto SgsColourPanel rows below (fillRow/textRow + a helper-built link
+ *     row), so the client sees ONE colour control per property.
  *
  * NO-INLINE (LOCKED per-block no-inline migration contract §A, 2026-07-10):
  * render.php now scopes ALL of color/typography/spacing/border/shadow into
@@ -43,11 +53,10 @@ import { UnitControl } from '../../components/primitives';
  * this block is dynamic (render.php), so nothing here is persisted to
  * post_content.
  *
- * HC2 cleanup (2026-06-08): the per-element colour / font-size / icon-size and
- * legacy-link controls were removed. They were dead — the child blocks
- * (sgs/icon, sgs/heading, sgs/text, sgs/multi-button) own their own colour,
- * font size and link, so the parent controls set attributes render.php never
- * read. The removed attrs survive only in deprecated.js for back-compat.
+ * Child blocks (sgs/icon, sgs/heading, sgs/text, sgs/multi-button) own their
+ * own colour, font size and link, so the parent controls set attributes
+ * render.php never reads. Removed attrs survive only in block.json as
+ * historical schema; no deprecated.js exists (D271).
  */
 
 const LENGTH_UNITS = [
@@ -61,11 +70,10 @@ const LENGTH_UNITS = [
 // box object — mirrors render.php's box-shorthand builder so the canvas
 // preview matches the frontend (contract §5). Desktop-tier only (responsive
 // tiers apply via PHP @media, not previewable in the fixed-width canvas).
-function boxShorthand( box ) {
+function boxShorthand( box, keys = [ 'top', 'right', 'bottom', 'left' ] ) {
 	if ( ! box || 'object' !== typeof box ) return undefined;
-	const { top, right, bottom, left } = box;
-	if ( ! top && ! right && ! bottom && ! left ) return undefined;
-	return [ top || '0', right || '0', bottom || '0', left || '0' ].join( ' ' );
+	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
 }
 
 /**
@@ -78,46 +86,80 @@ function boxShorthand( box ) {
  * @returns {Object} React inline-style object.
  */
 function buildPreviewStyle( attributes ) {
-	const { style, width, maxWidth } = attributes;
+	const {
+		padding,
+		margin,
+		width,
+		maxWidth,
+		backgroundColour,
+		backgroundColourGradient,
+		textColour,
+		borderColourGradient,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		borderRadius,
+		textAlign,
+	} = attributes;
 	const preview = {};
 
-	const bg = style?.color?.background;
-	if ( bg ) preview.backgroundColor = bg;
-	const text = style?.color?.text;
-	if ( text ) preview.color = text;
-	const gradient = style?.color?.gradient;
-	if ( gradient ) preview.backgroundImage = gradient;
-
-	const border = style?.border;
-	if ( border ) {
-		if ( border.style && border.style !== 'none' ) {
-			if ( border.width ) preview.borderWidth = border.width;
-			preview.borderStyle = border.style;
-			if ( border.color ) preview.borderColor = border.color;
-		}
-		const radius = border.radius;
-		if ( typeof radius === 'string' && radius ) {
-			preview.borderRadius = radius;
-		} else if ( radius && typeof radius === 'object' ) {
-			const r = boxShorthand( {
-				top: radius.topLeft,
-				right: radius.topRight,
-				bottom: radius.bottomRight,
-				left: radius.bottomLeft,
-			} );
-			if ( r ) preview.borderRadius = r;
-		}
+	// `style?.typography?.textAlign` — DEAD: block.json declares no
+	// `typography` support at all, so WP never populates `style.typography`.
+	// The top-level `textAlign` attribute (the cloning converter's fallback)
+	// is this block's only real source; applied to the block ROOT so
+	// InnerBlocks children inherit it.
+	const infoBoxTextAlign = textAlign ?? '';
+	if ( [ 'left', 'center', 'right' ].includes( infoBoxTextAlign ) ) {
+		preview.textAlign = infoBoxTextAlign;
 	}
 
-	if ( style?.shadow ) {
-		preview.boxShadow = /^#|^rgb|^var\(/.test( style.shadow )
-			? style.shadow
-			: `var(--wp--preset--shadow--${ style.shadow })`;
+	// Background/text colour moved OFF native style.color.* to block-private
+	// attrs mounted in SgsColourPanel (D744) — supports.color.background/
+	// text/gradients are now false, so WP no longer writes style.color here.
+	// Resolve the same way sgs/quote's editor preview does: a `#`/`rgb`/`hsl`
+	// value passes through raw, anything else is a design-token slug wrapped
+	// via colourVar(). A text GRADIENT is deliberately NOT previewed here —
+	// it needs `background-clip:text` on the text layer while a background
+	// gradient/colour needs its own `::after` layer (render.php owns that
+	// interaction authoritatively); the canvas approximation stays
+	// flat-colour-only for text.
+	if ( backgroundColourGradient ) {
+		preview.backgroundImage = backgroundColourGradient;
+	} else if ( backgroundColour ) {
+		preview.backgroundColor = /^#|^rgb|^hsl/.test( backgroundColour )
+			? backgroundColour
+			: colourVar( backgroundColour );
+	}
+	if ( textColour ) {
+		preview.color = /^#|^rgb|^hsl/.test( textColour )
+			? textColour
+			: colourVar( textColour );
 	}
 
-	const paddingPreview = boxShorthand( style?.spacing?.padding );
+	// Border is entirely the block's own borderWidth/borderStyle/borderColour/
+	// borderRadius attrs (SgsBorderControl below) — block.json declares no
+	// `__experimentalBorder` support at all, so WP-native `style.border` is
+	// never populated here (the old inline comment above claiming a native
+	// resting-colour control was stale; verified against the current Border
+	// PanelBody, which is fully SgsBorderControl-driven).
+	if ( borderStyle && borderStyle !== 'none' ) {
+		const borderWidthPreview = boxShorthand( borderWidth );
+		if ( borderWidthPreview ) preview.borderWidth = borderWidthPreview;
+		preview.borderStyle = borderStyle;
+		if ( borderColour ) preview.borderColor = borderColour;
+		// A gradient border renders frontend as a masked ::before ring, which cannot
+		// be reproduced in a plain inline style — approximate it with the gradient as
+		// a border-image so the canvas at least shows that a gradient is applied.
+		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+			preview.borderImage = `${ borderColourGradient } 1`;
+		}
+	}
+	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	if ( radiusPreview ) preview.borderRadius = radiusPreview;
+
+	const paddingPreview = boxShorthand( padding?.desktop );
 	if ( paddingPreview ) preview.padding = paddingPreview;
-	const marginPreview = boxShorthand( style?.spacing?.margin );
+	const marginPreview = boxShorthand( margin?.desktop );
 	if ( marginPreview ) preview.margin = marginPreview;
 
 	if ( maxWidth ) {
@@ -145,9 +187,24 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 ];
 
+const EASING_OPTIONS = [
+	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
+	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+];
+
 const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Top', 'sgs-blocks' ), value: 'top' },
 	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
+];
+
+const TEXT_ALIGN_OPTIONS = [
+	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
 	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
 ];
 
@@ -237,23 +294,28 @@ const INFO_BOX_TEMPLATE = [
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
-		style,
 		cardStyle,
 		effectHover,
 		iconPosition,
+		textAlign,
 		width,
 		maxWidth,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
-		backgroundColourHover,
-		textColourHover,
 		borderColourHover,
 		borderColourHoverGradient,
+		borderColourGradient,
 		shadowHover,
 		shadowHoverColour,
+		scaleHover,
+		grayscaleHover,
+		transitionDuration,
+		transitionEasing,
+		backgroundColour,
+		backgroundColourGradient,
 	} = attributes;
+
+	// (The resting border-gradient row's Solid/Gradient mode is owned by
+	// DesignTokenPicker and derived from the stored value — there is deliberately
+	// no local useState mirror of it here. See the note at that control.)
 
 	// -------------------------------------------------------------------------
 	// Read the inner blocks of THIS info-box so we can derive the current
@@ -350,6 +412,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// them automatically. buildPreviewStyle() mirrors render.php's scoped
 	// declarations here so the canvas stays a faithful WYSIWYG (editor-only —
 	// this block is dynamic, so nothing here persists to post_content).
+
+	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
+	// against the info-box's own background. When the background is a gradient,
+	// the flat backgroundColour is not rendered, so skip the check in that case.
+	const infoBoxContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
+
 	const blockProps = useBlockProps( { className, style: buildPreviewStyle( attributes ) } );
 
 	// FR-22-6: single InnerBlocks slot covers ALL card content.
@@ -361,43 +432,56 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
-			{ /* D609/D618 — ONE grouped, SGS-OWNED colour panel, rendered FIRST.
-			   This block's NORMAL-state background/text/border colours are
-			   WP-native `style.color.*`/`__experimentalBorder.color` (own native
-			   UI, left untouched — genuinely consumed by render.php, no SGS
-			   custom attr exists to replace them). Only the HOVER states are
-			   custom SGS attrs with no native equivalent, so they render here as
-			   single-state rows (no "Normal" tab — there is no sibling base
-			   attr for these three). Every state links to the theme palette
-			   (D619). */ }
+			{ /* D609/D618/D744 — ONE grouped, SGS-OWNED colour panel, rendered
+			   FIRST. Background/text/link colour used to be WP-native
+			   (`style.color.*`/Elements API); D744 moved them off the native
+			   Styles-tab panel (supports.color.* all false) onto block-private
+			   attrs so the client sees ONE colour control per property, not two
+			   competing ones. Background/text now render as full rows (both
+			   Normal + Hover states, via the shared fillRow/textRow helpers) —
+			   Border stays native for its RESTING solid colour (only the
+			   gradient sibling + the hover state are custom, unchanged by
+			   D744). Link colour has no shared row helper, so it is hand-built
+			   below matching sgs/table-of-contents' linkColour/hover pairing.
+			   Every state links to the theme palette (D619). */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
-						label: __( 'Background colour (hover)', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: backgroundColourHover,
-								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
+						label: __( 'Background colour', 'sgs-blocks' ),
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
 						key: 'text',
-						label: __( 'Text colour (hover)', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: textColourHover,
-								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						label: __( 'Text colour', 'sgs-blocks' ),
+						attrs: {
+							base: 'textColour',
+							hover: 'textColourHover',
+							gradient: 'textColourGradient',
+							hoverGradient: 'textColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'link',
+						label: __( 'Link colour', 'sgs-blocks' ),
+						attrs: {
+							base: 'linkColour',
+							hover: 'linkColourHover',
+							gradient: 'linkColourGradient',
+							hoverGradient: 'linkColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'border',
 						label: __( 'Border colour (hover)', 'sgs-blocks' ),
@@ -429,6 +513,52 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					},
 				] }
 			/>
+			{ /* Resting border gradient — the missing base counterpart to the
+			   "Border colour (hover)" row above. Solid resting colour stays the
+			   native `__experimentalBorder.color` control (WP's own Border panel
+			   in the Styles tab, left untouched) — this control ONLY owns the
+			   gradient sibling attribute, so there is no second control that can
+			   disagree with the native one about what the solid colour is. */ }
+			<InspectorControls group="styles">
+				{ /* Typography — replaces the old WP-native supports.typography
+				   (fontSize/lineHeight only) with the shared TypographyControls
+				   component + sgs_typography_css_rule() render.php helper
+				   (D971/D972 full-replacement track). Root prefix "" — this
+				   block's typography support targeted the block root
+				   (.wp-block-sgs-info-box), same as sgs/accordion. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+					/>
+				</PanelBody>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						contrastAgainst={ infoBoxContrastAgainst }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
+					/>
+				</PanelBody>
+			</InspectorControls>
 			<InspectorControls>
 				{ /* ===== Media type (convenience swap — first child only) ===== */ }
 				<PanelBody title={ __( 'Media', 'sgs-blocks' ) } initialOpen={ true }>
@@ -445,94 +575,189 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				{ /* ===== Width (kept-scalar, base only — matches render.php scope) ===== */ }
 				<PanelBody title={ __( 'Width', 'sgs-blocks' ) } initialOpen={ false }>
-					<UnitControl
+					<SgsLengthControl
+						presets={ false }
 						label={ __( 'Outer max-width', 'sgs-blocks' ) }
 						value={ maxWidth || '' }
 						units={ LENGTH_UNITS }
 						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 						help={ __( 'Leave blank for no cap.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
-					<UnitControl
+					<SgsLengthControl
+						presets={ false }
 						label={ __( 'Width', 'sgs-blocks' ) }
 						value={ width || '' }
 						units={ LENGTH_UNITS }
 						onChange={ ( val ) => setAttributes( { width: val ?? '' } ) }
 						help={ __( 'Exact CSS length, e.g. 900px. Leave blank for full width.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
-				{ /* ===== Spacing — box-object interface contract §B/§E: base routes to
-				   WP-native style.spacing.* (Dimensions panel, skip-serialised → scoped,
-				   not inline); tiers are the paddingTablet/paddingMobile +
-				   marginTablet/marginMobile object attrs. ===== */ }
+				{ /* ===== Spacing — padding/margin are each a single block-owned
+				   tier-object attr { desktop, tablet, mobile }, written via
+				   ResponsiveOverride + SgsBoxControl; read by SGS_Container_Wrapper's
+				   tier-object emission path. ===== */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* ===== Card Style ===== */ }
-				<PanelBody title={ __( 'Card Style', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
+				<ToolsPanel
+					label={ __( 'Card Style', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							cardStyle: 'elevated',
+							effectHover: 'lift',
+							scaleHover: '',
+							grayscaleHover: false,
+							transitionDuration: '300',
+							transitionEasing: 'ease-in-out',
+							shadowHover: '',
+						} )
+					}
+				>
+					<ToolsPanelItem
 						label={ __( 'Card style', 'sgs-blocks' ) }
-						value={ cardStyle }
-						options={ CARD_STYLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
+						hasValue={ () => cardStyle !== 'elevated' }
+						onDeselect={ () => setAttributes( { cardStyle: 'elevated' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Card style', 'sgs-blocks' ) }
+							value={ cardStyle }
+							options={ CARD_STYLE_OPTIONS }
+							onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						value={ effectHover }
-						options={ HOVER_EFFECT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { effectHover: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ /* shadowHover — declared + read by render.php (preset-slug ONLY,
-						no colour, no editor control at all) until this fix (Stage 0
-						orphan attr, D621/D622). Landed straight on the target shape
-						(shape + colour), not the old fixed subtle/raised/floating/glow
-						allowlist. */ }
-					<ShadowControl
+						hasValue={ () => effectHover !== 'lift' }
+						onDeselect={ () => setAttributes( { effectHover: 'lift' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Hover effect', 'sgs-blocks' ) }
+							value={ effectHover }
+							options={ HOVER_EFFECT_OPTIONS }
+							onChange={ ( val ) => setAttributes( { effectHover: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
-						value={ shadowHover }
-						onChange={ ( val ) => setAttributes( { shadowHover: val } ) }
-						colour={ shadowHoverColour }
-						onColourChange={ ( val ) => setAttributes( { shadowHoverColour: val } ) }
-					/>
-				</PanelBody>
+						hasValue={ () => shadowHover !== '' }
+						onDeselect={ () => setAttributes( { shadowHover: '' } ) }
+						isShownByDefault
+					>
+						{ /* shadowHover — declared + read by render.php (preset-slug ONLY,
+							no colour, no editor control at all) until this fix (Stage 0
+							orphan attr, D621/D622). Landed straight on the target shape
+							(shape + colour), not the old fixed subtle/raised/floating/glow
+							allowlist. */ }
+						<ShadowControl
+							label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ shadowAttrKeys( 'shadowHover' ) }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Scale on hover (e.g. 1.03)', 'sgs-blocks' ) }
+						hasValue={ () => scaleHover !== '' }
+						onDeselect={ () => setAttributes( { scaleHover: '' } ) }
+					>
+						<TextControl
+							label={ __( 'Scale on hover (e.g. 1.03)', 'sgs-blocks' ) }
+							value={ scaleHover }
+							onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
+							placeholder="1.03"
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
+						hasValue={ () => grayscaleHover !== false }
+						onDeselect={ () =>
+							setAttributes( { grayscaleHover: false } )
+						}
+					>
+						<ToggleControl
+							label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
+							checked={ grayscaleHover }
+							onChange={ ( val ) => setAttributes( { grayscaleHover: val } ) }
+							help={ __(
+								'Desaturates the media at rest; restores full colour on hover.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+						hasValue={ () => transitionDuration !== '300' }
+						onDeselect={ () =>
+							setAttributes( { transitionDuration: '300' } )
+						}
+					>
+						<RangeControl
+							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+							value={ parseInt( transitionDuration, 10 ) || 300 }
+							onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
+							min={ 0 }
+							max={ 1000 }
+							step={ 50 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Transition easing', 'sgs-blocks' ) }
+						hasValue={ () => transitionEasing !== 'ease-in-out' }
+						onDeselect={ () =>
+							setAttributes( { transitionEasing: 'ease-in-out' } )
+						}
+					>
+						<SelectControl
+							label={ __( 'Transition easing', 'sgs-blocks' ) }
+							value={ transitionEasing }
+							options={ EASING_OPTIONS }
+							onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+				</ToolsPanel>
 
 				{ /* ===== Layout ===== */ }
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
@@ -541,6 +766,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						value={ iconPosition }
 						options={ ICON_POSITION_OPTIONS }
 						onChange={ ( val ) => setAttributes( { iconPosition: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<SelectControl
+						label={ __( 'Text align', 'sgs-blocks' ) }
+						value={ textAlign }
+						options={ TEXT_ALIGN_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { textAlign: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

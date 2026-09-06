@@ -1,0 +1,8 @@
+{
+	"name": "sgs/variation-inserter-only-still-flags",
+	"title": "Fixture — inserter-only variation is NOT a control",
+	"attributes": {
+		"headingText":   { "type": "string", "default": "" },
+		"variantPreset": { "type": "string", "default": "plain" }
+	}
+}

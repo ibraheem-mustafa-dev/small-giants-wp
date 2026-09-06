@@ -32,6 +32,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Require it HERE, not just via render-helpers.php, because a render.php may
+// require_once this file directly without ever loading render-helpers.php —
+// sgs_allowed_svg_tags() now delegates to sgs_svg_kses_allowed_tags() and would
+// fatal on an undefined function without this line.
+require_once __DIR__ . '/helpers-svg-kses.php';
+
 if ( ! function_exists( 'sgs_allowed_svg_tags' ) ) {
 	/**
 	 * The SGS inline-SVG allow-list for `wp_kses()`.
@@ -39,100 +45,38 @@ if ( ! function_exists( 'sgs_allowed_svg_tags' ) ) {
 	 * Security non-negotiable: inline SVG is never echoed raw. This is the single
 	 * definition of what an operator-supplied SVG may contain.
 	 *
-	 * NOTE: `class-sgs-container-wrapper.php` still carries a byte-identical inline
-	 * copy of this array (used for `bgSvgContent`). Folding that call site onto this
-	 * function is a one-line change, but the container wrapper is a design-gate
-	 * surface, so it is deliberately NOT done here without approval.
+	 * ⭐ UNIFIED 2026-08-30. This is now an ALIAS for
+	 * `sgs_svg_kses_allowed_tags()`. There is ONE list.
+	 *
+	 * Six SVG allowlists existed in SGS code. Two were byte-identical copies of
+	 * this one (media/render.php, class-sgs-container-wrapper.php) and were
+	 * collapsed onto it. This function and `sgs_svg_kses_allowed_tags()` were
+	 * the two REAL lists and they diverged in BOTH directions — 13 tags vs 36,
+	 * with `<style>`/`<animate>` unique to this one.
+	 *
+	 * The merge, and what it changes for this function's callers (hero,
+	 * timeline, sgs/media, every container background):
+	 *
+	 *  GAINED — 25 tags, including linearGradient/radialGradient/stop (a
+	 *    gradient-filled SVG was previously flattened SILENTLY), <title>/<desc>
+	 *    (SVG accessible names were previously stripped, against the WCAG 2.1
+	 *    AA baseline), plus filters, masks, patterns and <use>.
+	 *  KEPT — `<animate>`, carried over so animated SVG still works here.
+	 *  LOST — `<style>`, deliberately. Inline SVG `<style>` in an HTML document
+	 *    is DOCUMENT-scoped, and wp_kses does not sanitise element TEXT
+	 *    content, so arbitrary page-wide CSS survived it. A Contributor could
+	 *    restyle or overlay the page, or `@import` an external sheet from an
+	 *    admin's session. That is the same privilege-escalation family as the
+	 *    editor XSS this work exists to close, so it did not carry over.
+	 *
+	 * Kept as a named alias rather than deleted so the existing call sites keep
+	 * working; collapsing the two names is a later tidy-up, not a behaviour
+	 * change.
 	 *
 	 * @return array<string,array<string,bool>> wp_kses allow-list.
 	 */
 	function sgs_allowed_svg_tags(): array {
-		return array(
-			'svg'      => array(
-				'xmlns'               => true,
-				'viewbox'             => true,
-				'width'               => true,
-				'height'              => true,
-				'preserveaspectratio' => true,
-				'class'               => true,
-				'id'                  => true,
-			),
-			'g'        => array(
-				'transform' => true,
-				'class'     => true,
-				'id'        => true,
-			),
-			'path'     => array(
-				'd'            => true,
-				'fill'         => true,
-				'stroke'       => true,
-				'stroke-width' => true,
-				'class'        => true,
-			),
-			'circle'   => array(
-				'cx'     => true,
-				'cy'     => true,
-				'r'      => true,
-				'fill'   => true,
-				'stroke' => true,
-				'class'  => true,
-			),
-			'rect'     => array(
-				'x'      => true,
-				'y'      => true,
-				'width'  => true,
-				'height' => true,
-				'fill'   => true,
-				'stroke' => true,
-				'class'  => true,
-			),
-			'polygon'  => array(
-				'points' => true,
-				'fill'   => true,
-				'stroke' => true,
-				'class'  => true,
-			),
-			'polyline' => array(
-				'points' => true,
-				'fill'   => true,
-				'stroke' => true,
-				'class'  => true,
-			),
-			'line'     => array(
-				'x1'     => true,
-				'y1'     => true,
-				'x2'     => true,
-				'y2'     => true,
-				'stroke' => true,
-				'class'  => true,
-			),
-			'ellipse'  => array(
-				'cx'     => true,
-				'cy'     => true,
-				'rx'     => true,
-				'ry'     => true,
-				'fill'   => true,
-				'stroke' => true,
-				'class'  => true,
-			),
-			'text'     => array(
-				'x'           => true,
-				'y'           => true,
-				'fill'        => true,
-				'font-size'   => true,
-				'font-family' => true,
-				'class'       => true,
-			),
-			'defs'     => array(),
-			'style'    => array( 'type' => true ),
-			'animate'  => array(
-				'attributename' => true,
-				'from'          => true,
-				'to'            => true,
-				'dur'           => true,
-				'repeatcount'   => true,
-			),
-		);
+		return sgs_svg_kses_allowed_tags();
 	}
 }
 
@@ -156,9 +100,33 @@ if ( ! function_exists( 'sgs_tier_media_render' ) ) {
 	 *                           of the same subject describes the same thing.
 	 * @param array  $extra      Optional per-type extra classes, e.g.
 	 *                           array( 'image' => 'sgs-hero__split-image' ).
+	 * @param array  $options    Optional per-caller overrides. ADDITIVE — every
+	 *                           key defaults to the behaviour this helper had
+	 *                           before the parameter existed, so `sgs/hero`'s
+	 *                           output is byte-identical without passing it.
+	 *                           img_loading       'eager' -> 'lazy'
+	 *                           img_fetchpriority 'high'  -> 'auto'|'low'
+	 *                           video_autoplay    true    -> false (renders
+	 *                           `controls` instead, so the media stays operable).
+	 *
+	 *                           ⛔ WHY OVERRIDABLE AT ALL. The defaults are right
+	 *                           for the ONE caller this was written for: a single
+	 *                           hero above the fold, fetched eagerly at high
+	 *                           priority, autoplaying if it is video. They are
+	 *                           wrong for a caller rendering N of these DOWN a
+	 *                           page — `sgs/timeline` puts one per milestone, and
+	 *                           eight eager high-priority images (or eight
+	 *                           autoplaying looped videos) is a real regression
+	 *                           against the green-CWV budget. The timeline's own
+	 *                           pre-existing `<img>` used loading="lazy", so
+	 *                           adopting this helper WITHOUT the override would
+	 *                           have made that block slower, not faster.
 	 * @return array{html:string,css:string} Markup and the tier-toggle CSS.
 	 */
-	function sgs_tier_media_render( array $tiers, string $base_class, string $uid, string $alt = '', array $extra = array() ): array {
+	function sgs_tier_media_render( array $tiers, string $base_class, string $uid, string $alt = '', array $extra = array(), array $options = array() ): array {
+		$img_loading       = isset( $options['img_loading'] ) ? (string) $options['img_loading'] : 'eager';
+		$img_fetchpriority = isset( $options['img_fetchpriority'] ) ? (string) $options['img_fetchpriority'] : 'high';
+		$video_autoplay    = array_key_exists( 'video_autoplay', $options ) ? (bool) $options['video_autoplay'] : true;
 		$html = '';
 		$css  = '';
 
@@ -210,8 +178,9 @@ if ( ! function_exists( 'sgs_tier_media_render' ) ) {
 				// with preload="none", does not fetch — which is what keeps sibling
 				// markup honest against D5's three-videos-all-fetching objection.
 				$html .= sprintf(
-					'<video class="%s" autoplay loop muted playsinline preload="%s"><source src="%s" type="video/mp4"></video>',
+					'<video class="%s"%s loop muted playsinline preload="%s"><source src="%s" type="video/mp4"></video>',
 					esc_attr( $class_attr ),
+					$video_autoplay ? ' autoplay' : ' controls',
 					'desktop' === $tier ? 'metadata' : 'none',
 					esc_url( (string) ( $media['url'] ?? '' ) )
 				);
@@ -219,9 +188,9 @@ if ( ! function_exists( 'sgs_tier_media_render' ) ) {
 				$media = is_array( $spec['media'] ?? null ) ? $spec['media'] : array();
 				$attrs = array(
 					'class'         => $class_attr,
-					'loading'       => 'eager',
+					'loading'       => $img_loading,
 					'decoding'      => 'async',
-					'fetchpriority' => 'high',
+					'fetchpriority' => $img_fetchpriority,
 				);
 				if ( ! empty( $media['width'] ) ) {
 					$attrs['width'] = absint( $media['width'] );

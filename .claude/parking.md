@@ -1,7 +1,7 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-08-12
+last_updated: 2026-09-03
 note: "OPEN deferred work ONLY. Four permitted Status values (OPEN | PARTIAL | BLOCKED | DEFERRED) and six buckets. The moment an entry is finished it moves VERBATIM to memory/parking-archive.md under a dated pass heading - enforced mechanically by .claude/hooks/handoff-preflight.py, not by prose. Normalised 2026-07-29: 296KB -> this, one layout, one Status syntax, shipped history stripped to residual scope. Pre-normalise copy: memory/archived-2026-07-28-parking-pre-normalise.md."
 ---
 
@@ -37,13 +37,35 @@ A `**Verify:**` line means the entry may already be complete - check it cheaply 
 sections fail recognition as `unrecognised` and never reach the converter — Stage 0 hard-rejects
 non-`sgs-`-prefixed BEM on production runs. Needs a decision: is this draft meant to convert yet, or
 is it pre-SGS-BEM by design? Unlike the homepage folder it has no TRUTH-SPEC.md. Relevant to the
-Phase-5 section-annihilation bug, which fires on non-BEM markup. Once resolved, migration is an
-HTML-only edit (no code change) so the page can clone to `sgs/option-picker` blocks.
+Phase-5 section-annihilation bug (now FIXED, 2026-09-04, D954/D956 — see decisions.md) —
+that fix scopes an unexpected exception to the failing column rather than nulling the whole
+section, but does not change Stage 0's hard-reject of non-BEM markup, so this entry's core
+decision is unaffected. Once resolved, migration is an HTML-only edit (no code change) so the
+page can clone to `sgs/option-picker` blocks.
 
 *(Merged 2026-08-12 with the duplicate `P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM`, parked 2026-06-03 —
 same file, same underlying issue. Superseded entry archived to `memory/parking-archive.md`.)*
 
-*58 entries total (measured 2026-08-14 via `grep -c "^### P-"`, excluding the fenced template example). Re-measure, do not trust this line.*
+*Entry count is deliberately NOT cached here — it drifted to three different figures (58 here, 61 below, 62 raw) before this line was cut on 2026-08-22. Measure it: `grep -c "^### P-" .claude/parking.md` minus the fenced template example, or read `handoff-preflight.py --check`.*
+
+### P-MEDIA-ATOM-CALLER-SUPPLIED-SELECTOR — overlay atom can't paint onto a caller's own marker
+
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-03
+
+Every media atom paints via one of two hardcoded marker classes (`sgs-media-box`/`sgs-media-el`,
+`SGS_Media_Element::box_classes()`/`element_classes()`) — there is no way for an existing shared
+component with its OWN marker (`class-sgs-container-wrapper.php`'s `.sgs-container__overlay`
+sibling span, used by 28 blocks) to consume an atom's custom-property values without adopting the
+atom's marker scheme wholesale. This is what blocks `class-sgs-container-wrapper.php`'s overlay
+CSS from ever routing through the shared `overlay` atom (7 blocks' `backgroundOverlay*` findings
+stay documented debt on rule `37-media-no-handroll` until this is solved — see D922).
+
+Needs a genuinely new atom capability: paint via the atom's custom properties on a
+caller-supplied selector, not just the two fixed marker classes. Investigated but not designed
+2026-09-03 — confirmed zero precedent anywhere in the atom system (16 atoms, all element/box
+scoped). A real design task, not a quick fix; the wrapper's own overlay CSS is currently MORE
+capable than the atom (has tiering the atom didn't, until D922's tiering fix), so this is not
+urgent — the wrapper works fine as-is, this is purely a dedup opportunity.
 
 ### P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT — a page-embedded nav's dropdown is overlapped
 
@@ -99,9 +121,14 @@ CURRENT paint has not been re-observed since 2026-07-31.
 
 *(Two motion-track entries — the canary-fixtures-invalid-in-editor one and the fx-panel-unguarded-by-
 every-control-gate one — were REMOVED from parking on 2026-08-01 and moved into
-`plans/2026-07-31-motion-wave-D-client-readiness.md` as Steps K and L, which carry their full text.
-Bean-ruled: parking is strictly for BLOCKED or POSTPONED work, and both are planned work with a named
-next action. Do not re-park motion-track items — the Wave D plan IS the register.)*
+`plans/2026-07-31-motion-wave-D-client-readiness.md` (CLOSED 2026-09-04, now `plans/archive/`) as
+Steps K and L. Neither step's text survives
+there any more: Step K was marked CLOSED and pruned in commit `ea12f5e7`; Step L was deleted in
+commit `0cb69514`, whose message states only closed bodies were deleted. Step L appears resolved —
+Spec 38 §7 names `plugins/sgs-blocks/scripts/inspector-scan/rules/17-reduced-motion-gate.js`
+(built 2026-08-06) as the fail-closed gate now covering every new fx panel — but that is INFERRED,
+not proven, and is recorded here as inference only. Bean-ruled: parking is strictly for BLOCKED or
+POSTPONED work; do not re-park motion-track items.)*
 
 ### P-A1-PHASE2-SLOT-RESPONSIVE-TYPOGRAPHY — Slot-level responsive typography still dropped
 **Status:** PARTIAL · **Bucket:** pipeline · **Parked:** unknown
@@ -175,13 +202,13 @@ shape with correct wrapper classes. A full 12-step build plan with 5 locked KJCs
 
 **Trigger:** Before the next multi-page clone run.
 
-### P-CONVERTER-LIVE-CLONE-VERIFY-BATCH — four converter changes are code-complete/merged but share one unmet closure condition: a real live-clone verification run
-**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-31 (merged)
+### P-CONVERTER-LIVE-CLONE-VERIFY-BATCH — three converter changes are code-complete/merged but share one unmet closure condition: a real live-clone verification run
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-31 (merged); narrowed 2026-09-06 (D975 closed the variant-discriminator item in full — see `memory/parking-archive.md`)
 
-**Why merged.** Four separately-parked entries all reduce to the same residual — the code shipped
+**Why merged.** These separately-parked entries all reduce to the same residual — the code shipped
 and unit tests pass, but nobody has run the converter against a real client draft/clone and read
 the live result. Merging them into one entry means the eventual verification session opens ONE
-item, not four, and can knock all four residuals out in the same pass since they sit on
+item, not several, and can knock all the residuals out in the same pass since they sit on
 overlapping converter surfaces (css_pass.py / variant detection / conformance goldens). Named
 `P-CONVERTER-LIVE-CLONE-VERIFY-BATCH` rather than after any one sub-case, since no single original
 slug should read as more important than the others — this is an index, not a rename.
@@ -195,16 +222,7 @@ slug should read as more important than the others — this is an index, not a r
    never verified against a live clone — whether the keyed data actually IMPROVES cloning fidelity
    is an R-31-11/R-31-13 claim that was deferred.
 
-2. **P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL** — nav-drawer/trust-bar variant discrimination
-   must be BEM-structural, not styling-attr-based (design-gated + Bean-approved 2026-07-21).
-   Trust-bar's own case is fixed (structural image controls double as its recogniser; the F6 gate
-   is now a universal ambiguity rule — 2+ variants sharing an identical/empty signature =
-   violation, one zero-signature fallback allowed) and unit-verified, but live-clone verification
-   was never done. The universal audit of other blocks' `variant_slots` rows for the same
-   styling-attr-discriminator defect is also still owed (see `P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS`,
-   the same defect class recurring on nav-drawer).
-
-3. **P-QUOTE-PATH2-SELF-NESTING** — the Path-2 self-nesting bug (an unrecognised child element
+2. **P-QUOTE-PATH2-SELF-NESTING** — the Path-2 self-nesting bug (an unrecognised child element
    resolving to its own parent block's slug, letting a block self-nest) is CODE RESOLVED and
    merged into `main`. Three universal defences shipped: a recognition self-nest guard (FR-31-11),
    a transparent-wrapper dissolve fixing a silent content-drop class on tab/feature-grid/form-step/
@@ -215,7 +233,7 @@ slug should read as more important than the others — this is an index, not a r
    proof FIRST, never a bare local emit. This is the SAME task as `P-CONFORMANCE-GOLDEN-DRIFT`
    (one 27-failure re-baseline; these 4 are a subset, not extra work).
 
-4. **P-CLONE-TEAM-MEMBER-ITEM-HEIGHT-DIVERGENCE** — the "244px vs 327px height gap" is an
+3. **P-CLONE-TEAM-MEMBER-ITEM-HEIGHT-DIVERGENCE** — the "244px vs 327px height gap" is an
    ENVIRONMENT ARTEFACT: the oracle renders the DRAFT as a bare `file://` fragment (no WP theme)
    and the CLONE as a full themed WP page, and `oracle/batch_runner.py:221` hardcodes
    `_HEIGHT_COMPARABLE = False`, so guard 4 returns passed+measured=False by design and can never
@@ -227,14 +245,57 @@ slug should read as more important than the others — this is an index, not a r
    team-member — verify via Stage 11.6 content-keyed parity, NOT the cross-environment height
    number. Remove this residual once the box-layout tier matches.
 
-**Trigger:** one dedicated converter live-clone-verification session covering all four: (1) run
-the keyed css_property resolver against a real draft and confirm it improves fidelity; (2) same run,
-confirm trust-bar/nav-drawer variant detection resolves correctly and audit the remaining
-`variant_slots` rows; (3) after a canary deploy, re-seed the 4 self-nesting goldens per
-`P-CONFORMANCE-GOLDEN-DRIFT`'s discipline; (4) check team-member's Stage 11.6 content-keyed parity
-and strike that residual if it matches.
+**Trigger:** one dedicated converter live-clone-verification session covering the remaining three:
+(1) run the keyed css_property resolver against a real draft and confirm it improves fidelity;
+(2) after a canary deploy, re-seed the 4 self-nesting goldens per `P-CONFORMANCE-GOLDEN-DRIFT`'s
+discipline; (3) check team-member's Stage 11.6 content-keyed parity and strike that residual if it
+matches. (The variant-discriminator item that used to be here — both nav-drawer's and trust-bar's
+live-clone legs — is fully closed; see D974/D975 and `memory/parking-archive.md`.)
 
 ## framework
+
+### P-COLOUR-NAV-MENU-BURGER-GRADIENT — nav-menu's burger icon needs the SVG-gradient mechanism, not the text-gradient one
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-04
+
+`nav-menu.burgerColour` was one of D936's 9 background-collision rows and was found (D942) to be
+a miscategorisation, not a same-recipe fix: the burger's visible glyph is an inline SVG icon
+coloured via `currentColor`, not rendered text, so `background-clip:text` (the mechanism every
+other row in that batch used) has no defined effect on it. A working precedent already exists —
+`sgs_svg_stroke_gradient()` (`includes/helpers-svg-gradient.php`), which `sgs/icon` already uses
+for exactly this shape (an SVG `<linearGradient>` + `stroke:url(#id)`). Needs a new colour-gradient
+attribute wired onto `nav-menu`'s burger icon through that existing function — not built.
+
+**Trigger:** the colour track resuming general gradient rollout work, or an operator request for
+a gradient burger icon specifically.
+
+### P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL — two decisions the consolidation track was waiting on
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
+
+The consolidation track (Phase 4, closed) flagged two decisions as owed by the client-controls
+track: (1) whether the sticky-sidebar pattern is already solved by the accordion (their own
+evidence said so — RE-MEASURE before building anything new, don't trust the old claim); (2) the
+band-replacement model, described as "Task 1 by another name" (Task 1 = the container
+width/`contentWidth` model, D725/D726, already closed). Neither decision was touched by the
+2026-08-30 colour-standard residuals close-out (D898) — that work was border controls, deploy,
+and the scatter-detector, unrelated to either question. Full prior context:
+`memory/session-2026-08-30-5.md` (archived client-controls track section).
+
+**Trigger:** whoever picks up sticky-sidebar or band-layout work next.
+
+### P-BOX-SHAPE-WIDTH-GATING — Width/MaxWidth/MaxHeight/MaxWidthPercent have no disclosure rule
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-02
+
+`box-shape` atom's `requires` field gates `Height`/`AspectRatio` on `MediaSizing`, but the newly
+wired `Width`/`MaxWidth`/`MaxHeight`/`MaxWidthPercent` bases have no gating rule at all — they
+always render regardless of sizing mode. Not a bug (nothing currently reads a "should be hidden"
+signal for them), but worth a decision once a real block adopts this atom and an operator can
+judge whether e.g. `MaxWidth` genuinely makes sense alongside `MediaSizing:ratio`. Flagged by the
+implementing agent rather than guessed at. `box-shape.control.js` / `MediaBoxShapeControls.js`.
+
+**Trigger:** whoever wires `box-shape` into a real block (Wave 5-7) and can judge the combination
+against a live control. ⚠ **NOW ACTIONABLE (2026-09-04)** — `sgs/hero` adopted the atom this
+session (C19 item 3, commit `7d0954776`) but the wiring pass didn't add width-gating rules; the
+judgment call this entry asks for is still unmade. Hero is a live control to judge it against.
 
 ### P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE — draft global-styles extractor: Phase 5-6 continuation
 **Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-11
@@ -294,17 +355,6 @@ When a block emits both a root residual (D289) and a per-area residual (D290), `
 
 **Trigger:** next Spec-36 session or the next full `/sgs-update` — confirm each mega block's KIND, add to the expected roster, re-run Stage 11 clean. Owned by Track 2.
 
-### P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS — nav-drawer's 7 variantPresets have empty structural discriminators
-**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-28
-
-D403 shipped 7 nav-drawer `variantPreset` variations, but the `supports.sgs.variants` set-difference leaves 6 of 7 variants (anchored-card-stack / centred-statement / editorial-ghost-list / solid-brand-light / two-column-editorial / split-zone-serif) with an EMPTY discriminator signature — `detect_variant` cannot tell them apart from extracted CSS. This is the same class as `P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL` (the universal F6 ambiguity rule built from the trust-bar case). The `variantPreset` enum itself was added (mechanical transcription from variations.js) and this finding was consciously BASELINED (`db-consistency-baseline.json`) to unblock main's prebuild — that is not a fix.
-
-**To close:** give each variant structural/styling discriminators per the F6 fix pattern (only ONE variant may keep the empty fallback), then remove the baseline key. `detect_variant` is blind on nav-drawer until this lands.
-
-**Status reasoning:** assigned OPEN rather than DEFERRED because it names a concrete next-session trigger and blocks a live capability (drawer-variant cloning), not a speculative future want.
-
-**Trigger:** next nav/Spec-36 session — before any drawer-variant cloning is attempted.
-
 ### P-PAGE8-DISCREPANCY-REGISTER / P-PAGE8-QC-BATCH-9 — page-8 clone-fidelity visual defect registers
 **Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-06 / 2026-07-11
 **Also known as:** P-PAGE8-QC-BATCH-9
@@ -317,6 +367,82 @@ Two overlapping Bean-reported visual-QC defect registers against the live page-8
 
 ## Framework: blocks, theme, specs
 
+### P-MEDIA-ALIGNMENT-SHARED-CONTROL — `alignment` duplicated ad hoc across unrelated blocks
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-01
+
+Found while auditing whether `sgs/media`'s remaining controls all came from shared/atom sources
+(D914): `alignment` is hand-rolled separately in `sgs/media`, `sgs/multi-button`,
+`sgs/feature-grid`, and `sgs/separator` — same control, four copies, never standardised. Not part
+of the media-atom system (it isn't a media-specific concern), and not in scope for the
+client-controls track. A smaller, separate unification: one shared `alignment` control,
+4 adopters to migrate.
+
+### P-DETECTOR-FIRST-COMMIT-GATE-THRESHOLD-HOLE - a component rollout sharing 0 lines is invisible
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
+
+`detector-first-commit-gate.py`'s `MIN_SHARED_LINES = 3` threshold does not catch every
+component rollout — verified against C19's real rollout commit `1612c7b1e`: gate 1 (6 files
+touched) passes, gate 2 (1 shared line vs 3 required) stops it. A rollout that shares ZERO lines
+would be equally invisible, so raising or lowering the threshold treats the symptom, not the
+cause. Not fixed because it is a shared PreToolUse hook, nobody has priced the false-positive
+cost of a stricter gate, and a gate that fires on every multi-file commit gets bypassed
+reflexively and then protects nothing. Needs a design gate from Bean, not a patch — whoever
+builds it should add a fixture from `1612c7b1e` to `--self-test` (the current self-test proves
+the gate CAN fail, not that it can see this specific case).
+
+**Trigger:** Bean design-gate session on shared-hook enforcement, or the next rollout this gate
+should have caught and didn't.
+
+### P-PARTICLE-TRAIL-VARIATIONS - two further trail looks, post-launch
+**Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-08-27
+
+Owner asked for two more FR-38-32 trail looks after seeing the effect working live for the first
+time. Neither is a current task — he set the timing himself: **feature extension AFTER the theme
+launches.**
+
+1. **Sparkler** — sparks thrown off a burning point, emitted radially/scattered, rather than
+   trailing behind the pointer along its path. Distinct from the existing `sparks` preset.
+2. **Continuous connected trail** — a snail-like ribbon that still FADES like the current trail but
+   stays visually CONNECTED to the pointer at all times, instead of resolving into discrete dying
+   particles. ⚠ Likely NOT a fourth preset of the current engine: `particles.js` is a pool of
+   short-lived sprites, and a continuous stroke is a different primitive. Settle that at its design
+   gate rather than assuming the engine stretches.
+
+Recorded verbatim because an ask held only in conversation drifts — `floating-objects` spent seven
+weeks blocked behind a design gate for an effect the owner never asked for (D839).
+
+**Trigger:** theme launch complete, and the owner raises trail variations again.
+
+### P-OVERLAY-MASK-SHAPE - a mask/shape for the background overlay
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-22
+
+Let the overlay be MASKED to a shape (`mask-image` / `clip-path`) rather than always
+filling its element as a rectangle. Bean's idea, 2026-08-22, explicitly POST-LAUNCH.
+
+Cheaper than it sounds, and the reasons are structural rather than optimistic:
+- The overlay already renders as its OWN scrim element with its own declaration set,
+  built in ONE place (`sgs_overlay_decls()` / `sgs_overlay_decls_for()`). A mask is one
+  more declaration on an element that already exists - no new DOM, no new selector, no
+  new state plumbing.
+- `clip-path` / `mask-image` are ALREADY used in this tree (before-after,
+  google-reviews, mega-panel render.php; audio, before-after style.css), so the
+  technique is not novel here.
+- It composes free with what already exists: masked gradient overlays, masked hover
+  states, per-device masks all fall out of the existing overlay contract.
+
+⚠ THE COST IS THE SHAPE LIBRARY, NOT THE CSS. `ShapeDividersPanel.js` exists but a scan
+found NO reusable preset list inside it, so shapes must be sourced or authored, plus a
+picker UI. Size this from the preset work, never from the CSS plumbing - the plumbing is
+the small half.
+
+⛔ Do NOT fold this into the five-variant colour-helper rollout. That work makes existing
+capability installable; this ADDS a capability. Mixing them makes a regression in either
+one unattributable.
+
+**Trigger:** post-launch, once the five colour variants are adopted across the block
+roster and the inspector surface is stable.
+
+
 *61 open entries (re-derived 2026-07-31 from a `**Bucket:** framework` count across the whole file — entries with this bucket value are not all physically grouped under this heading).*
 
 ### P-9 — Remaining bucket-2 blocks + timeline rework
@@ -324,8 +450,9 @@ Two overlapping Bean-reported visual-QC defect registers against the live page-8
 
 `sgs/button` grouping shipped (`270cd995`/D146). `sgs/testimonial-slider` is also already shipped
 (strike it from the original gap-candidate table). Genuinely open: `sgs/empty-state` block,
-`sgs/toggle` block (neither directory exists), plus the `sgs/timeline` rework — tracked separately
-as `P-TIMELINE-ADVANCED-VISUAL-EFFECTS`.
+`sgs/toggle` block (neither directory exists), plus the `sgs/timeline` rework — UNPARKED
+2026-08-27 (`19c52bc7c`, "unpark the timeline connector"); it is no longer a parking entry, so
+this line no longer cites one.
 
 **Trigger:** After cloning pipeline Method-2 lands.
 
@@ -391,7 +518,11 @@ Research-backed conclusion: persistent bottom CTA/cart/sale bars belong in the e
 ### P-HEADER-SIMPLICITY-FINDINGS — operator-simplicity test failed; 2 findings + the blind-tester arm still owed
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-26
 
-The FR-37-26 automated-proxy simplicity test failed on drawer content (since addressed — `sgs/nav-menu` now warns and one-click-fixes a burger with no panel to open) plus two still-open friction findings: (1) selecting the header block in the canvas by clicking is a hidden blocker — it only selects via List View; canvas-click should select it; (2) the header Settings tab shows ~7 default-visible controls against the target roster's 2 — reconsider ordering (move extras to Advanced) rather than hiding anything a client relies on. The test's authoritative half — a real non-coder, screen-recorded — has never been run.
+The FR-37-26 automated-proxy simplicity test failed on drawer content (since addressed — `sgs/nav-menu` now warns and one-click-fixes a burger with no panel to open). RESIDUAL SCOPE, after the 2026-08-19 header-completeness session:
+
+1. **Canvas-click selection — STILL OPEN.** Selecting the header block by clicking in the canvas is a hidden blocker; it only selects via List View. Untouched by that session.
+2. **The blind-tester arm — STILL OPEN, and it is the authoritative half.** A real non-coder, screen-recorded, has never been run. The automated proxy is not a substitute.
+3. ~~The Settings tab shows ~7 default-visible controls against a roster of 2~~ — **SETTLED 2026-08-19, not by reordering.** The "~7" was measured by a detector that counted a composite mount as ONE row without opening it; once that was fixed (Task 4, `6c3ec1b0`) the real figure is **4**, and Bean ruled the re-measured set IS the ruling: header 4, footer 2, header-row 8, footer-row 8. The ≤3 is a DEFAULT, not a ceiling (P2 §5), the detector is advisory, and `SgsColourPanel` is correctly not counted (it is the standardised colour panel; its picker is a popover, not a settings control the cap governs). Nothing to reorder on the header — do not re-open this from the old number.
 
 **Trigger:** a dedicated header-simplicity pass, including the blind-tester arm; not a blocker for the Spec-37 per-row build.
 
@@ -497,6 +628,21 @@ notice/dismiss-handling logic to bring it closer.
 
 **Trigger:** Next time anything is added to this file, or Wave 3 starts.
 
+### P-SITE-FOOTER-ROW-ALIGNITEMS-DEFAULT-MISMATCH — block.json default isn't a valid control option
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-03
+
+`sgs/site-footer-row`'s `alignItems` attribute declares `"default": "top"` in block.json, but its
+own `VERTICAL_ALIGN_OPTIONS` control list only has values `start`/`center`/`end`/`stretch` — `top`
+isn't valid CSS for `align-items` and isn't one of the control's own options. Found during a
+`/qc-council` pass on unrelated work (2026-09-03), confirmed pre-existing. `alignItems` isn't read
+by literal name in this block's own render.php — it goes through the shared
+`SGS_Container_Wrapper`, same pattern as hero's grid/flex attrs — so the practical effect on an
+untouched/reset instance hasn't been measured.
+
+**Trigger:** Next time this block's Alignment & grid panel is touched. Fix: align the block.json
+default to `'start'`, or add a `top` option to `VERTICAL_ALIGN_OPTIONS` — whichever matches the
+block's actual intended default visually.
+
 ### P-SPEC37-OPEN-RESIDUALS — Spec 37 coverage-matrix residuals
 **Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-21
 
@@ -510,16 +656,6 @@ Five smaller open items from the Spec 37 coverage matrix: (a) the skip-link regr
 The framework carries no client data any more (the client-named pattern file was deleted) and the mechanism for authoring each site's header/footer as CPT posts is proven on both live sites with generic proof content. What's left is authoring the REAL branded per-site content, which is deferred to the Spec 33 Part 2 cloning pipeline rather than being hand-built.
 
 **Trigger:** next session Task 1; blocks full FR-37-6 closure and the Indus deploy.
-
-### P-TIMELINE-ADVANCED-VISUAL-EFFECTS — Textured connector + progressive fill for sgs/timeline
-**Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-05-20
-
-`sgs/timeline` needs a textured/themed connector line (pulse, vine, tree, bricks-falling-into-place,
-gradient fill) plus per-entry progressive background fill on scroll. MIC (Muslims in Construction)
-specifically wants the bricks variant for their journey/process page. A full attribute +
-`view.js` implementation sketch already exists — do not build speculatively.
-
-**Trigger:** MIC or another client specifically requests the textured-timeline effect.
 
 ### P-UIMAX-DRAWER-LOGO-AUTODERIVE — auto-derive drawer-head logo colours from the header row
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-15

@@ -51,11 +51,19 @@
 	/* Custom-property fallbacks consumed by the preset rules below. render.php
 	   overrides --sgs-mm-soft / --sgs-mm-soft-image / --sgs-mm-card (and the
 	   full colour set) per instance on the frontend; edit.js sets the
-	   accentBackground / accentBorderColour / accentTextColour /
+	   iconBackground / groupBorderColourHover / iconColour /
 	   accentBackgroundImage / gap / aside props in the editor (D643 — split
-	   from the old single `--sgs-mm-accent`). These defaults keep the marker
-	   chips + card fills + spotlight glow painted in the canvas, where
-	   render.php never runs. */
+	   from the old single `--sgs-mm-accent`; the four attributes were renamed
+	   from accentBackground/accentBorderColour/accentTextColour/
+	   accentBorderColourGradient 2026-08-28, NULL css_element fix proposal
+	   §5 — the CSS custom-property names below are unchanged, cosmetic-only
+	   and out of scope for that rename). Same day, groupBorderColour was
+	   renamed a second time to groupBorderColourHover once a genuine NEW
+	   resting-state pair (groupBorderColour / groupBorderColourGradient)
+	   was added — see the `--sgs-mm-group-border-resting` custom property
+	   consumed further down in the `cards` group rule. These defaults keep
+	   the marker chips + card fills + spotlight glow painted in the canvas,
+	   where render.php never runs. */
 	--sgs-mm-soft: color-mix( in srgb, var( --sgs-mm-accent-bg, var( --wp--preset--color--accent ) ) 10%, transparent );
 	--sgs-mm-soft-image: color-mix( in srgb, var( --sgs-mm-accent-image, var( --wp--preset--color--accent ) ) 10%, transparent );
 	--sgs-mm-card: rgba( 255, 255, 255, 0.6 );
@@ -77,6 +85,11 @@
 	--sgs-mm-panel-border: rgba( 255, 255, 255, 0.11 );
 	color: var( --sgs-mm-text );
 	background-color: var( --sgs-mm-panel-bg );
+	/* panelBgGradient editor-canvas mirror (2026-09-06) — --sgs-mm-panel-bg-gradient
+	   is not redeclared in this dark-scheme rule, so an operator-set gradient
+	   (mirrored onto the root by edit.js) cascades in unchanged, matching
+	   render.php's dark_props behaviour. */
+	background-image: var( --sgs-mm-panel-bg-gradient, none );
 }
 
 .sgs-mega-panel__content {
@@ -133,6 +146,20 @@
 	.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within {
 		transform: none;
 	}
+}
+
+/* iconBackground/iconBackgroundGradient HOVER siblings (2026-09-06,
+   hover-controls task) — editor-canvas mirror of render.php's touch-guarded
+   hover pair. Fires off the SAME ancestor hover trigger as the lift/shadow
+   rule above — `cards` style only, the one style where `.sgs-mega-group`
+   already has a real hover treatment. The var(...) fallback chain resolves to
+   the exact resting-state --sgs-mm-soft / --sgs-mm-soft-gradient values, so
+   this is a no-op until an operator sets iconBackgroundHover /
+   iconBackgroundGradientHover. --------------------------------------------- */
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover .sgs-icon-list__icon,
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within .sgs-icon-list__icon {
+	background-color: var( --sgs-mm-icon-hover-bg, var( --sgs-mm-soft ) );
+	background-image: var( --sgs-mm-icon-hover-bg-gradient, var( --sgs-mm-soft-gradient, none ) );
 }
 
 /* -- media-cards / brands: a `sgs/card-grid` child sitting as a flat sibling
@@ -206,22 +233,47 @@
 	inset: 0;
 	opacity: 0.9;
 	pointer-events: none;
-	background: radial-gradient(
-		260px circle at var( --mx, 50% ) var( --my, 30% ),
-		var( --sgs-spotlight-colour, var( --sgs-mm-soft-image, var( --wp--preset--color--accent ) ) ),
-		transparent 70%
+	/* accentBackgroundImageGradient (2026-09-06, preset-to-gradient upgrade
+	   task) — when set, --sgs-mm-accent-image-gradient BYPASSES the
+	   color-mix()-derived --sgs-mm-soft-image tint entirely and paints the raw
+	   gradient directly as the WHOLE background-image; unset falls back to the
+	   exact pre-existing radial-gradient + colour-stop chain, unchanged. */
+	background-image: var(
+		--sgs-mm-accent-image-gradient,
+		radial-gradient(
+			260px circle at var( --mx, 50% ) var( --my, 30% ),
+			var( --sgs-spotlight-colour, var( --sgs-mm-soft-image, var( --wp--preset--color--accent ) ) ),
+			transparent 70%
+		)
 	);
 }
-.wp-block-sgs-mega-panel .sgs-mega-aside[ data-spotlight ] > * {
+/* CHILD-LIFT — `:where()`-wrapped at ZERO specificity (2026-08-25, D793), for the
+   same reason as `container/style.css` and the two fx child-lifts. NOT a live
+   defect today: this aside's only decorative layer is the `::before` glow above,
+   and `> *` can never match a pseudo-element. But at (0,3,0) this was the
+   HIGHEST-specificity child-lift in the tree, so the first REAL decorative child
+   element added inside `.sgs-mega-aside` would have been trapped hardest here.
+   De-specified pre-emptively rather than added to an exemption list — growing
+   that list is the exact failure D784 removed. The aside content still paints
+   above the glow: nothing else declares `position` on these children, and the
+   glow is at `z-index:auto` in the `::before`. Enforced by
+   `scripts/check-child-lift.py`. */
+:where( .wp-block-sgs-mega-panel .sgs-mega-aside[ data-spotlight ] ) > * {
 	position: relative;
 	z-index: 1;
 }
 @media ( prefers-reduced-motion: reduce ) {
 	.wp-block-sgs-mega-panel .sgs-mega-aside[ data-spotlight ]::before {
-		background: radial-gradient(
-			260px circle at 50% 30%,
-			var( --sgs-spotlight-colour, var( --sgs-mm-soft-image, var( --wp--preset--color--accent ) ) ),
-			transparent 70%
+		/* accentBackgroundImageGradient bypass — same as the main rule above,
+		   mirrored here since prefers-reduced-motion only fixes the cursor
+		   position (50%/30% static), not the colour source. */
+		background-image: var(
+			--sgs-mm-accent-image-gradient,
+			radial-gradient(
+				260px circle at 50% 30%,
+				var( --sgs-spotlight-colour, var( --sgs-mm-soft-image, var( --wp--preset--color--accent ) ) ),
+				transparent 70%
+			)
 		);
 	}
 }
@@ -237,6 +289,11 @@
 	height: 34px;
 	border-radius: 10px;
 	background-color: var( --sgs-mm-soft );
+	/* iconBackgroundGradient sibling (2026-09-06) — --sgs-mm-soft-gradient is
+	   set on the panel root by render.php §2 / edit.js's canvas mirror,
+	   paints the icon-chip at full strength (not colour-mixed, matching
+	   render.php's own comment on why a gradient bypasses the 10% tint). */
+	background-image: var( --sgs-mm-soft-gradient, none );
 	color: var( --sgs-mm-accent-text, var( --wp--preset--color--accent ) );
 }
 
@@ -251,7 +308,29 @@
 	padding: 17px;
 	border-radius: 15px;
 	border: 1px solid var( --sgs-mm-panel-border, color-mix( in srgb, var( --wp--preset--color--text ) 12%, transparent ) );
+	/* NEW resting-state border-colour override (2026-08-28, Bean-ruled) —
+	   `--sgs-mm-group-border-resting` is only set inline by edit.js when an
+	   operator has picked a resting colour; unset falls back to the SAME
+	   --sgs-mm-panel-border value the `border:` shorthand above already
+	   uses, so this declaration is behaviour-neutral by default. Longhand
+	   after the shorthand wins at equal specificity (source order). */
+	border-color: var( --sgs-mm-group-border-resting, var( --sgs-mm-panel-border, color-mix( in srgb, var( --wp--preset--color--text ) 12%, transparent ) ) );
 	background-color: var( --sgs-mm-card );
+	/* CHECK A editor-canvas mirror for groupBorderColourGradient (2026-09-05).
+	   The FRONTEND renders this gradient as a masked ::before ring via
+	   render.php's sgs_border_gradient_css() call (§7, scoped to
+	   $group_border_resting_gradient) — a technique this shared stylesheet
+	   selector cannot reproduce without duplicating that PHP mask logic in
+	   CSS. `--sgs-mm-group-border-image` is ONLY ever set by edit.js's canvas
+	   preview (an approximation via border-image, same documented approach
+	   used elsewhere this session) — render.php never declares it, so this
+	   declaration is a guaranteed no-op on the frontend (`none 1`, a valid,
+	   effect-free border-image value) and only paints in the editor canvas.
+	   Longhand after border-color, so it composes rather than competes with
+	   the flat-colour declaration above (an unset gradient never overrides
+	   the resolved flat colour, since `border-image:none` has no visual
+	   effect and border-color still governs the rendered edge). */
+	border-image: var( --sgs-mm-group-border-image, none ) 1;
 }
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-icon-list__item {
 	display: flex;
@@ -265,6 +344,7 @@
 	height: 36px;
 	border-radius: 10px;
 	background-color: var( --sgs-mm-soft );
+	background-image: var( --sgs-mm-soft-gradient, none );
 	color: var( --sgs-mm-accent-text, var( --wp--preset--color--accent ) );
 }
 
@@ -286,6 +366,7 @@
 	height: 34px;
 	border-radius: 10px;
 	background-color: var( --sgs-mm-soft );
+	background-image: var( --sgs-mm-soft-gradient, none );
 	color: var( --sgs-mm-accent-text, var( --wp--preset--color--accent ) );
 }
 
@@ -332,7 +413,15 @@
 .wp-block-sgs-mega-panel .sgs-mega-aside .sgs-media__img,
 .wp-block-sgs-mega-panel .sgs-mega-aside img {
 	max-height: 170px;
-	object-fit: cover;
+	/* 37-media-no-handroll remediation (2026-09-03) — this rule's specificity
+	   (0,3,0) is BEATEN by render.php's scoped `$aside_sel` rule (0,4,0:
+	   `.{uid}.wp-block-sgs-mega-panel .sgs-mega-aside .sgs-media__img`), so
+	   this declaration never actually wins and was dead weight (measured,
+	   not assumed — see render.php's own note at the matching rule). Kept as
+	   `var()` with the same `cover` fallback rather than deleted outright, so
+	   this stylesheet still paints something sane if render.php's scoped
+	   `<style>` is ever absent from the page. */
+	object-fit: var( --sgs-media-object-fit, cover );
 	width: 100%;
 	border-radius: 12px;
 }

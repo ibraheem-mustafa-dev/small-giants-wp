@@ -22,21 +22,11 @@
 		],
 		"anchor": true,
 		"html": false,
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"letterSpacing": true,
-			"textTransform": true,
-			"fontWeight": true,
-			"fontStyle": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
+		"color": {
+			"text": false,
+			"background": false,
+			"gradients": false,
+			"link": false,
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
@@ -47,14 +37,43 @@
 				"background",
 				"shapeDividers"
 			],
+			"_comment_mediaElements": "Wave 6 (2026-09-01). Migrates the split-media feature (image/video/SVG slot beside the text column) onto the shared media-atom system — NOT the section-level background (bgVideo/bgParallax/bgKenBurns/backgroundOverlay*), which stays on SGS_Container_Wrapper. THREE prefixes, not one, because hero's own legacy naming used three different conventions for one physical element and none may be renamed (D338): 'split' reproduces splitImage*/splitVideo*/splitMediaType* exactly (source + media-type bases); 'splitMedia' reproduces splitMediaObjectFit/splitMediaObjectPosition* exactly (object-fit + focal-point bases); 'media' reproduces mediaOverlayColour/mediaOverlayGradient/mediaParallax/mediaKenBurns/mediaAnimationDuration exactly (overlay + motion bases). The source atom's picker writes a NEW {base}Id/{base}Url pair (its own canonical shape) rather than hero's legacy composite {id,url,alt} object. NO read-time fallback to the legacy object — Bean-locked (2026-09-02): R-31-14 bans exactly that shape, and this block already carries a 2026-08-13 precedent of deleting an identically-shaped bridge for the same reason. An already-published hero instance holding only the legacy splitImage/splitVideo/splitSvg shape renders an EMPTY split-media slot until re-uploaded through the new picker (see render.php's own comment at the split-media source resolution). The legacy attributes stay declared (never renamed — D338), simply unread/unwritten going forward.",
+			"mediaElements": [
+				{
+					"prefix": "split",
+					"context": "element",
+					"atoms": [
+						"source",
+						"media-type"
+					]
+				},
+				{
+					"prefix": "splitMedia",
+					"context": "element",
+					"atoms": [
+						"object-fit",
+						"focal-point",
+						"box-shape",
+						"media-padding"
+					]
+				},
+				{
+					"prefix": "media",
+					"context": "element",
+					"atoms": [
+						"overlay",
+						"motion"
+					]
+				}
+			],
 			"variantAttr": "variant",
 			"variants": {
 				"standard": [
 					"backgroundImage"
 				],
 				"split": [
-					"splitImage",
-					"splitImageMobile"
+					"splitImageUrl",
+					"splitImageUrlMobile"
 				]
 			},
 			"boxFamilies": {
@@ -66,35 +85,30 @@
 					"mediaPaddingTablet",
 					"mediaPaddingMobile"
 				],
-				"imagePadding": [
-					"imagePadding",
-					"imagePaddingTablet",
-					"imagePaddingMobile"
+				"splitMediaPadding": [
+					"splitMediaPadding",
+					"splitMediaPaddingTablet",
+					"splitMediaPaddingMobile"
 				],
-				"imageBorderWidth": [
-					"imageBorderWidth"
+				"splitMediaBorderWidth": [
+					"splitMediaBorderWidth"
 				],
-				"imageBorderRadius": [
-					"imageBorderRadius",
-					"imageBorderRadiusTablet",
-					"imageBorderRadiusMobile"
+				"splitMediaBorderRadius": [
+					"splitMediaBorderRadius",
+					"splitMediaBorderRadiusTablet",
+					"splitMediaBorderRadiusMobile"
 				],
 				"contentBandPadding": [
 					"contentBandPadding"
 				],
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
-				"gridItemPadding": [
-					"gridItemPadding"
-				],
-				"gridItemBorderRadius": [
-					"gridItemBorderRadius"
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -109,27 +123,39 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:background-color": "native:color.background",
+						"css:background-color": "backgroundColour",
+						"css:color": "textColour",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:box-shadow": "shadow",
+						"css:box-shadow-color": "shadowColour",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
+						"css:letter-spacing": "letterSpacing",
+						"css:text-transform": "textTransform",
 						"anim:parallax": "bgParallax",
 						"anim:duration": "bgAnimationDuration"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:color": "textColourHover",
+								"css:border-color": "borderColourHover",
 								"css:border-color-gradient": "borderColourHoverGradient"
 							}
 						}
 					},
-					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; no `prefix` declared, per ROLLOUT REQUIREMENT 1). bgKenBurns is a separate preset toggle with no animation-cluster member and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — no sgsAnimation*/staggerDelay/scroll-trigger attrs on this block. D636 border-colour gradient sweep (remaining-block batch): `borderColourHoverGradient` is a HOVER-ONLY sibling to `borderColourHover` — the wrapper has no resting border-colour attribute at all (border-style is never set at rest), so only a `states.hover` entry exists, no base-level attrMap entry."
+					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; no `prefix` declared, per ROLLOUT REQUIREMENT 1). bgKenBurns is a separate preset toggle with no animation-cluster member and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — no sgsAnimation*/staggerDelay/scroll-trigger attrs on this block. D701 (2026-08-20): `borderColourGradient` (resting) added as the base-level sibling to `borderColourHoverGradient` — the wrapper's resting border colour comes from WP-native `__experimentalBorder.color` (already mapped above at `css:border-color`), and this new gradient wins over that native solid colour at render time when set (mirrors `borderColourHover`/`borderColourHoverGradient` and `sgs/quote`'s `borderColour`/`borderColourGradient` pair). See render.php for the emission order that makes the override work without `!important`. D702 (2026-08-20): `css:background-color`/`css:color` retargeted from the dead `native:color.background` reference (WordPress never registered that attribute — `supports.color` was absent) to the plain `backgroundColour`/`textColour` string attrs, mirroring `sgs/testimonial-slider`'s `slider` element. The hover pair (`backgroundColourHover`/`textColourHover`) was already declared on this block but bound to nothing until now."
 				},
 				"inner": {
 					"label": "Inner (grid / flex layout)",
@@ -192,41 +218,10 @@
 					"prefix": "image",
 					"attrMap": {
 						"css:background-color": "mediaBackground",
-						"css:object-fit": "imageObjectFit",
 						"anim:parallax": "mediaParallax",
 						"anim:duration": "mediaAnimationDuration"
 					},
-					"_note": "The `media` grid-area. Most box/border members resolve via the default `image{Suffix}` convention (imageBorderWidth/Style/Colour/Radius/Padding). `mediaBackground` (a second, plainer background attr alongside `mediaBackgroundColour`) is a genuine ORPHAN — two overlapping attrs for one concept, not modelled here. `anim:parallax`/`anim:duration` (added 2026-08-13, mirrors the wrapper element's own bgParallax/bgAnimationDuration mapping) resolve via mediaParallax/mediaAnimationDuration — a SEPARATE motion control family from the section's own bgParallax/bgKenBurns, scoped to the foreground split-media element, not the section background. mediaKenBurns is a preset toggle with no animation-cluster member and stays unmapped, same treatment as bgKenBurns on the wrapper."
-				},
-				"grid-item": {
-					"label": "Grid item",
-					"layer": "GRID_AREA",
-					"order": 6,
-					"clusters": [
-						"text",
-						"fill",
-						"layout"
-					],
-					"prefix": "gridItem",
-					"attrMap": {
-						"css:background-color": "gridItemBackground",
-						"css:padding": "gridItemPadding",
-						"css:border-radius": "gridItemBorderRadius",
-						"css:border-width": "gridItemBorder",
-						"css:border-style": "gridItemBorder",
-						"css:border-color": "gridItemBorder",
-						"css:border-color-gradient": "gridItemBorderGradient",
-						"css:box-shadow": "gridItemShadow",
-						"css:color": "gridItemTextColour"
-					},
-					"states": {
-						"hover": {
-							"attrMap": {
-								"css:border-color-gradient": "gridItemBorderGradientHover"
-							}
-						}
-					},
-					"_note": "Inherited from the sgs/container capability mirror — present on this block's attribute list but not exercised by any hero variant today. Declared so the attrs resolve rather than surface as orphans."
+					"_note": "The `media` grid-area. Most box/border members resolve via the default `image{Suffix}` convention (splitMediaBorderWidth/Style/Colour/Radius/Padding). `mediaBackground` (a second, plainer background attr alongside `mediaBackgroundColour`) is a genuine ORPHAN — two overlapping attrs for one concept, not modelled here. `anim:parallax`/`anim:duration` (added 2026-08-13, mirrors the wrapper element's own bgParallax/bgAnimationDuration mapping) resolve via mediaParallax/mediaAnimationDuration — a SEPARATE motion control family from the section's own bgParallax/bgKenBurns, scoped to the foreground split-media element, not the section background. mediaKenBurns is a preset toggle with no animation-cluster member and stays unmapped, same treatment as bgKenBurns on the wrapper."
 				},
 				"headline": {
 					"label": "Headline",
@@ -234,18 +229,10 @@
 					"clusters": [
 						"text"
 					],
-					"prefix": "headline",
 					"attrMap": {
-						"css:font-size": "native:typography.fontSize",
-						"css:font-weight": "native:typography.fontWeight",
-						"css:line-height": "native:typography.lineHeight",
-						"css:letter-spacing": "native:typography.letterSpacing",
-						"css:font-style": "native:typography.fontStyle",
-						"css:text-transform": "native:typography.textTransform",
-						"css:text-align": "native:typography.textAlign",
 						"css:color": "native:color.text"
 					},
-					"_note": "block.json `selectors.typography.root` scopes the wrapper's native typography support to `.sgs-hero__headline`, so these native paths are this element's controls, not the wrapper's. `headlineMarginBottom` (the standalone parent-side spacing override) was RETIRED 2026-08-12 (Spec 35 Phase 2.3, Bean-confirmed dead — its live values were scratch-page defaults, not deliberate client settings) — no layout member remains on this element."
+					"_note": "Typography REPOINTED to the `wrapper` element 2026-09-05 (D971/D972 full-replacement track — migrated off WP-native `supports.typography` onto the shared TypographyControls/sgs_typography_css_rule() mechanism, prefix ''). `_selectorsNote` above already corrected `selectors.typography` from `.sgs-hero__headline` to the block root `.wp-block-sgs-hero` on 2026-09-02 because this class is never emitted by hero's own rendered markup — so these controls were always the WRAPPER's, never this element's, and the migration completes that correction rather than reversing it. `native:color.text` stays mapped here for now even though native `supports.color.text` is disabled (`false`) on this block — a pre-existing dead mapping, out of scope for this migration. `headlineMarginBottom` (the standalone parent-side spacing override) was RETIRED 2026-08-12 (Spec 35 Phase 2.3, Bean-confirmed dead — its live values were scratch-page defaults, not deliberate client settings) — no layout member remains on this element."
 				},
 				"sub-headline": {
 					"label": "Sub-headline",
@@ -289,14 +276,8 @@
 					"order": 12,
 					"clusters": [],
 					"prefix": "",
-					"attrMap": {
-						"css:width": "imageWidth",
-						"css:height": "imageHeight",
-						"css:border-radius": "imageBorderRadius",
-						"css:padding": "imagePadding",
-						"css:object-position": "imageObjectPosition"
-					},
-					"_note": "The rendered split-media image node itself (`.sgs-hero__split-image`, nested inside the `media` grid-area's wrapper div — render.php ~line 1129-625). imageWidth/imageHeight/imageBorderRadius/imagePadding (and their Tablet/Mobile siblings) all target this node directly, not the `.sgs-hero__media` wrapper div. Ground-truth check (render.php lines 560-625) also shows imageObjectFit/imageObjectPosition(desktop)/imageBorderColour/imageBorderStyle/imageBorderWidth painting on this SAME node, yet the DB currently tags those css_element='media' — that is a separate, pre-existing DB-side inconsistency (both actually paint on split-image per render.php) left untouched here: fixing it needs a DB write, which this manifest-only fix cannot do, and 'media' is already a declared element so it produces no orphan finding. `prefix: \"\"` opts this element out of orphan-candidate scanning. Found live 2026-08-15: DB tagged 11 attrs css_element='split-image', undeclared until now."
+					"attrMap": {},
+					"_note": "The IMAGE type's extra class, applied by sgs_tier_media_render()'s per-type $extra argument so it lands ONLY on an <img> tier. It intentionally carries NO attrMap: as of 2026-08-27 (commit 33816708e) every splitMedia* control paints on the type-agnostic `.sgs-hero__split-media` base class instead, so video and SVG tiers obey the same controls — they previously obeyed none. The class is still emitted and still load-bearing for STATIC, image-only styling in style.css: the base width/height/object-fit/display rule (style.css:292) and the hover-zoom transform (style.css:305-318). Neither is attribute-driven, so neither belongs to an attr and neither maps here."
 				},
 				"split-media": {
 					"label": "Split media",
@@ -304,27 +285,39 @@
 					"order": 13,
 					"clusters": [],
 					"prefix": "",
-					"attrMap": {},
-					"_note": "The type-agnostic base class emitted by `sgs_tier_media_render()` (`render.php:1135`) — carries `sgs-hero__split-media`, `--{tier}`, and `--{type}` modifiers alongside the type-specific `split-image`/`split-video`/`split-svg` extra class on the same node. object-position tiers (imageObjectPositionTablet, splitImageMobileObjectPosition) paint on the SAME `.sgs-hero__split-image` node via compound selectors (`.split-image.split-media--mobile` at mobile), not on a separate element — all three variants are now unified under the split-image element's claim (constrained to desktop base due to the one-key-per-element rule and the non-standard Tablet/Mobile naming pattern)."
+					"attrMap": {
+						"css:width": "splitMediaWidth",
+						"css:height": "splitMediaHeight",
+						"css:max-width": "splitMediaMaxWidth",
+						"css:border-radius": "splitMediaBorderRadius",
+						"css:border-color": "splitMediaBorderColour",
+						"css:border-style": "splitMediaBorderStyle",
+						"css:border-width": "splitMediaBorderWidth",
+						"css:padding": "splitMediaPadding",
+						"css:object-fit": "splitMediaObjectFit",
+						"css:object-position": "splitMediaObjectPosition"
+					},
+					"_note": "The type-agnostic base class emitted by sgs_tier_media_render() — carries `sgs-hero__split-media` plus `--{tier}` and `--{type}` modifiers on EVERY tier node whatever its type. It OWNS the whole splitMedia* control family as of 2026-08-27 (commit 33816708e): width, height, border-radius, border-color/style/width, padding, object-fit and object-position all emit scoped to this class in render.php, which is what lets a video or SVG tier honour them. object-fit/object-position emit on the compound `.sgs-hero__split-media--image,.sgs-hero__split-media--video` selector — replaced-element properties do nothing on the <span> wrapping inline SVG — and a BEM MODIFIER is never an element, so the classifier's deriver cuts at the `--` and still resolves here. ⛔ WHY THIS MAP MOVED: it lived on split-image, which pinned 16 block_attributes.css_element rows to a class those properties no longer paint on. The tier variants (splitMediaPaddingTablet, splitMediaObjectPositionMobile, …) were already correct because they carry no attrMap key and fall through to selector derivation — that split is what exposed the stale manifest. `css:max-width` added 2026-09-05 (db-consistency residual close-out): render.php:781-797 shows TWO attrs genuinely paint max-width here — `splitMediaMaxWidth` (object + `splitMediaMaxWidthUnit` sibling, desktop-tier only) and `splitMediaMaxWidthPercent` (bare number, emitted SECOND so it wins the cascade when an operator sets both). `splitMediaMaxWidth` is declared the routing owner because the object+unit pair is strictly MORE expressive — it can express a percentage via `splitMediaMaxWidthUnit: '%'`, so nothing is lost. `splitMediaMaxWidthPercent` remains a working, independent editor control; it simply stops being a clone-routing target for this css_property/element pair."
 				}
 			}
 		}
 	},
+	"_selectorsNote": "S1 fix (2026-09-02, uniformity sweep, inspector-scan rule 33): selectors.typography retargeted from '.sgs-hero__headline' to the block root ('.wp-block-sgs-hero', matching cta-section/info-box/notice-banner). '.sgs-hero__headline' is set ONLY as an InnerBlocks TEMPLATE child's className in edit.js, never emitted by hero's own rendered markup — the old selector generated a scoped rule at CSS specificity (0,2,0) that could never beat the child block's own inline typography at (1,0,0,0), so hero's 7 declared native typography controls were silent no-ops (Spec 35 F.1).",
 	"selectors": {
 		"root": ".wp-block-sgs-hero",
-		"border": ".wp-block-sgs-hero",
-		"typography": {
-			"root": ".sgs-hero__headline",
-			"fontSize": ".sgs-hero__headline",
-			"fontFamily": ".sgs-hero__headline",
-			"fontWeight": ".sgs-hero__headline",
-			"lineHeight": ".sgs-hero__headline",
-			"letterSpacing": ".sgs-hero__headline",
-			"textTransform": ".sgs-hero__headline",
-			"textDecoration": ".sgs-hero__headline"
-		}
+		"border": ".wp-block-sgs-hero"
 	},
 	"attributes": {
+		"templateLock": {
+			"type": "string",
+			"enum": [
+				"",
+				"all",
+				"contentOnly",
+				"insert"
+			],
+			"default": ""
+		},
 		"variant": {
 			"type": "string",
 			"default": "standard",
@@ -340,14 +333,42 @@
 		"backgroundImage": {
 			"type": "object"
 		},
-		"splitImage": {
-			"type": "object"
+		"_comment_sourceAtomPair": "Wave 6 (2026-09-01) — the `source` atom's own canonical shape (prefix 'split'), written by HeroSplitMediaPanelLayout's new picker. Hand-declared here (rather than left to the mediaElements auto-injection filter alone) because render.php/edit.js destructure these as literal variables to resolve the split-media source (no legacy fallback — see the mediaElements comment above) — check-undeclared-attrs.py flags any literal destructure of an attribute block.json doesn't declare, regardless of whether a runtime filter would also inject it. The legacy `splitImageTablet`/`splitVideo`/`splitVideoTablet`/`splitVideoMobile`/`splitSvg`/`splitSvgTablet`/`splitSvgMobile` attributes these replace were REMOVED (not just retired) 2026-09-02 — Bean-locked (R-31-14 strict reading): with no read-time fallback, nothing on either the render or editor side consumed them any more, so they were genuinely dead declarations, not merely superseded ones. `variants.split` above was updated to `splitImageUrl`/`splitImageUrlMobile` (the new discriminating names) in the same commit. `splitImage`/`splitImageMobile` (the two composite object attrs previously declared here) were kept alive for one extra day purely because `scripts/dbschema/check_value_identity.py` anchored the cloning pipeline's scalar-media role assignment on their literal names — see `scripts/data/scalar-media-roles.json`'s `__RE_ANCHOR_2026_09_02` note. That anchor moved onto `splitMediaType` the following day (Wave 7b, same date), which IS genuinely read by render.php to select the media family, closing the last reason these two dead declarations needed to survive — they are deleted in the same commit as the re-anchor, and `check_value_identity.py`'s assertions were repointed at `splitMediaType` alongside them.",
+		"splitImageId": {
+			"type": "integer",
+			"default": 0
 		},
-		"splitImageTablet": {
-			"type": "object"
+		"splitImageUrl": {
+			"type": "string",
+			"default": ""
 		},
-		"splitImageMobile": {
-			"type": "object"
+		"splitImageAlt": {
+			"type": "string",
+			"default": ""
+		},
+		"splitImageAltTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"splitImageAltMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"splitImageIdTablet": {
+			"type": "integer",
+			"default": 0
+		},
+		"splitImageUrlTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"splitImageIdMobile": {
+			"type": "integer",
+			"default": 0
+		},
+		"splitImageUrlMobile": {
+			"type": "string",
+			"default": ""
 		},
 		"splitMediaType": {
 			"type": "string",
@@ -378,39 +399,88 @@
 				"svg"
 			]
 		},
-		"splitVideo": {
-			"type": "object"
+		"splitVideoId": {
+			"type": "integer",
+			"default": 0
 		},
-		"splitVideoTablet": {
-			"type": "object"
-		},
-		"splitVideoMobile": {
-			"type": "object"
-		},
-		"splitSvg": {
+		"splitVideoUrl": {
 			"type": "string",
 			"default": ""
 		},
-		"splitSvgTablet": {
+		"splitVideoIdTablet": {
+			"type": "integer",
+			"default": 0
+		},
+		"splitVideoUrlTablet": {
 			"type": "string",
 			"default": ""
 		},
-		"splitSvgMobile": {
+		"splitVideoIdMobile": {
+			"type": "integer",
+			"default": 0
+		},
+		"splitVideoUrlMobile": {
 			"type": "string",
 			"default": ""
 		},
-		"splitImageMobileObjectPosition": {
-			"type": "string",
-			"default": "center 20%"
-		},
-		"imageObjectPositionTablet": {
+		"splitSvgContent": {
 			"type": "string",
 			"default": ""
+		},
+		"splitSvgContentTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"splitSvgContentMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"splitMediaDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "WCAG 2.1 AA 1.1.1 (finding 18, 2026-09-02). When true, the split-media element (image/video/svg — the only real <img>/<video>/svg this block renders) is hidden from assistive tech: render.php blanks its alt text and marks it aria-hidden. Does NOT apply to backgroundImage, which paints via CSS background-image and is never exposed to a screen reader."
 		},
 		"label": {
 			"type": "string",
 			"default": "",
 			"role": "content"
+		},
+		"_comment_typography": "D971/D972 full-replacement track (2026-09-05) — root prefix '' (wrapper element), replacing the deleted WP-native `supports.typography`. Mirrors sgs/accordion's already-migrated shape exactly. letterSpacing/letterSpacingUnit/textTransform are ADDITIONAL to the base fontSize/fontSizeUnit/fontWeight/fontStyle/lineHeight/lineHeightUnit set because the native support being replaced actually declared AND render.php actually consumed both (the old selector was broken — see block.json's `_selectorsNote` — but the attributes were live, not dead, so dropping them here would be a real scope reduction, not a cleanup).",
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"letterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"letterSpacingUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"textTransform": {
+			"type": "string",
+			"default": ""
 		},
 		"minHeight": {
 			"type": "object",
@@ -418,13 +488,43 @@
 				"mobile": "360px"
 			}
 		},
+		"backgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Resting (non-hover) root background colour, bound to the wrapper element's css:background-color (D702). Distinct from the decorative backgroundOverlayColour/overlayGradient dimming layer."
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting root background instead of a flat colour. Non-empty wins over backgroundColour at render time (mirrors the borderColour/borderColourGradient pair)."
+		},
 		"backgroundColourHover": {
 			"type": "string",
 			"default": ""
 		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the hover root background instead of a flat colour. Non-empty wins over backgroundColourHover at render time."
+		},
+		"textColour": {
+			"type": "string",
+			"default": "",
+			"description": "Resting (non-hover) root text colour, bound to the wrapper element's css:color (D702)."
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting root text colour (background-clip: text) instead of a flat colour. Non-empty wins over textColour at render time."
+		},
 		"textColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the hover root text colour (background-clip: text) instead of a flat colour. Non-empty wins over textColourHover at render time."
 		},
 		"borderColourHover": {
 			"type": "string",
@@ -435,6 +535,11 @@
 			"default": "",
 			"description": "CSS gradient string painting the hover border instead of a flat colour. Non-empty wins over borderColourHover at render time (D636)."
 		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting (non-hover) border instead of a flat colour. Non-empty wins over the WP-native __experimentalBorder.color at render time (D701)."
+		},
 		"transitionDuration": {
 			"type": "string",
 			"default": "300"
@@ -443,17 +548,9 @@
 			"type": "string",
 			"default": "ease-in-out"
 		},
-		"textAlignMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"textAlignTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"textAlignDesktop": {
-			"type": "string",
-			"default": ""
+		"textAlign": {
+			"type": "object",
+			"default": {}
 		},
 		"bgParallax": {
 			"type": "boolean",
@@ -472,82 +569,129 @@
 		"bgVideoMobile": {
 			"type": "object"
 		},
-		"splitImageBleed": {
-			"type": "boolean",
-			"default": true
-		},
-		"imageObjectFit": {
+		"splitMediaObjectFit": {
 			"type": "string",
 			"default": "cover"
 		},
-		"imageObjectPosition": {
+		"splitMediaObjectPosition": {
 			"type": "string",
 			"default": "center center"
 		},
-		"imageWidth": {
-			"type": "number",
-			"default": null
-		},
-		"imageWidthTablet": {
-			"type": "number",
-			"default": null
-		},
-		"imageWidthMobile": {
-			"type": "number",
-			"default": null
-		},
-		"imageWidthUnit": {
-			"type": "string",
-			"default": "%"
-		},
-		"imageHeight": {
-			"type": "object",
-			"default": {}
-		},
-		"imageHeightUnit": {
-			"type": "string",
-			"default": "px"
-		},
-		"imageBorderRadius": {
-			"type": "object",
-			"default": {}
-		},
-		"imageBorderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"imageBorderRadiusMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"imageBorderStyle": {
-			"type": "string",
-			"default": "none"
-		},
-		"imageBorderWidth": {
-			"type": "object",
-			"default": {}
-		},
-		"imageBorderColour": {
+		"splitMediaObjectPositionTablet": {
 			"type": "string",
 			"default": ""
 		},
-		"imageBorderColourGradient": {
+		"splitMediaObjectPositionMobile": {
+			"type": "string",
+			"default": "center 20%"
+		},
+		"splitMediaWidth": {
+			"type": "number"
+		},
+		"splitMediaWidthTablet": {
+			"type": "number"
+		},
+		"splitMediaWidthMobile": {
+			"type": "number"
+		},
+		"splitMediaWidthUnit": {
+			"type": "string",
+			"default": "%"
+		},
+		"splitMediaHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"splitMediaHeightUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"splitMediaBorderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"splitMediaBorderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"splitMediaBorderRadiusMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"splitMediaBorderStyle": {
+			"type": "string",
+			"default": "none"
+		},
+		"splitMediaBorderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"splitMediaBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"splitMediaBorderColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the split-image border instead of a flat colour. Non-empty wins over imageBorderColour at render time (D636)."
+			"description": "CSS gradient string painting the split-image border instead of a flat colour. Non-empty wins over splitMediaBorderColour at render time (D636)."
 		},
-		"imagePadding": {
+		"splitMediaPadding": {
 			"type": "object",
 			"default": {}
 		},
-		"imagePaddingTablet": {
+		"splitMediaPaddingTablet": {
 			"type": "object",
 			"default": {}
 		},
-		"imagePaddingMobile": {
+		"splitMediaPaddingMobile": {
 			"type": "object",
 			"default": {}
+		},
+		"_comment_boxShapeNewBases": "C19 item 3 (2026-09-04) — the box-shape atom's remaining bases (Wave 6 only adopted object-fit/focal-point). Hand-declared, not left to auto-injection, because render.php/edit.js destructure them as literal variables (same precedent as the 'source atom pair' comment above). Mirrors sgs/media's own shapes exactly: MediaSizing carries no default (a 'default':null on a typed attr 400s SSR previews); Shape/AspectRatio/MinHeight/MaxWidth/MaxHeight match box-shape.js's MEDIA_ATTR_TYPES map. MaxWidthPercent has no default, same as every other non-tiered number base in the atom.",
+		"splitMediaMediaSizing": {
+			"type": "string",
+			"enum": [
+				"auto",
+				"height",
+				"ratio"
+			]
+		},
+		"splitMediaShape": {
+			"type": "string",
+			"default": "none",
+			"enum": [
+				"none",
+				"rounded",
+				"circle",
+				"square"
+			]
+		},
+		"splitMediaAspectRatio": {
+			"type": "string",
+			"default": ""
+		},
+		"splitMediaMinHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"splitMediaMaxWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"splitMediaMaxWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"splitMediaMaxHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"splitMediaMaxHeightUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"splitMediaMaxWidthPercent": {
+			"type": "number"
 		},
 		"mediaBackground": {
 			"type": "string",
@@ -648,9 +792,8 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": "",
+			"default": "wrap",
 			"enum": [
-				"",
 				"wrap",
 				"nowrap"
 			]
@@ -671,6 +814,12 @@
 		},
 		"backgroundOverlayColour": {
 			"type": "string"
+		},
+		"backgroundOverlayOpacity": {
+			"type": "object",
+			"default": {
+				"desktop": 30
+			}
 		},
 		"backgroundPosition": {
 			"type": "string",
@@ -762,40 +911,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"gridItemBackground": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBorder": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBorderGradient": {
-			"type": "string",
-			"default": "",
-			"description": "CSS gradient string painting the grid item's resting border with a masked ring instead of a flat colour (D636 border-gradient rollout, residual scope). Non-empty wins over gridItemBorder's colour component; width/style still come from gridItemBorder."
-		},
-		"gridItemBorderGradientHover": {
-			"type": "string",
-			"default": "",
-			"description": "CSS gradient string painting the grid item's hover-state border (D636 border-gradient rollout, residual scope). Non-empty wins on :hover/:focus-within; empty means no hover change."
-		},
-		"gridItemBorderRadius": {
-			"type": "object",
-			"default": {}
-		},
-		"gridItemPadding": {
-			"type": "object",
-			"default": {}
-		},
-		"gridItemShadow": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemTextColour": {
-			"type": "string",
-			"default": ""
-		},
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {}
@@ -816,6 +931,12 @@
 		},
 		"layout": {
 			"type": "string",
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
 			"default": ""
 		},
 		"maxWidth": {
@@ -826,8 +947,41 @@
 			"type": "string",
 			"default": ""
 		},
+		"backgroundOverlayColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundOverlayBlendMode": {
+			"type": "string",
+			"default": "normal",
+			"enum": [
+				"normal",
+				"multiply",
+				"screen",
+				"overlay",
+				"darken",
+				"lighten",
+				"color-dodge",
+				"color-burn",
+				"soft-light",
+				"hard-light",
+				"difference",
+				"exclusion"
+			]
+		},
 		"shadow": {
 			"type": "string"
+		},
+		"shadowColour": {
+			"type": "string"
+		},
+		"shadowColourHover": {
+			"type": "string",
+			"default": ""
 		},
 		"shapeDividerBottom": {
 			"type": "string",
@@ -847,7 +1001,10 @@
 		},
 		"shapeDividerBottomScale": {
 			"type": "object",
-			"default": { "x": 100, "y": 100 }
+			"default": {
+				"x": 100,
+				"y": 100
+			}
 		},
 		"shapeDividerBottomInvert": {
 			"type": "boolean",
@@ -871,20 +1028,14 @@
 		},
 		"shapeDividerTopScale": {
 			"type": "object",
-			"default": { "x": 100, "y": 100 }
+			"default": {
+				"x": 100,
+				"y": 100
+			}
 		},
 		"shapeDividerTopInvert": {
 			"type": "boolean",
 			"default": false
-		},
-		"templateMode": {
-			"type": "string",
-			"default": "free",
-			"enum": [
-				"free",
-				"grid-section",
-				"card-grid"
-			]
 		},
 		"alignItems": {
 			"type": "string",
@@ -896,21 +1047,18 @@
 				"desktop": {}
 			}
 		},
-		"paddingTablet": {
+		"padding": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			},
+			"description": "Base (desktop) padding, owned outright — hero declares NO supports.spacing, so before 2026-08-21 this control wrote to style.spacing and WordPress DISCARDED it on save (D338/D587 class). Matches the D555/D707 container shape."
 		},
-		"paddingMobile": {
+		"margin": {
 			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"tagName": {
 			"type": "string",
@@ -929,6 +1077,35 @@
 		"ariaLabel": {
 			"type": "string",
 			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"render": "file:./render.php",

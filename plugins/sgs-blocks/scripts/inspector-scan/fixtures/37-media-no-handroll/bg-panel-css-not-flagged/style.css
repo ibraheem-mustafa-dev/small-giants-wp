@@ -1,0 +1,9 @@
+.sgs-bg-panel-css-not-flagged--ken-burns {
+	animation: sgs-bg-panel-ken-burns 20s ease-in-out infinite alternate;
+	background-size: 110% !important;
+}
+
+@keyframes sgs-bg-panel-ken-burns {
+	from { background-size: 110%; background-position: center center; }
+	to   { background-size: 120%; background-position: 55% 45%; }
+}

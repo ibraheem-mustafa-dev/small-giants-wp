@@ -305,7 +305,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// would reorder a closure several hundred lines of logic already depend on.
 			$sgs_grid_obj = $attributes['gridTemplateColumns'] ?? null;
 			$object_grid  = false;
-			if ( $container_queries && is_array( $sgs_grid_obj ) ) {
+			if ( is_array( $sgs_grid_obj ) ) {
 				foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sgs_grid_tier ) {
 					$sgs_grid_val = $sgs_grid_obj[ $sgs_grid_tier ] ?? null;
 					if ( null !== $sgs_grid_val && '' !== $sgs_grid_val && array() !== $sgs_grid_val ) {
@@ -395,18 +395,47 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$bg_attachment = 'scroll';
 			}
 			$overlay_colour = $attributes['backgroundOverlayColour'] ?? '';
+			// D717 (2026-08-21): a real 0-100 opacity attribute, replacing the colour
+			// picker's alpha channel as the overlay's transparency mechanism. Null when
+			// a block has not adopted the attribute — the helper then emits no opacity
+			// declaration at all, so nothing changes for that block.
+			// backgroundOverlayOpacity is a TIER OBJECT {desktop,tablet,mobile} (Spec 35
+				// migration, 2026-09-06); backgroundOverlayOpacityTablet/Mobile are no longer
+				// declared by any block.json. A raw read here would hand sgs_overlay_decls()
+				// an array, which is_numeric() silently rejects -- the desktop opacity would
+				// vanish with no error, same failure mode as the pre-fix minHeight bug.
+				$overlay_opacity_obj    = sgs_responsive_normalise_object( $attributes['backgroundOverlayOpacity'] ?? null );
+				$overlay_opacity        = $overlay_opacity_obj['desktop'] ?? null;
 			// Task 3 (gradient palette-stop rebuild): overlayGradient is now ONE
 			// attribute holding the complete CSS gradient value (any stop count),
 			// validated through sgs_css_gradient_value() at the point of emission
 			// below — replaces the old 4-attr bool/angle/from/to shape, which could
 			// only ever express a straight two-stop gradient.
-			$overlay_gradient      = $attributes['overlayGradient'] ?? '';
-			$bg_video              = $attributes['bgVideo'] ?? null;
-			$bg_video_tablet       = $attributes['bgVideoTablet'] ?? null;
-			$bg_video_mobile       = $attributes['bgVideoMobile'] ?? null;
-			$bg_parallax           = ! empty( $attributes['bgParallax'] );
-			$bg_ken_burns          = ! empty( $attributes['bgKenBurns'] );
-			$bg_animation_duration = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
+			$overlay_gradient = $attributes['overlayGradient'] ?? '';
+			// D6 (2026-08-22) — hover + responsive-tier siblings for the overlay
+			// paint pair, plus Step 8's blend mode. Null/absent on a block that
+			// has not adopted the sibling (WordPress drops an undeclared attr on
+			// the editor surface — D338/D704) is handled downstream exactly like
+			// $overlay_opacity above: sgs_overlay_decls() simply emits nothing
+			// extra for that state/tier.
+			$overlay_colour_hover    = $attributes['backgroundOverlayColourHover'] ?? '';
+			$overlay_gradient_hover  = $attributes['overlayGradientHover'] ?? '';
+			// D739: the responsive tier axis lives on OPACITY, not colour. A
+			// per-device overlay need is "a heavier scrim on the small screen",
+			// which is an opacity change rather than a different hue. The tier
+			// COLOUR attrs this replaces were the framework's only responsive
+			// colour, and crossing tier x state also produced an incoherent
+			// control — a hover tab that appeared on the desktop tier alone.
+			// null means "this tier does not override".
+			$overlay_opacity_tablet  = $overlay_opacity_obj['tablet'] ?? null;
+			$overlay_opacity_mobile  = $overlay_opacity_obj['mobile'] ?? null;
+			$overlay_blend_mode      = $attributes['backgroundOverlayBlendMode'] ?? '';
+			$bg_video                = $attributes['bgVideo'] ?? null;
+			$bg_video_tablet         = $attributes['bgVideoTablet'] ?? null;
+			$bg_video_mobile         = $attributes['bgVideoMobile'] ?? null;
+			$bg_parallax             = ! empty( $attributes['bgParallax'] );
+			$bg_ken_burns            = ! empty( $attributes['bgKenBurns'] );
+			$bg_animation_duration   = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
 
 			$shadow = $attributes['shadow'] ?? '';
 			// is_array guard (Spec 35 Phase 1.4b, STAGE 2): `shadow` is being made
@@ -417,12 +446,44 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// arrays never coerce to a scalar type-hint, so this is a hard fatal on
 			// every render, not just a warning. Same shape as the $grid_auto_rows
 			// guard at :448.
-			$shadow    = is_array( $shadow ) ? '' : $shadow;
-			$max_width = $attributes['maxWidth'] ?? '';
-			$max_width = is_array( $max_width ) ? '' : $max_width;
+			$shadow = is_array( $shadow ) ? '' : $shadow;
+			// Shadow COLOUR is a separate attribute (D621/D622 colour-panel split);
+			// ShadowControl stores SHAPE only. Composed back together at emission
+			// via sgs_shadow_value_composed(). Same is_array guard rationale as the
+			// shape above — a tiered object would TypeError-fatal the ?string hint.
+			$shadow_colour = $attributes['shadowColour'] ?? '';
+			$shadow_colour = is_array( $shadow_colour ) ? '' : $shadow_colour;
+			// HOVER-state sibling (Rule 31, 2026-08-22): ShadowControl's colour
+			// row is now two-state (normal/hover) for the four blocks routing
+			// their outer shadow through this shared wrapper — container, hero,
+			// physics-canvas, trust-bar (main shadow only; its icon-circle/
+			// badge-image shadows are block-private and handled in their own
+			// render.php). Hover reuses the resting SHAPE, only the colour
+			// differs, mirroring how the existing backgroundColourHover/
+			// textColourHover pairs work per-block.
+			$shadow_colour_hover = $attributes['shadowColourHover'] ?? '';
+			$shadow_colour_hover = is_array( $shadow_colour_hover ) ? '' : $shadow_colour_hover;
+			$max_width     = $attributes['maxWidth'] ?? '';
+			$max_width     = is_array( $max_width ) ? '' : $max_width;
 			// Raw read — sanitised via $sgs_css_length after the closure is defined (~line 211).
-			$content_width = $attributes['contentWidth'] ?? '';
-			$content_width = is_array( $content_width ) ? '' : $content_width;
+			//
+			// `contentWidth` is a TIER OBJECT ({desktop,tablet,mobile}), same shape as
+			// `minHeight` above (:450) — resolved the same way, via the shared
+			// `sgs_responsive_normalise_object()` helper, so a plain string (older/
+			// other callers) still degrades to today's desktop-only behaviour and a
+			// tier object no longer collapses to ''.
+			//
+			// ⛔ REGRESSION FIXED (2026-08-20): the old `is_array( $content_width )
+			// ? '' : $content_width` unconditionally emptied the value on EVERY
+			// render, because `contentWidth` has been a tier object (not a scalar)
+			// since commit 163f9fa7 migrated 96 core/group instances to
+			// sgs/container. That silently defeated `$has_band_props` below, which
+			// meant `.sgs-container__inner` never rendered and every container's
+			// max-width landed on the OUTER element instead of the content band.
+			// Proven live: `/shop/` had `max-width:1280px` on the outer element with
+			// no `.sgs-container__inner` child.
+			$content_width_obj = sgs_responsive_normalise_object( $attributes['contentWidth'] ?? null );
+			$content_width     = $content_width_obj['desktop'] ?? '';
 			// minHeight is a TIER OBJECT {desktop,tablet,mobile} (Spec 35 migration,
 			// 2026-08-11); `minHeightTablet` / `minHeightMobile` are no longer
 			// declared by any block.json.
@@ -534,25 +595,40 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// rather than the inline base (which would beat any .uid{} @media rule).
 			$has_responsive_min_height = $is_section && ( '' !== $min_height_tablet || '' !== $min_height_mobile );
 
-			// Responsive padding — all kinds (WP spacing.padding sets base via the block-supports
-			// layer; responsive variants land as @media rules scoped to the uid selector).
-			// Box-object interface contract (.claude/plans/2026-07-09-box-object-interface-contract.md
-			// §1/§2): paddingTablet/paddingMobile are OBJECT attrs { top, right, bottom, left } —
-			// a missing side key = that side unset, matching the prior flat-attr '' semantic.
-			$padding_tablet_obj    = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-			$padding_mobile_obj    = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-			$padding_top_tablet    = $sgs_css_length( $padding_tablet_obj['top'] ?? '' );
-			$padding_right_tablet  = $sgs_css_length( $padding_tablet_obj['right'] ?? '' );
-			$padding_bottom_tablet = $sgs_css_length( $padding_tablet_obj['bottom'] ?? '' );
-			$padding_left_tablet   = $sgs_css_length( $padding_tablet_obj['left'] ?? '' );
-			$padding_top_mobile    = $sgs_css_length( $padding_mobile_obj['top'] ?? '' );
-			$padding_right_mobile  = $sgs_css_length( $padding_mobile_obj['right'] ?? '' );
-			$padding_bottom_mobile = $sgs_css_length( $padding_mobile_obj['bottom'] ?? '' );
-			$padding_left_mobile   = $sgs_css_length( $padding_mobile_obj['left'] ?? '' );
+			// Responsive padding/margin — all kinds. FIXED 2026-09-06 (D976 follow-up,
+			// live-verified via render_block() on sandybrown): this used to read the
+			// PRE-migration flat paddingTablet/paddingMobile/marginTablet/marginMobile
+			// sibling attrs directly, and separately (~:1931 below) misread a
+			// tier-object `padding`/`margin` as a flat box on any block NOT flagged
+			// container_queries. Once sgs/container (then sgs/hero) migrated their
+			// own `padding`/`margin` to the {desktop,tablet,mobile} tier-object shape
+			// (Phase 2 box-object migration, 2026-09-06) neither read matched any
+			// more: base AND tablet AND mobile all silently emitted nothing — no
+			// inline (correct, no-inline policy), no scoped rule either, proven via a
+			// direct render_block() call returning zero CSS for either property.
+			// sgs_responsive_normalise_object() already disambiguates a flat box
+			// (returns it as the DESKTOP tier, tablet/mobile null) from a real
+			// tier-object (returns all three as stored) from an absent attribute
+			// (native `supports.spacing` blocks — all three null, correctly falling
+			// through to the style.spacing.* fallback at ~:1949 below) — by DATA
+			// SHAPE, not by the container_queries flag, so it replaces the old
+			// per-flag branching entirely rather than adding a second branch to it.
+			// Computed once here and reused at ~:1931 for the base/desktop tier.
+			$sgs_wrap_padding_tiers = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+			$sgs_wrap_margin_tiers  = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+			$padding_tablet_obj     = is_array( $sgs_wrap_padding_tiers['tablet'] ) ? $sgs_wrap_padding_tiers['tablet'] : array();
+			$padding_mobile_obj     = is_array( $sgs_wrap_padding_tiers['mobile'] ) ? $sgs_wrap_padding_tiers['mobile'] : array();
+			$padding_top_tablet     = $sgs_css_length( $padding_tablet_obj['top'] ?? '' );
+			$padding_right_tablet   = $sgs_css_length( $padding_tablet_obj['right'] ?? '' );
+			$padding_bottom_tablet  = $sgs_css_length( $padding_tablet_obj['bottom'] ?? '' );
+			$padding_left_tablet    = $sgs_css_length( $padding_tablet_obj['left'] ?? '' );
+			$padding_top_mobile     = $sgs_css_length( $padding_mobile_obj['top'] ?? '' );
+			$padding_right_mobile   = $sgs_css_length( $padding_mobile_obj['right'] ?? '' );
+			$padding_bottom_mobile  = $sgs_css_length( $padding_mobile_obj['bottom'] ?? '' );
+			$padding_left_mobile    = $sgs_css_length( $padding_mobile_obj['left'] ?? '' );
 
-			// Responsive margin — all kinds. Same object-attr contract as padding above.
-			$margin_tablet_obj    = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-			$margin_mobile_obj    = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+			$margin_tablet_obj    = is_array( $sgs_wrap_margin_tiers['tablet'] ) ? $sgs_wrap_margin_tiers['tablet'] : array();
+			$margin_mobile_obj    = is_array( $sgs_wrap_margin_tiers['mobile'] ) ? $sgs_wrap_margin_tiers['mobile'] : array();
 			$margin_top_tablet    = $sgs_css_length( $margin_tablet_obj['top'] ?? '' );
 			$margin_right_tablet  = $sgs_css_length( $margin_tablet_obj['right'] ?? '' );
 			$margin_bottom_tablet = $sgs_css_length( $margin_tablet_obj['bottom'] ?? '' );
@@ -647,12 +723,29 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// carry a semantic tag in every page context (WCAG 2.2 landmark navigation
 			// + SEO).
 			//
-			// 'main' is deliberately NOT in this list. A page has exactly one <main>
-			// landmark (no nesting exception exists for it, unlike header/footer/aside
-			// — confirmed against HTML-AAM); offering it on a repeatable layout block
-			// let a client produce 2-3 <main> landmarks on one page. Any stored
-			// tagName:'main' from before this change falls through to the 'section'
-			// default below, same as any other invalid value.
+			// 'main' IS allowed, but only ONCE per request — see the guard below.
+			//
+			// HISTORY, because this reverses an earlier decision rather than ignoring
+			// it: 'main' was previously removed from this list outright. The reasoning
+			// was sound as far as it went — a page has exactly one <main> landmark (no
+			// nesting exception exists for it, unlike header/footer/aside, confirmed
+			// against HTML-AAM), and offering it on a repeatable layout block let a
+			// client produce 2-3 <main> landmarks on one page.
+			//
+			// But removing it traded one defect for a worse one. Every one of the
+			// theme's 9 templates authors tagName:'main' on its outermost content
+			// container, and every one silently fell through to 'section' — measured
+			// live 2026-08-21: ZERO <main> and ZERO role="main" on the home, shop and
+			// about pages. So the site shipped no main landmark at all, on any page,
+			// for any client. That breaks the target of every "skip to content" link
+			// and removes the landmark screen readers jump to by shortcut key (WCAG
+			// 2.4.1 Bypass Blocks).
+			//
+			// The fix keeps BOTH properties: the first container claiming 'main' in a
+			// request renders <main>; any later one falls back to 'section'. A client
+			// duplicating a container therefore cannot produce a second <main> — the
+			// original footgun stays closed — while the template's single intentional
+			// one now works.
 			$allowed_tags = array(
 				'section',
 				'div',
@@ -664,9 +757,24 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				'figure',
 				'details',
 				'fieldset',
+				'main',
 			);
 			if ( ! in_array( $html_tag, $allowed_tags, true ) ) {
 				$html_tag = 'section';
+			}
+
+			// Singleton guard for the document's one <main>. Static, so it resets
+			// naturally per request. Deliberately NOT a "did the template ask first"
+			// check: whichever container renders first wins, which for a block theme
+			// is the outermost one the template authored.
+			if ( 'main' === $html_tag ) {
+				static $sgs_main_landmark_claimed = false;
+
+				if ( $sgs_main_landmark_claimed ) {
+					$html_tag = 'section';
+				} else {
+					$sgs_main_landmark_claimed = true;
+				}
 			}
 
 			// WP-native align — breakout control (v0.4: widthMode retired; align replaces
@@ -703,8 +811,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// existed.
 			$grid_item_border_gradient       = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) ( $attributes['gridItemBorderGradient'] ?? '' ) ) : '';
 			$grid_item_border_gradient_hover = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) ( $attributes['gridItemBorderGradientHover'] ?? '' ) ) : '';
-			$grid_item_shadow        = $attributes['gridItemShadow'] ?? '';
-			$grid_item_text_colour   = $attributes['gridItemTextColour'] ?? '';
+			$grid_item_shadow                = $attributes['gridItemShadow'] ?? '';
+			$grid_item_text_colour           = $attributes['gridItemTextColour'] ?? '';
 			// is_array guards (Spec 35 Phase 1.4b, STAGE 2): these four ARE being made
 			// tier-capable below. A tiered object reaching these legacy scalar vars
 			// would TypeError-fatal sgs_colour_value()/sgs_shadow_value() (both
@@ -714,10 +822,41 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// preg_replace on an array SUBJECT returns an array, and trim() then
 			// TypeErrors on that array). Same shape as the $grid_auto_rows guard
 			// at :448.
-			$grid_item_background  = is_array( $grid_item_background ) ? '' : $grid_item_background;
-			$grid_item_border      = is_array( $grid_item_border ) ? '' : $grid_item_border;
-			$grid_item_shadow      = is_array( $grid_item_shadow ) ? '' : $grid_item_shadow;
-			$grid_item_text_colour = is_array( $grid_item_text_colour ) ? '' : $grid_item_text_colour;
+			$grid_item_background = is_array( $grid_item_background ) ? '' : $grid_item_background;
+			$grid_item_border     = is_array( $grid_item_border ) ? '' : $grid_item_border;
+			$grid_item_shadow     = is_array( $grid_item_shadow ) ? '' : $grid_item_shadow;
+			// Grid-item shadow COLOUR — same SHAPE/colour split as the outer shadow
+			// above, same is_array guard rationale.
+			$grid_item_shadow_colour = $attributes['gridItemShadowColour'] ?? '';
+			$grid_item_shadow_colour = is_array( $grid_item_shadow_colour ) ? '' : $grid_item_shadow_colour;
+			$grid_item_text_colour   = is_array( $grid_item_text_colour ) ? '' : $grid_item_text_colour;
+
+			// Grid-item background/text-colour HOVER + gradient siblings (Step 5a,
+			// phase-colour-conformance.md, 2026-08-22 — closes rule 31's
+			// GridItemDefaultsPanel.js findings). Reuses the SAME two helpers
+			// container's own root background/text rows already call
+			// (sgs_background_paint_decl() / sgs_resolve_text_colour_or_gradient()
+			// + sgs_text_colour_decl()) — no new PHP mechanism invented. Emission
+			// is scoped-CSS, not another `--sgs-gi-*` custom property, because
+			// unlike the resting-only case the DECLARATION PROPERTY itself
+			// differs between a solid colour and a gradient
+			// (background-color vs background-image; a single custom property
+			// cannot express that), same reasoning as the border-gradient block
+			// below. Same is_array guard rationale as every other gridItem* var
+			// above.
+			$grid_item_background_hover          = $attributes['gridItemBackgroundHover'] ?? '';
+			$grid_item_background_gradient       = $attributes['gridItemBackgroundGradient'] ?? '';
+			$grid_item_background_hover_gradient = $attributes['gridItemBackgroundHoverGradient'] ?? '';
+			$grid_item_background_hover          = is_array( $grid_item_background_hover ) ? '' : $grid_item_background_hover;
+			$grid_item_background_gradient       = is_array( $grid_item_background_gradient ) ? '' : $grid_item_background_gradient;
+			$grid_item_background_hover_gradient = is_array( $grid_item_background_hover_gradient ) ? '' : $grid_item_background_hover_gradient;
+
+			$grid_item_text_colour_hover          = $attributes['gridItemTextColourHover'] ?? '';
+			$grid_item_text_colour_gradient       = $attributes['gridItemTextColourGradient'] ?? '';
+			$grid_item_text_colour_hover_gradient = $attributes['gridItemTextColourHoverGradient'] ?? '';
+			$grid_item_text_colour_hover          = is_array( $grid_item_text_colour_hover ) ? '' : $grid_item_text_colour_hover;
+			$grid_item_text_colour_gradient       = is_array( $grid_item_text_colour_gradient ) ? '' : $grid_item_text_colour_gradient;
+			$grid_item_text_colour_hover_gradient = is_array( $grid_item_text_colour_hover_gradient ) ? '' : $grid_item_text_colour_hover_gradient;
 
 			// QB-1 advanced grid attrs (section + layout kinds only).
 			// is_array guard (Spec 35 pass 3b, 2026-08-11) — SAME shape as
@@ -782,6 +921,53 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			if ( ! in_array( $flex_direction, $allowed_flex_direction, true ) ) {
 				$flex_direction = '';
 			}
+
+			// <main> stacks by default (2026-08-23, Bean-directed). A <main> is the
+			// page's one content landmark and its children are page SECTIONS, so a row
+			// axis is never the right answer for it. D742 changed the generic container's
+			// `layout` default to "flex" with flexDirection left blank — correct for a
+			// generic container, since blank resolves to CSS's own `row` and that keeps
+			// the converter's draft->clone mapping honest (R-1) — but it is retroactive
+			// across every instance that never set the attr, and NONE of the theme's nine
+			// <main> containers had. Measured live on the product page before this landed:
+			// three sections laid out horizontally at 634/1328/1328px on a 1454px viewport,
+			// the buybox band's background covering under half the page.
+			//
+			// ⚠ This is a FALLBACK, not an override, and the distinction is load-bearing:
+			// it fires ONLY when flexDirection is blank (genuinely unset — WP omits an
+			// attribute equal to its default, and this one defaults to ''), so an operator
+			// who deliberately picks `row` still gets `row`. An override would leave the
+			// direction control visibly present and silently inert, which is precisely the
+			// defect `supports.align` was removed for the day before this.
+			//
+			// No cloning impact: the converter never emits `tagName` at all (verified —
+			// zero occurrences across converter/), so `main` reaches this code only from a
+			// hand-authored theme template. `layout` cannot be the lever instead, because
+			// it now DEFAULTS to "flex" and WP does not serialise a value equal to its
+			// default — an authored "flex" and an absent key are indistinguishable here,
+			// the same absent-vs-default trap this session already hit twice.
+			// ⛔ REVISED 2026-08-23, same day, on Bean's challenge — and his framing was
+			// the correct one. The first version forced flexDirection:'column' here. That
+			// works, but it answers the wrong question: it makes <main> a flex container
+			// in order to stop it being a flex ROW, when a page's main region has no
+			// business being a flex container at all. Normal block flow already stacks;
+			// that is what block layout DOES.
+			//
+			// MEASURED, which is what settled it: <main> on 404.html computes
+			// display:block and stacks correctly with zero flex involved, because that
+			// template's <main> has a content band — and $grid_on_inner (above) routes
+			// the flex declarations onto the __inner element, leaving the outer alone.
+			// single-product.html's <main> said contentWidth:"full", so it had NO band, no
+			// __inner to route to, and the flex landed on <main> itself as a ROW. So
+			// whether the page's main region became a flex container was decided purely
+			// by whether it happened to carry a content band. That is the actual defect.
+			//
+			// The fix is therefore to SUPPRESS the outer flex for a <main>, not to
+			// re-point it: children fall back to block flow, stack, and fill the width,
+			// with no flex-wrap semantics dragged along (column + wrap can wrap into
+			// COLUMNS if a height is ever constrained — a latent trap the previous shape
+			// carried). An explicit direction still wins, so the control never lies.
+			$suppress_outer_flex_for_main = ( 'main' === $html_tag && '' === $flex_direction );
 			if ( ! in_array( $flex_wrap, $allowed_flex_wrap, true ) ) {
 				$flex_wrap = '';
 			}
@@ -841,13 +1027,22 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				'' !== $band_padding_left
 			);
 
-			$grid_on_inner = ( ( 'grid' === $layout || 'flex' === $layout ) && $has_band_props && null === $opt_wrap_inner );
+			// Task 1 (Stack layout): Stack is a flex mode (display:flex +
+			// forced flex-direction:column, see the layout branch below), so it
+			// routes through exactly the same grid-on-inner / gap / shrink-to-fit
+			// plumbing as 'flex' — joining every gate below that already reads
+			// 'grid' || 'flex' for that reason. It does NOT join the grid-ONLY
+			// gates further down (grid-item defaults, grid-template-rows,
+			// tier-column-count, grid-template responsive tiers) — those emit
+			// grid-specific properties that have no meaning on a flex container.
+			$grid_on_inner = ( ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) && $has_band_props && null === $opt_wrap_inner );
 			// Container queries (Spec 37 FR-37-16): force the two-layer structure so the
 			// flex/grid container (where gap applies) is the __inner — a DESCENDANT of
 			// the container-type outer — so @container queries can respond to the
 			// block's own width (an element cannot size-query itself). Paired with the
 			// $do_wrap force further down so the __inner element actually renders.
-			if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout ) ) {
+			// Stack joins this for the same reason it joins $grid_on_inner above.
+			if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) ) {
 				$grid_on_inner = true;
 			}
 			$inner_grid_decls = array();
@@ -889,10 +1084,128 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// the old behaviour) AND raw box-shadow strings from ShadowControl
 				// render. The old hardcoded preset wrap mangled raw CSS into an
 				// invalid var() and shadows silently vanished.
-				$shadow_value = sgs_shadow_value( $shadow );
+				// 2026-08-20: composed, not shape-only. ShadowControl has always
+				// rendered a "Shadow colour" picker, but four blocks routing through
+				// this wrapper (container, hero, physics-canvas, trust-bar) passed it
+				// no handler at all — picking a colour threw
+				// `onColourChange is not a function` and blanked the inspector. The
+				// control is now wired to a real `shadowColour` attribute, and this is
+				// the consumer that makes it render rather than a dead control.
+				// Preset slugs are unaffected: sgs_shadow_value_composed() delegates
+				// straight to sgs_shadow_value() for anything that is not a raw shape.
+				// ⚠ VISIBLE CHANGE, declared not slipped in: a RAW shape with no
+				// colour set previously emitted no colour at all, so the browser used
+				// `currentColor` — i.e. the shadow tracked the TEXT colour and went
+				// near-invisible on dark sections. It now defaults to rgba(0,0,0,0.1),
+				// matching cta-section (render.php:125), which has composed since D621.
+				$shadow_value = sgs_shadow_value_composed( $shadow, $shadow_colour );
 				if ( '' !== $shadow_value ) {
 					$base_outer_decls[] = 'box-shadow:' . $shadow_value;
 				}
+			}
+
+			// Background image — real <img> fast path (Phase 2 LCP, mirrors
+			// sgs/hero's own `bg_img_html` in render.php).
+			//
+			// Why: a CSS background-image only becomes discoverable to the browser's
+			// PRELOAD SCANNER once it has downloaded and matched the render-blocking
+			// stylesheet that declares it — the scanner cannot see inside a <style>
+			// tag while still parsing the HTML. A real <img fetchpriority="high"> is
+			// visible to the scanner immediately, while it is still reading markup,
+			// which lets the browser start the request for the section's LCP image
+			// far earlier and shortens the page's largest paint.
+			//
+			// $sgs_bg_img_is_simple gates the <img> path to cases it can express
+			// FAITHFULLY. Every clause below names a real capability gap between
+			// <img> and CSS background-* — this is a mechanism boundary applied
+			// identically to every block that reaches this shared wrapper, not a
+			// per-block carve-out.
+			$sgs_bg_img_is_simple = ( 'no-repeat' === $bg_repeat )
+				// An <img> is a single raster paint — it has no equivalent to
+				// background-repeat's tiling, so a tiled background must stay CSS.
+				&& in_array( $bg_size, array( 'cover', 'contain' ), true )
+				// object-fit only maps to cover/contain. background-size also
+				// accepts arbitrary lengths/percentages/'auto', none of which
+				// object-fit can express, so anything other than cover/contain
+				// must stay CSS.
+				&& ! $bg_parallax
+				// Parallax works by pinning the CSS background box with
+				// `position:fixed` relative to the viewport (see
+				// `.sgs-container--parallax` in style.css) — an <img> painting the
+				// section's own box cannot reproduce that independent scroll.
+				&& 'fixed' !== $bg_attachment
+				// background-attachment:fixed has no <img> equivalent, for the
+				// same structural reason as parallax above.
+				&& empty( $bg_image_tablet['url'] )
+				&& empty( $bg_image_mobile['url'] );
+				// The tablet/mobile tier overrides (below, ~L2079-2083) swap the
+				// image on the SAME ::before layer inside @media rules — an <img>
+				// element sitting outside that layer does not participate. Migrating
+				// only the desktop tier while leaving tiers on ::before would
+				// silently drop a client's tablet/mobile background the moment they
+				// set one, so whenever ANY tier override exists the WHOLE image
+				// stays on the existing CSS path until the tiers are migrated too.
+
+			$bg_img_html = '';
+			if ( $has_bg_image && ! $has_bg_video && $sgs_bg_img_is_simple ) { // D6: universal, was section-only.
+				// PAGE-SCOPED counter (Fix 3, adversarial-review corrected): LCP
+				// priority is a property of the PAGE's render order, not of this
+				// block's own code path — a private static here would only know
+				// "am I first within THIS wrapper", so a hero background image
+				// followed by a container background image would mark BOTH
+				// `fetchpriority=high`, prioritising neither. sgs_hero/render.php
+				// calls the SAME shared counter (helpers-media.php) so only the
+				// image that renders first ON THE PAGE — whichever block it
+				// belongs to — gets the high-priority hint; every later instance
+				// is presumed below-the-fold and stays lazy.
+				$sgs_bg_img_is_first = 1 === sgs_next_background_image_index();
+
+				$bg_img_html = sgs_responsive_image(
+					! empty( $bg_image['id'] ) ? absint( $bg_image['id'] ) : 0,
+					$bg_image['url'],
+					'',
+					'full',
+					array(
+						'class'         => 'sgs-container__image-bg',
+						'aria-hidden'   => 'true',
+						'fetchpriority' => $sgs_bg_img_is_first ? 'high' : 'auto',
+						'loading'       => $sgs_bg_img_is_first ? 'eager' : 'lazy',
+						'decoding'      => $sgs_bg_img_is_first ? 'sync' : 'async',
+					)
+				);
+			}
+
+			// object-fit/object-position for the <img> path above — built here
+			// (where $bg_size/$bg_position are in scope) but EMITTED with the
+			// other scoped rules further down, same reason as $sgs_media_layer_decls
+			// below: $uid/$responsive_css don't exist yet at this point. No-inline
+			// contract (Spec 32): these values route to the scoped <style>, never
+			// onto the <img> tag itself.
+			$sgs_bg_img_style_decls = array();
+			if ( '' !== $bg_img_html ) {
+				$sgs_bg_img_style_decls[] = 'object-fit:' . esc_attr( $bg_size );
+				$sgs_bg_img_style_decls[] = 'object-position:' . esc_attr( $bg_position );
+			}
+
+			// object-fit/object-position for the <video> background — same
+			// $bg_size/$bg_position source as the <img> fast path immediately
+			// above and the CSS-background ::before layer below.
+			// `backgroundSize`/`backgroundPosition` are the ONE attribute pair
+			// the whole Background panel writes; the Video tab's new Size/
+			// Position controls (BackgroundPanel.js) now write into them too,
+			// via the shared object-fit/focal-point media atoms (backdrop
+			// scope) — no second attribute family. Before this, a video
+			// background had NO size/position control at all: it only ever
+			// got style.css's hardcoded `object-fit:cover` default with no
+			// object-position rule. Built here (where $bg_size/$bg_position
+			// are in scope) but EMITTED with the other scoped rules further
+			// down — $uid/$responsive_css don't exist yet at this point.
+			// No-inline contract (Spec 32): these values route to the scoped
+			// <style>, never onto the <video> tag itself.
+			$sgs_bg_video_style_decls = array();
+			if ( $has_bg_video ) {
+				$sgs_bg_video_style_decls[] = 'object-fit:' . esc_attr( $bg_size );
+				$sgs_bg_video_style_decls[] = 'object-position:' . esc_attr( $bg_position );
 			}
 
 			// Background image — section kind only, painted on the .$uid::before
@@ -913,8 +1226,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// $responsive_css do not exist yet at this point, and $responsive_css
 			// is initialised to '' below, which would silently discard anything
 			// appended here.
+			//
+			// Gated on `! $sgs_bg_img_is_simple` (added Phase 2): when the <img>
+			// fast path above already painted the image, this block must NOT also
+			// push background-image onto ::before — that would double-paint the
+			// same image on two separate layers for no benefit.
 			$sgs_media_layer_decls = array();
-			if ( $has_bg_image && ! $has_bg_video ) { // D6: universal, was section-only.
+			if ( $has_bg_image && ! $has_bg_video && ! $sgs_bg_img_is_simple ) { // D6: universal, was section-only.
 				// The layer's own box properties are emitted HERE rather than as a
 				// blanket `.sgs-container::before` rule in style.css, so the
 				// pseudo-element only becomes a box on containers that actually have
@@ -977,7 +1295,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$gtc_base = '' !== trim( (string) $grid_template )
 						? sgs_sanitize_grid_template( $grid_template )
 						: ( $intrinsic_columns
-							? sgs_intrinsic_columns_track( absint( $columns ), sgs_container_tier_gap( $attributes, 'desktop' ) )
+							? sgs_intrinsic_columns_track( absint( $columns ), sgs_container_tier_gap( $attributes, 'desktop' ), sgs_container_tier_min_column_width( $attributes, 'desktop' ) )
 							: 'repeat(' . absint( $columns ) . ',1fr)' );
 					// An object-shaped gridTemplateColumns owns emission via
 					// sgs_emit_responsive_css(); suppress the legacy columns/base fallback
@@ -1000,15 +1318,95 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					if ( 'stretch' !== $align_content ) {
 						$gd[] = 'align-content:' . esc_attr( $align_content );
 					}
-				} elseif ( 'flex' === $layout ) {
+					// NOTE: a <main> with no explicit flexDirection falls through this whole
+					// chain and emits NO display, so block flow stacks its sections. See
+					// the note at $suppress_outer_flex_for_main above.
+				} elseif ( 'flex' === $layout && ! $suppress_outer_flex_for_main ) {
 					$gd[] = 'display:flex';
-					$gd[] = 'flex-wrap:' . esc_attr( '' !== $flex_wrap ? $flex_wrap : 'wrap' );
+					/*
+					 * OWNERSHIP: block.json owns the DEFAULT; this code owns only the
+					 * INVARIANT. There is deliberately no fallback value here.
+					 *
+					 * Until 2026-08-24 this line read `'' !== $flex_wrap ? $flex_wrap :
+					 * 'wrap'` -- a default invented in PHP, invisible to the operator and
+					 * to the cloning pipeline. Three problems, all real:
+					 *   1. It broke faithful transfer. A draft with no flex-wrap means
+					 *      `nowrap` (CSS's initial value); the clone rendered `wrap`.
+					 *      Absence is a value that must transfer, same as a missing
+					 *      max-width meaning full-width.
+					 *   2. '' and 'wrap' rendered IDENTICALLY, so the inspector's default
+					 *      option was indistinguishable from an explicit choice.
+					 *   3. It was a third ownership model for one property, alongside the
+					 *      declared scalar defaults on site-header-row/site-footer-row
+					 *      (D455) and the responsive-object default on multi-button.
+					 *
+					 * All 17 blocks that relied on the fallback now declare
+					 * `"flexWrap": { "default": "wrap" }` in their own block.json, and ''
+					 * is gone from those enums because it never rendered as blank. WP
+					 * applies a block.json default to any instance that does not store the
+					 * attribute, so every existing container renders identically and NO
+					 * content was migrated. Every one of the 17 has flexDirection default
+					 * '' (= row), so 'wrap' is behaviour-preserving for all of them.
+					 *
+					 * THE INVARIANT BELOW IS NOT A DEFAULT. A column container's cross axis
+					 * is its WIDTH, and per CSS Flexbox L1 9.4 a MULTI-LINE container sizes
+					 * each line from its items -- "the largest outer hypothetical cross
+					 * size" -- while a SINGLE-LINE container with a definite cross size is
+					 * HANDED the container's own inner cross size. So column+wrap makes the
+					 * child ignore its parent's width entirely: measured live on the PDP at
+					 * 375px, a child rendered 712px inside a 327px parent and the page
+					 * scrolled sideways. That is true however the value arrived, so it is
+					 * coerced rather than defaulted -- an operator who explicitly picks
+					 * 'wrap' on a column axis is asking for a broken layout.
+					 *
+					 * A width/max-width on the CHILD also fixes it (measured: max-width:100%
+					 * -> 327px). Deliberately NOT added as well: two overlapping fixes are
+					 * unfalsifiable, so neither could ever be safely removed.
+					 */
+					$is_column_axis = ( 0 === strpos( $flex_direction, 'column' ) );
+					if ( $is_column_axis && in_array( $flex_wrap, array( 'wrap', 'wrap-reverse' ), true ) ) {
+						$flex_wrap = 'nowrap';
+					}
+					if ( '' !== $flex_wrap ) {
+						$gd[] = 'flex-wrap:' . esc_attr( $flex_wrap );
+					}
 					// D288: blank alignItems → browser default (see grid branch above).
 					if ( '' !== $vertical_align ) {
 						$gd[] = 'align-items:' . esc_attr( $vertical_align );
 					}
 					if ( '' !== $flex_direction ) {
 						$gd[] = 'flex-direction:' . esc_attr( $flex_direction );
+					}
+					if ( '' !== $justify_content ) {
+						$gd[] = 'justify-content:' . esc_attr( $justify_content );
+					}
+				} elseif ( 'stack' === $layout && ! $suppress_outer_flex_for_main ) {
+					// Task 1 (Stack layout). Stack is display:flex with the column
+					// axis FORCED, not read from flexDirection — that is the whole
+					// point of the mode: an operator who set flexDirection:"row" and
+					// then picked Stack still gets a column, because Stack answers
+					// "which axis" outright rather than depending on a second control
+					// staying in sync with it. $flex_direction is therefore
+					// deliberately never read in this branch (contrast the flex
+					// branch above, which reads it).
+					$gd[] = 'display:flex';
+					$gd[] = 'flex-direction:column';
+					// Column-axis wrap invariant: Stack IS a column axis, so it
+					// inherits the same coercion the flex branch applies for an
+					// explicit column direction (CSS Flexbox L1 9.4 — a multi-line
+					// (wrapped) container sizes each line from its items rather than
+					// being handed the parent's cross-size, so column+wrap makes a
+					// child ignore its parent's width). See the flex branch's long
+					// comment above for the measured regression this prevents.
+					if ( in_array( $flex_wrap, array( 'wrap', 'wrap-reverse' ), true ) ) {
+						$flex_wrap = 'nowrap';
+					}
+					if ( '' !== $flex_wrap ) {
+						$gd[] = 'flex-wrap:' . esc_attr( $flex_wrap );
+					}
+					// D288: blank alignItems → browser default (see grid branch above).
+					if ( '' !== $vertical_align ) {
+						$gd[] = 'align-items:' . esc_attr( $vertical_align );
 					}
 					if ( '' !== $justify_content ) {
 						$gd[] = 'justify-content:' . esc_attr( $justify_content );
@@ -1047,8 +1445,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$gi[]        = '--sgs-gi-border:' . esc_attr( trim( $safe_border ) );
 				}
 				if ( '' !== $grid_item_shadow ) {
-					// T2.2b: same preset-or-raw routing as the outer shadow above.
-					$gi_shadow_value = sgs_shadow_value( $grid_item_shadow );
+					// T2.2b: same preset-or-raw routing as the outer shadow above —
+					// and, since 2026-08-20, the same SHAPE+colour composition, so
+					// GridItemDefaultsPanel's "Shadow colour" picker is a live control
+					// rather than a dead one. See the outer-shadow note above for the
+					// declared currentColor → rgba(0,0,0,0.1) default change.
+					$gi_shadow_value = sgs_shadow_value_composed( $grid_item_shadow, $grid_item_shadow_colour );
 					if ( '' !== $gi_shadow_value ) {
 						$gi[] = '--sgs-gi-shadow:' . $gi_shadow_value;
 					}
@@ -1087,6 +1489,70 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			$classes = array( 'sgs-container' );
 
+			// ----------------------------------------------------------------
+			// Global padding (the horizontal gutter) — WordPress core's own
+			// mechanism, re-adopted 2026-08-21 after a hand-rolled copy of it
+			// regressed every nested container.
+			//
+			// HISTORY, because the shape of this fix is only obvious with it:
+			// before 163f9fa7 (2026-07-16) these were `core/group` blocks with
+			// `layout:{"type":"constrained"}`. Core gave every constrained group
+			// `.has-global-padding`, which supplies the gutter from
+			// `--wp--style--root--padding-*` AND — critically — carries core's own
+			// nesting reset, so a constrained group inside a constrained group
+			// pays the gutter ONCE. That migration carried the max-width cap
+			// (`layout.constrained` -> `contentWidth`) across but NOT the gutter,
+			// so content rendered flush to the viewport edge. f9f4368b then fixed
+			// that symptom by giving EVERY container instance a 24px `padding`
+			// default — a PER-INSTANCE default has no nesting reset, so it
+			// compounded: measured live on /shop/ at 323px, 19 of 22 containers
+			// were nested and a product card sat at left:72px (3 x 24px) with only
+			// 165px of its 309px viewport left. The footer-links container was
+			// 48px wide with 48px of padding — zero content.
+			//
+			// So this is a RE-CONNECTION, not a new mechanism: core's four
+			// `.has-global-padding` rules were already shipped and live on the page
+			// with ZERO elements using them, and `--wp--style--root--padding-left`
+			// already computes to 1.5rem/24px — the very number f9f4368b hardcoded.
+			//
+			// GATE — `$has_band_props`, and no carve-out is needed:
+			//   * a real content band == the old constrained group -> gutter.
+			//   * `contentWidth:"full"` resolves to '' (see $sgs_resolve_content_width),
+			//     so the 5 full-bleed blocks that default it (site-header/-row,
+			//     site-footer/-row, physics-canvas) have no band and are excluded —
+			//     which is exactly how core excludes full-width from global padding.
+			//   * a caller that explicitly suppresses the band via
+			//     $opts['wrap_inner'] => false (hero-split, product-card) is left
+			//     byte-identical.
+			// Deliberately NOT gated on $do_wrap: the $container_queries and
+			// fx:horizontal-panel forces further down emit a band ELEMENT without
+			// band PROPS, i.e. no constrained cap, so they must not gain a gutter.
+			// ⛔ YES, THIS ASKS THE WRONG QUESTION — AND IT STAYS (D726, 2026-08-21).
+			// It asks "does this cap its content width?" and uses the answer to decide
+			// "should this have a side margin?" — two unrelated questions sharing one
+			// answer. That was raised as a defect during the one-cap-per-page work and
+			// examined properly rather than acted on. The OUTCOME is correct in every
+			// case that exists:
+			//   banded container   = page content -> must not touch the screen edge -> gutter
+			//   full-bleed container = structure (main / header-row / footer-row) -> no
+			//                          automatic indent, and it sets `padding` if it wants one
+			// That is the same rule Bean set for bare blocks in D725: opting out of the
+			// container behaviour IS the choice, and the padding control is still there.
+			// Searched for a counter-example live and found none — 0 footer/text nodes at
+			// the viewport edge on /shop/ at 500px.
+			//
+			// NOT changed because the fix is worse than the flaw: 28 blocks route through
+			// this file, three override the band guard via $opts['wrap_inner'], and it is
+			// a Rule 7 shared mechanism. Re-verifying header/footer/hero/card-grid/shop
+			// filters live buys a tidier conditional and zero visible change.
+			//
+			// REOPEN IT only on a real case: a container that needs a side margin its
+			// band-state will not give it, and cannot simply author `padding`. Until then
+			// this is settled — do not re-investigate it.
+			if ( $has_band_props && false !== $opt_wrap_inner ) {
+				$classes[] = 'has-global-padding';
+			}
+
 			// Composite block class (e.g. 'sgs-hero') is appended directly after the
 			// base class so composites carry both sgs-container + their own class.
 			if ( '' !== $opt_block_class ) {
@@ -1100,7 +1566,20 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				}
 			}
 
-			if ( '' !== $layout ) {
+			// The layout marker class. It is a SEMANTIC marker, not the styling hook —
+			// the real properties (display/wrap/direction) are emitted as a per-instance
+			// `.{uid}` rule under Spec 32's no-inline contract, never keyed on this class.
+			// Verified live: a flex container's display comes from
+			// `.sgs-container-50841e95 { display:flex; flex-wrap:nowrap }`, and NO rule
+			// anywhere keys `display` off `.sgs-container--flex`.
+			//
+			// Suppressed for a flow-mode <main> (2026-08-23): that element deliberately
+			// emits no display and stacks by block flow, so tagging it `--flex` would put
+			// a marker on the page that misdescribes its own element. Harmless to
+			// rendering — nothing consumes it — which is exactly why it is worth removing
+			// rather than leaving: an emitted-but-meaningless class is the shape that let
+			// `align` sit inert for months before it was measured.
+			if ( '' !== $layout && ! $suppress_outer_flex_for_main ) {
 				$classes[] = 'sgs-container--' . esc_attr( $layout );
 			}
 
@@ -1296,30 +1775,45 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// validated through sgs_css_gradient_value() — a non-empty valid
 				// gradient wins over the flat colour, matching how WP core and
 				// Kadence/Spectra/Otter all resolve colour-vs-gradient.
-				$overlay_gradient_value = sgs_css_gradient_value( $overlay_gradient );
-				$has_overlay_colour     = $overlay_colour || $overlay_gradient_value;
+				// D718 (2026-08-21): the EXISTENCE test IS the shared helper's return value.
+				// sgs_overlay_decls() yields '' when there is nothing to paint, so "is there an
+				// overlay?" and "what does it paint?" are ONE decision in ONE place. D717
+				// unified the declaration building but left this gating hand-written at both
+				// call sites, which is exactly how sgs/hero kept a divergent overlay policy
+				// through that change. hero now gates identically.
+				// D6/Step 8 (2026-08-22): blend mode joins the same call — one shared
+				// owner for the whole overlay declaration set, not a second emitter
+				// appended after this one (the exact gap D718 named and closed for
+				// opacity/existence; blend mode does not reopen it).
+				$overlay_decls_computed = sgs_overlay_decls( $overlay_colour, $overlay_gradient, $overlay_opacity, $overlay_blend_mode );
 
 				// UNGATED 2026-08-08 (Phase 1). This used to require `$has_any_bg &&`
 				// — a colour or gradient set with NO media rendered nothing at all,
 				// which is why a flat background colour was only reachable through
-				// WordPress's native Color panel. The colour layer is now the ONE
-				// background-colour concept: with media beneath it, a lowered alpha
-				// lets the image through and it reads as an overlay; with no media it
-				// simply IS the background. Same control, same attribute, one model.
-				if ( $has_overlay_colour ) {
-					// D5 (Background panel redesign, 2026-08-11): the separate
-					// opacity-percentage control is REMOVED — the colour/gradient
-					// picker's own alpha channel is the one place transparency is
-					// set now. `backgroundOverlayOpacity` no longer exists as an
-					// attribute (see block.json); do not reintroduce it here.
-					if ( $overlay_gradient_value ) {
-						$overlay_decls = 'background-image:' . $overlay_gradient_value;
-					} else {
-						$overlay_decls = sprintf(
-							'background-color:%s',
-							sgs_colour_value( $overlay_colour )
-						);
-					}
+				// WordPress's native Color panel.
+				//
+				// CORRECTED 2026-08-21 (D717). The rest of this comment used to claim the
+				// overlay "simply IS the background" when no media sits beneath it. That
+				// was true on 2026-08-08 and is NOT true now: `1905257e` gave every one of
+				// the eight blocks mounting <BackgroundPanel> its own separate
+				// `backgroundColour` base layer, declared AND rendered (verified per block
+				// 2026-08-21). This layer is an overlay and only an overlay — which is why
+				// it can carry a 30% default opacity without washing out a solid background.
+				if ( '' !== $overlay_decls_computed ) {
+					// D717 (2026-08-21) — SUPERSEDES D581's D5, which stood here as an
+					// explicit "do not reintroduce `backgroundOverlayOpacity`" prohibition.
+					// D5 was right that ONE transparency mechanism beats two; it picked the
+					// wrong one. The colour picker's alpha silently unlinks the client's
+					// brand token — DesignTokenPicker stores a palette slug only on exact
+					// string equality, so altering the alpha stores a raw hex instead — and
+					// that side effect was not known when D5 was made. Alpha is now off on
+					// that row and this is the one mechanism.
+					//
+					// The gradient-beats-colour resolution is no longer hand-rolled here:
+					// sgs_overlay_decls() owns the whole overlay declaration set, and
+					// sgs/hero's own `.sgs-hero__overlay` calls the same helper. Two
+					// drifting copies became one.
+					$overlay_decls = $overlay_decls_computed;
 					// No-inline contract (Spec 32): the overlay paint is emitted as a
 					// scoped `.{uid} .sgs-container__overlay` rule below — NOT inline on
 					// the span. safecss doesn't touch this raw-echoed span, but an inline
@@ -1433,16 +1927,49 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// no !important needed, source order alone lets the existing @media tier
 			// rules (below) win at narrower viewports.
 			// ----------------------------------------------------------------
-			$base_spacing_padding = array();
-			if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
+			// D555 (2026-08-10) — sgs/container migrated its BASE padding/margin off
+			// WP-native `supports.spacing` onto block-owned box-object attrs
+			// (`padding`/`margin`, shape { top, right, bottom, left } — same shape as
+			// the pre-existing `paddingTablet`/`paddingMobile` legacy siblings read
+			// below), because a WP-native support cannot carry a framework default and
+			// the block needed one (no horizontal gutter → flush-to-viewport-edge bug).
+			// ⛔ ADDITIVE ONLY — 37 other blocks still declare `supports.spacing` and
+			// rely on the native `style.spacing.padding`/`margin` read; that path is
+			// untouched below. Prefer the owned attr when the block actually declares
+			// it (non-empty), else fall back to native.
+			// FIXED 2026-09-06 (D976 follow-up): `$attributes['padding']` used to be
+			// misread here as a flat box on every block except the three flagged
+			// container_queries (which store it as a TIER object). Once sgs/container
+			// itself migrated `padding`/`margin` to the tier-object shape (Phase 2,
+			// 2026-09-06) that stopped being true, and the flat-box foreach loop below
+			// silently produced nothing for it (an array value fails is_string(),
+			// so every 'side' was dropped) — proven live via render_block(). Reuses
+			// $sgs_wrap_padding_tiers/$sgs_wrap_margin_tiers computed at ~:603 above,
+			// which already disambiguates flat-box vs tier-object vs absent BY DATA
+			// SHAPE — the container_queries flag is no longer needed as a gate here.
+			$owned_spacing_padding = array();
+			foreach ( ( is_array( $sgs_wrap_padding_tiers['desktop'] ) ? $sgs_wrap_padding_tiers['desktop'] : array() ) as $spacing_side => $spacing_value ) {
+				if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+					$owned_spacing_padding[ $spacing_side ] = $spacing_value;
+				}
+			}
+			$owned_spacing_margin = array();
+			foreach ( ( is_array( $sgs_wrap_margin_tiers['desktop'] ) ? $sgs_wrap_margin_tiers['desktop'] : array() ) as $spacing_side => $spacing_value ) {
+				if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+					$owned_spacing_margin[ $spacing_side ] = $spacing_value;
+				}
+			}
+
+			$base_spacing_padding = $owned_spacing_padding;
+			if ( empty( $base_spacing_padding ) && isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
 				foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
 					if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 						$base_spacing_padding[ $spacing_side ] = $spacing_value;
 					}
 				}
 			}
-			$base_spacing_margin = array();
-			if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+			$base_spacing_margin = $owned_spacing_margin;
+			if ( empty( $base_spacing_margin ) && isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
 				foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
 					if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 						$base_spacing_margin[ $spacing_side ] = $spacing_value;
@@ -1534,7 +2061,22 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| $sgs_needs_uid_object_tier( $attributes['gridTemplateColumns'] ?? null )
 				|| $sgs_needs_uid_object_tier( $attributes['gridTemplateRows'] ?? null )
 				|| $sgs_needs_uid_object_tier( $attributes['columns'] ?? null )
-				|| $sgs_needs_uid_object_tier( $attributes['contentBandPadding'] ?? null );
+				|| $sgs_needs_uid_object_tier( $attributes['contentBandPadding'] ?? null )
+				// Phase 2 fix (2026-09-06): on a block whose `padding`/`margin`
+				// has migrated to the tier-of-boxes shape (D555 + the Phase 2
+				// box-object migration — e.g. sgs/container, sgs/hero), these
+				// were never added here, so a block whose ONLY customisation
+				// was padding/margin never minted a uid and the correct
+				// tier-object CSS emitted further down (which only runs
+				// `if ($uid)`) silently never fired. `$owned_spacing_padding`/
+				// `$owned_spacing_margin` above does NOT cover this case either
+				// for such a block — it expects `{top,right,bottom,left}` keys
+				// and gets `{desktop,tablet,mobile}` instead, so it silently
+				// computes empty (it's still load-bearing for blocks that
+				// haven't migrated off native `style.spacing`, so it stays).
+				// See decisions.md for the D-number.
+				|| $sgs_needs_uid_object_tier( $attributes['padding'] ?? null )
+				|| $sgs_needs_uid_object_tier( $attributes['margin'] ?? null );
 
 			// uid also needed when parallax/ken-burns is active, bg-video is responsive,
 			// base padding/margin needs a scoped (non-inline) home, a base outer
@@ -1562,6 +2104,25 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// divider's height/colour (FR-32-1 — those were inline PROPERTY
 				// declarations, the more serious breach).
 				|| $has_bg_svg
+				// Phase 2 <img> LCP fast path: object-fit/object-position for the
+				// real <img> can ONLY ever be a scoped `.$uid > .sgs-container__image-bg`
+				// rule (Spec 32 no-inline contract forbids putting them on the tag).
+				// Without this clause a MINIMAL container — background image only,
+				// nothing else that would otherwise mint a uid — renders the <img>
+				// but never gets a uid, so the rule that sets its object-fit/
+				// object-position never emits and the browser silently falls back
+				// to this stylesheet's `object-fit:cover` / default centred position,
+				// discarding whatever the client actually configured.
+				|| ! empty( $sgs_bg_img_style_decls )
+				// Video background object-fit/object-position — same reasoning
+				// as the <img> LCP fast-path clause immediately above: a
+				// MINIMAL container with only a background video (nothing else
+				// that would otherwise mint a uid) must still get a uid, or the
+				// scoped rule that sets its object-fit/object-position never
+				// emits and the browser silently falls back to style.css's
+				// hardcoded `object-fit:cover` default, discarding whatever
+				// the client configured on the Video tab.
+				|| ! empty( $sgs_bg_video_style_decls )
 				|| ! empty( $shape_divider_decls )
 				// D345 Facet B: any remaining custom-property VALUES ($styles — the
 				// composite's extra_styles + ken-burns/svg/grid-item vars) also need a
@@ -1571,7 +2132,18 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// D636 border-gradient rollout (residual scope) — a grid-item gradient
 				// border is masked ::before CSS, which (like the shape-divider rules
 				// above) can only ever be a scoped .$uid rule, never inline.
-				|| '' !== $grid_item_border_gradient;
+				|| '' !== $grid_item_border_gradient
+				// Step 5a (phase-colour-conformance.md, 2026-08-22) — grid-item
+				// background/text-colour hover + gradient. Same reasoning as the
+				// border gradient immediately above: the declaration PROPERTY
+				// differs between solid and gradient, so it can only ever be a
+				// scoped .$uid rule.
+				|| '' !== $grid_item_background_hover
+				|| '' !== $grid_item_background_gradient
+				|| '' !== $grid_item_background_hover_gradient
+				|| '' !== $grid_item_text_colour_hover
+				|| '' !== $grid_item_text_colour_gradient
+				|| '' !== $grid_item_text_colour_hover_gradient;
 
 			$uid = '';
 			if ( $needs_uid ) {
@@ -1612,12 +2184,56 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$grid_item_border_width = function_exists( 'sgs_grid_border_parts' )
 					? sgs_grid_border_parts( $grid_item_border )['width']
 					: '';
-				$responsive_css .= sgs_border_gradient_css(
+				$responsive_css        .= sgs_border_gradient_css(
 					'.' . $uid . '.sgs-container--grid > .sgs-container',
 					$grid_item_border_gradient,
 					'' !== $grid_item_border_gradient_hover ? $grid_item_border_gradient_hover : null,
 					'' !== $grid_item_border_width ? $grid_item_border_width : '2px'
 				);
+			}
+
+			// Grid-item background hover/gradient (Step 5a, phase-colour-conformance.
+			// md, 2026-08-22). Resting `--sgs-gi-bg` stays the existing GLOBAL
+			// custom-property rule in style.css untouched — this only fires when a
+			// hover or gradient value is genuinely set, reusing
+			// sgs_background_paint_decl(), the SAME helper container's own root
+			// background row already calls.
+			if ( $uid && ( '' !== $grid_item_background_gradient || '' !== $grid_item_background_hover || '' !== $grid_item_background_hover_gradient ) ) {
+				$gi_bg_sel          = '.' . $uid . '.sgs-container--grid > .sgs-container';
+				$gi_bg_resting_decl = sgs_background_paint_decl( $grid_item_background, $grid_item_background_gradient );
+				if ( '' !== $gi_bg_resting_decl ) {
+					$responsive_css .= $gi_bg_sel . '{' . $gi_bg_resting_decl . ';}';
+				}
+				$gi_bg_hover_decl = sgs_background_paint_decl( $grid_item_background_hover, $grid_item_background_hover_gradient );
+				if ( '' !== $gi_bg_hover_decl ) {
+					$responsive_css .= sgs_hover_state_rules( $gi_bg_sel, $gi_bg_hover_decl . ';', ':focus-within' );
+				}
+			}
+
+			// Grid-item text-colour hover/gradient (Step 5a). Text needs
+			// background-clip:text for a gradient — a single custom property
+			// cannot express that — so this reuses sgs_resolve_text_colour_or_
+			// gradient() + sgs_text_colour_decl() + sgs_text_colour_gradient_
+			// fallback_rule(), the SAME three helpers container's own root text
+			// row already calls.
+			if ( $uid && ( '' !== $grid_item_text_colour_gradient || '' !== $grid_item_text_colour_hover || '' !== $grid_item_text_colour_hover_gradient ) ) {
+				$gi_text_sel     = '.' . $uid . '.sgs-container--grid > .sgs-container';
+				$gi_text_resting = sgs_resolve_text_colour_or_gradient( $grid_item_text_colour, $grid_item_text_colour_gradient );
+				if ( '' !== $gi_text_resting ) {
+					$gi_text_resting_decl = sgs_text_colour_decl( $gi_text_resting );
+					if ( '' !== $gi_text_resting_decl ) {
+						$responsive_css .= $gi_text_sel . '{' . $gi_text_resting_decl . ';}';
+						$responsive_css .= sgs_text_colour_gradient_fallback_rule( $gi_text_sel, $gi_text_resting );
+					}
+				}
+				$gi_text_hover = sgs_resolve_text_colour_or_gradient( $grid_item_text_colour_hover, $grid_item_text_colour_hover_gradient );
+				if ( '' !== $gi_text_hover ) {
+					$gi_text_hover_decl = sgs_text_colour_decl( $gi_text_hover );
+					if ( '' !== $gi_text_hover_decl ) {
+						$responsive_css .= sgs_hover_state_rules( $gi_text_sel, $gi_text_hover_decl . ';', ':focus-within' );
+						$responsive_css .= sgs_hover_media_wrap( sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $gi_text_sel . ':hover', $gi_text_hover ) );
+					}
+				}
 			}
 
 			// Grid/flex scoped-CSS selector — the __inner content band when
@@ -1631,7 +2247,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// below) so source order lets a narrower-viewport tier win without needing
 			// !important. wp_style_engine_get_styles() produces the same CSS WP's own
 			// style engine would have inlined, just scoped to .$uid instead.
-			if ( $has_base_spacing && $uid && function_exists( 'wp_style_engine_get_styles' ) ) {
+			if ( $has_base_spacing && $uid ) {
 				$base_spacing_style_args = array();
 				if ( ! empty( $base_spacing_padding ) ) {
 					$base_spacing_style_args['padding'] = $base_spacing_padding;
@@ -1668,6 +2284,17 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$responsive_css .= '.' . $uid . '{' . implode( ';', $base_outer_decls ) . '}';
 			}
 
+			// HOVER-state outer shadow colour (Rule 31, 2026-08-22) — same shape
+			// as the resting rule above, reusing the resting shadow SHAPE with the
+			// hover-state colour composed in. Emitted only when a hover colour is
+			// actually set, so a block never using the hover state adds no CSS.
+			if ( $shadow && $shadow_colour_hover && $uid ) {
+				$shadow_hover_value = sgs_shadow_value_composed( $shadow, $shadow_colour_hover );
+				if ( '' !== $shadow_hover_value ) {
+					$responsive_css .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );
+				}
+			}
+
 			// MEDIA LAYER scoped rule (Phase 1, 2026-08-08) — the background image
 			// paints on .{uid}::before, not on .{uid}, so `backgroundMediaOpacity`
 			// can dim the media WITHOUT dimming the section's own content. Built
@@ -1678,12 +2305,71 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$responsive_css .= '.' . $uid . '::before{' . implode( ';', $sgs_media_layer_decls ) . '}';
 			}
 
+			// <img> fast-path object-fit/object-position scoped rule (Phase 2 LCP,
+			// built further up alongside $sgs_bg_img_is_simple) — the real <img>
+			// sits directly inside .{uid} (see the final-assembly sprintf below),
+			// so this targets it as a direct child, matching the ::before media
+			// layer's box exactly (same object-fit/object-position semantics as
+			// that layer's background-size/background-position).
+			if ( $sgs_bg_img_style_decls && $uid ) {
+				$responsive_css .= '.' . $uid . ' > .sgs-container__image-bg{' . implode( ';', $sgs_bg_img_style_decls ) . '}';
+			}
+
+			// <video> background object-fit/object-position scoped rule — same
+			// direct-child selector shape as the <img> fast-path rule above
+			// (the video markup sits directly inside .{uid}, see the final-
+			// assembly sprintf near the end of render()). Closes the gap
+			// where a video background had no per-instance size/position at
+			// all (style.css's `.sgs-container__video-bg{object-fit:cover}`
+			// stays as the CSS fallback default for the (rare) no-uid case).
+			if ( $sgs_bg_video_style_decls && $uid ) {
+				$responsive_css .= '.' . $uid . ' > .sgs-container__video-bg{' . implode( ';', $sgs_bg_video_style_decls ) . '}';
+			}
+
 			// Overlay paint scoped rule (Spec 32 no-inline contract) — the bg overlay
 			// span's background/opacity, emitted on `.{uid} .sgs-container__overlay`
 			// instead of inline on the span. $overlay_decls is pre-sanitised
 			// (sgs_colour_value + esc_attr on the opacity/angle).
 			if ( '' !== $overlay_decls && $uid ) {
 				$responsive_css .= '.' . $uid . ' .sgs-container__overlay{' . $overlay_decls . '}';
+
+				// Overlay HOVER state (D6, 2026-08-22) — same shared owner
+				// (sgs_overlay_decls()), NOT a hand-rolled second emitter. Opacity
+				// and blend mode are deliberately not re-passed here: the base
+				// rule above already declared them, and the more specific
+				// `:hover`/`:focus-visible` selector only needs to override the
+				// properties that actually change — colour/gradient. Gated on the
+				// span existing at all (the `'' !== $overlay_decls` outer check):
+				// a hover-only value with no resting paint has nothing to select,
+				// matching D717/D718's "no colour set means no overlay" rule.
+				if ( '' !== $overlay_colour_hover || '' !== $overlay_gradient_hover ) {
+					$overlay_hover_paint = sgs_overlay_decls( $overlay_colour_hover, $overlay_gradient_hover );
+					if ( '' !== $overlay_hover_paint ) {
+						$responsive_css .= sgs_emit_state_colour_css(
+							'.' . $uid . ' .sgs-container__overlay',
+							array(),
+							array( $overlay_hover_paint )
+						);
+					}
+				}
+
+				// Overlay responsive TIERS (D739) — the tier axis is OPACITY, not colour.
+				// Project-standard 768/1024 breakpoints (tablet max-width:1023px, mobile
+				// max-width:767px). Emitted only when a tier explicitly overrides; an
+				// unset tier inherits the desktop rule by ordinary cascade.
+				//
+				// ONLY the opacity declaration is re-emitted, never the whole paint.
+				// Colour, gradient and blend mode are deliberately NOT per-tier, so
+				// restating them inside a @media block would create a SECOND owner for
+				// the same properties — and the tier rule would then silently outrank a
+				// later desktop edit at the same specificity. Two owners for one
+				// property is the defect, not the fix.
+				if ( null !== $overlay_opacity_tablet && '' !== $overlay_opacity_tablet ) {
+					$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_tablet / 100 ) . '}}';
+				}
+				if ( null !== $overlay_opacity_mobile && '' !== $overlay_opacity_mobile ) {
+					$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_mobile / 100 ) . '}}';
+				}
 			}
 
 			// Base content-band scoped rule (Spec 32, D293 no-inline contract) —
@@ -1764,7 +2450,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// always targets the actual grid/flex element (the __inner band
 			// when $grid_on_inner, else the outer .$uid); direct children only
 			// (>*) so it never reaches into a nested grid it shouldn't touch.
-			if ( $uid && ( 'grid' === $layout || 'flex' === $layout ) ) {
+			// Stack joins this (Task 1) — it is display:flex, so its children carry
+			// the exact same min-width:auto/min-height:auto shrink refusal as flex.
+			if ( $uid && ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) ) {
 				$responsive_css .= $grid_sel . '>*{min-width:0;min-height:0}';
 			}
 
@@ -1961,13 +2649,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						// ever being organic.
 						if ( $columns_tablet && '' === trim( (string) $grid_template_tablet ) ) {
 							$tablet_track    = $intrinsic_columns
-								? sgs_intrinsic_columns_track( absint( $columns_tablet ), sgs_container_tier_gap( $attributes, 'tablet' ) )
+								? sgs_intrinsic_columns_track( absint( $columns_tablet ), sgs_container_tier_gap( $attributes, 'tablet' ), sgs_container_tier_min_column_width( $attributes, 'tablet' ) )
 								: 'repeat(' . absint( $columns_tablet ) . ',1fr)';
 							$responsive_css .= '@media (max-width:1023px){' . $grid_sel . '{grid-template-columns:' . $tablet_track . '}}';
 						}
 						if ( $columns_mobile && '' === trim( (string) $grid_template_mobile ) ) {
 							$mobile_track    = $intrinsic_columns
-								? sgs_intrinsic_columns_track( absint( $columns_mobile ), sgs_container_tier_gap( $attributes, 'mobile' ) )
+								? sgs_intrinsic_columns_track( absint( $columns_mobile ), sgs_container_tier_gap( $attributes, 'mobile' ), sgs_container_tier_min_column_width( $attributes, 'mobile' ) )
 								: 'repeat(' . absint( $columns_mobile ) . ',1fr)';
 							$responsive_css .= '@media (max-width:767px){' . $grid_sel . '{grid-template-columns:' . $mobile_track . '}}';
 						}
@@ -2084,92 +2772,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			$svg_html = '';
 			if ( $has_bg_svg ) { // D6: universal, was section-only.
-				$allowed_svg_tags = array(
-					'svg'      => array(
-						'xmlns'               => true,
-						'viewbox'             => true,
-						'width'               => true,
-						'height'              => true,
-						'preserveaspectratio' => true,
-						'class'               => true,
-						'id'                  => true,
-					),
-					'g'        => array(
-						'transform' => true,
-						'class'     => true,
-						'id'        => true,
-					),
-					'path'     => array(
-						'd'            => true,
-						'fill'         => true,
-						'stroke'       => true,
-						'stroke-width' => true,
-						'class'        => true,
-					),
-					'circle'   => array(
-						'cx'     => true,
-						'cy'     => true,
-						'r'      => true,
-						'fill'   => true,
-						'stroke' => true,
-						'class'  => true,
-					),
-					'rect'     => array(
-						'x'      => true,
-						'y'      => true,
-						'width'  => true,
-						'height' => true,
-						'fill'   => true,
-						'stroke' => true,
-						'class'  => true,
-					),
-					'polygon'  => array(
-						'points' => true,
-						'fill'   => true,
-						'stroke' => true,
-						'class'  => true,
-					),
-					'polyline' => array(
-						'points' => true,
-						'fill'   => true,
-						'stroke' => true,
-						'class'  => true,
-					),
-					'line'     => array(
-						'x1'     => true,
-						'y1'     => true,
-						'x2'     => true,
-						'y2'     => true,
-						'stroke' => true,
-						'class'  => true,
-					),
-					'ellipse'  => array(
-						'cx'     => true,
-						'cy'     => true,
-						'rx'     => true,
-						'ry'     => true,
-						'fill'   => true,
-						'stroke' => true,
-						'class'  => true,
-					),
-					'text'     => array(
-						'x'           => true,
-						'y'           => true,
-						'fill'        => true,
-						'font-size'   => true,
-						'font-family' => true,
-						'class'       => true,
-					),
-					'defs'     => array(),
-					'style'    => array( 'type' => true ),
-					'animate'  => array(
-						'attributename' => true,
-						'from'          => true,
-						'to'            => true,
-						'dur'           => true,
-						'repeatcount'   => true,
-					),
-				);
+				// Shared wp_kses() allowlist - was an 86-line hand-rolled copy of
+				// sgs_allowed_svg_tags(), verified byte-equivalent as parsed data
+				// before collapsing (negative-controlled). Behaviour-neutral.
+				$allowed_svg_tags = sgs_allowed_svg_tags();
 
 				// FR-32-4 / D345: the opacity custom-property VALUE is scoped to the
 				// instance, never inline on the layer div. $uid is guaranteed here —
@@ -2328,6 +2934,89 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// old behaviour and changes no rendering; it removes an
 				// ambiguity. Keep container/edit.js's gapCssValue() in step.
 				$obj_inner_props = array();
+
+				/*
+				 * BAND (Layer 2) properties get their OWN selector — they must never
+				 * ride on $grid_sel.
+				 *
+				 * $grid_sel (defined ~:1779) is `.uid>.sgs-container__inner` ONLY when
+				 * $grid_on_inner is true, which requires the block's own SGS `layout`
+				 * attr to be grid/flex. It falls back to the bare `.uid` otherwise. That
+				 * is correct for Layer-3 grid/flex properties, and WRONG for a Layer-2
+				 * band property, which belongs on the band element whenever one renders —
+				 * regardless of layout. Routing band CSS through $grid_sel put the band's
+				 * max-width and centring onto the OUTER box of every container that has a
+				 * band but no SGS layout attr, which is the common case.
+				 *
+				 * Three live defects, all one bug, all measured on the canary /shop/:
+				 *   1. The outer carried the band's max-width, so a container's BACKGROUND
+				 *      was capped at content width instead of filling its own box —
+				 *      violating D-1. Title area: 1232px wide inside a 1309px viewport.
+				 *   2. The outer carried margin-inline:auto. An auto inline margin on a
+				 *      grid item DISABLES stretch (CSS Box Alignment 4.1), so the item
+				 *      shrink-to-fits: sgs-site-footer__links rendered 47.98px inside a
+				 *      340.909px track. Proven by forcing margin-inline:0 live — it jumped
+				 *      to exactly 340.909px, and `justify-self:stretch` had ZERO effect,
+				 *      which is the signature of auto margins winning over stretch.
+				 *      NOT an empty-content artefact: the same column with the word
+				 *      "Links" in it still reached only 111.59px of the 340.909px track.
+				 *   3. A stray centring margin on clusters whose contentWidth is 'full'.
+				 *
+				 * The correct band rule was ALREADY being emitted alongside these, so the
+				 * outer pair was a duplicate on the wrong layer, not the only copy —
+				 * which is why removing it loses nothing.
+				 *
+				 * Gate on $opt_wrap_inner rather than $do_wrap (computed later, ~:2766):
+				 * a caller that explicitly suppresses the band (hero-split, product-card,
+				 * `wrap_inner => false`) has NO band element, so its band CSS must stay on
+				 * the outer or it would address a node that does not exist.
+				 */
+				$obj_band_props = array();
+
+				/*
+				 * Which element the band CSS targets must follow whether the band
+				 * ELEMENT actually renders — not whether the caller asked for it.
+				 *
+				 * This mirrors $do_wrap (computed far below, ~:2890) exactly, because
+				 * keying on $opt_wrap_inner alone was WRONG in both directions, and a
+				 * post-ship council caught both:
+				 *
+				 *   a) $do_wrap is FORCED true for container-queries-with-grid/flex
+				 *      (~:2895) and for fx='horizontal-panel' (~:2920), and NEITHER
+				 *      force consults $opt_wrap_inner. So `wrap_inner => false` plus
+				 *      either force rendered a band element while band CSS still
+				 *      targeted the outer — the original bug, reintroduced on exactly
+				 *      that combination.
+				 *   b) $has_band_props tests the DESKTOP tier only (~:894), while
+				 *      $obj_band_props is populated from an is_array() check across ALL
+				 *      tiers. A contentWidth with desktop 'full' but a real tablet or
+				 *      mobile value therefore emitted a band rule for an element that
+				 *      never rendered — the cap silently doing nothing. Before this
+				 *      routing change that case landed on the outer: wrong layer, but
+				 *      at least visible. Falling back to the outer when no band renders
+				 *      keeps that behaviour rather than trading a visible bug for an
+				 *      invisible one.
+				 *
+				 * Neither path is reachable by any block shipping today (no block
+				 * combines wrap_inner with containerQueries or fx — grepped), so this
+				 * closes latent landmines, not live regressions. It is cheap to close
+				 * now and expensive to diagnose later, when the composite that trips it
+				 * will look like the thing at fault.
+				 */
+				$band_will_render = ( null !== $opt_wrap_inner )
+					? (bool) $opt_wrap_inner
+					: $has_band_props;
+				// Stack joins this (Task 1) — same two-layer forcing reason as the
+				// $grid_on_inner container-queries gate above.
+				if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) ) {
+					$band_will_render = true;
+				}
+				if ( 'horizontal-panel' === ( $attributes['fx'] ?? '' ) ) {
+					$band_will_render = true;
+				}
+				$band_obj_sel = $uid
+					? ( $band_will_render ? '.' . $uid . '>.sgs-container__inner' : '.' . $uid )
+					: '';
 				if ( isset( $attributes['gap'] ) && is_array( $attributes['gap'] ) ) {
 					$obj_inner_props[] = array(
 						'value'        => $attributes['gap'],
@@ -2342,7 +3031,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					);
 				}
 				if ( isset( $attributes['contentWidth'] ) && is_array( $attributes['contentWidth'] ) ) {
-					$obj_inner_props[] = array(
+					// BAND property (Layer 2) — routed to $band_obj_sel, NOT $grid_sel.
+					$obj_band_props[] = array(
 						'value'     => $attributes['contentWidth'],
 						'css'       => 'max-width',
 						// contentWidth tiers are TOKENS (normal/wide/full/literal); resolve
@@ -2534,6 +3224,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$responsive_css .= sgs_emit_responsive_css( $grid_sel, $obj_inner_props, array( 'container' => $container_queries ) );
 				}
 
+				// Band (Layer 2) tier rules — own selector, see the $band_obj_sel note above.
+				if ( $obj_band_props && '' !== $band_obj_sel ) {
+					$responsive_css .= sgs_emit_responsive_css( $band_obj_sel, $obj_band_props, array( 'container' => $container_queries ) );
+				}
+
 				// CENTRING — the second half of a width band, and the flat path's
 				// missing twin. A `max-width` alone does NOT centre: the leftover space
 				// has to be shared explicitly. EVERY flat-path width rule emits
@@ -2565,8 +3260,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// rule that an empty value is UNSET, and it would silently start
 				// centring if a width ever arrived from another source. So require a
 				// REAL tier value.
-				if ( '' !== $grid_sel && $sgs_tier_object_has_value( $attributes['contentWidth'] ?? null ) ) {
-					$responsive_css .= $grid_sel . '{margin-inline:auto}';
+				// Centring is a BAND property and follows $band_obj_sel, never $grid_sel
+				// — see the note at $band_obj_sel. On the outer it silently disabled
+				// grid-item stretch (defect 2 there).
+				if ( '' !== $band_obj_sel && $sgs_tier_object_has_value( $attributes['contentWidth'] ?? null ) ) {
+					$responsive_css .= $band_obj_sel . '{margin-inline:auto}';
 				}
 
 				// OUTER shadow — tier-capable (Spec 35 Phase 1.4b, STAGE 2). VERIFIED
@@ -2690,7 +3388,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Object model (Spec 37 FR-37-16): the __inner must render so the forced
 			// $grid_on_inner target (.uid>.sgs-container__inner) exists for the
 			// flex/grid + gap rules and the @container queries.
-			if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout ) ) {
+			// Stack joins this (Task 1) — same two-layer forcing reason as the
+			// $grid_on_inner container-queries gate above.
+			if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) ) {
 				$do_wrap = true;
 			}
 
@@ -2762,16 +3462,25 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 
 			// ----------------------------------------------------------------
-			// Final assembly — order mirrors container/render.php printf exactly:
-			// shape_top / video / overlay / svg_bg / [__inner] content [/__inner] / svg_fg / shape_bottom
+			// Final assembly — order:
+			// shape_top / bg_img / video / overlay / svg_bg / [__inner] content [/__inner] / svg_fg / shape_bottom
+			//
+			// $bg_img_html sits IMMEDIATELY BEFORE $video_html (Phase 2 LCP fast
+			// path, above) so today's z-order is preserved: a background video was
+			// already painting above a background image via the ::before layer's
+			// z-index, and the two are mutually exclusive per-block anyway
+			// ($has_bg_image && ! $has_bg_video gates the <img> path), so placing
+			// the image ahead of the video slot keeps that ordering intact for the
+			// (currently impossible) case either changes.
 			// ----------------------------------------------------------------
-			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- All variables pre-sanitised: $html_tag allowlisted, $wrapper_attributes from get_block_wrapper_attributes(), HTML vars built with esc_*/wp_kses(), $inner_html is caller-rendered blocks, $inner_open/$inner_close built with esc_attr().
+			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- All variables pre-sanitised: $html_tag allowlisted, $wrapper_attributes from get_block_wrapper_attributes(), HTML vars built with esc_*/wp_kses(), $inner_html is caller-rendered blocks, $inner_open/$inner_close built with esc_attr(), $bg_img_html built via sgs_responsive_image()/wp_get_attachment_image() (core-escaped).
 			$open_attrs = '' !== $opt_extra_attr_html ? $wrapper_attributes . ' ' . $opt_extra_attr_html : $wrapper_attributes;
 			$element    = sprintf(
-				'<%1$s %2$s>%3$s%4$s%5$s%6$s%7$s%8$s%9$s</%1$s>',
+				'<%1$s %2$s>%3$s%4$s%5$s%6$s%7$s%8$s%9$s%10$s</%1$s>',
 				$html_tag,
 				$open_attrs,
 				$shape_top_html,
+				$bg_img_html,
 				$video_html,
 				$overlay_html,
 				$svg_bg_html,

@@ -1,0 +1,62 @@
+/**
+ * SGS motion — surface treatment (Spec 38 Tier W, D479).
+ *
+ * The POSITIONING half of the effect. `src/shared/effects/webgl/renderer.js`
+ * appends a `<canvas class="sgs-webgl-surface">` as a sibling of the treated
+ * `<img>`, directly inside the element carrying `data-sgs-fx="surface-
+ * treatment"` (Spec 32: that module writes zero CSS property declarations —
+ * `canvas.style.*` never appears there, only this stylesheet positions it).
+ *
+ * The canvas must sit exactly over its sibling `<img>`, so the host element
+ * becomes the positioning context and the canvas fills it edge to edge.
+ */
+
+[data-sgs-fx="surface-treatment"] {
+	position: relative;
+}
+
+/*
+ * A BARE CLASS RULE, and that is now the correct shape — this is the NEGATIVE
+ * CONTROL for the 2026-08-25 child-lift de-specification.
+ *
+ * This selector used to be parent-scoped to `[data-sgs-fx="surface-treatment"]
+ * > .sgs-webgl-surface` purely defensively. Its own comment recorded why:
+ * `[data-sgs-cursor-field] > *` (fx-cursor-field.css) forced every direct child
+ * to `z-index: 1` at (0,1,0), and a surface-treatment host can ALSO be a
+ * cursor-field emitter (both are extension attributes on the same root, and
+ * nothing stops a block carrying both) — so an unqualified rule at the same
+ * (0,1,0) could lose that cascade fight on source order alone. Hand-raising
+ * this rule's specificity was the workaround. That made this the SEVENTH
+ * feature to work around the child-lift trap independently.
+ *
+ * Both child-lift rules are now `:where()`-wrapped at (0,0,0), so this bare
+ * class rule at (0,1,0) out-ranks them outright, in either source order. The
+ * workaround is therefore unnecessary, and REMOVING it is what proves the
+ * de-specification actually works rather than merely looking tidy. If a future
+ * change makes this rule lose again, the child-lift fix has regressed — fix it
+ * THERE, never by re-scoping this selector.
+ */
+.sgs-webgl-surface {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+	pointer-events: none;
+}
+
+/*
+ * No `@media (prefers-reduced-motion: reduce)` rule here, deliberately.
+ *
+ * Every other Tier V/G effect stylesheet in this directory gates something
+ * under reduced motion because those effects ANIMATE. This one draws exactly
+ * once (see `fx-surface-treatment.js`'s own docblock: `initSurface()` paints
+ * a single frame; the canvas only ever redraws on a debounced resize, never
+ * on a timer or scroll) and then sits as static as the plain `<img>` it
+ * covers. There is no motion for reduced-motion to suppress, and adding a
+ * gate that hid the canvas would silently give reduced-motion visitors a
+ * plain photo where every other visitor sees the designed grain/halftone/
+ * duotone finish — the "degrade to less content" failure this framework's
+ * design rules forbid. Do not add the gate back without re-litigating this
+ * comment and the matching one in the JS module.
+ */

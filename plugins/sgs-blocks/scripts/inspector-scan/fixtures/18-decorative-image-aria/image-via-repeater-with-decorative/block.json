@@ -1,0 +1,20 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/image-via-repeater-with-decorative",
+	"title": "Fixture: renders <img> per repeater item, item schema HAS a nested decorative field",
+	"category": "sgs",
+	"attributes": {
+		"logos": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"url": { "type": "string" },
+					"alt": { "type": "string" },
+					"decorative": { "type": "boolean", "default": false }
+				}
+			}
+		}
+	}
+}

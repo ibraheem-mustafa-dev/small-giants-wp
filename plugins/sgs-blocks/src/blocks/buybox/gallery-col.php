@@ -47,6 +47,20 @@ if ( ! isset( $buybox_thumbs_fx_attr ) ) {
 // Resolve width/height from the first gallery item for LCP <img> hint.
 $buybox_def_img_w = ( ! empty( $buybox_def_gallery[0]['w'] ) ) ? (int) $buybox_def_gallery[0]['w'] : 0;
 $buybox_def_img_h = ( ! empty( $buybox_def_gallery[0]['h'] ) ) ? (int) $buybox_def_gallery[0]['h'] : 0;
+
+// Media-atom marker classes (rule 37-media-no-handroll / block.json
+// supports.sgs.mediaElements 'main'/'thumb'). $uid is set by render.php
+// (step 8-gallery, before requiring this partial) and shared into this
+// file's scope via require(), same as every other render.php variable this
+// partial already reads ($buybox_def_gallery, $buybox_img_src, etc.).
+// Guarded so a request that somehow reaches this partial before the class
+// autoloads still renders with the plain 'product-card-img' class.
+$buybox_main_img_classes  = 'product-card-img';
+$buybox_thumb_img_classes = '';
+if ( ! empty( $uid ) && class_exists( 'SGS_Media_Element' ) ) {
+	$buybox_main_img_classes  .= ' ' . implode( ' ', SGS_Media_Element::element_classes( SGS_Media_Element::scope_class( $uid, 'main' ) ) );
+	$buybox_thumb_img_classes  = implode( ' ', SGS_Media_Element::element_classes( SGS_Media_Element::scope_class( $uid, 'thumb' ) ) );
+}
 ?>
 <?php // ── Main image (mirrors product-card L684-717 exactly, minus the optional permalink wrap). ?>
 <div
@@ -54,7 +68,7 @@ $buybox_def_img_h = ( ! empty( $buybox_def_gallery[0]['h'] ) ) ? (int) $buybox_d
 >
 <?php if ( '' !== $buybox_img_src ) : ?>
 	<img
-		class="product-card-img"
+		class="<?php echo esc_attr( $buybox_main_img_classes ); ?>"
 		src="<?php echo esc_url( $buybox_img_src ); ?>"
 		alt="<?php echo esc_attr( $buybox_img_alt ); ?>"
 		<?php echo $buybox_def_img_w > 0 ? 'width="' . esc_attr( (string) $buybox_def_img_w ) . '"' : ''; ?>
@@ -95,6 +109,7 @@ $buybox_def_img_h = ( ! empty( $buybox_def_gallery[0]['h'] ) ) ? (int) $buybox_d
 		aria-label="<?php echo $buybox_thumb_aria_label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr applied above. ?>"
 	>
 		<img
+			class="<?php echo esc_attr( $buybox_thumb_img_classes ); ?>"
 			src="<?php echo esc_url( $buybox_thumb['url'] ); ?>"
 			alt="<?php echo esc_attr( $buybox_thumb['alt'] ); ?>"
 			<?php echo $buybox_thumb['w'] > 0 ? 'width="' . esc_attr( (string) $buybox_thumb['w'] ) . '"' : ''; ?>

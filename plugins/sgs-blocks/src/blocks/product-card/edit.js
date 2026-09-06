@@ -14,6 +14,9 @@ import {
 	ResponsiveBorderRadiusControl,
 	LinkPopoverField,
 	SgsColourPanel,
+	SgsLengthControl,
+	SgsBorderControl,
+	MediaElementPanel,
 } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import {
@@ -33,8 +36,8 @@ import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import apiFetch from '@wordpress/api-fetch';
 import ServerSideRender from '@wordpress/server-side-render';
-import { BoxControl, NumberControl, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
-import { SGS_LENGTH_UNITS, sgsNormaliseLength } from '../../utils';
+import { BoxControl, NumberControl, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { SGS_LENGTH_UNITS, sgsNormaliseLength, resolveTextColourPreviewStyle } from '../../utils';
 
 /** Sentinel value for the "No product connected" option. */
 const TYPED_VALUE = '__typed__';
@@ -385,219 +388,272 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 		value ? `${ __( 'Live value:', 'sgs-blocks' ) } ${ value }` : undefined;
 
 	return (
-		<PanelBody
-			title={ __( 'Content overrides', 'sgs-blocks' ) }
-			initialOpen={ false }
-		>
-			<p style={ { marginTop: 0 } }>
+		<>
+			<p style={ { marginTop: 0, marginBottom: 16 } }>
 				{ __(
-					'Replace individual live product details with your own text. Switching an override off keeps your text for later. Price always comes from the product.',
-					'sgs-blocks'
+					"Replace individual live product details with your own text. Switching an override off keeps your text for later. Price always comes from the product.",
+					"sgs-blocks"
 				) }
 			</p>
-
-			{ /* Name */ }
-			<ToggleControl
-				label={ __( 'Override name', 'sgs-blocks' ) }
-				checked={ isOn( 'name' ) }
-				onChange={ ( on ) => toggle( 'name', on ) }
-				help={ ! isOn( 'name' ) ? liveHelp( liveName ) : undefined }
-				__nextHasNoMarginBottom
-			/>
-			{ isOn( 'name' ) && (
-				<TextControl
-					label={ __( 'Name', 'sgs-blocks' ) }
-					value={ attributes.productName || '' }
-					onChange={ ( v ) =>
-						setAttributes( { productName: v } )
-					}
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-			) }
-
-			{ /* Description */ }
-			<ToggleControl
-				label={ __( 'Override description', 'sgs-blocks' ) }
-				checked={ isOn( 'description' ) }
-				onChange={ ( on ) => toggle( 'description', on ) }
-				help={
-					! isOn( 'description' )
-						? liveHelp( liveDesc )
-						: undefined
+			<ToolsPanel
+				label={ __( "Content overrides", "sgs-blocks" ) }
+				resetAll={ () =>
+					setAttributes( {
+						overrideElements: [],
+						productName: "",
+						description: "",
+						trialTag: "",
+						featuredTag: "",
+						image: "",
+						imageId: 0,
+						imageAlt: "",
+						ctaText: "",
+						ctaUrl: "",
+					} )
 				}
-				__nextHasNoMarginBottom
-			/>
-			{ isOn( 'description' ) && (
-				<TextareaControl
-					label={ __( 'Description', 'sgs-blocks' ) }
-					value={ attributes.description || '' }
-					onChange={ ( v ) =>
-						setAttributes( { description: v } )
-					}
-					__nextHasNoMarginBottom
-				/>
-			) }
+			>
+				{ /* Name */ }
+				<ToolsPanelItem
+					label={ __( "Override name", "sgs-blocks" ) }
+					hasValue={ () => isOn( "name" ) }
+					onDeselect={ () => toggle( "name", false ) }
+					isShownByDefault
+				>
+					<ToggleControl
+						label={ __( "Override name", "sgs-blocks" ) }
+						checked={ isOn( "name" ) }
+						onChange={ ( on ) => toggle( "name", on ) }
+						help={ ! isOn( "name" ) ? liveHelp( liveName ) : undefined }
+						__nextHasNoMarginBottom
+					/>
+					{ isOn( "name" ) && (
+						<TextControl
+							label={ __( "Name", "sgs-blocks" ) }
+							value={ attributes.productName || "" }
+							onChange={ ( v ) =>
+								setAttributes( { productName: v } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+				</ToolsPanelItem>
 
-			{ /* Badge */ }
-			<ToggleControl
-				label={ __( 'Override badge', 'sgs-blocks' ) }
-				checked={ isOn( 'badge' ) }
-				onChange={ ( on ) => toggle( 'badge', on ) }
-				__nextHasNoMarginBottom
-			/>
-			{ isOn( 'badge' ) &&
-				( badgeApplies ? (
-					<TextControl
-						label={ __( 'Badge text', 'sgs-blocks' ) }
-						value={ attributes[ badgeAttr ] || '' }
-						onChange={ ( v ) =>
-							setAttributes( { [ badgeAttr ]: v } )
+				{ /* Description */ }
+				<ToolsPanelItem
+					label={ __( "Override description", "sgs-blocks" ) }
+					hasValue={ () => isOn( "description" ) }
+					onDeselect={ () => toggle( "description", false ) }
+					isShownByDefault
+				>
+					<ToggleControl
+						label={ __( "Override description", "sgs-blocks" ) }
+						checked={ isOn( "description" ) }
+						onChange={ ( on ) => toggle( "description", on ) }
+						help={
+							! isOn( "description" )
+								? liveHelp( liveDesc )
+								: undefined
 						}
 						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
-				) : (
-					<Notice status="info" isDismissible={ false }>
-						{ __(
-							'Badges show on the Trial and Featured variants. Choose one under Card.',
-							'sgs-blocks'
-						) }
-					</Notice>
-				) ) }
+					{ isOn( "description" ) && (
+						<TextareaControl
+							label={ __( "Description", "sgs-blocks" ) }
+							value={ attributes.description || "" }
+							onChange={ ( v ) =>
+								setAttributes( { description: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					) }
+				</ToolsPanelItem>
 
-			{ /* Image */ }
-			<ToggleControl
-				label={ __( 'Override image', 'sgs-blocks' ) }
-				checked={ isOn( 'image' ) }
-				onChange={ ( on ) => toggle( 'image', on ) }
-				help={ __(
-					'Sets the card’s default image. Variation photos still swap in when an option is selected.',
-					'sgs-blocks'
-				) }
-				__nextHasNoMarginBottom
-			/>
-			{ isOn( 'image' ) && (
-				<>
-					{ galleryImages.length > 0 && (
-						<div
-							style={ {
-								display: 'flex',
-								flexWrap: 'wrap',
-								gap: 8,
-								margin: '8px 0',
-							} }
-							aria-label={ __(
-								'Product gallery images',
-								'sgs-blocks'
+				{ /* Badge */ }
+				<ToolsPanelItem
+					label={ __( "Override badge", "sgs-blocks" ) }
+					hasValue={ () => isOn( "badge" ) }
+					onDeselect={ () => toggle( "badge", false ) }
+				>
+					<ToggleControl
+						label={ __( "Override badge", "sgs-blocks" ) }
+						checked={ isOn( "badge" ) }
+						onChange={ ( on ) => toggle( "badge", on ) }
+						__nextHasNoMarginBottom
+					/>
+					{ isOn( "badge" ) &&
+						( badgeApplies ? (
+							<TextControl
+								label={ __( "Badge text", "sgs-blocks" ) }
+								value={ attributes[ badgeAttr ] || "" }
+								onChange={ ( v ) =>
+									setAttributes( { [ badgeAttr ]: v } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) : (
+							<Notice status="info" isDismissible={ false }>
+								{ __(
+									"Badges show on the Trial and Featured variants. Choose one under Card.",
+									"sgs-blocks"
+								) }
+							</Notice>
+						) ) }
+				</ToolsPanelItem>
+
+				{ /* Image */ }
+				<ToolsPanelItem
+					label={ __( "Override image", "sgs-blocks" ) }
+					hasValue={ () => isOn( "image" ) }
+					onDeselect={ () => toggle( "image", false ) }
+					isShownByDefault
+				>
+					<ToggleControl
+						label={ __( "Override image", "sgs-blocks" ) }
+						checked={ isOn( "image" ) }
+						onChange={ ( on ) => toggle( "image", on ) }
+						help={ __(
+							'Sets the card’s default image. Variation photos still swap in when an option is selected.',
+							"sgs-blocks"
+						) }
+						__nextHasNoMarginBottom
+					/>
+					{ isOn( "image" ) && (
+						<>
+							{ galleryImages.length > 0 && (
+								<div
+									style={ {
+										display: "flex",
+										flexWrap: "wrap",
+										gap: 8,
+										margin: "8px 0",
+									} }
+									aria-label={ __(
+										"Product gallery images",
+										"sgs-blocks"
+									) }
+								>
+									{ galleryImages.map( ( img, i ) => (
+										<Button
+											key={ img.id || i }
+											onClick={ () =>
+												setAttributes( {
+													image: img.src,
+													// img is a WooCommerce REST product image object
+													// ({id,src,name,alt}) — img.id is a real WP
+													// attachment ID, not a synthetic gallery index.
+													imageId: img.id || 0,
+													imageAlt: img.alt || "",
+												} )
+											}
+											aria-label={ `${ __(
+												"Use gallery image",
+												"sgs-blocks"
+											) } ${ i + 1 }` }
+											style={ {
+												padding: 0,
+												width: 48,
+												height: 48,
+												minWidth: 44,
+												minHeight: 44,
+												overflow: "hidden",
+												borderRadius: 4,
+												border:
+													attributes.image === img.src
+														? "2px solid var(--wp-admin-theme-color, #007cba)"
+														: "2px solid transparent",
+											} }
+										>
+											<img
+												src={ img.src }
+												alt={ img.alt || "" }
+												style={ {
+													width: "100%",
+													height: "100%",
+													objectFit: "cover",
+												} }
+											/>
+										</Button>
+									) ) }
+								</div>
 							) }
-						>
-							{ galleryImages.map( ( img, i ) => (
-								<Button
-									key={ img.id || i }
-									onClick={ () =>
+							<MediaUploadCheck>
+								<MediaUpload
+									onSelect={ ( media ) =>
 										setAttributes( {
-											image: img.src,
-											imageAlt: img.alt || '',
+											image: media.url,
+											imageId: media.id || 0,
+											imageAlt: media.alt || "",
 										} )
 									}
-									aria-label={ `${ __(
-										'Use gallery image',
-										'sgs-blocks'
-									) } ${ i + 1 }` }
-									style={ {
-										padding: 0,
-										width: 48,
-										height: 48,
-										minWidth: 44,
-										minHeight: 44,
-										overflow: 'hidden',
-										borderRadius: 4,
-										border:
-											attributes.image === img.src
-												? '2px solid var(--wp-admin-theme-color, #007cba)'
-												: '2px solid transparent',
-									} }
-								>
-									<img
-										src={ img.src }
-										alt={ img.alt || '' }
-										style={ {
-											width: '100%',
-											height: '100%',
-											objectFit: 'cover',
-										} }
-									/>
-								</Button>
-							) ) }
-						</div>
-					) }
-					<MediaUploadCheck>
-						<MediaUpload
-							onSelect={ ( media ) =>
-								setAttributes( {
-									image: media.url,
-									imageAlt: media.alt || '',
-								} )
-							}
-							allowedTypes={ [ 'image' ] }
-							render={ ( { open } ) => (
-								<Button
-									variant="secondary"
-									onClick={ open }
-								>
-									{ __(
-										'Choose another image',
-										'sgs-blocks'
+									allowedTypes={ [ "image" ] }
+									render={ ( { open } ) => (
+										<Button
+											variant="secondary"
+											onClick={ open }
+										>
+											{ __(
+												"Choose another image",
+												"sgs-blocks"
+											) }
+										</Button>
 									) }
-								</Button>
-							) }
-						/>
-					</MediaUploadCheck>
-				</>
-			) }
-
-			{ /* CTA */ }
-			<ToggleControl
-				label={ __( 'Override button', 'sgs-blocks' ) }
-				checked={ isOn( 'cta' ) }
-				onChange={ ( on ) => toggle( 'cta', on ) }
-				__nextHasNoMarginBottom
-			/>
-			{ isOn( 'cta' ) && (
-				<>
-					<TextControl
-						label={ __( 'Button text', 'sgs-blocks' ) }
-						value={ attributes.ctaText || '' }
-						onChange={ ( v ) =>
-							setAttributes( { ctaText: v } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ ( ctaBehaviour || 'learn-more' ) ===
-					'learn-more' ? (
-						/* Spec 35 §2 LINK standard, searchOnly mode — ctaUrl
-						   is a bare string with no target/rel concept. */
-						<LinkPopoverField
-							label={ __( 'Button link', 'sgs-blocks' ) }
-							value={ attributes.ctaUrl || '' }
-							onChange={ ( url ) =>
-								setAttributes( { ctaUrl: url } )
-							}
-							searchOnly
-						/>
-					) : (
-						<Notice status="info" isDismissible={ false }>
-							{ __(
-								'Only the button text is overridable for basket buttons — the button keeps its basket action.',
-								'sgs-blocks'
-							) }
-						</Notice>
+								/>
+							</MediaUploadCheck>
+						</>
 					) }
-				</>
-			) }
-		</PanelBody>
+				</ToolsPanelItem>
+
+				{ /* CTA */ }
+				<ToolsPanelItem
+					label={ __( "Override button", "sgs-blocks" ) }
+					hasValue={ () => isOn( "cta" ) }
+					onDeselect={ () => toggle( "cta", false ) }
+					isShownByDefault
+				>
+					<ToggleControl
+						label={ __( "Override button", "sgs-blocks" ) }
+						checked={ isOn( "cta" ) }
+						onChange={ ( on ) => toggle( "cta", on ) }
+						__nextHasNoMarginBottom
+					/>
+					{ isOn( "cta" ) && (
+						<>
+							<TextControl
+								label={ __( "Button text", "sgs-blocks" ) }
+								value={ attributes.ctaText || "" }
+								onChange={ ( v ) =>
+									setAttributes( { ctaText: v } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							{ ( ctaBehaviour || "learn-more" ) ===
+							"learn-more" ? (
+								/* Spec 35 §2 LINK standard, searchOnly mode — ctaUrl
+								   is a bare string with no target/rel concept. */
+								<LinkPopoverField
+									label={ __( "Button link", "sgs-blocks" ) }
+									value={ attributes.ctaUrl || "" }
+									onChange={ ( url ) =>
+										setAttributes( { ctaUrl: url } )
+									}
+									searchOnly
+								/>
+							) : (
+								<Notice status="info" isDismissible={ false }>
+									{ __(
+										"Only the button text is overridable for basket buttons — the button keeps its basket action.",
+										"sgs-blocks"
+									) }
+								</Notice>
+							) }
+						</>
+					) }
+				</ToolsPanelItem>
+			</ToolsPanel>
+		</>
 	);
 }
 
@@ -615,6 +671,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		description,
 		image,
 		imageAlt,
+		imageDecorative,
 		packSizes,
 		priceLarge,
 		priceNote,
@@ -631,6 +688,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		pickerColourPreset,
 		pickerShowSelectedTick,
 		pickerPillBgColour,
+		pickerPillBgColourGradient,
 		pickerPillTextColour,
 		pickerPillBorderColour,
 		pickerPillBorderRadius,
@@ -639,16 +697,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		pickerPillSelectedBorderColour,
 		pickerPillSelectedBorderRadius,
 		titleColour,
+		titleColourGradient,
 		priceColour,
+		priceColourGradient,
 		descColour,
+		descColourGradient,
 		priceNoteColour,
+		priceNoteColourGradient,
 		// Built-in CTA styling (typed + bound share the same cta* attrs).
 		ctaColourBackground,
+		ctaColourBackgroundGradient,
 		ctaColourText,
+		ctaColourTextGradient,
 		ctaColourBorder,
 		ctaColourBorderGradient,
 		ctaColourBackgroundHover,
+		ctaColourBackgroundHoverGradient,
 		ctaColourTextHover,
+		ctaColourTextHoverGradient,
 		ctaColourBorderHover,
 		ctaColourBorderHoverGradient,
 		ctaBorderStyle,
@@ -659,6 +725,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		ctaPadding,
 		ctaWidthType,
 		cardPadding,
+		// Card root colour/border (R2c, B-3/B-8) — block-private, replaces the
+		// native style.color/__experimentalBorder path.
+		backgroundColour,
+		backgroundColourGradient,
+		backgroundColourHover,
+		backgroundColourHoverGradient,
+		textColour,
+		textColourGradient,
+		textColourHover,
+		textColourHoverGradient,
+		borderColour,
+		borderColourGradient,
+		borderWidth,
+		borderStyle,
 	} = attributes;
 
 	const isTrial = variantStyle === 'trial';
@@ -666,7 +746,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const isBound = sourceMode !== 'typed';
 
 	// Typed mode = the built-in element editor. The block has no InnerBlocks
-	// slot (legacy bridge retired 2026-07-04).
+	// slot.
 	const isBuiltIn = ! isBound;
 
 	// FP-H final unit: SINGLE shared /wc/v3/products/{id} fetch for the
@@ -714,33 +794,82 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		? cta2Style
 		: 'secondary';
 
-	// Typed-mode editor parity (no-inline migration): color/spacing/border supports
-	// are __experimentalSkipSerialization, so useBlockProps() no longer applies the
-	// WP-native colour/border to the editor wrapper. Bound mode uses ServerSideRender
-	// (already faithful to render.php's scoped <style> + re-added has-* classes), but
-	// the typed NATIVE preview must re-apply them here so the editor mirrors the
-	// frontend. Editor inline style is allowed for live preview (only the SAVED /
-	// dynamic-rendered frontend must be inline-free — this block is render.php-driven).
-	// Mirrors render.php's scoped emission + preset has-* class re-add exactly.
+	// Contrast check for border colour — warn if border fails WCAG AA contrast
+	// against the card's own background. When the background is a gradient,
+	// comparing against the flat colour would compare against a surface that
+	// isn't rendered — skip the check entirely in that case. The backgroundColour
+	// is used by render.php in both typed and bound modes.
+	const productCardContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
+
+	// Typed-mode editor parity (R2c, B-3/B-8): card root colour/border are now
+	// block-private attrs (not the native style.color/__experimentalBorder
+	// path), so useBlockProps() does not apply them to the editor wrapper.
+	// Bound mode uses ServerSideRender (already faithful to render.php's
+	// scoped <style>); the typed preview mirrors render.php's block-private
+	// colour/border emission here. Editor inline style is allowed for live
+	// preview (only the SAVED / dynamic-rendered frontend must be
+	// inline-free — this block is render.php-driven). Border-radius alone
+	// stays native (style.border.radius) — a corner-shape control, not a
+	// colour/paint decision.
+	const resolveCardColourPreview = ( value ) => {
+		if ( ! value ) {
+			return undefined;
+		}
+		const v = String( value ).trim();
+		return /^(var\(|#|rgb|hsl)/i.test( v ) ? v : `var(--wp--preset--color--${ v })`;
+	};
+	const cardBoxShorthand = ( box, keys ) => {
+		if ( ! box || 'object' !== typeof box ) return undefined;
+		if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+		return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+	};
 	const nativeStyle = attributes.style || {};
 	const typedPreviewStyle = {};
 	const typedPreviewClasses = [];
 	if ( ! isBound ) {
-		const nc = nativeStyle.color || {};
-		if ( nc.text ) typedPreviewStyle.color = nc.text;
-		if ( nc.background ) typedPreviewStyle.background = nc.background;
-		if ( nc.gradient ) typedPreviewStyle.background = nc.gradient;
-		const nb = nativeStyle.border || {};
-		if ( nb.color ) typedPreviewStyle.borderColor = nb.color;
-		if ( nb.style ) typedPreviewStyle.borderStyle = nb.style;
-		if ( nb.width ) typedPreviewStyle.borderWidth = nb.width;
-		if ( typeof nb.radius === 'string' && nb.radius ) {
-			typedPreviewStyle.borderRadius = nb.radius;
-		} else if ( nb.radius && typeof nb.radius === 'object' ) {
-			if ( nb.radius.topLeft ) typedPreviewStyle.borderTopLeftRadius = nb.radius.topLeft;
-			if ( nb.radius.topRight ) typedPreviewStyle.borderTopRightRadius = nb.radius.topRight;
-			if ( nb.radius.bottomLeft ) typedPreviewStyle.borderBottomLeftRadius = nb.radius.bottomLeft;
-			if ( nb.radius.bottomRight ) typedPreviewStyle.borderBottomRightRadius = nb.radius.bottomRight;
+		Object.assign(
+			typedPreviewStyle,
+			resolveTextColourPreviewStyle( textColour, textColourGradient, resolveCardColourPreview )
+		);
+		if (
+			backgroundColourGradient &&
+			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( backgroundColourGradient )
+		) {
+			typedPreviewStyle.backgroundImage = backgroundColourGradient;
+		} else if ( backgroundColour ) {
+			typedPreviewStyle.backgroundColor = resolveCardColourPreview( backgroundColour );
+		}
+		if ( borderStyle && 'none' !== borderStyle ) {
+			typedPreviewStyle.borderStyle = borderStyle;
+			const borderWidthPreview = cardBoxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+			if ( borderWidthPreview ) {
+				typedPreviewStyle.borderWidth = borderWidthPreview;
+			}
+			if (
+				borderColourGradient &&
+				/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient )
+			) {
+				// Canvas-only approximation of the frontend's masked ::before
+				// gradient ring — a flat border-image shorthand, not a full
+				// mask reproduction (not worth it for a preview).
+				typedPreviewStyle.borderImage = `${ borderColourGradient } 1`;
+			} else if ( borderColour ) {
+				typedPreviewStyle.borderColor = resolveCardColourPreview( borderColour );
+			}
+		}
+		if ( typeof nativeStyle?.border?.radius === 'string' && nativeStyle.border.radius ) {
+			typedPreviewStyle.borderRadius = nativeStyle.border.radius;
+		} else {
+			const radiusPreview = cardBoxShorthand(
+				nativeStyle?.border?.radius,
+				[ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ]
+			);
+			if ( radiusPreview ) {
+				typedPreviewStyle.borderRadius = radiusPreview;
+			}
 		}
 		// Preset (palette-slug) colours are class-based — mirror render.php's re-add.
 		if ( attributes.textColor ) {
@@ -758,27 +887,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	}
 
 	/*
-	 * Typed-mode CTA preview parity (2026-07-24 fix). The typed preview's CTA
-	 * is hand-authored JSX with no scoped <style> mechanism, so the cta* box
-	 * attrs (padding, border, radius, font, width) never reached it — a
-	 * client changing "CTA padding" in the BoxControl saw the frontend update
-	 * but the editor canvas stay static. Mirrors
-	 * includes/helpers-button-style.php sgs_button_element_style_css() (the
-	 * SAME emitter render.php calls for both typed and bound branches) so the
-	 * two paths stay in lockstep; resolvePcColour mirrors
+	 * Typed-mode CTA preview parity. The typed preview's CTA is hand-authored
+	 * JSX with no scoped <style> mechanism, so the cta* box attrs (padding,
+	 * border, radius, font, width) are applied here to mirror the frontend.
+	 * Mirrors includes/helpers-button-style.php sgs_button_element_style_css()
+	 * (the SAME emitter render.php calls for both typed and bound branches)
+	 * so the two paths stay in lockstep; resolvePcColour mirrors
 	 * includes/helpers-tokens.php sgs_colour_value()'s slug-vs-raw-value
 	 * branch. Hover/focus-visible declarations are NOT mirrored here — this
 	 * is a static (non-interactive) preview element with no :hover state to
 	 * drive, same as every other control in this typed preview.
 	 *
-	 * Extended 2026-07-24 to the text-colour attrs (titleColour/priceColour/
+	 * Also covers the text-colour attrs (titleColour/priceColour/
 	 * descColour/priceNoteColour) — render.php resolves each via the same
 	 * sgs_colour_value() branch and emits it as a scoped CSS custom property
-	 * (--sgs-card-title-colour etc., consumed by style.css); the typed
-	 * preview had inspector controls for these but never applied them, so a
-	 * client changing e.g. "Title colour" saw no change in the editor canvas.
-	 * resolvePcColour is the SAME resolver, renamed generically — the CTA
-	 * usage below is unchanged.
+	 * (--sgs-card-title-colour etc., consumed by style.css). resolvePcColour
+	 * is the SAME resolver, renamed generically — the CTA usage below is
+	 * unchanged.
 	 */
 	const resolvePcColour = ( value ) => {
 		if ( ! value ) {
@@ -794,10 +919,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const ctaPaddingBox = ctaPadding && typeof ctaPadding === 'object' ? ctaPadding : {};
 	const ctaHasPadding =
 		ctaPaddingBox.top || ctaPaddingBox.right || ctaPaddingBox.bottom || ctaPaddingBox.left;
-	// A2 box-object migration (2026-07-26): ctaBorderWidth/ctaBorderRadius are now
-	// {top,right,bottom,left} / {topLeft,topRight,bottomLeft,bottomRight} objects
-	// (mirrors sgs/button). boxShorthand mirrors button/edit.js's canvas-preview
-	// helper (contract §5) so the editor preview matches the frontend
+	// A2 — ctaBorderWidth/ctaBorderRadius are {top,right,bottom,left} /
+	// {topLeft,topRight,bottomLeft,bottomRight} objects (mirrors sgs/button).
+	// boxShorthand mirrors button/edit.js's canvas-preview helper (contract §5)
+	// so the editor preview matches the frontend
 	// (helpers-button-style.php's sgs_box_object_shorthand()).
 	const boxShorthand = ( box, keys ) => {
 		if ( ! box || 'object' !== typeof box ) return undefined;
@@ -829,11 +954,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	};
 
 	/*
-	 * Typed-mode CTA HOVER preview (2026-07-24 residual fix). ctaPreviewStyle
-	 * above covers RESTING state only — an inline style={} object cannot
-	 * express :hover, so a client setting ctaColourBackgroundHover /
-	 * ctaColourTextHover / ctaColourBorderHover never saw it in the editor
-	 * canvas even though render.php emits it via
+	 * Typed-mode CTA HOVER preview. ctaPreviewStyle above covers RESTING
+	 * state only — an inline style={} object cannot express :hover, so this
+	 * block renders the hover rule render.php emits via
 	 * sgs_button_element_style_css()'s hover/focus-visible rule (see
 	 * includes/helpers-button-style.php lines 138-174). Mirrors that rule
 	 * EXACTLY: same 3 properties (background-color/color/border-color), same
@@ -918,9 +1041,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// D618/D619 — ONE grouped, SGS-owned colour panel, rendered FIRST (mirrors
 	// button/edit.js + option-picker/edit.js). Rows group by CSS property, not
-	// by attribute name — every state (including the 3 CTA hover states that
-	// previously had NO inspector control at all, only preset-seeding) carries
-	// linked: true. Title/description/price/price-note text colours only apply
+	// by attribute name — every state carries linked: true.
+	// Title/description/price/price-note text colours only apply
 	// in typed built-in mode (bound mode draws these from the live product and
 	// shows a Notice instead — mirrors the isBuiltIn/isBound gating already on
 	// the Card style / Price style panels below). Tag background/text only
@@ -937,16 +1059,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// grouping (background/text/border, each Normal+Selected) since this
 	// block's pill controls forward 1:1 onto that same block.
 	const colourRows = [];
-	// Card background/text colour — the BLOCK-LEVEL native WP colour controls
-	// (was `supports.color.background`/`text`, now false so WP no longer
-	// renders its own duplicate panel), wired straight to
-	// `style.color.background`/`text`. Placed FIRST (whole-card controls,
-	// before the per-element rows below). render.php already reads these
-	// manually and unconditionally — lines ~239-243, wp_style_engine_get_styles(),
-	// scoped to the card's own `.{uid}` root selector — regardless of typed
-	// vs bound mode (confirmed: the read happens before the mode branch
-	// split), so this pair applies in BOTH modes, unlike the isBuiltIn-gated
-	// rows below.
+	// Card root background/text/border colour — R2c (B-3/B-8): block-private
+	// attrs, replacing the native style.color/__experimentalBorder path so
+	// the root box has ONE owner. Placed FIRST (whole-card controls, before
+	// the per-element rows below). render.php reads these unconditionally
+	// (block-private colour/border section, before the mode branch split),
+	// so this trio applies in BOTH typed and bound modes, unlike the
+	// isBuiltIn-gated rows below.
 	colourRows.push(
 		{
 			key: 'cardText',
@@ -955,15 +1074,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
-					value: nativeStyle?.color?.text,
-					onChange: ( val ) =>
-						setAttributes( {
-							style: {
-								...nativeStyle,
-								color: { ...nativeStyle?.color, text: val || undefined },
-							},
-						} ),
+					value: textColour,
+					onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
 					linked: true,
+					gradientValue: textColourGradient,
+					onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: textColourHover,
+					onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+					linked: true,
+					gradientValue: textColourHoverGradient,
+					onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
 				},
 			],
 		},
@@ -974,23 +1098,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
-					value: nativeStyle?.color?.background,
-					onChange: ( val ) =>
-						setAttributes( {
-							style: {
-								...nativeStyle,
-								color: { ...nativeStyle?.color, background: val || undefined },
-							},
-						} ),
+					value: backgroundColour,
+					onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
 					linked: true,
+					gradientValue: backgroundColourGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { backgroundColourGradient: val ?? '' } ),
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: backgroundColourHover,
+					onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+					linked: true,
+					gradientValue: backgroundColourHoverGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
 				},
 			],
-		}
+		},
 	);
 	if ( isBuiltIn ) {
 		colourRows.push( {
 			key: 'title',
 			label: __( 'Title colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -998,12 +1130,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: titleColour,
 					onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
 					linked: true,
+					gradientValue: titleColourGradient,
+					onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
 				},
 			],
 		} );
 		colourRows.push( {
 			key: 'description',
 			label: __( 'Description colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -1011,12 +1146,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: descColour,
 					onChange: ( val ) => setAttributes( { descColour: val ?? '' } ),
 					linked: true,
+					gradientValue: descColourGradient,
+					onGradientChange: ( val ) => setAttributes( { descColourGradient: val ?? '' } ),
 				},
 			],
 		} );
 		colourRows.push( {
 			key: 'price',
 			label: __( 'Price colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -1024,12 +1162,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: priceColour,
 					onChange: ( val ) => setAttributes( { priceColour: val ?? '' } ),
 					linked: true,
+					gradientValue: priceColourGradient,
+					onGradientChange: ( val ) => setAttributes( { priceColourGradient: val ?? '' } ),
 				},
 			],
 		} );
 		colourRows.push( {
 			key: 'priceNote',
 			label: __( 'Price note colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -1037,6 +1178,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: priceNoteColour,
 					onChange: ( val ) => setAttributes( { priceNoteColour: val ?? '' } ),
 					linked: true,
+					gradientValue: priceNoteColourGradient,
+					onGradientChange: ( val ) => setAttributes( { priceNoteColourGradient: val ?? '' } ),
 				},
 			],
 		} );
@@ -1052,12 +1195,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: attributes.tagBackgroundColour,
 					onChange: ( val ) => setAttributes( { tagBackgroundColour: val ?? '' } ),
 					linked: true,
+					gradientValue: attributes.tagBackgroundColourGradient,
+					onGradientChange: ( val ) => setAttributes( { tagBackgroundColourGradient: val ?? '' } ),
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: attributes.tagBackgroundColourHover,
+					onChange: ( val ) => setAttributes( { tagBackgroundColourHover: val ?? '' } ),
+					linked: true,
+					gradientValue: attributes.tagBackgroundColourHoverGradient,
+					onGradientChange: ( val ) => setAttributes( { tagBackgroundColourHoverGradient: val ?? '' } ),
 				},
 			],
 		} );
 		colourRows.push( {
 			key: 'tagText',
 			label: __( 'Tag text colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -1065,6 +1220,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: attributes.tagTextColour,
 					onChange: ( val ) => setAttributes( { tagTextColour: val ?? '' } ),
 					linked: true,
+					gradientValue: attributes.tagTextColourGradient,
+					onGradientChange: ( val ) => setAttributes( { tagTextColourGradient: val ?? '' } ),
 				},
 			],
 		} );
@@ -1080,6 +1237,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: ctaColourBackground,
 					onChange: ( val ) => setAttributes( { ctaColourBackground: val ?? '' } ),
 					linked: true,
+					gradientValue: ctaColourBackgroundGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { ctaColourBackgroundGradient: val ?? '' } ),
 				},
 				{
 					key: 'hover',
@@ -1087,12 +1247,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: ctaColourBackgroundHover,
 					onChange: ( val ) => setAttributes( { ctaColourBackgroundHover: val ?? '' } ),
 					linked: true,
+					gradientValue: ctaColourBackgroundHoverGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { ctaColourBackgroundHoverGradient: val ?? '' } ),
 				},
 			],
 		},
 		{
 			key: 'ctaText',
 			label: __( 'CTA text colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -1100,6 +1264,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: ctaColourText,
 					onChange: ( val ) => setAttributes( { ctaColourText: val ?? '' } ),
 					linked: true,
+					gradientValue: ctaColourTextGradient,
+					onGradientChange: ( val ) => setAttributes( { ctaColourTextGradient: val ?? '' } ),
 				},
 				{
 					key: 'hover',
@@ -1107,6 +1273,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: ctaColourTextHover,
 					onChange: ( val ) => setAttributes( { ctaColourTextHover: val ?? '' } ),
 					linked: true,
+					gradientValue: ctaColourTextHoverGradient,
+					onGradientChange: ( val ) => setAttributes( { ctaColourTextHoverGradient: val ?? '' } ),
 				},
 			],
 		},
@@ -1159,6 +1327,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: pickerPillBgColour,
 					onChange: ( val ) => setAttributes( { pickerPillBgColour: val ?? '' } ),
 					linked: true,
+					gradientValue: pickerPillBgColourGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { pickerPillBgColourGradient: val ?? '' } ),
 				},
 				{
 					key: 'selected',
@@ -1269,6 +1440,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
+							{ /* Typed mode only — a bound/live product photo is genuine
+							     shopping content and must never be hidden from
+							     assistive tech; this control only exists here,
+							     inside the isBuiltIn gate. */ }
+							<ToggleControl
+								label={ __( 'Product image is decorative', 'sgs-blocks' ) }
+								checked={ !! imageDecorative }
+								onChange={ ( val ) =>
+									setAttributes( { imageDecorative: val } )
+								}
+								help={ __(
+									'Turn on when this image is a visual/promotional tile rather than a real product photo — screen readers will skip it instead of reading the alt text.',
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+							/>
 							{ isTrial && (
 								<TextControl
 									label={ __( 'Trial tag text', 'sgs-blocks' ) }
@@ -1293,6 +1480,46 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							) }
 						</>
 					) }
+				</PanelBody>
+
+				{ /* ── Card border panel — R2c (B-3/B-8): width/style/colour are
+				     SGS custom attrs (borderWidth is an object, base only, no
+				     tiers; borderStyle + borderColour/Gradient are flat) — now
+				     ONE composite row (Task 0, 2026-08-27) mirroring native's
+				     BorderBoxControl layout (width, style, colour side by
+				     side) instead of style hiding inside the colour popover
+				     and width living in a separate panel. borderColour has no
+				     hover pair on this block (block.json declares none), so
+				     the colour slot uses the single-state form. Border-radius
+				     stays WP-native (style.border.radius) — the block declares
+				     __experimentalBorder.__experimentalSkipSerialization so it
+				     serialises scoped, not inline (mirrors sgs/heading + sgs/quote). ── */ }
+				<PanelBody title={ __( 'Card border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Card border colour', 'sgs-blocks' ) }
+						colourValue={ borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ borderColourGradient }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
+						colourLinked={ true }
+						contrastAgainst={ productCardContrastAgainst }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
+					/>
 				</PanelBody>
 
 				{ /* ── Price panel (typed built-in only) — content fields; typography +
@@ -1376,7 +1603,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								'What happens when the button is clicked in the live product card.',
 								'sgs-blocks'
 							) }
-							value={ ctaBehaviour || 'learn-more' }
+							value={ ctaBehaviour || "learn-more" }
 							options={ CTA_BEHAVIOUR_OPTIONS }
 							onChange={ ( v ) =>
 								setAttributes( { ctaBehaviour: v } )
@@ -1526,6 +1753,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							}
 							__nextHasNoMarginBottom
 						/>
+						<ToggleControl
+							label={ __(
+								'Show option pickers',
+								'sgs-blocks'
+							) }
+							help={ __(
+								'Off suppresses all option-picker renders (both variable-axis and non-variable pill paths) and falls through to the static From-price card appearance. Useful on collection grids where picker UI is unwanted.',
+								'sgs-blocks'
+							) }
+							checked={ attributes.showPickers !== false }
+							onChange={ ( v ) =>
+								setAttributes( { showPickers: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
 					</PanelBody>
 				) }
 
@@ -1584,11 +1826,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 							prefix="title"
+							showFontFamily
 						/>
 						<TypographyControls
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 							prefix="desc"
+							showFontFamily
 							showWeight={ false }
 							showStyle={ false }
 						/>
@@ -1621,18 +1865,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								     bare number is treated as px by render.php.
 								     Mirrors sgs/label — both feed the SAME shared
 								     sgs_label_box_css_rule() emitter. */ }
-								<UnitControl
+								<SgsLengthControl
 									label={ __( 'Tag border radius', 'sgs-blocks' ) }
 									value={ attributes.tagBorderRadius ?? '' }
 									units={ SGS_LENGTH_UNITS }
+									presets={ false }
 									onChange={ ( v ) =>
 										setAttributes( {
 											tagBorderRadius:
 												sgsNormaliseLength( v ),
 										} )
 									}
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
 								/>
 								<BoxControl
 									label={ __( 'Tag padding', 'sgs-blocks' ) }
@@ -1658,6 +1901,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 							prefix="price"
+							showFontFamily
 							showStyle={ false }
 							showLineHeight={ false }
 						/>
@@ -1665,6 +1909,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 							prefix="priceNote"
+							showFontFamily
 							showWeight={ false }
 							showStyle={ false }
 							showLineHeight={ false }
@@ -1734,10 +1979,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									? {
 											ctaColourBackground: preset.colourBackground,
 											ctaColourText: preset.colourText,
-											ctaColourBorder: preset.colourBorder,
+											ctaColourBorder: preset.borderColour,
 											ctaColourBackgroundHover: preset.colourBackgroundHover,
 											ctaColourTextHover: preset.colourTextHover,
-											ctaColourBorderHover: preset.colourBorderHover,
+											ctaColourBorderHover: preset.borderColourHover,
 											ctaBorderStyle: preset.borderStyle,
 											// A2 box-object migration: presets are uniform
 											// (all sides/corners equal), so a uniform-object
@@ -1815,13 +2060,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									ctaColourBackground:
 										preset.colourBackground,
 									ctaColourText: preset.colourText,
-									ctaColourBorder: preset.colourBorder,
+									ctaColourBorder: preset.borderColour,
 									ctaColourBackgroundHover:
 										preset.colourBackgroundHover,
 									ctaColourTextHover:
 										preset.colourTextHover,
 									ctaColourBorderHover:
-										preset.colourBorderHover,
+										preset.borderColourHover,
 									ctaBorderStyle: preset.borderStyle,
 									ctaBorderWidth: {
 										top: `${ preset.borderWidthTop }px`,
@@ -1843,6 +2088,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							{ __( 'Reset colours to preset', 'sgs-blocks' ) }
 						</Button>
 						<ToolsPanel
+							className="sgs-nested-tools-panel"
 							label={ __( 'CTA Button Style', 'sgs-blocks' ) }
 							resetAll={ () =>
 								setAttributes( {
@@ -1859,7 +2105,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										bottomLeft: '10px',
 										bottomRight: '10px',
 									},
-									ctaFontSize: null,
+									ctaFontSize: undefined,
 									ctaPadding: {},
 									ctaColourBackground: '',
 									ctaColourText: '',
@@ -1925,6 +2171,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							>
 								<ResponsiveBoxControl
 									label={ __( 'Border width', 'sgs-blocks' ) }
+									presets={ [ '10', '20', '30' ] }
 									values={ { base: ctaBorderWidth ?? {} } }
 									showResponsive={ false }
 									onChange={ ( _tier, next ) =>
@@ -1970,7 +2217,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									ctaFontSize !== undefined
 								}
 								onDeselect={ () =>
-									setAttributes( { ctaFontSize: null } )
+									setAttributes( { ctaFontSize: undefined } )
 								}
 							>
 								<NumberControl
@@ -2045,6 +2292,36 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ /* Media-element atom controls (rule 37-media-no-handroll).
+					     'main' governs every render branch's main product image
+					     (typed, bound read-only, bound variable-configurator —
+					     they never render simultaneously, so ONE control is
+					     correct per R-31-9). 'thumb' governs only the bound
+					     variable-configurator's thumbnail-rail images, a
+					     distinct element with its own 48x48 box. Mirrors
+					     sgs/before-after's + sgs/buybox's independently-scoped
+					     per-element panels. */ }
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="main"
+						blockSlug="sgs/product-card"
+						insertion="element"
+						atoms={ [ 'object-fit', 'focal-point' ] }
+						mediaType="image"
+						scope="element"
+						previewUrl={ image }
+					/>
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="thumb"
+						blockSlug="sgs/product-card"
+						insertion="element"
+						atoms={ [ 'object-fit' ] }
+						mediaType="image"
+						scope="element"
+					/>
 				</PanelBody>
 
 				{ /* ── Picker style panel (R4 — pill-style forwarding to every
@@ -2062,6 +2339,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							) }
 						</p>
 						<ToolsPanel
+							className="sgs-nested-tools-panel"
 							label={ __( 'Picker style', 'sgs-blocks' ) }
 							resetAll={ () =>
 								setAttributes( {
@@ -2070,6 +2348,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									pickerColourPreset: 'solid',
 									pickerShowSelectedTick: true,
 									pickerPillBgColour: '',
+									pickerPillBgColourGradient: '',
 									pickerPillTextColour: '',
 									pickerPillBorderColour: '',
 									pickerPillBorderRadius: '',
@@ -2153,14 +2432,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									setAttributes( { pickerPillBorderRadius: '' } )
 								}
 							>
-								<UnitControl
+								<SgsLengthControl
+									presets={ false }
 									label={ __( 'Pill border radius', 'sgs-blocks' ) }
 									value={ pickerPillBorderRadius || '' }
 									units={ PICKER_RADIUS_UNITS }
 									onChange={ ( v ) => setAttributes( { pickerPillBorderRadius: v ?? '' } ) }
 									help={ __( 'CSS length, e.g. 6px. Blank = default; 0 = square.', 'sgs-blocks' ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
@@ -2170,14 +2448,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									setAttributes( { pickerPillSelectedBorderRadius: '' } )
 								}
 							>
-								<UnitControl
+								<SgsLengthControl
+									presets={ false }
 									label={ __( 'Selected pill border radius', 'sgs-blocks' ) }
 									value={ pickerPillSelectedBorderRadius || '' }
 									units={ PICKER_RADIUS_UNITS }
 									onChange={ ( v ) => setAttributes( { pickerPillSelectedBorderRadius: v ?? '' } ) }
 									help={ __( 'Blank = match resting radius; 0 = square.', 'sgs-blocks' ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 						</ToolsPanel>
@@ -2215,23 +2492,67 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									display: 'block',
 								} }
 							/>
-							<Button
-								isDestructive
-								isSmall
+							{ /* D787 — a broken/mismatched image (exactly how a freshly
+							     cloned card lands) previously left only a destructive
+							     "Remove image" button here; a client had to DELETE the
+							     value before the MediaPlaceholder picker (in the else
+							     branch below) reappeared. "Replace image" mounts the
+							     same picker inline so a client can swap the image
+							     without first destroying it. */ }
+							<div
 								style={ {
 									position: 'absolute',
 									top: 8,
 									right: 8,
+									display: 'flex',
+									gap: '4px',
 								} }
-								onClick={ () =>
-									setAttributes( {
-										image: '',
-										imageAlt: '',
-									} )
-								}
 							>
-								{ __( 'Remove image', 'sgs-blocks' ) }
-							</Button>
+								<MediaUploadCheck>
+									<MediaUpload
+										onSelect={ ( media ) =>
+											setAttributes( {
+												image: media.url,
+												imageId: media.id || 0,
+												imageAlt: media.alt || '',
+											} )
+										}
+										allowedTypes={ [ 'image' ] }
+										render={ ( { open } ) => (
+											<Button
+												variant="secondary"
+												onClick={ open }
+												style={ {
+													minHeight: '44px',
+													minWidth: '44px',
+												} }
+											>
+												{ __(
+													'Replace image',
+													'sgs-blocks'
+												) }
+											</Button>
+										) }
+									/>
+								</MediaUploadCheck>
+								<Button
+									isDestructive
+									variant="secondary"
+									style={ {
+										minHeight: '44px',
+										minWidth: '44px',
+									} }
+									onClick={ () =>
+										setAttributes( {
+											image: '',
+											imageId: 0,
+											imageAlt: '',
+										} )
+									}
+								>
+									{ __( 'Remove image', 'sgs-blocks' ) }
+								</Button>
+							</div>
 						</div>
 					) : (
 						<MediaUploadCheck>
@@ -2243,6 +2564,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onSelect={ ( media ) =>
 									setAttributes( {
 										image: media.url,
+										imageId: media.id || 0,
 										imageAlt: media.alt || '',
 									} )
 								}
@@ -2263,9 +2585,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<span
 								className="sgs-product-card__tag sgs-product-card__tag--trial"
 								style={ {
-									color: resolvePcColour( attributes.tagTextColour ),
 									backgroundColor: resolvePcColour(
 										attributes.tagBackgroundColour
+									),
+									...resolveTextColourPreviewStyle(
+										attributes.tagTextColour,
+										attributes.tagTextColourGradient,
+										resolvePcColour
 									),
 								} }
 							>

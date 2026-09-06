@@ -71,6 +71,10 @@
 .sgs-accordion-item[open] > summary > .sgs-accordion-item__header {
 	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
 	color: var(--wp--preset--color--primary, #0f7e80);
+	/* Rule 43 (WCAG 1.4.1): open state must not rely on colour alone — the
+	 * base header is already font-weight:600 (line 42), so the open state
+	 * steps up to 700 as the non-colour signal. */
+	font-weight: 700;
 }
 
 /* :focus-visible ring */

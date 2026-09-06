@@ -10,14 +10,9 @@ import {
 	ToggleControl,
 	Notice,
 } from '@wordpress/components';
-import {
-	IconPicker,
-	IconPreview,
-	ResponsiveBoxControl,
-	SgsColourPanel,
-} from '../../components';
+import { IconPicker, IconPreview, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar } from '../../utils';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 // Box-object interface contract — length units for the kept-scalar maxWidth
 // attr (base only, matches the pre-existing attribute set). contentWidth was
@@ -28,6 +23,17 @@ const LENGTH_UNITS = [
 	{ value: 'rem', label: 'rem' },
 	{ value: 'em', label: 'em' },
 	{ value: '%', label: '%' },
+];
+
+// Block-private text-align (replaces the retired native
+// supports.typography.textAlign — D971/D972 full-replacement track; mirrors
+// sgs/text's canonical bare-attribute pattern).
+const TEXT_ALIGN_OPTIONS = [
+	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
+	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
 ];
 
 const DISPLAY_MODE_OPTIONS = [
@@ -114,14 +120,14 @@ function boxShorthand( box, keys ) {
 // and carries zero inline declarations — this inline style exists only for
 // the live editor preview, same exception documented in sgs/quote's edit.js.
 function buildWrapperStyle( attributes ) {
-	const { style, maxWidth } = attributes;
+	const { padding, margin, maxWidth } = attributes;
 	const wrapperStyle = {};
 
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}
@@ -134,33 +140,47 @@ function buildWrapperStyle( attributes ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		style,
 		variant,
 		showIcon,
 		iconSource,
 		iconColour,
+		iconColourHover,
 		iconColourGradient,
+		iconColourHoverGradient,
 		displayMode,
 		stickyPosition,
 		dismissible,
 		dismissBehaviour,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		maxWidth,
+		backgroundColour,
+		backgroundColourGradient,
+		textAlign,
 	} = attributes;
 
 	const isAnnouncement = 'announcement' === displayMode;
+
+	// Mirrors render.php's own allowlist exactly (left/center/right only —
+	// 'justify' is not a valid has-text-align-* class) so the editor canvas
+	// shows the same class the frontend emits.
+	const canvasTextAlign = [ 'left', 'center', 'right' ].includes( textAlign ) ? textAlign : '';
 
 	const className = [
 		'sgs-notice-banner',
 		`sgs-notice-banner--${ variant }`,
 		isAnnouncement ? 'sgs-notice-banner--announcement' : '',
 		isAnnouncement ? `sgs-notice-banner--sticky-${ stickyPosition }` : '',
+		canvasTextAlign ? `has-text-align-${ canvasTextAlign }` : '',
 	]
 		.filter( Boolean )
 		.join( ' ' );
+
+	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
+	// against the notice-banner's own background. When the background is a gradient,
+	// the flat backgroundColour is not rendered, so skip the check in that case.
+	const noticeBannerContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
 
 	const blockProps = useBlockProps( {
 		className,
@@ -178,55 +198,42 @@ export default function Edit( { attributes, setAttributes } ) {
 			   sits at the top of the inspector (Styles tab). Replaces the
 			   inline "Icon colour" DesignTokenPicker that used to sit inside
 			   the "Icon" ToolsPanelItem below. "Text colour" + "Background
-			   colour" are the BLOCK-LEVEL native WP colour controls (was
-			   `supports.color.text`/`background`, now false so WP no longer
-			   renders its own duplicate panel) — wired straight to
-			   `style.color.text`/`background`, which render.php already
-			   reads manually (lines ~172-174, wp_style_engine_get_styles(),
-			   scoped to the root `.sgs-notice-banner` selector) — a real
-			   working control, not dead plumbing. Single-state (no hover
-			   pair exists for either in render.php). iconColour stays
-			   single-state too — no hover counterpart. */ }
+			   colour" are now BLOCK-PRIVATE attributes (native
+			   `supports.color` is fully false — WP no longer renders its own
+			   colour panel or writes to core's `style.color.*` storage)
+			   built via the shared five-variant colour helpers (`fillRow`/
+			   `textRow`) — render.php reads the same attrs through the
+			   matching PHP-side emitters (`sgs_fill_decls`/`sgs_text_decls`).
+			   Both rows support a base + hover state and a gradient sibling.
+			   iconColour now does too (2026-09-06) — its gradient sibling
+			   was single-state until this fix, despite the flat colour
+			   already being two-state. */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					textRow( {
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: style?.color?.text,
-								onChange: ( val ) =>
-									setAttributes( {
-										style: {
-											...style,
-											color: { ...style?.color, text: val || undefined },
-										},
-									} ),
-								linked: true,
-							},
-						],
-					},
-					{
+						attrs: {
+							base: 'textColour',
+							hover: 'textColourHover',
+							gradient: 'textColourGradient',
+							hoverGradient: 'textColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+					fillRow( {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: style?.color?.background,
-								onChange: ( val ) =>
-									setAttributes( {
-										style: {
-											...style,
-											color: { ...style?.color, background: val || undefined },
-										},
-									} ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'iconColour',
 						label: __( 'Icon colour', 'sgs-blocks' ),
@@ -241,60 +248,21 @@ export default function Edit( { attributes, setAttributes } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { iconColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: iconColourHover,
+								onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: iconColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconColourHoverGradient: val ?? '' } ),
+							},
 						],
 					},
 				] }
 			/>
 			<InspectorControls>
-				{ /* NO-INLINE + NO-WRAPPER (2026-07-10): content-KIND, box+width only —
-				     dropped SGS_Container_Wrapper (D294) in favour of block-private
-				     scoped output (matches sgs/quote). Padding/margin route to the
-				     WP-native style.spacing.* object (base) + custom Tablet/Mobile
-				     box-object tiers; only shown in inline mode — announcement mode
-				     is always full-width + fixed. */ }
-				{ ! isAnnouncement && (
-					<PanelBody title={ __( 'Wrapper', 'sgs-blocks' ) } initialOpen={ false }>
-						<UnitControl
-							label={ __( 'Outer max-width', 'sgs-blocks' ) }
-							value={ maxWidth || '' }
-							units={ LENGTH_UNITS }
-							onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
-							help={ __( 'Exact CSS length, e.g. 800px. Leave blank for no cap.', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-						<ResponsiveBoxControl
-							label={ __( 'Padding', 'sgs-blocks' ) }
-							values={ {
-								base: style?.spacing?.padding ?? {},
-								tablet: paddingTablet ?? {},
-								mobile: paddingMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								if ( 'base' === tier ) {
-									setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-								} else {
-									setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-								}
-							} }
-						/>
-						<ResponsiveBoxControl
-							label={ __( 'Margin', 'sgs-blocks' ) }
-							values={ {
-								base: style?.spacing?.margin ?? {},
-								tablet: marginTablet ?? {},
-								mobile: marginMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								if ( 'base' === tier ) {
-									setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-								} else {
-									setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-								}
-							} }
-						/>
-					</PanelBody>
-				) }
 				{ /* Outer PanelBody removed 2026-08-13 — it duplicated this
 				   ToolsPanel's own "Banner settings" title with no
 				   initialOpen, so the client saw the same words twice for
@@ -465,6 +433,120 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ToolsPanel>
 			</InspectorControls>
 
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				{ /* Typography — replaces the old WP-native supports.typography
+				   (fontSize/lineHeight/fontStyle/textAlign) with the shared
+				   TypographyControls component + sgs_typography_css_rule()
+				   render.php helper (D971/D972 full-replacement track). Root
+				   prefix "" — this block's text is a child sgs/text
+				   InnerBlock (FR-22-6), so this paints an INHERITABLE default
+				   on the wrapper (HC2's explicit native-typography carve-out),
+				   never a per-element override on the child. textAlign is a
+				   block-private bare attribute (mirrors sgs/text's canonical
+				   pattern) rather than native — the full-replacement rule
+				   (rule 45) flags ANY declared supports.typography sub-key,
+				   so textAlign moved off the native mechanism too, driving
+				   the same has-text-align-* class render.php already emits.
+				   D812 (2026-08-26): a 5-option enum with longest rendered
+				   label <=12 chars ("— inherit —", 11 chars) renders as
+				   ToggleGroupControl, not SelectControl. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<ToggleGroupControl
+						label={ __( 'Text align', 'sgs-blocks' ) }
+						value={ textAlign }
+						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						{ TEXT_ALIGN_OPTIONS.map( ( option ) => (
+							<ToggleGroupControlOption
+								key={ option.value }
+								value={ option.value }
+								label={ option.label }
+							/>
+						) ) }
+					</ToggleGroupControl>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+					/>
+				</PanelBody>
+				{ /* NO-INLINE + NO-WRAPPER (2026-07-10): content-KIND, box+width only —
+				     dropped SGS_Container_Wrapper (D294) in favour of block-private
+				     scoped output (matches sgs/quote). padding/margin are each a
+				     single block-owned tier-object attr { desktop, tablet, mobile },
+				     read directly by this block's render.php; only shown in inline
+				     mode — announcement mode is always full-width + fixed. */ }
+				{ ! isAnnouncement && (
+					<PanelBody title={ __( 'Wrapper', 'sgs-blocks' ) } initialOpen={ false }>
+						<SgsLengthControl
+							presets={ false }
+							label={ __( 'Outer max-width', 'sgs-blocks' ) }
+							value={ maxWidth || '' }
+							units={ LENGTH_UNITS }
+							onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
+							help={ __( 'Exact CSS length, e.g. 800px. Leave blank for no cap.', 'sgs-blocks' ) }
+						/>
+						<ResponsiveOverride
+							value={ attributes.padding }
+							onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<SgsBoxControl
+									label={ __( 'Padding', 'sgs-blocks' ) }
+									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+									units={ BOX_UNITS }
+									presets
+									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								/>
+							) }
+						</ResponsiveOverride>
+						<ResponsiveOverride
+							value={ attributes.margin }
+							onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<SgsBoxControl
+									label={ __( 'Margin', 'sgs-blocks' ) }
+									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+									units={ BOX_UNITS }
+									presets
+									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								/>
+							) }
+						</ResponsiveOverride>
+					</PanelBody>
+				) }
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						contrastAgainst={ noticeBannerContrastAgainst }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
 			{ /* FR-22-6: the notice text is now an InnerBlocks child (sgs/text).
 			     The wrapper div carries the variant class + role="note".
 			     In announcement mode we use role="banner" (a landmark, one per page);
@@ -476,7 +558,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						aria-hidden="true"
 						style={ iconColour ? { color: colourVar( iconColour ) } : undefined }
 					>
-						<IconPreview source={ resolved.source } name={ resolved.name } size={ 20 } />
+						<IconPreview source={ resolved.source } name={ resolved.name } size={ 20 } gradient={ iconColourGradient } />
 					</span>
 				) }
 				<div { ...innerBlocksProps } />

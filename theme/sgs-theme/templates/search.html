@@ -1,19 +1,33 @@
+<!-- SEARCH EMPTY STATE — recovery routes. Only "/" is hardcoded, because it is the
+     one URL valid on EVERY site this theme ships to. A "/blog/" button was added and
+     removed on 2026-08-23: it returned HTTP 404 on the canary, which put a dead link
+     on the one page whose whole job is recovering from a dead link. "/shop/" was
+     removed for the same class of reason — the theme functions fully without
+     WooCommerce, so that URL does not exist on a non-commerce client.
+     Operators: add site-appropriate routes here. Do NOT reintroduce a hardcoded path
+     without checking it resolves on the target site.
+     The stronger answer is operator-editable suggested-search chips, which needs a
+     block that does not exist yet — recorded as a block candidate in
+     .claude/reports/2026-08-23-template-design-benchmark.md (S4-1). -->
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
-<!-- wp:sgs/container {"tagName":"main","anchor":"main","contentWidth":{"desktop":"normal"}} -->
+<!-- wp:sgs/container {"tagName":"main","anchor":"main","contentWidth":{"desktop":"normal"},"flexWrap":"wrap"} -->
 
-	<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|40"}}},"backgroundColor":"surface-alt","contentWidth":{"desktop":"normal"}} -->
+	<!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface-alt","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|40"},"flexWrap":"wrap","layout":"stack"} -->
+		<!-- wp:template-part {"slug":"sgs-archive-toolbar"} /-->
 		<!-- wp:query-title {"type":"search"} /-->
 		<!-- wp:search {"label":"Search","showLabel":false,"placeholder":"Search this site\u2026","buttonText":"Search","buttonPosition":"button-inside","buttonUseIcon":true,"style":{"border":{"radius":"8px"}},"backgroundColor":"surface"} /-->
 	<!-- /wp:sgs/container -->
 
-	<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|60"}}},"contentWidth":{"desktop":"normal"}} -->
+	<!-- wp:sgs/container {"tagName":"div","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|60"},"flexWrap":"wrap"} -->
 
 		<!-- wp:query {"queryId":1,"query":{"perPage":10,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"relevance","inherit":true}} -->
 		<div class="wp-block-query">
+			<!-- wp:query-total {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
+
 			<!-- wp:post-template -->
-				<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"bottom":"var:preset|spacing|40"}},"border":{"bottom":{"color":"var:preset|color|surface-alt","width":"1px"}}}} -->
-					<!-- wp:post-title {"level":3,"isLink":true} /-->
+				<!-- wp:sgs/container {"tagName":"div","style":{"border":{"bottom":{"color":"var:preset|color|surface-alt","width":"1px"}}},"padding":{"bottom":"var:preset|spacing|40"},"flexWrap":"wrap"} -->
+					<!-- wp:post-title {"level":2,"isLink":true} /-->
 					<!-- wp:post-date {"fontSize":"small","textColor":"text-muted"} /-->
 					<!-- wp:post-excerpt {"moreText":"Read more","excerptLength":30} /-->
 				<!-- /wp:sgs/container -->
@@ -26,10 +40,15 @@
 			<!-- /wp:query-pagination -->
 
 			<!-- wp:query-no-results -->
-				<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}}},"contentWidth":{"desktop":"500px"}} -->
+				<!-- wp:sgs/container {"tagName":"div","contentWidth":{"desktop":"500px"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70"},"flexWrap":"wrap"} -->
 					<!-- wp:sgs/heading {"content":"No results found","textAlign":"center","level":"h2"} /-->
 					<!-- wp:sgs/text {"text":"Sorry, no content matched your search. Please try a different search term.","textAlign":"center","textColour":"text-muted"} /-->
-					<!-- wp:search {"label":"Search","showLabel":false,"placeholder":"Try a different search\u2026","buttonText":"Search","buttonPosition":"button-inside","buttonUseIcon":true,"style":{"border":{"radius":"8px"}}} /-->
+
+					<!-- wp:sgs/text {"text":"Try fewer or different words, or browse from here:","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"small"},"margin":{"top":"var:preset|spacing|40"}} /-->
+
+					<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"margin":{"top":"var:preset|spacing|20"}} -->
+						<!-- wp:sgs/button {"label":"Home","url":"/","inheritStyle":"secondary","style":{"border":{"radius":"8px"}}} /-->
+					<!-- /wp:sgs/multi-button -->
 				<!-- /wp:sgs/container -->
 			<!-- /wp:query-no-results -->
 		</div>

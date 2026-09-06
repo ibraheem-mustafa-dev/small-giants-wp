@@ -1,0 +1,13 @@
+/*
+ * meaning atom — no rules.
+ *
+ * Alt text and the decorative flag reach the page as HTML attributes
+ * (`alt=""`, `aria-hidden="true"`, `role="presentation"`), never as CSS.
+ * There is nothing for this atom to paint, so it contributes no rule to the
+ * shared stylesheet.
+ *
+ * This file exists so `generate-media-stylesheet.mjs`'s partial roster stays
+ * complete and self-documenting — an atom with genuinely no CSS still gets a
+ * partial explaining why, rather than a silent gap someone re-investigates
+ * later.
+ */

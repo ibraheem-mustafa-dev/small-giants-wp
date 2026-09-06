@@ -152,7 +152,35 @@ class SourceCache {
 			// KNOWN-LIMITED (STOP-GATE-COMMENT-STRIPPER, D339d): a `/*` inside a
 			// PHP/CSS string literal swallows the rest of the file. Do not treat
 			// this as a general-purpose PHP parser.
-			out = raw.replace( /\/\*[\s\S]*?\*\//g, ( m ) => ' '.repeat( m.length ) );
+			//
+			// S1 fix (2026-09-02): `//` PHP line comments are stripped so a comment
+			// merely MENTIONING an attribute name (e.g. "// FR-22-6: scalar attrs
+			// are intentionally NOT read here") does not count as a live render
+			// reference — proven false positive on 3 baselined rule-21 findings
+			// (cta-section headline/body, hero subHeadline). Only a FULL-LINE `//`
+			// comment (the first non-whitespace token on its line) is stripped —
+			// deliberately not a trailing inline `//` after real code, since that
+			// risks truncating a same-line string containing "//" (e.g. a URL).
+			//
+			// ⛔ ORDER IS LOAD-BEARING (2026-09-02 fix): line comments MUST be
+			// stripped BEFORE block comments. Reversed — as it was until now — a
+			// `/*`-shaped sequence sitting INSIDE a `//` comment opens a spurious
+			// block comment that swallows everything up to the next `*/`. Measured:
+			// `hero/render.php`'s line comment containing the literal text
+			// `*Tablet/*Mobile` blanked ~50KB of real code, including the
+			// `$attributes['contentWidth']` read and the `padding-inline:` emission
+			// that rule 23 was checking for — producing a confident, wholly false
+			// "contentWidth is declared but never read" finding on a block whose
+			// band demonstrably works. Stripping line comments first removes the
+			// `/*` before it can be misread. Do not swap these two back.
+			if ( path.extname( file ) === '.php' ) {
+				out = raw.replace( /^([ \t]*)\/\/.*$/gm, ( m, indent ) =>
+					indent + ' '.repeat( m.length - indent.length )
+				);
+			} else {
+				out = raw;
+			}
+			out = out.replace( /\/\*[\s\S]*?\*\//g, ( m ) => ' '.repeat( m.length ) );
 		}
 		this._stripped.set( file, out );
 		return out;

@@ -85,14 +85,12 @@ function sgs_demand_analytics_render_meta_box( int $product_id ): void {
 
 		// Term label (e.g. "48-pack" → "48-Pack" or the WC term name).
 		$term_label = $slug;
-		if ( \function_exists( 'get_term_by' ) ) {
-			$term = \get_term_by( 'slug', $slug, $taxonomy );
-			if ( $term && ! \is_wp_error( $term ) ) {
-				$term_label = $term->name;
-			} else {
-				// Graceful fallback: title-case the slug.
-				$term_label = \ucwords( \str_replace( '-', ' ', $slug ) );
-			}
+		$term       = \get_term_by( 'slug', $slug, $taxonomy );
+		if ( $term && ! \is_wp_error( $term ) ) {
+			$term_label = $term->name;
+		} else {
+			// Graceful fallback: title-case the slug.
+			$term_label = \ucwords( \str_replace( '-', ' ', $slug ) );
 		}
 
 		return \esc_html( $tax_label ) . ': ' . \esc_html( $term_label );

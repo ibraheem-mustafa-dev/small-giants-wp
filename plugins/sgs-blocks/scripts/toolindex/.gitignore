@@ -1,0 +1,5 @@
+# Generated artefacts — rebuilt from the tree by build_index.py in ~2s, and
+# query.py builds them on demand when absent. Tracking a 1.5MB JSON blob that
+# regenerates whenever any script's header doc changes would churn every diff.
+index.json
+undocumented.txt

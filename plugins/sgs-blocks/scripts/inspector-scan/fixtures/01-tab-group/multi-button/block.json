@@ -1,0 +1,11 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/multi-button",
+	"title": "Fixture: multi-button (all-CSS panel, negative exemption control)",
+	"category": "sgs",
+	"attributes": {
+		"flexDirection": { "type": "object", "default": {} },
+		"gap": { "type": "object", "default": {} },
+		"flexWrap": { "type": "object", "default": {} }
+	}
+}

@@ -7,6 +7,15 @@
 .sgs-toc {
 	--sgs-toc-link-indent: 1rem;
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
+}
+
+/*
+ * Line-height default — :where() keeps this at specificity 0 so the
+ * uid-scoped lineHeight rule (sgs_typography_css_rule) always wins.
+ * Sanctioned F3-exempt overridable-default pattern (mirrors
+ * sgs/product-card's line-height :where() block).
+ */
+:where(.sgs-toc) {
 	line-height: 1.6;
 }
 
@@ -143,6 +152,10 @@
 
 .sgs-toc__link--active {
 	font-weight: 600;
+	/* Rule 43 (WCAG 1.4.1): the active-link colour rule below (:where(), colour
+	 * only) must not be the sole signal — text-decoration is the non-colour
+	 * signal for a text link. */
+	text-decoration: underline;
 }
 
 /* Spec 32: no block emits an inline `style` property declaration any more,

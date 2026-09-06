@@ -23,27 +23,35 @@
 				"box": {
 					"label": "Quote box",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "backgroundColour",
 						"css:background-image": "backgroundColourGradient",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:max-width": "maxWidth",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-radius": "borderRadius",
 						"css:box-shadow": "boxShadow",
-						"css:border-color-gradient": "borderColourGradient"
+						"css:border-color-gradient": "borderColourGradient",
+						"css:box-shadow-color": "boxShadowColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:background-color": "backgroundColourHover",
 								"css:background-image": "backgroundColourHoverGradient",
-								"css:box-shadow": "boxShadowHover"
+								"css:box-shadow": "boxShadowHover",
+								"css:box-shadow-color": "boxShadowHoverColour",
+								"css:border-color": "borderColourHover",
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
 							}
 						}
 					}
@@ -57,10 +65,14 @@
 				"attribution": {
 					"label": "Attribution",
 					"order": 3,
-					"clusters": [ "text", "layout" ],
+					"clusters": [
+						"text",
+						"layout"
+					],
 					"prefix": "attribution",
 					"attrMap": {
 						"css:color": "attributionColour",
+						"css:color-gradient": "attributionColourGradient",
 						"css:margin-top": "attributionMarginTop"
 					},
 					"_note": "attributionMarginTop/attributionMarginTopTablet/attributionMarginTopMobile (render.php:290-313, `'css' => 'margin-top'`) resolve via the new css:margin-top layout member (Spec 35 vocabulary fix). attributionMarginUnit is a companion unit-selector for the margin-top value (not an independent CSS property) — left unmapped; its literal name does not reduce to the attributionMarginTop base under the checker's Unit-suffix-stripping convention, a naming-shape mismatch outside this fix's scope."
@@ -71,12 +83,13 @@
 					"borderWidth"
 				],
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			}
 		},
@@ -85,7 +98,7 @@
 		"html": false,
 		"color": {
 			"background": false,
-			"gradients": true,
+			"gradients": false,
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
@@ -93,18 +106,21 @@
 			"fontSize": true,
 			"lineHeight": true,
 			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"__experimentalSkipSerialization": true
 		}
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"attribution": {
 			"type": "string",
 			"default": ""
@@ -125,6 +141,11 @@
 		"attributionColour": {
 			"type": "string",
 			"default": ""
+		},
+		"attributionColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the attribution element's text via background-clip:text (D636 text builder). Non-empty wins over attributionColour."
 		},
 		"attributionFontSize": {
 			"type": "object",
@@ -157,7 +178,8 @@
 				"",
 				"none",
 				"underline",
-				"line-through"
+				"line-through",
+				"overline"
 			],
 			"default": ""
 		},
@@ -199,6 +221,12 @@
 			"type": "object",
 			"default": {}
 		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"borderStyle": {
 			"type": "string",
 			"enum": [
@@ -212,7 +240,7 @@
 				"inset",
 				"outset"
 			],
-			"default": "none"
+			"default": "solid"
 		},
 		"borderColour": {
 			"type": "string",
@@ -240,32 +268,24 @@
 			"default": ""
 		},
 		"scaleHover": {
-			"type": "number",
-			"default": null
+			"type": "number"
 		},
 		"textColourHover": {
 			"type": "string",
 			"default": ""
 		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the quote box's hover-state text with a background-clip:text mechanism instead of a flat colour (D636 text-colour gradient rollout). Non-empty wins over textColourHover. Safe on this selector because the root's background paint is routed onto a `::after` layer (D936)."
+		},
 		"backgroundColourHover": {
 			"type": "string",
 			"default": ""
 		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"maxWidth": {
 			"type": "object",
@@ -282,6 +302,10 @@
 		"transitionEasing": {
 			"type": "string",
 			"default": "ease-in-out"
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

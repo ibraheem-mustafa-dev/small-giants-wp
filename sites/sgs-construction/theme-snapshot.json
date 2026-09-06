@@ -177,42 +177,42 @@
         {
           "slug": "20",
           "size": "0.5rem",
-          "name": "2"
+          "name": "XXS"
         },
         {
           "slug": "30",
           "size": "0.75rem",
-          "name": "3"
+          "name": "XS"
         },
         {
           "slug": "40",
           "size": "1rem",
-          "name": "4"
+          "name": "S"
         },
         {
           "slug": "50",
           "size": "1.5rem",
-          "name": "5"
+          "name": "M"
         },
         {
           "slug": "60",
           "size": "2rem",
-          "name": "6"
+          "name": "L"
         },
         {
           "slug": "70",
           "size": "3rem",
-          "name": "7"
+          "name": "XL"
         },
         {
           "slug": "80",
           "size": "4rem",
-          "name": "8"
+          "name": "XXL"
         },
         {
           "slug": "90",
           "size": "5.5rem",
-          "name": "9"
+          "name": "XXXL"
         }
       ],
       "customSpacingSize": true

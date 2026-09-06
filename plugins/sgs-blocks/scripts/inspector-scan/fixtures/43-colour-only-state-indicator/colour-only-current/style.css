@@ -1,0 +1,4 @@
+.sgs-x__page[aria-current] {
+	color: var( --wp--preset--color--primary );
+	background-color: transparent;
+}

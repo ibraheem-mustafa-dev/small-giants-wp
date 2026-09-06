@@ -1,0 +1,16 @@
+# Captured renders are evidence, not source — regenerate them with
+# capture-render.mjs rather than tracking them.
+#
+# ⛔ `rig-canvas.png` in particular must NEVER be committed. It is a render of
+# the REFERENCE rig's own output. D880 authorised porting the vertex-shader
+# MECHANISM; it did not authorise keeping copies of the reference's rendered
+# artwork, and KJC-4's surviving constraint ("study it, write our own, keep
+# nothing") applies to imagery regardless — an image is an artistic work, a
+# different asset class from a computer program.
+*.png
+
+# fidelity-compare.mjs's run-scoped output (Task 2) — imagery per the rule
+# above, PLUS the intermediate compare.py --json stat blocks per rung, which
+# are debug artefacts of a single run, not the tracked result. The tracked
+# result is fidelity-baseline.json, one level up, outside this directory.
+runs/

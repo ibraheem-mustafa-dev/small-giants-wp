@@ -4,13 +4,18 @@ import {
 	useInnerBlocksProps,
 	RichText,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
+import { PanelBody } from '@wordpress/components';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { colourVar } from '../../utils';
-import { SgsColourPanel } from '../../components';
+import { colourVar, textPaintPreview } from '../../utils';
+import { SgsColourPanel, fillRow,
+	SgsBorderControl,
+	resolveColourToken,
+} from '../../components';
 
 const CHEVRON_SVG = (
 	<svg
@@ -32,7 +37,14 @@ const CHEVRON_SVG = (
 );
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
-	const { title, isOpen, backgroundColour, textColour } = attributes;
+	const { title, isOpen, backgroundColour, backgroundColourGradient, textColour, textColourGradient } = attributes;
+
+	// D288/D636 pattern (mirrors sgs/container): resolve the wrapper's textColour/
+	// textColourGradient pair to a live canvas preview — render.php applies this
+	// pair to $root_sel (the whole `.sgs-accordion-item` wrapper, per block.json's
+	// `wrapper` element attrMap css:color/css:background-image), so it belongs on
+	// the wrapper's own blockProps style, inherited by header/content beneath it.
+	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	// Position of this item among its accordion siblings — mirrors sgs/tab's
 	// index derivation, needed to compare against the parent's `defaultOpen`
@@ -72,7 +84,10 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		.filter( Boolean )
 		.join( ' ' );
 
-	const blockProps = useBlockProps( { className } );
+	const blockProps = useBlockProps( {
+		className,
+		style: textPaintPreview( textColour, textColourGradient, colourPalette ),
+	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
 		{
@@ -114,27 +129,33 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		</span>
 	);
 
+	// Contrast check for border colour against the accordion item's own background.
+	// When the background has a gradient sibling, skip the check (flat colour would be inaccurate).
+	const accordionItemContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
 	return (
 		<>
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: backgroundColour,
-								onChange: ( val ) =>
-									setAttributes( { backgroundColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -143,18 +164,46 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								onChange: ( val ) =>
 									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourGradient: val ?? '' } ),
 							},
 						],
 					},
 				] }
 			/>
-			<InspectorControls>
+			<InspectorControls group="settings">
 				{ /* WS-4: mirrored sgs/container wrapper controls (content kind). */ }
 				<ContainerWrapperControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					kind="content"
 				/>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						contrastAgainst={ accordionItemContrastAgainst }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
+					/>
+				</PanelBody>
 			</InspectorControls>
 			<div { ...blockProps }>
 			{ /* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */ }

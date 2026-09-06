@@ -27,27 +27,22 @@
 		"html": false,
 		"color": {
 			"background": false,
-			"gradients": true,
+			"gradients": false,
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
+			"_comment_overlayNotAdopted": "backgroundOverlayColour/Opacity/OpacityTablet/OpacityMobile/ColourHover/BlendMode are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- same settled reasoning as sgs/container (see its block.json for the full note, 2026-09-03, Bean-directed). Detector rule 37-media-no-handroll's bare `background`/`bg`-prefix discriminator excludes this whole family from supports.sgs.mediaElements by design.",
+			"containerKind": "layout",
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
+				],
+				"margin": [
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -64,18 +59,19 @@
 					"attrMap": {
 						"css:color": "textColour",
 						"css:background-color": "backgroundColour",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
-						"css:padding": "native:spacing.padding",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:padding": "padding",
 						"css:background-image": "backgroundImage",
 						"css:max-width": "maxWidth",
 						"css:gap": "gap",
 						"css:flex-direction": "flexDirection",
 						"css:flex-wrap": "flexWrap",
 						"css:justify-content": "justifyContent",
-						"css:align-items": "alignItems"
+						"css:align-items": "alignItems",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "The root IS the flex arranger (own scoped CSS in render.php, not the shared wrapper's grid layer) — layer OUTER is correct per the MF-3 guard, same reasoning as sgs/card-grid's `grid` element. `spacing.margin`/`spacing.padding` are declared (2026-08-13/2026-08-16). `typography` remains an honest gap. `display` is hardcoded to flex in render.php — not attribute-controlled, an honest gap. Background media (image/video/SVG) + overlay colour/gradient render through the shared SGS_Container_Wrapper (D6, universal regardless of kind) — mapped by convention, not every bg sub-attr individually. Attribute names diverge from the default suffix convention (`direction`/`wrap`, not `flexDirection`/`flexWrap`) — every arrangement member is explicitly mapped per ROLLOUT REQUIREMENT 1."
 				},
@@ -89,21 +85,37 @@
 		}
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
 			"type": "string",
 			"default": ""
 		},
 		"textColour": {
 			"type": "string",
 			"default": ""
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"backgroundImage": {
 			"type": "object",
@@ -149,9 +161,41 @@
 		"backgroundOverlayColour": {
 			"type": "string"
 		},
+		"backgroundOverlayOpacity": {
+			"type": "object",
+			"default": {
+				"desktop": 30
+			}
+		},
 		"overlayGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"backgroundOverlayColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundOverlayBlendMode": {
+			"type": "string",
+			"default": "normal",
+			"enum": [
+				"normal",
+				"multiply",
+				"screen",
+				"overlay",
+				"darken",
+				"lighten",
+				"color-dodge",
+				"color-burn",
+				"soft-light",
+				"hard-light",
+				"difference",
+				"exclusion"
+			]
 		},
 		"bgVideo": {
 			"type": "object"
@@ -222,6 +266,21 @@
 			"default": "",
 			"_comment": "A2 (D638 SS4/5) -- CSS custom-property GROUP DEFAULT for child sgs/button instances. Emitted as --sgs-mb-btn-bg-default on this block's own wrapper; button/style.css reads it as the second fallback tier of --sgs-btn-bg. Empty = no group default; buttons behave exactly as before."
 		},
+		"childBtnBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient GROUP DEFAULT for child sgs/button instances (colour-conformance FILL closeout 2026-09-06). Emitted as --sgs-mb-btn-bg-image-default; button/style.css reads it as the fallback tier of --sgs-btn-bg-image, right before button/style.css's own 'transparent'/'none' floor. Empty = no group default."
+		},
+		"childBtnBackgroundHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover background colour GROUP DEFAULT for child sgs/button instances. Emitted as --sgs-mb-btn-bg-hover-default; button/style.css's own :hover chain previously had no group-default rung at all -- a hover colour set here only ever fell through to the RESTING group default, never a distinct hover one."
+		},
+		"childBtnBackgroundHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient hover GROUP DEFAULT for child sgs/button instances. Emitted as --sgs-mb-btn-bg-hover-image-default."
+		},
 		"childBtnTextColour": {
 			"type": "string",
 			"default": ""
@@ -229,6 +288,16 @@
 		"childBtnBorderColour": {
 			"type": "string",
 			"default": ""
+		},
+		"childBtnBorderWidth": {
+			"type": "object",
+			"default": {},
+			"_comment": "2026-08-30 owner decision -- added alongside childBtnBorderStyle so SgsBorderControl can mount for this group-default row (D338: mounting the composite with a missing sibling attr crashes/discards edits). Box-object shape MATCHES every other SgsBorderControl widthValues attr (e.g. sgs/button's own borderWidth) so the shared control needs no special-casing. Reduced to a single CSS-length shorthand string via sgs_box_object_shorthand() at render time and consumed by a :where(.sgs-multi-button) .sgs-button rule in button/style.css -- zero-specificity ancestor scoping, so it never outranks a preset and never matches a standalone button (see that file's comment for why the base .sgs-button rule itself could not be reused, unlike radius/font-weight)."
+		},
+		"childBtnBorderStyle": {
+			"type": "string",
+			"default": "",
+			"_comment": "2026-08-30 owner decision. Default '' (not 'solid', unlike a per-instance borderStyle attr) matches this block's own childBtn* GROUP-DEFAULT convention: empty means no override, so an unconfigured multi-button changes nothing."
 		},
 		"childBtnBorderRadius": {
 			"type": "string",
@@ -244,23 +313,37 @@
 		},
 		"flexDirection": {
 			"type": "object",
-			"default": {"desktop": "row", "mobile": "column"}
+			"default": {
+				"desktop": "row",
+				"mobile": "column"
+			}
 		},
 		"gap": {
 			"type": "object",
-			"default": {"desktop": "12px", "mobile": "8px"}
+			"default": {
+				"desktop": "12px",
+				"mobile": "8px"
+			}
 		},
 		"justifyContent": {
 			"type": "object",
-			"default": {"desktop": "flex-start"}
+			"default": {
+				"desktop": "flex-start"
+			}
 		},
 		"flexWrap": {
 			"type": "object",
-			"default": {"desktop": "nowrap", "mobile": "nowrap"}
+			"default": {
+				"desktop": "nowrap",
+				"mobile": "nowrap"
+			}
 		},
 		"alignItems": {
 			"type": "object",
-			"default": {"desktop": "center", "mobile": "stretch"}
+			"default": {
+				"desktop": "center",
+				"mobile": "stretch"
+			}
 		},
 		"contentWidth": {
 			"type": "object",
@@ -285,7 +368,11 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 2,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"gridAutoRows": {
 			"type": "string",
@@ -311,16 +398,47 @@
 		},
 		"layout": {
 			"type": "string",
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
 			"default": ""
 		},
-		"templateMode": {
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
 			"type": "string",
-			"default": "free",
 			"enum": [
-				"free",
-				"grid-section",
-				"card-grid"
-			]
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"example": {

@@ -14,6 +14,14 @@ SGS is an AI website-builder. The cloning pipeline must CONVERT any SGS-BEM draf
 verification: `verify/merged-spec36-37-track.md`. Exit = FR-37-23 acceptance + 10/10 roster clones
 accepted + Spec 33 Part 2 walker consuming the proven system.
 
+**Progress 2026-08-19 (D681-D684):** FR-37-44 and FR-37-45 are BUILT and live-verified on the
+canary (`reports/visual-diff/site-header-2026-08-19.md`, 17 assertions, verdict PASS). FR-37-15's
+"done when" — no header behaviour renders an inline `style=""` and the emitted CSS is scoped to the
+block uid — is now MET for **all five** behaviours, not four: `contrastSafe` was the last
+body-class holdout and D402's carve-out is superseded. The header's unreachable surface is closed
+too (13 attrs deleted, `shadow` mounted). Still open on this goal: the 10-clone reference proof
+gate and Spec 33 Part 2.
+
 **Goal A — Faithful universal CSS transfer (cloning pipeline):** deliver a single DB-driven, name-free routing engine that places any draft CSS property on the correct block attribute at the correct responsive tier, for `sgs/container` and every composite identically (Spec 31 §0). **SUPERSEDES the old 5-workstream container/wrapper standardisation programme** (launched D152; WS-1 block-side mirror SHIPPED D167) — WS-2/WS-3/WS-4/WS-5 are no longer tracked as independent workstreams; the **clean modular stage-by-stage rebuild (Spec 31 §12)** addresses them structurally. Foundation Phase F (F1–F6 + F5 gates) COMPLETE (D232–D241); `convert.py` FROZEN (D-MODULAR, D229); next = the stage-by-stage rebuild. THE blueprint: [`specs/31-UNIVERSAL-CLONING-PIPELINE.md`](specs/31-UNIVERSAL-CLONING-PIPELINE.md) §12. Underlying architecture: **Spec 31 §13.6 / FR-31-21** (Spec 22 was absorbed into Spec 31 §13 at D253 and is DEAD — `R-22-N ≡ R-31-N`, `FR-22-N ≡ FR-31-N`). Composite-mirror rule: no composite with a built-in wrapper diverges from sgs/container capabilities.
 
 **Goal B — Cloning pipeline produces a clone Bean signs off as faithful to the draft, per body section × 3 viewports (375/768/1440), from any Claude-generated SGS-BEM HTML draft.** **STATUS 2026-07-25: Spec 31 C2 LANDED closing gate MET** — the 35-fixture canary corpus was re-provisioned through the current converter + live-verified 0 WRITTEN-not-LANDED + 0 UNACCOUNTED at 375/768/1440 (D380, `9babcfd5`; R-31-11/R-31-13, Bean's eye). Body-section clone fidelity is closed for the fixture corpus. Phase 2 (header/footer = Spec 33 Part 2) NOT started.

@@ -1,0 +1,69 @@
+/* ── object-fit atom ──────────────────────────────────────────────────────
+ *
+ * One client-facing question ("how should this media fill its box?") backing
+ * TWO properties depending on scope:
+ *   element scope  -> object-fit        (replaced elements: <img>/<video>)
+ *   backdrop scope -> background-size   (a painted background box)
+ *
+ * ── ELEMENT scope is tiered (Bean-directed, 2026-09-01, reversing the
+ * "neither is tiered" decision this comment used to record) ───────────────
+ * Different media genuinely needs a different fit mode per device — a video
+ * that's `cover` on desktop but `contain` on a small mobile screen, so the
+ * subject isn't cropped out of frame. `MEDIA_TIERED_BASES`
+ * (MediaElementControls.js) now carries `ObjectFit`, so `object-fit` gets the
+ * same tablet/mobile fallback chain as `focal-point`'s `object-position`
+ * below. The BACKDROP scope's `background-size` (the `Size` base) stays
+ * untiered — `Size` is not in `MEDIA_TIERED_BASES`, and Bean's ask was about
+ * element media, not painted backgrounds.
+ *
+ * The mobile rule nests mobile -> tablet -> desktop -> initial, same reason
+ * as `focal-point.css`: reversing the middle two would let an unset mobile
+ * value fall through to desktop and silently ignore a tablet value the
+ * client did set.
+ *
+ * `initial` as the var() fallback resets each property to its own CSS
+ * initial value (`fill` for object-fit, `auto` for background-size) — the
+ * same value the browser paints when this rule is absent entirely, so an
+ * unset atom never changes rendering.
+ *
+ * ⛔ Not scoped to `--svg`. object-fit/background-size are meaningless on an
+ * inline <svg>'s own geometry either way (a surface adopting this atom for an
+ * SVG tier gets no visible effect, which is correct — see registry.js).
+ */
+.sgs-media-el {
+	/* ⛔ The fallback is `cover`, NOT `initial`, and that is measured rather than
+	   chosen. All four surfaces carrying this atom default to cover:
+	   sgs/media objectFit, sgs/hero splitMediaObjectFit and backgroundSize, and
+	   sgs/container backgroundSize (census `presentation`).
+
+	   `initial` would be a silent visible regression. This rule is (0,1,0) and
+	   fires unconditionally, so it beats sgs/media's own (0,0,0)
+	   `:where( .sgs-media__img ){ object-fit: cover }` default — every existing
+	   block that never set an object-fit would have flipped from cover to
+	   `initial` (= fill) and stretched its image, with no attribute changed and
+	   nothing to grep for. A rule that LOSES is indistinguishable from one that
+	   is absent; a rule that silently WINS is worse. */
+	object-fit: var( --sgs-media-object-fit, cover );
+	background-size: var( --sgs-media-background-size, cover );
+}
+
+@media (max-width: 1023px) {
+	.sgs-media-el {
+		object-fit: var(
+			--sgs-media-object-fit-tablet,
+			var( --sgs-media-object-fit, cover )
+		);
+	}
+}
+
+@media (max-width: 767px) {
+	.sgs-media-el {
+		object-fit: var(
+			--sgs-media-object-fit-mobile,
+			var(
+				--sgs-media-object-fit-tablet,
+				var( --sgs-media-object-fit, cover )
+			)
+		);
+	}
+}

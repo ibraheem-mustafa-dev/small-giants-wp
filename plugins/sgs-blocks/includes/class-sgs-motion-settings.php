@@ -87,10 +87,12 @@ final class Sgs_Motion_Settings {
 				'type'              => 'array',
 				'sanitize_callback' => array( __CLASS__, 'sanitise' ),
 				'default'           => array(
-					'smooth_scroll'          => false,
-					'smooth_scroll_strength' => 3,
-					'page_transitions'       => false,
-					'page_transition_style'  => 'fade',
+					'smooth_scroll'             => false,
+					'smooth_scroll_strength'    => 3,
+					'page_transitions'          => false,
+					'page_transition_style'     => 'fade',
+					'animate_product_filtering' => false,
+					'treatment_palette_base'    => 'primary',
 				),
 			)
 		);
@@ -137,6 +139,19 @@ final class Sgs_Motion_Settings {
 			$style = 'fade';
 		}
 
+		// Treatment colour source (Tier W grain/halftone/duotone, D-treatment-palette-base).
+		// This reaches a CSS custom-property NAME (`--wp--preset--color--<slug>`),
+		// so — same as `page_transition_style` above — an unknown value is
+		// replaced rather than stored. A valid WordPress preset slug is
+		// `[a-z0-9-]+` only; anything else falls back to `'primary'`.
+		$treatment_palette_base = isset( $value['treatment_palette_base'] )
+			? (string) $value['treatment_palette_base']
+			: 'primary';
+
+		if ( ! \preg_match( '/^[a-z0-9-]+$/', $treatment_palette_base ) ) {
+			$treatment_palette_base = 'primary';
+		}
+
 		return array(
 			'smooth_scroll'             => ! empty( $value['smooth_scroll'] ),
 			'smooth_scroll_strength'    => $strength,
@@ -149,7 +164,59 @@ final class Sgs_Motion_Settings {
 			'page_transition_templates' => SGS_Motion_Registry::sanitise_template_styles(
 				$value['page_transition_templates'] ?? array()
 			),
+			// FR-38-12 (redirected 2026-08-20). A plain checkbox presence
+			// test, same as every other boolean setting on this page.
+			'animate_product_filtering' => ! empty( $value['animate_product_filtering'] ),
+			'treatment_palette_base'    => $treatment_palette_base,
 		);
+	}
+
+	/**
+	 * The site's registered palette slugs, as slug => name.
+	 *
+	 * Enumerated from the active theme rather than hard-coded, so this control
+	 * is correct on any client site without an edit — the same discipline
+	 * `templates()` below already follows for page templates. Merges the
+	 * theme/default/custom origins `wp_get_global_settings()` can return and
+	 * de-duplicates by slug (first origin wins), mirroring
+	 * `sgs_resolve_palette_hex()` in `helpers-colour-wcag.php`.
+	 *
+	 * @return array<string, string>
+	 */
+	private static function palette_slugs(): array {
+		$out = array();
+
+		$palette = \wp_get_global_settings( array( 'color', 'palette' ) );
+
+		// wp_get_global_settings() may return the palette keyed by origin
+		// (default/theme/custom) or, in some WP versions, a flat list.
+		$lists = array();
+		if ( \is_array( $palette ) && ( isset( $palette['custom'] ) || isset( $palette['theme'] ) || isset( $palette['default'] ) ) ) {
+			foreach ( array( 'theme', 'custom', 'default' ) as $origin ) {
+				if ( ! empty( $palette[ $origin ] ) && \is_array( $palette[ $origin ] ) ) {
+					$lists[] = $palette[ $origin ];
+				}
+			}
+		} elseif ( \is_array( $palette ) ) {
+			$lists[] = $palette;
+		}
+
+		foreach ( $lists as $list ) {
+			foreach ( $list as $entry ) {
+				if ( ! \is_array( $entry ) || ! isset( $entry['slug'] ) ) {
+					continue;
+				}
+
+				$slug = (string) $entry['slug'];
+				if ( isset( $out[ $slug ] ) ) {
+					continue;
+				}
+
+				$out[ $slug ] = ! empty( $entry['name'] ) ? (string) $entry['name'] : $slug;
+			}
+		}
+
+		return $out;
 	}
 
 	/**
@@ -197,10 +264,6 @@ final class Sgs_Motion_Settings {
 	 * @return array<string, string>
 	 */
 	private static function templates(): array {
-		if ( ! \function_exists( 'get_block_templates' ) ) {
-			return array();
-		}
-
 		$templates = \get_block_templates( array(), 'wp_template' );
 		$out       = array();
 
@@ -445,6 +508,71 @@ final class Sgs_Motion_Settings {
 				<p style="max-width:46rem">
 					<?php \esc_html_e( 'Page transitions are switched off automatically for visitors whose device asks for reduced motion, and they never run in the block editor or admin screens.', 'sgs-blocks' ); ?>
 				</p>
+
+				<h2><?php \esc_html_e( 'WooCommerce product filtering', 'sgs-blocks' ); ?></h2>
+				<p style="max-width:46rem">
+					<?php \esc_html_e( 'When a visitor narrows a Product Collection block by price, attribute or rating, the product cards animate to their new positions instead of snapping instantly. Requires WooCommerce. Off by default.', 'sgs-blocks' ); ?>
+				</p>
+
+				<table class="form-table" role="presentation">
+					<tbody>
+						<tr>
+							<th scope="row"><?php \esc_html_e( 'Animate product re-filtering', 'sgs-blocks' ); ?></th>
+							<td>
+								<label>
+									<input
+										type="checkbox"
+										id="sgs-animate-product-filtering-toggle"
+										name="<?php echo \esc_attr( self::OPTION_KEY ); ?>[animate_product_filtering]"
+										value="1"
+										<?php \checked( true, $settings['animate_product_filtering'] ); ?>
+									/>
+									<?php \esc_html_e( 'Animate WooCommerce product re-filtering', 'sgs-blocks' ); ?>
+								</label>
+								<p class="description" style="max-width:44rem">
+									<?php \esc_html_e( 'Applies only to the Product Collection block. Switched off automatically for visitors whose device asks for reduced motion.', 'sgs-blocks' ); ?>
+								</p>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<h2><?php \esc_html_e( 'Surface treatments', 'sgs-blocks' ); ?></h2>
+				<p style="max-width:46rem">
+					<?php \esc_html_e( 'Grain, halftone and duotone are WebGL image finishes; each derives all of its colours from a single palette colour (deepened for shadow/ink, lightened for highlight). This sets that source for the whole site. Off by default it uses your Primary colour.', 'sgs-blocks' ); ?>
+				</p>
+
+				<table class="form-table" role="presentation">
+					<tbody>
+						<tr>
+							<th scope="row">
+								<label for="sgs-treatment-palette-base"><?php \esc_html_e( 'Treatment colour source', 'sgs-blocks' ); ?></label>
+							</th>
+							<td>
+								<?php $palette_slugs = self::palette_slugs(); ?>
+								<?php if ( empty( $palette_slugs ) ) : ?>
+									<?php $palette_slugs = array( 'primary' => \__( 'Primary', 'sgs-blocks' ) ); ?>
+								<?php endif; ?>
+								<select
+									id="sgs-treatment-palette-base"
+									name="<?php echo \esc_attr( self::OPTION_KEY ); ?>[treatment_palette_base]"
+								>
+									<?php foreach ( $palette_slugs as $slug => $name ) : ?>
+										<option
+											value="<?php echo \esc_attr( $slug ); ?>"
+											<?php \selected( $slug, $settings['treatment_palette_base'] ); ?>
+										>
+											<?php echo \esc_html( $name ); ?>
+										</option>
+									<?php endforeach; ?>
+								</select>
+								<p class="description" style="max-width:44rem">
+									<?php \esc_html_e( 'Grain, halftone and duotone derive their colours from this palette colour. Individual blocks can still override it.', 'sgs-blocks' ); ?>
+								</p>
+							</td>
+						</tr>
+					</tbody>
+				</table>
 
 				<?php \submit_button(); ?>
 			</form>

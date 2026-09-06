@@ -234,6 +234,15 @@
             "min": "32px",
             "max": "50px"
           }
+        },
+        {
+          "slug": "display",
+          "size": "120px",
+          "name": "Display",
+          "fluid": {
+            "min": "56px",
+            "max": "120px"
+          }
         }
       ],
       "defaultFontSizes": false
@@ -475,7 +484,7 @@
           "lineHeight": "1.2"
         },
         "color": {
-          "text": "var:preset|color|primary"
+          "text": "var:preset|color|text"
         }
       },
       "h1": {
@@ -613,24 +622,9 @@
       "title": "Header"
     },
     {
-      "area": "header",
-      "name": "header-minimal",
-      "title": "Header (Minimal)"
-    },
-    {
       "area": "footer",
       "name": "footer",
       "title": "Footer"
-    },
-    {
-      "area": "footer",
-      "name": "footer-minimal",
-      "title": "Footer (Minimal)"
-    },
-    {
-      "area": "uncategorized",
-      "name": "sgs-pdp-gallery",
-      "title": "PDP: Product Gallery"
     },
     {
       "area": "uncategorized",

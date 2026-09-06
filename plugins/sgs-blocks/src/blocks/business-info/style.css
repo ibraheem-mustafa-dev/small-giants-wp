@@ -10,8 +10,16 @@
  * --sgs-bi-icon-colour  : emitted by render.php from the iconColour attribute ONLY when an
  *                         explicit override is set; otherwise omitted so the currentColor
  *                         fallback below inherits from the surrounding container.
- * --sgs-bi-text-colour  : emitted by render.php from the textColour attribute (same rule).
- * --sgs-bi-label-colour : emitted by render.php from the labelColour attribute (same rule).
+ *
+ * textColour/labelColour moved OFF this custom-property bridge (2026-09-04, D636
+ * gradient rollout finish) — render.php now writes a direct scoped `color:`/
+ * `background-image:` declaration for them (sgs_text_colour_decl(), same
+ * mechanism as sgs/counter) so a gradient sibling can paint via
+ * background-clip:text, which a custom property can never legally hold. The
+ * `var(--sgs-bi-text-colour, currentColor)` / `var(--sgs-bi-label-colour, currentColor)`
+ * fallbacks below are now DEAD for override purposes (that custom property is
+ * never declared by any mechanism any more) but harmless to keep — an unset
+ * attribute still resolves to `currentColor`, identical behaviour either way.
  *
  * WCAG 1.4.3 (D-pending): fallback is `currentColor`, not a fixed theme preset — a
  * business-info instance nested in a dark container (e.g. the mobile drawer) must inherit
@@ -139,6 +147,15 @@
 	gap: 0.5em;
 	font-style: normal;
 	margin: 0;
+}
+
+/*
+ * Line-height default — :where() keeps this at specificity 0 so the uid-scoped
+ * lineHeight rule (sgs_typography_css_rule, emitted only when the operator
+ * sets a value) always wins. Sanctioned F3-exempt overridable-default pattern
+ * (mirrors sgs/product-card's identical :where() block).
+ */
+:where(.sgs-business-address) {
 	line-height: 1.6;
 }
 

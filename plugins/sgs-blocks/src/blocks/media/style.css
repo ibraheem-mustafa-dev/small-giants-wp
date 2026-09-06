@@ -37,14 +37,15 @@
 	height: auto;
 }
 
-/* object-fit default (D7) — supplied as an OVERRIDABLE :where() fallback (0
-   specificity) instead of being force-emitted inline by render.php. An unset
-   objectFit therefore no longer crop-forces, and any override (a non-default
-   inline value from render.php, a theme rule, or a parent) wins. Matches both
-   the figure-mode img and the naked-mode img (id + class on the same element). */
-:where( .sgs-media__img ) {
-	object-fit: cover;
-}
+/* object-fit is OWNED BY THE ATOM LAYER (Wave 5a). The rule now lives once, in
+   assets/css/media-element.css, keyed on `.sgs-media-el` and carrying the same
+   measured `cover` default this rule used to supply.
+   Deleting it here is the GUT half of INSERT -> VERIFY -> GUT: leaving both
+   would give one property two writers, and the surviving one would be invisible
+   until the values disagreed. The video element gains the default it never had
+   — this rule only ever matched `__img`, so an unset video previously rendered
+   at the browser default `fill`. All four surfaces in the census measure
+   `cover`, so that is the standard being applied, not a regression. */
 
 /* Video element — mirrors image defaults so shared styling attrs apply uniformly */
 .wp-block-sgs-media video,

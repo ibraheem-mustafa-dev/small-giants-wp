@@ -33,17 +33,23 @@
 					"label": "Wrapper",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "textColour",
 						"css:background-color": "backgroundColour",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
-						"css:width": "contentWidth"
+						"css:width": "contentWidth",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:background-image": "textColourGradient"
 					},
 					"_note": "block.json declares no typography/spacing support on this block — the wrapper's font/padding/margin members are honest gaps. color+border are skip-serialised and emitted into a scoped style keyed to the field's uid class (render.php:59-114), mirroring sgs/container."
 				},
@@ -51,7 +57,9 @@
 					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 2,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
@@ -66,21 +74,19 @@
 					},
 					"_note": "WS-4: the tile grid delegates to SGS_Container_Wrapper (kind='layout', render.php:231-242) so it mirrors sgs/container's grid/flex capabilities. Maps explicitly — no `prefix` declared, so the default convention cannot resolve bare camelCase attrs (ROLLOUT REQUIREMENT 1). display/order/overflow/align-items remain honest gaps (no attribute on this block)."
 				}
+			},
+			"boxFamilies": {
+				"borderRadius": [
+					"borderRadius"
+				]
 			}
 		},
 		"html": false,
 		"anchor": false,
 		"color": {
 			"background": false,
-			"gradients": true,
+			"gradients": false,
 			"text": false,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
 			"__experimentalSkipSerialization": true
 		}
 	},
@@ -125,13 +131,15 @@
 						"type": "string"
 					},
 					"icon": {
-						"type": "string"
+						"type": "string",
+						"role": "icon"
 					},
 					"iconSource": {
 						"type": "string"
 					},
 					"image": {
-						"type": "string"
+						"type": "string",
+						"role": "image-object"
 					}
 				}
 			}
@@ -142,7 +150,11 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 3,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"conditionalField": {
 			"type": "string",
@@ -170,6 +182,12 @@
 		},
 		"layout": {
 			"type": "string",
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
 			"default": ""
 		},
 		"alignItems": {
@@ -226,9 +244,8 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": "",
+			"default": "wrap",
 			"enum": [
-				"",
 				"wrap",
 				"nowrap"
 			]
@@ -249,9 +266,59 @@
 			"type": "string",
 			"default": ""
 		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"textColour": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"render": "file:./render.php",

@@ -583,7 +583,7 @@ final class Configurator_Meta {
 	 */
 	public static function sanitize_image_id( $value ): int {
 		$id = \absint( $value );
-		if ( $id > 0 && \function_exists( 'wp_attachment_is_image' ) && \wp_attachment_is_image( $id ) ) {
+		if ( $id > 0 && \wp_attachment_is_image( $id ) ) {
 			return $id;
 		}
 		return 0;

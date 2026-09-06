@@ -90,7 +90,11 @@
 	width: 48px;
 	height: 48px;
 	border-radius: 50%;
-	object-fit: cover;
+	/* object-fit removed 2026-09-03 (37-media-no-handroll remediation) — the
+	   shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}`
+	   atom stylesheet paints the identical `cover` default, and a client can
+	   now override it per instance via the `avatar` mediaElements entry
+	   (block.json supports.sgs.mediaElements — avatarObjectFit). */
 	display: block;
 }
 
@@ -102,6 +106,10 @@
 	max-width: 140px;
 	height: auto;
 	max-height: 56px;
+	/* Intentionally fixed — a logo must never be cropped, so this is a
+	   component-owned constant, not a client-overridable control (2026-08-17
+	   design decision, reconfirmed 2026-09-03 during the 37-media-no-handroll
+	   remediation of the avatar/work slots above). */
 	object-fit: contain;
 	display: block;
 }
@@ -423,7 +431,11 @@
 	.sgs-testimonial--case-study-media .sgs-testimonial__work video {
 		border-radius: var(--wp--custom--border-radius--medium, 8px) 0 0 var(--wp--custom--border-radius--medium, 8px);
 		height: 100%;
-		object-fit: cover;
+		/* object-fit removed 2026-09-03 (37-media-no-handroll remediation) — the
+		   shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}`
+		   atom stylesheet paints the identical `cover` default at this width, and
+		   a client can now override it per instance via the `work` mediaElements
+		   entry (block.json supports.sgs.mediaElements — workObjectFit). */
 	}
 }
 
@@ -436,16 +448,19 @@
 
 /* ===== Hover effects ===== */
 @media (prefers-reduced-motion: no-preference) {
-	.sgs-testimonial--hover-lift:hover {
+	.sgs-testimonial--hover-lift:hover,
+	.sgs-testimonial--hover-lift:focus-within {
 		transform: translateY(-4px);
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 	}
 
-	.sgs-testimonial--hover-scale:hover {
+	.sgs-testimonial--hover-scale:hover,
+	.sgs-testimonial--hover-scale:focus-within {
 		transform: scale(1.02);
 	}
 
-	.sgs-testimonial--hover-glow:hover {
+	.sgs-testimonial--hover-glow:hover,
+	.sgs-testimonial--hover-glow:focus-within {
 		box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);
 	}
 
@@ -454,11 +469,13 @@
 			box-shadow var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
 	}
 
-	.sgs-testimonial.sgs-has-hover-scale:hover {
+	.sgs-testimonial.sgs-has-hover-scale:hover,
+	.sgs-testimonial.sgs-has-hover-scale:focus-within {
 		transform: scale(var(--sgs-hover-scale, 1.05));
 	}
 
-	.sgs-testimonial.sgs-has-hover:hover {
+	.sgs-testimonial.sgs-has-hover:hover,
+	.sgs-testimonial.sgs-has-hover:focus-within {
 		box-shadow: var(--sgs-hover-shadow, none);
 	}
 }
@@ -471,8 +488,11 @@
 	}
 
 	.sgs-testimonial--hover-lift:hover,
+	.sgs-testimonial--hover-lift:focus-within,
 	.sgs-testimonial--hover-scale:hover,
-	.sgs-testimonial.sgs-has-hover-scale:hover {
+	.sgs-testimonial--hover-scale:focus-within,
+	.sgs-testimonial.sgs-has-hover-scale:hover,
+	.sgs-testimonial.sgs-has-hover-scale:focus-within {
 		transform: none;
 	}
 }

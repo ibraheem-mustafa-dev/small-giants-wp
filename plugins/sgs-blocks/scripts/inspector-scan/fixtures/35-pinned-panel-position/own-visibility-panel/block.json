@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/own-visibility-panel",
+	"title": "Fixture: block authors its own Visibility conditions panel",
+	"category": "sgs",
+	"attributes": {}
+}

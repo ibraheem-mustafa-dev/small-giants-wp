@@ -65,6 +65,10 @@
 .sgs-product-faq-item[open] > .sgs-product-faq-item__question {
 	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
 	color: var(--wp--preset--color--primary, #0f7e80);
+	/* Rule 43 (WCAG 1.4.1): open/hover state must not rely on colour alone —
+	 * the base question is already font-weight:600 (line 52), so the
+	 * open/hover state steps up to 700 as the non-colour signal. */
+	font-weight: 700;
 }
 
 .sgs-product-faq-item__question:focus-visible {

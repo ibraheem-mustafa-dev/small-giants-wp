@@ -204,14 +204,26 @@ function findControlledAttrs( editSrc, blockJson ) {
 	const written = attrsWrittenBySetAttributes( editSrc );
 	const tierMapped = attrsFromTierMaps( editSrc );
 	const native = attrsFromNativeSupports( blockJson );
+	// A block's own edit.js can declare its OWN indirection map locally (e.g.
+	// `const attrFor = { base: 'padding', tablet: 'paddingTablet', ... }` then
+	// `setAttributes({ [attrFor[tier]]: next })`) rather than reaching one from
+	// a shared component. Proven necessary 2026-09-02 (D917 follow-up):
+	// sgs/container's own responsive-box map was invisible because this
+	// resolver ran ONLY against the shared-component corpus, never against the
+	// calling block's own file -- 13 false "orphaned capability" findings on
+	// sgs/container alone (marginMobile/marginTablet/paddingMobile/
+	// paddingTablet among them), the SAME shape survey-wrapper-capability.js
+	// was built to catch, just one file closer to home than it looked.
+	const indirect = attrsFromIndirectionMaps( editSrc );
 
-	const controlled = new Set( [ ...written, ...tierMapped, ...native ] );
+	const controlled = new Set( [ ...written, ...tierMapped, ...native, ...indirect ] );
 	return {
 		controlled,
 		bySource: {
 			setAttributes: [ ...written ].sort(),
 			tierMap: [ ...tierMapped ].sort(),
 			nativeSupports: [ ...native ].sort(),
+			indirectionMap: [ ...indirect ].sort(),
 		},
 	};
 }
@@ -277,14 +289,70 @@ function attrsFromIndirectionMaps( src ) {
 	while ( ( b = bareRe.exec( src ) ) !== null ) {
 		idents.add( b[ 1 ] );
 	}
+
+	// FORM B2 -- `[ ident[ other ] ]:`, a BRACKET-NESTED computed key (an
+	// object-literal lookup rather than a bare local). Same idea as FORM B,
+	// one more level of indirection.
+	//
+	//   const attrFor = { base: 'padding', tablet: 'paddingTablet', mobile: 'paddingMobile' };
+	//   setAttributes( { [ attrFor[ tier ] ]: next } );      container/edit.js:613-614
+	//
+	// Proven necessary 2026-09-02: this exact shape (declared LOCALLY inside a
+	// JSX callback, not hoisted to module scope) left marginMobile/
+	// marginTablet/paddingMobile/paddingTablet reported orphaned on every one
+	// of the 6 blocks using ResponsiveBoxControl this way, even after FORM
+	// A/B and findControlledAttrs() were taught to scan the block's own
+	// edit.js -- `attrFor` itself was invisible to both existing forms.
+	const bracketRe = /\[\s*([A-Za-z_$][A-Za-z0-9_$]*)\s*\[\s*[A-Za-z_$][A-Za-z0-9_$]*\s*\]\s*\]\s*:/g;
+	while ( ( b = bracketRe.exec( src ) ) !== null ) {
+		idents.add( b[ 1 ] );
+	}
+
 	for ( const id of idents ) {
-		const declRe = new RegExp( `\\b(?:const|let|var)\\s+${ id }\\s*=\\s*([^;\\n]*)`, 'g' );
+		// `[^;]*` (no `\n` exclusion) so a multi-line ternary declaration is
+		// captured in full. Proven necessary 2026-09-02: BackgroundPanel.js
+		// computes its overlay-opacity key across several lines --
+		//     const key =
+		//       'desktop' === bp
+		//         ? 'backgroundOverlayOpacity'
+		//         : ...
+		// -- and the old `[^;\n]*` stopped at the first newline (right after
+		// `key =`), capturing nothing. `[^;]` already matches a literal
+		// newline character in a JS character class with no `s`/dotall flag
+		// needed; it still stops correctly at the statement's `;`.
+		const declRe = new RegExp( `\\b(?:const|let|var)\\s+${ id }\\s*=\\s*([^;]*)`, 'g' );
 		let d;
 		while ( ( d = declRe.exec( src ) ) !== null ) {
 			const strs = d[ 1 ].match( /['"]([A-Za-z_$][A-Za-z0-9_$]*)['"]/g ) || [];
 			for ( const s of strs ) {
 				found.add( s.replace( /['"]/g, '' ) );
 			}
+		}
+	}
+
+	// FORM C -- a JSX prop passed as an OBJECT LITERAL configuring a child
+	// component's own attribute-name map, e.g.
+	//   <ShadowControl attrNames={{ colour: 'shadowColour', hoverColour: 'shadowColourHover' }} />
+	// The string appears at neither end of a single file in the usual sense:
+	// the literal lives in the CALLER's JSX prop, and is only consumed inside
+	// the CALLEE against a differently-named function parameter (`attrNames.colour`)
+	// -- a two-hop indirection FORM A/B do not cover, since there is no
+	// same-file map keyed by the destructured parameter name to resolve
+	// against. Proven necessary 2026-09-02: sgs/container's own
+	// shadowColour/shadowColourHover and shapeDivider*Colour* families were
+	// reported orphaned this exact way. Treating every string value inside a
+	// JSX prop's inline object literal as a plausible controlled attribute
+	// name is deliberately permissive (matching this function's existing
+	// documented stance: over-claiming here can only mark an attribute
+	// controlled when a real map really does name it) -- a non-attribute
+	// string value (e.g. a CSS colour, a label) simply adds a harmless name
+	// no `block_attributes` row will ever match.
+	const jsxObjRe = /=\s*\{\s*\{([^{}]*)\}\s*\}/g;
+	let j;
+	while ( ( j = jsxObjRe.exec( src ) ) !== null ) {
+		const strs = j[ 1 ].match( /:\s*['"]([A-Za-z_$][A-Za-z0-9_$]*)['"]/g ) || [];
+		for ( const s of strs ) {
+			found.add( s.replace( /^:\s*['"]/, '' ).replace( /['"]$/, '' ) );
 		}
 	}
 

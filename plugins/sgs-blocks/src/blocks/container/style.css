@@ -44,23 +44,40 @@
 	pointer-events: none;
 }
 
-/* Excludes every block's own private overlay span, not just the shared
-   wrapper's own .sgs-container__overlay — a composite that mirrors
-   sgs/container (hero, cta-section) but renders its OWN overlay (C3
-   double-emit guard, `no_overlay` opt) still carries the `sgs-container`
-   class, so this generic child rule matches its overlay span too unless
-   named here. Found live 2026-08-11: hero's gradient overlay CSS was
-   correct but the span collapsed to 0x0 because this rule overrode its
-   `position:absolute` to `position:relative` with no explicit size.
-   The same collision hit the FX route/shape decorations (D442 follow-up,
-   2026-08-12): `.sgs-fx-path-route` / `.sgs-fx-shape-visual` /
-   `.sgs-fx-shape-target` are appended as siblings of a block's root inside
-   `sgs/container`, so this generic child rule forced them to
-   `position:relative` too — breaking both the legacy inset-based sizing and
-   the CSS-anchor-positioned sizing that replaced it, since anchor()/
-   anchor-size() require `position:absolute`/`fixed` to resolve at all.
-   Excluded here on the same terms as the two overlay classes above. */
-.sgs-container > *:not(.sgs-container__overlay):not(.sgs-hero__overlay):not(.sgs-cta-section__overlay):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target) {
+/* CHILD-LIFT — deliberately ZERO specificity, via `:where()`.
+
+   WHAT THIS DOES. Lifts a container's children into their own stacking context
+   so they paint above the container's background and overlay layers.
+
+   WHY :where() AND NOT AN EXCLUSION LIST. Until 2026-08-25 each of the six rules
+   below carried its own hand-maintained `:not()` chain naming every decorative
+   layer that must NOT be lifted — 47 exclusions across the six, and they had
+   already drifted out of sync with one another.
+
+   That list was self-defeating. Each `:not(.x)` ADDS a class's specificity, so the
+   base rule reached (0,10,0) while a layer's own rule sits at (0,1,0). Every member
+   added made the NEXT unlisted layer more certain to lose. SIX separate features
+   learned this independently, each fixed by appending one more name: the shared
+   overlay, hero's overlay, cta-section's overlay, the fx path/shape visuals, the
+   container image background, the FR-38-31 wave-gradient canvas (which rendered
+   24px inset and 146px down, and grew its section to 5170px — an in-flow
+   height:100% child feeds its height back into the parent that sizes it, pushing
+   the drawing buffer to ~11 million pixels per frame), and the FR-38-32 particle
+   canvas.
+
+   At (0,0,0) it cannot recur: ANY element declaring its own `position` out-ranks
+   this rule automatically, with no registration anywhere. A new decorative layer
+   needs to do nothing except style itself.
+
+   ⛔ DO NOT reintroduce a `:not()` chain here. If a layer is lifted when it should
+   not be, it is missing its OWN `position` declaration — fix it at the layer,
+   never by re-growing a list in this file.
+
+   ⚠ KNOWN LIMIT, recorded not hidden: two sibling layers that BOTH declare
+   `position` at (0,1,0) resolve by source order, not by intent. That is unchanged
+   from before and has not occurred; if it does, give one an explicit z-index —
+   do not re-specify this rule. */
+:where(.sgs-container) > * {
 	position: relative;
 	z-index: 1;
 }
@@ -125,7 +142,7 @@
 /* Ensure content stays above shape dividers. FX decorations excluded — see
    the D442-follow-up note above the identical exclusion on the base
    .sgs-container rule; same collision, same fix. */
-.sgs-container--has-shape-divider > *:not(.sgs-shape-divider):not(.sgs-container__overlay):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target) {
+:where(.sgs-container--has-shape-divider) > * {
 	position: relative;
 	z-index: 1;
 }
@@ -140,15 +157,33 @@
 
 /* All child content sits above bg layers. FX decorations excluded — see the
    D442-follow-up note above the identical exclusion on the base
-   .sgs-container rule; same collision, same fix. */
-.sgs-container--has-bg-image > *:not(.sgs-container__overlay):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target),
-.sgs-container--has-bg-video > *:not(.sgs-container__video-bg):not(.sgs-container__overlay):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target) {
+   .sgs-container rule; same collision, same fix. `.sgs-container__image-bg`
+   (Phase 2 <img> LCP fast path) is excluded here too — the class this rule
+   selector is keyed on is `--has-bg-image`, which the wrapper adds whenever
+   $has_bg_image is true regardless of whether the ::before-CSS path or the
+   <img> path rendered it, so the <img> can reach this container. */
+:where(.sgs-container--has-bg-image) > *,
+:where(.sgs-container--has-bg-video) > * {
 	position: relative;
 	z-index: 1;
 }
 
 /* Background video */
 .sgs-container__video-bg {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	pointer-events: none;
+}
+
+/* Background image — real <img> LCP fast path (Phase 2). Mirrors
+   .sgs-container__video-bg above; object-fit/object-position are overridden
+   per-instance by the scoped <style> the wrapper emits (class-sgs-container-
+   wrapper.php), matching the ::before layer's background-size/-position. */
+.sgs-container__image-bg {
 	position: absolute;
 	inset: 0;
 	z-index: 0;
@@ -204,6 +239,52 @@
 	}
 }
 
+/* Ken-burns on the <img> LCP fast path — WITHOUT THIS, KEN BURNS IS DEAD IN THE
+   COMMONEST CASE. The rule above animates `background-size`/`background-position`
+   on the container, which only moves when the background is painted as a CSS
+   `background-image`. It often is not: SGS_Container_Wrapper renders the
+   background as a real <img class="sgs-container__image-bg"> whenever
+   `$has_bg_image && ! $has_bg_video && $sgs_bg_img_is_simple`
+   (class-sgs-container-wrapper.php ~L1129, the Phase 2 LCP fast path), while the
+   `sgs-container--ken-burns` class is added on `$has_bg_image && ! $has_bg_video`
+   alone (~L1607) with NO check on `$sgs_bg_img_is_simple`. The two conditions are
+   independent, so a plain background image with no responsive tiers — the simplest
+   and most common setup a client will pick — gets the class, has no
+   background-image to resize, and animates nothing at all. Silently: every
+   computed style still resolves, so a style-based check cannot see it.
+
+   Fixing it here rather than by suppressing the <img> path keeps the LCP benefit,
+   and is strictly better motion: `transform` is GPU-composited, whereas animating
+   `background-size` forces a full repaint every frame.
+
+   The <img> is `position:absolute; inset:0; width/height:100%; object-fit:cover`
+   (see .sgs-container__image-bg above), so it already fills the container and a
+   scale-up has room to grow into without letterboxing; `--has-bg-image` sets
+   `overflow:hidden`, which clips the overflow. Nothing else animates this element:
+   image parallax uses `background-attachment:fixed` and extensions/parallax.js
+   contains no `transform` at all, so there is no transform to collide with. */
+.sgs-container--ken-burns > .sgs-container__image-bg {
+	animation: sgs-container-ken-burns-img var(--sgs-ken-burns-duration, 20s) ease-in-out infinite alternate;
+	transform-origin: center center;
+	will-change: transform;
+}
+
+/* Mirrors the background-image keyframes' feel: the same 110% -> 120% zoom, with
+   the drift expressed as a translate rather than a background-position shift.
+   Both are composited, so the pair animates as one property. */
+@keyframes sgs-container-ken-burns-img {
+	from { transform: scale(1.1) translate(0, 0); }
+	to   { transform: scale(1.2) translate(-2%, 2%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-container--ken-burns > .sgs-container__image-bg {
+		animation: none;
+		transform: none;
+		will-change: auto;
+	}
+}
+
 /* ===== SVG background layer (merged from sgs/svg-background 2026-05-28 D93) ===== */
 
 .sgs-container--has-bg-svg {
@@ -235,19 +316,19 @@
 /* Ensure content sits above background SVG layer. FX decorations excluded —
    see the D442-follow-up note above the identical exclusion on the base
    .sgs-container rule; same collision, same fix. */
-.sgs-container--has-bg-svg > *:not(.sgs-container__svg-bg):not(.sgs-container__overlay):not(.sgs-container__video-bg):not(.sgs-shape-divider):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target) {
+:where(.sgs-container--has-bg-svg) > * {
 	position: relative;
 	z-index: 1;
 }
 
 /* Foreground SVG: content sits below */
-.sgs-container--svg-foreground > *:not(.sgs-container__svg-bg):not(.sgs-container__overlay):not(.sgs-container__video-bg):not(.sgs-shape-divider):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target) {
+:where(.sgs-container--svg-foreground) > * {
 	position: relative;
 	z-index: 0;
 }
 
 /* Optional text shadow for readability over busy SVG layers */
-.sgs-container--svg-text-shadow > *:not(.sgs-container__svg-bg):not(.sgs-container__overlay):not(.sgs-container__video-bg):not(.sgs-shape-divider) {
+:where(.sgs-container--svg-text-shadow) > * {
 	text-shadow: 0 1px 4px rgba( 0, 0, 0, 0.35 );
 }
 

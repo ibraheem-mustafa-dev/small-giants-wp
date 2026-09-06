@@ -10,7 +10,7 @@
 
 ?>
 
-<!-- wp:sgs/container {"tagName":"div","layout":"flex","justifyContent":"center","flexDirection":"column","flexWrap":"nowrap"} -->
+<!-- wp:sgs/container {"tagName":"div","layout":"flex","justifyContent":"center","flexDirection":"column","flexWrap":"nowrap","templateLock":"contentOnly"} -->
 
 	<!-- wp:sgs/label {"text":"Our speciality","textColour":"primary"} /-->
 

@@ -150,6 +150,10 @@
 	height: var(--sgs-tile-size);
 	padding: var(--sgs-tile-padding, 10px);
 	background-color: var(--sgs-tile-bg, var(--wp--preset--color--surface-alt, #fff));
+	/* Gradient sibling (2026-09-04) — composites OVER background-color above;
+	 * unset falls back to "none" and paints nothing, leaving the flat colour
+	 * untouched. */
+	background-image: var(--sgs-tile-bg-gradient, none);
 	/* Clip the white fill to the PADDING box so the border sits AROUND the card,
 	 * not painted over it: the 10px border shows the band behind it (transparent
 	 * at rest) and turns gold on hover, framing the white tile rather than
@@ -194,11 +198,15 @@
  * `height` (not `max-height`) is deliberate — Bean's requirement is every
  * logo renders at the EXACT SAME height regardless of source aspect ratio.
  * `max-height` only clamps oversized sources; a naturally-short logo would
- * stay short. An explicit `height` + `object-fit: contain` forces every
- * logo to the identical rendered height, letter-boxing width as needed.
- * Height is derived from --sgs-tile-size (the fluid, column-driven, capped
- * tile size) minus the tile padding + border, so the logo and its tile grow
- * together with the strip width and hit the maxHeight cap in lock-step. */
+ * stay short. An explicit `height` forces every logo to the identical
+ * rendered height, letter-boxing width as needed — `object-fit` itself is
+ * now owned by the shared media-element atom layer's `.sgs-media-el` rule
+ * (assets/css/media-element.css), fed by this block's own `logoFit`
+ * control via the STORED_AS bridge (helpers-media-element.php); the marker
+ * class is added to each logo <img> in render.php. Height is derived from
+ * --sgs-tile-size (the fluid, column-driven, capped tile size) minus the
+ * tile padding + border, so the logo and its tile grow together with the
+ * strip width and hit the maxHeight cap in lock-step. */
 .sgs-brand-strip__logo,
 .sgs-brand-strip__item .sgs-media--sgs-brand-strip {
 	/* Logo fills the square tile's interior UP TO --sgs-logo-max-height, then
@@ -209,7 +217,6 @@
 	height: min(calc(var(--sgs-tile-size) - var(--sgs-tile-padding, 10px) * 2 - var(--sgs-tile-border-thickness, 0px) * 2), var(--sgs-logo-max-height, 180px));
 	width: auto;
 	max-width: 100%;
-	object-fit: var(--sgs-logo-fit, contain);
 	display: block;
 }
 

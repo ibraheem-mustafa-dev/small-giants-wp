@@ -18,29 +18,24 @@
 	"supports": {
 		"anchor": true,
 		"className": true,
+		"interactivity": {
+			"clientNavigation": true
+		},
 		"html": false,
 		"color": false,
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"boxFamilies": {
 				"borderWidth": [
 					"borderWidth"
 				],
+				"borderRadius": [
+					"borderRadius"
+				],
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				]
 			},
 			"elements": {
@@ -63,18 +58,21 @@
 						"css:text-transform": "textTransform",
 						"css:text-decoration": "textDecoration",
 						"css:color": "textColour",
-						"css:background-image": "backgroundColourGradient",
 						"css:text-align": "textAlign",
+						"css:text-wrap": "textWrap",
+						"css:column-count": "textColumns",
+						"css:text-indent": "textIndent",
+						"css:writing-mode": "writingMode",
 						"css:font-family": "fontFamily",
-						"css:background-color": "backgroundColour",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
 						"css:border-color-gradient": "borderColourGradient",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-radius": "borderRadius",
 						"css:box-shadow": "boxShadow",
+						"css:box-shadow-color": "boxShadowColour",
 						"css:width": "customWidth",
 						"css:max-width": "maxWidth",
 						"css:transition-duration": "transitionDuration",
@@ -85,14 +83,35 @@
 						"hover": {
 							"attrMap": {
 								"css:color": "textColourHover",
-								"css:background-image": "backgroundColourHoverGradient",
-								"css:background-color": "backgroundColourHover",
 								"css:box-shadow": "boxShadowHover",
-								"css:color-gradient": "textColourHoverGradient"
+								"css:box-shadow-color": "boxShadowHoverColour",
+								"css:color-gradient": "textColourHoverGradient",
+								"css:border-color": "borderColourHover"
 							}
 						}
 					},
-					"_note": "Single-semantic-element block — the <p> root IS the wrapper. `color` support is `false` in this block's supports (no native color path), so css:color/background-color map to the SGS custom textColour/backgroundColour attrs directly, not native:. No `layer` — no children to arrange. scaleHover has no Spec 35 vocabulary member and is left unclaimed."
+					"_note": "Single-semantic-element block — the <p> root IS the wrapper. `color` support is `false` in this block's supports (no native color path), so css:color maps to the SGS custom textColour attr directly, not native:. No `layer` — no children to arrange. scaleHover has no Spec 35 vocabulary member and is left unclaimed. `css:background-color`/`css:background-image` (+ their Hover siblings) moved OFF this element onto the new `background` element below (2026-08-22, text/background pseudo-element split) — this element's `css:color-gradient` paints via `background-clip:text`, which would otherwise overwrite/clip a background painted on the SAME node."
+				},
+				"background": {
+					"label": "Background",
+					"order": 3,
+					"clusters": [
+						"fill"
+					],
+					"isWrapper": false,
+					"attrMap": {
+						"css:background-color": "backgroundColour",
+						"css:background-image": "backgroundColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:background-image": "backgroundColourHoverGradient"
+							}
+						}
+					},
+					"_note": "The block's own background paint, moved off the `text` element onto a `::after` pseudo-element layer (render.php) so a text gradient on the SAME root node (`text` element's `css:color-gradient`) cannot clip or overwrite it via `background-clip:text`."
 				},
 				"first-letter": {
 					"label": "Drop cap (first letter)",
@@ -105,12 +124,31 @@
 						"css:font-weight": "firstLetterFontWeight",
 						"css:color": "firstLetterColour"
 					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "firstLetterColourHover"
+							}
+						}
+					},
 					"_note": "Opt-in via the `dropCap` boolean (render.php:463-480) — emits a scoped `::first-letter` pseudo-element rule, a genuinely distinct visual element from the body text. line-height/letter-spacing/font-style/text-transform/text-decoration/text-align/font-family have no first-letter-specific attribute — honest gaps, the drop-cap render hardcodes float:left/line-height:0.8/margins rather than exposing them as controls."
 				}
 			}
 		}
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"text": {
 			"type": "string",
 			"default": "",
@@ -186,22 +224,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"textAlign": {
 			"type": "string",
 			"enum": [
@@ -210,6 +232,35 @@
 				"center",
 				"right",
 				"justify"
+			],
+			"default": ""
+		},
+		"textWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"textColumns": {
+			"type": "number"
+		},
+		"textIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"writingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
 			],
 			"default": ""
 		},
@@ -255,6 +306,12 @@
 			"type": "object",
 			"default": {}
 		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"borderStyle": {
 			"type": "string",
 			"enum": [
@@ -268,7 +325,7 @@
 				"inset",
 				"outset"
 			],
-			"default": "none"
+			"default": "solid"
 		},
 		"borderColour": {
 			"type": "string",
@@ -284,6 +341,14 @@
 			"default": ""
 		},
 		"boxShadowHover": {
+			"type": "string",
+			"default": ""
+		},
+		"boxShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"boxShadowHoverColour": {
 			"type": "string",
 			"default": ""
 		},
@@ -332,6 +397,14 @@
 				"linear"
 			],
 			"default": "ease"
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"firstLetterColourHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

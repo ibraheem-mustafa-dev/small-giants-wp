@@ -88,6 +88,8 @@ def _bootstrap_db_consistency():
     _load("check_variant_reseed")
     _load("check_orphan_roles")
     _load("check_tier_composition")
+    _load("check_dead_composition_signal")
+    _load("check_role_resolution_guess")
 
 
 _bootstrap_db_consistency()
@@ -95,11 +97,13 @@ _bootstrap_db_consistency()
 from db_consistency.models import (  # noqa: E402
     Violation, routing_key, composition_key, variant_key,
     variant_reseed_key, orphan_role_key, tier_composition_key,
+    dead_composition_signal_key, role_resolution_guess_key,
 )
 from db_consistency import (  # noqa: E402
     check_routing, check_composition, check_variants,
     check_overrides_drift, check_variant_reseed,
     check_orphan_roles, check_tier_composition,
+    check_dead_composition_signal, check_role_resolution_guess,
 )
 from db_consistency.resolver_bridge import (  # noqa: E402
     lift_producible_attrs,
@@ -138,9 +142,12 @@ def _make_minimal_db(
     block_attributes: list[tuple],   # (block_slug, attr_name) or (block_slug, attr_name, role)
     blocks: list[tuple] | None = None,  # (slug, variant_attr) or (slug, variant_attr, tier)
     variant_slots: list[tuple] | None = None,  # (block_slug, variant_value, unique_slot)
+    variant_composition_slots: list[tuple] | None = None,  # (block_slug, variant_value, unique_child_slug)
     block_composition: list[tuple] | None = None,  # (block_slug, has_inner_blocks) or (..., composition_role, container_kind)
     roles: list[tuple] | None = None,  # (role_name,)
     variant_enum: list[tuple] | None = None,  # (block_slug, attr_name, enum_values_json)
+    block_capabilities: list[tuple] | None = None,  # (block_slug, capability)
+    emit_shape_attrs: list[tuple] | None = None,  # (block_slug, attr_name) -> emit_shape='child'
 ) -> sqlite3.Connection:
     """Create a minimal in-memory SQLite DB for unit tests.
 
@@ -153,6 +160,14 @@ def _make_minimal_db(
     the variant-attr's own declared enum roster (check #3's ambiguity rule
     reads this to see zero-discriminator variants that never get a
     variant_slots row).
+    variant_composition_slots rows are 3-tuples (block_slug, variant_value,
+    unique_child_slug) — the InnerBlocks-composition discriminator half of
+    check #3's FULL signature (2026-09-05 update).
+    block_capabilities rows are 2-tuples (block_slug, capability) — check
+    #10's second content-extraction path ('array-content-lift').
+    emit_shape_attrs rows are 2-tuples (block_slug, attr_name) — each gets
+    emit_shape='child' on its block_attributes row, check #10's third
+    content-extraction path.
     """
     conn = sqlite3.connect(":memory:")
     conn.execute(
@@ -161,7 +176,12 @@ def _make_minimal_db(
     )
     conn.execute(
         "CREATE TABLE block_attributes "
-        "(block_slug TEXT, attr_name TEXT, role TEXT, canonical_slot TEXT, enum_values TEXT)"
+        "(block_slug TEXT, attr_name TEXT, role TEXT, canonical_slot TEXT, "
+        "enum_values TEXT, emit_shape TEXT)"
+    )
+    conn.execute(
+        "CREATE TABLE block_capabilities "
+        "(block_slug TEXT, capability TEXT)"
     )
     conn.execute(
         "CREATE TABLE blocks "
@@ -170,6 +190,10 @@ def _make_minimal_db(
     conn.execute(
         "CREATE TABLE variant_slots "
         "(block_slug TEXT, variant_value TEXT, unique_slot TEXT)"
+    )
+    conn.execute(
+        "CREATE TABLE variant_composition_slots "
+        "(block_slug TEXT, variant_value TEXT, unique_child_slug TEXT)"
     )
     conn.execute(
         "CREATE TABLE block_composition "
@@ -202,6 +226,11 @@ def _make_minimal_db(
                 conn.execute("INSERT INTO blocks (slug, variant_attr, tier) VALUES (?,?,?)", row)
     if variant_slots:
         conn.executemany("INSERT INTO variant_slots VALUES (?,?,?)", variant_slots)
+    if variant_composition_slots:
+        conn.executemany(
+            "INSERT INTO variant_composition_slots VALUES (?,?,?)",
+            variant_composition_slots,
+        )
     if block_composition:
         for row in block_composition:
             if len(row) == 2:
@@ -221,6 +250,16 @@ def _make_minimal_db(
         conn.executemany(
             "INSERT INTO block_attributes (block_slug, attr_name, enum_values) VALUES (?,?,?)",
             variant_enum,
+        )
+    if block_capabilities:
+        conn.executemany(
+            "INSERT INTO block_capabilities (block_slug, capability) VALUES (?,?)",
+            block_capabilities,
+        )
+    if emit_shape_attrs:
+        conn.executemany(
+            "INSERT INTO block_attributes (block_slug, attr_name, emit_shape) VALUES (?,?,'child')",
+            emit_shape_attrs,
         )
     conn.commit()
     return conn
@@ -349,7 +388,19 @@ class TestCheck3LiveDB:
 
     @_skip_no_db
     def test_check3_hero_split_discriminators_safe(self, live_conn):
-        """After the fix, sgs/hero 'split' discriminators are splitImage+splitImageMobile only."""
+        """After the fix, sgs/hero 'split' discriminators are image-family attrs only.
+
+        2026-09-02 (Wave 7b): the literal names changed from
+        splitImage/splitImageMobile to splitImageUrl/splitImageUrlMobile —
+        block.json's composite splitImage/splitImageMobile attrs were
+        DELETED (their only remaining reason to exist, the cloning
+        pipeline's DB anchor, moved to splitMediaType — see
+        scripts/data/scalar-media-roles.json's __RE_ANCHOR_2026_09_02 note),
+        so variant_slots' auto-derivation (which reads live block.json
+        attrs) correctly picked new discriminating slots from what block.json
+        NOW declares. This is the mechanism adapting correctly, not a design
+        break — assert on the CURRENT real attr names, not the deleted ones.
+        """
         split_slots = live_conn.execute(
             "SELECT unique_slot FROM variant_slots WHERE block_slug='sgs/hero' AND variant_value='split'"
         ).fetchall()
@@ -359,8 +410,9 @@ class TestCheck3LiveDB:
             "Run: python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 1"
         )
         # The safe discriminators should be present.
-        assert "splitImage" in slot_names or "splitImageMobile" in slot_names, (
-            "Expected splitImage or splitImageMobile as hero 'split' discriminators after fix"
+        assert "splitImageUrl" in slot_names or "splitImageUrlMobile" in slot_names, (
+            f"Expected splitImageUrl or splitImageUrlMobile as hero 'split' discriminators "
+            f"after the 2026-09-02 re-anchor; got {slot_names!r}"
         )
 
 
@@ -458,6 +510,43 @@ class TestCheck3PlantedViolation:
         assert violations == [], (
             f"Expected 0 violations for a single empty-signature fallback, got {len(violations)}: "
             + "\n".join(v.detail for v in violations)
+        )
+
+    def test_check3_composition_signature_disambiguates_empty_attr_signature(self):
+        """Plant: two variants both with EMPTY variant_slots (attribute)
+        signatures — 'text-only' style, gate would previously flag them as
+        colliding (as sgs/nav-drawer's 'split-zone-serif'/'two-column-editorial'
+        pair genuinely did pre-fix). But ONE of them ('composed-variant') also
+        has a REAL, unique variant_composition_slots row — an InnerBlocks
+        composition discriminator. That must be enough to disambiguate it:
+        detect_variant can now tell them apart via composition even though
+        neither has a distinguishing styling attr. Only 'plain-variant' is left
+        as the single empty-FULL-signature fallback, so 0 violations expected.
+        """
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            blocks=[
+                ("sgs/test-block", "variant"),
+            ],
+            variant_slots=[],  # both variants have zero attribute-signature rows
+            variant_composition_slots=[
+                # Only 'composed-variant' gets a composition discriminator —
+                # 'plain-variant' gets none, so it stays the sole intentional
+                # empty-signature fallback.
+                ("sgs/test-block", "composed-variant", "sgs/card-grid"),
+            ],
+            variant_enum=[
+                ("sgs/test-block", "variant", '["plain-variant", "composed-variant"]'),
+            ],
+        )
+        violations = check_variants.run(conn)
+        conn.close()
+
+        assert violations == [], (
+            f"Expected 0 violations — 'composed-variant' has a unique composition "
+            f"discriminator even though its attribute signature is empty, got "
+            f"{len(violations)}: " + "\n".join(v.detail for v in violations)
         )
 
     def test_check3_ignores_empty_string_default_sentinel(self):
@@ -1319,3 +1408,425 @@ class TestNewModelKeys:
 
     def test_tier_composition_key_format(self):
         assert tier_composition_key("sgs/hero") == "tiercomp:sgs/hero"
+
+    def test_dead_composition_signal_key_format(self):
+        assert dead_composition_signal_key("sgs/counter") == "deadcomp:sgs/counter"
+
+
+# ===========================================================================
+# 11. Check #10 — dead composition discriminator (variant-composition-
+#     fingerprinting plan, Task 7 — the "protect the future" structural guard)
+# ===========================================================================
+
+class TestCheck10LiveDB:
+    """Check #10 on the real, live DB — real negative control."""
+
+    @_skip_no_db
+    def test_check10_zero_violations_today(self, live_conn):
+        """After Task 5/6's nav-drawer fix, check #10 must return no violations —
+        the only block with variant_composition_slots rows (sgs/nav-drawer) now
+        has a real content-extraction path (derive_delegates_content()==1)."""
+        violations = check_dead_composition_signal.run(live_conn)
+        assert violations == [], (
+            f"Expected 0 dead-composition-signal violations on the live DB, got "
+            f"{len(violations)}: " + "\n".join(v.detail for v in violations)
+        )
+
+    @_skip_no_db
+    def test_check10_nav_drawer_has_real_extraction_path(self, live_conn):
+        """Ground the negative control: sgs/nav-drawer DOES have composition rows
+        AND DOES have a real extraction path today (Task 5 fixed the has_inner.py
+        regex) — this is the specific case the whole plan exists to fix, so the
+        test asserts the fix landed, not just that the check stayed quiet."""
+        rows = live_conn.execute(
+            "SELECT DISTINCT variant_value FROM variant_composition_slots "
+            "WHERE block_slug = 'sgs/nav-drawer'"
+        ).fetchall()
+        assert rows, (
+            "sgs/nav-drawer has no variant_composition_slots rows — the check "
+            "would trivially pass with nothing to inspect."
+        )
+        assert check_dead_composition_signal.derive_delegates_content("sgs/nav-drawer") == 1, (
+            "sgs/nav-drawer's derive_delegates_content() must be 1 (Task 5's "
+            "has_inner.py regex widening) for check #10 to correctly stay quiet."
+        )
+
+
+class TestCheck10PlantedViolation:
+    """Synthetic positive + negative controls — proves check #10 can both fire
+    and stay quiet, per this project's 'a check with no positive control passes
+    against a dead feature' doctrine. Uses a fake block slug with no real
+    src/blocks/ directory, so derive_delegates_content() fails CLOSED to 0 for
+    it (no source on disk to derive from) without needing to mock anything."""
+
+    def test_check10_flags_block_with_no_extraction_path(self):
+        """POSITIVE CONTROL: a block with a real variant_composition_slots row
+        and NONE of the three content-extraction paths must be flagged. This
+        is the exact shape of the original nav-drawer bug this check exists to
+        catch automatically for any future block."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            variant_composition_slots=[
+                ("sgs/fake-dead-block", "fake-variant", "sgs/card-grid"),
+            ],
+        )
+        violations = check_dead_composition_signal.run(conn)
+        conn.close()
+
+        assert len(violations) == 1, (
+            f"Expected 1 violation for a block with a composition discriminator "
+            f"and no extraction path, got {len(violations)}"
+        )
+        v = violations[0]
+        assert v.block == "sgs/fake-dead-block"
+        assert v.check == "dead_composition_signal"
+        assert "fake-variant" in v.detail
+        assert v.key == dead_composition_signal_key("sgs/fake-dead-block")
+
+    def test_check10_passes_block_with_array_content_lift_capability(self):
+        """NEGATIVE CONTROL (a): an 'array-content-lift' block_capabilities row
+        is enough on its own to clear the block, even with no real source dir."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            variant_composition_slots=[
+                ("sgs/fake-lift-block", "fake-variant", "sgs/card-grid"),
+            ],
+            block_capabilities=[
+                ("sgs/fake-lift-block", "array-content-lift"),
+            ],
+        )
+        violations = check_dead_composition_signal.run(conn)
+        conn.close()
+
+        assert violations == [], (
+            f"Expected 0 violations when an array-content-lift capability row "
+            f"exists, got {len(violations)}: " + "\n".join(v.detail for v in violations)
+        )
+
+    def test_check10_passes_block_with_emit_shape_child_attr(self):
+        """NEGATIVE CONTROL (b): a block_attributes row with emit_shape='child'
+        is enough on its own to clear the block."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            variant_composition_slots=[
+                ("sgs/fake-child-block", "fake-variant", "sgs/card-grid"),
+            ],
+            emit_shape_attrs=[
+                ("sgs/fake-child-block", "childItems"),
+            ],
+        )
+        violations = check_dead_composition_signal.run(conn)
+        conn.close()
+
+        assert violations == [], (
+            f"Expected 0 violations when an emit_shape='child' attribute exists, "
+            f"got {len(violations)}: " + "\n".join(v.detail for v in violations)
+        )
+
+    def test_check10_passes_block_with_real_delegates_content(self):
+        """NEGATIVE CONTROL (c): a REAL block that genuinely delegates content
+        (sgs/nav-drawer, post Task-5 fix) is not flagged even via the synthetic
+        in-memory DB path — proves path (a) alone is sufficient, using the real
+        derive_delegates_content() against real source on disk, not a mock."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            variant_composition_slots=[
+                ("sgs/nav-drawer", "split-zone-serif", "sgs/card-grid"),
+            ],
+        )
+        violations = check_dead_composition_signal.run(conn)
+        conn.close()
+
+        assert violations == [], (
+            f"Expected 0 violations for sgs/nav-drawer (real delegates_content==1 "
+            f"post Task-5 fix), got {len(violations)}: "
+            + "\n".join(v.detail for v in violations)
+        )
+
+    def test_check10_reports_all_affected_variants_for_one_block(self):
+        """A block with TWO dead-discriminator variants gets ONE violation
+        naming both — not two separate violations (block-level key, per the
+        module's design: one Violation per block, listing every affected
+        variant)."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            variant_composition_slots=[
+                ("sgs/fake-multi-block", "variant-a", "sgs/card-grid"),
+                ("sgs/fake-multi-block", "variant-b", "sgs/icon-list"),
+            ],
+        )
+        violations = check_dead_composition_signal.run(conn)
+        conn.close()
+
+        assert len(violations) == 1, (
+            f"Expected exactly 1 violation (one per block) for a block with 2 "
+            f"dead-discriminator variants, got {len(violations)}"
+        )
+        v = violations[0]
+        assert "variant-a" in v.detail
+        assert "variant-b" in v.detail
+        assert v.key == dead_composition_signal_key("sgs/fake-multi-block")
+
+
+# ===========================================================================
+# 12. Check #12 — order-dependent role resolution (universal-variant-detection
+#     -audit plan, Part C — the structural guard for the defect class Part A
+#     fixed in _slot_extraction_role()).
+# ===========================================================================
+
+import contextlib  # noqa: E402
+import os  # noqa: E402
+import tempfile  # noqa: E402
+
+# The check imports the REAL _slot_extraction_role, which reads the DB through
+# converter/db/db_lookup.py's module-level SGS_DB path (plus several lru_caches).
+# The fixture below repoints that path at an on-disk fixture DB so the real
+# function and the check's own conn read the SAME planted data — a positive
+# control that exercises the live resolver, not a re-implementation of it.
+_db_lookup = check_role_resolution_guess.db_lookup
+
+
+def _clear_db_lookup_caches() -> None:
+    """Clear every lru_cache in db_lookup (discovered, not enumerated — an
+    enumerated list would silently stop clearing a cache added later)."""
+    for obj in vars(_db_lookup).values():
+        clear = getattr(obj, "cache_clear", None)
+        if callable(clear):
+            clear()
+
+
+@contextlib.contextmanager
+def _fixture_db(
+    *,
+    roles: list[tuple[str, str]],
+    blocks: list[str],
+    slots: list[tuple[str, str]],
+    block_attributes: list[tuple[str, str, str, "str | None"]],
+    array_item_schema: "list[tuple[str, str, str, int, str | None]] | None" = None,
+):
+    """Yield an open connection to an ON-DISK fixture DB, with db_lookup
+    repointed at it for the duration. Restores the real path + clears caches on
+    exit, so a fixture can never leak into the live-DB tests."""
+    fd, path = tempfile.mkstemp(suffix=".db")
+    os.close(fd)
+    conn = sqlite3.connect(path)
+    conn.execute("CREATE TABLE roles (role_name TEXT, classification TEXT)")
+    conn.executemany("INSERT INTO roles VALUES (?,?)", roles)
+    conn.execute("CREATE TABLE blocks (slug TEXT, status TEXT)")
+    conn.executemany("INSERT INTO blocks VALUES (?, 'built')", [(b,) for b in blocks])
+    conn.execute(
+        "CREATE TABLE slots (slot_name TEXT, scope TEXT, standalone_block TEXT, aliases TEXT)"
+    )
+    conn.executemany("INSERT INTO slots VALUES (?, 'element', ?, NULL)", slots)
+    conn.execute(
+        # attr_type + derived_selector are not read by this check, but the REAL
+        # db_lookup.block_attrs() the resolver calls SELECTs them by name — a
+        # fixture missing them makes the live function raise, not pass.
+        "CREATE TABLE block_attributes "
+        "(block_slug TEXT, attr_name TEXT, attr_type TEXT, role TEXT, "
+        " canonical_slot TEXT, derived_selector TEXT)"
+    )
+    conn.executemany(
+        "INSERT INTO block_attributes VALUES (?,?,'string',?,?,NULL)",
+        [(b, a, r, cs) for b, a, r, cs in block_attributes],
+    )
+    conn.execute(
+        "CREATE TABLE array_item_schema "
+        "(block_slug TEXT, array_attr TEXT, field_key TEXT, field_order INTEGER, role TEXT)"
+    )
+    conn.executemany(
+        "INSERT INTO array_item_schema VALUES (?,?,?,?,?)", array_item_schema or []
+    )
+    conn.commit()
+
+    real_path = _db_lookup.SGS_DB
+    _db_lookup.SGS_DB = Path(path)
+    _clear_db_lookup_caches()
+    try:
+        yield conn
+    finally:
+        _db_lookup.SGS_DB = real_path
+        _clear_db_lookup_caches()
+        conn.close()
+        with contextlib.suppress(OSError):
+            os.remove(path)
+
+
+_FIXTURE_ROLES = [
+    ("text-content", "content-bearing"),
+    ("image-object", "content-bearing"),
+    ("padding", "styling-behaviour"),
+]
+
+
+class TestCheck12PositiveControl:
+    """Proves check #12 both FIRES on a real reproduction of the defect and
+    stays SILENT on the shapes that are legitimately fine — per this project's
+    'a check that has never fired can't prove it works' doctrine."""
+
+    def test_check12_fires_on_order_dependent_resolution(self):
+        """POSITIVE CONTROL: 'fake-slot' routes to sgs/fake-target, which has
+        TWO content-bearing attrs with DIFFERENT roles and NEITHER carrying
+        canonical_slot='fake-slot'. _slot_extraction_role() therefore returns
+        whichever row comes first — the exact shape of the sgs/trust-bar
+        image-badge bug — and must be flagged."""
+        with _fixture_db(
+            roles=_FIXTURE_ROLES,
+            blocks=["sgs/fake-target"],
+            slots=[("fake-slot", "sgs/fake-target")],
+            block_attributes=[
+                ("sgs/fake-target", "videoUrl", "text-content", "video"),
+                ("sgs/fake-target", "imageUrl", "image-object", "image"),
+                ("sgs/fake-target", "padding", "padding", None),
+            ],
+            array_item_schema=[
+                ("sgs/fake-consumer", "items", "fake-slot", 0, None),
+            ],
+        ) as conn:
+            violations = check_role_resolution_guess.run(conn)
+
+        assert len(violations) == 1, (
+            f"Expected exactly 1 order-dependent-resolution violation, got "
+            f"{len(violations)}: " + "\n".join(v.detail for v in violations)
+        )
+        v = violations[0]
+        assert v.check == "role_resolution_guess"
+        assert v.block == "sgs/fake-target"
+        assert v.key == role_resolution_guess_key("fake-slot")
+        # The candidate roles that make it a guess must be named in the report.
+        assert "image-object" in v.detail and "text-content" in v.detail
+        # The concrete affected array-item field must be named, not just the slot.
+        assert "sgs/fake-consumer.items.fake-slot" in v.detail
+        # The fix must name both real routes.
+        assert "items.properties" in v.fix and "canonical_slot" in v.fix
+
+    def test_check12_silent_when_a_candidate_owns_the_slot(self):
+        """NEGATIVE CONTROL (CONFIRMED): identical fixture except one candidate
+        carries canonical_slot='fake-slot', so the exact-match branch anchors
+        the answer. The SAME fixture with the deliberate break removed — it
+        proves the check is keyed on the defect, not on the fixture."""
+        with _fixture_db(
+            roles=_FIXTURE_ROLES,
+            blocks=["sgs/fake-target"],
+            slots=[("fake-slot", "sgs/fake-target")],
+            block_attributes=[
+                ("sgs/fake-target", "videoUrl", "text-content", "video"),
+                ("sgs/fake-target", "imageUrl", "image-object", "fake-slot"),
+            ],
+            array_item_schema=[
+                ("sgs/fake-consumer", "items", "fake-slot", 0, None),
+            ],
+        ) as conn:
+            violations = check_role_resolution_guess.run(conn)
+
+        assert violations == [], (
+            "Expected 0 violations when a candidate's canonical_slot matches "
+            "the slot: " + "\n".join(v.detail for v in violations)
+        )
+
+    def test_check12_silent_when_all_candidates_share_one_role(self):
+        """NEGATIVE CONTROL (DETERMINATE): the fallback fires (no candidate
+        matches the slot) but every candidate carries the SAME role, so the
+        answer cannot change with row order. Documented-legitimate — the
+        'label -> sgs/label.text' shape — and must not be flagged."""
+        with _fixture_db(
+            roles=_FIXTURE_ROLES,
+            blocks=["sgs/fake-target"],
+            slots=[("fake-slot", "sgs/fake-target")],
+            block_attributes=[
+                ("sgs/fake-target", "text", "text-content", "text"),
+                ("sgs/fake-target", "subtitle", "text-content", "subtitle"),
+            ],
+        ) as conn:
+            violations = check_role_resolution_guess.run(conn)
+
+        assert violations == [], (
+            "Expected 0 violations when every candidate carries the same role: "
+            + "\n".join(v.detail for v in violations)
+        )
+
+    def test_check12_silent_when_target_block_has_no_content_attrs(self):
+        """NEGATIVE CONTROL: a target block with no content-bearing attribute at
+        all — the resolver returns None, there is no role to guess."""
+        with _fixture_db(
+            roles=_FIXTURE_ROLES,
+            blocks=["sgs/fake-target"],
+            slots=[("fake-slot", "sgs/fake-target")],
+            block_attributes=[
+                ("sgs/fake-target", "padding", "padding", None),
+            ],
+        ) as conn:
+            violations = check_role_resolution_guess.run(conn)
+
+        assert violations == [], (
+            "Expected 0 violations when the target block has no content-bearing "
+            "attribute: " + "\n".join(v.detail for v in violations)
+        )
+
+    def test_check12_drift_guard_fires_when_resolver_shape_changes(self):
+        """The check calls the REAL _slot_extraction_role. If that function is
+        refactored into a shape this check no longer models, the check must say
+        so LOUDLY rather than silently classify everything as passing (the
+        'a check that stopped detecting looks identical to a clean tree'
+        failure mode). Simulated by making it return an off-roster role."""
+        with _fixture_db(
+            roles=_FIXTURE_ROLES,
+            blocks=["sgs/fake-target"],
+            slots=[("fake-slot", "sgs/fake-target")],
+            block_attributes=[
+                ("sgs/fake-target", "videoUrl", "text-content", "video"),
+                ("sgs/fake-target", "imageUrl", "image-object", "image"),
+            ],
+        ) as conn:
+            with patch.object(
+                check_role_resolution_guess,
+                "_slot_extraction_role",
+                lambda _slot: "role-that-does-not-exist",
+            ):
+                violations = check_role_resolution_guess.run(conn)
+
+        assert len(violations) == 1, (
+            f"Expected 1 drift violation, got {len(violations)}"
+        )
+        assert violations[0].key == role_resolution_guess_key("drift:fake-slot")
+        assert "CHECK DRIFT" in violations[0].detail
+
+
+class TestCheck12LiveDB:
+    """Check #12 against the real DB — grounds the positive control in the
+    residual the resolver's own docstring documents as still open."""
+
+    @_skip_no_db
+    def test_check12_surfaces_the_documented_media_residual(self, live_conn):
+        """_slot_extraction_role()'s docstring names avatar/background-image/
+        background-video -> sgs/media -> role 'svg' as a KNOWN, still-unfixed
+        wrong-role guess. The check must surface all three — if it does not,
+        it is not detecting the defect class it was built for."""
+        violations = check_role_resolution_guess.run(live_conn)
+        keys = {v.key for v in violations}
+        for slot in ("avatar", "background-image", "background-video"):
+            assert role_resolution_guess_key(slot) in keys, (
+                f"Check #12 did not surface the documented residual slot "
+                f"'{slot}'. Found: {sorted(keys)}"
+            )
+        media = [v for v in violations if v.key == role_resolution_guess_key("avatar")][0]
+        assert media.block == "sgs/media"
+        assert "'svg'" in media.detail
+
+    @_skip_no_db
+    def test_check12_does_not_flag_confirmed_or_determinate_slots(self, live_conn):
+        """A real negative control on live data: the 'label' slot resolves to
+        sgs/label, whose single content-bearing attr is 'text' — a DETERMINATE
+        fallback the resolver's docstring calls legitimate. It must not be
+        flagged, or the check would fire on correct code."""
+        violations = check_role_resolution_guess.run(live_conn)
+        keys = {v.key for v in violations}
+        assert role_resolution_guess_key("label") not in keys, (
+            "Check #12 flagged the 'label' slot, whose fallback is "
+            "deterministic (one candidate role) — that is a false positive."
+        )

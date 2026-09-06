@@ -8,15 +8,12 @@
  * SGS_Container_Wrapper (section KIND) per composite-mirror (R-31-9 / D294) —
  * no divergent per-block styling path.
  *
- * Rendered with tag <header> (FR-37-13 fix B, D375): this block IS the site
- * banner landmark. The SGS header engine (Sgs_Header_Rules::filter_template_part)
- * short-circuits core/template-part on every request via the priority-9999
- * default rule, so core never emits its own <header class="wp-block-template-part">
- * wrapper — leaving the page with zero <header> landmarks and the scroll-behaviour
- * JS/CSS (header-behaviours) targeting an element that never rendered (all four
- * behaviours silently dead, live-proven 2026-07-23). Emitting <header> here revives
- * sticky/transparent/shrink/hide-on-scroll AND adds the missing banner landmark.
- * 'header' is in SGS_Container_Wrapper's tag allowlist. The behaviours key on the
+ * Rendered with tag <header> (D375): this block IS the site banner landmark.
+ * The SGS header engine (Sgs_Header_Rules::filter_template_part) short-circuits
+ * core/template-part on every request via the priority-9999 default rule, so
+ * core never emits its own <header class="wp-block-template-part"> wrapper.
+ * Emitting <header> here provides sticky/transparent/shrink/hide-on-scroll AND
+ * the banner landmark. 'header' is in SGS_Container_Wrapper's tag allowlist. The behaviours key on the
  * block-guaranteed '.sgs-site-header' class. No nested landmark in the current
  * template roster: rows render as <div> (site-header-row) and the engine's
  * short-circuit means core's <header class="wp-block-template-part"> wrapper is not
@@ -41,13 +38,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-breakpoints.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 
-$sgs_css_length  = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // Deterministic, content-addressed uid — mirrors SGS_Container_Wrapper's own
 // md5( wp_json_encode( $attributes ) ) derivation (class-sgs-container-wrapper.php)
 // rather than the per-request counter wp_unique_id(): identical header attributes
@@ -63,74 +53,63 @@ $css = '';
 // ── WP-native colour / border supports — no-inline contract (Spec 32). ──────────
 // Mirrors sgs/site-header-row + sgs/feature-grid: skip-serialised supports are
 // read from $attributes['style'] and emitted into this block's scoped <style>.
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$sh_style_engine_args = array();
 
-	$sh_color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$sh_color_args['text'] = (string) $attributes['style']['color']['text'];
-	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$sh_color_args['background'] = (string) $attributes['style']['color']['background'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$sh_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $sh_color_args ) ) {
-		$sh_style_engine_args['color'] = $sh_color_args;
-	}
+$sh_style_engine_args = array();
 
-	$sh_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$sh_border_args['color'] = (string) $attributes['style']['border']['color'];
+// Colour comes from SGS-OWNED attributes, not the native supports (FR-37-44).
+// block.json still DECLARES supports.color — the audit-block-uniformity gate
+// requires the key to be present as a pipeline/DB contract signal — but every
+// sub-flag is false, so WordPress renders no colour panel of its own and never
+// writes $attributes['style']['color'] at all. Reading it here would be dead code.
+// The header mirrors sgs/site-header-row exactly — same attribute names, same
+// style engine, same scoped emission — so the two read as one system.
+// ⚠ EVERY value goes through sgs_colour_value() before the style engine.
+// DesignTokenPicker stores a token SLUG ('surface') when a palette swatch is
+// picked with linked:true — see its own docblock — and the style engine does
+// NOT resolve a bare slug: it would emit the invalid `background-color:surface`.
+// sgs_colour_value() turns a slug into var(--wp--preset--color--surface),
+// passes a raw hex through untouched, and rejects a declaration breakout
+// riding a var() passthrough.
+$sh_color_args = array();
+if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
+	$sh_text_value = sgs_colour_value( (string) $attributes['textColour'] );
+	if ( '' !== $sh_text_value ) {
+		$sh_color_args['text'] = $sh_text_value;
 	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$sh_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+}
+if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+	$sh_bg_value = sgs_colour_value( (string) $attributes['backgroundColour'] );
+	if ( '' !== $sh_bg_value ) {
+		$sh_color_args['background'] = $sh_bg_value;
 	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$sh_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+}
+if ( isset( $attributes['backgroundColourGradient'] ) && '' !== $attributes['backgroundColourGradient'] ) {
+	$sh_gradient_value = sgs_colour_value( (string) $attributes['backgroundColourGradient'] );
+	if ( '' !== $sh_gradient_value ) {
+		$sh_color_args['gradient'] = $sh_gradient_value;
 	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$sh_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $sh_radius_raw ) && '' !== $sh_radius_raw ) {
-			$sh_border_args['radius'] = $sgs_css_length( $sh_radius_raw );
-		} elseif ( is_array( $sh_radius_raw ) ) {
-			$sh_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sh_corner ) {
-				if ( ! empty( $sh_radius_raw[ $sh_corner ] ) ) {
-					$sh_radius_clean[ $sh_corner ] = $sgs_css_length( $sh_radius_raw[ $sh_corner ] );
-				}
-			}
-			if ( ! empty( $sh_radius_clean ) ) {
-				$sh_border_args['radius'] = $sh_radius_clean;
-			}
-		}
-	}
-	if ( ! empty( $sh_border_args ) ) {
-		$sh_style_engine_args['border'] = $sh_border_args;
-	}
+}
+if ( ! empty( $sh_color_args ) ) {
+	$sh_style_engine_args['color'] = $sh_color_args;
+}
 
-	if ( ! empty( $sh_style_engine_args ) ) {
-		$sh_scoped_styles = wp_style_engine_get_styles(
-			$sh_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $sh_scoped_styles['css'] ) ) {
-			$css .= $sh_scoped_styles['css'];
-		}
+// (native border_args removed by the Shape-B migration -- width/style/colour
+//  are block-private attrs now, emitted below)
+
+if ( ! empty( $sh_style_engine_args ) ) {
+	$sh_scoped_styles = wp_style_engine_get_styles(
+		$sh_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $sh_scoped_styles['css'] ) ) {
+		$css .= $sh_scoped_styles['css'];
 	}
 }
 
-$sh_preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$sh_preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
-if ( '' !== $sh_preset_text_slug ) {
-	$classes[] = 'has-text-color';
-	$classes[] = 'has-' . $sh_preset_text_slug . '-color';
-}
-if ( '' !== $sh_preset_bg_slug ) {
-	$classes[] = 'has-background';
-	$classes[] = 'has-' . $sh_preset_bg_slug . '-background-color';
-}
+// WordPress injects the `textColor` / `backgroundColor` slug attributes ONLY
+// while supports.color's sub-flags are true; with them false those attributes
+// are never written, so the has-*-color classes could only ever come from
+// stale stored content.
 
 // ── Header-level tri-state behaviours (FR-37-14, Spec 35 T1.4) ──────────────
 // The body-class mechanism (Sgs_Header_Behaviours::add_body_classes) is
@@ -162,19 +141,46 @@ $sh_sticky      = isset( $attributes['headerSticky'] ) ? $attributes['headerStic
 $sh_transparent = isset( $attributes['headerTransparent'] ) ? $attributes['headerTransparent'] : array();
 $sh_shrink      = isset( $attributes['headerShrink'] ) ? $attributes['headerShrink'] : array();
 $sh_hide        = isset( $attributes['headerHideOnScroll'] ) ? $attributes['headerHideOnScroll'] : array();
+$sh_contrast    = isset( $attributes['contrastSafe'] ) ? $attributes['contrastSafe'] : array();
+
+// FORCE-SOLID IS A TRANSPARENT SUPPRESSOR, NOT A COMPETING PAINT (2026-08-19).
+// The retired body-class CSS made 'force-solid' fight Transparent with
+// `background:… !important`. That does not survive being made per-device: a
+// tier that stops being force-solid has no clean way to UNDO an !important
+// background (`revert` would revert past the block's own background too), so
+// the mode would leak across tiers. Resolving it here instead — force-solid
+// simply means "do not go transparent at this tier" — removes the fight
+// entirely: no !important, no cancel declaration, and Transparent's own
+// merge below stays the single writer of `background`/`position` as designed.
+// Every tier is resolved concrete, which the emitters handle identically (the
+// differs-from-the-tier-above minimisation still collapses equal tiers).
+// DIRECTION. Transparent has TWO states — see-through at rest, solid once
+// scrolled. `headerTransparentDirection` chooses which state is which. It
+// adds NO new CSS mechanism: it swaps which of the two existing
+// rules (the resting one, or the `.is-header-scrolled` one) carries the
+// transparency.
+$sh_direction   = isset( $attributes['headerTransparentDirection'] )
+	? (string) $attributes['headerTransparentDirection']
+	: 'transparent-first';
+$sh_solid_first = ( 'solid-first' === $sh_direction );
+
+$sh_transparent_effective = array();
+foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sh_tier ) {
+	$sh_tier_transparent = sgs_resolve_tier( $sh_transparent, $sh_tier, 'off' );
+	$sh_tier_contrast    = sgs_resolve_tier( $sh_contrast, $sh_tier, 'none' );
+	$sh_transparent_effective[ $sh_tier ] = ( 'force-solid' === $sh_tier_contrast['value'] )
+		? 'off'
+		: $sh_tier_transparent['value'];
+}
 
 // Sticky + Transparent both write to the SAME base selector's `position` /
-// `top` / `z-index` — QC (2026-07-28) proved that emitting each behaviour's
-// CSS independently (each with its own unconditional `!important` off-decl)
-// let a later-emitted OFF behaviour's cancel-declaration clobber an earlier
-// ON behaviour's declaration via plain CSS source order, at every viewport.
-// Fixed via sgs_merge_tri_state_declarations(): resolves both per tier FIRST
-// and emits ONE set of declarations per tier, single writer per property —
-// an off/never-configured behaviour now contributes nothing at all (no more
-// cancel-decl to clobber anyone), and if both are ever genuinely ON for the
-// same tier, Sticky (listed first) wins position/top/z-index while
-// Transparent still contributes its own non-colliding `background`/`left`/
-// `right` (documented precedence, not an accident of source order).
+// `top` / `z-index`. sgs_merge_tri_state_declarations() resolves both per
+// tier FIRST and emits ONE set of declarations per tier, single writer per
+// property — an off/never-configured behaviour contributes nothing at all,
+// and if both are ever genuinely ON for the same tier, Sticky (listed first)
+// wins position/top/z-index while Transparent still contributes its own
+// non-colliding `background`/`left`/`right` (documented precedence, not an
+// accident of source order).
 $css .= sgs_merge_tri_state_declarations(
 	$root_sel,
 	array(
@@ -187,7 +193,18 @@ $css .= sgs_merge_tri_state_declarations(
 			),
 		),
 		array(
-			'raw'   => $sh_transparent,
+			// Under solid-first the header RESTS solid, so the resting rule must
+			// not receive the transparent declarations at all — transparency
+			// moves to the scrolled rule below. Passing an all-off object (not
+			// an empty one) keeps every tier concrete, which is what stops a
+			// stored desktop value cascading back in.
+			'raw'   => $sh_solid_first
+				? array(
+					'desktop' => 'off',
+					'tablet'  => 'off',
+					'mobile'  => 'off',
+				)
+				: $sh_transparent_effective,
 			'props' => array(
 				'position'   => 'absolute',
 				'top'        => '0',
@@ -214,13 +231,59 @@ $css .= sgs_merge_tri_state_declarations(
 // one regardless of selector specificity or source order, so the extra
 // `.is-header-scrolled` class here never mattered; the missing `!important`
 // did. Token-based (theme surface preset), never hardcoded.
-$css .= sgs_emit_tier_rules(
-	$root_sel . '.is-header-scrolled',
-	$sh_transparent,
-	'background:var(--wp--preset--color--surface,#ffffff) !important;',
-	'',
-	'off'
-);
+// SCROLLED STATE — the other half of the transparent pair, client-reachable via
+// backgroundColourScrolled / backgroundColourScrolledGradient / textColourScrolled,
+// falling back to the same surface token when unset.
+//
+// MUST CARRY `!important` — do not drop it (see the root-cause note above:
+// P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING).
+//
+// Built by hand rather than through wp_style_engine_get_styles() for exactly
+// that reason — the style engine has no way to emit `!important`.
+if ( $sh_solid_first ) {
+	// Inverted pair: solid at rest (emitted above), see-through once scrolled.
+	$css .= sgs_emit_tier_rules(
+		$root_sel . '.is-header-scrolled',
+		$sh_transparent_effective,
+		'background:transparent !important;',
+		'',
+		'off'
+	);
+} else {
+	$sh_scrolled_decls = '';
+
+	$sh_scrolled_bg = isset( $attributes['backgroundColourScrolled'] )
+		? sgs_colour_value( (string) $attributes['backgroundColourScrolled'] )
+		: '';
+	$sh_scrolled_decls .= 'background:' . ( '' !== $sh_scrolled_bg
+		? $sh_scrolled_bg
+		: 'var(--wp--preset--color--surface,#ffffff)' ) . ' !important;';
+
+	// A gradient paints via background-image, so it LAYERS over the colour
+	// above rather than replacing it — the colour stays as the fallback for a
+	// browser that cannot render the gradient value.
+	if ( isset( $attributes['backgroundColourScrolledGradient'] ) && '' !== $attributes['backgroundColourScrolledGradient'] ) {
+		$sh_scrolled_gradient = sgs_colour_value( (string) $attributes['backgroundColourScrolledGradient'] );
+		if ( '' !== $sh_scrolled_gradient ) {
+			$sh_scrolled_decls .= 'background-image:' . $sh_scrolled_gradient . ' !important;';
+		}
+	}
+
+	if ( isset( $attributes['textColourScrolled'] ) && '' !== $attributes['textColourScrolled'] ) {
+		$sh_scrolled_text = sgs_colour_value( (string) $attributes['textColourScrolled'] );
+		if ( '' !== $sh_scrolled_text ) {
+			$sh_scrolled_decls .= 'color:' . $sh_scrolled_text . ' !important;';
+		}
+	}
+
+	$css .= sgs_emit_tier_rules(
+		$root_sel . '.is-header-scrolled',
+		$sh_transparent_effective,
+		$sh_scrolled_decls,
+		'',
+		'off'
+	);
+}
 
 // Shrink — transition/animation setup per tier, THEN the shrunk padding value
 // itself emitted separately (also per tier) keyed to ".is-header-shrunk" so a
@@ -293,6 +356,70 @@ if ( $sh_hide_any_tier ) {
 	);
 }
 
+// Contrast safety over hero — PER TIER, emitted as per-instance scoped CSS,
+// matching the four behaviours above. A body class is site-wide and cannot
+// express "scrim on desktop, none on phone", which is the common case for a
+// header transparent over a desktop hero only.
+//
+// Uses sgs_emit_tier_rules_map(), NOT sgs_emit_tier_rules(): this is a
+// four-value enum, and the binary helper tests `'on' === $state`, so 'scrim',
+// 'shadow' and 'force-solid' would all collapse into its single off branch and
+// paint identically.
+//
+// 'force-solid' is absent here by design — it is resolved above, as a
+// suppressor of Transparent, so it needs no CSS of its own.
+$sh_contrast_modes = array();
+foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sh_tier ) {
+	$sh_resolved                = sgs_resolve_tier( $sh_contrast, $sh_tier, 'none' );
+	$sh_contrast_modes[]        = $sh_resolved['value'];
+}
+
+if ( in_array( 'scrim', $sh_contrast_modes, true ) ) {
+	// Containing block for the overlay. Emitted unconditionally (not per tier)
+	// because it is inert on a tier without the scrim: the overlay there is
+	// switched off via `content:none`, so nothing is positioned against it.
+	$css .= $root_sel . '{position:relative;}';
+
+	// The scrim itself. The 'none' fallback CANCELS it, which is what makes a
+	// per-tier difference work at all — a tier that drops the scrim must
+	// actively remove the overlay, not merely decline to add one.
+	$css .= sgs_emit_tier_rules_map(
+		$root_sel . '::before',
+		$sh_contrast,
+		array(
+			'scrim' => 'content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,0.55),rgba(0,0,0,0));',
+		),
+		'content:none;',
+		'none'
+	);
+
+	// Header content sits above the scrim.
+	$css .= sgs_emit_tier_rules_map(
+		$root_sel . ' > *',
+		$sh_contrast,
+		array( 'scrim' => 'position:relative;z-index:1;' ),
+		'',
+		'none'
+	);
+}
+
+if ( in_array( 'shadow', $sh_contrast_modes, true ) ) {
+	// COSMETIC ONLY — never WCAG-conformant. A text-shadow's contrast against
+	// arbitrary imagery cannot be computed, so this mode must never be
+	// described as meeting a contrast requirement; the inspector label says
+	// "not WCAG-safe" for exactly this reason. Do not upgrade that claim.
+	//
+	// A selector LIST, with no pseudo-element appended — appending one to an
+	// imploded list attaches it to the last selector only.
+	$css .= sgs_emit_tier_rules_map(
+		$root_sel . ' a,' . $root_sel . ' button',
+		$sh_contrast,
+		array( 'shadow' => 'text-shadow:0 1px 3px rgba(0,0,0,0.6);' ),
+		'text-shadow:none;',
+		'none'
+	);
+}
+
 // prefers-reduced-motion: self-contained here (per-instance scoped CSS) rather
 // than relying on the shared stylesheet, since the transition/animation
 // declarations above are now themselves per-instance.
@@ -301,8 +428,7 @@ $css .= '@media (prefers-reduced-motion: reduce) {' . $root_sel . '{transition:n
 // Data attrs consumed by view.js: (a) whether ANY tier requests sticky, so the
 // "sticky silently broken by an ancestor" warning only fires when relevant;
 // (b) whether ANY tier requests a scroll-driven behaviour, so the scroll
-// listener is skipped entirely on headers with none active (matches the prior
-// getActiveBehaviours() perf gate, now resolved per-block instead of per-body).
+// listener is skipped entirely on headers with none active.
 $sh_extra_attrs         = array( 'id' => $uid );
 $sh_sticky_any_tier     = ! empty( sgs_resolve_on_tiers( $sh_sticky, 'on', 'off' ) );
 $sh_scroll_behaviour_on = ! empty( sgs_resolve_on_tiers( $sh_transparent, 'on', 'off' ) )
@@ -313,6 +439,94 @@ if ( $sh_sticky_any_tier ) {
 }
 if ( $sh_scroll_behaviour_on ) {
 	$sh_extra_attrs['data-sgs-header-scroll-behaviours'] = '1';
+}
+
+
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+} else {
+	// G5 corollary: "none" must be an explicit override too, not a
+	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
+	// class default) would otherwise keep painting even though the
+	// operator picked "no border". Cause-agnostic: harmless when no
+	// such default exists, a real fix when one does.
+	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$css .= $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = $radius_tiers['mobile'];
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
 }
 
 if ( '' !== $css ) {
@@ -327,7 +541,10 @@ echo SGS_Container_Wrapper::render(
 	$content,
 	SGS_Container_Wrapper::resolve_kind( $block, 'section' ),
 	array(
-		'tag'           => isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'header',
+		// ALWAYS <header> — a site header is a page-unique landmark; offering a
+		// plain <div> tag choice would let someone break the page's accessibility
+		// landmark structure from a dropdown.
+		'tag'           => 'header',
 		'extra_classes' => $classes,
 		'extra_attrs'   => $sh_extra_attrs,
 	)

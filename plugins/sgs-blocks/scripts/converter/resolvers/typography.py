@@ -43,9 +43,14 @@ from converter.services.styling_helpers import (
     split_value_unit,
     strip_important,
 )
+from converter.services.tier_object import tier_object_key as _shared_tier_object_key
+from converter.services.tier_object import tier_object_write
 from converter.services.tier_suffix import tier_suffix
 from converter.services.validate import attr_is_number, validate
-from converter.db.db_lookup import typography_css_to_attrs
+from converter.db.db_lookup import (
+    tier_object_base,
+    typography_css_to_attrs,
+)
 
 # font-weight keyword → numeric string (faithful port of convert.py:3897).
 # R-31-1 PERMITTED named-constant exception (same class as SKIP_TOP_LEVEL_TAGS):
@@ -113,6 +118,26 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     if state:
         tgt = f"{tgt}{state}"
 
+    # --- TIER-OBJECT destination (Spec 35 tier shape, 2026-08-11) ---------------
+    # When the primary attr is a TIER-SHAPED object attr its per-device values live
+    # INSIDE one object as {desktop,tablet,mobile} — the `fontSizeTablet`/`Mobile`
+    # siblings this resolver would otherwise target no longer exist. Re-appending a
+    # tier suffix there produces an attr the block does not declare, so `validate`
+    # gaps it as NO_DESTINATION and the tier value is discarded SILENTLY.
+    #
+    # Measured on the Mama's clone (2026-08-28): ZERO tier-suffixed typography attrs
+    # were written across the whole page, so every heading carried only its DESKTOP
+    # size — the hero h1 rendered 52px at 375 where the draft says 34px, and the
+    # theme's own fluid `hero` preset (32px at 375) was overridden by the flat write.
+    # Typography was 38% of all mobile parity divergence, the single largest share.
+    #
+    # Gated on `tier_object_base` (a DB predicate, never a name test — R-31-1) and
+    # skipped when an interaction STATE is present: a state destination is its own
+    # attr (`fontSizeHover`) whose shape is resolved independently, and v1 hover is
+    # base-tier only, so the flat path below remains correct for it.
+    if not state and tier_object_base(ctx.block_slug, primary_attr):
+        return _tier_object_writes(ctx, decl, prop, primary_attr, unit_attr, raw)
+
     # --- colour properties: bare slug / hex (Bug-1) ------------------------------
     if prop in _COLOUR_PROPS:
         if not validate(ctx, tgt, raw):
@@ -174,3 +199,95 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             f"{ctx.block_slug} does not declare {tgt!r} (tier {decl.tier})",
         )
     return Write(attr=tgt, value=raw, property=prop, tier=decl.tier)
+
+
+# ---------------------------------------------------------------------------
+# TIER-OBJECT emission (Spec 35 tier shape)
+# ---------------------------------------------------------------------------
+
+def _tier_object_key(tier: str) -> "str | None":
+    """Map a device tier to its key inside a {desktop,tablet,mobile} object.
+
+    Delegates to the shared ``converter.services.tier_object.tier_object_key``
+    (extracted 2026-08-27 so grid.py/outer_box.py/content_band.py share ONE
+    tier-key mechanism with this, the original D802 implementation — R-31-9).
+    Kept as a thin same-signature wrapper so this module's own call sites
+    below are unchanged and any external caller resolving
+    ``typography._tier_object_key`` still works.
+    """
+    return _shared_tier_object_key(tier)
+
+
+def _tier_object_writes(
+    ctx: Any, decl: Any, prop: str, primary_attr: str, unit_attr: "str | None", raw: str
+) -> "Write | list[Write] | GAP":
+    """Emit ONE partial tier-object Write ({tier: value}) for a tier-shaped attr.
+
+    The orchestrator merges partial dict writes for the same attr per key, the
+    same way it already merges partial BOX writes — so three declarations at
+    three tiers accumulate into one `{desktop, tablet, mobile}` object rather
+    than three separate attrs.
+
+    Value normalisation is DELIBERATELY the same as the flat path's, property for
+    property, because the tier object stores exactly what the flat sibling stored
+    — only the destination changes:
+      * a NUMERIC typography property (font-size / line-height / letter-spacing)
+        stores a NUMBER, with the CSS unit in the separate `…Unit` companion.
+        ⛔ It must NOT store "52px". `heading/render.php:485` treats a NON-numeric
+        desktop value as a theme PRESET SLUG and resolves it to
+        `var(--wp--preset--font-size--52px)` — an undefined custom property, so the
+        declaration is invalid and the heading silently falls back to its inherited
+        size. That is the measured D574 defect; storing a number is what avoids it.
+      * a colour stores the bare token slug or hex (Bug-1), never `var:preset|…`.
+      * font-weight stores the numeric string, keywords normalised.
+    """
+    tier_key = _tier_object_key(decl.tier)
+    if tier_key is None:
+        return gap_writer(
+            ctx, decl, GapOrigin.NO_DESTINATION,
+            f"tier {decl.tier!r} has no tier-object key for {primary_attr}",
+        )
+
+    # The BASE attr must exist and (for enum-typed attrs) admit the value. validate()
+    # is called on the BASE attr, not a suffixed one — that is the whole point here.
+    if not validate(ctx, primary_attr, raw):
+        return gap_writer(
+            ctx, decl, GapOrigin.NO_DESTINATION,
+            f"{ctx.block_slug} does not declare tier-object base {primary_attr!r}",
+        )
+
+    if prop in _COLOUR_PROPS:
+        v = extract_token_or_hex(raw)
+        if v is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{prop} value {raw!r} is neither a token slug nor a hex colour",
+            )
+        return Write(attr=primary_attr, value={tier_key: v}, property=prop, tier=decl.tier)
+
+    if prop == "font-weight":
+        out = _FONT_WEIGHT_KEYWORDS.get(raw.lower(), raw)
+        return Write(attr=primary_attr, value={tier_key: out}, property=prop, tier=decl.tier)
+
+    # Numeric typography. The flat path gates this on `attr_is_number(primary_attr)`,
+    # which is FALSE here by construction — the attr's declared type is `object`, so
+    # the number lives one level down. Detect numeric-ness from the VALUE instead.
+    num, unit = split_value_unit(raw, default_unit="")
+    if num is not None:
+        num_out: int | float = int(num) if float(num).is_integer() else num
+        writes: list[Write] = [
+            Write(attr=primary_attr, value={tier_key: num_out}, property=prop, tier=decl.tier)
+        ]
+        # Unit companion: still a FLAT scalar attr, still written only alongside the
+        # BASE tier (convert.py:1699). It is shared by all three tiers by design —
+        # the object holds numbers, the unit sits beside it.
+        if unit_attr is not None and decl.tier == "Base":
+            effective_unit = unit if unit else "unitless"
+            if effective_unit and validate(ctx, unit_attr, effective_unit):
+                writes.append(
+                    Write(attr=unit_attr, value=effective_unit, property=prop, tier=decl.tier)
+                )
+        return writes
+
+    # Non-numeric string (font-style / text-align / a theme preset slug).
+    return Write(attr=primary_attr, value={tier_key: raw}, property=prop, tier=decl.tier)

@@ -17,36 +17,15 @@
 	"textdomain": "sgs-blocks",
 	"icon": "layout",
 	"supports": {
-		"align": [
-			"wide",
-			"full"
-		],
+		"interactivity": {
+			"clientNavigation": true
+		},
 		"anchor": true,
 		"html": false,
 		"color": false,
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"letterSpacing": true,
-			"textTransform": true,
-			"fontWeight": true,
-			"fontStyle": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
+			"_comment_overlayNotAdopted": "backgroundImage/Size/Position/Repeat/Attachment, backgroundOverlay*, bgVideo*/bgSvg*/bgParallax/bgKenBurns are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- settled 2026-09-03 (Bean-directed) after this exact question was investigated. A background panel applied to the whole block is a different feature from a client-configurable <img>/<video> element (which the media-atom system in supports.sgs.mediaElements DOES cover), so it is correctly out of scope for that system and is not a deferred migration. Detector rule 37-media-no-handroll (scripts/inspector-scan/rules/37-media-no-handroll.js) encodes this discriminator: a bare `background`/`bg`-prefixed attribute is panel-owned and never flagged; an element-prefixed attribute (e.g. splitMediaObjectFit) still is.",
+			"intrinsicColumns": true,
 			"enabledExtensions": [
 				"width",
 				"layout",
@@ -56,21 +35,28 @@
 			],
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"contentBandPadding": [
 					"contentBandPadding"
+				],
+				"contentBandMargin": [
+					"contentBandMargin"
 				],
 				"gridItemPadding": [
 					"gridItemPadding"
 				],
 				"gridItemBorderRadius": [
 					"gridItemBorderRadius"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -78,37 +64,55 @@
 					"label": "Wrapper",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout", "animation" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout",
+						"animation"
+					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:color": "native:color.text",
-						"css:background-color": "native:color.background",
-						"css:font-size": "native:typography.fontSize",
-						"css:font-weight": "native:typography.fontWeight",
-						"css:line-height": "native:typography.lineHeight",
-						"css:letter-spacing": "native:typography.letterSpacing",
-						"css:font-style": "native:typography.fontStyle",
-						"css:text-transform": "native:typography.textTransform",
-						"css:text-align": "native:typography.textAlign",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:color": "textColour",
+						"css:background-color": "backgroundColour",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:line-height": "lineHeight",
+						"css:font-style": "fontStyle",
+						"css:text-align": "textAlign",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
 						"css:box-shadow": "shadow",
+						"css:box-shadow-color": "shadowColour",
 						"anim:parallax": "bgParallax",
-						"anim:duration": "bgAnimationDuration"
+						"anim:duration": "bgAnimationDuration",
+						"css:color-gradient": "textColourGradient"
 					},
-					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; the wrapper declares no `prefix`, so ROLLOUT REQUIREMENT 1 applies). bgKenBurns has no animation-cluster member (it's a Ken-Burns preset toggle, not a scroll-trigger/parallax/preset/duration/easing/stagger control) and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — this block has no sgsAnimation*/staggerDelay/scroll-trigger attributes."
+					"_note_border": "R2c pattern (mirrors sgs/product-card, D-pending 2026-08-25): root border colour/width/style are block-private attrs (borderColour/borderColourGradient/borderWidth/borderStyle), not the native __experimentalBorder path — a single owner instead of the native Styles-tab colour panel and an SGS panel both writing style.border. Native __experimentalBorder is reduced to radius only (a corner-shape control, not a paint decision) and stays skip-serialised, emitted scoped via the style engine exactly as before. borderWidth has NO default (unset = no border, matching the padding attribute's no-default discipline right below) and is a base-only box object (no Tablet/Mobile siblings, matching product-card's own borderWidth).",
+					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; the wrapper declares no `prefix`, so ROLLOUT REQUIREMENT 1 applies). bgKenBurns has no animation-cluster member (it's a Ken-Burns preset toggle, not a scroll-trigger/parallax/preset/duration/easing/stagger control) and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — this block has no sgsAnimation*/staggerDelay/scroll-trigger attributes.",
+					"_note_typography": "Typography migrated off the old WP-native supports.typography (fontSize/lineHeight/textAlign/letterSpacing/textTransform/fontWeight/fontStyle) onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972 full-replacement track), root prefix '' (fontSize/fontSizeUnit/fontWeight/fontStyle/lineHeight/lineHeightUnit) — mirrors sgs/accordion. css:letter-spacing and css:text-transform are now honest gaps (no letterSpacing/textTransform control is offered); css:text-align keeps mapping to the block's own pre-existing textAlign attribute, unrelated to this migration.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					}
 				},
 				"inner": {
 					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 2,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
@@ -127,7 +131,10 @@
 					"label": "Content band",
 					"layer": "CONTENT",
 					"order": 3,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"prefix": "contentBand",
 					"attrMap": {
 						"css:width": "contentWidth"
@@ -137,7 +144,11 @@
 					"label": "Grid item",
 					"layer": "GRID_AREA",
 					"order": 4,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"prefix": "gridItem",
 					"attrMap": {
 						"css:background-color": "gridItemBackground",
@@ -148,12 +159,15 @@
 						"css:border-color": "gridItemBorder",
 						"css:border-color-gradient": "gridItemBorderGradient",
 						"css:box-shadow": "gridItemShadow",
-						"css:color": "gridItemTextColour"
+						"css:color": "gridItemTextColour",
+						"css:background-image": "gridItemBackgroundGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:border-color-gradient": "gridItemBorderGradientHover"
+								"css:border-color-gradient": "gridItemBorderGradientHover",
+								"css:background-image": "gridItemBackgroundHoverGradient",
+								"css:color-gradient": "gridItemTextColourHoverGradient"
 							}
 						}
 					}
@@ -164,20 +178,47 @@
 					"clusters": [],
 					"_note": "Background image/video (backgroundImage*/bgVideo*), background SVG (bgSvg*), overlay gradient (overlayGradient*), parallax/Ken Burns, and shape dividers (shapeDivider*) are governed by dedicated controls outside the Text/Fill/Layout style clusters, so this element declares none."
 				}
-			}
+			},
+			"containerKind": "section"
 		}
 	},
 	"selectors": {
 		"root": ".wp-block-sgs-container"
 	},
 	"attributes": {
+		"templateLock": {
+			"type": "string",
+			"enum": [
+				"",
+				"all",
+				"contentOnly",
+				"insert"
+			],
+			"default": ""
+		},
 		"layout": {
 			"type": "string",
-			"default": ""
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
+			"default": "flex"
 		},
 		"tagName": {
 			"type": "string",
-			"enum": [ "div", "section", "article", "aside", "nav", "header", "footer", "figure" ],
+			"enum": [
+				"div",
+				"section",
+				"article",
+				"aside",
+				"nav",
+				"header",
+				"footer",
+				"figure",
+				"main"
+			],
 			"default": "section"
 		},
 		"ariaLabel": {
@@ -186,7 +227,11 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 2,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"gridTemplateColumns": {
 			"type": "object",
@@ -195,6 +240,14 @@
 		"gap": {
 			"type": "object",
 			"default": {}
+		},
+		"minColumnWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"minColumnWidthUnit": {
+			"type": "string",
+			"default": "px"
 		},
 		"backgroundImage": {
 			"type": "object"
@@ -239,9 +292,41 @@
 		"backgroundOverlayColour": {
 			"type": "string"
 		},
+		"backgroundOverlayOpacity": {
+			"type": "object",
+			"default": {
+				"desktop": 30
+			}
+		},
 		"overlayGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"backgroundOverlayColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundOverlayBlendMode": {
+			"type": "string",
+			"default": "normal",
+			"enum": [
+				"normal",
+				"multiply",
+				"screen",
+				"overlay",
+				"darken",
+				"lighten",
+				"color-dodge",
+				"color-burn",
+				"soft-light",
+				"hard-light",
+				"difference",
+				"exclusion"
+			]
 		},
 		"bgVideo": {
 			"type": "object"
@@ -266,6 +351,13 @@
 		},
 		"shadow": {
 			"type": "string"
+		},
+		"shadowColour": {
+			"type": "string"
+		},
+		"shadowColourHover": {
+			"type": "string",
+			"default": ""
 		},
 		"maxWidth": {
 			"type": "object",
@@ -293,7 +385,10 @@
 		},
 		"shapeDividerTopScale": {
 			"type": "object",
-			"default": { "x": 100, "y": 100 }
+			"default": {
+				"x": 100,
+				"y": 100
+			}
 		},
 		"shapeDividerTopFlip": {
 			"type": "boolean",
@@ -317,7 +412,10 @@
 		},
 		"shapeDividerBottomScale": {
 			"type": "object",
-			"default": { "x": 100, "y": 100 }
+			"default": {
+				"x": 100,
+				"y": 100
+			}
 		},
 		"shapeDividerBottomFlip": {
 			"type": "boolean",
@@ -372,9 +470,23 @@
 		},
 		"gridItemPadding": {
 			"type": "object",
-			"default": {"desktop": {}}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"gridItemBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBackgroundHoverGradient": {
 			"type": "string",
 			"default": ""
 		},
@@ -400,7 +512,23 @@
 			"type": "string",
 			"default": ""
 		},
+		"gridItemShadowColour": {
+			"type": "string",
+			"default": ""
+		},
 		"gridItemTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemTextColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemTextColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemTextColourHoverGradient": {
 			"type": "string",
 			"default": ""
 		},
@@ -461,46 +589,161 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": "",
+			"default": "wrap",
 			"enum": [
-				"",
 				"wrap",
-				"nowrap",
-				"wrap-reverse"
-			]
-		},
-		"templateMode": {
-			"type": "string",
-			"default": "free",
-			"enum": [
-				"free",
-				"grid-section",
-				"card-grid"
+				"nowrap"
 			]
 		},
 		"contentWidth": {
 			"type": "object",
-			"default": {"desktop": "full"}
+			"default": {
+				"desktop": "normal"
+			}
 		},
-		"paddingTablet": {
+		"padding": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			},
+			"description": "TIER-of-BOXES: {desktop,tablet,mobile}, each tier a {top,right,bottom,left} box (Phase 2 tier-object migration, 2026-09-06 — matches the shape already shipped on sgs/site-header-row/sgs/site-footer-row/sgs/gallery). Owned outright (no supports.spacing — D555 box-object migration). NO DESKTOP DEFAULT: the horizontal gutter is supplied by WordPress core's own .has-global-padding, which the shared wrapper applies whenever the container renders a content band (class-sgs-container-wrapper.php, search has-global-padding). A 24px default lived here from f9f4368b until 2026-08-21 and was REVERTED: a per-instance default has no nesting reset, so it compounded to 72px on a 3-deep nest and left a 48px-wide footer container with zero content. Core's mechanism carries the nesting reset; a hand-rolled copy cannot. Do NOT reintroduce a default here."
 		},
-		"paddingMobile": {
+		"margin": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			},
+			"description": "TIER-of-BOXES: {desktop,tablet,mobile}, each tier a {top,right,bottom,left} box (Phase 2 tier-object migration, 2026-09-06)."
 		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
+		"borderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Wrapper root border colour (R2c pattern — block-private, replaces the native __experimentalBorder.color path). Empty = no border colour; the shared style-engine border-colour rule only emits when borderStyle is also set."
 		},
-		"marginMobile": {
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the wrapper's border with a masked ring instead of a flat colour. Non-empty wins over borderColour, matching sgs/product-card."
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
 			"type": "object",
-			"default": {}
+			"default": {},
+			"description": "Wrapper root border width {top,right,bottom,left}, base-only (no Tablet/Mobile siblings — matches sgs/product-card's own borderWidth). NO DEFAULT (unset = no border), same no-hardcoded-default discipline as the padding attribute above."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"borderStyle": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"description": "Wrapper root border style. Empty/none = no border rendered regardless of colour/width — matches sgs/product-card's 'none' sentinel."
 		},
 		"contentBandPadding": {
 			"type": "object",
-			"default": { "desktop": {} }
+			"default": {
+				"desktop": {}
+			}
+		},
+		"contentBandMargin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": "",
+			"description": "Resting root text colour, bound to the wrapper element's css:color. A section-KIND block can parent arbitrary content, so this is a root-scoped INHERITABLE cascade default for whatever the client nests inside — not a duplicate of a child's own control (HC2 carve-out, Bean-ruled 2026-08-21)."
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting root text colour (background-clip: text) instead of a flat colour. Non-empty wins over textColour at render time, mirroring sgs/hero."
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover/focus root text colour. Sibling of textColour; declared so the state is reachable (a state without a base is an asymmetric control surface)."
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient for the hover root text colour. Non-empty wins over textColourHover."
+		},
+		"textAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Root wrapper typography (D971/D972 full-replacement track, mirrors sgs/accordion) — replaces the retired WP-native supports.typography.fontSize. Consumed by sgs_typography_css_rule() via the shared TypographyControls component, prefix ''."
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		}
 	},
 	"providesContext": {

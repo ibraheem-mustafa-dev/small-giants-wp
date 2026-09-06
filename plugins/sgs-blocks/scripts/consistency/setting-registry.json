@@ -3133,6 +3133,31 @@
 			"notes": "Added 2026-08-16 (D644, gradient rollout Task 1b decision). Mirrors css:fill's shape exactly — the same 'a CSS property the registry lacked' gap, one property earlier. Distinct from css:fill: fill paints closed SVG geometry (a shape divider's path), stroke paints line geometry (an icon's outline). SGS icons (Lucide) are stroke-based, so a gradient-capable icon control needs this member to exist before it can declare \"css:stroke\": \"<attr>\" in an element's attrMap."
 		},
 		{
+			"setting_key": "css:fill-gradient",
+			"category": "css-property",
+			"label": "Fill (SVG paint, gradient)",
+			"optimal_control": {
+				"component": "DesignTokenPicker (states array with gradientValue/onGradientChange, as every other gradient-capable colour control)",
+				"props": {
+					"enableAlpha": true,
+					"clearable": true
+				},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "enableAlpha + clearable",
+				"reset_disclosure": "allowReset"
+			},
+			"shared_component": "DesignTokenPicker",
+			"spec_ref": "Spec 35 Part B (Colour completeness) + Part H",
+			"current_state": "3 instances at declaration time (sgs/google-reviews starColourGradient, sgs/star-rating starColourGradient + emptyColourGradient)",
+			"divergence": "painted on fill-based SVG glyph geometry (star ratings) via a real SVG gradient def + fill:url(#id) CSS override, so css:color / css:background-image do not apply",
+			"divergence_severity": "low",
+			"notes": "Added 2026-09-05, extending the D636/D644 gradient rollout from stroke-based icon glyphs (css:stroke above) to fill-based SVG shapes. Same mechanism, one target swapped: sgs_svg_stroke_gradient() (helpers-svg-gradient.php) gained a third $target param ('stroke'|'fill') so it can emit fill:url(#id) instead of stroke:url(#id) for glyphs whose presentation attribute is fill=\"...\" (star ratings) rather than stroke=\"currentColor\" (icon glyphs). Distinct from css:fill: that member is the FLAT fill value; this is its gradient sibling, same {flatAttr}Gradient naming convention as css:stroke's icon-colour siblings."
+		},
+		{
 			"setting_key": "css:transform",
 			"category": "css-property",
 			"label": "Transform (flip / mirror / rotate)",
@@ -3155,6 +3180,80 @@
 			"divergence": "booleans that compile to scaleX/scaleY; no arbitrary-transform path exists",
 			"divergence_severity": "low",
 			"notes": "Added 2026-08-09 (D537 §4 vocabulary gate). Flip and invert are two AXES of one property (scaleX vs scaleY), which is why both live on this single row rather than splitting into a row whose partner would be unclustered. ⛔ Do NOT fold hover scale/tilt in here without a decision: those are extension-injected and are members of no cluster today, deliberately (see hover-effects.js)."
+		},
+		{
+			"setting_key": "css:box-shadow-color",
+			"category": "css-property",
+			"label": "Box shadow colour",
+			"optimal_control": {
+				"component": "DesignTokenPicker, as a row in the block's SgsColourPanel (NOT a lone field on the shadow builder)",
+				"props": {
+					"enableAlpha": true,
+					"clearable": true
+				},
+				"preset_layer": "theme.json colour palette",
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": true,
+				"reset_disclosure": "clearable clears to inherit",
+				"states": "Normal | Hover as TABS INSIDE the colour popover (Spec 35 PART O §1 field 9b)"
+			},
+			"shared_component": "DesignTokenPicker (via SgsColourPanel)",
+			"spec_ref": "Spec 35 PART O §1 field 9b — a compound property's colour half is set in the colour row, shadow colour being the NAMED case",
+			"current_state": "Added 2026-08-20 (R-3 / element-manifest burn-down).",
+			"divergence": "None known at creation.",
+			"divergence_severity": "none",
+			"notes": "Registry row added 2026-08-20 alongside the cluster member of the same key. It MUST be its own member rather than another suffix on css:box-shadow, because a cluster member claims exactly ONE attribute (the resolver returns on the first matching suffix) — so the shadow VALUE attribute always won and every {prefix}ShadowColour in the framework was unclaimable by construction. Sibling to css:box-shadow the way css:border-color-gradient is sibling to css:border-color."
+		},
+		{
+			"setting_key": "css:outline-width",
+			"category": "css-property",
+			"label": "Outline width",
+			"optimal_control": {
+				"component": "UnitControl (px)",
+				"props": {
+					"units": "px"
+				},
+				"preset_layer": null,
+				"units": "px",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": false,
+				"reset_disclosure": "allowReset clears to the theme default"
+			},
+			"shared_component": "UnitControl",
+			"spec_ref": "Spec 35 Part B (length control shape)",
+			"current_state": "Added 2026-08-20 (R-3 / element-manifest burn-down).",
+			"divergence": "None known at creation.",
+			"divergence_severity": "none",
+			"notes": "Outline is separately painted — it is NOT border and NOT box-shadow. The framework paints focus rings with it (sgs/form style.css:207). Added 2026-08-20: NO css:outline-* member existed at all, so sgs/form's attrMap entry for css:outline-width pointed at a member that did not exist and could never resolve."
+		},
+		{
+			"setting_key": "css:outline-offset",
+			"category": "css-property",
+			"label": "Outline offset",
+			"optimal_control": {
+				"component": "UnitControl (px)",
+				"props": {
+					"units": "px"
+				},
+				"preset_layer": null,
+				"units": "px",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": false,
+				"reset_disclosure": "allowReset clears to the theme default"
+			},
+			"shared_component": "UnitControl",
+			"spec_ref": "Spec 35 Part B (length control shape)",
+			"current_state": "Added 2026-08-20 (R-3 / element-manifest burn-down).",
+			"divergence": "None known at creation.",
+			"divergence_severity": "none",
+			"notes": "Sibling to css:outline-width, added in the same pass. sgs/form style.css:209 `outline-offset: var(--sgs-focus-ring-offset)`."
 		}
 	]
 }

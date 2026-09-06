@@ -36,7 +36,7 @@ lock_reason: null
 
 SGS is one custom WP 7.0 block theme serving many client sites. Two problems are tangled together:
 
-1. **Wrong write-layer (live bug).** `push-theme-snapshot.py` SCP-overwrites `theme.json` on disk. But WordPress renders a site's global styles from the `wp_global_styles` database post (the Site-Editor user layer), which is merged ON TOP of `theme.json`. So a disk push is silently overridden for every property the post already defines — the push is a no-op the moment anyone has touched the Site Editor (confirmed on the sandybrown canary, post ID 7). The same push path is what the cloning pipeline (Spec 22 Stage 10) uses, so cloned sites' global tokens can silently fail to apply — plausibly inflating the cloning pixel-diff gate.
+1. **Wrong write-layer (live bug).** `push-theme-snapshot.py` SCP-overwrites `theme.json` on disk. But WordPress renders a site's global styles from the `wp_global_styles` database post (the Site-Editor user layer), which is merged ON TOP of `theme.json`. So a disk push is silently overridden for every property the post already defines — the push is a no-op the moment anyone has touched the Site Editor (confirmed on the sandybrown canary, post ID 7). The same push path is what the cloning pipeline (Spec 31 §13 Stage 10) uses, so cloned sites' global tokens can silently fail to apply — plausibly inflating the cloning pixel-diff gate.
 2. **Fork tax + a retired mechanism.** Each client is a FULL `theme.json` copy (`sites/<client>/theme-snapshot.json`), so every framework-baseline change must be hand-merged into all snapshots → drift. WP style variations — the canonical per-client mechanism — were retired (Decision 18) to fix what was actually a deploy-scoping bug, not a mechanism flaw.
 
 ## Corrected mental model (the foundation)
@@ -58,7 +58,7 @@ SGS is one custom WP 7.0 block theme serving many client sites. Two problems are
 
 - Universal auto-contrast for any arbitrary light primary with zero per-client override (parked `P-AUTO-CONTRAST-LIGHT-PRIMARIES`). **DIRECTION DECIDED 2026-06-03 (Bean, D161): build-time luminance** — at deploy, compute the brand colour's WCAG relative luminance and pick black/white text per the contrast algorithm; layer CSS `contrast-color()` as a later progressive-enhancement once Baseline-safe. Build still deferred (with the rest of Spec 26) until the cloning phase closes.
 - Replacing per-instance inline styles — they remain the highest layer by design.
-- Fixing structural / InnerBlocks cloning gaps — separate (Spec 22) and dominate pixel-diff independently of styling.
+- Fixing structural / InnerBlocks cloning gaps — separate (Spec 31 §13) and dominate pixel-diff independently of styling.
 - A new REST endpoint, a new WP Ability, or a Create Block Theme runtime dependency (see FR-26-A5).
 
 ## Hard constraints
@@ -154,7 +154,7 @@ SGS is one custom WP 7.0 block theme serving many client sites. Two problems are
 
 ### Group D — Urgent fixes (low-risk; do before the deferred migration)
 
-**FR-26-D1 — Canary contamination — RESOLVED / MOOT (verified 2026-06-03, do NOT clear post 7).** The council's recommendation was "clear `wp_global_styles` post 7 so `theme.json` renders." **Verification inverted that:** the canary's `theme.json` already carries Mama's FULL brand palette (`theme:primary`, `theme:surface-pink`, `theme:accent`, …) AND the WCAG CSS (len ~2273), and post 7 MIRRORS the same tokens — because this session's Mama's WCAG work (D157-adjacent) wrote BOTH layers, which synced them. So the canary already renders Mama's brand correctly from both layers; the colour-contamination the council feared was real *before* this session but is **already resolved**. **Clearing post 7 is therefore unnecessary AND risky** (no render benefit; the canary is shared with the cloning thread) — do NOT do it. The cloning pixel-diff is NOT colour-contaminated currently.
+**FR-26-D1 — Canary contamination — RESOLVED/MOOT (verified 2026-06-03). Do NOT clear `wp_global_styles` post 7** — its tokens already match `theme.json` (Mama's brand palette + WCAG CSS byte-for-byte), so clearing would lose the render with no benefit; the cloning pixel-diff is not colour-contaminated. This sync is coincidental (both layers were hand-written the same session) and will RE-DIVERGE on the next `push-theme-snapshot` or Site-Editor edit — FR-26-D2 is the durable fix.
 - *Done when:* (verified) `GET /wp/v2/global-styles/themes/sgs-theme` shows `theme:*` Mama slugs + the WCAG css; post 7 mirrors them. No action.
 - *Residual risk this leaves:* the two layers are synced ONLY because both were hand-written this session; without FR-26-D2 they will RE-DIVERGE on the next `push-theme-snapshot` (disk-only) or any Site-Editor edit. FR-26-D2 is the durable fix.
 - *Model:* n/a.
@@ -222,7 +222,7 @@ sites/<client>/<client>.json  (style-variation DELTA, git-tracked) ← per-clien
         ▼
 wp_global_styles post (Site-Editor user layer)  ← what the site RENDERS
         ▲
-        │  cloning pipeline (Spec 22):
+        │  cloning pipeline (Spec 31 §13):
         │    converter emits RAW → derive-globals post-pass (repetition + hero-button position)
         │    → writes the variation delta → deploys via the sync above
 Block editor: presets prominent + raw available; per-instance wins via cascade;
@@ -256,6 +256,6 @@ Block editor: presets prominent + raw available; per-instance wins via cascade;
 
 - **Supersedes** Spec 01 §"Per-site theme.json Model" D156 "Live-style precedence" wording (the "override precedence" framing). Update Spec 01 to reference this spec when shipped.
 - **Decision 18** (variation retirement) gets a superseding note (FR-26-A2): it over-corrected a deploy-scoping bug.
-- Cross-ref: Spec 22 (cloning pipeline / Stage 10 deploy), Spec 11 (button presets), Spec 17 §S1 FR-S1-4 (skip-link — separate header concern), Spec 24/25 (product/WooCommerce layer use these globals).
+- Cross-ref: Spec 31 §13 (cloning pipeline / Stage 10 deploy), Spec 11 (button presets), Spec 17 §S1 FR-S1-4 (skip-link — separate header concern), Spec 24/25 (product/WooCommerce layer use these globals).
 - Parking: `P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES` (closed by FR-26-D2), `P-AUTO-CONTRAST-LIGHT-PRIMARIES` (related, still deferred).
 - Memories: `canary-live-styles-come-from-wp-global-styles-post`, `block-style-controls-accept-raw-css-and-overridable`.

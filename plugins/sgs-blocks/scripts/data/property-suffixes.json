@@ -3,7 +3,6 @@
   "__why": "Converter-load-bearing with NO writer anywhere: read by the typography lift, the kind resolver, the attr-name proposer, the excluded-gate and the cheat-gate. A rebuild-from-empty produced 0 rows — no error, just wrong answers. Captured from live 2026-08-02 (Phase 1).",
   "__ORDER_IS_LOAD_BEARING": "db_lookup.py reads this table with `ORDER BY rowid` in several places, and `ORDER BY rowid LIMIT 1` in propose_attr_name() — so for a css_property with more than one suffix row, THE FIRST ROW WINS. `Colour` precedes `Color` for `color` deliberately (UK English is the SGS convention). NEVER alphabetise this list; the seeder rewrites the table in exactly this sequence.",
   "__kind_override": "Captured POST-migration: _migrate_property_suffixes_kind_override() seeds 17 rows from _KIND_BY_SUFFIX with `WHERE kind_override IS NULL`. Capturing the post-migration state keeps the two writers in agreement, so neither rewrites the other on the next module load.",
-  "__why_min_max_removed": "2026-08-15 (element-manifest style-defect audit). The 'Min' and 'Max' suffix rows (both role='layout', css_property=null, 'Added by Spec 15 P3 §3.8 gap remediation') were REMOVED entirely, not merely re-roled -- `property_suffixes.role` is NOT NULL (dbschema/schema.sql), so a bare suffix that matches no single reliable role cannot be represented as a row with role=null; the only schema-legal fix is to drop the row so peel_property_suffix() finds no suffix match at all and the attr falls through to its normal (evidence-based) classification path. Checked the ENTIRE population of both suffixes in block_attributes before removing (2026-08-15, live query, not inferred): 'Max' matched exactly 2 attrs (sgs/testimonial.ratingScaleMax, sgs/form-field-number.max), 'Min' matched exactly 1 (sgs/form-field-number.min) -- 0 of the 3 real occurrences are CSS. ratingScaleMax is a content-bearing rating-scale denominator (render.php:125,473,654 -- feeds display text + Schema.org bestRating). form-field-number.min/max are HTML <input min=\"\"/max=\"\"> validation constraints (render.php:19-20,25-30 -- extra_attrs strings, never CSS). All three now carry their correct role via attr-classification-overrides.json (rating / technical / technical respectively) instead of a suffix rule bent to fit a minority case. If a genuinely-CSS 'Min'/'Max'-suffixed attribute is ever added (e.g. a raw scalar min-width), give it its own override rather than re-adding either suffix row -- 0/3 real occurrences were CSS at removal time.",
   "__columns": [
     "suffix",
     "role",
@@ -1353,6 +1352,42 @@
       0,
       null,
       "CSS padding-left -> CONTENT-layer 'contentBandPaddingLeft'; EXECUTION Step 12",
+      null
+    ],
+    [
+      "BandMarginTop",
+      "layout",
+      "margin-top",
+      0,
+      null,
+      "CSS margin-top -> CONTENT-layer 'contentBandMarginTop' (sgs/container's actual band-margin attr name, distinct from the generic contentMarginTop candidate that the pre-existing 'MarginTop' suffix derives); Defect 3, qc-council-validated 2026-09-04",
+      null
+    ],
+    [
+      "BandMarginRight",
+      "layout",
+      "margin-right",
+      0,
+      null,
+      "CSS margin-right -> CONTENT-layer 'contentBandMarginRight'; Defect 3, qc-council-validated 2026-09-04",
+      null
+    ],
+    [
+      "BandMarginBottom",
+      "layout",
+      "margin-bottom",
+      0,
+      null,
+      "CSS margin-bottom -> CONTENT-layer 'contentBandMarginBottom'; Defect 3, qc-council-validated 2026-09-04",
+      null
+    ],
+    [
+      "BandMarginLeft",
+      "layout",
+      "margin-left",
+      0,
+      null,
+      "CSS margin-left -> CONTENT-layer 'contentBandMarginLeft'; Defect 3, qc-council-validated 2026-09-04",
       null
     ],
     [

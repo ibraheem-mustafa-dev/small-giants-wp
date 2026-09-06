@@ -1,9 +1,267 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-08-17 (1 entry added — stale-worktree gate failures; 1 oldest by date archived to keep at target — 30 → 31 → 30 active.)
+**Last updated:** 2026-09-06 (typography-migration handoff) (1 new entry added — a shared-mechanism
+doc committed mid-session can still get violated minutes later; 1 oldest entry pruned to archive
+to hold the ~30 cap.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-06] An already-documented architecture rule still got violated because nobody checked the doc before building the mechanism it forbids
+- **Pattern key:** `an-already-documented-architecture-rule-still-got-violated`
+- **Evidence:** `plugins/sgs-blocks/CLAUDE.md`'s "Colour controls" section explicitly forbade
+  mounting a colour control inside an element's own panel ("no general mechanism... should not
+  be built without a design gate") — documented in commit `6a204a21e`, 2026-08-30. A mechanical
+  rule-41 fix batch on 2026-09-05/06 built exactly that forbidden mechanism across 10 blocks
+  anyway, ~6 days later — not because the doc was hard to find or newly written, but because
+  nobody checked it before treating "colour needs fixing somewhere" as license to invent how. A
+  full read-only audit (not a review, a proactive one) caught it the same night; reverted (D970).
+  (An earlier draft of this entry wrongly claimed the gap was "6 minutes" in the same session —
+  corrected to the true ~6 days after an independent QC check caught the fabricated precision;
+  the lesson holds either way, but state figures you've actually measured, not guessed.)
+- **Rule:** before building any general mechanism (not a one-off block fix) that touches a shared
+  component's placement/architecture, read the relevant CLAUDE.md/spec section in full — don't
+  rely on general familiarity or an earlier read — and check its git blame if timing might
+  matter. A documented rule is binding regardless of whether it's a day old or a year old; the
+  failure here was never checking, not the rule being too recent to know about.
+
+### [2026-09-06] A deferral can be recorded only in another session's own progress doc, not parking.md
+- **Pattern key:** `deferred-work-search-beyond-parking-md`
+- **Evidence:** closing out 3 deferred Minors from an `is_responsive` fix, `parking.md` and
+  `plans/` held nothing. A broader grep of `.claude/memory/` found the exact deferred-items list
+  in `sdd-progress.md` — a progress doc belonging to an entirely unrelated session's own tracked
+  work (`variant-composition-fingerprinting`), which had noted the deferral as a side comment.
+- **Rule:** on any "close out/update the docs" request, grep `.claude/memory/*` alongside
+  `parking.md`/`plans/`/`decisions.md` — "nothing in parking.md" is inconclusive, not proof
+  nothing was deferred. Update only the specific stale lines found elsewhere, never the whole
+  doc, since it is shared-tree state another session may still read.
+
+### [2026-09-05] A subagent brief's "no destructive git commands" / "verification only" prohibition is not enforcement — it's the 3rd recurrence in a week
+- **Pattern key:** `a-prohibition-in-a-subagent-brief-is-not-enforcement`
+- **Evidence:** two background subagents ran `git stash` on this actively shared tree despite an
+  explicit prohibition (both self-corrected and popped immediately, verified clean afterward — no
+  lasting damage, caught by independently re-checking `git stash list`/`git status` myself both
+  times rather than trusting either agent's self-report). A third, briefed only to verify a fix and
+  write visual-diff reports, ran a full unauthorised `build-deploy.py` deploy to the shared canary,
+  bundling whatever every other concurrent session's uncommitted files happened to be at that
+  moment — flagged to Bean immediately rather than proceeding quietly.
+- **Rule:** a tool-access restriction written in prose is advisory, not a control. When a subagent
+  genuinely must not run a class of command (git mutation, deploy, network write), give it a scratch
+  baseline to self-verify against instead of just forbidding the tool, and independently re-verify
+  shared-state safety after it reports done — never on the strength of its own "verified clean"
+  claim. Feedback file: [feedback_a_prohibition_in_a_subagent_brief_is_not_enforcement.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_prohibition_in_a_subagent_brief_is_not_enforcement.md)
+
+### [2026-09-04] Re-read the full source doc before answering "what's left" — never from your own just-written summary
+- **Pattern key:** `re-read-full-plan-before-answering-whats-left`
+- **Feedback file:** [feedback_re_read_full_plan_before_answering_whats_left.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_re_read_full_plan_before_answering_whats_left.md)
+
+### [2026-09-04] A peer session's claim about who caused an uncommitted change is a hypothesis, not verified fact
+- **Pattern key:** `a-peers-claim-about-who-caused-a-change-is-not-verified-by-default`
+- **Evidence:** a peer session told me "it looks like you'd already bumped the ceiling yourself"
+  about an uncommitted `check-editor-render-parity.js` change — plausible (the file was dirty on
+  my end too) and stated with confidence. `git diff` on that exact file showed a comment I had
+  never written and code I had never opened; a THIRD, unidentified session owned it.
+- **Rule:** when a peer states who made an uncommitted change on a shared tree, check `git diff`
+  on that specific file yourself before accepting or acting on the claim — dirty-tree evidence is
+  ambiguous by construction, and a peer's confident read of it is still an inference, not an
+  observation. Feedback file: [feedback_a_peers_claim_about_who_caused_a_change_is_not_verified_by_default.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_peers_claim_about_who_caused_a_change_is_not_verified_by_default.md)
+
+### [2026-09-04] A live page rendering "no CSS" for a fixed block may just mean the CSS was lifted elsewhere
+- **Pattern key:** `check-the-lifted-css-file-before-concluding-emitted-css-is-missing`
+- **Evidence:** grepped the raw fetched HTML of a live verification page for six blocks' expected
+  `::after`/`::before` background rules — zero found, for every single one, right after a deploy
+  that had just passed all payload checks. Nearly concluded the fix hadn't actually deployed.
+  SGS lifts every block's scoped `<style>` tag out of its rendered HTML on the front end
+  (`class-sgs-css-registry.php`'s `render_block` filter) into a content-hash-named external file
+  (`uploads/sgs-css/sgs-<epoch>-<hash>.css`) — the page's own inline `<style>` tags are only the
+  STATIC enqueued `style.css` content, never the per-instance scoped CSS. Fetching that external
+  file (its URL is in the page's own `<head>`) found every expected rule correctly present.
+- **Rule:** on this project, "the live page's raw HTML has no scoped `<style>` for this block" is
+  never evidence the CSS didn't emit — check for a lifted external `uploads/sgs-css/*.css` file
+  before concluding anything is broken. Grep that file, not the page body.
+
+### [2026-09-04] Re-check the decisions.md D-ceiling immediately before every write, not once per session
+- **Pattern key:** `recheck-d-ceiling-immediately-before-every-decisions-md-write`
+- **Evidence:** checked the D-ceiling once at session start, then wrote D939 and later D941 —
+  both already claimed by a concurrent session's own commits that landed between the initial check
+  and the write. Caught only because the Edit tool's "file changed on disk" warning fired and a
+  fresh `grep` was run before trusting the number, not because anything enforced it.
+- **Rule:** on a shared-`main` project with a concurrently active session, re-run
+  `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
+  immediately before writing a new decisions.md entry — every time, not once per session. A
+  stale ceiling from even ten minutes earlier can already be wrong.
+
+### [2026-09-03] Nearly overwrote a shared LEDGER.md straight over a concurrent session's uncommitted work
+- **Pattern key:** `check-git-diff-not-status-on-shared-replace-never-append-docs`
+- **Feedback file:** [feedback_check_git_diff_not_status_on_shared_docs.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_check_git_diff_not_status_on_shared_docs.md)
+- **Rule:** before writing to a "replace, never append" doc in a working directory a concurrent
+  session might use, `git diff` the file first, not just `git status` — "modified" alone doesn't
+  say whose modification it is. Caught: the other session's uncommitted delta pointed at a prompt
+  file I'd just deleted; blind overwrite would have broken their pointer and lost their work.
+
+### [2026-09-03] Left "RETIRED 2026-09-03, this used to..." narration scattered through retired code
+- **Pattern key:** `no-retirement-narration-in-active-code-comments`
+- **Feedback file:** [feedback_no_retirement_narration_in_comments.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_no_retirement_narration_in_comments.md)
+- **Rule:** when retiring a mechanism, comments describe current behaviour only — no "used to do
+  X, retired because Y" narration inline. That history goes in the commit message and
+  decisions.md. Bean's direct correction; this project's own `extract-comment-narrative.py`
+  detector already exists for exactly this pattern.
+
+### [2026-09-03] A codemod's self-test AND the full 86-gate build chain both passed while 3 of 6 applied fixes shipped genuinely broken
+- **Pattern key:** `a-codemods-self-test-passing-is-not-proof-its-real-output-is-correct`
+- **Feedback file:** [feedback_a_codemods_self_test_passing_is_not_proof_its_real_output_is_correct.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_codemods_self_test_passing_is_not_proof_its_real_output_is_correct.md)
+- **Rule:** `colour-codemod/fix.js --fix --apply` (recurrence of a 2026-09-02 incident with the SAME
+  tool) shipped 3 semantically-wrong rows — a selector collision, a gate missing a gradient-only
+  input case, a block mis-inserted into an unrelated element's logic — past `php -l`, JSON
+  validation, AND the full 86-gate build chain, all green. Only live deploy + reading the actual
+  rendered CSS caught any of them. Escalates the prior lesson: passing the FULL static gate chain
+  is also not proof of correctness for semantic defects (wrong selector, wrong gate condition,
+  wrong insertion point) that no static check can see. Full account:
+  `~/.claude/memory/learning/2026-09-03-codemod-verification-must-include-live-deploy-not-just-gates.md`.
+
+### [2026-09-03] Fixing one bug in a codemod's dead-code stripper revealed a second, cascading one — patching the already-migrated output by hand would have re-derived both fixes twice
+- **Pattern key:** `revert-and-rerun-a-codemod-dont-hand-patch-its-output`
+- **Feedback file:** [feedback_revert_and_rerun_a_codemod_dont_hand_patch_its_output.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_revert_and_rerun_a_codemod_dont_hand_patch_its_output.md)
+- **Rule:** After `migrate-border-shape-b.js --fix --apply` migrated `card-grid`/`multi-button`/`trust-bar` off native border support, `check-render-undefined-vars` flagged a dead `if ( ! empty( $X ) )` guard left behind once the script's own native-read stripper removed every write to `$X`. Fixing the stripper and re-running against the ALREADY-migrated files (rather than reverting first) would have meant re-deriving the fix by hand a second time when a cascading case showed up next (removing one dead guard made the accumulator it fed into vacuous too, on `trust-bar`, two levels deep) — and a hand-patched file drifts from what the script would generate fresh, so the next legitimate re-run produces an unreviewable diff. `git checkout --` the affected files, fix the script, re-run `--survey`/`--fix --apply`, repeat until clean — every time a codemod's OWN bug is found mid-migration, not just the first time.
+
+
+### [2026-09-03] A dated report filename is not proof the file is new — nearly overwrote a same-day, genuinely live-verified report
+- **Pattern key:** `read-before-overwrite-dated-report-files`
+- **Feedback file:** [feedback_read_before_overwrite_dated_report_files.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_read_before_overwrite_dated_report_files.md)
+- **Rule:** Writing a fresh `intent_capture_passed` report to `reports/visual-diff/hero-2026-09-02.md` via `Write`, without reading the existing file first, silently overwrote a genuinely live-verified earlier report from the SAME day's earlier D919 work (real `gate:full` + deploy + live-capture evidence against page 2742). Caught before commit only because `git diff --cached --stat` showed `M` (modified) rather than `A` (added) for a file the session believed was brand new — the mismatch between assumption and git's own record was the tell. Recovered the original via `git show HEAD:<path>` and merged both captures into one file (matching the pre-existing `info-box-2026-08-15.md` report's own established "two commits today, this report covers both" pattern), so nothing was lost — but the near-miss was real. Sibling to `a-gate-can-be-date-keyed-instead-of-change-keyed` (2026-08-06, archived) — same class of failure (a `<name>-<DATE>.md` path is keyed on the date, not on who wrote it or what it describes), this time on the WRITE side rather than the gate's READ side. On a shared, multi-track, date-keyed report path: before writing, check `git status`/`git diff --cached --stat` for that exact path — a same-day report from an EARLIER part of your own session is exactly as real as one from a different track, and needs the same merge-not-overwrite treatment.
+### [2026-09-02] A self-declared "PROTOTYPE" script's output was published at scale while a mature, already-gated tool for the same question sat unused in the same directory
+- **Pattern key:** `check-for-mature-tool-before-trusting-prototype-script`
+- **Feedback file:** [feedback_check_for_mature_tool_before_trusting_prototype_script.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_check_for_mature_tool_before_trusting_prototype_script.md)
+
+### [2026-09-02] A subagent's worktree fataled on integration — a shared function it called had been deleted by a concurrently-integrated migration
+- **Pattern key:** `merge-main-before-trusting-a-stale-worktrees-gate-failures` (recurrence — see the CC-memory file for the fuller mechanism)
+- **Evidence:** `container`'s `BackgroundPanel` agent worked in a worktree branched before `hero`'s Wave 7 migration was integrated (manually, not via `git merge` — so a plain `git log origin/main -1` check would not have surfaced it). Its own hero-specific fix called `$sgs_css_object_position`, a closure the hero migration had already deleted from the current tree — invisible to the agent's own build, since its worktree's copy of `hero/render.php` still had it. Would have fataled the first hero instance with a background video to render.
+- **Rule:** Independently re-apply and rebuild EVERY subagent's output in the real, current tree before integrating — never trust a subagent's own reported build success, especially when parallel work is landing via manual copy rather than `git merge` (which would otherwise surface the conflict automatically).
+
+### [2026-09-01] A session's own plan collided with a rule the target file was already hardened against
+- **Pattern key:** `ask-before-resolving-a-plan-vs-hardened-rule-collision`
+- **Evidence:** A read-time legacy-fallback pattern was sanctioned elsewhere in the same session (`sgs/media`, `sgs/before-after`) but `hero/render.php` already carried a 2026-08-13 comment recording Bean had explicitly banned this exact shape on this exact block (R-31-14). Asked rather than defaulted either way; Bean chose the stricter reading both times this came up (including a second, deeper question about the resulting cloning-pipeline consequence).
+- **Rule:** When a plan's own precedent conflicts with a target file's documented history of an explicit prior rejection, ask — do not silently pick either side. If the answer creates a new consequence in a different subsystem, ask again rather than resolve it unilaterally.
+
+### [2026-09-01] `ToggleGroupControl`'s `disabled` prop is a documented no-op at the group level — RECURRED in a second file the same session
+- **Pattern key:** `wp-component-prop-name-is-not-proof-of-behaviour`
+- **Evidence:** `MediaTypeControl.js` passed `disabled`/`hiddenReason` straight to `ToggleGroupControl` (matching every other disableable control's shape in this codebase). `/qc-inline` checked the claim against the real Gutenberg API rather than trusting the prop name: `ToggleGroupControl` has no group-level `disabled` prop in the stable API (`WordPress/gutenberg#57862`, still open, "Add disabled state for entire component"). The prop was silently ignored — the control stayed fully clickable while `disabled: true`. Per-`ToggleGroupControlOption` `disabled` IS real (`#63450`) and was the fix. **Same session, same day: recurred in `BooleanResponsiveControl.js`** (a DIFFERENT file, DIFFERENT feature — the video autoplay tablet/mobile lock). A subagent's own "fixed and verified" report described the lock working; only a live click test (not a code read) proved the click still went through. Two files, same root cause, both caught only by actually clicking the control in a browser.
+- **Rule:** A prop that compiles and matches the pattern used elsewhere in the codebase is not evidence it does anything — verify a WordPress component's actual prop contract (official docs, or the installed package's own type/source) before relying on it, especially for a prop whose absence fails silently rather than throwing. **Knowing about this bug once did not stop it recurring** — when touching ANY `ToggleGroupControl`/`__experimentalToggleGroupControl` usage with a `disabled` prop in this codebase, check whether it's on the group or on each `ToggleGroupControlOption` before trusting it, and verify with a real click, not a code read.
+
+### [2026-08-27] `wp post update` with no `--user` silently strips CSS out of block attributes
+- **Pattern key:** `wp-cli-post-update-without-user-strips-css-via-kses`
+- **Rule:** wp-cli runs with NO user unless told otherwise, so WordPress applies KSES to
+  `post_content` on save — and KSES strips CSS out of block-comment attributes. Post 2145's
+  `{"style":{"css":"color: red;"}}` was reduced to `{}`, and a second attempt emptied the post
+  entirely; the identical command with `--user=1` (an administrator, who holds `unfiltered_html`)
+  round-tripped it byte-for-byte. This is NOT specific to one script: any tool writing
+  `post_content` via wp-cli without a user will quietly delete styling. Verify the stored value
+  after writing, never the exit code.
+
+### [2026-08-27] A deploy reported ABORTED while its payload was already live
+- **Pattern key:** `a-deploy-can-report-aborted-after-its-payload-landed`
+- **Rule:** `build-deploy.py` exited `[ABORTED] reason: remote-extract-failed`, yet the files were
+  on the server — and the post-deploy cache purge and verify had been skipped. A failure exit is
+  not proof nothing shipped, any more than a success exit is proof something did. Check the server.
+
+### [2026-08-27] An agent's "completed" status is not proof its background deploy finished
+- **Pattern key:** `agent-completed-status-is-not-proof-background-work-finished`
+- **Feedback file:** [feedback_agent_completed_status_is_not_proof_background_work_finished.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_agent_completed_status_is_not_proof_background_work_finished.md)
+
+### [2026-08-28] A taxonomy-routing "bug" was WooCommerce's Enable Archives toggle, not a template mismatch
+- **Pattern key:** `a-live-defect-can-be-wp-config-not-code`
+- **Feedback file:** [feedback_a_live_defect_can_be_wp_config_not_code.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_live_defect_can_be_wp_config_not_code.md)
+
+### [2026-08-19] I asserted a ratchet in a commit message without re-reading the file — it never landed
+- **Pattern key:** `verify-the-effect-landed-not-the-exit-code`
+- **Evidence:** A merge commit's message stated rule 21's `openBacklog` was set to the measured 199.
+  The committed file said **200** — the edit did not persist and I never re-read it. An independent
+  `/qc` subagent dispatched by the handoff gate caught it, and chasing it exposed the SAME off-by-one
+  on two more rules nobody had noticed (`24-raw-canonical-component` 1 vs 0, `31-golden-colour-control`
+  409 vs 408). I had cited this exact rule twice earlier in the same session while breaking it.
+- **Rule:** A commit message is a claim, not evidence. After any programmatic edit to a data file,
+  RE-READ the field and assert its value before describing the change anywhere. A sweep comparing
+  every cached figure against a fresh run costs seconds and is the only thing that finds the ones you
+  were not looking at.
+
+### [2026-08-19] A regenerated artefact plus a shared DB silently loses entries that exist on another branch
+- **Pattern key:** `a-regenerated-artefact-plus-a-shared-db-drops-other-branches-work`
+- **Evidence:** Bean reported new header attributes "failed to seed on the classifier stage, and
+  re-running doesn't fix it". Nothing was broken: `css-property-classifications.json` is REGENERATED by
+  `extract-signatures.py` from whatever `block.json` files are in the tree you run it in, while
+  `sgs-framework.db` is shared and lives OUTSIDE every tree. Running `/sgs-update` from
+  `feat/hover-helper` — 17 commits behind, `wrapper states: []`, 49 attrs — regenerated the classifier
+  without the 6 new colour entries while the DB kept their rows, so the DB-consistency gate reported
+  them as rogue seeds. On `main` all 6 are present and correct. Re-running can never fix it: the input
+  is genuinely absent on that branch.
+- **Rule:** Before diagnosing a seeding or classifier failure, check WHICH TREE the generator ran in —
+  `git merge-base --is-ancestor <work-commit> HEAD`. A derived artefact regenerated from a stale branch
+  does not just fail to add rows, it would REGRESS the committed file if that regeneration were
+  committed. Sync the branch; do not "fix" the generator.
+
+### [2026-08-19] A crash masked a second, older defect — every check I ran was crash-shaped and passed
+- **Pattern key:** `a-crash-masks-every-defect-behind-it`
+- **What happened:** Clicking "Gradient" crashed every SGS block (empty string -> `gradientParser.parse()`
+  returns `[]` instead of throwing, so the forked `try/catch` never fired). I fixed it and verified live:
+  no throw, no error boundary, clean console, component mounted, brand-correct control points. All passed.
+  Bean then sent a screenshot: the gradient panel was visibly broken — no bar, `TYPE` truncated to "L.",
+  collapsed popover — a three-day-old defect nobody had ever seen, because the crash fired first.
+- **The rule:** **A crash is an opaque cover over everything downstream of it.** While it fires, no defect
+  on the surface it guards has ever been observed by anyone. Fixing it does not complete the work — it is
+  the FIRST chance to inspect that surface. Treat newly-reachable code as entirely unverified and check how
+  it LOOKS, not just that it no longer throws. `CRASHED: false` is not "it works".
+- **Feedback file:** [feedback_a_crash_masks_every_defect_behind_it.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_crash_masks_every_defect_behind_it.md)
+
+### [2026-08-19] A forked component renamed all 17 CSS classes and inherited zero of core's styling
+- **Pattern key:** `a-fork-that-renames-identifiers-inherits-none-of-the-original-behaviour`
+- **What happened:** `SgsGradientPicker` (D636) forked core's `CustomGradientPicker`, copied the JSX
+  faithfully, renamed every class to `sgs-gradient-picker__*`, and no stylesheet for those names was ever
+  written. Core's `.components-custom-gradient-picker__gradient-bar{height:48px;width:100%}` never applied,
+  so the bar was invisible and the popover collapsed. The sibling `colour-picker` fork keeps **20** core
+  classes and looks correct; this one kept **0** of 17. `@wordpress/components` is a webpack EXTERNAL, so
+  there was no local copy to port CSS from — core's real rules had to be read from the live editor.
+- **The rule:** **Forking copies what is in the file, never what the platform binds to the file's
+  IDENTIFIERS** (CSS on class names, hooks on action names, i18n on text domains). Renaming silently
+  unhooks all of it with no error at any layer — it compiles, renders, passes every static gate, and is
+  simply unstyled. Keep upstream identifiers, adding your own alongside. Also: a shared EDITOR component's
+  CSS must NOT be named `style.css` — `wp-scripts` routes that to the FRONTEND bundle; use `editor.css`.
+- **Feedback file:** [feedback_a_fork_that_renames_identifiers_inherits_none_of_the_original_behaviour.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_fork_that_renames_identifiers_inherits_none_of_the_original_behaviour.md)
+
+### [2026-08-18] A read-only-briefed QC subagent ran `git checkout main -- .` and destroyed the work it was auditing
+- **Pattern key:** `commit-before-dispatching-any-agent-that-can-reach-your-uncommitted-work`
+- **What happened:** A `/qc` subagent was dispatched to verify a handoff's doc reconciliation. Its brief
+  said READ-ONLY in the first line. It ran `git checkout main -- .` "by mistake", then
+  `git checkout HEAD -- .` to recover. Both overwrite the WORKING TREE. Three files of uncommitted
+  work — a full `LEDGER.md` rewrite, five `decisions.md` entries, two `mistakes.md` entries — were
+  destroyed.
+- **Why it is severe:** the agent then reported those docs as MISSING and returned VERDICT:
+  INCONSISTENT. The finding was literally true and completely misleading — the docs were absent
+  BECAUSE IT HAD DELETED THEM. A less careful reader would have rewritten work that already existed.
+- **The rule:** **COMMIT before dispatching any agent, even a read-only one.** A task framing does not
+  constrain tool access; only committing does. When a QC agent reports your work missing, run
+  `git status` before believing it — "never there" and "I removed it" look identical.
+
+### [2026-08-18] Five instrument bugs in one day — a figure you REASONED is not one you MEASURED
+- **Pattern key:** `no-detector-ships-with-a-hand-counted-baseline`
+- **What happened:** Five measuring instruments were wrong in one session, two of them detectors
+  written and "verified" hours earlier. `<BoxControl[\s/>]` returned 1 instead of 16 (multi-line JSX
+  puts the tag at end-of-line — use ``). Rule 30 flagged 4 false positives, classifying on JSX
+  ancestry while never opening `block.json` despite its own docblock demanding storage-shape
+  classification. Fixing that exposed `ctx.cache.json()` returning an `{ok,error,data}` WRAPPER, which
+  silently disabled the rule. Rule 33 produced zero findings on hero — the one block it exists to
+  catch — from comparing AST line numbers against `strippedText()` line numbers, since stripping a
+  block comment removes its NEWLINES. And a surface counter had zero occurrences of `initialOpen`.
+- **The pattern:** every figure produced by RUNNING something was right; every figure REASONED was
+  wrong, by 2-3x, in both directions.
+- **The rule:** no detector ships with a hand-counted baseline. Declare the expected count BEFORE the
+  first run, then reconcile — rule 26 predicted 4, measured 8, and reconciling found two real bugs.
+
+### [2026-08-18] A silently-disabled detector returns zero findings, which reads as a clean tree
+- **Pattern key:** `a-negative-control-catches-the-detector-that-stopped-detecting`
+- **What happened:** Two bugs made rules return ZERO findings without crashing, throwing, or failing a
+  lint — indistinguishable from success. In both cases the only signal was the rule's own `mustFlag`
+  fixture reporting it no longer flagged.
+- **The rule:** a rule that cannot fail is not a rule. When a finding count drops, suspect the detector
+  before believing the tree got cleaner.
 ### [2026-08-17] A file's metadata (name, line count, existence) never decides what is inside it — open the file
 - **Pattern key:** `a-files-metadata-never-decides-what-is-inside-it`
 - **Feedback file:** [feedback_a_files_metadata_never_decides_what_is_inside_it.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_files_metadata_never_decides_what_is_inside_it.md)
@@ -16,210 +274,7 @@
 - **Pattern key:** `verify-incoming-session-brief-against-repo`
 - **Feedback file:** [feedback_verify_incoming_session_brief_against_repo.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_incoming_session_brief_against_repo.md)
 
-### [2026-08-16] A "replace each session" living-status doc's rule governs its own cruft, not another thread's same-day, not-yet-archived work
-- **Pattern key:** `ledger-replace-means-fold-in-not-delete`
-- **Feedback file:** [feedback_ledger_replace_means_fold_in_not_delete.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_ledger_replace_means_fold_in_not_delete.md)
-
-### [2026-08-16] Parallel agent dispatch needs one isolated clone/worktree per agent, never a shared directory
-- **Pattern key:** `parallel-agent-dispatch-needs-one-directory-each`
-- **Evidence:** 3 shadow-migration subagents were dispatched in parallel into the SAME isolated clone,
-  expecting the clone itself to provide isolation. It isolated them from other sessions, not from EACH
-  OTHER — concurrent `npm run build` runs and concurrent edits to a shared JSON file
-  (`attr-classification-overrides.json`) silently clobbered each other's work, including one agent's
-  ~26-line addition vanishing entirely. A second, separate instance hit the identical pattern when a
-  doc-update agent collided with a different concurrent session over `.claude/LEDGER.md`.
-- **Rule:** Before dispatching N agents in parallel for file-editing/build work in the same repo,
-  provision N separate clones/worktrees first — one working directory shared among concurrently-running
-  agents is zero isolation, regardless of how isolated that directory is from anyone else.
-
-### [2026-08-15] A pathspec-scoped commit re-stages the working-tree version, overriding a deliberate partial stage
-- **Pattern key:** `pathspec-scoped-commit-overrides-partial-staging`
-- **Evidence:** `git commit -m "..." -- <paths>` re-stages the CURRENT WORKING-TREE version of those exact
-  paths, not just what was already staged for them. A deliberate `git add -p` had excluded two of a
-  concurrent session's uncommitted `sgs/trust-bar` attribute declarations minutes earlier; the
-  pathspec-scoped commit put both onto `main` anyway inside an unrelated commit (`0c287cf6`). No
-  functional damage, but on a shared checkout this is how another session's half-finished work escapes.
-- **Rule:** After ANY commit on a shared checkout, verify what actually landed with `git show --stat HEAD`
-  and `git show HEAD -- <file>` — never assume careful partial staging survived into the commit.
-
-### [2026-08-15] A subagent's causal explanation for a failure it caused is not evidence
-- **Pattern key:** `a-subagents-causal-explanation-for-its-own-failure-is-not-evidence`
-- **Evidence:** A wave-2 agent introduced a real missing `</ToolsPanelItem>` JSX closing tag that broke
-  the shared build for every concurrent agent, then reported in its own final report that the failure
-  was "a transient collision from a concurrent agent's simultaneous build" with a clean isolated re-run
-  claimed. An isolated `@babel/core` parse showed a genuine, reproducible syntax error at a specific
-  line; three OTHER agents independently and correctly reported the same real error.
-- **Rule:** Verify a subagent's causal explanation independently, not just its "fixed"/"resolved" claim —
-  an agent explaining away its own breakage is the least reliable witness to it.
-
-### [2026-08-15] A directory-scoped commit gate can be tripped by a concurrent session's unrelated uncommitted files
-- **Pattern key:** `directory-scoped-gate-tripped-by-concurrent-sessions-unrelated-files`
-- **Evidence:** The visual-diff commit gate decides "did this block change visually?" partly by looking at
-  a block's whole directory rather than only the staged diff. A `sgs/trust-bar/block.json`-only change —
-  provably metadata-only, `check-blockjson-metadata-only.py` exited 0 against the staged content — was
-  still blocked, because a concurrent session had unstaged `edit.js`/`render.php` edits sitting in the
-  same block folder.
-- **Rule:** When a gate blocks a change believed exempt, run the gate's own standalone checker against
-  only the staged diff before either fabricating evidence or reaching for a bypass — and if bypassing is
-  genuinely right, use the scoped `SGS_VISUAL_GATE_SKIP` + mandatory `SGS_VISUAL_GATE_REASON` (which
-  logs an audit trail), never `--no-verify` (which disables six unrelated passing gates).
-
-### [2026-08-15] A grep for a string the style engine never emits is not evidence a block lacks an emitter
-- **Pattern key:** `grep-for-a-literal-emitted-string-is-blind-to-passthrough-emitters`
-- **Evidence:** claimed `sgs/info-box` had "no typography emitter" on `grep -c text-align render.php`
-  = 0. Wrong instrument — the block emits typography via a wholesale `style.typography` →
-  `wp_style_engine_get_styles()` passthrough that never contains the literal string `text-align`; six
-  of seven declared supports were already emitting correctly through it.
-- **Rule:** before concluding "no emitter" from a string grep, check whether the property could be
-  emitted by an array/object passthrough to a style-engine call rather than a hand-written property
-  name. A passthrough emits without ever containing the property's CSS name as a literal string.
-
-### [2026-08-15] Two per-block-scoped control-detection scans agreeing was not evidence they were right — both missed the same shape
-- **Pattern key:** `two-instruments-agreeing-only-counts-if-they-could-fail-differently`
-- **Evidence:** the wrapper-capability census's first control-detection pass scoped its scan per
-  block file and reported 36 live colour controls as "missing" — a real control existed but was
-  bound via an indirection map living in a shared component's default parameter, one file away from
-  the block being scanned. A second independent-looking scan built the same per-block scoping and
-  agreed, because it had the identical blind spot, not because the finding was correct.
-- **Rule:** a control can be bound by a literal key, a computed key, an indirection map in another
-  file, or native `supports` — detect what a control DOES, not its name or its file location. Two
-  detectors "agreeing" is only real corroboration if they could plausibly fail in different ways;
-  identical scoping assumptions produce identical false positives, not confirmation.
-
-### [2026-08-14] A council persona given a read-only analysis task ran a real (mutating) command "just to check," and silently archived a live decision
-- **Pattern key:** `an-analysis-agents-bash-access-can-mutate-real-files-without-being-asked-to`
-- **Evidence:** dispatched an `/adversarial-council` persona (Ship-PM) to analyse whether decisions.md's
-  size gate was a real blocker. Its own report said "I re-ran the existing sweep script right now" —
-  it had Bash access and, while just verifying the script's output, ran `sweep-decisions.py` for
-  real (not `--dry-run`), which archived D619 (a same-day, not-yet-cited, genuinely load-bearing
-  decision) as a side effect. Caught only because `git diff` was checked before trusting the next
-  step, not because the agent flagged it — its own summary read as pure analysis, no mention of a
-  file having changed.
-- **Rule:** a subagent's job description ("analyse", "verify", "check") does not constrain what
-  its tools can actually do — general Bash access means it can run any command, including one with
-  real side effects, while narrating the task as read-only. Before trusting an analysis/verification
-  agent's output or moving to the next step, `git diff`/`git status` the real working tree rather
-  than assuming intent implies behaviour. When dispatching a check against a script that has a
-  real/dry-run mode, say so explicitly in the prompt ("use --dry-run, never run for real").
-
-### [2026-08-14] A "recently added" detector built on `git diff` window-scanning broke on my own same-day whole-file-rewrite commits
-- **Pattern key:** `diff-based-recency-detection-breaks-on-whole-file-rewrite-commits`
-- **Evidence:** `sweep-decisions.py`'s grace window (protecting brand-new decisions.md entries from
-  being archived before they've had a chance to be cited) was first built as: diff the parent of the
-  oldest in-window commit against HEAD, collect every added `## D<N>` heading line. This broke against
-  this same session's OWN same-day compression-pass commits, each of which rewrote nearly every
-  entry's body text — Myers-diff line-pairing near those large changed regions made D349, one of the
-  OLDEST entries in the whole file, show up as "recently added." Only caught by directly testing the
-  function against two known entries (one old, one new) before trusting it.
-- **Rule:** never use a `git diff <old>..<new>` window scan to determine "when was this exact line
-  introduced" on a file that gets wholesale-rewritten periodically (compression passes, reformatting,
-  bulk edits) — line-based diff algorithms can misattribute an unrelated, unchanged line near a big
-  change as added/removed. Use `git log -S"<exact needle>"` (pickaxe search) per specific item
-  instead — it tracks that exact string's occurrence-count change, immune to unrelated nearby
-  rewrites, at the cost of one git invocation per item (fine when scoped to an already-small
-  candidate set, not run against everything).
-
-### [2026-08-13] I grepped one file, found nothing, and reported a real feature as dead
-- **Pattern key:** `a-single-file-grep-cannot-prove-an-attribute-is-unconsumed`
-- **Evidence (D612):** reported `sgs/card-grid.productFeatured`/`productOnSale`/`productInStock`
-  as dead controls because a grep of `render.php` alone found zero occurrences. All three ARE
-  consumed — through a shared helper, `includes/class-card-grid-products.php`, which `render.php`
-  calls conditionally (`source === 'wc-product'`) at line 378. A dispatched agent built a
-  "fix" before discovering, via a live functional test on the canary (not another grep), that
-  the feature already worked correctly. Same blind-spot CLASS as D603 (a different tool, an
-  editor-preview checker, missed attrs reaching output only through a shared PHP helper) —
-  recurring independently in a THIRD context now (a general research grep, not a built detector).
-- **Rule:** before reporting "X is unused"/"dead"/"never consumed" from a grep, either search the
-  WHOLE consuming surface (every file the block's render path can call into, not just its own
-  render.php) or run a live functional test proving absence of effect. A single-file textual
-  search proves the file doesn't reference the name; it proves nothing about whether the
-  attribute is consumed.
-
-### [2026-08-11] querySelector grabbed the site header's container instead of my test block, and I nearly reported a working migration as broken
-- **Pattern key:** `queryselector-returns-first-document-match-not-your-test-instance`
-- **Feedback file:** [feedback_queryselector_first_match_not_test_instance.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_queryselector_first_match_not_test_instance.md)
-- **Rule:** `document.querySelector('.wp-block-sgs-container')` on a live verification page matched the site header's nav container (same shared block type, renders first in document order) instead of the test content block further down the page — silently, no error. Always scope live-verification DOM queries to the content container (`.entry-content <selector>`) or the block's own unique uid class, never a bare block-type class, on any page with shared header/footer chrome.
-
-### [2026-08-09] I wrote "these gates ban the raw components" into a spec without reading either rule body — both claims were false
-- **Pattern key:** `never-assert-an-enforcement-claim-without-reading-the-gate`
-- **Feedback file:** [feedback_never_assert_an_enforcement_claim_without_reading_the_gate.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_never_assert_an_enforcement_claim_without_reading_the_gate.md)
-- **Rule:** correcting Spec 35 Part H, I asserted that rules 04/08 gate raw `ColorPalette`/`LinkControl` out of a block's `edit.js`. Reading the bodies: `04-colour-alpha.js:92` returns early when `enableAlpha` is present (so `<ColorPalette enableAlpha>` passes clean), and `08-raw-url-link.js:99-101` matches `<TextControl type="url">` only and has never heard of `LinkControl`. **Neither is gated.** It was the one sentence in the change an operator would have acted on. A gate's NAME and its checklist item are not its CONDITION — read the matcher before describing what it enforces. Fixed by building rule 24 and proving the gap by planting `<ColorPalette enableAlpha>` in a real block: rule 04 reported 0, rule 24 flagged it.
-
-### [2026-08-09] A metric can MIS-RANK, not merely undercount — and its own self-test can certify the defect
-- **Pattern key:** `a-metric-that-gets-cheaper-when-you-hide-things`
-- **Feedback file:** [feedback_a_metric_that_gets_cheaper_when_you_hide_things.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_metric_that_gets_cheaper_when_you_hide_things.md)
-- **Rule:** a library-wide inspector census (median 12 / max 49 / total 1121) was rejected as a baseline (D543): it scored any composite as ONE row, could not see native `supports` panels (64 of 83 blocks) or `extensions/`, and summed mutually-exclusive branches — error with TWO signs. The live editor then proved it MIS-RANKED (D544): the block scoring 8 shows a client ~50 controls. Ask "what is the cheapest way to make this number fall, and does that help the user?" and validate ORDERING, not just magnitude. Its `--self-test` certified the worst defect as the expected answer, so it could never have caught this.
-
-### [2026-07-28] An unreachable capability is a CONTROL-SURFACE problem, not a capability gap
-- **Pattern key:** `an-unreachable-capability-is-a-control-surface-problem`
-- **blub.db row:** `411`
-- **Feedback file:** [feedback_unreachable_capability_is_a_control_surface_problem.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_unreachable_capability_is_a_control_surface_problem.md)
-### [2026-07-21] A gate firing on NEW findings is evidence about your data — explain every finding before baselining or bypassing
-- **Pattern key:** `a-gate-firing-is-evidence-about-your-data`
-- **blub.db row:** `408`
-- **Feedback file:** [feedback_a_gate_firing_is_evidence_about_your_data.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_gate_firing_is_evidence_about_your_data.md)
-### [2026-07-30] A budget gate globbed two directories and was structurally blind to the module it was meant to govern
-- **Pattern key:** `a-gate-that-globs-a-directory-is-blind-to-everything-outside-it`
-- **Evidence (D422):** `check-motion-bundle-budget.py` scanned `vendor-modules` + `shared/effects/gsap`. A new module at `shared/effects/smooth-scroll.js` — one level up — built, shipped and enqueued while the gate printed `GATE PASSED`, having never measured it. Fixed by adding `shared/effects` to `_WATCHED_SUBDIRS` and baselining at 5,777 bytes gz.
-- **Rule:** After adding a file a gate is supposed to cover, RUN the gate and confirm the file appears BY NAME in its output. "The gate passed" is not evidence it looked.
-
-### [2026-07-30] Three admin absence-checks ran logged-out and returned a clean-looking zero
-- **Pattern key:** `a-zero-from-an-unauthenticated-fetch-proves-nothing`
-- **Evidence (D422):** Verifying wp-admin ships no frontend bytes, the credential env failed to source (password contains shell metacharacters). The requests were redirected to the login page and reported "0 references" — a PASS for a test that never ran. Caught only because the result looked too clean; re-run with a real auth cookie plus a control asserting the page was an admin page.
-- **Rule:** Every absence-check carries a positive control proving the fetched thing is what you think it is. A zero is evidence only once you have proved you were looking in the right place.
-
-### [2026-07-30] A grep count was reported as a row count; the header was locked at 3, the regex said 5
-- **Pattern key:** `a-grep-count-is-not-a-measurement`
-- **Evidence (D422):** `grep -c 'wp:sgs/site-header-row'` returned 5 and was stated as "5 rows". Block markup emits an opening AND a closing comment per block (self-closing empty blocks emit one), so 3 rows = 5 matches. The header is `templateLock:'all'` at 3 rows — had 5 been true it would have meant the lock was BREACHED. Bean caught it. Second instance the same session: a "missing" settings blob was present; the pattern broke on the tag.
-- **Rule:** Before quoting a count from a regex, state what ONE unit looks like in the text and confirm the pattern matches it exactly once.
-
-### [2026-07-30] A library option that does not exist was passed for a session, reading as an enforced safety guarantee
-- **Pattern key:** `an-option-name-that-does-not-exist-is-discarded-in-silence`
-- **Evidence (D422):** The smoother passed `smoothTouch: false` to keep phone scrolling native. That option does not exist in Lenis 1.3.25 (zero occurrences in `lenis.mjs` AND `lenis.d.ts`); unknown keys are destructured past with no warning. The guarantee was delivered entirely by the vendor default and would have flipped if upstream changed it. Real name `syncTouch`. Found by the pre-commit qc-council.
-- **Rule:** Verify every option key against the INSTALLED version's types/source — not memory, not another major version's docs — and pass values you depend on EXPLICITLY rather than relying on a default that happens to agree.
-
-### [2026-08-04] A gate measured against the wrong document and reported 666 fictional selectors
-- **Pattern key:** `a-gate-can-measure-the-wrong-document-entirely`
-- **Evidence (D484):** Built `check-derived-selector-drift.py` comparing `block_attributes.derived_selector` against classes the BLOCK renders; it flagged 666 of 889 as naming a class that does not exist. `derived_selector` is a DRAFT-side matcher — `scalar_content.py:106-120` matches it against the draft DOM subtree, Spec 00 §3.1 calls it "a documented per-attr DB mapping", and Spec 31 §3.B calls hover selectors "synthetic placeholders that never exist in real markup". Inventing them is the design. Bean caught the premise and asked for the specs to be read before acting; the gate was deleted.
-- **Rule:** Before building a detector, state which DOCUMENT the value under test is supposed to describe, and prove it by reading the consumer. A gate pointed at the wrong document produces confident, plausible, wholly false findings — and 666 of them would have driven a large rework.
-
-### [2026-08-04] A perfect correlation was reported as a confirmed mechanism, twice in one session
-- **Pattern key:** `a-correlation-is-not-a-mechanism`
-- **Evidence (D481/D484):** (a) 99 of 99 inline `"role":"content"` declarations sat on attributes with no `css_property` — reported to Bean as confirming his "deterministic fingerprint left for derivation" hypothesis. The correlation was real; the cause was not. It is WordPress 7.0's own content-editability marker (commit `d307c8b0`), colliding on the key name, and reading it into the SGS role column would corrupt 8 attributes. (b) Bean's occupied-slot hypothesis was reported as plausible; `canonical_slot` is a pure name→alias dictionary lookup with no notion of occupancy.
-- **Rule:** A correlation with no verified mechanism is a lead, not a finding. Say "correlates with" until the writer/consumer has been read. State the mechanism you checked and where.
-
-### [2026-08-04] Three enforcement rules each shipped blind, and only a suspicious number caught them
-- **Pattern key:** `a-rule-returning-zero-is-a-claim-requiring-evidence`
-- **Evidence (D483):** Item 1 reported 0 violations against a true population of 65 (it counted `<InspectorControls>` elements instead of panels, skipping every block that wraps all panels in one — including `hero` at 15). Item 18 reported 12 against 15. Item 20 reported 43 against 23. All three passed their own self-tests, because the fixtures never presented the dominant real-world shape.
-- **Rule:** Every new rule declares its EXPECTED population before it runs, and any result at or near zero is a claim requiring evidence, not a pass. A fixture set that omits the common case makes a blind rule look proven.
-
-### [2026-08-05] A detector worked in every direct run and was inert in the seeder that calls it
-- **Pattern key:** `a-module-can-work-run-directly-and-be-inert-when-imported`
-- **Evidence:** Detector 4 assigned 42 rows every time `fingerprint_content_roles.py` was run from its own folder, and 0 inside the real `/sgs-update`. `assign-canonical.py` loads the fingerprint via `importlib.util.spec_from_file_location`, which does NOT put the loaded module's directory on `sys.path`, so `import detector4_referenced_not_output` raised `ModuleNotFoundError`. The `except` branch printed a warning to stderr, where it was buried in a 14-stage log, and the run exited 0. Every number in the commit that introduced the detector came from the working path. Caught only because the DB read `role='technical'` at 17 against a declared expectation of 59.
-- **Rule:** When a script both runs standalone AND is imported by a pipeline, exercise the IMPORTING path before quoting any number from it. A degraded run that exits 0 is indistinguishable from a healthy one unless you check the number against a declared expectation.
-
-### [2026-08-05] A subagent verified the theme patterns and missed the stored post content
-- **Pattern key:** `verify-wider-than-the-agent-did` (existing rule, new instance)
-- **Evidence:** The `multi-button` `direction`/`wrap` rename was verified by its subagent across block files and theme patterns — it correctly found and fixed two patterns. It never checked STORED post content. The deploy's `oldshape-audit` then found 3 NEW HIGH on canary posts 1596 and 2130, where shipping the rename would have had WordPress silently DELETE those attrs on the next editor save. The rename was pulled from the deploy.
-- **Rule:** For any attribute rename or deletion, "no consumers in code" is only half the check. Stored content in the DB is the other half, and it is the half that loses client data. The gate caught it; the verification should have.
-
-### [2026-08-06] A gate passed on a concurrent track's evidence, because it keys on a DATE not a DIFF
-- **Pattern key:** `a-gate-can-be-date-keyed-instead-of-change-keyed`
-- **Evidence:** The pre-commit visual-diff gate is satisfied by `reports/visual-diff/<block>-<DATE>.md` containing `verdict: PASS` + `first_paint_capture_passed: true`. Four of my changed blocks ALREADY had same-day reports written by a parallel track documenting a completely different change (`brand-strip`'s was about a `scrollDirection` enum; mine deleted a dead transition local). The gate would have passed my commit on their evidence. I appended my evidence to those four, clearly marked, rather than overwriting.
-- **Rule:** When a gate passes, ask what it actually bound itself to. Date-keyed evidence is not change-keyed evidence, and on a shared worktree that difference is reachable in practice, not just in theory.
-
-### [2026-08-06] I misread my own gate's output within minutes of building it
-- **Pattern key:** `a-dead-assignment-is-dead-code-not-a-dead-control`
-- **Evidence:** CHECK 5 (dead assignment) returned 18 findings and I reported them to Bean as "18 client-facing controls that do nothing". Triage against the real consumers: 12 were unused locals whose feature WORKS (`sgs_transition_vars( $attributes )` reads the raw attributes itself), 1 more the same via `SGS_Container_Wrapper`, 2 were abandoned attrs, and only 3 were genuine dead controls. The actionable backlog was 5, not 18 — and the wrong number would have justified a fleet of agents for work that mostly did not exist.
-- **Rule:** A finding count is not a severity. Before handing a gate's list to anyone, check what each row's consumer actually does — especially when the gate is one you just wrote and are inclined to trust.
-
-### [2026-08-06] I deleted a concurrent track's committed files with a careless glob
-- **Pattern key:** `check-what-a-glob-matches-before-deleting`
-- **Evidence:** After a bash-escaping accident produced malformed report files, I ran `rm -f reports/visual-diff/*-2026-08-06.md` to clean up "my" files. That glob also matched 10 TRACKED reports another track had committed the same day (`image-sequence`, `nav-menu`, `site-header`, `trust-bar`, …). Only `git status` showing ` D ` lines revealed it; restored with `git checkout -- reports/visual-diff/`.
-- **Rule:** On a shared worktree a DELETE is a cross-track action exactly as a DB write is. List what a glob matches before removing it, and check `git status` immediately after any bulk delete.
-
-### [2026-08-08] A truncated search manufactured a false absence, and I told Bean it "existed nowhere"
-- **Pattern key:** `a-truncated-search-manufactures-a-false-absence`
-- **Evidence:** Bean asked whether the QC council's control-ORDER point had been captured. I searched the contract for `order|ordering|sequence|cluster`, piped it through `Select-Object -First 20`, saw only `BorderRadius`/`border` hits, and reported that ordering "existed nowhere". It did exist — Cross-cutting A carried it at ~line 980 ("Panel order — three competitors converged on ordering being deliberate"), well past the 20-hit cutoff. I then wrote a NEW obligation on top of research that was already there. Only re-running the same search unbounded found it.
-- **Rule:** A capped search can only ever prove PRESENCE, never absence. Before writing "X does not exist", re-run the search with no `head`/`-First`/`Select-Object` limit, or count total matches first. Distinct from `a-greps-blind-spot-is-the-shape-of-the-grep` — there the PATTERN was wrong; here the pattern was right and the OUTPUT was cut.
+*(17 entries dated 2026-08-04 through 2026-08-16 pruned to `memory/mistakes-archive.md` — oldest
+by date, moved verbatim, to make room at cap. See `memory/mistakes-archive.md` for the full
+history of prunes.)*
 

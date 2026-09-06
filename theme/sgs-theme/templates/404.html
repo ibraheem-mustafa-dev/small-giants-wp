@@ -1,18 +1,54 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
-<!-- wp:sgs/container {"tagName":"main","anchor":"main","style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70"}}},"contentWidth":{"desktop":"600px"}} -->
+<!-- LIVING CANARY for the <main> column fallback (2026-08-23). This template
+     deliberately does NOT state layout:"stack" — the other eight do. The shared
+     wrapper resolves a blank flexDirection on a <main> to `column`, and with every
+     template stating it explicitly that code path would never execute anywhere,
+     which is how a mechanism rots without anyone noticing. This page depends on no
+     posts, products or client content, so it is the cheapest possible place to keep
+     the fallback honest: request any nonsense URL and check <main> computes
+     flex-direction:column. If it ever reads `row`, the fallback has broken.
+     ⛔ Do NOT "tidy" this by adding layout:"stack" to match its siblings. -->
+<!-- HEADING SEMANTICS (2026-08-23 design benchmark, S7-2). The numerals used to be the
+     <h1> and "Page not found" an <h2>, so a screen reader announced this page as "404" —
+     a status code, not a page name — and the page carried two competing headings while
+     committing to neither. GOV.UK, the cheap-and-excellent benchmark, makes "Page not
+     found" the h1. The numerals are now sgs/text: they carry the visual weight without
+     claiming heading semantics, and they still read aloud, which is useful rather than
+     noise (GOV.UK deliberately prints the status code too — see the disclosure below).
+     ⛔ Do NOT promote the numerals back to a heading to make them "look important".
+     Their size is doing that job; the h1 is for what the page IS. -->
 
-	<!-- wp:sgs/heading {"content":"404","textAlign":"center","level":"h1","fontSize":{"desktop":"hero"}} /-->
+<!-- TYPOGRAPHY AS THE EFFECT (S7-3). This is the whole design idea, and it is deliberately
+     the ONLY one: the numerals ARE the artwork. Measured 2026-08-23, this page was 494px
+     tall in an 852px viewport with exactly one SVG on it (the search icon) — correct in
+     every functional respect and completely mute. Award-tier 404s go to 96-200px display
+     type and set the numerals as the artwork themselves; the `display` token added to
+     theme.json the same day (clamp 56px -> 120px) exists for this and for future hero
+     patterns. Cost: zero JS, zero requests, zero motion, no CDN — it is one font-size.
+     The muted colour is intentional restraint: huge + quiet reads as editorial, huge +
+     loud reads as an error page shouting. It also clears contrast comfortably. -->
 
-	<!-- wp:sgs/heading {"content":"Page not found","textAlign":"center","level":"h2"} /-->
+<!-- STATUS DISCLOSURE (S7-4). GOV.UK literally prints "Status code: 404" in the body.
+     It is honest, it costs nothing, and it gives anyone reporting a broken link the one
+     detail that makes the report actionable. Keep it small and muted — it is a footnote,
+     not a second message. This page already returns a real HTTP 404 (verified live
+     2026-08-23); this line just says so where a human can read it. -->
+<!-- wp:sgs/container {"tagName":"main","anchor":"main","contentWidth":{"desktop":"600px"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70"},"flexWrap":"wrap"} -->
+
+	<!-- wp:sgs/text {"text":"404","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"display"},"lineHeight":{"desktop":"0.85"}} /-->
+
+	<!-- wp:sgs/heading {"content":"Page not found","textAlign":"center","level":"h1","fontSize":{"desktop":"xx-large"}} /-->
 
 	<!-- wp:sgs/text {"text":"The page you're looking for doesn't exist or has been moved. Try searching or head back to the homepage.","textAlign":"center","textColour":"text-muted"} /-->
 
 	<!-- wp:search {"label":"Search","showLabel":false,"placeholder":"Search this site\u2026","buttonText":"Search","buttonPosition":"button-inside","buttonUseIcon":true,"style":{"border":{"radius":"8px"},"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} /-->
 
-	<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
+	<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"margin":{"top":"var:preset|spacing|40"}} -->
 		<!-- wp:sgs/button {"label":"Back to Homepage","url":"/","inheritStyle":"primary","style":{"border":{"radius":"8px"}}} /-->
 	<!-- /wp:sgs/multi-button -->
+
+	<!-- wp:sgs/text {"text":"Status code: 404","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"small"},"margin":{"top":"var:preset|spacing|50"}} /-->
 
 <!-- /wp:sgs/container -->
 

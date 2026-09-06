@@ -18,41 +18,90 @@
 	"icon": "search",
 	"supports": {
 		"html": false,
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"align": [
 			"wide"
 		],
 		"sgs": {
+			"_comment_mediaElements": "37-media-no-handroll remediation (2026-09-03). The result-row product thumbnail (`.sgs-product-search__results [role=\"option\"] img`) is built at runtime by view.js (a live REST-fetched results list), not by render.php — there is no server-rendered <img> to attach the marker class to at render time. The scoped custom-property VALUE is still computed server-side by SGS_Media_Element::style() (keyed on the block's existing no-inline scoped-styling uid class, $sgs_style_uid, already present on the wrapper for every display mode), and view.js adds the `sgs-media-el` marker + that same uid class onto each thumbnail <img> it creates, so the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` atom stylesheet paints it. style.css no longer hardcodes object-fit:cover.",
+			"mediaElements": [
+				{
+					"prefix": "",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
+			],
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
 				"wrapper": {
 					"label": "Search wrapper",
 					"order": 1,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin"
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:border-color-gradient": "borderColourGradient"
 					},
-					"_note": "No color, typography or __experimentalBorder support is declared on this block at all. clusters is deliberately scoped to layout (native spacing only) to avoid a zero-resolution declaration (ROLLOUT REQUIREMENT 1)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color": "borderColourHover",
+								"css:border-color-gradient": "borderColourHoverGradient"
+							}
+						}
+					},
+					"_note": "No native color/typography/__experimentalBorder support is declared on this block; clusters stays scoped to layout (native spacing only, ROLLOUT REQUIREMENT 1). The wrapper-level borderColour/etc added 2026-09-06 (Block Customisation Standard) is DISTINCT from the pre-existing inputBorderColour (below) — that one paints ONLY the `.sgs-product-search__input` search box border; this one frames the whole block wrapper (and, via the bare-uid-class rule, the reparented dialog in overlay/command-palette display modes — see render.php)."
+				},
+				"input": {
+					"label": "Search input",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:border-color": "inputBorderColour",
+						"css:outline-color": "focusRingColour"
+					},
+					"_note": "The search <input class=\"sgs-product-search__input\" role=\"combobox\"> (render.php:326-341). Declared because F6 check #8 (reseed-survival) correctly REFUSED a css_property with no css_element: inputBorderColour resolved to border-color but had css_element=NULL and derived_selector=NULL, so it fell to the ROOT routing domain and would misroute on a clone. A property resolved without an element is not a win — it is a mis-route waiting to happen. ⚠ KNOWN MODELLING LIMIT: --sgs-ps-input-border has TWO consumers — this input's border (style.css:37) AND the listbox border (style.css:87). One attribute paints two nodes; the manifest models attribute->element ownership one-to-one, so it is declared on the input (the primary, named node) and the listbox border rides the same variable. Splitting them would need a second attribute, which is a client-facing control decision, not a mapping one."
 				}
 			}
 		}
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"displayMode": {
 			"type": "string",
 			"default": "inline-bar"
@@ -67,23 +116,10 @@
 		},
 		"maxResults": {
 			"type": "object",
-			"default": {"desktop": 10, "mobile": 6}
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": 10,
+				"mobile": 6
+			}
 		},
 		"inputBorderColour": {
 			"type": "string",
@@ -104,6 +140,47 @@
 		"matchHighlightColour": {
 			"type": "string",
 			"default": ""
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"render": "file:./render.php",

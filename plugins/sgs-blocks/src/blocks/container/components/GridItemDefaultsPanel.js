@@ -20,6 +20,7 @@ import {
 import {
 	ResponsiveOverride,
 	DesignTokenPicker,
+	GradientCapableColourControl,
 	ShadowControl,
 	ResponsiveBorderRadiusControl,
 	normaliseResponsiveBox,
@@ -33,6 +34,12 @@ const GRID_ITEM_BORDER_STYLES = [
 	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
 	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
 ];
+
+// Every CSS border-style keyword, NOT the subset offered by
+// GRID_ITEM_BORDER_STYLES above — this parses a border shorthand that may
+// already carry any of them (`1px groove red`). Narrowing it to the picker's
+// options would silently mis-parse those values as a colour.
+const _GRID_BORDER_STYLE_WORDS = [ 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset', 'none' ];
 
 function _gridBorderParts( value ) {
 	const out = { width: '', style: '', colour: '' };
@@ -83,12 +90,19 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 		layout = 'stack',
 		gridItemPadding = {},
 		gridItemBackground = '',
+		gridItemBackgroundHover = '',
+		gridItemBackgroundGradient = '',
+		gridItemBackgroundHoverGradient = '',
 		gridItemBorderRadius = {},
 		gridItemBorder = '',
 		gridItemBorderGradient = '',
 		gridItemBorderGradientHover = '',
 		gridItemShadow = '',
+		gridItemShadowColour = '',
 		gridItemTextColour = '',
+		gridItemTextColourHover = '',
+		gridItemTextColourGradient = '',
+		gridItemTextColourHoverGradient = '',
 	} = attributes;
 
 	if ( layout !== 'grid' ) {
@@ -137,8 +151,26 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 			</ResponsiveOverride>
 			<DesignTokenPicker
 				label={ __( 'Background colour', 'sgs-blocks' ) }
-				value={ gridItemBackground }
-				onChange={ ( val ) => setAttributes( { gridItemBackground: val } ) }
+				states={ [
+					{
+						key: 'normal',
+						label: __( 'Normal', 'sgs-blocks' ),
+						value: gridItemBackground,
+						onChange: ( val ) => setAttributes( { gridItemBackground: val ?? '' } ),
+						gradientValue: gridItemBackgroundGradient,
+						onGradientChange: ( val ) =>
+							setAttributes( { gridItemBackgroundGradient: val ?? '' } ),
+					},
+					{
+						key: 'hover',
+						label: __( 'Hover', 'sgs-blocks' ),
+						value: gridItemBackgroundHover,
+						onChange: ( val ) => setAttributes( { gridItemBackgroundHover: val ?? '' } ),
+						gradientValue: gridItemBackgroundHoverGradient,
+						onGradientChange: ( val ) =>
+							setAttributes( { gridItemBackgroundHoverGradient: val ?? '' } ),
+					},
+				] }
 			/>
 			{ /* Canonical per contract §14.1: the wrapper, not the raw primitive.
 			     Fixed 2026-08-11 (P-SPEC35-BORDER-RESIDUALS) — this mounted the
@@ -189,12 +221,21 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
+				{ /* ONE row, two states (Part O §1 fields 9a/9b — one control shape,
+				     states live inside the popover, never sibling controls). Was
+				     TWO SEPARATE DesignTokenPicker mounts (a below-min-states finding
+				     each) until this consolidation. Hover has no resting-state solid
+				     colour of its own (gridItemBorder has never had a hover twin) so
+				     its "Solid" branch has nothing to write to and just clears the
+				     hover gradient (DesignTokenPicker's existing rule — switching to
+				     Solid always clears the stored gradient), which is the correct
+				     "no hover override" state — unchanged behaviour, new shape. */ }
 				<DesignTokenPicker
 					label={ __( 'Border colour', 'sgs-blocks' ) }
 					states={ [
 						{
-							key: 'base',
-							label: __( 'Border colour', 'sgs-blocks' ),
+							key: 'normal',
+							label: __( 'Normal', 'sgs-blocks' ),
 							value: _gridBorderParts( gridItemBorder ).colour,
 							onChange: ( val ) => setAttributes( {
 								gridItemBorder: _gridBorderJoin( { ..._gridBorderParts( gridItemBorder ), colour: val || '' } ),
@@ -206,18 +247,6 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 							gradientValue: gridItemBorderGradient,
 							onGradientChange: ( val ) => setAttributes( { gridItemBorderGradient: val ?? '' } ),
 						},
-					] }
-				/>
-				{ /* Hover-only — no resting-state solid colour exists for grid items
-				     today (gridItemBorder has never had a hover twin), so this row is
-				     GRADIENT-ONLY: its "Solid" branch has nothing to write to and just
-				     clears the hover gradient (SgsColourStateControl's existing rule —
-				     switching to Solid always clears the stored gradient), which is the
-				     correct "no hover override" state. Same shape as this session's
-				     hover-only borders with no resting twin (mega-panel/testimonial). */ }
-				<DesignTokenPicker
-					label={ __( 'Border colour (hover)', 'sgs-blocks' ) }
-					states={ [
 						{
 							key: 'hover',
 							label: __( 'Hover', 'sgs-blocks' ),
@@ -233,11 +262,53 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 				label={ __( 'Shadow', 'sgs-blocks' ) }
 				value={ gridItemShadow }
 				onChange={ ( val ) => setAttributes( { gridItemShadow: val } ) }
+				colour={ gridItemShadowColour }
+				onColourChange={ ( val ) => setAttributes( { gridItemShadowColour: val } ) }
 			/>
-			<DesignTokenPicker
+			{ /* GradientCapableColourControl, NOT DesignTokenPicker — text needs
+			     background-clip:text, which DesignTokenPicker has no mechanism for
+			     at all (its per-state gradientValue toggle paints a background
+			     gradient BEHIND the text). SgsColourPanel switches between the two
+			     via a row-level `gradientCapable` flag, but this panel mounts
+			     controls directly (no SgsColourPanel), so that flag does nothing on
+			     a bare DesignTokenPicker — the component itself must change. Same
+			     trap this session's Step 3 negative control caught on sgs/container
+			     and sgs/cta-section's OWN root text rows. */ }
+			{ /* Contrast warning: text defaults are paired with background defaults
+			     set in this same panel. When a grid item child uses both defaults
+			     (no override), the text renders on the background. Warn if that
+			     pairing lacks WCAG AA contrast. `contrastAgainst` only accepts a
+			     FLAT colour/token — when `gridItemBackgroundGradient` is also set,
+			     the gradient (not the flat colour) is what actually paints, so the
+			     check is skipped in that case rather than comparing against a
+			     surface that isn't rendered. */ }
+			<GradientCapableColourControl
 				label={ __( 'Text colour', 'sgs-blocks' ) }
-				value={ gridItemTextColour }
-				onChange={ ( val ) => setAttributes( { gridItemTextColour: val } ) }
+				contrastAgainst={
+					gridItemBackground && ! gridItemBackgroundGradient
+						? gridItemBackground
+						: ''
+				}
+				states={ [
+					{
+						key: 'normal',
+						label: __( 'Normal', 'sgs-blocks' ),
+						value: gridItemTextColour,
+						onChange: ( val ) => setAttributes( { gridItemTextColour: val ?? '' } ),
+						gradientValue: gridItemTextColourGradient,
+						onGradientChange: ( val ) =>
+							setAttributes( { gridItemTextColourGradient: val ?? '' } ),
+					},
+					{
+						key: 'hover',
+						label: __( 'Hover', 'sgs-blocks' ),
+						value: gridItemTextColourHover,
+						onChange: ( val ) => setAttributes( { gridItemTextColourHover: val ?? '' } ),
+						gradientValue: gridItemTextColourHoverGradient,
+						onGradientChange: ( val ) =>
+							setAttributes( { gridItemTextColourHoverGradient: val ?? '' } ),
+					},
+				] }
 			/>
 		</PanelBody>
 	);

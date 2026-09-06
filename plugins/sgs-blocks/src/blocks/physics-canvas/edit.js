@@ -3,16 +3,12 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import { PanelBody, RangeControl, SelectControl, Notice, BoxControl } from '@wordpress/components';
-import {
-	ResponsiveBoxControl,
-	ResponsiveOverride,
-	ShadowControl,
-	SgsColourPanel,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-} from '../../components';
+import { useSelect } from '@wordpress/data';
+import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, fillRow, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
+import { backgroundPreview, spacingPreview, svgBackgroundPreview } from '../../utils';
 // Reused directly rather than duplicated (Spec 35 Part B / composite-mirror rule,
 // D152): physics-canvas KEEPS SGS_Container_Wrapper (containerKind: 'section'), so
 // its box + width controls must be the SAME shape sgs/container itself exposes —
@@ -63,14 +59,106 @@ const ALLOWED_BLOCKS = [
  */
 
 export default function Edit( { attributes, setAttributes, name } ) {
-	const { physicsGravity, physicsBounce, physicsEdgeResistance, backgroundColour } = attributes;
+	const { physicsGravity, physicsBounce, physicsEdgeResistance, backgroundColour, backgroundColourGradient } = attributes;
 
-	const blockProps = useBlockProps();
+	// D717/background-preview: BackgroundPanel (mounted below) writes image/
+	// video/overlay/ken-burns/parallax attrs this block never previewed on
+	// canvas — the shared mirror (src/utils/background-preview.js, 2026-08-26)
+	// fixes that the same way sgs/container already did.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	// Decorative SVG background layer — editor mirror (2026-09-05). Sibling of
+	// backgroundPreview() below, deliberately NOT folded into it: that helper
+	// paints via `--sgs-ed-bg-*` custom properties on a ::before, whereas the
+	// SVG layer is a real element whose painting rules already ship in the
+	// block's style.css (loaded in the canvas via block.json `style`). See
+	// svgBackgroundPreview()'s own docblock. Attributes are enumerated
+	// EXPLICITLY — check-editor-render-parity.js (CHECK A) resolves an
+	// attribute as canvas-reflected only when its NAME appears outside the
+	// Inspector panels, so a whole-object hand-off would render correctly but
+	// still read as a desync.
+	const svgPreview = svgBackgroundPreview( {
+		bgSvgContent: attributes.bgSvgContent,
+		bgSvgPosition: attributes.bgSvgPosition,
+		bgSvgAnimation: attributes.bgSvgAnimation,
+		bgSvgAnimationSpeed: attributes.bgSvgAnimationSpeed,
+		bgSvgOpacity: attributes.bgSvgOpacity,
+		bgSvgMinHeight: attributes.bgSvgMinHeight,
+		bgSvgTextShadow: attributes.bgSvgTextShadow,
+	} );
+
+	const bgPreview = backgroundPreview( {
+		backgroundImage: attributes.backgroundImage,
+		bgVideo: attributes.bgVideo,
+		backgroundSize: attributes.backgroundSize,
+		backgroundPosition: attributes.backgroundPosition,
+		backgroundRepeat: attributes.backgroundRepeat,
+		backgroundAttachment: attributes.backgroundAttachment,
+		bgKenBurns: attributes.bgKenBurns,
+		bgAnimationDuration: attributes.bgAnimationDuration,
+		bgParallax: attributes.bgParallax,
+		backgroundOverlayColour: attributes.backgroundOverlayColour,
+		overlayGradient: attributes.overlayGradient,
+		backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
+		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
+	}, colourPalette );
+
+	// Active device tier for the padding/margin preview below — this block had
+	// no previewTier mechanism of its own, so this follows sgs/container's
+	// getDeviceType read exactly (same source its own Layout panel writes).
+	const previewTier = useSelect( ( select ) => {
+		const ed = select( 'core/editor' );
+		const device =
+			ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
+		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
+	}, [] );
+
+	// Padding/margin canvas preview (measured live 2026-08-26: sibling blocks
+	// showed 0px padding/margin on canvas against a real 120px/80px page).
+	// Base padding + margin are now the block-OWNED `padding`/`margin`
+	// object attrs (D555 gutter-default migration — no `supports.spacing`);
+	// tablet/mobile overrides are the block-private paddingTablet/
+	// paddingMobile/marginTablet/marginMobile object attrs (this block
+	// declares all four — verified in block.json).
+	const spacePreview = spacingPreview( {
+		basePadding: attributes.padding,
+		paddingTablet: attributes.paddingTablet,
+		paddingMobile: attributes.paddingMobile,
+		baseMargin: attributes.margin,
+		marginTablet: attributes.marginTablet,
+		marginMobile: attributes.marginMobile,
+	}, previewTier );
+
+	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
+	// against the physics-canvas's own background. When the background is a gradient,
+	// the flat backgroundColour is not rendered, so skip the check in that case.
+	const physicsCanvasContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
+
+	const blockProps = useBlockProps( {
+		className: [ bgPreview.className, ...svgPreview.className ].filter( Boolean ).join( ' ' ),
+		style: { ...bgPreview.style, ...svgPreview.style, ...spacePreview },
+	} );
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		allowedBlocks: ALLOWED_BLOCKS,
 		templateLock: false,
 		renderAppender: undefined,
 	} );
+
+	// Mirrors class-sgs-container-wrapper.php:2794-2798. `aria-hidden` matches
+	// the server; `pointer-events:none` is editor-only insurance so the
+	// decorative layer can never swallow a click meant for the block or its
+	// children. Rendered as a direct child of the block ROOT — never inside
+	// the thrown-item canvas, which the physics engine owns.
+	const svgLayer = svgPreview.hasSvg ? (
+		<div
+			className="sgs-container__svg-bg"
+			aria-hidden="true"
+			style={ { pointerEvents: 'none' } }
+			dangerouslySetInnerHTML={ { __html: svgPreview.markup } }
+		/>
+	) : null;
 
 	return (
 		<>
@@ -79,23 +167,25 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			    Text colour row — every allowed child is decorative/non-textual and
 			    sgs/icon always sets its own explicit colour, so inherited `color` never
 			    painted anything visible on this block (see block.json's element note).
-			    No hover state exists on this attr, so a single 'normal' state. */ }
+			    Background row is now the FILL variant (fillRow) — gradient + hover
+			    moved off the native panel (supports.color.gradients was true,
+			    competing with this SGS panel) onto block-private backgroundColour{
+			    Hover,Gradient,HoverGradient} attrs, so capability is moved rather
+			    than lost. */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: backgroundColour,
-								onChange: ( val ) =>
-									setAttributes( { backgroundColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 				] }
 			/>
 
@@ -107,6 +197,31 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			     colour, which D621/D622 already placed in Styles. */ }
 			<InspectorControls group="styles">
 				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						contrastAgainst={ physicsCanvasContrastAgainst }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			<InspectorControls>
@@ -213,56 +328,40 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				</PanelBody>
 
 				{ /* ── Padding & margin (box-object tiers) — base tier writes to the
-				     WP-native style.spacing object; tablet/mobile write to the
+				     block-OWNED `padding`/`margin` attrs; tablet/mobile write to the
 				     paddingTablet/paddingMobile + marginTablet/marginMobile object
 				     attrs the wrapper's @media tiers read. Mirrors sgs/container's
 				     and sgs/trust-bar's own edit.js exactly. ────────────────── */ }
 				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={ {
-							base: attributes.style?.spacing?.padding ?? {},
-							tablet: attributes.paddingTablet ?? {},
-							mobile: attributes.paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( tier === 'base' ) {
-								setAttributes( {
-									style: {
-										...attributes.style,
-										spacing: { ...attributes.style?.spacing, padding: next },
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
-								} );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+							presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 					<hr style={ { margin: '16px 0' } } />
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						values={ {
-							base: attributes.style?.spacing?.margin ?? {},
-							tablet: attributes.marginTablet ?? {},
-							mobile: attributes.marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( tier === 'base' ) {
-								setAttributes( {
-									style: {
-										...attributes.style,
-										spacing: { ...attributes.style?.spacing, margin: next },
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ tier === 'tablet' ? 'marginTablet' : 'marginMobile' ]: next,
-								} );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* ── Content band (Layer 2 __inner) — this band IS the physics
@@ -333,12 +432,18 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
-						value={ attributes.shadow || '' }
-						onChange={ ( val ) => setAttributes( { shadow: val } ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'shadow',
+							colour: 'shadowColour',
+							hoverColour: 'shadowColourHover',
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>
 			<div { ...innerBlocksProps }>
+				{ svgLayer }
 				<p className="wp-block-sgs-physics-canvas__editor-notice">
 					{ __(
 						'Decorative content only — images, media and icons. No links, buttons or body text (they would have no keyboard/reduced-motion alternative once thrown).',

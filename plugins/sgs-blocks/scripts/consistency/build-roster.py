@@ -16,8 +16,17 @@ Surface flags (a block is "in scope" for an audit dimension if the flag is true)
   link      — has a url/link/href attribute (LinkControl migration target)
   media     — declares sgs.imageControls, OR has an image/media/video attribute (media-controls target)
   animation — declares a parallax/animation support or attribute (reduced-motion-gate target)
+
+`qualifies` (per block, ADDITIVE — does not touch `surfaces`):
+  paintDeclarations     — count of colour-paint CSS declarations in the block's own style.css
+  replacedCoreSupports  — WP core support families the block's `replaces` core block(s) ENABLE,
+                           e.g. ["color", "spacing"]. This is the feature-parity evidence
+                           survey-golden-conformance.js's `qualifiesFor()` cannot compute itself
+                           (it has no access to core block.json). See `support_enabled()` below
+                           for the exact "enabled" rule per family.
 """
 import json
+import re
 import sqlite3
 import sys
 from pathlib import Path
@@ -25,6 +34,81 @@ from pathlib import Path
 # Same DB the sgs-db.py CLI uses: skills/sgs-wp-engine/scripts/../sgs-framework.db
 DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 OUT = Path(__file__).parent / "roster.json"
+BLOCKS_DIR = Path(__file__).parent.parent.parent / "src" / "blocks"
+
+# Same paint-declaration pattern the survey uses for `paintsOwnSurface`
+# (survey-golden-conformance.js `qualifiesFor()`), duplicated here rather than
+# shared cross-language — kept identical on purpose so the two counts never
+# silently diverge in meaning.
+PAINT_DECLARATION_RE = re.compile(r'(?:background(?:-color)?|border-color|[^-\w]color)\s*:')
+
+# Sub-flags that mean core's `color` support paints REAL UI, not just the
+# ability to declare one. Verified 2026-08-19 against live DB rows:
+# core/site-logo has `color: {"enabled":true, background:false, text:false,
+# link:null, gradients:null, button:null, heading:null}` — `enabled:true` alone
+# with every sub-flag false/null renders NO colour UI at all. core/paragraph
+# has `gradients:true, link:true` alongside `enabled:true` — real UI. So
+# `enabled:true` is necessary but not sufficient for `color`; at least one of
+# these six must be `=== true`.
+COLOUR_UI_SUBFLAGS = ("background", "text", "link", "gradients", "button", "heading")
+
+
+def support_enabled(support_name: str, raw_value: str) -> bool:
+    """Whether a WP core support FAMILY is ENABLED (real user-facing UI), not
+    merely present/declared.
+
+    Rule (documented per the two shapes actually observed in block_supports):
+      - `color`: `support_value` must parse as a JSON object with
+        `enabled === true` AND at least one of COLOUR_UI_SUBFLAGS `=== true`.
+        `enabled:true` with every sub-flag false/null (core/site-logo) is NOT
+        enabled — it is the ability to declare a colour, never exercised.
+      - Every other family: a bare JSON boolean `true`, OR a JSON object
+        carrying `enabled === true` (e.g. spacing/border/typography's
+        `{"enabled":true, ...}` shape). Enum/list-shaped values (e.g.
+        `align: ["left","center",...]`) are never treated as "enabled" — they
+        describe allowed values, not a UI capability.
+    """
+    try:
+        parsed = json.loads(raw_value)
+    except (ValueError, TypeError):
+        return False
+
+    if support_name == "color":
+        if not isinstance(parsed, dict) or parsed.get("enabled") is not True:
+            return False
+        return any(parsed.get(f) is True for f in COLOUR_UI_SUBFLAGS)
+
+    if isinstance(parsed, bool):
+        return parsed is True
+    if isinstance(parsed, dict):
+        return parsed.get("enabled") is True
+    return False
+
+
+def assert_db_healthy(conn: sqlite3.Connection) -> None:
+    """Fail loud, never silent, on the two known decoy-DB traps.
+
+    Two 0-byte `sgs-framework.db` files sit INSIDE this repo
+    (`plugins/sgs-blocks/scripts/sgs-framework.db`, repo-root `sgs-framework.db`).
+    A relative path resolving to either lands on an empty file that "passes
+    clean forever" — every query returns zero rows and every downstream
+    predicate reads as legitimately-absent rather than DB-not-found. DB_PATH
+    above already resolves to the canonical out-of-repo DB, so this is a
+    guard against future path-logic drift, not a workaround for a bug today.
+    """
+    if not DB_PATH.exists() or DB_PATH.stat().st_size == 0:
+        sys.exit(f"DB at {DB_PATH} is missing or 0 bytes — refusing to build a roster from a decoy DB")
+    tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+    if "block_supports" not in tables:
+        # Report the file THIS CONNECTION actually opened, not DB_PATH. They are
+        # normally the same, but naming DB_PATH unconditionally would send the
+        # reader to the canonical DB when the decoy is somewhere else entirely —
+        # a guard that misnames the bad file is worse than one that says nothing.
+        opened = next(
+            (r[2] for r in conn.execute("PRAGMA database_list").fetchall() if r[1] == "main"),
+            str(DB_PATH),
+        )
+        sys.exit(f"DB at {opened} has no `block_supports` table — refusing to build a roster from a decoy DB")
 
 
 def q(sql: str):
@@ -34,6 +118,7 @@ def q(sql: str):
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
     try:
+        assert_db_healthy(conn)
         rows = conn.execute(sql).fetchall()
     finally:
         conn.close()
@@ -63,6 +148,45 @@ def build_payload() -> dict:
         "SELECT block_slug, attr_name, role, inspector_control_type FROM block_attributes "
         "WHERE source='sgs';"
     )
+    # `native_wp` is the source value core blocks carry in this table (verified
+    # 2026-08-19 — the other value present is `sgs`). 119 distinct core/* slugs
+    # currently have rows; a `replaces` entry naming a core slug NOT in this set
+    # (e.g. core/stack, core/row, core/form-submit-button — genuinely not
+    # separately-registered core blocks) is legitimately absent, not a bug.
+    core_supports = q(
+        "SELECT block_slug, support_name, support_value FROM block_supports "
+        "WHERE source='native_wp' AND is_stale=0 AND block_slug LIKE 'core/%';"
+    )
+    core_sup_by_block: dict[str, dict[str, str]] = {}
+    for s in core_supports:
+        core_sup_by_block.setdefault(s["block_slug"], {})[s["support_name"]] = s.get("support_value") or ""
+
+    def replaced_core_supports(replaces_csv: str | None) -> list[str]:
+        """Union of WP support families ENABLED (support_enabled()) across every
+        core block named in a `replaces` value. `replaces` can be comma-joined
+        (e.g. "core/accordion-item,core/details") — split before lookup."""
+        if not replaces_csv:
+            return []
+        families: set[str] = set()
+        for core_slug in (s.strip() for s in replaces_csv.split(",")):
+            if not core_slug:
+                continue
+            for name, raw_value in core_sup_by_block.get(core_slug, {}).items():
+                if support_enabled(name, raw_value):
+                    families.add(name)
+        return sorted(families)
+
+    def paint_declarations(slug: str) -> int:
+        """Count of colour-paint CSS declarations in the block's own style.css —
+        the same pattern the survey uses for `paintsOwnSurface`. `slug` carries
+        the `sgs/` prefix (DB shape); `src/blocks/` directories are bare."""
+        bare = slug.split("/", 1)[1] if "/" in slug else slug
+        css_path = BLOCKS_DIR / bare / "style.css"
+        try:
+            css = css_path.read_text(encoding="utf-8")
+        except OSError:
+            return 0
+        return len(PAINT_DECLARATION_RE.findall(css))
 
     STYLING = {"color", "spacing", "__experimentalBorder", "typography", "shadow"}
     sup_by_block: dict[str, dict[str, str]] = {}
@@ -122,6 +246,10 @@ def build_payload() -> dict:
             "replaces": b.get("replaces") or None,
             "has_render_php": bool(b.get("has_render_php")),
             "surfaces": flags(b["slug"]),
+            "qualifies": {
+                "paintDeclarations": paint_declarations(b["slug"]),
+                "replacedCoreSupports": replaced_core_supports(b.get("replaces")),
+            },
         })
 
     payload = {

@@ -1,0 +1,13 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/bg-panel-attr-not-flagged",
+	"title": "Fixture: bare background-panel attrs declared with no mediaElements (must NOT flag, condition 1 negative)",
+	"category": "sgs",
+	"attributes": {
+		"backgroundOverlayColour": { "type": "string", "default": "" },
+		"backgroundOverlayOpacity": { "type": "number", "default": 30 },
+		"backgroundSize": { "type": "string", "default": "cover" },
+		"bgParallax": { "type": "boolean", "default": false },
+		"unrelatedAttr": { "type": "string", "default": "" }
+	}
+}

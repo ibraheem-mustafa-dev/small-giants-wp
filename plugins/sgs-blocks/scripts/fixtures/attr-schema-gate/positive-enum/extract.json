@@ -1,0 +1,4 @@
+{
+  "_fixture_purpose": "POSITIVE CONTROL (ENUM) for check_attr_schema_conformance.py. sgs/hero's 'variant' attribute is declared in block.json with enum [\"standard\",\"split\"]. Emitting 'variant':'bogus-value' is exactly the out-of-enum regression Task 2 (commits 4aee732d4/6e5170762) fixed for one resolver (arrangement.layout_attrs) — this is the general, output-side backstop that must catch it for ANY resolver, on ANY enum-declared attribute (rule b).",
+  "block_markup": "<!-- wp:sgs/hero {\"variant\":\"bogus-value\",\"label\":\"Welcome\"} -->\n<section class=\"wp-block-sgs-hero\"></section>\n<!-- /wp:sgs/hero -->"
+}

@@ -26,28 +26,29 @@
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"typography": {
-			"textAlign": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
+			"colourExemptions": {
+				"icon-bg-hover": {
+					"rule": "states",
+					"reason": "CLASSIFIER FALSE POSITIVE — edit.js branches on colourMode via a ternary; the 'theme' branch already has a real 2-state icon-bg row (normal+hover, fully wired), and this row is the OTHER branch's own deliberately hover-only row for a different display mode where the resting background comes from a CSS preset class, not a custom attribute. The census's ConditionalExpression handling concatenates both ternary branches as if they coexisted. Confirmed 2026-09-06 (colour-conformance FILL audit) — this block's colour coverage is already complete."
+				}
+			},
 			"collection": true,
 			"imageControls": false,
 			"_imageControlsNote": "Deliberate opt-out (FR-36-21). The universal image-controls extension (object-position/max-width/height) targets ONE block-level image; this block's optional custom-SVG upload is a PER-ITEM glyph inside a repeater (mirrors sgs/icon's own imageControls:false). Size is governed by the existing iconSize control instead.",
 			"arrayContentLift": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -63,12 +64,28 @@
 					"attrMap": {
 						"css:color": "native:color.text",
 						"css:background-color": "native:color.background",
-						"css:text-align": "native:typography.textAlign",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:gap": "gap"
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:gap": "gap",
+						"css:border-width": "wrapperBorderWidth",
+						"css:border-style": "wrapperBorderStyle",
+						"css:border-color": "wrapperBorderColour",
+						"css:border-radius": "borderRadius",
+						"css:border-color-gradient": "wrapperBorderColourGradient"
 					},
-					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-social-icons — display:flex is hardcoded CSS, no attribute, so no `layer` is declared and the 12 arrangement members are honestly never asked about). No `layout` box-model attrs beyond padding/margin/gap exist (no width/height/max-width/border/box-shadow control) — honest gaps."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color": "wrapperBorderColourHover",
+								"css:border-color-gradient": "wrapperBorderColourHoverGradient"
+							}
+						}
+					},
+					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-social-icons — display:flex is hardcoded CSS, no attribute, so no `layer` is declared and the 12 arrangement members are honestly never asked about). No `layout` box-model attrs beyond padding/margin/gap exist (no width/height/max-width/border/box-shadow control) — honest gaps. Typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight). The old native `textAlign` capability (`css:text-align`) was dropped, not replaced: this root is `display:flex` (style.css) with no inline/block content of its own, so `text-align` was inert dead CSS on every real instance — confirmed by reading style.css, not assumed."
 				},
 				"icon": {
 					"label": "Icon",
@@ -91,6 +108,7 @@
 						"css:color": "iconGlyphColour",
 						"css:stroke": "iconGlyphColourGradient",
 						"css:background-color": "iconBackground",
+						"css:background-image": "iconBackgroundGradient",
 						"css:border-color": "iconBorderColour",
 						"css:border-color-gradient": "iconBorderColourGradient"
 					},
@@ -100,6 +118,7 @@
 								"css:color": "iconGlyphColourHover",
 								"css:stroke": "iconGlyphColourHoverGradient",
 								"css:background-color": "iconBackgroundHover",
+								"css:background-image": "iconBackgroundHoverGradient",
 								"css:border-color": "iconBorderColourHover",
 								"css:border-color-gradient": "iconBorderColourHoverGradient"
 							}
@@ -114,6 +133,18 @@
 		"root": ".wp-block-sgs-social-icons"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"icons": {
 			"type": "array",
 			"default": [],
@@ -143,6 +174,11 @@
 					},
 					"rel": {
 						"type": "string"
+					},
+					"iconDecorative": {
+						"type": "boolean",
+						"default": true,
+						"_comment": "Spec 35 item 18 / {element}Decorative convention, scoped to the repeater item. Default true documents render.php's existing, always-correct WCAG pattern: the glyph <img>/<svg> is wrapped in an aria-hidden span (never announced), while the real accessible name lives on the wrapping <a>'s aria-label (built from `label`, above). Exposing a per-item override to make the glyph itself announced would double-announce alongside the link's own aria-label, so this is documented architecture rather than a client-facing toggle."
 					}
 				}
 			}
@@ -163,9 +199,17 @@
 			"type": "string",
 			"default": "text-muted"
 		},
+		"iconBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"iconBackgroundHover": {
 			"type": "string",
 			"default": "primary"
+		},
+		"iconBackgroundHoverGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"iconBorderColour": {
 			"type": "string",
@@ -217,21 +261,70 @@
 			"type": "string",
 			"default": "20"
 		},
-		"paddingTablet": {
+		"fontSize": {
 			"type": "object",
 			"default": {}
 		},
-		"paddingMobile": {
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
 			"type": "object",
 			"default": {}
 		},
-		"marginTablet": {
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"wrapperBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"wrapperBorderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"wrapperBorderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"wrapperBorderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"wrapperBorderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"wrapperBorderWidth": {
 			"type": "object",
 			"default": {}
 		},
-		"marginMobile": {
+		"borderRadius": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"editorScript": "file:./index.js",

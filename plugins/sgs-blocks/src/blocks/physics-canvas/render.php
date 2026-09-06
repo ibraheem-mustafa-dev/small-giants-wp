@@ -33,9 +33,11 @@ require_once dirname( __DIR__, 3 ) . '/includes/shape-dividers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 // ---------------------------------------------------------------------------
-// No-inline residual (Spec 32) — same pattern as sgs/container's render.php:
-// block.json skip-serialises color/border, so extract + emit via the core
-// style engine as a scoped rule, and hand the wrapper only a class name.
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+// --check. Same pattern as sgs/container's render.php: extract + emit via
+// the core style engine as a scoped rule, and hand the wrapper only a class
+// name.
 // ---------------------------------------------------------------------------
 
 $sgs_ps_style_group = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();
@@ -43,41 +45,56 @@ $sgs_ps_style_group = is_array( $attributes['style'] ?? null ) ? $attributes['st
 $sgs_ps_supports_css     = '';
 $sgs_ps_supports_classes = array();
 
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$sgs_ps_engine_input = array();
+$sgs_ps_engine_input = array();
 
-	// D635-pattern migration: background now reads from the flat backgroundColour
-	// attr (SgsColourPanel), not native style.color.background (supports.color.
-	// background is now false). Text was turned off with no replacement attr
-	// (block.json's element note: decorative-only children never inherit `color`
-	// visibly). Gradient stays native (supports.color.gradients unchanged).
-	$sgs_ps_color_args = array();
-	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-		$sgs_ps_color_args['background'] = (string) $attributes['backgroundColour'];
-	}
-	if ( ! empty( $sgs_ps_style_group['color']['gradient'] ) ) {
-		$sgs_ps_color_args['gradient'] = (string) $sgs_ps_style_group['color']['gradient'];
-	}
-	if ( ! empty( $sgs_ps_color_args ) ) {
-		$sgs_ps_engine_input['color'] = $sgs_ps_color_args;
-	}
-	if ( ! empty( $sgs_ps_style_group['border'] ) && is_array( $sgs_ps_style_group['border'] ) ) {
-		$sgs_ps_engine_input['border'] = $sgs_ps_style_group['border'];
-	}
+// D635-pattern migration: text was turned off with no replacement attr
+// (block.json's element note: decorative-only children never inherit `color`
+// visibly). Background (colour + gradient, resting + hover) is owned by the
+// shared fill emitter below, NOT by the style engine and NOT by
+// supports.color.gradients.
+//
+// supports.color.gradients was `true` here, so CORE rendered its own gradient
+// panel in the Styles tab, competing with the SGS colour panel — the client
+// saw two and could not tell which won. Switching the flag off alone would
+// have REMOVED the only gradient control this block had, because the sole
+// gradient read was $sgs_ps_style_group['color']['gradient'] (core's own
+// storage). The flag flip is therefore PAIRED with a block-private
+// backgroundColourGradient exposed through fillRow(), so capability is moved
+// rather than lost.
+if ( ! empty( $sgs_ps_style_group['border'] ) && is_array( $sgs_ps_style_group['border'] ) ) {
+	$sgs_ps_engine_input['border'] = $sgs_ps_style_group['border'];
+}
 
-	if ( ! empty( $sgs_ps_engine_input ) ) {
-		$sgs_ps_uid = 'sgs-ps-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-		$sgs_ps_sel = '.' . $sgs_ps_uid . '.wp-block-sgs-physics-canvas';
+// Uid is computed UNCONDITIONALLY (not just when the style engine has
+// output) — the shared fill emitter below always needs a stable selector to
+// attach to, and the uid class must always be present on the wrapper for
+// that selector to resolve.
+$sgs_ps_uid                = 'sgs-ps-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sgs_ps_sel                = '.' . $sgs_ps_uid . '.wp-block-sgs-physics-canvas';
+$sgs_ps_supports_classes[] = $sgs_ps_uid;
 
-		$sgs_ps_engine_styles = wp_style_engine_get_styles(
-			$sgs_ps_engine_input,
-			array( 'selector' => $sgs_ps_sel )
-		);
-		if ( ! empty( $sgs_ps_engine_styles['css'] ) ) {
-			$sgs_ps_supports_css       = $sgs_ps_engine_styles['css'];
-			$sgs_ps_supports_classes[] = $sgs_ps_uid;
-		}
+if ( ! empty( $sgs_ps_engine_input ) ) {
+	$sgs_ps_engine_styles = wp_style_engine_get_styles(
+		$sgs_ps_engine_input,
+		array( 'selector' => $sgs_ps_sel )
+	);
+	if ( ! empty( $sgs_ps_engine_styles['css'] ) ) {
+		$sgs_ps_supports_css = $sgs_ps_engine_styles['css'];
 	}
+}
+
+$sgs_ps_fill_css = sgs_fill_states_css(
+	$sgs_ps_sel,
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+if ( '' !== $sgs_ps_fill_css ) {
+	$sgs_ps_supports_css .= $sgs_ps_fill_css;
 }
 
 $sgs_ps_preset_bg       = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
@@ -118,9 +135,11 @@ $sgs_ps_wrapper_opts = array(
 		'aria-hidden'              => 'true',
 	),
 );
-if ( ! empty( $sgs_ps_supports_classes ) ) {
-	$sgs_ps_wrapper_opts['extra_classes'] = $sgs_ps_supports_classes;
-}
+// Unconditional: the uid class is pushed onto $sgs_ps_supports_classes above on
+// every render (it has to be — the scoped fill CSS keys on it), so this array is
+// never empty and the `! empty()` guard that used to sit here could never be
+// false. A guard that cannot fail reads like a condition and is not one.
+$sgs_ps_wrapper_opts['extra_classes'] = $sgs_ps_supports_classes;
 
 // Migrated to SGS_Container_Wrapper::resolve_kind() 2026-08-16 (D626/D633
 // step 6, Phase B, second pass) after 2113eeb6 fixed the helper. An earlier
@@ -148,6 +167,94 @@ $sgs_ps_output = SGS_Container_Wrapper::render(
 	$sgs_ps_wrapper_opts
 );
 
+
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$sgs_ps_supports_css .= $sgs_ps_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$sgs_ps_supports_css .= sgs_border_gradient_css( $sgs_ps_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$sgs_ps_supports_css .= $sgs_ps_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+} else {
+	// G5 corollary: "none" must be an explicit override too, not a
+	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
+	// class default) would otherwise keep painting even though the
+	// operator picked "no border". Cause-agnostic: harmless when no
+	// such default exists, a real fix when one does.
+	$sgs_ps_supports_css .= $sgs_ps_sel . '{border-style:none;border-width:0;}';
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $sgs_ps_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$sgs_ps_supports_css .= $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $sgs_ps_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$sgs_ps_supports_css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = $radius_tiers['mobile'];
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $sgs_ps_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$sgs_ps_supports_css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
+}
+
 if ( '' !== $sgs_ps_supports_css ) {
 	$sgs_ps_output = '<style>' . wp_strip_all_tags( $sgs_ps_supports_css ) . '</style>' . $sgs_ps_output;
 }
@@ -163,7 +270,14 @@ if ( '' !== $sgs_ps_supports_css ) {
 
 $sgs_ps_is_frontend = ! function_exists( 'SGS\\Blocks\\sgs_is_frontend_render' ) || \SGS\Blocks\sgs_is_frontend_render();
 
-if ( $sgs_ps_is_frontend && function_exists( 'wp_enqueue_script_module' ) && trim( $content ) !== '' ) {
+if ( $sgs_ps_is_frontend && trim( $content ) !== '' ) {
+	// The view module's dependency graph (needed so its bare `@sgs/*`
+	// imports resolve via the browser's import map) is corrected in
+	// SGS_Motion_Registry::preregister_physics_canvas_deps() — it MUST run
+	// before WP core auto-registers this block's viewScriptModule handle
+	// (init priority 10), so it cannot live here: render.php only runs at
+	// render time, long after every `init` hook has already fired, and
+	// WP_Script_Modules::register() is a no-op once an id is registered.
 	wp_enqueue_script_module( '@sgs/gsap' );
 	wp_enqueue_script_module( '@sgs/motion-provider' );
 	wp_enqueue_script_module( '@sgs/gsap-draggable' );

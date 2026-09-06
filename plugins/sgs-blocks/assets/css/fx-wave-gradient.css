@@ -1,0 +1,550 @@
+/**
+ * SGS motion — wave gradient (Spec 38 FR-38-31). Tier W, second entry.
+ *
+ * ⛔ THIS FILE IS THE FALLBACK CONTRACT, NOT DECORATION.
+ *
+ * Tier W's founding promise is that a `null` return IS the fallback — the
+ * untouched `<img>` is already the finished state, so there is no second path
+ * to keep in sync. That promise holds ONLY because there is a source image.
+ * This effect is GENERATIVE: there is no untouched anything. So the fallback
+ * has to be built, and this is it.
+ *
+ * The static gradient below is painted from the SAME four custom properties the
+ * shader reads. No WebGL2, a shader that will not compile, JS that never runs,
+ * a blocked module, or a lost context that never restores — every one of those
+ * leaves a real multi-stop gradient in the CLIENT'S OWN COLOURS, not a blank
+ * box. The canvas covers it only after `data-sgs-wave-active` is set, which the
+ * boot module sets only after a draw has actually succeeded.
+ */
+
+[data-sgs-fx="wave-gradient"] {
+	position: relative;
+	isolation: isolate;
+
+	/* The four colours. The render layer overrides these per instance; these
+	   defaults exist so the block is never unstyled if it somehow renders
+	   without them.
+
+	   Light, hue-adjacent set (2026-08-27, Phase 1 Step 5) — replaces a
+	   navy/blue/purple/pink spread (113° of hue) that read as a rendered 3D
+	   object ("B-movie 3D VFX", Bean's verdict). These three sit within a
+	   ~20° blue-cyan band, so the mesh blends rather than separating into
+	   distinct painted blobs, and the base is light enough (CIELAB L* > 90)
+	   that the fallback and the shader both read as a soft, flat surface
+	   tint rather than a dark stage lit from within. */
+	--sgs-wave-base: #f4f8fb;
+	--sgs-wave-1: #7dd3fc;
+	--sgs-wave-2: #38bdf8;
+	--sgs-wave-3: #22d3ee;
+
+	/* THE FALLBACK. Three overlapping radials over a flat base — deliberately
+	   the same layer COUNT and roughly the same composition the shader
+	   produces, so the moment the canvas appears is not a jarring recolour. */
+	background-color: var( --sgs-wave-base );
+	background-image:
+		radial-gradient(
+			60% 80% at 20% 25%,
+			var( --sgs-wave-1 ) 0%,
+			transparent 70%
+		),
+		radial-gradient(
+			55% 75% at 80% 30%,
+			var( --sgs-wave-2 ) 0%,
+			transparent 68%
+		),
+		radial-gradient(
+			70% 85% at 50% 85%,
+			var( --sgs-wave-3 ) 0%,
+			transparent 72%
+		);
+}
+
+/* The canvas sits behind the block's own content, never over it. */
+.sgs-wave-gradient__canvas {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	/* Hidden until a first draw succeeds. Revealing it before that would
+	   flash a blank canvas over a perfectly good CSS gradient. */
+	opacity: 0;
+	transition: opacity 400ms ease-out;
+	pointer-events: none;
+}
+
+[data-sgs-wave-active="1"] .sgs-wave-gradient__canvas {
+	opacity: 1;
+}
+
+/* CHILD-LIFT — deliberately ZERO specificity, via `:where()`. Lifts the block's
+   own children above the canvas. `> *` rather than a descendant selector, so
+   nested structures are not each given their own layer.
+
+   ⛔ DO NOT reintroduce a `:not()` chain here. Until 2026-08-25 this rule
+   excluded `.sgs-wave-gradient__canvas` and `.sgs-wave-gradient__toggle` by
+   name, because at equal specificity (0,1,0 both ways) the later rule won and
+   this one overrode the canvas's own `position: absolute`, dropping it into
+   normal flow. Measured live at the time: the canvas rendered at x=24 y=466
+   instead of filling the block, AND the section grew to 5266px, because an
+   in-flow `height: 100%` child feeds its own height back into the parent that
+   sizes it. One selector, three symptoms.
+
+   That exclusion list was the same self-defeating shape D784 removed from
+   `container/style.css`: each `:not(.x)` ADDS specificity, so every name added
+   made the NEXT unlisted layer more certain to lose. At (0,0,0) it cannot
+   recur — the canvas (`:55`, `position:absolute; z-index:0`) and the toggle
+   both out-rank this rule on their own declarations, with no registration
+   anywhere. A new decorative layer needs to do nothing except style itself.
+   Enforced by `scripts/check-child-lift.py`. */
+:where( [data-sgs-fx="wave-gradient"] ) > * {
+	position: relative;
+	z-index: 1;
+}
+
+/*
+ * THE PAUSE CONTROL — SC 2.2.2.
+ *
+ * This effect animates automatically, indefinitely, behind other content, so a
+ * mechanism to pause it is REQUIRED, not a nicety. It is `hidden` in the markup
+ * and unhidden by JS: if the script never runs there is nothing animating, so
+ * offering a pause button would be a control that does nothing.
+ *
+ * Sized and contrasted to be genuinely usable rather than technically present —
+ * 44px target (WCAG 2.5.5), visible focus ring, and a label that changes with
+ * state so a screen-reader user knows what it will do.
+ */
+.sgs-wave-gradient__toggle:not( [hidden] ) {
+	position: absolute;
+	right: 12px;
+	bottom: 12px;
+	z-index: 2;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0 12px;
+	border: 1px solid rgb( 255 255 255 / 20%);
+	border-radius: 999px;
+	/* Was rgb(0 0 0 / 45%) — composited to 3.36:1 on white, failing 4.5:1
+	   for 13px text (measured, KJC-3). The ground is now light rather than
+	   the old dark navy, so a translucent pill needs more coverage to keep
+	   its OWN contrast independent of whatever the gradient is doing
+	   underneath — a solid dark control reads reliably against any of the
+	   wave colours, translucent only enough to still read as "floating on
+	   the gradient" rather than a hard UI chrome element. */
+	background: rgb( 15 23 42 / 82%);
+	color: #fff;
+	font-size: 13px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.sgs-wave-gradient__toggle:hover {
+	background: rgb( 15 23 42 / 95%);
+}
+
+.sgs-wave-gradient__toggle:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 2px;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	/*
+	 * The boot module draws ONE frame and stops under `reduce`, so the visitor
+	 * still gets the gradient — a still image is a legitimate finished state
+	 * (§10 SIMPLIFY, never suppress). Nothing is animating, so the pause
+	 * control has nothing to pause and is hidden.
+	 *
+	 * The canvas fade is also removed: a 400ms opacity transition is itself
+	 * motion, and it is the one piece of motion that would otherwise survive.
+	 */
+	.sgs-wave-gradient__canvas {
+		transition: none;
+	}
+
+	.sgs-wave-gradient__toggle {
+		display: none;
+	}
+}
+
+/*
+ * CSS-ONLY VARIANTS — pastel, horizon, ribbon, veil (Spec 38, client-approved
+ * values). `--aurora` is the WebGL shader variant and is handled entirely
+ * outside this file; nothing below matches it.
+ *
+ * Each variant paints its two moving layers on the block root's own
+ * `::before`/`::after`, because these variants render no child span layers at
+ * all. Layers sit below the block's own content (z-index convention matches
+ * `.sgs-wave-gradient__canvas` above: 0 for the painted layers, content lifted
+ * to 1 by the existing CHILD-LIFT rule) and travel on large `translate`
+ * ranges — never scale-only, which reads as static breathing rather than
+ * motion.
+ */
+
+/* CURATED DEFAULTS — zero specificity via `:where()` so a client's own colour
+   pick (emitted as a single `.sgs-wg-xxxxxxxx{ --sgs-wave-*: ... }` class,
+   specificity 0,1,0) always beats these. The variant rules below read the
+   same four custom properties, so a colour change here or from the client
+   propagates through every gradient stop automatically. */
+:where( .sgs-wave-gradient--pastel ) {
+	--sgs-wave-base: #928DC0;
+	--sgs-wave-1: #E2FBD2;
+	--sgs-wave-2: #D3C6FF;
+	--sgs-wave-3: #7BAD79;
+}
+
+:where( .sgs-wave-gradient--horizon ) {
+	--sgs-wave-base: #070A13;
+	--sgs-wave-1: #3EDCB8;
+	--sgs-wave-2: #C95FD4;
+	--sgs-wave-3: #2A5FD0;
+}
+
+:where( .sgs-wave-gradient--ribbon ) {
+	--sgs-wave-base: #0A0C18;
+	--sgs-wave-1: #4C6BE0;
+	--sgs-wave-2: #4FD2C4;
+	--sgs-wave-3: #C267B8;
+}
+
+:where( .sgs-wave-gradient--veil ) {
+	--sgs-wave-base: #0B1020;
+	--sgs-wave-1: #2F63D8;
+	--sgs-wave-2: #39C7B4;
+	--sgs-wave-3: #B45BB8;
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil {
+	background-image: none;
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::before,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::after,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::before,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::after,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::before,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::after,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::before,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+}
+
+/* PASTEL — mid-luminance mint/violet blobs travelling over a shifting base. */
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel {
+	background-color: color-mix( in srgb, var( --sgs-wave-base ) 70%, var( --sgs-wave-3 ) 30% );
+	background-image: linear-gradient(
+		100deg,
+		var( --sgs-wave-base ) 0%,
+		color-mix( in srgb, var( --sgs-wave-base ) 70%, var( --sgs-wave-3 ) 30% ) 16%,
+		color-mix( in srgb, var( --sgs-wave-base ) 30%, var( --sgs-wave-3 ) 70% ) 34%,
+		var( --sgs-wave-3 ) 50%,
+		color-mix( in srgb, var( --sgs-wave-3 ) 70%, var( --sgs-wave-base ) 30% ) 64%,
+		color-mix( in srgb, var( --sgs-wave-base ) 60%, var( --sgs-wave-3 ) 40% ) 80%,
+		var( --sgs-wave-base ) 100%
+	);
+	background-size: 190% 100%;
+	animation: sgs-wave-pastel-base 26s ease-in-out infinite;
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::before {
+	background: radial-gradient(
+		46% 50% at 50% 50%,
+		var( --sgs-wave-1 ) 0%,
+		color-mix( in srgb, var( --sgs-wave-1 ) 60%, var( --sgs-wave-3 ) 40% ) 34%,
+		transparent 62%
+	);
+	filter: blur( 40px );
+	opacity: 0.78;
+	mix-blend-mode: screen;
+	animation: sgs-wave-pastel-layer-a 19s ease-in-out infinite;
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::after {
+	background: radial-gradient(
+		46% 50% at 50% 50%,
+		var( --sgs-wave-2 ) 0%,
+		color-mix( in srgb, var( --sgs-wave-2 ) 70%, black 30% ) 38%,
+		transparent 66%
+	);
+	filter: blur( 46px );
+	opacity: 0.6;
+	mix-blend-mode: screen;
+	animation: sgs-wave-pastel-layer-b 24s ease-in-out infinite;
+	animation-delay: -6s;
+}
+
+/* HORIZON — dark ground, teal/violet glow banked along the bottom edge. */
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon {
+	background-color: var( --sgs-wave-base );
+	background-image: linear-gradient(
+		to top,
+		var( --sgs-wave-base ) 0%,
+		color-mix( in srgb, var( --sgs-wave-base ) 80%, var( --sgs-wave-3 ) 20% ) 46%,
+		var( --sgs-wave-base ) 100%
+	);
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::before {
+	top: auto;
+	bottom: 0;
+	height: 60%;
+	background: radial-gradient(
+		52% 100% at 50% 100%,
+		var( --sgs-wave-1 ) 0%,
+		var( --sgs-wave-3 ) 48%,
+		transparent 76%
+	);
+	filter: blur( 44px );
+	opacity: 0.78;
+	animation: sgs-wave-horizon-layer-a 17s ease-in-out infinite;
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::after {
+	top: auto;
+	bottom: 0;
+	height: 46%;
+	background: radial-gradient(
+		42% 100% at 50% 100%,
+		var( --sgs-wave-2 ) 0%,
+		color-mix( in srgb, var( --sgs-wave-3 ) 60%, var( --sgs-wave-2 ) 40% ) 54%,
+		transparent 78%
+	);
+	filter: blur( 44px );
+	opacity: 0.6;
+	animation: sgs-wave-horizon-layer-b 23s ease-in-out infinite;
+	animation-delay: -8s;
+}
+
+/* RIBBON — a single diagonal band crossing a dark ground, plus a thinner echo. */
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon {
+	background-color: var( --sgs-wave-base );
+	background-image: radial-gradient(
+		120% 120% at 20% 0%,
+		color-mix( in srgb, var( --sgs-wave-base ) 80%, var( --sgs-wave-1 ) 20% ) 0%,
+		var( --sgs-wave-base ) 68%
+	);
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::before {
+	top: 50%;
+	left: -25%;
+	right: auto;
+	bottom: auto;
+	width: 150%;
+	height: 66px;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		var( --sgs-wave-1 ) 18%,
+		var( --sgs-wave-2 ) 48%,
+		var( --sgs-wave-3 ) 76%,
+		transparent
+	);
+	filter: blur( 19px );
+	opacity: 0.7;
+	transform-origin: center;
+	animation: sgs-wave-ribbon-layer-a 20s ease-in-out infinite;
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::after {
+	top: 50%;
+	left: -25%;
+	right: auto;
+	bottom: auto;
+	width: 150%;
+	height: 40px;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		color-mix( in srgb, var( --sgs-wave-1 ) 50%, var( --sgs-wave-3 ) 50% ) 26%,
+		color-mix( in srgb, var( --sgs-wave-1 ) 40%, var( --sgs-wave-2 ) 60% ) 68%,
+		transparent
+	);
+	filter: blur( 15px );
+	opacity: 0.5;
+	transform-origin: center;
+	animation: sgs-wave-ribbon-layer-a 20s ease-in-out infinite;
+	animation-delay: -9s;
+}
+
+/* VEIL — broad overlapping sheets that cross and swap sides on a dark ground. */
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil {
+	background-color: var( --sgs-wave-base );
+	background-image: radial-gradient(
+		100% 100% at 50% 50%,
+		color-mix( in srgb, var( --sgs-wave-base ) 85%, white 15% ) 0%,
+		var( --sgs-wave-base ) 72%
+	);
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::before {
+	top: -29%;
+	left: -37%;
+	right: auto;
+	bottom: auto;
+	width: 74%;
+	height: 158%;
+	background: radial-gradient( circle at 50% 50%, var( --sgs-wave-1 ), transparent 66% );
+	filter: blur( 52px );
+	opacity: 0.74;
+	mix-blend-mode: screen;
+	animation: sgs-wave-veil-layer-a 22s ease-in-out infinite;
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::after {
+	top: -29%;
+	left: -37%;
+	right: auto;
+	bottom: auto;
+	width: 74%;
+	height: 158%;
+	background: radial-gradient( circle at 50% 50%, var( --sgs-wave-2 ), transparent 66% );
+	filter: blur( 52px );
+	opacity: 0.62;
+	mix-blend-mode: screen;
+	animation: sgs-wave-veil-layer-b 28s ease-in-out infinite;
+	animation-delay: -11s;
+}
+
+@keyframes sgs-wave-pastel-base {
+	0%, 100% {
+		background-position: 0% 50%;
+	}
+
+	50% {
+		background-position: 100% 50%;
+	}
+}
+
+@keyframes sgs-wave-pastel-layer-a {
+	0%, 100% {
+		translate: -30% -18%;
+	}
+
+	33% {
+		translate: 26% 20%;
+	}
+
+	66% {
+		translate: 12% -24%;
+	}
+}
+
+@keyframes sgs-wave-pastel-layer-b {
+	0%, 100% {
+		translate: 28% 16%;
+	}
+
+	40% {
+		translate: -24% -20%;
+	}
+
+	75% {
+		translate: -10% 26%;
+	}
+}
+
+@keyframes sgs-wave-horizon-layer-a {
+	0%, 100% {
+		translate: -32% 6%;
+	}
+
+	50% {
+		translate: 32% -10%;
+	}
+}
+
+@keyframes sgs-wave-horizon-layer-b {
+	0%, 100% {
+		translate: 30% -8%;
+	}
+
+	50% {
+		translate: -30% 8%;
+	}
+}
+
+@keyframes sgs-wave-ribbon-layer-a {
+	0%, 100% {
+		translate: -6% -14%;
+		rotate: -19deg;
+	}
+
+	50% {
+		translate: 6% 14%;
+		rotate: -9deg;
+	}
+}
+
+@keyframes sgs-wave-veil-layer-a {
+	0%, 100% {
+		translate: -45% 0%;
+	}
+
+	50% {
+		translate: 45% 8%;
+	}
+}
+
+@keyframes sgs-wave-veil-layer-b {
+	0%, 100% {
+		translate: 45% -6%;
+	}
+
+	50% {
+		translate: -45% 4%;
+	}
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel,
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::before,
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::after,
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::before,
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::after,
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::before,
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::after,
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::before,
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::after {
+		animation: none;
+	}
+}
+
+/*
+ * Curated defaults for the two shader-drawn styles. Both run the SAME shader;
+ * it measures the base colour and composites accordingly, so the ONLY thing
+ * separating an aurora from drifting pigment is the four colours below.
+ *
+ * These sit in :where() at zero specificity so the per-instance rule the render
+ * layer emits for a client's own picks always wins. They also feed the no-WebGL
+ * fallback, which reads the same four properties.
+ *
+ * ⛔ The violet on --sgs-wave-3 is deliberate and is why it lives here rather
+ * than in the site palette. A real aurora runs oxygen green low to nitrogen
+ * violet high; the theme's 21 preset colours contain no violet at all. Curating
+ * it per style gives the effect its signature colour without pushing a purple
+ * into every client's palette for one style they may never switch on.
+ */
+:where( .sgs-wave-gradient--aurora ) {
+	--sgs-wave-base: #0B1020;
+	--sgs-wave-1: #2FE08F;
+	--sgs-wave-2: #3FD9D0;
+	--sgs-wave-3: #A46BE8;
+}
+
+:where( .sgs-wave-gradient--ink ) {
+	--sgs-wave-base: #F7F6F2;
+	--sgs-wave-1: #2E5E6E;
+	--sgs-wave-2: #3E7A6B;
+	--sgs-wave-3: #6B5B8A;
+}

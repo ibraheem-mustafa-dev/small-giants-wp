@@ -80,9 +80,13 @@ GROUND-TRUTH: spec=31 source=db evidence=attr_for_layer_property('sgs/container'
 'background-size')='backgroundSize'; ('background-position')='backgroundPosition';
 ('background-repeat')='backgroundRepeat'; ('background-attachment')='backgroundAttachment';
 ('box-shadow')='shadow' (role=color wins over BoxShadow/role=visual via rowid ordering).
-Shadow presets sourced from design_tokens WHERE token_type='size' AND slug LIKE 'shadow-%':
-shadow-sm='0 1px 3px rgba(0,0,0,0.08)', shadow-md='0 4px 12px rgba(0,0,0,0.1)',
-shadow-lg='0 8px 30px rgba(0,0,0,0.12)', shadow-glow='0 0 20px rgba(248,122,31,0.3)'.
+Shadow presets sourced from design_tokens WHERE token_type='shadow' AND slug LIKE 'shadow-%'
+(the design_tokens CHECK constraint declares 'shadow' as its own token_type — a
+2026-08-24 audit found earlier framework rows mistyped as 'size' from before the
+constraint carried 'shadow'; corrected via .claude/reports/2026-08-24-design-tokens-shadow-fix.sql).
+Current live presets (from theme.json): shadow-subtle='0 1px 3px rgba(0,0,0,0.08)',
+shadow-raised='0 4px 12px rgba(0,0,0,0.1)', shadow-floating='0 8px 30px rgba(0,0,0,0.12)',
+shadow-glow='0 0 20px rgba(248,122,31,0.3)'.
 Wrapper renders box-shadow:var(--wp--preset--shadow--{slug}) where slug=suffix after 'shadow-'.
 """
 from __future__ import annotations
@@ -102,6 +106,7 @@ from converter.services.styling_helpers import (
     strip_important,
 )
 from converter.services.state_value_lift import resolve_state_property
+from converter.services.tier_object import tier_object_write
 from converter.services.tier_suffix import tier_state_suffix
 from converter.services.token_snap import token_snap
 from converter.services.validate import attr_is_number, validate
@@ -110,7 +115,7 @@ from converter.services.value_serialise import value_serialise
 # NOTE: root_supports._parse_padding_shorthand (the generic 1-4-value CSS
 # box-model parser D307 reuses for the box-family self-merge branch below) is
 # imported LAZILY inside resolve(), not at module scope — root_supports.py
-# imports converter.orchestrator, which imports converter.resolvers (this
+# imports converter.dispatch_spine, which imports converter.resolvers (this
 # package, for REGISTRY), which imports this module — a module-level import
 # here would be a circular-import cycle. The deferred import is safe: by the
 # time resolve() actually runs, orchestrator/resolvers are fully loaded.
@@ -155,7 +160,10 @@ def _shadow_token_snap(raw_value: str, conn: sqlite3.Connection) -> str | None:
     value exactly matches (after whitespace normalisation) a design_tokens shadow preset.
     Returns None if no preset matches — the caller must emit an honest gap.
 
-    Shadow presets live in design_tokens WHERE token_type='size' AND slug LIKE 'shadow-%'.
+    Shadow presets live in design_tokens WHERE token_type='shadow' AND slug LIKE 'shadow-%'
+    (the CHECK constraint on design_tokens.token_type declares 'shadow' as its own type;
+    see .claude/reports/2026-08-24-design-tokens-shadow-fix.sql for the 2026-08-24 correction
+    of framework rows that predated the constraint's 'shadow' member and were mistyped 'size').
     The default_value column holds the canonical CSS value (e.g. '0 4px 12px rgba(0,0,0,0.1)').
     The wrapper renders box-shadow:var(--wp--preset--shadow--{slug-after-shadow-prefix}).
 
@@ -164,7 +172,7 @@ def _shadow_token_snap(raw_value: str, conn: sqlite3.Connection) -> str | None:
     normalised = _normalise_shadow(raw_value)
     rows = conn.execute(
         "SELECT slug, default_value FROM design_tokens "
-        "WHERE slug LIKE ? AND token_type='size'",
+        "WHERE slug LIKE ? AND token_type='shadow'",
         (f"{_SHADOW_SLUG_PREFIX}%",),
     ).fetchall()
     for slug, default_value in rows:
@@ -212,7 +220,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     if prop == "padding":
         _pad_attr = attr_resolve(ctx, "OUTER", prop)
         if _pad_attr is not None and db_lookup.box_family_for(ctx.block_slug, _pad_attr) == _pad_attr:
-            _pad_tgt = tier_state_suffix(_pad_attr, decl, ctx.conn)
+            _pad_tgt = tier_state_suffix(_pad_attr, decl, ctx.conn, ctx.block_slug)
             if validate(ctx, _pad_tgt, decl.value):
                 from converter.services.root_supports import (
                     _parse_padding_shorthand as _parse_box_shorthand_value,
@@ -279,10 +287,34 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             f"{ctx.block_slug} has no OUTER attr for {prop}",
         )
 
+    # --- TIER-OBJECT destination (Spec 35 tier shape, D802-class fix extended
+    # from typography to OUTER, this fix). A migrated tier-object attr
+    # (maxWidth/minHeight on container-family blocks; height/maxHeight/
+    # maxWidth/order on sgs/media) stores its per-device values INSIDE one
+    # object as {desktop,tablet,mobile} — the flat maxWidthTablet/Mobile
+    # siblings this resolver would otherwise target no longer exist on a
+    # migrated block. Re-appending a tier suffix there produces an attr the
+    # block does not declare, so `validate` gaps it NO_DESTINATION and the
+    # tier value is discarded SILENTLY.
+    #
+    # Measured via check_flat_tier_regression.py against a real clone run:
+    # sgs/container.maxWidth, sgs/hero.minHeight and sgs/media.{height,
+    # maxHeight,maxWidth,order} all emitted a bare scalar instead of
+    # {"desktop": ...} — the OUTER-resolver half of the same defect class
+    # D802 fixed for typography's fontSize.
+    #
+    # Gated on `tier_object_base` (a DB predicate, never a name test — R-31-1)
+    # and skipped when an interaction STATE is present, mirroring
+    # typography.py's identical gate: a state destination is its own attr
+    # (`maxWidthHover`) resolved independently, and v1 hover is base-tier
+    # only, so the flat path below remains correct for it.
+    if not decl.state and db_lookup.tier_object_base(ctx.block_slug, base_attr):
+        return _outer_tier_object_write(decl, ctx, prop, base_attr)
+
     # Step 4 + 4a: re-append the tier suffix THEN the interaction-state suffix
     # (universal shared helper — §3.A). A :hover/:focus/:active decl routes to the
     # block's `{base}{Tier}{State}` companion (validated below) else an honest gap.
-    attr = tier_state_suffix(base_attr, decl, ctx.conn)
+    attr = tier_state_suffix(base_attr, decl, ctx.conn, ctx.block_slug)
     if not validate(ctx, attr, decl.value):
         return gap_writer(
             ctx, decl, GapOrigin.NO_DESTINATION,
@@ -314,7 +346,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             return gap_writer(
                 ctx, decl, GapOrigin.NO_DESTINATION,
                 f"box-shadow value {decl.value!r} does not match any shadow preset in "
-                f"design_tokens (token_type='size', slug LIKE 'shadow-%'); the shadow "
+                f"design_tokens (token_type='shadow', slug LIKE 'shadow-%'); the shadow "
                 f"attr expects a preset slug, not a raw CSS value — add a matching "
                 f"preset to design_tokens or rework the draft to use a standard shadow",
             )
@@ -334,7 +366,25 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # contract §3/§4). Reuses root_supports' generic 1-4-value CSS box-model
     # parser (the SAME rule padding/margin already use) rather than a second
     # hand-rolled parser (R-31-9).
-    if db_lookup.box_family_for(ctx.block_slug, attr) == attr:
+    # Self-merge gate: two DB shapes both mean "attr is a box-family base",
+    # and only ONE of them is `box_family_for(attr) == attr` (the
+    # self-referencing shape, e.g. sgs/button.borderWidth). VERIFIED
+    # 2026-08-22 that `sgs/container.margin`/`padding` use the OTHER shape —
+    # box_family IS NULL on the base row itself, and only the Tablet/Mobile
+    # siblings carry `box_family='margin'`/`'padding'` POINTING BACK at the
+    # base. Querying "does any OTHER row for this block declare
+    # box_family=<attr>?" catches both shapes uniformly and is a strictly
+    # NARROWER, DB-driven, no-slug-literal check (R-31-1) than gating on
+    # attr_type='object' alone — that column is shared by many non-box
+    # tier/config objects (contentWidth, gap, columns, gridTemplateColumns)
+    # that must NOT be routed through the box-shorthand parser. Mirrors
+    # content_band.py's identical widening EXACTLY (ONE mechanism, R-31-9).
+    _box_family = db_lookup.box_family_for(ctx.block_slug, attr)
+    _is_box_family_base = _box_family == attr or ctx.conn.execute(
+        "SELECT 1 FROM block_attributes WHERE block_slug=? AND box_family=?",
+        (ctx.block_slug, attr),
+    ).fetchone() is not None
+    if _is_box_family_base:
         from converter.services.root_supports import (
             _parse_padding_shorthand as _parse_box_shorthand_value,
         )
@@ -344,6 +394,27 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
                 ctx, decl, GapOrigin.NO_DESTINATION,
                 f"{prop} value {decl.value!r} is not a parseable 1-4-value CSS "
                 f"box shorthand for merged object attr {attr!r}",
+            )
+        # Horizontal auto-centring idiom (`margin: 0 auto`) is EXCLUDED, not
+        # lifted: the band-rule emitter (class-sgs-container-wrapper.php
+        # ~2721-2726) already writes `margin-inline:auto` on the `__inner`
+        # band whenever a band max-width/contentWidth tier resolves, so this
+        # centring is reproduced by construction at the CORRECT layer. Lifting
+        # it onto the OUTER margin attr as well would be (a) the wrong layer
+        # and (b) a duplicate; `auto` is also not a real box-object side value
+        # for this attr (lengths only) even where it would be spuriously
+        # well-formed. Gated on the CSS SHAPE (left==right=="auto"), never on
+        # owning_slug/block name — true for every band on every composite
+        # mirroring sgs/container (R-31-9). Mirrors content_band.py's D307
+        # branch EXACTLY (ONE mechanism, R-31-9).
+        if sides["left"] == sides["right"] == "auto":
+            return gap_writer(
+                ctx, decl, GapOrigin.EXCLUDED,
+                f"{prop} left/right are both 'auto' — horizontal centring is "
+                f"already reproduced by the band's contentWidth rule "
+                f"(class-sgs-container-wrapper.php margin-inline:auto), so "
+                f"lifting it onto the OUTER {attr!r} attr would be the wrong "
+                f"layer and a duplicate.",
             )
         return Write(attr=attr, value=sides, property=prop, tier=decl.tier)
 
@@ -410,6 +481,72 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # validate and would have gapped, so we never reach here with an illegal value).
     value = token_snap(prop, value_serialise("string", None, decl.value), ctx.conn)
     return Write(attr=attr, value=value, property=prop, tier=decl.tier)
+
+
+# ---------------------------------------------------------------------------
+# TIER-OBJECT emission (Spec 35 tier shape) — the OUTER-resolver counterpart
+# to typography.py's `_tier_object_writes` (D802). Mirrors that function's
+# value-normalisation branches (box-shadow preset snap / colour-role token-or
+# -hex / numeric+unit / string verbatim) EXACTLY as `resolve()` itself uses
+# them below — only the DESTINATION differs (the base attr's tier-object key,
+# not a suffixed sibling).
+# ---------------------------------------------------------------------------
+
+def _outer_tier_object_write(
+    decl: Any, ctx: Any, prop: str, base_attr: str
+) -> "Write | list[Write] | GAP":
+    """Emit ONE partial tier-object Write (or Write+Unit-companion pair) for a
+    migrated OUTER attr. See the call site's comment for the full rationale.
+    """
+    if prop == "box-shadow":
+        slug = _shadow_token_snap(decl.value, ctx.conn)
+        if slug is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"box-shadow value {decl.value!r} does not match any shadow preset in "
+                f"design_tokens (token_type='shadow', slug LIKE 'shadow-%'); the shadow "
+                f"attr expects a preset slug, not a raw CSS value",
+            )
+        return tier_object_write(ctx, decl, prop, base_attr, slug, validate_raw=slug)
+
+    if db_lookup.attr_is_colour_role(ctx.block_slug, base_attr):
+        v = extract_token_or_hex(strip_important(decl.value))
+        if v is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{prop} value {decl.value!r} is neither a token slug, hex, "
+                f"nor rgb/hsl colour literal",
+            )
+        return tier_object_write(ctx, decl, prop, base_attr, v, validate_raw=v)
+
+    if _attr_is_number(ctx, base_attr):
+        num, unit = split_value_unit(decl.value)
+        if num is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{prop} value {decl.value!r} is not a parseable number for "
+                f"numeric attr {base_attr!r}",
+            )
+        num_out: int | float = int(num) if float(num).is_integer() else num
+        write = tier_object_write(ctx, decl, prop, base_attr, num_out, validate_raw=str(num_out))
+        if isinstance(write, GAP):
+            return write
+        # Unit companion: still a FLAT scalar attr, still written only
+        # alongside the BASE tier (convert.py:1699) — shared by all three
+        # tiers by design, mirroring typography's tier-object unit companion.
+        if unit and decl.tier == "Base":
+            base_unit_attr = f"{base_attr}Unit"
+            if validate(ctx, base_unit_attr, unit):
+                return [
+                    write,
+                    Write(attr=base_unit_attr, value=unit, property=prop, tier=decl.tier),
+                ]
+        return write
+
+    # String/length-literal attr (D230 — max-width/min-height/height/maxHeight
+    # etc. are exact literals; token_snap is identity for a length literal).
+    value = token_snap(prop, value_serialise("string", None, decl.value), ctx.conn)
+    return tier_object_write(ctx, decl, prop, base_attr, value, validate_raw=str(value))
 
 
 def _block_supports_full_align(ctx: Any) -> bool:

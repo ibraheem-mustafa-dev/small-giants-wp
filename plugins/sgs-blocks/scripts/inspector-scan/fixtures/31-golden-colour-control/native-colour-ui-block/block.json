@@ -1,0 +1,18 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/native-colour-ui-block",
+	"title": "Fixture: supports.color.background is true — core renders its own colour panel (must flag native-colour-ui)",
+	"category": "sgs",
+	"attributes": {
+		"label": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"color": {
+			"background": true,
+			"text": false,
+			"gradients": false,
+			"link": false,
+			"__experimentalSkipSerialization": true
+		}
+	}
+}

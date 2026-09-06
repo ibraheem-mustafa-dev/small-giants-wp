@@ -201,6 +201,27 @@ class Post_Grid_REST {
 				'default'           => '',
 				'sanitize_callback' => 'sanitize_text_field',
 			],
+			// 37-media-no-handroll: the block's own uid, round-tripped by
+			// view.js so AJAX-paginated cards' featured images carry the same
+			// media-atom marker class as the initial render's — see the
+			// $sgs_pg_uid comment in render_card().
+			'uid'                   => [
+				'type'              => 'string',
+				'default'           => '',
+				// WP always calls a REST sanitize_callback as
+				// call_user_func( $cb, $value, $request, $key ) -- three args.
+				// sanitize_html_class( $classname, $fallback = '' ) only takes
+				// two, so the $request object silently binds to $fallback. When
+				// $value is empty (this param's own declared default), its
+				// fallback branch fires and recurses as
+				// sanitize_html_class( $request ), which then fatals inside
+				// preg_replace() (expects array|string, gets WP_REST_Request).
+				// This closure drops the extra WP-supplied args so only the
+				// real value ever reaches sanitize_html_class().
+				'sanitize_callback' => static function ( $value ) {
+					return sanitize_html_class( (string) $value );
+				},
+			],
 		];
 	}
 
@@ -283,21 +304,35 @@ class Post_Grid_REST {
 	 * @return string Declarations without braces, or '' if none apply.
 	 */
 	public static function card_vars_decls( array $params ): string {
-		$map = [
-			'titleColour'           => '--sgs-pg-title-colour',
-			'excerptColour'         => '--sgs-pg-excerpt-colour',
-			'metaColour'            => '--sgs-pg-meta-colour',
-			'readMoreColour'        => '--sgs-pg-readmore-colour',
-			'categoryBadgeColour'   => '--sgs-pg-badge-colour',
-			'categoryBadgeBgColour' => '--sgs-pg-badge-bg',
-		];
-
+		// D956 (778879732 rollout, Phase 3): titleColour/excerptColour/metaColour/
+		// readMoreColour moved OFF this custom-property map to a direct
+		// sgs_text_colour_decl()/sgs_resolve_text_colour_or_gradient() emission
+		// in render.php (survey.js's `paints-via-colour-valued-custom-property`
+		// refusal reason -- a `var(--x, ...)` fed into a fixed `color:`
+		// declaration cannot switch to `background-image` for a gradient).
+		// categoryBadgeColour keeps the custom-property route for resting state.
+		// categoryBadgeBgColour moved to sgs_custom_property_gradient_decls() to
+		// support hover variants (categoryBadgeBgColourHover +
+		// categoryBadgeBgColourHoverGradient), emitted as --sgs-pg-badge-bg,
+		// --sgs-pg-badge-bg-hover, --sgs-pg-badge-bg-gradient,
+		// --sgs-pg-badge-bg-hover-gradient. Fallback chain in style.css allows
+		// unset hover to be byte-identical to before.
 		$card_vars = [];
-		foreach ( $map as $param_key => $css_var ) {
-			if ( ! empty( $params[ $param_key ] ) ) {
-				$card_vars[] = $css_var . ':' . sgs_colour_value( $params[ $param_key ] );
-			}
+
+		// Badge text colour (resting only).
+		if ( ! empty( $params['categoryBadgeColour'] ) ) {
+			$card_vars[] = '--sgs-pg-badge-colour:' . sgs_colour_value( $params['categoryBadgeColour'] );
 		}
+
+		// Badge background colour (with hover support).
+		$badge_bg_decls = sgs_custom_property_gradient_decls(
+			'sgs-pg-badge-bg',
+			! empty( $params['categoryBadgeBgColour'] ) ? (string) $params['categoryBadgeBgColour'] : '',
+			(string) ( $params['categoryBadgeBgColourGradient'] ?? '' ),
+			(string) ( $params['categoryBadgeBgColourHover'] ?? '' ),
+			(string) ( $params['categoryBadgeBgColourHoverGradient'] ?? '' )
+		);
+		$card_vars = array_merge( $card_vars, $badge_bg_decls );
 
 		$aspect_ratio = isset( $params['aspectRatio'] ) ? sanitize_text_field( $params['aspectRatio'] ) : '16/10';
 		$card_vars[]  = '--sgs-pg-aspect:' . $aspect_ratio;
@@ -331,6 +366,17 @@ class Post_Grid_REST {
 		$image_size    = isset( $params['imageSize'] ) ? sanitize_key( $params['imageSize'] ) : 'medium_large';
 		$aspect_ratio  = isset( $params['aspectRatio'] ) ? sanitize_text_field( $params['aspectRatio'] ) : '16/10';
 		$card_index    = isset( $params['_card_index'] ) ? absint( $params['_card_index'] ) : 1;
+
+		// 37-media-no-handroll: the block's own uid, threaded through so the
+		// featured-image <img> can carry the shared media-atom marker class
+		// (SGS_Media_Element::scope_class()). render.php passes it via
+		// $card_params for the initial render; view.js's AJAX pagination
+		// round-trips it back as a REST param (see render.php's
+		// $sgs_query_data 'uid' key) so cards injected later match the SAME
+		// `.{uid}{--sgs-media-object-fit:…}` rule already printed in the
+		// page's <head> on first load — that rule is a bare class selector,
+		// so it matches DOM added after the stylesheet was parsed.
+		$sgs_pg_uid = isset( $params['uid'] ) && is_string( $params['uid'] ) ? sanitize_html_class( $params['uid'] ) : '';
 
 		// FR-32-4 as amended (D345): the per-instance colour + aspect custom
 		// property VALUES are NO LONGER emitted inline on the card root. They are
@@ -374,6 +420,16 @@ class Post_Grid_REST {
 
 			if ( 0 === $card_index ) {
 				$img_attrs['fetchpriority'] = 'high';
+			}
+
+			// 37-media-no-handroll: media-atom marker classes (see the $sgs_pg_uid
+			// comment above). Appended to the same `class` attr `get_the_post_
+			// thumbnail()` already receives — one <img>, one class string.
+			if ( '' !== $sgs_pg_uid && class_exists( 'SGS_Media_Element' ) ) {
+				$img_attrs['class'] .= ' ' . implode(
+					' ',
+					\SGS_Media_Element::element_classes( \SGS_Media_Element::scope_class( $sgs_pg_uid, '' ) )
+				);
 			}
 
 			if ( has_post_thumbnail( $post_id ) ) {

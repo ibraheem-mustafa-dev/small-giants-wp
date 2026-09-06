@@ -87,6 +87,25 @@ const VAR_Y = '--sgs-cursor-y';
 const VAR_ELEMENT_X = '--mx';
 const VAR_ELEMENT_Y = '--my';
 
+/**
+ * Element-relative pixels, published ALONGSIDE the viewport pair in viewport
+ * mode. Deliberately NOT `--mx`/`--my`: those are the mega-menu's frozen
+ * contract, carry PERCENTAGES, and rest at a different spot (50%/30%).
+ * Reusing them here would silently redefine a published contract.
+ *
+ * WHY THIS PAIR EXISTS (2026-08-24, measured). `background-attachment: fixed`
+ * resolves the LAYER against the viewport, so viewport pixels are correct for
+ * it. A `mask-image` has no attachment equivalent — `mask-attachment` is in
+ * CSS Masking L1 but no engine implements it — so a mask gradient's `at X Y`
+ * resolves against the ELEMENT's own box. Feeding it viewport pixels put the
+ * reveal off by exactly the element's distance from the viewport top:
+ * measured, a pointer at viewport y=481 over an element whose top was 256 lit
+ * a spot at 737, below that element's own bottom edge. Masked field types read
+ * this pair instead.
+ */
+const VAR_LOCAL_X = '--sgs-cursor-local-x';
+const VAR_LOCAL_Y = '--sgs-cursor-local-y';
+
 /** Marks the element painting the base field. */
 const EMITTER_ATTR = 'data-sgs-cursor-field';
 
@@ -326,12 +345,45 @@ export function initCursorField( el, opts = {} ) {
 			varY,
 			`${ Math.round( rect.top + rect.height / 2 ) }px`
 		);
+		// The same resting point expressed in the element's own box, for
+		// masked types. Same rect, no extra measurement.
+		el.style.setProperty( VAR_LOCAL_X, `${ Math.round( rect.width / 2 ) }px` );
+		el.style.setProperty( VAR_LOCAL_Y, `${ Math.round( rect.height / 2 ) }px` );
+	};
+
+	/**
+	 * Show/hide without moving. `--sgs-cursor-field-opacity` DEFAULTS TO 1 in
+	 * the stylesheet, so a no-JS visitor, the editor canvas and reduced motion
+	 * all still see the static resting field (§1.6 fail-open, §9, §10). JS
+	 * turns it off only once JS is confirmed running — the `sgs-js` gate shape.
+	 */
+	const setVisible = ( on ) => {
+		if ( on ) {
+			// REMOVE rather than set 1 — the stylesheet's own default (0.9) is
+			// the resting appearance every field type already shipped with, and
+			// writing a literal here would have brightened all of them as a
+			// side effect of one look's change.
+			el.style.removeProperty( '--sgs-cursor-field-opacity' );
+			return;
+		}
+		el.style.setProperty( '--sgs-cursor-field-opacity', '0' );
 	};
 
 	// The resting position is applied unconditionally and FIRST, so the field
 	// is never absent — not before the first pointer move, not under reduced
 	// motion, not on touch, not with JS half-loaded.
 	rest();
+
+	// ⭐ BUT it is not SHOWN at rest once JS is live (2026-08-24, Bean's ruling:
+	// "this is a cursor effect so the effect should leave and arrive to the
+	// section with your cursor"). Parking a lit pool in the middle of every
+	// section announced the effect before the pointer was anywhere near it, and
+	// snapping back to that centre on exit read as a teleport rather than a
+	// departure. Reduced motion KEEPS the static resting field — there the pool
+	// is a finished state, not an animation (§10 SIMPLIFY, never suppress).
+	if ( ! elementSpace && ! prefersReducedMotion() ) {
+		setVisible( false );
+	}
 
 	const participants = elementSpace ? [] : markParticipants( el );
 
@@ -362,6 +414,94 @@ export function initCursorField( el, opts = {} ) {
 		return unmark;
 	}
 
+	/**
+	 * Write one pointer position to both published pairs.
+	 *
+	 * The VIEWPORT pair needs no measurement — it IS the client position, and
+	 * `background-attachment: fixed` resolves the layer against the viewport, so
+	 * every participant paints the same field in the same screen place with no
+	 * per-element maths. That remains the mechanism.
+	 *
+	 * The LOCAL pair costs one rect read per frame — the same cost element space
+	 * has always paid, and one read for the EMITTER, never one per participant.
+	 * Masked types need it because a mask resolves against this element's box.
+	 *
+	 * @param {number} vx Viewport x.
+	 * @param {number} vy Viewport y.
+	 * @return {void}
+	 */
+	const publishViewport = ( vx, vy ) => {
+		el.style.setProperty( varX, `${ Math.round( vx ) }px` );
+		el.style.setProperty( varY, `${ Math.round( vy ) }px` );
+		const localRect = el.getBoundingClientRect();
+		el.style.setProperty(
+			VAR_LOCAL_X,
+			`${ Math.round( vx - localRect.left ) }px`
+		);
+		el.style.setProperty(
+			VAR_LOCAL_Y,
+			`${ Math.round( vy - localRect.top ) }px`
+		);
+	};
+
+	/*
+	 * DRAG WEIGHT — the standard lerp follower: each frame, move the published
+	 * position a FRACTION of the remaining distance toward the pointer, so it
+	 * eases in and never quite overshoots. `current += (target - current) * f`.
+	 *
+	 * The client-facing control is 0-100 "how far it lags", which is the
+	 * inverse of the maths: a SMALLER factor means more lag. 0 maps to 1
+	 * (publish directly, the pre-existing behaviour, byte-identical), and 100
+	 * maps to 0.06 (very heavy). The published range therefore spans the
+	 * 0.1-0.2 "visibly heavy drag" and 0.3-0.5 "snappier but still eased" bands
+	 * that recur across implementations of this pattern.
+	 *
+	 * Reduced motion needs no branch here: `init` returns before any listener
+	 * is attached under `reduce`, so the loop can never start and the field
+	 * simply rests.
+	 */
+	const trailAttr = el.getAttribute( 'data-sgs-cursor-field-trail' );
+	const trailAmount = clamp( parseInt( trailAttr, 10 ) || 0, 0, 100 );
+	const trailFactor = 0 === trailAmount ? 1 : 1 - ( trailAmount / 100 ) * 0.94;
+
+	let targetX = null;
+	let targetY = null;
+	let currentX = null;
+	let currentY = null;
+	let trailFrame = null;
+
+	const stopTrail = () => {
+		if ( null !== trailFrame ) {
+			cancelAnimationFrame( trailFrame );
+			trailFrame = null;
+		}
+	};
+
+	const tick = () => {
+		currentX += ( targetX - currentX ) * trailFactor;
+		currentY += ( targetY - currentY ) * trailFactor;
+		publishViewport( currentX, currentY );
+		// Half a pixel is below what any of this can paint, so settling there
+		// ends the loop rather than running forever on rounding noise.
+		if (
+			0.5 < Math.abs( targetX - currentX ) ||
+			0.5 < Math.abs( targetY - currentY )
+		) {
+			trailFrame = requestAnimationFrame( tick );
+			return;
+		}
+		currentX = targetX;
+		currentY = targetY;
+		publishViewport( currentX, currentY );
+		trailFrame = null;
+	};
+
+	const startTrail = () => {
+		if ( null === trailFrame ) {
+			trailFrame = requestAnimationFrame( tick );
+		}
+	};
+
 	const handleMove = rafThrottle( ( clientX, clientY ) => {
 		if ( elementSpace ) {
 			const rect = el.getBoundingClientRect();
@@ -387,9 +527,20 @@ export function initCursorField( el, opts = {} ) {
 			return;
 		}
 
-		// Viewport space needs no measurement of anything at all.
-		el.style.setProperty( varX, `${ Math.round( clientX ) }px` );
-		el.style.setProperty( varY, `${ Math.round( clientY ) }px` );
+		// DRAG 0 (the default) publishes the pointer position directly, exactly
+		// as this module always has. Anything above 0 hands the position to the
+		// easing loop instead, so the pool lags behind the cursor.
+		if ( 1 <= trailFactor ) {
+			publishViewport( clientX, clientY );
+			return;
+		}
+		targetX = clientX;
+		targetY = clientY;
+		if ( null === currentX ) {
+			currentX = clientX;
+			currentY = clientY;
+		}
+		startTrail();
 	} );
 
 	/**
@@ -409,20 +560,52 @@ export function initCursorField( el, opts = {} ) {
 		handleMove( event.clientX, event.clientY );
 	};
 
+	/**
+	 * ARRIVE WITH THE POINTER. `mouseenter` carries the coordinates of the
+	 * crossing, so the field is placed AT the edge the pointer came through
+	 * before it is shown — it appears where the cursor is, rather than fading
+	 * up in the middle and sliding out to meet it.
+	 */
+	const onEnter = ( event ) => {
+		if ( isTouchInput() ) {
+			return;
+		}
+		// Seed the lerp at the entry point, or a non-zero drag weight would
+		// ease the pool in from wherever it was left, across the whole section.
+		currentX = event.clientX;
+		currentY = event.clientY;
+		handleMove( event.clientX, event.clientY );
+		setVisible( true );
+	};
+
 	// `mouseleave` does not fire when entering a child, so this only runs when
 	// the pointer genuinely leaves the emitter.
-	const onLeave = () => {
+	const onLeave = ( event ) => {
 		handleMove.cancel();
-		rest();
+		stopTrail();
+		currentX = null;
+		currentY = null;
+		// LEAVE WITH THE POINTER: publish the exit crossing, which is ON the
+		// boundary, then fade. `rest()` is deliberately NOT called — recentring
+		// is the teleport Bean reported. The stylesheet's own default still
+		// covers the no-JS and reduced-motion cases.
+		if ( event && 'number' === typeof event.clientX ) {
+			handleMove( event.clientX, event.clientY );
+		}
+		setVisible( false );
 	};
 
 	el.addEventListener( 'mousemove', onMove );
+	el.addEventListener( 'mouseenter', onEnter );
 	el.addEventListener( 'mouseleave', onLeave );
 
 	return () => {
 		handleMove.cancel();
+		stopTrail();
 		el.removeEventListener( 'mousemove', onMove );
+		el.removeEventListener( 'mouseenter', onEnter );
 		el.removeEventListener( 'mouseleave', onLeave );
+		el.style.removeProperty( '--sgs-cursor-field-opacity' );
 		unmark();
 	};
 }

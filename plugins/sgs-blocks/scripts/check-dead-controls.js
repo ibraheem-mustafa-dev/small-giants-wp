@@ -88,6 +88,40 @@
  *   node scripts/check-dead-controls.js          # report (exit 0 unless net-new findings)
  *   node scripts/check-dead-controls.js --check   # same, for prebuild/CI (exit 1 on net-new)
  *   node scripts/check-dead-controls.js --json     # machine-readable findings
+ *   node scripts/check-dead-controls.js --dump-json  # per-(block,attr) consumption dump (Task 1,
+ *                                                     # 2026-08-27) — REPORTING ONLY, always exit 0,
+ *                                                     # never changes --check/--json output. Emits a
+ *                                                     # JSON array, one row per declared attribute of
+ *                                                     # every block this script scans: { block, attr,
+ *                                                     # renderConsumed, controlPresent, renderVia,
+ *                                                     # exempt, exemptReason }.
+ *                                                     # renderVia names WHICH of this script's seven-
+ *                                                     # corpus resolvers proved consumption (literal /
+ *                                                     # dynamic-prefix / prefixed-helper / shared-
+ *                                                     # include / block-context / responsive-variant /
+ *                                                     # none) — the field a downstream consumer needs to
+ *                                                     # distinguish a real absence from a resolver
+ *                                                     # limitation. exempt/exemptReason surface the SAME
+ *                                                     # gate exemptions checkFullyDeadAttrs() applies
+ *                                                     # before resolving (isSystemAttr / EDITOR_ONLY_ATTRS
+ *                                                     # / KEY_NOISE), plus a fourth dump-only exemption
+ *                                                     # (Important 4, 2026-08-27) for a WP-native
+ *                                                     # `supports`-backed attribute (e.g. `anchor`) that
+ *                                                     # core itself renders — reason one of 'system-attr' /
+ *                                                     # 'editor-only' / 'key-noise' / 'core-supports' /
+ *                                                     # null — so a
+ *                                                     # `renderConsumed: false` row can be told apart
+ *                                                     # from an attribute the blocking gate actually
+ *                                                     # flags as dead (a by-design editor-only attr —
+ *                                                     # `templateMode` was the historical example until
+ *                                                     # it was removed as vestigial, see
+ *                                                     # `.superpowers/sdd/task-3-report.md` — would have
+ *                                                     # renderConsumed=false but exempt=true, not a real
+ *                                                     # finding). Exists
+ *                                                     # so a second instrument (inspector-scan rule 34)
+ *                                                     # can consume this script's verdicts instead of
+ *                                                     # re-deriving them with a narrower corpus — see
+ *                                                     # `.superpowers/sdd/task-1-brief.md`.
  *
  * Wired into `prebuild` / `prestart` in package.json, so `npm run build` FAILS
  * on a net-new dead control (it actually runs — not a dormant --check).
@@ -97,6 +131,7 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
+const { resolveComponentFiles } = require( './inspector-scan/core/components' );
 
 const ROOT = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -107,6 +142,99 @@ const SHARED_CONTROLS_JS = path.join(
 	'components',
 	'ContainerWrapperControls.js'
 );
+
+// R3-a (2026-08-20): the shared name -> file resolver (components.js), used
+// two ways below to close the "control lives in a shared component file"
+// blind spot documented in the R-3 register (`.claude/plans/phase-shop-
+// container-remediation.md` R3-a). Computed once — resolveComponentFiles()
+// walks the filesystem, so caching it avoids re-reading every component file
+// per block during a single run.
+const COMPONENT_FILE_MAP = resolveComponentFiles();
+
+// Any capitalised JSX tag referenced in a source file, e.g. `<WidthPanel`.
+const JSX_TAG_RE = /<([A-Z]\w*)\b/g;
+
+/**
+ * Given a source file's text (typically a block's edit.js), find every
+ * capitalised JSX tag it references, resolve each name to the FILE that
+ * DEFINES it via the shared resolver, and return the concatenated source of
+ * every resolved file. This is how a control living in a shared component
+ * (e.g. `container/components/WidthPanel.js`, mounted via `<WidthPanel .../>`
+ * in edit.js) becomes visible to the text-based `collectControlledAttrs()`
+ * scan below, instead of being invisible because it never appears as literal
+ * text inside edit.js itself.
+ *
+ * Deliberately resolves by JSX TAG NAME, cross-referenced against a
+ * component whose own source was read — never by import-path string
+ * matching (components.js's own documented discipline).
+ *
+ * @param {string} src Source text to scan for JSX tags.
+ * @return {string} Concatenated source of every resolved component file (may be empty).
+ */
+function collectReferencedComponentSources( src ) {
+	if ( ! src ) {
+		return '';
+	}
+	const names = new Set();
+	JSX_TAG_RE.lastIndex = 0;
+	let m;
+	while ( ( m = JSX_TAG_RE.exec( src ) ) !== null ) {
+		names.add( m[ 1 ] );
+	}
+	const seen = new Set();
+	let out = '';
+	for ( const name of names ) {
+		const file = COMPONENT_FILE_MAP.get( name );
+		if ( file && ! seen.has( file ) ) {
+			seen.add( file );
+			out += '\n' + readIfExists( file );
+		}
+	}
+	return out;
+}
+
+/**
+ * Resolve the set of files a "facade" component file (one that only
+ * re-exports its real implementation files, e.g. ContainerWrapperControls.js
+ * after the 2026-08-17 panel split) actually brings in, by reading its own
+ * local `import { Name } from './Name'` statements and resolving each Name
+ * to the file that DEFINES it. Replaces the old single-hardcoded-file read
+ * (`readIfExists( SHARED_CONTROLS_JS )` alone), which measured 0 hits for
+ * `contentWidth`/`gapTablet`/etc. because those controls moved OUT of the
+ * facade into per-panel files it merely re-exports (R3-a register).
+ *
+ * @param {string} facadePath Absolute path to the facade file.
+ * @return {string} Concatenated source: the facade itself + every locally-imported file it resolves to.
+ */
+function collectFacadeResolvedSources( facadePath ) {
+	const facadeSrc = readIfExists( facadePath );
+	if ( ! facadeSrc ) {
+		return '';
+	}
+	const localImportRe = /import\s*\{([^}]*)\}\s*from\s*['"]\.\/[^'"]+['"]/g;
+	const names = new Set();
+	let m;
+	while ( ( m = localImportRe.exec( facadeSrc ) ) !== null ) {
+		for ( const part of m[ 1 ].split( ',' ) ) {
+			const n = part.trim().split( /\s+as\s+/ ).pop().trim();
+			if ( /^[A-Z]\w*$/.test( n ) ) {
+				names.add( n );
+			}
+		}
+	}
+	const files = new Set();
+	for ( const n of names ) {
+		const file = COMPONENT_FILE_MAP.get( n );
+		if ( file ) {
+			files.add( file );
+		}
+	}
+	let out = facadeSrc;
+	for ( const file of files ) {
+		out += '\n' + readIfExists( file );
+	}
+	return out;
+}
 // CHECK 3 target (Step L, 2026-08-01): src/blocks/extensions/*.js registers
 // attributes on other blocks via `blocks.registerBlockType` JS filters, not a
 // block.json — so CHECK 1 (which iterates block DIRECTORIES and explicitly
@@ -131,9 +259,18 @@ const SYSTEM_ATTR_PREFIXES = [ 'sgs' ];
 // Attribute names that are ALWAYS editor-only by design (drive allowedBlocks,
 // templates, or other editor-side behaviour) and legitimately have no render
 // consumption. Keep this list tiny and justified (Spec 22 BY-DESIGN).
-const EDITOR_ONLY_ATTRS = new Set( [
-	'templateMode', // container: drives allowedBlocks in the editor (Spec 22 BY-DESIGN).
-] );
+//
+// Was intentionally EMPTY 2026-08-27 -> 2026-09-02 (the only prior member,
+// `templateMode`, was removed outright as vestigial — see
+// `.superpowers/sdd/task-3-report.md`). `templateLock` (sgs/container,
+// sgs/hero) is the next genuinely editor-only attribute: it drives
+// useInnerBlocksProps' `templateLock` option (Spec 20-pattern-template-lock's
+// repair target) and is never read in render.php — the InnerBlocks structural
+// lock is a block-editor-only behaviour, confirmed live (grep for
+// "templateLock" across both blocks' render.php: 0 matches). Keep this list
+// tiny and justified; do not repopulate it with a stale name once an
+// attribute is gone.
+const EDITOR_ONLY_ATTRS = new Set( [ 'templateLock' ] );
 
 // Extension attributes that are BY-DESIGN editor-only — never emitted as a
 // data-attribute / consumed server-side, with the design decision documented
@@ -159,6 +296,42 @@ const EXTENSION_EDITOR_ONLY_ATTRS = new Set( [
 // but are never attribute names. Filtered from the controlled set so they don't
 // masquerade as dead controls.
 const KEY_NOISE = new Set( [ 'id', 'url', 'alt', 'true', 'false', 'null', 'undefined' ] );
+
+// Attributes that are genuinely dead to THIS gate's render/editor scope (no
+// render.php/save.js/view.js consumer, no editor control) but are kept alive
+// deliberately for a NON-render consumer: the Python cloning pipeline. This is
+// structurally distinct from every exemption above — not a WP `supports`-
+// backed attribute (`core-supports`), not editor-only UI wiring
+// (`editor-only`), not a naming-convention/object-literal artefact
+// (`key-noise`/`system-attr`) — so it gets its own reason rather than being
+// folded into one of those.
+//
+// `sgs/hero`'s `splitImage`/`splitImageMobile` USED to be the DB-side
+// routing anchors for the scalar-media art-direction mechanism, kept alive
+// here purely so `/sgs-update` Stage 9's orphan-prune wouldn't silently
+// delete their `block_attributes` rows (`role='scalar-media'`) and lose the
+// routing entirely — the exact 2026-08-02 regression this mechanism existed
+// to prevent. 2026-09-02 (Wave 7b): the anchor was re-pointed onto
+// `splitMediaType` (genuinely read by render.php, so it needs no dead-control
+// exemption of its own) and `splitImage`/`splitImageMobile` were deleted from
+// block.json outright — nothing declares them any more, so this gate can
+// never see them, and the two-entry roster below is now empty. Source of
+// truth for the re-anchor: `plugins/sgs-blocks/scripts/data/scalar-media-
+// roles.json`'s `__RE_ANCHOR_2026_09_02` note.
+//
+// The exemption MECHANISM (Set + isCloningPipelineAnchorAttr helper) is kept
+// rather than deleted — it is a general-purpose category (a declared attr
+// that is dead to THIS gate's render/editor scope but load-bearing for the
+// Python cloning pipeline elsewhere), not hero-specific, and a future
+// virtual-only anchor could need it again. Keyed by `block::attr` (same
+// convention as inspector-scan rule 34's dumpRowKey()) so any future entry
+// can never accidentally widen to catch an unrelated block's same-named
+// attribute.
+const CLONING_PIPELINE_ANCHOR_ATTRS = new Set( [] );
+
+function isCloningPipelineAnchorAttr( blockName, attr ) {
+	return CLONING_PIPELINE_ANCHOR_ATTRS.has( blockName + '::' + attr );
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -336,11 +509,107 @@ function stripComments( src ) {
  * does NOT match inside `nameFontSizeTablet`. The corpus is the block's own
  * render/save/view source plus the shared includes corpus, comments stripped.
  */
+/**
+ * Attribute names a corpus consumes through the MEDIA-ATOM name helpers.
+ *
+ * The media layer never writes an attribute name as a literal. It composes one
+ * from a PREFIX (the block's own call-site argument to
+ * `SGS_Media_Element::style()`/`::css()`, e.g. hero's `'splitMedia'`/`'media'`,
+ * or `''` for an unprefixed surface like `sgs/media`/`sgs/decorative-image`)
+ * and a PascalCase BASE (a literal string inside the shared atom file, e.g.
+ * `focal-point.php`'s `'ObjectPosition'`):
+ *
+ *     sgs_media_element_attr( '', 'VideoPlaysInline' )         -> videoPlaysInline
+ *     sgs_media_element_attr( 'splitMedia', 'ObjectPosition' ) -> splitMediaObjectPosition
+ *     mediaStoredAttrName( slug, prefix, 'ImageUrl' )          -> {prefix}ImageUrl
+ *
+ * so a literal grep reports every one of them as unrendered. That is a real
+ * blind spot, not a real finding: `sgs/media`'s videoPlaysInline trio was
+ * flagged the moment render.php started resolving those three flags through
+ * `sgs_media_atom_video_behaviour_requires()` — the attributes went from
+ * consumed to "dead" while becoming MORE correct.
+ *
+ * WIDENED 2026-09-02 (rule-34 findings review): this used to derive ONLY the
+ * unprefixed (`prefix === ''`) form — `lcfirst(base)` — because it never
+ * looked for the prefix argument at all. That is correct for `sgs/media` and
+ * `sgs/decorative-image` (both call the helper with a literal `''` prefix),
+ * but produced 5 false-positive "dead" findings on `sgs/hero`, whose call
+ * sites pass `'splitMedia'`/`'media'` — the real stored names
+ * (`splitMediaObjectPosition`, `mediaOverlayColour`, …) were never generated,
+ * so `isConsumed()` never matched them even though `SGS_Media_Element::style()`
+ * genuinely resolves them at render time (see the atom's own
+ * `sgs_media_element_stored_attr( $block_slug, $prefix, $base )` call — prefix
+ * concatenation, not string literal). Every literal prefix this BLOCK'S OWN
+ * corpus passes to `::style()`/`::css()` is found structurally (the same
+ * "resolve the call site's own literal argument" discipline
+ * `collectPrefixedHelperConsumed()` already uses for `sgs_typography_css_rule`)
+ * and combined with every base found anywhere in the corpus — `''` is always
+ * tried too, so the pre-existing unprefixed blocks keep working unchanged.
+ *
+ * This is the same shape `sgs/before-after` already documents ("tier keys are
+ * written as WHOLE literal suffixes because this checker cannot follow a key
+ * whose tail is a second variable") for its OWN dynamic (loop-variable) prefix
+ * — that shape is NOT resolved here (a non-literal 2nd argument can't be
+ * statically determined) and is out of scope for this widening; before-after
+ * works around it today by writing the composed literal names directly. A
+ * future block hitting the same dynamic-prefix shape needs the same treatment
+ * or a further-generalised resolver, not a baseline entry.
+ *
+ * Unprefixed and tiered forms are both derived, because a base composes into
+ * up to three real attribute names per prefix.
+ *
+ * @param {string} corpus Render/save/view source, comments stripped (this
+ *   block's own corpus + the shared includes corpus — prefixes are read from
+ *   whichever half of `corpus` actually calls `::style()`/`::css()`, which in
+ *   practice is always the block's own render.php; no `includes/*.php` file
+ *   calls either method, so cross-block prefix leakage cannot occur).
+ * @return {Set<string>} Attribute names reachable through the helpers.
+ */
+function mediaAtomComposedNames( corpus ) {
+	const names = new Set();
+	const baseRe =
+		/(?:sgs_media_element_attr|sgs_media_element_stored_attr|mediaAttrName|mediaStoredAttrName)\s*\([^)]*?['"]([A-Z][A-Za-z0-9]*)['"]\s*\)/g;
+	const bases = new Set();
+	let m;
+	while ( ( m = baseRe.exec( corpus ) ) !== null ) {
+		bases.add( m[ 1 ] );
+	}
+	if ( bases.size === 0 ) {
+		return names;
+	}
+
+	// Literal prefixes this corpus passes as the 2nd argument to
+	// `SGS_Media_Element::style()`/`::css()`. `''` is always tried — the
+	// unprefixed shape every surface used before any block passed a real prefix.
+	const prefixRe = /SGS_Media_Element::(?:style|css)\(\s*[^,]+,\s*['"]([A-Za-z0-9]*)['"]/g;
+	const prefixes = new Set( [ '' ] );
+	while ( ( m = prefixRe.exec( corpus ) ) !== null ) {
+		prefixes.add( m[ 1 ] );
+	}
+
+	for ( const base of bases ) {
+		for ( const prefix of prefixes ) {
+			// Mirrors sgs_media_element_attr()'s own rule exactly: a non-empty
+			// prefix concatenates verbatim; an empty prefix lower-cases the base's
+			// first letter instead.
+			const composed = '' !== prefix ? prefix + base : base.charAt( 0 ).toLowerCase() + base.slice( 1 );
+			names.add( composed );
+			names.add( composed + 'Tablet' );
+			names.add( composed + 'Mobile' );
+		}
+	}
+	return names;
+}
+
 function isConsumed( attr, corpus ) {
 	// Escape nothing needed — attr names are [A-Za-z0-9_$]. Word boundary on both
 	// sides; allow the JS/PHP token to be quoted, a property, or an array key.
 	const re = new RegExp( '\\b' + attr + '\\b' );
-	return re.test( corpus );
+	if ( re.test( corpus ) ) {
+		return true;
+	}
+	// Composed through a media-atom name helper — see above.
+	return mediaAtomComposedNames( corpus ).has( attr );
 }
 
 /**
@@ -425,6 +694,14 @@ function readBlock( dir ) {
 		ownCorpus,
 		providesContext,
 		usesContext,
+		// GROUND-TRUTH: spec=.superpowers/sdd/task-2-brief.md Important 4 (2026-08-27)
+		// source=file evidence=live-read block.json for sgs/button, sgs/heading,
+		// sgs/nav-drawer — all three declare an `anchor` attribute AND a top-level
+		// `supports.anchor: true`. DUMP-ONLY: this field is additive on the block
+		// descriptor and is read by NOTHING in CHECK 1-5 (checkBlock,
+		// checkFullyDeadAttrs, etc.) — only dumpAttributeRows() below reads it, so
+		// adding it cannot change --check/--json output.
+		supports: meta.supports || {},
 	};
 }
 
@@ -480,6 +757,17 @@ const PREFIXED_HELPER_SUFFIXES = {
 		'FontSizeUnit',
 		'FontSizeTablet',
 		'FontSizeMobile',
+		// Added 2026-08-26 with the helper's own font-family branch (G4). Until
+		// then `sgs_typography_css_rule()` could NOT emit font-family, so blocks
+		// that offered TypographyControls' showFontFamily picker had to emit it
+		// block-privately — and that private emission was the only LITERAL
+		// occurrence of the attr name. Deleting it in favour of the shared helper
+		// made `sgs/product-card.titleFontFamily` look "fully unused" to this
+		// checker, which is what this list exists to prevent: both the control
+		// (TypographyControls.js:160 builds `typographyAttrName(prefix,
+		// 'FontFamily')`) and the render (`sgs_typography_attr($prefix,
+		// 'FontFamily')`) construct the key, so neither end contains the string.
+		'FontFamily',
 		'FontWeight',
 		'FontStyle',
 		'TextTransform',
@@ -493,16 +781,56 @@ const PREFIXED_HELPER_SUFFIXES = {
 		'LetterSpacingTablet',
 		'LetterSpacingMobile',
 		'TextAlign',
+		// Added 2026-09-06 with the helper's own text-wrap branch, for exactly
+		// the reason the FontFamily comment above describes. Until then
+		// `sgs_typography_css_rule()` could not emit `text-wrap`, so the only
+		// block offering it (`sgs/heading`) emitted it BLOCK-PRIVATELY — and
+		// that private emission was the sole LITERAL occurrence of the attr
+		// name in any PHP file. Moving it into the shared helper made
+		// `textWrap` look unrendered to this checker at both ends: the control
+		// builds the key as `typographyAttrName( prefix, 'TextWrap' )` and the
+		// render as `sgs_typography_attr( $prefix, 'TextWrap' )`, so the string
+		// "textWrap" appears in neither.
+		//
+		// ⛔ This is the CORRECT fix, not a baseline entry. `dead-controls-
+		// baseline.json`'s own header and this repo's CLAUDE.md both say to
+		// broaden the resolver when it false-positives a legitimate consumption
+		// pattern rather than accepting the finding — a baselined entry would
+		// silence this attribute on every block forever, including a future one
+		// where it really is dead.
+		'TextWrap',
+		// Added 2026-09-06 alongside the helper's column-count / text-indent /
+		// writing-mode branches — same dynamic-key reason as every suffix above.
+		//
+		// ⚠ TextIndent is emitted on its OWN selector (the adjacent-sibling
+		// rule), not into $base_decls, but it is still read as
+		// `sgs_typography_attr( $prefix, 'TextIndent' )` inside the same helper
+		// call, so it belongs in this list exactly like the others — the list
+		// records which SUFFIXES the helper consumes, not which CSS rule they
+		// land in.
+		'TextColumns',
+		'TextIndent',
+		'WritingMode',
 	],
 	sgs_button_element_style_css: [
 		'ColourBackground',
 		'ColourText',
 		'ColourBorder',
 		'ColourBorderGradient',
+		// Added 2026-09-03 alongside the helper's own fill-gradient branch —
+		// sgs_background_paint_decl() reads these two by the same $prefix.
+		// 'Suffix' concatenation as every other entry in this list.
+		'ColourBackgroundGradient',
+		'ColourBackgroundHoverGradient',
 		'ColourBackgroundHover',
 		'ColourTextHover',
 		'ColourBorderHover',
 		'ColourBorderHoverGradient',
+		// Added 2026-09-04 (D942/D956 gate) — the helper's text-gradient
+		// branch reads these two the same $prefix.'Suffix' way; only paints
+		// per-state when that state's own ColourBackground(Hover) is unset.
+		'ColourTextGradient',
+		'ColourTextHoverGradient',
 		'BorderStyle',
 		'BorderWidth',
 		'BorderRadius',
@@ -600,6 +928,143 @@ function isDynamicPrefixConsumed( attr, corpus, suffixes ) {
 	return false;
 }
 
+// The media-ATOM resolver (2026-09-02, task-2 findings-34 fix). A THIRD
+// computed-key shape, distinct from both PREFIXED_HELPER_SUFFIXES (a fixed
+// helper name, prefix as a literal 2nd-arg string) and the dynamic-prefix
+// `$attributes[ $var . 'Suffix' ]` concatenation: `SGS_Media_Element::style(
+// $attributes, '<prefix>', '<block-slug>', $uid, array( 'atom-id', ... ) )`
+// (`includes/class-sgs-media-element.php`). Each named atom owns a fixed set
+// of PascalCase "bases" (e.g. the `focal-point` atom owns `ObjectPosition`);
+// inside the atom's own PHP twin the actual read is
+// `$attributes[ sgs_media_element_stored_attr( $block_slug, $prefix, $base ) ]`
+// — a bracket access keyed by a FUNCTION CALL, not a literal or a simple
+// concatenation, so neither existing resolver can see it. `sgs/hero`'s
+// `splitMediaObjectPosition`/`mediaOverlayColour`/`mediaOverlayGradient` are
+// exactly this shape (verified live: `hero/render.php` calls
+// `SGS_Media_Element::style( $attributes, 'splitMedia', 'sgs/hero', $uid,
+// array( 'object-fit', 'focal-point' ) )` and
+// `SGS_Media_Element::style( $attributes, 'media', 'sgs/hero', $uid,
+// array( 'overlay' ) )`).
+//
+// MEDIA_ELEMENT_ATOM_BASES is a byte-for-byte mirror of the atom -> bases map
+// `src/components/media/atoms/registry.js` builds from `MEDIA_BASES` in
+// `src/components/MediaElementControls.js` (the JS registry this whole
+// mechanism is driven by) — kept in sync the same way PREFIXED_HELPER_SUFFIXES
+// is kept in sync with each PHP helper's own doc-comment (see that dict's
+// comment above). Adding a 17th atom there means adding its `id`+`bases` here;
+// nothing else in this resolver is atom-specific. MEDIA_ELEMENT_TIERED_BASES /
+// MEDIA_ELEMENT_TIERS mirror `MEDIA_TIERED_BASES`/`MEDIA_TIERS` from the same
+// JS file — only a tiered base gets `+Tablet`/`+Mobile` siblings.
+//
+// Known limitation (documented, not silently assumed away): `sgs_media_
+// element_stored_attr()` (`includes/helpers-media-element.php`) applies a
+// STORED_AS override for exactly two blocks (`sgs/before-after`,
+// `sgs/decorative-image`) — today every override maps to the SAME name the
+// default prefix+base convention already produces (verified live,
+// 2026-09-02), so ignoring STORED_AS here changes no result. If a future
+// STORED_AS entry genuinely renames a base, this resolver will miss it until
+// updated — the same class of drift PREFIXED_HELPER_SUFFIXES already accepts
+// for its own helpers.
+const MEDIA_ELEMENT_ATOM_BASES = {
+	source: [
+		'Image', 'ImageId', 'ImageUrl', 'Video', 'VideoId', 'VideoUrl', 'Svg',
+		'SvgContent', 'Thumbnail', 'ThumbnailId',
+	],
+	'media-type': [ 'MediaType', 'VideoSource', 'VideoMimeType' ],
+	'video-behaviour': [
+		'VideoAutoplay', 'VideoLoop', 'VideoMuted', 'VideoControls',
+		'VideoPlaysInline', 'VideoLazyLoad', 'VideoCaptionsId', 'VideoCaptionsUrl',
+		'VideoCaptionsLabel', 'VideoCaptionsSrcLang',
+	],
+	meaning: [ 'ImageAlt', 'VideoAlt', 'ImageIsDecorative' ],
+	intrinsic: [ 'ImageWidth', 'ImageHeight' ],
+	'svg-presentation': [
+		'SvgAnimation', 'SvgAnimationSpeed', 'SvgOpacity', 'SvgPosition',
+		'SvgMinHeight', 'SvgTextShadow',
+	],
+	'object-fit': [ 'ObjectFit', 'Size' ],
+	'focal-point': [ 'ObjectPosition', 'Position', 'Repeat', 'Attachment' ],
+	'box-shape': [
+		'MediaSizing', 'AspectRatio', 'Shape', 'Height', 'HeightUnit', 'MaxHeight',
+		'MaxHeightUnit', 'MaxWidth', 'MaxWidthUnit', 'MaxWidthPercent', 'MinHeight',
+		'Width', 'WidthUnit', 'BorderRadius', 'BorderWidth', 'BorderStyle',
+		'BorderColour', 'BorderColourGradient',
+	],
+	overlay: [
+		'OverlayColour', 'OverlayColourHover', 'OverlayGradient',
+		'OverlayGradientHover', 'OverlayOpacity', 'OverlayBlendMode',
+	],
+	motion: [ 'KenBurns', 'Parallax', 'AnimationDuration' ],
+	opacity: [ 'Opacity' ],
+	shadow: [ 'BoxShadow', 'BoxShadowColour', 'BoxShadowColourHover' ],
+	'media-padding': [ 'Padding' ],
+	caption: [ 'Caption', 'CaptionTag' ],
+	link: [ 'LinkUrl', 'LinkOpensNewTab', 'LinkRel' ],
+};
+
+const MEDIA_ELEMENT_TIERED_BASES = new Set( [
+	'Image', 'ImageId', 'ImageUrl', 'Video', 'VideoId', 'VideoUrl', 'Svg',
+	'SvgContent', 'Thumbnail', 'ThumbnailId',
+	'VideoAutoplay', 'VideoLoop', 'VideoMuted', 'VideoControls',
+	'VideoPlaysInline', 'VideoLazyLoad', 'VideoCaptionsId', 'VideoCaptionsUrl',
+	'VideoCaptionsLabel', 'VideoCaptionsSrcLang',
+	'ObjectFit', 'ObjectPosition', 'Height', 'Width', 'MinHeight',
+	'OverlayOpacity', 'BorderRadius', 'Padding',
+] );
+
+const MEDIA_ELEMENT_TIERS = [ 'Tablet', 'Mobile' ];
+
+// `SGS_Media_Element::style( $attributes, 'prefix', 'sgs/block', $uid,
+// array( 'atom-a', 'atom-b' ) )` — prefix + block-slug + the atom-id array,
+// each a literal string/array so this can be resolved statically. A call
+// site with a computed (non-literal) prefix or block-slug is skipped, same
+// discipline as isDynamicPrefixConsumed()'s own "can't resolve, don't claim"
+// rule.
+const MEDIA_ELEMENT_STYLE_CALL_RE =
+	/SGS_Media_Element::style\(\s*\$\w+\s*,\s*['"]([A-Za-z0-9]*)['"]\s*,\s*['"][a-z0-9-]+\/[a-z0-9-]+['"]\s*,\s*\$\w+\s*,\s*array\(\s*((?:['"][a-z0-9-]+['"]\s*,?\s*)+)\)/g;
+
+const MEDIA_ELEMENT_ATOM_ID_RE = /['"]([a-z0-9-]+)['"]/g;
+
+/**
+ * Collect every attribute name consumed via an `SGS_Media_Element::style()`
+ * call site in `corpus` — the prefix+base(+tier) product of each call's
+ * literal prefix and its declared atom ids.
+ *
+ * @param {string} corpus PHP source (comments already stripped).
+ * @return {Set<string>} Attribute names consumed via a media-element atom.
+ */
+function collectMediaElementAtomConsumed( corpus ) {
+	const consumed = new Set();
+	let m;
+	MEDIA_ELEMENT_STYLE_CALL_RE.lastIndex = 0;
+	while ( ( m = MEDIA_ELEMENT_STYLE_CALL_RE.exec( corpus ) ) !== null ) {
+		const prefix = m[ 1 ];
+		const atomIdsRaw = m[ 2 ];
+		let atomMatch;
+		MEDIA_ELEMENT_ATOM_ID_RE.lastIndex = 0;
+		while ( ( atomMatch = MEDIA_ELEMENT_ATOM_ID_RE.exec( atomIdsRaw ) ) !== null ) {
+			const atomId = atomMatch[ 1 ];
+			const bases = MEDIA_ELEMENT_ATOM_BASES[ atomId ];
+			if ( ! bases ) {
+				continue; // unknown atom id — not this resolver's business to guess
+			}
+			for ( const base of bases ) {
+				const attrName = '' !== prefix ? prefix + base : base.charAt( 0 ).toLowerCase() + base.slice( 1 );
+				consumed.add( attrName );
+				if ( MEDIA_ELEMENT_TIERED_BASES.has( base ) ) {
+					for ( const tier of MEDIA_ELEMENT_TIERS ) {
+						const tieredBase = base + tier;
+						const tieredAttrName =
+							'' !== prefix ? prefix + tieredBase : tieredBase.charAt( 0 ).toLowerCase() + tieredBase.slice( 1 );
+						consumed.add( tieredAttrName );
+					}
+				}
+			}
+		}
+	}
+	return consumed;
+}
+
 // ---------------------------------------------------------------------------
 // CHECK 1 — per-block dead controls
 // ---------------------------------------------------------------------------
@@ -608,7 +1073,10 @@ function checkBlock( block, wrapperControlled, sharedCorpus, contextConsumed ) {
 	const findings = [];
 	const editJs = readIfExists( path.join( block.dir, 'edit.js' ) );
 
-	const controlled = collectControlledAttrs( editJs );
+	// R3-a: widen the corpus to include any shared component file edit.js
+	// mounts via JSX (e.g. `<WidthPanel .../>`) — a control living entirely
+	// inside that component's own source is otherwise invisible here.
+	const controlled = collectControlledAttrs( editJs + collectReferencedComponentSources( editJs ) );
 
 	// Consumption corpus for this block: its own render/save/view source plus the
 	// shared includes corpus (forms engine, container wrapper, helpers).
@@ -618,6 +1086,7 @@ function checkBlock( block, wrapperControlled, sharedCorpus, contextConsumed ) {
 	// is recognised only via the declared providesContext/usesContext channel.
 	const corpus = block.ownCorpus + '\n' + sharedCorpus;
 	const prefixedHelperConsumed = collectPrefixedHelperConsumed( corpus );
+	const mediaElementAtomConsumed = collectMediaElementAtomConsumed( corpus );
 
 	for ( const attr of controlled ) {
 		// Only attributes actually DECLARED in this block.json count; a stray
@@ -648,6 +1117,14 @@ function checkBlock( block, wrapperControlled, sharedCorpus, contextConsumed ) {
 		if ( prefixedHelperConsumed.has( attr ) ) {
 			continue;
 		}
+			// Media-element atom (SGS_Media_Element::style() dispatch -- see the
+			// resolver's own comment above CHECK 1). The literal call site names
+			// the prefix + the atom-id array; the full attr name is resolvable
+			// even though the atom's own PHP twin builds the key via a helper
+			// function call, not a literal or a simple concatenation.
+			if ( mediaElementAtomConsumed.has( attr ) ) {
+				continue;
+			}
 		// Rule (a) — responsive variant: a {base}Tablet/Mobile/Desktop attr is
 		// consumed if its base is consumed AND the BLOCK'S OWN corpus builds
 		// responsive keys dynamically / emits @media (the legitimate reason its
@@ -752,9 +1229,11 @@ function checkSharedControls( wrapperControlled, sharedCorpus, declaredAnywhere 
 function checkFullyDeadAttrs( block, wrapperControlled, sharedCorpus, contextConsumed ) {
 	const findings = [];
 	const editJs = readIfExists( path.join( block.dir, 'edit.js' ) );
-	const controlled = collectControlledAttrs( editJs );
+	// R3-a: same widening as checkBlock() above — see its comment.
+	const controlled = collectControlledAttrs( editJs + collectReferencedComponentSources( editJs ) );
 	const corpus = block.ownCorpus + '\n' + sharedCorpus;
 	const prefixedHelperConsumed = collectPrefixedHelperConsumed( corpus );
+	const mediaElementAtomConsumed = collectMediaElementAtomConsumed( corpus );
 	const dynamicPrefixSuffixes = collectDynamicPrefixSuffixes( corpus );
 
 	for ( const attr of block.attrs ) {
@@ -763,6 +1242,9 @@ function checkFullyDeadAttrs( block, wrapperControlled, sharedCorpus, contextCon
 		}
 		if ( EDITOR_ONLY_ATTRS.has( attr ) || KEY_NOISE.has( attr ) ) {
 			continue; // by-design editor-only, or stray non-attribute key
+		}
+		if ( isCloningPipelineAnchorAttr( block.name, attr ) ) {
+			continue; // kept alive for the Python cloning pipeline — see CLONING_PIPELINE_ANCHOR_ATTRS
 		}
 
 		// Attrs with a control are CHECK 1/2's responsibility (own edit.js, or the
@@ -786,6 +1268,11 @@ function checkFullyDeadAttrs( block, wrapperControlled, sharedCorpus, contextCon
 		// media-render.php `$attributes[ $prefix . 'ImageId' ]`, where $prefix
 		// is a local variable, not a literal call-site argument).
 		if ( isDynamicPrefixConsumed( attr, corpus, dynamicPrefixSuffixes ) ) {
+			continue;
+		}
+		// Media-element atom (SGS_Media_Element::style() dispatch -- see the
+		// resolver's own comment above CHECK 1; same rule as CHECK 1).
+		if ( mediaElementAtomConsumed.has( attr ) ) {
 			continue;
 		}
 
@@ -1228,6 +1715,188 @@ function findingKey( f ) {
 }
 
 // ---------------------------------------------------------------------------
+// --dump-json — per-(block, attr) consumption dump (Task 1, 2026-08-27)
+// ---------------------------------------------------------------------------
+//
+// REPORTING ONLY. Reuses this script's existing resolver functions exactly as
+// CHECK 1 / CHECK 4 call them — isConsumed / isDynamicPrefixConsumed /
+// collectPrefixedHelperConsumed / collectDynamicPrefixSuffixes / the live
+// providesContext->usesContext chain / the BREAKPOINT_DYNAMIC_RE responsive-
+// variant rule — with NO changes to any of them. It does not touch findings,
+// baselines, or the exit code; main() reads it in a fully separate branch.
+//
+// `renderVia` names WHICH resolver proved consumption, so a consumer (e.g.
+// inspector-scan rule 34, which currently re-derives consumption with none of
+// these resolvers and drifts 317 findings from this gate) can tell a real
+// absence ('none') apart from a resolver limitation:
+//   'literal'            the attr's own name appears in the block's OWN corpus
+//                         (its .php files / save.js / *view*.js).
+//   'shared-include'      the attr's own name appears only in the shared
+//                         includes/*.php corpus, not the block's own.
+//   'dynamic-prefix'      resolved via isDynamicPrefixConsumed() against a
+//                         structurally-discovered `$attributes[ $var . 'Suffix' ]`
+//                         read (collectDynamicPrefixSuffixes()).
+//   'prefixed-helper'     resolved via a PREFIXED_HELPER_SUFFIXES call site
+//                         (collectPrefixedHelperConsumed()) — e.g.
+//                         sgs/brand-strip.nameFontSize via
+//                         sgs_typography_css_rule( $attributes, 'name', ... ).
+//   'block-context'       resolved via a live providesContext -> usesContext
+//                         chain (contextConsumedByBlock, computed in main()).
+//   'responsive-variant'  rule (a): a {base}Tablet/Mobile/Desktop attr whose
+//                         OWN literal name never appears anywhere, resolved
+//                         only because its BASE attr is consumed AND the
+//                         block's own corpus builds tier keys dynamically
+//                         (BREAKPOINT_DYNAMIC_RE) — e.g. `$attributes[ $base
+//                         . 'Tablet' ]`. Distinct from 'literal'/'shared-
+//                         include': what matched is the BASE attr's name, not
+//                         this attr's own, so labelling it 'literal' would be
+//                         wrong by the definition above.
+//   'none'                none of the above resolved it.
+//
+// `exempt` / `exemptReason` surface the SAME FOUR exemptions
+// checkFullyDeadAttrs() applies BEFORE resolving consumption (isSystemAttr() /
+// EDITOR_ONLY_ATTRS / KEY_NOISE / CLONING_PIPELINE_ANCHOR_ATTRS — see that
+// function's own comment), PLUS a fifth, dump-only exemption this function
+// alone applies (Important 4, 2026-08-27): 'core-supports'. Without them,
+// `renderConsumed: false` conflates a genuinely dead control with a by-design
+// editor-only attr (the mechanism currently has no live example —
+// `templateMode` was it until removed as vestigial, see
+// `.superpowers/sdd/task-3-report.md`), a registered extension attr, a
+// WP-native `supports`-backed attribute (e.g. `anchor`, `lock`) that
+// WordPress core itself renders, or a cloning-pipeline routing anchor (the
+// mechanism currently has no live example either — `sgs/hero::splitImage`/
+// `splitImageMobile` were its only entries and both were DELETED from
+// block.json 2026-09-02, Wave 7b, once the DB anchor moved to
+// `splitMediaType` — see CLONING_PIPELINE_ANCHOR_ATTRS above, currently
+// empty) — none of the five are a finding.
+// `exemptReason` is one of 'system-attr' / 'editor-only' / 'key-noise' /
+// 'core-supports' / 'cloning-pipeline-anchor' / null (not exempt).
+//
+// 'core-supports' — CONSUMPTION RESOLUTION BELONGS TO THE PRODUCER (design
+// decision, Important 4). A block.json attribute IS consumed when its own
+// name is also a top-level `supports` key set to a non-`false` value (e.g.
+// `{ "attributes": { "anchor": {...} }, "supports": { "anchor": true } }`) —
+// WordPress core renders that attribute itself (the anchor/lock/align
+// mechanism), so the block's OWN render.php never needs to reference it
+// literally. Before this exemption existed, an attribute like
+// `sgs/button::anchor` escaped CHECK 4 / rule 34 only by COINCIDENCE — the
+// literal string "anchor" happens to appear somewhere in the shared-includes
+// corpus for unrelated reasons. Acting on a false "dead" verdict for a
+// `supports`-backed attribute would delete a WORKING WordPress core feature.
+// isCoreSupportsAttr() below is the ONLY thing that reads `block.supports`
+// (added to readBlock()'s return purely for this) — DUMP-ONLY, never
+// consulted by CHECK 1-5, so it cannot change --check/--json output.
+
+/**
+ * DUMP-ONLY (Important 4). True when `attr` is itself a top-level `supports`
+ * key whose value is not `false` — WordPress core's own supports-driven
+ * attribute mechanism (anchor/align/lock/…), not this block's own render
+ * corpus. Reads only the block's OWN `supports` object (readBlock()'s
+ * `meta.supports`); no cross-block dict, no hardcoded name list beyond the
+ * literal-name-match itself.
+ *
+ * @param {string} attr The attribute name.
+ * @param {Object} supports The block's own `block.json` `supports` object.
+ * @return {boolean}
+ */
+function isCoreSupportsAttr( attr, supports ) {
+	return (
+		!! supports &&
+		Object.prototype.hasOwnProperty.call( supports, attr ) &&
+		supports[ attr ] !== false
+	);
+}
+
+/**
+ * @param {Array<Object>} blocks Parsed block descriptors (readBlock() output).
+ * @param {Set<string>} wrapperControlled Attrs the shared ContainerWrapperControls mounts.
+ * @param {string} sharedCorpus Concatenated includes/*.php corpus, comments stripped.
+ * @param {Map<string,Set<string>>} contextConsumedByBlock block.name -> Set(attrName),
+ *   from main()'s live-context pass (rule (b)).
+ * @return {Array<Object>} One row per (block, attr): { block, attr, renderConsumed,
+ *   controlPresent, renderVia, exempt, exemptReason }.
+ */
+function dumpAttributeRows( blocks, wrapperControlled, sharedCorpus, contextConsumedByBlock ) {
+	const rows = [];
+	for ( const block of blocks ) {
+		const editJs = readIfExists( path.join( block.dir, 'edit.js' ) );
+		// Same widened control-resolution CHECK 1/CHECK 4 use (R3-a).
+		const controlled = collectControlledAttrs( editJs + collectReferencedComponentSources( editJs ) );
+		const corpus = block.ownCorpus + '\n' + sharedCorpus;
+		const prefixedHelperConsumed = collectPrefixedHelperConsumed( corpus );
+		const dynamicPrefixSuffixes = collectDynamicPrefixSuffixes( corpus );
+		const mediaElementAtomConsumed = collectMediaElementAtomConsumed( corpus );
+		const contextConsumed = contextConsumedByBlock.get( block.name ) || new Set();
+
+		for ( const attr of block.attrs ) {
+			const controlPresent =
+				controlled.has( attr ) || ( block.usesWrapper && wrapperControlled.has( attr ) );
+
+			// Same three exemptions checkFullyDeadAttrs() applies before resolving
+			// consumption (:875-880) — CALLED, not re-derived, so a change to any
+			// of the three predicates is automatically reflected here.
+			let exemptReason = null;
+			if ( isSystemAttr( attr ) ) {
+				exemptReason = 'system-attr';
+			} else if ( EDITOR_ONLY_ATTRS.has( attr ) ) {
+				exemptReason = 'editor-only';
+			} else if ( KEY_NOISE.has( attr ) ) {
+				exemptReason = 'key-noise';
+			} else if ( isCoreSupportsAttr( attr, block.supports ) ) {
+				exemptReason = 'core-supports';
+			} else if ( isCloningPipelineAnchorAttr( block.name, attr ) ) {
+				// Render/editor-dead by design — kept alive as a routing anchor for
+				// the Python cloning pipeline's scalar-media mechanism. Source of
+				// truth: plugins/sgs-blocks/scripts/data/scalar-media-roles.json.
+				exemptReason = 'cloning-pipeline-anchor';
+			}
+
+			let renderVia = 'none';
+			if ( contextConsumed.has( attr ) ) {
+				renderVia = 'block-context';
+			} else if ( prefixedHelperConsumed.has( attr ) ) {
+				renderVia = 'prefixed-helper';
+			} else if ( isDynamicPrefixConsumed( attr, corpus, dynamicPrefixSuffixes ) ) {
+				renderVia = 'dynamic-prefix';
+			} else if ( mediaElementAtomConsumed.has( attr ) ) {
+				renderVia = 'media-element-atom';
+			} else if ( isConsumed( attr, block.ownCorpus ) ) {
+				renderVia = 'literal';
+			} else if ( isConsumed( attr, sharedCorpus ) ) {
+				renderVia = 'shared-include';
+			} else {
+				// Rule (a) — the same responsive-variant fallback CHECK 1/CHECK 4
+				// apply: a {base}Tablet/Mobile/Desktop attr is consumed if its base
+				// is consumed AND the block's own corpus builds responsive keys
+				// dynamically (BREAKPOINT_DYNAMIC_RE), even though the tier attr's
+				// own literal name never appears verbatim. What matched is the
+				// BASE attr's name, not this attr's own — never 'literal' or
+				// 'shared-include', which both mean "this attr's OWN name
+				// appears" by the docblock's own definition above.
+				const suffix = attr.match( BREAKPOINT_SUFFIX_RE );
+				if ( suffix ) {
+					const base = attr.slice( 0, -suffix[ 1 ].length );
+					if ( base && isConsumed( base, corpus ) && BREAKPOINT_DYNAMIC_RE.test( block.ownCorpus ) ) {
+						renderVia = 'responsive-variant';
+					}
+				}
+			}
+
+			rows.push( {
+				block: block.name,
+				attr,
+				renderConsumed: renderVia !== 'none',
+				controlPresent,
+				renderVia,
+				exempt: exemptReason !== null,
+				exemptReason,
+			} );
+		}
+	}
+	return rows;
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -1250,7 +1919,8 @@ function tierAudit( blocks, sharedCorpus, wrapperControlled ) {
 	const rows = [];
 	for ( const block of blocks ) {
 		const editJs = readIfExists( path.join( block.dir, 'edit.js' ) );
-		const controlled = collectControlledAttrs( editJs );
+		// R3-a: same widening as checkBlock() above.
+		const controlled = collectControlledAttrs( editJs + collectReferencedComponentSources( editJs ) );
 		const corpus = block.ownCorpus + '\n' + sharedCorpus;
 		for ( const attr of block.attrs ) {
 			const suffix = attr.match( BREAKPOINT_SUFFIX_RE );
@@ -1286,10 +1956,17 @@ function main() {
 	const check = process.argv.includes( '--check' );
 	const asJson = process.argv.includes( '--json' );
 	const tierAuditOnly = process.argv.includes( '--tier-audit' );
+	const dumpJsonOnly = process.argv.includes( '--dump-json' );
 
 	EXTENSION_ATTRS = loadExtensionAttrs();
 	const sharedCorpus = stripComments( loadSharedCorpus() );
-	const wrapperControlled = collectControlledAttrs( readIfExists( SHARED_CONTROLS_JS ) );
+	// R3-a: resolve the facade's own locally-imported panel files (WidthPanel.js,
+	// LayoutPanel.js, etc.) via the shared resolver instead of reading only the
+	// facade file's text — the facade RE-EXPORTS those panels post-split
+	// (2026-08-17) and no longer contains their control code itself.
+	const wrapperControlled = collectControlledAttrs(
+		collectFacadeResolvedSources( SHARED_CONTROLS_JS )
+	);
 
 	const blockDirs = fs
 		.readdirSync( BLOCKS_DIR, { withFileTypes: true } )
@@ -1345,6 +2022,12 @@ function main() {
 			}
 		}
 		contextConsumedByBlock.set( b.name, set );
+	}
+
+	if ( dumpJsonOnly ) {
+		const rows = dumpAttributeRows( blocks, wrapperControlled, sharedCorpus, contextConsumedByBlock );
+		process.stdout.write( JSON.stringify( rows, null, 2 ) + '\n' );
+		process.exit( 0 );
 	}
 
 	let findings = [];
@@ -1474,6 +2157,15 @@ function main() {
 					'fully-dead finding(s) (accepted with reason).\n'
 			);
 		}
+		// PROMOTION TRIGGER (R3-c, dated 2026-08-20) — CHECK 4 stays advisory ONLY while
+		// real net-new findings exist. As of 2026-08-20 there are exactly TWO:
+		//   sgs/before-after :: maxWidthUnit   sgs/button :: fontFamily
+		// Both are fully dead — no control anywhere AND no render consumption anywhere.
+		// ⏱ TRIGGER: when `--check` reports 0 net-new for CHECK 4, make this BLOCKING in the
+		// same commit that clears the last one. Do NOT baseline them to reach zero — a
+		// fully-dead attribute has nothing to preserve; delete it or wire it. An advisory
+		// with no stated promotion condition is how a gate quietly becomes decoration, which
+		// is the exact failure R3-c exists to end.
 		if ( fullyDeadNetNew.length ) {
 			process.stdout.write(
 				`[check-dead-controls] CHECK 4 (ADVISORY — does not fail the build): ` +
@@ -1501,6 +2193,15 @@ function main() {
 					'dead-assignment finding(s) (accepted with reason).\n'
 			);
 		}
+		// PROMOTION TRIGGER (R3-c, dated 2026-08-20) — CHECK 5 measured **0 net-new** on
+		// 2026-08-20, immediately after R3-a widened this script's corpus to resolve shared
+		// component files. It is therefore ALREADY at the state CHECK 4 is working towards.
+		// ⏱ TRIGGER: promote to BLOCKING on the next deliberate pass over this file, which
+		// is safe precisely because it starts green — any future finding is a real
+		// regression. It was left advisory here only because flipping it means re-plumbing
+		// the exit path, and that deserves its own commit with its own self-test rather
+		// than riding along at the end of a long session. Do not let this note outlive the
+		// next such pass.
 		if ( deadAssignNetNew.length ) {
 			process.stdout.write(
 				`[check-dead-controls] CHECK 5 (ADVISORY — does not fail the build): ` +
@@ -1711,8 +2412,9 @@ function runSelfTest() {
 
 	const check4Pass = runCheck4SelfTest( log );
 	const check5Pass = runCheck5SelfTest( log );
+	const dumpJsonPass = runDumpJsonSelfTest( log );
 
-	if ( ! pass || ! check4Pass || ! check5Pass ) {
+	if ( ! pass || ! check4Pass || ! check5Pass || ! dumpJsonPass ) {
 		process.exit( 1 );
 	}
 }
@@ -1739,9 +2441,16 @@ function runCheck4SelfTest( log ) {
 			liveAttr: { type: 'string', default: '' }, // consumed in this fixture's own render.php
 			deadAttr: { type: 'string', default: '' }, // PLANTED DEFECT — consumed nowhere
 			wrapperAttr: { type: 'string', default: '' }, // consumed only via shared/wrapper corpus — mirrors sgs/google-reviews' gap/gapTablet/gapMobile shape
-			templateMode: { type: 'string', default: '' }, // documented EDITOR_ONLY_ATTRS exemption
+			// Synthetic, not a real attribute — proves the EDITOR_ONLY_ATTRS
+			// exemption mechanism itself works, independent of whether any
+			// real attribute currently uses it (the set is legitimately
+			// empty since `templateMode` was removed as vestigial — see
+			// `.superpowers/sdd/task-3-report.md`). Added to EDITOR_ONLY_ATTRS
+			// below for the duration of this test only, then removed.
+			fixtureEditorOnlyAttr: { type: 'string', default: '' },
 		},
 	};
+	EDITOR_ONLY_ATTRS.add( 'fixtureEditorOnlyAttr' );
 	fs.writeFileSync( path.join( tmpDir, 'block.json' ), JSON.stringify( blockJson, null, 2 ), 'utf8' );
 	fs.writeFileSync(
 		path.join( tmpDir, 'render.php' ),
@@ -1797,12 +2506,13 @@ function runCheck4SelfTest( log ) {
 		pass = false;
 	}
 
-	if ( ! findingAttrs.has( 'templateMode' ) ) {
-		log( 'PASS — Test D: documented editor-only attr ("templateMode") was NOT flagged.' );
+	if ( ! findingAttrs.has( 'fixtureEditorOnlyAttr' ) ) {
+		log( 'PASS — Test D: EDITOR_ONLY_ATTRS-exempted attr ("fixtureEditorOnlyAttr") was NOT flagged.' );
 	} else {
-		log( 'FAIL — Test D: documented editor-only attr ("templateMode") was flagged — allowlist broken.' );
+		log( 'FAIL — Test D: EDITOR_ONLY_ATTRS-exempted attr ("fixtureEditorOnlyAttr") was flagged — allowlist broken.' );
 		pass = false;
 	}
+	EDITOR_ONLY_ATTRS.delete( 'fixtureEditorOnlyAttr' ); // cleanup — do not leak into other self-tests
 
 	// Test E — baseline suppression: a baselined finding key must move from
 	// netNew to accepted.
@@ -2098,10 +2808,364 @@ function runCheck5SelfTest( log ) {
 		}
 	}
 
+	// R3-a widening regression test (2026-08-20). NEGATIVE CONTROL against the
+	// OLD narrow corpus: `collectControlledAttrs( readIfExists( SHARED_CONTROLS_JS ) )`
+	// (facade text alone) genuinely misses `contentWidth` — it lives entirely
+	// in WidthPanel.js, which ContainerWrapperControls.js only re-exports
+	// since the 2026-08-17 panel split. Proves the widened
+	// `collectFacadeResolvedSources()` path finds it where the old path does not.
+	log( '\n[check-dead-controls --self-test] R3-a resolver-widening regression test' );
+	const oldNarrowControlled = collectControlledAttrs( readIfExists( SHARED_CONTROLS_JS ) );
+	const widenedControlled = collectControlledAttrs( collectFacadeResolvedSources( SHARED_CONTROLS_JS ) );
+	if ( ! oldNarrowControlled.has( 'contentWidth' ) && widenedControlled.has( 'contentWidth' ) ) {
+		log(
+			'PASS — Test H (negative control): the old facade-only read does NOT see ' +
+				"'contentWidth' (it moved to WidthPanel.js); the resolver-widened read DOES."
+		);
+	} else {
+		log(
+			`FAIL — Test H: old-narrow has contentWidth=${ oldNarrowControlled.has( 'contentWidth' ) } ` +
+				`(expected false), widened has contentWidth=${ widenedControlled.has( 'contentWidth' ) } (expected true).`
+		);
+		pass = false;
+	}
+
 	log(
 		pass
 			? '\n[check-dead-controls --self-test] CHECK 5 — ALL SYNTHETIC TESTS PASS.'
 			: '\n[check-dead-controls --self-test] CHECK 5 — FAIL.'
+	);
+	return pass;
+}
+
+// ---------------------------------------------------------------------------
+// --dump-json self-test (Task 1, 2026-08-27) — proves dumpAttributeRows()
+// reports every one of the six renderVia values correctly, including a real
+// LIVE example of the prefixed-helper resolver (sgs/brand-strip.nameFontSize
+// via sgs_typography_css_rule(), brand-strip/render.php:412) so the field
+// this task exists to add is proven against real code, not only a fixture.
+// ---------------------------------------------------------------------------
+
+function runDumpJsonSelfTest( log ) {
+	const os = require( 'os' );
+	let pass = true;
+
+	// This function reassigns the module-level EXTENSION_ATTRS global (below,
+	// for the live brand-strip check) — save/restore it so a caller after this
+	// one (currently none — this runs last in runSelfTest — but that is an
+	// ordering fact about the CALLER, not a guarantee this function can rely
+	// on) always sees the value it had on entry, not whatever this test last
+	// set it to.
+	const savedExtensionAttrs = EXTENSION_ATTRS;
+
+	log( '\n[check-dead-controls --self-test] --dump-json (Task 1 per-attribute dump)\n' );
+
+	// Synthetic block covering all seven renderVia values plus all three
+	// exemption reasons, on hand-built corpora (fully isolated from real
+	// source, so no real code can make this pass by accident): literal (own
+	// corpus), shared-include (shared corpus only), prefixed-helper (a real
+	// PREFIXED_HELPER_SUFFIXES call shape), dynamic-prefix (a real
+	// `$attributes[ $var . 'Suffix' ]` shape), block-context, responsive-
+	// variant (rule (a): a {base}Tablet attr whose OWN name never appears,
+	// resolved via a dynamic `$x . 'Tablet'` key build + a consumed base), a
+	// controlled-but-dead attr (proves controlPresent and renderConsumed vary
+	// independently), a fully-dead attr (no control, no consumption, not
+	// exempt), and one attr per exemption reason (system-attr / editor-only /
+	// key-noise) each with no control and no consumption, proving `exempt`
+	// disambiguates them from a real fully-dead finding.
+	//
+	// `sgsAnimation` is a REAL registered extension attribute (verified:
+	// includes/extension-attributes.generated.php declares `'sgsAnimation' =>
+	// array(...)`, matching loadExtensionAttrs()'s own `sgs[A-Za-z0-9]+`
+	// extraction pattern — NOT the same allowlist as EXTENSION_EDITOR_ONLY_ATTRS,
+	// whose `fxPreset` entry does not start with `sgs` and so is NOT in
+	// EXTENSION_ATTRS at all), used here — rather than a synthetic name — so
+	// the system-attr case is proven against isSystemAttr()'s real
+	// EXTENSION_ATTRS (loaded earlier in runSelfTest, before this function
+	// runs) instead of requiring a temporary mutation of that global just for
+	// this test.
+	const tmpDir = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-dump-json-self-test-' ) );
+	const editJsSrc = [
+		"setAttributes( { literalAttr: 'x' } );",
+		"setAttributes( { deadControlledAttr: 'x' } );",
+	].join( '\n' );
+	fs.writeFileSync( path.join( tmpDir, 'edit.js' ), editJsSrc, 'utf8' );
+
+	const syntheticBlock = {
+		name: 'sgs/fixture-dump',
+		dir: tmpDir,
+		attrs: new Set( [
+			'literalAttr',
+			'sharedAttr',
+			'ctaFontSize',
+			'beforeImageId',
+			'ctxAttr',
+			'respBase',
+			'respBaseTablet',
+			'deadControlledAttr',
+			'fullyDeadAttr',
+			'sgsAnimation',
+			'fixtureEditorOnlyAttr',
+			'id',
+			'anchor',
+		] ),
+		dynamic: true,
+		usesWrapper: false,
+		ownCorpus:
+			"echo esc_html( $attributes['literalAttr'] ?? '' );\n" +
+			"echo sgs_button_element_style_css( $attributes, 'cta', '.cta' );\n" +
+			"$prefix = 'before' === $modifier ? 'before' : 'after';\n" +
+			"echo $attributes[ $prefix . 'ImageId' ] ?? '';\n" +
+			"echo $attributes['respBase'] ?? '';\n" +
+			"$tierKey = $respVar . 'Tablet';\n",
+		providesContext: {},
+		usesContext: [],
+		// Important 4 (2026-08-27): `anchor` is a top-level `supports` key set to
+		// `true` and is NEVER referenced anywhere in ownCorpus/editJsSrc above —
+		// proves the new exemption fires from `block.supports` alone, not from
+		// any literal-name coincidence.
+		supports: { anchor: true },
+	};
+	const syntheticSharedCorpus = "echo $attributes['sharedAttr'] ?? '';\n";
+	const syntheticContextConsumedByBlock = new Map( [
+		[ 'sgs/fixture-dump', new Set( [ 'ctxAttr' ] ) ],
+	] );
+
+	// 'fixtureEditorOnlyAttr' proves the 'editor-only' exemptReason path — a
+	// synthetic name, not a real attribute, because EDITOR_ONLY_ATTRS is
+	// legitimately empty (its only member, `templateMode`, was removed as
+	// vestigial — see `.superpowers/sdd/task-3-report.md`). Added for the
+	// duration of this test only, then removed.
+	EDITOR_ONLY_ATTRS.add( 'fixtureEditorOnlyAttr' );
+	const rows = dumpAttributeRows(
+		[ syntheticBlock ],
+		new Set(), // wrapperControlled — irrelevant, syntheticBlock.usesWrapper is false
+		syntheticSharedCorpus,
+		syntheticContextConsumedByBlock
+	);
+	EDITOR_ONLY_ATTRS.delete( 'fixtureEditorOnlyAttr' ); // cleanup — do not leak into other self-tests
+	const byAttr = {};
+	rows.forEach( ( r ) => {
+		byAttr[ r.attr ] = r;
+	} );
+
+	// [ attr, expControl, expConsumed, expVia, expExempt, expExemptReason ]
+	const expected = [
+		[ 'literalAttr', true, true, 'literal', false, null ],
+		[ 'sharedAttr', false, true, 'shared-include', false, null ],
+		[ 'ctaFontSize', false, true, 'prefixed-helper', false, null ],
+		[ 'beforeImageId', false, true, 'dynamic-prefix', false, null ],
+		[ 'ctxAttr', false, true, 'block-context', false, null ],
+		[ 'respBaseTablet', false, true, 'responsive-variant', false, null ],
+		[ 'deadControlledAttr', true, false, 'none', false, null ],
+		[ 'fullyDeadAttr', false, false, 'none', false, null ],
+		[ 'sgsAnimation', false, false, 'none', true, 'system-attr' ],
+		[ 'fixtureEditorOnlyAttr', false, false, 'none', true, 'editor-only' ],
+		[ 'id', false, false, 'none', true, 'key-noise' ],
+		[ 'anchor', false, false, 'none', true, 'core-supports' ],
+	];
+	for ( const [ attr, expControl, expConsumed, expVia, expExempt, expExemptReason ] of expected ) {
+		const row = byAttr[ attr ];
+		const ok =
+			row &&
+			row.controlPresent === expControl &&
+			row.renderConsumed === expConsumed &&
+			row.renderVia === expVia &&
+			row.exempt === expExempt &&
+			row.exemptReason === expExemptReason;
+		if ( ok ) {
+			log(
+				`PASS — Test I (${ attr }): controlPresent=${ row.controlPresent } ` +
+					`renderConsumed=${ row.renderConsumed } renderVia=${ row.renderVia } ` +
+					`exempt=${ row.exempt } exemptReason=${ row.exemptReason }`
+			);
+		} else {
+			log(
+				`FAIL — Test I (${ attr }): got ${ JSON.stringify( row ) }, expected ` +
+					`controlPresent=${ expControl } renderConsumed=${ expConsumed } renderVia=${ expVia } ` +
+					`exempt=${ expExempt } exemptReason=${ expExemptReason }`
+			);
+			pass = false;
+		}
+	}
+
+	fs.rmSync( tmpDir, { recursive: true, force: true } );
+
+	// Live check — the exact case the brief names as verified: sgs/brand-strip
+	// declares `nameFontSize` with NO own edit.js control (it is emitted via the
+	// shared TypographyControls component, resolved separately from this
+	// PHP-side check) and consumes it via
+	// sgs_typography_css_rule( $attributes, 'name', ... ) at
+	// brand-strip/render.php:412 — a genuine PREFIXED_HELPER_SUFFIXES call.
+	log( '\n[check-dead-controls --self-test] Live check: sgs/brand-strip.nameFontSize via --dump-json' );
+	EXTENSION_ATTRS = loadExtensionAttrs();
+	const sharedCorpusLive = stripComments( loadSharedCorpus() );
+	const wrapperControlledLive = collectControlledAttrs(
+		collectFacadeResolvedSources( SHARED_CONTROLS_JS )
+	);
+	const liveBlockDirs = fs
+		.readdirSync( BLOCKS_DIR, { withFileTypes: true } )
+		.filter( ( d ) => d.isDirectory() && d.name !== 'extensions' )
+		.map( ( d ) => path.join( BLOCKS_DIR, d.name ) );
+	const liveBlocks = [];
+	for ( const dir of liveBlockDirs ) {
+		const b = readBlock( dir );
+		if ( b ) {
+			liveBlocks.push( b );
+		}
+	}
+	// NOTE: contextConsumedByBlock is passed empty here — this Test J assertion
+	// only checks the prefixed-helper resolution of sgs/brand-strip.nameFontSize
+	// (below), which never depends on block-context, so reconstructing main()'s
+	// full providesContext -> usesContext live-context pass here would be ~20
+	// lines that measure nothing (a MIRROR of main() with no assertion reading
+	// its output — flagged by code review, 2026-08-27). Real block-context
+	// resolution is exercised by Test I's synthetic `ctxAttr` case above; if a
+	// future assertion here needs to depend on a LIVE context-provided attr,
+	// rebuild this pass at that point rather than resurrecting it unused.
+	const liveRows = dumpAttributeRows(
+		liveBlocks,
+		wrapperControlledLive,
+		sharedCorpusLive,
+		new Map()
+	);
+	const brandStripRow = liveRows.find(
+		( r ) => 'sgs/brand-strip' === r.block && 'nameFontSize' === r.attr
+	);
+	if ( brandStripRow && true === brandStripRow.renderConsumed && 'prefixed-helper' === brandStripRow.renderVia ) {
+		log(
+			'PASS — Test J (live): sgs/brand-strip.nameFontSize -> renderConsumed=true, ' +
+				'renderVia=prefixed-helper (brand-strip/render.php:412).'
+		);
+	} else {
+		log( `FAIL — Test J (live): got ${ JSON.stringify( brandStripRow ) }` );
+		pass = false;
+	}
+
+	// Live check — the synthetic sgsAnimation case above (Test I) proves the
+	// exemptReason='system-attr' WIRING against the real EXTENSION_ATTRS set,
+	// but on a fixture block, not a real block.json. This confirms the SAME
+	// resolution holds through the full live pipeline: sgs/card-grid declares
+	// sgsAnimation for real, and it must come back exempt here too.
+	const cardGridAnimRow = liveRows.find(
+		( r ) => 'sgs/card-grid' === r.block && 'sgsAnimation' === r.attr
+	);
+	if ( cardGridAnimRow && true === cardGridAnimRow.exempt && 'system-attr' === cardGridAnimRow.exemptReason ) {
+		log(
+			'PASS — Test J (live, exempt): sgs/card-grid.sgsAnimation -> exempt=true, ' +
+				"exemptReason='system-attr'."
+		);
+	} else {
+		log( `FAIL — Test J (live, exempt): got ${ JSON.stringify( cardGridAnimRow ) }` );
+		pass = false;
+	}
+
+	// Live check — Important 4 (2026-08-27): sgs/button declares `anchor` AND a
+	// top-level `supports.anchor: true`. Before this fix it escaped CHECK 4/
+	// rule 34 only because the literal string "anchor" happens to appear
+	// somewhere in the shared corpus by coincidence; this proves the NEW
+	// exemption fires deliberately, from `block.supports`, not from that
+	// coincidence.
+	const buttonAnchorRow = liveRows.find( ( r ) => 'sgs/button' === r.block && 'anchor' === r.attr );
+	if ( buttonAnchorRow && true === buttonAnchorRow.exempt && 'core-supports' === buttonAnchorRow.exemptReason ) {
+		log(
+			'PASS — Test J (live, exempt): sgs/button.anchor -> exempt=true, ' +
+				"exemptReason='core-supports'."
+		);
+	} else {
+		log( `FAIL — Test J (live, exempt): got ${ JSON.stringify( buttonAnchorRow ) }` );
+		pass = false;
+	}
+
+	// Live check — task-2 findings-34 fix (2026-09-02): sgs/hero declares
+	// `splitMediaObjectPosition`/`mediaOverlayColour`/`mediaOverlayGradient`
+	// with NO own edit.js control and consumes them entirely via
+	// `SGS_Media_Element::style( $attributes, 'splitMedia'|'media', 'sgs/hero',
+	// $uid, array( 'focal-point' )|array( 'overlay' ) )` — a bracket read keyed
+	// by a HELPER FUNCTION CALL (`sgs_media_element_stored_attr()`), which
+	// neither PREFIXED_HELPER_SUFFIXES nor the dynamic-prefix resolver could
+	// see (both require the key expression to be a literal or a simple `$var .
+	// 'Suffix'` concatenation). Positive control for the new
+	// collectMediaElementAtomConsumed() resolver.
+	const heroObjectPositionRow = liveRows.find(
+		( r ) => 'sgs/hero' === r.block && 'splitMediaObjectPosition' === r.attr
+	);
+	if (
+		heroObjectPositionRow &&
+		true === heroObjectPositionRow.renderConsumed &&
+		'media-element-atom' === heroObjectPositionRow.renderVia
+	) {
+		log(
+			'PASS — Test K (live): sgs/hero.splitMediaObjectPosition -> renderConsumed=true, ' +
+				'renderVia=media-element-atom (hero/render.php SGS_Media_Element::style(), focal-point atom).'
+		);
+	} else {
+		log( `FAIL — Test K (live): got ${ JSON.stringify( heroObjectPositionRow ) }` );
+		pass = false;
+	}
+	const heroOverlayColourRow = liveRows.find(
+		( r ) => 'sgs/hero' === r.block && 'mediaOverlayColour' === r.attr
+	);
+	if (
+		heroOverlayColourRow &&
+		true === heroOverlayColourRow.renderConsumed &&
+		'media-element-atom' === heroOverlayColourRow.renderVia
+	) {
+		log(
+			'PASS — Test K (live): sgs/hero.mediaOverlayColour -> renderConsumed=true, ' +
+				'renderVia=media-element-atom (hero/render.php SGS_Media_Element::style(), overlay atom).'
+		);
+	} else {
+		log( `FAIL — Test K (live): got ${ JSON.stringify( heroOverlayColourRow ) }` );
+		pass = false;
+	}
+
+	// Negative control — USED to target sgs/hero's `splitImage` (object, no
+	// suffix), a genuinely orphaned attribute left over from the 2026-09-01
+	// migration to the decomposed splitImageId/splitImageUrl/splitImageAlt
+	// fields (never a media-element-atom base, never read anywhere in
+	// render.php). Proved the resolver does not over-match: it must NOT clear
+	// a real dead attribute just because the block also uses
+	// SGS_Media_Element::style() for unrelated atoms.
+	//
+	// 2026-09-02 (Wave 7b): `splitImage`/`splitImageMobile` were DELETED from
+	// block.json outright (the DB-anchor role that was their only remaining
+	// reason to exist moved to `splitMediaType`, which render.php genuinely
+	// reads — see scripts/data/scalar-media-roles.json's
+	// `__RE_ANCHOR_2026_09_02` note). That removed this negative control's
+	// fixture: sgs/hero currently declares no unexempt orphaned attribute at
+	// all (verified via `--dump-json` the same day), so there is nothing live
+	// left to assert a FAIL against without inventing one. Rather than either
+	// silently deleting the negative control (leaving the resolver's
+	// non-over-match behaviour unproven) or hard-failing the whole self-test
+	// on an absent-by-design fixture, this WARNS and skips — honest about
+	// what it can and cannot currently prove. If a future change reintroduces
+	// a genuinely orphaned attribute on sgs/hero (or another
+	// SGS_Media_Element::style()-using block), retarget this at it.
+	const heroSplitImageRow = liveRows.find( ( r ) => 'sgs/hero' === r.block && 'splitImage' === r.attr );
+	if ( heroSplitImageRow && false === heroSplitImageRow.renderConsumed && 'none' === heroSplitImageRow.renderVia ) {
+		log(
+			'PASS — Test K (live, negative control): sgs/hero.splitImage -> renderConsumed=false, ' +
+				'renderVia=none (genuinely orphaned, not a media-element-atom base — resolver does not over-match).'
+		);
+	} else if ( undefined === heroSplitImageRow ) {
+		log(
+			'WARN — Test K (live, negative control): sgs/hero.splitImage no longer exists ' +
+				'(deleted 2026-09-02, Wave 7b) — no live orphaned-attr fixture currently ' +
+				'available on sgs/hero to prove the resolver does not over-match. Not counted ' +
+				'as a failure; retarget at a real fixture if one reappears.'
+		);
+	} else {
+		log( `FAIL — Test K (live, negative control): got ${ JSON.stringify( heroSplitImageRow ) }` );
+		pass = false;
+	}
+
+	EXTENSION_ATTRS = savedExtensionAttrs;
+
+	log(
+		pass
+			? '\n[check-dead-controls --self-test] --dump-json — ALL TESTS PASS.'
+			: '\n[check-dead-controls --self-test] --dump-json — FAIL.'
 	);
 	return pass;
 }

@@ -1,0 +1,8 @@
+{
+	"name": "sgs/gradient-helper-solid-colour-still-flags",
+	"title": "Fixture — a 'solid' family colour attr is NOT derived by gradientOverlayAttrKeys() (negative control)",
+	"attributes": {
+		"panelOverlayGradient": { "type": "boolean", "default": false },
+		"panelOverlayColour": { "type": "string", "default": "" }
+	}
+}

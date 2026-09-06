@@ -7,18 +7,18 @@ import {
 import {
 	PanelBody,
 	SelectControl,
-	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { TypographyControls, ResponsiveBoxControl, SgsColourPanel } from '../../components';
+import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl } from '../../components';
 import {
 	colourVar,
 	SGS_LENGTH_UNITS,
 	sgsNormaliseLength,
 	sgsHasLength,
 	sgsLengthPreview,
+	resolveTextColourPreviewStyle,
 } from '../../utils';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const TEXT_TRANSFORM_OPTIONS = [
 	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },
@@ -63,12 +63,11 @@ const LINE_HEIGHT_UNITS = [
 
 /**
  * Build the fontSize reset value for the font-size responsive family owned by
- * <TypographyControls>. fontSize is now an OBJECT-typed {desktop,tablet,
- * mobile} attr (Spec 35 tier-object migration) — the retired flat
- * fontSizeTablet/fontSizeMobile sibling attrs no longer exist in this block's
- * schema, so resetting them individually would silently no-op (WP discards a
- * write to an undeclared attr). Reset the WHOLE object back to the block's own
- * default (block.json: `{"desktop":12}`) instead.
+ * <TypographyControls>. fontSize is an OBJECT-typed {desktop,tablet,mobile}
+ * attr (Spec 35 tier-object migration) — resetting a Tablet/Mobile sibling
+ * individually would silently no-op (WP discards a write to an undeclared
+ * attr), so the WHOLE object resets to the block's own default
+ * (block.json: `{"desktop":12}`) instead.
  */
 function resetFontSizeResponsive() {
 	return {
@@ -122,7 +121,9 @@ function boxShorthand( box ) {
 function buildStyle( attributes ) {
 	const {
 		textColour,
+		textColourGradient,
 		backgroundColour,
+		backgroundColourGradient,
 		fontFamily,
 		fontSize,
 		fontSizeUnit,
@@ -155,7 +156,7 @@ function buildStyle( attributes ) {
 			: fontSize;
 
 	const previewStyle = {
-		color: colourVar( textColour ) || undefined,
+		...resolveTextColourPreviewStyle( textColour, textColourGradient, colourVar ),
 		fontFamily: fontFamily || undefined,
 		fontSize: fontSizeDesktop ? `${ fontSizeDesktop }${ fontSizeUnit }` : undefined,
 		fontWeight: fontWeight || undefined,
@@ -174,6 +175,11 @@ function buildStyle( attributes ) {
 	// render.php's ungated helper (no pill gate).
 	previewStyle.padding = paddingPreview;
 	previewStyle.backgroundColor = colourVar( backgroundColour ) || undefined;
+	// Gradient sibling preview (colour-conformance FILL closeout, 2026-09-06) —
+	// mirrors render.php's sgs_background_paint_decl() gradient-wins-when-set.
+	if ( backgroundColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( backgroundColourGradient ) ) {
+		previewStyle.backgroundImage = backgroundColourGradient;
+	}
 	// borderRadius is a CSS-length STRING (2026-08-13). The old check used
 	// `Number( borderRadius ) !== 0`, which is NaN for '1.5rem' — and the old
 	// preview appended 'px' unconditionally, so '1.5rem' painted as '1.5rempx'
@@ -210,7 +216,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		text,
 		style,
 		textColour,
+		textColourGradient,
 		backgroundColour,
+		backgroundColourGradient,
 		fontSize,
 		fontSizeUnit,
 		fontWeight,
@@ -247,6 +255,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -254,12 +263,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: textColour,
 								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -267,12 +279,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: backgroundColour,
 								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
 								linked: true,
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourGradient: val ?? '' } ),
 							},
 						],
 					},
 				] }
 			/>
-			<InspectorControls>
+			<InspectorControls group="styles">
 				<PanelBody
 					title={ __( 'Typography', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -329,6 +344,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								showWeight={ false }
 								showStyle={ false }
 								showLineHeight={ false }
+								showDecoration={ true }
 								showResponsive={ true }
 							/>
 						</ToolsPanelItem>
@@ -375,7 +391,14 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { lineHeight: 1.2, lineHeightUnit: 'em' } )
 							}
 						>
-							<UnitControl
+							{ /* SgsLengthControl adoption (Gate B, presets={false}) — split-scalar
+							   case (composeUnit builds a display string from two separate
+							   attrs, lineHeight+lineHeightUnit; parseUnit splits the raw
+							   string back on change). Safe: SgsLengthControl's presets=false
+							   branch forwards the raw UnitControl string unchanged to
+							   onChange, so this caller's own split-and-setAttributes logic
+							   is untouched — see Branch 2 report. */ }
+							<SgsLengthControl
 								label={ __( 'Line height', 'sgs-blocks' ) }
 								value={ composeUnit( lineHeight, lineHeightUnit ) }
 								units={ LINE_HEIGHT_UNITS }
@@ -383,8 +406,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									const { num, unit } = parseUnit( raw, lineHeightUnit !== undefined ? lineHeightUnit : '' );
 									setAttributes( { lineHeight: num, lineHeightUnit: unit } );
 								} }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
+								presets={ false }
 							/>
 						</ToolsPanelItem>
 
@@ -398,7 +420,10 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { letterSpacing: 0.08, letterSpacingUnit: 'em' } )
 							}
 						>
-							<UnitControl
+							{ /* SgsLengthControl adoption (Gate B, presets={false}) — same
+							   split-scalar shape as Line height above (composeUnit/parseUnit),
+							   safe passthrough, see Branch 2 report. */ }
+							<SgsLengthControl
 								label={ __( 'Letter spacing', 'sgs-blocks' ) }
 								value={ composeUnit( letterSpacing, letterSpacingUnit ) }
 								units={ LETTER_SPACING_UNITS }
@@ -406,27 +431,14 @@ export default function Edit( { attributes, setAttributes } ) {
 									const { num, unit } = parseUnit( raw, letterSpacingUnit || 'em' );
 									setAttributes( { letterSpacing: num, letterSpacingUnit: unit } );
 								} }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
+								presets={ false }
 							/>
 						</ToolsPanelItem>
 
-						<ToolsPanelItem
-							label={ __( 'Text decoration', 'sgs-blocks' ) }
-							hasValue={ () => !! textDecoration }
-							onDeselect={ () => setAttributes( { textDecoration: '' } ) }
-						>
-							<TextControl
-								label={ __( 'Text decoration', 'sgs-blocks' ) }
-								value={ textDecoration }
-								onChange={ ( val ) =>
-									setAttributes( { textDecoration: val } )
-								}
-								placeholder={ __( 'none', 'sgs-blocks' ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
+						{ /* Text decoration now lives inside the TypographyControls mount
+						   above (showDecoration) — a restricted 4-value dropdown matching
+						   the shared sgs_typography_css_rule() helper's allowlist, not the
+						   previous free-text control (D971/D972 full-replacement track). */ }
 						<ToolsPanelItem
 							label={ __( 'Font style', 'sgs-blocks' ) }
 							hasValue={ () => !! fontStyle }
@@ -461,7 +473,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ToolsPanelItem>
 					</ToolsPanel>
 				</PanelBody>
+			</InspectorControls>
 
+			{ /* ── Settings tab (structural — no CSS property) ─────────────── */ }
+			<InspectorControls>
 				<PanelBody
 					title={ __( 'Box', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -482,7 +497,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					     the operator picks the unit. Stored as a CSS-length
 					     STRING; a legacy bare number is treated as px by both
 					     render.php and the canvas preview. */ }
-					<UnitControl
+					{ /* SgsLengthControl adoption (Gate B, presets={false}). */ }
+					<SgsLengthControl
 						label={ __( 'Border radius', 'sgs-blocks' ) }
 						value={ borderRadius ?? '' }
 						units={ SGS_LENGTH_UNITS }
@@ -491,14 +507,14 @@ export default function Edit( { attributes, setAttributes } ) {
 								borderRadius: sgsNormaliseLength( val ),
 							} )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 					{ /* padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
 					     (Spec 35 box-tier migration) — ONE attr; each tier holds the
 					     4-side box, unchanged in shape from the old sibling attrs. */ }
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
+						presets
 						values={ {
 							base: padding?.desktop ?? {},
 							tablet: padding?.tablet ?? {},
@@ -516,13 +532,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					/>
 				</PanelBody>
+			</InspectorControls>
 
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				<PanelBody
 					title={ __( 'Spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
 					<ResponsiveBoxControl
 						label={ __( 'Margin', 'sgs-blocks' ) }
+						presets
 						values={ {
 							base: style?.spacing?.margin ?? {},
 							tablet: marginTablet ?? {},

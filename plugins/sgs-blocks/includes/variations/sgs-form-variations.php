@@ -29,7 +29,7 @@ function sgs_register_form_styles(): void {
 			'label'        => __( 'Boxed', 'sgs-blocks' ),
 			'inline_style' => '
 				.wp-block-sgs-form.is-style-boxed {
-					border: 1px solid var( --wp--preset--color--border-subtle );
+					border: 1px solid var( --wp--preset--color--border );
 					border-radius: var( --wp--custom--border-radius--medium );
 					background: var( --wp--preset--color--surface );
 					padding: var( --wp--preset--spacing--60 );

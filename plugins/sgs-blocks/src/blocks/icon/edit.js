@@ -11,7 +11,7 @@ import {
 	TextControl,
 	RangeControl,
 } from '@wordpress/components';
-import { SgsColourPanel, IconPicker, IconPreview, ResponsiveBoxControl, LinkPopoverField } from '../../components';
+import { SgsColourPanel, IconPicker, IconPreview, ResponsiveBoxControl, LinkPopoverField, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar } from '../../utils';
 
 // Box-object interface contract §1: build an editor-preview shorthand from a
@@ -50,6 +50,14 @@ const BG_SHAPES = [
 	{ label: __( 'Rounded square', 'sgs-blocks' ), value: 'rounded' },
 	{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
 	{ label: __( 'Outline ring', 'sgs-blocks' ), value: 'outline' },
+];
+
+const TEXT_ALIGN_OPTIONS = [
+	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
+	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
 ];
 
 /**
@@ -92,12 +100,12 @@ function currentIconName( attrs ) {
 }
 
 export default function Edit( { attributes, setAttributes } ) {
-	const {
-		style,
+	const { padding, margin,
 		iconSource,
 		iconSize,
 		iconColour,
 		backgroundColour,
+		backgroundColourGradient,
 		backgroundShape,
 		backgroundPadding,
 		linkUrl,
@@ -110,10 +118,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		shapeColourHover,
 		scaleHover,
 		iconAlign,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
+		textAlign,
 	} = attributes;
 
 	const blockAlign = attributes.align || 'center';
@@ -139,8 +144,15 @@ export default function Edit( { attributes, setAttributes } ) {
 	const previewStyle = {
 		'--sgs-icon-size': `${ iconSize }px`,
 		color: colourVar( iconColour ) || undefined,
+		// Gradient wins over the flat colour — mirrors render.php's
+		// sgs_background_paint_decl() (helpers-tokens.php): background-image
+		// when backgroundColourGradient is set, else background-color.
+		backgroundImage:
+			backgroundColourGradient && backgroundShape !== 'none' && ! isOutline
+				? backgroundColourGradient
+				: undefined,
 		backgroundColor:
-			backgroundColour && backgroundShape !== 'none' && ! isOutline
+			! backgroundColourGradient && backgroundColour && backgroundShape !== 'none' && ! isOutline
 				? colourVar( backgroundColour )
 				: undefined,
 		'--sgs-icon-outline-colour':
@@ -153,15 +165,19 @@ export default function Edit( { attributes, setAttributes } ) {
 			backgroundShape !== 'none' && backgroundPadding
 				? shapePaddingCssValue( backgroundPadding )
 				: undefined,
+		// Mirrors render.php's `$root_decls[] = 'text-align:' . $text_align`
+		// (emitted only when set, so inheritance works when empty — same here).
+		textAlign: textAlign || undefined,
 	};
 
-	// Base padding/margin preview — WP-native style.spacing.* objects
-	// (box-object interface contract §B; box-model order top/right/bottom/left).
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	// Base padding/margin preview — padding/margin are owned tier-object
+	// attrs { desktop, tablet, mobile }; the desktop tier is a box (box-model
+	// order top/right/bottom/left).
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		previewStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		previewStyle.margin = marginPreview;
 	}
@@ -244,6 +260,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					backgroundShape !== 'none' && {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -252,6 +269,11 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) =>
 									setAttributes( {
 										backgroundColour: val,
+									} ),
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										backgroundColourGradient: val ?? '',
 									} ),
 							},
 							{
@@ -262,6 +284,12 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( {
 										shapeColourHover: val,
 									} ),
+								// No shapeColourHoverGradient attribute exists (out of
+								// scope for this rollout) — required no-op, not a
+								// missing feature (GradientCapableColourControl calls
+								// onGradientChange('') on every pick for every state
+								// in a gradientCapable row).
+								onGradientChange: () => {},
 							},
 						],
 					},
@@ -340,6 +368,23 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Text align', 'sgs-blocks' ) }
+						value={ textAlign }
+						options={ TEXT_ALIGN_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { textAlign: val } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
+
 				<PanelBody title={ __( 'Hover effects', 'sgs-blocks' ) } initialOpen={ false }>
 					{ /* D609: the hover colours moved into the Icon/Background
 					   panels' own colour rows (Normal/Hover tab inside the
@@ -357,44 +402,43 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /* ── Spacing panel ── Box-object interface contract §B/§E: padding/
-				   margin base routes to WP-native style.spacing.* (skip-serialised —
-				   scoped, not inline, on the frontend); tiers are the
-				   paddingTablet/paddingMobile + marginTablet/marginMobile object
-				   attrs (scoped @media 1023/767). */ }
+				{ /* ── Spacing panel ── padding/margin are each a single block-owned
+				   tier-object attr { desktop, tablet, mobile }, written via
+				   ResponsiveOverride + SgsBoxControl; read directly by this
+				   block's render.php. */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
+			</InspectorControls>
 
+			<InspectorControls>
 				<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
 					<TextControl
 						label={ __( 'Accessible label', 'sgs-blocks' ) }
@@ -424,6 +468,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						source={ iconSource }
 						name={ currentIconName( attributes ) }
 						size={ iconSize }
+						gradient={ iconColourGradient }
 					/>
 				</span>
 			</div>

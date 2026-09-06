@@ -46,6 +46,7 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
+import { useInstanceId } from '@wordpress/compose';
 import { link as linkIcon } from '@wordpress/icons';
 import { VStack } from './primitives';
 import './LinkPopoverControl.css';
@@ -263,14 +264,23 @@ const LinkPopoverField = forwardRef( function LinkPopoverField(
 
 	const url = searchOnly ? ( value || '' ) : ( value?.url || '' );
 
+	// `id` is required for BaseControl to give its own `help` paragraph an id
+	// (`${id}__help`, the same convention every native self-wiring control
+	// gets from useBaseControlProps()) — without it the paragraph renders
+	// with no id at all and nothing can point aria-describedby at it.
+	const instanceId = useInstanceId( LinkPopoverField, 'sgs-link-popover-field' );
+	const id = `sgs-link-popover-field-${ instanceId }`;
+	const helpId = help ? `${ id }__help` : undefined;
+
 	return (
-		<BaseControl label={ label } help={ help } __nextHasNoMarginBottom>
+		<BaseControl id={ id } label={ label } help={ help } __nextHasNoMarginBottom>
 			<Button
 				ref={ triggerRef }
 				variant="tertiary"
 				className="sgs-link-popover__row"
 				icon={ linkIcon }
 				title={ url || undefined }
+				aria-describedby={ helpId }
 				onClick={ () => setIsOpen( true ) }
 			>
 				<span className="sgs-link-popover__row-label">

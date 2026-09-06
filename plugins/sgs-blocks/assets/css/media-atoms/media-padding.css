@@ -1,0 +1,27 @@
+/*
+ * media-padding — the media element's own inner spacing, tiered.
+ *
+ * Custom-property names match `media-padding.js`/`media-padding.php`'s
+ * `css()` output exactly: `--sgs-media-padding[-tablet|-mobile]`. Follows
+ * the mobile -> tablet -> desktop -> initial fallback chain `_base.css`
+ * documents, same as every other tiered atom.
+ */
+
+.sgs-media-el {
+	padding: var( --sgs-media-padding, 0 );
+}
+
+@media ( max-width: 1023px ) {
+	.sgs-media-el {
+		padding: var( --sgs-media-padding-tablet, var( --sgs-media-padding, 0 ) );
+	}
+}
+
+@media ( max-width: 767px ) {
+	.sgs-media-el {
+		padding: var(
+			--sgs-media-padding-mobile,
+			var( --sgs-media-padding-tablet, var( --sgs-media-padding, 0 ) )
+		);
+	}
+}

@@ -92,12 +92,14 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-tokens.php';
+require_once __DIR__ . '/helpers-hover-state.php';
 require_once __DIR__ . '/helpers-responsive.php';
 require_once __DIR__ . '/helpers-typography.php';
 require_once __DIR__ . '/helpers-media-position.php';
 require_once __DIR__ . '/helpers-colour-wcag.php';
 require_once __DIR__ . '/helpers-media.php';
 require_once __DIR__ . '/helpers-tier-media.php';
+require_once __DIR__ . '/helpers-media-element.php';
 require_once __DIR__ . '/helpers-configurator-pricing.php';
 require_once __DIR__ . '/helpers-value-ladder.php';
 require_once __DIR__ . '/helpers-css-safety.php';
@@ -111,3 +113,28 @@ require_once __DIR__ . '/helpers-list-markers.php';
 require_once __DIR__ . '/helpers-mega-render.php';
 require_once __DIR__ . '/helpers-row-behaviour.php';
 require_once __DIR__ . '/helpers-svg-gradient.php';
+require_once __DIR__ . '/helpers-colour-variants.php';
+require_once __DIR__ . '/media/atoms/media-type.php';
+require_once __DIR__ . '/media/atoms/video-behaviour.php';
+require_once __DIR__ . '/class-sgs-media-element.php';
+require_once __DIR__ . '/media/atoms/source.php';
+require_once __DIR__ . '/media/atoms/intrinsic.php';
+require_once __DIR__ . '/media/atoms/meaning.php';
+// ⛔ EVERY atom twin is required here, not just the ones a block happened to
+// need. `sgs_media_element_style()` dispatches by naming convention and SKIPS a
+// missing function silently by design, so an unloaded twin is not an error —
+// it is an atom that quietly emits nothing. Five of the ten were unloaded when
+// sgs/media was first wired, which is why its object-fit control stored the
+// right value and painted nothing. `check-media-atom-purity.js` now fails the
+// build if a twin exists on disk without a require here.
+require_once __DIR__ . '/media/atoms/object-fit.php';
+require_once __DIR__ . '/media/atoms/focal-point.php';
+require_once __DIR__ . '/media/atoms/box-shape.php';
+require_once __DIR__ . '/media/atoms/overlay.php';
+require_once __DIR__ . '/media/atoms/svg-presentation.php';
+require_once __DIR__ . '/media/atoms/motion.php';
+require_once __DIR__ . '/media/atoms/opacity.php';
+require_once __DIR__ . '/media/atoms/shadow.php';
+require_once __DIR__ . '/media/atoms/media-padding.php';
+require_once __DIR__ . '/media/atoms/caption.php';
+require_once __DIR__ . '/media/atoms/link.php';

@@ -347,9 +347,10 @@ wp sgs migrations run --target=0003-some-migration --user=1
 
 ---
 
-### 4.14 `wp sgs theme-mod restore` (RETIRED 2026-05-21 — see `.claude/plans/2026-05-21-architecture-staging.md` §6.6)
-
-`wp sgs theme-mod restore` and `Sgs_Variation_Picker` are DELETED by Decision 18. The WP style-variation system is removed; there is no legacy `active_theme_style` theme_mod to restore. Per-site branding is managed via `push-theme-snapshot.py` (see §7 below).
+| Command / class | Retired | Reason | Replacement |
+|---|---|---|---|
+| `wp sgs theme-mod restore` / `Sgs_Variation_Picker` | 2026-05-21 (Decision 18) | WP style-variation system deleted; no legacy `active_theme_style` theme_mod to restore | `push-theme-snapshot.py` (§7) |
+| `Sgs_Variation_REST` (`sgs/v1/active-variation`) | 2026-05-21 (Decision 18) | variation system deleted | Stage 10 of `/sgs-clone` calls `push-theme-snapshot.py` |
 
 ---
 
@@ -405,20 +406,14 @@ wp --user=1 eval '$rules = get_option("sgs_header_rules", []); foreach($rules as
 
 ---
 
-## 2026-05-20 — Out-of-scope but operator-relevant: stage_attribute_promotion.py CLI
+## 2026-05-20 — `stage_attribute_promotion.py` — DELETED 2026-09-02, do not rebuild
 
-This spec owns the `wp sgs *` PHP CLI surface (12 commands via WP-CLI). A separate operator-driven Python CLI shipped in the orchestrator scope this session:
+⛔ **Retired as part of retiring the attribute-gap-detection mechanism.** The gap-detection feature (writer: `gap-detection/detect.py`, promotion workflow: `stage_attribute_promotion.py`, DB table: `sgs-framework.db.attribute_gap_candidates`) was never finished and the project owner confirmed it was never wanted as a completed feature. Note: `converter/services/gap_writer.py` is a DIFFERENT, unrelated, still-live module — it builds the in-memory `GAP` object for the converter's real conservation ledger and was never part of this retired mechanism; do not confuse the two similarly-named files. The "honest gap" concept — ensuring no CSS property silently disappears from a clone — is preserved via in-memory ledger tracking inside the converter, NOT via this DB-backed promotion path. The workflow consisted of:
+- (deleted) `python stage_attribute_promotion.py list --top N` — ranked candidates from the retired `attribute_gap_candidates` table
+- (deleted) `python stage_attribute_promotion.py promote --id <row_id>` — mutate block.json + render.php on promotion
+- (deleted) `python stage_attribute_promotion.py status` — show promoted vs pending counts
 
-**`plugins/sgs-blocks/scripts/orchestrator/stage_attribute_promotion.py`** (commit `37c92950`):
-- `python stage_attribute_promotion.py list --top N` — ranked candidates from `attribute_gap_candidates` (uimax + sgs-framework DBs)
-- `python stage_attribute_promotion.py promote --id <row_id>` — mutate block.json + render.php (manual confirm gate)
-- `python stage_attribute_promotion.py status` — promoted vs pending counts
-
-NOT a `wp sgs` subcommand because (a) it mutates source files outside WP runtime, (b) it requires manual operator confirmation gate, (c) it operates on dev-machine artefacts not server state. If future maintenance wants a `wp sgs promote-attribute` wrapper around it, that would belong in this spec.
-
-**Sgs_Variation_REST** (commit `8ceb8787`): REST surface at `sgs/v1/active-variation` (POST + GET; `manage_options` gated) — **RETIRED 2026-05-21 (Decision 18)**. The variation system is deleted. This endpoint is no longer needed; Stage 10 of `/sgs-clone` now calls `push-theme-snapshot.py` instead.
-
----
+This was a development-tool convenience for surfacing and promoting CSS-gap findings; it was never deployed to production or called by any automated pipeline. **Do NOT rebuild it** — the gap mechanism persists via in-memory detection in the converter itself.
 
 ## 7. Adjacent CLI scripts (non-wp-sgs)
 
@@ -460,7 +455,7 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py \
 
 The primary pipeline orchestrator for the SGS clone workflow. Runs all pipeline stages
 (extraction, recognition, conversion, deploy). Accepts `--converter-v2` flag to route
-through the Spec 22 universal walker converter.
+through the Spec 31 §13 universal walker converter.
 
 ```bash
 # Standard full run
@@ -507,15 +502,15 @@ one DB, one query tool.
 
 ---
 
-### `stage_attribute_promotion.py`
+### `stage_attribute_promotion.py` — RETIRED 2026-09-02
 
-(See above — 2026-05-20 section.)
+(See retirement note above — 2026-05-20 section.)
 
 ---
 
 ### `build-deploy.py` (D3, 2026-05-30 — commit `a23ff53f`)
 
-Canary-fast-cycle deploy script (367 LOC) at `plugins/sgs-blocks/scripts/build-deploy.py`. Complementary to (NOT replacing) the `/wp-sgs-deploy` skill — that skill targets `palestine-lives.org` with full Check+Build+Execute+Cache+Verify ceremony. This script targets `sandybrown` by default for fast iteration.
+Canary-fast-cycle deploy script (367 LOC) at `plugins/sgs-blocks/scripts/build-deploy.py`. Complementary to (NOT replacing) the `/wp-sgs-deploy` skill — that skill carries the full Check+Build+Execute+Cache+Verify ceremony. This script targets `sandybrown` by default for fast iteration.
 
 ```bash
 # Default: build + deploy plugin + theme to sandybrown
@@ -535,20 +530,16 @@ python plugins/sgs-blocks/scripts/build-deploy.py --dry-run
 # 2026-07-14 outage. Only after READING the paths it lists.
 python plugins/sgs-blocks/scripts/build-deploy.py --allow-dirty
 
-# Production target (requires explicit opt-in)
-python plugins/sgs-blocks/scripts/build-deploy.py --target palestine-lives
-
 # Verify a specific page instead of the target homepage (verify is ON by default)
 python plugins/sgs-blocks/scripts/build-deploy.py --verify-url https://sandybrown-nightingale-600381.hostingersite.com/
 ```
 
-**Args:** `--target {sandybrown,palestine-lives}` (default sandybrown), `--skip-build`, `--theme-only`, `--blocks-only`, `--dry-run`, `--allow-dirty`, `--skip-verify`, `--verify-url <URL>`.
+**Args:** `--target {sandybrown}` (the only target; palestine-lives removed 2026-08-10), `--skip-build`, `--theme-only`, `--blocks-only`, `--dry-run`, `--allow-dirty`, `--skip-verify`, `--verify-url <URL>`.
 
 **Guards (hardened 2026-07-14 after the outage below):**
 - **Dirty-deploy guard.** Refuses when a file that BOTH ships in the tarball AND executes in WordPress (`.php/.js/.css/.html/.json` under `theme/sgs-theme/` or `plugins/sgs-blocks/`, minus `src/`, `_retired/`, `styles/`, `scripts/`, `tests/`, minus lockfiles + the generated `lucide-icons.php`) is uncommitted — unless `--allow-dirty`. **Deliberately scoped:** it previously checked the WHOLE repo, which is permanently dirty, so every documented command carried `--allow-dirty` and the guard protected nothing.
 - **Post-deploy smoke test.** Runs BY DEFAULT (opt out: `--skip-verify`). Cache-busted GET of the target; **fails the run** on 5xx/4xx or a WordPress fatal in the body. It was previously opt-in AND warn-only ("never aborts"), so a deploy that broke the site still reported `[DONE]`.
 - **One-generation rollback.** The previous copy is rotated to `<dir>.bak` instead of being `rm -rf`'d, so a bad deploy is one `mv` from recovery.
-- Refuses `palestine-lives` target without explicit opt-in (no default-to-production footgun).
 - Refuses if `plugins/sgs-blocks/build/` missing and `--skip-build` set.
 
 > **Why (2026-07-14):** an unfinished, uncommitted edit (a missing `use SGS\Blocks\Sgs_Site_Info;` — a RUNTIME class-resolution error that `php -l` passes cleanly) was deployed to **both** live client sites and 500'd them for ~2.5 hours, while the deploy reported success. All three defences above were inert at the time. This is also why `build-deploy.py` is now the deploy path for EVERY target — see `.claude/dev-setup.md`; the raw tar/scp sequence has been removed from the docs.
@@ -567,7 +558,7 @@ Container-inheritance audit + KIND-classification script at `plugins/sgs-blocks/
 
 **Writes** `block_composition.wraps_block + container_kind` to canonical `sgs-framework.db`. **Never auto-edits block.json** — operator review gate for `containerKind` operator-override attribute is separate. Per-block diff Markdown at `pipeline-state/container-inheritance-sync/<date>/<block>.diff.md`.
 
-**Current roster (post-D152):** 28 blocks with `wraps_block` + `container_kind` populated. Original P-D6-THRESHOLD-RETUNE target (20–30+) met. See Spec 22 §FR-22-21 for the canonical wrapper-conversion procedure.
+**Current roster (post-D152):** 28 blocks with `wraps_block` + `container_kind` populated. Original P-D6-THRESHOLD-RETUNE target (20–30+) met. See Spec 31 §13 FR-31-21 for the canonical wrapper-conversion procedure.
 
 ```bash
 python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py

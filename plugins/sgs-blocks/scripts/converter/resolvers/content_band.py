@@ -40,6 +40,7 @@ from converter.services.styling_helpers import (
     strip_important,
 )
 from converter.services.state_value_lift import resolve_state_property
+from converter.services.tier_object import tier_object_write
 from converter.services.tier_suffix import tier_state_suffix
 from converter.services.token_snap import token_snap
 from converter.services.validate import attr_is_number, validate
@@ -58,10 +59,7 @@ from converter.services.value_serialise import value_serialise
 # ---------------------------------------------------------------------------
 
 _WIDTH_PROPS = frozenset({"max-width", "width", "--content-width"})
-_GAP_MARGIN_MINH = frozenset({
-    "gap", "row-gap", "column-gap", "min-height",
-    "margin", "margin-top", "margin-right", "margin-bottom", "margin-left",
-})
+_GAP_MINH = frozenset({"gap", "row-gap", "column-gap", "min-height"})
 
 
 def _layer_priorities(prop: str) -> tuple[str, ...]:
@@ -69,48 +67,163 @@ def _layer_priorities(prop: str) -> tuple[str, ...]:
     if prop in _WIDTH_PROPS:
         return ("CONTENT", "OUTER")
     if prop.startswith("padding"):
+        return ("CONTENT", "OUTER", "GRID")
+    if prop.startswith("margin"):
+        # margin* now tries CONTENT first, mirroring padding's own chain
+        # (Defect 3, qc-council-validated 2026-09-04): a sole-passthrough
+        # band's margin declaration reaches this resolver via fold_band_css
+        # (a wrapper WITH a sibling never reaches content_band.py at all — it
+        # becomes its own sgs/container block via a completely separate
+        # extraction path, so this change cannot and does not affect that
+        # case). CONTENT is tried before GRID/OUTER so a block declaring a
+        # merged contentBandMargin* box family (gated in
+        # _content_band_box_write below) wins over the OUTER self-merge
+        # fallback that previously absorbed a margin shorthand wholesale.
         return ("CONTENT", "GRID", "OUTER")
-    if prop in _GAP_MARGIN_MINH:
+    if prop in _GAP_MINH:
         return ("GRID", "OUTER")
     return ("CONTENT", "OUTER")
 
 
-def _content_band_box_write(decl: Any, ctx: Any) -> Write | None:
-    """Route a ``padding-{side}`` CONTENT-layer declaration into the merged
-    ``contentBandPadding{Tier}`` box-object attr (box-object interface contract
-    §3/§4, ``.claude/plans/2026-07-09-box-object-interface-contract.md``),
-    when the owning block declares that ``box_family`` — closing the
+# The two box-shorthand CSS base properties this router folds into a merged
+# CONTENT-band object attr. A recognition SET, not a property->attr map — the
+# actual suffix ('BandPadding' / 'BandMargin') is derived live from
+# property_suffixes below, never hardcoded (R-31-1).
+_BAND_BOX_PROPS = frozenset({"padding", "margin"})
+
+
+def _band_family_row_suffix(base_prop: str, conn: Any) -> str | None:
+    """Read the raw per-side suffix (e.g. ``'BandPaddingTop'``) seeded in
+    ``property_suffixes`` for a base CSS property's longhand top side
+    (DB-first, R-31-1 — never a hardcoded property->attr dict). Returns
+    ``None`` when the per-side rows aren't seeded yet (e.g. ``BandMargin*``
+    before Defect 3's DB reseed lands).
+
+    ``property_suffixes`` seeds TWO distinct rows per longhand side (e.g.
+    ``PaddingTop`` for the flat OUTER family, ``BandPaddingTop`` for the
+    CONTENT-band family this router owns) — both share ``css_property`` and
+    ``role``, so the ``'Band'`` name prefix is the only live discriminator
+    between them; filtered here rather than picking whichever row SQLite
+    returns first.
+
+    Deliberately returns the RAW row, not a side-stripped family name — the
+    stripping happens in ``_content_band_box_write`` itself, in the same
+    scope that re-validates the result against ``db_lookup.box_family_for``
+    before it is ever used (§3/§6 box-family-guard AST gate: a side-token
+    string test must sit alongside a genuine ``box_family`` DB check, not in
+    an isolated helper the gate can't see that check from).
+    """
+    row = conn.execute(
+        "SELECT suffix FROM property_suffixes WHERE css_property = ? AND suffix LIKE 'Band%'",
+        (f"{base_prop}-top",),
+    ).fetchone()
+    return row[0] if row else None
+
+
+def _content_band_box_write(decl: Any, ctx: Any) -> Write | list[Write] | GAP | None:
+    """Route a ``padding``/``margin`` CONTENT-layer declaration — longhand
+    per-side (``padding-top`` etc) OR shorthand (``padding: 10px 20px``) — into
+    the merged ``contentBandPadding{Tier}``/``contentBandMargin{Tier}``
+    box-object attr (box-object interface contract §3/§4,
+    ``.claude/plans/2026-07-09-box-object-interface-contract.md``), when the
+    owning block declares that ``box_family`` — closing (a) the
     previously-HONEST content-band-padding routing gap documented in this
     module's header (container declares ``contentBandPadding*`` as a merged
     OBJECT attr, never the flat ``contentPadding{Side}*`` the ordinary
-    layer-priority chain derives).
+    layer-priority chain derives), and (b) the shorthand-misroute defect: a
+    bare ``padding: 20px`` used to fail the longhand-only ``padding-`` guard
+    and fall through to the OUTER-layer ``padding`` self-merge, silently
+    landing on the block-ROOT attr instead of the CONTENT-band one — a real
+    collision risk with a genuine OUTER ``padding`` on the same node
+    (qc-council-validated Defect 2, 2026-09-04).
 
-    Returns ``None`` (never a GAP) when the box-object path doesn't apply —
-    the caller falls through to the unchanged layer-priority chain. Gated on
-    ``db_lookup.box_family_for``, NEVER an attr-name regex (§3/§6 AST gate).
+    Returns ``None`` (never a GAP) when the box-object path doesn't apply at
+    all — the caller falls through to the unchanged layer-priority chain.
+    Once the box-object destination IS the gate match, an unparseable
+    shorthand value returns an honest GAP rather than silently falling
+    through to the wrong layer. Gated on ``db_lookup.box_family_for``, NEVER
+    an attr-name regex (§3/§6 AST gate).
     """
+    # Local import: root_supports -> dispatch_spine -> converter.resolvers
+    # (this package's own __init__) is a real circular-import chain at module
+    # level (proven — a top-level import here breaks the whole resolvers
+    # package on load), exactly why the OUTER self-merge branch below already
+    # imports this same function locally, aliased.
+    from converter.services.root_supports import _parse_padding_shorthand
+
     prop = decl.property
-    if not prop.startswith("padding-"):
+    base_prop: str | None = None
+    side: str | None = None
+    for candidate in _BAND_BOX_PROPS:
+        if prop == candidate:
+            base_prop = candidate
+            break
+        if prop.startswith(f"{candidate}-"):
+            maybe_side = prop[len(candidate) + 1:]
+            if maybe_side in ("top", "right", "bottom", "left"):
+                base_prop = candidate
+                side = maybe_side
+            break
+    if base_prop is None:
         return None
-    side = prop[len("padding-"):]
-    if side not in ("top", "right", "bottom", "left"):
+
+    # Side-token strip on a value already READ from property_suffixes (a DB
+    # read, not a name-guessed grouping) -- but never trusted alone: `family`
+    # is only used below once `box_family` (the real DB classification) has
+    # confirmed it, so a wrongly-derived suffix fails closed rather than
+    # silently grouping the wrong attrs (§3/§6 box-family-guard AST gate).
+    raw_suffix = _band_family_row_suffix(base_prop, ctx.conn)
+    if raw_suffix is None or not raw_suffix.endswith("Top"):
         return None
+    band_suffix = raw_suffix[: -len("Top")]
 
     prefix = db_lookup.layer_attr_prefix("CONTENT") or ""
-    # 'BandPadding' is the universal CSS-architecture band-mirror vocabulary —
-    # the SAME family root already seeded in property_suffixes ('BandPaddingTop'
-    # etc — see attr_for_area_property's Band-prefix exclusion filter, D194).
-    # Not a per-block literal (R-31-1 permitted-constant, same class as
-    # _LAYER_PREFIXES itself).
-    family = f"{prefix}BandPadding"
-    object_attr = tier_state_suffix(family, decl, ctx.conn)
+    family = f"{prefix}{band_suffix}"
+    object_attr = tier_state_suffix(family, decl, ctx.conn, ctx.block_slug)
     box_family = db_lookup.box_family_for(ctx.block_slug, object_attr)
     if box_family != family:
         return None
 
-    resolved = _resolve_co_declared_var(strip_important(decl.value).strip(), {})
-    value = token_snap(prop, value_serialise("string", None, resolved), ctx.conn)
-    return Write(attr=object_attr, value={side: value}, property=prop, tier=decl.tier)
+    raw = strip_important(decl.value).strip()
+
+    if side is not None:
+        resolved = _resolve_co_declared_var(raw, {})
+        value = token_snap(prop, value_serialise("string", None, resolved), ctx.conn)
+        return Write(attr=object_attr, value={side: value}, property=prop, tier=decl.tier)
+
+    # Shorthand form (`padding: 10px 20px 30px 40px`, CSS top/right/bottom/left
+    # order) — parse into the same 4 sides the longhand path accumulates one
+    # at a time, token-snapping each side independently so a per-side token
+    # slug or var() resolves identically to the longhand path.
+    sides = _parse_padding_shorthand(raw)
+    if sides is None:
+        return gap_writer(
+            ctx, decl, GapOrigin.NO_DESTINATION,
+            f"{prop} value {decl.value!r} is not a parseable 1-4-value CSS "
+            f"box shorthand for merged CONTENT-band object attr {object_attr!r}",
+        )
+    # Horizontal auto-centring idiom (`margin: 0 auto`) is EXCLUDED, not
+    # lifted -- same rule as the OUTER self-merge branch below (search
+    # "Horizontal auto-centring idiom" for the full rationale): the
+    # band-rule emitter already reproduces this centring via
+    # `margin-inline:auto`, so lifting it here too would be the wrong layer
+    # and a duplicate. This CONTENT-band path runs BEFORE that OUTER branch
+    # ever sees the declaration (line ~251 short-circuits it), so the check
+    # must be duplicated here rather than assumed to fire downstream.
+    if base_prop == "margin" and sides["left"] == sides["right"] == "auto":
+        return gap_writer(
+            ctx, decl, GapOrigin.EXCLUDED,
+            f"{prop} left/right are both 'auto' — horizontal centring is "
+            f"already reproduced by the band's contentWidth rule "
+            f"(class-sgs-container-wrapper.php margin-inline:auto), so "
+            f"lifting it onto the CONTENT-band {object_attr!r} attr would be "
+            f"the wrong layer and a duplicate.",
+        )
+    value = {
+        s: token_snap(prop, value_serialise("string", None, _resolve_co_declared_var(v, {})), ctx.conn)
+        for s, v in sides.items()
+    }
+    return Write(attr=object_attr, value=value, property=prop, tier=decl.tier)
 
 
 def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
@@ -182,10 +295,24 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             f"(proposed_action: add attr or seed property_suffixes)",
         )
 
+    # --- TIER-OBJECT destination (Spec 35 tier shape, D802-class fix extended
+    # from typography to CONTENT — mirrors outer_box.py/grid.py's identical
+    # gate). ``contentWidth`` is the worked example: sgs/container, sgs/hero,
+    # sgs/trust-bar, sgs/feature-grid and sgs/testimonial-slider all migrated
+    # it to ``{desktop,tablet,mobile}``; re-appending a tier suffix here (the
+    # flat path below) produced a bare scalar — measured live via
+    # check_flat_tier_regression.py: sgs/trust-bar.contentWidth emitted
+    # "1100px" instead of {"desktop": ...}, discarded SILENTLY by `validate`
+    # gapping the now-nonexistent suffixed sibling. Gated on
+    # ``tier_object_base`` (R-31-1) and skipped when a STATE is present
+    # (its own attr, resolved independently), mirroring typography.py.
+    if not decl.state and db_lookup.tier_object_base(ctx.block_slug, base_attr):
+        return _content_band_tier_object_write(decl, ctx, prop, base_attr)
+
     # Step 4 + 4a: tier suffix THEN interaction-state suffix (universal shared helper,
     # §3.A). A :hover/:focus/:active decl routes to `{base}{Tier}{State}` (validated
     # below) else an honest gap.
-    attr = tier_state_suffix(base_attr, decl, ctx.conn)
+    attr = tier_state_suffix(base_attr, decl, ctx.conn, ctx.block_slug)
     if not validate(ctx, attr, decl.value):
         return gap_writer(
             ctx, decl, GapOrigin.NO_DESTINATION,
@@ -207,7 +334,24 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # to the generic string-verbatim branch below, which would write a bare
     # "1px" into an attr_type='object' destination (render.php's is_array()
     # guard drops it) or leave a raw "var(--border)" un-tokenised).
-    if db_lookup.box_family_for(ctx.block_slug, attr) == attr:
+    # Self-merge gate: two DB shapes both mean "attr is a box-family base",
+    # and only ONE of them is `box_family_for(attr) == attr` (the
+    # self-referencing shape, e.g. sgs/button.borderWidth). VERIFIED
+    # 2026-08-22 that `sgs/container.margin`/`padding` use the OTHER shape —
+    # box_family IS NULL on the base row itself, and only the Tablet/Mobile
+    # siblings carry `box_family='margin'`/`'padding'` POINTING BACK at the
+    # base. Querying "does any OTHER row for this block declare
+    # box_family=<attr>?" catches both shapes uniformly and is a strictly
+    # NARROWER, DB-driven, no-slug-literal check (R-31-1) than gating on
+    # attr_type='object' alone — that column is shared by many non-box
+    # tier/config objects (contentWidth, gap, columns, gridTemplateColumns)
+    # that must NOT be routed through the box-shorthand parser.
+    _box_family = db_lookup.box_family_for(ctx.block_slug, attr)
+    _is_box_family_base = _box_family == attr or ctx.conn.execute(
+        "SELECT 1 FROM block_attributes WHERE block_slug=? AND box_family=?",
+        (ctx.block_slug, attr),
+    ).fetchone() is not None
+    if _is_box_family_base:
         from converter.services.root_supports import (
             _parse_padding_shorthand as _parse_box_shorthand_value,
         )
@@ -217,6 +361,26 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
                 ctx, decl, GapOrigin.NO_DESTINATION,
                 f"{prop} value {decl.value!r} is not a parseable 1-4-value CSS "
                 f"box shorthand for merged object attr {attr!r}",
+            )
+        # Horizontal auto-centring idiom (`margin: 0 auto`) is EXCLUDED, not
+        # lifted: the band-rule emitter (class-sgs-container-wrapper.php
+        # ~2721-2726) already writes `margin-inline:auto` on the `__inner`
+        # band whenever a band max-width/contentWidth tier resolves, so this
+        # centring is reproduced by construction at the CORRECT layer. Lifting
+        # it onto the OUTER margin attr as well would be (a) the wrong layer
+        # and (b) a duplicate; `auto` is also not a real box-object side value
+        # for this attr (lengths only) even where it would be spuriously
+        # well-formed. Gated on the CSS SHAPE (left==right=="auto"), never on
+        # owning_slug/block name — true for every band on every composite
+        # mirroring sgs/container (R-31-9).
+        if sides["left"] == sides["right"] == "auto":
+            return gap_writer(
+                ctx, decl, GapOrigin.EXCLUDED,
+                f"{prop} left/right are both 'auto' — horizontal centring is "
+                f"already reproduced by the band's contentWidth rule "
+                f"(class-sgs-container-wrapper.php margin-inline:auto), so "
+                f"lifting it onto the OUTER {attr!r} attr would be the wrong "
+                f"layer and a duplicate.",
             )
         return Write(attr=attr, value=sides, property=prop, tier=decl.tier)
 
@@ -270,3 +434,55 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # token-or-literal; token-snap is identity for a length literal, §3.A.6).
     value = token_snap(prop, value_serialise("string", None, resolved), ctx.conn)
     return Write(attr=attr, value=value, property=prop, tier=decl.tier)
+
+
+# ---------------------------------------------------------------------------
+# TIER-OBJECT emission (Spec 35 tier shape) — the CONTENT-resolver counterpart
+# to typography.py's `_tier_object_writes` (D802) and outer_box.py's
+# `_outer_tier_object_write` (this fix). Mirrors resolve()'s own
+# value-normalisation branches (colour-role / numeric+unit / string verbatim)
+# EXACTLY — only the destination differs. Box-family self-merge is
+# deliberately NOT mirrored here: BOX and TIER are independent, mutually
+# exclusive axes (a box_family-carrying attr always fails tier_object_base by
+# construction), so a tier-object CONTENT attr can never also be a box family.
+# ---------------------------------------------------------------------------
+
+def _content_band_tier_object_write(
+    decl: Any, ctx: Any, prop: str, base_attr: str
+) -> "Write | list[Write] | GAP":
+    resolved = _resolve_co_declared_var(strip_important(decl.value).strip(), {})
+
+    if db_lookup.attr_is_colour_role(ctx.block_slug, base_attr):
+        v = extract_token_or_hex(resolved)
+        if v is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{prop} value {decl.value!r} is neither a token slug, hex, "
+                f"nor rgb/hsl colour literal",
+            )
+        return tier_object_write(ctx, decl, prop, base_attr, v, validate_raw=v)
+
+    if attr_is_number(ctx, base_attr):
+        num, unit = split_value_unit(resolved)
+        if num is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{prop} value {decl.value!r} is not a parseable number for "
+                f"numeric attr {base_attr!r}",
+            )
+        num_out: int | float = int(num) if float(num).is_integer() else num
+        write = tier_object_write(ctx, decl, prop, base_attr, num_out, validate_raw=str(num_out))
+        if isinstance(write, GAP):
+            return write
+        if unit and decl.tier == "Base":
+            base_unit_attr = f"{base_attr}Unit"
+            if validate(ctx, base_unit_attr, unit):
+                return [
+                    write,
+                    Write(attr=base_unit_attr, value=unit, property=prop, tier=decl.tier),
+                ]
+        return write
+
+    # String/length-literal attr (D230 — contentWidth is token-or-literal).
+    value = token_snap(prop, value_serialise("string", None, resolved), ctx.conn)
+    return tier_object_write(ctx, decl, prop, base_attr, value, validate_raw=str(value))

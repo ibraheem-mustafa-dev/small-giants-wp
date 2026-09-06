@@ -1,0 +1,3754 @@
+{
+  "_meta": {
+    "generated_by": "audit-script-reachability.py",
+    "tests_excluded": 123,
+    "tests_excluded_reason": "pytest discovers test_*.py by name convention; nothing references them, so absence of a caller carries no information about them",
+    "candidate_note": "DOC-ONLY and UNREFERENCED are CANDIDATES FOR TRIAGE, not deletions. Unwired means SUPERSEDED (retire) or ORPHANED (revive) and only reading the code tells you which.",
+    "ambiguity_note": "A module stem shared by two files credits both. Deliberate: over-crediting hides a revival candidate, under-crediting invites deleting a live tool."
+  },
+  "counts": {
+    "UNREFERENCED": 1,
+    "DOC-ONLY": 84,
+    "WIRED": 419
+  },
+  "scripts": [
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-script-cull-candidates.py",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/assert-comment-only-diff.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/behavioural-analyser/backfill-coarse-roles.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/build-font-collection.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/census-colour-paint-route.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-unresolvable-token-refs.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/colour-codemod/adopt.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/colour-codemod/migrate-shadow-mounts.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/consistency/reclassify.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector8_undeclared_enum.php",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/button_group.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/coverage-matrix/generate-coverage-matrix.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/retire_table.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/diff-gap-sanitiser.php",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/e2e-authoring-acceptance.php",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/extract-button-presets.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/extract-comment-narrative.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/fanout-overlay-sibling-attrs.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/fingerprint-builder/audit-attr-vocabulary-v2.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-db-catalogue.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/golden-master-acceptance.php",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/image-sequence-prep.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-content-collection-to-card-grid.php",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/capture-page.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/capture-preset-gap.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/migrate-details-to-accordion.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-accordion.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-button-equivalence.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-columns-responsive.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-cw-cause.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-group-layout.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-heading-cascade.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-image-pairing.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-multibutton-margin.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-overflow.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-page8-media.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-preset-gap.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/probe-text-equivalence.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/publish-pattern-pair.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/upgrade-button-presets.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-gallery-object-model.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-length-sanitiser.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-overlay-tier-axis.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-render-closures.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-theme-attr-rename.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-theme-native-spacing.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrations/2026-08-13-register-core-role-and-seed-native-wp.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrations/2026-08-13-role-remediation-part2-overrides.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-carousel-loop.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-editor-css-warnings.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-first-paint.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-horizontal-panel-focus.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-stepn-image-sequence-pin.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-tier-w-surface.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-wave-c-editor.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/crawl-assert.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/palette-contrast-sweep.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/submenu-harness.php",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/attribution_ground_truth.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/decompose_unattributed.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/preflight-acceptance.php",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/qa/capture-native-colour-ui.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/qa/capture-ncui-final3.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/qa/capture-ncui-remainder.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/qa/capture-ncui-templateparts.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/qa/check-colour-editor-roundtrip.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/qa/probe-native-colour-ui-close.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/qa/probe-row-gradient.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/row-fit-sweep.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/seed-48-sku-fixture-v2.php",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/seed-mamas-products.php",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/audit-css-element-drift.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/census-tier-siblings.sh",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/check-control-parity-live.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-extension-usage.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/test-pack-pricing-cascade.php",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "scripts/apply-block-attrs-batch.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "scripts/brand-palette-sampler.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "scripts/colour-parity-audit.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "scripts/font-source-audit.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "scripts/lint-patterns-for-personal-data.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "scripts/qc-correctness-regression.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "scripts/render-mobile-override-audit.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "scripts/sgs-block-grep.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "scripts/verify-restored-page.js",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": ".claude/hooks/decisions-sweep-auto.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "manifest",
+        "settings"
+      ]
+    },
+    {
+      "script": ".claude/hooks/drift-check-dispatcher.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "settings"
+      ]
+    },
+    {
+      "script": ".claude/hooks/f5-commit-gate.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate",
+        "hook",
+        "script-call",
+        "settings"
+      ]
+    },
+    {
+      "script": ".claude/hooks/git-path-scope-guard.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "settings"
+      ]
+    },
+    {
+      "script": ".claude/hooks/handoff-preflight.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": ".claude/hooks/ledger-rotate.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "settings"
+      ]
+    },
+    {
+      "script": ".claude/hooks/memory-cap-guard.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "settings"
+      ]
+    },
+    {
+      "script": ".claude/hooks/no-header-footer-block.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "settings",
+        "skill"
+      ]
+    },
+    {
+      "script": ".claude/hooks/spec-drift-commit-gate.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "settings"
+      ]
+    },
+    {
+      "script": ".claude/scripts/build-archive-index.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": ".claude/scripts/sweep-decisions.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-block-file-consistency.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-block-uniformity.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-declared-vs-seeded-roles.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-feature-parity.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "npm",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-inline-styling.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-post-content-blocks.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-scoped-selector-live.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-script-reachability.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-shrink-to-fit.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/behavioural-analyser/backfill-from-json-catalogue.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/behavioural-analyser/extract-signatures.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/build-deploy.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/build-tier-fixture-page.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/capture-tier-fixture.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/__init__.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/check_bound_emit.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/check_converter_source.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/check_d2_when_d1.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/check_hardcoded_dicts.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/check_important_render.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/check_parallel_bp.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/check_sentinel.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/check_slug_literals.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/models.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/cheat-gate/run.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate",
+        "hook",
+        "manifest",
+        "npm",
+        "script-call",
+        "settings",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-atomic-slug-literals.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-block-asset-targets.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-blockjson-metadata-only.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-box-family-guard.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-control-ux.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-dead-api-calls.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-dead-controls.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-dead-pattern-attrs.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-device-toggle.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-duplicate-controls.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-editor-canvas-css.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-editor-only.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-editor-render-parity.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-element-manifest-conformance.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-empty-inspector-containers.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-fx-list-drift.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-id-scoped-emits.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-inert-controls.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-interaction-only-css.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-jsonld-flags.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-ksort-before-hash.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-markup-neutral.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-motion-bundle-budget.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-no-core-blocks.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-palette-slug-refs.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-preset-token-naming.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-product-search-guards.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-render-undefined-vars.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-shader-sources.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-shared-css-state-rules.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-shared-panel-schema.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-simple-surface-cap.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-single-instance-invariants.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-text-gradient-companion.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-tier-object-cast.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-tier-storage-shape.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-token-rename-neutral.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-undeclared-attrs.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-undefined-refs.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-undefined-refs.selftest.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-universal-fit.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/check-wrapper-capability-preconditions.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/colour-codemod/fix.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/colour-codemod/scan-undeclared-setattributes.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/colour-codemod/survey.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/consistency/build-roster.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/consistency/build-setting-types.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/consistency/check-box-flat.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/consistency/check-cluster-coverage.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/consistency/check-reclassified-keys.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/consistency/report-colour-alpha.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/consistency/run-consistency-gates.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/classify_detector1.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector1_render_escaping.php",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector2_editjs_controls.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector3_i18n_default.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector4_referenced_not_output.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector5_image_alt_companion.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector6_native_support_and_style_emission.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector7_css_paint_flow.php",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/fingerprint_content_roles.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/__init__.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/context.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/coverage_report.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/db/__init__.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/db/db_lookup.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "manifest",
+        "script-call",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/dispatch_table.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/entry.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/gates/__init__.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/gates/check_content_attr_collisions.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/gates/check_preset_absence_no_slug_literal.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/gates/check_raw_sqlite.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/gates/import_ban.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/gates/no_slug_literal.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/models.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/orchestrator.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/recognition.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/__init__.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/array_content.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/content_band.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/grid.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/outer_box.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/preset_absence.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/scalar_content.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/scalar_media.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/styling_content.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/resolvers/typography.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/__init__.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/arrangement.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/assembly.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/attr_resolve.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/border_side.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/content_gap_collector.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/content_select.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/css_parse.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/css_pass.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/draft_oracle.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/extraction.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/field_extractors.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/fold_helpers.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/gap_writer.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/has_inner.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/icon_resolver.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/l2_qualify.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/layer_detect.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/lift_helpers.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/pseudo_overlay.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/recognise_helpers.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/render_emits.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/root_supports.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/section_passes.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/state_value_lift.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/styling_helpers.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/text_leaf.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/tier_suffix.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/token_resolution_check.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/token_snap.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/validate.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/value_serialise.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/variant_detect.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/walk.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/copy-built-styles.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/coverage-matrix/classifier.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/coverage-matrix/db_queries.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/coverage-matrix/models.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/__init__.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_composition.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_css_property_reseed.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_fx_qualifying_blocks_stale.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_motion_fx_reseed.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_orphan_roles.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_overrides_drift.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_routing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_tier_composition.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_variant_reseed.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/check_variants.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/models.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/resolver_bridge.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/db-consistency/run.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate",
+        "hook",
+        "manifest",
+        "npm",
+        "script-call",
+        "settings",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/capture_seed_data.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/check_schema_drift.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/check_value_identity.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/migrate.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/rebuild_compare.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/refresh_wp_reference.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/sandbox.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/seed_history.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dbschema/wp_reference_archive.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dead-api-checker/tokenize-calls.php",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/drift-validator/validate.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/excluded-gate/__init__.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/excluded-gate/db_check.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/excluded-gate/models.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/excluded-gate/run.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate",
+        "hook",
+        "manifest",
+        "npm",
+        "script-call",
+        "settings",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/excluded-gate/scanner.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/gap-detection/detect.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-attr-role-map.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-block-reference.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-extension-attributes.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-fx-effects-php.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-fx-qualifying-blocks.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-icons.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-markup-examples.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-tooling-catalogue.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/golden-master-harness.php",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/baseline.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/components.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/extensions.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/finding.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/golden.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/report.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/roster.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/selftest.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/core/sources.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/export-colour-css-property.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/01-tab-group.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/03-dense-panel-candidate.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/04-colour-alpha.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/07-preset-only-shadow.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/08-raw-url-link.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/14-media-upload-check.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/17-reduced-motion-gate.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/18-decorative-image-aria.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/20-pattern-template-lock.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/21-render-without-control.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/22-placement-rule-surfaces.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/23-content-width-needs-inner-band.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/24-raw-canonical-component.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/25-no-own-device-switcher.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/26-responsive-duplicate.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/27-superseded-link-control.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/28-fix-durability.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/29-duplicate-visible-label.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/30-raw-box-control.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/33-ineffective-typography-selector.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/rules/34-declared-attr-unrendered.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/inspector-scan/run.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate",
+        "manifest",
+        "npm",
+        "script-call",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/ledger/__init__.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/ledger/content_gap_check.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/ledger/coverage_check.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate",
+        "hook",
+        "npm",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/ledger/declare_input.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/ledger/models.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/lint-responsive-controls.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/lints/__init__.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/lints/bem-lint.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate",
+        "hook",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/lints/draft-vocab-lint.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/lints/lint-spec-drift.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/lints/lint-theme-css-hardcodes.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/lints/token-lint.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate",
+        "hook",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/make-visual-diff-reports.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/block_parser.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/build_register.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/contract.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/driver.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/lint-page.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/__init__.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/button_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/buttons_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/column_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/columns_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/cover_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/group_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/heading_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/image_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/latest_posts_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/paragraph_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/post_template_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/query_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/row_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/separator_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/site_logo_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/stack_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/typography_common.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-theme-tier-scalars.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-tier-object.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrations/2026-06-13-testimonial-selector-fingerprint-override.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrations/2026-06-26-testimonial-media-role-selector.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrations/2026-08-24-drop-fossil-columns.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-cursor-field.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-good-by-default.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-horizontal-panel.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-morph-geometry.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-motion-path-repeat.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-reduced-motion.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-step13-pin-focus.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-step14-scrub-focus.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-wave-c.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/run-live-probes.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/axe-run.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/build-poc-fixtures.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/elementfrompoint-sweep.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/lib/openness-guard.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/logical-props-lint.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/shoot-drawer-pairs.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/sweep-drawer-variants.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/no-inline-land-verify.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "settings"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/no-inline/check-no-inline.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/no-inline/check-stranded-guards.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/no-inline/detect.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/__init__.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/batch_runner.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/capture.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/element_probe.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/golden_expectations.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/guards.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/metamorphic.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/models.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/provision_fixture_canaries.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/render_oracle.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/run_canary_proof.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/verdict.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/atomic-block-scaffold.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/attribute-staged-apply.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/autonomy_gate.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/check_flat_tier_regression.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/check_no_mirror.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/critical-fix-verification.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/css_router.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/expected_rules.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/functionality-bulk-apply.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/lingua_franca.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/media-sideload.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/mutex.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/orchestrator_main.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/pipeline-stage-gate.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/preflight_chain.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/register_patterns.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/stage1_boundary_hook.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/stage_attribute_promotion.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/staged_merge.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/staged_output.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/trace.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/upload_and_patch.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/validate-stage-artifact.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/visual_qa_capture.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/orchestrator/wp_integration.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/parity/computed-parity.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/parity/extract-css-diff.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/pattern-classify.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/pattern-fingerprint.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/pattern-register.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/placement-reach.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/playwright-fetch.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/product-search-leak-check.php",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/prove-selftest-can-fail.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/push-theme-snapshot.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/__init__.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/attribute-gap-writer.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/bucket-c-classifier.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/confidence-matrix.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/functionality-gap-detector.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/gap-review-report.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "manifest",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/recogniser/simple_html_review_report.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/remove-vacuous-style-engine-guard.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/run-motion-fx-generators.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/scan-component-adoption.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/seed-48-sku-fixture.php",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/seed-component-adoption.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/seed-composition-roles.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/seed-motion-fx-registry.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "settings",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/sgs-update-v2.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/shared_utils.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/check-image-controls-support.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/compare-reach-depth.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/extract-native-contracts.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/fetch-native-control-contracts.sh",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/lib/control-detection.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/lib/php-kind-consumption.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/lib/wrapper-capability-selftest.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-background-colour-support.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-box-controls.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-colour-controls.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-colour-coverage.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-control-gaps.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-control-mounts.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-control-parity.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-dead-css.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-experimental-imports.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-golden-conformance.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-inspector-surface.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-length-controls.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-native-supports.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-responsive-shape.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-typography-controls.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "npm"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/survey-wrapper-capability.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/sync-business-info.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/colour.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/derive.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/extract.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/measure.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/palette.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/presets.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/roles.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/schema_validate.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/token_map.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/theme-extractor/typography.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/uimax-tools/enrich-db.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/uimax-tools/seed-block-compositions.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/uimax-tools/seed-slot-synonyms.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uimax-sync.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/uimax-tools/uimax-write-validator.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/uimax-tools/uimax_write.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/value-matcher/inheritance.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/value-matcher/match.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/visual-report-sha.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/wp-pre-merge-gate.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate"
+      ]
+    },
+    {
+      "script": "scripts/css-pattern-audit.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate"
+      ]
+    },
+    {
+      "script": "scripts/global-styles-reset.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "skill"
+      ]
+    },
+    {
+      "script": "scripts/lib/oldshape-mappings.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "scripts/lint-naming-conventions.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest"
+      ]
+    },
+    {
+      "script": "scripts/qc-anti-cheat.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "scripts/qc_anti_cheat_checks.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "scripts/wc-pages-responsive-audit.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "scripts/wp-migrate-oldshape-blocks.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "scripts/wp-update-block-attrs.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "skill"
+      ]
+    }
+  ]
+}

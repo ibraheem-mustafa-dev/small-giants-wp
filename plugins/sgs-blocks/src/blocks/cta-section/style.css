@@ -354,24 +354,50 @@
 }
 
 /* ===== Custom Hover States (editor-configurable) =====
- * The `--sgs-hover-*` VALUES are now emitted by SGS_Container_Wrapper as a
- * scoped `.uid{…}` rule (zero-inline, GOTCHA F), NOT an inline style
- * attribute, so these rules must NOT gate on `[style*="--sgs-hover-…"]`
- * (that selector no longer matches after the no-inline conversion and
- * silently killed the hover colours). Gate via `var(--x, <inert-fallback>)`
- * instead — unset → falls through to the resting value (no visible change on
- * hover), set → applies (mirrors sgs/brand-strip's per-tile hover fix). */
+ * Background/text/border hover colours are now emitted by render.php via
+ * sgs_emit_state_colour_css() as a per-instance `.{uid}.sgs-cta-section:hover,
+ * .{uid}.sgs-cta-section:focus-visible{…}` rule — no static rule here, no
+ * hardcoded fallback colour. Unset hover colour = no visible change on hover
+ * (matches sgs/info-box). */
 
-.sgs-cta-section:hover {
-	background-color: var(--sgs-hover-bg, var(--wp--preset--color--primary-dark));
-}
+/* ===== Hover Image Zoom + Grayscale (Gate A, D808) =====
+ * cta-section is a root-hover block (D808), but unlike sgs/team-member it has
+ * no <img> child — an optional background image is set directly on the ROOT
+ * via a CSS `background-image` declaration (render.php,
+ * `.sgs-cta-section--has-bg-image`), so applying `filter`/`transform` to the
+ * root itself would also zoom/grey the headline, body and buttons. Both
+ * effects instead target a dedicated `::before` background layer that
+ * inherits the root's own background declarations, matching team-member's
+ * transition/transform approach without touching foreground content. When no
+ * background image is set, `--has-bg-image` never applies and this CSS is a
+ * no-op (matches team-member's "unset = no visible change"). */
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-cta-section.sgs-cta-section--has-bg-image:is(.sgs-has-img-zoom, .sgs-has-grayscale)::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		background-image: inherit;
+		background-size: cover;
+		background-position: inherit;
+		pointer-events: none;
+		transition: transform 0.5s ease,
+			filter var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
+	}
 
-.sgs-cta-section:hover {
-	color: var(--sgs-hover-text, inherit);
-}
+	/* Hover Image Zoom */
+	.sgs-cta-section.sgs-has-img-zoom.sgs-cta-section--has-bg-image:hover::before {
+		transform: scale(1.1);
+	}
 
-.sgs-cta-section:hover {
-	border-color: var(--sgs-hover-border, transparent);
+	/* Grayscale to colour */
+	.sgs-cta-section.sgs-has-grayscale.sgs-cta-section--has-bg-image::before {
+		filter: grayscale(100%);
+	}
+
+	.sgs-cta-section.sgs-has-grayscale.sgs-cta-section--has-bg-image:hover::before {
+		filter: grayscale(0%);
+	}
 }
 
 /* ===== Responsive ===== */
@@ -408,6 +434,13 @@
 	}
 
 	.sgs-cta-section__btn:hover {
+		transform: none;
+	}
+
+	/* Kill residual resting zoom transform on the background layer — matches
+	   team-member's reduced-motion behaviour (genuinely zero motion, no
+	   near-zero-transition fallback). */
+	.sgs-cta-section.sgs-has-img-zoom.sgs-cta-section--has-bg-image:hover::before {
 		transform: none;
 	}
 }

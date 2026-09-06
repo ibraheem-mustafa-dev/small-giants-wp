@@ -24,14 +24,9 @@ import {
 	ToggleControl,
 	BaseControl,
 } from '@wordpress/components';
-import {
-	ResponsiveBoxControl,
-	ResponsiveControl,
-	ShadowControl,
-	SgsColourPanel,
-} from '../../components';
+import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsColourPanel, DesignTokenPicker, TypographyControls, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // No-inline migration contract §B3 (D294): testimonial is a content-KIND
 // composite using only box+width, so it migrates BLOCK-PRIVATE — dropped
@@ -161,10 +156,6 @@ const VARIANTS = [
 export default function Edit( { attributes, setAttributes, context } ) {
 	const {
 		style,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		maxWidth,
 		variant,
 		quote,
@@ -175,6 +166,9 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		avatarMedia,
 		orgLogo,
 		workMedia,
+		avatarDecorative,
+		orgLogoDecorative,
+		workMediaDecorative,
 		showRating,
 		ratingType,
 		ratingStars,
@@ -187,18 +181,27 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		quoteFontSize,
 		quoteMarginBottom,
 		quoteColour,
+		quoteColourHover,
 		quoteColourGradient,
 		quoteFontStyle,
 		quoteLineHeight,
 		summaryFontSize,
 		summaryColour,
+		summaryColourGradient,
 		nameColour,
+		nameColourGradient,
 		roleColour,
+		roleColourGradient,
 		orgColour,
+		orgColourGradient,
 		ratingColour,
+		ratingColourGradient,
 		ratingSize,
 		nameFontWeight,
+		nameFontSize,
 		effectHover,
+		backgroundColour,
+		backgroundColourGradient,
 		backgroundColourHover,
 		textColourHover,
 		borderColourHover,
@@ -208,6 +211,12 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		scaleHover,
 		shadowHover,
 		shadowHoverColour,
+		staggerDelay,
+		summaryColourHover,
+		nameColourHover,
+		roleColourHover,
+		orgColourHover,
+		ratingColourHover,
 	} = attributes;
 
 	// Effective variant = this card's own explicit choice, else the parent
@@ -245,15 +254,6 @@ export default function Edit( { attributes, setAttributes, context } ) {
 	const blockProps = useBlockProps( {
 		className,
 		style: {
-			'--sgs-hover-bg': backgroundColourHover
-				? colourVar( backgroundColourHover )
-				: undefined,
-			'--sgs-hover-text': textColourHover
-				? colourVar( textColourHover )
-				: undefined,
-			'--sgs-hover-border': borderColourHover
-				? colourVar( borderColourHover )
-				: undefined,
 			'--sgs-transition-duration': transitionDuration
 				? `${ transitionDuration }ms`
 				: undefined,
@@ -274,20 +274,23 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		lineHeight: quoteLineHeight || undefined,
 		marginBottom: quoteMarginBottom || undefined,
 	};
+	// summary/name/role/org/rating colours (2026-09-03) — the sibling
+	// {attr}ColourGradient wins when set+valid, same recipe as quoteColour/
+	// quoteColourGradient above.
 	const summaryStyle = {
-		color: summaryColour || undefined,
+		...resolveTextColourPreviewStyle( summaryColour, summaryColourGradient ),
 		fontSize: summaryFontSize ? fontSizeVar( summaryFontSize ) : undefined,
 	};
-	const nameStyle = { color: nameColour || undefined };
-	const roleStyle = { color: roleColour || undefined };
-	const orgStyle = { color: orgColour || undefined };
+	const nameStyle = resolveTextColourPreviewStyle( nameColour, nameColourGradient );
+	const roleStyle = resolveTextColourPreviewStyle( roleColour, roleColourGradient );
+	const orgStyle = resolveTextColourPreviewStyle( orgColour, orgColourGradient );
 	// ratingSize mirrors render.php:487/499, which sets the same pixel value as
 	// the frontend SVG stars' width/height. The canvas renders the rating as a
 	// text glyph ('★'.repeat(...)) rather than SVG, so the equivalent visual
 	// control is font-size — matches block.json's own attrMap
 	// ("css:font-size": "ratingSize", block.json:134).
 	const ratingStyle = {
-		color: ratingColour || undefined,
+		...resolveTextColourPreviewStyle( ratingColour, ratingColourGradient ),
 		fontSize: ratingSize ? ratingSize + 'px' : undefined,
 	};
 
@@ -336,68 +339,51 @@ export default function Edit( { attributes, setAttributes, context } ) {
 			   already scoped it inside the old Typography panel. */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: style?.color?.background,
-								onChange: ( val ) =>
-									setAttributes( {
-										style: {
-											...style,
-											color: {
-												...style?.color,
-												background: val ?? '',
-											},
-										},
-									} ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: backgroundColourHover,
-								onChange: ( val ) =>
-									setAttributes( {
-										backgroundColourHover: val ?? '',
-									} ),
-								linked: true,
-							},
-						],
-					},
-					{
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: style?.color?.text,
-								onChange: ( val ) =>
-									setAttributes( {
-										style: {
-											...style,
-											color: {
-												...style?.color,
-												text: val ?? '',
-											},
-										},
-									} ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: textColourHover,
-								onChange: ( val ) =>
-									setAttributes( { textColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'textColour',
+							hover: 'textColourHover',
+							gradient: 'textColourGradient',
+							hoverGradient: 'textColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+					/* Link colour. supports.color.link was `true`, so CORE rendered its
+					   own link-colour control — but this block never READ
+					   style.elements.link.color.text, so that control wrote an attribute
+					   nothing painted. It was a DEAD control, not a working feature, and
+					   the flip therefore removes nothing. A link genuinely can appear
+					   here: `quote` and `summary` are RichText fields output through
+					   wp_kses_post(), which permits <a>. So the capability is added
+					   properly rather than dropped. Same `text` paint mechanism as the
+					   row above (css_property `color`), hence textRow, not fillRow. */
+					textRow( {
+						key: 'link',
+						label: __( 'Link colour', 'sgs-blocks' ),
+						attrs: {
+							base: 'linkColour',
+							hover: 'linkColourHover',
+							gradient: 'linkColourGradient',
+							hoverGradient: 'linkColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'border',
 						label: __( 'Border colour (hover)', 'sgs-blocks' ),
@@ -416,54 +402,9 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						],
 					},
 					{
-						key: 'quote',
-						label: __( 'Quote colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: quoteColour,
-								onChange: ( val ) =>
-									setAttributes( { quoteColour: val ?? '' } ),
-								linked: true,
-								gradientValue: quoteColourGradient,
-								gradientOnChange: ( val ) =>
-									setAttributes( { quoteColourGradient: val ?? '' } ),
-							},
-						],
-					},
-					showSummary && {
-						key: 'summary',
-						label: __( 'Summary colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: summaryColour,
-								onChange: ( val ) =>
-									setAttributes( { summaryColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'name',
-						label: __( 'Name colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: nameColour,
-								onChange: ( val ) =>
-									setAttributes( { nameColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
 						key: 'role',
 						label: __( 'Role colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -472,39 +413,20 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onChange: ( val ) =>
 									setAttributes( { roleColour: val ?? '' } ),
 								linked: true,
+								gradientValue: roleColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { roleColourGradient: val ?? '' } ),
 							},
-						],
-					},
-					{
-						key: 'org',
-						label: __( 'Organisation colour', 'sgs-blocks' ),
-						states: [
 							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: orgColour,
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: roleColourHover,
 								onChange: ( val ) =>
-									setAttributes( { orgColour: val ?? '' } ),
+									setAttributes( { roleColourHover: val ?? '' } ),
 								linked: true,
-							},
+								},
 						],
 					},
-					( effectiveVariant === 'rating-led' ||
-						effectiveVariant === 'classic-card' ) &&
-						showRating && {
-							key: 'rating',
-							label: __( 'Rating colour', 'sgs-blocks' ),
-							states: [
-								{
-									key: 'normal',
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: ratingColour,
-									onChange: ( val ) =>
-										setAttributes( { ratingColour: val ?? '' } ),
-									linked: true,
-								},
-							],
-						},
 					shadowHover && {
 						key: 'shadowHover',
 						label: __( 'Hover shadow colour', 'sgs-blocks' ),
@@ -599,139 +521,6 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					</BaseControl>
 				</PanelBody>
 
-				{ /* ── Rating — visibility + content (behaviour). Appearance
-				     [colour, size] moved to the Styles tab below. ── */ }
-				{ ( effectiveVariant === 'rating-led' || effectiveVariant === 'classic-card' ) && (
-					<PanelBody title={ __( 'Rating', 'sgs-blocks' ) } initialOpen={ false }>
-						<ToggleControl
-							label={ __( 'Show a rating', 'sgs-blocks' ) }
-							help={ __(
-								'Ratings are optional. Leave off for testimonials with no score.',
-								'sgs-blocks'
-							) }
-							checked={ showRating }
-							onChange={ ( val ) =>
-								setAttributes( { showRating: val } )
-							}
-							__nextHasNoMarginBottom
-						/>
-						{ showRating && effectiveVariant === 'rating-led' && (
-							<SelectControl
-								label={ __( 'Rating type', 'sgs-blocks' ) }
-								value={ ratingType }
-								options={ [
-									{
-										label: __( 'Stars (out of 5)', 'sgs-blocks' ),
-										value: 'stars',
-									},
-									{
-										label: __( 'Numeric score', 'sgs-blocks' ),
-										value: 'scale',
-									},
-								] }
-								onChange={ ( val ) =>
-									setAttributes( { ratingType: val } )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
-						{ showRating &&
-							showStarsControl &&
-							( effectiveVariant === 'classic-card' ||
-								ratingType === 'stars' ) && (
-								<RangeControl
-									label={ __( 'Stars', 'sgs-blocks' ) }
-									value={ ratingStars }
-									onChange={ ( val ) =>
-										setAttributes( { ratingStars: val } )
-									}
-									min={ 0 }
-									max={ 5 }
-									step={ 0.5 }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							) }
-						{ showRating &&
-							effectiveVariant === 'rating-led' &&
-							ratingType === 'scale' && (
-								<>
-									<RangeControl
-										label={ __( 'Score', 'sgs-blocks' ) }
-										value={ ratingScale }
-										onChange={ ( val ) =>
-											setAttributes( {
-												ratingScale: val,
-											} )
-										}
-										min={ 0 }
-										max={ 10 }
-										step={ 0.1 }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
-									/>
-									<TextControl
-										label={ __(
-											'Out of (max)',
-											'sgs-blocks'
-										) }
-										value={ ratingScaleMax }
-										onChange={ ( val ) =>
-											setAttributes( {
-												ratingScaleMax: val,
-											} )
-										}
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
-									/>
-								</>
-							) }
-						{ showRating && effectiveVariant === 'rating-led' && (
-							<>
-								<ToggleControl
-									label={ __(
-										'Verified badge',
-										'sgs-blocks'
-									) }
-									checked={ verified }
-									onChange={ ( val ) =>
-										setAttributes( { verified: val } )
-									}
-									__nextHasNoMarginBottom
-								/>
-								<TextControl
-									label={ __(
-										'Source platform',
-										'sgs-blocks'
-									) }
-									help={ __(
-										'e.g. Trustpilot, Google',
-										'sgs-blocks'
-									) }
-									value={ sourcePlatform }
-									onChange={ ( val ) =>
-										setAttributes( {
-											sourcePlatform: val,
-										} )
-									}
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-								<TextControl
-									label={ __( 'Review date', 'sgs-blocks' ) }
-									value={ reviewDate }
-									onChange={ ( val ) =>
-										setAttributes( { reviewDate: val } )
-									}
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</>
-						) }
-					</PanelBody>
-				) }
-
 				{ /* ── Media (gated per variant) ── */ }
 				{ ( showAvatar || showLogo || showWork ) && (
 					<PanelBody
@@ -746,6 +535,30 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onChange={ ( media ) =>
 									setAttributes( { avatarMedia: media } )
 								}
+							/>
+						) }
+						{ /* Item 18 (WCAG 1.1.1) — a person's headshot is normally
+						     informative (it identifies who gave the testimonial), so
+						     this stays OFF by default; only an operator who knows this
+						     particular photo carries no information (e.g. a stock/
+						     placeholder image) should switch it on. When on, the photo
+						     renders with an empty alt + aria-hidden instead of the
+						     media library's stored alt text. */ }
+						{ showAvatar && avatarMedia?.url && (
+							<ToggleControl
+								label={ __(
+									'Author photo is decorative',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Hides this photo from screen readers. Leave off unless the photo carries no information of its own.',
+									'sgs-blocks'
+								) }
+								checked={ !! avatarDecorative }
+								onChange={ ( val ) =>
+									setAttributes( { avatarDecorative: val } )
+								}
+								__nextHasNoMarginBottom
 							/>
 						) }
 						{ /* Art direction (2026-08-07). Same device-switched shape as
@@ -795,6 +608,25 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								} }
 							</ResponsiveControl>
 						) }
+						{ /* 37-media-no-handroll remediation (2026-09-03) — the author
+						     photo's crop mode is a genuine per-instance client control
+						     now (style.css no longer hardcodes object-fit:cover; the
+						     shared media-atoms stylesheet paints the same default).
+						     Gated on an author photo existing, same as the art-direction
+						     control above — a crop control for a photo that is not
+						     there would be a dead control. */ }
+						{ showAvatar && avatarMedia?.url && (
+							<MediaElementPanel
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix="avatar"
+								blockSlug="sgs/testimonial"
+								insertion="element"
+								atoms={ [ 'object-fit' ] }
+								mediaType="image"
+								scope="element"
+							/>
+						) }
 						{ showLogo && (
 							<MediaPanel
 								label={ __( 'Organisation logo', 'sgs-blocks' ) }
@@ -803,6 +635,55 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onChange={ ( media ) =>
 									setAttributes( { orgLogo: media } )
 								}
+							/>
+						) }
+						{ /* Item 18 (WCAG 1.1.1) — a logo is normally informative (it
+						     identifies which company), so OFF by default. */ }
+						{ showLogo && orgLogo?.url && (
+							<ToggleControl
+								label={ __(
+									'Organisation logo is decorative',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Hides this logo from screen readers. Leave off unless the logo carries no information of its own.',
+									'sgs-blocks'
+								) }
+								checked={ !! orgLogoDecorative }
+								onChange={ ( val ) =>
+									setAttributes( { orgLogoDecorative: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						) }
+						{ /* Moved in from the shared SgsColourPanel (D622 — an
+						     element-scoped colour belongs in its own element's
+						     TIER 1 panel; "organisation name" is a declared
+						     element whose attrMap claims orgColour). */ }
+						{ showLogo && (
+							<DesignTokenPicker
+								label={ __( 'Organisation colour', 'sgs-blocks' ) }
+								states={ [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: orgColour,
+										onChange: ( val ) =>
+											setAttributes( { orgColour: val ?? '' } ),
+										linked: true,
+										gradientValue: orgColourGradient,
+										onGradientChange: ( val ) =>
+											setAttributes( { orgColourGradient: val ?? '' } ),
+									},
+									{
+										key: 'hover',
+										label: __( 'Hover', 'sgs-blocks' ),
+										value: orgColourHover,
+										onChange: ( val ) =>
+											setAttributes( { orgColourHover: val ?? '' } ),
+										linked: true,
+									},
+								] }
 							/>
 						) }
 						{ showWork && (
@@ -815,7 +696,303 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								}
 							/>
 						) }
+						{ /* Item 18 (WCAG 1.1.1) — case-study media is more plausibly
+						     decorative (a background/hero shot for the story) than the
+						     avatar/logo above, but still OFF by default: the operator
+						     makes the call per instance. */ }
+						{ showWork && workMedia?.url && (
+							<ToggleControl
+								label={ __(
+									'Work media is decorative',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Hides this image or video from screen readers. Leave off unless it carries no information of its own.',
+									'sgs-blocks'
+								) }
+								checked={ !! workMediaDecorative }
+								onChange={ ( val ) =>
+									setAttributes( { workMediaDecorative: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						) }
+						{ /* 37-media-no-handroll remediation (2026-09-03) — replaces the
+						     old block-level imageControls/imageControlsExplicit
+						     "Image Controls" panel (a single shared sgsObjectFit/
+						     sgsObjectPosition pair) with an independently-scoped
+						     object-fit + focal-point control for THIS slot only,
+						     matching sgs/before-after's Wave 5b precedent. Case-study
+						     photos/videos vary wildly in composition, so both the crop
+						     mode and crop focus are genuine per-instance needs here. */ }
+						{ showWork && workMedia?.url && (
+							<MediaElementPanel
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix="work"
+								blockSlug="sgs/testimonial"
+								insertion="element"
+								atoms={ [ 'object-fit', 'focal-point' ] }
+								mediaType={ workMedia?.type === 'video' ? 'video' : 'image' }
+								scope="element"
+								previewUrl={ workMedia?.type === 'video' ? '' : workMedia?.url || '' }
+							/>
+						) }
 					</PanelBody>
+				) }
+
+				{ /* ── Rating — visibility + content (behaviour). Appearance
+				     [colour, size] moved to the Styles tab below. ── */ }
+				{ ( effectiveVariant === 'rating-led' || effectiveVariant === 'classic-card' ) && (
+					<ToolsPanel
+						label={ __( 'Rating', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								showRating: false,
+								ratingType: 'stars',
+								ratingStars: 0,
+								ratingScale: 0,
+								ratingScaleMax: '10',
+								verified: false,
+								sourcePlatform: '',
+								reviewDate: '',
+								ratingSize: 16,
+								ratingColour: '',
+								ratingColourGradient: '',
+								ratingColourHover: '',
+							} )
+						}
+					>
+						<ToolsPanelItem
+							label={ __( 'Show a rating', 'sgs-blocks' ) }
+							hasValue={ () => showRating !== false }
+							onDeselect={ () => setAttributes( { showRating: false } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Show a rating', 'sgs-blocks' ) }
+								help={ __(
+									'Ratings are optional. Leave off for testimonials with no score.',
+									'sgs-blocks'
+								) }
+								checked={ showRating }
+								onChange={ ( val ) =>
+									setAttributes( { showRating: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						{ showRating && effectiveVariant === 'rating-led' && (
+							<ToolsPanelItem
+								label={ __( 'Rating type', 'sgs-blocks' ) }
+								hasValue={ () => ratingType !== 'stars' }
+								onDeselect={ () => setAttributes( { ratingType: 'stars' } ) }
+							>
+								<SelectControl
+									label={ __( 'Rating type', 'sgs-blocks' ) }
+									value={ ratingType }
+									options={ [
+										{
+											label: __( 'Stars (out of 5)', 'sgs-blocks' ),
+											value: 'stars',
+										},
+										{
+											label: __( 'Numeric score', 'sgs-blocks' ),
+											value: 'scale',
+										},
+									] }
+									onChange={ ( val ) =>
+										setAttributes( { ratingType: val } )
+									}
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
+						) }
+						{ showRating &&
+							showStarsControl &&
+							( effectiveVariant === 'classic-card' ||
+								ratingType === 'stars' ) && (
+								<ToolsPanelItem
+									label={ __( 'Stars', 'sgs-blocks' ) }
+									hasValue={ () => ratingStars !== 0 }
+									onDeselect={ () => setAttributes( { ratingStars: 0 } ) }
+								>
+									<RangeControl
+										label={ __( 'Stars', 'sgs-blocks' ) }
+										value={ ratingStars }
+										onChange={ ( val ) =>
+											setAttributes( { ratingStars: val } )
+										}
+										min={ 0 }
+										max={ 5 }
+										step={ 0.5 }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+							) }
+						{ showRating &&
+							effectiveVariant === 'rating-led' &&
+							ratingType === 'scale' && (
+								<>
+									<ToolsPanelItem
+										label={ __( 'Score', 'sgs-blocks' ) }
+										hasValue={ () => ratingScale !== 0 }
+										onDeselect={ () => setAttributes( { ratingScale: 0 } ) }
+									>
+										<RangeControl
+											label={ __( 'Score', 'sgs-blocks' ) }
+											value={ ratingScale }
+											onChange={ ( val ) =>
+												setAttributes( {
+													ratingScale: val,
+												} )
+											}
+											min={ 0 }
+											max={ 10 }
+											step={ 0.1 }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+									</ToolsPanelItem>
+									<ToolsPanelItem
+										label={ __( 'Out of (max)', 'sgs-blocks' ) }
+										hasValue={ () => ratingScaleMax !== '10' }
+										onDeselect={ () => setAttributes( { ratingScaleMax: '10' } ) }
+									>
+										<TextControl
+											label={ __(
+												'Out of (max)',
+												'sgs-blocks'
+											) }
+											value={ ratingScaleMax }
+											onChange={ ( val ) =>
+												setAttributes( {
+													ratingScaleMax: val,
+												} )
+											}
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+									</ToolsPanelItem>
+								</>
+							) }
+						{ showRating && effectiveVariant === 'rating-led' && (
+							<>
+								<ToolsPanelItem
+									label={ __( 'Verified badge', 'sgs-blocks' ) }
+									hasValue={ () => verified !== false }
+									onDeselect={ () => setAttributes( { verified: false } ) }
+								>
+									<ToggleControl
+										label={ __(
+											'Verified badge',
+											'sgs-blocks'
+										) }
+										checked={ verified }
+										onChange={ ( val ) =>
+											setAttributes( { verified: val } )
+										}
+										__nextHasNoMarginBottom
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Source platform', 'sgs-blocks' ) }
+									hasValue={ () => sourcePlatform !== '' }
+									onDeselect={ () => setAttributes( { sourcePlatform: '' } ) }
+								>
+									<TextControl
+										label={ __(
+											'Source platform',
+											'sgs-blocks'
+										) }
+										help={ __(
+											'e.g. Trustpilot, Google',
+											'sgs-blocks'
+										) }
+										value={ sourcePlatform }
+										onChange={ ( val ) =>
+											setAttributes( {
+												sourcePlatform: val,
+											} )
+										}
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Review date', 'sgs-blocks' ) }
+									hasValue={ () => reviewDate !== '' }
+									onDeselect={ () => setAttributes( { reviewDate: '' } ) }
+								>
+									<TextControl
+										label={ __( 'Review date', 'sgs-blocks' ) }
+										value={ reviewDate }
+										onChange={ ( val ) =>
+											setAttributes( { reviewDate: val } )
+										}
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+							</>
+						) }
+						{ /* ── Rating appearance (colour + star size), consolidated
+						     in from the Styles-tab "Rating appearance" panel —
+						     CO-2 / THE PLACEMENT RULE TIER 1 requires "Rating"'s
+						     content, styling and hover to live in one panel. ── */ }
+						{ showRating && (
+							<ToolsPanelItem
+								label={ __( 'Star size (px)', 'sgs-blocks' ) }
+								hasValue={ () => ratingSize !== 16 }
+								onDeselect={ () => setAttributes( { ratingSize: 16 } ) }
+							>
+								<RangeControl
+									label={ __( 'Star size (px)', 'sgs-blocks' ) }
+									value={ ratingSize }
+									onChange={ ( val ) =>
+										setAttributes( { ratingSize: val } )
+									}
+									min={ 10 }
+									max={ 32 }
+									step={ 1 }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
+						) }
+						{ /* Moved in from the shared SgsColourPanel (D622 — an
+						     element-scoped colour belongs in its own element's
+						     TIER 1 panel; "rating" is a declared element whose
+						     attrMap claims ratingColour). */ }
+						{ showRating && (
+							<DesignTokenPicker
+								label={ __( 'Rating colour', 'sgs-blocks' ) }
+								states={ [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: ratingColour,
+										onChange: ( val ) =>
+											setAttributes( { ratingColour: val ?? '' } ),
+										linked: true,
+										gradientValue: ratingColourGradient,
+										onGradientChange: ( val ) =>
+											setAttributes( { ratingColourGradient: val ?? '' } ),
+									},
+									{
+										key: 'hover',
+										label: __( 'Hover', 'sgs-blocks' ),
+										value: ratingColourHover,
+										onChange: ( val ) =>
+											setAttributes( { ratingColourHover: val ?? '' } ),
+										linked: true,
+									},
+								] }
+							/>
+						) }
+					</ToolsPanel>
 				) }
 
 				{ /* ── SEO schema (behaviour — enables/disables structured-data
@@ -841,35 +1018,44 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					{ (() => {
+						const testimonialContrastAgainst =
+							backgroundColour && ! backgroundColourGradient
+								? backgroundColour
+								: '';
+						return (
+							<SgsBorderControl
+								widthValues={ attributes.borderWidth ?? {} }
+								onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+								widthPresets={ [ '10', '20', '30' ] }
+								styleValue={ attributes.borderStyle }
+								onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+								colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+								colourValue={ attributes.borderColour }
+								onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+								colourGradientValue={ attributes.borderColourGradient }
+								onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+								colourLinked={ true }
+								contrastAgainst={ testimonialContrastAgainst }
+								radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+								onRadiusChange={ ( tier, next ) => {
+									const key = tier === 'base' ? 'desktop' : tier;
+									setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+								} }
+							/>
+						);
+					} )() }
+				</PanelBody>
 			</InspectorControls>
 
 			{ /* ── Styles tab (appearance — colour, typography, hover
 			     appearance, layout geometry) ── */ }
 			<InspectorControls group="styles">
-				{ /* ── Rating appearance (colour + star size), split out of
-				     the Settings-tab Rating panel above. ── */ }
-				{ ( effectiveVariant === 'rating-led' || effectiveVariant === 'classic-card' ) && (
-					<PanelBody
-						title={ __( 'Rating appearance', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						{ showRating && (
-							<RangeControl
-								label={ __( 'Star size (px)', 'sgs-blocks' ) }
-								value={ ratingSize }
-								onChange={ ( val ) =>
-									setAttributes( { ratingSize: val } )
-								}
-								min={ 10 }
-								max={ 32 }
-								step={ 1 }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
-					</PanelBody>
-				) }
-
 				{ /* ── Typography ── */ }
 				<PanelBody
 					title={ __( 'Typography', 'sgs-blocks' ) }
@@ -886,6 +1072,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								quoteMarginBottom: '',
 								summaryFontSize: '',
 								nameFontWeight: '700',
+								nameFontSize: {},
 							} )
 						}
 					>
@@ -974,6 +1161,35 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
+						{ /* Moved in from the shared SgsColourPanel (D622 — an
+						     element-scoped colour belongs in its own element's
+						     TIER 1 panel; "quote text" is a declared element
+						     whose attrMap claims quoteColour). Same row shape,
+						     same attributes, just relocated. */ }
+						<DesignTokenPicker
+							label={ __( 'Quote colour', 'sgs-blocks' ) }
+							states={ [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: quoteColour,
+									onChange: ( val ) =>
+										setAttributes( { quoteColour: val ?? '' } ),
+									linked: true,
+									gradientValue: quoteColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { quoteColourGradient: val ?? '' } ),
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: quoteColourHover,
+									onChange: ( val ) =>
+										setAttributes( { quoteColourHover: val ?? '' } ),
+									linked: true,
+								},
+							] }
+						/>
 						{ showSummary && (
 							<>
 								<ToolsPanelItem
@@ -996,8 +1212,62 @@ export default function Edit( { attributes, setAttributes, context } ) {
 										__next40pxDefaultSize
 									/>
 								</ToolsPanelItem>
+								{ /* Moved in from the shared SgsColourPanel (D622). */ }
+								<DesignTokenPicker
+									label={ __( 'Summary colour', 'sgs-blocks' ) }
+									states={ [
+										{
+											key: 'normal',
+											label: __( 'Normal', 'sgs-blocks' ),
+											value: summaryColour,
+											onChange: ( val ) =>
+												setAttributes( { summaryColour: val ?? '' } ),
+											linked: true,
+											gradientValue: summaryColourGradient,
+											onGradientChange: ( val ) =>
+												setAttributes( { summaryColourGradient: val ?? '' } ),
+										},
+										{
+											key: 'hover',
+											label: __( 'Hover', 'sgs-blocks' ),
+											value: summaryColourHover,
+											onChange: ( val ) =>
+												setAttributes( { summaryColourHover: val ?? '' } ),
+											linked: true,
+										},
+									] }
+								/>
 							</>
 						) }
+						{ /*
+						 * Reviewer-name font size (responsive: desktop/tablet/mobile)
+						 * via the shared TypographyControls component (Bean R-22-13).
+						 * showWeight=false because the existing Name font weight
+						 * SelectControl below already owns nameFontWeight with its
+						 * own restricted option set.
+						 */ }
+						<ToolsPanelItem
+							label={ __( 'Name font size', 'sgs-blocks' ) }
+							hasValue={ () => {
+								const fsObj = nameFontSize && 'object' === typeof nameFontSize ? nameFontSize : {};
+								return !! fsObj.desktop || !! fsObj.tablet || !! fsObj.mobile;
+							} }
+							onDeselect={ () =>
+								setAttributes( { nameFontSize: {} } )
+							}
+							isShownByDefault
+						>
+							<TypographyControls
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix="name"
+								showSize={ true }
+								showWeight={ false }
+								showStyle={ false }
+								showLineHeight={ false }
+								showResponsive={ true }
+							/>
+						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Name font weight', 'sgs-blocks' ) }
 							hasValue={ () => nameFontWeight !== '700' }
@@ -1022,6 +1292,31 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
+						{ /* Moved in from the shared SgsColourPanel (D622). */ }
+						<DesignTokenPicker
+							label={ __( 'Name colour', 'sgs-blocks' ) }
+							states={ [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: nameColour,
+									onChange: ( val ) =>
+										setAttributes( { nameColour: val ?? '' } ),
+									linked: true,
+									gradientValue: nameColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { nameColourGradient: val ?? '' } ),
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: nameColourHover,
+									onChange: ( val ) =>
+										setAttributes( { nameColourHover: val ?? '' } ),
+									linked: true,
+								},
+							] }
+						/>
 					</ToolsPanel>
 				</PanelBody>
 
@@ -1040,6 +1335,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								transitionEasing: 'ease-in-out',
 								scaleHover: '',
 								shadowHover: '',
+								staggerDelay: 0,
 							} )
 						}
 					>
@@ -1160,81 +1456,79 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						>
 							<ShadowControl
 								label={ __( 'Hover shadow', 'sgs-blocks' ) }
-								value={ shadowHover }
-								onChange={ ( val ) =>
-									setAttributes( { shadowHover: val } )
-								}
-								colour={ shadowHoverColour }
-								onColourChange={ ( val ) =>
-									setAttributes( { shadowHoverColour: val } )
-								}
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								attrNames={ {
+									base: 'shadowHover',
+									colour: 'shadowHoverColour',
+								} }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Stagger delay (ms)', 'sgs-blocks' ) }
+							hasValue={ () => !! staggerDelay }
+							onDeselect={ () => setAttributes( { staggerDelay: 0 } ) }
+						>
+							<RangeControl
+								label={ __( 'Stagger delay (ms)', 'sgs-blocks' ) }
+								help={ __( 'When several testimonial cards sit side by side, each is delayed by a multiple of this value on entrance.', 'sgs-blocks' ) }
+								value={ staggerDelay }
+								onChange={ ( val ) => setAttributes( { staggerDelay: val } ) }
+								min={ 0 }
+								max={ 500 }
+								step={ 25 }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>
 				</PanelBody>
 
 				{ /* ── Width / spacing (WS-4 container-mirror, content kind).
-				     Box-object interface contract §B/§E: padding/margin base
-				     routes to WP-native style.spacing.* (skip-serialised →
-				     scoped, not inline); tiers are the paddingTablet/
-				     paddingMobile + marginTablet/marginMobile object attrs
-				     (mirrors sgs/quote's block-private Wrapper panel). ── */ }
+				     padding/margin are each a single block-owned tier-object
+				     attr { desktop, tablet, mobile }, written via
+				     ResponsiveOverride + SgsBoxControl; read directly by this
+				     block's render.php (mirrors sgs/quote's block-private
+				     Wrapper panel). ── */ }
 				<PanelBody
 					title={ __( 'Width & spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( {
-									style: {
-										...style,
-										spacing: { ...style?.spacing, padding: next },
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next,
-								} );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( {
-									style: {
-										...style,
-										spacing: { ...style?.spacing, margin: next },
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next,
-								} );
-							}
-						} }
-					/>
-					<UnitControl
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<SgsLengthControl
 						label={ __( 'Outer max-width', 'sgs-blocks' ) }
 						value={ maxWidth || '' }
 						units={ LENGTH_UNITS }
 						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 						help={ __( 'Exact CSS length applied as max-width (e.g. 800px). Leave blank for no cap.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 				</PanelBody>
 			</InspectorControls>

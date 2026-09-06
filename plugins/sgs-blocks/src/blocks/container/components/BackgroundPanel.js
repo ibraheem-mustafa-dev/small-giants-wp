@@ -26,8 +26,9 @@ import {
 	DesignTokenPicker,
 	GradientOverlayControl,
 	SgsColourPanel,
+	SgsLengthControl,
+	MediaElementPanel,
 } from '../../../components';
-import { UnitControl } from '../../../components/primitives';
 import { isExtensionEnabled } from '../../extensions/hide-extensions';
 import { LENGTH_UNITS } from './_shared';
 
@@ -61,6 +62,26 @@ const BG_ATTACHMENT_OPTIONS = [
 	{ label: __( 'Fixed (parallax)', 'sgs-blocks' ), value: 'fixed' },
 ];
 
+// Mirrors block.json's `backgroundOverlayBlendMode` enum exactly (the CSS
+// mix-blend-mode keyword list that property supports). Kept as a literal
+// array rather than importing block.json — an out-of-sync value here would
+// silently coerce to the block's default on save (WP enum coercion), which
+// is worse than a duplicated list that's easy to eyeball against the schema.
+const BG_OVERLAY_BLEND_MODE_OPTIONS = [
+	{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
+	{ label: __( 'Multiply', 'sgs-blocks' ), value: 'multiply' },
+	{ label: __( 'Screen', 'sgs-blocks' ), value: 'screen' },
+	{ label: __( 'Overlay', 'sgs-blocks' ), value: 'overlay' },
+	{ label: __( 'Darken', 'sgs-blocks' ), value: 'darken' },
+	{ label: __( 'Lighten', 'sgs-blocks' ), value: 'lighten' },
+	{ label: __( 'Colour dodge', 'sgs-blocks' ), value: 'color-dodge' },
+	{ label: __( 'Colour burn', 'sgs-blocks' ), value: 'color-burn' },
+	{ label: __( 'Soft light', 'sgs-blocks' ), value: 'soft-light' },
+	{ label: __( 'Hard light', 'sgs-blocks' ), value: 'hard-light' },
+	{ label: __( 'Difference', 'sgs-blocks' ), value: 'difference' },
+	{ label: __( 'Exclusion', 'sgs-blocks' ), value: 'exclusion' },
+];
+
 export function BackgroundPanel( { attributes, setAttributes, name } ) {
 	if ( undefined !== name && ! isExtensionEnabled( name, 'background' ) ) {
 		return null;
@@ -84,6 +105,8 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 		bgSvgPosition = 'background',
 		bgSvgAnimation = 'none',
 		bgSvgAnimationSpeed = 'medium',
+		backgroundOverlayOpacity = 30,
+		backgroundOverlayBlendMode = 'normal',
 		bgSvgOpacity = 100,
 		bgSvgTextShadow = false,
 		bgSvgMinHeight = '',
@@ -93,15 +116,121 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 
 	return (
 		<PanelBody title={ __( 'Background', 'sgs-blocks' ) } initialOpen={ false }>
+			{ /* Help text rewritten 2026-08-21. The previous wording made three claims that
+			   are all false under the two-layer model (D2 revised): it called this colour
+			   "the background" (it is the OVERLAY), said "there is no separate overlay to
+			   set up" (there is — sgs/container gained a real backgroundColour base layer in
+			   1905257e), and told clients to LOWER ITS ALPHA to blend over media.
+			   That last one was the harmful one: DesignTokenPicker stores a palette SLUG only
+			   when the picked colour is string-equal to a palette entry, so changing the alpha
+			   breaks the match and stores a RAW HEX instead — silently unlinking the client's
+			   brand token, so a later rebrand leaves that colour behind. The shipped help text
+			   was instructing people to do it.
+			   ⛔ Deliberately NOT renamed to "Background colour": that rename came from D2b,
+			   which the design doc marks SUPERSEDED. Under D2 revised the overlay names are
+			   correct, and renaming would leave TWO controls both labelled "Background
+			   colour" — the real duplicate.
+			   Step 4 SHIPPED 2026-08-21 (D717): the blend mechanism is the Overlay
+			   opacity control below, and alpha is now switched off on the colour row
+			   entirely (GradientOverlayControl.js). This text no longer promises
+			   anything that does not exist. */ }
 			<p className="components-base-control__help">
 				{ __(
-					'This colour is the background. With an image or video behind it, lower its alpha to let the media show through — there is no separate overlay to set up.',
+					'Sits OVER any image or video behind it — a tint or scrim. Use the opacity slider below to let the media show through. For a plain background with no media, use the Background colour setting instead.',
 					'sgs-blocks'
 				) }
 			</p>
+			{ /* Overlay colour — ONE row, deliberately NOT inside <ResponsiveControl>.
+			   D739 moved the device axis onto OPACITY below. Colour now has exactly the
+			   golden shape every other colour control in the framework has: one row,
+			   Normal/Hover tabs, a Solid/Gradient toggle inside each tab.
+			   Previously this ALSO sat inside the device switcher, giving one property
+			   three axes with two of them in different places on screen — which is what
+			   produced the seam Bean caught: a hover tab visible on the desktop tier
+			   only. Colour rarely varies by device; scrim WEIGHT does. */ }
 			<GradientOverlayControl
 				attributes={ attributes }
 				setAttributes={ setAttributes }
+				solidLabel={ __( 'Overlay colour', 'sgs-blocks' ) }
+			/>
+			{ /* D717 (2026-08-21). REPLACES the colour picker's alpha channel as the
+			   overlay's transparency mechanism — see the help-text comment above for
+			   why alpha was actively harmful. Reaches all eight blocks that mount this
+			   panel (container, cta-section, hero, multi-button, physics-canvas,
+			   site-footer, site-header, trust-bar) with no per-block wiring, and is
+			   painted by the one shared owner, sgs_overlay_decls(). */ }
+			<ResponsiveControl label={ __( 'Overlay opacity', 'sgs-blocks' ) }>
+				{ ( bp ) => {
+					// D739: opacity carries the device axis, because what varies per
+					// device is HOW HEAVY the scrim is, not what colour it is. Desktop
+					// writes the base attr; a tier writes its own and is left UNDEFINED
+					// when unset, so it inherits desktop by ordinary cascade instead of
+					// pinning a duplicate value that would then fight a later edit.
+					const key =
+						'desktop' === bp
+							? 'backgroundOverlayOpacity'
+							: 'tablet' === bp
+							? 'backgroundOverlayOpacityTablet'
+							: 'backgroundOverlayOpacityMobile';
+					return (
+						<RangeControl
+							label={ __( 'Overlay opacity', 'sgs-blocks' ) }
+							// <ResponsiveControl> paints its own label span
+							// unconditionally, so the visible text would appear TWICE
+							// without this. The label prop stays for the accessible
+							// name — hiding it from vision is not the same as removing
+							// it, and a RangeControl with no accessible name is worse
+							// than a duplicated one. Caught by inspector-scan rule 29.
+							hideLabelFromVision
+							help={
+								'desktop' === bp
+									? __(
+											'How solid the overlay is. Lower it to let an image or video behind show through.',
+											'sgs-blocks'
+									  )
+									: __(
+											'Leave unset to use the desktop value. Set it to make the scrim heavier or lighter at this screen size.',
+											'sgs-blocks'
+									  )
+							}
+							value={ attributes[ key ] }
+							onChange={ ( val ) =>
+								setAttributes( {
+									[ key ]:
+										undefined === val
+											? ( 'desktop' === bp ? 30 : undefined )
+											: val,
+								} )
+							}
+							min={ 0 }
+							max={ 100 }
+							step={ 1 }
+							allowReset
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+						/>
+					);
+				} }
+			</ResponsiveControl>
+			{ /* Blend mode — the plain CSS `mix-blend-mode` keyword the overlay
+			   paints with against whatever sits behind it (media, block
+			   background). Options list mirrors block.json's enum verbatim;
+			   if the two ever disagree WordPress silently coerces an
+			   out-of-enum stored value back to "normal" on save, so any
+			   future edit to the enum must land in both places together. */ }
+			<SelectControl
+				label={ __( 'Overlay blend mode', 'sgs-blocks' ) }
+				help={ __(
+					'How the overlay colour mixes with the image or video behind it.',
+					'sgs-blocks'
+				) }
+				value={ backgroundOverlayBlendMode }
+				options={ BG_OVERLAY_BLEND_MODE_OPTIONS }
+				onChange={ ( val ) =>
+					setAttributes( { backgroundOverlayBlendMode: val } )
+				}
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			<TabPanel
 				tabs={ [
@@ -337,6 +466,38 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 									} }
 								</ResponsiveControl>
 								) }
+
+								{ /* Size/Position — closes the gap this atom migration exists for:
+								     the Image tab has had Size/Position since the panel shipped;
+								     the Video tab had NOTHING, so a client setting a video
+								     background had no way to control how it fits/positions. Routes
+								     into the SAME backgroundSize/backgroundPosition attributes the
+								     Image tab's controls write (prefix="background" + the object-fit/
+								     focal-point atoms' own "Size"/"Position" backdrop-scope bases —
+								     mediaAttrName('background','Size') derives 'backgroundSize' exactly,
+								     zero renames, no second attribute family). Deliberately NOT
+								     replacing the Image tab's own hand-rolled Size/Position
+								     SelectControls — this is a pure ADDITION for a tab that had zero
+								     such controls, keeping the Image tab's byte-identical existing
+								     behaviour completely untouched. Repeat/Attachment stay hand-rolled
+								     Image-tab-only, unaffected — no atom owns those two bases. Gated on
+								     bgVideo existing, matching the art-direction control above. */ }
+								{ bgVideo?.url && (
+									<>
+										<p className="components-base-control__label" style={ { fontWeight: 600, marginTop: '12px', marginBottom: '4px' } }>
+											{ __( 'Video sizing', 'sgs-blocks' ) }
+										</p>
+										<MediaElementPanel
+											attributes={ attributes }
+											setAttributes={ setAttributes }
+											prefix="background"
+											blockSlug={ name }
+											insertion="element"
+											atoms={ [ 'object-fit', 'focal-point' ] }
+											scope="backdrop"
+										/>
+									</>
+								) }
 							</>
 						);
 					}
@@ -412,7 +573,8 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 											onChange={ ( val ) => setAttributes( { bgSvgTextShadow: val } ) }
 											__nextHasNoMarginBottom
 										/>
-										<UnitControl
+										<SgsLengthControl
+											presets={ false }
 											label={ __( 'Minimum height', 'sgs-blocks' ) }
 											value={ bgSvgMinHeight }
 											units={ LENGTH_UNITS }
@@ -421,8 +583,6 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 												'Minimum height applied to the SVG background layer, e.g. 400px or 50vh. Leave blank for no minimum.',
 												'sgs-blocks'
 											) }
-											__nextHasNoMarginBottom
-											__next40pxDefaultSize
 										/>
 									</>
 								) }
@@ -477,43 +637,13 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 }
 
 /**
- * WrapperColourPanel — Colour Track B (D626, merged into step 6 rather than
- * running as a separate session; built 2026-08-16).
- *
- * The shared wrapper owns colour-bearing attrs OUTSIDE `BackgroundPanel`
- * itself: `shapeDividerTopColour`/`shapeDividerBottomColour` (as of the
- * gradient rollout, Builder 5 D636/D643/coordinator-correction, a
- * `GradientOverlayControl` inline inside `ShapeDividersPanel` — two sibling
- * attrs per position, `shapeDivider{Top,Bottom}Colour` (flat) +
- * `shapeDivider{Top,Bottom}ColourGradient` (gradient), unchanged by this
- * component) and `gridItemBackground`/`gridItemTextColour` (currently a
- * `DesignTokenPicker` inline inside `GridItemDefaultsPanel`, likewise
- * unchanged). This component gives Phase B a ready-made `SgsColourPanel`
- * (D609/D634 shape — swatch-left row, states in a popover) surfacing THE
- * SAME flat-colour attributes via the SAME onChange contract — it does NOT
- * yet know about the gradient sibling, so a future commit wiring this in
- * must extend it (or keep `GradientOverlayControl`) rather than silently
- * dropping gradient support.
- *
- * ⛔ NOT mounted anywhere by this commit — Phase A builds the mechanism only.
- * No block's `edit.js` renders `<WrapperColourPanel>` yet, so
- * `GradientOverlayControl` (shape dividers) / the inline `DesignTokenPicker`
- * (`GridItemDefaultsPanel`) remain the ONLY live colour controls for those
- * two attribute pairs until a later commit wires this in (and, in the same
- * commit, removes the now-duplicate inline pickers — mounting both at once
- * would be two controls writing one attribute, D609's "never optional, one
- * place" rule).
- *
- * Rows are OMITTED (not disabled) when the underlying setting doesn't apply
- * yet — same convention `SgsColourPanel`'s own docblock documents (9c: never
- * hide a row behind a "+" menu, just don't include it): a shape-divider
- * colour row needs that divider enabled first; a grid-item colour row needs
- * `layout === 'grid'` first, exactly the same gate `GridItemDefaultsPanel`
- * itself already applies (`if ( layout !== 'grid' ) { return null; }`,
- * confirmed at this file's `GridItemDefaultsPanel`, ~:1274-1287).
- *
- * Gated on the same `'background'` extension as `BackgroundPanel` (D626:
- * "merge it into this initiative's step 6 (background pilot)") via the same
- * optional `name` prop / `isExtensionEnabled` mechanism — see that
- * component's docblock for the backward-compatibility contract.
+ * `WrapperColourPanel` (shape-divider + grid-item colour rows) never lived
+ * in this file as code — this was a design-stage docblock with no function
+ * attached to it. The real component is `./WrapperColourPanel.js`, which
+ * was neutralised to a no-op on 2026-08-22 (D4/D5/step-7, unified-colour-
+ * panel design): it had zero JSX mounts anywhere in the plugin, and two of
+ * its four rows duplicated `ShapeDividersPanel.js`'s live gradient-capable
+ * colour controls with conflicting (non-gradient) semantics. See that
+ * file's own docblock for the full reasoning and the follow-up still owed
+ * (repointing `ContainerWrapperControls.js`'s import, then deleting it).
  */

@@ -5,9 +5,10 @@
 // source=spec evidence=this is the entry point described in §4.1/§4.6/§4.9 —
 // CLI contract `default report | --check | --json`, mode table read from
 // rules.json (never prose/code), and a generic --self-test harness that a
-// rule cannot skip. NOT wired into prebuild yet (deliberately, per task scope
-// — that is a later, separate wave once the 6 currently-gating rules have
-// been migrated with a proven equivalence gate).
+// rule cannot skip. WIRED INTO BOTH gate chains — `node scripts/inspector-scan/run.js
+// --check` runs in package.json's `prebuild` chain AND in `.githooks/sgs-gates.sh`'s
+// commit-time chain. Corrected 2026-08-24: this comment said "NOT wired into prebuild
+// yet" after both wirings had already landed.
 
 const fs = require( 'fs' );
 const path = require( 'path' );
@@ -41,6 +42,12 @@ const THEME_DIR = path.resolve( __dirname, '..', '..', '..', '..', 'theme', 'sgs
 // it does NOT add extensions to the roster denominator (they are a
 // separate surface, not pseudo-blocks).
 const EXTENSIONS_DIR = path.resolve( __dirname, '..', '..', 'src', 'blocks', 'extensions' );
+// 0.5 (2026-08-18): src/components/*.js is the ONE corpus no rule could reach.
+// rule 26's header declares this exact gap: "this rule does NOT scan
+// src/components/*.js". Purely ADDITIVE plumbing, mirroring EXTENSIONS_DIR --
+// no existing rule reads componentsDir, so no existing rule's corpus or count
+// changes by adding it. A rule opts in by naming ctx.componentsDir.
+const COMPONENTS_DIR = path.resolve( __dirname, '..', '..', 'src', 'components' );
 
 // Repo root — reachable so a rule can assert on surfaces OUTSIDE the plugin
 // (`.claude/specs`, `.claude/plans`) as well as inside it. Same ctx-supplied
@@ -113,6 +120,7 @@ function buildCtx( cache, rosterInfo ) {
 		patternsDir: PATTERNS_DIR,
 		themeDir: THEME_DIR,
 		extensionsDir: EXTENSIONS_DIR,
+		componentsDir: COMPONENTS_DIR,
 		repoRoot: REPO_ROOT,
 		components: components.discover( cache ), // resolved once per run, not per rule/block
 		ast: ( f ) => cache.parse( f ),
@@ -170,6 +178,36 @@ function computeExit( table, results, driftFindings, parseErrorFindings, registr
 	if ( modeOf( table, 'roster-drift' ) === 'gate' && driftFindings.length ) failing = true;
 	if ( modeOf( table, 'parse-error' ) === 'gate' && parseErrorFindings.length ) failing = true;
 	if ( registryDriftFindings.length ) failing = true; // scanner self-integrity — always enforced
+
+	// ------------------------------------------------------------------
+	// 0.6 ADVISORY RATCHET (2026-08-18). An advisory rule never gates on
+	// its absolute count, but its debt may only go DOWN. Freezing today's
+	// measured figure turns a silent backlog into a floor: rule 21 grew
+	// 129 -> 259 unnoticed precisely because nothing compared them.
+	// `openBacklog` was already carried on 19 rule entries and read by
+	// NOTHING before this.
+	// ------------------------------------------------------------------
+	for ( const r of results ) {
+		if ( r.ruleDef.mode !== 'advisory' ) continue;
+		if ( r.runError ) continue;
+		const cap = r.ruleDef.openBacklog;
+		if ( typeof cap !== 'number' ) {
+			// An advisory rule with no declared backlog cannot be ratcheted, so
+			// it would silently escape this check forever. Registration defect.
+			console.error(
+				`[inspector-scan] rule "${ r.ruleDef.id }" is advisory with no numeric openBacklog — cannot ratchet. Declare one in rules.json.`
+			);
+			failing = true;
+			continue;
+		}
+		const flagged = r.findings.filter( ( f ) => f.status === 'FLAGGED' ).length;
+		if ( flagged > cap ) {
+			console.error(
+				`[inspector-scan] RATCHET: rule "${ r.ruleDef.id }" has ${ flagged } finding(s), above its declared openBacklog of ${ cap }. Advisory debt may only go DOWN. Fix the new finding(s), or lower/raise the backlog deliberately in rules.json with a reason.`
+			);
+			failing = true;
+		}
+	}
 	return failing ? 1 : 0;
 }
 

@@ -7,15 +7,46 @@
  *
  * ── HOW A FIELD TYPE IS ADDED ─────────────────────────────────────────────
  *
- * A field type sets ONE custom property on the emitter:
+ * A field type sets custom properties on the emitter and nothing else:
  *
- *   --sgs-cursor-field-layer   the image painted at the pointer position
- *   --sgs-cursor-field-mask    (optional) a mask applied to that image
+ *   --sgs-cursor-field-layer         the image painted at the pointer position
+ *   --sgs-cursor-field-mask          (optional) a mask applied to that image
+ *   --sgs-cursor-field-pattern-size  (optional) background-size for the layer
+ *   --sgs-cursor-field-position      (optional) background-position for the layer
+ *   --sgs-cursor-field-attachment    (optional) background-attachment, default
+ *                                    `fixed`. Set `scroll` when the layer is
+ *                                    NOT cursor-positioned, or it drifts on
+ *                                    scroll and `auto` sizing resolves against
+ *                                    the viewport instead of the tile.
  *
  * Everything downstream — the emitter's own overlay and every participant —
- * reads those two properties and never names a type. So a new type is a rule
- * setting those properties plus a descriptor row in `cursor-fields/index.js`;
- * no new selector, no new JS, nothing to wire.
+ * reads those properties and never names a type. So a new type is ONE rule
+ * here, plus the slug in `SGS_FX_CURSOR_FIELD_TYPES`
+ * (`includes/fx-cursor-field.php`) and in `FX_FIELD_TYPE_OPTIONS`
+ * (`src/blocks/extensions/fx.js`). No new selector.
+ * `scripts/check-fx-list-drift.py` invariant I6 fails the build if those three
+ * lists disagree, so a half-added type cannot ship.
+ *
+ * ⚠ "NO NEW JS" IS TRUE ONLY FOR AN UNMASKED TYPE (corrected 2026-08-24, D767).
+ * A type that MASKS needs the element-relative coordinate pair the emitter now
+ * publishes — that was JS, and it already exists, so no FURTHER JS is needed
+ * for another masked type. But the unqualified claim was wrong, and it was
+ * wrong in the same file that told you `spotlight-mask` proved the seam.
+ *
+ * ⚠ This docblock previously directed the reader to "a descriptor row in
+ * `cursor-fields/index.js`". No such module has ever existed — corrected
+ * 2026-08-24 after it sent a survey looking for a file that is not there.
+ *
+ * ── WHY `--sgs-cursor-field-position` EXISTS (2026-08-24) ──────────────────
+ *
+ * `glow` and `spotlight-mask` move the pointer-centred STOP inside the
+ * gradient, leaving the layer itself stationary. `hue-shift` and
+ * `parallax-pattern` instead move the LAYER under a stationary window, which is
+ * the only way a fixed-hue band or a repeating pattern can change what sits
+ * beneath a given point. Both are lengths multiplied by a plain number, so no
+ * unit division is involved and support is universal. The property defaults to
+ * `0% 0%`, so the two original types render byte-identically to before it
+ * existed.
  *
  * ── WHY EMITTER AND PARTICIPANT PAINT DIFFERENTLY ─────────────────────────
  *
@@ -37,6 +68,20 @@
  * emitter, every participant paints the same field in the same screen place
  * with zero per-element geometry maths. This is the whole mechanism.
  *
+ * ⚠ AND IT COVERS THE LAYER ONLY — NOT THE MASK (D767, 2026-08-24). A
+ * `mask-image` has no attachment concept (`mask-attachment` is in CSS Masking
+ * L1 and no engine implements it), so a mask gradient's `at X Y` resolves
+ * against each element's OWN box. Every participant would therefore cut its
+ * reveal at a different screen point — measured 155px from the emitter's.
+ * MASKED TYPES ARE THEREFORE EMITTER-ONLY: they declare
+ * `--sgs-cursor-field-participant-layer: none` and read
+ * `--sgs-cursor-local-x/y` instead. Invariant I8 fails the build if a masked
+ * type forgets either. `glow` and `parallax-pattern` are unmasked and the
+ * paragraph above holds for them in full.
+ *
+ * This sentence read as universal until 2026-08-24, while `spotlight-mask`
+ * had been lighting the wrong spot for 23 days.
+ *
  * ── FAIL-OPEN + REDUCED MOTION ────────────────────────────────────────────
  *
  * Every custom property has a static fallback, so with JS blocked the field
@@ -56,13 +101,44 @@
 	--sgs-cursor-field-colour: var(--wp--preset--color--accent, #f59e0b);
 	--sgs-cursor-field-radius: 260px;
 
+	/* The SHAPE of every pointer-centred gradient, as the leading half of a
+	   `radial-gradient()`. One property so no field type hardcodes a circle and
+	   a shape change reaches all four looks at once. Overridden per instance by
+	   the `[data-sgs-cursor-field-shape]` rules below. */
+	--sgs-cursor-field-geometry: var(--sgs-cursor-field-radius) circle;
+
 	/* Fallbacks used before the first pointer move and whenever JS is absent:
 	   roughly the centre of the viewport, so the field rests somewhere
 	   sensible rather than at the top-left corner. */
 	--sgs-cursor-x: 50vw;
 	--sgs-cursor-y: 40vh;
 
+	/* The same idea in the element's OWN box, for masked types (see the
+	   coordinate-space note in the header). Percentages so the no-JS resting
+	   state is sensible at any block size. */
+	--sgs-cursor-local-x: 50%;
+	--sgs-cursor-local-y: 40%;
+
 	position: relative;
+}
+
+/* ==========================================================================
+ * FIELD SHAPE. A pool is not always a circle — a wide ellipse reads as a
+ * horizontal wash across a band, a tall one as a column of light. The default
+ * (no attribute) stays a circle, so every instance saved before this existed
+ * renders exactly as it did.
+ * ========================================================================== */
+
+[data-sgs-cursor-field-shape="wide"] {
+	--sgs-cursor-field-geometry:
+		calc(var(--sgs-cursor-field-radius) * 1.6)
+		calc(var(--sgs-cursor-field-radius) * 0.62) ellipse;
+}
+
+[data-sgs-cursor-field-shape="tall"] {
+	--sgs-cursor-field-geometry:
+		calc(var(--sgs-cursor-field-radius) * 0.62)
+		calc(var(--sgs-cursor-field-radius) * 1.6) ellipse;
 }
 
 /* ==========================================================================
@@ -72,7 +148,7 @@
 
 [data-sgs-cursor-field="glow"] {
 	--sgs-cursor-field-layer: radial-gradient(
-		var(--sgs-cursor-field-radius) circle at var(--sgs-cursor-x) var(--sgs-cursor-y),
+		var(--sgs-cursor-field-geometry) at var(--sgs-cursor-x) var(--sgs-cursor-y),
 		var(--sgs-cursor-field-colour),
 		transparent 70%
 	);
@@ -89,18 +165,249 @@
  * ========================================================================== */
 
 [data-sgs-cursor-field="spotlight-mask"] {
-	--sgs-cursor-field-pattern-size: 22px;
+	/* BOTH axes. A single value leaves height `auto`, which resolves against
+	   the BACKGROUND POSITIONING AREA — and with `background-attachment: fixed`
+	   that area is the VIEWPORT, so each "dot" became a 22px-wide,
+	   viewport-tall ellipse and only one row could ever fit. Reported by eye
+	   2026-08-24 as "thin vertical rolling-pin shapes in one singular row";
+	   every static check passed it. */
+	--sgs-cursor-field-pattern-size: 22px 22px;
+
+	/* This layer carries no cursor coordinates — the pointer lives in the MASK,
+	   which reads the ELEMENT-relative pair (D767). So the layer has no reason
+	   to resolve against the viewport, and doing so made the dot screen drift
+	   vertically on scroll. `fixed` remains the default for every type whose
+	   layer IS cursor-positioned (glow), which is why this is a property and
+	   not an edit to the shared paint rule. */
+	--sgs-cursor-field-attachment: scroll;
 
 	--sgs-cursor-field-layer: radial-gradient(
 		var(--sgs-cursor-field-colour) 1.5px,
 		transparent 1.5px
 	);
 	--sgs-cursor-field-mask: radial-gradient(
-		var(--sgs-cursor-field-radius) circle at var(--sgs-cursor-x) var(--sgs-cursor-y),
+		var(--sgs-cursor-field-geometry) at var(--sgs-cursor-local-x) var(--sgs-cursor-local-y),
 		#000 0%,
 		transparent 70%
 	);
+
+	/* A mask resolves against each element's OWN box, so a participant would
+	   cut its reveal at a different screen point from the emitter — measured
+	   155px apart. Masked types are therefore EMITTER-ONLY (Bean's ruling,
+	   option A): an opaque child occludes them rather than showing a
+	   mis-registered second hole. `glow` and `parallax-pattern` are unmasked
+	   and keep full seamless coverage across participants. */
+	--sgs-cursor-field-participant-layer: none;
 }
+
+/* ==========================================================================
+ * FIELD TYPE: hue-shift (FR-38-28 look 2, Bean-signed 2026-08-07).
+ *
+ * ⭐ REBUILT AS A MESH GRADIENT 2026-08-24, on Bean's ruling, after he reviewed
+ * the live canary and reported: "a clear diagonal repeating pattern of each
+ * colour, the teal is very faint and the orange has a lot more coverage, and
+ * even has a part where it has a solid diagonal line."
+ *
+ * ALL THREE were the previous mechanism working AS WRITTEN — not bugs in it:
+ *   · `repeating-linear-gradient(115deg, …)` IS diagonal stripes. That is what
+ *     the function does; no amount of tuning removes the repeat.
+ *   · The "solid diagonal line" was the WRAP. Colour was continuous across it
+ *     (hue-a → hue-a) but its RATE was not, and the eye reads a discontinuous
+ *     derivative as an edge (a Mach band). A seam you cannot see in the colour
+ *     values is still a seam.
+ *   · The faint teal was structural: every stop was the base colour at 65%, so
+ *     nothing in the band was ever really teal and the base always dominated.
+ *
+ * THE MESH: three large radial "spots" in viewport space, each tracking the
+ * pointer with a DIFFERENT multiplier, over a flat base layer. There is no
+ * tile, no repeat and no background-size, so banding and seams cannot occur BY
+ * CONSTRUCTION rather than by an argument — three "seamless by construction"
+ * arguments were made about the previous build and a screenshot refuted all
+ * three. This is a documented mesh-gradient technique, not an
+ * invention.
+ *
+ * WHY DIFFERENT MULTIPLIERS. Moving every spot by the same amount is a rigid
+ * translation: the mesh would slide but never change shape, so the colour
+ * RELATIONSHIPS would be fixed. At 0.85 / 1.15 / 0.6 the spots move relative to
+ * one another, so the hue arriving at a given point genuinely changes — which
+ * is the entire point of this look, and what `glow` cannot do.
+ *
+ * ⛔ THE 65%-BASE RULE IS GONE, replaced by a CLIENT CONTROL. It was ours, not
+ * the technique's — no reference dilutes its hues toward a brand colour — and
+ * it was the direct cause of "the teal is very faint". `--sgs-cursor-field-blend`
+ * (0 = single hue, 100 = fully distinct) now decides, defaulting to 60. This
+ * follows Bean's own FR-38-28 ruling that contrast is a CONTROL, not a gate.
+ *
+ * FAIL-OPEN is preserved: without `color-mix()` all three hues resolve to the
+ * base colour, giving a valid single-hue mesh that still moves and reshapes.
+ * Degraded, never broken, and never an invalid custom property — which would
+ * take the whole layer down with it.
+ * ========================================================================== */
+
+[data-sgs-cursor-field="hue-shift"] {
+	/* Hue SPREAD, 0-100 -> 0-120deg of rotation. 0 = one hue. */
+	--sgs-cursor-field-blend: 75;
+	/* UNITLESS. In relative colour syntax the `h` channel resolves to a plain
+	   NUMBER, not an angle, so `calc(h + 90deg)` is a type error — and one
+	   invalid custom property takes the WHOLE layer down (background-image
+	   computed to `none`, the section rendered empty). Measured live before
+	   this shipped; the docblock two rules above warns about exactly this. */
+	--sgs-cursor-field-spread: calc(var(--sgs-cursor-field-blend) * 1.2);
+
+	/* HUES ARE ROTATED, NOT MIXED. Mixing every hue TOWARD the brand colour is
+	   what made the teal invisible: cyan mixed into yellow is muddy green, at
+	   any ratio. Rotating in OKLCH keeps the brand's lightness and chroma and
+	   moves only the hue, so the other two are real colours at the same
+	   intensity — and re-theming still drives all three.
+	   Each accepts a client OVERRIDE via `--sgs-cursor-field-colour-b/-c`,
+	   read as the var() fallback so the render layer's lower-specificity uid
+	   rule can win without an !important. */
+	--sgs-cursor-field-hue-a: var(--sgs-cursor-field-colour);
+	--sgs-cursor-field-hue-b: var(--sgs-cursor-field-colour);
+	--sgs-cursor-field-hue-c: var(--sgs-cursor-field-colour);
+
+	/* THE BLUR IS THE EFFECT, not a polish pass. Every reference implementation
+	   blurs its blobs by 60-100px; without it these are coloured circles, which
+	   is exactly what the first two attempts rendered as and what was reported
+	   twice. `saturate()` is its required partner — blurring drags colour
+	   toward grey, and this is the same trick glassmorphism uses. */
+	--sgs-cursor-field-filter: blur(64px) saturate(1.45);
+
+	/* Overlaps combine like light rather than paint. Requires the dark ground
+	   the references call mandatory: aurora over a light surface has nothing to
+	   glow against. */
+	--sgs-cursor-field-blend-mode: screen;
+
+	/* THREE blobs — the references cap at 3-4 before overlaps muddy to brown.
+	   Anchored in the viewport and drifting only slightly with the pointer, so
+	   the WINDOW-equivalent (the whole surface) shows several hues at once
+	   rather than one colour riding along under the cursor. */
+	--sgs-cursor-field-layer:
+		radial-gradient(
+			34vmax circle at
+			calc(22% + var(--sgs-cursor-x) * 0.10)
+			calc(30% + var(--sgs-cursor-y) * 0.10),
+			var(--sgs-cursor-field-hue-a),
+			transparent 62%
+		),
+		radial-gradient(
+			30vmax circle at
+			calc(76% - var(--sgs-cursor-x) * 0.12)
+			calc(26% + var(--sgs-cursor-y) * 0.07),
+			var(--sgs-cursor-field-hue-b),
+			transparent 60%
+		),
+		radial-gradient(
+			38vmax circle at
+			calc(50% + var(--sgs-cursor-x) * 0.06)
+			calc(78% - var(--sgs-cursor-y) * 0.10),
+			var(--sgs-cursor-field-hue-c),
+			transparent 64%
+		);
+
+	/* ⛔ NO MASK, and this reverses D767's note that "the mask is load-bearing".
+	   That note was right about what it measured — an unmasked FULL-STRENGTH
+	   rainbow does destroy the ground — but wrong to conclude the mask was the
+	   fix. The references are all unmasked; what makes them readable is blur,
+	   a dark base and a scrim behind text, not a hole. Masked, this was a
+	   torch with colours in it, which is what it was reported as. */
+
+	/* EMITTER-ONLY, for a different reason than the masked types. The blur and
+	   the screen blend live on the emitter's ::before, which participants do
+	   not have — a participant would paint the same gradient SHARP and
+	   unblended next to a 64px-blurred wash, which reads as a seam rather than
+	   as coverage. Not a limitation of the mask; a consequence of the filter. */
+	--sgs-cursor-field-participant-layer: none;
+}
+
+/* ==========================================================================
+ * FIELD TYPE: parallax-pattern (FR-38-28 look 3, Bean-signed 2026-08-07).
+ *
+ * "A subtle pattern that parallaxes." Deliberately NOT masked, which is the
+ * whole difference from `spotlight-mask`: there, a static pattern sits under a
+ * moving hole and only the REVEAL moves; here the pattern is visible across the
+ * surface and the PATTERN ITSELF moves. Masking this one would collapse it back
+ * into a slightly different torch.
+ *
+ * Travel is 8% of pointer distance — enough to read as depth, little enough
+ * that the pattern still belongs to the surface rather than being dragged
+ * around by the cursor. Negative so it lags rather than leads.
+ * ========================================================================== */
+
+[data-sgs-cursor-field="parallax-pattern"] {
+	/* ⚠ "Field size" was a DEAD CONTROL here until 2026-08-24 (found by a QC
+	   council). The inspector renders that slider whenever the effect is
+	   `cursor-field`, but this type is the only one that never read
+	   `--sgs-cursor-field-radius` — so a client could drag it and see nothing.
+	   Fixed by giving it a MEANING rather than hiding it: radius now sets the
+	   dot spacing. The /9 keeps the default identical to the hand-picked 28px
+	   this shipped with (260/9 = 28.9), so no authored instance changes. */
+	--sgs-cursor-field-pattern-size:
+		calc(var(--sgs-cursor-field-radius) / 9)
+		calc(var(--sgs-cursor-field-radius) / 9);
+
+	--sgs-cursor-field-position:
+		calc(var(--sgs-cursor-x) * -0.08) calc(var(--sgs-cursor-y) * -0.08);
+
+	--sgs-cursor-field-layer: radial-gradient(
+		var(--sgs-cursor-field-colour) 1.5px,
+		transparent 1.5px
+	);
+}
+
+/* ==========================================================================
+ * FIELD TYPE: brick-reveal.
+ *
+ * `spotlight-mask`'s sibling: the same torch mechanism, a different thing
+ * revealed. Bean's case is a construction client — brickwork tiling in under
+ * the pointer over a flat brand colour, rather than a dot screen.
+ *
+ * STACKED BOND, not running bond, and that is a real limitation stated rather
+ * than hidden: a running-bond offset needs the vertical mortar to change per
+ * course, which a linear gradient cannot express (a 90deg gradient has no
+ * vertical variation, so its strokes always run the full tile height). Two
+ * gradients give courses and verticals; offsetting alternate courses would
+ * need a 2D tile. If the stacked look reads as tile rather than brick, that is
+ * the thing to change.
+ *
+ * Masked, so I8 binds it: local coordinate pair + emitter-only.
+ * ========================================================================== */
+
+[data-sgs-cursor-field="brick-reveal"] {
+	/* RUNNING BOND, via an SVG mask rather than gradients.
+	   The first attempt drew mortar with two repeating-linear-gradients and
+	   produced a GRID, not brickwork — a 90deg gradient has no vertical
+	   variation, so its strokes run the full tile height and every course
+	   lines up. Looked like graph paper. An SVG tile can offset alternate
+	   courses trivially, which gradients cannot.
+	   The SVG carries no colour: it is a MASK, so the client's own colour is
+	   painted underneath as a flat layer and the mask cuts the mortar out of
+	   it. That is what keeps the palette token live — a data-URI cannot read a
+	   CSS custom property, so colouring the SVG directly would have frozen it.
+	   Two mask layers are INTERSECTED: the brick tile, and the pointer pool.
+	   Both -webkit- and standard properties are set; where compositing is
+	   unsupported the pointer mask still applies and the surface reads as a
+	   plain wash rather than breaking. */
+	--sgs-cursor-field-brick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='68'%3E%3Cg fill='%23000'%3E%3Crect x='0' y='0' width='84' height='3'/%3E%3Crect x='0' y='34' width='84' height='3'/%3E%3Crect x='0' y='0' width='3' height='34'/%3E%3Crect x='42' y='34' width='3' height='34'/%3E%3C/g%3E%3C/svg%3E");
+
+	--sgs-cursor-field-layer: linear-gradient(
+		var(--sgs-cursor-field-colour),
+		var(--sgs-cursor-field-colour)
+	);
+
+	--sgs-cursor-field-mask: var(--sgs-cursor-field-brick),
+		radial-gradient(
+			var(--sgs-cursor-field-geometry) at var(--sgs-cursor-local-x) var(--sgs-cursor-local-y),
+			#000 0%,
+			transparent 70%
+		);
+
+	--sgs-cursor-field-mask-size: 84px 68px, 100% 100%;
+	--sgs-cursor-field-mask-composite: intersect;
+	--sgs-cursor-field-mask-composite-webkit: source-in;
+	--sgs-cursor-field-participant-layer: none;
+}
+
 
 /* ==========================================================================
  * The paint. Neither rule names a field type.
@@ -112,20 +419,38 @@
 	inset: 0;
 	z-index: 0;
 	pointer-events: none;
-	opacity: 0.9;
 	background-image: var(--sgs-cursor-field-layer);
-	background-attachment: fixed;
+	filter: var(--sgs-cursor-field-filter, none);
+	mix-blend-mode: var(--sgs-cursor-field-blend-mode, normal);
+	opacity: var(--sgs-cursor-field-opacity, 0.9);
+	background-attachment: var(--sgs-cursor-field-attachment, fixed);
 	background-size: var(--sgs-cursor-field-pattern-size, auto);
-	mask-image: var(--sgs-cursor-field-mask, none);
-	mask-size: 100% 100%;
+	background-position: var(--sgs-cursor-field-position, 0% 0%);
 	-webkit-mask-image: var(--sgs-cursor-field-mask, none);
-	-webkit-mask-size: 100% 100%;
+	-webkit-mask-size: var(--sgs-cursor-field-mask-size, 100% 100%);
+	-webkit-mask-composite: var(--sgs-cursor-field-mask-composite-webkit, source-over);
+	mask-image: var(--sgs-cursor-field-mask, none);
+	mask-size: var(--sgs-cursor-field-mask-size, 100% 100%);
+	/* LAST deliberately: in Blink the -webkit- form maps onto the same internal
+	   property but takes a different keyword vocabulary, so declaring it after
+	   the standard one silently reset this to `add` and the brick tile stopped
+	   intersecting. Measured, not guessed. */
+	mask-composite: var(--sgs-cursor-field-mask-composite, add);
 }
 
-/* The emitter's own children must sit above the field, or the field paints
-   over the block's content instead of behind it. `> *` (not a descendant
-   selector) so nested structures are not each pushed onto their own layer. */
-[data-sgs-cursor-field] > * {
+/* CHILD-LIFT — deliberately ZERO specificity, via `:where()`. The emitter's own
+   children must sit above the field, or the field paints over the block's
+   content instead of behind it. `> *` (not a descendant selector) so nested
+   structures are not each pushed onto their own layer.
+
+   ⛔ DO NOT re-specify this rule, and DO NOT add a `:not()` chain to it. At
+   (0,1,0) it used to out-rank, by source order alone, any decorative layer that
+   declared its own `position` at the same specificity — the D784 trap, and this
+   rule is the one `fx-surface-treatment.css` had to defensively parent-scope
+   itself against (its own comment recorded the cascade fight). At (0,0,0) any
+   layer declaring its own `position` wins automatically, with no registration
+   anywhere. Enforced by `scripts/check-child-lift.py`. */
+:where( [data-sgs-cursor-field] ) > * {
 	position: relative;
 	z-index: 1;
 }
@@ -134,13 +459,27 @@
    reads as continuous across an opaque child rather than being occluded by
    it — Bean's requirement that it "go over any surface seamlessly". */
 [data-sgs-cursor-participant] {
-	background-image: var(--sgs-cursor-field-layer);
-	background-attachment: fixed;
+	background-image: var(
+		--sgs-cursor-field-participant-layer,
+		var(--sgs-cursor-field-layer)
+	);
+	/* ⛔ NO filter / mix-blend-mode / opacity here. Unlike the emitter, this
+	   rule styles the participant ELEMENT itself rather than a ::before, so
+	   any of the three would blur or fade that child's CONTENT — its text —
+	   not just the field it paints. A type needing those is emitter-only. */
+	background-attachment: var(--sgs-cursor-field-attachment, fixed);
 	background-size: var(--sgs-cursor-field-pattern-size, auto);
-	mask-image: var(--sgs-cursor-field-mask, none);
-	mask-size: 100% 100%;
+	background-position: var(--sgs-cursor-field-position, 0% 0%);
 	-webkit-mask-image: var(--sgs-cursor-field-mask, none);
-	-webkit-mask-size: 100% 100%;
+	-webkit-mask-size: var(--sgs-cursor-field-mask-size, 100% 100%);
+	-webkit-mask-composite: var(--sgs-cursor-field-mask-composite-webkit, source-over);
+	mask-image: var(--sgs-cursor-field-mask, none);
+	mask-size: var(--sgs-cursor-field-mask-size, 100% 100%);
+	/* LAST deliberately: in Blink the -webkit- form maps onto the same internal
+	   property but takes a different keyword vocabulary, so declaring it after
+	   the standard one silently reset this to `add` and the brick tile stopped
+	   intersecting. Measured, not guessed. */
+	mask-composite: var(--sgs-cursor-field-mask-composite, add);
 }
 
 /* ==========================================================================
@@ -163,5 +502,28 @@
 		background-image: none;
 		mask-image: none;
 		-webkit-mask-image: none;
+	}
+}
+
+/* Rotate the two derived hues in OKLCH. Fail-open: without relative colour
+   syntax all three stay the brand colour, giving a valid single-hue wash that
+   still drifts — degraded, never an invalid custom property (which would take
+   the whole layer down). The client override wins as the var() fallback. */
+@supports (color: oklch(from red l c h)) {
+	[data-sgs-cursor-field="hue-shift"] {
+		--sgs-cursor-field-hue-b: var(
+			--sgs-cursor-field-colour-b,
+			oklch(
+				from var(--sgs-cursor-field-colour) l c
+				calc(h + var(--sgs-cursor-field-spread))
+			)
+		);
+		--sgs-cursor-field-hue-c: var(
+			--sgs-cursor-field-colour-c,
+			oklch(
+				from var(--sgs-cursor-field-colour) l c
+				calc(h - var(--sgs-cursor-field-spread))
+			)
+		);
 	}
 }

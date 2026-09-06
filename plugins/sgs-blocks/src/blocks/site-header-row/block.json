@@ -25,21 +25,21 @@
 		"color": {
 			"background": false,
 			"text": false,
-			"gradients": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
 			"containerKind": "layout",
 			"boxFamilies": {
-				"padding": [ "padding" ],
-				"margin": [ "margin" ]
+				"padding": [
+					"padding"
+				],
+				"margin": [
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
+				]
 			},
 			"elements": {
 				"row": {
@@ -55,10 +55,10 @@
 					"attrMap": {
 						"css:color": "textColour",
 						"css:background-color": "backgroundColour",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:padding": "padding",
 						"css:margin": "margin",
 						"css:max-width": "maxWidth",
@@ -71,7 +71,9 @@
 						"css:align-content": "alignContent",
 						"css:align-items": "alignItems",
 						"css:flex-direction": "flexDirection",
-						"css:flex-wrap": "flexWrap"
+						"css:flex-wrap": "flexWrap",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:background-image": "textColourGradient"
 					},
 					"_note": "A horizontal row inside sgs/site-header. This element is BOTH the block root and the grid definition (containerKind=layout, rendered through SGS_Container_Wrapper), the same single-element shape sgs/trust-bar's wrapper uses. Padding and margin are the block's OWN box-object attributes, not native spacing — this block declares no `supports.spacing`. css:align-items maps to `alignItems` (class-sgs-container-wrapper.php:247). Typography members, display, order and overflow have no attribute here and remain honest GAPs. prefix: \"\" is an explicit opt-out of orphan scanning — every style attribute is mapped explicitly above, and the remaining row* attributes (rowSlot/rowTransparent/rowHideOnScroll/rowShrink/rowShrinkHideTarget) are slot identity and scroll BEHAVIOUR, not style properties.",
 					"prefix": ""
@@ -100,7 +102,23 @@
 			"type": "string",
 			"default": ""
 		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
 			"type": "string",
 			"default": ""
 		},
@@ -115,7 +133,11 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 3, "tablet": 3, "mobile": 1}
+			"default": {
+				"desktop": 3,
+				"tablet": 3,
+				"mobile": 1
+			}
 		},
 		"flexWrap": {
 			"type": "string",
@@ -217,14 +239,39 @@
 				"end"
 			]
 		},
-		"templateMode": {
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
 			"type": "string",
-			"default": "free",
 			"enum": [
-				"free",
-				"grid-section",
-				"card-grid"
-			]
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"render": "file:./render.php",

@@ -1,0 +1,10 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/no-gradient-row",
+	"title": "Fixture: SgsColourPanel row with normal+hover states but no gradient path anywhere (must flag row-missing-gradient, must NOT flag row-below-minimum-states)",
+	"category": "sgs",
+	"attributes": {
+		"borderColour": { "type": "string", "default": "" },
+		"borderColourHover": { "type": "string", "default": "" }
+	}
+}

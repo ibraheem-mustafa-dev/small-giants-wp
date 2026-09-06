@@ -12,12 +12,9 @@
  * already-published posts continue to round-trip via their stored save
  * HTML; only new (cv2-emitted) instances flow through this renderer.
  *
- * NO-INLINE (per-block no-inline migration contract, 2026-07-09): the
- * rendered subtree carries ZERO inline CSS property declarations. Native WP
- * supports (color / spacing / border / typography) declare
- * `__experimentalSkipSerialization` in block.json so
- * `get_block_wrapper_attributes()` never auto-inlines them; every
- * declaration is emitted instead into the block's own scoped `<style>`.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check.
  *
  * BOX-GROUP: padding / margin / border-radius are box objects. Base =
  * WP-native `style.spacing.*` / `style.border.radius` (scoped via
@@ -33,9 +30,6 @@
  * `selectors.typography` — WP's own `get_block_wrapper_attributes()` would
  * otherwise (incorrectly) inline them onto the outer wrapper.
  *
- * @since 2026-05-16  P-PHASE8-2 render.php audit
- * @since 2026-07-10  no-inline migration (contract 2026-07-09)
- *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused).
  * @var \WP_Block $block      Block instance.
@@ -45,6 +39,29 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
@@ -52,13 +69,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // object-attr side/corner value or free-text keyword can never break out of
 // its declaration.
 // ---------------------------------------------------------------------------
-$sgs_css_length  = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 $number        = isset( $attributes['number'] ) ? absint( $attributes['number'] ) : 0;
 $prefix        = isset( $attributes['prefix'] ) ? (string) $attributes['prefix'] : '';
 $suffix        = isset( $attributes['suffix'] ) ? (string) $attributes['suffix'] : '';
@@ -66,10 +76,11 @@ $label         = isset( $attributes['label'] ) ? (string) $attributes['label'] :
 $duration      = isset( $attributes['duration'] ) ? absint( $attributes['duration'] ) : 2000;
 $separator     = ! empty( $attributes['separator'] );
 $number_colour = $attributes['numberColour'] ?? '';
-// D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
-// mirrors sgs/container's shipped backgroundOverlayColour/overlayGradient.
+// D636 — sibling-attribute shape, mirrors sgs/container's shipped
+// backgroundOverlayColour/overlayGradient.
 $number_colour_gradient = $attributes['numberColourGradient'] ?? '';
 $label_colour           = $attributes['labelColour'] ?? '';
+$label_colour_gradient  = $attributes['labelColourGradient'] ?? '';
 $icon                   = $attributes['icon'] ?? '';
 $accent_stroke          = ! empty( $attributes['accentStroke'] );
 
@@ -113,7 +124,7 @@ $scoped_css = array();
 // ---------------------------------------------------------------------------
 // Number / label custom colour (SGS scalar attrs) — scoped, NOT inline.
 // ---------------------------------------------------------------------------
-// D636 Task 1b — sibling gradient attribute wins when set+valid.
+// D636 — sibling gradient attribute wins when set+valid.
 $number_colour_effective = sgs_resolve_text_colour_or_gradient( $number_colour, $number_colour_gradient );
 if ( '' !== $number_colour_effective ) {
 	$number_colour_decl = sgs_text_colour_decl( $number_colour_effective );
@@ -122,8 +133,17 @@ if ( '' !== $number_colour_effective ) {
 	}
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $number_sel, $number_colour_effective );
 }
-if ( $label_colour ) {
-	$scoped_css[] = "{$label_sel}{color:" . sgs_colour_value( $label_colour ) . ';}';
+$label_colour_effective = sgs_resolve_text_colour_or_gradient( $label_colour, $label_colour_gradient );
+if ( '' !== $label_colour_effective ) {
+	$label_colour_decl = sgs_text_colour_decl( $label_colour_effective );
+	if ( '' !== $label_colour_decl ) {
+		$scoped_css[] = "{$label_sel}{{$label_colour_decl};}";
+	}
+	// MANDATORY companion, not optional: a gradient reaches the browser as
+	// background-clip:text, and without this @supports fallback a browser
+	// lacking that support gets a bare `color:` holding a gradient string,
+	// which it drops silently. No-op for a flat colour.
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_sel, $label_colour_effective );
 }
 
 // ---------------------------------------------------------------------------
@@ -132,22 +152,21 @@ if ( $label_colour ) {
 // the wrapper. `textAlign` is class-based (`has-text-align-*`, applied by WP
 // core automatically) — no scoped rule needed for it.
 // ---------------------------------------------------------------------------
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$typography_args = array();
-	if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
-		$typography_args['fontSize'] = $attributes['style']['typography']['fontSize'];
-	}
-	if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
-		$typography_args['lineHeight'] = $attributes['style']['typography']['lineHeight'];
-	}
-	if ( ! empty( $typography_args ) ) {
-		$native_typo_styles = wp_style_engine_get_styles(
-			array( 'typography' => $typography_args ),
-			array( 'selector' => $number_sel )
-		);
-		if ( ! empty( $native_typo_styles['css'] ) ) {
-			$scoped_css[] = $native_typo_styles['css'];
-		}
+
+$typography_args = array();
+if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
+	$typography_args['fontSize'] = $attributes['style']['typography']['fontSize'];
+}
+if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
+	$typography_args['lineHeight'] = $attributes['style']['typography']['lineHeight'];
+}
+if ( ! empty( $typography_args ) ) {
+	$native_typo_styles = wp_style_engine_get_styles(
+		array( 'typography' => $typography_args ),
+		array( 'selector' => $number_sel )
+	);
+	if ( ! empty( $native_typo_styles['css'] ) ) {
+		$scoped_css[] = $native_typo_styles['css'];
 	}
 }
 
@@ -164,16 +183,16 @@ $preset_text_slug     = isset( $attributes['textColor'] ) ? sanitize_html_class(
 $preset_bg_slug       = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
 $base_padding_obj = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	foreach ( $sgs_tor_padding_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_padding_obj[ $spacing_side ] = $spacing_value;
 		}
 	}
 }
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	foreach ( $sgs_tor_margin_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_margin_obj[ $spacing_side ] = $spacing_value;
 		}
@@ -182,85 +201,47 @@ if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes
 
 // Base border-radius — WP-native style.border.radius (string = uniform, or an
 // object with topLeft/topRight/bottomLeft/bottomRight keys), base only.
-$base_border_radius = null;
-if ( isset( $attributes['style']['border']['radius'] ) ) {
-	$radius_raw = $attributes['style']['border']['radius'];
-	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-		$base_border_radius = $radius_raw;
-	} elseif ( is_array( $radius_raw ) ) {
-		$radius_clean   = array();
-		$has_any_corner = false;
-		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? $sgs_css_length( $radius_raw[ $corner ] ) : '';
-			if ( '' !== $radius_clean[ $corner ] ) {
-				$has_any_corner = true;
-			}
-		}
-		if ( $has_any_corner ) {
-			$base_border_radius = $radius_clean;
-		}
-	}
-}
 
 // Border width/style/colour — WP-native scalar (base only, no tiers; no
 // custom SGS border attrs exist on this block).
-$border_width_val = isset( $attributes['style']['border']['width'] ) ? $sgs_css_length( $attributes['style']['border']['width'] ) : '';
-$border_style_val = isset( $attributes['style']['border']['style'] ) ? $sgs_css_keyword( $attributes['style']['border']['style'] ) : '';
-$border_color_val = isset( $attributes['style']['border']['color'] ) ? (string) $attributes['style']['border']['color'] : '';
 
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_style_engine_args = array();
+$base_style_engine_args = array();
 
-	$base_spacing = array();
-	if ( ! empty( $base_padding_obj ) ) {
-		$base_spacing['padding'] = $base_padding_obj;
-	}
-	if ( ! empty( $base_margin_obj ) ) {
-		$base_spacing['margin'] = $base_margin_obj;
-	}
-	if ( ! empty( $base_spacing ) ) {
-		$base_style_engine_args['spacing'] = $base_spacing;
-	}
+$base_spacing = array();
+if ( ! empty( $base_padding_obj ) ) {
+	$base_spacing['padding'] = $base_padding_obj;
+}
+if ( ! empty( $base_margin_obj ) ) {
+	$base_spacing['margin'] = $base_margin_obj;
+}
+if ( ! empty( $base_spacing ) ) {
+	$base_style_engine_args['spacing'] = $base_spacing;
+}
 
-	$border_args = array();
-	if ( null !== $base_border_radius ) {
-		$border_args['radius'] = $base_border_radius;
-	}
-	if ( '' !== $border_width_val ) {
-		$border_args['width'] = $border_width_val;
-	}
-	if ( '' !== $border_style_val ) {
-		$border_args['style'] = $border_style_val;
-	}
-	if ( '' !== $border_color_val ) {
-		$border_args['color'] = $border_color_val;
-	}
-	if ( ! empty( $border_args ) ) {
-		$base_style_engine_args['border'] = $border_args;
-	}
+// (native border_args removed by the Shape-B migration -- width/style/colour
+//  are block-private attrs now, emitted below)
 
-	$color_args = array();
-	if ( '' !== $style_color_text ) {
-		$color_args['text'] = $style_color_text;
-	}
-	if ( '' !== $style_color_bg ) {
-		$color_args['background'] = $style_color_bg;
-	}
-	if ( '' !== $style_color_gradient ) {
-		$color_args['gradient'] = $style_color_gradient;
-	}
-	if ( ! empty( $color_args ) ) {
-		$base_style_engine_args['color'] = $color_args;
-	}
+$color_args = array();
+if ( '' !== $style_color_text ) {
+	$color_args['text'] = $style_color_text;
+}
+if ( '' !== $style_color_bg ) {
+	$color_args['background'] = $style_color_bg;
+}
+if ( '' !== $style_color_gradient ) {
+	$color_args['gradient'] = $style_color_gradient;
+}
+if ( ! empty( $color_args ) ) {
+	$base_style_engine_args['color'] = $color_args;
+}
 
-	if ( ! empty( $base_style_engine_args ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			$base_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
+if ( ! empty( $base_style_engine_args ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		$base_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
 
@@ -269,43 +250,22 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // shorthand, scoped @media on the root selector (tablet <=1023px, mobile
 // <=767px) — mirrors sgs/heading + sgs/button exactly.
 // ---------------------------------------------------------------------------
-$padding_tablet_obj       = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj       = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj        = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj        = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
-$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
-
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
+$padding_tablet_obj       = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj       = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj        = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj        = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
+$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+$border_radius_mobile_obj = $radius_tiers['mobile'];
 
 // CSS border-radius shorthand order is top-left top-right bottom-right
 // bottom-left (NOT the box-model top/right/bottom/left order).
-$sgs_corner_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$tl = $sgs_css_length( $box['topLeft'] ?? '' );
-	$tr = $sgs_css_length( $box['topRight'] ?? '' );
-	$br = $sgs_css_length( $box['bottomRight'] ?? '' );
-	$bl = $sgs_css_length( $box['bottomLeft'] ?? '' );
-	if ( '' === $tl && '' === $tr && '' === $br && '' === $bl ) {
-		return null;
-	}
-	return ( '' !== $tl ? $tl : '0' ) . ' ' . ( '' !== $tr ? $tr : '0' ) . ' ' . ( '' !== $br ? $br : '0' ) . ' ' . ( '' !== $bl ? $bl : '0' );
-};
-
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
-$radius_tab_val  = $sgs_corner_shorthand( $border_radius_tablet_obj );
-$radius_mob_val  = $sgs_corner_shorthand( $border_radius_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
+$radius_tab_val  = sgs_corner_object_shorthand( $border_radius_tablet_obj );
+$radius_mob_val  = sgs_corner_object_shorthand( $border_radius_mobile_obj );
 
 $tablet_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -369,12 +329,99 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 $full_text = $prefix . $formatted_number . $suffix . ' ' . $label;
 
 ?>
+<?php
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$scoped_css[] = $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$scoped_css[] = sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$scoped_css[] = $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+} else {
+	// G5 corollary: "none" must be an explicit override too, not a
+	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
+	// class default) would otherwise keep painting even though the
+	// operator picked "no border". Cause-agnostic: harmless when no
+	// such default exists, a real fix when one does.
+	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$scoped_css[] = $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$scoped_css[] = '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$scoped_css[] = '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
+}
+?>
 <?php if ( $scoped_css ) : ?>
 	<?php
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D — matches SGS_Container_Wrapper
 	// + sgs/heading). Every value reaching $scoped_css is pre-sanitised
-	// ($sgs_css_length / $sgs_css_keyword / wp_style_engine_get_styles /
+	// (sgs_css_length_value() / sgs_css_keyword_sanitise() / wp_style_engine_get_styles /
 	// sgs_colour_value / sgs_typography_css_rule), so no un-sanitised value
 	// survives here.
 	?>

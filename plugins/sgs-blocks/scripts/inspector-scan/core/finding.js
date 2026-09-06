@@ -56,6 +56,15 @@ function makeFinding({
 	severity = 'warn',
 	detail,
 	fix,
+	// A machine-readable axis label (e.g. 'below-min-states', 'missing-gradient').
+	// OPTIONAL + defaulted, so every rule that omits it is unaffected.
+	// It MUST be destructured here AND returned below, or it is silently DISCARDED:
+	// this function builds its result from an explicit field list, so a rule passing
+	// `kind:` into an unaware makeFinding() looks correct at the call site and emits
+	// nothing. That is exactly what happened - rule 31 passed `kind` at 6 direct call
+	// sites while every finding in --json came out without it, and nothing threw.
+	// Verified by reading the emitted JSON keys, never the call sites.
+	kind = null,
 	keyParts = [],
 }) {
 	if (!detail || typeof detail !== 'string' || !detail.trim()) {
@@ -84,6 +93,7 @@ function makeFinding({
 		severity,
 		detail,
 		fix,
+		kind,
 		key,
 		status: 'FLAGGED',
 	};

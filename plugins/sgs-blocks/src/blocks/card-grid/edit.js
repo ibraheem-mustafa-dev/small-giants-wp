@@ -3,6 +3,7 @@ import {
 	useBlockProps,
 	InspectorControls,
 } from '@wordpress/block-editor';
+import { useEffect, useMemo } from '@wordpress/element';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import {
 	PanelBody,
@@ -12,17 +13,23 @@ import {
 	TextControl,
 	ToggleControl,
 	Spinner,
+	FocalPointPicker,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
 	ProductTaxonomyChecklist,
 	ProductHandpickPanel,
 } from './components/product-panels';
-import { ShadowControl, TypographyControls, ResponsiveBoxControl, LinkPopoverField, SgsColourPanel } from '../../components';
+import { ShadowControl, TypographyControls, ResponsiveBoxControl, LinkPopoverField, SgsLengthControl, MEDIA_SIZING_RATIO_OPTIONS,
+	SgsBorderControl,
+	resolveColourToken,
+	DesignTokenPicker,
+	GradientCapableColourControl,
+} from '../../components';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import MediaPicker from '../../components/MediaPicker';
 import CollectionPanel from './components/collection-panel';
-import { colourVar, spacingVar, resolveResponsiveTier } from '../../utils';
-import { UnitControl } from '../../components/primitives';
+import { colourVar, spacingVar, resolveResponsiveTier, resolveTextColourPreviewStyle, generateItemKey, withStableItemKeys, focalPointToObjectPosition } from '../../utils';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
@@ -40,20 +47,29 @@ const HEADING_LEVEL_OPTIONS = [
 	{ label: __( 'Paragraph (not a heading)', 'sgs-blocks' ), value: 'p' },
 ];
 
-const ASPECT_RATIO_OPTIONS = [
-	{ label: __( 'Auto', 'sgs-blocks' ), value: 'auto' },
-	{ label: '1:1', value: '1/1' },
-	{ label: '4:3', value: '4/3' },
-	{ label: '3:2', value: '3/2' },
-	{ label: '16:10', value: '16/10' },
-	{ label: '16:9', value: '16/9' },
-];
+// C19 ratio-mode adoption (2026-08-27) — reuses MediaSizingPanel's shared
+// six-value ratio list (spaced format, "16 / 9" etc.) rather than this
+// block's own hand-rolled set (which included a non-CSS "auto" value and
+// unspaced ratios not shared with any other block). render.php now
+// whitelists against this exact six-value set, falling back to this
+// block's own existing default ('16/10') for anything outside it — so an
+// existing '16/10'/'auto'/'3/2' stored value keeps rendering exactly as
+// before rather than breaking.
+const ASPECT_RATIO_OPTIONS = MEDIA_SIZING_RATIO_OPTIONS;
 
 const HOVER_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 	{ label: __( 'Zoom', 'sgs-blocks' ), value: 'zoom' },
 	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
 	{ label: __( 'Overlay Slide', 'sgs-blocks' ), value: 'overlay-slide' },
+];
+
+const EASING_OPTIONS = [
+	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
+	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
 ];
 
 const PRODUCT_COLLECTION_OPTIONS = [
@@ -101,7 +117,7 @@ const CARD_STYLE_PRESETS = {
 	},
 	boxed: {
 		cardBackground: 'surface',
-		cardBorderColour: 'border-subtle',
+		cardBorderColour: 'border',
 		cardBorderWidth: { top: '1px', right: '1px', bottom: '1px', left: '1px' },
 		cardRadius: '8px',
 		// Zero-size shape (D621/D622 colour split) — explicitly resets any
@@ -156,6 +172,44 @@ function ItemEditor( { item, index, onChange, onRemove } ) {
 					) }
 				/>
 			</div>
+			{ /* Gated on media existing — an unavailable image shows no crop
+			     control, matching the avatar/work disclosure pattern on
+			     sgs/testimonial. Spec 35 Part 4: per-item, keyed by item._key
+			     in render.php, never by array index. */ }
+			{ !! item.media?.url && (
+				<>
+					<SelectControl
+						label={ __( 'Image fit', 'sgs-blocks' ) }
+						value={ item.objectFit || 'cover' }
+						options={ [
+							{ label: __( 'Cover (crop to fill)', 'sgs-blocks' ), value: 'cover' },
+							{ label: __( 'Contain (fit within, no crop)', 'sgs-blocks' ), value: 'contain' },
+							{ label: __( 'Fill (stretch)', 'sgs-blocks' ), value: 'fill' },
+						] }
+						onChange={ ( val ) => update( 'objectFit', val ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ 'cover' === ( item.objectFit || 'cover' ) && (
+						<FocalPointPicker
+							label={ __( 'Focal point', 'sgs-blocks' ) }
+							url={ item.media.url }
+							value={ item.focalPoint || { x: 0.5, y: 0.5 } }
+							onChange={ ( val ) => update( 'focalPoint', val ) }
+						/>
+					) }
+				</>
+			) }
+			<ToggleControl
+				label={ __( 'Decorative — hide from screen readers', 'sgs-blocks' ) }
+				checked={ !! item.decorative }
+				onChange={ ( val ) => update( 'decorative', val ) }
+				help={ __(
+					'Turn on for a purely decorative card image with no informational content — screen readers will skip it entirely (WCAG 1.1.1).',
+					'sgs-blocks'
+				) }
+				__nextHasNoMarginBottom
+			/>
 			<TextControl
 				label={ __( 'Title', 'sgs-blocks' ) }
 				value={ item.title || '' }
@@ -230,13 +284,17 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		variant,
 		headingLevel,
-		items,
+		items: rawItems,
 		columns,
 		gap,
 		aspectRatio,
 		effectHover,
 		titleColour,
+		titleColourHover,
+		titleColourGradient,
 		subtitleColour,
+		subtitleColourHover,
+		subtitleColourGradient,
 		cardBackground,
 		cardBackgroundGradient,
 		cardBorderColour,
@@ -252,6 +310,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		textColourHover,
 		shadowHover,
 		shadowHoverColour,
+		transitionDuration,
+		transitionEasing,
+		scaleHover,
+		imageZoomHover,
+		grayscaleHover,
+		staggerDelay,
 		source,
 		queryPostType,
 		queryPostsPerPage,
@@ -269,9 +333,32 @@ export default function Edit( { attributes, setAttributes } ) {
 		productEmptyMessage,
 	} = attributes;
 
+	// Stable per-item `_key` for CSS scoping (Spec 35 Part 4) — backfilled
+	// silently for items authored before this field existed. useMemo keeps
+	// the generated keys stable within a render even before the effect
+	// below persists them; the effect fires at most once per real backfill
+	// (withStableItemKeys returns the SAME reference when nothing changed).
+	const items = useMemo( () => withStableItemKeys( rawItems ), [ rawItems ] );
+	useEffect( () => {
+		if ( items !== rawItems ) {
+			setAttributes( { items } );
+		}
+	}, [ items, rawItems, setAttributes ] );
+
 	const isQueryMode = source === 'query';
 	const isWcProductMode = source === 'wc-product';
 	const isCptCollectionMode = source === 'cpt-collection';
+
+	// Contrast check for card text (title/subtitle) against the card's
+	// background. `contrastAgainst` only accepts a FLAT colour/token, so this
+	// only fires when a flat `cardBackground` is set AND no
+	// `cardBackgroundGradient` overrides it — when a gradient is set, the
+	// gradient (not the flat colour) is what actually paints, so comparing
+	// against the flat colour would compare against a surface that isn't
+	// rendered. Otherwise the check is skipped (ambiguous/inherited/gradient
+	// background). Mirrors site-header-row's rowHasOwnBackground pattern.
+	const cardBackgroundForContrast =
+		cardBackground && ! cardBackgroundGradient ? cardBackground : '';
 
 	// Flat help-text resolution (no nested ternary — S3358).
 	let sourceHelp = __( 'Add and arrange cards manually below.', 'sgs-blocks' );
@@ -314,13 +401,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-card-grid-aspect': aspectRatio,
 	};
 
-	const titleStyle = {
-		color: colourVar( titleColour ) || undefined,
-	};
+	const titleStyle = resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar );
 
-	const subtitleStyle = {
-		color: colourVar( subtitleColour ) || undefined,
-	};
+	const subtitleStyle = resolveTextColourPreviewStyle( subtitleColour, subtitleColourGradient, colourVar );
 
 	const updateItem = ( index, updatedItem ) => {
 		const updated = [ ...items ];
@@ -345,6 +428,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					badge: '',
 					badgeVariant: '',
 					link: '',
+					decorative: false,
+					_key: generateItemKey(),
+					objectFit: 'cover',
+					focalPoint: { x: 0.5, y: 0.5 },
 				},
 			],
 		} );
@@ -352,51 +439,114 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			{ /* D618/D609 — ONE grouped, SGS-OWNED colour panel, mounted FIRST so
-			   it sits at the top of the inspector (Styles tab). Replaces the
-			   scattered DesignTokenPicker rows that used to sit in "Text
-			   Styling" (titleColour/subtitleColour) and "Card Styling"
-			   (cardBackground/cardBorderColour) below. cardBackground pairs
-			   with backgroundColourHover and cardBorderColour pairs with
-			   borderColourHover — both target `.sgs-card-grid__item`
-			   (render.php item element, confirmed via block.json's element
-			   manifest + render.php:74-78/211-234/266-272/411-419). Text
-			   colour on the card item is HOVER-ONLY — render.php has no
-			   resting textColour attribute for the item, only
-			   textColourHover (render.php:68,414) — so that row carries a
-			   single Hover state, no Normal state. */ }
-			<SgsColourPanel
-				rows={ [
-					{
-						key: 'title',
-						label: __( 'Title colour', 'sgs-blocks' ),
-						states: [
+			{ /* Spec 35 THE PLACEMENT RULE (D537) — TIER 1: one panel per declared
+			   element (supports.sgs.elements), holding that element's content,
+			   style and hover TOGETHER. Replaces the old single grouped
+			   "Colour" panel that mixed title/subtitle/card colours across 3
+			   different elements. Each element's colour rows are mounted the
+			   same way SgsColourPanel mounts its own rows internally
+			   (InspectorControls group="styles" + PanelBody + DesignTokenPicker/
+			   GradientCapableColourControl) — SgsColourPanel itself has no
+			   per-caller title override, so these are built directly rather
+			   than forcing a shared-component change for 3 blocks (Rule 7 —
+			   shared-mechanism changes need a design gate). */ }
+
+			{ /* TITLE element — content (heading level) in Settings, colour+hover
+			   in Styles. Both panels share the "Title" name so they read as
+			   one conceptual element panel split across WP's native tabs
+			   (the interim state ahead of SGS's own 3-tab bar, Spec 35 PART O). */ }
+			<InspectorControls>
+				<PanelBody title={ __( 'Title', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Heading level', 'sgs-blocks' ) }
+						value={ headingLevel || 'h3' }
+						options={ HEADING_LEVEL_OPTIONS }
+						onChange={ ( val ) => setAttributes( { headingLevel: val } ) }
+						help={ __(
+							'Pick the level that fits your page outline — usually H2 or H3 depending on what comes before this grid.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
+			</InspectorControls>
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Title', 'sgs-blocks' ) } className="sgs-colour-panel">
+					<GradientCapableColourControl
+						label={ __( 'Title colour', 'sgs-blocks' ) }
+						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: titleColour,
 								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
 								linked: true,
+								gradientValue: titleColourGradient,
+								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
 							},
-						],
-					},
-					{
-						key: 'subtitle',
-						label: __( 'Subtitle colour', 'sgs-blocks' ),
-						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: titleColourHover,
+								onChange: ( val ) => setAttributes( { titleColourHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
+						{ ...( cardBackgroundForContrast ? { contrastAgainst: cardBackgroundForContrast } : {} ) }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* SUBTITLE element — colour+hover only, no content control of its
+			   own (the subtitle text itself is authored per-item, not a
+			   block-level setting). */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Subtitle', 'sgs-blocks' ) } className="sgs-colour-panel">
+					<GradientCapableColourControl
+						label={ __( 'Subtitle colour', 'sgs-blocks' ) }
+						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: subtitleColour,
 								onChange: ( val ) => setAttributes( { subtitleColour: val ?? '' } ),
 								linked: true,
+								gradientValue: subtitleColourGradient,
+								onGradientChange: ( val ) => setAttributes( { subtitleColourGradient: val ?? '' } ),
 							},
-						],
-					},
-					{
-						key: 'card-background',
-						label: __( 'Card background colour', 'sgs-blocks' ),
-						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: subtitleColourHover,
+								onChange: ( val ) => setAttributes( { subtitleColourHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
+						{ ...( cardBackgroundForContrast ? { contrastAgainst: cardBackgroundForContrast } : {} ) }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* CARD element (block.json's "item") — background/border/shadow
+			   colour+hover plus the item's hover-only text colour, all in ONE
+			   panel per THE PLACEMENT RULE. cardBackground pairs with
+			   backgroundColourHover and cardBorderColour pairs with
+			   borderColourHover — both target `.sgs-card-grid__item`
+			   (render.php item element, confirmed via block.json's element
+			   manifest + render.php:74-78/211-234/266-272/411-419). Text
+			   colour on the card item is HOVER-ONLY — render.php has no
+			   resting textColour attribute for the item, only
+			   textColourHover (render.php:68,414) — so that row carries a
+			   single Hover state, no Normal state. The shadow builder
+			   (cardShadow/shadowHover, shape + colour) lives here too — see
+			   the "Card Styling (resting state)" panel below for the rest of
+			   the item's non-colour box styling (border width, radius). */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Card', 'sgs-blocks' ) } className="sgs-colour-panel">
+					<DesignTokenPicker
+						label={ __( 'Card background colour', 'sgs-blocks' ) }
+						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
@@ -417,12 +567,11 @@ export default function Edit( { attributes, setAttributes } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
 							},
-						],
-					},
-					{
-						key: 'card-border',
-						label: __( 'Card border colour', 'sgs-blocks' ),
-						states: [
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Card border colour', 'sgs-blocks' ) }
+						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
@@ -443,12 +592,11 @@ export default function Edit( { attributes, setAttributes } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { borderColourHoverGradient: val ?? '' } ),
 							},
-						],
-					},
-					{
-						key: 'card-text',
-						label: __( 'Card text colour (hover)', 'sgs-blocks' ),
-						states: [
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Card text colour (hover)', 'sgs-blocks' ) }
+						states={ [
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
@@ -456,12 +604,11 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
 								linked: true,
 							},
-						],
-					},
-					{
-						key: 'card-shadow',
-						label: __( 'Card shadow colour', 'sgs-blocks' ),
-						states: [
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Card shadow colour', 'sgs-blocks' ) }
+						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
@@ -476,25 +623,65 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { shadowHoverColour: val ?? '' } ),
 								linked: true,
 							},
-						],
-					},
-				] }
-			/>
-			<InspectorControls>
-				<PanelBody title={ __( 'Card Grid Settings', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'Heading level', 'sgs-blocks' ) }
-						value={ headingLevel || 'h3' }
-						options={ HEADING_LEVEL_OPTIONS }
-						onChange={ ( val ) => setAttributes( { headingLevel: val } ) }
+						] }
+					/>
+					<ShadowControl
+						label={ __( 'Shadow', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'cardShadow',
+							colour: 'cardShadowColour',
+						} }
+					/>
+					{ /* shadowHover — declared + read by render.php (--sgs-hover-shadow)
+						but had NO editor control at all until this fix (Stage 0 orphan
+						attr, D621/D622). Landed straight on the target shape (shape +
+						colour), matching cardShadow above. */ }
+					<ShadowControl
+						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'shadowHover',
+							colour: 'shadowHoverColour',
+						} }
+					/>
+					{ /* Moved in from the Settings-tab "Card Styling (resting
+					     state)" panel (D622 — an element-scoped control
+					     belongs in its own element's TIER 1 panel;
+					     cardBorderWidth/cardRadius are owned by "Card"). */ }
+					<ResponsiveBoxControl
+						label={ __( 'Border width', 'sgs-blocks' ) }
+						showResponsive={ false }
+						presets={ [ '10', '20', '30' ] }
+						values={ { base: cardBorderWidth || {} } }
+						onChange={ ( _tier, next ) =>
+							setAttributes( { cardBorderWidth: next } )
+						}
+					/>
+					<SgsLengthControl
+						label={ __( 'Corner radius', 'sgs-blocks' ) }
+						value={ cardRadius || '' }
+						onChange={ ( val ) =>
+							setAttributes( { cardRadius: val || '' } )
+						}
+						units={ [
+							{ value: 'px', label: 'px', default: 8 },
+							{ value: '%', label: '%', default: 50 },
+							{ value: 'rem', label: 'rem', default: 0.5 },
+							{ value: 'em', label: 'em', default: 0.5 },
+						] }
 						help={ __(
-							'Pick the level that fits your page outline — usually H2 or H3 depending on what comes before this grid.',
+							'Leave empty to use the theme default.',
 							'sgs-blocks'
 						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 				</PanelBody>
+			</InspectorControls>
+
+			<InspectorControls>
 				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
 				<PanelBody title={ __( 'Content Source', 'sgs-blocks' ) }>
 					<SelectControl
@@ -554,95 +741,163 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				) }
 
-				{ /* ── Products panel: visible only in wc-product mode ── */ }
+				{ /* ── Products panel: visible only in wc-product mode.
+					   S7 pilot (2026-09-02, uniformity sweep): converted from a flat
+					   PanelBody to a ToolsPanel. Selection mode is core config
+					   (isShownByDefault); collection/handpick controls and filters
+					   are optional and resettable. */ }
 				{ isWcProductMode && (
-					<PanelBody
-						title={ __( 'Products', 'sgs-blocks' ) }
-						initialOpen={ true }
+					<ToolsPanel
+						label={ __( 'Products', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								productSource: 'collection',
+								productCollection: 'latest',
+								productLimit: 6,
+								productCategories: [],
+								productTags: [],
+								productInStock: true,
+								productOnSale: false,
+								productFeatured: false,
+								productShowLadder: false,
+								productEmptyMessage: '',
+							} )
+						}
 					>
-						<SelectControl
+						<ToolsPanelItem
 							label={ __( 'Selection mode', 'sgs-blocks' ) }
-							value={ productSource || 'collection' }
-							options={ [
-								{ label: __( 'Smart collection', 'sgs-blocks' ), value: 'collection' },
-								{ label: __( 'Hand-pick specific products', 'sgs-blocks' ), value: 'handpick' },
-							] }
-							onChange={ ( val ) => setAttributes( { productSource: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
+							hasValue={ () => ( productSource || 'collection' ) !== 'collection' }
+							onDeselect={ () => setAttributes( { productSource: 'collection' } ) }
+							isShownByDefault
+						>
+							<SelectControl
+								label={ __( 'Selection mode', 'sgs-blocks' ) }
+								value={ productSource || 'collection' }
+								options={ [
+									{ label: __( 'Smart collection', 'sgs-blocks' ), value: 'collection' },
+									{ label: __( 'Hand-pick specific products', 'sgs-blocks' ), value: 'handpick' },
+								] }
+								onChange={ ( val ) => setAttributes( { productSource: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
 
 						{ ( productSource || 'collection' ) === 'collection' && (
 							<>
-								<SelectControl
+								<ToolsPanelItem
 									label={ __( 'Smart collection', 'sgs-blocks' ) }
-									value={ productCollection || 'latest' }
-									options={ PRODUCT_COLLECTION_OPTIONS }
-									onChange={ ( val ) => setAttributes( { productCollection: val } ) }
-									help={ __( 'One-click preset ordering for your product grid.', 'sgs-blocks' ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-								<RangeControl
+									hasValue={ () => ( productCollection || 'latest' ) !== 'latest' }
+									onDeselect={ () => setAttributes( { productCollection: 'latest' } ) }
+									isShownByDefault
+								>
+									<SelectControl
+										label={ __( 'Smart collection', 'sgs-blocks' ) }
+										value={ productCollection || 'latest' }
+										options={ PRODUCT_COLLECTION_OPTIONS }
+										onChange={ ( val ) => setAttributes( { productCollection: val } ) }
+										help={ __( 'One-click preset ordering for your product grid.', 'sgs-blocks' ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
 									label={ __( 'Number of products', 'sgs-blocks' ) }
-									value={ productLimit || 6 }
-									onChange={ ( val ) => setAttributes( { productLimit: val } ) }
-									min={ 1 }
-									max={ 24 }
-									help={ __( 'Maximum 24 products.', 'sgs-blocks' ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-								<p style={ { margin: '12px 0 4px', fontWeight: 600, fontSize: 12 } }>
-									{ __( 'Filters', 'sgs-blocks' ) }
-								</p>
-								<ProductTaxonomyChecklist
-									taxonomy="product_cat"
+									hasValue={ () => ( productLimit || 6 ) !== 6 }
+									onDeselect={ () => setAttributes( { productLimit: 6 } ) }
+									isShownByDefault
+								>
+									<RangeControl
+										label={ __( 'Number of products', 'sgs-blocks' ) }
+										value={ productLimit || 6 }
+										onChange={ ( val ) => setAttributes( { productLimit: val } ) }
+										min={ 1 }
+										max={ 24 }
+										help={ __( 'Maximum 24 products.', 'sgs-blocks' ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
 									label={ __( 'Categories', 'sgs-blocks' ) }
-									attributeKey="productCategories"
-									selectedIds={ productCategories || [] }
-									setAttributes={ setAttributes }
-								/>
-								<ProductTaxonomyChecklist
-									taxonomy="product_tag"
+									hasValue={ () => ( productCategories || [] ).length > 0 }
+									onDeselect={ () => setAttributes( { productCategories: [] } ) }
+								>
+									<p style={ { margin: '12px 0 4px', fontWeight: 600, fontSize: 12 } }>
+										{ __( 'Filters', 'sgs-blocks' ) }
+									</p>
+									<ProductTaxonomyChecklist
+										taxonomy="product_cat"
+										label={ __( 'Categories', 'sgs-blocks' ) }
+										attributeKey="productCategories"
+										selectedIds={ productCategories || [] }
+										setAttributes={ setAttributes }
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
 									label={ __( 'Tags', 'sgs-blocks' ) }
-									attributeKey="productTags"
-									selectedIds={ productTags || [] }
-									setAttributes={ setAttributes }
-								/>
-								<SelectControl
+									hasValue={ () => ( productTags || [] ).length > 0 }
+									onDeselect={ () => setAttributes( { productTags: [] } ) }
+								>
+									<ProductTaxonomyChecklist
+										taxonomy="product_tag"
+										label={ __( 'Tags', 'sgs-blocks' ) }
+										attributeKey="productTags"
+										selectedIds={ productTags || [] }
+										setAttributes={ setAttributes }
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
 									label={ __( 'In stock only', 'sgs-blocks' ) }
-									value={ productInStock === false ? 'no' : 'yes' }
-									options={ [
-										{ label: __( 'Yes (recommended)', 'sgs-blocks' ), value: 'yes' },
-										{ label: __( 'No — include out-of-stock', 'sgs-blocks' ), value: 'no' },
-									] }
-									onChange={ ( val ) => setAttributes( { productInStock: val === 'yes' } ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-								<SelectControl
+									hasValue={ () => productInStock !== true }
+									onDeselect={ () => setAttributes( { productInStock: true } ) }
+								>
+									<SelectControl
+										label={ __( 'In stock only', 'sgs-blocks' ) }
+										value={ productInStock === false ? 'no' : 'yes' }
+										options={ [
+											{ label: __( 'Yes (recommended)', 'sgs-blocks' ), value: 'yes' },
+											{ label: __( 'No — include out-of-stock', 'sgs-blocks' ), value: 'no' },
+										] }
+										onChange={ ( val ) => setAttributes( { productInStock: val === 'yes' } ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
 									label={ __( 'On sale only', 'sgs-blocks' ) }
-									value={ productOnSale ? 'yes' : 'no' }
-									options={ [
-										{ label: __( 'No', 'sgs-blocks' ), value: 'no' },
-										{ label: __( 'Yes — sale items only', 'sgs-blocks' ), value: 'yes' },
-									] }
-									onChange={ ( val ) => setAttributes( { productOnSale: val === 'yes' } ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-								<SelectControl
+									hasValue={ () => productOnSale !== false }
+									onDeselect={ () => setAttributes( { productOnSale: false } ) }
+								>
+									<SelectControl
+										label={ __( 'On sale only', 'sgs-blocks' ) }
+										value={ productOnSale ? 'yes' : 'no' }
+										options={ [
+											{ label: __( 'No', 'sgs-blocks' ), value: 'no' },
+											{ label: __( 'Yes — sale items only', 'sgs-blocks' ), value: 'yes' },
+										] }
+										onChange={ ( val ) => setAttributes( { productOnSale: val === 'yes' } ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
 									label={ __( 'Featured only', 'sgs-blocks' ) }
-									value={ productFeatured ? 'yes' : 'no' }
-									options={ [
-										{ label: __( 'No', 'sgs-blocks' ), value: 'no' },
-										{ label: __( 'Yes — featured items only', 'sgs-blocks' ), value: 'yes' },
-									] }
-									onChange={ ( val ) => setAttributes( { productFeatured: val === 'yes' } ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
+									hasValue={ () => productFeatured !== false }
+									onDeselect={ () => setAttributes( { productFeatured: false } ) }
+								>
+									<SelectControl
+										label={ __( 'Featured only', 'sgs-blocks' ) }
+										value={ productFeatured ? 'yes' : 'no' }
+										options={ [
+											{ label: __( 'No', 'sgs-blocks' ), value: 'no' },
+											{ label: __( 'Yes — featured items only', 'sgs-blocks' ), value: 'yes' },
+										] }
+										onChange={ ( val ) => setAttributes( { productFeatured: val === 'yes' } ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
 							</>
 						) }
 
@@ -653,22 +908,34 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) }
 
-						<ToggleControl
+						<ToolsPanelItem
 							label={ __( 'Show price breakdown on cards', 'sgs-blocks' ) }
-							checked={ !! productShowLadder }
-							onChange={ ( val ) => setAttributes( { productShowLadder: val } ) }
-							help={ __( 'Off by default — grids are a browsing context; the ladder does its upsell work on the product page.', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-						/>
-						<TextControl
+							hasValue={ () => !! productShowLadder }
+							onDeselect={ () => setAttributes( { productShowLadder: false } ) }
+						>
+							<ToggleControl
+								label={ __( 'Show price breakdown on cards', 'sgs-blocks' ) }
+								checked={ !! productShowLadder }
+								onChange={ ( val ) => setAttributes( { productShowLadder: val } ) }
+								help={ __( 'Off by default — grids are a browsing context; the ladder does its upsell work on the product page.', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
 							label={ __( 'Empty state message', 'sgs-blocks' ) }
-							value={ productEmptyMessage || '' }
-							onChange={ ( val ) => setAttributes( { productEmptyMessage: val } ) }
-							help={ __( 'Shown when no products match — never a blank region (FR-24-6).', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</PanelBody>
+							hasValue={ () => productEmptyMessage !== '' }
+							onDeselect={ () => setAttributes( { productEmptyMessage: '' } ) }
+						>
+							<TextControl
+								label={ __( 'Empty state message', 'sgs-blocks' ) }
+								value={ productEmptyMessage || '' }
+								onChange={ ( val ) => setAttributes( { productEmptyMessage: val } ) }
+								help={ __( 'Shown when no products match — never a blank region (FR-24-6).', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 				) }
 
 				{ ! isQueryMode && ! isWcProductMode && ! isCptCollectionMode && (
@@ -730,24 +997,154 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody
+					title={ __( 'Hover Effects', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ToolsPanel
+						className="sgs-nested-tools-panel"
+						label={ __( 'Hover Effects', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								scaleHover: '',
+								imageZoomHover: false,
+								grayscaleHover: false,
+								staggerDelay: 80,
+								transitionDuration: '300',
+								transitionEasing: 'ease-in-out',
+							} )
+						}
+					>
+						<ToolsPanelItem
+							label={ __( 'Hover scale', 'sgs-blocks' ) }
+							hasValue={ () => !! scaleHover }
+							onDeselect={ () => setAttributes( { scaleHover: '' } ) }
+							isShownByDefault
+						>
+							<RangeControl
+								label={ __( 'Hover scale', 'sgs-blocks' ) }
+								value={ parseFloat( scaleHover ) || 1 }
+								onChange={ ( val ) => setAttributes( { scaleHover: String( val ) } ) }
+								min={ 1 }
+								max={ 1.1 }
+								step={ 0.01 }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
+							hasValue={ () => imageZoomHover !== false }
+							onDeselect={ () => setAttributes( { imageZoomHover: false } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
+								help={ __( 'Zooms the card image on hover.', 'sgs-blocks' ) }
+								checked={ imageZoomHover }
+								onChange={ ( val ) => setAttributes( { imageZoomHover: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
+							hasValue={ () => grayscaleHover !== false }
+							onDeselect={ () => setAttributes( { grayscaleHover: false } ) }
+						>
+							<ToggleControl
+								label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
+								help={ __( 'Desaturates the card image at rest; restores full colour on hover.', 'sgs-blocks' ) }
+								checked={ grayscaleHover }
+								onChange={ ( val ) => setAttributes( { grayscaleHover: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Stagger delay (ms)', 'sgs-blocks' ) }
+							hasValue={ () => staggerDelay !== 80 }
+							onDeselect={ () => setAttributes( { staggerDelay: 80 } ) }
+						>
+							<RangeControl
+								label={ __( 'Stagger delay (ms)', 'sgs-blocks' ) }
+								help={ __( 'Each card is delayed by a multiple of this value on entrance.', 'sgs-blocks' ) }
+								value={ staggerDelay }
+								onChange={ ( val ) => setAttributes( { staggerDelay: val } ) }
+								min={ 0 }
+								max={ 500 }
+								step={ 25 }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+							hasValue={ () => transitionDuration !== '300' }
+							onDeselect={ () => setAttributes( { transitionDuration: '300' } ) }
+						>
+							<RangeControl
+								label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+								value={ parseInt( transitionDuration, 10 ) || 300 }
+								onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
+								min={ 100 }
+								max={ 1000 }
+								step={ 50 }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Transition easing', 'sgs-blocks' ) }
+							hasValue={ () => transitionEasing !== 'ease-in-out' }
+							onDeselect={ () => setAttributes( { transitionEasing: 'ease-in-out' } ) }
+						>
+							<SelectControl
+								label={ __( 'Transition easing', 'sgs-blocks' ) }
+								value={ transitionEasing }
+								options={ EASING_OPTIONS }
+								onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
+				</PanelBody>
+
+				<PanelBody
 					title={ __( 'Text Styling', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
+					{ /*
+					 * Multi-target switcher (2026-09-05) — title + subtitle share
+					 * ONE full control set at a time instead of stacking two,
+					 * proving the shared TypographyControls `targets` API against
+					 * a real 2-target block. `card-grid` was picked over
+					 * `sgs/testimonial` because testimonial's quote/summary are
+					 * NOT actually on this shared component yet (flat legacy
+					 * string attrs + hand-rolled controls) — migrating them was
+					 * out of scope for this task; title/subtitle here are
+					 * genuinely object-typed + already rendered via
+					 * sgs_typography_css_rule(), so this is a real, clean case.
+					 */ }
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						prefix="title"
-						showWeight={ false }
-						showStyle={ false }
-						showLineHeight={ false }
-					/>
-					<TypographyControls
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="subtitle"
-						showWeight={ false }
-						showStyle={ false }
-						showLineHeight={ false }
+						targets={ [
+							{
+								key: 'title',
+								label: __( 'Title', 'sgs-blocks' ),
+								prefix: 'title',
+								showWeight: false,
+								showStyle: false,
+								showLineHeight: false,
+							},
+							{
+								key: 'subtitle',
+								label: __( 'Subtitle', 'sgs-blocks' ),
+								prefix: 'subtitle',
+								showWeight: false,
+								showStyle: false,
+								showLineHeight: false,
+							},
+						] }
 					/>
 				</PanelBody>
 
@@ -778,63 +1175,43 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<ResponsiveBoxControl
-						label={ __( 'Border width', 'sgs-blocks' ) }
-						showResponsive={ false }
-						values={ { base: cardBorderWidth || {} } }
-						onChange={ ( _tier, next ) =>
-							setAttributes( { cardBorderWidth: next } )
-						}
-					/>
-					{ /* Contract §14.3 forbids a raw TextControl taking free CSS here —
-					     it accepted invalid values and offered no unit affordance.
-					     UnitControl per §14.1/§14.2 with an explicit units array
-					     (D561). The attribute stays `type: string` and render.php:72
-					     still reads a plain string, so the value domain is unchanged;
-					     the canary carried 0 stored values at migration. */ }
-					<UnitControl
-						label={ __( 'Corner radius', 'sgs-blocks' ) }
-						value={ cardRadius || '' }
-						onChange={ ( val ) =>
-							setAttributes( { cardRadius: val || '' } )
-						}
-						units={ [
-							{ value: 'px', label: 'px', default: 8 },
-							{ value: '%', label: '%', default: 50 },
-							{ value: 'rem', label: 'rem', default: 0.5 },
-							{ value: 'em', label: 'em', default: 0.5 },
-						] }
-						help={ __(
-							'Leave empty to use the theme default.',
-							'sgs-blocks'
-						) }
-						__next40pxDefaultSize
-					/>
-					<ShadowControl
-						label={ __( 'Shadow', 'sgs-blocks' ) }
-						value={ cardShadow }
-						onChange={ ( val ) =>
-							setAttributes( { cardShadow: val } )
-						}
-						colour={ cardShadowColour }
-						onColourChange={ ( val ) =>
-							setAttributes( { cardShadowColour: val } )
-						}
-					/>
-					{ /* shadowHover — declared + read by render.php (--sgs-hover-shadow)
-						but had NO editor control at all until this fix (Stage 0 orphan
-						attr, D621/D622). Landed straight on the target shape (shape +
-						colour), matching cardShadow above. */ }
-					<ShadowControl
-						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
-						value={ shadowHover }
-						onChange={ ( val ) =>
-							setAttributes( { shadowHover: val } )
-						}
-						colour={ shadowHoverColour }
-						onColourChange={ ( val ) =>
-							setAttributes( { shadowHoverColour: val } )
-						}
+					{ /* Border width + corner radius moved to the "Card" (item
+					     element) colour panel above, Styles tab — D622. */ }
+					{ /* cardShadow/shadowHover moved to the "Card" (item element)
+					   colour panel above, Styles tab — Spec 35 THE PLACEMENT RULE
+					   groups the shadow builder (shape + colour) with the rest of
+					   the item's colour states rather than in this box-styling
+					   panel. */ }
+				</PanelBody>
+				{ /* GRID element (wrapper) — border/radius resolve to the same
+				   TIER-2 "Layout" property family as ContainerWrapperControls'
+				   grid/gap/width controls above (block.json attrMap:
+				   css:border-* → borderWidth/Style/Colour/Radius, all declared
+				   on the `grid` element's `layout` cluster). Titled "Layout" so
+				   it reads as the grid wrapper's Layout family rather than a
+				   generic catch-all "Border" panel. */ }
+				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>
@@ -867,8 +1244,16 @@ export default function Edit( { attributes, setAttributes } ) {
 							) }
 						</p>
 					) }
-					{ items.map( ( item, index ) => (
-						<div key={ index } className="sgs-card-grid__item">
+					{ items.map( ( item ) => {
+						const itemMediaStyle = {
+							objectFit: item.objectFit || 'cover',
+							objectPosition:
+								'cover' === ( item.objectFit || 'cover' )
+									? focalPointToObjectPosition( item.focalPoint || { x: 0.5, y: 0.5 } )
+									: undefined,
+						};
+						return (
+						<div key={ item._key } className="sgs-card-grid__item">
 							<div className="sgs-card-grid__image-wrap">
 								{ item.media?.url ? (
 									item.media.type === 'video' ? (
@@ -876,6 +1261,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										<video
 											src={ item.media.url }
 											className="sgs-card-grid__image"
+											style={ itemMediaStyle }
 											muted
 											loop
 											playsInline
@@ -885,6 +1271,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											src={ item.media.url }
 											alt={ item.media.alt || '' }
 											className="sgs-card-grid__image"
+											style={ itemMediaStyle }
 										/>
 									)
 								) : (
@@ -939,7 +1326,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								</div>
 							) }
 						</div>
-					) ) }
+					);
+				} ) }
 				</div>
 			) }
 		</>

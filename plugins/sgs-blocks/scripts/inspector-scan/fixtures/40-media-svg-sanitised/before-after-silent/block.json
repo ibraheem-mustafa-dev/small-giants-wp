@@ -1,0 +1,12 @@
+{
+	"apiVersion": 3,
+	"name": "sgs/before-after-silent",
+	"title": "Fixture: sgs/before-after SVG pattern (silent, delegated read)",
+	"category": "sgs-content",
+	"attributes": {
+		"beforeType": { "type": "string", "default": "image" },
+		"afterType": { "type": "string", "default": "image" },
+		"beforeSvgContent": { "type": "string", "default": "" },
+		"afterSvgContent": { "type": "string", "default": "" }
+	}
+}

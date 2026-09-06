@@ -1,0 +1,14 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/fixture-unknown-atom",
+	"title": "Fixture: mediaElements names an atom id that does not exist in the generated atom map (must flag)",
+	"category": "sgs",
+	"supports": {
+		"sgs": {
+			"mediaElements": [
+				{ "prefix": "", "context": "element", "atoms": [ "nonexistent-atom" ] }
+			]
+		}
+	},
+	"attributes": {}
+}

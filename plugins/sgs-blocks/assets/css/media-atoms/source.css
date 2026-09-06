@@ -1,0 +1,40 @@
+/*
+ * source atom — background-image, BACKDROP scope only.
+ *
+ * Element-scope surfaces (an `<img>`/`<video>` tag) never rely on this rule —
+ * the chosen media reaches those via markup (`src`), not CSS. This rule only
+ * paints when the `.sgs-media-box` marker sits on a painted background box.
+ *
+ * Video and SVG sources are not paintable as a CSS `background-image` and are
+ * intentionally NOT emitted by `sgs_media_atom_source_css()`/`css()` — they
+ * need their own DOM (a `<video>` element or inline `<svg>`) in a backdrop
+ * context, which is outside this atom's declared scope.
+ *
+ * Tiered per `_base.css`'s documented cascade: mobile -> tablet -> desktop ->
+ * initial. `ImageUrl`/`ImageUrlTablet`/`ImageUrlMobile` are all in
+ * MEDIA_TIERED_BASES, so all three tiers are real.
+ */
+.sgs-media-box {
+	background-image: var( --sgs-media-background-image, none );
+}
+
+@media (max-width: 1023px) {
+	.sgs-media-box {
+		background-image: var(
+			--sgs-media-background-image-tablet,
+			var( --sgs-media-background-image, none )
+		);
+	}
+}
+
+@media (max-width: 767px) {
+	.sgs-media-box {
+		background-image: var(
+			--sgs-media-background-image-mobile,
+			var(
+				--sgs-media-background-image-tablet,
+				var( --sgs-media-background-image, none )
+			)
+		);
+	}
+}

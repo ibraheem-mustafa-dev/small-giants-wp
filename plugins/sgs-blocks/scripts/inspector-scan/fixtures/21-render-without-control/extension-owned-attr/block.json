@@ -1,0 +1,10 @@
+{
+	"name": "sgs/extension-owned-attr",
+	"title": "Fixture — declares attributes the EXTENSIONS own",
+	"attributes": {
+		"fx": { "type": "string", "default": "" },
+		"fxGridDotColour": { "type": "string", "default": "" },
+		"sgsHoverScale": { "type": "string", "default": "" },
+		"headingText": { "type": "string", "default": "" }
+	}
+}

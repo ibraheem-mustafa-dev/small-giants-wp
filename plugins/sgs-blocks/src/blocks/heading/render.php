@@ -10,23 +10,15 @@
  * BEM modifier class for fontWeight (400) and textColour (text-muted) when
  * the attrs are still at their schema defaults.
  *
- * NO-INLINE (LOCKED per-block no-inline migration contract §A, 2026-07-09):
- * the rendered subtree carries ZERO inline CSS property declarations. Every
- * declaration — wrapper box/border/background/shadow/width/text-align, the WP
- * `color` support, AND the text element's typography — is emitted into the
- * block's OWN scoped `.{uid}` <style> tag. WP styling supports (spacing /
- * color / __experimentalBorder) all declare `__experimentalSkipSerialization`
- * in block.json so get_block_wrapper_attributes() never auto-inlines them.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check.
  *
  * BOX-GROUP (contract §B): padding / margin / border-width are box objects.
  * Base padding/margin/border-radius = WP-native style.spacing.* /
  * style.border.radius objects (emitted scoped via wp_style_engine_get_styles);
  * tiers = paddingTablet/paddingMobile/marginTablet/marginMobile object attrs
  * (scoped @media 1023/767); border-width = SGS custom object attr.
- *
- * @since 2026-05-26  v0.4.0 - single-element refactor (headingRole + content).
- * @since 2026-06-01  v0.5.0 - variantStyle replaced by WP block-styles (is-style-*).
- * @since 2026-07-09  v0.7.0 - 100% no-inline + 100% box-group migration.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused - dynamic block).
@@ -36,6 +28,29 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
@@ -111,27 +126,21 @@ $is_subheading = ( 'subheading' === $heading_role );
 $rendered_tag  = $is_subheading ? $sub_tag : $level;
 
 // Typography attrs.
-$font_family    = $attributes['fontFamily'] ?? '';
-$font_size_unit = $attributes['fontSizeUnit'] ?? 'px';
-// No '700' fallback (D338): that duplicated theme.json's styles.elements.heading
-// fontWeight and forced an emit that beat it, so a client could never change heading
-// weight. Empty => the emitter below writes no declaration => the theme wins.
-$font_weight         = $attributes['fontWeight'] ?? '';
-$line_height         = isset( $attributes['lineHeight'] ) ? $attributes['lineHeight'] : null;
-$line_height_unit    = $attributes['lineHeightUnit'] ?? 'em';
-$letter_spacing      = isset( $attributes['letterSpacing'] ) ? $attributes['letterSpacing'] : null;
-$letter_spacing_unit = $attributes['letterSpacingUnit'] ?? 'em';
-$text_transform      = isset( $attributes['textTransform'] ) ? $attributes['textTransform'] : '';
+// D971/D972 full-replacement track: fontFamily/fontWeight/fontStyle/
+// lineHeight/letterSpacing/textTransform/textDecoration/fontSize are now
+// emitted via the shared sgs_typography_css_rule() helper (step 3 below) —
+// no local variables needed for them any more. textColour stays hand-rolled
+// (gradient-capable, outside the shared helper's scope).
 // '' = inherit (D343). NEVER default this to a colour: the scoped rule it emits
 // is (0,2,0) and beats the theme's own `h1..h6 { color: … }` (0,0,1), so a
 // default here silently disables the client's heading colour on every heading.
+// Enforced by scripts/check-hardcoded-render-defaults.js F3b (block.json
+// default-value divergence scan) — --check.
 $text_colour = $attributes['textColour'] ?? '';
-// D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
-// mirrors sgs/container's shipped backgroundOverlayColour/overlayGradient:
-// TWO attributes, gradient wins when set+valid, textColour is untouched.
+// D636 — sibling-attribute shape, mirrors sgs/container's shipped
+// backgroundOverlayColour/overlayGradient: TWO attributes, gradient wins
+// when set+valid, textColour is untouched.
 $text_colour_gradient = $attributes['textColourGradient'] ?? '';
-$font_style           = isset( $attributes['fontStyle'] ) ? sanitize_text_field( $attributes['fontStyle'] ) : '';
-$text_decoration      = isset( $attributes['textDecoration'] ) ? sanitize_text_field( $attributes['textDecoration'] ) : '';
 
 // Wrapper-level attrs. Box-object interface contract §B: padding/margin are box
 // objects — base from WP-native style.spacing.* (skip-serialised, read in step
@@ -139,11 +148,13 @@ $text_decoration      = isset( $attributes['textDecoration'] ) ? sanitize_text_f
 // object attrs. The flat per-side + {family}Unit attrs are removed.
 $background_colour          = $attributes['backgroundColour'] ?? '';
 $background_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
-$border_colour               = $attributes['borderColour'] ?? '';
+$border_colour              = $attributes['borderColour'] ?? '';
 // D636 border-colour gradient — sibling attribute, wins over $border_colour when set.
-$border_colour_gradient      = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-$box_shadow        = $attributes['boxShadow'] ?? '';
-$box_shadow_hover  = $attributes['boxShadowHover'] ?? '';
+$border_colour_gradient  = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+$box_shadow              = $attributes['boxShadow'] ?? '';
+$box_shadow_hover        = $attributes['boxShadowHover'] ?? '';
+$box_shadow_colour       = $attributes['boxShadowColour'] ?? '';
+$box_shadow_hover_colour = $attributes['boxShadowHoverColour'] ?? '';
 
 $transition_duration_raw = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
 $transition_duration     = $transition_duration_raw > 0 ? $transition_duration_raw : 300;
@@ -151,9 +162,9 @@ $transition_easing_raw   = $attributes['transitionEasing'] ?? 'ease';
 $allowed_easings         = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
 $transition_easing       = in_array( $transition_easing_raw, $allowed_easings, true ) ? $transition_easing_raw : 'ease';
 
-$hover_scale               = isset( $attributes['scaleHover'] ) && null !== $attributes['scaleHover'] ? (float) $attributes['scaleHover'] : null;
-$hover_colour              = $attributes['textColourHover'] ?? '';
-// D636 Task 1b, sibling-attribute shape — see $text_colour_gradient above.
+$hover_scale  = isset( $attributes['scaleHover'] ) && null !== $attributes['scaleHover'] ? (float) $attributes['scaleHover'] : null;
+$hover_colour = $attributes['textColourHover'] ?? '';
+// D636 — sibling-attribute shape, see $text_colour_gradient above.
 $hover_colour_gradient     = $attributes['textColourHoverGradient'] ?? '';
 $hover_background          = $attributes['backgroundColourHover'] ?? '';
 $hover_background_gradient = $attributes['backgroundColourHoverGradient'] ?? '';
@@ -180,64 +191,41 @@ $text_align          = in_array( $text_align_raw, $allowed_text_aligns, true ) ?
 // CSS-length sanitiser — strips everything except digits, dot, %, and unit
 // letters so an object-attr side/corner value can never break out of its
 // declaration. Mirrors sgs/button + sgs/container.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // (border-style / text-transform). Strips everything except letters + hyphen so
 // ;{}():digits can never break out of the declaration (contract §D).
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // Border-width — SGS custom OBJECT attr { top, right, bottom, left }, base only
 // (no tiers). No WP-native border-width support; colour/style stay scalar attrs.
 $border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = $sgs_css_length( $border_width_obj['top'] ?? '' );
-$border_width_right  = $sgs_css_length( $border_width_obj['right'] ?? '' );
-$border_width_bottom = $sgs_css_length( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = $sgs_css_length( $border_width_obj['left'] ?? '' );
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
 $has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
 // Border-radius — WP-native style.border.radius (string = uniform, or an object
 // with topLeft/topRight/bottomLeft/bottomRight keys), base only. Skip-serialised
 // in block.json → emit scoped via the style engine in step 5.
-$base_border_radius = null;
-if ( isset( $attributes['style']['border']['radius'] ) ) {
-	$radius_raw = $attributes['style']['border']['radius'];
-	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-		$base_border_radius = $radius_raw;
-	} elseif ( is_array( $radius_raw ) ) {
-		$radius_clean   = array();
-		$has_any_corner = false;
-		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? $sgs_css_length( $radius_raw[ $corner ] ) : '';
-			if ( '' !== $radius_clean[ $corner ] ) {
-				$has_any_corner = true;
-			}
-		}
-		if ( $has_any_corner ) {
-			$base_border_radius = $radius_clean;
-		}
-	}
-}
+$radius_tiers            = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$base_border_radius       = $radius_tiers['base'];
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+$border_radius_mobile_obj = $radius_tiers['mobile'];
 
 // Base padding/margin — WP-native style.spacing.* objects (skip-serialised).
 // Kept as-is (string values incl. preset "var:preset|spacing|N" refs) and passed
 // straight to the style engine, which formats + sanitises them (contract §B / the
 // button reference does exactly this).
 $base_padding_obj = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	foreach ( $sgs_tor_padding_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_padding_obj[ $spacing_side ] = $spacing_value;
 		}
 	}
 }
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	foreach ( $sgs_tor_margin_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_margin_obj[ $spacing_side ] = $spacing_value;
 		}
@@ -245,10 +233,10 @@ if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes
 }
 
 // Responsive spacing tiers — SGS object attrs { top, right, bottom, left }.
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
 // WP `color` support values (skip-serialised in block.json → NOT auto-inlined).
 // Custom hex/rgb → emitted scoped via the style engine; preset SLUGS → the
@@ -257,7 +245,19 @@ $style_color_text     = isset( $attributes['style']['color']['text'] ) ? (string
 $style_color_bg       = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
 $style_color_gradient = isset( $attributes['style']['color']['gradient'] ) ? (string) $attributes['style']['color']['gradient'] : '';
 $preset_text_slug     = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$preset_bg_slug       = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+// `color.background` support is declared FALSE in block.json, so WP never
+// registers/writes a `backgroundColor` attr through the editor — but PHP
+// does not drop an undeclared attr written by hand-authored pattern/theme
+// content (D338). Fold a hand-authored preset slug into the SAME background-
+// paint path as the custom backgroundColour attr (below) rather than adding
+// WP's native `has-{slug}-background-color` class: that class paints
+// `!important` directly on the root element, which is exactly the conflict
+// the `::after` background layer exists to avoid (a text gradient's
+// `background-clip:text` would clip it to the glyph shapes same as before).
+$preset_bg_slug = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+if ( '' === $background_colour && '' === $background_colour_gradient && '' !== $preset_bg_slug ) {
+	$background_colour = $preset_bg_slug;
+}
 
 // ---------------------------------------------------------------------------
 // 3. Build the text element's typography declarations (scoped, NOT inline).
@@ -268,8 +268,8 @@ $preset_bg_slug       = isset( $attributes['backgroundColor'] ) ? sanitize_html_
 // id-scoped text selector, never inline (contract §A).
 $text_decls = array();
 
-// D636 Task 1b — sibling gradient attribute wins when set+valid; the
-// gradient path paints through the glyphs via background-clip:text.
+// D636 — sibling gradient attribute wins when set+valid; the gradient path
+// paints through the glyphs via background-clip:text.
 $text_colour_effective = sgs_resolve_text_colour_or_gradient( $text_colour, $text_colour_gradient );
 if ( '' !== $text_colour_effective ) {
 	$text_colour_decl = sgs_text_colour_decl( $text_colour_effective );
@@ -277,59 +277,25 @@ if ( '' !== $text_colour_effective ) {
 		$text_decls[] = $text_colour_decl;
 	}
 }
-if ( $font_weight ) {
-	$font_weight_safe = preg_replace( '/[^a-zA-Z0-9]/', '', (string) $font_weight );
-	if ( '' !== $font_weight_safe ) {
-		$text_decls[] = 'font-weight:' . $font_weight_safe;
-	}
-}
-if ( null !== $line_height && '' !== $line_height ) {
-	// A converter-lifted unitless line-height stores lineHeightUnit="unitless"
-	// so the ratio survives serialisation — emit the bare number.
-	$lh_unit      = ( 'unitless' === $line_height_unit ) ? '' : preg_replace( '/[^a-z%]/i', '', (string) $line_height_unit );
-	$text_decls[] = 'line-height:' . floatval( $line_height ) . $lh_unit;
-}
-if ( null !== $letter_spacing && '' !== $letter_spacing ) {
-	$ls_unit      = preg_replace( '/[^a-z%]/i', '', (string) $letter_spacing_unit );
-	$text_decls[] = 'letter-spacing:' . floatval( $letter_spacing ) . $ls_unit;
-}
-if ( '' !== $text_transform ) {
-	$text_transform_safe = $sgs_css_keyword( $text_transform );
-	if ( '' !== $text_transform_safe ) {
-		$text_decls[] = 'text-transform:' . $text_transform_safe;
-	}
-}
-if ( $font_family ) {
-	// Allow font-name chars (letters, digits, spaces, commas, quotes, hyphen);
-	// strip ;{}():% so a font-family value can't break out into a new rule.
-	$font_family_safe = preg_replace( '/[^a-zA-Z0-9 ,"\'\-]/', '', (string) $font_family );
-	if ( '' !== $font_family_safe ) {
-		$text_decls[] = 'font-family:' . $font_family_safe;
-	}
-}
-
-$allowed_font_styles = array( 'normal', 'italic' );
-if ( '' !== $font_style && in_array( $font_style, $allowed_font_styles, true ) ) {
-	$text_decls[] = 'font-style:' . $font_style;
-}
-
-$allowed_decorations = array( 'none', 'underline', 'line-through' );
-if ( '' !== $text_decoration && in_array( $text_decoration, $allowed_decorations, true ) ) {
-	$text_decls[] = 'text-decoration:' . $text_decoration;
-}
-
 // text-wrap (D305): the theme applies `text-wrap: balance` to all headings
 // (core-blocks-critical.css `h1..h6`, a deliberate enhancement for AUTHORED
 // content). A CLONED heading must instead render the DRAFT's effective wrap —
 // drafts declare no `text-wrap`, so the effective value is the CSS-initial
-// `wrap` (greedy). The converter sets `textWrap` on cloned headings; render
-// emits it at `$root_sel` (`.uid.wp-block-sgs-heading`, 0,2,0) which beats the
-// theme's `h1..h6` (0,0,1). Authored headings leave it EMPTY → inherit balance.
-$allowed_text_wrap = array( 'wrap', 'nowrap', 'balance', 'pretty', 'stable' );
-$text_wrap         = isset( $attributes['textWrap'] ) ? (string) $attributes['textWrap'] : '';
-if ( '' !== $text_wrap && in_array( $text_wrap, $allowed_text_wrap, true ) ) {
-	$text_decls[] = 'text-wrap:' . $text_wrap;
-}
+// `wrap` (greedy). The converter sets `textWrap` on cloned headings.
+// Authored headings leave it EMPTY → inherit balance.
+//
+// ⛔ NOT emitted here any more (2026-09-06). The local block-private emitter
+// that used to sit at this spot moved verbatim — same allowlist, same value
+// set — into the SHARED sgs_typography_css_rule() helper, so that any block
+// declaring `{prefix}TextWrap` gains the property rather than sgs/heading
+// being the only block able to render it. The helper is called below at
+// `$root_sel` (`.uid.wp-block-sgs-heading`, 0,2,0), the SAME selector this
+// block's own $text_decls rule uses, so the specificity argument that made
+// this beat the theme's `h1..h6` (0,0,1) is unchanged.
+//
+// ⚠ Do NOT re-add a local emitter here: it would double-declare `text-wrap`
+// on one selector, and a future divergence between the two allowlists would
+// then be invisible (the later rule silently wins).
 
 // ---------------------------------------------------------------------------
 // 4. Build the wrapper's box/visual declarations (scoped, NOT inline).
@@ -342,19 +308,23 @@ if ( '' !== $text_wrap && in_array( $text_wrap, $allowed_text_wrap, true ) ) {
 $wrapper_decls = array();
 
 if ( ! $inherit_style ) {
-	$background_decl = sgs_background_paint_decl( $background_colour, $background_colour_gradient );
-	if ( $background_decl ) {
-		$wrapper_decls[] = $background_decl;
-	}
+	// Block-background paint moved OFF this decl list onto a `::after`
+	// pseudo-element layer (step 5) — a text gradient painted on THIS SAME
+	// element via `sgs_text_colour_decl()` uses `background-clip:text`,
+	// which silently overwrites (same `background-image` property) or clips
+	// (same box) a background painted directly on the root. See
+	// `sgs_block_background_layer_css()` in helpers-tokens.php.
 	// $border_style is allowlist-validated above (stronger than the keyword regex).
-	if ( $border_style && 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): 'style set, no width' means no border by default —
+	// never fall through to the browser's initial medium (~3px) border-width.
+	if ( $border_style && 'none' !== $border_style && $has_border_width ) {
 		$wrapper_decls[] = 'border-style:' . $border_style;
 	}
 	if ( $border_colour ) {
 		$wrapper_decls[] = 'border-color:' . sgs_colour_value( $border_colour );
 	}
 	if ( $box_shadow ) {
-		$wrapper_decls[] = 'box-shadow:' . sgs_shadow_value( $box_shadow );
+		$wrapper_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
 	}
 	if ( '' !== $custom_width ) {
 		$cw_val = sgs_heading_spacing_val( $custom_width, $custom_width_unit );
@@ -393,7 +363,7 @@ $scoped_css = array();
 
 // --- Hover states ---
 $hover_rules = array();
-// D636 Task 1b — sibling gradient attribute wins when set+valid.
+// D636 — sibling gradient attribute wins when set+valid.
 $hover_colour_effective = sgs_resolve_text_colour_or_gradient( $hover_colour, $hover_colour_gradient );
 if ( '' !== $hover_colour_effective ) {
 	$hover_colour_decl = sgs_text_colour_decl( $hover_colour_effective );
@@ -401,12 +371,11 @@ if ( '' !== $hover_colour_effective ) {
 		$hover_rules[] = $hover_colour_decl;
 	}
 }
-$hover_background_decl = sgs_background_paint_decl( $hover_background, $hover_background_gradient );
-if ( $hover_background_decl ) {
-	$hover_rules[] = $hover_background_decl;
-}
+// Hover background paint is NOT joined into $hover_rules (which targets the
+// root element) — it is emitted on the `::after` background layer instead,
+// alongside the resting-state background, in step 5b below.
 if ( $box_shadow_hover ) {
-	$hover_rules[] = 'box-shadow:' . sgs_shadow_value( $box_shadow_hover );
+	$hover_rules[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow_hover, $box_shadow_hover_colour );
 }
 $has_scale = null !== $hover_scale && abs( $hover_scale - 1.0 ) > 0.001;
 if ( $has_scale ) {
@@ -417,9 +386,10 @@ if ( $hover_rules || $has_scale ) {
 	$scoped_css[] = "{$root_sel}{transition:all {$transition_duration}ms {$transition_easing};}";
 	$scoped_css[] = "@media(prefers-reduced-motion:reduce){{$root_sel}{transition:none !important;transform:none !important;}}";
 	if ( $hover_rules ) {
-		$hover_sel           = "{$root_sel}:hover,{$root_sel}:focus-within";
-		$scoped_css[]        = "{$hover_sel}{" . implode( ';', $hover_rules ) . ';}';
-		$hover_fallback_rule = sgs_text_colour_gradient_fallback_rule( $hover_sel, $hover_colour_effective );
+		$scoped_css[]         = sgs_hover_state_rules( $root_sel, implode( ';', $hover_rules ), ':focus-within' );
+		$hover_fallback_rule  = sgs_hover_media_wrap(
+			sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover', $hover_colour_effective )
+		) . sgs_text_colour_gradient_fallback_rule( $root_sel . ':focus-within', $hover_colour_effective );
 		if ( '' !== $hover_fallback_rule ) {
 			$scoped_css[] = $hover_fallback_rule;
 		}
@@ -430,82 +400,45 @@ if ( $hover_rules || $has_scale ) {
 if ( $text_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $text_decls ) . ';}';
 }
-// D636 Task 1b — old-browser fallback for a gradient textColour; a no-op
-// (returns '') when the flat colour (no gradient sibling set) applies.
+// D636 — old-browser fallback for a gradient textColour; a no-op (returns
+// '') when the flat colour (no gradient sibling set) applies.
 $text_colour_fallback_rule = sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_effective );
 if ( '' !== $text_colour_fallback_rule ) {
 	$scoped_css[] = $text_colour_fallback_rule;
 }
 
-// fontSize is a TIER OBJECT when authored as a number (Spec 35 migration,
-// 2026-08-11) — {desktop,tablet,mobile}; the old …Tablet/…Mobile sibling
-// attrs are no longer declared by block.json. A STRING fontSize (a theme
-// preset slug) is untouched by this — sgs_responsive_normalise_object()
-// on a string is not this migration's concern, and the preset-slug branch
-// below reads $attributes['fontSize'] directly, unaffected by this block.
-// is_numeric() on the raw value below correctly gates BOTH shapes: a preset
-// slug string is non-numeric (skipped here, handled below), and the object
-// case is handled by feeding the normalised desktop/tablet/mobile scalars
-// through under the OLD flat key names sgs_responsive_css_rule() expects —
-// same pattern as button/render.php's $tier_object_synthetic_attrs.
-// Normalised UNCONDITIONALLY, exactly as text/render.php does it: the helper
-// already routes every shape correctly — a tier object keeps its tiers, an
-// empty `{}` (an untouched object attr, the COMMON case) returns all-null so
-// nothing is emitted, and a plain preset-slug string becomes the desktop
-// value. The previous ternary sent a STRING down its else branch to all-null,
-// which is why the preset-slug branch below had to re-read the raw attribute —
-// and re-reading it is what emitted `font-size:var(--wp--preset--font-size--array)`
-// once fontSize became an object.
-$heading_font_size_obj = sgs_responsive_normalise_object( $attributes['fontSize'] ?? null );
-
-// --- Root font-size — base + tablet + mobile on the SAME selector (Pattern A)
-// so the narrower tier wins by cascade order, never inline. ---
-$scoped_css[] = sgs_responsive_css_rule(
-	array_merge(
-		$attributes,
-		array(
-			'fontSize'       => $heading_font_size_obj['desktop'],
-			'fontSizeTablet' => $heading_font_size_obj['tablet'],
-			'fontSizeMobile' => $heading_font_size_obj['mobile'],
-		)
-	),
-	array(
-		array(
-			'attr'         => 'fontSize',
-			'css'          => 'font-size',
-			'unit_default' => $font_size_unit,
-			'tablet_attr'  => 'fontSizeTablet',
-			'mobile_attr'  => 'fontSizeMobile',
-			'cast'         => 'int',
-		),
-	),
-	$root_sel
-);
-
-// A STRING fontSize is a theme preset slug (core-block parity: `"fontSize":"small"`).
-// The numeric emitter above skips non-numerics, so resolve it via
-// sgs_font_size_value() → var(--wp--preset--font-size--{slug}) on the same selector.
-// Mirrors the canonical legacy-string branch in helpers-typography.php.
-// ⛔ Reads the NORMALISED desktop tier, never the raw attribute. Once fontSize
-// became an object, `(string) $attributes['fontSize']` PHP-coerced it to the
-// literal "Array" and emitted `font-size:var(--wp--preset--font-size--array)` —
-// an undefined custom property, so the declaration is invalid at
-// computed-value time and the heading silently drops to its inherited size.
-// Measured live on the canary: 5 heading instances (D574). Same bug class as
-// D569/D570 and as the `max-width:Array` defect recorded in
-// sgs_responsive_normalise_object() itself.
-$heading_preset_source = $heading_font_size_obj['desktop'];
-if ( null !== $heading_preset_source && '' !== $heading_preset_source
-	&& ! is_numeric( $heading_preset_source ) ) {
-	$preset_font_size = sgs_font_size_value( (string) $heading_preset_source );
-	if ( '' !== $preset_font_size ) {
-		$scoped_css[] = "{$root_sel}{font-size:{$preset_font_size};}";
-	}
-}
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Covers fontSize (numeric
+// tiered OR a theme preset-slug string in the desktop tier — the helper's
+// font-size transform resolves a slug via sgs_font_size_value() exactly as
+// the old hand-rolled preset-slug branch here did, closing the D574 bug
+// class the same way) plus fontWeight/fontStyle/lineHeight/letterSpacing/
+// textTransform/textDecoration/fontFamily.
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
 
 // --- Root box/visual declarations (scoped) ---
 if ( $wrapper_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_decls ) . ';}';
+}
+
+// --- Block background — painted on a `::after` layer, never the root itself.
+// A text gradient on this same element (sgs_text_colour_decl()) uses
+// background-clip:text, which would overwrite/clip a background painted
+// directly on the root — see sgs_block_background_layer_css(). ---
+if ( ! $inherit_style ) {
+	$background_layer_css = sgs_block_background_layer_css(
+		$root_sel,
+		sgs_background_paint_decl( $background_colour, $background_colour_gradient ),
+		sgs_background_paint_decl( $hover_background, $hover_background_gradient )
+	);
+	if ( '' !== $background_layer_css ) {
+		$scoped_css[] = $background_layer_css;
+		// Keep the ::after layer's own background transition in step with the
+		// root's hover transition above (only relevant when a hover state exists).
+		if ( $hover_rules || $has_scale ) {
+			$scoped_css[] = "{$root_sel}::after{transition:background-color {$transition_duration}ms {$transition_easing},background-image {$transition_duration}ms {$transition_easing};}";
+		}
+	}
 }
 
 // --- Border gradient (D636 border builder) — masked ::before, wins over the flat
@@ -517,7 +450,7 @@ if ( ! $inherit_style && '' !== $border_colour_gradient ) {
 // --- Base spacing (padding/margin), border-radius, and WP colour support —
 // skip-serialised in block.json, emitted scoped via the stable core style
 // engine (exactly how WP core outputs `layout` support). ---
-if ( ! $inherit_style && function_exists( 'wp_style_engine_get_styles' ) ) {
+if ( ! $inherit_style ) {
 	$base_style_engine_args = array();
 
 	$base_spacing = array();
@@ -563,22 +496,13 @@ if ( ! $inherit_style && function_exists( 'wp_style_engine_get_styles' ) ) {
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME wrapper selector (contract §B / §B2: tablet
 // max-width:1023px, mobile max-width:767px). ---
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
 if ( ! $inherit_style ) {
-	$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-	$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-	$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-	$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+	$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+	$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+	$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+	$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
+	$radius_tab_val  = sgs_corner_object_shorthand( $border_radius_tablet_obj );
+	$radius_mob_val  = sgs_corner_object_shorthand( $border_radius_mobile_obj );
 
 	$tablet_box_decls = array();
 	if ( null !== $padding_tab_val ) {
@@ -586,6 +510,9 @@ if ( ! $inherit_style ) {
 	}
 	if ( null !== $margin_tab_val ) {
 		$tablet_box_decls[] = "margin:{$margin_tab_val}";
+	}
+	if ( null !== $radius_tab_val ) {
+		$tablet_box_decls[] = "border-radius:{$radius_tab_val}";
 	}
 	if ( $tablet_box_decls ) {
 		$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
@@ -597,6 +524,9 @@ if ( ! $inherit_style ) {
 	}
 	if ( null !== $margin_mob_val ) {
 		$mobile_box_decls[] = "margin:{$margin_mob_val}";
+	}
+	if ( null !== $radius_mob_val ) {
+		$mobile_box_decls[] = "border-radius:{$radius_mob_val}";
 	}
 	if ( $mobile_box_decls ) {
 		$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
@@ -618,16 +548,15 @@ if ( $is_subheading ) {
 	$root_classes[] = 'wp-block-sgs-heading--subheading';
 }
 
-// Preset colour slugs — the `color` support is skip-serialised, so re-add the
-// standard has-* classes manually (they set the colour from the theme palette).
+// Preset TEXT colour slug — the `color` support is skip-serialised, so
+// re-add the standard has-* class manually (it sets the colour from the
+// theme palette). The background preset slug does NOT get its native class
+// here — it was folded into $background_colour above and paints through the
+// `::after` background layer instead (see that fold's comment).
 if ( ! $inherit_style ) {
 	if ( '' !== $preset_text_slug ) {
 		$root_classes[] = 'has-text-color';
 		$root_classes[] = 'has-' . $preset_text_slug . '-color';
-	}
-	if ( '' !== $preset_bg_slug ) {
-		$root_classes[] = 'has-background';
-		$root_classes[] = 'has-' . $preset_bg_slug . '-background-color';
 	}
 }
 
@@ -650,8 +579,8 @@ $rendered_tag_escaped = tag_escape( $rendered_tag );
 	<?php
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D — matches SGS_Container_Wrapper).
-	// Every value reaching $scoped_css is pre-sanitised ($sgs_css_length /
-	// $sgs_css_keyword / allowlists / floatval / wp_style_engine_get_styles /
+	// Every value reaching $scoped_css is pre-sanitised (sgs_css_length_value() /
+	// sgs_css_keyword_sanitise() / allowlists / floatval / wp_style_engine_get_styles /
 	// sgs_colour_value / sgs_shadow_value), so no un-sanitised value survives here.
 	?>
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>

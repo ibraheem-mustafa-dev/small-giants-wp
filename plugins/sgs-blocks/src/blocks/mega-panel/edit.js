@@ -6,21 +6,18 @@
  * (CF-5) — it is insert-time only, chosen by the starter pattern that
  * inserts this block, so it never appears here.
  *
- * FLEXIBLE COLUMNS (QC-fix 2026-07-24, Bean-directed): the panel accepts a
- * free 1-N mix of `sgs/mega-group` / `sgs/mega-aside` children — add,
- * remove, reorder freely (no `contentOnly` lock at THIS level). The number
- * of columns is simply the number of mega-group children an operator has
- * added; there is no separate `columnCount` attribute any more. Each
- * individual mega-group/mega-aside still locks its OWN internal template
- * (mega-group: heading+icon-list; mega-aside: media+LABEL+heading+text+button
- * — five children, see `mega-aside/edit.js:37`; `templateLock: 'insert'` on
- * their own edit.js, fixed from `'all'` 2026-08-17/D652 — `'all'` re-ran
- * WordPress's template-sync on every mount and silently dropped stored
- * content that didn't line up with the template by position) so an operator
- * cannot break THEIR shape, but can freely
- * select and edit any nested block's own settings (e.g. sgs/icon-list's
- * link controls) — the previous `contentOnly` lock at the panel level
- * suppressed the inspector for that whole subtree, which is what hid them.
+ * FLEXIBLE COLUMNS (Bean-directed): the panel accepts a free 1-N mix of
+ * `sgs/mega-group` / `sgs/mega-aside` children — add, remove, reorder freely
+ * (no `contentOnly` lock at THIS level). The number of columns is simply the
+ * number of mega-group children an operator has added; there is no separate
+ * `columnCount` attribute. Each individual mega-group/mega-aside still locks
+ * its OWN internal template (mega-group: heading+icon-list; mega-aside:
+ * media+LABEL+heading+text+button — five children, see
+ * `mega-aside/edit.js:37`; `templateLock: 'insert'` on their own edit.js —
+ * `'all'` re-runs WordPress's template-sync on every mount and silently
+ * drops stored content that doesn't line up with the template by position,
+ * so an operator cannot break THEIR shape, but can freely select and edit
+ * any nested block's own settings (e.g. sgs/icon-list's link controls).
  *
  * The canvas itself proves the "parent paints child" mechanism (CF-10) live:
  * this component sets the SAME `data-mega-style` / `data-mega-scheme` /
@@ -52,10 +49,14 @@ import {
 	DesignTokenPicker,
 	ResponsiveControl,
 	ResponsiveBoxControl,
+	SgsBorderControl,
 	SgsColourPanel,
+	SgsLengthControl,
+	fillRow,
 } from '../../components';
+import MediaElementPanel from '../../components/MediaElementPanel';
 import { colourVar } from '../../utils';
-import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
+import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /** Default general-variant template: 2 mega-groups (CF-10 pin) — a starting
  *  point only; the panel is NOT locked to this shape (FIX 1). */
@@ -152,22 +153,52 @@ function paddingFromBox( box ) {
 	return `${ top || '0' } ${ right || '0' } ${ bottom || '0' } ${ left || '0' }`;
 }
 
+/**
+ * Build a CSS border-width shorthand from a { top, right, bottom, left } box
+ * object — each side falls back to '1px' independently, mirroring
+ * render.php's `$border_width_top = '' !== $border_width_top ? … : '1px';`
+ * (B4, 2026-09-04) so a fresh instance (which never wrote this attr) shows
+ * the exact same 1px-everywhere hairline in the canvas that it renders on
+ * the published page. Always returns a value (never undefined) — matches
+ * render.php's `$has_border_width` being unconditionally true by
+ * construction.
+ *
+ * @param {Object} box Box object.
+ * @return {string} CSS border-width shorthand value.
+ */
+function borderWidthShorthand( box ) {
+	const b = box && typeof box === 'object' ? box : {};
+	return [ b.top, b.right, b.bottom, b.left ]
+		.map( ( side ) => side || '1px' )
+		.join( ' ' );
+}
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		variant,
 		style,
 		headings,
 		colourScheme,
-		accentBackground,
-		accentBorderColour,
-		accentBorderColourGradient,
-		accentTextColour,
+		iconBackground,
+		iconBackgroundGradient,
+		iconBackgroundHover,
+		iconBackgroundGradientHover,
+		groupBorderColour,
+		groupBorderColourGradient,
+		groupBorderColourHover,
+		groupBorderColourGradientHover,
+		iconColour,
+		iconColourGradient,
 		accentBackgroundImage,
+		accentBackgroundImageGradient,
 		maxWidth,
 		panelPadding,
 		groupGap,
 		panelBg,
+		panelBgGradient,
 		bgBlur,
+		borderWidth,
+		borderStyle,
 		borderColour,
 		borderColourGradient,
 		borderRadius,
@@ -189,22 +220,103 @@ export default function Edit( { attributes, setAttributes } ) {
 	// down through the DOM from this root to every descendant regardless of
 	// display type, so editor.css can consume them on `.sgs-mega-panel__content`
 	// / `.sgs-mega-aside` even though those are separate elements.
-	const accentBackgroundValue = colourVar( accentBackground ) || 'var(--wp--preset--color--accent)';
-	const accentBorderValue = colourVar( accentBorderColour ) || 'var(--wp--preset--color--accent)';
-	const accentTextValue = colourVar( accentTextColour ) || 'var(--wp--preset--color--accent)';
+	const iconBackgroundValue = colourVar( iconBackground ) || 'var(--wp--preset--color--accent)';
+	const groupBorderValue = colourVar( groupBorderColourHover ) || 'var(--wp--preset--color--accent)';
+	// Gradient-set preview (D636 pattern, mirrors sgs/text's firstLetterColour
+	// precedent): a background-clip:text declaration cannot be expressed
+	// through a single CSS custom-property value consumed by a DESCENDANT
+	// selector — `--sgs-mm-accent-text` feeds `.sgs-icon-list__icon` several
+	// DOM levels down via style.css/editor.css, so there is nowhere to attach
+	// the extra background-image/background-clip/color:transparent trio. When
+	// the gradient sibling is set the canvas simply falls back to the accent
+	// default rather than emitting an invalid custom-property value; the
+	// frontend (render.php + sgs_text_colour_decl()) renders the gradient
+	// correctly via a direct rule scoped to the descendant selector.
+	const iconColourValue = iconColourGradient
+		? 'var(--wp--preset--color--accent)'
+		: colourVar( iconColour ) || 'var(--wp--preset--color--accent)';
 	const accentImageValue = colourVar( accentBackgroundImage ) || 'var(--wp--preset--color--accent)';
 	const shellStyle = {
-		// Split from the old single `--sgs-mm-accent` (D643) — style.css derives
+		// Per-role accent custom properties (D643) — style.css derives
 		// --sgs-mm-soft / --sgs-mm-soft-image from -bg / -image via color-mix();
 		// -text / -border are consumed directly.
-		'--sgs-mm-accent-bg': accentBackgroundValue,
-		'--sgs-mm-accent-border': accentBorderValue,
-		'--sgs-mm-accent-text': accentTextValue,
+		'--sgs-mm-accent-bg': iconBackgroundValue,
+		'--sgs-mm-accent-border': groupBorderValue,
+		'--sgs-mm-accent-text': iconColourValue,
 		'--sgs-mm-accent-image': accentImageValue,
+		// iconBackgroundGradient canvas mirror (2026-09-06) — paints the icon-chip
+		// background-image at full strength, same approximation approach as the
+		// borderImage/groupBorderColourGradient mirrors below (a raw CSS function
+		// string, gated on looking like a real gradient() call).
+		'--sgs-mm-soft-gradient':
+			iconBackgroundGradient &&
+			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( iconBackgroundGradient )
+				? iconBackgroundGradient
+				: undefined,
+		// iconBackgroundHover/iconBackgroundGradientHover canvas mirrors (2026-09-06,
+		// hover-controls task) — consumed by style.css's `cards`-style hover rule on
+		// `.sgs-mega-group:hover .sgs-icon-list__icon`. Only set when the operator
+		// has picked one; unset means the hover rule's own var(...) fallback chain
+		// resolves to the exact resting-state values, so this stays a no-op.
+		'--sgs-mm-icon-hover-bg': iconBackgroundHover
+			? colourVar( iconBackgroundHover ) || iconBackgroundHover
+			: undefined,
+		'--sgs-mm-icon-hover-bg-gradient':
+			iconBackgroundGradientHover &&
+			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( iconBackgroundGradientHover )
+				? iconBackgroundGradientHover
+				: undefined,
+		// accentBackgroundImageGradient canvas mirror (2026-09-06) — consumed by
+		// style.css's spotlight `[data-spotlight]::before` rule, bypassing the
+		// derived --sgs-mm-soft-image tint entirely when set.
+		'--sgs-mm-accent-image-gradient':
+			accentBackgroundImageGradient &&
+			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( accentBackgroundImageGradient )
+				? accentBackgroundImageGradient
+				: undefined,
 		'--sgs-mm-panel-bg': panelBg ? colourVar( panelBg ) || panelBg : undefined,
+		// panelBgGradient canvas mirror (2026-09-06) — same approach: --sgs-mm-panel-bg-gradient
+		// is consumed by style.css's dark-scheme rule and by this root's own
+		// panelBg background-color (once painted — see that attribute's own
+		// pre-existing gap, unaffected by this change).
+		'--sgs-mm-panel-bg-gradient':
+			panelBgGradient &&
+			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( panelBgGradient )
+				? panelBgGradient
+				: undefined,
 		'--sgs-mm-panel-border': borderColour
 			? colourVar( borderColour ) || borderColour
 			: undefined,
+		// A gradient border renders frontend as a masked ::before ring
+		// (sgs_border_gradient_css() in render.php), which cannot be reproduced in
+		// a plain inline style — approximate it with the gradient as a border-image,
+		// same as every other border-migrated block's canvas preview. Paints into
+		// the real border area set below (borderWidth/borderStyle/borderColor —
+		// this block DOES have its own width/style control via SgsBorderControl,
+		// B4 2026-09-04; the "no width/style control" claim that used to live
+		// here was stale and is corrected by that same migration's own attrs).
+		borderImage:
+			borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient )
+				? `${ borderColourGradient } 1`
+				: undefined,
+		// NEW resting-state group-tile border override (2026-08-28, Bean-ruled) —
+		// only set when the operator has picked a resting colour; unset means
+		// "inherit the cards tile's existing --sgs-mm-panel-border-derived
+		// border", matched in style.css via a `var(..., var(--sgs-mm-panel-border))`
+		// fallback chain (see that file's `.sgs-mega-group` cards rule).
+		'--sgs-mm-group-border-resting': groupBorderColour
+			? colourVar( groupBorderColour ) || groupBorderColour
+			: undefined,
+		// CHECK A: groupBorderColourGradient had no canvas mirror — render.php
+		// paints it as a masked ::before ring on the resting `.sgs-mega-group`
+		// tile (cards style only), winning over the flat resting colour above.
+		// style.css's `--sgs-mm-group-border-image` consumer (added alongside
+		// this) is a border-image approximation, scoped so it is a no-op on the
+		// frontend (that custom property is never set by render.php).
+		'--sgs-mm-group-border-image':
+			groupBorderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( groupBorderColourGradient )
+				? `${ groupBorderColourGradient } 1`
+				: undefined,
 		'--sgs-mm-group-gap': groupGap?.desktop || undefined,
 		'--sgs-mm-aside-w': asideWidth || undefined,
 		'--sgs-mm-aside-sep-width': asideSeparator?.width || undefined,
@@ -217,6 +329,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		// property, not a custom-prop indirection.
 		padding: paddingFromBox( panelPadding?.desktop ),
 		borderRadius: borderRadius || undefined,
+		// CHECK A: borderWidth/borderStyle had no canvas mirror at all (only
+		// borderColour was referenced, via --sgs-mm-panel-border above) — the
+		// panel rendered with no visible border in the editor regardless of
+		// these two controls. Mirrors render.php:344-356 exactly: width always
+		// paints (each side falls back to 1px, B4), style/colour ride the same
+		// declaration set, colour reusing the --sgs-mm-panel-border value
+		// already resolved above so an unset borderColour falls back
+		// identically in both places.
+		borderWidth: borderWidthShorthand( borderWidth ),
+		borderStyle: borderStyle || 'solid',
+		borderColor: 'var(--sgs-mm-panel-border)',
 		backdropFilter: bgBlur ? 'saturate(1.5) blur(24px)' : undefined,
 	};
 
@@ -249,17 +372,27 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			{ /* GROUND-TRUTH: block.json attributes.panelBg / borderColour /
-			   accentBackground / accentBorderColour / accentTextColour /
-			   accentBackgroundImage (plain string colour attrs) +
-			   render.php:80-360 (each accent* attribute resolves to its OWN
+			   iconBackground / groupBorderColour / groupBorderColourHover /
+			   iconColour / accentBackgroundImage (plain string colour attrs) +
+			   render.php:80-360 (each attribute resolves to its OWN
 			   --sgs-mm-accent-bg / -border / -text / -image custom property,
 			   consumed by exactly ONE real CSS property each — background-color
 			   via the derived --sgs-mm-soft, border-color, color, and the aside
 			   spotlight's background-image via the derived --sgs-mm-soft-image
 			   — split 2026-08-16 (D643) from the single `accent` attribute that
-			   previously drove all four at once) + style.css (panelBg ->
-			   background-color, borderColour -> border-color). Confirmed
-			   2026-08-16 against the live source before wiring these rows. All
+			   previously drove all four at once, then renamed 2026-08-28 [NULL
+			   css_element fix proposal §5] from accentBackground/
+			   accentBorderColour/accentTextColour to iconBackground/
+			   groupBorderColour/iconColour, and — same day, once Bean ruled a
+			   genuine resting-state border should exist alongside the hover —
+			   groupBorderColour/groupBorderColourGradient renamed a second time
+			   to groupBorderColourHover/groupBorderColourGradientHover, freeing
+			   the base names for the NEW resting pair) + style.css (panelBg ->
+			   background-color, borderColour -> border-color, the new
+			   --sgs-mm-group-border-resting -> the cards tile's resting
+			   border-color). Confirmed 2026-08-16 against the live source
+			   before wiring these rows; resting pair confirmed 2026-08-28
+			   against the same render.php/style.css/block.json triad. All
 			   single-state, `linked: true` per D619 (all previously used
 			   `linked` on their DesignTokenPicker already). */ }
 			<SgsColourPanel
@@ -267,6 +400,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'background',
 						label: __( 'Background', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -274,73 +408,101 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: panelBg,
 								onChange: ( val ) => setAttributes( { panelBg: val ?? '' } ),
 								linked: true,
-							},
-						],
-					},
-					{
-						key: 'border',
-						label: __( 'Border colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: borderColour,
-								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-								linked: true,
-								gradientValue: borderColourGradient,
+								gradientValue: panelBgGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { borderColourGradient: val ?? '' } ),
+									setAttributes( { panelBgGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
-						key: 'accentBackground',
+						key: 'iconBackground',
 						label: __( 'Accent background', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
-								value: accentBackground,
+								value: iconBackground,
 								onChange: ( val ) =>
-									setAttributes( { accentBackground: val ?? 'accent' } ),
+									setAttributes( { iconBackground: val ?? 'accent' } ),
 								linked: true,
-							},
-						],
-					},
-					{
-						key: 'accentBorderColour',
-						label: __( 'Accent border colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: accentBorderColour,
-								onChange: ( val ) =>
-									setAttributes( { accentBorderColour: val ?? 'accent' } ),
-								linked: true,
-								gradientValue: accentBorderColourGradient,
+								gradientValue: iconBackgroundGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { accentBorderColourGradient: val ?? '' } ),
+									setAttributes( { iconBackgroundGradient: val ?? '' } ),
+							},
+							{
+								// Hover pair (2026-09-06, hover-controls task) — fires off the
+								// icon chip's ancestor `.sgs-mega-group:hover` on the `cards`
+								// style only (the one style where that ancestor already has a
+								// real hover trigger). Default empty string: no colour override
+								// at hover until an operator sets one.
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: iconBackgroundHover,
+								onChange: ( val ) =>
+									setAttributes( { iconBackgroundHover: val ?? '' } ),
+								linked: true,
+								gradientValue: iconBackgroundGradientHover,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconBackgroundGradientHover: val ?? '' } ),
 							},
 						],
 					},
 					{
-						key: 'accentTextColour',
+						key: 'groupBorderColour',
+						label: __( 'Group border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: groupBorderColour,
+								onChange: ( val ) =>
+									setAttributes( { groupBorderColour: val ?? '' } ),
+								linked: true,
+								gradientValue: groupBorderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { groupBorderColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: groupBorderColourHover,
+								onChange: ( val ) =>
+									setAttributes( { groupBorderColourHover: val ?? 'accent' } ),
+								linked: true,
+								gradientValue: groupBorderColourGradientHover,
+								onGradientChange: ( val ) =>
+									setAttributes( { groupBorderColourGradientHover: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'iconColour',
 						label: __( 'Accent text colour', 'sgs-blocks' ),
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
-								value: accentTextColour,
+								value: iconColour,
 								onChange: ( val ) =>
-									setAttributes( { accentTextColour: val ?? 'accent' } ),
+									setAttributes( { iconColour: val ?? 'accent' } ),
 								linked: true,
+								gradientValue: iconColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconColourGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'accentBackgroundImage',
 						label: __( 'Accent background image', 'sgs-blocks' ),
+						// gradientCapable (2026-09-06, preset-to-gradient upgrade task): the
+						// new accentBackgroundImageGradient sibling BYPASSES the base slug's
+						// color-mix()-derived tint entirely and paints the raw gradient
+						// directly on the spotlight glow's background-image — a gradient
+						// cannot be meaningfully passed through that same colour-stop
+						// derivation the way a flat colour can (see block.json's own note).
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -349,88 +511,138 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) =>
 									setAttributes( { accentBackgroundImage: val ?? 'accent' } ),
 								linked: true,
+								gradientValue: accentBackgroundImageGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { accentBackgroundImageGradient: val ?? '' } ),
 							},
 						],
 					},
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Panel', 'sgs-blocks' ) }>
+				{ /* S7 pilot (2026-09-02, uniformity sweep): converted from a plain
+				   PanelBody to a ToolsPanel — all six controls (bgBlur, maxWidth,
+				   panelPadding, groupGap, borderRadius) are optional style/layout
+				   customisations, so none are marked isShownByDefault. Same pattern
+				   as team-member's optional controls. */ }
+				<ToolsPanel
+					label={ __( 'Panel', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							bgBlur: false,
+							maxWidth: undefined,
+							panelPadding: undefined,
+							groupGap: undefined,
+							borderRadius: '',
+						} )
+					}
+				>
 					{ /* Fill */ }
-					<ToggleControl
+					<ToolsPanelItem
 						label={ __( 'Background blur', 'sgs-blocks' ) }
-						help={ __(
-							'Adds a frosted-glass blur behind a translucent panel background.',
-							'sgs-blocks'
-						) }
-						checked={ !! bgBlur }
-						onChange={ ( value ) => setAttributes( { bgBlur: value } ) }
-						__nextHasNoMarginBottom
-					/>
+						hasValue={ () => !! bgBlur }
+						onDeselect={ () => setAttributes( { bgBlur: false } ) }
+					>
+						<ToggleControl
+							label={ __( 'Background blur', 'sgs-blocks' ) }
+							help={ __(
+								'Adds a frosted-glass blur behind a translucent panel background.',
+								'sgs-blocks'
+							) }
+							checked={ !! bgBlur }
+							onChange={ ( value ) => setAttributes( { bgBlur: value } ) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
 
 					{ /* Layout */ }
-					<ResponsiveControl label={ __( 'Panel max width', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => (
-							<UnitControl
-								label={ __( 'Max width', 'sgs-blocks' ) }
-								hideLabelFromVision
-								value={ maxWidth?.[ breakpoint ] || '' }
-								onChange={ ( value ) =>
-									setAttributes( {
-										maxWidth: { ...maxWidth, [ breakpoint ]: value || undefined },
-									} )
-								}
-								__next40pxDefaultSize
-							/>
-						) }
-					</ResponsiveControl>
+					<ToolsPanelItem
+						label={ __( 'Panel max width', 'sgs-blocks' ) }
+						hasValue={ () => !! maxWidth && Object.values( maxWidth ).some( v => v ) }
+						onDeselect={ () => setAttributes( { maxWidth: undefined } ) }
+					>
+						<ResponsiveControl label={ __( 'Panel max width', 'sgs-blocks' ) }>
+							{ ( breakpoint ) => (
+								<SgsLengthControl
+									label={ __( 'Max width', 'sgs-blocks' ) }
+									hideLabelFromVision
+									value={ maxWidth?.[ breakpoint ] || '' }
+									onChange={ ( value ) =>
+										setAttributes( {
+											maxWidth: { ...maxWidth, [ breakpoint ]: value || undefined },
+										} )
+									}
+									presets={ false }
+								/>
+							) }
+						</ResponsiveControl>
+					</ToolsPanelItem>
 
-					<ResponsiveBoxControl
+					<ToolsPanelItem
 						label={ __( 'Panel padding', 'sgs-blocks' ) }
-						values={ {
-							base: panelPadding?.desktop ?? {},
-							tablet: panelPadding?.tablet ?? {},
-							mobile: panelPadding?.mobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( {
-								panelPadding: { ...panelPadding, [ key ]: next },
-							} );
-						} }
-					/>
+						hasValue={ () => !! panelPadding && Object.values( panelPadding ).some( box => box && Object.values( box ).some( v => v ) ) }
+						onDeselect={ () => setAttributes( { panelPadding: undefined } ) }
+					>
+						<ResponsiveBoxControl
+							label={ __( 'Panel padding', 'sgs-blocks' ) }
+							presets
+							values={ {
+								base: panelPadding?.desktop ?? {},
+								tablet: panelPadding?.tablet ?? {},
+								mobile: panelPadding?.mobile ?? {},
+							} }
+							onChange={ ( tier, next ) => {
+								const key = tier === 'base' ? 'desktop' : tier;
+								setAttributes( {
+									panelPadding: { ...panelPadding, [ key ]: next },
+								} );
+							} }
+						/>
+					</ToolsPanelItem>
 
-					<ResponsiveControl label={ __( 'Group gap', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => (
-							<UnitControl
-								label={ __( 'Gap', 'sgs-blocks' ) }
-								hideLabelFromVision
-								value={ groupGap?.[ breakpoint ] || '' }
-								onChange={ ( value ) =>
-									setAttributes( {
-										groupGap: { ...groupGap, [ breakpoint ]: value || undefined },
-									} )
-								}
-								__next40pxDefaultSize
-							/>
-						) }
-					</ResponsiveControl>
+					<ToolsPanelItem
+						label={ __( 'Group gap', 'sgs-blocks' ) }
+						hasValue={ () => !! groupGap && Object.values( groupGap ).some( v => v ) }
+						onDeselect={ () => setAttributes( { groupGap: undefined } ) }
+					>
+						<ResponsiveControl label={ __( 'Group gap', 'sgs-blocks' ) }>
+							{ ( breakpoint ) => (
+								<SgsLengthControl
+									label={ __( 'Gap', 'sgs-blocks' ) }
+									hideLabelFromVision
+									value={ groupGap?.[ breakpoint ] || '' }
+									onChange={ ( value ) =>
+										setAttributes( {
+											groupGap: { ...groupGap, [ breakpoint ]: value || undefined },
+										} )
+									}
+									presets={ false }
+								/>
+							) }
+						</ResponsiveControl>
+					</ToolsPanelItem>
 
 					{ /* units array REQUIRED by contract §14 field 2 — added
 					     2026-08-11 (P-SPEC35-BORDER-RESIDUALS item 3). */ }
-					<UnitControl
+					<ToolsPanelItem
 						label={ __( 'Border radius', 'sgs-blocks' ) }
-						value={ borderRadius || '' }
-						onChange={ ( value ) => setAttributes( { borderRadius: value || '20px' } ) }
-						units={ [
-							{ value: 'px', label: 'px', default: 20 },
-							{ value: '%', label: '%', default: 50 },
-							{ value: 'rem', label: 'rem', default: 1.25 },
-							{ value: 'em', label: 'em', default: 1.25 },
-						] }
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
+						hasValue={ () => !! borderRadius }
+						onDeselect={ () => setAttributes( { borderRadius: '' } ) }
+					>
+						<SgsLengthControl
+							label={ __( 'Border radius', 'sgs-blocks' ) }
+							value={ borderRadius || '' }
+							onChange={ ( value ) => setAttributes( { borderRadius: value || '20px' } ) }
+							units={ [
+								{ value: 'px', label: 'px', default: 20 },
+								{ value: '%', label: '%', default: 50 },
+								{ value: 'rem', label: 'rem', default: 1.25 },
+								{ value: 'em', label: 'em', default: 1.25 },
+							] }
+							presets={ false }
+						/>
+					</ToolsPanelItem>
+				</ToolsPanel>
 
 				<PanelBody title={ __( 'Style', 'sgs-blocks' ) } initialOpen={ false }>
 					<ToggleGroupControl
@@ -505,37 +717,25 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 
-					<SelectControl
+					<ToggleGroupControl
 						label={ __( '"View all" link', 'sgs-blocks' ) }
 						help={ __(
 							'The menu item that opens this panel is a button, so its own page needs a link somewhere inside the panel. Automatic hides it when this panel already has its own button linking there.',
 							'sgs-blocks'
 						) }
 						value={ viewAllPlacement || 'auto' }
-						options={ [
-							{
-								label: __( 'Automatic', 'sgs-blocks' ),
-								value: 'auto',
-							},
-							{
-								label: __( "Don't show", 'sgs-blocks' ),
-								value: 'none',
-							},
-							{
-								label: __( 'Bottom left', 'sgs-blocks' ),
-								value: 'bottom-left',
-							},
-							{
-								label: __( 'Bottom right', 'sgs-blocks' ),
-								value: 'bottom-right',
-							},
-						] }
 						onChange={ ( value ) =>
 							setAttributes( { viewAllPlacement: value || 'auto' } )
 						}
+						isBlock
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
-					/>
+					>
+						<ToggleGroupControlOption value="auto" label={ __( 'Automatic', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="none" label={ __( "Don't show", 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="bottom-left" label={ __( 'Bottom left', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="bottom-right" label={ __( 'Bottom right', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
 				</PanelBody>
 
 				<PanelBody title={ __( 'Aside', 'sgs-blocks' ) } initialOpen={ false }>
@@ -545,11 +745,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 					</p>
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Aside width', 'sgs-blocks' ) }
 						value={ asideWidth || '' }
 						onChange={ ( value ) => setAttributes( { asideWidth: value || '340px' } ) }
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 					<ToggleGroupControl
 						label={ __( 'Divider', 'sgs-blocks' ) }
@@ -568,18 +768,20 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ToggleGroupControl>
 					{ 'line' === sepStyle && (
 						<>
-							<DesignTokenPicker
-								label={ __( 'Divider colour', 'sgs-blocks' ) }
-								value={ asideSeparator?.colour }
-								onChange={ ( value ) =>
+							<SgsColourPanel
+								rows={ [
+									fillRow( {
+										key: 'aside-separator-colour',
+										label: __( 'Divider colour', 'sgs-blocks' ),
+										get: () => asideSeparator?.colour,
+										set: ( value ) =>
 									setAttributes( {
 										asideSeparator: { ...asideSeparator, colour: value || '' },
-									} )
-								}
-								linked
-								clearable
+									} ),
+									} ),
+								] }
 							/>
-							<UnitControl
+							<SgsLengthControl
 								label={ __( 'Divider width', 'sgs-blocks' ) }
 								value={ asideSeparator?.width || '' }
 								onChange={ ( value ) =>
@@ -587,10 +789,78 @@ export default function Edit( { attributes, setAttributes } ) {
 										asideSeparator: { ...asideSeparator, width: value || '' },
 									} )
 								}
-								__next40pxDefaultSize
+								presets={ false }
 							/>
 						</>
 					) }
+					{ /* 37-media-no-handroll remediation (2026-09-03) — the aside
+					   banner's crop mode is a genuine client control now
+					   (style.css/render.php no longer hardcode object-fit:cover;
+					   the shared media-atoms system paints the same default).
+					   The aside's image is rendered by a CHILD block (sgs/mega-
+					   aside), so this is parent-paints-child (CF-10), same as
+					   this panel's other Aside-panel controls above. */ }
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+						blockSlug="sgs/mega-panel"
+						insertion="element"
+						atoms={ [ 'object-fit' ] }
+						mediaType="image"
+						scope="element"
+					/>
+				</PanelBody>
+
+				{ /* B4 (2026-09-04): SgsBorderControl migration, ANOMALY category —
+				   the panel had a border colour (+ gradient) already, painted via a
+				   HARDCODED `border:1px solid` shorthand in render.php (no width/style
+				   attrs existed). Adopting the shared control necessarily adds real
+				   width + style capability (SgsBorderControl always renders the width
+				   box; there is no colour+radius-only composition), so borderWidth/
+				   borderStyle are NEW attrs, defaulting to 1px/solid to match the
+				   previous hardcoded shorthand exactly. Radius is DELIBERATELY left
+				   out of this control (no onRadiusChange wired) and stays on its own
+				   scalar `borderRadius` control in the Panel ToolsPanel above —
+				   SgsBorderControl's radius param expects a per-CORNER object
+				   ({topLeft,topRight,bottomLeft,bottomRight}), a different shape from
+				   this block's existing plain-string `borderRadius` (`"20px"`), and
+				   migrating that shape is a separate, unscoped change with its own
+				   backward-compatibility risk against every already-published
+				   mega-menu instance. Placed LAST in InspectorControls (not next to
+				   the Panel ToolsPanel it conceptually belongs beside) so its
+				   borderStyle/onStyleChange lines sit outside the enum-control-shape
+				   gate's 900-char proximity window of the unrelated Style/Motion/
+				   Aside panels' own ToggleGroupControl mounts — those falsely
+				   resolved as the bound control for borderStyle when this sat
+				   earlier in the tree (SgsBorderControl's OWN internal style picker
+				   is invisible to the file-local scan, same as every other migrated
+				   block's "shared-component" skip). */ }
+			</InspectorControls>
+
+			{ /* Routed to its own explicit "styles" group (RULE 01-tab-group,
+			   inspector-scan): this panel is a genuine CSS-styling control, and
+			   once it joined MediaElementPanel above as a second non-structural
+			   panel in this block, WordPress's default (both land in Settings
+			   with no explicit choice) became a real routing decision the gate
+			   requires be made explicitly. Same mechanism sgs/before-after uses
+			   for its own "Frame styling" panel. */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						styleValue={ borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ borderColourGradient }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
+						colourLinked={ true }
+					/>
 				</PanelBody>
 			</InspectorControls>
 

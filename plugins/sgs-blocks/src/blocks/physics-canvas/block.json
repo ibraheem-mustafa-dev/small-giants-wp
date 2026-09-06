@@ -26,37 +26,27 @@
 		"color": {
 			"background": false,
 			"text": false,
-			"gradients": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"_comment_overlayNotAdopted": "backgroundOverlayColour/Opacity/OpacityTablet/OpacityMobile/ColourHover/BlendMode are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- same settled reasoning as sgs/container (see its block.json for the full note, 2026-09-03, Bean-directed). Detector rule 37-media-no-handroll's bare `background`/`bg`-prefix discriminator excludes this whole family from supports.sgs.mediaElements by design.",
 			"containerKind": "section",
 			"enabledExtensions": [
 				"background"
 			],
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"contentBandPadding": [
 					"contentBandPadding"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -64,18 +54,22 @@
 					"label": "Wrapper",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "backgroundColour",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
-						"css:min-height": "minHeight"
+						"css:min-height": "minHeight",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "Composite-mirror rule (project CLAUDE.md D152): this block MUST mirror sgs/container's wrapper capabilities (padding, max-width, contentWidth, gap, background) rather than diverging — it is a section-KIND composite so it KEEPS SGS_Container_Wrapper rather than going block-private (D294). Background migrated off native color.background onto the flat `backgroundColour` attr (D635-pattern). `supports.color.text` was turned OFF WITHOUT a replacement flat attr — every allowed child (core/image, sgs/media, sgs/icon, sgs/decorative-image) is decorative/non-textual and sgs/icon always sets its own explicit `iconColour`, so inherited `color` never painted anything visible here; adding a `textColour` attr would be a control with no visible effect."
 				},
@@ -83,7 +77,10 @@
 					"label": "Content band (throw arena)",
 					"layer": "CONTENT",
 					"order": 2,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"prefix": "contentBand",
 					"attrMap": {
 						"css:width": "contentWidth"
@@ -97,7 +94,31 @@
 		"root": ".wp-block-sgs-physics-canvas"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
 			"type": "string",
 			"default": ""
 		},
@@ -107,18 +128,33 @@
 		},
 		"minHeight": {
 			"type": "object",
-			"default": {"desktop": "480px", "mobile": "320px"}
+			"default": {
+				"desktop": "480px",
+				"mobile": "320px"
+			}
 		},
 		"contentWidth": {
 			"type": "object",
-			"default": {"desktop": "full"}
+			"default": {
+				"desktop": "full"
+			}
 		},
-		"contentBandPadding": { "type": "object", "default": { "desktop": {} } },
-		"paddingTablet": { "type": "object", "default": {} },
-		"paddingMobile": { "type": "object", "default": {} },
-		"marginTablet": { "type": "object", "default": {} },
-		"marginMobile": { "type": "object", "default": {} },
-		"shadow": { "type": "string" },
+		"contentBandPadding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"shadow": {
+			"type": "string"
+		},
+		"shadowColour": {
+			"type": "string"
+		},
+		"shadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"backgroundAttachment": {
 			"type": "string",
 			"default": "scroll",
@@ -138,6 +174,12 @@
 		},
 		"backgroundOverlayColour": {
 			"type": "string"
+		},
+		"backgroundOverlayOpacity": {
+			"type": "object",
+			"default": {
+				"desktop": 30
+			}
 		},
 		"backgroundPosition": {
 			"type": "string",
@@ -230,6 +272,32 @@
 			"type": "string",
 			"default": ""
 		},
+		"backgroundOverlayColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundOverlayBlendMode": {
+			"type": "string",
+			"default": "normal",
+			"enum": [
+				"normal",
+				"multiply",
+				"screen",
+				"overlay",
+				"darken",
+				"lighten",
+				"color-dodge",
+				"color-burn",
+				"soft-light",
+				"hard-light",
+				"difference",
+				"exclusion"
+			]
+		},
 		"physicsGravity": {
 			"type": "number",
 			"default": 1400,
@@ -258,6 +326,40 @@
 				"figure"
 			],
 			"default": "section"
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"render": "file:./render.php",

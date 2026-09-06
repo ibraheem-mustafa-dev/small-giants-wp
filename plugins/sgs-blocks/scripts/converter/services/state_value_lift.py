@@ -200,5 +200,26 @@ def resolve_state_property(decl: Any, ctx: Any) -> Write | GAP | None:
             f"token (or an anisotropic scale) for {attr!r}",
         )
 
+    # A BOOLEAN destination can only say on or off. A fractional value —
+    # `filter: grayscale(0.4)` — coerces to True and then RENDERS AS 100%, so
+    # the draft's 40% silently becomes 100% with nothing recording that it
+    # changed. It is emitted as a Write, so no gap row is produced and the
+    # cumulative gap ledger stays clean while the clone is wrong.
+    #
+    # Rule 4 says every draft declaration either transfers or is REPORTED as
+    # skipped-with-reason. A lossy write is neither. Gap it, in the same shape
+    # as the out-of-range and anisotropic-scale gaps above.
+    #
+    # 0 and 1 are exact in a boolean and still write normally (0.0 == 0 and
+    # 1.0 == 1, so a float parse of an exact value is unaffected).
+    if db_lookup.attr_is_boolean(ctx.block_slug, attr) and parsed not in (0, 1):
+        return gap_writer(
+            ctx, decl, GapOrigin.NO_DESTINATION,
+            f"{decl.property} value {decl.value!r} carries a fractional amount "
+            f"({parsed}) but {attr!r} is boolean on {ctx.block_slug} — it can "
+            f"only express on/off, so accepting it would render as 100% and "
+            f"silently change the draft's value",
+        )
+
     out_value = _coerce_for_attr_type(parsed, ctx, attr)
     return Write(attr=attr, value=out_value, property=decl.property, tier=decl.tier)

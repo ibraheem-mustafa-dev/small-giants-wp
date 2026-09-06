@@ -28,57 +28,79 @@
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"collection": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
 				"wrapper": {
 					"label": "Breadcrumb bar",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin"
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:border-color-gradient": "borderColourGradient"
 					},
-					"_note": "No selectors.typography is declared (only selectors.root), so the block-level typography.fontSize serialises as an inherited default across link/separator/current rather than a per-crumb control — no text cluster claimed here for size."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color": "borderColourHover",
+								"css:border-color-gradient": "borderColourHoverGradient"
+							}
+						}
+					},
+					"_note": "Typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight) — serialises as an inherited default across link/separator/current rather than a per-crumb control, same inheritance behaviour as before the migration."
 				},
 				"item": {
 					"label": "Crumb link",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "link",
 					"_note": "Renamed from 'link' 2026-08-15 (element-manifest drift fix) — no `.sgs-breadcrumbs__link` class exists anywhere in render.php; the anchor carries no class at all, and its parent `<li>` is `.sgs-breadcrumbs__item` (render.php:347). `linkColour` already resolved to css_element='item' via the markup-fallback derivation before this rename. `prefix` stays 'link' (the attribute-name prefix, e.g. linkColour) — unrelated to the element key."
 				},
 				"separator": {
 					"label": "Separator",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "separator"
 				},
 				"current": {
 					"label": "Current page",
 					"order": 4,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "current",
 					"_note": "NOT renamed (2026-08-15 audit) — its base class is ALSO `.sgs-breadcrumbs__item` (render.php:342, modified `--current`), so `currentColour`'s markup-fallback derivation ALSO resolves to css_element='item', identically to the 'item' element above. Two manifest elements cannot share one JSON key, and 'item' is already claimed by the link element (the more common case). Same single-valued-css_element schema limitation the task brief carves out for sgs/hero and sgs/trust-bar: a real DB orphan against 'current' will persist after reseed, but renaming here would either collide with 'item' or silently merge two distinct semantic controls (crumb link vs. terminal unlinked crumb) under one key. Left as-is deliberately — needs a schema decision (multi-valued css_element or a modifier axis), not a manifest edit."
 				}
@@ -89,6 +111,18 @@
 		"root": ".wp-block-sgs-breadcrumbs"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"separator": {
 			"type": "string",
 			"default": "/"
@@ -105,29 +139,93 @@
 			"type": "string",
 			"default": "text-muted"
 		},
+		"linkColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the link text with a background-clip:text mechanism instead of a flat colour. Non-empty wins over linkColour."
+		},
 		"separatorColour": {
 			"type": "string",
 			"default": "text-muted"
+		},
+		"separatorColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the separator text with a background-clip:text mechanism instead of a flat colour. Non-empty wins over separatorColour."
 		},
 		"currentColour": {
 			"type": "string",
 			"default": "text"
 		},
-		"paddingTablet": {
+		"currentColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the current-page crumb text with a background-clip:text mechanism instead of a flat colour. Non-empty wins over currentColour."
+		},
+		"fontSize": {
 			"type": "object",
 			"default": {}
 		},
-		"paddingMobile": {
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
 			"type": "object",
 			"default": {}
 		},
-		"marginTablet": {
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderWidth": {
 			"type": "object",
 			"default": {}
 		},
-		"marginMobile": {
+		"borderRadius": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"editorScript": "file:./index.js",

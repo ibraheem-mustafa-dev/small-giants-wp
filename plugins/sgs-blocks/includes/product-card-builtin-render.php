@@ -47,6 +47,15 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 		$sgs_pcard_variant = $attributes['variantStyle'] ?? 'standard';
 		$sgs_pcard_image   = isset( $attributes['image'] ) ? (string) $attributes['image'] : '';
 		$sgs_pcard_alt     = isset( $attributes['imageAlt'] ) ? (string) $attributes['imageAlt'] : '';
+		// Typed mode only (finding 18-decorative-image-aria). A client using the
+		// card as a visual/promotional tile can mark the image decorative — alt
+		// is blanked and aria-hidden hides it from assistive tech. Never applies
+		// to a bound/live product photo (that path renders through the separate
+		// bound-mode branches in render.php, which this helper does not touch).
+		$sgs_pcard_decorative = ! empty( $attributes['imageDecorative'] );
+		if ( $sgs_pcard_decorative ) {
+			$sgs_pcard_alt = '';
+		}
 		$sgs_pcard_name    = isset( $attributes['productName'] ) ? (string) $attributes['productName'] : '';
 		$sgs_pcard_desc    = isset( $attributes['description'] ) ? (string) $attributes['description'] : '';
 		$sgs_pcard_trial   = isset( $attributes['trialTag'] ) ? sanitize_text_field( (string) $attributes['trialTag'] ) : '';
@@ -110,15 +119,28 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 		 */
 		$sgs_pcard_feat_badge = ( 'featured' === $sgs_pcard_variant ) ? $sgs_pcard_feat : '';
 
+		// Media-element atom marker (rule 37-media-no-handroll / block.json
+		// supports.sgs.mediaElements 'main'). Same scope class every other
+		// main-image render site in render.php carries — see render.php's
+		// "Media-element atom layer" comment for the full explanation.
+		// Guarded so a request that somehow reaches this file before the
+		// class autoloads still renders with the plain base class (mirrors
+		// buybox/gallery-col.php's own guard).
+		$sgs_pcard_image_class = 'sgs-product-card__image';
+		if ( '' !== $card_uid && class_exists( 'SGS_Media_Element' ) ) {
+			$sgs_pcard_image_class .= ' ' . implode( ' ', SGS_Media_Element::element_classes( SGS_Media_Element::scope_class( $card_uid, 'main' ) ) );
+		}
+
 		if ( '' !== $sgs_pcard_image ) :
 			?>
 			<div class="sgs-product-card__media-wrap">
 				<img
-					class="sgs-product-card__image"
+					class="<?php echo esc_attr( $sgs_pcard_image_class ); ?>"
 					src="<?php echo esc_url( $sgs_pcard_image ); ?>"
 					alt="<?php echo esc_attr( $sgs_pcard_alt ); ?>"
 					loading="lazy"
 					decoding="async"
+					<?php echo $sgs_pcard_decorative ? 'aria-hidden="true"' : ''; ?>
 				>
 				<?php if ( '' !== $sgs_pcard_feat_badge ) : ?>
 					<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_pcard_feat_badge ); ?></span>

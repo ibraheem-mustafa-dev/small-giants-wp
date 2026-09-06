@@ -1,0 +1,18 @@
+/*
+ * video-behaviour atom — no rules.
+ *
+ * Playback behaviour (autoplay/loop/muted/controls/plays-inline/lazy-load,
+ * captions) is HTML element state — attributes and properties on `<video>`,
+ * or query-string params baked into a YouTube/Vimeo iframe embed — never a
+ * paintable CSS property. Both value-setters
+ * (`src/components/media/atoms/video-behaviour.js` `css()` and
+ * `includes/media/atoms/video-behaviour.php`
+ * `sgs_media_atom_video_behaviour_css()`) return an empty array by design.
+ *
+ * The real work this atom does — enforcing `VideoAutoplay -> [VideoMuted,
+ * VideoPlaysInline]` so a browser can actually play what it's told to
+ * autoplay — lives in `sgs_media_atom_video_behaviour_requires()`, not here.
+ *
+ * This file exists so the generator (`scripts/generate-media-stylesheet.mjs`)
+ * has a partial to concatenate, matching every other atom's shape.
+ */

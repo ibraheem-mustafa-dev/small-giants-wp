@@ -20,6 +20,7 @@
 	"icon": "awards",
 	"supports": {
 		"sgs": {
+			"_comment_overlayNotAdopted": "backgroundOverlayColour/Opacity/OpacityTablet/OpacityMobile/ColourHover/BlendMode are deliberately NOT routed through supports.sgs.mediaElements' overlay atom (detector rule 37-media-no-handroll) -- same reasoning as sgs/container (see its block.json for the full note): this block's overlay renders through the shared SGS_Container_Wrapper, whose own sgs_overlay_decls()-based emission is already more capable than the atom (until the atom system gains a caller-supplied-selector mode). Tracked as a future atom-layer capability, not a silent gap.",
 			"collection": true,
 			"iconPicker": true,
 			"is_section_root": true,
@@ -28,11 +29,20 @@
 				"width",
 				"layout",
 				"background",
-				"shapeDividers",
-				"gridItems"
+				"shapeDividers"
 			],
 			"arrayContentLift": true,
 			"scalarStylingLift": true,
+			"_comment_mediaElements": "badgeImageObjectFit already matches mediaAttrName('badgeImage','ObjectFit') — wired directly onto the existing attribute, no rename/bridge needed (detector rule 37-media-no-handroll).",
+			"mediaElements": [
+				{
+					"prefix": "badgeImage",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
+			],
 			"variantAttr": "badgeStyle",
 			"variants": {
 				"icon-circle": [
@@ -52,21 +62,16 @@
 			},
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"contentBandPadding": [
 					"contentBandPadding"
 				],
-				"gridItemPadding": [
-					"gridItemPadding"
-				],
-				"gridItemBorderRadius": [
-					"gridItemBorderRadius"
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -75,23 +80,27 @@
 					"layer": "OUTER",
 					"_layer_note": "section-KIND composite rendered via SGS_Container_Wrapper (D294 — keeps the wrapper, genuine grid/section). This element is both the block root and the grid definition, mirroring sgs/card-grid's grid element.",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:background-color": "native:color.background",
+						"css:background-color": "backgroundColour",
+						"css:color": "textColour",
 						"css:background-attachment": "backgroundAttachment",
 						"css:background-position": "backgroundPosition",
 						"css:background-repeat": "backgroundRepeat",
 						"css:background-size": "backgroundSize",
 						"css:background-image": "backgroundOverlayColour",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:box-shadow": "shadow",
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
@@ -101,46 +110,84 @@
 						"css:justify-content": "justifyContent",
 						"css:align-content": "alignContent",
 						"css:flex-direction": "flexDirection",
-						"css:flex-wrap": "flexWrap"
+						"css:flex-wrap": "flexWrap",
+						"css:border-color-gradient": "borderColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:color": "textColourHover"
+							}
+						}
 					},
 					"_note": "gridTemplateColumns/Rows, gap, justify-*/align-content/flex-* are consumed by SGS_Container_Wrapper via the universal wrapper mechanism (render.php:214-220 comment). No alignItems/display/overflow/aspect-ratio/width/height/max-height attrs exist — honest gaps."
 				},
 				"icon-badge": {
 					"label": "Icon badge (icon-circle variant)",
 					"order": 2,
-					"clusters": [ "fill", "layout", "text" ],
+					"clusters": [
+						"fill",
+						"layout",
+						"text"
+					],
 					"prefix": "icon",
 					"attrMap": {
 						"css:background-color": "iconCircleBackground",
+						"css:background-image": "iconCircleBackgroundGradient",
 						"css:width": "iconCircleSize",
 						"css:height": "iconCircleSize",
 						"css:border-radius": "iconCircleBorderRadius",
 						"css:box-shadow": "iconCircleShadow",
 						"css:color": "iconColour",
-						"css:stroke": "iconColourGradient"
+						"css:stroke": "iconColourGradient",
+						"css:box-shadow-color": "iconCircleShadowColour"
 					},
-					"_note": "iconColour (the SVG stroke/fill colour, style.css:80 `color: var(--sgs-trust-badge-icon-colour, ...)`) resolves via css:color (text cluster) — mirrors sgs/icon's own icon element + sgs/business-info's icon element, which use the same functional-icon-colour/css:color convention (Spec 35 vocabulary fix). Only applies when badgeStyle='icon-circle' (supports.sgs.variants). `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "iconCircleBackgroundHover",
+								"css:background-image": "iconCircleBackgroundHoverGradient",
+								"css:color": "iconColourHover",
+								"css:stroke": "iconColourHoverGradient"
+							}
+						}
+					},
+					"_note": "iconColour (the SVG stroke/fill colour, style.css:80 `color: var(--sgs-trust-badge-icon-colour, ...)`) resolves via css:color (text cluster) — mirrors sgs/icon's own icon element + sgs/business-info's icon element, which use the same functional-icon-colour/css:color convention (Spec 35 vocabulary fix). Only applies when badgeStyle='icon-circle' (supports.sgs.variants). `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover pairs with the resting iconColour above (2026-09-02) — render.php:255-258 emits it as a `color:` decl scoped to the block ROOT rather than a dedicated icon-badge selector, but the element it semantically belongs to (and the one its resting twin is declared on) is icon-badge, matching check-hover-state-classification.py's resting-twin discriminator."
 				},
 				"label": {
 					"label": "Badge label",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "label",
 					"_note": "Typography only (labelFontSize/labelFontWeight/labelFontStyle, render.php:393) — covers both variants via a compound selector. Colour is NOT claimed here: on icon-circle it's the separate textColour attr (render.php:54,111 -> --sgs-trust-badge-text-colour -> style.css:106 .sgs-trust-bar--icon-circle .sgs-trust-bar__label); on text-only/image-badge it's labelColour, claimed by the sibling badge-label element instead — one attrMap slot can't hold two attributes, and the two variants render different class names for what would otherwise be the same conceptual node."
 				},
 				"badge-label": {
 					"label": "Badge label colour (text-only / image-badge variants)",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "",
-					"attrMap": { "css:color": "labelColour" },
+					"attrMap": {
+						"css:color": "labelColour",
+						"css:background-image": "labelColourGradient"
+					},
 					"_note": "Same conceptual node as `label` above, but a DIFFERENT class name (.sgs-trust-bar__badge-label, render.php:281) rendered only by the text-only/image-badge variants — split into its own element because the DB's css_element column holds one name per attribute and the two variants genuinely use two different class names."
 				},
 				"title": {
 					"label": "Title",
 					"order": 4,
-					"clusters": [ "text" ],
-					"prefix": "title"
+					"clusters": [
+						"text"
+					],
+					"prefix": "title",
+					"attrMap": {
+						"css:color": "titleColour",
+						"css:background-image": "titleColourGradient"
+					}
 				},
 				"badge-item": {
 					"label": "Badge item",
@@ -151,7 +198,10 @@
 				"badge-img": {
 					"label": "Badge image (image-badge variant)",
 					"order": 6,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"prefix": "badgeImage",
 					"attrMap": {
 						"css:width": "badgeImageSize",
@@ -171,21 +221,9 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"text": true,
+			"text": false,
 			"background": false,
 			"gradients": false,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
 			"__experimentalSkipSerialization": true
 		}
 	},
@@ -194,6 +232,18 @@
 		"typography": ".sgs-trust-bar__label"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"badgeStyle": {
 			"type": "string",
 			"default": "icon-circle",
@@ -209,7 +259,8 @@
 				"type": "object",
 				"properties": {
 					"icon": {
-						"type": "string"
+						"type": "string",
+						"role": "icon"
 					},
 					"iconSvg": {
 						"type": "string"
@@ -227,9 +278,6 @@
 					"linkRel": {
 						"type": "string"
 					},
-					"pending": {
-						"type": "boolean"
-					},
 					"fillStyle": {
 						"type": "string",
 						"enum": [
@@ -243,6 +291,7 @@
 					},
 					"media": {
 						"type": "object",
+						"role": "image-object",
 						"properties": {
 							"url": {
 								"type": "string"
@@ -251,29 +300,43 @@
 								"type": "string"
 							}
 						}
+					},
+					"decorative": {
+						"type": "boolean",
+						"default": false,
+						"description": "image-badge variant only. Explicit editorial choice (WCAG 2.1 AA 1.1.1) that this badge's image carries no information — render.php blanks its alt text and adds aria-hidden so assistive tech skips it entirely."
+					},
+					"_key": {
+						"type": "string",
+						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit CSS (image-badge variant only) so a fit value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed."
+					},
+					"objectFit": {
+						"type": "string",
+						"enum": [
+							"cover",
+							"contain"
+						],
+						"default": "cover",
+						"description": "image-badge variant only. Per-item object-fit override — badges are logos/certification marks, so no focal-point/crop field exists here by design (see sgs/testimonial orgLogo, sgs/brand-strip logoFit)."
 					}
 				}
 			},
 			"default": [
 				{
 					"icon": "truck",
-					"label": "Fast delivery",
-					"pending": false
+					"label": "Fast delivery"
 				},
 				{
 					"icon": "check",
-					"label": "Certified quality",
-					"pending": false
+					"label": "Certified quality"
 				},
 				{
 					"icon": "star",
-					"label": "Trusted service",
-					"pending": false
+					"label": "Trusted service"
 				},
 				{
 					"icon": "heart",
-					"label": "Loved by customers",
-					"pending": false
+					"label": "Loved by customers"
 				}
 			]
 		},
@@ -285,6 +348,10 @@
 		"titleColour": {
 			"type": "string",
 			"default": "text-muted"
+		},
+		"titleColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"titleFontSize": {
 			"type": "object",
@@ -312,6 +379,10 @@
 		"labelColour": {
 			"type": "string",
 			"default": "text"
+		},
+		"labelColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"labelFontSize": {
 			"type": "object",
@@ -346,6 +417,21 @@
 			"type": "string",
 			"default": "surface"
 		},
+		"iconCircleBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the icon-circle badge background via a --sgs-trust-badge-circle-bg-gradient custom-property sibling (helpers-tokens.php sgs_custom_property_gradient_decls shape). Non-empty wins over iconCircleBackground (icon-circle variant only)."
+		},
+		"iconCircleBackgroundHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state background colour for the icon-circle badge."
+		},
+		"iconCircleBackgroundHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of iconCircleBackgroundHover. Non-empty wins over iconCircleBackgroundHover at render time."
+		},
 		"iconColour": {
 			"type": "string",
 			"default": "primary-dark"
@@ -354,6 +440,11 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the badge icon's stroke instead of a flat colour (icon-circle variant only). Non-empty wins over iconColour at render time (D636/D644)."
+		},
+		"iconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of iconColourGradient. Non-empty wins over iconColourHover at render time."
 		},
 		"iconCircleBorderRadius": {
 			"type": "string",
@@ -365,6 +456,10 @@
 		},
 		"iconCircleShadowColour": {
 			"type": "string"
+		},
+		"iconCircleShadowColourHover": {
+			"type": "string",
+			"default": ""
 		},
 		"badgeImageBorderRadius": {
 			"type": "string",
@@ -381,6 +476,10 @@
 		"badgeImageShadowColour": {
 			"type": "string"
 		},
+		"badgeImageShadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"badgeImageObjectFit": {
 			"type": "string",
 			"default": "contain",
@@ -393,13 +492,47 @@
 			"type": "string",
 			"default": "text"
 		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 4, "tablet": 4, "mobile": 2}
+			"default": {
+				"desktop": 4,
+				"tablet": 4,
+				"mobile": 2
+			}
 		},
 		"gap": {
 			"type": "object",
-			"default": {"desktop": "0.5rem"},
+			"default": {
+				"desktop": "0.5rem"
+			},
 			"_comment": "Was the bare number \"20\", which the old flat path read as WordPress spacing-scale SLUG 20 = 0.5rem (theme.json settings.spacing.spacingSizes). A bare number now means px (Bean-ruled 2026-08-10), so the value is stated explicitly to render EXACTLY as before rather than jumping to 20px. This block is pure-wrapper (render.php:86 — gap is handled entirely by the shared wrapper), so it had no render.php fallback shielding it."
 		},
 		"autoScroll": {
@@ -421,11 +554,21 @@
 		},
 		"layout": {
 			"type": "string",
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
 			"default": "grid"
 		},
 		"gridTemplateColumns": {
 			"type": "object",
-			"default": {"desktop": "repeat(4, 1fr)", "tablet": "repeat(4, 1fr)", "mobile": "1fr 1fr"}
+			"default": {
+				"desktop": "repeat(4, 1fr)",
+				"tablet": "repeat(4, 1fr)",
+				"mobile": "1fr 1fr"
+			}
 		},
 		"backgroundImage": {
 			"type": "object"
@@ -470,9 +613,41 @@
 		"backgroundOverlayColour": {
 			"type": "string"
 		},
+		"backgroundOverlayOpacity": {
+			"type": "object",
+			"default": {
+				"desktop": 30
+			}
+		},
 		"overlayGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"backgroundOverlayColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundOverlayBlendMode": {
+			"type": "string",
+			"default": "normal",
+			"enum": [
+				"normal",
+				"multiply",
+				"screen",
+				"overlay",
+				"darken",
+				"lighten",
+				"color-dodge",
+				"color-burn",
+				"soft-light",
+				"hard-light",
+				"difference",
+				"exclusion"
+			]
 		},
 		"bgVideo": {
 			"type": "object"
@@ -497,6 +672,13 @@
 		},
 		"shadow": {
 			"type": "string"
+		},
+		"shadowColour": {
+			"type": "string"
+		},
+		"shadowColourHover": {
+			"type": "string",
+			"default": ""
 		},
 		"maxWidth": {
 			"type": "object",
@@ -524,7 +706,10 @@
 		},
 		"shapeDividerTopScale": {
 			"type": "object",
-			"default": { "x": 100, "y": 100 }
+			"default": {
+				"x": 100,
+				"y": 100
+			}
 		},
 		"shapeDividerTopFlip": {
 			"type": "boolean",
@@ -548,7 +733,10 @@
 		},
 		"shapeDividerBottomScale": {
 			"type": "object",
-			"default": { "x": 100, "y": 100 }
+			"default": {
+				"x": 100,
+				"y": 100
+			}
 		},
 		"shapeDividerBottomFlip": {
 			"type": "boolean",
@@ -600,40 +788,6 @@
 		"bgSvgTextShadow": {
 			"type": "boolean",
 			"default": false
-		},
-		"gridItemPadding": {
-			"type": "object",
-			"default": {"desktop": {}}
-		},
-		"gridItemBackground": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBorder": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBorderGradient": {
-			"type": "string",
-			"default": "",
-			"description": "CSS gradient string painting the grid item's resting border with a masked ring instead of a flat colour (D636 border-gradient rollout, residual scope). Non-empty wins over gridItemBorder's colour component; width/style still come from gridItemBorder."
-		},
-		"gridItemBorderGradientHover": {
-			"type": "string",
-			"default": "",
-			"description": "CSS gradient string painting the grid item's hover-state border (D636 border-gradient rollout, residual scope). Non-empty wins on :hover/:focus-within; empty means no hover change."
-		},
-		"gridItemBorderRadius": {
-			"type": "object",
-			"default": {}
-		},
-		"gridItemShadow": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemTextColour": {
-			"type": "string",
-			"default": ""
 		},
 		"gridTemplateRows": {
 			"type": "object",
@@ -689,9 +843,8 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": "",
+			"default": "wrap",
 			"enum": [
-				"",
 				"wrap",
 				"nowrap"
 			]
@@ -700,25 +853,11 @@
 			"type": "object",
 			"default": {}
 		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"contentBandPadding": {
 			"type": "object",
-			"default": { "desktop": {} }
+			"default": {
+				"desktop": {}
+			}
 		},
 		"tagName": {
 			"type": "string",
@@ -737,6 +876,44 @@
 		"ariaLabel": {
 			"type": "string",
 			"default": ""
+		},
+		"iconColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"render": "file:./render.php",
@@ -749,23 +926,19 @@
 			"items": [
 				{
 					"icon": "truck",
-					"label": "Fast turnaround",
-					"pending": false
+					"label": "Fast turnaround"
 				},
 				{
 					"icon": "check",
-					"label": "Certified quality",
-					"pending": false
+					"label": "Certified quality"
 				},
 				{
 					"icon": "star",
-					"label": "Trusted service",
-					"pending": false
+					"label": "Trusted service"
 				},
 				{
 					"icon": "heart",
-					"label": "Loved by customers",
-					"pending": false
+					"label": "Loved by customers"
 				}
 			]
 		}

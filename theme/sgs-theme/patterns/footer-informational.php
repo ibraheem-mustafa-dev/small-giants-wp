@@ -15,19 +15,19 @@
 
 ?>
 
-<!-- wp:sgs/site-footer {"align":"full","backgroundColor":"footer-bg","contentWidth":{"desktop":"normal"}} -->
+<!-- wp:sgs/site-footer {"align":"full","backgroundColour":"footer-bg","contentWidth":{"desktop":"normal"}} -->
 
 <!-- wp:sgs/site-footer-row {"rowSlot":"columns","layout":"grid","columns":{"desktop":3},"padding":{"desktop":{"top":"var(--wp--preset--spacing--60)"}}} -->
 
-<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Brand"}} -->
+<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Brand"},"flexWrap":"wrap"} -->
 <!-- wp:sgs/responsive-logo {"width":200,"linkToHome":true} /-->
 
-<!-- wp:sgs/business-info {"displayType":"description","textColour":"text-inverse","fontSize":"small"} /-->
+<!-- wp:sgs/business-info {"displayType":"description","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
 
 <!-- wp:sgs/business-info {"displayType":"socials"} /-->
 <!-- /wp:sgs/container -->
 
-<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Links and Contact"}} -->
+<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Links and Contact"},"flexWrap":"wrap"} -->
 <!-- wp:sgs/heading {"content":"Quick Links","level":"h2","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
 
 <!-- wp:list {"style":{"typography":{"lineHeight":"2.2"},"spacing":{"padding":{"left":"0"}}},"textColor":"text-inverse","fontSize":"small"} -->
@@ -44,21 +44,21 @@
 
 <!-- wp:sgs/heading {"content":"Contact","level":"h3","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
 
-<!-- wp:sgs/business-info {"displayType":"phone","textColour":"text-inverse","fontSize":"small"} /-->
+<!-- wp:sgs/business-info {"displayType":"phone","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
 
-<!-- wp:sgs/business-info {"displayType":"email","textColour":"text-inverse","fontSize":"small"} /-->
+<!-- wp:sgs/business-info {"displayType":"email","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
 
 <!-- wp:sgs/heading {"content":"Opening Hours","level":"h3","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
 
-<!-- wp:sgs/business-info {"displayType":"hours","textColour":"text-inverse","fontSize":"small"} /-->
+<!-- wp:sgs/business-info {"displayType":"hours","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
 <!-- /wp:sgs/container -->
 
-<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Map and Address"}} -->
+<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Map and Address"},"flexWrap":"wrap"} -->
 <!-- wp:sgs/business-info {"displayType":"map"} /-->
 
 <!-- wp:sgs/heading {"content":"Address","level":"h3","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
 
-<!-- wp:sgs/business-info {"displayType":"address","textColour":"text-inverse","fontSize":"small"} /-->
+<!-- wp:sgs/business-info {"displayType":"address","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
 
 <!-- wp:sgs/multi-button {"justifyContent":{"desktop":"flex-start"}} -->
 <!-- wp:sgs/button {"label":"Get Directions","url":"#","inheritStyle":"custom","colourBackground":"accent","colourText":"text","fontSize":{"desktop":14},"style":{"border":{"radius":"8px"}}} /-->
@@ -67,9 +67,9 @@
 
 <!-- /wp:sgs/site-footer-row -->
 
-<!-- wp:sgs/site-footer-row {"rowSlot":"bottom","layout":"flex","justifyContent":"center","padding":{"desktop":{"top":"var(--wp--preset--spacing--40)","bottom":"var(--wp--preset--spacing--40)"}},"margin":{"desktop":{"top":"var(--wp--preset--spacing--50)"}},"style":{"border":{"top":{"color":"var:preset|color|accent","width":"1px"}}}} -->
+<!-- wp:sgs/site-footer-row {"borderWidth":{"top":"1px"},"borderStyle":"solid","borderColour":"accent","rowSlot":"bottom","layout":"flex","justifyContent":"center","padding":{"desktop":{"top":"var(--wp--preset--spacing--40)","bottom":"var(--wp--preset--spacing--40)"}},"margin":{"desktop":{"top":"var(--wp--preset--spacing--50)"}}} -->
 
-<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"text-inverse","fontSize":"small"} /-->
+<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
 
 <!-- /wp:sgs/site-footer-row -->
 

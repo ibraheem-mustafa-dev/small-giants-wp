@@ -23,6 +23,22 @@ finding (spec-35-capability-routing-doctrine.md Part 6). A block that fails that
 proof falls through to case 1's stricter equality check and the gate still
 applies normally.
 
+CASE 3 (added 2026-08-22, FR-38-12 shop-archive follow-on) — ``supports.interactivity``
+(or ``supports.interactivity.clientNavigation``) turned ON, and NOTHING else
+changed. Predicted by D702's own closing note when it fixed the identical shape
+for sgs/text: "the 73-block follow-on pass will hit this gate every time, so
+adding CASE 3 is the structural fix." The declaration is a claim to WordPress
+Core / WooCommerce's ProductCollection controller that this block's markup
+survives a soft client-side navigation unchanged — it cannot itself alter any
+existing rendered page, because it carries no CSS, no attribute, no markup.
+Gated STRICTER than case 1, same shape as case 2: it also requires proof the
+declaration is honest — the block's OWN render.php and view.js/*.js carry zero
+`data-wp-*` Interactivity API directives and never call `wp_interactivity_*()`
+for THEIR OWN instance (a composite may still pass interactivity attrs THROUGH
+on a caller's behalf via `extra_attr_html`; that is the caller's declaration to
+make, not this block's). A block that fails that proof falls through to case 1's
+stricter equality check and the gate still applies normally.
+
 Both replace the documented ``--no-verify`` escape hatch with a deterministic,
 auditable gate rather than a blanket bypass.
 
@@ -116,6 +132,62 @@ def _render_already_applies_colour(block: str) -> bool:
     return bool(finding["delegates_to_wrapper"] or finding["self_applies"])
 
 
+def _strip_interactivity(obj: dict) -> dict:
+    """Return a deep-ish copy with supports.interactivity removed."""
+    if not isinstance(obj, dict):
+        return obj
+    clone = json.loads(json.dumps(obj))
+    supports = clone.get("supports")
+    if isinstance(supports, dict) and "interactivity" in supports:
+        del supports["interactivity"]
+    return clone
+
+
+def _interactivity_turned_on(head: dict, staged: dict) -> bool:
+    """True only when supports.interactivity (bool True) or
+    supports.interactivity.clientNavigation went from falsy/absent to True —
+    a pure capability-widening addition, mirroring `_gradients_turned_on`."""
+
+    def _flag(obj: dict) -> bool:
+        val = (obj.get("supports") or {}).get("interactivity")
+        if val is True:
+            return True
+        if isinstance(val, dict):
+            return val.get("clientNavigation") is True
+        return False
+
+    return (not _flag(head)) and _flag(staged)
+
+
+def _render_is_honestly_static(block: str) -> bool:
+    """True only when this block's OWN render.php and any *.js under its
+    folder carry zero `data-wp-*` Interactivity API directives and never call
+    `wp_interactivity_*()` for their own instance — the honesty bar D702 set
+    for sgs/text (composites may still pass interactivity attrs THROUGH on a
+    caller's behalf via extra_attr_html; that's the caller's declaration, not
+    this block's, so it does not disqualify this block)."""
+    import re
+
+    block_dir = Path(__file__).resolve().parents[1] / "src" / "blocks" / block
+    if not block_dir.is_dir():
+        return False  # can't prove it → fail safe, case 3 does not apply
+
+    data_wp_re = re.compile(r"data-wp-[a-z-]+")
+    wp_interactivity_call_re = re.compile(r"wp_interactivity_(?:state|config|data_wp_context)\s*\(")
+
+    for path in block_dir.rglob("*"):
+        if path.suffix not in (".php", ".js"):
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except OSError:
+            return False  # can't prove it → fail safe
+        if data_wp_re.search(text) or wp_interactivity_call_re.search(text):
+            return False
+
+    return True
+
+
 def main(argv: list[str]) -> int:
     if len(argv) != 2:
         print("usage: check-blockjson-metadata-only.py <block_name>", file=sys.stderr)
@@ -144,6 +216,15 @@ def main(argv: list[str]) -> int:
         _gradients_turned_on(head, staged)
         and _strip_color_gradients(head) == _strip_color_gradients(staged)
         and _render_already_applies_colour(block)
+    ):
+        return 0
+
+    # CASE 3 — supports.interactivity turned on, nothing else changed, AND
+    # the block's own render is proven to carry no Interactivity API directives.
+    if (
+        _interactivity_turned_on(head, staged)
+        and _strip_interactivity(head) == _strip_interactivity(staged)
+        and _render_is_honestly_static(block)
     ):
         return 0
 

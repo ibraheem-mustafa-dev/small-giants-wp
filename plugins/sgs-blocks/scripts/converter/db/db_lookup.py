@@ -34,6 +34,10 @@ from pathlib import Path
 from typing import NamedTuple
 
 SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+
+# Device-tier sibling suffixes — a name ending in one of these is a tier SIBLING,
+# never a tier BASE (see tier_object_base condition 3).
+_TIER_SIBLING_SUFFIX_RE = re.compile(r"(Tablet|Mobile|Desktop)$")
 UIMAX_DB = Path.home() / ".agents" / "ui-ux-pro-max" / "scripts" / "ui-ux-pro-max.db"
 if not UIMAX_DB.exists():
     UIMAX_DB = Path.home() / ".agents" / "skills" / "ui-ux-pro-max" / "scripts" / "ui-ux-pro-max.db"
@@ -335,7 +339,7 @@ _SEEDED_TABLES: dict[str, tuple[str, tuple[str, ...], str]] = {
     "slots": (
         "slots.json",
         ("slot_name", "scope", "aliases", "standalone_block", "notes",
-         "standalone_block_default_attrs"),
+         "standalone_block_default_attrs", "resolves_whole_instance"),
         "CREATE TABLE IF NOT EXISTS slots ("
         "  slot_name TEXT NOT NULL,"
         "  scope TEXT NOT NULL CHECK (scope IN ('section','element')),"
@@ -344,6 +348,7 @@ _SEEDED_TABLES: dict[str, tuple[str, tuple[str, ...], str]] = {
         "  notes TEXT,"
         "  created_at TEXT DEFAULT CURRENT_TIMESTAMP,"
         "  standalone_block_default_attrs TEXT,"
+        "  resolves_whole_instance TEXT,"
         "  PRIMARY KEY (slot_name, scope)"
         ")",
     ),
@@ -416,6 +421,17 @@ def _seed_table_ordered(table: str) -> None:
     conn = sqlite3.connect(SGS_DB)
     try:
         conn.execute(ddl)
+        # Idempotent column-add (mirrors the block_attributes override-column
+        # pattern): `CREATE TABLE IF NOT EXISTS` above is a no-op against an
+        # ALREADY-EXISTING table, so a column widening one of these seeded
+        # tables gains over time (e.g. slots.resolves_whole_instance, Check#12
+        # Build 3, 2026-09-06) never reaches a live DB created before the
+        # widening. ADD any column this table's declared `cols` names but the
+        # live table doesn't have yet.
+        existing_cols = {r[1] for r in conn.execute(f'PRAGMA table_info("{table}")').fetchall()}  # noqa: S608
+        for col in cols:
+            if col not in existing_cols:
+                conn.execute(f'ALTER TABLE "{table}" ADD COLUMN {col} TEXT')  # noqa: S608
         current = conn.execute(
             f'SELECT {collist} FROM "{table}" ORDER BY rowid'  # noqa: S608 — fixed names
         ).fetchall()
@@ -497,16 +513,115 @@ _SCALAR_MEDIA_ROLE = "scalar-media"
 
 
 def _load_scalar_media_roles() -> list[tuple[str, str]]:
-    """Load the [(block_slug, attr_name)] roster. Soft-fails to ``[]``."""
+    """Load the [(block_slug, attr_name)] roster for the `block_attributes.role`
+    RE-ASSERTION path only (``_migrate_scalar_media_roles``).
+
+    Skips any entry marked ``"virtual": true`` in its 4th (options) field —
+    added 2026-09-02 for the Tablet/video/svg tier-sibling entries. Those
+    entries exist purely so ``scalar_media_emit_as``/``scalar_media_type_stem``
+    can resolve their target attr names; they name a COMPOSITE attr
+    (``splitImageTablet``, ``splitVideo``, …) that has no ``block_attributes``
+    row at all (block.json never declares a composite object for those tiers —
+    only the flat Id/Url/Alt trio, which the emit_as expansion writes to).
+    Feeding them through the role re-assertion path would print a permanent
+    false "no block_attributes row" warning on every module load. Real
+    (non-virtual) entries are unaffected — same soft-fail-to-``[]`` contract.
+    """
     try:
         raw = json.loads(_SCALAR_MEDIA_ROLES_FILE.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return []
     out: list[tuple[str, str]] = []
     for entry in raw.get("attrs", []):
-        if isinstance(entry, list) and len(entry) >= 2:
-            out.append((entry[0], entry[1]))
+        if not (isinstance(entry, list) and len(entry) >= 2):
+            continue
+        opts = entry[3] if len(entry) >= 4 else None
+        if isinstance(opts, dict) and opts.get("virtual"):
+            continue
+        out.append((entry[0], entry[1]))
     return out
+
+
+def scalar_media_emit_as(block_slug: str, attr_name: str) -> dict[str, str] | None:
+    """Optional 4th roster-entry field (``scalar-media-roles.json``'s own
+    ``__emit_as`` docstring carries the full rationale): when a scalar-media
+    attr's STORAGE shape has moved from the composite ``{id,url,alt}`` object
+    ``run_mechanism_b``'s ``ScalarLift`` still produces to separate scalar
+    keys (Wave 6, 2026-09-02 — sgs/hero's media-atom migration), this names
+    the target attr names so ``assembly.py``'s ScalarLift handling can expand
+    the composite value into them instead of writing the composite object to
+    a name nothing reads any more.
+
+    Widened 2026-09-02 (Tablet/video/svg tier routing): the shape is no
+    longer fixed to the id/url/alt image trio — a video lift has no ``alt``
+    (``{"id": ..., "url": ...}``), so this now returns WHATEVER key set the
+    roster entry declares, verbatim, rather than requiring all three of
+    id/url/alt to be present. ``assembly.py``'s consumer reads the returned
+    dict generically (``r.value.get(key, ...)`` per declared key) so any
+    subset of {id, url, alt} keys is safe to add here without a second change
+    there. (An inline-SVG lift needs no expansion at all — ``splitSvgContent``
+    is written directly as a plain string ScalarLift; it never appears here.)
+
+    @return the entry's ``emit_as`` dict (target attr names) verbatim, or
+        ``None`` for every roster entry that has not opted in — the
+        overwhelming majority, which keep writing the composite object
+        exactly as before.
+    """
+    try:
+        raw = json.loads(_SCALAR_MEDIA_ROLES_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    for entry in raw.get("attrs", []):
+        if not (isinstance(entry, list) and len(entry) >= 4):
+            continue
+        if entry[0] != block_slug or entry[1] != attr_name:
+            continue
+        opts = entry[3]
+        emit_as = opts.get("emit_as") if isinstance(opts, dict) else None
+        if isinstance(emit_as, dict) and emit_as:
+            return dict(emit_as)
+    return None
+
+
+def scalar_media_type_stem(block_slug: str, media_kind: str) -> str | None:
+    """Return the BASE attr-name STEM for `block_slug`'s scalar-media family
+    matching `media_kind` (``'image'``, ``'video'`` or ``'svg'``).
+
+    Added 2026-09-02 for the video/SVG split-media tier widening; widened the
+    same day (Wave 7b re-anchor) to also cover ``'image'``. A scalar-media
+    column (e.g. sgs/hero's split-media slot) may hold an ``<img>``, a
+    ``<video>``, or an inline ``<svg>`` depending on the draft — each media
+    kind writes to a DIFFERENT attr family (``splitImage*`` / ``splitVideo*``
+    / ``splitSvgContent*``).
+
+    ⚠ Before the Wave 7b re-anchor, the image family's stem was NOT declared
+    here — it was read straight off ``scalar_media_attr_for``'s return value,
+    because that function's DB-resolved anchor happened to BE ``splitImage``.
+    That coincidence is exactly what the re-anchor removed: the anchor moved
+    to ``splitMediaType`` (a presence/eligibility gate only — see
+    ``scalar_media_attr_for``'s docstring), which shares no substring with
+    any of the three content families, so NONE of them can be derived from
+    it any more. All three are now declared explicitly and symmetrically in
+    the roster's ``media_type_stems`` section instead of being guessed by
+    string-substitution (R-31-1 — no invented naming convention).
+
+    @return the stem string (e.g. ``'splitVideo'``, ``'splitSvgContent'``) or
+        ``None`` when the block declares no stem for that media kind — the
+        caller must treat this as "route not built for this block/kind", a
+        loud ContentGap, never a guess.
+    """
+    try:
+        raw = json.loads(_SCALAR_MEDIA_ROLES_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    stems = raw.get("media_type_stems", {})
+    if not isinstance(stems, dict):
+        return None
+    block_stems = stems.get(block_slug)
+    if not isinstance(block_stems, dict):
+        return None
+    stem = block_stems.get(media_kind)
+    return stem if isinstance(stem, str) and stem else None
 
 
 def _migrate_scalar_media_roles() -> None:
@@ -569,6 +684,12 @@ def _migrate_scalar_media_roles() -> None:
             # seeder REFUSED to repair sgs/hero while printing a message that said
             # `is_class_section_block(sgs/hero) is False` — which was untrue. A guard that
             # fails closed AND reports a fabricated reason is worse than no guard.
+            #
+            # 2026-09-02 (Wave 7b): the roster's only real (non-virtual) row for
+            # sgs/hero is now 'splitMediaType', not 'splitImage'/'splitImageMobile' —
+            # this precondition guard is unaffected (it keys on block_slug, not the
+            # attr name), but a reader expecting 'splitImage' examples in older
+            # comments nearby should treat 'splitMediaType' as the current anchor.
             # Fixed by moving the module-load invocation to the END of this file; the
             # narrow except keeps that class of mistake loud if the order ever regresses.
             eligible = is_class_section_block(block_slug)
@@ -902,6 +1023,41 @@ def standalone_block_for(canonical_slot: str) -> str | None:
     return result
 
 
+@functools.lru_cache(maxsize=1)
+def _container_marker_slots() -> frozenset[str]:
+    """{slot_name} for element-scope slots with resolves_whole_instance='true'.
+
+    Check#12 Build 3 (container-marker resolver rule, 2026-09-06). These slots'
+    standalone_block is a WHOLE NESTED COMPOSITE to insert as-is when a draft
+    child's BEM token resolves here — never a scalar content field to guess a
+    role for by picking among the target block's own content-bearing attrs.
+    Data-driven (slots.json's `resolves_whole_instance` column) — no per-slug
+    literal here or in any caller.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT slot_name FROM slots "
+            "WHERE scope='element' AND resolves_whole_instance = 'true'"
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return frozenset()
+    finally:
+        conn.close()
+    return frozenset(r[0] for r in rows)
+
+
+def is_container_marker_slot(canonical_slot: str | None) -> bool:
+    """True when `canonical_slot` is a container-marker slot (see
+    `_container_marker_slots()`). A caller resolving a draft child's
+    extraction ROLE for such a slot should stop — the child is a whole
+    nested block instance, not a value to route into one of the target
+    block's own scalar attributes."""
+    if not canonical_slot:
+        return False
+    return canonical_slot in _container_marker_slots()
+
+
 def _normalise(token: str) -> str:
     """Strip hyphens/underscores and lowercase. So 'max-width' == 'maxWidth' == 'max_width'.
     Per Bean's note 2026-05-14: multi-word attrs should auto-handle hyphen variants."""
@@ -936,10 +1092,15 @@ def attr_name_for_slot_or_alias(block_slug: str, slot_or_alias: str) -> str | No
     e.g. attr_name_for_slot_or_alias('sgs/product-card', 'media') → 'image' (if canonical_slot='media' set)
     """
     norm_target = _normalise(slot_or_alias)
-    # First pass: exact canonical_slot match
+    # First pass: exact canonical_slot match (or one of its
+    # canonical_slot_aliases — Check#12 Build 2, 2026-09-06: e.g.
+    # sgs/button.label's canonical_slot='button' also answers to
+    # 'button-outline'/'button-primary'/'buttonSecondary').
     for name, info in block_attrs(block_slug).items():
         cs = info.get("canonical_slot")
         if cs and (_normalise(cs) == norm_target or _normalise(name) == norm_target):
+            return name
+        if any(_normalise(a) == norm_target for a in info.get("canonical_slot_aliases") or ()):
             return name
     # Second pass: by attr_name only (normalised)
     for name in block_attrs(block_slug):
@@ -994,27 +1155,61 @@ def modifier_kind(modifier: str) -> str | None:
 # ----------------------------------------------------------------------------
 
 @functools.lru_cache(maxsize=256)
+def _parse_canonical_slot_aliases(raw: str | None) -> list[str]:
+    """Parse `block_attributes.canonical_slot_aliases` (a JSON-array-as-TEXT
+    column, Check#12 Build 2, 2026-09-06) into a plain list. Soft-fails to []
+    on a missing/malformed value — an alias widening is additive, never
+    load-bearing for the primary `canonical_slot` match."""
+    if not raw:
+        return []
+    try:
+        parsed = json.loads(raw)
+    except (ValueError, TypeError):
+        return []
+    return [a for a in parsed if isinstance(a, str)] if isinstance(parsed, list) else []
+
+
 def block_attrs(block_slug: str) -> dict[str, dict]:
-    """Return {attr_name: {role, canonical_slot, attr_type, derived_selector}} for a block.
+    """Return {attr_name: {role, canonical_slot, canonical_slot_aliases, attr_type,
+    derived_selector}} for a block.
 
     `derived_selector` (added 2026-06-11 for the universal scalar-lift,
     _lift_scalar_attrs_by_selector) is the BEM class selector for the draft
     element this attr extracts from (e.g. '.sgs-testimonial__text'). NULL for
     attrs with no draft element. Consumed by FR-31-2 / FR-31-5 D1 selector-lift.
+
+    `canonical_slot_aliases` (Check#12 Build 2, 2026-09-06) is a list of
+    EXTRA slot names this attr also answers to, beyond its primary
+    `canonical_slot` — e.g. sgs/button.label's canonical_slot='button' plus
+    aliases ['button-outline','button-primary','buttonSecondary'], the 3
+    other style-variant slots that are the same button element. Empty list
+    when the column is absent/NULL (an ordinary single-slot attr). Column may
+    not exist yet on an unmigrated DB — `PRAGMA table_info` guards the SELECT.
     """
     conn = sqlite3.connect(SGS_DB)
     try:
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(block_attributes)").fetchall()}
+        has_aliases_col = "canonical_slot_aliases" in cols
+        select_cols = "attr_name, attr_type, role, canonical_slot, derived_selector" + (
+            ", canonical_slot_aliases" if has_aliases_col else ""
+        )
         rows = conn.execute(
-            "SELECT attr_name, attr_type, role, canonical_slot, derived_selector "
-            "FROM block_attributes WHERE block_slug = ?",
+            f"SELECT {select_cols} FROM block_attributes WHERE block_slug = ?",  # noqa: S608
             (block_slug,),
         ).fetchall()
     finally:
         conn.close()
-    result = {
-        name: {"attr_type": t, "role": role, "canonical_slot": cs, "derived_selector": ds}
-        for name, t, role, cs, ds in rows
-    }
+    result = {}
+    for row in rows:
+        name, t, role, cs, ds = row[:5]
+        aliases_raw = row[5] if has_aliases_col else None
+        result[name] = {
+            "attr_type": t,
+            "role": role,
+            "canonical_slot": cs,
+            "derived_selector": ds,
+            "canonical_slot_aliases": _parse_canonical_slot_aliases(aliases_raw),
+        }
     if not result:
         _trace("db_lookup_miss", lookup="block_attrs", block_slug=block_slug)
     return result
@@ -1083,6 +1278,250 @@ def box_family_for(block_slug: str, attr_name: str) -> "str | None":
     if not row:
         return None
     return row[0] or None
+
+
+@functools.lru_cache(maxsize=1024)
+def tier_object_base(block_slug: str, attr_name: str) -> bool:
+    """True iff ``attr_name`` is a TIER-SHAPED object attr on this block.
+
+    The TIER shape is ``{desktop, tablet, mobile}`` (Spec 35 Phase 1.4, Bean
+    2026-08-10) — the successor to the legacy FLAT TIER SIBLINGS model
+    (``fontSize`` + ``fontSizeTablet`` + ``fontSizeMobile``). When this returns
+    True the caller MUST accumulate its per-tier writes into ONE object attr
+    rather than re-appending a tier suffix, because the suffixed sibling no
+    longer exists and ``services.validate`` would gap the write silently.
+
+    Sibling of ``box_family_for`` and gated the same way — on DB columns, never
+    on the attr NAME (R-31-1). The two shapes are INDEPENDENT axes and mutually
+    exclusive at the storage layer: BOX is a CLOSED, named set
+    (padding/margin/borderWidth/borderRadius + prefixed variants, carried by the
+    ``box_family`` column); anything else object-typed is a TIER.
+
+    Four conditions, each earning its place against a measured false positive:
+      1. ``attr_type='object'``      — a scalar attr keeps the flat model.
+      2. ``box_family IS NULL``      — a BOX attr accumulates by SIDE, not tier.
+      3. the name is not itself a tier sibling — ``backgroundImageMobile`` is
+         object-typed with no box_family, so conditions 1-2 alone classify it as
+         a tier BASE and a caller would write ``{mobile: ...}`` INTO the mobile
+         sibling. It is an asset sibling, not a base.
+      4. no ``<attr>Tablet``/``<attr>Mobile`` sibling is declared — a block that
+         still declares the flat siblings still uses the flat model, and the
+         suffixed write is correct there. This is what keeps the 307 surviving
+         flat-sibling attrs working unchanged.
+
+    Verified against positive controls (sgs/heading.fontSize, sgs/text.fontSize
+    and .lineHeight, sgs/container.gridTemplateColumns/.columns/.gap) and
+    negative controls (sgs/hero.backgroundImage and .backgroundImageMobile,
+    sgs/text.borderWidth, sgs/heading.fontSizeUnit and .lineHeight — the last
+    being ``number`` on heading while ``object`` on text, which is exactly why
+    this must be resolved per (block, attr) and never by name).
+    """
+    if _TIER_SIBLING_SUFFIX_RE.search(attr_name):
+        return False
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT attr_type, box_family FROM block_attributes "
+            "WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, attr_name),
+        ).fetchone()
+        if not row or row[0] != "object" or row[1]:
+            return False
+        siblings = conn.execute(
+            "SELECT 1 FROM block_attributes "
+            "WHERE block_slug = ? AND attr_name IN (?, ?) LIMIT 1",
+            (block_slug, attr_name + "Tablet", attr_name + "Mobile"),
+        ).fetchone()
+    finally:
+        conn.close()
+    return siblings is None
+
+
+@functools.lru_cache(maxsize=1024)
+def box_family_is_tier_shaped(block_slug: str, attr_name: str) -> bool:
+    """True iff ``attr_name`` is a box-family attribute that has been folded
+    into the TIER-of-BOXES shape (Phase 2 tier-object migration, 2026-09-06):
+    ``{desktop:{top,right,bottom,left}, tablet:{...}, mobile:{...}}`` — ONE
+    attribute, not three physical sibling attributes.
+
+    WHY THIS EXISTS: ``box_family_for()`` alone cannot answer this. Both a
+    genuine per-tier FLAT box family (the legacy shape — three independent
+    physical attributes, e.g. un-migrated ``padding``/``paddingTablet``/
+    ``paddingMobile``, each ``box_family='padding'``) and an ALREADY-TIER-OF-
+    BOXES family (``contentBandPadding``, or ``padding`` once migrated) carry
+    the identical self-referential ``box_family`` value on their base
+    attribute — the column was never designed to distinguish the two shapes,
+    only to answer "does this attr belong to a box family at all".
+
+    ⛔ The absence of Tablet/Mobile sibling ROWS alone is NOT enough either —
+    proven by a real regression this predicate's first version caused:
+    ``sgs/container.borderWidth`` is self-referential (``box_family=
+    'borderWidth'``) and genuinely has no Tablet/Mobile siblings (it has
+    never been responsive, per its own block.json description — a base-only
+    box, not a per-device one), so a sibling-only check misclassifies it as
+    tier-shaped too. The real discriminator is the base attribute's
+    DECLARED DEFAULT: a tier-of-boxes attribute's default is always
+    ``{"desktop": {...}}`` (the migration codemod folds the old base default
+    as the desktop tier, matching ``contentBandPadding``'s existing shape,
+    D549); a genuinely non-tiered box's default has no ``desktop`` key at
+    all (``borderWidth``'s is bare ``{}``). Structural, DB-read, no name
+    literal (R-31-1).
+
+    Callers (the converter's dispatch/merge layer): when this returns True,
+    a per-tier declaration must write to the BASE attr name (never a
+    suffixed sibling name — it no longer exists) with its value wrapped
+    under the tier key, and merges accumulate by TIER, not by side.
+    """
+    if _TIER_SIBLING_SUFFIX_RE.search(attr_name):
+        return False
+    family = box_family_for(block_slug, attr_name)
+    if family is None or family != attr_name:
+        return False
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT default_value FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, attr_name),
+        ).fetchone()
+    finally:
+        conn.close()
+    if not row or not row[0]:
+        return False
+    try:
+        default = json.loads(row[0])
+    except (ValueError, TypeError):
+        return False
+    return isinstance(default, dict) and "desktop" in default
+
+
+@functools.lru_cache(maxsize=1024)
+def content_order_attr_for(block_slug: str) -> "str | None":
+    """The block's MEDIA/CONTENT area-order tier-object attr, or None.
+
+    A 2-region split composite (hero-shaped) declares ``grid-template-areas``
+    on its own root — a PRE-LAYER GRID concern (dispatch_table.py
+    ``_GRID_LAYOUT_PROPS``) — that swaps row/column order between device
+    tiers (e.g. mobile: media above content; desktop: content beside media).
+    That swap is a semantically DIFFERENT destination from
+    ``grid-template-columns``/``grid-template-rows``: it stores which region
+    reads first, not a track template.
+
+    DB-driven (R-31-1 — no per-block name literal): a block is eligible ONLY
+    when BOTH hold —
+      1. it declares GRID_AREA-layer attrs for BOTH a ``media`` and a
+         ``content`` ``css_element`` (the area-name vocabulary this block's
+         own schema already uses for its two split regions, e.g.
+         ``mediaBackground``/``contentBackground``); AND
+      2. it declares exactly one ``object``-typed attr whose
+         ``default_value`` JSON contains the literal enum member
+         ``"media-first"`` — the destination the order swap writes into.
+    Two or more candidate attrs → treated as none (ambiguous, honest gap
+    upstream) rather than a silent rowid pick, matching
+    ``attr_for_area_property``'s ambiguity discipline.
+
+    ⚠ Condition 2 keys on ``default_value`` (a schema DEFAULT), not a
+    declared enum column — there is no ``enum_values`` row for
+    ``splitContentOrder`` to key on instead (verified: NULL in
+    ``block_attributes`` at the time this was written). This is fragile if
+    a block's default ever changes shape (e.g. normalises to ``{}``) —
+    if this stops matching, re-point to the block's declared enum
+    (``enum_values`` on the attr, or its block.json ``enum``) rather than
+    silently deleting the eligibility check or the premise test that
+    pins it (``test_premise_hero_resolves_to_split_content_order``).
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        area_rows = conn.execute(
+            "SELECT DISTINCT css_element FROM block_attributes "
+            "WHERE block_slug = ? AND css_layer = 'GRID_AREA' "
+            "AND css_element IN ('media', 'content')",
+            (block_slug,),
+        ).fetchall()
+        area_tokens = {r[0] for r in area_rows}
+        if not {"media", "content"} <= area_tokens:
+            return None
+
+        candidates = conn.execute(
+            "SELECT attr_name FROM block_attributes "
+            "WHERE block_slug = ? AND attr_type = 'object' "
+            "AND default_value LIKE '%\"media-first\"%'",
+            (block_slug,),
+        ).fetchall()
+    finally:
+        conn.close()
+
+    if len(candidates) != 1:
+        return None
+    return candidates[0][0]
+
+
+@functools.lru_cache(maxsize=1024)
+def attr_for_grid_column_count(block_slug: str) -> "str | None":
+    """The block's grid COLUMN-COUNT destination attr, DB-driven (R-31-1).
+
+    ``grid.py``'s ``grid-template-columns`` branch derives an integer column
+    COUNT from a ``repeat(N, …)`` track-list, as a SECOND Write alongside the
+    raw template string. Historically this destination was a hardcoded literal
+    attr name (``"columns"``) — a block naming its count destination anything
+    else (e.g. ``sgs/nav-menu``'s ``listColumns``, a tier-object attr feeding
+    its in-drawer vertical-list grid) silently lost the value: ``"columns"``
+    doesn't exist on that block, so the write was dropped with no gap logged
+    (a plain KeyError-shaped miss, not even a tracked NO_DESTINATION).
+
+    A block opts in by declaring an explicit PSEUDO-property attrMap entry —
+    ``"css:grid-template-columns:count"`` — on the element that owns its grid
+    track, e.g. ``sgs/nav-menu``'s ``"bar"`` element:
+    ``"attrMap": {"css:gap": "gap", "css:grid-template-columns:count": "listColumns"}``.
+    This mirrors the existing pseudo-property convention already in this
+    codebase (``"css:color-gradient"`` is not a real CSS property either — it's
+    a manifest-level destination tag, resolved the same way).
+
+    Deliberately NOT routed through ``attr_for_property`` — that function's
+    entry gate queries ``property_suffixes`` for an EXACT ``css_property``
+    match and returns ``None`` immediately when no row exists, and
+    ``property_suffixes`` only ever holds real CSS property names. A pseudo
+    property never has a ``property_suffixes`` row by definition, so
+    ``attr_for_property`` can never resolve it — this queries
+    ``block_attributes`` directly instead, the same base-domain shape
+    ``_base_domain_attrs_for_css_property`` uses, but WITHOUT that helper's
+    root/self/wrapper ``css_element`` restriction (the count destination is
+    typically declared on the block's own GRID-layer child element, e.g.
+    nav-menu's ``bar`` — not necessarily the block's root).
+
+    Falls back to ``None`` when undeclared; the caller (``grid.py``) then
+    applies the ONE remaining hardcoded literal (``"columns"``) that every
+    pre-existing grid-bearing block relies on implicitly today — this
+    function adds a DB-driven alternative route, never a second hardcoded
+    name (R-31-1).
+
+    ≥2 matching attrs -> ``AmbiguousCssPropAttrError`` (fail loud, matches the
+    sibling column-first lookups' discipline), never a silent rowid pick.
+    """
+    if not block_slug:
+        return None
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT attr_name FROM block_attributes "
+            "WHERE block_slug = ? AND css_property = ? "
+            "AND (css_tier IS NULL OR css_tier = 'desktop') "
+            "AND css_state IS NULL "
+            "ORDER BY rowid",
+            (block_slug, "grid-template-columns:count"),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return None
+    finally:
+        conn.close()
+    attrs = tuple(r[0] for r in rows)
+    if len(attrs) > 1:
+        raise AmbiguousCssPropAttrError(
+            f"attr_for_grid_column_count({block_slug!r}): {len(attrs)} attrs "
+            f"match pseudo-property 'grid-template-columns:count' "
+            f"({', '.join(attrs)}); add a css_element disambiguator or remove "
+            "the duplicate registration."
+        )
+    return attrs[0] if attrs else None
 
 
 @functools.lru_cache(maxsize=1024)
@@ -1255,6 +1694,135 @@ def tag_identity_match(node_tag: str, allowed: "frozenset[str] | None") -> "str 
     return None
 
 
+@functools.lru_cache(maxsize=512)
+def _get_block_root_element(block_slug: str) -> "str | None":
+    """Read the element marked `isWrapper: true` from a block's block.json.
+
+    Returns the element key (e.g. 'frame' for sgs/before-after, 'media' for
+    sgs/media) if the block declares an isWrapper element, or None if not
+    found or if the block.json is inaccessible.
+
+    Used by the root-domain element guard in declared_attrs_for_css_property
+    and _base_domain_attrs_for_css_property to recognise each block's own
+    declared root element name (Task 1 2026-08-27), rather than checking
+    against a hardcoded list ('', 'root', 'self', 'wrapper'). This allows
+    blocks with custom-named wrappers (e.g. before-after's 'frame') to be
+    correctly gated as root-domain elements.
+
+    Defensive: if block.json is missing or unparseable, returns None (the
+    block's root element is not discoverable locally; the hardcoded list
+    fallback in the guard will still apply, ensuring no silent regressions).
+    Cached for performance (up to 512 blocks per session).
+    """
+    # Locate the block's block.json by block_slug (e.g. 'sgs/before-after'
+    # → 'before-after'). The block.json files are at:
+    # plugins/sgs-blocks/src/blocks/<block-name>/block.json
+    # This file is at: plugins/sgs-blocks/scripts/converter/db/db_lookup.py
+    # So we need to go up 4 levels to plugins/sgs-blocks, then into src/blocks.
+    if not block_slug or "/" not in block_slug:
+        return None
+    block_name = block_slug.split("/", 1)[1]  # 'sgs/before-after' → 'before-after'
+    # Navigate: db_lookup.py -> db -> converter -> scripts -> sgs-blocks -> src/blocks
+    block_json_path = (
+        Path(__file__).parent.parent.parent.parent / "src" / "blocks" / block_name / "block.json"
+    )
+    if not block_json_path.exists():
+        return None
+    try:
+        data = json.loads(block_json_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, json.JSONDecodeError):
+        return None
+    elements = ((data.get("supports") or {}).get("sgs") or {}).get("elements")
+    if not isinstance(elements, dict):
+        return None
+    # Return the first element marked with isWrapper: true.
+    for elem_name, elem_data in elements.items():
+        if isinstance(elem_data, dict) and elem_data.get("isWrapper") is True:
+            return elem_name
+    return None
+
+
+def _get_block_root_selector(block_slug: str) -> str:
+    """The block's own root/wrapper CSS selector, per the standard WordPress
+    block class-name convention (mirrors core's ``get_block_default_classname``):
+    ``.wp-block-`` + the slug with ``/`` replaced by ``-``. E.g.
+    ``sgs/before-after`` -> ``.wp-block-sgs-before-after``.
+
+    Pure string derivation — no block.json read, no DB query. Used ONLY to
+    disambiguate a block's CUSTOM ``isWrapper`` element name (e.g.
+    before-after's 'frame', media's 'media') from a same-named CHILD attr that
+    merely shares that string as its own ``css_element`` label (see
+    ``_root_domain_element_clause``).
+    """
+    return ".wp-block-" + block_slug.replace("/", "-")
+
+
+# The GENERIC root-domain element names — conventions any block's own root/
+# wrapper attr may carry REGARDLESS of what its block.json calls its isWrapper
+# element. No selector restriction applies to this route: a genuine root attr
+# may legitimately carry its OWN scoped BEM-shaped derived_selector (e.g.
+# sgs/container.maxWidth -> '.sgs-container__max') without that making it a
+# child attr — see _root_domain_element_clause's docstring.
+_OUTER_ROOT_ELEMENTS = ("", "root", "self", "wrapper")
+
+
+def _root_domain_element_clause(
+    block_slug: str, column: str = "css_element",
+) -> "tuple[str, list]":
+    """Build the SQL clause + ordered params for "is this attribute's
+    css_element within the block's root/self domain" — the guard shared by
+    ``declared_attrs_for_css_property``'s OUTER branch and
+    ``_base_domain_attrs_for_css_property``'s OUTER arm (Task 1, 2026-08-27
+    re-fix, replacing the broken v1 attempt in commit ca99f6aee).
+
+    Root-domain membership has two independent routes, and it is critical
+    they are NOT conflated (v1's bug was applying route 2's selector
+    restriction to route 1's rows too):
+
+      1. GENERIC — ``css_element`` is NULL/''/root/self/wrapper (the common
+         convention). NO selector restriction: e.g. sgs/container.maxWidth
+         (css_element='wrapper') carries derived_selector='.sgs-container__max'
+         — a BEM-shaped selector, but still root, because it's the block's OWN
+         scoped modifier selector, not a reference to a child DOM node.
+
+      2. CUSTOM ISWRAPPER NAME — the block declares some OTHER name as its
+         isWrapper element in block.json (e.g. before-after's 'frame', media's
+         'media') and THIS row's css_element equals that name. Because the
+         same custom name can ALSO be used for a genuinely CHILD-scoped attr
+         that merely happens to share the block's isWrapper string
+         (sgs/media.boxShadowColour's css_element is 'media' but its
+         derived_selector is '.sgs-media__img, .sgs-media__video' — two actual
+         child nodes, not the block's root), this route additionally requires
+         the row's derived_selector to be empty/NULL (no override -> defaults
+         to root) OR to equal the block's own root CSS selector VERBATIM
+         (``_get_block_root_selector`` — e.g. '.wp-block-sgs-before-after').
+
+    v1's bug: it tried to tell these apart with
+    ``derived_selector NOT LIKE '%.%__%'``. Two independent defects: (a) SQL
+    LIKE's bare ``_`` is a single-character WILDCARD, not a literal
+    underscore, so the pattern doesn't mean what it looks like it means; (b)
+    even correctly escaped, "contains a literal __" is not a reliable
+    root-vs-child discriminator at all — route 1 above is full of genuinely
+    root attrs whose OWN scoped selector contains '__'. Selector IDENTITY with
+    the block's real root selector is the only reliable signal, and it only
+    ever needs to gate route 2 (route 1 rows are already root by construction
+    of their generic css_element value).
+    """
+    params: list = [*_OUTER_ROOT_ELEMENTS]
+    generic_placeholders = ",".join("?" for _ in _OUTER_ROOT_ELEMENTS)
+    clause = f"({column} IS NULL OR {column} IN ({generic_placeholders}))"
+
+    block_root = _get_block_root_element(block_slug)
+    if block_root and block_root not in _OUTER_ROOT_ELEMENTS:
+        root_selector = _get_block_root_selector(block_slug)
+        clause += (
+            f" OR ({column} = ? AND (derived_selector IS NULL OR derived_selector = '' "
+            "OR derived_selector = ?))"
+        )
+        params.extend([block_root, root_selector])
+    return clause, params
+
+
 @functools.lru_cache(maxsize=4096)
 def declared_attrs_for_css_property(
     block_slug: str,
@@ -1276,8 +1844,20 @@ def declared_attrs_for_css_property(
         overloaded with OUTER/self.
       * ``css_layer=None`` → layer-agnostic (any layer), for ``attr_for_property`` /
         ``_css_prop_maps_to_typed_attr`` (their contract is first-by-rowid).
-      * ``css_layer='OUTER'|'CONTENT'|'GRID'|'GRID_AREA'`` → that layer OR a NULL
-        (self/OUTER-default) layer, for ``attr_for_layer_property``.
+      * ``css_layer='OUTER'`` → an explicit OUTER tag OR a NULL (self/OUTER-
+        default) layer, BOTH restricted to a root-domain css_element (the
+        layer name itself means "the block's own root/outer box" — an
+        explicit OUTER tag on a named child element is a data error, not a
+        legitimate case).
+      * ``css_layer='CONTENT'|'GRID'|'GRID_AREA'`` → an explicit tag for
+        that layer (ANY css_element — these layers legitimately own
+        non-root child elements when explicitly declared) OR a NULL
+        (self/OUTER-default) layer RESTRICTED to a root-domain css_element
+        (D873, 2026-08-27 — the NULL-fallback guard was OUTER-only before
+        this fix, so a NULL-layer child-scoped attr like sgs/product-card's
+        ctaBorderWidth [css_element='cta'] leaked into a CONTENT-layer
+        probe for the same css_property ahead of the block's genuine
+        OUTER-tagged root border). Used by ``attr_for_layer_property``.
       * ``ORDER BY rowid`` preserves determinism, matching the suffix fallback.
       * Callers decide the ambiguity policy on a ≥2 result (the layer resolver
         raises ``AmbiguousLayerAttrError``; the first-wins resolvers take [0]).
@@ -1327,40 +1907,85 @@ def declared_attrs_for_css_property(
                 (block_slug, css_property),
             ).fetchall()
         else:
-            # OUTER-layer element guard (2026-07-24, FR-31-22 cardPadding fix):
-            # a NULL css_layer row is treated as "self/OUTER-default" (docstring
-            # above) so an attr the classifier never explicitly tagged OUTER can
-            # still be found by this query — but ONLY when its css_element is
-            # ALSO root-domain (NULL/''/root/self/'wrapper' — 'wrapper' is the
-            # universal, block-agnostic marker extract-signatures.py writes for
-            # ANY block's own isWrapper root element, see _load_root_element +
-            # its "wrapper" normalisation note). Without this, a genuine LEAF
-            # sub-element attr sharing the same css_property with its css_layer
-            # left NULL (the leaf guard's documented, intentional value — e.g.
-            # sgs/product-card's css_element='cta' ctaPadding, routed entirely
-            # by the separate attr_for_area_property cross-node fold, which
-            # matches on css_element alone and never reads css_layer) is WRONGLY
-            # ALSO visible to an 'OUTER' query for the SAME css_property on the
-            # block's real root attr (cardPadding, css_element='wrapper'),
-            # raising a false AmbiguousLayerAttrError between two attrs that
-            # never actually compete in real dispatch (one resolved via this
-            # OUTER-layer resolver, the other via the unrelated AREA resolver).
-            # CONTENT/GRID/GRID_AREA queries are UNCHANGED (no element filter) —
-            # per the pre-existing design note above, those layers legitimately
-            # own non-root elements and this guard only applies structurally to
-            # OUTER (the block's own root/outer box).
-            _outer_element_clause = (
-                " AND (css_element IS NULL OR css_element IN ('', 'root', 'self', 'wrapper')) "
-                if css_layer == "OUTER" else ""
-            )
+            # NULL-layer element guard (2026-07-24, FR-31-22 cardPadding fix;
+            # 2026-08-27 Task 1, re-fixed same day per the reviewed v1 attempt
+            # in commit ca99f6aee; 2026-08-27 Task D873, generalised from
+            # OUTER-only to EVERY layer). A NULL css_layer row is treated as
+            # "self/OUTER-default" (docstring above) — an attr the classifier
+            # never explicitly tagged a layer for. That is only a safe
+            # fallback match when the attr's OWN css_element is ALSO
+            # root-domain, per ``_root_domain_element_clause`` (shared
+            # verbatim with ``_base_domain_attrs_for_css_property``'s
+            # identical OUTER arm — do NOT hand-roll a second copy of this
+            # predicate here). Without this, a genuine LEAF sub-element attr
+            # sharing the same css_property with its css_layer left NULL
+            # (the leaf guard's documented, intentional value — e.g.
+            # sgs/product-card's css_element='cta' ctaPadding/ctaBorderWidth/
+            # ctaBorderStyle/ctaColourBorder, routed entirely by the separate
+            # attr_for_area_property cross-node fold, which matches on
+            # css_element alone and never reads css_layer) is WRONGLY ALSO
+            # visible to a query for the SAME css_property on the block's
+            # real root attr.
+            #
+            # D873 (2026-08-27): this restriction previously applied ONLY to
+            # OUTER, so a CONTENT/GRID query's NULL-fallback branch matched
+            # ANY css_element unconditionally. sgs/product-card's
+            # ctaBorderWidth/ctaBorderStyle/ctaColourBorder (css_element=
+            # 'cta', css_layer=NULL) leaked into a CONTENT-layer
+            # border-width/style/color probe ahead of the correctly
+            # OUTER-tagged card border (borderWidth/borderStyle/borderColour,
+            # css_element='wrapper'), because content_band.py's
+            # ``_layer_priorities()`` tries CONTENT before OUTER for
+            # non-width/padding/gap-margin properties (border included) —
+            # the leaked child attr won the race and the card's own border
+            # never painted.
+            #
+            # The restriction's SHAPE differs by layer, and this split is
+            # LOAD-BEARING (proven by test_root_modifier_element_guard.py's
+            # synthetic fixtures, which fabricate a css_layer='OUTER' row on
+            # a NAMED-CHILD css_element specifically to prove OUTER excludes
+            # it even when EXPLICITLY tagged — an earlier version of this
+            # fix applied the guard to the NULL branch only for every layer,
+            # unifying the SQL shape, and that regressed those three tests):
+            #
+            #   * OUTER — root-domain is what the LAYER NAME MEANS: the
+            #     block's own root/outer box. The restriction applies to
+            #     BOTH branches of the OR (explicit ``css_layer='OUTER'``
+            #     AND the NULL fallback) — an explicit OUTER tag on a named
+            #     child element is a data error, not a legitimate case, and
+            #     must still be excluded.
+            #   * CONTENT / GRID — these layers legitimately own non-root
+            #     child elements WHEN EXPLICITLY TAGGED (e.g. sgs/hero's
+            #     contentWidth on css_element='content-band',
+            #     sgs/mega-aside's asidePadding on css_element='wrapper'
+            #     meaning ITS OWN wrapper not the block root,
+            #     sgs/nav-drawer's drawerPadding on css_element='body') —
+            #     the restriction applies ONLY to the NULL-fallback branch,
+            #     per "NULL = self/OUTER-default" (docstring above): an
+            #     UNTAGGED attr defaults toward being a root/self attr, so
+            #     it should only surface via the fallback when it actually
+            #     is root-domain. This is what closes the D873 leak without
+            #     touching CONTENT/GRID's already-working explicit-tag path.
+            _element_clause, _element_params = _root_domain_element_clause(block_slug)
+
+            if css_layer == "OUTER":
+                query_params = [block_slug, css_property, css_layer, *_element_params]
+                _layer_or_clause = (
+                    "(css_layer = ? OR css_layer IS NULL) AND (" + _element_clause + ")"
+                )
+            else:
+                query_params = [block_slug, css_property, css_layer, *_element_params]
+                _layer_or_clause = (
+                    "(css_layer = ? OR (css_layer IS NULL AND (" + _element_clause + ")))"
+                )
+
             rows = conn.execute(
                 "SELECT attr_name FROM block_attributes "
                 "WHERE block_slug = ? AND css_property = ? "
-                "AND (css_layer = ? OR css_layer IS NULL) "
-                + _outer_element_clause
+                "AND " + _layer_or_clause + " "
                 + _base_clause +
                 " ORDER BY rowid",
-                (block_slug, css_property, css_layer),
+                query_params,
             ).fetchall()
     except sqlite3.OperationalError:
         # css_property/css_layer column absent (pre-seed DB) → no declaration.
@@ -1389,6 +2014,14 @@ class AmbiguousCssPropAttrError(RuntimeError):
 # own root/self element" — the only elements attr_for_property routes for (per-child
 # elements are served by styling_content.py's derived_selector path, NOT this one).
 _BASE_ELEMENTS = ("", "root", "self")
+
+# NOTE: the wider OUTER-layer root-domain set (_OUTER_ROOT_ELEMENTS) and the
+# custom-isWrapper-name recognition it feeds into are defined once, earlier in
+# this module, alongside _get_block_root_element/_get_block_root_selector and
+# the shared ``_root_domain_element_clause`` helper both OUTER-layer guards in
+# this file now call — see that helper's docstring for the full mechanism
+# (Task 1, 2026-08-27, re-fixed same day per the reviewed v1 attempt in commit
+# ca99f6aee). Do not re-declare a second copy of this constant here.
 
 
 @functools.lru_cache(maxsize=4096)
@@ -1431,15 +2064,33 @@ def _base_domain_attrs_for_css_property(
     conn = sqlite3.connect(SGS_DB)
     try:
         placeholders = ",".join("?" for _ in _BASE_ELEMENTS)
+
+        # OUTER-layer element guard (2026-08-27, Task 1 / converter bug (b) fix,
+        # re-fixed same day per the reviewed v1 attempt in commit ca99f6aee):
+        # a css_layer='OUTER' row is admitted into the root/self domain ONLY when
+        # its OWN css_element is ALSO root-domain, per
+        # ``_root_domain_element_clause`` — shared verbatim with
+        # ``declared_attrs_for_css_property``'s identical OUTER branch (do NOT
+        # hand-roll a second copy of this predicate here). Before the original
+        # 2026-08-27 fix the OR'd `css_layer = 'OUTER'` arm carried NO
+        # css_element restriction at all, so a NAMED CHILD attr merely tagged
+        # css_layer='OUTER' was wrongly treated as a root-domain match.
+        # Verified live against the seeded DB (this module's connected
+        # instance, not a synthetic fixture — see
+        # test_root_modifier_element_guard.py for both the DB-dependent proof
+        # and a schema-independent synthetic proof of the predicate itself):
+        # sgs/hero.overlayGradient (css_element='overlay', background-image)
+        # is wrongly admitted without this guard, correctly excluded with it.
+        _element_clause, _element_params = _root_domain_element_clause(block_slug)
         rows = conn.execute(
             "SELECT attr_name FROM block_attributes "
             "WHERE block_slug = ? AND css_property = ? "
-            f"AND (css_element IS NULL OR css_element IN ({placeholders}) "
-            "OR css_layer = 'OUTER') "
+            f"AND ((css_element IS NULL OR css_element IN ({placeholders})) "
+            f"OR (css_layer = 'OUTER' AND ({_element_clause}))) "
             "AND (css_tier IS NULL OR css_tier = 'desktop') "
             "AND css_state IS NULL "
             "ORDER BY rowid",
-            (block_slug, css_property, *_BASE_ELEMENTS),
+            (block_slug, css_property, *_BASE_ELEMENTS, *_element_params),
         ).fetchall()
     except sqlite3.OperationalError:
         # css_element/css_state/css_tier columns absent (pre-seed DB) → no declaration.
@@ -1989,13 +2640,25 @@ if _SGS_DB_PRESENT_AT_IMPORT:
 #     each variant's DISCRIMINATING slots (set-difference vs sibling variants).
 #     Populated by /sgs-update Stage 1 from block.json supports.sgs.variants.
 #
+# ADDITIVE (2026-09-05, VALUE-aware variant discrimination): variant_slots
+# gains a nullable `slot_value` column. A CAPABILITY variant (hero, trust-bar,
+# testimonial, product-card — the variant genuinely enables different
+# ATTRIBUTES) keeps NULL here; presence-of-name was already the correct
+# signal and this column changes nothing for it. A PRESET variant (nav-drawer
+# — all variants share the same attribute vocabulary, differing only in
+# VALUES) gets the literal value that attribute-name discriminates BY,
+# extracted from the block's `variations.js` (never block.json, which only
+# lists names). `detect_variant` treats a non-NULL `slot_value` as "must
+# match this exact value", not merely "must be present" — see its docstring.
+#
 # This migration is pure schema (additive, no data). Population is a /sgs-update
 # responsibility, so there is no seed dict here (R-31-1 dict-as-seed N/A).
 #
 # Safe to call repeatedly. Runs at module load.
 def _migrate_variant_detection_schema() -> None:
     """Idempotent migration: add blocks.variant_attr column + create the
-    variant_slots table if absent. Schema only — no data seeding.
+    variant_slots table (+ its `slot_value` column) if absent. Schema only —
+    no data seeding.
 
     Safe to call repeatedly. Runs at module load.
     """
@@ -2013,6 +2676,9 @@ def _migrate_variant_detection_schema() -> None:
               PRIMARY KEY (block_slug, variant_value, unique_slot)
             )
         """)
+        vs_cols = {row[1] for row in conn.execute("PRAGMA table_info(variant_slots)").fetchall()}
+        if "slot_value" not in vs_cols:
+            conn.execute("ALTER TABLE variant_slots ADD COLUMN slot_value TEXT")
         conn.commit()
     except sqlite3.OperationalError:
         # DB read-only / locked / missing — soft-fail. Variant detection then
@@ -2025,6 +2691,139 @@ def _migrate_variant_detection_schema() -> None:
 # Run migration at module load (idempotent — safe to call repeatedly).
 if _SGS_DB_PRESENT_AT_IMPORT:
     _migrate_variant_detection_schema()
+
+
+# ----------------------------------------------------------------------------
+# Idempotent schema migration — variant_composition_slots (Task 2,
+# InnerBlocks-composition fingerprinting, 2026-09-05)
+# ----------------------------------------------------------------------------
+# Sibling table to variant_slots above, but for CHILD BLOCK SLUGS rather than
+# attribute (name, value) pairs: a variant's discriminating InnerBlocks
+# composition, extracted from `variations.js` by
+# `variant-value-extractor/extract-variation-values.js` (Task 1) and
+# populated by `/sgs-update` Stage 1 (Task 2) via set-difference over each
+# variant's `innerBlockSlugs`, exactly mirroring how variant_slots is
+# populated over attribute pairs.
+#
+# DELIBERATELY DUPLICATED in both this file and sgs-update-v2.py, for the
+# SAME REASON variant_slots's own schema-ensure is duplicated above: a
+# one-off writer script (`/sgs-update`) and this converter package don't
+# share a schema-migration import — see the block comment above
+# `_migrate_variant_detection_schema` for the full rationale. This is pure
+# schema (additive, no data); population is a `/sgs-update` responsibility.
+#
+# Safe to call repeatedly. Runs at module load.
+def _migrate_variant_composition_schema() -> None:
+    """Idempotent migration: create the `variant_composition_slots` table if
+    absent. Schema only — no data seeding.
+
+    Safe to call repeatedly. Runs at module load.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS variant_composition_slots (
+                block_slug TEXT NOT NULL,
+                variant_value TEXT NOT NULL,
+                unique_child_slug TEXT NOT NULL,
+                PRIMARY KEY (block_slug, variant_value, unique_child_slug)
+            )
+            """
+        )
+        conn.commit()
+    except sqlite3.OperationalError:
+        # DB read-only / locked / missing — soft-fail. Composition detection
+        # then simply has no rows to read (callers must treat absence as
+        # "no fingerprint", never an error).
+        pass
+    finally:
+        conn.close()
+
+
+# Run migration at module load (idempotent — safe to call repeatedly).
+if _SGS_DB_PRESENT_AT_IMPORT:
+    _migrate_variant_composition_schema()
+
+
+# ----------------------------------------------------------------------------
+# Idempotent schema migration — variant_composition_attr_slots
+# (child-ATTRIBUTE-VALUE composition fingerprinting, 2026-09-06)
+# ----------------------------------------------------------------------------
+# THIRD variant-discrimination table, sibling to `variant_slots` (the PARENT's
+# own attribute (name, value) pairs) and `variant_composition_slots` (the
+# parent's uniquely-nested child block SLUGS). This one keys on a nested
+# CHILD's own attribute value: `(child_slug, child_attr_name,
+# child_attr_value)`.
+#
+# WHY A THIRD TABLE RATHER THAN TWO NULLABLE COLUMNS ON
+# `variant_composition_slots`:
+#
+#   1. Different PRIMARY KEY. That table's PK is
+#      (block_slug, variant_value, unique_child_slug) — one row per
+#      discriminating slug. This signal needs several rows per (variant,
+#      child_slug) pair, one per discriminating attribute, so the PK must
+#      widen. SQLite cannot ALTER a PRIMARY KEY; widening it means rebuilding
+#      the table (create-copy-drop-rename) on a DB shared live across
+#      concurrent sessions, for zero behavioural gain.
+#   2. Different SCORING TIER. The slug signal is checked FIRST and, when it
+#      resolves, this one is never consulted (see `_composition_tiebreak`).
+#      Two signals scored in different tiers read far more honestly as two
+#      tables than as one table whose rows mean different things depending on
+#      whether two columns are NULL.
+#   3. PRECEDENT. `variant_slots` and `variant_composition_slots` are already
+#      separate sibling tables rather than one table with a discriminator
+#      column, for exactly this "different signal, different shape" reason.
+#
+# Populated by `/sgs-update` Stage 1
+# (`sgs-update-v2.py::_populate_variant_composition_attr_slots`) by
+# set-difference over each variant's `(child_slug, attr, canonical_value)`
+# triples, extracted from `variations.js` by
+# `variant-value-extractor/extract-variation-values.js` — the SAME
+# methodology as the two tables above. No block, child slug or attribute name
+# is named anywhere in code (R-31-1).
+#
+# `child_attr_value` is the canonical JSON form produced by
+# `_canon_slot_value`, matching `variant_slots.slot_value` exactly, so the
+# reader can compare an extracted value with a single string equality.
+#
+# DELIBERATELY DUPLICATED in both this file and sgs-update-v2.py, for the SAME
+# REASON the two schema-ensures above are — see the block comment above
+# `_migrate_variant_detection_schema`. Pure schema (additive, no data).
+#
+# Safe to call repeatedly. Runs at module load.
+def _migrate_variant_composition_attr_schema() -> None:
+    """Idempotent migration: create `variant_composition_attr_slots` if absent.
+
+    Schema only — no data seeding. Safe to call repeatedly; runs at module load.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS variant_composition_attr_slots (
+                block_slug TEXT NOT NULL,
+                variant_value TEXT NOT NULL,
+                child_slug TEXT NOT NULL,
+                child_attr_name TEXT NOT NULL,
+                child_attr_value TEXT NOT NULL,
+                PRIMARY KEY (block_slug, variant_value, child_slug, child_attr_name, child_attr_value)
+            )
+            """
+        )
+        conn.commit()
+    except sqlite3.OperationalError:
+        # DB read-only / locked / missing — soft-fail, identically to the two
+        # sibling migrations above. Detection then simply has no rows to read
+        # (absence is "no fingerprint", never an error).
+        pass
+    finally:
+        conn.close()
+
+
+# Run migration at module load (idempotent — safe to call repeatedly).
+if _SGS_DB_PRESENT_AT_IMPORT:
+    _migrate_variant_composition_attr_schema()
 
 
 # ----------------------------------------------------------------------------
@@ -2790,115 +3589,6 @@ def image_alt_companion_for(block_slug: str, image_attr: str) -> str | None:
 
 
 # ----------------------------------------------------------------------------
-# D3 — Attribute gap candidate helpers
-# ----------------------------------------------------------------------------
-
-def propose_attr_name(block_slug: str, css_property: str, source_class: str) -> str:
-    """Derive a sensible proposed attribute name for a CSS property that has no
-    matching typed attr on ``block_slug``.
-
-    Algorithm (DB-first per Rule 11):
-      1. Look up the CSS property in ``property_suffixes`` to get the canonical
-         suffix (e.g. ``letter-spacing`` → ``LetterSpacing``).
-      2. Parse ``source_class`` as SGS-BEM to extract the slot/element name
-         (e.g. ``.sgs-hero__label`` → element ``label``).
-      3. Resolve the element through ``slot_synonyms`` to a canonical slot
-         (e.g. ``label`` → ``label``).
-      4. Combine: ``{slot}{Suffix}`` (e.g. ``labelLetterSpacing``).
-
-    Fallback chain:
-      - If no suffix in DB → use camelCase of the CSS property itself.
-      - If no slot from BEM parse → use ``block`` (bare suffix on the block root).
-      - Strip any leading ``sgs-`` and the block name portion from the slot so
-        proposals use the slot short-form only (``label``, not ``hero-label``).
-    """
-    # Step 1: suffix from property_suffixes
-    conn = sqlite3.connect(SGS_DB)
-    try:
-        row = conn.execute(
-            "SELECT suffix FROM property_suffixes "
-            "WHERE css_property = ? AND css_property IS NOT NULL "
-            "ORDER BY rowid LIMIT 1",
-            (css_property,),
-        ).fetchone()
-    finally:
-        conn.close()
-
-    if row:
-        suffix = row[0]  # e.g. "LetterSpacing", "Colour", "FontSize"
-    else:
-        # Fallback: camelCase the CSS property ("letter-spacing" → "LetterSpacing")
-        parts = css_property.split("-")
-        suffix = parts[0] + "".join(p.title() for p in parts[1:])
-        # Capitalise first letter to match SGS naming convention (PascalCase suffix)
-        suffix = suffix[0].upper() + suffix[1:] if suffix else css_property
-
-    # Step 2+3: slot from BEM parse of source_class
-    bem = parse_sgs_bem(source_class.lstrip("."))
-    slot: str = ""
-    if bem and bem.element:
-        canonical = canonical_slot_for(bem.element)
-        slot = canonical if canonical else bem.element
-    elif bem and bem.block:
-        # Source class is a block root (no element) — slot is the block itself
-        slot = ""  # bare suffix on the block root: e.g. "LetterSpacing"
-
-    # Step 4: compose the proposed attr name
-    if slot:
-        # camelCase the slot (it's already lowercase from DB; capitalise first letter)
-        slot_camel = slot[0].lower() + slot[1:]
-        return f"{slot_camel}{suffix}"
-    # No slot — bare suffix form (rare: block-root styling attr)
-    # Lowercase first char to get camelCase: "LetterSpacing" → "letterSpacing"
-    return suffix[0].lower() + suffix[1:] if suffix else css_property
-
-
-def write_attribute_gap_candidate(
-    block_slug: str,
-    css_property: str,
-    raw_value: str,
-    source_class: str,
-    source_run_id: str,
-    proposed_attr: str | None = None,
-) -> None:
-    """Insert (or ignore duplicate) row into ``attribute_gap_candidates``.
-
-    Maps the FR6 idealised columns onto the actual table schema:
-      - ``attr_name``        ← proposed attribute name (derived via propose_attr_name)
-      - ``stem``             ← css_property  (repurposed: carries the CSS property)
-      - ``proposed_action``  ← context string with raw_value + source_class + run_id
-
-    UNIQUE constraint: ``(block_slug, attr_name)`` — same proposed attr on the
-    same block only inserts once regardless of how many times the run encounters it.
-    Different raw values or source classes for the SAME proposed attr are collapsed
-    (first-writer wins). Use INSERT OR IGNORE to enforce idempotency without errors.
-    """
-    if not proposed_attr:
-        proposed_attr = propose_attr_name(block_slug, css_property, source_class)
-
-    proposed_action = (
-        f"add attr: css={css_property} "
-        f"raw={raw_value!r} "
-        f"class={source_class} "
-        f"run={source_run_id}"
-    )
-
-    conn = sqlite3.connect(SGS_DB)
-    try:
-        conn.execute(
-            """
-            INSERT OR IGNORE INTO attribute_gap_candidates
-                (block_slug, attr_name, stem, proposed_action)
-            VALUES (?, ?, ?, ?)
-            """,
-            (block_slug, proposed_attr, css_property, proposed_action),
-        )
-        conn.commit()
-    finally:
-        conn.close()
-
-
-# ----------------------------------------------------------------------------
 # Legacy role lookup — kebab-semantic class → SGS slug (DB-driven)
 # D99 2026-05-29: queries `slots WHERE scope='section'` (was legacy_role_lookup).
 # The legacy_role_lookup table has been retired and its 16 rows migrated to
@@ -3034,7 +3724,9 @@ def has_scalar_media_attrs(block_slug: str) -> bool:
 
 
 def scalar_media_attr_for(block_slug: str, bem_element: str) -> str | None:
-    """Return the attr_name of the scalar-media attr on `block_slug` for `bem_element`.
+    """Return the attr_name of the scalar-media ANCHOR row on `block_slug` for
+    `bem_element` — a presence/eligibility gate, NOT necessarily the content
+    family's write-target stem.
 
     A 'scalar-media' attr is one where:
       - block_attributes.role = 'scalar-media'  (classification='styling-behaviour'
@@ -3042,12 +3734,23 @@ def scalar_media_attr_for(block_slug: str, bem_element: str) -> str | None:
       - Its canonical_slot aliases include `bem_element` (or canonical_slot itself
         equals `bem_element` after normalisation).
 
+    ⚠ Wave 7b re-anchor (2026-09-02): for sgs/hero this now returns
+    'splitMediaType', not 'splitImage'. Do NOT use the return value directly
+    as an image/video/svg content-family stem (the old assumption, which
+    happened to work only because the anchor and the image stem used to be
+    the same string by coincidence). Callers building a CONTENT write target
+    must resolve the family stem via `scalar_media_type_stem(block_slug,
+    media_kind)` instead, for every media kind including 'image' — this
+    function's only remaining job is "does a scalar-media anchor exist for
+    this BEM element at all", the truthy/None gate that decides whether
+    Branch A fires.
+
     The Mobile/Desktop distinction is the CALLER's job: this function returns the
-    **base** attr_name (e.g. 'splitImage', 'sideImage') — never the '+Mobile'
-    sibling.  The caller appends 'Mobile' when the BEM modifier is '--mobile'.
+    **base** (non-suffixed) anchor attr_name — never the '+Mobile' sibling. The
+    caller appends 'Mobile'/'Tablet' to whatever stem it actually needs to write.
 
     Returns:
-        attr_name string (e.g. 'splitImage') on a match, or None when the
+        attr_name string (e.g. 'splitMediaType') on a match, or None when the
         composite has no scalar-media attr at the given slot.
 
     Args:
@@ -3189,18 +3892,85 @@ def variant_attr_for(block_slug: str) -> str | None:
     return row[0] if row and row[0] else None
 
 
+def _canon_slot_value(value) -> str:
+    """Canonical string form of a variant discriminator's value.
+
+    MUST behave identically to `sgs-update-v2.py::_canon_slot_value` — one
+    writes `variant_slots.slot_value`, this reads it back to compare against
+    the draft's extracted attrs (`detect_variant`). Duplicated on purpose
+    (pure function, not a lookup dict — R-31-1 doesn't apply); see the
+    writer's copy for the reasoning.
+    """
+    try:
+        return json.dumps(value, sort_keys=True, separators=(",", ":"))
+    except (TypeError, ValueError):
+        return repr(value)
+
+
 @functools.lru_cache(maxsize=256)
 def _variant_slots_map(block_slug: str) -> tuple:
-    """Return ((variant_value, frozenset(discriminating slots)), ...) for a block.
+    """Return ((variant_value, frozenset((slot, slot_value_or_None))), ...).
 
-    Reads the variant_slots table (populated by /sgs-update via set-difference).
-    Cached per slug — the data is static for a pipeline run. Returns a tuple of
-    pairs (hashable, lru_cache-friendly); detect_variant consumes it.
+    Reads the variant_slots table (populated by /sgs-update). `slot_value` is
+    NULL for a capability-variant slot (name-only discrimination, unchanged
+    behaviour — `detect_variant` treats `None` as "presence is enough") and a
+    canonical JSON string for a preset-variant slot (value-aware
+    discrimination, 2026-09-05 — `detect_variant` then requires an exact
+    value match, not merely presence). Cached per slug — the data is static
+    for a pipeline run. Returns a tuple of pairs (hashable, lru_cache-friendly);
+    detect_variant consumes it.
     """
     conn = sqlite3.connect(SGS_DB)
     try:
         rows = conn.execute(
-            "SELECT variant_value, unique_slot FROM variant_slots WHERE block_slug = ?",
+            "SELECT variant_value, unique_slot, slot_value FROM variant_slots WHERE block_slug = ?",
+            (block_slug,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        # `slot_value` column absent (pre-migration DB) — soft-fail to the
+        # name-only shape rather than erroring the whole detector.
+        try:
+            rows = [
+                (v, s, None)
+                for v, s in conn.execute(
+                    "SELECT variant_value, unique_slot FROM variant_slots WHERE block_slug = ?",
+                    (block_slug,),
+                ).fetchall()
+            ]
+        except sqlite3.OperationalError:
+            rows = []
+    finally:
+        conn.close()
+    grouped: dict = {}
+    for variant_value, unique_slot, slot_value in rows:
+        grouped.setdefault(variant_value, set()).add((unique_slot, slot_value))
+    return tuple((v, frozenset(slots)) for v, slots in grouped.items())
+
+
+@functools.lru_cache(maxsize=256)
+def _variant_composition_slots_map(block_slug: str) -> tuple:
+    """Return ((variant_value, (unique_child_slug, ...)), ...).
+
+    Reads the `variant_composition_slots` table (populated by /sgs-update from
+    the JS variant-value extractor's `innerBlockSlugs` output — Task 1/2 of the
+    variant-composition-fingerprinting plan, 2026-09-05). Mirrors
+    `_variant_slots_map`'s query/cache shape exactly, but the composition
+    signal has no `slot_value` column — a discriminating child slug is a
+    NAME-only fact (this variant's InnerBlocks seed uniquely includes this
+    child block, full stop), so there's nothing analogous to preset-variant
+    value-matching here. Cached per slug — static for a pipeline run, same as
+    `_variant_slots_map`.
+
+    Soft-fails to an empty tuple when the table is absent (pre-migration DB) —
+    `detect_variant`'s composition tiebreak treats that as "no composition
+    signal available", falling through to today's attribute-only behaviour
+    exactly as it does when `child_slugs` itself is None.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT variant_value, unique_child_slug FROM variant_composition_slots "
+            "WHERE block_slug = ?",
             (block_slug,),
         ).fetchall()
     except sqlite3.OperationalError:
@@ -3208,9 +3978,47 @@ def _variant_slots_map(block_slug: str) -> tuple:
     finally:
         conn.close()
     grouped: dict = {}
-    for variant_value, unique_slot in rows:
-        grouped.setdefault(variant_value, set()).add(unique_slot)
-    return tuple((v, frozenset(slots)) for v, slots in grouped.items())
+    for variant_value, unique_child_slug in rows:
+        grouped.setdefault(variant_value, []).append(unique_child_slug)
+    return tuple((v, tuple(slugs)) for v, slugs in grouped.items())
+
+
+@functools.lru_cache(maxsize=256)
+def _variant_composition_attr_slots_map(block_slug: str) -> tuple:
+    """Return ((variant_value, ((child_slug, attr_name, canon_value), ...)), ...).
+
+    Reads `variant_composition_attr_slots` (populated by /sgs-update from the
+    JS variant-value extractor's per-child `attributes` output — the
+    child-ATTRIBUTE-VALUE composition signal, 2026-09-06). Third sibling to
+    `_variant_slots_map` (the parent's own attribute pairs) and
+    `_variant_composition_slots_map` (uniquely-nested child slugs); same
+    query/cache shape as both.
+
+    Unlike the slug map, this one IS value-aware — a shared child slug at a
+    DIFFERENT attribute value must score 0, exactly as `_slot_score` treats a
+    shared attribute name at a different value. `child_attr_value` is stored in
+    `_canon_slot_value`'s canonical JSON form, so scoring is one string
+    comparison.
+
+    Soft-fails to an empty tuple when the table is absent (pre-migration DB) —
+    the caller then behaves exactly as it does when no child attribute data was
+    supplied at all.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT variant_value, child_slug, child_attr_name, child_attr_value "
+            "FROM variant_composition_attr_slots WHERE block_slug = ?",
+            (block_slug,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        rows = []
+    finally:
+        conn.close()
+    grouped: dict = {}
+    for variant_value, child_slug, attr_name, attr_value in rows:
+        grouped.setdefault(variant_value, []).append((child_slug, attr_name, attr_value))
+    return tuple((v, tuple(triples)) for v, triples in grouped.items())
 
 
 @functools.lru_cache(maxsize=256)
@@ -3421,19 +4229,255 @@ def _slot_extracted(value: object) -> bool:
     return True
 
 
-def detect_variant(block_slug: str, populated_attrs: dict) -> str | None:
+def _slot_score(slot_value: "str | None", populated_attrs: dict, unique_slot: str) -> int:
+    """Score ONE discriminating slot against the draft's extracted attrs.
+
+    `slot_value is None` — a CAPABILITY-variant slot (name-only, unchanged
+    behaviour): presence of a meaningful value is the whole signal, worth 1.
+
+    `slot_value` set — a PRESET-variant slot (value-aware, 2026-09-05): the
+    extracted value must canonically EQUAL the stored value to score. This is
+    the fix for the bug this mechanism exists to close — a name shared by
+    every sibling variant (e.g. nav-drawer's `closeStyle`) must not score a
+    hit for the WRONG variant just because the name is present; a DIFFERENT
+    value at that name is worth 0, exactly the same as the name being absent
+    (weak/neutral, per the design brief — never a negative score, never a
+    hit).
+    """
+    actual = populated_attrs.get(unique_slot)
+    if not _slot_extracted(actual):
+        return 0
+    if slot_value is None:
+        return 1
+    return 1 if _canon_slot_value(actual) == slot_value else 0
+
+
+def _composition_attr_score(
+    triples: "tuple", child_blocks: "list[tuple[str, dict]]"
+) -> int:
+    """Score ONE variant's child-attribute discriminators against real children.
+
+    `triples` is that variant's `(child_slug, attr_name, canon_value)` rows;
+    `child_blocks` is the draft's recognised children as `(slug, attrs)` pairs.
+    A triple scores 1 when SOME child of that slug carries that attribute at
+    that exact canonical value — the same value-aware contract as `_slot_score`
+    for a preset-variant slot: a matching NAME at a different VALUE is worth 0,
+    identical to the attribute being absent (weak/neutral, never negative,
+    never a hit).
+
+    Set semantics on the child list: several children may share a slug (a
+    variant could nest two `sgs/button`s), so any one of them satisfying the
+    triple is enough — order and multiplicity carry no meaning here, exactly as
+    in the slug-set tiebreak above.
+    """
+    score = 0
+    for child_slug, attr_name, canon_value in triples:
+        for actual_slug, actual_attrs in child_blocks:
+            if actual_slug != child_slug or not isinstance(actual_attrs, dict):
+                continue
+            if attr_name not in actual_attrs:
+                continue
+            actual = actual_attrs[attr_name]
+            if not _slot_extracted(actual):
+                continue
+            if _canon_slot_value(actual) == canon_value:
+                score += 1
+                break
+    return score
+
+
+def _composition_attr_tiebreak(
+    block_slug: str,
+    tied_variants: "set[str] | frozenset[str]",
+    child_blocks: "list[tuple[str, dict]] | None",
+) -> str | None:
+    """TIER 2 of the composition tiebreak — a nested CHILD's own attribute VALUE.
+
+    WHY THIS TIER EXISTS (2026-09-06). Tier 1 (`_composition_tiebreak`'s slug
+    set-overlap) can only separate variants whose nested child SLUG SETS
+    differ. Two variants can legitimately nest the identical set of child block
+    types and still be structurally different, because one of those children is
+    configured differently — the measured case is `sgs/nav-drawer`'s
+    `two-column-editorial` vs `floating-capped-card`: both nest exactly
+    {`sgs/nav-menu`, `sgs/button`}. Slug-uniqueness has nothing to
+    discriminate on there; the child's attribute value does.
+
+    WHICH child attribute actually carries it (corrected 2026-09-06, task-5
+    review finding). The investigation that motivated this tier named
+    `listColumns`: `two-column-editorial` is indeed the only
+    variant across all seven whose nested `sgs/nav-menu` sets `listColumns`
+    (a genuinely rendered, CSS-extractable `grid-template-columns` rule —
+    `nav-menu/render.php`). BUT `listColumns` carries no Front-1 CSS routing —
+    `block_attributes.css_property` and `css_element` are both NULL — so a real
+    draft clone can never populate it and it can never contribute to this
+    score. What discriminates `two-column-editorial` TODAY is ONE attribute on
+    the same child: `itemFontSize` (64), unique across the seven variants and
+    genuinely routed (`font-size` on the `item` element). Its sibling
+    `itemFontSizeMobile` (40) does NOT help either — `sgs/nav-menu` declares no
+    such attribute at all (`itemFontSize` migrated to a tier OBJECT), so it is
+    a value WordPress discards on the editor surface, not a signal.
+    Seeding now skips unroutable triples outright
+    (`sgs-update-v2.py`'s `_child_attr_has_css_routing`) and db-consistency
+    Check #11 (`check_inert_composition_attr.py`) fails on any that reach the
+    table by another route, so an inert row can no longer silently suppress a
+    Check #3 ambiguity report. Giving `listColumns` real routing is OPEN work:
+    the count-vs-track-list destination choice in `converter/resolvers/grid.py`
+    (hardcoded to the literal attr name "columns") must become DB-driven first,
+    or the resolver would write the track-list STRING into an integer-count
+    attribute and render one column where the draft has two.
+
+    Same discipline as tier 1: TIEBREAKER ONLY, never additive, and it returns
+    the single tied variant with a STRICTLY higher score than every other tied
+    variant — None on no data, a tie, or an all-zero field, so the caller falls
+    through to its existing tie/miss behaviour.
+
+    R-31-1: every (child slug, attribute, value) triple comes from
+    `variant_composition_attr_slots`; no block, child or attribute is named in
+    this code.
+    """
+    if not child_blocks:
+        return None
+    tied = set(tied_variants)
+    if len(tied) < 2:
+        return None
+    attr_map = dict(_variant_composition_attr_slots_map(block_slug))
+    scores = sorted(
+        (
+            (_composition_attr_score(attr_map.get(variant_value, ()), child_blocks), variant_value)
+            for variant_value in tied
+        ),
+        reverse=True,
+    )
+    top_count, top_variant = scores[0]
+    if top_count == 0:
+        return None
+    if len(scores) > 1 and scores[1][0] == top_count:
+        return None
+    _trace(
+        "variant_detect_composition_attr_tiebreak_hit",
+        block_slug=block_slug,
+        tied=",".join(sorted(tied)),
+        variant=top_variant,
+    )
+    return top_variant
+
+
+def _composition_tiebreak(
+    block_slug: str,
+    tied_variants: "set[str] | frozenset[str]",
+    child_slugs: "list[str] | None",
+    child_blocks: "list[tuple[str, dict]] | None" = None,
+) -> str | None:
+    """Attempt to break an attribute-score tie using InnerBlocks composition.
+
+    TIEBREAKER ONLY (variant-composition-fingerprinting plan, Task 3,
+    2026-09-05) — never additive, never a way to detect a variant that the
+    attribute signal didn't already narrow to a tie among `tied_variants`.
+    Scoring is SET-OVERLAP membership (`len(variant_slugs & set(child_slugs))`),
+    NOT an exact-sequence match: the walker's assembled child order reflects
+    DOM order, which need not match a variant template's declaration order, so
+    order isn't a meaningful part of "which variant is this" — only WHICH
+    children are present is.
+
+    Returns the single tied variant with a strictly-higher composition score
+    than every other tied variant, or None when composition data is
+    unavailable, still ties, or every tied variant scores 0 (no signal) — the
+    caller falls through to today's existing tie/miss behaviour in every one
+    of those cases.
+
+    TWO TIERS, IN ORDER (2026-09-06):
+
+      TIER 1 — child SLUG uniqueness (`child_slugs`, unchanged). Whenever it
+      resolves, that answer is returned and tier 2 is never consulted, so this
+      extension cannot change any result the slug signal already produced.
+
+      TIER 2 — a nested child's own ATTRIBUTE VALUE (`child_blocks`, see
+      `_composition_attr_tiebreak`). Reached only when tier 1 has nothing to
+      discriminate on — the identical-child-slug-set case. Requires the
+      caller to pass the children's real extracted attributes; a caller
+      passing only `child_slugs` gets exactly the pre-2026-09-06 behaviour.
+    """
+    tied = set(tied_variants)
+    if len(tied) < 2:
+        return None
+    if child_slugs:
+        comp_map = dict(_variant_composition_slots_map(block_slug))
+        input_slugs = set(child_slugs)
+        comp_scores = sorted(
+            (
+                (len(set(comp_map.get(variant_value, ())) & input_slugs), variant_value)
+                for variant_value in tied
+            ),
+            reverse=True,
+        )
+        top_comp_count, top_comp_variant = comp_scores[0]
+        if top_comp_count > 0 and not (
+            len(comp_scores) > 1 and comp_scores[1][0] == top_comp_count
+        ):
+            _trace(
+                "variant_detect_composition_tiebreak_hit",
+                block_slug=block_slug,
+                tied=",".join(sorted(tied)),
+                variant=top_comp_variant,
+            )
+            return top_comp_variant
+    return _composition_attr_tiebreak(block_slug, tied, child_blocks)
+
+
+def detect_variant(
+    block_slug: str,
+    populated_attrs: dict,
+    child_slugs: "list[str] | None" = None,
+    child_blocks: "list[tuple[str, dict]] | None" = None,
+) -> str | None:
     """Detect a block's variant from the draft's extracted attrs THIS run.
 
-    For each variant, count how many of its DISCRIMINATING slots (variant_slots)
-    were EXTRACTED into `populated_attrs` this run (presence of a meaningful
-    value per _slot_extracted — NOT the block's stored attrs). Return the variant
-    with the strictly-highest count.
+    For each variant, sum `_slot_score` across its DISCRIMINATING slots
+    (variant_slots) against `populated_attrs` this run (extracted THIS run —
+    NOT the block's stored attrs). Return the variant with the
+    strictly-highest score.
+
+    A capability-variant slot (`slot_value IS NULL`) scores on PRESENCE alone,
+    identical to pre-2026-09-05 behaviour. A preset-variant slot (`slot_value`
+    set) scores only on an EXACT value match — a shared name at a different
+    value contributes 0, never a false hit (see `_slot_score`).
+
+    `child_slugs` (variant-composition-fingerprinting plan, Task 3, 2026-09-05)
+    is the OPTIONAL recognized-child-slug list for THIS draft node (assembled
+    by `assembly.py` before this call) — default `None` so every caller that
+    doesn't pass it (today, none do) is byte-identical to pre-Task-3 behaviour.
+    When supplied, it is consulted ONLY as a tiebreaker (see
+    `_composition_tiebreak`), in two places:
+
+      1. A 0-0(-0...) tie: `_variant_slots_map` only returns rows for variants
+         that HAVE discriminating attrs at all — a variant with NONE (e.g.
+         nav-drawer's `split-zone-serif`/`two-column-editorial`, whose every
+         attribute value duplicates a sibling's) never appears in `scores` in
+         the first place, so it can't even be a candidate for the ordinary
+         tie check below. Composition can still discriminate these, so the
+         candidate pool here is widened to every DECLARED variant
+         (`declared_variant_values`), not just the ones `variant_slots` knows
+         about.
+      2. The ordinary tie check (>=2 variants matched, same top score >0):
+         candidates are exactly the variants tied at that top score, per the
+         existing ambiguity guard.
+
+    `child_blocks` (child-attribute-value composition signal, 2026-09-06) is
+    the OPTIONAL `[(child_slug, child_attrs_dict), ...]` list for the same
+    children, carrying each recognised child's own extracted attributes rather
+    than just its slug. It feeds TIER 2 of the composition tiebreak, consulted
+    only when the tier-1 slug signal cannot discriminate — the case where two
+    variants nest the identical set of child block types and differ only in how
+    one of those children is configured (`sgs/nav-drawer`'s
+    `two-column-editorial`). Default `None` keeps every caller that doesn't
+    pass it byte-identical to pre-2026-09-06 behaviour.
 
     Returns None when:
       - the block declares no variant_slots, or
-      - no variant scored above zero (nothing matched), or
-      - the top score is a tie between >=2 variants (ambiguous — leave the
-        block's default rather than guess).
+      - no variant scored above zero and composition didn't resolve it, or
+      - the top score is a tie between >=2 variants and composition didn't
+        resolve it either (ambiguous — leave the block's default rather than
+        guess).
 
     R-31-1 (DB-driven, no slug literal).
     """
@@ -3442,17 +4486,33 @@ def detect_variant(block_slug: str, populated_attrs: dict) -> str | None:
         return None
     scores = sorted(
         (
-            (sum(1 for slot in slots if _slot_extracted(populated_attrs.get(slot))), variant_value)
+            (
+                sum(_slot_score(slot_value, populated_attrs, unique_slot) for unique_slot, slot_value in slots),
+                variant_value,
+            )
             for variant_value, slots in variants
         ),
         reverse=True,
     )
     top_count, top_variant = scores[0]
     if top_count == 0:
+        # See docstring point 1 — every declared variant is a candidate here,
+        # not just the ones with variant_slots rows (those all scored 0 too,
+        # but a variant absent from `variants` altogether is equally at 0 and
+        # must not be excluded from the composition tiebreak).
+        resolved = _composition_tiebreak(
+            block_slug, declared_variant_values(block_slug), child_slugs, child_blocks
+        )
+        if resolved is not None:
+            return resolved
         _trace("variant_detect_miss", block_slug=block_slug, reason="no_slots_matched")
         return None
     # Ambiguity guard: a tie at the top means we cannot disambiguate → leave default.
     if len(scores) > 1 and scores[1][0] == top_count:
+        tied_names = {v for cnt, v in scores if cnt == top_count}
+        resolved = _composition_tiebreak(block_slug, tied_names, child_slugs, child_blocks)
+        if resolved is not None:
+            return resolved
         tied = ",".join(v for cnt, v in scores if cnt == top_count)
         _trace("variant_detect_tie", block_slug=block_slug, top_count=top_count, tied=tied)
         return None
@@ -5044,12 +6104,157 @@ def resolve_slug_from_bem(sgs_classes: list[str]) -> str | None:
 
 
 # ----------------------------------------------------------------------------
+# fx_attr_roster — the FULL fx* attribute contract (name, data-attr, type)
+# Built 2026-09-04 (D951/D952-adversarial-council fix). Two canonical,
+# already-maintained sources, combined — no hand-authored duplicate:
+#   - includes/fx-attributes.php FX_ATTR_MAP: attr_name -> rendered
+#     data-attribute name (Spec 38 §11.2). This is the file
+#     scripts/db-consistency/check-fx-list-drift.py already gate-enforces
+#     against fx.js, so it is guaranteed current — never derive a data-attr
+#     name mechanically (kebab-casing an attr name) when this exists; several
+#     real names are irregular (fxPathRotate -> data-sgs-fx-motion-path-
+#     rotate, fxFieldType -> data-sgs-fx-field, not a mechanical kebab of the
+#     attr name at all).
+#   - includes/extension-attributes.generated.php: attr_name -> real JS type
+#     (string/number/boolean/array), build-generated by
+#     scripts/generate-extension-attributes.js FROM the actual fx.js
+#     attribute declarations — not re-derived or guessed here.
+# Prior to this fix, the cloning-lift's writer (_seed_missing_fx_attr_rows,
+# sgs-update-v2.py) only knew about 29 of fx.js's ~79 registered fx* attrs
+# (via a DIFFERENT, narrower map — seed-motion-fx-registry.py's
+# FX_ATTR_CSS_PROPERTY, which exists for css_property classification, not as
+# an attribute roster) and seeded every row as attr_type='string' regardless
+# of the real JS type. Both were adversarial-council findings (Cynic;
+# Spec-Lawyer; Ship-PM/Verification-Skeptic independently on the type bug).
+# ----------------------------------------------------------------------------
+
+_FX_ATTRIBUTES_PHP = (
+    Path(__file__).resolve().parents[3] / "includes" / "fx-attributes.php"
+)
+_EXTENSION_ATTRS_GENERATED_PHP = (
+    Path(__file__).resolve().parents[3]
+    / "includes" / "extension-attributes.generated.php"
+)
+
+_FX_MAP_ENTRY_RE = re.compile(r"'(\w+)'\s*=>\s*'(data-sgs-[\w-]+)'")
+_EXT_ATTR_TYPE_RE = re.compile(r"'(\w+)'\s*=>\s*array\(\s*'type'\s*=>\s*'(\w+)'")
+
+
+@functools.lru_cache(maxsize=1)
+def fx_attr_roster() -> dict[str, dict[str, str]]:
+    """Return {attr_name: {"data_attr": "data-sgs-...", "type": "string"|...}}
+    for every attribute FX_ATTR_MAP declares (the full fx* contract), typed
+    from extension-attributes.generated.php. Missing type defaults to
+    'string' (matches the prior uniform behaviour, only now the exception
+    rather than the rule) — this can only happen if a name is in FX_ATTR_MAP
+    but was somehow never generated into the JS-attrs artefact, which would
+    itself indicate a drift the existing check-fx-list-drift.py gate should
+    catch.
+
+    Soft-optional like the sibling loaders in this module: a missing/
+    unreadable PHP file degrades to an empty/partial roster rather than
+    hard-failing an unrelated caller.
+    """
+    data_attrs: dict[str, str] = {}
+    try:
+        text = _FX_ATTRIBUTES_PHP.read_text(encoding="utf-8")
+        for name, data_attr in _FX_MAP_ENTRY_RE.findall(text):
+            data_attrs[name] = data_attr
+    except Exception as exc:  # noqa: BLE001
+        _trace("db_lookup_miss", lookup="fx_attr_roster",
+               reason=f"FX_ATTR_MAP unreadable: {exc}")
+
+    types: dict[str, str] = {}
+    try:
+        text = _EXTENSION_ATTRS_GENERATED_PHP.read_text(encoding="utf-8")
+        for name, typ in _EXT_ATTR_TYPE_RE.findall(text):
+            types[name] = typ
+    except Exception as exc:  # noqa: BLE001
+        _trace("db_lookup_miss", lookup="fx_attr_roster",
+               reason=f"extension-attributes.generated.php unreadable: {exc}")
+
+    roster = {
+        name: {"data_attr": data_attr, "type": types.get(name, "string")}
+        for name, data_attr in data_attrs.items()
+    }
+
+    # fxDisableTablet/fxDisableMobile are DELIBERATELY absent from
+    # FX_ATTR_MAP's generic loop (fx-attributes.php:726-735, D446 Task 15) —
+    # a plain "value or absent" loop can't distinguish a real `false` from
+    # "unset", so these two booleans render via their own branch:
+    # `data-sgs-fx-disable-tablet="1"` / `data-sgs-fx-disable-mobile="1"`.
+    # Added explicitly here (not regex-derivable from FX_ATTR_MAP) so the
+    # cloning lift can still recognise them on a draft.
+    for _name, _data_attr in (
+        ("fxDisableTablet", "data-sgs-fx-disable-tablet"),
+        ("fxDisableMobile", "data-sgs-fx-disable-mobile"),
+    ):
+        if _name not in roster:
+            roster[_name] = {
+                "data_attr": _data_attr,
+                "type": types.get(_name, "boolean"),
+            }
+
+    return roster
+
+
+# ----------------------------------------------------------------------------
 # Helper 2 — lift_behavioural_attrs
 # Spec 22 §FR-31-2 — scalar attr lifting (NULL equivalent_block only)
 # ----------------------------------------------------------------------------
 
-def lift_behavioural_attrs(node: object, slug: str) -> dict:
-    """Return a dict of scalar block attrs inferred from node's DOM attributes and classes.
+def _coerce_lifted_value(value: object, attr_type: "str | None") -> object:
+    """Coerce a raw HTML attribute string to `attr_type`'s real Python shape
+    before it is written into an emitted block's attrs (D952-adversarial-
+    council fix, 2026-09-04 — Ship-PM + Verification-Skeptic, independently).
+
+    A DOM attribute value is ALWAYS a string (`data-sgs-fx-scrub="1.5"`).
+    Left uncoerced, a 'number'/'boolean'-typed attr round-trips as the
+    literal JSON STRING `"1.5"`/`"true"` in the emitted block comment. Real
+    render code reads it back with a STRICT PHP comparison
+    (`includes/fx-attributes.php`: `true === ( $attrs['fxDisableTablet'] ??
+    false )`) — a string never satisfies that, so a client's "don't run
+    this on mobile" setting would silently not apply. Falls back to the
+    original string on any parse failure (defensive — never crashes the
+    walk over a malformed draft value; the attr is still lifted, just
+    unconverted, which matches the PRE-fix behaviour rather than dropping
+    it).
+    """
+    if not isinstance(value, str):
+        return value
+    if attr_type == "boolean":
+        low = value.strip().lower()
+        if low in ("1", "true"):
+            return True
+        if low in ("0", "false"):
+            return False
+        return value
+    if attr_type == "number":
+        try:
+            as_float = float(value)
+            return int(as_float) if as_float.is_integer() else as_float
+        except (ValueError, TypeError):
+            return value
+    return value
+
+
+def _kebab_to_camel(name: str) -> str:
+    """Convert a kebab-case remainder (`fx-trigger`) to camelCase (`fxTrigger`).
+
+    Universal helper for matching a DOM `data-sgs-<kebab>` attribute against a
+    block's camelCase attr names — used by `lift_behavioural_attrs` section
+    (a); not fx-specific (R-31-9). A remainder with no hyphen is returned
+    unchanged.
+    """
+    parts = name.split("-")
+    if len(parts) == 1:
+        return name
+    return parts[0] + "".join(p[:1].upper() + p[1:] for p in parts[1:] if p)
+
+
+def lift_behavioural_attrs(node: object, slug: str) -> "tuple[dict, list[tuple[str, str]]]":
+    """Return (attrs, skipped) — scalar block attrs inferred from node's DOM
+    attributes and classes, plus a Rule-4 skip-with-reason list.
 
     # TODO: FR-31-2 scalar lift — refine in Pass 2 as walker discovers attrs that
     # need lifting beyond the simple cases handled here. Current implementation
@@ -5058,16 +6263,37 @@ def lift_behavioural_attrs(node: object, slug: str) -> dict:
     # Array attrs (FR-31-2.5) and equivalent_block-routed attrs (FR-31-2.1) are
     # walker concerns — this helper does NOT lift those.
 
+    ⛔ Rule 4 (CLAUDE.md's 7 non-negotiable rules — NO SKIPPING): "every draft
+    class's content + CSS transfers to the clone, OR is reported as
+    skipped-with-reason". Before this (D949-D953), a `data-sgs-fx-*` marker
+    the fx grammar genuinely recognises (present in `fx_attr_roster()`) but
+    with no destination on THIS resolved block (e.g. an effect param the
+    block doesn't support) was silently absent — a live instance of the
+    exact violation Rule 4 exists to catch. Added 2026-09-04: when the fx
+    reverse lookup recognises the data-attribute name but the target attr
+    isn't in `attrs` for this slug, it is recorded in `skipped` instead of
+    silently dropped. A non-fx `data-sgs-*` attribute that doesn't resolve
+    via the generic kebab guess is NOT flagged here — it may legitimately be
+    an author's unrelated custom marker, not a known grammar gap; only a
+    RECOGNISED-but-unrouted fx attribute is a genuine skip.
+
     Args:
         node: BeautifulSoup Tag (or any object with .get() and .get('class') interface)
         slug: Resolved SGS block slug (e.g. 'sgs/hero')
 
     Returns:
-        dict of attr_name → value for scalar behavioural attrs that can be
-        inferred from the node without requiring content extraction.
-        Empty dict when no scalar attrs are found.
+        (attrs, skipped) — `attrs` is attr_name → value for scalar behavioural
+        attrs inferred from the node without requiring content extraction
+        (empty dict when none found). `skipped` is a list of (where, detail)
+        pairs, each a `data-sgs-fx-*` marker the grammar recognises but this
+        block has no destination for (empty list when none found) — the
+        caller is responsible for routing these through `ContentGap`/
+        `content_gap_collector` (kept out of this module: its own docstring
+        describes it as pure "DB-backed canonical lookups", and
+        `content_gap_collector` lives in the services layer, one layer up).
     """
     result: dict = {}
+    skipped: list[tuple[str, str]] = []
 
     # ---- (a) Explicit data-sgs-X="Y" attributes ----
     # Mockup authors (or the pipeline's Stage 4 Playwright pass) may annotate
@@ -5082,20 +6308,63 @@ def lift_behavioural_attrs(node: object, slug: str) -> dict:
     except Exception:
         node_attrs = {}
 
+    # Authoritative reverse lookup for the fx* contract specifically
+    # (full `data-sgs-fx-...` string -> real attr name), sourced from
+    # FX_ATTR_MAP — several real names are irregular and do NOT mechanically
+    # kebab-convert (`fxPathRotate` -> `data-sgs-fx-motion-path-rotate`,
+    # `fxFieldType` -> `data-sgs-fx-field`). Checked before the generic
+    # kebab guess below, which stays as the universal fallback for any
+    # non-fx `data-sgs-*` attribute (R-31-9 — this helper is not fx-only).
+    _fx_reverse = {v["data_attr"]: k for k, v in fx_attr_roster().items()}
+
     for html_attr, value in node_attrs.items():
         if not isinstance(html_attr, str):
             continue
         if html_attr.startswith("data-sgs-"):
-            attr_name = html_attr[len("data-sgs-"):]
+            raw_remainder = html_attr[len("data-sgs-"):]
+            # A DOM data-attribute is conventionally kebab-case
+            # (`data-sgs-fx-trigger`) while the block attr it targets is
+            # camelCase (`fxTrigger`) — try the fx roster's exact mapping
+            # first, then the literal remainder (covers an author who
+            # already writes `data-sgs-fxTrigger`), then the kebab->camelCase
+            # conversion as a last resort. Fixed 2026-09-04 (FR-38-22
+            # investigation): before this, ANY kebab-named data-sgs-*
+            # attribute silently failed to lift — not just fx's; and even
+            # after that first fix, several real fx attr names still
+            # mismatched because they are not a mechanical kebab of the
+            # attr name at all (adversarial-council, Cynic finding).
+            candidates = (
+                _fx_reverse.get(html_attr),
+                raw_remainder,
+                _kebab_to_camel(raw_remainder),
+            )
+            attr_name = next((c for c in candidates if c and c in attrs), None)
             # Only lift if the attr exists on this block AND is scalar (not array)
-            if attr_name in attrs and attrs[attr_name].get("attr_type") != "array":
+            if attr_name is not None and attrs[attr_name].get("attr_type") != "array":
                 # Only lift if equivalent_block_for returns None (scalar, not block-equiv)
                 if equivalent_block_for(slug, attr_name) is None:
                     # Value may be a list when BS4 parses multi-value attrs; take first
                     lifted_val = value[0] if isinstance(value, list) else value
+                    lifted_val = _coerce_lifted_value(
+                        lifted_val, attrs[attr_name].get("attr_type")
+                    )
                     result[attr_name] = lifted_val
                     _trace("scalar_lift", slug=slug, attr=attr_name,
                            source="data-sgs-attr", value=lifted_val)
+            elif html_attr in _fx_reverse:
+                # Rule 4 (CLAUDE.md NO-SKIPPING): the fx grammar genuinely
+                # recognises this data-attribute (it's in FX_ATTR_MAP), but
+                # no candidate resolved to a real attr on THIS block — either
+                # `attr_name` stayed None (block doesn't declare this fx
+                # attr) or it resolved but is array-typed (shouldn't happen
+                # for fx — defensive). Report, don't silently drop.
+                fx_name = _fx_reverse[html_attr]
+                skipped.append((
+                    html_attr,
+                    f"fx grammar attribute '{fx_name}' recognised but "
+                    f"'{slug}' has no matching block_attributes row for it "
+                    "— not fx-capable for this effect, or not yet seeded.",
+                ))
 
     # ---- (b) sgs-block--modifier class patterns ----
     # A modifier class like `sgs-cta-section--large` carries potential attr info.
@@ -5142,7 +6411,7 @@ def lift_behavioural_attrs(node: object, slug: str) -> dict:
                            source="modifier-class", value=modifier)
                     break
 
-    return result
+    return result, skipped
 
 
 # ----------------------------------------------------------------------------
@@ -5170,14 +6439,17 @@ def _emit_wp_block_markup(slug: str, attrs: dict, children: list[str]) -> str:
     is invoked by emit_sgs_container_wrapping for a non-container inner block
     such as sgs/star-rating (2026-06-02 fix).
     """
-    import json as _json
+    from converter.block_serialization import serialize_block_attributes
     clean = {
         k: v for k, v in attrs.items()
         if v not in (None, "", [], {}) and not k.startswith("_")
     }
     attr_json = ""
     if clean:
-        attr_json = " " + _json.dumps(clean, separators=(",", ":"), ensure_ascii=False)
+        # SECURITY: WP-core-faithful escaping, never plain json.dumps — an attr value
+        # containing "-->" would otherwise close this comment early and inject raw
+        # HTML into stored post_content (stored-XSS class). See block_serialization.
+        attr_json = " " + serialize_block_attributes(clean)
     inner_str = "\n".join(children) if children else ""
     if not inner_str:
         # Self-close when no inner content — matches WP save()=null contract.
@@ -5580,15 +6852,59 @@ def nested_attr_named(
     return None
 
 
+def _variant_modifier_tiebreak(
+    block_slug: str,
+    candidates: list[tuple[str, str | None, str | None, str | None]],
+    modifiers: tuple[str, ...],
+) -> tuple[str, str | None, str | None, str | None] | None:
+    """Disambiguate a same-tier `content_attr_for_element` alias tie using
+    `variant_slots` (FR-31-20) — GENERAL, not product-card-specific.
+
+    `candidates` are same-match-tier content-attr rows that all alias one
+    draft BEM element token (e.g. `featuredTag`/`trialTag` both alias 'tag').
+    `modifiers` are the BEM modifiers the draft's ACTUAL element carries
+    (e.g. `('featured',)`). A candidate wins when its `attr_name` is the
+    `unique_slot` `variant_slots` declares for a `variant_value` matching one
+    of `modifiers` case-insensitively — i.e. the block's own DB-declared
+    variant-discrimination fact says "this attr is what names the
+    `--featured` variant", which is exactly the disambiguating signal the
+    draft's modifier supplies. Returns None (no change) when zero or 2+
+    candidates match — an unresolved ambiguity is never guessed at; the
+    caller keeps its existing first-by-rowid default.
+
+    R-31-1: reads `variant_slots` only, no per-block/per-attr literal.
+    """
+    if not modifiers:
+        return None
+    mods_lower = {m.lower() for m in modifiers if m}
+    if not mods_lower:
+        return None
+    slot_to_variants: dict[str, set[str]] = {}
+    for variant_value, slots in _variant_slots_map(block_slug):
+        for slot_name, _slot_value in slots:
+            if slot_name:
+                slot_to_variants.setdefault(slot_name, set()).add(
+                    str(variant_value).lower()
+                )
+    matches = [
+        row for row in candidates
+        if mods_lower & slot_to_variants.get(row[0], set())
+    ]
+    if len(matches) == 1:
+        return matches[0]
+    return None  # 0 or 2+ matches — genuinely ambiguous, do not guess
+
+
 def content_attr_for_element(
-    block_slug: str, bem_element: str, tier: str | None = None
+    block_slug: str, bem_element: str, tier: str | None = None,
+    modifiers: tuple[str, ...] = (),
 ) -> tuple[str, str | None, str | None, str | None] | None:
     """Resolve a draft BEM __element token to `block_slug`'s content attr.
 
     Spec 31 §13.3 FR-31-2.6: the per-attr content walk resolves each draft
     element to the composite's own typed attr by MATCH STRENGTH, not DB row
-    order. Ranking (lower match-tier wins; first DB row breaks a same-tier
-    tie):
+    order. Ranking (lower match-tier wins; a same-tier tie is broken by
+    ``modifiers`` — see below — before falling back to the first DB row):
 
       Match-tier 0 (direct/exact): the attr's `canonical_slot` == element
               token, OR the attr's own `attr_name` == element token.
@@ -5596,9 +6912,26 @@ def content_attr_for_element(
               the element-scope `slots` row named by the attr's
               `canonical_slot`.
 
-    Only content-bearing roles enter (FR-31-2.2 positive allowlist:
-    'text-content', 'identity', 'image-object', 'content', 'rating') — styling
-    and behaviour attrs never resolve as a content destination.
+    ``modifiers`` (added — general BEM-modifier disambiguation, Task 3
+    2026-09-05): when a same-tier alias match is AMBIGUOUS (2+ candidate
+    attrs share the tier, e.g. `sgs/product-card`'s `featuredTag` and
+    `trialTag` both alias element token 'tag' via `canonical_slot='label'`),
+    a rowid tie-break silently always picks the same winner regardless of
+    which variant the draft actually authored — proven live: a
+    `--featured`-modified tag's text landed in `trialTag` every time,
+    because `trialTag` has the lower rowid. This is NOT a product-card
+    special case — it is a GENERAL BEM-modifier routing gap: the caller (the
+    content walker) already extracts every own-family modifier an element
+    carries (device-tier modifiers reuse the SAME mechanism below); passing
+    them through here lets a same-tier ambiguity resolve via the block's
+    OWN `variant_slots` declaration (FR-31-20) — the DB fact that already
+    states which attr is the discriminating slot for which variant value —
+    rather than an arbitrary DB row order. Resolution: among the tied
+    candidates, an attr_name that is `variant_slots.unique_slot` for a
+    `variant_value` matching one of ``modifiers`` (case-insensitive) wins.
+    If zero or 2+ candidates match, behaviour is UNCHANGED (first-by-rowid)
+    — this only narrows an existing ambiguity, never invents a new one.
+    R-31-1: DB-only (`variant_slots`), no per-block/per-slug literal.
 
     ``tier`` (added — content-router device-tier axis, mirrors the CSS
     router's `modifier_suffixes(kind='breakpoint')` vocabulary so content and
@@ -5641,6 +6974,12 @@ def content_attr_for_element(
                      `modifier_suffixes(kind='breakpoint')`. None = no tier
                      requested (byte-identical to the pre-tier behaviour,
                      modulo the rule-1 exclusion correction above).
+        modifiers:   Every own-family BEM modifier token this draft element
+                     carries (e.g. `('featured',)` from
+                     `sgs-product-card__tag--featured`), in no particular
+                     order. Used ONLY to break a same-tier alias tie via
+                     `variant_slots` (see above) — an empty tuple (default)
+                     reproduces the pre-existing behaviour exactly.
 
     Returns:
         (attr_name, emit_shape, role, attr_type) for the best match, or None.
@@ -5750,19 +7089,35 @@ def content_attr_for_element(
 
     best: tuple[str, str | None, str | None, str | None] | None = None
     best_tier: int | None = None
+    # ALL rows at the current best tier, rowid-ordered — needed so a same-tier
+    # ambiguity can be disambiguated by `modifiers` below rather than only ever
+    # seeing the first (rowid-winning) candidate. Tier-0 still breaks the loop
+    # immediately (unchanged): an exact name/canonical_slot match is definitional,
+    # not an alias-tier ambiguity, so it is never a candidate for modifier
+    # disambiguation.
+    tier_candidates: list[tuple[str, str | None, str | None, str | None]] = []
     for attr_name, canonical_slot, emit_shape, role, attr_type in base_rows:
         if (canonical_slot == bem_element or attr_name == bem_element
                 or attr_name.replace("-", "").lower() == _norm_el):
-            match_tier = 0
+            best = (attr_name, emit_shape, role, attr_type)
+            best_tier = 0
+            break  # rows are rowid-ordered; the first tier-0 hit is final.
         elif bem_element in slot_aliases.get(canonical_slot or "", ()):
             match_tier = 1
-        else:
-            continue
-        if best_tier is None or match_tier < best_tier:
-            best = (attr_name, emit_shape, role, attr_type)
-            best_tier = match_tier
-        if best_tier == 0:
-            break  # rows are rowid-ordered; the first tier-0 hit is final.
+            if best_tier is None or match_tier < best_tier:
+                best_tier = match_tier
+                tier_candidates = [(attr_name, emit_shape, role, attr_type)]
+            elif match_tier == best_tier:
+                tier_candidates.append((attr_name, emit_shape, role, attr_type))
+
+    if best is None and tier_candidates:
+        best = tier_candidates[0]  # unchanged default: first-by-rowid
+        if len(tier_candidates) > 1 and modifiers:
+            _disambiguated = _variant_modifier_tiebreak(
+                block_slug, tier_candidates, modifiers
+            )
+            if _disambiguated is not None:
+                best = _disambiguated
 
     if best is None:
         _trace("db_lookup_miss", lookup="content_attr_for_element",

@@ -20,10 +20,18 @@ WHAT THIS IS
     This Step-5 registry expresses the PRE-emit_shape dispatch semantics
     (``delegates_content`` + capability flags) EXACTLY — a behaviour-identical
     re-expression of the retired ``extract_content`` if-chain. EXECUTION
-    Step 6 swaps the ``delegates_content`` signature axis for the per-attr
-    ``block_attributes.emit_shape`` walk (FR-31-2.6) inside this same
-    registry; the signature dataclass carries the axis explicitly so that
-    swap is a data change, not a re-architecture.
+    Step 6 introduces the per-attr ``block_attributes.emit_shape`` walk
+    (FR-31-2.6) as the primary content-routing mechanism inside this same
+    registry. It does NOT replace ``delegates_content`` — the two COEXIST BY
+    DESIGN (D-3, ``.claude/plans/2026-08-01-db-derivation-and-converter-
+    cleanup.md``): ``delegates_content`` is derived fresh from source on
+    every call (self-healing, not decaying) and is retained ONLY as the
+    narrow "does this open container accept arbitrary children at all" gate
+    for 5 named open-container blocks (accordion-item, mega-group, modal,
+    product-faq-item, quote). They do different jobs — emit_shape routes
+    NAMED-attr content; delegates_content gates ARBITRARY-child acceptance —
+    so the signature dataclass carries both axes rather than one replacing
+    the other.
 
 RECURSION OWNERSHIP (FR-31-2.8.1)
     Every node — section root, child, grandchild — re-enters through this ONE
@@ -86,13 +94,15 @@ class NodeSignature:
     """Structural DB facts ONLY — never a block slug (FR-31-2.8.2).
 
     ``delegates_content`` is the Step-5 (pre-FR-31-2.6) child-shape axis;
-    EXECUTION Step 6 replaces it with the per-attr ``emit_shape`` walk. ``kind``
+    EXECUTION Step 6 ADDS the per-attr ``emit_shape`` walk alongside it —
+    the two coexist by design (D-3), doing different jobs (see module
+    docstring). ``kind``
     is the Recognition kind (named | atomic | scalar — ``unrecognised`` is a
     PRE-registry gate, never a signature).
     """
     kind: str
     classify: str        # holder | composite (FR-31-2.7)
-    delegates_content: int  # 0 | 1 — Step-6 swaps this axis for per-attr emit_shape
+    delegates_content: int  # 0 | 1 — coexists with per-attr emit_shape (D-3); narrow open-container gate
     scalar_lift: bool    # scalar-content-lift capability (DB)
     array_lift: bool     # array-content-lift capability (DB)
     content_leaf: bool   # primary_content_attr present OR an icon-source role attr
@@ -527,13 +537,34 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
         # Taking "whichever modifier came first" would be the positional
         # tie-break D505 removed from the sibling resolver — same defect
         # class, so it is not reintroduced here.
+        _element_modifiers = _family_modifiers(el, element)
         _device_tier = next(
             (_tier_by_lower[m.lower()]
-             for m in _family_modifiers(el, element)
+             for m in _element_modifiers
              if m.lower() in _tier_by_lower),
             None,
         )
-        hit = db_lookup.content_attr_for_element(rec.slug, element, tier=_device_tier)
+        # NON-tier own-family modifiers are handed to the resolver as
+        # `modifiers` — a modifier like `--featured`/`--trial` is the signal
+        # that disambiguates a same-tier content-attr alias tie via the
+        # block's own `variant_slots` declaration (Task 3, 2026-09-05: the
+        # featuredTag/trialTag defect — see `content_attr_for_element`'s
+        # docstring). Breakpoint-tier modifiers (mobile/tablet/desktop) are
+        # excluded here via `_tier_by_lower` — the same DB-sourced vocabulary
+        # `_device_tier` above reads — rather than relying on the empirical
+        # fact that no block TODAY names a `variant_slots.variant_value`
+        # `mobile`/`tablet`/`desktop`. That fact holds now but is not
+        # structurally guaranteed against a future block declaring a variant
+        # with one of those names, at which point an element's own device-
+        # tier modifier would silently win a content-routing tiebreak it has
+        # no business winning. Reviewer finding, 2026-09-05.
+        _non_tier_modifiers = tuple(
+            m for m in _element_modifiers if m.lower() not in _tier_by_lower
+        )
+        hit = db_lookup.content_attr_for_element(
+            rec.slug, element, tier=_device_tier,
+            modifiers=_non_tier_modifiers,
+        )
         if hit is None:
             # `hit is None` has THREE causes inside content_attr_for_element:
             # no_rows / no_match / tier_sibling_missing. Only the third means

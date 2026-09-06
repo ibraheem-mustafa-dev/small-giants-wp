@@ -41,6 +41,20 @@
 const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
 
+// S10 fix (2026-09-02): these two blocks' <TextControl type="url"> fields are
+// genuine non-navigational config URLs (external-service target/rel is
+// hardcoded server-side; page-internal search is inapplicable) — the same two
+// exceptions that lived in baselines/08-raw-url-link.json for a year, keyed on
+// a LINE NUMBER that any unrelated edit above the control invalidated. That
+// baseline entry needed re-anchoring 7 times (google-reviews) / 7 times
+// (trustpilot-reviews) for code that never changed. Moved here as a block-slug
+// exemption instead: the exception is "this block's url field", not "this
+// line", so it can never drift. If either block grows a SECOND
+// TextControl type="url" for a genuinely different (navigational) purpose,
+// this exemption would wrongly suppress it — re-scope to a per-control check
+// (e.g. matching on the field's `label`) if that ever happens.
+const EXEMPT_BLOCKS = new Set( [ 'sgs/google-reviews', 'sgs/trustpilot-reviews' ] );
+
 function jsxName( openingElement ) {
 	const n = openingElement.name;
 	if ( ! n ) return null;
@@ -87,6 +101,7 @@ module.exports = {
 	scope: 'per-block',
 	needs: [ 'ast:edit.js' ],
 	run( ctx, block ) {
+		if ( EXEMPT_BLOCKS.has( block.slug ) ) return [];
 		// See 04-colour-alpha.js's identical comment — `this.id` is not usable
 		// inside a nested Babel visitor callback; captured here instead.
 		const ruleId = this.id;

@@ -1,0 +1,2580 @@
+{
+  "total_colour_attrs": 309,
+  "by_property": {
+    "border-color": {
+      "DesignTokenPicker": [
+        {
+          "block_slug": "sgs/heading",
+          "attr_name": "borderColour",
+          "file": "plugins/sgs-blocks/src/blocks/heading/edit.js:477",
+          "jsx_tag": "DesignTokenPicker",
+          "is_canonical": true,
+          "is_banned": false,
+          "resolution_note": "direct",
+          "attr_resolution_source": "db_column",
+          "responsive_tier": null
+        },
+        {
+          "block_slug": "sgs/hero",
+          "attr_name": "imageBorderColour",
+          "file": "plugins/sgs-blocks/src/blocks/hero/edit.js:1350",
+          "jsx_tag": "DesignTokenPicker",
+          "is_canonical": true,
+          "is_banned": false,
+          "resolution_note": "direct",
+          "attr_resolution_source": "db_column",
+          "responsive_tier": null
+        },
+        {
+          "block_slug": "sgs/multi-button",
+          "attr_name": "childBtnBorderColour",
+          "file": "plugins/sgs-blocks/src/blocks/multi-button/edit.js:454",
+          "jsx_tag": "DesignTokenPicker",
+          "is_canonical": true,
+          "is_banned": false,
+          "resolution_note": "direct",
+          "attr_resolution_source": "suffix_table",
+          "responsive_tier": null
+        }
+      ]
+    },
+    "background-color": {
+      "DesignTokenPicker": [
+        {
+          "block_slug": "sgs/hero",
+          "attr_name": "contentBackground",
+          "file": "plugins/sgs-blocks/src/blocks/hero/edit.js:996",
+          "jsx_tag": "GradientOverlayControl",
+          "is_canonical": true,
+          "is_banned": false,
+          "resolution_note": "shared:GradientOverlayControl",
+          "attr_resolution_source": "db_column",
+          "responsive_tier": null
+        },
+        {
+          "block_slug": "sgs/hero",
+          "attr_name": "mediaBackground",
+          "file": "plugins/sgs-blocks/src/blocks/hero/edit.js:1387",
+          "jsx_tag": "GradientOverlayControl",
+          "is_canonical": true,
+          "is_banned": false,
+          "resolution_note": "shared:GradientOverlayControl",
+          "attr_resolution_source": "db_column",
+          "responsive_tier": null
+        },
+        {
+          "block_slug": "sgs/hero",
+          "attr_name": "mediaOverlayColour",
+          "file": "plugins/sgs-blocks/src/blocks/hero/edit.js:730",
+          "jsx_tag": "GradientOverlayControl",
+          "is_canonical": true,
+          "is_banned": false,
+          "resolution_note": "shared:GradientOverlayControl",
+          "attr_resolution_source": "db_column",
+          "responsive_tier": null
+        },
+        {
+          "block_slug": "sgs/multi-button",
+          "attr_name": "childBtnBackground",
+          "file": "plugins/sgs-blocks/src/blocks/multi-button/edit.js:444",
+          "jsx_tag": "DesignTokenPicker",
+          "is_canonical": true,
+          "is_banned": false,
+          "resolution_note": "direct",
+          "attr_resolution_source": "suffix_table",
+          "responsive_tier": null
+        },
+        {
+          "block_slug": "sgs/trust-bar",
+          "attr_name": "iconCircleBackground",
+          "file": "plugins/sgs-blocks/src/blocks/trust-bar/edit.js:694",
+          "jsx_tag": "DesignTokenPicker",
+          "is_canonical": true,
+          "is_banned": false,
+          "resolution_note": "direct",
+          "attr_resolution_source": "db_column",
+          "responsive_tier": null
+        }
+      ]
+    },
+    "color": {
+      "DesignTokenPicker": [
+        {
+          "block_slug": "sgs/multi-button",
+          "attr_name": "childBtnTextColour",
+          "file": "plugins/sgs-blocks/src/blocks/multi-button/edit.js:449",
+          "jsx_tag": "DesignTokenPicker",
+          "is_canonical": true,
+          "is_banned": false,
+          "resolution_note": "direct",
+          "attr_resolution_source": "suffix_table",
+          "responsive_tier": null
+        },
+        {
+          "block_slug": "sgs/trust-bar",
+          "attr_name": "iconColour",
+          "file": "plugins/sgs-blocks/src/blocks/trust-bar/edit.js:723",
+          "jsx_tag": "DesignTokenPicker",
+          "is_canonical": true,
+          "is_banned": false,
+          "resolution_note": "direct",
+          "attr_resolution_source": "db_column",
+          "responsive_tier": null
+        },
+        {
+          "block_slug": "sgs/trust-bar",
+          "attr_name": "labelColour",
+          "file": "plugins/sgs-blocks/src/blocks/trust-bar/edit.js:799",
+          "jsx_tag": "DesignTokenPicker",
+          "is_canonical": true,
+          "is_banned": false,
+          "resolution_note": "direct",
+          "attr_resolution_source": "db_column",
+          "responsive_tier": null
+        },
+        {
+          "block_slug": "sgs/trust-bar",
+          "attr_name": "textColour",
+          "file": "plugins/sgs-blocks/src/blocks/trust-bar/edit.js:737",
+          "jsx_tag": "DesignTokenPicker",
+          "is_canonical": true,
+          "is_banned": false,
+          "resolution_note": "direct",
+          "attr_resolution_source": "db_column",
+          "responsive_tier": null
+        },
+        {
+          "block_slug": "sgs/trust-bar",
+          "attr_name": "titleColour",
+          "file": "plugins/sgs-blocks/src/blocks/trust-bar/edit.js:668",
+          "jsx_tag": "DesignTokenPicker",
+          "is_canonical": true,
+          "is_banned": false,
+          "resolution_note": "direct",
+          "attr_resolution_source": "db_column",
+          "responsive_tier": null
+        }
+      ]
+    },
+    "stroke": {
+      "DesignTokenPicker": [
+        {
+          "block_slug": "sgs/trust-bar",
+          "attr_name": "iconColourGradient",
+          "file": "plugins/sgs-blocks/src/blocks/trust-bar/edit.js:723",
+          "jsx_tag": "DesignTokenPicker",
+          "is_canonical": true,
+          "is_banned": false,
+          "resolution_note": "direct",
+          "attr_resolution_source": "db_column",
+          "responsive_tier": null
+        }
+      ]
+    }
+  },
+  "divergences": {},
+  "unresolved_attrs": [
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "pickerColourPreset",
+      "css_property": null,
+      "resolution_source": "unresolved",
+      "matched_suffix": null,
+      "responsive_tier": null
+    }
+  ],
+  "no_editor_file": [],
+  "no_control_found": [
+    {
+      "block_slug": "sgs/accordion",
+      "attr_name": "headerBackground",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/accordion",
+      "attr_name": "headerColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/accordion",
+      "attr_name": "iconColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/accordion",
+      "attr_name": "iconColourGradient",
+      "css_property": "stroke",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/accordion-item",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/accordion-item",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/audio",
+      "attr_name": "accentColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/audio",
+      "attr_name": "spectrumColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/before-after",
+      "attr_name": "dividerColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/before-after",
+      "attr_name": "handleColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/before-after",
+      "attr_name": "handleIconColour",
+      "css_property": "stroke",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/before-after",
+      "attr_name": "labelBackgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/before-after",
+      "attr_name": "labelColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/brand-strip",
+      "attr_name": "backgroundColourHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/brand-strip",
+      "attr_name": "borderColourHover",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/brand-strip",
+      "attr_name": "nameColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/brand-strip",
+      "attr_name": "textColourHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/brand-strip",
+      "attr_name": "tileBackgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/brand-strip",
+      "attr_name": "tileBorderColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/breadcrumbs",
+      "attr_name": "currentColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/breadcrumbs",
+      "attr_name": "linkColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/breadcrumbs",
+      "attr_name": "separatorColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/business-info",
+      "attr_name": "iconColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/business-info",
+      "attr_name": "iconColourGradient",
+      "css_property": "stroke",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/business-info",
+      "attr_name": "labelColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/business-info",
+      "attr_name": "linkHoverTextColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/business-info",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/button",
+      "attr_name": "colourBackground",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/button",
+      "attr_name": "colourBackgroundHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/button",
+      "attr_name": "colourBorder",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/button",
+      "attr_name": "colourBorderHover",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/button",
+      "attr_name": "colourText",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/button",
+      "attr_name": "colourTextHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/button",
+      "attr_name": "iconColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/button",
+      "attr_name": "iconColourGradient",
+      "css_property": "stroke",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/button",
+      "attr_name": "iconColourHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/button",
+      "attr_name": "iconColourHoverGradient",
+      "css_property": "stroke",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/card-grid",
+      "attr_name": "backgroundColourHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/card-grid",
+      "attr_name": "borderColourHover",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/card-grid",
+      "attr_name": "cardBackground",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/card-grid",
+      "attr_name": "cardBorderColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/card-grid",
+      "attr_name": "subtitleColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/card-grid",
+      "attr_name": "textColourHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/card-grid",
+      "attr_name": "titleColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/cart",
+      "attr_name": "badgeColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/cart",
+      "attr_name": "badgeTextColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/cart",
+      "attr_name": "iconColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/cart",
+      "attr_name": "iconColourGradient",
+      "css_property": "stroke",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/cart",
+      "attr_name": "panelBg",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/cart",
+      "attr_name": "panelTextColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/collapsible-text",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/collapsible-text",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/container",
+      "attr_name": "backgroundOverlayColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/container",
+      "attr_name": "gridItemBackground",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/container",
+      "attr_name": "gridItemBorder",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/container",
+      "attr_name": "gridItemTextColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/container",
+      "attr_name": "shapeDividerBottomColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/container",
+      "attr_name": "shapeDividerTopColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/countdown-timer",
+      "attr_name": "labelColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/countdown-timer",
+      "attr_name": "numberColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/counter",
+      "attr_name": "accentStroke",
+      "css_property": "stroke",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Stroke",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/counter",
+      "attr_name": "labelColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/counter",
+      "attr_name": "numberColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/cta-section",
+      "attr_name": "backgroundColor",
+      "css_property": "background-color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "BackgroundColor",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/cta-section",
+      "attr_name": "backgroundColourHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/cta-section",
+      "attr_name": "backgroundOverlayColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/cta-section",
+      "attr_name": "borderColourHover",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/cta-section",
+      "attr_name": "gridItemBackground",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/cta-section",
+      "attr_name": "gridItemBorder",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/cta-section",
+      "attr_name": "gridItemTextColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/cta-section",
+      "attr_name": "shapeDividerBottomColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/cta-section",
+      "attr_name": "shapeDividerTopColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/cta-section",
+      "attr_name": "textColor",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "TextColor",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/cta-section",
+      "attr_name": "textColourHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/feature-grid",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/feature-grid",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/filter-search",
+      "attr_name": "inputBorderColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/filter-search",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/form",
+      "attr_name": "formFocusRingColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/form",
+      "attr_name": "progressBarColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/form",
+      "attr_name": "submitBackground",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/form",
+      "attr_name": "submitColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/form-field-tiles",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/form-field-tiles",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/form-step",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/form-step",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/gallery",
+      "attr_name": "captionBgColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/gallery",
+      "attr_name": "captionColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/gallery",
+      "attr_name": "overlayColourHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/google-reviews",
+      "attr_name": "starColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/heading",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/heading",
+      "attr_name": "backgroundColourHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/heading",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/heading",
+      "attr_name": "textColourHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/hero",
+      "attr_name": "backgroundColourHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/hero",
+      "attr_name": "backgroundOverlayColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/hero",
+      "attr_name": "borderColourHover",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/hero",
+      "attr_name": "shapeDividerBottomColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/hero",
+      "attr_name": "shapeDividerTopColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/hero",
+      "attr_name": "textColourHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/icon",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/icon",
+      "attr_name": "iconColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/icon",
+      "attr_name": "iconColourGradient",
+      "css_property": "stroke",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/icon",
+      "attr_name": "iconColourHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/icon",
+      "attr_name": "iconColourHoverGradient",
+      "css_property": "stroke",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/icon",
+      "attr_name": "shapeColourHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/icon-list",
+      "attr_name": "borderColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/icon-list",
+      "attr_name": "iconColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/icon-list",
+      "attr_name": "iconColourGradient",
+      "css_property": "stroke",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/icon-list",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/info-box",
+      "attr_name": "backgroundColourHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/info-box",
+      "attr_name": "borderColourHover",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/info-box",
+      "attr_name": "textColourHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/label",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/label",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/media",
+      "attr_name": "captionColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/mega-aside",
+      "attr_name": "asideBg",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/mega-aside",
+      "attr_name": "asideBorderColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/mega-panel",
+      "attr_name": "accentBackground",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/mega-panel",
+      "attr_name": "accentBorderColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/mega-panel",
+      "attr_name": "accentTextColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/mega-panel",
+      "attr_name": "borderColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/mega-panel",
+      "attr_name": "panelBg",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/modal",
+      "attr_name": "modalBackground",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/modal",
+      "attr_name": "overlayColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/modal",
+      "attr_name": "triggerBackground",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/modal",
+      "attr_name": "triggerColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/multi-button",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/multi-button",
+      "attr_name": "backgroundOverlayColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/multi-button",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-drawer",
+      "attr_name": "drawerBg",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-drawer",
+      "attr_name": "surfaceOpacity",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-drawer",
+      "attr_name": "toggleCloseColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "burgerBg",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "burgerColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "burgerHoverColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "featuredBg",
+      "css_property": "background-color,color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "featuredBgHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "featuredColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "featuredColourHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "indicatorColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "itemBg",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "itemBgHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "itemColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "itemColourHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "navBg",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "navBgHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "navColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "submenuBg",
+      "css_property": "background-color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Bg",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "submenuColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "underlineColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/nav-menu",
+      "attr_name": "underlineColourHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/notice-banner",
+      "attr_name": "iconColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/notice-banner",
+      "attr_name": "iconColourGradient",
+      "css_property": "stroke",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/option-picker",
+      "attr_name": "borderColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/option-picker",
+      "attr_name": "labelColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/option-picker",
+      "attr_name": "pillBgColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/option-picker",
+      "attr_name": "pillBorderColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/option-picker",
+      "attr_name": "pillSelectedBgColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/option-picker",
+      "attr_name": "pillSelectedBorderColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/option-picker",
+      "attr_name": "pillSelectedTextColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/option-picker",
+      "attr_name": "pillTextColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/physics-canvas",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/physics-canvas",
+      "attr_name": "backgroundOverlayColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/post-grid",
+      "attr_name": "backgroundColourHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/post-grid",
+      "attr_name": "borderColourHover",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/post-grid",
+      "attr_name": "cardBgColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/post-grid",
+      "attr_name": "categoryBadgeBgColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/post-grid",
+      "attr_name": "categoryBadgeColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/post-grid",
+      "attr_name": "excerptColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/post-grid",
+      "attr_name": "metaColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/post-grid",
+      "attr_name": "readMoreColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/post-grid",
+      "attr_name": "textColourHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/post-grid",
+      "attr_name": "titleColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/pricing-table",
+      "attr_name": "ctaBackground",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/pricing-table",
+      "attr_name": "ctaColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/pricing-table",
+      "attr_name": "featureColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/pricing-table",
+      "attr_name": "popularBadgeBackground",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/pricing-table",
+      "attr_name": "popularBadgeColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/pricing-table",
+      "attr_name": "priceColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/pricing-table",
+      "attr_name": "titleColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/process-steps",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/process-steps",
+      "attr_name": "backgroundColourHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/process-steps",
+      "attr_name": "borderColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/process-steps",
+      "attr_name": "borderColourHover",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/process-steps",
+      "attr_name": "descriptionColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/process-steps",
+      "attr_name": "numberBackground",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/process-steps",
+      "attr_name": "numberColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/process-steps",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/process-steps",
+      "attr_name": "textColourHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/process-steps",
+      "attr_name": "titleColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "ctaColourBackground",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "ctaColourBackgroundHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "ctaColourBorder",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "ctaColourBorderHover",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "ctaColourText",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "ctaColourTextHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "descColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "pickerLabelColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "pickerPillBgColour",
+      "css_property": "background-color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "BgColour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "pickerPillBorderColour",
+      "css_property": "border-color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "BorderColour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "pickerPillSelectedBgColour",
+      "css_property": "background-color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "BgColour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "pickerPillSelectedBorderColour",
+      "css_property": "border-color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "BorderColour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "pickerPillSelectedTextColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "TextColour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "pickerPillTextColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "TextColour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "priceColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "priceNoteColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "tagBackgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "BackgroundColour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "tagTextColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-card",
+      "attr_name": "titleColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-faq",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-faq",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-faq-item",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-faq-item",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-search",
+      "attr_name": "focusRingColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-search",
+      "attr_name": "inputBorderColour",
+      "css_property": "border-color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "BorderColour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-search",
+      "attr_name": "listboxBackgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "BackgroundColour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-search",
+      "attr_name": "matchHighlightColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/product-search",
+      "attr_name": "resultHoverBackgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "BackgroundColour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/quote",
+      "attr_name": "attributionColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/quote",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/quote",
+      "attr_name": "backgroundColourHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/quote",
+      "attr_name": "borderColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/quote",
+      "attr_name": "textColourHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/separator",
+      "attr_name": "colour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/separator",
+      "attr_name": "contentColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/site-footer",
+      "attr_name": "backgroundOverlayColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/site-footer",
+      "attr_name": "shapeDividerBottomColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/site-footer",
+      "attr_name": "shapeDividerTopColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/site-footer-row",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/site-footer-row",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/site-header",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/site-header",
+      "attr_name": "backgroundColourScrolled",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/site-header",
+      "attr_name": "backgroundOverlayColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/site-header",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/site-header",
+      "attr_name": "textColourScrolled",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/site-header-row",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/site-header-row",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/social-icons",
+      "attr_name": "iconBackground",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/social-icons",
+      "attr_name": "iconBackgroundHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/social-icons",
+      "attr_name": "iconBorderColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/social-icons",
+      "attr_name": "iconBorderColourHover",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/social-icons",
+      "attr_name": "iconGlyphColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/social-icons",
+      "attr_name": "iconGlyphColourGradient",
+      "css_property": "stroke",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/social-icons",
+      "attr_name": "iconGlyphColourHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/social-icons",
+      "attr_name": "iconGlyphColourHoverGradient",
+      "css_property": "stroke",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/star-rating",
+      "attr_name": "emptyColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/star-rating",
+      "attr_name": "starColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/tab",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/tab",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/table-of-contents",
+      "attr_name": "activeLinkColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/table-of-contents",
+      "attr_name": "linkColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/table-of-contents",
+      "attr_name": "titleColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/tabs",
+      "attr_name": "panelBgColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/tabs",
+      "attr_name": "panelBorderColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/tabs",
+      "attr_name": "tabActiveBgColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/tabs",
+      "attr_name": "tabActiveIndicatorColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/tabs",
+      "attr_name": "tabActiveTextColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/tabs",
+      "attr_name": "tabBgColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/tabs",
+      "attr_name": "tabHoverBgColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/tabs",
+      "attr_name": "tabIndicatorColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/tabs",
+      "attr_name": "tabTextColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/team-member",
+      "attr_name": "nameColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/team-member",
+      "attr_name": "roleColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/testimonial",
+      "attr_name": "backgroundColourHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/testimonial",
+      "attr_name": "borderColourHover",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/testimonial",
+      "attr_name": "nameColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/testimonial",
+      "attr_name": "orgColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/testimonial",
+      "attr_name": "quoteColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/testimonial",
+      "attr_name": "ratingColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/testimonial",
+      "attr_name": "roleColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/testimonial",
+      "attr_name": "summaryColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/testimonial",
+      "attr_name": "textColourHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/testimonial-slider",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/testimonial-slider",
+      "attr_name": "backgroundColourHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/testimonial-slider",
+      "attr_name": "borderColourHover",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/testimonial-slider",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/testimonial-slider",
+      "attr_name": "textColourHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/text",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/text",
+      "attr_name": "backgroundColourHover",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/text",
+      "attr_name": "borderColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/text",
+      "attr_name": "firstLetterColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/text",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/text",
+      "attr_name": "textColourHover",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/timeline",
+      "attr_name": "borderColour",
+      "css_property": "border-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/timeline",
+      "attr_name": "connectorColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/timeline",
+      "attr_name": "dateColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/trust-bar",
+      "attr_name": "gridItemBackground",
+      "css_property": "background-color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Background",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/trust-bar",
+      "attr_name": "gridItemTextColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "TextColour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/trust-bar",
+      "attr_name": "shapeDividerBottomColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/trust-bar",
+      "attr_name": "shapeDividerTopColour",
+      "css_property": "color",
+      "resolution_source": "suffix_table",
+      "matched_suffix": "Colour",
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/trustpilot-reviews",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/trustpilot-reviews",
+      "attr_name": "textColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/whatsapp-cta",
+      "attr_name": "backgroundColour",
+      "css_property": "background-color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    },
+    {
+      "block_slug": "sgs/whatsapp-cta",
+      "attr_name": "labelColour",
+      "css_property": "color",
+      "resolution_source": "db_column",
+      "matched_suffix": null,
+      "responsive_tier": null
+    }
+  ],
+  "extension_findings": {
+    "TextControl": [
+      "conditional-visibility.js:475",
+      "conditional-visibility.js:486",
+      "conditional-visibility.js:547",
+      "conditional-visibility.js:565",
+      "hover-effects.js:498",
+      "image-controls.js:217"
+    ],
+    "DesignTokenPicker": [
+      "fx.js:2179",
+      "hover-effects.js:342",
+      "hover-effects.js:347",
+      "hover-effects.js:352",
+      "hover-effects.js:537"
+    ]
+  },
+  "extension_files_scanned": [
+    "animation.js",
+    "block-defaults.js",
+    "conditional-visibility.js",
+    "custom-css.js",
+    "fx.js",
+    "hide-extensions.js",
+    "hover-effects.js",
+    "image-controls.js",
+    "index.js",
+    "parallax.js",
+    "responsive-device-toggle.js",
+    "responsive-visibility.js"
+  ]
+}

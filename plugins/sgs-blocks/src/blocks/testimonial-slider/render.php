@@ -2,13 +2,11 @@
 /**
  * Server-side render for the SGS Testimonial Slider block.
  *
- * FR-22-6 InnerBlocks migration (2026-05-30):
- * Slides are now sgs/testimonial InnerBlocks, not a scalar `testimonials`
- * array attribute. The render iterates $block->inner_blocks, renders each
- * child via $inner_block->render(), and wraps it in the existing
- * .sgs-testimonial-slider__slide container so view.js (which queries
- * '.sgs-testimonial-slider__slide') and style.css continue to work
- * unchanged — zero edits needed to view.js or CSS.
+ * Slides are sgs/testimonial InnerBlocks (FR-22-6). The render iterates
+ * $block->inner_blocks, renders each child via $inner_block->render(), and
+ * wraps it in the existing .sgs-testimonial-slider__slide container so
+ * view.js (which queries '.sgs-testimonial-slider__slide') and style.css
+ * work unchanged.
  *
  * Dots and arrows are derived from count( $block->inner_blocks ) so the
  * navigation count is always in sync with the actual number of testimonials.
@@ -17,16 +15,16 @@
  * attributes (read from $inner_block->parsed_block['attrs']) so structured
  * data is preserved without requiring the scalar testimonials array.
  *
- * NO-INLINE (contract §A, 2026-07-10): the rendered subtree carries ZERO inline
- * CSS property declarations. color/typography/spacing/__experimentalBorder all
- * declare __experimentalSkipSerialization in block.json; the block's own color
- * + typography values are emitted into THIS BLOCK'S OWN scoped `.{uid}` <style>
- * (composite caveat — mirrors sgs/hero — these do NOT ride through the shared
- * wrapper's `extra_styles`, which would inline them). Base spacing/border-radius/
- * max-width remain the wrapper's own scoped mechanism (unchanged). The transition
- * + hover-colour CSS custom-property VALUES ($css_vars below) are allowed inline
- * (a `--x:y` var value is not a property declaration) and continue to ride the
- * wrapper's `extra_styles`.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * The block's own color + typography values are emitted into THIS BLOCK'S
+ * OWN scoped `.{uid}` <style> (composite caveat — mirrors sgs/hero — these do
+ * NOT ride through the shared wrapper's `extra_styles`, which would inline
+ * them). Base spacing/border-radius/max-width remain the wrapper's own
+ * scoped mechanism (unchanged). The transition + hover-colour CSS
+ * custom-property VALUES ($css_vars below) are allowed inline (a `--x:y` var
+ * value is not a property declaration) and continue to ride the wrapper's
+ * `extra_styles`.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — we iterate inner_blocks directly).
@@ -44,19 +42,9 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations (textTransform / fontWeight / fontStyle / border-style) —
 // letters + hyphen only. Mirrors sgs/hero's proven sanitiser.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // CSS length/unit sanitiser — for free-text length values (letterSpacing,
 // border width/radius) concatenated into raw CSS declarations.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // ── Attribute extraction ───────────────────────────────────────────────────
-$layout         = $attributes['layout'] ?? 'full';
-$side_image     = $attributes['sideImage'] ?? null;
 $autoplay       = $attributes['autoplay'] ?? false;
 $autoplay_speed = $attributes['autoplaySpeed'] ?? 5000;
 $show_dots      = $attributes['showDots'] ?? true;
@@ -66,7 +54,10 @@ $slides_visible = $attributes['slidesVisible'] ?? 1;
 // (Bean-locked card-in-a-card de-style). It flows to child sgs/testimonial blocks
 // as `sgs/testimonialVariant` via block.json `providesContext`, resolved in
 // sgs/testimonial's own render.php ($block->context), not by this parent.
-$hover_bg_colour     = $attributes['backgroundColourHover'] ?? '';
+// backgroundColourHover is read by sgs_fill_decls() directly (below) — no
+// local variable needed. textColourHover is still read here: it feeds the
+// gradient-resolve calc below, not the combined hover-decls array (D744
+// pattern moved it out of that array — see the comment further down).
 $hover_text_colour   = $attributes['textColourHover'] ?? '';
 $hover_border_colour = $attributes['borderColourHover'] ?? '';
 // D636 border-colour gradient rollout — non-empty wins over the flat
@@ -75,33 +66,19 @@ $hover_border_colour = $attributes['borderColourHover'] ?? '';
 $hover_border_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 $hover_effect        = $attributes['effectHover'] ?? 'none';
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
-// below — no local variable needed here (dead-assignment cleanup).
-// nameFontSize had no editor control and no consumer anywhere in the repo
-// (D338 full-repo grep, 2026-08-06) — removed as an abandoned attribute,
-// see block.json for the matching removal.
+// below — no local variable needed here.
 
 /*
  * Drag momentum — BLOCK-PRIVATE, deliberately NOT the shared Tier G roster.
+ * This carousel is `overflow: hidden` with a transform-based clone-loop
+ * driven by `--sgs-slider-offset`, so it is never a genuine native
+ * `overflow-x: auto|scroll` element — the shared runtime's
+ * `isNativeHorizontalScroller()` check cannot attach to it.
  *
- * This block used to declare `supports.sgs.fx.draggable` and emit
- * `data-sgs-fx="draggable"` here. That was inert and expensive, and both
- * halves were removed 2026-07-31:
- *
- *   · INERT — the shared runtime (shared/effects/gsap/fx-draggable.js) only
- *     ever attaches to a genuine native `overflow-x: auto|scroll` element.
- *     This carousel is `overflow: hidden` with a transform-based clone-loop
- *     driven by `--sgs-slider-offset`, so `isNativeHorizontalScroller()`
- *     returned false and `initDraggable()` returned `undefined`, every time.
- *     Confirmed independently by the site owner: the effect did nothing here.
- *   · EXPENSIVE — `SGS_Motion_Registry` sniffs the rendered markup for
- *     `data-sgs-fx` and enqueues that effect's whole plugin set. Emitting the
- *     marker therefore shipped GSAP core + InertiaPlugin + the effect module
- *     (~35KB gzip) to run a function that returned `undefined`.
- *
- * What remains is this block's OWN, working mechanism: the pointer-drag in
- * view.js plus its private InertiaPlugin momentum layer, which imports the
- * plugin dynamically and only for an instance that opted in — so a page with
- * the toggle off still fetches zero bytes of GSAP. The marker below is
+ * The working mechanism is this block's OWN: the pointer-drag in view.js
+ * plus its private InertiaPlugin momentum layer, which imports the plugin
+ * dynamically and only for an instance that opted in — so a page with the
+ * toggle off still fetches zero bytes of GSAP. The marker below is
  * block-private grammar (`data-sgs-slider-momentum`), read only by this
  * block's view.js, and is invisible to the shared registry's `data-sgs-fx`
  * sniff by construction.
@@ -115,20 +92,16 @@ $inner_blocks       = $block->inner_blocks ?? array();
 $total_testimonials = count( $inner_blocks );
 
 // ── Wrapper classes + CSS vars ─────────────────────────────────────────────
-$is_split = 'split' === $layout;
-$classes  = array(
+$classes = array(
 	'sgs-testimonial-slider',
 );
-if ( $is_split ) {
-	$classes[] = 'sgs-testimonial-slider--split';
-}
 $allowed_effects   = array( 'none', 'lift', 'scale', 'glow' );
 $safe_hover_effect = in_array( $hover_effect, $allowed_effects, true ) ? $hover_effect : 'none';
 if ( 'none' !== $safe_hover_effect ) {
 	$classes[] = 'sgs-testimonial-slider--hover-' . esc_attr( $safe_hover_effect );
 }
 
-// ── Scoped-style uid (no-inline contract §A) ───────────────────────────────
+// ── Scoped-style uid (NO-INLINE contract — Spec 32) ─────────────────────────
 // Own uid, independent of the wrapper's internal responsive-CSS uid — used to
 // scope THIS BLOCK'S color/typography <style> below (mirrors sgs/hero). This
 // is a CLASS (contract §B3-style scoping) — the root also carries the WP
@@ -137,111 +110,102 @@ $uid      = 'sgs-testimonial-slider-' . substr( md5( wp_json_encode( $attributes
 $root_sel = '.' . $uid . '.wp-block-sgs-testimonial-slider';
 $classes[] = $uid;
 
-// ── Own WP-native color/typography/border supports — no-inline contract (§A). ──
-// block.json declares color/typography/spacing/__experimentalBorder ALL with
-// __experimentalSkipSerialization:true, so get_block_wrapper_attributes()
-// (called inside SGS_Container_Wrapper::render() below) never auto-inlines
-// them. Read the resolved values from $attributes['style'] here and emit them
-// into THIS BLOCK'S OWN scoped <style> (composite caveat — do NOT pass these
-// as wrapper `extra_styles`, that path inlines). Base spacing/border-radius/
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// Read the resolved values from $attributes['style'] here and emit them into
+// THIS BLOCK'S OWN scoped <style> (composite caveat — do NOT pass these as
+// wrapper `extra_styles`, that path inlines). Base spacing/border-radius/
 // max-width is a SEPARATE mechanism the wrapper already handles scoped
 // internally — not duplicated here.
 $slider_scoped_css = '';
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$slider_style_engine_args = array();
 
-	$slider_color_args = array();
-	if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-		$slider_color_args['text'] = (string) $attributes['textColour'];
+// Text colour (flat-or-gradient, base + hover) — block-private, on the SAME
+// root selector as the background paint below.
+//
+// ⛔ NOT sgs_text_decls()/sgs_emit_state_colour_css() — that pair is
+// text-decls-NAIVE: sgs_text_decls() resolves flat-vs-gradient via
+// sgs_resolve_text_colour_or_gradient() but then feeds the result through
+// sgs_colour_value() unconditionally, which expects a slug/hex, not a full
+// gradient() function string. Verified live (2026-09-04): with a gradient
+// set it emitted `color:var(--wp--preset--color--linear-gradient90degff...)`
+// — garbage, not a working gradient. sgs/info-box's own D744 rollout has
+// this exact same defect (verified live via the same probe method), so this
+// is a real pre-existing bug in that pairing, not something specific to
+// this block — the CORRECT pattern (proven live on sgs/pricing-table's
+// ctaColour, sgs/modal's closeColourText, sgs/google-reviews) is
+// sgs_resolve_text_colour_or_gradient() -> sgs_text_colour_decl() ->
+// sgs_text_colour_gradient_fallback_rule(), used below instead.
+$slider_text_normal_resolved = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColour'] ?? '' ),
+	(string) ( $attributes['textColourGradient'] ?? '' )
+);
+if ( '' !== $slider_text_normal_resolved ) {
+	$slider_text_normal_decl = sgs_text_colour_decl( $slider_text_normal_resolved );
+	if ( '' !== $slider_text_normal_decl ) {
+		$slider_scoped_css .= $root_sel . '{' . $slider_text_normal_decl . '}';
 	}
-	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-		$slider_color_args['background'] = (string) $attributes['backgroundColour'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$slider_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $slider_color_args ) ) {
-		$slider_style_engine_args['color'] = $slider_color_args;
-	}
+	$slider_scoped_css .= sgs_text_colour_gradient_fallback_rule( $root_sel, $slider_text_normal_resolved );
+}
 
-	$slider_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$slider_border_args['color'] = (string) $attributes['style']['border']['color'];
+$slider_text_hover_resolved = sgs_resolve_text_colour_or_gradient(
+	$hover_text_colour,
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+if ( '' !== $slider_text_hover_resolved ) {
+	$slider_text_hover_decl = sgs_text_colour_decl( $slider_text_hover_resolved );
+	if ( '' !== $slider_text_hover_decl ) {
+		$slider_scoped_css .= sgs_hover_state_rules( $root_sel, $slider_text_hover_decl, ':focus-visible' );
 	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$slider_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$slider_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$slider_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $slider_radius_raw ) && '' !== $slider_radius_raw ) {
-			$slider_border_args['radius'] = $sgs_css_length( $slider_radius_raw );
-		} elseif ( is_array( $slider_radius_raw ) ) {
-			$slider_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-				if ( ! empty( $slider_radius_raw[ $corner ] ) ) {
-					$slider_radius_clean[ $corner ] = $sgs_css_length( $slider_radius_raw[ $corner ] );
-				}
-			}
-			if ( ! empty( $slider_radius_clean ) ) {
-				$slider_border_args['radius'] = $slider_radius_clean;
-			}
-		}
-	}
-	if ( ! empty( $slider_border_args ) ) {
-		$slider_style_engine_args['border'] = $slider_border_args;
-	}
-
-	if ( ! empty( $slider_style_engine_args ) ) {
-		$slider_scoped_styles = wp_style_engine_get_styles(
-			$slider_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $slider_scoped_styles['css'] ) ) {
-			$slider_scoped_css .= $slider_scoped_styles['css'];
-		}
-	}
-
-	// Typography — the block itself renders no direct text node (the quote
-	// text belongs to the child sgs/testimonial InnerBlocks), so this scopes
-	// to the same root element WP was previously auto-inlining onto (parity
-	// with pre-migration behaviour), not the stale/unused block.json
-	// `selectors.typography` (.sgs-testimonial-slider__quote — no element in
-	// this block's own markup ever carried that class).
-	$slider_typography_args = array();
-	if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
-		$slider_typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
-	}
-	if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
-		$slider_typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
-	}
-	if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
-		$slider_typography_args['letterSpacing'] = $sgs_css_length( $attributes['style']['typography']['letterSpacing'] );
-	}
-	if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
-		$slider_typography_args['textTransform'] = $sgs_css_keyword( $attributes['style']['typography']['textTransform'] );
-	}
-	if ( isset( $attributes['style']['typography']['fontWeight'] ) && '' !== $attributes['style']['typography']['fontWeight'] ) {
-		$slider_typography_args['fontWeight'] = $sgs_css_keyword( (string) $attributes['style']['typography']['fontWeight'] );
-	}
-	if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
-		$slider_typography_args['fontStyle'] = $sgs_css_keyword( $attributes['style']['typography']['fontStyle'] );
-	}
-	if ( ! empty( $slider_typography_args ) ) {
-		$slider_typography_scoped = wp_style_engine_get_styles(
-			array( 'typography' => $slider_typography_args ),
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $slider_typography_scoped['css'] ) ) {
-			$slider_scoped_css .= $slider_typography_scoped['css'];
-		}
-	}
-	if ( isset( $attributes['style']['typography']['textAlign'] ) && '' !== $attributes['style']['typography']['textAlign'] ) {
-		$slider_scoped_css .= $root_sel . '{text-align:' . $sgs_css_keyword( $attributes['style']['typography']['textAlign'] ) . '}';
+	if ( $slider_text_hover_resolved !== $slider_text_normal_resolved ) {
+		$slider_scoped_css .= sgs_hover_media_wrap(
+			sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover', $slider_text_hover_resolved )
+		) . sgs_text_colour_gradient_fallback_rule( $root_sel . ':focus-visible', $slider_text_hover_resolved );
 	}
 }
+
+// Background (colour + gradient, resting + hover) — painted on a `::after`
+// layer, never the root itself, so the text colour/gradient above
+// (background-clip:text on the SAME $root_sel) cannot clip or overwrite it
+// (both use background-image). Mirrors sgs/info-box (D744). The border
+// gradient's masked ring (below) owns `::before` on this same root, so
+// `::after` is free.
+//
+// supports.color.gradients was `true` here, so CORE rendered its own gradient
+// panel in the Styles tab, competing with the SGS colour panel — the client saw
+// two and could not tell which won. Switching the flag off alone would have
+// REMOVED the only gradient control this block had, because the sole gradient
+// read was $attributes['style']['color']['gradient'] (core's own storage). The
+// flag flip is therefore PAIRED with a block-private backgroundColourGradient
+// exposed through fillRow(), so capability is moved rather than lost.
+$slider_bg_decls = sgs_fill_decls(
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+$slider_scoped_css .= sgs_block_background_layer_css(
+	$root_sel,
+	$slider_bg_decls['normal'][0] ?? '',
+	$slider_bg_decls['hover'][0] ?? ''
+);
+
+// (native border_args removed by the Shape-B migration -- width/style/colour
+//  are block-private attrs now, emitted below)
+
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). The block itself renders no
+// direct text node (the quote text belongs to the child sgs/testimonial
+// InnerBlocks), so this scopes to the root element, not the stale/unused
+// block.json `selectors.typography` (.sgs-testimonial-slider__quote — no
+// element in this block's own markup ever carried that class). Replaces the
+// old WP-native supports.typography (fontSize/lineHeight/letterSpacing/
+// textTransform/fontWeight/fontStyle/textAlign) — letterSpacing/textTransform/
+// textAlign are honest gaps the shared helper doesn't cover (matches
+// sgs/accordion's wrapper element).
+$slider_scoped_css .= sgs_typography_css_rule( $attributes, '', $root_sel );
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add them
@@ -264,6 +228,94 @@ if ( '' !== $slider_preset_bg_slug ) {
 $css_vars = sgs_transition_vars( $attributes );
 
 // Hover colours emit as a scoped `.{uid}.sgs-testimonial-slider:hover{…}` rule
+
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$slider_scoped_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$slider_scoped_css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$slider_scoped_css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+} else {
+	// G5 corollary: "none" must be an explicit override too, not a
+	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
+	// class default) would otherwise keep painting even though the
+	// operator picked "no border". Cause-agnostic: harmless when no
+	// such default exists, a real fix when one does.
+	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$slider_scoped_css .= $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$slider_scoped_css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = $radius_tiers['mobile'];
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$slider_scoped_css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
+}
+
 // (assembled below, appended to $slider_scoped_css), NOT as inline
 // `--sgs-hover-*` VALUES. An inline `--var` (a) leaves a `style` attribute on
 // the root and (b) breaks the former `[style*="--sgs-hover-*"]`
@@ -271,26 +323,43 @@ $css_vars = sgs_transition_vars( $attributes );
 // amended 2026-07-18 / D345; footprint GOTCHA F). A per-instance `:hover` rule
 // beats the base rule and applies only when the operator set a hover colour —
 // variant-safe, so no resting-value fallback is needed (mirrors sgs/info-box).
+//
+// D744-pattern rollout (2026-09-04): background/text hover colours moved OUT
+// of this array — they are now emitted above by
+// sgs_block_background_layer_css()/sgs_emit_state_colour_css() (background on
+// its own `::after` layer; text alongside its base state), so building them
+// here too would duplicate the same declarations on the same selector.
 $slider_hover_decls = array();
-if ( $hover_bg_colour ) {
-	$slider_hover_decls[] = 'background-color:' . sgs_colour_value( $hover_bg_colour );
-}
-if ( $hover_text_colour ) {
-	$slider_hover_decls[] = 'color:' . sgs_colour_value( $hover_text_colour );
-}
 if ( $hover_border_colour ) {
 	$slider_hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
 }
 if ( $slider_hover_decls ) {
-	$slider_scoped_css .= $root_sel . ':hover{' . implode( ';', $slider_hover_decls ) . '}';
+	// Via the ONE shared hover-colour helper — also emits the `:focus-visible`
+	// twin a keyboard user needs.
+	$slider_scoped_css .= sgs_emit_state_colour_css( $root_sel, array(), $slider_hover_decls );
 }
 
 // D636 border-colour gradient rollout — masked ::before ring, scoped to
 // :hover/:focus-within only (mirrors sgs/testimonial's own borderColourHover
 // gradient — same hover-only semantics, no resting-state border to override).
 if ( '' !== $hover_border_gradient ) {
+	// Touch-safe: sgs_border_gradient_css() has no hover-only mode (it bails
+	// when $normal_paint is empty), so a hover-scoped selector is baked in as
+	// its own "normal_paint" call — this must therefore carry its own guard
+	// rather than relying on the helper's $hover_paint branch. Layer 1 (media)
+	// wraps the whole rule via sgs_hover_media_wrap(); layer 2 (touch class) is
+	// prefixed onto the selector per that function's own documented pattern
+	// for opaque-rule callers. Focus-within stays outside both guards.
+	$slider_scoped_css .= sgs_hover_media_wrap(
+		sgs_border_gradient_css(
+			SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover',
+			$hover_border_gradient,
+			null,
+			'1px'
+		)
+	);
 	$slider_scoped_css .= sgs_border_gradient_css(
-		$root_sel . ':hover,' . $root_sel . ':focus-within',
+		$root_sel . ':focus-within',
 		$hover_border_gradient,
 		null,
 		'1px'
@@ -301,8 +370,8 @@ if ( '' !== $hover_border_gradient ) {
 // view.js queries .sgs-testimonial-slider[data-autoplay] / [data-speed] /
 // [data-slides] on the OUTER wrapper. These must ride through extra_attrs so
 // they are present on the element that get_block_wrapper_attributes() emits.
-// The role/aria-roledescription/aria-label that were previously on the <div>
-// in the printf() calls are also moved here so the wrapper helper owns the tag.
+// role/aria-roledescription/aria-label ride the same array so the wrapper
+// helper owns the tag.
 $slider_extra_attrs = array(
 	'data-autoplay'        => $autoplay ? 'true' : 'false',
 	'data-speed'           => (string) absint( $autoplay_speed ),
@@ -379,18 +448,16 @@ foreach ( $inner_blocks as $inner_block ) {
 	++$slide_index;
 }
 
-// ── Arrows — always rendered when showArrows is enabled, regardless of count.
-// Bug-fix (2026-06-03): removed "total > slidesVisible" gate — nav must always
-// show and rotate even when total === slidesVisible (e.g. 4 cards, 3 visible).
+// ── Arrows — always rendered when showArrows is enabled, regardless of count
+// (nav must show and rotate even when total === slidesVisible, e.g. 4 cards,
+// 3 visible).
 $arrow_prev_html = '';
 $arrow_next_html = '';
 if ( $show_arrows && $total_testimonials > 0 ) {
 	// Chevron SVGs from the shared Lucide icon library (same mechanism used by
-	// sgs/accordion-item + sgs/nav-menu) — replaces the old bare ‹ / › text
-	// glyph, which rendered as an 8×24px mark rattling around inside the
-	// 44px circular button. The SVG is trusted static markup from
-	// sgs_get_lucide_icon() (mirrors the escaping pattern used elsewhere in
-	// this codebase for the same helper).
+	// sgs/accordion-item + sgs/nav-menu). The SVG is trusted static markup
+	// from sgs_get_lucide_icon() (mirrors the escaping pattern used elsewhere
+	// in this codebase for the same helper).
 	$arrow_prev_icon = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-left' ) : '';
 	$arrow_next_icon = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-right' ) : '';
 
@@ -399,7 +466,6 @@ if ( $show_arrows && $total_testimonials > 0 ) {
 }
 
 // ── Dots — always rendered when showDots is enabled, regardless of count.
-// Bug-fix (2026-06-03): removed "total > slidesVisible" gate — same reason.
 $dots_html = '';
 if ( $show_dots && $total_testimonials > 0 ) {
 	$dots_html = '<div class="sgs-testimonial-slider__dots" role="group" aria-label="' . esc_attr__( 'Testimonial navigation', 'sgs-blocks' ) . '">';
@@ -421,42 +487,13 @@ if ( $show_dots && $total_testimonials > 0 ) {
 }
 
 // ── Controls bar (dots + pause button slot) — always rendered when there are
-// slides, so view.js can always inject the pause button into __controls.
-// Bug-fix (2026-06-03): was conditional on $dots_html — pause btn fell outside
-// __controls when dots were hidden. Now rendered whenever there are slides.
+// slides, so view.js can always inject the pause button into __controls, even
+// when dots are hidden.
 $controls_html = '';
 if ( $total_testimonials > 0 ) {
 	$controls_html = '<div class="sgs-testimonial-slider__controls">' . $dots_html . '</div>';
 }
 
-// ── Side image (split layout) ──────────────────────────────────────────────
-$side_image_html = '';
-if ( $is_split && ! empty( $side_image['url'] ) ) {
-	$side_img_id     = ! empty( $side_image['id'] ) ? absint( $side_image['id'] ) : 0;
-	$side_img_tag    = sgs_responsive_image(
-		$side_img_id,
-		$side_image['url'],
-		$side_image['alt'] ?? '',
-		'large',
-		array(
-			'class'   => 'sgs-testimonial-slider__side-img',
-			'loading' => 'lazy',
-		)
-	);
-	$side_image_html = '<div class="sgs-testimonial-slider__side-image">' . $side_img_tag . '</div>';
-
-	// Side-image object-fit/object-position (Spec 35 capability-routing
-	// doctrine mechanism (c), Part 9) — explicit call to the shared helper
-	// with this block's OWN known selector, since
-	// supports.sgs.imageControlsExplicit=true opts this block out of the
-	// guessing render_block filter (includes/image-controls.php). Returns ''
-	// when unset, leaving style.css's hardcoded `object-fit:cover` default in
-	// place (style.css:349).
-	$side_image_position_css = sgs_media_position_css( $attributes, 'sgs', $root_sel . ' .sgs-testimonial-slider__side-img' );
-	if ( '' !== $side_image_position_css ) {
-		$slider_scoped_css .= $side_image_position_css;
-	}
-}
 
 // ── Schema.org Review JSON-LD ──────────────────────────────────────────────
 // Rebuilt from inner block attrs above. If $total_testimonials is 0
@@ -503,16 +540,10 @@ $slider_inner = sprintf(
 );
 
 // ── Build $inner_html for the wrapper helper ───────────────────────────────
-// For the split layout the interior wraps in a two-column shell (side image +
-// slider content div). For full-width, the slider inner IS the interior.
-// $schema_html is appended outside the region tag (same as before) — it is a
-// <script type="application/ld+json"> which must not be inside a landmark.
-if ( $is_split ) {
-	$carousel_inner = $side_image_html
-		. '<div class="sgs-testimonial-slider__slider-content">' . $slider_inner . '</div>';
-} else {
-	$carousel_inner = $slider_inner;
-}
+// The slider inner IS the interior. $schema_html is appended outside the region
+// tag (same as before) — it is a <script type="application/ld+json"> which must
+// not be inside a landmark.
+$carousel_inner = $slider_inner;
 
 // ── Own scoped <style> (no-inline contract §A) ──────────────────────────────
 // $slider_scoped_css holds this block's color/typography/border output (built

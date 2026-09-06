@@ -14,9 +14,10 @@
  *      ScrollTrigger + `@sgs/fx-image-sequence` — no per-block view module
  *      is registered (mirrors `sgs/responsive-logo`'s DrawSVG wiring).
  *
- * No inline CSS property declarations (Spec 32): `aspectRatio` is a
- * per-instance value, so it is emitted into the block's OWN scoped `<style>`
- * tag rather than a `style="aspect-ratio:…"` attribute.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * `aspectRatio` is a per-instance value, so it is emitted into the block's
+ * OWN scoped `<style>` tag rather than a `style="aspect-ratio:…"` attribute.
  *
  * Frame source config (resolution ladder + filename convention) is passed to
  * the runtime as a JSON blob in `data-sgs-image-sequence-frames` — the same
@@ -43,13 +44,31 @@ if ( empty( $thumbnail_media['url'] ) ) {
 	return;
 }
 
-$thumbnail_url = (string) $thumbnail_media['url'];
-$thumbnail_id  = isset( $thumbnail_media['id'] ) ? absint( $thumbnail_media['id'] ) : 0;
-$thumbnail_alt = (string) ( $attributes['thumbnailAlt'] ?? '' );
-$aspect_ratio  = (string) ( $attributes['aspectRatio'] ?? '16 / 9' );
+$thumbnail_url        = (string) $thumbnail_media['url'];
+$thumbnail_id         = isset( $thumbnail_media['id'] ) ? absint( $thumbnail_media['id'] ) : 0;
+$thumbnail_alt        = (string) ( $attributes['thumbnailAlt'] ?? '' );
+$thumbnail_decorative = ! empty( $attributes['thumbnailDecorative'] );
+$aspect_ratio         = (string) ( $attributes['aspectRatio'] ?? '16 / 9' );
+
+// Decorative fallback thumbnail (WCAG 2.1 AA 1.1.1). Block-level, not
+// per-tier — the tablet/mobile thumbnails are art-directed crops of the
+// SAME photo (2026-08-07 art-direction tiers), not different pictures, so
+// one editorial choice covers all of them. Blanking the alt here (rather
+// than only adding aria-hidden) matches the sgs/timeline pattern: an empty
+// alt already tells assistive tech to skip the image; aria-hidden reinforces
+// it for browsers/ATs that still expose an empty-alt <img> to the a11y tree.
+if ( $thumbnail_decorative ) {
+	$thumbnail_alt = '';
+}
 
 // Whitelist — this reaches a scoped <style> rule, so it is validated against
-// known-good values rather than trusted as free text.
+// known-good values rather than trusted as free text. This array is the
+// ORIGINAL/canonical six-value ratio set (C19, 2026-08-27) — this block's
+// own edit.js now imports the JS-side mirror of this exact list from
+// `src/components/MediaSizingPanel.js`'s exported `RATIO_OPTIONS`, and
+// card-grid/gallery/post-grid's edit.js files do the same. PHP cannot
+// import a JS constant, so this array must be kept BYTE-IDENTICAL to
+// `RATIO_OPTIONS`'s values by hand if the set ever changes.
 $allowed_ratios = array( '16 / 9', '21 / 9', '4 / 3', '1 / 1', '3 / 4', '9 / 16' );
 if ( ! in_array( $aspect_ratio, $allowed_ratios, true ) ) {
 	$aspect_ratio = '16 / 9';
@@ -130,6 +149,24 @@ $root_sel = '.' . $uid;
 $scoped_css   = array();
 $scoped_css[] = "{$root_sel}{aspect-ratio:" . $aspect_ratio . ';}';
 
+// Shared media-element atom layer (rule 37-media-no-handroll) — object-fit
+// ONLY, no client control (see block.json's `_comment_mediaElements`: the
+// canvas's own drawCover() always centre-crops every frame with zero
+// configurability, so exposing a fit control here would let an operator set
+// a value the canvas can never honour). `style()` returns '' with no
+// `objectFit`/`objectFitTablet`/`objectFitMobile` attribute set (none is
+// ever written — no edit.js control writes it), so nothing is appended to
+// $scoped_css; the shared stylesheet's own `.sgs-media-el{object-fit:var(
+// --sgs-media-object-fit,cover)}` default (assets/css/media-atoms/
+// object-fit.css) supplies the exact same 'cover' resting behaviour the old
+// local hardcode did — just sourced from the shared layer, not duplicated.
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_is_media_css = SGS_Media_Element::style( $attributes, '', 'sgs/image-sequence', $uid, array( 'object-fit' ) );
+	if ( '' !== $sgs_is_media_css ) {
+		$scoped_css[] = $sgs_is_media_css;
+	}
+}
+
 // ART-DIRECTION TIERS (2026-08-07) — the fail-open <img> only. The canvas frame
 // sequence already art-directs itself through its own per-tier pipelines
 // (tierDesktop/tierTablet/tierMobile), so this closes the one surface that could
@@ -154,7 +191,12 @@ foreach ( array( 'Tablet', 'Mobile' ) as $sgs_tier ) {
 	);
 }
 
-$thumb_class = 'sgs-image-sequence__thumbnail';
+// `sgs-media-el` is the shared media-element atom layer's marker for the
+// replaced element (SGS_Media_Element::CLASS_ELEMENT) — carried by the
+// thumbnail <img>(s) AND the canvas below so both read the shared
+// stylesheet's `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}`
+// default rule (see the `$sgs_is_media_css` block above).
+$thumb_class = 'sgs-image-sequence__thumbnail sgs-media-el';
 if ( ! empty( $sgs_tier_thumbs ) ) {
 	// ⛔ Build tier selectors from $root_sel — a BARE single-class token
 	// ('.' . $uid, above), never a multi-member selector list: a descendant
@@ -162,7 +204,7 @@ if ( ! empty( $sgs_tier_thumbs ) ) {
 	$sgs_tier_sel = static function ( $tier ) use ( $root_sel ) {
 		return $root_sel . ' .sgs-image-sequence__thumbnail--' . $tier;
 	};
-	$tier_css = '';
+	$tier_css     = '';
 	if ( isset( $sgs_tier_thumbs['mobile'] ) ) {
 		$tier_css .= '@media(max-width:767px){' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
 		$tier_css .= '@media(min-width:768px){' . $sgs_tier_sel( 'mobile' ) . '{display:none}}';
@@ -183,7 +225,7 @@ $block_props = get_block_wrapper_attributes(
 );
 
 $canvas_attrs = array(
-	'class'       => 'sgs-image-sequence__canvas',
+	'class'       => 'sgs-image-sequence__canvas sgs-media-el',
 	'aria-hidden' => 'true',
 );
 
@@ -222,21 +264,30 @@ printf(
 	$style_tag // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-validated via whitelist + wp_strip_all_tags.
 );
 
+$thumb_attrs = array( 'class' => $thumb_class );
+if ( $thumbnail_decorative ) {
+	$thumb_attrs['aria-hidden'] = 'true';
+}
+
 echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes internally.
 	$thumbnail_id,
 	$thumbnail_url,
 	$thumbnail_alt,
 	'large',
-	array( 'class' => $thumb_class )
+	$thumb_attrs
 );
 
 foreach ( $sgs_tier_thumbs as $sgs_tier_key => $sgs_tier_media ) {
+	$sgs_tier_attrs = array( 'class' => 'sgs-image-sequence__thumbnail sgs-media-el sgs-image-sequence__thumbnail--' . $sgs_tier_key );
+	if ( $thumbnail_decorative ) {
+		$sgs_tier_attrs['aria-hidden'] = 'true';
+	}
 	echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes internally.
 		$sgs_tier_media['id'],
 		$sgs_tier_media['url'],
 		$thumbnail_alt,
 		'large',
-		array( 'class' => 'sgs-image-sequence__thumbnail sgs-image-sequence__thumbnail--' . $sgs_tier_key )
+		$sgs_tier_attrs
 	);
 }
 

@@ -30,38 +30,39 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true,
-			"__experimentalDefaultControls": {
-				"margin": false,
-				"padding": false
-			}
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"scalarStylingLift": true,
 			"arrayContentLift": true,
 			"scalarContentLift": true,
+			"_comment_mediaElements": "The image-swatch <img> (style.css .sgs-option-picker__swatch--image, render.php ~line 609) is a fixed 2rem square crop of a WooCommerce attribute term's `_sgs_swatch_image_id` image — no per-instance media picker, but the crop MODE (cover|contain) is a legitimate client choice (e.g. a white-background product photo may want 'contain'). Wired via the shared object-fit atom, prefix 'swatch', rather than the hand-rolled `object-fit: cover` that used to live in style.css (detector rule 37-media-no-handroll).",
+			"mediaElements": [
+				{
+					"prefix": "swatch",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
+			],
 			"elements": {
 				"root": {
 					"label": "Picker (fieldset)",
 					"order": 1,
-					"clusters": [ "layout", "fill", "text" ],
+					"clusters": [
+						"layout",
+						"fill",
+						"text"
+					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:max-width": "maxWidth",
 						"css:width": "width",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-radius": "borderRadius",
 						"css:background-color": "native:color.background",
 						"css:color": "native:color.text",
 						"css:border-color-gradient": "borderColourGradient"
@@ -71,21 +72,40 @@
 				"label": {
 					"label": "Group label (legend)",
 					"order": 2,
-					"clusters": [ "text", "layout" ],
+					"clusters": [
+						"text",
+						"layout"
+					],
 					"prefix": "label",
-					"_note": "labelFontSize/labelColour/labelFontWeight/labelFontStyle/labelMarginBottom resolve via the default {prefix}{suffix} convention (labelMarginBottom -> css:margin-bottom, Spec 35 vocabulary fix; render.php:492-495 legend `margin-bottom:...`). line-height/letter-spacing/text-transform/text-decoration/text-align/font-family have no labelX equivalent — honest gaps."
+					"attrMap": {
+						"css:color-gradient": "labelColourGradient"
+					},
+					"_note": "labelFontSize/labelColour/labelFontWeight/labelFontStyle/labelMarginBottom resolve via the default {prefix}{suffix} convention (labelMarginBottom -> css:margin-bottom, Spec 35 vocabulary fix; render.php:492-495 legend `margin-bottom:...`). line-height/letter-spacing/text-transform/text-decoration/text-align/font-family have no labelX equivalent — honest gaps. labelColourGradient is the text-colour gradient sibling to labelColour (background-clip:text mechanism, same recipe as sgs/quote's attributionColour/attributionColourGradient) — needs an explicit attrMap entry since the default prefix convention only covers css:color, not the gradient sibling."
 				},
 				"pill": {
 					"label": "Option pill",
 					"order": 3,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"prefix": "pill",
 					"attrMap": {
 						"css:background-color": "pillBgColour",
-						"css:border-color-gradient": "pillBorderColourGradient"
+						"css:background-image": "pillBgColourGradient",
+						"css:border-color-gradient": "pillBorderColourGradient",
+						"css:color-gradient": "pillTextColourGradient"
 					},
 					"states": {
-						"selected": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "pillBgColourHover",
+								"css:background-image": "pillBgColourHoverGradient",
+								"css:color": "pillTextColourHover"
+							}
+						},
+						"current": {
 							"attrMap": {
 								"css:background-color": "pillSelectedBgColour",
 								"css:color": "pillSelectedTextColour",
@@ -95,24 +115,21 @@
 							}
 						}
 					},
-					"_note": "FR-35-5 — 'selected' (NOT :hover/:active) is the correct state name: style.css:200/246/277 key the selected look off `input[type=radio]:checked ~ .pill`, which is the [aria-current]/is-active family the states vocabulary calls 'selected'. The CSS ALSO shows a `:hover` visual (style.css:192/241/272) but it is a STATIC preset-variant rule with no distinct hover-only attribute behind it (no pillHoverBgColour etc. exists) — correctly NOT declared as a state per FR-35-5 rule 1 (opt-in, attribute-backed only). css:background-color needs explicit attrMap (pillBgColour doesn't match the default Background/Bg/BackgroundColour suffixes); css:border-color (pillBorderColour) and css:border-radius (pillBorderRadius) and css:padding (pillPadding) and css:font-size (pillFontSize) all resolve via the default convention. css:font-weight is an honest gap — no pillFontWeight attr exists."
+					"_note": "FR-35-5 — 'selected' (NOT :hover/:active) is the correct state name for the pillSelected* family: style.css:200/246/277 key the selected look off `input[type=radio]:checked ~ .pill`, which is the [aria-current]/is-active family the states vocabulary calls 'selected'. UPDATE (2026-09-03, block owner reversal of the original FR-35-5 exception below): the CSS ALSO shows a `:hover` visual (style.css:192/241/272) which USED TO be a STATIC preset-variant rule with no distinct hover-only attribute behind it — Bean explicitly reversed that exception, so `pillBgColourHover`/`pillTextColourHover` now exist as real attributes and are declared as this element's 'hover' state below, mirroring sgs/nav-menu's item-bg/item-text normal+hover row pattern. The original rationale is preserved here for context only: 'no distinct hover-only attribute behind it (no pillHoverBgColour etc. exists) — correctly NOT declared as a state per FR-35-5 rule 1 (opt-in, attribute-backed only)' — that reasoning no longer applies now that the attributes exist. css:background-color needs explicit attrMap (pillBgColour doesn't match the default Background/Bg/BackgroundColour suffixes); css:border-color (pillBorderColour) and css:border-radius (pillBorderRadius) and css:padding (pillPadding) and css:font-size (pillFontSize) all resolve via the default convention. css:font-weight is an honest gap — no pillFontWeight attr exists. GRADIENT DEFERRAL RETIRED (2026-09-05): pillBgColour/pillBgColourHover now carry pillBgColourGradient/pillBgColourHoverGradient siblings via `sgs_custom_property_gradient_decls()` (helpers-tokens.php:953) — the same shape already proven on brand-strip/post-grid/social-icons/form/gallery/before-after. style.css declares `background-image:var(--sgs-op-bg[-hover]-gradient,none)` next to each existing `background-color:var(...)` line, so the two properties coexist unconditionally and the gradient only paints when the resolved custom property is set; no conditional property-switching needed, contrary to the original 2026-09-03 deferral note (preserved in git history). pillTextColourGradient (2026-09-05) used the unrelated D636 text builder (`sgs_resolve_text_colour_or_gradient()`/`sgs_text_colour_decl()`/`sgs_text_colour_gradient_fallback_rule()`), same recipe as labelColourGradient; css:color-gradient needs the explicit attrMap entry above since the default prefix convention only covers css:color, not the gradient sibling."
 				}
 			},
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderWidth": [
 					"borderWidth"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				],
 				"pillPadding": [
 					"pillPadding"
@@ -125,6 +142,18 @@
 		"typography": ".sgs-option-picker__pill"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"label": {
 			"type": "string",
 			"default": "Choose an option"
@@ -148,6 +177,11 @@
 		"labelColour": {
 			"type": "string",
 			"default": ""
+		},
+		"labelColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the label legend's text via background-clip:text (D636 text builder). Non-empty wins over labelColour."
 		},
 		"labelFontWeight": {
 			"type": "string",
@@ -222,7 +256,30 @@
 			"type": "string",
 			"default": ""
 		},
+		"pillBgColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting pill background via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over pillBgColour."
+		},
 		"pillTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillTextColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting pill text via background-clip:text (D636 text builder). Non-empty wins over pillTextColour."
+		},
+		"pillBgColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"pillBgColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the hover pill background via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over pillBgColourHover."
+		},
+		"pillTextColourHover": {
 			"type": "string",
 			"default": ""
 		},
@@ -274,31 +331,15 @@
 		},
 		"pillPadding": {
 			"type": "object",
-			"default": {"desktop": {}}
+			"default": {
+				"desktop": {}
+			}
 		},
-		"paddingTablet": {
+		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"borderWidth": {
 			"type": "object",
@@ -306,7 +347,7 @@
 		},
 		"borderStyle": {
 			"type": "string",
-			"default": "none",
+			"default": "solid",
 			"enum": [
 				"none",
 				"solid",

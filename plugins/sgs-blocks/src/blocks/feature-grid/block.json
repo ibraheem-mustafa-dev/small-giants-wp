@@ -24,19 +24,12 @@
 		"color": {
 			"background": false,
 			"text": false,
-			"gradients": true,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
 			"margin": true,
 			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
@@ -47,7 +40,10 @@
 					"layer": "OUTER",
 					"_layer_note": "This element is both the block root and the grid definition (child sgs/info-box items). layer_detect.py's MF-3 guard makes the root OUTER regardless of its own display:grid.",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "backgroundColour",
@@ -55,10 +51,10 @@
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
 						"css:grid-template-rows": "gridTemplateRows",
@@ -68,10 +64,17 @@
 						"css:align-content": "alignContent",
 						"css:align-items": "alignItems",
 						"css:flex-direction": "flexDirection",
-						"css:flex-wrap": "flexWrap"
+						"css:flex-wrap": "flexWrap",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:background-image": "textColourGradient"
 					},
 					"_note": "No `display`/`order`/`overflow` attribute exists on this block — honest GAPs. Children are sgs/info-box InnerBlocks (allowedBlocks) which own their own typography/fill — this block declares no per-item element."
 				}
+			},
+			"boxFamilies": {
+				"borderRadius": [
+					"borderRadius"
+				]
 			}
 		}
 	},
@@ -93,9 +96,12 @@
 		},
 		"gap": {
 			"type": "object",
-			"default": {"desktop": "24px", "mobile": "16px"}
+			"default": {
+				"desktop": "24px",
+				"mobile": "16px"
+			}
 		},
-		"_comment_gap_unit": "gapUnit retired 2026-06-07 — gap now stores a full CSS value (e.g. '24px') resolved by sgs_container_gap_value(). Existing posts migrate via deprecated.js v3.",
+		"_comment_gap_unit": "gapUnit retired 2026-06-07 — gap now stores a full CSS value (e.g. '24px') resolved by sgs_container_gap_value(). No migration path for existing posts — deprecations were deleted plugin-wide at D271/D293 (pre-production policy).",
 		"alignItems": {
 			"type": "string",
 			"default": "stretch"
@@ -114,6 +120,12 @@
 		},
 		"layout": {
 			"type": "string",
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
 			"default": ""
 		},
 		"gridTemplateColumns": {
@@ -134,7 +146,7 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": ""
+			"default": "wrap"
 		},
 		"justifyContent": {
 			"type": "string",
@@ -146,15 +158,69 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 2,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
 			"type": "string",
 			"default": ""
 		},
 		"textColour": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"render": "file:./render.php",
@@ -164,7 +230,9 @@
 	"example": {
 		"attributes": {
 			"layoutMode": "fixed-columns",
-			"columns": {"desktop": 4},
+			"columns": {
+				"desktop": 4
+			},
 			"gap": 24
 		}
 	}

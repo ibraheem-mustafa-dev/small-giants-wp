@@ -39,19 +39,48 @@ final class Sgs_Site_Info_Binding {
 	 */
 	public static function register(): void {
 		\add_action( 'init', array( self::class, 'register_source' ) );
+		\add_action( 'enqueue_block_editor_assets', array( self::class, 'enqueue_editor_script' ) );
+	}
+
+	/**
+	 * Enqueues the JS half of this source's registration (C15-2/C15-3).
+	 *
+	 * Loads `build/bindings/index.js`, which calls
+	 * `registerBlockBindingsSource( { name: 'sgs/site-info', … } )` — the
+	 * `name` there MUST stay byte-identical to the PHP registration's first
+	 * argument in `register_source()` above, or the two never pair up and
+	 * core's editor UI can never populate a picker for this source even
+	 * though the PHP side keeps rendering the frontend correctly.
+	 *
+	 * Deliberately does NOT enqueue against `includes/class-sgs-blocks.php`'s
+	 * shared `enqueue_editor_extensions()` bundle — that file is owned by a
+	 * different part of the build, and this source's JS is small enough to
+	 * ship as its own bundle rather than growing a shared one.
+	 */
+	public static function enqueue_editor_script(): void {
+		$asset_file = SGS_BLOCKS_PATH . 'build/bindings/index.asset.php';
+
+		if ( ! \file_exists( $asset_file ) ) {
+			return;
+		}
+
+		$asset = require $asset_file;
+
+		\wp_enqueue_script(
+			'sgs-block-bindings',
+			SGS_BLOCKS_URL . 'build/bindings/index.js',
+			$asset['dependencies'],
+			$asset['version'],
+			true
+		);
 	}
 
 	/**
 	 * Registers the block bindings source with WordPress core.
 	 *
-	 * Requires WP 6.5+. The function_exists guard ensures graceful no-op
-	 * on older installs instead of a fatal error.
+	 * Requires WP 6.5+ (plugin floor is 6.9 — always available).
 	 */
 	public static function register_source(): void {
-		if ( ! \function_exists( 'register_block_bindings_source' ) ) {
-			return;
-		}
-
 		// NOTE: do NOT pass 'can_user_edit_value' — it is NOT a recognised key in
 		// WP core's register_block_bindings_source() (WP 6.5–7.0). Passing it makes
 		// core reject the ENTIRE registration (returns false), which is why this
@@ -127,8 +156,8 @@ final class Sgs_Site_Info_Binding {
 	 * capability gate matching the exact capability that gates the Site Info
 	 * admin page itself (Sgs_Site_Info_Admin::CAP = 'edit_theme_options') —
 	 * belt-and-braces so a hint can never surface to a user who couldn't act
-	 * on it anyway. WP 6.9–7.0 floor: `wp_is_serving_rest_request()` is
-	 * native (WP 6.5+) but still function_exists-guarded for safety.
+	 * on it anyway. `wp_is_serving_rest_request()` is native since WP 6.5,
+	 * always available at the plugin's 6.7 floor.
 	 *
 	 * @return bool
 	 */
@@ -139,7 +168,7 @@ final class Sgs_Site_Info_Binding {
 		if ( \is_admin() ) {
 			return true;
 		}
-		if ( \function_exists( 'wp_is_serving_rest_request' ) && \wp_is_serving_rest_request() ) {
+		if ( \wp_is_serving_rest_request() ) {
 			return true;
 		}
 		if ( \defined( 'REST_REQUEST' ) && \REST_REQUEST ) {

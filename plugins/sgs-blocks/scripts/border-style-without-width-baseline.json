@@ -1,0 +1,16 @@
+{
+  "_readme": [
+    "Accepted exemptions for check-border-style-without-width.py.",
+    "",
+    "An entry here is a REASONED exemption, never a silenced finding (D786: fix",
+    "what the scanners find; an exemption must be reasoned, not skipped). Each",
+    "one states WHY the ungated emission does not produce the ~3px browser",
+    "default, so the next reader can re-check the reason rather than trust the",
+    "row. If the stated reason stops being true, delete the entry — the gate is",
+    "then correct to fail.",
+    "",
+    "Add an entry ONLY when gating the emission would make the render WORSE.",
+    "Everywhere else, gate it."
+  ],
+  "entries": []
+}

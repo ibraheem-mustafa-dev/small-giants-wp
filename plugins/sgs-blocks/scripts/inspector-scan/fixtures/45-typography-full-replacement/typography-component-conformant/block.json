@@ -1,0 +1,21 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/typography-component-conformant",
+	"title": "Fixture: title element uses TypographyControls + sgs_typography_css_rule() — must NOT flag (positive control)",
+	"category": "sgs",
+	"supports": {
+		"sgs": {
+			"elements": {
+				"title": {
+					"label": "Title",
+					"clusters": [ "text" ],
+					"prefix": "title",
+					"attrMap": {
+						"css:font-size": "titleFontSize"
+					}
+				}
+			}
+		}
+	},
+	"attributes": {}
+}

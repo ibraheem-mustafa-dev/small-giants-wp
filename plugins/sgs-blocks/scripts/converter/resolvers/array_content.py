@@ -74,26 +74,89 @@ def _bem_token(node: Tag) -> str | None:
 def _slot_extraction_role(slot: str | None) -> str | None:
     """Derive the field_extractors role for a canonical slot, DB-driven.
 
-    slot -> standalone block -> its content-bearing attr role. Two documented
-    normalisations for slots whose block role isn't a field_extractors handler:
+    slot -> standalone block -> that block's content-bearing attr role.
+    Two documented normalisations for slots whose block role isn't a
+    field_extractors handler:
       - the ``icon`` slot's block (sgs/icon) carries role='identity' → extract as
         'icon-slug' (the shared icon handler).
       - the ``link`` slot's block (sgs/button) → 'url-href' (nearest <a href>).
+
+    Disambiguation (fixed 2026-09-05, load-bearing): most target blocks have
+    exactly ONE content-bearing attr (e.g. sgs/label's ``text``, sgs/icon's
+    ``iconSource``), so "the first one found" was harmless. A POLYMORPHIC
+    target block that carries MORE THAN ONE content-bearing attr — e.g.
+    sgs/media, which has BOTH ``imageUrl`` (role='image-object',
+    canonical_slot='image') AND ``videoUrl`` (role='content',
+    canonical_slot='video') — is genuinely ambiguous: returning whichever one
+    the DB happens to return first (row-insertion order) silently routed a
+    ``media``/``image`` array field to ``videoUrl``'s role ('content' → rich
+    text), which finds no text on an ``<img>`` and drops the value, instead of
+    ``imageUrl``'s role ('image-object'). Fixed by preferring the candidate
+    whose OWN ``canonical_slot`` matches ``slot`` when more than one
+    content-bearing candidate exists.
+
+    This must NOT unconditionally require an exact canonical_slot match: a
+    slot name and the target block's own generic content attr can legitimately
+    use DIFFERENT canonical-slot tokens for the SAME concept (e.g. the
+    ``label`` slot resolves to sgs/label, whose only content-bearing attr is
+    ``text`` with canonical_slot='text', not 'label' — there is no second
+    candidate to disambiguate against, so the mismatch is harmless and the
+    old "return the only candidate" behaviour is preserved via the fallback
+    below). The exact-match preference only matters, and is only applied,
+    when the target block actually has more than one candidate to choose
+    between.
+
+    True scope (re-enumerated live DB-wide, 2026-09-05): 29 slots route to a
+    target block with more than one content-bearing candidate; of those, 22
+    still fall through to the ``candidates[0][0]`` guess below because no
+    candidate's ``canonical_slot`` matches the incoming slot. sgs/media's
+    image-vs-video case is the one this session fixed; it is NOT the only
+    multi-candidate case DB-wide. Known residual, not yet fixed: the
+    ``avatar``/``background-image``/``background-video`` slots all route to
+    sgs/media (14 candidates) and resolve to ``svgContent``'s role ``'svg'``
+    — the same wrong-role-guess shape as the bug this fix closes for
+    ``media``/``image``. Fixing that residual is out of scope here; it needs
+    its own disambiguation pass (or a slot-to-candidate widening beyond exact
+    ``canonical_slot`` match) rather than being folded into this docstring.
     """
     if not slot:
+        return None
+    if db_lookup.is_container_marker_slot(slot):
+        # Check#12 Build 3 (2026-09-06): this slot's target block is a WHOLE
+        # NESTED COMPOSITE instance (like the pre-existing `step`/`badge`
+        # shapes), never a scalar content field. Guessing a role by picking
+        # among the target block's own content-bearing attrs would misroute
+        # real content (e.g. routing plain wrapper text into an image field).
+        # Data-driven via slots.json's `resolves_whole_instance` column — see
+        # db_lookup.is_container_marker_slot()'s docstring.
         return None
     block = db_lookup.standalone_block_for(slot)
     if not block:
         return None
     content_roles = db_lookup._content_bearing_roles()
-    for name, info in (db_lookup.block_attrs(block) or {}).items():
-        role = info.get("role")
-        if role in content_roles:
+    candidates = [
+        (info.get("role"), info.get("canonical_slot"), info.get("canonical_slot_aliases") or [])
+        for info in (db_lookup.block_attrs(block) or {}).values()
+        if info.get("role") in content_roles
+    ]
+    if not candidates:
+        return None
+    # Prefer the candidate that OWNS this slot (its own canonical_slot matches,
+    # OR the slot is one of its canonical_slot_aliases — Check#12 Build 2,
+    # 2026-09-06: e.g. sgs/media.imageUrl's canonical_slot='image' also
+    # answers to 'avatar'/'background-image') — this is what disambiguates
+    # sgs/media's image vs video.
+    for role, cslot, aliases in candidates:
+        if cslot == slot or slot in aliases:
             # Return the block's own content role verbatim — the shared
-            # field_extractors dispatches it (incl. 'identity' → icon-slug, in the
-            # extractor, not here: 'role' is a no_slug_literal-guarded name).
+            # field_extractors dispatches it (incl. 'identity' → icon-slug, in
+            # the extractor, not here: 'role' is a no_slug_literal-guarded name).
             return role
-    return None
+    # No candidate's canonical_slot matches the incoming slot (the common,
+    # unambiguous case — a single-content-attr block whose attr's generic
+    # canonical_slot token differs from the slot alias that led here).
+    # Preserve prior behaviour: return the first content-bearing role found.
+    return candidates[0][0]
 
 
 def _item_field_schema(slug: str, array_attr: str) -> list[tuple[str, str | None, str | None]]:
@@ -182,7 +245,7 @@ def _field_owns_token(field_key: str, bem_token: str) -> bool:
 # Roles that read a specific attribute/descendant (safe to self-extract from a
 # flat item root); text-content is EXCLUDED (it would concatenate a structured
 # item's children).
-_FLAT_SELF_ROLES = frozenset({"icon-slug", "identity", "url-href", "link-href",
+_FLAT_SELF_ROLES = frozenset({"icon-slug", "identity", "icon", "url-href", "link-href",
                               "image-object", "rating"})
 
 
@@ -354,6 +417,50 @@ def _lift_item(
     return item
 
 
+def _candidate_relevant_to_schema(
+    candidate: Tag,
+    schema: list[tuple[str, str | None, str | None]],
+) -> bool:
+    """Does this lone BEM-classed child belong to THIS array attr's OWN item
+    schema (approved smaller fix, 2026-09-04 /qc-council, replacing the
+    originally-proposed ``consumed_ids`` thread through ``walk.py`` — that
+    variable lives in a different function's stack frame and would have made
+    the deliberately flat/additive/stateless handler dispatch stateful for no
+    reason)?
+
+    Scopes the below-threshold report so an element a DIFFERENT leg already
+    lifted correctly (product-card's ``__cta``, lifted by ``ctaText`` as a
+    scalar) never appears in an unrelated array attr's drop diagnostic —
+    measured live: a ``packSizes`` report on a product-card with a media +
+    heading + cta listed ALL THREE as ``candidate_elements``, none of which
+    ``packSizes`` has any field for.
+
+    Matches by SHAPE ONLY — the same L1 (canonical-slot identity) and L3
+    (tag-shape identity) tiers ``_match_child`` uses to bind a real item's
+    field, plus L1b (BEM-token ownership). Deliberately EXCLUDES the L2
+    role-fallback tier: a bare content-role match (e.g. ``text-content``) is
+    too permissive for a single isolated candidate with no sibling fields to
+    disambiguate against — role-only matching is exactly what the trust-bar
+    docstring above already documents as unreliable (a lone ``__badge``, its
+    ``__inner`` wrapper AND its ``__label`` child all satisfy ``text-content``
+    under the item schema). Requiring a token/slot/identity match instead of a
+    role match is what keeps an irrelevant text node (the CTA's own label)
+    from masquerading as a lost item of an unrelated array.
+    """
+    ctoken = _bem_token(candidate)
+    cslot = bem_element_to_canonical_slot(candidate)
+    cident = _tag_identity(candidate)
+    for field_key, fslot, _frole in schema:
+        if fslot is not None and cslot == fslot:
+            return True
+        if ctoken and _field_owns_token(field_key, ctoken):
+            return True
+        fident = _field_identity(fslot)
+        if fident is not None and cident == fident:
+            return True
+    return False
+
+
 def _warn_items_below_threshold(
     slug: str,
     attr_name: str,
@@ -450,8 +557,12 @@ def lift_array_content(
             # the warning becomes something operators learn to ignore. The lift is
             # a dry run — its result is DISCARDED, so no item is invented and the
             # emitted attrs are byte-identical to before this block existed.
-            if below_threshold:
-                _warn_items_below_threshold(slug, attr_name, below_threshold)
+            relevant_candidates = [
+                c for c in below_threshold
+                if _candidate_relevant_to_schema(c, schema)
+            ]
+            if relevant_candidates:
+                _warn_items_below_threshold(slug, attr_name, relevant_candidates)
             continue
 
         filled: list[dict] = []

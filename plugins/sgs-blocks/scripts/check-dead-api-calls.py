@@ -79,12 +79,13 @@ Usage
     python scripts/check-dead-api-calls.py --self-test       # prove the detector works
     python scripts/check-dead-api-calls.py --json             # machine-readable report
 
-NOT wired into `prebuild`/`prestart` — this is a brand-new detector on its
-first day. Per this codebase's own survey-then-fix-then-gate convention
-(and the advisory-first pattern check-dead-controls.js CHECK 4/5 and
-inspector-scan already use), a new detector should be run standalone and
-reviewed before it can fail anyone's build. Wiring it into prebuild is a
-follow-up decision for Bean, not something this build takes unilaterally.
+HARD GATE, wired into both `prestart` (package.json — direct `&&` chain, no
+advisory fallback) and `prebuild`'s `fast` tier (`scripts/gates.json`,
+promoted from `full` 2026-09-02 per P-DEAD-API-PROMOTE-TO-HARD-GATE): the
+baseline is genuinely 0 findings (all real WP/WC calls curated into the
+allowlist) and `--self-test` still catches the exact D641 incident call, so
+nothing justifies leaving it advisory any longer. It also still runs at
+`gate:full` pre-deploy as a second, deploy-time confirmation.
 
 UK English throughout.
 """

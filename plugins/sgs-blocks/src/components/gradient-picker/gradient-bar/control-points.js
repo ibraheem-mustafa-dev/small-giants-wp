@@ -62,6 +62,8 @@ function ControlPointButton( { isOpen, position, color, ...additionalProps } ) {
 				aria-expanded={ isOpen }
 				__next40pxDefaultSize
 				className={ clsx(
+					// Core's class carries the styling (see gradient-bar/index.js).
+					'components-custom-gradient-picker__control-point-button',
 					'sgs-gradient-picker__control-point-button',
 					{ 'is-active': isOpen }
 				) }
@@ -88,6 +90,8 @@ function GradientColorPickerDropdown( { isRenderedInSidebar, className, ...props
 	);
 
 	const mergedClassName = clsx(
+		// Core's class carries the styling (see gradient-bar/index.js).
+		'components-custom-gradient-picker__control-point-dropdown',
 		'sgs-gradient-picker__control-point-dropdown',
 		className
 	);
@@ -315,7 +319,10 @@ function ControlPoints( {
 									{ ! disableRemove &&
 										controlPoints.length > 2 && (
 											<HStack
-												className="sgs-gradient-picker__remove-control-point-wrapper"
+												className={ clsx(
+									'components-custom-gradient-picker__remove-control-point-wrapper',
+									'sgs-gradient-picker__remove-control-point-wrapper'
+								) }
 												alignment="center"
 											>
 												<Button
@@ -364,7 +371,10 @@ function InsertPoint( {
 	return (
 		<GradientColorPickerDropdown
 			isRenderedInSidebar={ __experimentalIsRenderedInSidebar }
-			className="sgs-gradient-picker__inserter"
+			className={ clsx(
+				'components-custom-gradient-picker__inserter',
+				'sgs-gradient-picker__inserter'
+			) }
 			onClose={ () => {
 				onCloseInserter();
 			} }
@@ -382,7 +392,10 @@ function InsertPoint( {
 						}
 						onToggle();
 					} }
-					className="sgs-gradient-picker__insert-point-dropdown"
+					className={ clsx(
+						'components-custom-gradient-picker__insert-point-dropdown',
+						'sgs-gradient-picker__insert-point-dropdown'
+					) }
 					icon={ plus }
 				/>
 			) }

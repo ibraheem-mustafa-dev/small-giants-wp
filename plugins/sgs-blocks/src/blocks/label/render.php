@@ -12,11 +12,8 @@
  * already-published posts continue to round-trip via their stored save
  * HTML; only new (cv2-emitted) instances flow through this renderer.
  *
- * NO-INLINE (LOCKED per-block no-inline migration contract §A, 2026-07-09):
- * the rendered `<span>` carries ZERO inline CSS property declarations. Every
- * declaration is emitted into the block's OWN scoped `.{uid}` <style> tag.
- * The `color`/`spacing` WP supports declare `__experimentalSkipSerialization`
- * in block.json so get_block_wrapper_attributes() never auto-inlines them.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
  *
  * BOX-GROUP (contract §B): `padding` is a SGS custom object attr (this block
  * has no WP-native `spacing.padding` support — padding is pill-gated, so it
@@ -49,55 +46,31 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // (sgs_css_length_sanitise), so no local length closure is needed here.
 // ---------------------------------------------------------------------------
 
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // ---------------------------------------------------------------------------
 // 2. Extract attributes with defaults.
 // ---------------------------------------------------------------------------
 
 $text = $attributes['text'] ?? '';
-// User-facing HTML-tag chooser removed (2026-07-05) — the converter never
-// emitted this attr; sgs/label always renders a <span>.
+// sgs/label always renders a <span> — there is no HTML-tag chooser; the
+// converter never emits one.
 $tag_name          = 'span';
 $text_colour       = $attributes['textColour'] ?? '';
-$background_colour = $attributes['backgroundColour'] ?? '';
-$font_family       = $attributes['fontFamily'] ?? '';
-// fontSize is OBJECT-typed {desktop,tablet,mobile} (Spec 35 tier-object
-// migration) — normalise via the shared helper rather than raw-bracket-reading
-// a Tablet/Mobile SIBLING attr that no longer exists in this block's schema
-// (WP silently discards a value written to an undeclared attr — D338).
-$font_size_obj     = sgs_responsive_normalise_object( $attributes['fontSize'] ?? null );
-$font_size         = $font_size_obj['desktop'] ?? '';
-$font_size_unit    = $sgs_css_keyword( $attributes['fontSizeUnit'] ?? 'px' );
-if ( '' === $font_size_unit ) {
-	$font_size_unit = 'px';
-}
-$font_weight      = $attributes['fontWeight'] ?? '';
-$line_height      = $attributes['lineHeight'] ?? '';
-$line_height_unit = $attributes['lineHeightUnit'] ?? '';
-// Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
-$line_height_unit    = ( 'unitless' === $line_height_unit ) ? '' : $line_height_unit;
-$letter_spacing      = $attributes['letterSpacing'] ?? '';
-$letter_spacing_unit = $attributes['letterSpacingUnit'] ?? 'px';
-$text_transform      = $attributes['textTransform'] ?? '';
-$text_decoration     = $attributes['textDecoration'] ?? '';
-$border_radius       = $attributes['borderRadius'] ?? '';
+// D636 shape — sibling gradient attribute, wins over $text_colour when set+
+// valid (mirrors sgs/heading/sgs/text; added here 2026-08-22 alongside the
+// text/background pseudo-element split).
+$text_colour_gradient = $attributes['textColourGradient'] ?? '';
+$background_colour    = $attributes['backgroundColour'] ?? '';
+// fontSize/fontWeight/fontStyle/lineHeight/letterSpacing/textTransform/
+// textDecoration/fontFamily/textAlign are all emitted via the shared
+// sgs_typography_css_rule() helper below (step 4, D971/D972 full-replacement
+// track) — no local variables needed for them any more.
+$border_radius = $attributes['borderRadius'] ?? '';
 
-$font_style_raw      = isset( $attributes['fontStyle'] ) ? sanitize_text_field( $attributes['fontStyle'] ) : '';
-$allowed_font_styles = array( 'normal', 'italic' );
-$font_style          = in_array( $font_style_raw, $allowed_font_styles, true ) ? $font_style_raw : '';
-
-$text_align_raw      = isset( $attributes['textAlign'] ) ? sanitize_text_field( $attributes['textAlign'] ) : '';
-$allowed_text_aligns = array( 'left', 'center', 'right', 'justify', 'start', 'end' );
-$text_align          = in_array( $text_align_raw, $allowed_text_aligns, true ) ? $text_align_raw : '';
-
-// Style-variant detection. Padding / background / radius now paint on VALUE-
-// PRESENCE (ungated 2026-07-12): the pill block-styles are one-click convenience
-// presets that SET those values, no longer the gate that renders them. The only
-// thing still keyed on a variant is the DISPLAY model — when an is-style-* class
-// is present the variant's own CSS owns display, so render.php emits none.
+// Style-variant detection. Padding / background / radius paint on VALUE-
+// PRESENCE: the pill block-styles are one-click convenience presets that SET
+// those values, not a gate on whether they render. The only thing still keyed
+// on a variant is the DISPLAY model — when an is-style-* class is present the
+// variant's own CSS owns display, so render.php emits none.
 $extra_classes     = isset( $attributes['className'] ) ? $attributes['className'] : '';
 $has_style_variant = ( false !== strpos( $extra_classes, 'is-style-' ) );
 $full_width        = ! empty( $attributes['fullWidth'] );
@@ -133,7 +106,19 @@ $margin_mobile_obj = is_array( $attributes['marginMobile'] ?? null ) ? $attribut
 $style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
 $style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+// `color.background` support is declared FALSE in block.json, so WP never
+// registers/writes a `backgroundColor` attr through the editor — but PHP
+// does not drop an undeclared attr written by hand-authored pattern/theme
+// content (D338). Fold a hand-authored preset slug into the SAME
+// background-paint path as the custom backgroundColour attr (used by the
+// `::after` background layer below) rather than adding WP's native
+// `has-{slug}-background-color` class: that class paints `!important`
+// directly on the root, which is exactly the text-gradient clip conflict
+// this file's `::after` background layer exists to avoid.
+$preset_bg_slug = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+if ( '' === $background_colour && '' !== $preset_bg_slug ) {
+	$background_colour = $preset_bg_slug;
+}
 
 // ---------------------------------------------------------------------------
 // 3. Build the root element's declarations (scoped, NOT inline).
@@ -141,52 +126,26 @@ $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_clas
 
 $root_decls = array();
 
-if ( $text_colour ) {
-	$root_decls[] = 'color:' . sgs_colour_value( $text_colour );
-}
-// Background, border-radius, padding + the display model are BOX properties,
-// emitted below via the shared sgs_label_box_css_rule() helper (the SAME
-// renderer the product-card trial tag uses) — never here in $root_decls.
-if ( $font_weight ) {
-	$font_weight_safe = preg_replace( '/[^a-zA-Z0-9]/', '', (string) $font_weight );
-	if ( '' !== $font_weight_safe ) {
-		$root_decls[] = 'font-weight:' . $font_weight_safe;
+// D636 shape — sibling gradient attribute wins when set+valid; the gradient
+// path paints through the glyphs via background-clip:text (sgs_text_colour_
+// decl()), which is why the block's own background paint (below) is moved
+// off this same root element onto a `::after` layer instead.
+$text_colour_effective = sgs_resolve_text_colour_or_gradient( $text_colour, $text_colour_gradient );
+if ( '' !== $text_colour_effective ) {
+	$text_colour_decl = sgs_text_colour_decl( $text_colour_effective );
+	if ( '' !== $text_colour_decl ) {
+		$root_decls[] = $text_colour_decl;
 	}
 }
-if ( '' !== $line_height && null !== $line_height ) {
-	$lh_unit      = ( '' === $line_height_unit ) ? '' : $sgs_css_keyword( $line_height_unit );
-	$root_decls[] = 'line-height:' . floatval( $line_height ) . $lh_unit;
-}
-if ( '' !== $letter_spacing && null !== $letter_spacing ) {
-	$ls_unit      = $sgs_css_keyword( $letter_spacing_unit );
-	$root_decls[] = 'letter-spacing:' . floatval( $letter_spacing ) . $ls_unit;
-}
-if ( $text_transform ) {
-	$text_transform_safe = $sgs_css_keyword( $text_transform );
-	if ( '' !== $text_transform_safe ) {
-		$root_decls[] = 'text-transform:' . $text_transform_safe;
-	}
-}
-if ( $text_decoration ) {
-	// Free-text historically; sanitise as a keyword (letters/hyphen only) —
-	// covers the legitimate values ('none', 'underline', 'line-through', etc.).
-	$text_decoration_safe = $sgs_css_keyword( $text_decoration );
-	if ( '' !== $text_decoration_safe ) {
-		$root_decls[] = 'text-decoration:' . $text_decoration_safe;
-	}
-}
-if ( $font_family ) {
-	$font_family_safe = preg_replace( '/[^a-zA-Z0-9 ,"\'\-]/', '', (string) $font_family );
-	if ( '' !== $font_family_safe ) {
-		$root_decls[] = 'font-family:' . $font_family_safe;
-	}
-}
-if ( $font_style ) {
-	$root_decls[] = 'font-style:' . $font_style;
-}
-if ( $text_align ) {
-	$root_decls[] = 'text-align:' . $text_align;
-}
+// Background, border-radius, padding + the display model are BOX properties.
+// Border-radius/padding/display are emitted below via the shared
+// sgs_label_box_css_rule() helper (the SAME renderer the product-card trial
+// tag uses); background paint is NOT passed into that helper any more — it
+// is emitted on a `::after` pseudo-element layer instead (step 4b), so the
+// text-gradient clip above cannot reach it.
+// fontWeight/lineHeight/letterSpacing/textTransform/textDecoration/
+// fontFamily/fontStyle/textAlign now emitted via sgs_typography_css_rule()
+// below (step 4, D971/D972 full-replacement track) — not here.
 
 // ---------------------------------------------------------------------------
 // 4. Scoped CSS assembly. uid is a CLASS (this block has no anchor support,
@@ -202,28 +161,31 @@ $scoped_css = array();
 if ( $root_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
 }
+// D636 — old-browser fallback for a gradient textColour; a no-op (returns
+// '') when $text_colour was a flat colour.
+$text_colour_fallback_rule = sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_effective );
+if ( '' !== $text_colour_fallback_rule ) {
+	$scoped_css[] = $text_colour_fallback_rule;
+}
 
-// --- Base font-size — base + tablet + mobile on the SAME selector so the
-// narrower tier wins by cascade order, never inline. Object-model emitter
-// (Spec 35 tier-object migration — fontSize is now {desktop,tablet,mobile}). ---
-$font_size_css = sgs_emit_responsive_css(
-	$root_sel,
-	array(
-		array(
-			'value'        => $attributes['fontSize'] ?? null,
-			'css'          => 'font-size',
-			'unit_default' => $font_size_unit,
-			'cast'         => 'int',
-		),
-	)
-);
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Covers fontSize (base +
+// tablet + mobile tiers, same cascade-order Pattern A as before) plus
+// fontWeight/fontStyle/lineHeight/letterSpacing/textTransform/textDecoration/
+// fontFamily/textAlign (moved here from step 3's $root_decls above).
+// ⚠ Previously cast fontSize to 'int' — the shared helper's tiered path
+// defaults to 'float' (the objectively correct CSS behaviour: a client's
+// decimal UnitControl input is no longer silently rounded). This is a
+// deliberate, reasoned change, not a byte-identical swap — see D971/D972
+// helper-widening follow-up for the analysis.
+$font_size_css = sgs_typography_css_rule( $attributes, '', $root_sel );
 if ( '' !== $font_size_css ) {
 	$scoped_css[] = $font_size_css;
 }
 
 // --- Base margin (WP-native style.spacing.margin, skip-serialised) emitted
 // scoped via the stable core style engine. ---
-if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $base_margin_obj ) ) {
+if ( ! empty( $base_margin_obj ) ) {
 	$base_scoped_styles = wp_style_engine_get_styles(
 		array( 'spacing' => array( 'margin' => $base_margin_obj ) ),
 		array( 'selector' => $root_sel )
@@ -276,13 +238,16 @@ if ( ! $has_style_variant ) {
 	}
 }
 
+// NOTE: 'background' is deliberately NOT passed to this shared helper any
+// more — sgs_label_box_css_rule() paints it onto $root_sel directly, which
+// the text-gradient clip above (background-clip:text) would overwrite/clip.
+// Background paint is emitted separately below on a `::after` layer instead.
 $box_css = sgs_label_box_css_rule(
 	array(
 		'padding'       => $padding_obj,
 		'paddingTablet' => $padding_tablet_obj,
 		'paddingMobile' => $padding_mobile_obj,
 		'radius'        => $radius_value,
-		'background'    => $background_colour,
 		'display'       => $label_display,
 		'fullWidth'     => $label_fullwidth,
 	),
@@ -290,6 +255,19 @@ $box_css = sgs_label_box_css_rule(
 );
 if ( '' !== $box_css ) {
 	$scoped_css[] = $box_css;
+}
+
+// --- Block background — painted on a `::after` layer, never the root
+// itself (this block has no hover state). See sgs_block_background_layer_css().
+// backgroundColourGradient (colour-conformance FILL closeout, 2026-09-06) —
+// the mechanism already supported a gradient arg; only the attribute was
+// missing. ---
+$background_layer_css = sgs_block_background_layer_css(
+	$root_sel,
+	sgs_background_paint_decl( $background_colour, (string) ( $attributes['backgroundColourGradient'] ?? '' ) )
+);
+if ( '' !== $background_layer_css ) {
+	$scoped_css[] = $background_layer_css;
 }
 
 // --- Responsive MARGIN tiers — box objects, scoped @media on the SAME selector
@@ -307,22 +285,21 @@ if ( null !== $margin_mob_val ) {
 // --- WP colour support (skip-serialised) — custom hex/rgb emitted scoped via
 // the style engine; preset SLUGS get the standard has-* classes re-added
 // manually in step 5. ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$color_args = array();
-	if ( '' !== $style_color_text ) {
-		$color_args['text'] = $style_color_text;
-	}
-	if ( '' !== $style_color_bg ) {
-		$color_args['background'] = $style_color_bg;
-	}
-	if ( ! empty( $color_args ) ) {
-		$color_scoped_styles = wp_style_engine_get_styles(
-			array( 'color' => $color_args ),
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $color_scoped_styles['css'] ) ) {
-			$scoped_css[] = $color_scoped_styles['css'];
-		}
+
+$color_args = array();
+if ( '' !== $style_color_text ) {
+	$color_args['text'] = $style_color_text;
+}
+if ( '' !== $style_color_bg ) {
+	$color_args['background'] = $style_color_bg;
+}
+if ( ! empty( $color_args ) ) {
+	$color_scoped_styles = wp_style_engine_get_styles(
+		array( 'color' => $color_args ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $color_scoped_styles['css'] ) ) {
+		$scoped_css[] = $color_scoped_styles['css'];
 	}
 }
 
@@ -338,13 +315,14 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 
 $root_classes = array( 'wp-block-sgs-label', $uid );
 
+// Preset TEXT colour slug re-adds the standard has-* class (it sets colour
+// from the theme palette). The background preset slug does NOT get its
+// native class here — it was folded into $background_colour above and
+// paints through the `::after` background layer instead (see that fold's
+// comment).
 if ( '' !== $preset_text_slug ) {
 	$root_classes[] = 'has-text-color';
 	$root_classes[] = 'has-' . $preset_text_slug . '-color';
-}
-if ( '' !== $preset_bg_slug ) {
-	$root_classes[] = 'has-background';
-	$root_classes[] = 'has-' . $preset_bg_slug . '-background-color';
 }
 
 $wrapper_attrs = get_block_wrapper_attributes(
@@ -354,7 +332,7 @@ $wrapper_attrs = get_block_wrapper_attributes(
 if ( $scoped_css ) :
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D). Every value reaching
-	// $scoped_css is pre-sanitised (the box helper's length/keyword sanitisers / $sgs_css_keyword /
+	// $scoped_css is pre-sanitised (the box helper's length/keyword sanitisers / sgs_css_keyword_sanitise() /
 	// allowlists / floatval / wp_style_engine_get_styles / sgs_colour_value),
 	// so no un-sanitised value survives here.
 	?>

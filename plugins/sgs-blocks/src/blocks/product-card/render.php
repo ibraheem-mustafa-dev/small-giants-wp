@@ -2,12 +2,11 @@
 /**
  * Server-side render for the SGS Product Card block.
  *
- * Two modes, branched on the explicit `sourceMode` attribute (R-22-14 — never
+ * Two modes, branched on the explicit `sourceMode` attribute (R-31-14 — never
  * `empty( $content )`):
  *
  *  - 'typed' (default): renders the card's built-in elements directly from
- *    block attributes (sgs_product_card_builtin_render). No InnerBlocks —
- *    the FP-H transition bridge retired 2026-07-04.
+ *    block attributes (sgs_product_card_builtin_render). No InnerBlocks slot.
  *
  *  - 'wc-product' / 'sgs-cpt' (Live product data): resolves a real product
  *    (WooCommerce or sgs_product CPT), seeds the Interactivity API state from
@@ -21,12 +20,10 @@
  * wrapper capabilities (align, maxWidth, etc.). The block is
  * a CONTENT-KIND composite — only width layers are emitted (no bg/grid/shapes).
  *
- * `contentWidth` was DELETED 2026-08-10 (D540). It was declared and exposed to
- * the client, but $base_opts below passes `wrap_inner => false` on EVERY branch,
- * so `.sgs-container__inner` never renders and the wrapper wrote the band CSS to
- * a selector that does not exist. The control changed nothing. D540 reserves the
- * name for a block that genuinely renders an inner band; this one cannot.
- * Render-neutral at deletion: 0 theme patterns/parts and 0 canary posts set it.
+ * `contentWidth` is deliberately absent (D540) — $base_opts below passes
+ * `wrap_inner => false` on EVERY branch, so `.sgs-container__inner` never
+ * renders and a width control targeting it would do nothing. D540 reserves
+ * the name for a block that genuinely renders an inner band; this one cannot.
  *
  * Shell classes:
  *  - standard: .product-card
@@ -61,6 +58,16 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 require_once dirname( __DIR__, 3 ) . '/includes/configurator-seed.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-builtin-render.php';
 
+// The CTA below always carries .sgs-button/.sgs-button--primary classes, but it
+// is raw HTML, not a real `sgs/button` InnerBlocks instance — so WordPress's
+// automatic "only load a block's style.css when that block is actually parsed
+// on the page" detection never sees it and skips `sgs-button-style`. On a page
+// with no OTHER real sgs/button instance, the CTA's base look (background,
+// padding, colour) never loads until something else happens to pull the
+// stylesheet in. Declaring the dependency explicitly, every render, removes
+// the coincidence.
+wp_enqueue_style( 'sgs-button-style' );
+
 $variant_style  = $attributes['variantStyle'] ?? 'standard';
 $source_mode    = $attributes['sourceMode'] ?? 'typed';
 $card_max_width = isset( $attributes['cardMaxWidth'] ) ? sanitize_text_field( $attributes['cardMaxWidth'] ) : '';
@@ -77,13 +84,14 @@ $picker_label_colour    = isset( $attributes['pickerLabelColour'] ) ? sanitize_t
 // guards on non-empty), so an un-set card looks unchanged. pickerColourPreset
 // defaults 'solid' — see R5 note in style.css for why (replaces the removed
 // card-scoped --sgs-op-border hardcode).
-$picker_colour_preset       = isset( $attributes['pickerColourPreset'] ) ? sanitize_key( $attributes['pickerColourPreset'] ) : 'solid';
-$picker_show_selected_tick  = array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : true;
-$picker_pill_bg_colour      = isset( $attributes['pickerPillBgColour'] ) ? sanitize_text_field( $attributes['pickerPillBgColour'] ) : '';
-$picker_pill_text_colour    = isset( $attributes['pickerPillTextColour'] ) ? sanitize_text_field( $attributes['pickerPillTextColour'] ) : '';
-$picker_pill_border_colour  = isset( $attributes['pickerPillBorderColour'] ) ? sanitize_text_field( $attributes['pickerPillBorderColour'] ) : '';
+$picker_colour_preset           = isset( $attributes['pickerColourPreset'] ) ? sanitize_key( $attributes['pickerColourPreset'] ) : 'solid';
+$picker_show_selected_tick      = array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : true;
+$picker_pill_bg_colour          = isset( $attributes['pickerPillBgColour'] ) ? sanitize_text_field( $attributes['pickerPillBgColour'] ) : '';
+$picker_pill_bg_colour_gradient = isset( $attributes['pickerPillBgColourGradient'] ) ? sanitize_text_field( $attributes['pickerPillBgColourGradient'] ) : '';
+$picker_pill_text_colour        = isset( $attributes['pickerPillTextColour'] ) ? sanitize_text_field( $attributes['pickerPillTextColour'] ) : '';
+$picker_pill_border_colour      = isset( $attributes['pickerPillBorderColour'] ) ? sanitize_text_field( $attributes['pickerPillBorderColour'] ) : '';
 // Border-radius forwards are CSS-length STRINGS (e.g. "6px") — the option-picker
-// side reads them as strings, gates on '' !== and sanitises via $sgs_css_length,
+// side reads them as strings, gates on '' !== and sanitises via sgs_css_length_value(),
 // so an explicit "0"/"0px" survives and empty = the picker's own default.
 $picker_pill_border_radius  = isset( $attributes['pickerPillBorderRadius'] ) ? sanitize_text_field( (string) $attributes['pickerPillBorderRadius'] ) : '';
 $picker_pill_sel_bg_colour  = isset( $attributes['pickerPillSelectedBgColour'] ) ? sanitize_text_field( $attributes['pickerPillSelectedBgColour'] ) : '';
@@ -98,6 +106,7 @@ $picker_style_attrs = array(
 	'colourPreset'             => $picker_colour_preset,
 	'showSelectedTick'         => $picker_show_selected_tick,
 	'pillBgColour'             => $picker_pill_bg_colour,
+	'pillBgColourGradient'     => $picker_pill_bg_colour_gradient,
 	'pillTextColour'           => $picker_pill_text_colour,
 	'pillBorderColour'         => $picker_pill_border_colour,
 	'pillBorderRadius'         => $picker_pill_border_radius,
@@ -135,34 +144,21 @@ if ( '' !== $card_max_width && preg_match( $sgs_css_length_re, $card_max_width )
 if ( '' !== $image_height && preg_match( $sgs_css_length_re, $image_height ) ) {
 	$inline_styles[] = '--sgs-product-card-image-height:' . esc_attr( $image_height ) . ';';
 }
-// NOTE (2026-07-30): the retired `innerPadding` emit block lived here. The
-// scalar `innerPadding` attr was migrated to the `cardPadding` box-object on
-// 2026-07-24 (FR-31-22) — see the cardPadding rendering further down — but the
-// old emit was left behind reading a `$inner_padding` variable whose assignment
-// had been deleted with the attribute. It was a READ WITH NO WRITER: harmless
-// in output (sgs_container_gap_value(null) casts to '' and returns '', so the
-// `if` never fired and no var was ever emitted) but it raised a PHP 8
-// "Undefined variable $inner_padding" warning on EVERY product-card render.
-// Deleted, not repaired — cardPadding is the live mechanism.
-
 // CSS-length + CSS-keyword sanitisers for any free-text style value concatenated
 // into the scoped <style> below (border width/radius = length; border style =
 // keyword). Strip everything outside the safe grammar so a Contributor-authored
 // value can never break out of the declaration into a new CSS rule. Mirrors
 // sgs/hero's proven sanitisers.
-$sgs_css_length  = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // ── Per-element typography (title heading + price) ──────────────────────
 // Font size/weight/style/line-height now come from the shared
 // TypographyControls component → sgs_typography_css_rule() scoped <style>
 // (built below). Only the COLOUR vars are emitted here (the helper does not
 // handle colour). A per-instance uid scopes the typography rules.
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
+// Normalise borderRadius from flat/tier-object shape to tier-keyed structure.
+$sgs_radius_tiers = sgs_responsive_normalise_object( $attributes['borderRadius'] ?? null );
+
 $sgs_card_uid          = 'sgs-pc-' . wp_unique_id();
 $sgs_title_colour      = sgs_colour_value( $attributes['titleColour'] ?? '' );
 $sgs_price_colour      = sgs_colour_value( $attributes['priceColour'] ?? '' );
@@ -187,127 +183,367 @@ $classes[] = $sgs_card_uid;
 // list covers EVERY render branch's markup for that visual role (typed BEM
 // classes + the read-only/live-data plain classes) so ONE control governs the
 // element everywhere it can appear — no per-branch carve-out (R-31-9 / CG-9).
+// FONT FAMILIES — titleFontFamily, descFontFamily, priceFontFamily and
+// priceNoteFontFamily are all emitted by sgs_typography_css_rule() itself (G4,
+// helpers-typography.php) via its own base_decls font-family branch, sanitised
+// through sgs_font_family_sanitise(). No block-private duplicate emission is
+// needed, and none of the four is read by name in this file.
+//
+// ⚠ All four are DYNAMIC-KEY attrs: the helper builds its key as
+// `$prefix . 'FontFamily'` (helpers-typography.php:93) and TypographyControls
+// builds the matching editor key the same way, so the literal attribute name
+// exists at neither end. audit-block-file-consistency.py greps for the literal
+// with comments STRIPPED, so all four are carried as documented FALSE POSITIVES
+// in block-file-consistency-baseline.json — this comment does not and cannot
+// satisfy that gate. Adding a fifth prefixed font-family attr means adding a
+// fifth baseline row, with the same verify-before-trusting clause.
+
 $sgs_card_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'price', '.' . $sgs_card_uid . ' .sgs-product-card__price, .' . $sgs_card_uid . ' .price, .' . $sgs_card_uid . ' .price-from-amount' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'desc', '.' . $sgs_card_uid . ' .sgs-product-card__description, .' . $sgs_card_uid . ' .product-desc' );
-// 'pill' typography now targets the REAL option-picker pill (both typed + bound
-// pack pickers render sgs/option-picker) — the legacy .sgs-product-card__pill /
-// .pill markup was removed 2026-07-10, so this control styles the live pills.
+// 'pill' typography targets the option-picker pill (both typed + bound pack
+// pickers render sgs/option-picker).
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'pill', '.' . $sgs_card_uid . ' .sgs-option-picker__pill' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceNote', '.' . $sgs_card_uid . ' .sgs-product-card__price-note, .' . $sgs_card_uid . ' .price-note' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceFromLabel', '.' . $sgs_card_uid . ' .price-from-label' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_card_uid . ' .sgs-product-card__tag' );
 
-// ── Explicit media-position (Spec 35 capability-routing doctrine, mechanism
-// (c)) — replaces the guessed-root render_block injector (image-controls.php),
-// which can never find the right element among this block's several <img>
-// roles. Targets ONLY the card's MAIN product image — the element the fixed
-// --sgs-product-card-image-height box + hardcoded object-fit:cover in
-// style.css governs (lines 50-56, 711-718, 937-942) — never the thumbnail
-// strip (.product-card__thumb img, a distinct role with its own 48×48 box,
-// never height-var-governed) or the no-image SVG placeholder. Covers every
-// render branch's own main-image class: the typed built-in element
-// (.sgs-product-card__image, product-card-builtin-render.php), the bound
-// read-only/non-variable-live image (.product-card-img), and the bound
-// variable-configurator image nested one level deeper inside
-// .product-card__media (same element, .product-card-img class, but a
-// higher-specificity style.css override rule at that nesting requires an
-// equally-deep selector here to win). ONE control governs the main image
-// everywhere it can appear (R-31-9 / CG-9) — computed once, before the
-// typed/bound branch split, so it flows into every branch's assembled
-// $sgs_card_typo_css.
-$sgs_card_typo_css .= sgs_media_position_css(
-	$attributes,
-	'sgs',
-	'.' . $sgs_card_uid . ' .sgs-product-card__image, .' . $sgs_card_uid . ' .product-card-img, .' . $sgs_card_uid . ' .product-card__media .product-card-img'
+// ── Text-colour gradient siblings: title / desc / price / priceNote ──────
+// Mirrors the tagTextColour/tagTextColourGradient triad below (D636 rollout)
+// — sgs_resolve_text_colour_or_gradient() + sgs_text_colour_decl() +
+// sgs_text_colour_gradient_fallback_rule(). Each of these 4 attrs previously
+// painted ONLY via a colour-valued CSS custom property (--sgs-card-title-
+// colour etc., set above near $inline_styles) which cannot carry a gradient
+// (a gradient is `background-image`, a different CSS property from the
+// custom property's `color` value) — confirmed by a separate audit this
+// session as TEXT-only with no background painted on the same selector, so
+// each gets an unconditional gradient sibling, no gating needed. Selectors
+// mirror the ones this same element already uses two lines above for
+// typography, so the emitted rule wins the identical cascade specificity /
+// source-order battle those typography rules already win against style.css's
+// base `.product-card` selectors. The flat-colour branch below re-emits the
+// SAME `color:` value the pre-existing custom-property mechanism already
+// sets (harmless duplication, kept for backward compatibility) — the
+// gradient branch is the new behaviour.
+$sgs_pc_title_colour_sel       = '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3';
+$sgs_pc_title_colour_effective = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['titleColour'] ?? '' ),
+	(string) ( $attributes['titleColourGradient'] ?? '' )
 );
-
-// ── Native styling supports (color + border) → scoped, NOT inline ────────
-// block.json declares supports.color + supports.__experimentalBorder with
-// __experimentalSkipSerialization, so get_block_wrapper_attributes() (called
-// inside SGS_Container_Wrapper::render() below) no longer auto-inlines them.
-// Read the resolved CUSTOM values from $attributes['style'] and emit them into
-// the card's OWN scoped <style> (mirrors sgs/hero render.php). Base spacing
-// (margin) is a SEPARATE mechanism the shared wrapper already handles scoped
-// internally (it reads $attributes['style']['spacing'] directly) — NOT
-// duplicated here, or it would double-emit. Preset (palette-slug) colours are
-// class-based, re-added below.
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$sgs_pc_style_engine_args = array();
-
-	$sgs_pc_color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$sgs_pc_color_args['text'] = (string) $attributes['style']['color']['text'];
+if ( '' !== $sgs_pc_title_colour_effective ) {
+	$sgs_pc_title_colour_decl = sgs_text_colour_decl( $sgs_pc_title_colour_effective );
+	if ( '' !== $sgs_pc_title_colour_decl ) {
+		$sgs_card_typo_css .= $sgs_pc_title_colour_sel . '{' . $sgs_pc_title_colour_decl . ';}';
 	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$sgs_pc_color_args['background'] = (string) $attributes['style']['color']['background'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$sgs_pc_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $sgs_pc_color_args ) ) {
-		$sgs_pc_style_engine_args['color'] = $sgs_pc_color_args;
-	}
-
-	$sgs_pc_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$sgs_pc_border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$sgs_pc_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$sgs_pc_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$sgs_pc_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $sgs_pc_radius_raw ) && '' !== $sgs_pc_radius_raw ) {
-			$sgs_pc_border_args['radius'] = $sgs_css_length( $sgs_pc_radius_raw );
-		} elseif ( is_array( $sgs_pc_radius_raw ) ) {
-			$sgs_pc_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sgs_pc_corner ) {
-				if ( ! empty( $sgs_pc_radius_raw[ $sgs_pc_corner ] ) ) {
-					$sgs_pc_radius_clean[ $sgs_pc_corner ] = $sgs_css_length( $sgs_pc_radius_raw[ $sgs_pc_corner ] );
-				}
-			}
-			if ( ! empty( $sgs_pc_radius_clean ) ) {
-				$sgs_pc_border_args['radius'] = $sgs_pc_radius_clean;
-			}
-		}
-	}
-	if ( ! empty( $sgs_pc_border_args ) ) {
-		$sgs_pc_style_engine_args['border'] = $sgs_pc_border_args;
-	}
-
-	if ( ! empty( $sgs_pc_style_engine_args ) ) {
-		$sgs_pc_scoped = wp_style_engine_get_styles(
-			$sgs_pc_style_engine_args,
-			array( 'selector' => '.' . $sgs_card_uid . '.wp-block-sgs-product-card' )
-		);
-		if ( ! empty( $sgs_pc_scoped['css'] ) ) {
-			$sgs_card_typo_css .= $sgs_pc_scoped['css'];
-		}
-	}
+	$sgs_card_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_title_colour_sel, $sgs_pc_title_colour_effective );
 }
 
-// Card ROOT padding (FR-31-22 box-object migration, 2026-07-24) — REPLACES the
-// retired single-value innerPadding custom-property mechanism. cardPadding is
-// a {top,right,bottom,left} box-object attr (mirrors ctaPadding/tagPadding),
-// shorthanded via the shared sgs_box_object_shorthand() helper (helpers-box.php,
-// auto-loaded via render-helpers.php) into ONE scoped <style> rule — never an
-// inline `style="padding:…"` declaration (Spec 32). Targets BOTH the bound-mode
-// body class (.product-card-body) and the typed-mode body class
+$sgs_pc_desc_colour_sel       = '.' . $sgs_card_uid . ' .sgs-product-card__description, .' . $sgs_card_uid . ' .product-desc';
+$sgs_pc_desc_colour_effective = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['descColour'] ?? '' ),
+	(string) ( $attributes['descColourGradient'] ?? '' )
+);
+if ( '' !== $sgs_pc_desc_colour_effective ) {
+	$sgs_pc_desc_colour_decl = sgs_text_colour_decl( $sgs_pc_desc_colour_effective );
+	if ( '' !== $sgs_pc_desc_colour_decl ) {
+		$sgs_card_typo_css .= $sgs_pc_desc_colour_sel . '{' . $sgs_pc_desc_colour_decl . ';}';
+	}
+	$sgs_card_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_desc_colour_sel, $sgs_pc_desc_colour_effective );
+}
+
+$sgs_pc_price_colour_sel       = '.' . $sgs_card_uid . ' .sgs-product-card__price, .' . $sgs_card_uid . ' .price, .' . $sgs_card_uid . ' .price-from-amount';
+$sgs_pc_price_colour_effective = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['priceColour'] ?? '' ),
+	(string) ( $attributes['priceColourGradient'] ?? '' )
+);
+if ( '' !== $sgs_pc_price_colour_effective ) {
+	$sgs_pc_price_colour_decl = sgs_text_colour_decl( $sgs_pc_price_colour_effective );
+	if ( '' !== $sgs_pc_price_colour_decl ) {
+		$sgs_card_typo_css .= $sgs_pc_price_colour_sel . '{' . $sgs_pc_price_colour_decl . ';}';
+	}
+	$sgs_card_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_price_colour_sel, $sgs_pc_price_colour_effective );
+}
+
+$sgs_pc_price_note_colour_sel       = '.' . $sgs_card_uid . ' .sgs-product-card__price-note, .' . $sgs_card_uid . ' .price-note';
+$sgs_pc_price_note_colour_effective = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['priceNoteColour'] ?? '' ),
+	(string) ( $attributes['priceNoteColourGradient'] ?? '' )
+);
+if ( '' !== $sgs_pc_price_note_colour_effective ) {
+	$sgs_pc_price_note_colour_decl = sgs_text_colour_decl( $sgs_pc_price_note_colour_effective );
+	if ( '' !== $sgs_pc_price_note_colour_decl ) {
+		$sgs_card_typo_css .= $sgs_pc_price_note_colour_sel . '{' . $sgs_pc_price_note_colour_decl . ';}';
+	}
+	$sgs_card_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_price_note_colour_sel, $sgs_pc_price_note_colour_effective );
+}
+
+// Card ROOT padding (FR-31-22). cardPadding is a {top,right,bottom,left}
+// box-object attr (mirrors ctaPadding/tagPadding), shorthanded via the shared
+// sgs_box_object_shorthand() helper (helpers-box.php, auto-loaded via
+// render-helpers.php) into ONE scoped <style> rule — never an inline
+// `style="padding:…"` declaration (Spec 32). Targets BOTH the bound-mode body
+// class (.product-card-body) and the typed-mode body class
 // (.sgs-product-card__body) — the same attr governs card padding in either
 // render branch. An entirely-empty/un-set cardPadding ({}) → sgs_box_object_
 // shorthand() returns null → NO rule is emitted at all, so style.css's own
 // :where(.product-card) .product-card-body/.sgs-product-card__body{padding:20px}
-// default renders — byte-identical to the pre-migration innerPadding default.
-$sgs_card_padding_obj      = is_array( $attributes['cardPadding'] ?? null ) ? $attributes['cardPadding'] : array();
+// default renders.
+//
+// ⚠ RESTORED 2026-08-22. The R2c root-box migration deleted this block while
+// rewriting the colour/border emit around it, leaving the cardPadding CONTROL
+// live in edit.js with nothing rendering it — a client setting that silently
+// did nothing. Caught by check-dead-controls.js, which was missing from that
+// task's verification list; the migration's own gate run reported green.
+$sgs_card_padding_obj       = is_array( $attributes['cardPadding'] ?? null ) ? $attributes['cardPadding'] : array();
 $sgs_card_padding_shorthand = sgs_box_object_shorthand( $sgs_card_padding_obj );
 if ( null !== $sgs_card_padding_shorthand ) {
 	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .product-card-body,.' . $sgs_card_uid . ' .sgs-product-card__body{padding:' . $sgs_card_padding_shorthand . ';}';
 }
 
+// ── Media-element atom layer (rule 37-media-no-handroll) — replaces the
+// former sgs_media_position_css() hand-roll (which never had a declared
+// sgsObjectFit/sgsObjectPosition attribute pair or any editor control, so it
+// always emitted ''). Two independently-scoped elements, per block.json's
+// supports.sgs.mediaElements:
+//
+// - 'main' covers EVERY render branch's main product image (typed
+// .sgs-product-card__image, bound read-only/non-variable .product-card-img,
+// bound variable-configurator .product-card__media .product-card-img) —
+// deliberately ONE control (R-31-9 / CG-9), since only one branch ever
+// renders per page load. Each render site carries the SAME
+// sgs_media_element_scope_class( $sgs_card_uid, 'main' ) marker class, so
+// this ONE scoped rule (keyed to that class) governs whichever branch is
+// live. Replaces style.css's hardcoded object-fit:cover / object-position:
+// center on the main image (both atoms default to those exact values via
+// assets/css/media-atoms/object-fit.css + focal-point.css, so an untouched
+// card renders byte-identical).
+// - 'thumb' covers the bound variable-configurator's thumbnail-rail image
+// (.product-card__thumb img) — a distinct role, never governed by 'main'.
+//
+// Computed once, before the typed/bound branch split, so it flows into every
+// branch's assembled $sgs_card_typo_css.
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_card_typo_css .= SGS_Media_Element::style(
+		$attributes,
+		'main',
+		'sgs/product-card',
+		$sgs_card_uid,
+		array( 'object-fit', 'focal-point' )
+	);
+	$sgs_card_typo_css .= SGS_Media_Element::style(
+		$attributes,
+		'thumb',
+		'sgs/product-card',
+		$sgs_card_uid,
+		array( 'object-fit' )
+	);
+}
+
+// Marker classes for every main-image render site + the thumbnail-rail site
+// (see the atom-layer block above). Built once, reused verbatim at each of
+// this file's <img> tags plus passed into product-card-builtin-render.php
+// for the typed element. class_exists()-guarded so a request that somehow
+// reaches this file before the class autoloads still renders with the plain
+// base class (mirrors buybox/gallery-col.php's own guard).
+$sgs_pc_main_img_class  = 'product-card-img';
+$sgs_pc_thumb_img_class = '';
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_pc_main_img_class .= ' ' . implode( ' ', SGS_Media_Element::element_classes( SGS_Media_Element::scope_class( $sgs_card_uid, 'main' ) ) );
+	$sgs_pc_thumb_img_class = implode( ' ', SGS_Media_Element::element_classes( SGS_Media_Element::scope_class( $sgs_card_uid, 'thumb' ) ) );
+}
+
+// ── Block-private colour/border (R2c, B-3/B-8) → scoped, NOT inline ──────
+// block.json's native color/border supports are now radius-only + gradients
+// disabled (colour.background/text were already false) — the card's root
+// box has ONE owner: these block-private attrs, emitted here via the shared
+// five-variant colour helpers (helpers-colour-variants.php). Border RADIUS
+// alone remains native — a corner-shape control, not a colour/paint
+// decision — and is still read from the skip-serialised style.border.radius
+// object further below. Base spacing (margin) is a SEPARATE mechanism the
+// shared wrapper already handles scoped internally (it reads
+// $attributes['style']['spacing'] directly) — NOT duplicated here.
+
+$sgs_pc_root_sel = '.' . $sgs_card_uid . '.wp-block-sgs-product-card';
+
+// --- Text colour (flat-or-gradient, base + hover) ---
+// FIXED 2026-09-04 — was sgs_text_decls()/sgs_emit_state_colour_css(), which
+// always emits a bare `color:` even for a resolved gradient string (invalid
+// CSS, silently dropped — same defect proven live on sgs/info-box and
+// sgs/testimonial-slider). Distinct from the titleColour/descColour/
+// priceColour/priceNoteColour rows, which paint via a genuinely different
+// custom-property mechanism and stay out of scope here. sgs_text_colour_decl()
+// is the correct primary primitive; the companion fallback rule below was
+// already correct.
+$sgs_pc_text_normal_resolved = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColour'] ?? '' ),
+	(string) ( $attributes['textColourGradient'] ?? '' )
+);
+$sgs_pc_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColourHover'] ?? '' ),
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+$sgs_pc_text_normal_decl     = sgs_text_colour_decl( $sgs_pc_text_normal_resolved );
+$sgs_pc_text_hover_decl      = sgs_text_colour_decl( $sgs_pc_text_hover_resolved );
+if ( '' !== $sgs_pc_text_normal_decl || '' !== $sgs_pc_text_hover_decl ) {
+	$sgs_card_typo_css .= sgs_emit_state_colour_css(
+		$sgs_pc_root_sel,
+		'' !== $sgs_pc_text_normal_decl ? array( $sgs_pc_text_normal_decl ) : array(),
+		'' !== $sgs_pc_text_hover_decl ? array( $sgs_pc_text_hover_decl ) : array()
+	);
+}
+// Gradient companion rule — a no-op for a flat colour, MUST accompany
+// sgs_text_colour_decl(): its gradient branch has no @supports fallback of
+// its own.
+$sgs_card_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_root_sel, $sgs_pc_text_normal_resolved );
+if ( '' !== $sgs_pc_text_hover_resolved && $sgs_pc_text_hover_resolved !== $sgs_pc_text_normal_resolved ) {
+	$sgs_card_typo_css .= sgs_hover_media_wrap(
+		sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $sgs_pc_root_sel . ':hover', $sgs_pc_text_hover_resolved )
+	) . sgs_text_colour_gradient_fallback_rule( $sgs_pc_root_sel . ':focus-visible', $sgs_pc_text_hover_resolved );
+}
+
+// --- Background (flat-or-gradient, base + hover) — painted on a `::after`
+// layer, never the root itself, so a text gradient on the SAME element
+// (background-clip:text, above) cannot clip or overwrite it (mirrors
+// sgs/heading + sgs/text's background/text pseudo-element split). ---
+$sgs_pc_bg_decls    = sgs_fill_decls(
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+$sgs_card_typo_css .= sgs_block_background_layer_css(
+	$sgs_pc_root_sel,
+	$sgs_pc_bg_decls['normal'][0] ?? '',
+	$sgs_pc_bg_decls['hover'][0] ?? ''
+);
+
+// --- Border (colour + gradient, no hover — block.json declares no
+// borderColourHover on this block). Real border-width/style are separate
+// BOX-MODEL declarations (not paint) — emitted first so the masked
+// `::before` ring (when a colour/gradient is set) visually wins by source
+// order, matching sgs/quote + sgs/heading. ---
+$sgs_pc_border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$sgs_pc_border_width_top    = sgs_css_length_value( $sgs_pc_border_width_obj['top'] ?? '' );
+$sgs_pc_border_width_right  = sgs_css_length_value( $sgs_pc_border_width_obj['right'] ?? '' );
+$sgs_pc_border_width_bottom = sgs_css_length_value( $sgs_pc_border_width_obj['bottom'] ?? '' );
+$sgs_pc_border_width_left   = sgs_css_length_value( $sgs_pc_border_width_obj['left'] ?? '' );
+$sgs_pc_has_border_width    = ( '' !== $sgs_pc_border_width_top || '' !== $sgs_pc_border_width_right || '' !== $sgs_pc_border_width_bottom || '' !== $sgs_pc_border_width_left );
+
+$sgs_pc_border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$sgs_pc_allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$sgs_pc_border_style          = in_array( $sgs_pc_border_style_raw, $sgs_pc_allowed_border_styles, true ) ? $sgs_pc_border_style_raw : 'none';
+$sgs_pc_border_colour_raw     = isset( $attributes['borderColour'] ) ? (string) $attributes['borderColour'] : '';
+
+if ( 'none' !== $sgs_pc_border_style ) {
+	// G5 (Bean, 2026-08-26): "border with no width should mean no border by
+	// default." The width block below is nested, so seeding the array with the
+	// style meant a style with no width fell through to the browser's initial
+	// `medium` (~3px). The style is now seeded only alongside a real width;
+	// border-colour below is legitimately independent and still emits.
+	$sgs_pc_border_box_decls = $sgs_pc_has_border_width
+		? array( 'border-style:' . $sgs_pc_border_style )
+		: array();
+	if ( $sgs_pc_has_border_width ) {
+		$sgs_pc_bwt                = '' !== $sgs_pc_border_width_top ? $sgs_pc_border_width_top : '0';
+		$sgs_pc_bwr                = '' !== $sgs_pc_border_width_right ? $sgs_pc_border_width_right : '0';
+		$sgs_pc_bwb                = '' !== $sgs_pc_border_width_bottom ? $sgs_pc_border_width_bottom : '0';
+		$sgs_pc_bwl                = '' !== $sgs_pc_border_width_left ? $sgs_pc_border_width_left : '0';
+		$sgs_pc_border_box_decls[] = "border-width:{$sgs_pc_bwt} {$sgs_pc_bwr} {$sgs_pc_bwb} {$sgs_pc_bwl}";
+	}
+	$sgs_card_typo_css .= $sgs_pc_root_sel . '{' . implode( ';', $sgs_pc_border_box_decls ) . ';}';
+
+	$sgs_card_typo_css .= sgs_border_states_css(
+		$sgs_pc_root_sel,
+		$attributes,
+		array(
+			'base'     => 'borderColour',
+			'gradient' => 'borderColourGradient',
+			'width'    => '' !== $sgs_pc_border_width_top ? $sgs_pc_border_width_top : '1px',
+		)
+	);
+} elseif ( $sgs_pc_has_border_width || '' !== $sgs_pc_border_colour_raw ) {
+	// G5 negative-control fix (2026-08-29, check-border-roundtrip.js): the card
+	// ROOT has an always-on 1px definitional border in style.css (`.product-card`,
+	// ~:43 — a WCAG §1.4.11 boundary, present by design for every card the
+	// operator has never touched border controls on; block.json's own default is
+	// borderStyle:"none" + borderWidth:{} + borderColour:"", so "untouched" and
+	// "explicitly none" are the SAME attribute state and cannot be told apart from
+	// borderStyle alone).
+	//
+	// borderWidth/borderColour being non-default is the signal that the operator
+	// DID engage these controls (an untouched card carries {} and ""), so
+	// borderStyle:"none" in that combination is a deliberate "remove the border"
+	// request, not the passive default. Without this branch, that request was
+	// silently ignored: render.php emitted NOTHING (per G5 — a style must only be
+	// emitted alongside a real width), leaving the base 1px rule as the only
+	// same-specificity (0,1,0 vs the scoped 0,2,0 rule below) declaration in
+	// play... except with THIS branch there IS a scoped (0,2,0) rule again, which
+	// reliably beats the base rule's (0,1,0) regardless of source order.
+	//
+	// An operator who has never touched borderWidth/borderColour at all keeps the
+	// default definitional border untouched — this branch does not fire for them.
+	$sgs_card_typo_css .= $sgs_pc_root_sel . '{border-style:none;border-width:0;}';
+}
+
+// --- Native border-radius (unchanged mechanism) — still resolved from the
+// skip-serialised style.border.radius object and emitted scoped via the
+// stable core style engine. ---
+$sgs_pc_style_engine_args = array();
+$sgs_pc_radius_args       = array();
+if ( null !== $sgs_radius_tiers['desktop'] ) {
+	$sgs_pc_radius_raw = $sgs_radius_tiers['desktop'];
+	if ( is_string( $sgs_pc_radius_raw ) && '' !== $sgs_pc_radius_raw ) {
+		$sgs_pc_radius_args['radius'] = sgs_css_length_value( $sgs_pc_radius_raw );
+	} elseif ( is_array( $sgs_pc_radius_raw ) ) {
+		$sgs_pc_radius_clean = array();
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sgs_pc_corner ) {
+			if ( ! empty( $sgs_pc_radius_raw[ $sgs_pc_corner ] ) ) {
+				$sgs_pc_radius_clean[ $sgs_pc_corner ] = sgs_css_length_value( $sgs_pc_radius_raw[ $sgs_pc_corner ] );
+			}
+		}
+		if ( ! empty( $sgs_pc_radius_clean ) ) {
+			$sgs_pc_radius_args['radius'] = $sgs_pc_radius_clean;
+		}
+	}
+}
+if ( ! empty( $sgs_pc_radius_args ) ) {
+	$sgs_pc_style_engine_args['border'] = $sgs_pc_radius_args;
+}
+if ( ! empty( $sgs_pc_style_engine_args ) ) {
+	$sgs_pc_scoped = wp_style_engine_get_styles(
+		$sgs_pc_style_engine_args,
+		array( 'selector' => $sgs_pc_root_sel )
+	);
+	if ( ! empty( $sgs_pc_scoped['css'] ) ) {
+		$sgs_card_typo_css .= $sgs_pc_scoped['css'];
+	}
+}
+
+// Border-radius tablet/mobile tiers — block-private object attrs (2026-08-30
+// radius target-shape correction; base handled above).
+$sgs_pc_radius_tablet_obj = is_array( $sgs_radius_tiers['tablet'] ) ? $sgs_radius_tiers['tablet'] : array();
+$sgs_pc_radius_mobile_obj = is_array( $sgs_radius_tiers['mobile'] ) ? $sgs_radius_tiers['mobile'] : array();
+$sgs_pc_radius_tab_val    = sgs_corner_object_shorthand( $sgs_pc_radius_tablet_obj );
+$sgs_pc_radius_mob_val    = sgs_corner_object_shorthand( $sgs_pc_radius_mobile_obj );
+
+$sgs_pc_radius_tablet_decls = array();
+if ( null !== $sgs_pc_radius_tab_val ) {
+	$sgs_pc_radius_tablet_decls[] = "border-radius:{$sgs_pc_radius_tab_val}";
+}
+if ( $sgs_pc_radius_tablet_decls ) {
+	$sgs_card_typo_css .= '@media(max-width:1023px){' . $sgs_pc_root_sel . '{' . implode( ';', $sgs_pc_radius_tablet_decls ) . ';}}';
+}
+
+$sgs_pc_radius_mobile_decls = array();
+if ( null !== $sgs_pc_radius_mob_val ) {
+	$sgs_pc_radius_mobile_decls[] = "border-radius:{$sgs_pc_radius_mob_val}";
+}
+if ( $sgs_pc_radius_mobile_decls ) {
+	$sgs_card_typo_css .= '@media(max-width:767px){' . $sgs_pc_root_sel . '{' . implode( ';', $sgs_pc_radius_mobile_decls ) . ';}}';
+}
 // Skip-serialised color/border supports also stop WP auto-adding the standard
 // has-*-color / has-*-background-color / has-*-border-color classes onto the
 // wrapper — re-add them from the preset (palette-slug) attrs (mirrors sgs/hero
@@ -334,7 +570,7 @@ if ( '' !== $sgs_pc_preset_border ) {
 	$classes[] = 'has-' . $sgs_pc_preset_border . '-border-color';
 }
 
-$sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
+$sgs_card_typo_tag = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
 
 // Base opts shared across all branches (no WP Interactivity attrs).
 $base_opts = array(
@@ -354,10 +590,15 @@ if ( 'typed' === $source_mode ) {
 	// — NOT the bound `.product-card__view` / `.product-card__add-to-cart`
 	// selectors, which never render in typed markup. Folded into
 	// $sgs_card_typo_css so ONE <style> tag carries every typed-mode override.
+	// bg_layer=true (D940 batch): moves ctaColourBackground onto a `::after`
+	// layer, freeing ctaColourText for a future text-gradient sibling. Not
+	// positioned (confirmed — no `position` on this selector in style.css),
+	// so the helper's own `position:relative` is safe here.
 	$sgs_card_typo_css .= sgs_button_element_style_css(
 		$attributes,
 		'cta',
-		'.' . $sgs_card_uid . ' .sgs-product-card__cta--primary'
+		'.' . $sgs_card_uid . ' .sgs-product-card__cta--primary',
+		true
 	);
 
 	// In-body TRIAL tag box (padding / background / radius / display) — rendered
@@ -385,20 +626,91 @@ if ( 'typed' === $source_mode ) {
 	);
 	// Text colour — the box helper handles background but not colour (mirrors the
 	// label split: colour is a $root_decls concern), so emit it on the same rule.
-	$sgs_tag_text_colour = sgs_colour_value( (string) ( $attributes['tagTextColour'] ?? '' ) );
-	if ( '' !== $sgs_tag_text_colour ) {
-		$sgs_tag_box_css .= '.' . $sgs_card_uid . '.sgs-product-card__tag--trial{color:' . $sgs_tag_text_colour . ';}';
+	// D636 — sibling gradient attribute wins when set+valid (text-colour gradient
+	// rollout, mirrors sgs/counter's numberColour/labelColour pattern).
+	$sgs_tag_text_colour_sel       = '.' . $sgs_card_uid . '.sgs-product-card__tag--trial';
+	$sgs_tag_text_colour_effective = sgs_resolve_text_colour_or_gradient(
+		(string) ( $attributes['tagTextColour'] ?? '' ),
+		(string) ( $attributes['tagTextColourGradient'] ?? '' )
+	);
+	if ( '' !== $sgs_tag_text_colour_effective ) {
+		$sgs_tag_text_colour_decl = sgs_text_colour_decl( $sgs_tag_text_colour_effective );
+		if ( '' !== $sgs_tag_text_colour_decl ) {
+			$sgs_tag_box_css .= $sgs_tag_text_colour_sel . '{' . $sgs_tag_text_colour_decl . ';}';
+		}
+		$sgs_tag_box_css .= sgs_text_colour_gradient_fallback_rule( $sgs_tag_text_colour_sel, $sgs_tag_text_colour_effective );
 	}
+
+	// Tag background gradient (resting) — FILL surface, colour-conformance audit.
+	// The shared helper handles flat-colour background but not gradients. Emit
+	// the gradient rule separately if set, following the same fallback-chain
+	// pattern as the card root (lines 404-417).
+	$sgs_tag_bg_flat     = sgs_colour_value( (string) ( $attributes['tagBackgroundColour'] ?? '' ) );
+	$sgs_tag_bg_gradient = (string) ( $attributes['tagBackgroundColourGradient'] ?? '' );
+	if ( '' !== $sgs_tag_bg_gradient ) {
+		$sgs_tag_box_css .= sgs_text_colour_gradient_fallback_rule( $sgs_tag_text_colour_sel, $sgs_tag_bg_gradient );
+	}
+
+	// Tag background hover state (flat + gradient, base + hover) — colour-conformance
+	// audit closure. Emit :hover/:focus-visible rules with fallback chains: hover var
+	// → resting var → original default. Structured identically to the card root's
+	// root-background-hover pattern (lines 393-398).
+	$sgs_tag_bg_hover_flat     = sgs_colour_value( (string) ( $attributes['tagBackgroundColourHover'] ?? '' ) );
+	$sgs_tag_bg_hover_gradient = (string) ( $attributes['tagBackgroundColourHoverGradient'] ?? '' );
+	if ( '' !== $sgs_tag_bg_hover_flat || '' !== $sgs_tag_bg_hover_gradient ) {
+		$sgs_tag_hover_decls = array();
+		if ( '' !== $sgs_tag_bg_hover_flat ) {
+			$sgs_tag_hover_decls[] = "background-color:{$sgs_tag_bg_hover_flat}";
+		}
+		if ( '' !== $sgs_tag_bg_hover_gradient ) {
+			$sgs_tag_hover_decls[] = "background-image:{$sgs_tag_bg_hover_gradient}";
+		}
+		if ( $sgs_tag_hover_decls ) {
+			$sgs_tag_box_css .= $sgs_tag_text_colour_sel . ':hover,' . $sgs_tag_text_colour_sel . ':focus-visible{' . implode( ';', $sgs_tag_hover_decls ) . ';}';
+		}
+		// Gradient fallback rule for hover state (if gradient was set).
+		if ( '' !== $sgs_tag_bg_hover_gradient ) {
+			$sgs_tag_box_css .= sgs_text_colour_gradient_fallback_rule( $sgs_tag_text_colour_sel . ':hover', $sgs_tag_bg_hover_gradient );
+			$sgs_tag_box_css .= sgs_text_colour_gradient_fallback_rule( $sgs_tag_text_colour_sel . ':focus-visible', $sgs_tag_bg_hover_gradient );
+		}
+	}
+
 	$sgs_card_typo_css .= $sgs_tag_box_css;
 
-	$sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
+	$sgs_card_typo_tag = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
 
-	// Built-in element render — the ONLY typed path. The FP-H InnerBlocks
-	// transition bridge retired 2026-07-04 (legacy clones are re-cloned with
-	// native typed attrs; the block has no InnerBlocks slot).
+	/*
+	 * imageId resolution (2026-09-01 data-migration): imageId is a real
+	 * attachment post ID, added alongside the pre-existing `image` URL string.
+	 * `image` is the PERMANENT fallback — never removed, never made
+	 * conditional — for content authored/cloned before imageId existed, or
+	 * where the attachment has since been deleted. When imageId is set and
+	 * wp_get_attachment_image_src() proves it still resolves to a live
+	 * attachment, that URL wins (this is what unlocks real attachment
+	 * metadata for a future responsive-sizes pass); otherwise the raw `image`
+	 * string renders exactly as it did before this attribute existed. Mirrors
+	 * sgs/media's imageId-wins-else-imageUrl pattern (media/render.php
+	 * "Resolve final image URL: imageId wins; fall back to imageUrl.").
+	 * A COPY of $attributes is passed to sgs_product_card_builtin_render() so
+	 * that helper (includes/product-card-builtin-render.php) needs no change —
+	 * it already reads `image` as a plain string; this class of logic is fully
+	 * contained in render.php.
+	 */
+	$sgs_pcard_typed_image_id = isset( $attributes['imageId'] ) ? absint( $attributes['imageId'] ) : 0;
+	$sgs_pcard_typed_image    = isset( $attributes['image'] ) ? (string) $attributes['image'] : '';
+	if ( $sgs_pcard_typed_image_id ) {
+		$sgs_pcard_typed_src = wp_get_attachment_image_src( $sgs_pcard_typed_image_id, 'full' );
+		if ( $sgs_pcard_typed_src ) {
+			$sgs_pcard_typed_image = $sgs_pcard_typed_src[0];
+		}
+	}
+	$sgs_pcard_typed_attributes          = $attributes;
+	$sgs_pcard_typed_attributes['image'] = $sgs_pcard_typed_image;
+
+	// Built-in element render — the ONLY typed path (no InnerBlocks slot).
 	// Prepend the scoped typography + CTA <style>. Pass the uid so the trial tag
 	// carries it (the box rule above scopes to it).
-	$builtin_inner = $sgs_card_typo_tag . sgs_product_card_builtin_render( $attributes, $sgs_card_uid );
+	$builtin_inner = $sgs_card_typo_tag . sgs_product_card_builtin_render( $sgs_pcard_typed_attributes, $sgs_card_uid );
 
 	// BEM modifier classes on the wrapper.
 	$builtin_classes   = $classes;
@@ -425,10 +737,14 @@ if ( 'typed' === $source_mode ) {
 // class (sgs-button--{style}) and those selectors don't exist there, so a typed
 // card must NOT ship this dead <style>. One rule governs the CTA across every
 // bound branch (R-31-9 / CG-9). $sgs_card_typo_tag is REBUILT to fold it in.
+// bg_layer=true (D940 batch): moves ctaColourBackground onto a `::after`
+// layer per branch (D940's comma-split fix), freeing ctaColourText for a
+// future text-gradient sibling. Neither branch is positioned in style.css.
 $sgs_card_typo_css .= sgs_button_element_style_css(
 	$attributes,
 	'cta',
-	'.' . $sgs_card_uid . ' .product-card__view, .' . $sgs_card_uid . ' .product-card__add-to-cart'
+	'.' . $sgs_card_uid . ' .product-card__view, .' . $sgs_card_uid . ' .product-card__add-to-cart',
+	true
 );
 $sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
 
@@ -525,8 +841,20 @@ $sgs_resolved_desc  = sgs_product_card_resolve_element( $attributes, 'descriptio
 
 // Image: URL + alt resolve as a pair — when the typed image wins, the typed alt
 // accompanies it (a live alt under a typed image would mis-describe).
-$sgs_img_override     = sgs_product_card_override_active( $attributes, 'image', $attributes['image'] ?? '' );
-$sgs_resolved_img     = $sgs_img_override ? (string) $attributes['image'] : (string) $data['image_url'];
+$sgs_img_override = sgs_product_card_override_active( $attributes, 'image', $attributes['image'] ?? '' );
+// imageId resolution (2026-09-01): when the typed override wins, prefer the
+// resolved attachment URL over the raw `image` string, same rule + same
+// permanent fallback as the typed-mode branch above (imageId 0/unresolved ->
+// the raw image URL renders exactly as before this attribute existed).
+$sgs_pcard_bound_typed_image = (string) ( $attributes['image'] ?? '' );
+$sgs_pcard_bound_image_id    = isset( $attributes['imageId'] ) ? absint( $attributes['imageId'] ) : 0;
+if ( $sgs_pcard_bound_image_id ) {
+	$sgs_pcard_bound_src = wp_get_attachment_image_src( $sgs_pcard_bound_image_id, 'full' );
+	if ( $sgs_pcard_bound_src ) {
+		$sgs_pcard_bound_typed_image = $sgs_pcard_bound_src[0];
+	}
+}
+$sgs_resolved_img     = $sgs_img_override ? $sgs_pcard_bound_typed_image : (string) $data['image_url'];
 $sgs_resolved_img_alt = $sgs_img_override ? (string) ( $attributes['imageAlt'] ?? '' ) : (string) $data['image_alt'];
 
 // Badge: bound branches have no live badge — live value is '' (override OFF or
@@ -566,7 +894,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 	<?php if ( '' !== $sgs_resolved_img ) : ?>
 		<?php // F7: media-wrap = positioning context for the featured overlay badge. ?>
 		<div class="sgs-product-card__media-wrap">
-			<img class="product-card-img" src="<?php echo esc_url( $sgs_resolved_img ); ?>" alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>" loading="lazy" decoding="async">
+			<img class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>" src="<?php echo esc_url( $sgs_resolved_img ); ?>" alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>" loading="lazy" decoding="async">
 			<?php if ( '' !== $sgs_badge_overlay ) : ?>
 				<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_badge_overlay ); ?></span>
 			<?php endif; ?>
@@ -953,7 +1281,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
 				<?php endif; ?>
 				<img
-					class="product-card-img"
+					class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>"
 					src="<?php echo esc_url( $image_src ); ?>"
 					alt="<?php echo esc_attr( $sgs_img_override ? $sgs_resolved_img_alt : $data['image_alt'] ); ?>"
 					<?php echo $def_img_w > 0 ? 'width="' . esc_attr( (string) $def_img_w ) . '"' : ''; ?>
@@ -1002,6 +1330,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					aria-label="<?php echo $thumb_aria_label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr applied above. ?>"
 				>
 					<img
+						class="<?php echo esc_attr( $sgs_pc_thumb_img_class ); ?>"
 						src="<?php echo esc_url( $thumb['url'] ); ?>"
 						alt="<?php echo esc_attr( $thumb['alt'] ); ?>"
 						<?php echo $thumb['w'] > 0 ? 'width="' . esc_attr( (string) $thumb['w'] ) . '"' : ''; ?>
@@ -1020,11 +1349,8 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<?php endif; ?>
 				<?php
 				// FP-H: heading tag from headingLevel (allowlisted string — injection-safe); title via override helper.
-				// D649: the title carries `sgs-product-card__title` so styling keys on IDENTITY, not
-				// tag name. Bound markup previously emitted a bare tag, which forced style.css to
-				// enumerate `> h2, > h4` — a rule that had to be extended every time a new tag became
-				// selectable, and silently left the newest one (`p`) unstyled. Keying on the class
-				// makes that class of bug impossible and unifies bound with typed mode.
+				// D649: the title carries `sgs-product-card__title` so styling keys on IDENTITY,
+				// not tag name.
 				?>
 				<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?> class="sgs-product-card__title">
 					<?php if ( '' !== $card_permalink ) : ?>
@@ -1255,9 +1581,8 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					 * v1 ruling: 'add-to-basket'/'buy-now' are PRIMARY-only behaviours — a
 					 * second add form would double the Interactivity context wiring (one
 					 * canonical cart form per card), so the secondary is ALWAYS a plain
-					 * learn-more anchor (the cta2Behaviour attr was removed as a dead
-					 * control 2026-06-10). Nothing secondary is seeded into context
-					 * (the JS never needs it — the secondary is always a plain anchor).
+					 * learn-more anchor. Nothing secondary is seeded into context (the JS
+					 * never needs it — the secondary is always a plain anchor).
 					 * URL fallback: empty cta2Url → the bound product's permalink.
 					 */
 					$sgs_cta2_text = isset( $attributes['cta2Text'] ) ? sanitize_text_field( (string) $attributes['cta2Text'] ) : '';
@@ -1402,7 +1727,7 @@ ob_start();
 	<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
 	<?php endif; ?>
 	<img
-		class="product-card-img"
+		class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>"
 		src="<?php echo esc_url( $sgs_resolved_img ); ?>"
 		alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>"
 		loading="eager"
@@ -1596,9 +1921,8 @@ ob_start();
 		 * v1 ruling: 'add-to-basket'/'buy-now' are PRIMARY-only behaviours — a
 		 * second add form would double the Interactivity context wiring (one
 		 * canonical cart form per card), so the secondary is ALWAYS a plain
-		 * learn-more anchor (the cta2Behaviour attr was removed as a dead
-		 * control 2026-06-10). Nothing secondary is seeded into context
-		 * (the JS never needs it — the secondary is always a plain anchor).
+		 * learn-more anchor. Nothing secondary is seeded into context (the JS
+		 * never needs it — the secondary is always a plain anchor).
 		 * URL fallback: empty cta2Url → the bound product's permalink.
 		 */
 		$sgs_nv_cta2_text = isset( $attributes['cta2Text'] ) ? sanitize_text_field( (string) $attributes['cta2Text'] ) : '';

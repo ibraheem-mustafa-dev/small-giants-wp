@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/marker-without-css",
+	"title": "Fixture: Marker emitted but no paired rule — must flag",
+	"category": "sgs",
+	"attributes": {}
+}

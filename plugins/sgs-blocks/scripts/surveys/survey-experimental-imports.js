@@ -94,6 +94,8 @@ const NON_IMPORT_EXEMPT = {
 		'deliberate compat guard — reads wp.components at runtime and falls back to TextControl when the experimental export is absent on older WP',
 	'blocks/product-search/edit.js':
 		'deliberate compat guard — require() inside try/catch so a missing module cannot crash the editor; falls back to TextControl',
+	'components/SgsMultiSelectField.js':
+		"`__experimentalInvalid` here is a FormTokenField `messages` object KEY (its own documented prop shape, verified live 2026-08-19 against the runtime wp.components bundle — not smuggling an internal import). No component symbol is imported by this name; it's a string key in an object literal passed as a prop value.",
 };
 
 /** Strip // and block comments so prose mentions never count as code. */

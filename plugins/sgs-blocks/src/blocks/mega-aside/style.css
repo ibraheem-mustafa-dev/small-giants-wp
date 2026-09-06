@@ -24,12 +24,32 @@
 	gap: 16px;
 }
 
+/* object-fit is deliberately NOT declared here (rule 37-media-no-handroll,
+   2026-09-03). This selector used to force `object-fit: cover` on the child
+   sgs/media block's own <img>/<video> — but that child ALREADY declares
+   `supports.sgs.mediaElements` (object-fit atom) and its rendered media
+   always carries the shared `.sgs-media-el` marker, which already defaults
+   to `cover` (assets/css/media-atoms/object-fit.css). This selector's
+   specificity (0,2,1 via two classes + a tag) beat the shared atom rule's
+   (0,1,0), so it was SILENTLY OVERRIDING any per-instance fit an operator
+   set on the child sgs/media block back to cover — a hand-rolled duplicate
+   that also broke the child's own control. Removing it restores the
+   byte-identical default resting crop (child atom fallback = cover) while
+   letting a client's fit choice on the child actually take effect. */
 .sgs-mega-aside > .wp-block-sgs-media img,
 .sgs-mega-aside > .wp-block-sgs-media video {
 	max-height: 170px;
-	object-fit: cover;
 	width: 100%;
 	border-radius: 12px;
+}
+
+/* Aside background hover/focus (FILL closeout, 2026-09-06) — fallback chain:
+   hover var → resting var → CSS default. Unset hover renders byte-identically
+   to before this change. */
+.sgs-mega-aside:hover,
+.sgs-mega-aside:focus-within {
+	background-color: var( --sgs-mega-aside-bg-hover, var( --sgs-mega-aside-bg, transparent ) );
+	background-image: var( --sgs-mega-aside-bg-hover-gradient, var( --sgs-mega-aside-bg-gradient, none ) );
 }
 
 /* cta format: compact pill + description + CTA — media + heading hidden. */

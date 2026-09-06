@@ -1,0 +1,25 @@
+/*
+ * opacity — the media element's own transparency.
+ *
+ * Custom-property name matches `opacity.js`/`opacity.php`'s `css()` output
+ * exactly: `--sgs-media-opacity`. Not tiered — MEDIA_TIERED_BASES does not
+ * carry `Opacity`, matching the atom's own pre-existing single-value shape
+ * (the hand-rolled control it replaces had no Tablet/Mobile siblings either).
+ *
+ * ⛔ NO BARE `opacity:` DECLARATION HERE. `svg-presentation.css` also
+ * declares `opacity` on this SAME selector (`--sgs-media-svg-opacity`), and
+ * two atom partials both declaring the same real property at the same
+ * specificity (0,1,0) is unresolvable by cascade alone — whichever partial
+ * the alphabet loads last always wins outright, silently discarding this
+ * atom's value on any non-svg element (measured live 2026-09-01: an
+ * authored `--sgs-media-opacity:0.5` computed as `1` because
+ * `svg-presentation.css` loads after this file and unconditionally wins).
+ * Same collision class `_base.css`'s "Cross-atom rule: composed animation"
+ * section already documents and fixes for motion/svg-presentation. Fixed
+ * the same way: this atom still writes only to its OWN uniquely named
+ * custom property (unchanged above), but the REAL `opacity` property is
+ * composed ONCE, in `_base.css`, by multiplying both atoms' custom
+ * properties (opacity is naturally multiplicative — two 0.5 layers combine
+ * to 0.25, which is the physically correct visual result). See `_base.css`'s
+ * "Cross-atom rule: composed opacity" section for the combining rule itself.
+ */

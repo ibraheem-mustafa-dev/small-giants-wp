@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/own-advanced-panel",
+	"title": "Fixture: block authors its own Advanced panel",
+	"category": "sgs",
+	"attributes": {}
+}

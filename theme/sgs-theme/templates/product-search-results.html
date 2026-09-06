@@ -1,0 +1,65 @@
+<!-- Theme override of WooCommerce's plugin-registered `product-search-results` template.
+     Reason: WooCommerce's version renders each result as a generic product-image +
+     post-title + price + button stack. This version renders sgs/product-card instead,
+     matching archive-product.html.
+
+     WooCommerce KEEPS ownership of the query, filtering, sorting and pagination —
+     woocommerce/product-collection stays exactly as WooCommerce shipped it (inherit:true).
+     Only the contents of product-template change. That is the supported extension point:
+     core/query-pagination* and woocommerce/product-results-count read queryId + query from
+     product-collection's context, so replacing the collection would break all of them.
+
+     Converted to SGS conventions vs the plugin original:
+       - core/group -> sgs/container (core/group is banned; block-replacements.json)
+       - dropped layout:{"inherit":true,"type":"constrained"} on <main> per D725 —
+         one cap per page and it is ours; <main> is contentWidth "full" and passes width
+         through, sections cap their own content.
+
+     BLOCK-VALIDATION RULE: every comment in this file stays OUTSIDE all block delimiters.
+     A raw HTML comment is not a null placeholder, so inside a block's saved content it
+     lands in the innerContent chunks and fails validation against save(). This cost a day
+     on 404.html and single.html (D755 session). Do not move these comments inline. -->
+
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:sgs/container {"tagName":"main","anchor":"main","contentWidth":{"desktop":"full"},"flexWrap":"wrap"} -->
+
+	<!-- wp:sgs/container {"tagName":"div","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"flexWrap":"wrap"} -->
+		<!-- wp:woocommerce/breadcrumbs /-->
+		<!-- wp:query-title {"type":"search","showPrefix":false} /-->
+	<!-- /wp:sgs/container -->
+
+	<!-- wp:woocommerce/store-notices /-->
+
+	<!-- wp:sgs/container {"tagName":"div","flexDirection":"column","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|60"}} -->
+
+		<!-- wp:woocommerce/product-collection {"queryId":0,"query":{"woocommerceAttributes":[],"woocommerceStockStatus":["instock","outofstock","onbackorder"],"taxQuery":[],"isProductCollectionBlock":true,"perPage":10,"pages":0,"offset":0,"postType":"product","order":"asc","orderBy":"title","author":"","search":"","exclude":[],"sticky":"","inherit":true},"tagName":"div","dimensions":{"widthType":"fill","fixedWidth":""},"displayLayout":{"type":"flex","columns":3,"shrinkColumns":true},"convertedFromProducts":false,"queryContextIncludes":["collection"],"align":"wide"} -->
+		<div class="wp-block-woocommerce-product-collection alignwide">
+
+			<!-- wp:sgs/container {"tagName":"div","className":"sgs-shop-toolbar","layout":"flex","justifyContent":"space-between","alignItems":"center","flexWrap":"wrap","contentWidth":{"desktop":"full"}} -->
+				<!-- wp:woocommerce/product-results-count /-->
+				<!-- wp:woocommerce/catalog-sorting /-->
+			<!-- /wp:sgs/container -->
+
+			<!-- wp:woocommerce/product-template -->
+				<!-- wp:sgs/product-card {"sourceMode":"wc-product","showPickers":false,"ctaBehaviour":"learn-more","showLadder":false} /-->
+			<!-- /wp:woocommerce/product-template -->
+
+			<!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"center"}} -->
+				<!-- wp:query-pagination-previous /-->
+				<!-- wp:query-pagination-numbers /-->
+				<!-- wp:query-pagination-next /-->
+			<!-- /wp:query-pagination -->
+
+			<!-- wp:woocommerce/product-collection-no-results -->
+				<!-- wp:sgs/text {"text":"No products matched that search. Try a different term or browse the full shop.","textAlign":"center"} /-->
+			<!-- /wp:woocommerce/product-collection-no-results -->
+
+		</div>
+		<!-- /wp:woocommerce/product-collection -->
+
+	<!-- /wp:sgs/container -->
+
+<!-- /wp:sgs/container -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

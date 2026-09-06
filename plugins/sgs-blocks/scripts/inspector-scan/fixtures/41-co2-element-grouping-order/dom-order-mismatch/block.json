@@ -1,0 +1,9 @@
+{
+	"name": "sgs/dom-order-mismatch",
+	"attributes": {
+		"firstA": { "type": "string" },
+		"firstB": { "type": "string" },
+		"secondA": { "type": "string" },
+		"secondB": { "type": "string" }
+	}
+}

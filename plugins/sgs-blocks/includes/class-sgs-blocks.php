@@ -100,6 +100,47 @@ final class SGS_Blocks {
 		// and emits a uid-scoped <style> for the per-instance colour/radius
 		// (Spec 32 forbids the inline declarations those would otherwise be).
 		require_once SGS_BLOCKS_PATH . 'includes/fx-cursor-field.php';
+		require_once SGS_BLOCKS_PATH . 'includes/fx-wave-gradient.php';
+
+		// Generative background (Tier W, Spec 38, D874 — v1 static build
+		// only). Same p11 slot as the sibling above: resolves the four
+		// colour slots + ground preset into custom properties both the CSS
+		// fallback and the JS-built OKLCH image read.
+		require_once SGS_BLOCKS_PATH . 'includes/fx-generative-background.php';
+
+		// Surface treatment (Tier W / WebGL, Spec 38 s1.2b, D479). Same p11
+		// slot as the three siblings above: marks the emitter with its
+		// treatment id and, for duotone, a uid-scoped <style> setting
+		// --sgs-fx-shadow/--sgs-fx-highlight (Spec 32 forbids the inline
+		// declarations those would otherwise be). Rides the standard
+		// SGS_Motion_Registry enqueue path via the shared data-sgs-fx
+		// attribute — no bespoke sniff needed.
+		require_once SGS_BLOCKS_PATH . 'includes/fx-surface-treatment.php';
+
+		// Particle trail per-instance colour (FR-38-32, D846). Same p11 slot:
+		// resolves the stored palette slug and emits a uid-scoped <style>
+		// setting --sgs-fx-particle-colour, which particles.js prefers over the
+		// inherited `color`. Opt-in — with no colour set this filter returns
+		// early and the trail keeps its original inherited-text-colour default.
+		require_once SGS_BLOCKS_PATH . 'includes/fx-particles.php';
+
+		// Grid-dot field per-instance colour (FR-38-33). Same p11 slot and the
+		// same shape as the trail above, for the same reason and then some: the
+		// field shipped with an ACCENT default that measured 1.35:1 against the
+		// client's cream background — worse than the 1.44:1 that produced the
+		// particle-colour control. Default moved to `primary`; this filter is
+		// the per-instance override. Opt-in: with no colour set it returns early
+		// and the stylesheet's default stands.
+		require_once SGS_BLOCKS_PATH . 'includes/fx-grid-dots.php';
+
+		// Flip on WooCommerce Product Collection re-filtering (Spec 38
+		// FR-38-12, redirected 2026-08-20 — see the design gate this file's
+		// docblock points to). A `render_block_woocommerce/product-collection`
+		// filter, not the shared `render_block` p10 slot above: SGS does not
+		// own that block's block.json, so the opt-in is a site-level setting
+		// rather than a per-block attribute, and there is nothing here for
+		// the p10/p11 dynamic-block attribute-injection siblings to share.
+		require_once SGS_BLOCKS_PATH . 'includes/fx-flip-woocommerce.php';
 
 		// Pattern slug backward-compat shim (sgs-theme/ → sgs/ aliases, 1-cycle deprecation).
 		require_once SGS_BLOCKS_PATH . 'includes/class-pattern-slug-shim.php';
@@ -310,6 +351,22 @@ final class SGS_Blocks {
 		// target for `device-visibility.php`'s `wp_style_is()` check, so it
 		// must keep enqueueing exactly the hand-maintained extensions.css
 		// file it always has, not be repurposed to also carry this.
+		// The media-element layer's ONE stylesheet (Spec: architecture v2 L4).
+		// A shared layer has no block.json to hang a `style:` entry on, so it is
+		// enqueued in BOTH realms -- here for the canvas iframe, and in
+		// enqueue_frontend_assets() for the page. The canvas then resolves the
+		// device tier from the iframe width by construction, which is what the
+		// device-preview switcher wants; nothing computes a preview tier in JS.
+		$media_element_css = SGS_BLOCKS_PATH . 'assets/css/media-element.css';
+		if ( file_exists( $media_element_css ) ) {
+			wp_enqueue_style(
+				'sgs-media-element-editor',
+				SGS_BLOCKS_URL . 'assets/css/media-element.css',
+				[],
+				SGS_BLOCKS_VERSION
+			);
+		}
+
 		$colour_picker_css = SGS_BLOCKS_PATH . 'build/extensions/index.css';
 		if ( file_exists( $colour_picker_css ) ) {
 			$asset_file = SGS_BLOCKS_PATH . 'build/extensions/index.asset.php';
@@ -383,6 +440,34 @@ final class SGS_Blocks {
 				SGS_BLOCKS_URL . 'assets/css/extensions.css',
 				[],
 				SGS_BLOCKS_VERSION
+			);
+		}
+
+		// Front-end half of the media-element layer's dual enqueue. Same file,
+		// separate handle -- the editor handle is a guard target and must not be
+		// reused, the same discipline `sgs-extensions-editor` carries above.
+		$media_element_css = SGS_BLOCKS_PATH . 'assets/css/media-element.css';
+		if ( file_exists( $media_element_css ) ) {
+			wp_enqueue_style(
+				'sgs-media-element',
+				SGS_BLOCKS_URL . 'assets/css/media-element.css',
+				[],
+				SGS_BLOCKS_VERSION
+			);
+		}
+
+		// Layer 2 of the touch-safe hover system (helpers-hover-state.php owns
+		// layer 1, the pure-CSS media query). Enqueued alongside the other
+		// always-on frontend behaviours because a hover rule can be emitted by
+		// any block; it is dependency-free and does nothing until a pointerdown.
+		$touch_js = SGS_BLOCKS_PATH . 'assets/js/touch-input.js';
+		if ( file_exists( $touch_js ) ) {
+			wp_enqueue_script(
+				'sgs-touch-input',
+				SGS_BLOCKS_URL . 'assets/js/touch-input.js',
+				[],
+				SGS_BLOCKS_VERSION,
+				true
 			);
 		}
 

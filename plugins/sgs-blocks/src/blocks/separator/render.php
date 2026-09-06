@@ -13,11 +13,9 @@
  *     it is structurally required to lay out two independent line segments
  *     either side of the content, which a single element cannot express.
  *
- * BLOCK-PRIVATE, NO-INLINE (contract §A/§B): the rendered subtree carries
- * ZERO inline CSS property declarations. The WP-native `spacing` support
- * (padding/margin) declares `__experimentalSkipSerialization` and is emitted
- * scoped via `wp_style_engine_get_styles()` (exactly how WP core outputs
- * `layout` support), alongside the paddingTablet/paddingMobile/marginTablet/
+ * BLOCK-PRIVATE. NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check. The WP-native `spacing` support
+ * (padding/margin) is emitted scoped via `wp_style_engine_get_styles()` (exactly how WP core outputs `layout` support),
+ * alongside the paddingTablet/paddingMobile/marginTablet/
  * marginMobile object-attr tiers (contract §B2: @media 1023/767).
  *
  * The visible "line" is rendered as a `border-bottom` (NOT a background bar)
@@ -30,8 +28,6 @@
  * (CSS renders `border-image` only across the sides that actually carry a
  * border-width, so a bottom-only border-image paints just the visible line).
  *
- * @since 2026-07-17  Initial build.
- *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — no InnerBlocks slot).
  * @var \WP_Block $block      Block instance.
@@ -41,6 +37,29 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
@@ -48,14 +67,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 // ---------------------------------------------------------------------------
 // 1. Security sanitisers (contract §D) — mirrors sgs/quote + sgs/brand-strip.
 // ---------------------------------------------------------------------------
-
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
 
 // ---------------------------------------------------------------------------
 // 2. Extract + validate attributes.
@@ -68,7 +79,7 @@ $line_style          = in_array( $line_style_raw, $allowed_line_styles, true ) ?
 $width_unit_raw = $attributes['widthUnit'] ?? '%';
 $width_unit     = in_array( $width_unit_raw, array( 'px', '%' ), true ) ? $width_unit_raw : '%';
 
-$thickness_unit = $sgs_css_length( $attributes['thicknessUnit'] ?? 'px' );
+$thickness_unit = sgs_css_length_value( $attributes['thicknessUnit'] ?? 'px' );
 $thickness_unit = '' !== $thickness_unit ? $thickness_unit : 'px';
 
 $colour = $attributes['colour'] ?? '';
@@ -80,12 +91,9 @@ $allowed_alignments = array( 'left', 'center', 'right' );
 $alignment_raw      = $attributes['alignment'] ?? 'center';
 $alignment          = in_array( $alignment_raw, $allowed_alignments, true ) ? $alignment_raw : 'center';
 
-// Collapsed 2026-08-16 (D643) from the 4-scalar gradientEnabled/ColourStart/
-// ColourEnd/Angle family to ONE complete CSS gradient string, matching the D636
-// storage contract. This was the LAST pre-D636 gradient family in the tree —
-// commit 837f7c97 collapsed nine of them across six blocks and missed this one.
 // A non-empty validated gradient wins over the flat `colour`; no boolean
-// discriminator (an empty string is the "off" state).
+// discriminator (an empty string is the "off" state). Storage matches the
+// D636 gradient contract (one complete CSS gradient string).
 $line_gradient = sgs_css_gradient_value( $attributes['lineGradient'] ?? '' );
 $has_gradient  = '' !== $line_gradient;
 
@@ -99,26 +107,26 @@ $content_mode          = in_array( $content_mode_raw, $allowed_content_modes, tr
 // ---------------------------------------------------------------------------
 
 $base_padding_obj = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $padding_side => $padding_value ) {
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	foreach ( $sgs_tor_padding_desktop as $padding_side => $padding_value ) {
 		if ( is_string( $padding_value ) && '' !== $padding_value ) {
 			$base_padding_obj[ $padding_side ] = $padding_value;
 		}
 	}
 }
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $margin_side => $margin_value ) {
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	foreach ( $sgs_tor_margin_desktop as $margin_side => $margin_value ) {
 		if ( is_string( $margin_value ) && '' !== $margin_value ) {
 			$base_margin_obj[ $margin_side ] = $margin_value;
 		}
 	}
 }
 
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
 // ---------------------------------------------------------------------------
 // 4. Build the uid + selectors. Uid is a CLASS (contract §B3) — this block
@@ -254,43 +262,31 @@ if ( 100.0 !== $opacity ) {
 
 // --- Base spacing (padding/margin) — skip-serialised WP support, emitted
 // scoped via the stable core style engine (matches sgs/quote / sgs/heading). ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_spacing = array();
-	if ( ! empty( $base_padding_obj ) ) {
-		$base_spacing['padding'] = $base_padding_obj;
-	}
-	if ( ! empty( $base_margin_obj ) ) {
-		$base_spacing['margin'] = $base_margin_obj;
-	}
-	if ( ! empty( $base_spacing ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			array( 'spacing' => $base_spacing ),
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
+
+$base_spacing = array();
+if ( ! empty( $base_padding_obj ) ) {
+	$base_spacing['padding'] = $base_padding_obj;
+}
+if ( ! empty( $base_margin_obj ) ) {
+	$base_spacing['margin'] = $base_margin_obj;
+}
+if ( ! empty( $base_spacing ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		array( 'spacing' => $base_spacing ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
 
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME root selector (contract §B2: tablet
 // max-width:1023px, mobile max-width:767px). ---
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 
 $tablet_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -350,8 +346,9 @@ if ( 'icon' === $content_mode ) {
 		$content_html = '<span class="sgs-separator__icon" aria-hidden="true">' . sgs_get_lucide_icon( $icon_name ) . '</span>';
 	}
 } elseif ( 'text' === $content_mode ) {
-	$content_text   = $attributes['contentText'] ?? '';
-	$content_colour = $attributes['contentColour'] ?? '';
+	$content_text            = $attributes['contentText'] ?? '';
+	$content_colour          = $attributes['contentColour'] ?? '';
+	$content_colour_gradient = $attributes['contentColourGradient'] ?? '';
 
 	if ( function_exists( 'sgs_typography_css_rule' ) ) {
 		$content_typography_css = sgs_typography_css_rule( $attributes, 'content', "{$root_sel} .sgs-separator__content" );
@@ -359,8 +356,18 @@ if ( 'icon' === $content_mode ) {
 			$scoped_css[] = $content_typography_css;
 		}
 	}
-	if ( '' !== $content_colour ) {
-		$scoped_css[] = "{$root_sel} .sgs-separator__content{color:" . sgs_colour_value( $content_colour ) . ';}';
+	// D636 — sibling gradient attribute wins when set+valid. Only wired for
+	// 'text' mode (a real text-clip target); 'icon' mode below stays flat-only
+	// — background-clip:text clips to real glyph outlines and would blank a
+	// lucide/wp-icon inline-SVG glyph.
+	$content_colour_sel       = "{$root_sel} .sgs-separator__content";
+	$content_colour_effective = sgs_resolve_text_colour_or_gradient( $content_colour, $content_colour_gradient );
+	if ( '' !== $content_colour_effective ) {
+		$content_colour_decl = sgs_text_colour_decl( $content_colour_effective );
+		if ( '' !== $content_colour_decl ) {
+			$scoped_css[] = "{$content_colour_sel}{{$content_colour_decl};}";
+		}
+		$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $content_colour_sel, $content_colour_effective );
 	}
 
 	$content_html = '<span class="sgs-separator__content">' . esc_html( $content_text ) . '</span>';

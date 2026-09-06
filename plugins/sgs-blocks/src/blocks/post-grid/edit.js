@@ -13,7 +13,7 @@
  * InnerBlocks slot.
  */
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { useEntityRecords } from '@wordpress/core-data';
 import {
 	PanelBody,
@@ -22,16 +22,29 @@ import {
 	ToggleControl,
 	TextControl,
 	RadioControl,
-	FormTokenField,
 	Spinner,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import SgsColourPanel from '../../components/SgsColourPanel';
 import ShadowControl from '../../components/ShadowControl';
+import SgsBooleanField from '../../components/SgsBooleanField';
+import SgsMultiSelectField from '../../components/SgsMultiSelectField';
 import ResponsiveOverride from '../../components/ResponsiveOverride';
-import { colourVar, resolveResponsiveTier } from '../../utils';
+import {
+	colourVar,
+	resolveResponsiveTier,
+	resolveTextColourPreviewStyle,
+	resolveShadowPreviewComposed,
+} from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+import { MEDIA_SIZING_RATIO_OPTIONS,
+	SgsBorderControl,
+	resolveColourToken,
+	DesignTokenPicker,
+	TypographyControls,
+} from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import MediaElementPanel from '../../components/MediaElementPanel';
 
 // -------------------------------------------------------------------------
 // Static option arrays (defined outside component to avoid re-creation)
@@ -71,14 +84,15 @@ const ORDER_OPTIONS = [
 	{ label: __( 'Ascending (oldest first)', 'sgs-blocks' ), value: 'asc' },
 ];
 
-const ASPECT_RATIO_OPTIONS = [
-	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
-	{ label: __( '16:9', 'sgs-blocks' ), value: '16/9' },
-	{ label: __( '16:10', 'sgs-blocks' ), value: '16/10' },
-	{ label: __( '4:3', 'sgs-blocks' ), value: '4/3' },
-	{ label: __( '1:1 (square)', 'sgs-blocks' ), value: '1/1' },
-	{ label: __( '3:2', 'sgs-blocks' ), value: '3/2' },
-];
+// C19 ratio-mode adoption (2026-08-27) — reuses MediaSizingPanel's shared
+// six-value ratio list (spaced format, "16 / 9" etc.) rather than this
+// block's own hand-rolled set (which included a "Default" empty-string
+// option and unspaced ratios not shared with any other block). render.php
+// now whitelists against this exact six-value set, falling back to this
+// block's own existing default ('16/10') for anything outside it — so an
+// existing ''/`16/10`/`3/2` stored value keeps rendering exactly as before
+// rather than breaking.
+const ASPECT_RATIO_OPTIONS = MEDIA_SIZING_RATIO_OPTIONS;
 
 const IMAGE_SIZE_OPTIONS = [
 	{ label: __( 'Thumbnail (150×150)', 'sgs-blocks' ), value: 'thumbnail' },
@@ -133,7 +147,7 @@ function formatDate( dateString ) {
  * @param {Object} props.post       WP post record from useEntityRecords.
  * @param {Object} props.attributes Block attributes.
  */
-function PreviewCard( { post, attributes } ) {
+function PreviewCard( { post, attributes, palette } ) {
 	const {
 		cardStyle,
 		showImage,
@@ -146,10 +160,20 @@ function PreviewCard( { post, attributes } ) {
 		readMoreText,
 		aspectRatio,
 		titleColour,
+		titleColourGradient,
 		excerptColour,
+		excerptColourGradient,
 		metaColour,
+		metaColourGradient,
+		categoryBadgeColour,
+		categoryBadgeColourGradient,
+		categoryBadgeBgColour,
+		categoryBadgeBgColourHover,
+		categoryBadgeBgColourHoverGradient,
 		readMoreColour,
+		readMoreColourGradient,
 		cardBgColour,
+		imageDecorative,
 	} = attributes;
 
 	const featuredImage = post?._embedded?.[ 'wp:featuredmedia' ]?.[ 0 ];
@@ -158,10 +182,19 @@ function PreviewCard( { post, attributes } ) {
 	const firstCat      = categories[ 0 ];
 
 	const cardBg     = cardBgColour ? colourVar( cardBgColour ) : undefined;
-	const titleStyle = titleColour  ? { color: colourVar( titleColour )   } : {};
-	const excStyle   = excerptColour ? { color: colourVar( excerptColour ) } : {};
-	const metaStyle  = metaColour   ? { color: colourVar( metaColour )    } : {};
-	const rmStyle    = readMoreColour ? { color: colourVar( readMoreColour ) } : {};
+	const titleStyle = resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar );
+	const excStyle   = resolveTextColourPreviewStyle( excerptColour, excerptColourGradient, colourVar );
+	const metaStyle  = resolveTextColourPreviewStyle( metaColour, metaColourGradient, colourVar );
+	const badgeStyle = resolveTextColourPreviewStyle( categoryBadgeColour, categoryBadgeColourGradient, colourVar );
+	const rmStyle    = resolveTextColourPreviewStyle( readMoreColour, readMoreColourGradient, colourVar );
+
+	// categoryBadgeBgColour is a FLAT fill colour with no gradient sibling
+	// (block.json — only categoryBadgeColour, the TEXT colour, has one) and
+	// only paints `.sgs-post-grid__badge` (card/overlay cardStyle) — style.css
+	// gives `.sgs-post-grid__category` (flat/minimal) no background-color rule
+	// at all, so the plain category label must not receive this style.
+	const badgeBg = categoryBadgeBgColour ? resolveColourToken( categoryBadgeBgColour, palette ) : undefined;
+	const badgeFillStyle = badgeBg ? { ...badgeStyle, backgroundColor: badgeBg } : badgeStyle;
 
 	const isOverlay = cardStyle === 'overlay';
 
@@ -178,13 +211,14 @@ function PreviewCard( { post, attributes } ) {
 					>
 						<img
 							src={ featuredImage.source_url }
-							alt={ featuredImage.alt_text || '' }
+							alt={ imageDecorative ? '' : ( featuredImage.alt_text || '' ) }
 							className="sgs-post-grid__img"
+							aria-hidden={ imageDecorative || undefined }
 						/>
 					</div>
 
 					{ showCategory && firstCat && ( cardStyle === 'card' || isOverlay ) && (
-						<span className="sgs-post-grid__badge">
+						<span className="sgs-post-grid__badge" style={ badgeFillStyle }>
 							{ firstCat.name }
 						</span>
 					) }
@@ -206,7 +240,7 @@ function PreviewCard( { post, attributes } ) {
 				) }
 
 				{ showCategory && firstCat && ( cardStyle === 'flat' || cardStyle === 'minimal' ) && (
-					<span className="sgs-post-grid__category">
+					<span className="sgs-post-grid__category" style={ badgeStyle }>
 						{ firstCat.name }
 					</span>
 				) }
@@ -243,6 +277,10 @@ function PreviewCard( { post, attributes } ) {
 // -------------------------------------------------------------------------
 
 export default function Edit( { attributes, setAttributes } ) {
+	// categoryBadgeBgColour canvas mirror (CHECK A) — resolveColourToken needs
+	// the live theme palette to turn a stored slug into a real CSS colour.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+
 	const {
 		postType,
 		postsPerPage,
@@ -259,6 +297,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		aspectRatio,
 		imageSize,
 		showImage,
+		imageDecorative,
 		showTitle,
 		showExcerpt,
 		excerptLength,
@@ -271,16 +310,25 @@ export default function Edit( { attributes, setAttributes } ) {
 		showFilters,
 		filterTaxonomy,
 		titleColour,
+		titleColourGradient,
 		excerptColour,
+		excerptColourGradient,
 		metaColour,
+		metaColourGradient,
 		categoryBadgeColour,
+		categoryBadgeColourGradient,
 		categoryBadgeBgColour,
 		readMoreColour,
+		readMoreColourGradient,
 		cardBgColour,
+		cardBgColourGradient,
 		backgroundColourHover,
 		textColourHover,
+		textColourHoverGradient,
 		borderColourHover,
 		scaleHover,
+		shadow,
+		shadowColour,
 		shadowHover,
 		shadowHoverColour,
 		imageZoomHover,
@@ -379,6 +427,15 @@ export default function Edit( { attributes, setAttributes } ) {
 	const columnsTabletTier = resolveResponsiveTier( columns, 'tablet' )?.value || 2;
 	const columnsMobileTier = resolveResponsiveTier( columns, 'mobile' )?.value || 1;
 
+	// Editor-canvas parity for post-grid's resting card shadow. render.php
+	// composes shape (`shadow`) + colour (`shadowColour`) via
+	// sgs_shadow_value_composed() into ONE `--sgs-card-shadow` custom property
+	// on the block wrapper, inherited by every `.sgs-post-grid__card` child —
+	// it is NOT computed per card, so it belongs on the block root style here,
+	// not inside PreviewCard. An unset shadow leaves style.css's own
+	// `--sgs-card-shadow` default (line 30) untouched, matching render.php.
+	const shadowPreview = resolveShadowPreviewComposed( shadow, shadowColour );
+
 	// Wrapper inline styles.
 	// gap is now a raw CSS string (e.g. "30px") set by ContainerWrapperControls.
 	const inlineStyles = {
@@ -386,6 +443,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-columns-tablet':  columnsTabletTier,
 		'--sgs-columns-mobile':  columnsMobileTier,
 		'--sgs-gap':             gap || '30px',
+		...( shadowPreview ? { '--sgs-card-shadow': shadowPreview } : {} ),
 	};
 
 	const blockProps = useBlockProps( {
@@ -414,7 +472,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			   Row shape verified against render.php + class-post-grid-rest.php
 			   card_vars_decls() + style.css (2026-08-15):
 			   - cardBgColour/backgroundColourHover pair into ONE row (normal +
-			     hover) — both drive the card's --sgs-card-bg / --sgs-hover-bg,
+			     hover) — normal drives the card's --sgs-card-bg; hover is
+			     emitted as a real scoped declaration by
+			     sgs_emit_state_colour_css() (2026-08-19), not a var.
 			     background-color only.
 			   - titleColour/excerptColour/metaColour/readMoreColour/
 			     categoryBadgeColour/categoryBadgeBgColour are each single-state
@@ -435,58 +495,31 @@ export default function Edit( { attributes, setAttributes } ) {
 			     block.json note on the "card" element). Verified: NEITHER
 			     hover attr also touches `background-color`/`box-shadow` as the
 			     DB census suggested.
-			   - shadowHoverColour (added 2026-08-16, shadow-architecture
-			     migration off the preset-only picker — D621/D622 pattern) is
-			     its OWN hover-only row, same shape as borderColourHover — no
-			     resting/normal shadow-colour attribute (this block has no
-			     static card shadow). Pairs with the shape-only shadowHover
-			     attribute (still in the non-colour Hover Effects panel below
+			   - shadowColour/shadowHoverColour share ONE row (normal +
+			     hover), same shape as sgs/card-grid's 'card-shadow' row —
+			     shadowColour added 2026-08-20 alongside the new resting
+			     `shadow` shape attribute to close a STATE_WITHOUT_BASE
+			     conformance gap (client could style the hover shadow but not
+			     the resting one). Pairs with the shape attributes (shadow +
+			     shadowHover, both in the non-colour Hover Effects panel below
 			     via ShadowControl); render.php composes shape + colour via
-			     sgs_shadow_value_composed(). */ }
+			     sgs_shadow_value_composed() for each state independently. An
+			     unset shadow leaves the cardStyle preset's own shadow
+			     unchanged (see style.css `--sgs-card-shadow` default). */ }
 			<SgsColourPanel
 				rows={ [
 					{
-						key: 'card-bg',
-						label: __( 'Card background', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: cardBgColour,
-								onChange: ( val ) => setAttributes( { cardBgColour: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: backgroundColourHover,
-								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
 						key: 'title',
 						label: __( 'Title colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: titleColour,
 								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'excerpt',
-						label: __( 'Excerpt colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: excerptColour,
-								onChange: ( val ) => setAttributes( { excerptColour: val ?? '' } ),
+								gradientValue: titleColourGradient,
+								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -494,12 +527,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'meta',
 						label: __( 'Meta colour (date / author)', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: metaColour,
 								onChange: ( val ) => setAttributes( { metaColour: val ?? '' } ),
+								gradientValue: metaColourGradient,
+								onGradientChange: ( val ) => setAttributes( { metaColourGradient: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -507,12 +543,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'category-badge-text',
 						label: __( 'Category badge text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: categoryBadgeColour,
 								onChange: ( val ) => setAttributes( { categoryBadgeColour: val ?? '' } ),
+								gradientValue: categoryBadgeColourGradient,
+								onGradientChange: ( val ) => setAttributes( { categoryBadgeColourGradient: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -520,25 +559,24 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'category-badge-bg',
 						label: __( 'Category badge background', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: categoryBadgeBgColour,
 								onChange: ( val ) => setAttributes( { categoryBadgeBgColour: val ?? '' } ),
+								gradientValue: categoryBadgeBgColourGradient,
+								onGradientChange: ( val ) => setAttributes( { categoryBadgeBgColourGradient: val ?? '' } ),
 								linked: true,
 							},
-						],
-					},
-					{
-						key: 'read-more',
-						label: __( 'Read more colour', 'sgs-blocks' ),
-						states: [
 							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: readMoreColour,
-								onChange: ( val ) => setAttributes( { readMoreColour: val ?? '' } ),
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: categoryBadgeBgColourHover,
+								onChange: ( val ) => setAttributes( { categoryBadgeBgColourHover: val ?? '' } ),
+								gradientValue: categoryBadgeBgColourHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { categoryBadgeBgColourHoverGradient: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -546,6 +584,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'text-hover',
 						label: __( 'Text hover colour (title / excerpt / meta / read more)', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'hover',
@@ -553,32 +592,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: textColourHover,
 								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
 								linked: true,
-							},
-						],
-					},
-					{
-						key: 'border-hover',
-						label: __( 'Border hover colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: borderColourHover,
-								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'shadow-hover',
-						label: __( 'Shadow hover colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: shadowHoverColour,
-								onChange: ( val ) => setAttributes( { shadowHoverColour: val ?? '' } ),
-								linked: true,
+								gradientValue: textColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -627,19 +643,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<FormTokenField
+					<SgsMultiSelectField
 						label={ __( 'Categories', 'sgs-blocks' ) }
 						value={ selectedCatNames }
 						suggestions={ catSuggestions }
 						onChange={ onCategoriesChange }
-						__nextHasNoMarginBottom
 					/>
-					<FormTokenField
+					<SgsMultiSelectField
 						label={ __( 'Tags', 'sgs-blocks' ) }
 						value={ selectedTagNames }
 						suggestions={ tagSuggestions }
 						onChange={ onTagsChange }
-						__nextHasNoMarginBottom
 					/>
 					<RangeControl
 						label={ __( 'Offset', 'sgs-blocks' ) }
@@ -707,14 +721,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					</ResponsiveOverride>
 					{ /* Gap is provided by the shared ContainerWrapperControls panel below. */ }
-					<SelectControl
-						label={ __( 'Image aspect ratio', 'sgs-blocks' ) }
-						value={ aspectRatio }
-						options={ ASPECT_RATIO_OPTIONS }
-						onChange={ set( 'aspectRatio' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
 				</PanelBody>
 
 				{ /* Panel 3: Content */ }
@@ -724,6 +730,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						setAttributes( {
 							showImage: true,
 							imageSize: 'medium_large',
+							imageDecorative: false,
+							aspectRatio: '16 / 9',
+							imageZoomHover: true,
 							showTitle: true,
 							showExcerpt: true,
 							excerptLength: 20,
@@ -737,26 +746,79 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					<ToolsPanelItem
 						label={ __( 'Show image', 'sgs-blocks' ) }
-						hasValue={ () => showImage !== true }
-						onDeselect={ () => setAttributes( { showImage: true } ) }
+						hasValue={ () =>
+							showImage !== true || imageZoomHover !== true
+						}
+						onDeselect={ () =>
+							setAttributes( {
+								showImage: true,
+								imageZoomHover: true,
+							} )
+						}
 						isShownByDefault
 					>
-						<ToggleControl
+						<SgsBooleanField
 							label={ __( 'Show image', 'sgs-blocks' ) }
 							checked={ showImage }
 							onChange={ set( 'showImage' ) }
-							__nextHasNoMarginBottom
-						/>
-						{ showImage && (
-							<SelectControl
-								label={ __( 'Image size', 'sgs-blocks' ) }
-								value={ imageSize }
-								options={ IMAGE_SIZE_OPTIONS }
-								onChange={ set( 'imageSize' ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
+						>
+							{ showImage && (
+								<>
+									{ /* Consolidated in from the "Layout" panel — CO-2 /
+									     THE PLACEMENT RULE TIER 1 names "Post image" a
+									     declared element; aspect ratio is image-owned. */ }
+									<SelectControl
+										label={ __( 'Image aspect ratio', 'sgs-blocks' ) }
+										value={ aspectRatio }
+										options={ ASPECT_RATIO_OPTIONS }
+										onChange={ set( 'aspectRatio' ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+									<SelectControl
+										label={ __( 'Image size', 'sgs-blocks' ) }
+										value={ imageSize }
+										options={ IMAGE_SIZE_OPTIONS }
+										onChange={ set( 'imageSize' ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+									{ /* 37-media-no-handroll: object-fit for the featured-image <img>
+									     (sgs-post-grid__img), one media-atom control covering both the
+									     grid-mode and list-mode selectors in style.css — same element,
+									     rendered once per card by Post_Grid_REST::render_card(). */ }
+									<MediaElementPanel
+										attributes={ attributes }
+										setAttributes={ setAttributes }
+										prefix=""
+										blockSlug="sgs/post-grid"
+										insertion="element"
+										atoms={ [ 'object-fit' ] }
+										mediaType="image"
+										scope="element"
+									/>
+									<ToggleControl
+										label={ __( 'Featured images are decorative', 'sgs-blocks' ) }
+										help={ __(
+											'Hides every post’s featured image from screen readers across this whole grid. Turn on only if the images add no information beyond the post title — posts are queried dynamically, so this applies to all cards, not one at a time.',
+											'sgs-blocks'
+										) }
+										checked={ imageDecorative }
+										onChange={ set( 'imageDecorative' ) }
+										__nextHasNoMarginBottom
+									/>
+									{ /* Consolidated in from the "Hover Effects" panel —
+									     same TIER 1 reason; image zoom on hover is
+									     image-owned. */ }
+									<ToggleControl
+										label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
+										checked={ imageZoomHover }
+										onChange={ set( 'imageZoomHover' ) }
+										__nextHasNoMarginBottom
+									/>
+								</>
+							) }
+						</SgsBooleanField>
 					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Show title', 'sgs-blocks' ) }
@@ -784,23 +846,46 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						isShownByDefault
 					>
-						<ToggleControl
+						<SgsBooleanField
 							label={ __( 'Show excerpt', 'sgs-blocks' ) }
 							checked={ showExcerpt }
 							onChange={ set( 'showExcerpt' ) }
-							__nextHasNoMarginBottom
-						/>
-						{ showExcerpt && (
-							<RangeControl
-								label={ __( 'Excerpt length (words)', 'sgs-blocks' ) }
-								value={ excerptLength }
-								onChange={ set( 'excerptLength' ) }
-								min={ 5 }
-								max={ 80 }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
+						>
+							{ showExcerpt && (
+								<>
+									<RangeControl
+										label={ __( 'Excerpt length (words)', 'sgs-blocks' ) }
+										value={ excerptLength }
+										onChange={ set( 'excerptLength' ) }
+										min={ 5 }
+										max={ 80 }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+									{ /* Moved in from the shared SgsColourPanel (D622 —
+									     an element-scoped colour belongs in its own
+									     element's TIER 1 panel; "post excerpt" is a
+									     declared element whose attrMap claims
+									     excerptColour). */ }
+									<DesignTokenPicker
+										label={ __( 'Excerpt colour', 'sgs-blocks' ) }
+										states={ [
+											{
+												key: 'normal',
+												label: __( 'Normal', 'sgs-blocks' ),
+												value: excerptColour,
+												onChange: ( val ) =>
+													setAttributes( { excerptColour: val ?? '' } ),
+												linked: true,
+												gradientValue: excerptColourGradient,
+												onGradientChange: ( val ) =>
+													setAttributes( { excerptColourGradient: val ?? '' } ),
+											},
+										] }
+									/>
+								</>
+							) }
+						</SgsBooleanField>
 					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Show date', 'sgs-blocks' ) }
@@ -851,21 +936,40 @@ export default function Edit( { attributes, setAttributes } ) {
 							} )
 						}
 					>
-						<ToggleControl
+						<SgsBooleanField
 							label={ __( 'Show read more', 'sgs-blocks' ) }
 							checked={ showReadMore }
 							onChange={ set( 'showReadMore' ) }
-							__nextHasNoMarginBottom
-						/>
-						{ showReadMore && (
-							<TextControl
-								label={ __( 'Read more text', 'sgs-blocks' ) }
-								value={ readMoreText }
-								onChange={ set( 'readMoreText' ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
+						>
+							{ showReadMore && (
+								<>
+									<TextControl
+										label={ __( 'Read more text', 'sgs-blocks' ) }
+										value={ readMoreText }
+										onChange={ set( 'readMoreText' ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+									{ /* Moved in from the shared SgsColourPanel (D622). */ }
+									<DesignTokenPicker
+										label={ __( 'Read more colour', 'sgs-blocks' ) }
+										states={ [
+											{
+												key: 'normal',
+												label: __( 'Normal', 'sgs-blocks' ),
+												value: readMoreColour,
+												onChange: ( val ) =>
+													setAttributes( { readMoreColour: val ?? '' } ),
+												linked: true,
+												gradientValue: readMoreColourGradient,
+												onGradientChange: ( val ) =>
+													setAttributes( { readMoreColourGradient: val ?? '' } ),
+											},
+										] }
+									/>
+								</>
+							) }
+						</SgsBooleanField>
 					</ToolsPanelItem>
 				</ToolsPanel>
 
@@ -876,6 +980,76 @@ export default function Edit( { attributes, setAttributes } ) {
 						selected={ cardStyle }
 						options={ CARD_STYLE_OPTIONS }
 						onChange={ set( 'cardStyle' ) }
+					/>
+					{ /* Moved in from the shared SgsColourPanel (D622 — an
+					     element-scoped colour belongs in its own element's
+					     TIER 1 panel; "post card" is a declared element whose
+					     attrMap claims cardBgColour/backgroundColourHover/
+					     borderColourHover). */ }
+					<DesignTokenPicker
+						label={ __( 'Card background colour', 'sgs-blocks' ) }
+						gradientCapable={ true }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: cardBgColour,
+								onChange: ( val ) => setAttributes( { cardBgColour: val ?? '' } ),
+								gradientValue: cardBgColourGradient,
+								onGradientChange: ( val ) => setAttributes( { cardBgColourGradient: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Card border hover colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+					{ /* Consolidated in from the "Hover Effects" panel — CO-2 /
+					     THE PLACEMENT RULE TIER 1 names "Post card" a declared
+					     element; scale + shadow (base & hover) are card-owned. */ }
+					<RangeControl
+						label={ __( 'Hover scale', 'sgs-blocks' ) }
+						value={ parseFloat( scaleHover ) || 1 }
+						onChange={ ( val ) => setAttributes( { scaleHover: String( val ) } ) }
+						min={ 1 }
+						max={ 1.1 }
+						step={ 0.01 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<ShadowControl
+						label={ __( 'Shadow', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'shadow',
+							colour: 'shadowColour',
+						} }
+					/>
+					<ShadowControl
+						label={ __( 'Hover shadow', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'shadowHover',
+							colour: 'shadowHoverColour',
+						} }
 					/>
 				</PanelBody>
 
@@ -908,69 +1082,22 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				{ /* Panel 6: Hover Effects — colours moved to the top-level
-				   SgsColourPanel (D619/D621). This ToolsPanel now holds only
-				   the non-colour hover behaviours. */ }
+				   SgsColourPanel (D619/D621). This ToolsPanel holds the
+				   non-colour hover behaviours PLUS the resting shadow shape
+				   (shadow/shadowColour, added 2026-08-20 to close a
+				   STATE_WITHOUT_BASE gap — mirrors the shadowHover pair,
+				   ordered rest-then-hover so the reading order matches the
+				   render.php/style.css cascade). */ }
 				<ToolsPanel
 					label={ __( 'Hover Effects', 'sgs-blocks' ) }
 					resetAll={ () =>
 						setAttributes( {
-							scaleHover: '',
-							shadowHover: '',
-							shadowHoverColour: '',
 							imageZoomHover: true,
 							transitionDuration: '300',
 							transitionEasing: 'ease',
 						} )
 					}
 				>
-					<ToolsPanelItem
-						label={ __( 'Hover scale', 'sgs-blocks' ) }
-						hasValue={ () => !! scaleHover && scaleHover !== '' }
-						onDeselect={ () => setAttributes( { scaleHover: '' } ) }
-					>
-						<RangeControl
-							label={ __( 'Hover scale', 'sgs-blocks' ) }
-							value={ parseFloat( scaleHover ) || 1 }
-							onChange={ ( val ) => setAttributes( { scaleHover: String( val ) } ) }
-							min={ 1 }
-							max={ 1.1 }
-							step={ 0.01 }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Hover shadow', 'sgs-blocks' ) }
-						hasValue={ () => !! shadowHover }
-						onDeselect={ () =>
-							setAttributes( { shadowHover: '', shadowHoverColour: '' } )
-						}
-					>
-						<ShadowControl
-							label={ __( 'Hover shadow', 'sgs-blocks' ) }
-							value={ shadowHover }
-							onChange={ ( val ) => setAttributes( { shadowHover: val } ) }
-							colour={ shadowHoverColour }
-							onColourChange={ ( val ) =>
-								setAttributes( { shadowHoverColour: val } )
-							}
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
-						hasValue={ () => imageZoomHover !== true }
-						onDeselect={ () =>
-							setAttributes( { imageZoomHover: true } )
-						}
-						isShownByDefault
-					>
-						<ToggleControl
-							label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
-							checked={ imageZoomHover }
-							onChange={ set( 'imageZoomHover' ) }
-							__nextHasNoMarginBottom
-						/>
-					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
 						hasValue={ () => transitionDuration !== '300' }
@@ -1023,38 +1150,77 @@ export default function Edit( { attributes, setAttributes } ) {
 					showLayout={ false }
 				/>
 
-				{ /* Panel 8: Carousel (conditional) */ }
+				{ /* Panel 8: Carousel (conditional) — converted to ToolsPanel (S7 pilot, 2026-09-02, item 03). */ }
 				{ 'carousel' === layout && (
-					<PanelBody title={ __( 'Carousel', 'sgs-blocks' ) } initialOpen={ false }>
-						<ToggleControl
+					<ToolsPanel
+						label={ __( 'Carousel', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								carouselShowArrows: true,
+								carouselShowDots: true,
+								carouselAutoplay: false,
+								carouselSpeed: 5000,
+								dragToScroll: false,
+								dragMomentum: true,
+								loopCarousel: false,
+							} )
+						}
+					>
+						<ToolsPanelItem
 							label={ __( 'Show arrows', 'sgs-blocks' ) }
-							checked={ carouselShowArrows }
-							onChange={ set( 'carouselShowArrows' ) }
-							__nextHasNoMarginBottom
-						/>
-						<ToggleControl
-							label={ __( 'Show dots', 'sgs-blocks' ) }
-							checked={ carouselShowDots }
-							onChange={ set( 'carouselShowDots' ) }
-							__nextHasNoMarginBottom
-						/>
-						<ToggleControl
-							label={ __( 'Autoplay', 'sgs-blocks' ) }
-							checked={ carouselAutoplay }
-							onChange={ set( 'carouselAutoplay' ) }
-							__nextHasNoMarginBottom
-						/>
-						{ carouselAutoplay && (
-							<RangeControl
-								label={ __( 'Autoplay speed (ms)', 'sgs-blocks' ) }
-								value={ carouselSpeed }
-								onChange={ set( 'carouselSpeed' ) }
-								min={ 1000 }
-								max={ 10000 }
-								step={ 500 }
+							hasValue={ () => carouselShowArrows !== true }
+							onDeselect={ () => setAttributes( { carouselShowArrows: true } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Show arrows', 'sgs-blocks' ) }
+								checked={ carouselShowArrows }
+								onChange={ set( 'carouselShowArrows' ) }
 								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Show dots', 'sgs-blocks' ) }
+							hasValue={ () => carouselShowDots !== true }
+							onDeselect={ () => setAttributes( { carouselShowDots: true } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Show dots', 'sgs-blocks' ) }
+								checked={ carouselShowDots }
+								onChange={ set( 'carouselShowDots' ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Autoplay', 'sgs-blocks' ) }
+							hasValue={ () => carouselAutoplay !== false }
+							onDeselect={ () => setAttributes( { carouselAutoplay: false } ) }
+						>
+							<ToggleControl
+								label={ __( 'Autoplay', 'sgs-blocks' ) }
+								checked={ carouselAutoplay }
+								onChange={ set( 'carouselAutoplay' ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						{ carouselAutoplay && (
+							<ToolsPanelItem
+								label={ __( 'Autoplay speed (ms)', 'sgs-blocks' ) }
+								hasValue={ () => carouselSpeed !== 5000 }
+								onDeselect={ () => setAttributes( { carouselSpeed: 5000 } ) }
+							>
+								<RangeControl
+									label={ __( 'Autoplay speed (ms)', 'sgs-blocks' ) }
+									value={ carouselSpeed }
+									onChange={ set( 'carouselSpeed' ) }
+									min={ 1000 }
+									max={ 10000 }
+									step={ 500 }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
 						) }
 						{ /*
 						 * Draggable + Inertia opt-in (Spec 38 FR-38-13),
@@ -1063,27 +1229,39 @@ export default function Edit( { attributes, setAttributes } ) {
 						 * renders — touch keeps its native scroll either way,
 						 * so no "touch" caveat belongs in the help text.
 						 */ }
-						<ToggleControl
+						<ToolsPanelItem
 							label={ __( 'Drag to scroll (desktop)', 'sgs-blocks' ) }
-							checked={ dragToScroll }
-							onChange={ set( 'dragToScroll' ) }
-							help={ __(
-								'Lets visitors click and drag with a mouse to scroll the carousel, on top of the usual arrows, dots, swipe and scrollbar.',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-						/>
-						{ dragToScroll && (
+							hasValue={ () => dragToScroll !== false }
+							onDeselect={ () => setAttributes( { dragToScroll: false } ) }
+						>
 							<ToggleControl
-								label={ __( 'Momentum', 'sgs-blocks' ) }
-								checked={ dragMomentum }
-								onChange={ set( 'dragMomentum' ) }
+								label={ __( 'Drag to scroll (desktop)', 'sgs-blocks' ) }
+								checked={ dragToScroll }
+								onChange={ set( 'dragToScroll' ) }
 								help={ __(
-									'Carousel keeps coasting briefly after the visitor releases the drag, like a real scroll flick.',
+									'Lets visitors click and drag with a mouse to scroll the carousel, on top of the usual arrows, dots, swipe and scrollbar.',
 									'sgs-blocks'
 								) }
 								__nextHasNoMarginBottom
 							/>
+						</ToolsPanelItem>
+						{ dragToScroll && (
+							<ToolsPanelItem
+								label={ __( 'Momentum', 'sgs-blocks' ) }
+								hasValue={ () => dragMomentum !== true }
+								onDeselect={ () => setAttributes( { dragMomentum: true } ) }
+							>
+								<ToggleControl
+									label={ __( 'Momentum', 'sgs-blocks' ) }
+									checked={ dragMomentum }
+									onChange={ set( 'dragMomentum' ) }
+									help={ __(
+										'Carousel keeps coasting briefly after the visitor releases the drag, like a real scroll flick.',
+										'sgs-blocks'
+									) }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
 						) }
 						{ /*
 						 * Infinite loop (Spec 38 §11 loop FR). Deliberately its
@@ -1093,19 +1271,68 @@ export default function Edit( { attributes, setAttributes } ) {
 						 * (native swipe/scrollbar/keyboard still loop with
 						 * drag off). Default off, same as drag.
 						 */ }
-						<ToggleControl
+						<ToolsPanelItem
 							label={ __( 'Loop', 'sgs-blocks' ) }
-							checked={ loopCarousel }
-							onChange={ set( 'loopCarousel' ) }
-							help={ __(
-								'Scrolling or dragging past the last post continues into the first, and back again — never a dead end.',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-						/>
-					</PanelBody>
+							hasValue={ () => loopCarousel !== false }
+							onDeselect={ () => setAttributes( { loopCarousel: false } ) }
+						>
+							<ToggleControl
+								label={ __( 'Loop', 'sgs-blocks' ) }
+								checked={ loopCarousel }
+								onChange={ set( 'loopCarousel' ) }
+								help={ __(
+									'Scrolling or dragging past the last post continues into the first, and back again — never a dead end.',
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 				) }
 
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				{ /* Typography — replaces the old WP-native supports.typography
+				    (fontSize/lineHeight only, targeted at .sgs-post-grid__title via
+				    block.json selectors.typography) with the shared TypographyControls
+				    component + sgs_typography_css_rule() render.php helper (D971/D972
+				    full-replacement track). Prefix "title" since the native support's
+				    actual target was the post title, not the block root — defaults
+				    also now expose weight/style, which native typography never offered
+				    here. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="title"
+					/>
+				</PanelBody>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			{ /* ============================================================
@@ -1135,6 +1362,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								key={ post.id }
 								post={ post }
 								attributes={ attributes }
+								palette={ colourPalette }
 							/>
 						) ) }
 					</div>

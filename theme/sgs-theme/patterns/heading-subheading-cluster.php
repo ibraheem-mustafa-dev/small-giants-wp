@@ -10,7 +10,7 @@
 
 ?>
 
-<!-- wp:sgs/container {"tagName":"div","layout":"flex","justifyContent":"center","flexDirection":"column","flexWrap":"nowrap"} -->
+<!-- wp:sgs/container {"tagName":"div","layout":"flex","justifyContent":"center","flexDirection":"column","flexWrap":"nowrap","templateLock":"contentOnly"} -->
 
 	<!-- wp:sgs/heading {"headingRole":"heading","content":"A section heading that converts","level":"h2","fontSize":{"desktop":36}} /-->
 

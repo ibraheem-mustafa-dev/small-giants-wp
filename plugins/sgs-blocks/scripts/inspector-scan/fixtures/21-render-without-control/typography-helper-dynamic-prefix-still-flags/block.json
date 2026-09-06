@@ -1,0 +1,7 @@
+{
+	"name": "sgs/typography-helper-dynamic-prefix-still-flags",
+	"title": "Fixture — typographyAttrKeys() called with a NON-literal prefix (negative control)",
+	"attributes": {
+		"labelFontWeight": { "type": "string", "default": "" }
+	}
+}

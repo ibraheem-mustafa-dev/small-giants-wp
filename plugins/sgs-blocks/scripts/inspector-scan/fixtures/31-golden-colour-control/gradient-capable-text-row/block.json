@@ -1,0 +1,10 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/gradient-capable-text-row",
+	"title": "Fixture: text-colour row using gradientCapable:true (routes to GradientCapableColourControl) instead of a per-state gradientValue (must NOT flag)",
+	"category": "sgs",
+	"attributes": {
+		"textColour": { "type": "string", "default": "" },
+		"textColourHover": { "type": "string", "default": "" }
+	}
+}

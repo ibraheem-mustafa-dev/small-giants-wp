@@ -85,8 +85,10 @@
 	height: 18px;
 	padding: 0 4px;
 	border-radius: 999px;
-	background-color: var(--sgs-cart-badge-colour, var(--wp--preset--color--accent));
-	color: var(--sgs-cart-badge-text-colour, var(--wp--preset--color--accent-text, #fff));
+	/* background-color/color moved to a render.php-emitted ::after layer +
+	 * direct text rule (2026-09-04) so a badgeTextColour text gradient's
+	 * background-clip:text cannot clip the badge's own fill — this element
+	 * is `position:absolute` already, so no position rule is added here. */
 	font-size: 11px;
 	font-weight: 700;
 	line-height: 18px;
@@ -158,12 +160,11 @@
 }
 
 /* ── FR-36-19 Phase 2 — mini-cart panel (flyout + drawer share this) ─────────── */
-/* Per-instance colours (panelBg/panelTextColour) are scoped custom-property
-   VALUES from render.php (Spec 32 no-inline) — this file consumes the vars only. */
-.sgs-cart__panel {
-	background-color: var(--sgs-cart-panel-bg, var(--wp--preset--color--surface, #fff));
-	color: var(--sgs-cart-panel-text, var(--wp--preset--color--text, #111));
-}
+/* Per-instance colours (panelBg/panelTextColour) moved to a render.php-
+   emitted ::after layer + direct text rule (2026-09-04) so a
+   panelTextColour text gradient's background-clip:text cannot clip the
+   panel's own fill. Relies on .sgs-cart__panel--flyout/--drawer's own
+   position:absolute/fixed below for the ::after's positioning context. */
 
 /* ── Flyout — DISCLOSURE (FR-36-10): a plain absolutely-positioned popover,
    no dimming/blocking of the rest of the page, no backdrop. ──────────────── */
@@ -387,10 +388,16 @@
 	border-bottom: 1px solid rgba(128, 128, 128, 0.25);
 }
 
+/* object-fit is deliberately NOT declared here (rule 37-media-no-handroll
+   fix) — item-row-template.js appends the shared .sgs-media-el marker class
+   to this <img> at runtime, so assets/css/media-atoms/object-fit.css's
+   `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` rule owns it
+   (identical `cover` fallback to the value this replaces). The placeholder
+   `<span>` sharing this selector is unaffected either way — object-fit does
+   nothing on a non-replaced element. */
 .sgs-cart__item-thumb {
 	width: 48px;
 	height: 48px;
-	object-fit: cover;
 	border-radius: 4px;
 	background-color: rgba(128, 128, 128, 0.12);
 }

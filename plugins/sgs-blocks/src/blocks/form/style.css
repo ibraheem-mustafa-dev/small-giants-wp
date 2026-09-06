@@ -43,11 +43,17 @@
 	gap: var(--wp--preset--spacing--30, 1rem);
 }
 
-/* 2-column layout kicks in at 560px container width (not viewport) */
+/* Multi-column layout kicks in at 560px container width (not viewport).
+   SIX tracks, not two: 6 is the LCM of 2 and 3, so `half` (span 3) and
+   `third` (span 2) both tile the row exactly. Before 2026-08-28 this was
+   `1fr 1fr`, which made `--third` resolve to the same `span 1` as `--half`
+   — twelve field blocks offered a "Third width" option that rendered
+   identically to Half. The track count is an implementation detail; the
+   client-facing vocabulary (full / half / third) is unchanged. */
 @container sgs-form (min-width: 560px) {
 	.sgs-form__inner,
 	.sgs-form-step {
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: repeat(6, 1fr);
 	}
 }
 
@@ -58,14 +64,14 @@
 	grid-column: 1 / -1;
 }
 
-/* Half/third only apply inside 2-col layout */
+/* Half/third only apply inside the multi-column layout */
 @container sgs-form (min-width: 560px) {
 	.sgs-form-field--half {
-		grid-column: span 1;
+		grid-column: span 3;
 	}
 
 	.sgs-form-field--third {
-		grid-column: span 1;
+		grid-column: span 2;
 	}
 }
 
@@ -336,15 +342,41 @@ select.sgs-form-field__input {
 	position: relative;
 }
 
-.sgs-form-tile:hover {
+/* Hover border-colour is client-controllable (tileBorderColour/Hover) via
+   sgs_emit_state_colour_css() in render.php, emitted at real specificity so
+   it wins once a client sets a value. The rule below is the DEFAULT look,
+   kept at zero specificity via :where() so an unset attribute still shows
+   today's look unchanged. */
+:where(.sgs-form-tile:hover) {
 	border-color: var(--wp--preset--color--primary, #0f7e80);
 }
 
-.sgs-form-tile--selected,
-.sgs-form-tile:has(input:checked) {
+/* selectedStyle (sgs/form-field-tiles) gates which of the three selected-state
+   effects paint, via the `sgs-form-field--tiles-style-{value}` class render.php
+   emits on the FIELD wrapper (an ancestor of .sgs-form-tile, not the tile
+   itself — hence the descendant selectors below).
+   'checkmark' is the block's default: it keeps ALL THREE effects combined
+   (border colour+width bump, background tint, checkmark badge) so every
+   existing page — none of which has ever touched this control — renders
+   IDENTICALLY to before this split. 'border' and 'background' show ONLY
+   their own named effect. */
+.sgs-form-field--tiles-style-checkmark .sgs-form-tile--selected,
+.sgs-form-field--tiles-style-checkmark .sgs-form-tile:has(input:checked),
+.sgs-form-field--tiles-style-border .sgs-form-tile--selected,
+.sgs-form-field--tiles-style-border .sgs-form-tile:has(input:checked) {
 	/* FIX #4: selected border uses accent-text (#7A6B00) not accent (#F87A1F).
 	   accent gives 1.93:1 contrast on accent-light bg; accent-text gives 6.37:1. */
 	border-color: var(--wp--preset--color--accent-text, #7a6b00);
+	/* Rule 43 (WCAG 1.4.1): selected state must not rely on colour alone — the
+	 * resting border is already 2px solid, so bump to 3px as the non-colour
+	 * signal. */
+	border-width: 3px;
+}
+
+.sgs-form-field--tiles-style-checkmark .sgs-form-tile--selected,
+.sgs-form-field--tiles-style-checkmark .sgs-form-tile:has(input:checked),
+.sgs-form-field--tiles-style-background .sgs-form-tile--selected,
+.sgs-form-field--tiles-style-background .sgs-form-tile:has(input:checked) {
 	background-color: var(--wp--preset--color--accent-light, #fee8d4);
 }
 
@@ -388,7 +420,9 @@ select.sgs-form-field__input {
 	transform: rotate(45deg);
 }
 
-.sgs-form-tile:has(input:checked) .sgs-form-tile__check {
+/* Checkmark badge is exclusive to selectedStyle='checkmark' (the default) —
+   'border' and 'background' show ONLY their own named effect, no badge. */
+.sgs-form-field--tiles-style-checkmark .sgs-form-tile:has(input:checked) .sgs-form-tile__check {
 	display: block;
 }
 
@@ -442,7 +476,13 @@ select.sgs-form-field__input {
 	transition: border-color 0.2s, background-color 0.2s;
 }
 
-.sgs-form-field__file-label:hover {
+/* Hover border/background colours are client-controllable
+   (fileLabelBorderColour/Hover, fileLabelBackgroundColour/Hover) via
+   sgs_emit_state_colour_css() in render.php, emitted at real specificity so
+   it wins once a client sets a value. The rule below is the DEFAULT look,
+   kept at zero specificity via :where() so an unset attribute still shows
+   today's look unchanged. */
+:where(.sgs-form-field__file-label:hover) {
 	border-color: var(--wp--preset--color--primary, #0f7e80);
 	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
 }
@@ -513,7 +553,21 @@ select.sgs-form-field__input {
 	height: 4px;
 	border-radius: 2px;
 	background-color: var(--sgs-progress-colour, var(--wp--preset--color--primary, #0f7e80));
+	background-image: var(--sgs-progress-colour-gradient, none);
 	transition: width 0.3s ease;
+}
+
+/* Hover/focus-visible sibling (hover-sibling closeout, 2026-09-06) — same
+   fallback-chain shape as before-after's handle-colour hover: unset falls
+   through to the resting colour, then the CSS default, so an untouched form
+   stays byte-identical. .sgs-form__progress-bar itself has no cursor/tabindex
+   (:focus-visible never matches it), but the pairing is kept for parity with
+   every other hover rule in the framework and to cover a wrapping-element
+   focus/hover class a future feature might add. */
+.sgs-form__progress-bar:hover,
+.sgs-form__progress-bar:focus-visible {
+	background-color: var(--sgs-progress-colour-hover, var(--sgs-progress-colour, var(--wp--preset--color--primary, #0f7e80)));
+	background-image: var(--sgs-progress-colour-hover-gradient, var(--sgs-progress-colour-gradient, none));
 }
 
 .sgs-form__progress-steps {
@@ -558,9 +612,19 @@ select.sgs-form-field__input {
 
 .sgs-form__progress-step--active .sgs-form__progress-step-number,
 .sgs-form__progress-step--completed .sgs-form__progress-step-number {
+	/* Reuses --sgs-progress-colour for visual consistency with the progress-bar
+	 * fill, but the step-number circle is NOT the declared "progress-bar"
+	 * fill element (block.json supports.sgs.elements) and is scoped instead
+	 * under sgs/form-step's own step-navigation UI — no -hover sibling added
+	 * here (hover-sibling closeout, 2026-09-06); the step button already has
+	 * its own :focus-visible outline rule below. */
 	border-color: var(--sgs-progress-colour, var(--wp--preset--color--primary, #0f7e80));
 	background-color: var(--sgs-progress-colour, var(--wp--preset--color--primary, #0f7e80));
 	color: var(--wp--preset--color--text-inverse, #fff);
+	/* Rule 43 (WCAG 1.4.1): active/completed state must not rely on colour
+	 * alone — the resting border is already 2px solid, so bump to 3px as the
+	 * non-colour signal. */
+	border-width: 3px;
 }
 
 .sgs-form__progress-step-label {
@@ -670,7 +734,12 @@ select.sgs-form-field__input {
 	color: var(--wp--preset--color--text, #1e1e1e);
 }
 
-.sgs-form__button--prev:hover {
+/* Hover background-colour is client-controllable (prevColourBackground/Hover)
+   via sgs_button_element_style_css() in render.php, emitted at real
+   specificity so it wins once a client sets a value. The rule below is the
+   DEFAULT look, kept at zero specificity via :where() so an unset attribute
+   still shows today's look unchanged. */
+:where(.sgs-form__button--prev:hover) {
 	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
 }
 

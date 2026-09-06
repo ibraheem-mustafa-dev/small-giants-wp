@@ -25,15 +25,8 @@
 		},
 		"color": {
 			"background": false,
-			"gradients": true,
+			"gradients": false,
 			"text": false,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
@@ -45,21 +38,32 @@
 					"label": "Wrapper",
 					"layer": "CONTENT",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "textColour",
 						"css:background-color": "backgroundColour",
 						"css:padding": "native:spacing.padding",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
-						"css:width": "contentWidth"
+						"css:width": "contentWidth",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:background-image": "textColourGradient"
 					},
-					"_note": "CONTENT-kind composite (WS-4 composite-mirror, render.php:104-117) — width/spacing layer only via SGS_Container_Wrapper('content'). block.json declares no `margin` spacing support (only padding) and no typography support, so those members are honest gaps. Layer CONTENT names the structural role (naming discipline, FR-35-1) — this block has no GRID layer."
+					"_note": "CONTENT-kind composite (WS-4 composite-mirror, render.php:104-117) — width/spacing layer only via SGS_Container_Wrapper('content'). block.json declares no `margin` spacing support (only padding) and no typography support, so those members are honest gaps. Layer CONTENT names the structural role (naming discipline, FR-35-1) — this block has no GRID layer. textColourGradient is the text-colour gradient sibling to textColour, same background-clip:text mechanism as sgs/counter's labelColour/labelColourGradient (D636 gap-closure)."
 				}
+			},
+			"boxFamilies": {
+				"borderRadius": [
+					"borderRadius"
+				]
 			}
 		}
 	},
@@ -84,9 +88,59 @@
 			"type": "string",
 			"default": ""
 		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"textColour": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"render": "file:./render.php",

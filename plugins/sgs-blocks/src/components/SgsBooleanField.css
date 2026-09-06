@@ -1,0 +1,13 @@
+/**
+ * Editor-only spacing for the shared BOOLEAN control (`SgsBooleanField.js`).
+ * Deliberately an OWN, explicit margin rather than relying on
+ * ToggleControl's `__nextHasNoMarginBottom` flag — proven live 2026-08-19
+ * that toggling that flag does not restore any margin for ToggleControl in
+ * this installed WP version (verified via React fiber inspection: the prop
+ * was correctly `false`, computed margin-bottom was still 0px). This class
+ * is the real, directly-measurable fix.
+ */
+
+.sgs-boolean-field__reveal {
+	margin-top: 16px;
+}

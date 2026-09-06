@@ -21,38 +21,42 @@
 			"scalarStylingLift": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
 				"wrapper": {
 					"label": "Counter box",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius"
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:border-color-gradient": "borderColourGradient"
 					}
 				},
 				"number": {
 					"label": "Number",
 					"order": 2,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"prefix": "number",
 					"attrMap": {
 						"css:font-size": "native:typography.fontSize",
@@ -64,8 +68,14 @@
 				"label": {
 					"label": "Label",
 					"order": 3,
-					"clusters": [ "text" ],
-					"prefix": "label"
+					"clusters": [
+						"text"
+					],
+					"prefix": "label",
+					"attrMap": {
+						"css:background-image": "labelColourGradient"
+					},
+					"_note": "labelColourGradient is the text-colour gradient sibling to labelColour, same background-clip:text mechanism as the number element's numberColourGradient (D636 Task 1b). Finishes the text-colour gradient rollout 778879732 started and explicitly left open."
 				},
 				"icon": {
 					"label": "Icon",
@@ -91,18 +101,6 @@
 			"textAlign": true,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"interactivity": true
 	},
 	"selectors": {
@@ -110,6 +108,18 @@
 		"typography": ".sgs-counter__number"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"number": {
 			"type": "number",
 			"default": 0
@@ -149,6 +159,10 @@
 			"type": "string",
 			"default": "text-muted"
 		},
+		"labelColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"labelFontSize": {
 			"type": "object",
 			"default": {}
@@ -180,29 +194,39 @@
 			"type": "boolean",
 			"default": false
 		},
-		"paddingTablet": {
+		"borderWidth": {
 			"type": "object",
 			"default": {}
 		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
 		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
+		"borderColour": {
+			"type": "string",
+			"default": ""
 		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
 		},
-		"borderRadiusTablet": {
+		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"editorScript": "file:./index.js",

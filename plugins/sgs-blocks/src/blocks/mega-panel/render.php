@@ -28,14 +28,15 @@
  * here to a section-shaped composite because the shape is bespoke per
  * variant/style, not the container's generic grid.
  *
- * NO-INLINE (Spec 32): the rendered subtree carries ZERO inline `style="…"`
- * property declarations. Every attribute value is emitted into this
- * instance's OWN scoped `<style>` tag, keyed to a content-addressed class
- * selector (never `#uid`, D303), never an inline attribute.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check. Every attribute value is emitted into this instance's OWN scoped
+ * `<style>` tag, keyed to a content-addressed class selector (never `#uid`,
+ * D303).
  *
  * SECURITY (CF-2, binding): every colour/token attr resolves via
  * `sgs_colour_value()`; every free dimensional attr resolves via the shared
- * `sgs_css_length_sanitise()` / `sgs_css_keyword_sanitise()` regex
+ * `sgs_css_length_value()` / `sgs_css_keyword_sanitise()` regex
  * sanitisers (helpers-box.php); nothing raw is ever concatenated into the
  * scoped `<style>`. `wp_strip_all_tags()` guards the one remaining
  * `</style>`-breakout vector as a defence-in-depth backstop.
@@ -77,22 +78,125 @@ $colour_scheme   = isset( $attributes['colourScheme'] ) && in_array( $attributes
 $headings_on = ! isset( $attributes['headings'] ) || (bool) $attributes['headings'];
 $bg_blur     = ! empty( $attributes['bgBlur'] );
 
-// Split from the old single `accent` attribute (D643, Bean-ruled): one colour
-// attribute cannot secretly paint 4 unrelated CSS properties (background-colour,
-// border-colour, text-colour, background-image) — each needs its own control
-// before the universal gradient rollout can land. Each new attribute keeps the
-// SAME default ("accent") the retired attribute had, so existing rendering is
-// unchanged unless an operator now picks a different colour per role.
-$accent_bg_slug     = isset( $attributes['accentBackground'] ) ? sanitize_html_class( (string) $attributes['accentBackground'] ) : 'accent';
-$accent_border_slug = isset( $attributes['accentBorderColour'] ) ? sanitize_html_class( (string) $attributes['accentBorderColour'] ) : 'accent';
-$accent_border_gradient = sgs_css_gradient_value( $attributes['accentBorderColourGradient'] ?? '' );
-$accent_text_slug   = isset( $attributes['accentTextColour'] ) ? sanitize_html_class( (string) $attributes['accentTextColour'] ) : 'accent';
+// (D643, Bean-ruled): one colour attribute cannot secretly paint 4 unrelated
+// CSS properties (background-colour, border-colour, text-colour, background-
+// image) — each has its own control, each defaulting to "accent".
+// Renamed 2026-08-28 (NULL css_element fix proposal §5): accentBackground ->
+// iconBackground, accentBorderColour -> groupBorderColour,
+// accentBorderColourGradient -> groupBorderColourGradient, accentTextColour
+// -> iconColour. accentBackgroundImage is NOT part of this rename.
+//
+// SAME DAY, second rename: Bean ruled a genuine RESTING-state group-tile
+// border should exist alongside the hover-only one this code already had
+// (there was never a resting border on `.sgs-mega-group` at all — see
+// block.json's `group` element note for the full chain). groupBorderColour /
+// groupBorderColourGradient were re-renamed to groupBorderColourHover /
+// groupBorderColourGradientHover, freeing the base names for a NEW resting
+// pair (default empty string — no colour override at rest until an operator
+// sets one).
+$accent_bg_slug     = isset( $attributes['iconBackground'] ) ? sanitize_html_class( (string) $attributes['iconBackground'] ) : 'accent';
+$accent_border_slug = isset( $attributes['groupBorderColourHover'] ) ? sanitize_html_class( (string) $attributes['groupBorderColourHover'] ) : 'accent';
+$accent_border_gradient = sgs_css_gradient_value( $attributes['groupBorderColourGradientHover'] ?? '' );
+// iconColour (D636 flat/gradient sibling pattern, closes mega-panel.iconColour
+// non-conformance): NOT run through sanitize_html_class() like the other
+// slug-only accent attrs above — it is a free-text colour value (raw hex/var()
+// or a full CSS gradient function string when iconColourGradient is set), and
+// sanitize_html_class() would mangle a gradient string's parentheses/commas.
+// $icon_colour_effective/$icon_colour_decl are resolved once here and consumed
+// at all 3 layout-mode icon selectors below (§4/§4-icon), replacing the old
+// --sgs-mm-accent-text custom-property indirection entirely.
+$icon_colour_raw          = isset( $attributes['iconColour'] ) ? (string) $attributes['iconColour'] : 'accent';
+$icon_colour_gradient_raw = isset( $attributes['iconColourGradient'] ) ? (string) $attributes['iconColourGradient'] : '';
+$icon_colour_effective    = sgs_resolve_text_colour_or_gradient( $icon_colour_raw, $icon_colour_gradient_raw );
+$icon_colour_decl         = sgs_text_colour_decl( $icon_colour_effective );
+
+// NEW resting-state group-tile border (2026-08-28) — independent of the
+// hover pair above. Empty raw value = no override (the `cards` tile keeps
+// its existing --sgs-mm-panel-border-derived border, unchanged). Resolved
+// to a concrete colour only when set, never defaulted to 'accent' — an
+// unset resting attr must render NOTHING, not a silently-applied accent.
+$group_border_resting_raw      = isset( $attributes['groupBorderColour'] ) ? (string) $attributes['groupBorderColour'] : '';
+$group_border_resting_value    = '' !== $group_border_resting_raw ? sgs_colour_value( $group_border_resting_raw ) : '';
+$group_border_resting_gradient = sgs_css_gradient_value( $attributes['groupBorderColourGradient'] ?? '' );
 $accent_image_slug  = isset( $attributes['accentBackgroundImage'] ) ? sanitize_html_class( (string) $attributes['accentBackgroundImage'] ) : 'accent';
+// accentBackgroundImageGradient (2026-09-06, colour-conformance closeout §3):
+// a gradient sibling for accentBackgroundImage. accentBackgroundImage feeds
+// ONLY a colour STOP inside the aside spotlight glow's radial-gradient (via
+// the derived --sgs-mm-soft-image 10% tint, style.css's `[data-spotlight]::before`
+// rule) — a gradient cannot be meaningfully passed through that same
+// color-mix()-derived stop the way a solid colour can, so when this is set it
+// BYPASSES the derivation entirely and replaces the WHOLE background-image on
+// that same selector with the raw gradient (see $css below for the consuming
+// custom property; style.css wraps its background-image in
+// `var(--sgs-mm-accent-image-gradient, <existing radial-gradient>)` so an
+// unset value renders the exact pre-existing chain unchanged).
+$accent_image_gradient = sgs_css_gradient_value( $attributes['accentBackgroundImageGradient'] ?? '' );
 $panel_bg_raw      = isset( $attributes['panelBg'] ) ? (string) $attributes['panelBg'] : '';
+// panelBg/iconBackground gradient siblings (2026-09-06, colour-conformance
+// closeout) — neither attribute is a plain flat-value-to-custom-property
+// assignment (panelBg has a PHP-computed color-mix() default when empty;
+// iconBackground is a slug that resolves into the DERIVED "soft" 10%-tint
+// custom property, not a direct paint), so sgs_custom_property_gradient_decls()
+// does not fit either shape outright. Both gradients are resolved here via
+// the same sgs_css_gradient_value() primitive every other gradient attr in
+// this file already uses (see $border_colour_gradient below), then declared
+// as their own custom-property SIBLING next to the existing flat custom
+// property at the point each is actually emitted (§2) — a background-image
+// consumer is added next to every background-color consumer of that same
+// custom property (§4 + style.css), matching the option-picker/tabs recipe
+// at the FINAL emission point rather than at the raw attribute.
+$panel_bg_gradient = sgs_css_gradient_value( $attributes['panelBgGradient'] ?? '' );
+$icon_bg_gradient  = sgs_css_gradient_value( $attributes['iconBackgroundGradient'] ?? '' );
+
+// panelBg has DELIBERATELY NOT been given a hover pair (2026-09-06 colour-
+// conformance closeout, hover-controls task). `panelBg` paints the WHOLE
+// dropdown SHELL — the panel is a disclosure surface whose visibility is
+// already toggled by its trigger button/JS (CF-10's own doc-block, `sgs/
+// nav-menu`'s mega-item trigger), not an element a visitor points at and
+// hovers as a discrete interaction the way a card or a nav link is. There is
+// no genuine `:hover` moment on the panel root itself once it is open — the
+// pointer is over one of its CHILDREN (a group tile, an icon, a link), each
+// of which already has (or, for iconBackground below, now gains) its own
+// hover control. Inventing a panel-level hover here would have no real
+// trigger to attach it to, so none was added — same standard as a submenu
+// panel with no natural hover surface.
+//
+// iconBackground DOES get a hover pair: the icon chip sits inside
+// `.sgs-mega-group`, which already has a REAL hover trigger on the `cards`
+// style (the lift/shadow rule at §4 below) — so the icon's hover colour is
+// wired to fire off that SAME ancestor hover, `.sgs-mega-group:hover
+// .sgs-icon-list__icon` (columns/minimal styles paint no hover feedback on
+// `.sgs-mega-group` at all, so the hover pair is scoped to `cards` only,
+// where the ancestor trigger genuinely exists). When set, it REPLACES the
+// derived --sgs-mm-soft tint entirely for the hover state (painted raw,
+// never re-derived through color-mix()) — matching the same design choice
+// used for accentBackgroundImageGradient above.
+$icon_bg_hover_raw      = isset( $attributes['iconBackgroundHover'] ) ? (string) $attributes['iconBackgroundHover'] : '';
+$icon_bg_hover_gradient = sgs_css_gradient_value( $attributes['iconBackgroundGradientHover'] ?? '' );
 $border_colour_raw = isset( $attributes['borderColour'] ) ? (string) $attributes['borderColour'] : '';
 $border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-$border_radius     = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $attributes['borderRadius'] ?? '20px' ) : '20px';
-$aside_width       = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $attributes['asideWidth'] ?? '340px' ) : '340px';
+$border_radius     = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['borderRadius'] ?? '20px' ) : '20px';
+
+// B4 (2026-09-04, SgsBorderControl migration): width + style, NEW attrs. Each
+// side falls back to 1px / 'solid' falls back independently so a pre-existing
+// instance (which never wrote these attrs) renders the EXACT same hairline
+// as the old hardcoded `border:1px solid var(--sgs-mm-panel-border);` shorthand
+// this replaces below (§3). Oracle: sgs/accordion-item's own Shape-B width/
+// style resolution (scripts/migrate-border-shape-b.js).
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $border_width_obj['top'] ?? '' ) : '';
+$border_width_right  = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $border_width_obj['right'] ?? '' ) : '';
+$border_width_bottom = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $border_width_obj['bottom'] ?? '' ) : '';
+$border_width_left   = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $border_width_obj['left'] ?? '' ) : '';
+$border_width_top    = '' !== $border_width_top ? $border_width_top : '1px';
+$border_width_right  = '' !== $border_width_right ? $border_width_right : '1px';
+$border_width_bottom = '' !== $border_width_bottom ? $border_width_bottom : '1px';
+$border_width_left   = '' !== $border_width_left ? $border_width_left : '1px';
+
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style_raw      = isset( $attributes['borderStyle'] ) ? (string) $attributes['borderStyle'] : 'solid';
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'solid';
+$aside_width       = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['asideWidth'] ?? '340px' ) : '340px';
 $aside_separator   = is_array( $attributes['asideSeparator'] ?? null ) ? $attributes['asideSeparator'] : array( 'style' => 'line' );
 
 $max_width_obj     = is_array( $attributes['maxWidth'] ?? null ) ? $attributes['maxWidth'] : array( 'desktop' => '1120px' );
@@ -144,7 +248,6 @@ $css = '';
 
 $accent_bg_value     = sgs_colour_value( $accent_bg_slug );
 $accent_border_value = sgs_colour_value( $accent_border_slug );
-$accent_text_value   = sgs_colour_value( $accent_text_slug );
 $accent_image_value  = sgs_colour_value( $accent_image_slug );
 
 // panelBg: attr value (token slug or raw colour) resolves via sgs_colour_value
@@ -167,7 +270,7 @@ $panel_border_value = '' !== $border_colour_raw
 
 // The "soft" role (§4) is always DERIVED from the resolved accent-background
 // colour (never an independent attribute) — so the marker chip background
-// stays in lockstep with whichever accentBackground the operator picks.
+// stays in lockstep with whichever iconBackground the operator picks.
 // "soft-image" is the SAME derivation but sourced from accentBackgroundImage,
 // feeding only the aside spotlight glow's background-image (kept separate from
 // $soft_value so the two properties are genuinely independently overridable —
@@ -195,7 +298,6 @@ if ( '' !== $panel_bg_raw ) {
 $css .= $root_sel . '{'
 	. '--sgs-mm-text:' . $text_value . ';'
 	. '--sgs-mm-muted:var(--wp--preset--color--text-muted, #606D80);'
-	. '--sgs-mm-accent-text:' . $accent_text_value . ';'
 	. '--sgs-mm-accent-border:' . $accent_border_value . ';'
 	. '--sgs-mm-accent-bg:' . $accent_bg_value . ';'
 	. '--sgs-mm-accent-image:' . $accent_image_value . ';'
@@ -204,9 +306,38 @@ $css .= $root_sel . '{'
 	. '--sgs-mm-panel-bg:' . $panel_bg_value . ';'
 	. '--sgs-mm-card:rgba(255,255,255,.6);'
 	. '--sgs-mm-panel-border:' . $panel_border_value . ';'
+	// panelBgGradient/iconBackgroundGradient siblings (2026-09-06) — declared
+	// only when resolved, matching sgs_custom_property_gradient_decls()'s own
+	// no-op-when-empty contract; the consuming background-image declarations
+	// below (and in style.css) always emit unconditionally with a `none`
+	// fallback, so an unset gradient paints nothing extra.
+	. ( '' !== $panel_bg_gradient ? '--sgs-mm-panel-bg-gradient:' . $panel_bg_gradient . ';' : '' )
+	. ( '' !== $icon_bg_gradient ? '--sgs-mm-soft-gradient:' . $icon_bg_gradient . ';' : '' )
+	// iconBackgroundHover/iconBackgroundGradientHover (2026-09-06) — declared
+	// only when the operator has set one, consumed by the §4 cards-style hover
+	// rule below (and its style.css editor-canvas mirror) via a var(...)
+	// fallback chain, so an unset value is behaviour-neutral by construction.
+	. ( '' !== $icon_bg_hover_raw ? '--sgs-mm-icon-hover-bg:' . sgs_colour_value( $icon_bg_hover_raw ) . ';' : '' )
+	. ( '' !== $icon_bg_hover_gradient ? '--sgs-mm-icon-hover-bg-gradient:' . $icon_bg_hover_gradient . ';' : '' )
+	// accentBackgroundImageGradient (2026-09-06) — declared only when resolved;
+	// style.css's spotlight `::before` rule wraps its whole background-image in
+	// var(--sgs-mm-accent-image-gradient, <existing radial-gradient>), so this
+	// bypasses the color-mix()-derived soft-image tint entirely when set and is
+	// a complete no-op when unset.
+	. ( '' !== $accent_image_gradient ? '--sgs-mm-accent-image-gradient:' . $accent_image_gradient . ';' : '' )
 	. 'color:var(--sgs-mm-text);'
 	. 'background-color:var(--sgs-mm-panel-bg);'
+	. 'background-image:var(--sgs-mm-panel-bg-gradient, none);'
 	. '}';
+
+// NEW resting-state group-tile border custom property (2026-08-28) — only
+// declared when the operator has set one, so the fallback chain consuming
+// it (§4 below, and the mirrored rule in style.css for the editor canvas)
+// resolves to the existing --sgs-mm-panel-border value when absent, i.e.
+// behaviour-neutral by construction.
+if ( '' !== $group_border_resting_value ) {
+	$css .= $root_sel . '{--sgs-mm-group-border-resting:' . $group_border_resting_value . ';}';
+}
 
 // Dark scheme cascade (§4). None of the 4 split accent attributes are
 // redeclared in the dark props — §4 says the picked accent colours are "reuse
@@ -233,7 +364,12 @@ $dark_props = '--sgs-mm-text:#f3f2ee;'
 	. '--sgs-mm-card:rgba(255,255,255,.04);'
 	. '--sgs-mm-panel-border:rgba(255,255,255,.11);'
 	. 'color:var(--sgs-mm-text);'
-	. 'background-color:var(--sgs-mm-panel-bg);';
+	. 'background-color:var(--sgs-mm-panel-bg);'
+	// panelBgGradient sibling (2026-09-06) — --sgs-mm-panel-bg-gradient is NOT
+	// redeclared here, so an operator-set gradient (declared once on $root_sel
+	// above) still cascades into the forced/auto dark scheme exactly like the
+	// pre-existing accent/soft custom properties above it do.
+	. 'background-image:var(--sgs-mm-panel-bg-gradient, none);';
 
 // Forced per-panel dark (operator explicitly picked `dark` regardless of site mode).
 $css .= $root_sel . '[data-mega-scheme="dark"]{' . $dark_props . '}';
@@ -274,16 +410,35 @@ if ( function_exists( 'sgs_emit_responsive_css' ) ) {
 	}
 }
 
+// G5 (Bean, 2026-08-26): a style with no width must render NO border — CSS's
+// initial border-width is `medium` (~3px), so an ungated `border-style:` alone
+// paints an unwanted border. $has_border_width is always true here by
+// construction (every side falls back to '1px' above unless the operator
+// explicitly sets one, including an explicit 0 to remove it), but the
+// condition still has to ENCLOSE the emission for the shared detector
+// (check-border-style-without-width.py) to recognise it as gated.
+$has_border_width = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
 $css .= $root_sel . '{'
 	. 'border-radius:' . ( '' !== $border_radius ? $border_radius : '20px' ) . ';'
-	. 'border:1px solid var(--sgs-mm-panel-border);'
 	. 'box-shadow:0 30px 80px -30px rgba(0,0,0,.28),0 2px 8px -2px rgba(0,0,0,.08);'
 	. 'container-type:inline-size;'
 	. '}';
 
+if ( $has_border_width ) {
+	$css .= $root_sel . '{'
+		. 'border-style:' . $border_style . ';'
+		. 'border-width:' . "{$border_width_top} {$border_width_right} {$border_width_bottom} {$border_width_left}" . ';'
+		. 'border-color:var(--sgs-mm-panel-border);'
+		. '}';
+}
+
 // Border gradient (D636 border builder) — masked ::before on the panel root.
+// Mask ring thickness now follows the operator's own top-side width (B4,
+// 2026-09-04) instead of a hardcoded '1px', so the gradient ring stays in
+// step with a resized border.
 if ( '' !== $border_colour_gradient ) {
-	$css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '1px' );
+	$css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, $border_width_top );
 }
 
 if ( $bg_blur ) {
@@ -331,13 +486,21 @@ if ( function_exists( 'sgs_emit_responsive_css' ) ) {
 $css .= $style_col . $rel_content . '{display:flex;flex-wrap:wrap;}';
 $css .= $style_col . $rel_group . ',' . $style_col . $rel_card_grid . '{flex:1 1 200px;min-width:0;}';
 $css .= $style_col . $rel_item . '{display:flex;align-items:flex-start;gap:13px;padding:11px 12px;border-radius:13px;}';
-$css .= $style_col . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent-text);}';
+$css .= $style_col . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);background-image:var(--sgs-mm-soft-gradient, none);' . $icon_colour_decl . ';}';
 
 // -- cards -----------------------------------------------------------------
 $css .= $style_crd . $rel_content . '{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;}';
-$css .= $style_crd . $rel_group . '{padding:17px;border-radius:15px;border:1px solid var(--sgs-mm-panel-border);background-color:var(--sgs-mm-card);}';
+$css .= $style_crd . $rel_group . '{padding:17px;border-radius:15px;border:1px solid var(--sgs-mm-panel-border);border-color:var(--sgs-mm-group-border-resting, var(--sgs-mm-panel-border));background-color:var(--sgs-mm-card);}';
 $css .= $style_crd . $rel_item . '{display:flex;align-items:flex-start;gap:13px;padding:0;border-radius:0;}';
-$css .= $style_crd . $rel_icon . '{width:36px;height:36px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent-text);}';
+$css .= $style_crd . $rel_icon . '{width:36px;height:36px;border-radius:10px;background-color:var(--sgs-mm-soft);background-image:var(--sgs-mm-soft-gradient, none);' . $icon_colour_decl . ';}';
+
+// Resting-state border GRADIENT (2026-08-28) — masked ::before ring, scoped
+// to the resting (non-hover) `.sgs-mega-group` tile, independent of the
+// hover pair's own accent-border-gradient rule below. Non-empty wins over
+// the resting groupBorderColour on this SAME resting selector.
+if ( '' !== $group_border_resting_gradient ) {
+	$css .= sgs_border_gradient_css( $style_crd . $rel_group, $group_border_resting_gradient, null, '1px' );
+}
 
 // -- card hover-lift (§6 last row). Scoped to THIS style's `.sgs-mega-group`
 // tile only — `sgs/card-grid` (used by media-cards/brands) already owns a
@@ -351,22 +514,55 @@ $css .= $style_crd . $rel_icon . '{width:36px;height:36px;border-radius:10px;bac
 // instant colour swap, not part of the animated property set). ------------
 $css .= $style_crd . $rel_group . '{position:relative;transition:transform .2s ease;}';
 $css .= $style_crd . $rel_group . '::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 20px 40px -12px rgba(0,0,0,.28);opacity:0;transition:opacity .3s ease;pointer-events:none;}';
-$css .= $style_crd . $rel_group . ':hover,' . $style_crd . $rel_group . ':focus-within{transform:translateY(-3px);border-color:var(--sgs-mm-accent-border);}';
-$css .= $style_crd . $rel_group . ':hover::after,' . $style_crd . $rel_group . ':focus-within::after{opacity:1;}';
+$css .= sgs_hover_state_rules( $style_crd . $rel_group, 'transform:translateY(-3px);border-color:var(--sgs-mm-accent-border)', ':focus-within' );
+$css .= sgs_hover_state_rules( $style_crd . $rel_group, 'opacity:1', ':focus-within', '::after' );
 $css .= '@media (prefers-reduced-motion: reduce){'
 	. $style_crd . $rel_group . '{transition:none;}'
 	. $style_crd . $rel_group . '::after{transition:none;}'
 	. $style_crd . $rel_group . ':hover,' . $style_crd . $rel_group . ':focus-within{transform:none;}'
 	. '}';
 
+// iconBackground/iconBackgroundGradient HOVER siblings (2026-09-06 colour-
+// conformance closeout, hover-controls task). Fires off the SAME ancestor
+// hover trigger as the lift/shadow rule directly above — `.sgs-mega-group`
+// on the `cards` style only, the one style where that ancestor has a real
+// hover treatment. `sgs_hover_state_rules()`'s 4-arg suffix form is used for
+// the ANCESTOR-hover shape (`{ancestor}:hover {descendant}`), matching the
+// documented precedent for this exact call shape (plugins/sgs-blocks/CLAUDE.md
+// "Known precedent-function registry"). The var(...) fallback chain resolves
+// to the identical resting-state values when neither hover attr is set, so
+// this emission is a behaviour-neutral no-op by construction until an
+// operator picks a hover colour/gradient.
+$css .= sgs_hover_state_rules(
+	$style_crd . $rel_group,
+	'background-color:var(--sgs-mm-icon-hover-bg, var(--sgs-mm-soft));background-image:var(--sgs-mm-icon-hover-bg-gradient, var(--sgs-mm-soft-gradient, none));',
+	':focus-within',
+	' .sgs-icon-list__icon'
+);
+
 // Accent border gradient (D636 border builder) — masked ::before ring, scoped
-// to ONLY the hover/focus-within state (mirrors accentBorderColour above,
+// to ONLY the hover/focus-within state (mirrors groupBorderColour above,
 // which likewise has no resting-state border of its own to override —
 // accent-border-color is exclusively a hover/focus-within paint on this
 // `cards`-style tile).
 if ( '' !== $accent_border_gradient ) {
+	// Touch-safe: sgs_border_gradient_css() has no hover-only mode (it bails
+	// when $normal_paint is empty), so a hover-scoped selector is baked in as
+	// its own "normal_paint" call — this must therefore carry its own guard
+	// rather than relying on the helper's $hover_paint branch. Layer 1 (media)
+	// wraps the whole rule via sgs_hover_media_wrap(); layer 2 (touch class) is
+	// prefixed onto the selector per that function's own documented pattern
+	// for opaque-rule callers. Focus-within stays outside both guards.
+	$css .= sgs_hover_media_wrap(
+		sgs_border_gradient_css(
+			SGS_HOVER_NOT_TOUCH . ' ' . $style_crd . $rel_group . ':hover',
+			$accent_border_gradient,
+			null,
+			'1px'
+		)
+	);
 	$css .= sgs_border_gradient_css(
-		$style_crd . $rel_group . ':hover,' . $style_crd . $rel_group . ':focus-within',
+		$style_crd . $rel_group . ':focus-within',
 		$accent_border_gradient,
 		null,
 		'1px'
@@ -376,7 +572,16 @@ if ( '' !== $accent_border_gradient ) {
 // -- minimal -------------------------------------------------------------
 $css .= $style_min . $rel_content . '{display:flex;flex-direction:column;gap:2px;}';
 $css .= $style_min . $rel_item . '{display:flex;align-items:center;justify-content:space-between;padding:15px 14px;border-radius:14px;}';
-$css .= $style_min . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent-text);}';
+$css .= $style_min . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);background-image:var(--sgs-mm-soft-gradient, none);' . $icon_colour_decl . ';}';
+
+// Mandatory gradient-fallback companion (D636) — @supports not(background-clip:text)
+// rule for browsers lacking it. A no-op ('') when $icon_colour_effective is a flat
+// colour. One combined selector list is safe here: sgs_text_colour_gradient_fallback_rule()
+// treats $selector as an opaque string, unlike sgs_hover_state_rules().
+$css .= sgs_text_colour_gradient_fallback_rule(
+	$style_col . $rel_icon . ',' . $style_crd . $rel_icon . ',' . $style_min . $rel_icon,
+	$icon_colour_effective
+);
 
 // -- group heading visibility (headings toggle + the cards/minimal invariant:
 // both styles hide the group heading unconditionally per §3; columns respects
@@ -399,25 +604,28 @@ if ( ! $show_headings ) {
 // ---------------------------------------------------------------------------
 
 // The aside-present `display:flex` on the content row is INVARIANT shape and
-// lives in style.css (`.sgs-mega-panel__content:has(.sgs-mega-aside)`); the old
-// rule here was self-nested (`:has()` argument carried $root_sel) and inert.
+// lives in style.css (`.sgs-mega-panel__content:has(.sgs-mega-aside)`).
 // Only the per-INSTANCE aside WIDTH is emitted here (targets the aside directly
 // on the frontend, where it is the content row's direct child).
 $css .= $aside_sel . '{flex:0 0 ' . ( '' !== $aside_width ? $aside_width : '340px' ) . ';width:' . ( '' !== $aside_width ? $aside_width : '340px' ) . ';}';
 // Cap the aside media so a tall image never dominates the fixed-width aside
-// column — a modest banner, object-fit cover, matching the editor cap.
-$css .= $aside_sel . ' .sgs-media__img,' . $aside_sel . ' img{max-height:170px;object-fit:cover;width:100%;border-radius:12px;}';
+// column — a modest banner, matching the editor cap. max-height/width/
+// border-radius stay fixed panel constants; object-fit is now a genuine
+// client control (37-media-no-handroll remediation, 2026-09-03) via the
+// shared media-atom system. The aside's img is rendered by a CHILD block
+// (sgs/mega-aside, parent-paints-child per CF-10), so there is no element
+// this panel itself renders to attach the `sgs-media-el` marker class to —
+// instead the atom's VALUE is set as a custom property on this panel's OWN
+// root ($uid, prefix ''), which the aside img reads via var() since custom
+// properties inherit down through the InnerBlocks tree.
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$css .= SGS_Media_Element::style( $attributes, '', 'sgs/mega-panel', $uid, array( 'object-fit' ) );
+}
+$css .= $aside_sel . ' .sgs-media__img,' . $aside_sel . ' img{max-height:170px;object-fit:var(--sgs-media-object-fit,cover);width:100%;border-radius:12px;}';
 
 /*
  * Group-heading EYEBROW (BUILD-SPEC §3 columns: "group heading shown
  * (eyebrow, mono 11px .14em uppercase muted, margin-bottom 16px)").
- *
- * This was specified but NEVER BUILT — the only rule that ever targeted
- * $heading_sel was the headings-OFF visually-hidden case, so a group heading
- * rendered with the theme's plain <h> styling (measured live: 36px, weight
- * 700, Fraunces serif, brand pink — Bean's eye 2026-07-28: "the 2 headings in
- * the drafts were closer to label blocks ... it looks like you've set their
- * appearance to match general h2 tags").
  *
  * Draft values, both files, identical: `font-family:'Geist Mono',monospace;
  * font-size:11px; letter-spacing:.14em; text-transform:uppercase;
@@ -449,7 +657,7 @@ $sep_style_val = isset( $aside_separator['style'] ) && in_array( $aside_separato
 	? (string) $aside_separator['style']
 	: 'line';
 if ( 'line' === $sep_style_val ) {
-	$sep_width_val  = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $aside_separator['width'] ?? '1px' ) : '1px';
+	$sep_width_val  = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $aside_separator['width'] ?? '1px' ) : '1px';
 	$sep_width_val  = '' !== $sep_width_val ? $sep_width_val : '1px';
 	$sep_colour_raw = isset( $aside_separator['colour'] ) ? (string) $aside_separator['colour'] : '';
 	// A 1px separator at the panel-border alpha measured invisible next to an
@@ -475,13 +683,11 @@ if ( 'line' === $sep_style_val ) {
  * DEFAULT only: sgs/mega-aside's own `asideBg` is block-private and renders
  * at higher specificity, so an operator-set background still wins.
  *
- * 2026-08-06: the `:not([style*="background"])` guard this rule carried was
- * STRANDED. Under Spec 32 no block emits an inline `style` property
- * declaration, so the guard always matched and the default was unconditional
- * — it could not detect an operator background, and it out-ranked the
- * operator's own scoped rule. Replaced by :where(), which drops the selector
- * to specificity (0,0,0) so ANY operator rule wins. That is what "DEFAULT
- * only" was always trying to express.
+ * Uses `:where()`, which drops the selector to specificity (0,0,0), so ANY
+ * operator rule wins — this is what "DEFAULT only" means: under Spec 32 no
+ * block emits an inline `style` property declaration, so a
+ * `:not([style*="background"])` guard would always match and become an
+ * unconditional override, unable to detect an operator background.
  */
 $css .= ':where(' . $aside_sel . '){background-color:var(--sgs-mm-card);border-radius:12px;}';
 
@@ -558,14 +764,11 @@ if ( '' !== $css ) {
 }
 
 /*
- * Panel-footer slot (2026-07-28, Bean ruling). `sgs/nav-menu` needs the mega
+ * Panel-footer slot (Bean ruling, 2026-07-28). `sgs/nav-menu` needs the mega
  * item's own destination link ("View all X") to live INSIDE the panel — see
- * CF-15 — and its previous position as a SIBLING of this block rendered it
- * outside the panel's border, where it read as a stray line and was overlapped
- * by the trigger's hover underline. A filter is used rather than string
- * surgery on this block's output so the insertion point is explicit and
- * cannot drift. Consumers must pass ALREADY-ESCAPED markup (nav-menu builds
- * it with esc_url/esc_html).
+ * CF-15. A filter is used rather than string surgery on this block's output
+ * so the insertion point is explicit and cannot drift. Consumers must pass
+ * ALREADY-ESCAPED markup (nav-menu builds it with esc_url/esc_html).
  *
  * @param string $footer_html Escaped markup appended inside the panel, after the content row.
  * @param int    $panel_id    This panel post's ID.

@@ -249,3 +249,140 @@ def test_l3_ignores_a_field_whose_slot_routes_to_no_block():
     )
     for item in attrs["items"]:
         assert "badge" not in item, f"badge should not have matched: {item}"
+
+
+# ---------------------------------------------------------------------------
+# Root-cause regression (2026-09-05) — _slot_extraction_role() candidate-slot
+# filter. An array-item field whose block.json declares NO role (role=NULL in
+# array_item_schema) and whose target block carries MORE THAN ONE
+# content-bearing attr (e.g. sgs/media: imageUrl role='image-object'
+# canonical_slot='image', videoUrl role='content' canonical_slot='video')
+# used to resolve to whichever content-bearing attr the DB happened to return
+# FIRST (row-insertion order), regardless of whether that attr's own
+# canonical_slot matched the slot being resolved. For the `image`/`media`
+# slot this picked videoUrl's role='content' — routing an <img> through the
+# rich-text extractor, which finds no text and silently drops the field.
+#
+# Fixed by filtering candidates on `info.get("canonical_slot") == slot`
+# AND by declaring an explicit `role: "image-object"` in each affected
+# block's block.json items.properties (reseed durability — see block.json
+# diffs). These four tests are LIVE REPRODUCTIONS confirmed against the real
+# array_content_lift pipeline (lift_array_content), one per affected block:
+# sgs/trust-bar, sgs/brand-strip, sgs/card-grid, sgs/form-field-tiles.
+# ---------------------------------------------------------------------------
+
+_TRUST_BAR_IMAGE_BADGES = """
+<section class="sgs-trust-bar"><div class="sgs-trust-bar__inner">
+  <div class="sgs-trust-bar__badge">
+    <img class="sgs-trust-bar__badge-img" src="badge1.png" alt="Certified">
+    <span class="sgs-trust-bar__text">Certified Organic</span></div>
+  <div class="sgs-trust-bar__badge">
+    <img class="sgs-trust-bar__badge-img" src="badge2.png" alt="Trusted">
+    <span class="sgs-trust-bar__text">Trusted Service</span></div>
+</div></section>
+"""
+
+
+def test_trust_bar_image_badge_media_field_lifts_from_img_src():
+    """Regression: trust-bar's `items.media` field (target block sgs/media)
+    must lift the draft's real <img src>, not drop it via the wrong role."""
+    attrs, _gaps = lift_array_content(
+        _root(_TRUST_BAR_IMAGE_BADGES), "sgs/trust-bar", media_map={}
+    )
+    items = attrs.get("items") or []
+    assert len(items) == 2, f"expected 2 items, got {len(items)}: {items}"
+    assert items[0].get("media", {}).get("url") == "badge1.png", items[0]
+    assert items[1].get("media", {}).get("url") == "badge2.png", items[1]
+
+
+_BRAND_STRIP_LOGOS = """
+<div class="sgs-brand-strip"><div class="sgs-brand-strip__inner">
+  <div class="sgs-brand-strip__tile">
+    <img class="sgs-brand-strip__media" src="logo1.png" alt="Acme">
+    <span class="sgs-brand-strip__name">Acme</span></div>
+  <div class="sgs-brand-strip__tile">
+    <img class="sgs-brand-strip__media" src="logo2.png" alt="Globex">
+    <span class="sgs-brand-strip__name">Globex</span></div>
+</div></div>
+"""
+
+
+def test_brand_strip_logo_media_field_lifts_from_img_src():
+    """Regression: brand-strip's `logos.media` field (target block sgs/media)
+    must lift the draft's real <img src>, not drop it via the wrong role."""
+    attrs, _gaps = lift_array_content(
+        _root(_BRAND_STRIP_LOGOS), "sgs/brand-strip", media_map={}
+    )
+    items = attrs.get("logos") or []
+    assert len(items) == 2, f"expected 2 items, got {len(items)}: {items}"
+    assert items[0].get("media", {}).get("url") == "logo1.png", items[0]
+    assert items[1].get("media", {}).get("url") == "logo2.png", items[1]
+
+
+_CARD_GRID_MEDIA_ITEMS = """
+<section class="sgs-card-grid"><div class="sgs-card-grid__inner">
+  <div class="sgs-card-grid__item">
+    <img class="sgs-card-grid__media" src="card1.jpg" alt="Card One">
+    <h3 class="sgs-card-grid__title">Card One</h3>
+    <p class="sgs-card-grid__subtitle">First card body text.</p></div>
+  <div class="sgs-card-grid__item">
+    <img class="sgs-card-grid__media" src="card2.jpg" alt="Card Two">
+    <h3 class="sgs-card-grid__title">Card Two</h3>
+    <p class="sgs-card-grid__subtitle">Second card body text.</p></div>
+</div></section>
+"""
+
+
+def test_card_grid_item_media_field_lifts_from_img_src():
+    """Regression: card-grid's `items.media` field (target block sgs/media)
+    must lift the draft's real <img src>, not drop it via the wrong role."""
+    attrs, _gaps = lift_array_content(
+        _root(_CARD_GRID_MEDIA_ITEMS), "sgs/card-grid", media_map={}
+    )
+    items = attrs.get("items") or []
+    assert len(items) == 2, f"expected 2 items, got {len(items)}: {items}"
+    assert items[0].get("media", {}).get("url") == "card1.jpg", items[0]
+    assert items[1].get("media", {}).get("url") == "card2.jpg", items[1]
+    assert items[0].get("title") == "Card One"
+    assert items[0].get("subtitle") == "First card body text."
+
+
+_FORM_FIELD_TILES = """
+<div class="sgs-form-field-tiles"><div class="sgs-form-field-tiles__inner">
+  <div class="sgs-form-field-tiles__tile">
+    <img class="sgs-form-field-tiles__image" src="tile1.png" alt="Small">
+    <span class="sgs-form-field-tiles__label">Small</span></div>
+  <div class="sgs-form-field-tiles__tile">
+    <img class="sgs-form-field-tiles__image" src="tile2.png" alt="Large">
+    <span class="sgs-form-field-tiles__label">Large</span></div>
+</div></div>
+"""
+
+
+def test_form_field_tiles_declares_no_array_content_lift_capability():
+    """DIAGNOSIS CORRECTION (2026-09-05), not a regression test.
+
+    Task brief claimed the role-fallback bug was "confirmed live" on
+    sgs/form-field-tiles same as trust-bar/brand-strip/card-grid. Verified
+    against the real code: unlike those three, form-field-tiles' block.json
+    does NOT declare `supports.sgs.arrayContentLift: true` — so
+    `lift_array_content()` returns `({}, [])` at its capability gate
+    (R-31-1 opt-in) before ever reaching `_item_field_schema()` /
+    `_slot_extraction_role()`. This block's `tiles` array is therefore NOT
+    populated by this resolver at all today, and the role-fallback bug this
+    task fixes could never have manifested on it via this mechanism.
+
+    The `role: "image-object"` declaration was still added to this block's
+    block.json (+ reseeded into array_item_schema.role) per the task brief,
+    for reseed-durability / forward-compatibility should arrayContentLift
+    ever be opted into — but it is CURRENTLY INERT (no consumer reads it),
+    and NO live img-src-drop repro can be written for this block, because
+    there is no live bug to reproduce. Adding `arrayContentLift` capability
+    to this block would be a separate, design-gated decision (Rule 7) outside
+    this task's scope. This test asserts the capability-gate short-circuit
+    stays true so a future capability-add is noticed rather than silently
+    changing this block's behaviour."""
+    attrs, gaps = lift_array_content(
+        _root(_FORM_FIELD_TILES), "sgs/form-field-tiles", media_map={}
+    )
+    assert attrs == {} and gaps == []

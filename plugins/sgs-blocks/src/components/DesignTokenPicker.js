@@ -37,20 +37,29 @@
  * the caller passes `states`:
  *
  *  - No `states` prop → THE LEGACY SHAPE, byte-identical rendering to every
- *    existing call site (43 blocks / 214 instances, contract §1 field 6) —
- *    a labelled `ColorPalette` inline in the sidebar. Only change: the
- *    long-standing missing-`id` defect (field 2) is fixed here, for every
- *    caller, via `useInstanceId` + a verified-honoured `aria-label` on
- *    `ColorPalette` (see the comment on that prop below for why `id` alone
- *    does not fix this).
+ *    existing call site — a labelled `ColorPalette` inline in the sidebar.
+ *    Only change: the long-standing missing-`id` defect (field 2) is fixed
+ *    here, for every caller, via `useInstanceId` + a verified-honoured
+ *    `aria-label` on `ColorPalette` (see the comment on that prop below for
+ *    why `id` alone does not fix this).
  *  - `states={[{ key, label, value, onChange, linked? }, …]}` → THE NEW
  *    D609 ROW SHAPE (`SgsColourStateControl` below): a thin swatch row that
  *    opens a popover; a single state renders the palette directly, 2+ states
  *    add an in-popover tab toggle. This is the shape every colour control
- *    should eventually carry (9a) — today only the pilot block
- *    (`sgs/icon`) opts in, per the build brief's "pilot ONE block, do not
- *    roll out" instruction. Converting the other 42 call sites is a
- *    separate, deliberate decision, not a side effect of this file.
+ *    should eventually carry (9a).
+ *
+ *    ⚠ CORRECTED 2026-08-19 — the two paragraphs above used to quote fixed
+ *    counts ("43 blocks / 214 instances" for the legacy shape; "today only
+ *    the pilot block sgs/icon opts in… the other 42 call sites") that were
+ *    true only at D609 (2026-08-13), before `SgsColourPanel` (added
+ *    2026-08-19, contract §1 field 1) became the 61-block adoption route.
+ *    Both shapes are now live across many more callers and the split is a
+ *    moving target — Spec 35 PART O §1 field 9 records the current rollout
+ *    as "only 17% of colour rows carry 2+ states… the other 83% still call
+ *    the component with no `states` prop", itself flagged there as due for
+ *    re-measurement. Do not requote a fixed block/instance count here —
+ *    re-derive from `golden-controls.json` or the spec field above, which
+ *    are the sources this number is meant to track.
  */
 import { useSettings } from '@wordpress/block-editor';
 import { useInstanceId } from '@wordpress/compose';
@@ -75,6 +84,7 @@ import {
 } from './primitives';
 import { ColorPalette } from './colour-picker';
 import SgsGradientPicker from './gradient-picker';
+import BorderStyleControl from './BorderStyleControl';
 
 /**
  * Resolve a stored colour VALUE to a displayable CSS colour.
@@ -189,8 +199,13 @@ function makeChangeHandler( { linked, colours, onChange } ) {
  *                                    (D636): a non-empty gradient string on the sibling attr
  *                                    wins over the flat `value` at render time — see
  *                                    `sgs_background_paint_value()` in `helpers-tokens.php`.
- * @param {boolean} props.clearable   Forwarded to `ColorPalette`.
- * @param {boolean} props.enableAlpha Forwarded to `ColorPalette`.
+ * @param {boolean} props.clearable          Forwarded to `ColorPalette`.
+ * @param {boolean} props.enableAlpha        Forwarded to the solid `ColorPalette`.
+ * @param {boolean} [props.gradientEnableAlpha] Forwarded to the gradient bar's stop editor
+ *                                            instead of `enableAlpha` when a caller needs the
+ *                                            two paths to differ (D4 adapter rollout — see the
+ *                                            comment on this prop below). Falls back to
+ *                                            `enableAlpha` when omitted.
  * @param {Array}   props.colours     Active theme colour palette (from `useSettings( 'color.palette' )`).
  */
 function SgsColourStateControl( {
@@ -199,10 +214,33 @@ function SgsColourStateControl( {
 	states,
 	clearable,
 	enableAlpha,
+	// Independent alpha policy for the gradient bar's stop editor, falling
+	// back to `enableAlpha` when omitted (byte-identical behaviour for every
+	// existing caller). Added for the D4 GradientOverlayControl adapter
+	// (2026-08-22): that control's solid swatch has alpha OFF by D717 (an
+	// alpha edit there breaks the palette-slug match and silently unlinks
+	// the client's brand token — see GradientOverlayControl.js), but its
+	// gradient stops never carried that risk (a gradient stop is stored as
+	// part of a full CSS gradient string, never slug-matched), so its alpha
+	// stayed ON. One shared `enableAlpha` cannot express both at once.
+	gradientEnableAlpha,
 	colours,
+	borderStyle,
+	onBorderStyleChange,
+	help,
 } ) {
 	const descId = `${ id }-desc`;
+	// This shape returns an <ItemGroup>, not a <BaseControl>, so there is no
+	// native `help` slot to inherit — it is rendered explicitly below using
+	// WP's own `components-base-control__help` class so it matches the hint
+	// text under every other control in the panel, and is wired into
+	// aria-describedby rather than being visual-only.
+	const helpId = `${ id }-help`;
 	const hasStates = states.length > 1;
+	const describedBy =
+		[ help ? helpId : null, hasStates ? descId : null ]
+			.filter( Boolean )
+			.join( ' ' ) || undefined;
 
 	// D636 border-gradient rollout — ADDITIVE opt-in. A state entry may carry
 	// `gradientValue`/`onGradientChange` (the sibling `{attr}Gradient` string
@@ -325,7 +363,7 @@ function SgsColourStateControl( {
 							} ) );
 							s.onGradientChange( newGradient ?? '' );
 						} }
-						enableAlpha={ enableAlpha }
+						enableAlpha={ gradientEnableAlpha ?? enableAlpha }
 						__experimentalIsRenderedInSidebar
 					/>
 				) : (
@@ -371,7 +409,7 @@ function SgsColourStateControl( {
 							__next40pxDefaultSize
 							onClick={ onToggle }
 							aria-expanded={ isOpen }
-							aria-describedby={ hasStates ? descId : undefined }
+							aria-describedby={ describedBy }
 							className="sgs-colour-control__toggle"
 							style={ {
 								display: 'block',
@@ -395,33 +433,49 @@ function SgsColourStateControl( {
 							</HStack>
 						</Button>
 					) }
-					renderContent={ () =>
-						hasStates ? (
-							<TabPanel
-								className="sgs-colour-control__tabs"
-								tabs={ resolved.map( ( s ) => ( {
-									name: s.key,
-									title: s.label,
-								} ) ) }
-							>
-								{ ( tab ) => (
-									<div className="sgs-colour-control__content">
-										{ renderStateContent(
-											resolved.find(
-												( s ) => s.key === tab.name
-											) ?? resolved[ 0 ]
-										) }
-									</div>
-								) }
-							</TabPanel>
-						) : (
-							<div className="sgs-colour-control__content">
-								{ renderStateContent( resolved[ 0 ] ) }
-							</div>
-						)
-					}
+					renderContent={ () => (
+						<>
+							{ typeof onBorderStyleChange === 'function' && (
+								<BorderStyleControl
+									value={ borderStyle }
+									onChange={ onBorderStyleChange }
+								/>
+							) }
+							{ hasStates ? (
+								<TabPanel
+									className="sgs-colour-control__tabs"
+									tabs={ resolved.map( ( s ) => ( {
+										name: s.key,
+										title: s.label,
+									} ) ) }
+								>
+									{ ( tab ) => (
+										<div className="sgs-colour-control__content">
+											{ renderStateContent(
+												resolved.find(
+													( s ) => s.key === tab.name
+												) ?? resolved[ 0 ]
+											) }
+										</div>
+									) }
+								</TabPanel>
+							) : (
+								<div className="sgs-colour-control__content">
+									{ renderStateContent( resolved[ 0 ] ) }
+								</div>
+							) }
+						</>
+					) }
 				/>
 			</Item>
+			{ help && (
+				<p
+					id={ helpId }
+					className="components-base-control__help sgs-colour-control__help"
+				>
+					{ help }
+				</p>
+			) }
 			{ hasStates && (
 				<span id={ descId } className="screen-reader-text">
 					{ sprintf(
@@ -446,8 +500,51 @@ export default function DesignTokenPicker( {
 	clearable = true,
 	linked = false,
 	enableAlpha = true,
+	gradientEnableAlpha,
 	states,
+	// Border-style icons, opt-in. These MUST be listed here and forwarded
+	// below: this component forwards an EXPLICIT prop list rather than
+	// {...rest}, so a prop the caller passes but this signature omits is
+	// silently dropped on the way to the component that renders it. That is
+	// exactly what shipped on 2026-08-19 — SgsColourStateControl destructured
+	// both and gated <BorderStyleControl> on them, sgs/heading passed both, and
+	// the picker still never rendered because this layer in the middle ate them.
+	// Verified by reading the live React fiber: outer props carried
+	// onBorderStyleChange as a function, inner props had no such key.
+	borderStyle,
+	onBorderStyleChange,
+	// Hint text under the control. Added 2026-08-28 after a survey found FIVE
+	// callers passing `help` to this component and all five silently rendering
+	// nothing — four wave-gradient colour rows in `fx.js` and
+	// `hover-effects.js`'s `sgsClickRippleColour`. Same explicit-prop-list trap
+	// the borderStyle comment above records, second occurrence, six days apart.
+	help,
+	// ⛔ CAPTURED FOR THE WARNING BELOW, NEVER FORWARDED. This is deliberately
+	// NOT a `{...rest}` passthrough — see the borderStyle comment above for why
+	// this component forwards an explicit list. It serves TWO different render
+	// shapes, so blanket-spreading a caller's props would land them on whichever
+	// control happens to be rendering, or onto a DOM node as an invalid
+	// attribute. Collecting the leftovers lets an unknown prop FAIL LOUDLY
+	// instead of vanishing, which is the actual defect: both incidents were
+	// silent, and both were found by a human noticing missing UI rather than by
+	// anything in the toolchain.
+	...unrecognisedProps
 } ) {
+	if ( 'production' !== process.env.NODE_ENV ) {
+		const strayProps = Object.keys( unrecognisedProps );
+		if ( strayProps.length > 0 ) {
+			// eslint-disable-next-line no-console
+			console.warn(
+				`DesignTokenPicker: ignoring unrecognised prop(s) [${ strayProps.join(
+					', '
+				) }]${ label ? ` on "${ label }"` : '' }. This component forwards an ` +
+					'explicit prop list, so anything not in its signature is dropped. ' +
+					'Add the prop to the signature AND forward it to the shape that ' +
+					'renders it — passing it here alone does nothing.'
+			);
+		}
+	}
+
 	const [ colours ] = useSettings( 'color.palette' );
 	// Hook order must stay unconditional (both branches below return from the
 	// same component), so this is computed once regardless of which shape
@@ -467,7 +564,11 @@ export default function DesignTokenPicker( {
 				states={ states }
 				clearable={ clearable }
 				enableAlpha={ enableAlpha }
+				gradientEnableAlpha={ gradientEnableAlpha }
 				colours={ colours }
+				borderStyle={ borderStyle }
+				onBorderStyleChange={ onBorderStyleChange }
+				help={ help }
 			/>
 		);
 	}
@@ -478,19 +579,36 @@ export default function DesignTokenPicker( {
 
 	const handleChange = makeChangeHandler( { linked, colours, onChange } );
 
+	// `${id}__help` matches the id BaseControl's own `help` paragraph gets via
+	// useBaseControlProps() (the same convention every native self-wiring
+	// control relies on). ColorPalette renders MULTIPLE swatch buttons, not
+	// one focusable control, so aria-describedby can't be pointed at a single
+	// child the way the trigger-Button controls in this file do — it lands
+	// on a `role="group"` wrapper instead, the same ARIA-group pattern
+	// CircularOptionPicker/IconPicker already use elsewhere in this codebase
+	// for exactly this multi-widget-swatch shape.
+	const helpId = help ? `${ id }__help` : undefined;
+
 	return (
-		<BaseControl id={ id } label={ label } __nextHasNoMarginBottom>
-			<ColorPalette
-				colors={ colours }
-				value={ displayValue }
-				onChange={ handleChange }
-				clearable={ clearable }
-				disableCustomColors={ false }
-				enableAlpha={ enableAlpha }
-				// See the comment on the identical prop in SgsColourStateControl
-				// above — verified honoured at color-palette/index.tsx:190.
-				aria-label={ label }
-			/>
+		<BaseControl
+			id={ id }
+			label={ label }
+			help={ help }
+			__nextHasNoMarginBottom
+		>
+			<div role="group" aria-describedby={ helpId }>
+				<ColorPalette
+					colors={ colours }
+					value={ displayValue }
+					onChange={ handleChange }
+					clearable={ clearable }
+					disableCustomColors={ false }
+					enableAlpha={ enableAlpha }
+					// See the comment on the identical prop in SgsColourStateControl
+					// above — verified honoured at color-palette/index.tsx:190.
+					aria-label={ label }
+				/>
+			</div>
 		</BaseControl>
 	);
 }

@@ -53,15 +53,15 @@ class SGS_Motion_Registry {
 	 * @var array<string, array{path: string, deps: string[]}>
 	 */
 	private const MODULES = array(
-		'@sgs/gsap'               => array(
+		'@sgs/gsap'                => array(
 			'path' => 'build/vendor-modules/gsap-core.js',
 			'deps' => array(),
 		),
-		'@sgs/gsap-scrolltrigger' => array(
+		'@sgs/gsap-scrolltrigger'  => array(
 			'path' => 'build/vendor-modules/gsap-scrolltrigger.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
-		'@sgs/gsap-splittext'     => array(
+		'@sgs/gsap-splittext'      => array(
 			'path' => 'build/vendor-modules/gsap-splittext.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
@@ -77,11 +77,11 @@ class SGS_Motion_Registry {
 		 * without dropping drag, because Spec 38 §10 keeps drag working under
 		 * reduced motion while switching physics off.
 		 */
-		'@sgs/gsap-draggable'     => array(
+		'@sgs/gsap-draggable'      => array(
 			'path' => 'build/vendor-modules/gsap-draggable.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
-		'@sgs/gsap-inertia'       => array(
+		'@sgs/gsap-inertia'        => array(
 			'path' => 'build/vendor-modules/gsap-inertia.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
@@ -96,35 +96,45 @@ class SGS_Motion_Registry {
 		 * uses) — NOT via the fx_effects DB sniff route, because this is a
 		 * dedicated block, not a data-sgs-fx attribute on an arbitrary block.
 		 */
-		'@sgs/gsap-physics2d'     => array(
+		'@sgs/gsap-physics2d'      => array(
 			'path' => 'build/vendor-modules/gsap-physics2d.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
-		'@sgs/gsap-drawsvg'       => array(
+
+		/*
+		 * Flip (FR-38-12, redirected 2026-08-20 to WooCommerce Product
+		 * Collection — see `src/shared/effects/gsap/fx-flip.js`'s docblock and
+		 * `.claude/plans/2026-08-20-flip-woocommerce-product-collection-design-gate.md`).
+		 */
+		'@sgs/gsap-flip'           => array(
+			'path' => 'build/vendor-modules/gsap-flip.js',
+			'deps' => array( '@sgs/gsap' ),
+		),
+		'@sgs/gsap-drawsvg'        => array(
 			'path' => 'build/vendor-modules/gsap-drawsvg.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
-		'@sgs/gsap-morphsvg'      => array(
+		'@sgs/gsap-morphsvg'       => array(
 			'path' => 'build/vendor-modules/gsap-morphsvg.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
-		'@sgs/gsap-motionpath'    => array(
+		'@sgs/gsap-motionpath'     => array(
 			'path' => 'build/vendor-modules/gsap-motionpath.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
-		'@sgs/gsap-scramble'      => array(
+		'@sgs/gsap-scramble'       => array(
 			'path' => 'build/vendor-modules/gsap-scrambletext.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
-		'@sgs/motion-provider'    => array(
+		'@sgs/motion-provider'     => array(
 			'path' => 'build/shared/effects/gsap/provider.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
-		'@sgs/fx-scrub'           => array(
+		'@sgs/fx-scrub'            => array(
 			'path' => 'build/shared/effects/gsap/fx-scrub.js',
 			'deps' => array( '@sgs/motion-provider', '@sgs/gsap-scrolltrigger' ),
 		),
-		'@sgs/fx-pin-scrub'       => array(
+		'@sgs/fx-pin-scrub'        => array(
 			'path' => 'build/shared/effects/gsap/fx-pin-scrub.js',
 			'deps' => array( '@sgs/motion-provider', '@sgs/gsap-scrolltrigger' ),
 		),
@@ -141,7 +151,7 @@ class SGS_Motion_Registry {
 		 * ScrollTrigger — a slower, undeclared fetch. The DB row was corrected
 		 * to match on 2026-07-29; the two must stay in step.
 		 */
-		'@sgs/fx-split-reveal'    => array(
+		'@sgs/fx-split-reveal'     => array(
 			'path' => 'build/shared/effects/gsap/fx-split-reveal.js',
 			'deps' => array(
 				'@sgs/motion-provider',
@@ -158,7 +168,7 @@ class SGS_Motion_Registry {
 		 * later, slower fetch. That silent-but-slower failure is why the
 		 * split-reveal row above was corrected rather than left alone.
 		 */
-		'@sgs/fx-draggable'       => array(
+		'@sgs/fx-draggable'        => array(
 			'path' => 'build/shared/effects/gsap/fx-draggable.js',
 			'deps' => array(
 				'@sgs/motion-provider',
@@ -173,7 +183,7 @@ class SGS_Motion_Registry {
 		 * `fx-draw.js:214` registers it. See the fx-scramble note below for why
 		 * an omission would be silent rather than fatal.
 		 */
-		'@sgs/fx-draw'            => array(
+		'@sgs/fx-draw'             => array(
 			'path' => 'build/shared/effects/gsap/fx-draw.js',
 			'deps' => array(
 				'@sgs/motion-provider',
@@ -181,11 +191,11 @@ class SGS_Motion_Registry {
 				'@sgs/gsap-scrolltrigger',
 			),
 		),
-		'@sgs/fx-morph'           => array(
+		'@sgs/fx-morph'            => array(
 			'path' => 'build/shared/effects/gsap/fx-morph.js',
 			'deps' => array( '@sgs/motion-provider', '@sgs/gsap-morphsvg' ),
 		),
-		'@sgs/fx-motion-path'     => array(
+		'@sgs/fx-motion-path'      => array(
 			'path' => 'build/shared/effects/gsap/fx-motion-path.js',
 			'deps' => array(
 				'@sgs/motion-provider',
@@ -203,7 +213,7 @@ class SGS_Motion_Registry {
 		 * late. That is the same silent-but-slower defect the split-reveal row
 		 * above was corrected for on 2026-07-29.
 		 */
-		'@sgs/fx-scramble'        => array(
+		'@sgs/fx-scramble'         => array(
 			'path' => 'build/shared/effects/gsap/fx-scramble.js',
 			'deps' => array(
 				'@sgs/motion-provider',
@@ -211,9 +221,19 @@ class SGS_Motion_Registry {
 				'@sgs/gsap-scrolltrigger',
 			),
 		),
-		'@sgs/fx-image-sequence'  => array(
+		'@sgs/fx-image-sequence'   => array(
 			'path' => 'build/shared/effects/gsap/fx-image-sequence.js',
 			'deps' => array( '@sgs/motion-provider', '@sgs/gsap-scrolltrigger' ),
+		),
+
+		/*
+		 * Flip (FR-38-12, redirected 2026-08-20). No ScrollTrigger dependency —
+		 * this effect is MutationObserver-triggered, not scroll-triggered, so
+		 * `fx-flip.js` never imports it.
+		 */
+		'@sgs/fx-flip'             => array(
+			'path' => 'build/shared/effects/gsap/fx-flip.js',
+			'deps' => array( '@sgs/motion-provider', '@sgs/gsap-flip' ),
 		),
 
 		/*
@@ -223,7 +243,7 @@ class SGS_Motion_Registry {
 		 * off ScrollSmoother. It is enqueued from the site SETTING rather than
 		 * from a block sniff, which is the second enqueue route §4.4 allows.
 		 */
-		'@sgs/smooth-scroll'      => array(
+		'@sgs/smooth-scroll'       => array(
 			'path' => 'build/shared/effects/smooth-scroll.js',
 			'deps' => array(),
 		),
@@ -240,8 +260,58 @@ class SGS_Motion_Registry {
 		 * the module ID still follows '@sgs/fx-' . <fx_effects.effect> so the
 		 * generic enqueue_effect() lookup finds it with no special case.
 		 */
-		'@sgs/fx-cursor-field'    => array(
+		'@sgs/fx-cursor-field'     => array(
 			'path' => 'build/shared/effects/fx-cursor-field.js',
+			'deps' => array(),
+		),
+
+		/*
+		 * Magnetic pull (Spec 38 FR-38-30). NO deps — one rAF-throttled
+		 * document listener writing two custom properties, no GSAP at all, so
+		 * a page using this and no Tier G effect ships zero GSAP bytes. The
+		 * 2026-08-02 ecosystem survey reached the same call independently:
+		 * magnetic buttons are ~20-30 lines of vanilla, "write it, don't
+		 * dependency it".
+		 */
+		/*
+		 * Wave gradient (Spec 38 FR-38-31, Tier W second entry). No GSAP —
+		 * Tier W is a rendering substrate, not a GSAP plugin.
+		 */
+		'@sgs/fx-wave-gradient'    => array(
+			'path' => 'build/shared/effects/fx-wave-gradient.js',
+			'deps' => array(),
+		),
+
+		'@sgs/fx-magnet'           => array(
+			'path' => 'build/shared/effects/fx-magnet.js',
+			'deps' => array(),
+		),
+
+		/*
+		 * Particle trail (Spec 38 FR-38-32). NO deps — a plain <canvas> 2D
+		 * pool with one rAF loop, no GSAP, so a page using this and no
+		 * Tier G effect ships zero GSAP bytes, the same guarantee
+		 * `@sgs/fx-magnet` and `@sgs/fx-cursor-field` keep above.
+		 */
+		'@sgs/fx-particles'        => array(
+			'path' => 'build/shared/effects/fx-particles.js',
+			'deps' => array(),
+		),
+
+		/*
+		 * Cursor grid-dot field (Spec 38 FR-38-33). NO deps — a plain <canvas>
+		 * 2D lattice with one self-terminating rAF loop and no GSAP, so a page
+		 * using this and no Tier G effect ships zero GSAP bytes, the same
+		 * guarantee `@sgs/fx-magnet`, `@sgs/fx-cursor-field` and
+		 * `@sgs/fx-particles` keep.
+		 *
+		 * ⛔ This map is one of the THREE registration points with no gate at
+		 * all (D784) — `check-fx-list-drift.py` does not read this file. Miss
+		 * this entry and the effect registers, the panel appears, the client
+		 * selects it, and nothing happens.
+		 */
+		'@sgs/fx-grid-dots'        => array(
+			'path' => 'build/shared/effects/fx-grid-dots.js',
 			'deps' => array(),
 		),
 
@@ -258,8 +328,37 @@ class SGS_Motion_Registry {
 		 * `data-sgs-loop="1"` at once, and `data-sgs-fx` can only ever hold
 		 * one value.
 		 */
-		'@sgs/fx-carousel-loop'  => array(
+		'@sgs/fx-carousel-loop'    => array(
 			'path' => 'build/shared/effects/fx-carousel-loop.js',
+			'deps' => array(),
+		),
+
+		/*
+		 * Surface treatment (Tier W / WebGL, Spec 38 §1.2b, D479). NO deps —
+		 * Tier W is a rendering substrate, not a GSAP plugin, and carries no
+		 * GSAP import at all: a page using this and no Tier G effect ships
+		 * zero GSAP bytes, the same guarantee `@sgs/fx-cursor-field` and
+		 * `@sgs/fx-carousel-loop` keep above. The module ID still follows
+		 * '@sgs/fx-' . <fx_effects.effect> so the generic enqueue_effect()
+		 * lookup finds it with no special case.
+		 */
+		'@sgs/fx-surface-treatment' => array(
+			'path' => 'build/shared/effects/fx-surface-treatment.js',
+			'deps' => array(),
+		),
+
+		/*
+		 * Generative background (Tier W, Spec 38, D874 technique spec — v1
+		 * static build only). NO deps — v1 is Canvas 2D colour maths, no
+		 * shader, no WebGL context, no GSAP import at all: a page using this
+		 * and no Tier G effect still ships zero GSAP bytes, the same
+		 * guarantee `@sgs/fx-wave-gradient`/`@sgs/fx-surface-treatment`
+		 * keep above. The module ID still follows
+		 * '@sgs/fx-' . <fx_effects.effect> so the generic enqueue_effect()
+		 * lookup finds it with no special case.
+		 */
+		'@sgs/fx-generative-background' => array(
+			'path' => 'build/shared/effects/fx-generative-background.js',
 			'deps' => array(),
 		),
 	);
@@ -316,6 +415,80 @@ class SGS_Motion_Registry {
 		 * months (D452).
 		 */
 		'cursor-field'     => 'assets/css/fx-cursor-field.css',
+
+		/*
+		 * Magnet needs one for the same reason cursor-field does: the JS
+		 * writes only `--magnet-x`/`--magnet-y` VALUES (Spec 32), so without
+		 * this stylesheet the module would faithfully track a pointer while
+		 * nothing on the page moved — the bug shape where every artefact looks
+		 * correct and the page does nothing, which is how morph sat broken for
+		 * months (D452).
+		 */
+		'magnet'           => 'assets/css/fx-magnet.css',
+
+		/*
+		 * Particle trail needs one for the same reason magnet does: the JS
+		 * paints entirely onto its OWN canvas element, which
+		 * `assets/css/fx-particles.css` positions/layers (Spec 32 — no
+		 * inline styling). Without this enqueue the canvas would exist with
+		 * no size and no stacking position, so the pool would run and paint
+		 * nothing a visitor could ever see.
+		 */
+		'particles'        => 'assets/css/fx-particles.css',
+
+		/*
+		 * The wave gradient's stylesheet is its FALLBACK CONTRACT, not
+		 * decoration. Tier W's usual "the untouched <img> is the fallback"
+		 * guarantee cannot apply to a generative effect — there is no
+		 * untouched anything — so this stylesheet paints the static gradient
+		 * from the same custom properties the shader reads. Without this
+		 * enqueue a no-WebGL visitor gets a blank box, which is precisely the
+		 * failure Tier W's invariant existed to make impossible.
+		 */
+		'wave-gradient'    => 'assets/css/fx-wave-gradient.css',
+
+		/*
+		 * Generative background (Tier W, Spec 38, D874 technique spec — v1
+		 * static build only). Same reason as the wave gradient's own row
+		 * immediately above: this is a GENERATIVE effect with no untouched
+		 * source image to fall back to, so this stylesheet paints the static
+		 * gradient from the same custom properties the JS-built OKLCH image
+		 * reads. Without this enqueue a no-JS visitor gets a blank box.
+		 */
+		'generative-background' => 'assets/css/fx-generative-background.css',
+
+		/*
+		 * Surface treatment (Tier W / WebGL, Spec 38 §1.2b, D479). The
+		 * stylesheet positions the `<canvas class="sgs-webgl-surface">` the
+		 * boot module appends over its sibling `<img>` — the render/JS
+		 * layers write zero CSS property declarations of their own
+		 * (Spec 32), so without this enqueue the canvas would paint at its
+		 * intrinsic size instead of covering the image it treats.
+		 */
+		'surface-treatment' => 'assets/css/fx-surface-treatment.css',
+
+		/*
+		 * Cursor grid-dot field (Spec 38 FR-38-33). LOAD-BEARING, not
+		 * decoration, for two independent reasons — either alone would make
+		 * the effect look broken rather than absent:
+		 *
+		 *  1. It positions the `<canvas class="sgs-grid-dots__canvas">` the
+		 *     engine appends (Spec 32: that module writes buffer-size
+		 *     ATTRIBUTES only, never inline style), so without it the canvas
+		 *     paints at its intrinsic 300x150 in the corner.
+		 *  2. It carries the `color` channel the engine READS its paint colour
+		 *     from. The JS deliberately does not read the custom property —
+		 *     `getPropertyValue()` returns the `var(...)` text unresolved and a
+		 *     canvas cannot paint with a string — so without this stylesheet
+		 *     the lattice computes perfectly and paints in whatever `color`
+		 *     happens to be inherited. That is D846's exact failure: a canvas
+		 *     firing correctly at 1.44:1 contrast, invisible, with every
+		 *     automated signal green.
+		 *
+		 * ⛔ This map is the SECOND of the three registration points with no
+		 * gate at all (D784).
+		 */
+		'grid-dots'         => 'assets/css/fx-grid-dots.css',
 	);
 
 	/**
@@ -388,6 +561,9 @@ class SGS_Motion_Registry {
 		'MorphSVG'      => '@sgs/gsap-morphsvg',
 		'MotionPath'    => '@sgs/gsap-motionpath',
 		'ScrambleText'  => '@sgs/gsap-scramble',
+		// Flip (FR-38-12, redirected 2026-08-20). Matches the `fx_effects` DB
+		// row's `plugin_set: ["Flip"]`.
+		'Flip'          => '@sgs/gsap-flip',
 	);
 
 	/**
@@ -404,6 +580,26 @@ class SGS_Motion_Registry {
 	 * @return void
 	 */
 	public static function register(): void {
+		/*
+		 * Priority 5 — MUST run before `SGS_Blocks::register_blocks()` (`init`,
+		 * default priority 10, `includes/class-sgs-blocks.php:24`), which is
+		 * where WP core's `register_block_script_module_id()`
+		 * (wp-includes/blocks.php) auto-registers `sgs-physics-canvas-view-
+		 * script-module` from `view.asset.php`. That file's 'dependencies' key
+		 * is always `array()` — @wordpress/dependency-extraction-webpack-plugin
+		 * only recognises `@wordpress/*` externals, never this project's
+		 * `@sgs/*` ones — so the auto-registration always carries empty deps,
+		 * even though `view.js` statically imports four bare `@sgs/*`
+		 * specifiers. `WP_Script_Modules::register()` is a NO-OP once an id is
+		 * already registered (`if ( ! isset( $this->registered[$id] ) )`,
+		 * wp-includes/class-wp-script-modules.php:139) — so correcting the
+		 * deps AFTER core's own registration (e.g. from
+		 * `physics-canvas/render.php` at render time, tried and proven dead
+		 * live 2026-08-27) can never take effect. Registering FIRST, at a
+		 * lower priority number, is the only point where this is fixable: core
+		 * then finds the id already registered and silently keeps these deps.
+		 */
+		\add_action( 'init', array( __CLASS__, 'preregister_physics_canvas_deps' ), 5 );
 		\add_action( 'init', array( __CLASS__, 'register_modules' ) );
 		\add_filter( 'render_block', array( __CLASS__, 'sniff_block' ), 99, 2 );
 
@@ -480,7 +676,30 @@ class SGS_Motion_Registry {
 			$style = 'fade';
 		}
 
+		/*
+		 * FR-38-29 — which palette slug the surface treatments derive every
+		 * colour from. It reaches a CSS custom-property NAME
+		 * (`--wp--preset--color--<slug>`), so an unrecognised value is
+		 * REPLACED here as well as at save time, same reasoning as the
+		 * transition style above. A slug is `[a-z0-9-]+` and nothing else.
+		 *
+		 * ⚠ This key MUST stay in the array below. `settings()` returns a
+		 * hard-coded whitelist rather than passing `$raw` through, so a key
+		 * absent from it reads as its default FOREVER, with no error — a
+		 * setting that saves correctly and then does nothing. Caught during
+		 * the 2026-08-21 build, when the first implementation had to bypass
+		 * this method entirely to work.
+		 */
+		$palette_base = isset( $raw['treatment_palette_base'] )
+			? (string) $raw['treatment_palette_base']
+			: 'primary';
+
+		if ( ! \preg_match( '/^[a-z0-9-]+$/', $palette_base ) ) {
+			$palette_base = 'primary';
+		}
+
 		return array(
+			'treatment_palette_base'    => $palette_base,
 			'smooth_scroll'             => ! empty( $raw['smooth_scroll'] ),
 			'smooth_scroll_strength'    => $strength,
 			'smooth_touch'              => ! empty( $raw['smooth_touch'] ),
@@ -490,6 +709,13 @@ class SGS_Motion_Registry {
 			'page_transition_templates' => self::sanitise_template_styles(
 				$raw['page_transition_templates'] ?? array()
 			),
+
+			/*
+			 * FR-38-12 (redirected 2026-08-20) — WooCommerce Product Collection
+			 * re-filter animation. Default OFF, same as every other site-level
+			 * motion capability: a site not using it serves zero Flip bytes.
+			 */
+			'animate_product_filtering' => ! empty( $raw['animate_product_filtering'] ),
 		);
 	}
 
@@ -677,10 +903,6 @@ class SGS_Motion_Registry {
 			return;
 		}
 
-		if ( ! \function_exists( 'wp_enqueue_script_module' ) ) {
-			return;
-		}
-
 		$settings = self::settings();
 		if ( empty( $settings['smooth_scroll'] ) ) {
 			// The whole point of FR-38-18's default-OFF: a site not using this
@@ -723,7 +945,7 @@ class SGS_Motion_Registry {
 	 * @return array
 	 */
 	public static function smooth_scroll_module_data( $data ): array {
-		$data = \is_array( $data ) ? $data : array();
+		$data     = \is_array( $data ) ? $data : array();
 		$settings = self::settings();
 
 		$data['strength']      = $settings['smooth_scroll_strength'];
@@ -741,10 +963,6 @@ class SGS_Motion_Registry {
 	 * @return void
 	 */
 	public static function register_modules(): void {
-		if ( ! \function_exists( 'wp_register_script_module' ) ) {
-			return;
-		}
-
 		foreach ( self::MODULES as $id => $module ) {
 			$file = SGS_BLOCKS_PATH . $module['path'];
 			if ( ! \file_exists( $file ) ) {
@@ -762,6 +980,62 @@ class SGS_Motion_Registry {
 				self::asset_version( $module['path'] )
 			);
 		}
+	}
+
+	/**
+	 * Correct the auto-registered physics-canvas view module's dependency
+	 * graph, before WP core auto-registers it with none.
+	 *
+	 * `sgs/physics-canvas`'s built `view.js` statically imports four bare
+	 * `@sgs/*` specifiers (`@sgs/motion-provider`, `@sgs/gsap-draggable`,
+	 * `@sgs/gsap-inertia`, `@sgs/gsap-physics2d` — verified against the built
+	 * file). WP core auto-registers this block's `viewScriptModule` handle
+	 * (id `sgs-physics-canvas-view-script-module`, per
+	 * `generate_block_asset_handle()`) from `view.asset.php`'s
+	 * `'dependencies'` key — always `array()` here, because
+	 * `@wordpress/dependency-extraction-webpack-plugin` only recognises
+	 * `@wordpress/*` externals, never this project's `@sgs/*` ones.
+	 *
+	 * `WP_Script_Modules::get_import_map()` deliberately excludes QUEUE
+	 * members from the printed import map ("they get printed as scripts") and
+	 * includes only their registered DEPENDENCIES. So with an empty deps
+	 * array, none of the four specifiers `view.js` imports ever reach the
+	 * browser's import map — even though `physics-canvas/render.php`
+	 * explicitly enqueues all four as separate top-level modules (a
+	 * `<script type="module" src="…">` tag is printed for each, but that does
+	 * not help resolve a BARE-specifier `import` statement inside another
+	 * module). The browser throws "Failed to resolve module specifier" on the
+	 * first one `view.js` imports — confirmed live on the canary,
+	 * `/tier-fixture-maxwidth/`, 2026-08-27.
+	 *
+	 * This must run BEFORE WP core's own auto-registration
+	 * (`register_block_script_module_id()`, called from
+	 * `SGS_Blocks::register_blocks()`, `init` priority 10):
+	 * `WP_Script_Modules::register()` is a no-op once an id is already
+	 * registered, so correcting these deps AFTER core's registration can
+	 * never take effect — proven live: an earlier attempt to call
+	 * `wp_register_script_module()` again from `render.php` at render time
+	 * shipped, deployed, purged both cache layers, and changed nothing.
+	 *
+	 * @return void
+	 */
+	public static function preregister_physics_canvas_deps(): void {
+		$view_path = 'build/blocks/physics-canvas/view.js';
+		$file      = SGS_BLOCKS_PATH . $view_path;
+		if ( ! \file_exists( $file ) ) {
+			// The build did not produce this file — nothing to pre-register.
+			// WP core's own registration will run next and find no file
+			// either, so this mirrors register_modules()'s own skip-quietly
+			// behaviour rather than introducing a new failure mode.
+			return;
+		}
+
+		\wp_register_script_module(
+			'sgs-physics-canvas-view-script-module',
+			SGS_BLOCKS_URL . $view_path,
+			array( '@sgs/motion-provider', '@sgs/gsap-draggable', '@sgs/gsap-inertia', '@sgs/gsap-physics2d' ),
+			self::asset_version( $view_path )
+		);
 	}
 
 	/**
@@ -959,10 +1233,6 @@ class SGS_Motion_Registry {
 					)
 				);
 			}
-			return;
-		}
-
-		if ( ! \function_exists( 'wp_enqueue_script_module' ) ) {
 			return;
 		}
 

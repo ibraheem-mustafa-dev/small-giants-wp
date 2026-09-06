@@ -167,4 +167,28 @@ function main() {
 	);
 }
 
-main();
+/*
+ * ⛔ GUARDED, so this file can be REQUIRED without writing anything.
+ *
+ * `main()` used to be called unconditionally at module scope, which meant any
+ * `require()` of this file regenerated `includes/extension-attributes.generated.php`
+ * as an import side effect. That is the exact shape this repo has already been
+ * bitten by once — `scripts/converter/db/db_lookup.py` runs six schema
+ * migrations against the shared live DB on import, and CLAUDE.md warns in
+ * writing not to import it from a read-only reporter.
+ *
+ * `inspector-scan` rule 21 now reuses `collectAttributes()` to learn which
+ * attributes are EXTENSION-OWNED. Sharing the parser is the point: a second
+ * copy of `ATTR_RE` living in the rule would be a second source to drift from
+ * this one, and the two would disagree silently the first time the attribute
+ * convention changed.
+ *
+ * Run directly (`node scripts/generate-extension-attributes.js`, which is how
+ * every package.json/gates.json entry invokes it) and `require.main === module`
+ * holds, so behaviour is unchanged.
+ */
+if ( require.main === module ) {
+	main();
+}
+
+module.exports = { collectAttributes };

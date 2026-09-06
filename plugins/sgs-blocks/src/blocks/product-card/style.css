@@ -31,12 +31,22 @@
 }
 
 .product-card {
-	background: var(--sgs-product-card-bg, #ffffff);
+	background-color: var(--sgs-product-card-bg, #ffffff);
+	/* NO `background-image: none` here, and no `background:` shorthand either.
+	   Either one sits at (0,1,0) and beats the trial variant's gradient, which is
+	   deliberately wrapped in :where() at (0,0,0) so an operator's own controls
+	   win. That is why the trial gradient rendered as `none` from the day it was
+	   written — measured live 2026-08-25. background-image already defaults to
+	   none, so declaring it here bought nothing and cost the variant its gradient. */
 	border-radius: 16px;
 	overflow: hidden;
 	border: 1px solid var( --wp--preset--color--border, #D4DBE5 );
 	display: flex;
 	flex-direction: column;
+	/* Card fills its grid/flex cell; previously this lived only in the theme's
+	 * .sgs-shop-layout rule, so cards outside the shop had ragged widths and gaps. */
+	width: 100%;
+	height: 100%;
 	max-width: var(--sgs-product-card-max-width, 380px);
 	margin-inline: auto;
 	/*
@@ -47,11 +57,22 @@
 	box-shadow: var(--sgs-product-card-shadow, 0 2px 12px rgba(58, 46, 38, 0.10));
 }
 
+/* Trial variant — re-declare the inherited custom property as transparent
+   so the base rule's var(--sgs-product-card-bg) resolves locally to transparent
+   instead of #ffffff. A var() fallback only fires when the property is UNDEFINED —
+   the fallback on line 34's base rule is overridden by this closer declaration. */
+.product-card.trial-card {
+	--sgs-product-card-bg: transparent;
+}
+
+/* object-fit/object-position now governed by the media-element atom layer
+   (rule 37-media-no-handroll — .sgs-media-el, assets/css/media-element.css),
+   which carries the SAME cover/center-center defaults this rule used to
+   hardcode, so an untouched card renders byte-identical. */
 .product-card .product-card-img {
 	width: 100%;
 	/* Var emitted by render.php when the imageHeight attr is set (F3 fix). */
 	height: var( --sgs-product-card-image-height, 220px );
-	object-fit: cover;
 	display: block;
 }
 
@@ -177,15 +198,16 @@
 
 /* Trial variant — dashed border + gradient overlay (B6, 2026-06-10): wrapped in
    :where() so specificity is 0 and the operator's border/background controls
-   (universal container-mirror supports, A1) always override these defaults. */
+   (universal container-mirror supports, A1) always override these defaults.
+   The background-image is now a standalone declaration (not a shorthand) to preserve
+   the transparent background-color set by the .product-card.trial-card rule above. */
 :where(.product-card.trial-card) {
 	border: 2px dashed var(--wp--preset--color--accent, #f5d050);
-	background:
-		linear-gradient(
-			135deg,
-			rgba(245, 208, 80, 0.08) 0%,
-			rgba(31, 122, 122, 0.06) 100%
-		);
+	background-image: linear-gradient(
+		135deg,
+		rgba(245, 208, 80, 0.08) 0%,
+		rgba(31, 122, 122, 0.06) 100%
+	);
 }
 
 /* NOTE (2026-07-26, F3 drain): the legacy `.product-card .trial-tag` rule was
@@ -597,11 +619,66 @@
 	box-shadow: 0 8px 24px rgba( 58, 46, 38, 0.16 );
 }
 
+/*
+ * Typed-card hover/focus affordance (Task 5d, 2026-08-27 — Bean-approved
+ * reversal of the "typed cards stay unstyled" scope guardrail below).
+ *
+ * A resting transparent RING is reserved up front so the coloured ring on
+ * hover/focus costs no layout shift.
+ *
+ * ⚠ FIX (2026-08-29, border-roundtrip G5 defect): this affordance used to be
+ * a real `border` shorthand on `.product-card`. That collided with the SAME
+ * longhand properties (`border-top-width/style/color`) that the operator's
+ * borderWidth/borderStyle/borderColour attributes paint (render.php's scoped
+ * `.sgs-pc-N.wp-block-sgs-product-card` rule, emitted only when
+ * borderStyle !== 'none'). When an operator explicitly set borderStyle to
+ * "none", render.php emits NOTHING for that instance (correct per G5 — "a
+ * style must only be emitted alongside a real width, and borderStyle:none
+ * must emit nothing at all"), which let THIS rule's `border: 2px solid
+ * transparent` become the winning declaration at equal specificity — a
+ * "none" card still painted a visible border. Root cause proven live
+ * 2026-08-29: `.product-card:not(.product-card--live)` and the operator's
+ * scoped rule are both (0,2,0); with no operator rule to beat it, this one
+ * painted. Moved the affordance onto `box-shadow` (a property the operator's
+ * border attrs never touch) so the two features can never collide again,
+ * regardless of which one is emitted or in what order.
+ *
+ * Colour resolves through the same theme-token chain as core-blocks.css:147 —
+ * --sgs-hover-primary (core-blocks-critical.css:484, a colour-mix() darken of
+ * --wp--preset--color--primary) with a plain-token fallback for older
+ * browsers. Never a client hex — works identically for any theme palette.
+ *
+ * ⚠ `box-shadow` was tried first and REJECTED before shipping: `.product-card`
+ * (line ~57, specificity 0,1,0) already owns `box-shadow` for the card's
+ * resting drop-shadow. This rule's higher specificity (0,2,0) would silently
+ * REPLACE that drop-shadow instead of adding a ring (box-shadow does not
+ * layer across two separate declarations — only the winning one applies).
+ * `outline` is a genuinely separate paint layer: no interaction with `border`
+ * (the operator's attrs) or `box-shadow` (the resting drop-shadow), so
+ * neither collides.
+ *
+ * Scoped to :not(.product-card--live) so a Bound/live card (which already
+ * has its own lift+shadow affordance above) doesn't get a second, competing
+ * hover treatment.
+ */
+.product-card:not( .product-card--live ) {
+	outline: 2px solid transparent;
+	outline-offset: -2px;
+	transition: outline-color 0.2s ease;
+}
+
+.product-card:not( .product-card--live ):hover,
+.product-card:not( .product-card--live ):focus-within,
+.product-card:not( .product-card--live ):focus-visible {
+	outline-color: var( --sgs-hover-primary, var( --wp--preset--color--primary, #1f7a7a ) );
+}
+
 /* Reduced motion — respect user preference */
 @media (prefers-reduced-motion: reduce) {
 	.product-card .sgs-button,
 	.product-card .product-card__cart-icon,
-	.product-card--live {
+	.product-card--live,
+	.product-card:not( .product-card--live ) {
 		transition: none;
 	}
 
@@ -614,8 +691,15 @@
 /*
  * ── Bound-card permalink + cart-status styles ────────────────────────────────
  *
- * All rules scoped to .product-card--live or new BEM classes so Typed
- * page-144 clones stay byte-identical (scope guardrail, blub.db 304).
+ * All rules scoped to .product-card--live or new BEM classes.
+ *
+ * REVERSED 2026-08-27 (Task 5d, Bean-approved): the "Typed page-144 clones
+ * stay byte-identical" scope guardrail (blub.db 304) no longer holds —
+ * future drafts will themselves carry hover effects to clone, so keeping
+ * cloned Typed cards byte-identical to their draft is no longer a goal.
+ * This comment is kept, not deleted, to record that reversal for anyone
+ * who finds blub.db 304 and wonders why Typed cards now have hover CSS.
+ *
  * WCAG 2.2 AA contrast verified against #ffffff card background.
  */
 
@@ -707,12 +791,13 @@
 	background: var( --wp--preset--color--surface-alt, #f5f7f7 );
 }
 
-/* Main image fills the fixed-height box, centred, scaled to cover. */
+/* Main image fills the fixed-height box. object-fit/object-position now
+   governed by the media-element atom layer (rule 37-media-no-handroll —
+   .sgs-media-el default cover/center-center matches what this rule used to
+   hardcode, so an untouched card renders byte-identical). */
 .product-card--live .product-card__media .product-card-img {
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
-	object-position: center;
 	display: block;
 	margin: 0;
 }
@@ -757,13 +842,19 @@
 /* Active / selected thumb gets the primary ring. */
 .product-card--live .product-card__thumb[aria-current="true"] {
 	border-color: var( --wp--preset--color--primary, #1F7A7A );
+	/* Rule 43 (WCAG 1.4.1): active-thumb state must not rely on colour alone —
+	 * the resting border is already 2px, so bump to 3px as the non-colour
+	 * signal. */
+	border-width: 3px;
 }
 
-/* Thumb image fills the button box. */
+/* Thumb image fills the button box. object-fit now governed by the
+   media-element atom layer (rule 37-media-no-handroll — .sgs-media-el
+   default cover matches what this rule used to hardcode, so an untouched
+   card renders byte-identical). */
 .product-card--live .product-card__thumb img {
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
 	display: block;
 }
 
@@ -933,11 +1024,13 @@
  * and the cascade is predictable.
  */
 
-/* Image — fills the full card width at the fixed image-height. */
+/* Image — fills the full card width at the fixed image-height. object-fit
+   now governed by the media-element atom layer (rule 37-media-no-handroll —
+   .sgs-media-el default cover matches what this rule used to hardcode, so
+   an untouched card renders byte-identical). */
 .product-card .sgs-product-card__image {
 	width: 100%;
 	height: var( --sgs-product-card-image-height, 220px );
-	object-fit: cover;
 	display: block;
 }
 
@@ -976,10 +1069,14 @@
 	margin: 0;
 }
 
-.product-card .sgs-product-card__tag--trial {
-	background: var( --wp--preset--color--accent, #f5d050 );
-	color: var( --wp--preset--color--text, #3a2e26 );
-}
+/* .sgs-product-card__tag--trial's background/colour class default REMOVED
+   2026-09-03 (D942 recipe item 3, mirrors D938's pricing-table badge fix):
+   `tagBackgroundColour`/`tagTextColour` now default to `accent`/`text` in
+   block.json (matching this rule's old literal values) instead of `""`, so
+   render.php's scoped `.{uid}.sgs-product-card__tag--trial` rule ALWAYS
+   emits both declarations and always wins this class default by source
+   order (the block's own <style> prints after this enqueued stylesheet) —
+   this rule was provably unreachable, not merely redundant. */
 
 .product-card .sgs-product-card__tag--featured {
 	/* WCAG-safe across ANY client palette: a light tint of the client primary

@@ -1,0 +1,326 @@
+[
+  {
+    "file": "theme/sgs-theme/parts/sgs-pdp-content.html",
+    "line": 6,
+    "children": 1,
+    "child_types": [
+      "sgs/container"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/parts/sgs-pdp-content.html",
+    "line": 43,
+    "children": 1,
+    "child_types": [
+      "sgs/trustpilot-reviews"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/about-image-left.php",
+    "line": 12,
+    "children": 1,
+    "child_types": [
+      "sgs/container"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/about-image-left.php",
+    "line": 15,
+    "children": 1,
+    "child_types": [
+      "sgs/media"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/about-story.php",
+    "line": 12,
+    "children": 1,
+    "child_types": [
+      "sgs/container"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/about-story.php",
+    "line": 16,
+    "children": 1,
+    "child_types": [
+      "sgs/media"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/contact-form.php",
+    "line": 21,
+    "children": 1,
+    "child_types": [
+      "sgs/text"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/cta-banner.php",
+    "line": 12,
+    "children": 1,
+    "child_types": [
+      "sgs/container"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/cta-banner.php",
+    "line": 21,
+    "children": 1,
+    "child_types": [
+      "sgs/multi-button"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/pricing-columns.php",
+    "line": 18,
+    "children": 1,
+    "child_types": [
+      "sgs/container"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/pricing-columns.php",
+    "line": 41,
+    "children": 1,
+    "child_types": [
+      "sgs/container"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/pricing-columns.php",
+    "line": 67,
+    "children": 1,
+    "child_types": [
+      "sgs/container"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/services-alternating.php",
+    "line": 21,
+    "children": 1,
+    "child_types": [
+      "sgs/media"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/services-alternating.php",
+    "line": 27,
+    "children": 1,
+    "child_types": [
+      "sgs/media"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/services-grid.php",
+    "line": 20,
+    "children": 1,
+    "child_types": [
+      "sgs/container"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/services-grid.php",
+    "line": 27,
+    "children": 1,
+    "child_types": [
+      "sgs/container"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/services-grid.php",
+    "line": 34,
+    "children": 1,
+    "child_types": [
+      "sgs/container"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/stats-counter.php",
+    "line": 12,
+    "children": 1,
+    "child_types": [
+      "sgs/container"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/stats-counter.php",
+    "line": 16,
+    "children": 1,
+    "child_types": [
+      "sgs/counter"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/stats-counter.php",
+    "line": 20,
+    "children": 1,
+    "child_types": [
+      "sgs/counter"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/stats-counter.php",
+    "line": 24,
+    "children": 1,
+    "child_types": [
+      "sgs/counter"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/stats-counter.php",
+    "line": 28,
+    "children": 1,
+    "child_types": [
+      "sgs/counter"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/team-section.php",
+    "line": 20,
+    "children": 1,
+    "child_types": [
+      "sgs/container"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/team-section.php",
+    "line": 29,
+    "children": 1,
+    "child_types": [
+      "sgs/container"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/team-section.php",
+    "line": 38,
+    "children": 1,
+    "child_types": [
+      "sgs/container"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/testimonials-cards.php",
+    "line": 18,
+    "children": 1,
+    "child_types": [
+      "sgs/container"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/testimonials-cards.php",
+    "line": 27,
+    "children": 1,
+    "child_types": [
+      "sgs/container"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/testimonials-cards.php",
+    "line": 36,
+    "children": 1,
+    "child_types": [
+      "sgs/container"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/patterns/testimonials-large.php",
+    "line": 11,
+    "children": 1,
+    "child_types": [
+      "sgs/text"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/templates/archive-product.html",
+    "line": 40,
+    "children": 1,
+    "child_types": [
+      "template-part"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/templates/archive-product.html",
+    "line": 44,
+    "children": 1,
+    "child_types": [
+      "sgs/collapsible-text"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/templates/front-page.html",
+    "line": 19,
+    "children": 1,
+    "child_types": [
+      "post-content"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/templates/page.html",
+    "line": 22,
+    "children": 1,
+    "child_types": [
+      "post-title"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/templates/single-product.html",
+    "line": 16,
+    "children": 1,
+    "child_types": [
+      "template-part"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/templates/single-product.html",
+    "line": 24,
+    "children": 1,
+    "child_types": [
+      "template-part"
+    ],
+    "verdict": "NO-OP"
+  },
+  {
+    "file": "theme/sgs-theme/templates/single.html",
+    "line": 60,
+    "children": 1,
+    "child_types": [
+      "avatar"
+    ],
+    "verdict": "NO-OP"
+  }
+]

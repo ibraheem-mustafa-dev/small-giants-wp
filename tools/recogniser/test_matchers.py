@@ -273,14 +273,22 @@ class TestBodyHeaderBehaviourDetection(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertIn(result["behaviour"], _VALID_HEADER_BEHAVIOURS)
 
-    def test_valid_behaviours_constant_matches_php_class(self):
-        """_VALID_HEADER_BEHAVIOURS must cover exactly the slugs declared in
-        Sgs_Header_Behaviours::VALID_BEHAVIOURS PHP constant."""
+    def test_valid_behaviours_is_the_frozen_legacy_vocabulary(self):
+        """_VALID_HEADER_BEHAVIOURS is a FROZEN legacy set, not a live mirror.
+
+        This test used to be named ..._matches_php_class and claimed to check the
+        set against `Sgs_Header_Behaviours::VALID_BEHAVIOURS`. It never did: it
+        compared two hardcoded copies of the same literal, so it could not fail —
+        and the PHP constant it named was deleted on 2026-07-28, which the test
+        therefore did not notice for a month. Renamed to say what it actually
+        asserts: that this legacy vocabulary has not drifted. See the detector's
+        own comment for why there is no live constant to mirror.
+        """
         expected = {"transparent", "sticky", "hide-on-scroll-down"}
         self.assertEqual(
             _VALID_HEADER_BEHAVIOURS,
             expected,
-            "_VALID_HEADER_BEHAVIOURS must match Sgs_Header_Behaviours::VALID_BEHAVIOURS",
+            "_VALID_HEADER_BEHAVIOURS is a frozen legacy set and must not drift",
         )
 
     # --- idempotency ---

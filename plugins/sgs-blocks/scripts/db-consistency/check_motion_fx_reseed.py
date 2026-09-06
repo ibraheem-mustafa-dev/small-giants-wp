@@ -120,9 +120,19 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
         for r in conn.execute("PRAGMA table_info(fx_effects)").fetchall()
     )
     creates_panel_column = "creates_panel" if has_creates_panel else "1"
+    # `in_picker` was added 2026-08-02, same gated-on-absence shape as
+    # creates_panel above — but the fallback literal is 0, not 1, mirroring the
+    # seeder's own `row.get("in_picker", 0)`. The direction matters: an effect
+    # is block-private until a row explicitly declares it offerable from the
+    # picker, so a pre-migration DB compares as 0 and fails CLOSED.
+    has_in_picker = any(
+        r[1] == "in_picker"
+        for r in conn.execute("PRAGMA table_info(fx_effects)").fetchall()
+    )
+    in_picker_column = "in_picker" if has_in_picker else "0"
     db_rows = conn.execute(
         "SELECT effect, tier, plugin_set, owns_scroll_transform, reduced_motion, editor_story, "
-        f"scope, requires, pins, triggers, {creates_panel_column} FROM fx_effects"
+        f"scope, requires, pins, triggers, {creates_panel_column}, {in_picker_column} FROM fx_effects"
     ).fetchall()
     db_by_effect = {r[0]: r for r in db_rows}
 
@@ -142,6 +152,7 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
         (
             _, db_tier, db_plugin_set_json, db_owns, db_reduced, db_editor,
             db_scope, db_requires, db_pins, db_triggers, db_creates_panel,
+            db_in_picker,
         ) = db_row
         try:
             db_plugin_set = json.loads(db_plugin_set_json)
@@ -185,6 +196,29 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
         if int(db_creates_panel) != int(expected.get("creates_panel", 1)):
             mismatches.append(
                 f"creates_panel: db={db_creates_panel!r} expected={expected.get('creates_panel', 1)!r}"
+            )
+        # `in_picker` — added to this guard 2026-08-28. The seeder DECLARES it
+        # (FX_EFFECTS carries the key, _seed_fx_effects writes the column) but
+        # nothing compared it back, so a hand-edited row read green here forever.
+        #
+        # WHY THE OBVIOUS OBJECTION IS WRONG. The seeder's own comment says
+        # "check-fx-list-drift.py (I1) compares it against SHIPPED_EFFECTS in
+        # BOTH directions", which reads like this guard would be duplicating it.
+        # That claim is narrow-true and broad-false: check-fx-list-drift.py
+        # explicitly does NOT read the DB (its docstring says it "stands ALONE"
+        # and takes the fact from the committed generated-fx-effect-meta.json).
+        # The real chain is
+        #     DB.in_picker -> generate-fx-effects-php.py -> meta.json -> drift gate
+        # so drift guards the DOWNSTREAM ARTEFACT against fx.js, never the DB
+        # against the seeder. Hand-edit this column — failure mode (a) in this
+        # module's own docstring — and BOTH gates stay green until someone
+        # happens to regenerate the JSON, at which point drift fires and blames
+        # SHIPPED_EFFECTS for a corruption that actually lives in the DB.
+        # That gap is precisely this guard's remit, which is why the comparison
+        # belongs here and is not a duplicate.
+        if int(db_in_picker) != int(expected.get("in_picker", 0)):
+            mismatches.append(
+                f"in_picker: db={db_in_picker!r} expected={expected.get('in_picker', 0)!r}"
             )
 
         if mismatches:
@@ -246,13 +280,46 @@ def _self_test() -> int:
         # the SELECT without adding it to this list leaves it unproven.
         cur = con.cursor()
         target_effect = "pin-scrub"
-        columns = (
+        # EVERY column run() compares gets an injection here. Until 2026-08-28
+        # this tuple held only the five below the divider, while run() compared
+        # ten — so tier, plugin_set, reduced_motion, editor_story and
+        # creates_panel were guarded-but-unproven and a regression in any of
+        # their comparison branches would have read green forever. That is the
+        # exact failure the comment above describes happening once already with
+        # pins/triggers at D416; it had simply happened again, five columns
+        # wider, without anyone counting SELECT-width against tuple-length.
+        #
+        # ⛔ IF YOU ADD A COLUMN TO run()'s COMPARISON, ADD IT HERE IN THE SAME
+        # EDIT. The two lists are the same list; nothing but this comment and
+        # the count assertion below ties them together.
+        columns = [
             "owns_scroll_transform",
             "scope",
             "requires",
             "pins",
             "triggers",
-        )
+            # ---- added 2026-08-28, previously unproven ----
+            "tier",
+            "plugin_set",
+            "reduced_motion",
+            "editor_story",
+        ]
+        # creates_panel / in_picker are MIGRATION-GATED in run() (it falls back
+        # to a literal when the column is absent), so perturbing them against a
+        # pre-migration DB would raise OperationalError rather than report an
+        # unguarded column. Gate the injection the same way run() gates the read.
+        _existing_cols = {
+            r[1] for r in cur.execute("PRAGMA table_info(fx_effects)").fetchall()
+        }
+        for _migrated in ("creates_panel", "in_picker"):
+            if _migrated in _existing_cols:
+                columns.append(_migrated)
+            else:
+                print(
+                    f"[check_motion_fx_reseed --self-test] {_migrated}: column absent "
+                    f"from this DB (pre-migration) — injection skipped, run() compares "
+                    f"its fallback literal."
+                )
 
         unguarded: list[str] = []
         for column in columns:
@@ -300,7 +367,15 @@ def _self_test() -> int:
             )
             return 1
 
-        print(f"[check_motion_fx_reseed --self-test] caught {len(caught)} violation(s) for the injected drift — OK")
+        # Report the COLUMNS proven, not `len(caught)` — that read the last loop
+        # iteration's leftover value, so it described one column while claiming
+        # to summarise all of them (harmless while the tuple held 5 identical-
+        # shaped columns; actively misleading once the list is gated and varies
+        # in length per DB).
+        print(
+            f"[check_motion_fx_reseed --self-test] all {len(columns)} guarded column(s) "
+            f"detected their injected drift — OK"
+        )
 
         # Final: confirm the revert actually restored the clean state.
         post_revert_violations = run(con)

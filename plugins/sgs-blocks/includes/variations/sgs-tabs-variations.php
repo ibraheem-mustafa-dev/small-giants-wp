@@ -37,12 +37,12 @@ function sgs_register_tabs_styles(): void {
 			'label'        => __( 'Boxed', 'sgs-blocks' ),
 			'inline_style' => '
 				.wp-block-sgs-tabs.is-style-boxed .sgs-tabs__panel {
-					border: 1px solid var( --wp--preset--color--border-subtle );
+					border: 1px solid var( --wp--preset--color--border );
 					border-radius: 0 0 var( --wp--custom--border-radius--medium ) var( --wp--custom--border-radius--medium );
 					padding: var( --wp--preset--spacing--50 );
 				}
 				.wp-block-sgs-tabs.is-style-boxed .sgs-tabs__tab {
-					border: 1px solid var( --wp--preset--color--border-subtle );
+					border: 1px solid var( --wp--preset--color--border );
 					border-bottom: 0;
 					border-radius: var( --wp--custom--border-radius--small ) var( --wp--custom--border-radius--small ) 0 0;
 				}
@@ -61,7 +61,7 @@ function sgs_register_tabs_styles(): void {
 					color: var( --wp--preset--color--primary );
 				}
 				.wp-block-sgs-tabs.is-style-outlined .sgs-tabs__panel {
-					border-top: 1px solid var( --wp--preset--color--border-subtle );
+					border-top: 1px solid var( --wp--preset--color--border );
 					padding-block-start: var( --wp--preset--spacing--50 );
 				}
 			',

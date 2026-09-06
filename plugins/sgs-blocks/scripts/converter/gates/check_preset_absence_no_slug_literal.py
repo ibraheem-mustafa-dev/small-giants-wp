@@ -9,7 +9,9 @@ NOTE: `converter/gates/no_slug_literal.py` ALREADY scans the whole
 `converter/resolvers/` + `converter/services/` tree via full AST analysis, and
 `preset_absence.py` is inside that scope — so this script is a narrow, fast,
 explicit confirmation for THIS file only, requested as an additional named
-deliverable. It is NOT a replacement for the general gate; both run in CI.
+deliverable. It is NOT a replacement for the general gate; both run as part of
+the local build gate chain (`prebuild` / `scripts/gates.json`) — this repo has
+no CI.
 
 CLI: python converter/gates/check_preset_absence_no_slug_literal.py
 Exit 0 = clean, exit 1 = violation found (prints the offending line).

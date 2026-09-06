@@ -1,0 +1,15 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/wp-generated-root-class",
+	"title": "Fixture: no explicit typography selector, falls back to the WP-core-generated root class — must NOT flag",
+	"category": "sgs",
+	"supports": {
+		"typography": {
+			"fontSize": true
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-wp-generated-root-class"
+	},
+	"attributes": {}
+}

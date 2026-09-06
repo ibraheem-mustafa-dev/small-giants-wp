@@ -42,8 +42,17 @@
 	font-size: var(--sgs-mb-btn-font-size-default, 15px);
 	line-height: 1.2;
 	padding: 14px 24px;
-	border-width: 2px;
-	border-style: solid;
+	/* border-width/border-style are NOT declared here (2026-08-27 fix — a
+	   hardcoded default painting a real 2px solid border through every button,
+	   including custom/preset-less instances that set no border attribute at
+	   all). They are set per-PRESET below (.sgs-button--primary/secondary/
+	   outline, which genuinely need the box reserved for their border-colour
+	   look) and per-INSTANCE by render.php's higher-specificity .uid.sgs-button
+	   rule when an operator sets a custom border. A button with neither —
+	   found live 2026-08-27 on the Mama's Munches clone's "Find out more"
+	   button, which had no preset class and no custom border yet still
+	   computed border:2px solid transparent — now renders no border at all,
+	   matching the draft. */
 	border-radius: var(--sgs-mb-btn-radius-default, 10px);
 	min-height: 48px;
 	text-align: center;
@@ -61,8 +70,28 @@
 	   per-instance override has set --sgs-btn-*. */
 	color: var(--sgs-btn-color, var(--sgs-mb-btn-color-default, var(--wp--preset--color--text)));
 	background-color: var(--sgs-btn-bg, var(--sgs-mb-btn-bg-default, transparent));
-	background-image: var(--sgs-btn-bg-image, none);
+	background-image: var(--sgs-btn-bg-image, var(--sgs-mb-btn-bg-image-default, none));
 	border-color: var(--sgs-btn-border, var(--sgs-mb-btn-border-default, transparent));
+}
+
+/*
+ * Child-button border-width/style GROUP DEFAULT (sgs/multi-button, 2026-08-30
+ * owner decision) — deliberately NOT on the `.sgs-button` base rule above.
+ * `:where(.sgs-multi-button)` costs zero specificity, so this whole rule
+ * matches at (0,1,0), identical to `.sgs-button` and to every preset below —
+ * it can NEVER outrank `.sgs-button--primary/--secondary/--outline` (which
+ * come after it here and win any tie), and for a button that isn't inside a
+ * multi-button wrapper this selector never matches at all, so it is a
+ * provable no-op there. This is why border-width/style could not simply
+ * reuse the base rule's var()-fallback pattern like radius/font-weight do —
+ * unlike those, a PRESET here sets the literal property directly rather than
+ * a --sgs-btn-* custom property, so a same-or-higher-specificity consumer
+ * would win over the preset instead of losing to it (see the 2026-08-27 fix
+ * above for why that repainted a border on preset-less buttons once already).
+ */
+:where(.sgs-multi-button) .sgs-button {
+	border-width: var(--sgs-mb-btn-border-width-default);
+	border-style: var(--sgs-mb-btn-border-style-default);
 }
 
 /*
@@ -88,8 +117,8 @@
 .sgs-button:focus-visible {
 	text-decoration: none;
 	color: var(--sgs-btn-color-hover, var(--sgs-btn-color, var(--sgs-mb-btn-color-default, var(--wp--preset--color--text))));
-	background-color: var(--sgs-btn-bg-hover, var(--sgs-btn-bg, var(--sgs-mb-btn-bg-default, transparent)));
-	background-image: var(--sgs-btn-bg-hover-image, var(--sgs-btn-bg-image, none));
+	background-color: var(--sgs-btn-bg-hover, var(--sgs-btn-bg, var(--sgs-mb-btn-bg-hover-default, var(--sgs-mb-btn-bg-default, transparent))));
+	background-image: var(--sgs-btn-bg-hover-image, var(--sgs-btn-bg-image, var(--sgs-mb-btn-bg-hover-image-default, var(--sgs-mb-btn-bg-image-default, none))));
 	border-color: var(--sgs-btn-border-hover, var(--sgs-btn-border, var(--sgs-mb-btn-border-default, transparent)));
 	/* Preset hover transform (FR-33-4 open-bag "transform-lift"): applied from the client's
 	   buttonPresets hover-transform token; `none` fallback = current behaviour when no preset.
@@ -101,6 +130,11 @@
 /* ── Style presets (Spec 32) — each SETS the six colour vars from the
    per-client token with a framework theme-token fallback. ──────────────── */
 .sgs-button--primary {
+	/* Preset-only border reservation (see the base-rule comment above) — every
+	   preset needs the same box regardless of whether its border-colour is
+	   visually distinct from its background. */
+	border-width: 2px;
+	border-style: solid;
 	--sgs-btn-color: var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--text-inverse));
 	--sgs-btn-bg: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
 	--sgs-btn-border: var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary));
@@ -111,6 +145,8 @@
 }
 
 .sgs-button--secondary {
+	border-width: 2px;
+	border-style: solid;
 	--sgs-btn-color: var(--wp--custom--button-presets--secondary--text, var(--wp--preset--color--primary));
 	--sgs-btn-bg: var(--wp--custom--button-presets--secondary--background, transparent);
 	--sgs-btn-border: var(--wp--custom--button-presets--secondary--border, var(--wp--preset--color--primary));
@@ -121,6 +157,8 @@
 }
 
 .sgs-button--outline {
+	border-width: 2px;
+	border-style: solid;
 	--sgs-btn-color: var(--wp--custom--button-presets--outline--text, var(--wp--preset--color--text));
 	--sgs-btn-bg: var(--wp--custom--button-presets--outline--background, transparent);
 	--sgs-btn-border: var(--wp--custom--button-presets--outline--border, var(--wp--preset--color--border));
