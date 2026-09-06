@@ -312,6 +312,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		iconColour,
 		iconColourHover,
 		iconColourGradient,
+		iconColourHoverGradient,
 		iconCircleBorderRadius,
 		iconCircleShadow,
 		iconCircleShadowColour,
@@ -708,7 +709,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: iconColourHover,
 								onChange: ( val ) => setAttributes( { iconColourHover: val } ),
-								},
+								gradientValue: iconColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconColourHoverGradient: val ?? '' } ),
+							},
 						],
 					},
 					// ── Consolidated in 2026-08-30 — was the "Title colour"

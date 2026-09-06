@@ -52,9 +52,12 @@ $icon_colour      = $attributes['iconColour'] ?? 'primary-dark';
 // D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above,
 // but only paints the outline (default) badge's `stroke` — a 'filled' badge's
 // `fill` paint is out of this mechanism's scope (css:fill territory, Builder 5).
-$icon_colour_gradient      = $attributes['iconColourGradient'] ?? '';
-$tb_stroke_grad            = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
-$tb_stroke_grad_defs_used  = false;
+// The actual CSS/defs resolution happens further down (after $uid_scope is
+// defined) via sgs_icon_gradient_states_css() — both states in one call
+// (2026-09-06 close-out; hover-gradient did not exist on this block before).
+$icon_colour_gradient       = $attributes['iconColourGradient'] ?? '';
+$icon_colour_hover_gradient = $attributes['iconColourHoverGradient'] ?? '';
+$tb_stroke_grad_defs_used   = false;
 $text_colour               = $attributes['textColour'] ?? 'text';
 $icon_circle_border_radius = isset( $attributes['iconCircleBorderRadius'] ) ? (string) $attributes['iconCircleBorderRadius'] : '50%';
 
@@ -374,9 +377,13 @@ if ( '' !== $title_colour_effective ) {
 
 // D636/D644 icon/SVG gradient — one rule paints every outline (default,
 // non-'filled') badge's icon stroke; a 'filled' badge's `fill` paint is
-// deliberately out of scope (css:fill territory).
-if ( '' !== $tb_stroke_grad['css'] ) {
-	$tb_extra_scoped_css .= $uid_scope . ' .sgs-trust-bar__circle svg{' . $tb_stroke_grad['css'] . '}';
+// deliberately out of scope (css:fill territory). Both states resolved
+// together via sgs_icon_gradient_states_css() (2026-09-06 close-out) —
+// lucide-only badge glyphs, so the icon source is hardcoded here.
+$tb_icon_grad_sel  = $uid_scope . ' .sgs-trust-bar__circle svg';
+$tb_stroke_grad    = sgs_icon_gradient_states_css( 'lucide', $icon_colour_gradient, $icon_colour_hover_gradient, $uid . '-ig', $tb_icon_grad_sel );
+if ( $tb_stroke_grad['css'] ) {
+	$tb_extra_scoped_css .= implode( '', $tb_stroke_grad['css'] );
 }
 
 // --- Optional title -----------------------------------------------------------
@@ -541,11 +548,14 @@ foreach ( $items as $tb_item_index => $item ) {
 			$svg = sgs_get_lucide_icon( 'check' );
 		}
 
-		// D636/D644 icon/SVG gradient — the def only needs to exist ONCE in the
+		// D636/D644 icon/SVG gradient — the defs only need to exist ONCE in the
 		// DOM (`url(#id)` resolves document-wide); injected into the first
 		// rendered badge's SVG only, to avoid a duplicate #id across the loop.
-		if ( ! $tb_stroke_grad_defs_used && '' !== $tb_stroke_grad['defs'] ) {
-			$svg                      = sgs_svg_inject_defs( $svg, $tb_stroke_grad['defs'] );
+		// Both base + hover defs share the one injection point/flag — a badge
+		// icon that never renders (empty items array) means neither is needed.
+		if ( ! $tb_stroke_grad_defs_used && ( '' !== $tb_stroke_grad['defs_base'] || '' !== $tb_stroke_grad['defs_hover'] ) ) {
+			$svg                      = sgs_svg_inject_defs( $svg, $tb_stroke_grad['defs_base'] );
+			$svg                      = sgs_svg_inject_defs( $svg, $tb_stroke_grad['defs_hover'] );
 			$tb_stroke_grad_defs_used = true;
 		}
 

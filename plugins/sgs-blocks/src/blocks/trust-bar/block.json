@@ -143,7 +143,8 @@
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "iconColourHover"
+								"css:color": "iconColourHover",
+								"css:stroke": "iconColourHoverGradient"
 							}
 						}
 					},
@@ -416,6 +417,11 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the badge icon's stroke instead of a flat colour (icon-circle variant only). Non-empty wins over iconColour at render time (D636/D644)."
+		},
+		"iconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of iconColourGradient. Non-empty wins over iconColourHover at render time."
 		},
 		"iconCircleBorderRadius": {
 			"type": "string",

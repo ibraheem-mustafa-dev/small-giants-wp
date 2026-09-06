@@ -158,6 +158,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconColour,
 		iconColourHover,
 		iconColourGradient,
+		iconColourHoverGradient,
 		displayMode,
 		stickyPosition,
 		dismissible,
@@ -214,7 +215,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			   `textRow`) — render.php reads the same attrs through the
 			   matching PHP-side emitters (`sgs_fill_decls`/`sgs_text_decls`).
 			   Both rows support a base + hover state and a gradient sibling.
-			   iconColour stays single-state — no hover counterpart. */ }
+			   iconColour now does too (2026-09-06) — its gradient sibling
+			   was single-state until this fix, despite the flat colour
+			   already being two-state. */ }
 			<SgsColourPanel
 				rows={ [
 					textRow( {
@@ -261,7 +264,10 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: iconColourHover,
 								onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
 								linked: true,
-								},
+								gradientValue: iconColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconColourHoverGradient: val ?? '' } ),
+							},
 						],
 					},
 				] }
