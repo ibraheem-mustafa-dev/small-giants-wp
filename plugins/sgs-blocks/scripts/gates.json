@@ -920,5 +920,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 98
+  },
+  {
+    "id": "check-render-tier-object-spacing",
+    "cmd": "python scripts/check-render-tier-object-spacing.py --check",
+    "tier": "fast",
+    "added_D": "D976",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 99
   }
 ]

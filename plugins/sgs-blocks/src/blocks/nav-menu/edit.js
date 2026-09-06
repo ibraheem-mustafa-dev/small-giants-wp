@@ -1129,8 +1129,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					resetAll={ () =>
 						setAttributes( {
 							gap: '8px',
-							paddingTablet: {},
-							paddingMobile: {},
+							padding: {},
 						} )
 					}
 				>
@@ -1161,17 +1160,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					 */ }
 					<ToolsPanelItem
 						hasValue={ () =>
-							Object.keys( attributes.paddingTablet || {} )
-								.length > 0 ||
-							Object.keys( attributes.paddingMobile || {} )
-								.length > 0
+							Object.keys( attributes.padding ?? {} ).length > 0
 						}
 						label={ __( 'Padding', 'sgs-blocks' ) }
 						onDeselect={ () =>
-							setAttributes( {
-								paddingTablet: {},
-								paddingMobile: {},
-							} )
+							setAttributes( { padding: {} } )
 						}
 						isShownByDefault
 					>

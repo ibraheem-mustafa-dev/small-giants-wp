@@ -1,3 +1,63 @@
+## D976 [INCIDENT] — render.php helper-function load-order fatal on sandybrown, rolled back and root-caused; new permanent guard gate + THE-MIGRATION-METHOD.md hazard entry
+
+**2026-09-06.** The tier-object padding/margin render.php fix (29 blocks,
+commits e863203d7 + 75b8dd657) inserted a normalisation preamble calling
+`sgs_responsive_normalise_object()` right after each file's `ABSPATH` guard —
+but that function is only DEFINED once `require_once .../render-helpers.php`
+(or `helpers-responsive.php` directly) actually executes, and in every one of
+the 29 files that require came 16-56 lines LATER in the file. Deployed to
+sandybrown; fataled immediately with "Call to undefined function
+sgs_responsive_normalise_object()" via `sgs/business-info`, reached early
+through `class-sgs-header-rules.php`'s header-pattern-evaluation path (which
+runs before the normal block-render lifecycle has loaded everything). Rolled
+back within ~2 minutes (`.bak` swap + OPcache reset over HTTPS on the web
+pool, per the documented rollback procedure). Fixed by requiring
+`helpers-responsive.php` directly, inline, right where the preamble is
+inserted — removing the load-order dependency entirely rather than trying to
+find "the right place" to insert relative to an existing require.
+
+**Structural fix, not just a one-off repair.** Built
+`scripts/check-render-tier-object-spacing.py` (GUARD gate shape per THE-
+MIGRATION-METHOD.md Step 8 — 0 from registration, 1 only on divergence),
+registered in `gates.json` (fast tier) + `package.json` aliases
+(`check:render-tier-object-spacing` / `selftest:render-tier-object-spacing`).
+It scans every `src/blocks/*/render.php` (not just the 29 already fixed) for
+two things: (1) any call to `sgs_responsive_normalise_object()` whose defining
+require appears at a LATER line number — catches this exact hazard on any
+current or future block; (2) any literal `$attributes['paddingTablet'/
+'paddingMobile'/'marginTablet'/'marginMobile']` read in a block whose
+`block.json` doesn't declare that attribute — the dead-flat-attribute bug
+class the original migration fixed, checked per-block against the real
+schema rather than a hardcoded roster. Ships with 7 fixtures including one
+earned mid-build: the first version matched a DOCBLOCK COMMENT describing the
+fix (which names the function with a trailing `(` and the dead attrs by name)
+as if it were real code, producing a false failure on all 29 already-fixed
+blocks — fixed by stripping comments (preserving line numbers) before
+scanning. An independent QC-council code-verifier subagent hit the identical
+comment-matching trap on its own first attempt before self-correcting,
+confirming this is a genuinely easy mistake to make, not a one-off slip.
+
+**THE-MIGRATION-METHOD.md gap.** The "Known hazards" section had no entry for
+"a function call can precede the require that defines it" — every existing
+hazard is about find-and-replace mechanics (CRLF, JSON reformatting, aligned
+assignment, brace-depth) rather than *execution order* within the file being
+edited. Added a new hazard entry naming this class directly, since a codemod
+inserting a call anywhere other than immediately after its own dependency's
+require is exactly how this recurs.
+
+**Also fixed while auditing:** the DB reseed run this session
+(`sgs-update-v2.py`, full 13-stage) cleared 241 orphaned `block_attributes`
+rows and 32 stale `block_supports` rows left behind by the padding/margin AND
+border-radius schema folds (border-radius's own migration is separate,
+unstarted work — not touched here, only its stale DB rows were pruned).
+`sgs/nav-menu` and `sgs/quote`'s `edit.js` still had `ToolsPanel`
+`resetAll`/`ToolsPanelItem` `hasValue`/`onDeselect` handlers referencing the
+same dead flat attrs (silently no-op on reset/deselect since WP discards
+writes to undeclared attributes, D338) — fixed to reference the real
+`padding`/`margin` tier-object attr directly, matching the already-correct
+pattern used by `sgs/quote`'s own individual Padding/Margin panel items and
+by `sgs/accordion`.
+
 ## D975 [ROUTINE] — trust-bar variant discrimination live-clone-verified for real; found + fixed a durability gap in D974's own container-marker fix
 
 **2026-09-06.** Closes the last open residual on `parking.md`'s

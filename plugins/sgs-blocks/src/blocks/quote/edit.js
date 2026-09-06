@@ -685,18 +685,8 @@ export default function Edit( { attributes, setAttributes } ) {
 									backgroundColour: '',
 									boxShadow: '',
 									boxShadowColour: '',
-									style: {
-										...style,
-										spacing: {
-											...style?.spacing,
-											padding: {},
-											margin: {},
-										},
-									},
-									paddingTablet: {},
-									paddingMobile: {},
-									marginTablet: {},
-									marginMobile: {},
+									padding: {},
+									margin: {},
 									maxWidth: {},
 								} )
 							}
