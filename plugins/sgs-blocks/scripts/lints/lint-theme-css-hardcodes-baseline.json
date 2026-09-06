@@ -174,5 +174,85 @@
     "reason": "mobile filter-toggle button text size -- component-scoped button chrome; the block comment above it (lines 507-527) documents this button deliberately reuses primary-button COLOUR tokens while owning its own layout/size",
     "selector": "body.is-enhanced .sgs-shop-filters__toggle",
     "value": "0.9375rem"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-shop-filters__apply:color:#ffffff": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 889,
+    "property": "color",
+    "reason": "fixed white text for contrast against the primary background colour -- component-scoped WooCommerce filter button chrome, a structural on-colour text value paired with a token background",
+    "selector": ".sgs-shop-filters__apply",
+    "value": "#ffffff"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-shop-filters__apply:font-size:0.9375rem": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 893,
+    "property": "font-size",
+    "reason": "shop filter apply button text size -- component-scoped WooCommerce filter UI chrome, not a heading/body typography-scale value",
+    "selector": ".sgs-shop-filters__apply",
+    "value": "0.9375rem"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-shop-filters__sticky-trigger:font-size:0.9375rem": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 951,
+    "property": "font-size",
+    "reason": "sticky mobile filter trigger button text size -- component-scoped WooCommerce filter UI chrome fixed-position overlay button",
+    "selector": ".sgs-shop-filters__sticky-trigger",
+    "value": "0.9375rem"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-shop-layout .product-card .sgs-product-card__title, .sgs-shop-layout .product-card .product-card__title-link:font-size:17px": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 1616,
+    "property": "font-size",
+    "reason": "product card title size in shop archive grid -- component-scoped WooCommerce product display chrome, not a content heading governed by theme.json's heading scale",
+    "selector": ".sgs-shop-layout .product-card .sgs-product-card__title, .sgs-shop-layout .product-card .product-card__title-link",
+    "value": "17px"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-shop-filters h3.sgs-shop-filters__group-heading:font-size:1rem": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 1838,
+    "property": "font-size",
+    "reason": "individual filter-group heading inside the shop-filters sidebar widget -- although selector matches h3, this is a small in-widget sub-label (WooCommerce's own filter block heading), not a content h1-h6 governed by theme.json's per-tag heading scale",
+    "selector": ".sgs-shop-filters h3.sgs-shop-filters__group-heading",
+    "value": "1rem"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-shop-toolbar select, select.orderby, .wc-block-product-sort-select select, .wp-block-woocommerce-product-sort-select select:font-size:0.9375rem": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 2415,
+    "property": "font-size",
+    "reason": "shop sort/filter dropdown button text size -- component-scoped WooCommerce filter UI chrome",
+    "selector": ".sgs-shop-toolbar select, select.orderby, .wc-block-product-sort-select select, .wp-block-woocommerce-product-sort-select select",
+    "value": "0.9375rem"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-shop-filters .wc-block-product-filter-removable-chips__item:font-size:0.8125rem": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 2529,
+    "property": "font-size",
+    "reason": "removable chip/tag text size -- component-scoped WooCommerce filter UI chrome",
+    "selector": ".sgs-shop-filters .wc-block-product-filter-removable-chips__item",
+    "value": "0.8125rem"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-product-rail .product-card .sgs-product-card__title, .sgs-product-rail .product-card .product-card__title-link:font-size:15px": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 2704,
+    "property": "font-size",
+    "reason": "product card title size in product rail/related products -- component-scoped WooCommerce product display chrome, not a content heading governed by theme.json's heading scale",
+    "selector": ".sgs-product-rail .product-card .sgs-product-card__title, .sgs-product-rail .product-card .product-card__title-link",
+    "value": "15px"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-product-rail .product-card .price:font-size:17px": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 2709,
+    "property": "font-size",
+    "reason": "product card price size in product rail/related products -- component-scoped WooCommerce product display chrome",
+    "selector": ".sgs-product-rail .product-card .price",
+    "value": "17px"
+  },
+  "theme/sgs-theme/assets/css/utilities.css:.sgs-u-meta-label:letter-spacing:0.06em": {
+    "file": "theme/sgs-theme/assets/css/utilities.css",
+    "line": 371,
+    "property": "letter-spacing",
+    "reason": "uppercase metadata label tracking (date or eyebrow rendered as metadata; deliberate typographic constant, not arbitrary -- Cloudflare and Smashing Magazine benchmarks set uppercase metadata as tracked labels)",
+    "selector": ".sgs-u-meta-label",
+    "value": "0.06em"
   }
 }
