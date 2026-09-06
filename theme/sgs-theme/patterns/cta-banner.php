@@ -20,7 +20,7 @@
 
 		<!-- wp:sgs/container {"sgsCustomCss":"&selector{align-self:center;}"} -->
 			<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"flex-end"}} -->
-				<!-- wp:sgs/button {"label":"Get Started Today","colourBackground":"accent","inheritStyle":"custom","colourText":"text","style":{"border":{"radius":"8px"}}} /-->
+				<!-- wp:sgs/button {"label":"Get Started Today","colourBackground":"accent","inheritStyle":"custom","colourText":"text","borderRadius":{"desktop":"8px"}} /-->
 			<!-- /wp:sgs/multi-button -->
 		<!-- /wp:sgs/container -->
 

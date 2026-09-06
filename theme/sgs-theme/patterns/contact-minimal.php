@@ -17,8 +17,8 @@
 	<!-- wp:sgs/text {"text":"Ready to discuss your project? Reach out and we’ll respond within one working day.","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"medium"}} /-->
 
 	<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"margin":{"top":"var:preset|spacing|40"}} -->
-		<!-- wp:sgs/button {"label":"Email Us","inheritStyle":"primary","style":{"border":{"radius":"8px"}},"metadata":{"bindings":{"url":{"source":"sgs/site-info","args":{"key":"email"}}}}} /-->
-		<!-- wp:sgs/button {"label":"Call Us","inheritStyle":"outline","style":{"border":{"radius":"8px"}},"metadata":{"bindings":{"url":{"source":"sgs/site-info","args":{"key":"phone"}}}}} /-->
+		<!-- wp:sgs/button {"label":"Email Us","inheritStyle":"primary","metadata":{"bindings":{"url":{"source":"sgs/site-info","args":{"key":"email"}}}},"borderRadius":{"desktop":"8px"}} /-->
+		<!-- wp:sgs/button {"label":"Call Us","inheritStyle":"outline","metadata":{"bindings":{"url":{"source":"sgs/site-info","args":{"key":"phone"}}}},"borderRadius":{"desktop":"8px"}} /-->
 	<!-- /wp:sgs/multi-button -->
 
 <!-- /wp:sgs/container -->

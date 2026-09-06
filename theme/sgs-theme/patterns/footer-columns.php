@@ -60,7 +60,7 @@
 <!-- wp:sgs/text {"text":"Subscribe to our newsletter for the latest updates, tips, and insights.","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
 
 <!-- wp:sgs/multi-button {"justifyContent":{"desktop":"flex-start"}} -->
-<!-- wp:sgs/button {"label":"Subscribe","url":"#","inheritStyle":"custom","colourBackground":"accent","colourText":"text","fontSize":{"desktop":14},"style":{"border":{"radius":"8px"}}} /-->
+<!-- wp:sgs/button {"label":"Subscribe","url":"#","inheritStyle":"custom","colourBackground":"accent","colourText":"text","fontSize":{"desktop":14},"borderRadius":{"desktop":"8px"}} /-->
 <!-- /wp:sgs/multi-button -->
 <!-- /wp:sgs/container -->
 
