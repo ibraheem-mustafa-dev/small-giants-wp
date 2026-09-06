@@ -223,6 +223,7 @@
 					"prefix": "cta",
 					"attrMap": {
 						"css:background-color": "ctaColourBackground",
+						"css:background-image": "ctaColourBackgroundGradient",
 						"css:color": "ctaColourText",
 						"css:color-gradient": "ctaColourTextGradient",
 						"css:border-color": "ctaColourBorder",
@@ -233,6 +234,7 @@
 						"hover": {
 							"attrMap": {
 								"css:background-color": "ctaColourBackgroundHover",
+								"css:background-image": "ctaColourBackgroundHoverGradient",
 								"css:color": "ctaColourTextHover",
 								"css:color-gradient": "ctaColourTextHoverGradient",
 								"css:border-color": "ctaColourBorderHover",
@@ -240,7 +242,7 @@
 							}
 						}
 					},
-					"_note": "css:padding maps to the single ctaPadding box-object attr {top,right,bottom,left} — migrated from the ctaPaddingX/ctaPaddingY axis-pair scalars to the universal box-object standard (mirrors sgs/button's padding box family + the tagPadding attr already on this block). Resolves the prior converter AmbiguousLayerAttrError collision and the elementless-ctaPaddingX misroute onto the card root. ctaColourTextGradient/ctaColourTextHoverGradient added 2026-09-04 (helpers-button-style.php D942/D956 gate) — keyed css:color-gradient since ctaColourBackground already claims css:background-color; sgs_button_element_style_css() only paints the text gradient per-state when that state's own background attr is unset."
+					"_note": "css:padding maps to the single ctaPadding box-object attr {top,right,bottom,left} — migrated from the ctaPaddingX/ctaPaddingY axis-pair scalars to the universal box-object standard (mirrors sgs/button's padding box family + the tagPadding attr already on this block). Resolves the prior converter AmbiguousLayerAttrError collision and the elementless-ctaPaddingX misroute onto the card root. ctaColourTextGradient/ctaColourTextHoverGradient added 2026-09-04 (helpers-button-style.php D942/D956 gate) — keyed css:color-gradient since ctaColourBackground already claims css:background-color; sgs_button_element_style_css() only paints the text gradient per-state when that state's own background attr is unset. ctaColourBackgroundGradient/ctaColourBackgroundHoverGradient added 2026-09-06 (colour-conformance FILL surface, Case E) — sgs_button_element_style_css() already read these keys via its generic ColourBackground(Hover)Gradient closure (mirrors sgs/button's own colourBackgroundGradient), they were simply never declared as attributes here; keyed css:background-image to match sgs/button's own DB row (sgs_background_paint_decl() emits background-image for a gradient, never background-color)."
 				}
 			}
 		},
@@ -365,6 +367,11 @@
 			"default": "",
 			"description": "Built-in CTA background colour override. EMPTY (default) = inherit the shared button-preset channel via the sgs-button--{style} class (so a --secondary/--outline CTA gets its transparent background, a --primary gets the solid fill — mirroring a standalone sgs/button). Set a token slug or raw colour only to override."
 		},
+		"ctaColourBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the CTA's resting background with a gradient instead of a flat colour (mirrors sgs/button's colourBackgroundGradient). Non-empty wins over ctaColourBackground via sgs_button_element_style_css()."
+		},
 		"ctaColourText": {
 			"type": "string",
 			"default": "",
@@ -389,6 +396,11 @@
 			"type": "string",
 			"default": "",
 			"description": "Built-in CTA hover background colour override. EMPTY (default) = inherit the shared button-preset hover channel via the sgs-button--{style} class. Set only to override."
+		},
+		"ctaColourBackgroundHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the CTA's hover background with a gradient instead of a flat colour (mirrors sgs/button's colourBackgroundHoverGradient). Non-empty wins over ctaColourBackgroundHover via sgs_button_element_style_css()."
 		},
 		"ctaColourTextHover": {
 			"type": "string",
@@ -676,6 +688,11 @@
 			"type": "string",
 			"default": "",
 			"description": "Forwarded to each in-card sgs/option-picker as pillBgColour (resting pill background)."
+		},
+		"pickerPillBgColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillBgColourGradient — sgs/option-picker already carries the full gradient sibling for its pill background (2026-09-05); this attribute was the missing forward. Non-empty wins over pickerPillBgColour."
 		},
 		"pickerPillTextColour": {
 			"type": "string",

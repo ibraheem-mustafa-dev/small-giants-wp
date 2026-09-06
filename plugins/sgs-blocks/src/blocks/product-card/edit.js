@@ -688,6 +688,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		pickerColourPreset,
 		pickerShowSelectedTick,
 		pickerPillBgColour,
+		pickerPillBgColourGradient,
 		pickerPillTextColour,
 		pickerPillBorderColour,
 		pickerPillBorderRadius,
@@ -705,11 +706,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		priceNoteColourGradient,
 		// Built-in CTA styling (typed + bound share the same cta* attrs).
 		ctaColourBackground,
+		ctaColourBackgroundGradient,
 		ctaColourText,
 		ctaColourTextGradient,
 		ctaColourBorder,
 		ctaColourBorderGradient,
 		ctaColourBackgroundHover,
+		ctaColourBackgroundHoverGradient,
 		ctaColourTextHover,
 		ctaColourTextHoverGradient,
 		ctaColourBorderHover,
@@ -1223,6 +1226,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: ctaColourBackground,
 					onChange: ( val ) => setAttributes( { ctaColourBackground: val ?? '' } ),
 					linked: true,
+					gradientValue: ctaColourBackgroundGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { ctaColourBackgroundGradient: val ?? '' } ),
 				},
 				{
 					key: 'hover',
@@ -1230,6 +1236,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: ctaColourBackgroundHover,
 					onChange: ( val ) => setAttributes( { ctaColourBackgroundHover: val ?? '' } ),
 					linked: true,
+					gradientValue: ctaColourBackgroundHoverGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { ctaColourBackgroundHoverGradient: val ?? '' } ),
 				},
 			],
 		},
@@ -1307,6 +1316,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: pickerPillBgColour,
 					onChange: ( val ) => setAttributes( { pickerPillBgColour: val ?? '' } ),
 					linked: true,
+					gradientValue: pickerPillBgColourGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { pickerPillBgColourGradient: val ?? '' } ),
 				},
 				{
 					key: 'selected',
@@ -2325,6 +2337,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									pickerColourPreset: 'solid',
 									pickerShowSelectedTick: true,
 									pickerPillBgColour: '',
+									pickerPillBgColourGradient: '',
 									pickerPillTextColour: '',
 									pickerPillBorderColour: '',
 									pickerPillBorderRadius: '',
