@@ -738,6 +738,17 @@ const SGS_TYPOGRAPHY_UNIT_COMPANION_KEYS = [ 'fontSizeUnit', 'lineHeightUnit', '
  * `{desktop:'',tablet:18,…}` object counts as modified because SOME tier is
  * set, even though its own `desktop` slot is empty).
  *
+ * ⚠ An empty ARRAY also means "unset", not just an empty object. A tiered
+ * attr declared `{"type":"object","default":{}}` (e.g. card-grid's
+ * `titleFontSize`) reads back from WordPress as `[]`, not `{}` — PHP cannot
+ * distinguish an empty associative array from an empty list, so an empty
+ * object default round-trips through block registration as a JSON array.
+ * `isTieredValue()` deliberately excludes arrays (so a real array-typed attr
+ * is never misread as a tier object), which without this check made every
+ * untouched tiered font-size attribute count as "customised" — live-verified
+ * 2026-09-06 on a freshly inserted `sgs/card-grid`, `titleFontSize:[]`
+ * still tripped the indicator after the unit-companion fix alone.
+ *
  * @param {Object} attributes Block attributes.
  * @param {string} prefix     Attribute prefix for the target.
  * @return {boolean} True when any attribute for this prefix has a set value.
@@ -750,6 +761,9 @@ function targetHasCustomValues( attributes, prefix ) {
 		}
 		const val = attributes[ attrKey ];
 		if ( val === undefined || val === null || '' === val ) {
+			return false;
+		}
+		if ( Array.isArray( val ) && 0 === val.length ) {
 			return false;
 		}
 		if ( isTieredValue( val ) ) {
