@@ -305,7 +305,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// would reorder a closure several hundred lines of logic already depend on.
 			$sgs_grid_obj = $attributes['gridTemplateColumns'] ?? null;
 			$object_grid  = false;
-			if ( $container_queries && is_array( $sgs_grid_obj ) ) {
+			if ( is_array( $sgs_grid_obj ) ) {
 				foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sgs_grid_tier ) {
 					$sgs_grid_val = $sgs_grid_obj[ $sgs_grid_tier ] ?? null;
 					if ( null !== $sgs_grid_val && '' !== $sgs_grid_val && array() !== $sgs_grid_val ) {
