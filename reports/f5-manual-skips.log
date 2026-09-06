@@ -74,3 +74,4 @@ timestamp | script | type | reason
 2026-09-06 21:13:09 | db-consistency/run.py | MANUAL SKIP | pre-existing @babel/parser module-not-found on extract-variation-values.js, unrelated to this merge
 2026-09-06 21:18:47 | db-consistency/run.py | MANUAL SKIP | pre-existing @babel/parser gap
 2026-09-06 23:11:13 | db-consistency/run.py | MANUAL SKIP | pre-existing @babel/parser gap, unrelated
+2026-09-07 00:30:35 | db-consistency/run.py | MANUAL SKIP | archival move of already-run one-off migration scripts, no functional change
