@@ -50,21 +50,21 @@ $label_collapse = isset( $attributes['labelCollapse'] ) ? (string) $attributes['
 // explicit non-empty value here (set programmatically or via a future
 // colour control) still wins — see the colour-bridge block below, which only
 // emits the custom property when the resolved value is non-empty.
-$icon_colour  = (string) ( $attributes['iconColour'] ?? '' );
+$icon_colour = (string) ( $attributes['iconColour'] ?? '' );
 // D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above.
 $icon_colour_gradient = (string) ( $attributes['iconColourGradient'] ?? '' );
 // Icon hover siblings (2026-09-05) — mirror sgs/button's icon element exactly.
 $icon_colour_hover          = (string) ( $attributes['iconColourHover'] ?? '' );
 $icon_colour_hover_gradient = (string) ( $attributes['iconColourHoverGradient'] ?? '' );
-$text_colour  = (string) ( $attributes['textColour'] ?? '' );
+$text_colour                = (string) ( $attributes['textColour'] ?? '' );
 // D636 text-colour gradient sibling (778879732 rollout finish, 2026-09-04) —
 // non-empty wins over textColour/labelColour at render time.
-$text_colour_gradient  = (string) ( $attributes['textColourGradient'] ?? '' );
+$text_colour_gradient = (string) ( $attributes['textColourGradient'] ?? '' );
 // Text hover siblings (2026-09-05) — real normal/hover pair via sgs_text_states_css().
 $text_colour_hover          = (string) ( $attributes['textColourHover'] ?? '' );
 $text_colour_hover_gradient = (string) ( $attributes['textColourHoverGradient'] ?? '' );
-$label_colour = (string) ( $attributes['labelColour'] ?? '' );
-$label_colour_gradient = (string) ( $attributes['labelColourGradient'] ?? '' );
+$label_colour               = (string) ( $attributes['labelColour'] ?? '' );
+$label_colour_gradient      = (string) ( $attributes['labelColourGradient'] ?? '' );
 // Attribution hover-sweep colours — unset means "no override", so style.css's
 // #e7d768 default applies. Renamed 2026-09-05 from linkHoverBackgroundImage/
 // linkHoverTextColour (D643, 2026-08-16): both only ever paint the website-credit
@@ -74,6 +74,17 @@ $label_colour_gradient = (string) ( $attributes['labelColourGradient'] ?? '' );
 // technique keeps its own attribute.
 $attribution_hover_colour          = (string) ( $attributes['attributionHoverColour'] ?? '' );
 $attribution_hover_colour_fallback = (string) ( $attributes['attributionHoverColourFallback'] ?? '' );
+
+// Border (Block Customisation Standard — wrapper-level border control).
+// Box-object interface contract §1/§2: borderWidth is an SGS custom OBJECT
+// attr { top, right, bottom, left }, no tiers.
+$border_style_raw = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
+$border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_rgt = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bot = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_lft = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
 
 // Placeholder shown when data is missing.
 $placeholder = sprintf(
@@ -94,12 +105,12 @@ $sgs_is_editor_render = ! \SGS\Blocks\sgs_is_frontend_render();
 // definition below, which needs it) using the SAME uid this render also uses
 // for its scoped <style> further down (moved up unchanged — one definition,
 // referenced both here and where $root_sel is built).
-$uid                       = 'sgs-biz-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-$sgs_bi_stroke_grad        = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
+$uid                = 'sgs-biz-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sgs_bi_stroke_grad = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
 // Icon hover gradient sibling (2026-09-05) — same mechanism, own <defs> id/'-igh'
 // suffix, mirroring sgs/button's iconColourHoverGradient handling exactly.
-$sgs_bi_stroke_grad_hover  = sgs_svg_stroke_gradient( $icon_colour_hover_gradient, $uid . '-igh' );
-$sgs_bi_defs_injected      = false;
+$sgs_bi_stroke_grad_hover = sgs_svg_stroke_gradient( $icon_colour_hover_gradient, $uid . '-igh' );
+$sgs_bi_defs_injected     = false;
 
 /**
  * Helper: wrap an inline SVG icon in a presentational span.
@@ -422,6 +433,63 @@ if ( '' === $html && ! $sgs_is_editor_render ) {
 $root_sel = '.' . $uid;
 
 $scoped_css = array();
+
+// --- Border — width/style on the wrapper, colour (flat or gradient, base +
+// hover) via the shared sgs_border_states_css() helper, radius via the
+// shared sgs_border_radius_tiers() + core style engine (base) plus
+// hand-built shorthand tiers (tablet/mobile). Mirrors sgs/button + sgs/quote. ---
+$border_base_decls = array();
+if ( $has_border_width ) {
+	$bwt                 = '' !== $border_width_top ? $border_width_top : '0';
+	$bwr                 = '' !== $border_width_rgt ? $border_width_rgt : '0';
+	$bwb                 = '' !== $border_width_bot ? $border_width_bot : '0';
+	$bwl                 = '' !== $border_width_lft ? $border_width_lft : '0';
+	$border_base_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
+	if ( $border_style_raw && 'solid' !== $border_style_raw ) {
+		$border_base_decls[] = 'border-style:' . $border_style_raw;
+	}
+}
+if ( $border_base_decls ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $border_base_decls ) . ';}';
+}
+
+$border_colour_css = sgs_border_states_css(
+	$root_sel,
+	$attributes,
+	array(
+		'base'           => 'borderColour',
+		'hover'          => 'borderColourHover',
+		'gradient'       => 'borderColourGradient',
+		'hover_gradient' => 'borderColourHoverGradient',
+		'width'          => $has_border_width && '' !== $border_width_top ? $border_width_top : '1px',
+	)
+);
+if ( '' !== $border_colour_css ) {
+	$scoped_css[] = $border_colour_css;
+}
+
+$border_radius_tiers      = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_base       = $border_radius_tiers['base'];
+$border_radius_tablet_obj = $border_radius_tiers['tablet'];
+$border_radius_mobile_obj = $border_radius_tiers['mobile'];
+if ( null !== $border_radius_base ) {
+	$border_radius_scoped = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_base ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_scoped['css'] ) ) {
+		$scoped_css[] = $border_radius_scoped['css'];
+	}
+}
+$border_radius_tab_val = sgs_corner_object_shorthand( $border_radius_tablet_obj );
+$border_radius_mob_val = sgs_corner_object_shorthand( $border_radius_mobile_obj );
+if ( null !== $border_radius_tab_val ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{border-radius:{$border_radius_tab_val};}}";
+}
+if ( null !== $border_radius_mob_val ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{border-radius:{$border_radius_mob_val};}}";
+}
+
 if ( '' !== $sgs_bi_stroke_grad['css'] ) {
 	$scoped_css[] = "{$root_sel} .sgs-business-info__icon svg{" . $sgs_bi_stroke_grad['css'] . ';}';
 }
@@ -495,7 +563,7 @@ $scoped_css[] = sgs_text_states_css(
 // (style.css:167 `color: var(--sgs-bi-label-colour, currentColor)`) — the
 // generic .sgs-business-info__label span carries no colour rule of its own,
 // it inherits. The gradient sibling follows the SAME real selector.
-$label_sel = "{$root_sel} .sgs-business-hours__day";
+$label_sel              = "{$root_sel} .sgs-business-hours__day";
 $label_colour_effective = sgs_resolve_text_colour_or_gradient( $label_colour, $label_colour_gradient );
 if ( '' !== $label_colour_effective ) {
 	$label_colour_decl = sgs_text_colour_decl( $label_colour_effective );

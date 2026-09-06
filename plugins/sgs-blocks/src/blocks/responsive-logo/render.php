@@ -52,6 +52,17 @@ $alt              = isset( $attributes['alt'] ) ? sanitize_text_field( $attribut
 $align            = isset( $attributes['align'] ) ? sanitize_key( $attributes['align'] ) : 'left';
 $logo_decorative  = ! empty( $attributes['logoDecorative'] );
 
+// Border (Block Customisation Standard — wrapper-level border control).
+// Box-object interface contract §1/§2: borderWidth is an SGS custom OBJECT
+// attr { top, right, bottom, left }, no tiers.
+$border_style_raw = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
+$border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_rgt = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bot = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_lft = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
+
 // Validate animationStyle against allowed values.
 $allowed_animation_styles = array( 'none', 'draw-on-load', 'hover-redraw', 'scroll-trigger' );
 if ( ! in_array( $animation_style, $allowed_animation_styles, true ) ) {
@@ -164,8 +175,8 @@ if ( 'draw-on-load' === $animation_style ) {
 // scoped uid-class rule below at D345 (see the emit a few lines down, and the
 // note near the end of this file).
 
-$uid      = 'sgs-rl-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-$sel      = '.' . $uid . '.wp-block-sgs-responsive-logo';
+$uid = 'sgs-rl-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sel = '.' . $uid . '.wp-block-sgs-responsive-logo';
 
 $scoped_css = array();
 
@@ -173,6 +184,62 @@ $scoped_css = array();
 // exception for custom-property values). Lives in the same scoped uid-class
 // rule as every other declaration on this block. ---
 $scoped_css[] = $sel . '{--logo-width:' . absint( $width ) . 'px}';
+
+// --- Border — width/style on the wrapper, colour (flat or gradient, base +
+// hover) via the shared sgs_border_states_css() helper, radius via the
+// shared sgs_border_radius_tiers() + core style engine (base) plus
+// hand-built shorthand tiers (tablet/mobile). Mirrors sgs/button + sgs/quote. ---
+$border_base_decls = array();
+if ( $has_border_width ) {
+	$bwt                 = '' !== $border_width_top ? $border_width_top : '0';
+	$bwr                 = '' !== $border_width_rgt ? $border_width_rgt : '0';
+	$bwb                 = '' !== $border_width_bot ? $border_width_bot : '0';
+	$bwl                 = '' !== $border_width_lft ? $border_width_lft : '0';
+	$border_base_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
+	if ( $border_style_raw && 'solid' !== $border_style_raw ) {
+		$border_base_decls[] = 'border-style:' . $border_style_raw;
+	}
+}
+if ( $border_base_decls ) {
+	$scoped_css[] = "{$sel}{" . implode( ';', $border_base_decls ) . ';}';
+}
+
+$border_colour_css = sgs_border_states_css(
+	$sel,
+	$attributes,
+	array(
+		'base'           => 'borderColour',
+		'hover'          => 'borderColourHover',
+		'gradient'       => 'borderColourGradient',
+		'hover_gradient' => 'borderColourHoverGradient',
+		'width'          => $has_border_width && '' !== $border_width_top ? $border_width_top : '1px',
+	)
+);
+if ( '' !== $border_colour_css ) {
+	$scoped_css[] = $border_colour_css;
+}
+
+$border_radius_tiers      = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_base       = $border_radius_tiers['base'];
+$border_radius_tablet_obj = $border_radius_tiers['tablet'];
+$border_radius_mobile_obj = $border_radius_tiers['mobile'];
+if ( null !== $border_radius_base ) {
+	$border_radius_scoped = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_base ) ),
+		array( 'selector' => $sel )
+	);
+	if ( ! empty( $border_radius_scoped['css'] ) ) {
+		$scoped_css[] = $border_radius_scoped['css'];
+	}
+}
+$border_radius_tab_val = sgs_corner_object_shorthand( $border_radius_tablet_obj );
+$border_radius_mob_val = sgs_corner_object_shorthand( $border_radius_mobile_obj );
+if ( null !== $border_radius_tab_val ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$sel}{border-radius:{$border_radius_tab_val};}}";
+}
+if ( null !== $border_radius_mob_val ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$sel}{border-radius:{$border_radius_mob_val};}}";
+}
 
 // --- Explicit left-alignment default (FR-36-22 basics) — NN/g: a left-aligned
 // logo returns visitors home 6x more reliably than other placements. Only
@@ -388,7 +455,7 @@ if ( $has_svg_animation && $svg_html ) {
 		'scroll-trigger' => 'scroll',
 		'hover-redraw'   => 'hover',
 	);
-	$fx_trigger = $fx_trigger_by_style[ $animation_style ] ?? 'load';
+	$fx_trigger          = $fx_trigger_by_style[ $animation_style ] ?? 'load';
 
 	printf(
 		'<span class="sgs-responsive-logo__svg" aria-hidden="true" data-sgs-fx="draw" data-sgs-fx-trigger="%s">',

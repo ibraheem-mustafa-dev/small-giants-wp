@@ -8,7 +8,7 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import { SgsColourPanel, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { colourVar, textPaintPreview } from '../../utils';
+import { colourVar, textPaintPreview, backgroundPaintPreview } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 const CARD_STYLES = [
@@ -40,8 +40,26 @@ function boxShorthand( box, order = [ 'top', 'right', 'bottom', 'left' ] ) {
  * mobile tiers are not simulated on the fixed-width canvas, matching quote/
  * media precedent).
  */
-function buildPreviewStyle( attributes ) {
-	const { padding, margin, style, textAlign, fontSize, fontSizeUnit, fontWeight, fontStyle, lineHeight, lineHeightUnit } = attributes;
+function buildPreviewStyle( attributes, colourPalette ) {
+	const {
+		padding,
+		margin,
+		textAlign,
+		fontSize,
+		fontSizeUnit,
+		fontWeight,
+		fontStyle,
+		lineHeight,
+		lineHeightUnit,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		borderRadius,
+		textColour,
+		textColourGradient,
+		backgroundColour,
+		backgroundColourGradient,
+	} = attributes;
 
 	const preview = {};
 
@@ -54,30 +72,35 @@ function buildPreviewStyle( attributes ) {
 		preview.margin = marginPreview;
 	}
 
-	const border = style?.border ?? {};
-	if ( border.style && border.style !== 'none' ) {
-		const borderWidthPreview = boxShorthand( border.width, [ 'top', 'right', 'bottom', 'left' ] );
-		if ( typeof border.width === 'string' ) {
-			preview.borderWidth = border.width;
-		} else if ( borderWidthPreview ) {
+	// Border is the block's own borderWidth/borderStyle/borderColour/
+	// borderRadius attrs (SgsBorderControl, below) — NOT WP-native
+	// `style.border`, which no control in this file ever writes to; the
+	// block.json `supports` block declares no `__experimentalBorder` at all.
+	if ( borderStyle && borderStyle !== 'none' ) {
+		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+		if ( borderWidthPreview ) {
 			preview.borderWidth = borderWidthPreview;
 		}
-		preview.borderStyle = border.style;
-		if ( border.color ) {
-			preview.borderColor = border.color;
+		preview.borderStyle = borderStyle;
+		if ( borderColour ) {
+			preview.borderColor = borderColour;
 		}
 	}
-	if ( border.radius ) {
-		preview.borderRadius = typeof border.radius === 'string'
-			? border.radius
-			: boxShorthand( border.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	if ( radiusPreview ) {
+		preview.borderRadius = radiusPreview;
 	}
 
-	if ( style?.color?.text ) {
-		preview.color = style.color.text;
+	// Wrapper text/background colour — block-private, gradient-capable attrs
+	// (WP-native `supports.color` is disabled; the old `style.color.*` path
+	// was never populated — colour-conformance track fix, 2026-09-06).
+	const wrapperTextPreview = textPaintPreview( textColour, textColourGradient, colourPalette );
+	if ( wrapperTextPreview ) {
+		Object.assign( preview, wrapperTextPreview );
 	}
-	if ( style?.color?.background ) {
-		preview.backgroundColor = style.color.background;
+	const wrapperBgPreview = backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette );
+	if ( wrapperBgPreview ) {
+		Object.assign( preview, wrapperBgPreview );
 	}
 	// Typography — migrated off WP-native style.typography.fontSize onto the
 	// shared TypographyControls attribute shape (D971/D972). Base/desktop tier
@@ -117,22 +140,20 @@ export default function Edit( { attributes, setAttributes } ) {
 		showSeconds,
 		cardStyle,
 		digitStyle,
-		style,
 		numberColour,
 		numberColourGradient,
 		labelColour,
 		labelColourGradient,
+		textColour,
+		textColourGradient,
+		backgroundColour,
+		backgroundColourGradient,
 	} = attributes;
 
 	const className = [
 		'sgs-countdown',
 		`sgs-countdown--${ cardStyle }`,
 	].join( ' ' );
-
-	const blockProps = useBlockProps( {
-		className,
-		style: buildPreviewStyle( attributes ),
-	} );
 
 	// numberColour/numberColourGradient + labelColour/labelColourGradient real
 	// mechanism (render.php): a flat colour is a `--sgs-countdown-*-colour`
@@ -142,6 +163,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	// exactly the textPaintPreview() technique already shared with
 	// sgs/container's own text-colour mirror.
 	const [ colourPalette ] = useSettings( 'color.palette' );
+
+	const blockProps = useBlockProps( {
+		className,
+		style: buildPreviewStyle( attributes, colourPalette ),
+	} );
+
 	const numberPreview = textPaintPreview( numberColour, numberColourGradient, colourPalette );
 	const labelPreview = textPaintPreview( labelColour, labelColourGradient, colourPalette );
 
@@ -161,6 +188,36 @@ export default function Edit( { attributes, setAttributes } ) {
 			   no native colour UI to overlap with this panel. */ }
 			<SgsColourPanel
 				rows={ [
+					{
+						key: 'wrapperText',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'wrapperBackground',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) => setAttributes( { backgroundColourGradient: val ?? '' } ),
+							},
+						],
+					},
 					{
 						key: 'number',
 						label: __( 'Number colour', 'sgs-blocks' ),

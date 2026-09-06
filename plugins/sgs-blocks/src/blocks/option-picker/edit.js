@@ -74,7 +74,6 @@ function boxShorthand( box, keys ) {
 
 function buildRootPreviewStyle( attributes ) {
 	const { padding, margin,
-		style,
 		borderWidth,
 		borderStyle,
 		borderColour,
@@ -97,7 +96,7 @@ function buildRootPreviewStyle( attributes ) {
 
 	const rootStyle = {};
 
-	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	const radiusPreview = boxShorthand( attributes.borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( radiusPreview ) {
 		rootStyle.borderRadius = radiusPreview;
 	}
@@ -159,7 +158,6 @@ function buildRootPreviewStyle( attributes ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		style,
 		label,
 		showLabel,
 		labelColour,

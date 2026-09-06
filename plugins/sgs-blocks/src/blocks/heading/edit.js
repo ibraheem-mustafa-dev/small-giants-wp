@@ -202,7 +202,7 @@ function boxShorthand( box, keys ) {
 
 /** Build wrapper-level inline style for the editor canvas (mirrors render.php $wrapper_inline). */
 function buildWrapperStyle( attributes ) {
-	const { padding, margin, textAlign, backgroundColour, borderWidth, borderStyle, borderColour, borderColourGradient, style, inheritStyle, customWidth, customWidthUnit } = attributes;
+	const { padding, margin, textAlign, backgroundColour, borderWidth, borderStyle, borderColour, borderColourGradient, inheritStyle, customWidth, customWidthUnit } = attributes;
 	const wrapperStyle = {};
 	// Contract §A (render.php): inheritStyle suppresses block-level wrapper
 	// styling (background/border/text-align) and inherits from the parent —
@@ -242,7 +242,7 @@ function buildWrapperStyle( attributes ) {
 	// radius is WP-native style.border.radius (CSS shorthand order top-left
 	// top-right bottom-right bottom-left). NOT part of Contract §A — render.php
 	// doesn't gate this on inheritStyle either, so neither does the preview.
-	const borderRadiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	const borderRadiusPreview = boxShorthand( attributes.borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( borderRadiusPreview ) {
 		wrapperStyle.borderRadius = borderRadiusPreview;
 	}
@@ -264,7 +264,6 @@ function buildWrapperStyle( attributes ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		style,
 		headingRole,
 		content,
 		level,

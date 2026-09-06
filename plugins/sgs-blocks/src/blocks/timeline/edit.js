@@ -227,27 +227,24 @@ function boxShorthand( box, keys ) {
  * manual reconstruction for visual parity, exactly like sgs/quote.
  */
 function buildRootPreviewStyle( attributes ) {
-	const { padding, margin, style, borderWidth, borderStyle, borderColour, borderColourGradient } = attributes;
+	const { padding, margin, borderWidth, borderStyle, borderColour, borderColourGradient, borderRadius, textColour, backgroundColour } = attributes;
 	const previewStyle = {};
 
-	const colourText = style?.color?.text;
-	if ( colourText ) {
-		previewStyle.color = colourText;
+	if ( textColour ) {
+		previewStyle.color = /^#|^rgb|^hsl/.test( textColour ) ? textColour : colourVar( textColour );
 	}
-	const colourBg = style?.color?.background;
-	if ( colourBg ) {
-		previewStyle.backgroundColor = colourBg;
+	if ( backgroundColour ) {
+		previewStyle.backgroundColor = /^#|^rgb|^hsl/.test( backgroundColour ) ? backgroundColour : colourVar( backgroundColour );
 	}
 
-	if ( style?.shadow ) {
-		previewStyle.boxShadow = style.shadow;
-	}
-
-	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	// Border radius is the block's own `borderRadius` tier-object attr
+	// (SgsBorderControl below) — block.json declares no `__experimentalBorder`
+	// support at all, so WP-native `style.border` is never populated (unlike
+	// `style.color`/`style.shadow` above, which stay live — see this file's
+	// colour panel and the `shadow` support declared in block.json).
+	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( radiusPreview ) {
 		previewStyle.borderRadius = radiusPreview;
-	} else if ( typeof style?.border?.radius === 'string' && style.border.radius ) {
-		previewStyle.borderRadius = style.border.radius;
 	}
 
 	if ( borderStyle && borderStyle !== 'none' ) {
@@ -478,7 +475,6 @@ function EntryEditor( { entry, index, onChange, onRemove } ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		style,
 		orientation,
 		contentLayout,
 		contentSide,
@@ -511,6 +507,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderColour,
 		borderColourGradient,
 		borderStyle,
+		textColour,
+		backgroundColour,
 	} = attributes;
 
 	// Build preview class list mirroring render.php. The class name IS the
@@ -647,22 +645,22 @@ export default function Edit( { attributes, setAttributes } ) {
 			<SgsColourPanel
 				rows={ [
 					{
-						/* Wrapper text/background colour — previously WP-native
-						   `supports.color` (text/background), now disabled
-						   (block.json) so this SGS panel is the only surface.
-						   Still stored at `style.color.text`/`style.color.background`
-						   (render.php:78-80, 245-253 reads + applies these to the
-						   root `.sgs-timeline` element via the style engine) — not
-						   a new attr, just moved off the native auto-generated UI. */
+						/* Wrapper text/background colour — WP-native `supports.color`
+						   is disabled (block.json), so this is a block-private
+						   colour attribute, matching the same pattern already
+						   used by connectorColour/dateColour/rowStripeColour*
+						   on this same block. Previously this row wrote to
+						   `attributes.style.color.*`, which WP silently
+						   discards (no attribute of that name is declared) —
+						   fixed 2026-09-06 (colour-conformance track). */
 						key: 'wrapperText',
 						label: __( 'Text colour', 'sgs-blocks' ),
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
-								value: style?.color?.text,
-								onChange: ( val ) =>
-									setAttributes( { style: { ...style, color: { ...style?.color, text: val ?? undefined } } } ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -674,9 +672,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
-								value: style?.color?.background,
-								onChange: ( val ) =>
-									setAttributes( { style: { ...style, color: { ...style?.color, background: val ?? undefined } } } ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
 								linked: true,
 							},
 						],

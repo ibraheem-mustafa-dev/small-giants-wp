@@ -106,6 +106,21 @@ $spectrum_val        = '' !== $spectrum_raw ? sgs_colour_value( $spectrum_raw ) 
 // the flat value exactly as before (see block.json's accent element _note).
 $accent_gradient_val = sgs_css_gradient_value( $accent_gradient_raw );
 
+// Border (Block Customisation Standard — wrapper-level border control).
+// Box-object interface contract §1/§2: borderWidth is an SGS custom OBJECT
+// attr { top, right, bottom, left }, no tiers. Colour resolution (flat vs
+// gradient, base + hover) is delegated to the shared sgs_border_states_css()
+// helper (helpers-colour-variants.php) — the ONLY one of the four colour
+// helpers that returns finished CSS unconditionally, per CLAUDE.md's
+// precedent-function registry.
+$border_style_raw = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
+$border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_rgt = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bot = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_lft = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
+
 // A no-controls audio with no autoplay is unreachable — force controls unless autoplay is on.
 $show_native_controls = ( $controls || ! $autoplay );
 
@@ -222,6 +237,63 @@ if ( $mobile_decls ) {
 // inline attribute or a stylesheet rule, so no runtime behaviour changes. ---
 $accent_gradient_decl = '' !== $accent_gradient_val ? '--sgs-audio-accent-gradient:' . esc_attr( $accent_gradient_val ) . ';' : '';
 $scoped_css[]         = "{$root_sel}{--sgs-audio-accent:" . esc_attr( $accent_val ) . ';--sgs-audio-spectrum:' . esc_attr( $spectrum_val ) . ';' . $accent_gradient_decl . '}';
+
+// --- Border — width/style on the wrapper (base decls), colour (flat or
+// gradient, base + hover) via the shared sgs_border_states_css() helper,
+// radius via the shared sgs_border_radius_tiers() + core style engine
+// (base) plus hand-built shorthand tiers (tablet/mobile), mirroring
+// sgs/button + sgs/quote. ---
+$border_base_decls = array();
+if ( $has_border_width ) {
+	$bwt                 = '' !== $border_width_top ? $border_width_top : '0';
+	$bwr                 = '' !== $border_width_rgt ? $border_width_rgt : '0';
+	$bwb                 = '' !== $border_width_bot ? $border_width_bot : '0';
+	$bwl                 = '' !== $border_width_lft ? $border_width_lft : '0';
+	$border_base_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
+	if ( $border_style_raw && 'solid' !== $border_style_raw ) {
+		$border_base_decls[] = 'border-style:' . $border_style_raw;
+	}
+}
+if ( $border_base_decls ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $border_base_decls ) . ';}';
+}
+
+$border_colour_css = sgs_border_states_css(
+	$root_sel,
+	$attributes,
+	array(
+		'base'           => 'borderColour',
+		'hover'          => 'borderColourHover',
+		'gradient'       => 'borderColourGradient',
+		'hover_gradient' => 'borderColourHoverGradient',
+		'width'          => $has_border_width && '' !== $border_width_top ? $border_width_top : '1px',
+	)
+);
+if ( '' !== $border_colour_css ) {
+	$scoped_css[] = $border_colour_css;
+}
+
+$border_radius_tiers      = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_base       = $border_radius_tiers['base'];
+$border_radius_tablet_obj = $border_radius_tiers['tablet'];
+$border_radius_mobile_obj = $border_radius_tiers['mobile'];
+if ( null !== $border_radius_base ) {
+	$border_radius_scoped = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_base ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_scoped['css'] ) ) {
+		$scoped_css[] = $border_radius_scoped['css'];
+	}
+}
+$border_radius_tab_val = sgs_corner_object_shorthand( $border_radius_tablet_obj );
+$border_radius_mob_val = sgs_corner_object_shorthand( $border_radius_mobile_obj );
+if ( null !== $border_radius_tab_val ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{border-radius:{$border_radius_tab_val};}}";
+}
+if ( null !== $border_radius_mob_val ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{border-radius:{$border_radius_mob_val};}}";
+}
 
 // Wrapper: SGS-BEM root + uid + style modifier + data hooks. Zero inline
 // `style` — everything (spacing + brand vars) lives in the scoped <style>

@@ -27,11 +27,22 @@ $star_colour           = sgs_colour_value( $star_colour_slug );
 $empty_colour          = sgs_colour_value( $attributes['emptyColour'] ?? 'border' );
 $star_colour_gradient  = (string) ( $attributes['starColourGradient'] ?? '' );
 $empty_colour_gradient = (string) ( $attributes['emptyColourGradient'] ?? '' );
-$label                 = $attributes['label'] ?? '';
-$show_numeric          = $attributes['showNumeric'] ?? false;
-$schema_enabled        = $attributes['schemaEnabled'] ?? true;
-$schema_item_name      = $attributes['schemaItemName'] ?? '';
-$schema_review_count   = (int) ( $attributes['schemaReviewCount'] ?? 1 );
+
+// Border (Block Customisation Standard — wrapper-level border control).
+// Box-object interface contract §1/§2: borderWidth is an SGS custom OBJECT
+// attr { top, right, bottom, left }, no tiers.
+$border_style_raw    = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_rgt    = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bot    = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_lft    = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
+$label               = $attributes['label'] ?? '';
+$show_numeric        = $attributes['showNumeric'] ?? false;
+$schema_enabled      = $attributes['schemaEnabled'] ?? true;
+$schema_item_name    = $attributes['schemaItemName'] ?? '';
+$schema_review_count = (int) ( $attributes['schemaReviewCount'] ?? 1 );
 
 // displayMode: stars-only | stars-with-value | stars-with-value-and-count
 $allowed_display_modes = array( 'stars-only', 'stars-with-value', 'stars-with-value-and-count' );
@@ -97,11 +108,13 @@ $padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attrib
 $margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
 $margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
 
-// WP `color` support values (skip-serialised in block.json → NOT auto-inlined).
-// Custom hex/rgb → emitted scoped via the style engine; preset SLUGS → the
-// standard has-* classes re-added manually below.
-$style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
-$style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
+// Wrapper text/background colour — block-private, gradient-capable attrs
+// (WP-native `supports.color` is disabled; the old `style.color.*` path was
+// never populated — colour-conformance track fix, 2026-09-06). Text paints
+// via background-clip:text when a gradient is set, so the background is
+// moved onto its own `::after` layer rather than sharing $root_sel.
+$wrapper_text_colour_value = sgs_resolve_text_colour_or_gradient( $attributes['textColour'] ?? '', $attributes['textColourGradient'] ?? '' );
+$wrapper_bg_paint_decl     = sgs_background_paint_decl( $attributes['backgroundColour'] ?? '', $attributes['backgroundColourGradient'] ?? '' );
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
@@ -114,6 +127,62 @@ $uid      = 'sgs-str-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-star-rating';
 
 $scoped_css = array();
+
+// --- Border — width/style on the wrapper, colour (flat or gradient, base +
+// hover) via the shared sgs_border_states_css() helper, radius via the
+// shared sgs_border_radius_tiers() + core style engine (base) plus
+// hand-built shorthand tiers (tablet/mobile). Mirrors sgs/button + sgs/quote. ---
+$border_base_decls = array();
+if ( $has_border_width ) {
+	$bwt                 = '' !== $border_width_top ? $border_width_top : '0';
+	$bwr                 = '' !== $border_width_rgt ? $border_width_rgt : '0';
+	$bwb                 = '' !== $border_width_bot ? $border_width_bot : '0';
+	$bwl                 = '' !== $border_width_lft ? $border_width_lft : '0';
+	$border_base_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
+	if ( $border_style_raw && 'solid' !== $border_style_raw ) {
+		$border_base_decls[] = 'border-style:' . $border_style_raw;
+	}
+}
+if ( $border_base_decls ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $border_base_decls ) . ';}';
+}
+
+$border_colour_css = sgs_border_states_css(
+	$root_sel,
+	$attributes,
+	array(
+		'base'           => 'borderColour',
+		'hover'          => 'borderColourHover',
+		'gradient'       => 'borderColourGradient',
+		'hover_gradient' => 'borderColourHoverGradient',
+		'width'          => $has_border_width && '' !== $border_width_top ? $border_width_top : '1px',
+	)
+);
+if ( '' !== $border_colour_css ) {
+	$scoped_css[] = $border_colour_css;
+}
+
+$border_radius_tiers      = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_base       = $border_radius_tiers['base'];
+$border_radius_tablet_obj = $border_radius_tiers['tablet'];
+$border_radius_mobile_obj = $border_radius_tiers['mobile'];
+if ( null !== $border_radius_base ) {
+	$border_radius_scoped = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_base ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_scoped['css'] ) ) {
+		$scoped_css[] = $border_radius_scoped['css'];
+	}
+}
+$border_radius_tab_val = sgs_corner_object_shorthand( $border_radius_tablet_obj );
+$border_radius_mob_val = sgs_corner_object_shorthand( $border_radius_mobile_obj );
+if ( null !== $border_radius_tab_val ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{border-radius:{$border_radius_tab_val};}}";
+}
+if ( null !== $border_radius_mob_val ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{border-radius:{$border_radius_mob_val};}}";
+}
 
 // --- Star/empty-star fill gradient (D636/D644 rollout) — reuses the shared
 // SVG stroke-gradient primitive, targeting `fill` since these are fill-based
@@ -153,17 +222,6 @@ if ( ! empty( $base_spacing ) ) {
 	$base_style_engine_args['spacing'] = $base_spacing;
 }
 
-$color_args = array();
-if ( '' !== $style_color_text ) {
-	$color_args['text'] = $style_color_text;
-}
-if ( '' !== $style_color_bg ) {
-	$color_args['background'] = $style_color_bg;
-}
-if ( ! empty( $color_args ) ) {
-	$base_style_engine_args['color'] = $color_args;
-}
-
 if ( ! empty( $base_style_engine_args ) ) {
 	$base_scoped_styles = wp_style_engine_get_styles(
 		$base_style_engine_args,
@@ -172,6 +230,15 @@ if ( ! empty( $base_style_engine_args ) ) {
 	if ( ! empty( $base_scoped_styles['css'] ) ) {
 		$scoped_css[] = $base_scoped_styles['css'];
 	}
+}
+
+$wrapper_text_decl = sgs_text_colour_decl( $wrapper_text_colour_value );
+if ( '' !== $wrapper_text_decl ) {
+	$scoped_css[] = "{$root_sel}{{$wrapper_text_decl};}";
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $wrapper_text_colour_value );
+}
+if ( '' !== $wrapper_bg_paint_decl ) {
+	$scoped_css[] = sgs_block_background_layer_css( $root_sel, $wrapper_bg_paint_decl );
 }
 
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,

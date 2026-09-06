@@ -70,11 +70,10 @@ const LENGTH_UNITS = [
 // box object — mirrors render.php's box-shorthand builder so the canvas
 // preview matches the frontend (contract §5). Desktop-tier only (responsive
 // tiers apply via PHP @media, not previewable in the fixed-width canvas).
-function boxShorthand( box ) {
+function boxShorthand( box, keys = [ 'top', 'right', 'bottom', 'left' ] ) {
 	if ( ! box || 'object' !== typeof box ) return undefined;
-	const { top, right, bottom, left } = box;
-	if ( ! top && ! right && ! bottom && ! left ) return undefined;
-	return [ top || '0', right || '0', bottom || '0', left || '0' ].join( ' ' );
+	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
 }
 
 /**
@@ -87,16 +86,29 @@ function boxShorthand( box ) {
  * @returns {Object} React inline-style object.
  */
 function buildPreviewStyle( attributes ) {
-	const { padding, margin, style, width, maxWidth, backgroundColour, backgroundColourGradient, textColour, borderColourGradient, textAlign } = attributes;
+	const {
+		padding,
+		margin,
+		width,
+		maxWidth,
+		backgroundColour,
+		backgroundColourGradient,
+		textColour,
+		borderColourGradient,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		borderRadius,
+		textAlign,
+	} = attributes;
 	const preview = {};
 
-	// Mirrors render.php's `$info_box_text_align` resolution exactly — the
-	// native `style.typography.textAlign` (WP's "Align text" control) wins
-	// over the top-level `textAlign` attribute (the cloning converter's
-	// fallback), applied to the block ROOT so InnerBlocks children inherit it
-	// (`supports.typography.textAlign.__experimentalSkipSerialization: true`
-	// means WP's own auto-apply is deliberately off — this is the only path).
-	const infoBoxTextAlign = style?.typography?.textAlign ?? ( textAlign ?? '' );
+	// `style?.typography?.textAlign` — DEAD: block.json declares no
+	// `typography` support at all, so WP never populates `style.typography`.
+	// The top-level `textAlign` attribute (the cloning converter's fallback)
+	// is this block's only real source; applied to the block ROOT so
+	// InnerBlocks children inherit it.
+	const infoBoxTextAlign = textAlign ?? '';
 	if ( [ 'left', 'center', 'right' ].includes( infoBoxTextAlign ) ) {
 		preview.textAlign = infoBoxTextAlign;
 	}
@@ -124,39 +136,26 @@ function buildPreviewStyle( attributes ) {
 			: colourVar( textColour );
 	}
 
-	const border = style?.border;
-	if ( border ) {
-		if ( border.style && border.style !== 'none' ) {
-			if ( border.width ) preview.borderWidth = border.width;
-			preview.borderStyle = border.style;
-			if ( border.color ) preview.borderColor = border.color;
-			// A gradient border renders frontend as a masked ::before ring, which cannot
-			// be reproduced in a plain inline style — approximate it with the gradient as
-			// a border-image so the canvas at least shows that a gradient is applied.
-			// borderColourGradient is a block-private attr (not part of native style.border).
-			if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
-				preview.borderImage = `${ borderColourGradient } 1`;
-			}
-		}
-		const radius = border.radius;
-		if ( typeof radius === 'string' && radius ) {
-			preview.borderRadius = radius;
-		} else if ( radius && typeof radius === 'object' ) {
-			const r = boxShorthand( {
-				top: radius.topLeft,
-				right: radius.topRight,
-				bottom: radius.bottomRight,
-				left: radius.bottomLeft,
-			} );
-			if ( r ) preview.borderRadius = r;
+	// Border is entirely the block's own borderWidth/borderStyle/borderColour/
+	// borderRadius attrs (SgsBorderControl below) — block.json declares no
+	// `__experimentalBorder` support at all, so WP-native `style.border` is
+	// never populated here (the old inline comment above claiming a native
+	// resting-colour control was stale; verified against the current Border
+	// PanelBody, which is fully SgsBorderControl-driven).
+	if ( borderStyle && borderStyle !== 'none' ) {
+		const borderWidthPreview = boxShorthand( borderWidth );
+		if ( borderWidthPreview ) preview.borderWidth = borderWidthPreview;
+		preview.borderStyle = borderStyle;
+		if ( borderColour ) preview.borderColor = borderColour;
+		// A gradient border renders frontend as a masked ::before ring, which cannot
+		// be reproduced in a plain inline style — approximate it with the gradient as
+		// a border-image so the canvas at least shows that a gradient is applied.
+		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+			preview.borderImage = `${ borderColourGradient } 1`;
 		}
 	}
-
-	if ( style?.shadow ) {
-		preview.boxShadow = /^#|^rgb|^var\(/.test( style.shadow )
-			? style.shadow
-			: `var(--wp--preset--shadow--${ style.shadow })`;
-	}
+	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	if ( radiusPreview ) preview.borderRadius = radiusPreview;
 
 	const paddingPreview = boxShorthand( padding?.desktop );
 	if ( paddingPreview ) preview.padding = paddingPreview;
@@ -295,7 +294,6 @@ const INFO_BOX_TEMPLATE = [
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
-		style,
 		cardStyle,
 		effectHover,
 		iconPosition,

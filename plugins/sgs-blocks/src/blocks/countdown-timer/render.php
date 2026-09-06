@@ -146,9 +146,14 @@ $border_radius_mobile_obj = $radius_tiers['mobile'];
 // sgs/media, because __experimentalBorder carries all four under one object.
 $native_border = ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) ? $attributes['style']['border'] : array();
 
-// WP `color` support values (skip-serialised).
-$style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
-$style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
+// Wrapper text/background colour — block-private, gradient-capable attrs
+// (WP-native `supports.color` is disabled; the old `style.color.*` path was
+// never populated — colour-conformance track fix, 2026-09-06). Text paints
+// via background-clip:text when a gradient is set, so the background is
+// moved onto its own `::after` layer (CLAUDE.md's text+background-on-one-
+// selector precondition) rather than sharing $root_sel with the text decl.
+$wrapper_text_colour_value = sgs_resolve_text_colour_or_gradient( $attributes['textColour'] ?? '', $attributes['textColourGradient'] ?? '' );
+$wrapper_bg_paint_decl     = sgs_background_paint_decl( $attributes['backgroundColour'] ?? '', $attributes['backgroundColourGradient'] ?? '' );
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
@@ -194,22 +199,20 @@ if ( ! empty( $native_border ) ) {
 	$base_args['border'] = sgs_gate_native_border_style( $native_border );
 }
 
-$color_args = array();
-if ( '' !== $style_color_text ) {
-	$color_args['text'] = $style_color_text;
-}
-if ( '' !== $style_color_bg ) {
-	$color_args['background'] = $style_color_bg;
-}
-if ( ! empty( $color_args ) ) {
-	$base_args['color'] = $color_args;
-}
-
 if ( ! empty( $base_args ) ) {
 	$base_out = wp_style_engine_get_styles( $base_args, array( 'selector' => $root_sel ) );
 	if ( ! empty( $base_out['css'] ) ) {
 		$scoped_css[] = $base_out['css'];
 	}
+}
+
+$wrapper_text_decl = sgs_text_colour_decl( $wrapper_text_colour_value );
+if ( '' !== $wrapper_text_decl ) {
+	$scoped_css[] = "{$root_sel}{{$wrapper_text_decl};}";
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $wrapper_text_colour_value );
+}
+if ( '' !== $wrapper_bg_paint_decl ) {
+	$scoped_css[] = sgs_block_background_layer_css( $root_sel, $wrapper_bg_paint_decl );
 }
 
 // --- text-align — scoped declaration (custom attr keyword, WP core support

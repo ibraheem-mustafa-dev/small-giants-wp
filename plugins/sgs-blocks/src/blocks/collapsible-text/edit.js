@@ -22,7 +22,7 @@ import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, fillRow, Resp
 import { textPaintPreview } from '../../utils';
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { text, collapsible, collapsedLines, style, paddingTablet, paddingMobile, marginTablet, marginMobile, backgroundColour, textColour, textColourGradient } = attributes;
+	const { text, collapsible, collapsedLines, backgroundColour, textColour, textColourGradient } = attributes;
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-collapsible-text',

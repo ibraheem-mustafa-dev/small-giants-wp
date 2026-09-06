@@ -65,8 +65,8 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:color": "native:color.text",
-						"css:background-color": "native:color.background",
+						"css:color": "textColour",
+						"css:background-color": "backgroundColour",
 						"css:padding": "padding",
 						"css:margin": "margin",
 						"css:border-radius": "borderRadius",
@@ -352,6 +352,14 @@
 		"rowStripes": {
 			"type": "boolean",
 			"default": false
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
 		},
 		"rowStripeColourA": {
 			"type": "string",

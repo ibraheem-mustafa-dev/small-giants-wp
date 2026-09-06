@@ -64,22 +64,31 @@ function radiusShorthand( radius ) {
 	return [ topLeft, topRight, bottomRight, bottomLeft ].map( ( v ) => v || '0' ).join( ' ' );
 }
 
-function buildRootPreviewStyle( style, padding, margin ) {
-	const border = style?.border || {};
-	const color = style?.color || {};
-	const typography = style?.typography || {};
+// `style.color.text` / `style.color.background` — block.json declares
+// `color.background/text/gradients: false` and no block-private
+// backgroundColour/textColour attr exists anywhere on this block to
+// substitute (only the per-element titleColour/linkColour/activeLinkColour
+// custom attrs exist), so those two properties are DEAD with no safe
+// replacement in this file. Deliberately left unset here — flagged as a
+// follow-up decision, not resolved. Border (block.json declares no
+// `__experimentalBorder` support) and typography (no `typography` support —
+// migrated onto the fontSize/lineHeight custom attrs, D971/D972) DO have
+// working block-private replacements and are wired to those instead.
+function buildRootPreviewStyle( attributes, padding, margin ) {
+	const { borderWidth, borderStyle, borderColour, borderRadius, fontSize, fontSizeUnit, lineHeight, lineHeightUnit } = attributes;
+
+	const fontSizeDesktop = fontSize && 'object' === typeof fontSize ? fontSize.desktop : fontSize;
+	const lineHeightDesktop = lineHeight && 'object' === typeof lineHeight ? lineHeight.desktop : lineHeight;
 
 	const previewStyle = {
-		color: color.text || undefined,
-		backgroundColor: color.background || undefined,
 		padding: boxShorthand( padding?.desktop ),
 		margin: boxShorthand( margin?.desktop ),
-		borderRadius: radiusShorthand( border.radius ),
-		borderWidth: border.width || undefined,
-		borderStyle: border.style || undefined,
-		borderColor: border.color || undefined,
-		fontSize: typography.fontSize || undefined,
-		lineHeight: typography.lineHeight || undefined,
+		borderRadius: radiusShorthand( borderRadius?.desktop ),
+		borderWidth: boxShorthand( borderWidth ) || undefined,
+		borderStyle: ( borderStyle && borderStyle !== 'none' ) ? borderStyle : undefined,
+		borderColor: borderColour || undefined,
+		fontSize: fontSizeDesktop ? `${ fontSizeDesktop }${ fontSizeUnit || 'px' }` : undefined,
+		lineHeight: lineHeightDesktop ? `${ lineHeightDesktop }${ lineHeightUnit || '' }` : undefined,
 	};
 
 	return Object.fromEntries(
@@ -104,7 +113,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		linkColourGradient,
 		activeLinkColour,
 		activeLinkColourGradient,
-		style,
 	} = attributes;
 
 	// Detect headings from the current post content in the editor.
@@ -168,7 +176,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// frontend never inlines these; see buildRootPreviewStyle above).
 	const blockProps = useBlockProps( {
 		className,
-		style: buildRootPreviewStyle( style, attributes.padding, attributes.margin ),
+		style: buildRootPreviewStyle( attributes, attributes.padding, attributes.margin ),
 	} );
 
 	const ListTag = listStyle === 'numbered' ? 'ol' : 'ul';

@@ -39,6 +39,12 @@
 				],
 				"margin": [
 					"margin"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -54,7 +60,20 @@
 						"css:padding": "padding",
 						"css:margin": "margin",
 						"css:width": "width",
-						"css:max-height": "maxHeight"
+						"css:max-height": "maxHeight",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:border-color-gradient": "borderColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color": "borderColourHover",
+								"css:border-color-gradient": "borderColourHoverGradient"
+							}
+						}
 					},
 					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-responsive-logo — display:inline-block hardcoded, no attribute, so no `layer`/arrangement members). `width`/`max-height` declared explicitly 2026-09-05 to close a rule-41 contested-manifest-gap raised against the newly-added `image` element (both were plausible owners with no attrMap to disambiguate). Traced through render.php: `$sel = '.' . $uid . '.wp-block-sgs-responsive-logo'` (the WRAPPER selector, not the <img>) is the target of both — `width` emits `{$sel}{--logo-width:...}` (render.php:175), consumed by style.scss's `.sgs-responsive-logo{width:var(--logo-width,240px)}` on the wrapper class itself; `maxHeight` (a tier object, Spec 35 pass 2) is flattened and passed to `sgs_responsive_css_rule()` with `$sel` as the selector argument (render.php:235-256), emitting `{$sel}{max-height:...}` plus tablet/mobile `@media` siblings. Neither ever targets `.sgs-responsive-logo__image--desktop`. (`width` is ALSO written as a literal HTML `width=\"...\"` sizing attribute on the <img> tag — an intrinsic-size hint, not a CSS property, so it does not compete for `css:width` ownership.) `maxWidth`'s existing `image`-element attrMap entry (declared same day, see that element's own `_note`) is a separate, unrelated finding and was left untouched. Empty-string prefix resolves the bare width/maxWidth/maxHeight attrs case-insensitively via the default {suffix} convention (Width/MaxWidth/MaxHeight). No background-color/border/box-shadow/gap/aspect-ratio attribute or native support exists (no color/border supports declared on this block — logo images carry no theme-colour fill) — honest gaps. The <img>/<picture> itself has no crop-box scenario (width:100%/max-width:100%, natural aspect) so supports.sgs.imageControls (universal image extension) was removed 2026-08-11 (Spec 35 capability-routing doctrine) as dead — the block's own per-device logoId*/logoUrl* art-direction tiers are its real media mechanism. logoId/logoIdTablet/logoIdMobile/svgAnimationSource/logoSwitchMode/animationStyle are media-source/behaviour scalars with no cluster member — deliberately undeclared (no prefix claims them)."
 				},
@@ -182,6 +201,47 @@
 			"type": "boolean",
 			"default": false,
 			"_comment": "WCAG 2.1 AA 1.1.1 explicit editorial decorative-image flag (mirrors sgs/timeline's milestoneMediaDecorative). Block-level, not per-tier: one flag covers the logo concept across logoId/logoIdTablet/logoIdMobile the same way `alt` already does. A site logo wrapped in a homepage link is almost never truly decorative — but this block sets the <a>'s aria-label independently of the <img> alt (see render.php's $link_aria_label), so the link keeps its accessible name ('Go to [Site] homepage') even when the logo image itself is marked decorative. render.php blanks alt + adds aria-hidden on the <img> when true."
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"render": "file:./render.php",

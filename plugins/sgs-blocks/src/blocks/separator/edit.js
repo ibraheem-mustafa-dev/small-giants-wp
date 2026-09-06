@@ -135,7 +135,6 @@ function currentIconName( attrs ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const { padding, margin,
-		style,
 		lineStyle,
 		width,
 		widthUnit,

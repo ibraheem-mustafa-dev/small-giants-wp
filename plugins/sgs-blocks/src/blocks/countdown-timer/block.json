@@ -51,7 +51,10 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:background-color": "native:color.background",
+						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
+						"css:background-color": "backgroundColour",
+						"css:background-image": "backgroundColourGradient",
 						"css:padding": "padding",
 						"css:margin": "margin",
 						"css:border-width": "borderWidth",
@@ -145,6 +148,22 @@
 		"showSeconds": {
 			"type": "boolean",
 			"default": true
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"numberColour": {
 			"type": "string",

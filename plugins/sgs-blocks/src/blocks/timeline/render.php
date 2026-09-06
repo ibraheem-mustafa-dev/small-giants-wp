@@ -210,9 +210,11 @@ $date_position = in_array( $date_position, array( 'own-column', 'inline' ), true
 $date_gutter   = 'own-column' === $date_position && 'single-column' === $content_layout;
 
 
-// WP `color` support values (skip-serialised in block.json → NOT auto-inlined).
-$style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
-$style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
+// Wrapper text/background colour — block-private attrs (WP-native
+// `supports.color` is disabled; the native `style.color.*` path is never
+// populated, matching connectorColour/dateColour on this same block).
+$style_color_text = isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ? sgs_colour_value( $attributes['textColour'] ) : '';
+$style_color_bg   = isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ? sgs_colour_value( $attributes['backgroundColour'] ) : '';
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 

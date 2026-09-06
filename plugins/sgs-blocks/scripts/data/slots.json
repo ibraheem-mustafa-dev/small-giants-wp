@@ -875,14 +875,6 @@
       null,
       "Attribution/author scalar content slot â€” content_attr_for_element alias-tier ONLY (standalone_block intentionally NULL so resolve_slug_from_bem/_slot_alias_to_standalone never routes it to a standalone child block). Universal: any block's content-bearing attr may declare canonical_slot='attribution' to accept an 'author'-classed draft element as its own scalar value. Added 2026-07-25 fixing the sgs/quote 3-block cloning bug.",
       null
-    ],
-    [
-      "svg",
-      "element",
-      "[\"svg\", \"svgContent\", \"inline-svg\"]",
-      "sgs/media",
-      "Split from the polymorphic backgroundMedia/media slots (Task B) mirroring image/video -- svg was left out of that split.",
-      null
     ]
   ]
 }

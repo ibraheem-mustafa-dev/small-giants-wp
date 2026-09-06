@@ -22,10 +22,11 @@
  * Padding/margin are edited via ResponsiveBoxControl (box-object interface
  * contract): base routes to WP-native padding/margin, tablet/
  * mobile route to the paddingTablet/paddingMobile/marginTablet/marginMobile
- * object attrs. Border width/colour/style/radius stay on WP's native
- * automatic Styles-tab panels (no custom UI needed — team-member declares
- * FULL native __experimentalBorder support, unlike quote's mixed custom+
- * native border).
+ * object attrs. Border width/colour/style/radius are BLOCK-PRIVATE
+ * (borderWidth/borderStyle/borderColour/borderRadius, via SgsBorderControl
+ * below) — CORRECTED 2026-09-06: this comment previously claimed team-member
+ * declares FULL native `__experimentalBorder` support; block.json declares no
+ * such support at all, so WP-native `style.border` was never populated.
  */
 import { __ } from '@wordpress/i18n';
 import {
@@ -186,7 +187,6 @@ function boxShorthand( box, keys ) {
 // nameColour/roleColour scoped rules render via PHP.
 function buildWrapperStyle( attributes ) {
 	const { padding, margin,
-		style,
 		maxWidth,
 		cardShadow,
 		cardShadowColour,
@@ -194,6 +194,10 @@ function buildWrapperStyle( attributes ) {
 		backgroundColourGradient,
 		textColour,
 		textColourGradient,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		borderRadius,
 	} = attributes;
 	const wrapperStyle = {};
 
@@ -237,18 +241,23 @@ function buildWrapperStyle( attributes ) {
 	// `fontSize` attr has no canvas preview yet, matching sgs/accordion's
 	// identical no-preview precedent for this same migration.
 
-	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	// Border is the block's own borderWidth/borderStyle/borderColour/
+	// borderRadius attrs (SgsBorderControl below) — block.json declares no
+	// `__experimentalBorder` support at all, so WP-native `style.border` is
+	// never populated.
+	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( radiusPreview ) {
 		wrapperStyle.borderRadius = radiusPreview;
 	}
-	if ( style?.border?.width ) {
-		wrapperStyle.borderWidth = style.border.width;
-	}
-	if ( style?.border?.style ) {
-		wrapperStyle.borderStyle = style.border.style;
-	}
-	if ( style?.border?.color ) {
-		wrapperStyle.borderColor = style.border.color;
+	if ( borderStyle && borderStyle !== 'none' ) {
+		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+		if ( borderWidthPreview ) {
+			wrapperStyle.borderWidth = borderWidthPreview;
+		}
+		wrapperStyle.borderStyle = borderStyle;
+		if ( borderColour ) {
+			wrapperStyle.borderColor = borderColour;
+		}
 	}
 
 	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
@@ -270,7 +279,6 @@ function buildWrapperStyle( attributes ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		style,
 		photo,
 		// photoTablet / photoMobile are deliberately NOT destructured — the
 		// responsive family is read through `photoForTier()` off `attributes`
@@ -821,8 +829,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ /* padding/margin are each a single block-owned tier-object attr
 				   { desktop, tablet, mobile }, written via ResponsiveOverride +
 				   SgsBoxControl; read by SGS_Container_Wrapper's tier-object
-				   emission path. Border width/colour/style/radius stay on WP's
-				   native automatic Styles panels. */ }
+				   emission path. Border width/colour/style/radius are
+				   block-private (borderWidth/borderStyle/borderColour/
+				   borderRadius via the SgsBorderControl panel below). */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveOverride
 						value={ attributes.padding }

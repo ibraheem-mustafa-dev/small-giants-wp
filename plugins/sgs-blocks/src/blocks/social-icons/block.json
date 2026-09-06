@@ -37,6 +37,12 @@
 				],
 				"margin": [
 					"margin"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -58,7 +64,20 @@
 						"css:line-height": "lineHeight",
 						"css:padding": "padding",
 						"css:margin": "margin",
-						"css:gap": "gap"
+						"css:gap": "gap",
+						"css:border-width": "wrapperBorderWidth",
+						"css:border-style": "wrapperBorderStyle",
+						"css:border-color": "wrapperBorderColour",
+						"css:border-radius": "wrapperBorderRadius",
+						"css:border-color-gradient": "wrapperBorderColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color": "wrapperBorderColourHover",
+								"css:border-color-gradient": "wrapperBorderColourHoverGradient"
+							}
+						}
 					},
 					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-social-icons — display:flex is hardcoded CSS, no attribute, so no `layer` is declared and the 12 arrangement members are honestly never asked about). No `layout` box-model attrs beyond padding/margin/gap exist (no width/height/max-width/border/box-shadow control) — honest gaps. Typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight). The old native `textAlign` capability (`css:text-align`) was dropped, not replaced: this root is `display:flex` (style.css) with no inline/block content of its own, so `text-align` was inert dead CSS on every real instance — confirmed by reading style.css, not assumed."
 				},
@@ -259,6 +278,55 @@
 		"lineHeightUnit": {
 			"type": "string",
 			"default": "em"
+		},
+		"wrapperBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"wrapperBorderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"wrapperBorderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"wrapperBorderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"wrapperBorderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"wrapperBorderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"wrapperBorderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"wrapperBorderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"wrapperBorderRadiusMobile": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"editorScript": "file:./index.js",

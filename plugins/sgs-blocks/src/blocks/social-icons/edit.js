@@ -9,7 +9,7 @@ import {
 	Flex,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken, SgsColourPanel, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken, SgsColourPanel, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
 import { spacingVar, borderPaintPreview } from '../../utils';
 
 // Site Info mode pulls from this fixed set of networks (same 8 slugs the
@@ -141,7 +141,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		colourMode,
 		iconStyle,
 		gap,
-		style,
+		wrapperBorderColour,
+		wrapperBorderColourGradient,
+		wrapperBorderColourHover,
+		wrapperBorderColourHoverGradient,
+		wrapperBorderStyle,
+		wrapperBorderWidth,
 	} = attributes;
 
 	const isSiteInfoSource = 'site-info' === source;
@@ -605,6 +610,36 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ wrapperBorderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { wrapperBorderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ wrapperBorderStyle }
+						onStyleChange={ ( val ) => setAttributes( { wrapperBorderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourStates={ [
+							{ key: 'normal', label: __( 'Normal', 'sgs-blocks' ), value: wrapperBorderColour,
+							  onChange: ( val ) => setAttributes( { wrapperBorderColour: val ?? '' } ),
+							  gradientValue: wrapperBorderColourGradient,
+							  onGradientChange: ( val ) => setAttributes( { wrapperBorderColourGradient: val ?? '' } ) },
+							{ key: 'hover', label: __( 'Hover', 'sgs-blocks' ), value: wrapperBorderColourHover,
+							  onChange: ( val ) => setAttributes( { wrapperBorderColourHover: val ?? '' } ),
+							  gradientValue: wrapperBorderColourHoverGradient,
+							  onGradientChange: ( val ) => setAttributes( { wrapperBorderColourHoverGradient: val ?? '' } ) },
+						] }
+						radiusValues={ {
+							base: attributes.wrapperBorderRadius?.desktop ?? {},
+							tablet: attributes.wrapperBorderRadius?.tablet ?? {},
+							mobile: attributes.wrapperBorderRadius?.mobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { wrapperBorderRadius: { ...attributes.wrapperBorderRadius, [ key ]: next } } );
+						} }
+					/>
 				</PanelBody>
 			</InspectorControls>
 

@@ -132,7 +132,6 @@ function parseUnit( raw, currentUnit ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const { padding, margin,
-		style,
 		label,
 		url,
 		linkId,
@@ -310,7 +309,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( borderWidthPreview ) previewStyle.borderWidth = borderWidthPreview;
 	// CSS border-radius shorthand order: top-left top-right bottom-right bottom-left.
-	const borderRadiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	const borderRadiusPreview = boxShorthand( attributes.borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( borderRadiusPreview ) previewStyle.borderRadius = borderRadiusPreview;
 	if ( fontSize ) previewStyle.fontSize = `${ fontSize }${ fontSizeUnit || 'px' }`;
 	if ( fontWeight ) previewStyle.fontWeight = fontWeight;

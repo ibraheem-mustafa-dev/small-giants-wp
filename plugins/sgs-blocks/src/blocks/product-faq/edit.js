@@ -72,7 +72,18 @@ function boxShorthand( box, keys ) {
 // (radius/width/style/colour — all skip-serialised so useBlockProps() no
 // longer auto-applies them) + the SGS kept-scalar width family.
 function buildWrapperStyle( attributes ) {
-	const { padding, margin, style, maxWidth, backgroundColour, textColour, textColourGradient } = attributes;
+	const {
+		padding,
+		margin,
+		maxWidth,
+		backgroundColour,
+		textColour,
+		textColourGradient,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		borderRadius,
+	} = attributes;
 	const wrapperStyle = {};
 
 	// D635-pattern migration: background/text preview now reads the flat
@@ -94,18 +105,23 @@ function buildWrapperStyle( attributes ) {
 		)
 	);
 
-	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	// Border is the block's own borderWidth/borderStyle/borderColour/
+	// borderRadius attrs (SgsBorderControl below) — block.json declares no
+	// `__experimentalBorder` support at all, so WP-native `style.border` is
+	// never populated.
+	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( radiusPreview ) {
 		wrapperStyle.borderRadius = radiusPreview;
 	}
-	if ( style?.border?.width ) {
-		wrapperStyle.borderWidth = style.border.width;
-	}
-	if ( style?.border?.style ) {
-		wrapperStyle.borderStyle = style.border.style;
-	}
-	if ( style?.border?.color ) {
-		wrapperStyle.borderColor = style.border.color;
+	if ( borderStyle && borderStyle !== 'none' ) {
+		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+		if ( borderWidthPreview ) {
+			wrapperStyle.borderWidth = borderWidthPreview;
+		}
+		wrapperStyle.borderStyle = borderStyle;
+		if ( borderColour ) {
+			wrapperStyle.borderColor = borderColour;
+		}
 	}
 
 	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
@@ -130,7 +146,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		heading,
 		headingLevel,
 		iconPosition,
-		style,
 		maxWidth,
 		textColour,
 		textColourGradient,

@@ -109,7 +109,6 @@ function StepEditor( { step, index, onChange, onRemove } ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const { padding, margin,
-		style,
 		steps,
 		headingLevel,
 		connectorStyle,
@@ -187,7 +186,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( marginPreview ) {
 		wrapperPreviewStyle.margin = marginPreview;
 	}
-	const borderRadiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	const borderRadiusPreview = boxShorthand( attributes.borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( borderRadiusPreview ) {
 		wrapperPreviewStyle.borderRadius = borderRadiusPreview;
 	}

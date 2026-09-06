@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	RangeControl,
@@ -7,8 +7,8 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, SgsColourPanel, DesignTokenPicker, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { parseSvgGradient, SvgGradientDefs } from '../../utils';
+import { ResponsiveBoxControl, SgsColourPanel, DesignTokenPicker, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
+import { parseSvgGradient, SvgGradientDefs, textPaintPreview, backgroundPaintPreview } from '../../utils';
 
 // Box-object interface contract §1: a 4-side box is an object with named
 // keys, each an already-unit-bearing CSS length string or absent (unset
@@ -31,8 +31,8 @@ function boxShorthand( box ) {
 }
 
 /** Build the wrapper's editor-preview style (mirrors render.php's scoped base declarations). */
-function buildWrapperStyle( attributes ) {
-	const { padding, margin, style } = attributes;
+function buildWrapperStyle( attributes, colourPalette ) {
+	const { padding, margin, textColour, textColourGradient, backgroundColour, backgroundColourGradient } = attributes;
 	const wrapperStyle = {};
 
 	const paddingPreview = boxShorthand( padding?.desktop );
@@ -43,12 +43,8 @@ function buildWrapperStyle( attributes ) {
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}
-	if ( style?.color?.text ) {
-		wrapperStyle.color = style.color.text;
-	}
-	if ( style?.color?.background ) {
-		wrapperStyle.backgroundColor = style.color.background;
-	}
+	Object.assign( wrapperStyle, textPaintPreview( textColour, textColourGradient, colourPalette ) );
+	Object.assign( wrapperStyle, backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette ) );
 	return wrapperStyle;
 }
 
@@ -123,8 +119,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		schemaItemName,
 		schemaReviewCount,
 		displayMode,
-		style,
+		borderColour,
+		borderColourGradient,
+		borderColourHover,
+		borderColourHoverGradient,
+		borderStyle,
+		borderWidth,
+		textColour,
+		textColourGradient,
+		backgroundColour,
+		backgroundColourGradient,
 	} = attributes;
+
+	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	// No-inline (contract §A/§5): the `spacing`/`color` supports declare
 	// __experimentalSkipSerialization in block.json, so useBlockProps() no
@@ -133,7 +140,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// frontend's scoped <style> output at desktop width.
 	const blockProps = useBlockProps( {
 		className: `sgs-star-rating sgs-star-rating--${ displayMode }`,
-		style: buildWrapperStyle( attributes ),
+		style: buildWrapperStyle( attributes, colourPalette ),
 	} );
 
 	// Style-variation gating — MIRRORS render.php:46-48 exactly (same split, same
@@ -202,6 +209,38 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ ! isTpOfficial && (
 			<SgsColourPanel
 				rows={ [
+					{
+						key: 'wrapperText',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'wrapperBackground',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) => setAttributes( { backgroundColourGradient: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
 					{
 						key: 'emptyColour',
 						label: __( 'Empty colour', 'sgs-blocks' ),
@@ -302,6 +341,36 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourStates={ [
+							{ key: 'normal', label: __( 'Normal', 'sgs-blocks' ), value: borderColour,
+							  onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+							  gradientValue: borderColourGradient,
+							  onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) },
+							{ key: 'hover', label: __( 'Hover', 'sgs-blocks' ), value: borderColourHover,
+							  onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+							  gradientValue: borderColourHoverGradient,
+							  onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ) },
+						] }
+						radiusValues={ {
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
+					/>
 				</PanelBody>
 
 				<PanelBody title={ __( 'Display', 'sgs-blocks' ) } initialOpen={ false }>
