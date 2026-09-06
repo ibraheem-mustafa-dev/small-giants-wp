@@ -66,10 +66,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		separatorColourGradient,
 		currentColour,
 		currentColourGradient,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 	} = attributes;
 
 	// Contract §B3: NO wrapper <div> — the <nav> IS the block root (matches

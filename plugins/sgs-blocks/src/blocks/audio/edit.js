@@ -52,10 +52,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		spectrumColour,
 		title,
 		style,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 	} = attributes;
 
 	// --sgs-audio-accent mirrors render.php's brand-accent custom property

@@ -178,19 +178,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	}, [] );
 
 	// Padding/margin canvas preview (measured live 2026-08-26: this block
-	// showed 0px on canvas against a real 120px/80px page). Base padding AND
-	// margin are now block-OWNED `padding`/`margin` object attrs, migrated off
-	// WP-native supports.spacing on 2026-08-27 to match sgs/container (D555).
-	// Bean ruled FULL parity for this block in that pass, so margin gained its
-	// own marginTablet/marginMobile tier attrs too — the previous note here that
-	// they "resolve to undefined" is no longer true.
+	// showed 0px on canvas against a real 120px/80px page). `padding`/`margin`
+	// are each a single block-owned tier-object attr { desktop, tablet,
+	// mobile } — spacingPreview() still expects the old flat-sibling shape
+	// (a separate follow-up: 8 other blocks share this same stale call —
+	// see the Phase 3 handoff prompt), so adapt at this call site only.
 	const spacePreview = spacingPreview( {
-		basePadding: attributes.padding,
-		paddingTablet: attributes.paddingTablet,
-		paddingMobile: attributes.paddingMobile,
-		baseMargin: attributes.margin,
-		marginTablet: attributes.marginTablet,
-		marginMobile: attributes.marginMobile,
+		basePadding: attributes.padding?.desktop,
+		paddingTablet: attributes.padding?.tablet,
+		paddingMobile: attributes.padding?.mobile,
+		baseMargin: attributes.margin?.desktop,
+		marginTablet: attributes.margin?.tablet,
+		marginMobile: attributes.margin?.mobile,
 	}, previewTier );
 
 	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
@@ -501,11 +500,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					resetAll={ () =>
 						setAttributes( {
 							padding: {},
-							paddingTablet: {},
-							paddingMobile: {},
 							margin: {},
-							marginTablet: {},
-							marginMobile: {},
 							flexDirection: { desktop: 'row', mobile: 'column' },
 							gap: { desktop: '12px', mobile: '8px' },
 							flexWrap: { desktop: 'nowrap', mobile: 'nowrap' },
@@ -516,32 +511,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							borderColour: '',
 							borderColourGradient: '',
 							borderRadius: {},
-							borderRadiusTablet: {},
-							borderRadiusMobile: {},
 						} )
 					}
 				>
 					<ToolsPanelItem
 						label={ __( 'Padding', 'sgs-blocks' ) }
 						hasValue={ () =>
-							JSON.stringify( attributes.padding ?? {} ) !== '{}' ||
-							JSON.stringify( attributes.paddingTablet ?? {} ) !== '{}' ||
-							JSON.stringify( attributes.paddingMobile ?? {} ) !== '{}'
+							JSON.stringify( attributes.padding ?? {} ) !== '{}'
 						}
 						onDeselect={ () =>
-							setAttributes( { padding: {}, paddingTablet: {}, paddingMobile: {} } )
+							setAttributes( { padding: {} } )
 						}
 						isShownByDefault
 					>
 					{ /* ── Padding & margin (A1, D638 — sgs/container parity) ──
-					    Base tier writes the block's OWN `padding`/`margin` object
-					    attrs — this block no longer declares supports.spacing, so
-					    there is no duplicate Styles > Dimensions panel for the
-					    client to confuse with this one. Tablet/mobile write the
-					    paddingTablet/paddingMobile and marginTablet/marginMobile
-					    attrs the shared wrapper already reads at every kind
-					    (all-kinds "Responsive padding" block in
-					    class-sgs-container-wrapper.php).
+					    `padding`/`margin` are each a single block-owned
+					    tier-object attr { desktop, tablet, mobile } — this block
+					    no longer declares supports.spacing, so there is no
+					    duplicate Styles > Dimensions panel for the client to
+					    confuse with this one. Read directly by render.php.
 					    ⚠ The margin half is NEW (2026-08-27). This block previously
 					    had NO margin control at all — margin was reachable only
 					    through WordPress's native Dimensions panel, which the
@@ -566,12 +554,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ToolsPanelItem
 						label={ __( 'Margin', 'sgs-blocks' ) }
 						hasValue={ () =>
-							JSON.stringify( attributes.margin ?? {} ) !== '{}' ||
-							JSON.stringify( attributes.marginTablet ?? {} ) !== '{}' ||
-							JSON.stringify( attributes.marginMobile ?? {} ) !== '{}'
+							JSON.stringify( attributes.margin ?? {} ) !== '{}'
 						}
 						onDeselect={ () =>
-							setAttributes( { margin: {}, marginTablet: {}, marginMobile: {} } )
+							setAttributes( { margin: {} } )
 						}
 					>
 					<ResponsiveOverride
@@ -764,9 +750,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							attributes.borderStyle !== 'solid' ||
 							( attributes.borderColour ?? '' ) !== '' ||
 							( attributes.borderColourGradient ?? '' ) !== '' ||
-							JSON.stringify( attributes.borderRadius ?? {} ) !== '{}' ||
-							JSON.stringify( attributes.borderRadiusTablet ?? {} ) !== '{}' ||
-							JSON.stringify( attributes.borderRadiusMobile ?? {} ) !== '{}'
+							JSON.stringify( attributes.borderRadius ?? {} ) !== '{}'
 						}
 						onDeselect={ () =>
 							setAttributes( {
@@ -775,8 +759,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								borderColour: '',
 								borderColourGradient: '',
 								borderRadius: {},
-								borderRadiusTablet: {},
-								borderRadiusMobile: {},
 							} )
 						}
 						isShownByDefault

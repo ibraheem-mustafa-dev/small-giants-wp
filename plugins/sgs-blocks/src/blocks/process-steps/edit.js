@@ -141,10 +141,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderStyle,
 		borderColour,
 		borderColourGradient,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 	} = attributes;
 
 	const className = [

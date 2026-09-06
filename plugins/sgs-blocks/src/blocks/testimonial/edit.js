@@ -156,10 +156,6 @@ const VARIANTS = [
 export default function Edit( { attributes, setAttributes, context } ) {
 	const {
 		style,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		maxWidth,
 		variant,
 		quote,

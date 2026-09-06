@@ -142,10 +142,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconStyle,
 		gap,
 		style,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 	} = attributes;
 
 	const isSiteInfoSource = 'site-info' === source;
@@ -156,8 +152,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	// NOTE: `style` here is WP's native style-support object attribute (now
 	// holds only style.color, not spacing) — distinct from this block's own
 	// `iconStyle` attribute (plain/filled/outlined/pill variant).
-	const basePadding = padding;
-	const baseMargin = margin;
+	const basePadding = attributes.padding?.desktop;
+	const baseMargin = attributes.margin?.desktop;
 	const previewStyle = {};
 	const paddingPreview = boxShorthand( basePadding );
 	if ( paddingPreview ) {

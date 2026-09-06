@@ -186,8 +186,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		pillSelectedBorderColourGradient,
 		pillBorderRadius,
 		pillSelectedBorderRadius,
-		borderRadiusTablet,
-		borderRadiusMobile,
 		// pillPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (Spec 35
 		// box-tier migration) — the pillPaddingTablet/pillPaddingMobile sibling
 		// attrs no longer exist in this block's schema.
@@ -196,10 +194,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderStyle,
 		borderColour,
 		borderColourGradient,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		width,
 		maxWidth,
 	} = attributes;

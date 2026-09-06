@@ -231,6 +231,7 @@ $padding_tablet_obj       = is_array( $attributes['paddingTablet'] ?? null ) ? $
 $padding_mobile_obj       = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
 $margin_tablet_obj        = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
 $margin_mobile_obj        = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
 $border_radius_tablet_obj = $radius_tiers['tablet'];
 $border_radius_mobile_obj = $radius_tiers['mobile'];
 
@@ -361,7 +362,6 @@ if ( 'none' !== $border_style ) {
 // serialisation. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
 $border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(

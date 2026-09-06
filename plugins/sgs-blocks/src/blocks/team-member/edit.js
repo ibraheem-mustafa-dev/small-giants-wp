@@ -301,10 +301,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		transitionEasing,
 		displayMode,
 		socialLinks,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		maxWidth,
 		nameColourHover,
 		roleColourHover,
@@ -886,13 +882,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourLinked={ true }
 						contrastAgainst={ teamMemberContrastAgainst }
 						radiusValues={ {
-							base: attributes.borderRadius ?? {},
-							tablet: attributes.borderRadiusTablet ?? {},
-							mobile: attributes.borderRadiusMobile ?? {},
-						} }
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
 						onRadiusChange={ ( tier, next ) => {
-							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-							setAttributes( { [ radiusKey ]: next } );
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

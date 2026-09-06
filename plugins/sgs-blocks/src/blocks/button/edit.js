@@ -184,12 +184,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		textDecorationHover,
 		borderStyle,
 		borderWidth,
-		borderRadiusTablet,
-		borderRadiusMobile,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		scaleHover,
 		transitionDuration,
 		transitionEasing,
@@ -892,12 +886,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /* Border — always editable (preset-as-seed). Box-object interface
 				   contract §1/§5: borderWidth is an SGS custom object attr (base only,
-				   no tiers); border-radius routes to WP-native style.border.radius
-				   (base) + borderRadiusTablet/Mobile object attrs (tiers). The button
-				   declares __experimentalBorder.__experimentalSkipSerialization itself
-				   (block.json) so base radius serialises scoped, not inline — this is
-				   the spacing skipSerialization pattern container proves, applied to
-				   border here (container skip-serialises spacing, not border). */ }
+				   no tiers); borderRadius is a single block-owned tier-object attr
+				   { desktop, tablet, mobile }, read directly by render.php. */ }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 												{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
 						   (width/style/colour) mirroring native's BorderBoxControl layout,

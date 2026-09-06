@@ -120,10 +120,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		scaleHover,
 		iconAlign,
 		textAlign,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 	} = attributes;
 
 	const blockAlign = attributes.align || 'center';

@@ -124,10 +124,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		schemaReviewCount,
 		displayMode,
 		style,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 	} = attributes;
 
 	// No-inline (contract §A/§5): the `spacing`/`color` supports declare

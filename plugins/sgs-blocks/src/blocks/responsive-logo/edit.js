@@ -169,10 +169,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		alt,
 		logoDecorative,
 		style,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 	} = attributes;
 
 	// `maxWidth` AND `maxHeight` are both TIER OBJECTS as of Spec 35 pass 2

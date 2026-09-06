@@ -251,10 +251,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundColourHover,
 		backgroundColourGradient,
 		backgroundColourHoverGradient,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		maxWidth,
 		inheritStyle,
 		transitionDuration,
@@ -731,16 +727,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							<ToolsPanelItem
 								label={ __( 'Padding', 'sgs-blocks' ) }
 								hasValue={ () =>
-									Object.keys( padding ?? {} ).length > 0 ||
-									Object.keys( paddingTablet ?? {} ).length > 0 ||
-									Object.keys( paddingMobile ?? {} ).length > 0
+									Object.keys( attributes.padding ?? {} ).length > 0
 								}
 								onDeselect={ () =>
-									setAttributes( {
-										padding: {},
-										paddingTablet: {},
-										paddingMobile: {},
-									} )
+									setAttributes( { padding: {} } )
 								}
 								isShownByDefault
 							>
@@ -762,16 +752,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							<ToolsPanelItem
 								label={ __( 'Margin', 'sgs-blocks' ) }
 								hasValue={ () =>
-									Object.keys( margin ?? {} ).length > 0 ||
-									Object.keys( marginTablet ?? {} ).length > 0 ||
-									Object.keys( marginMobile ?? {} ).length > 0
+									Object.keys( attributes.margin ?? {} ).length > 0
 								}
 								onDeselect={ () =>
-									setAttributes( {
-										margin: {},
-										marginTablet: {},
-										marginMobile: {},
-									} )
+									setAttributes( { margin: {} } )
 								}
 							>
 								<ResponsiveOverride

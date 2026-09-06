@@ -299,10 +299,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		effectHover,
 		transitionDuration,
 		transitionEasing,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		borderRadiusTablet,
 		borderRadiusMobile,
 		nameColourHover,
@@ -708,10 +704,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourLinked={ true }
 						contrastAgainst={ brandStripContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
 							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
@@ -1053,16 +1049,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ResponsiveBorderRadiusControl
 						label={ __( 'Border radius', 'sgs-blocks' ) }
 						values={ {
-							base: style?.border?.radius ?? {},
-							tablet: borderRadiusTablet ?? {},
-							mobile: borderRadiusMobile ?? {},
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } );
-							} else {
-								setAttributes( { [ `borderRadius${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

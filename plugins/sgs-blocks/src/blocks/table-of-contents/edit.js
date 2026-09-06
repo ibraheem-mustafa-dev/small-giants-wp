@@ -105,12 +105,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		activeLinkColour,
 		activeLinkColourGradient,
 		style,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
-		borderRadiusTablet,
-		borderRadiusMobile,
 	} = attributes;
 
 	// Detect headings from the current post content in the editor.
@@ -414,18 +408,15 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					<ResponsiveBorderRadiusControl
 						label={ __( 'Border radius', 'sgs-blocks' ) }
-						values={ {
-							base: style?.border?.radius ?? {},
-							tablet: borderRadiusTablet ?? {},
-							mobile: borderRadiusMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } );
-							} else {
-								setAttributes( { [ `borderRadius${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
+					values={ {
+						base: attributes.borderRadius?.desktop ?? {},
+						tablet: attributes.borderRadius?.tablet ?? {},
+						mobile: attributes.borderRadius?.mobile ?? {},
+					} }
+					onChange={ ( tier, next ) => {
+						const key = tier === 'base' ? 'desktop' : tier;
+						setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+					} }
 					/>
 				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>

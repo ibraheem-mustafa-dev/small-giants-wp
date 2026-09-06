@@ -118,12 +118,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		cardStyle,
 		digitStyle,
 		style,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
-		borderRadiusTablet,
-		borderRadiusMobile,
 		numberColour,
 		numberColourGradient,
 		labelColour,
@@ -371,16 +365,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ResponsiveBorderRadiusControl
 						label={ __( 'Border radius', 'sgs-blocks' ) }
 						values={ {
-							base: style?.border?.radius ?? {},
-							tablet: borderRadiusTablet ?? {},
-							mobile: borderRadiusMobile ?? {},
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } );
-							} else {
-								setAttributes( { [ `borderRadius${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>
@@ -398,13 +389,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
 						radiusValues={ {
-							base: attributes.borderRadius ?? {},
-							tablet: attributes.borderRadiusTablet ?? {},
-							mobile: attributes.borderRadiusMobile ?? {},
-						} }
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
 						onRadiusChange={ ( tier, next ) => {
-							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-							setAttributes( { [ radiusKey ]: next } );
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

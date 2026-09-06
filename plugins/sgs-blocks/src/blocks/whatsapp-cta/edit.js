@@ -42,10 +42,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		labelColour,
 		labelColourGradient,
 		backgroundColour,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		borderRadiusTablet,
 		borderRadiusMobile,
 	} = attributes;

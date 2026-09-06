@@ -507,12 +507,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		rowStripeColourAGradient,
 		rowStripeColourB,
 		rowStripeColourBGradient,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
-		borderRadiusTablet,
-		borderRadiusMobile,
 		borderWidth,
 		borderColour,
 		borderColourGradient,
@@ -1071,9 +1065,8 @@ export default function Edit( { attributes, setAttributes } ) {
 				   block's render.php.
 				   Box-object interface contract §1/§5: borderWidth is an SGS
 				   custom object attr (base only, no tiers — no WP-native
-				   per-side width support); border-radius routes to WP-native
-				   style.border.radius (base) + borderRadiusTablet/Mobile
-				   tiers. */}
+				   per-side width support); borderRadius is a single
+				   block-owned tier-object attr { desktop, tablet, mobile }. */}
 				<InspectorControls group="styles">
 				{/* Typography — replaces the old WP-native supports.typography
 				    (fontSize/lineHeight/fontWeight/fontStyle only) with the shared
