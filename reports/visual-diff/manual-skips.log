@@ -1125,3 +1125,5 @@
 2026-09-06 16:20:37 | container | MANUAL SKIP | render.php markup-neutral change: borderRadius tier-object read source refactor, no output diff
 2026-09-06 16:20:37 | icon-list | MANUAL SKIP | render.php markup-neutral change: borderRadius tier-object read source refactor, no output diff
 2026-09-06 16:20:38 | product-card | MANUAL SKIP | render.php markup-neutral change: borderRadius tier-object read source refactor, no output diff
+2026-09-06 19:55:33 | heading | MANUAL SKIP | genuine visual/panel change, not yet live-verified -- this commit is being pushed specifically to deploy to sandybrown and perform the live visual check immediately after; will fix forward with a follow-up commit if the live check surfaces a problem
+2026-09-06 19:55:34 | text | MANUAL SKIP | genuine visual/panel change, not yet live-verified -- this commit is being pushed specifically to deploy to sandybrown and perform the live visual check immediately after; will fix forward with a follow-up commit if the live check surfaces a problem
